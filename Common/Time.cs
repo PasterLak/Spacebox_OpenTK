@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Spacebox_OpenTK.Common
+namespace Spacebox.Common
 {
     public static class Time
     {

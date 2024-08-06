@@ -1,9 +1,9 @@
 ﻿using OpenTK.Windowing.Desktop;
-using Spacebox_OpenTK.Scenes;
+using Spacebox.Scenes;
 using System.Reflection;
 
 
-namespace Spacebox_OpenTK.Common
+namespace Spacebox.Common
 {
 
     public class SceneType

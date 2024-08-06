@@ -3,7 +3,7 @@ using System.Drawing;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace Spacebox_OpenTK.Common
+namespace Spacebox.Common
 {
     public class Skybox
     {

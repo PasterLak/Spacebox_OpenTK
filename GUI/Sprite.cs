@@ -3,9 +3,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using Spacebox_OpenTK.Common;
+using Spacebox.Common;
 
-namespace Spacebox_OpenTK.GUI
+namespace Spacebox.GUI
 {
     public class Sprite
     {

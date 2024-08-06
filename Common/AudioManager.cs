@@ -1,6 +1,6 @@
 ﻿using OpenTK.Audio.OpenAL;
 
-namespace Spacebox_OpenTK.Common;
+namespace Spacebox.Common;
 public class AudioManager : IDisposable
 {
     public ALDevice Device { get; private set; }

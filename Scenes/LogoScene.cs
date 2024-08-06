@@ -1,10 +1,10 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox_OpenTK.Common;
-using Spacebox_OpenTK.GUI;
+using Spacebox.Common;
+using Spacebox.GUI;
 
-namespace Spacebox_OpenTK.Scenes
+namespace Spacebox.Scenes
 {
     internal class LogoScene : Scene
     {

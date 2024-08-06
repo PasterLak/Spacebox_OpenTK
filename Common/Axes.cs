@@ -5,7 +5,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Graphics.OpenGL4;
 
 
-namespace Spacebox_OpenTK.Common;
+namespace Spacebox.Common;
 
 public class Axes
 {

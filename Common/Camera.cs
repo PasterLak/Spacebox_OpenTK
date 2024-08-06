@@ -1,7 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using System;
 
-namespace Spacebox_OpenTK.Common
+namespace Spacebox.Common
 {
     public class Camera
     {

@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 
 
-namespace Spacebox_OpenTK.Common
+namespace Spacebox.Common
 {
     public static class Lighting
     {

@@ -1,16 +1,15 @@
 ﻿using System;
-using Spacebox_OpenTK.Common;
+using Spacebox.Common;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
-using Spacebox_OpenTK.Scenes;
+using Spacebox.Scenes;
 
-namespace Spacebox_OpenTK
+namespace Spacebox
 {
-    // In this tutorial we focus on how to set up a scene with multiple lights, both of different types but also
-    // with several point lights
+
     public class Window : GameWindow
     {
 
@@ -22,21 +21,17 @@ namespace Spacebox_OpenTK
             : base(gameWindowSettings, nativeWindowSettings)
         {
             Instance = this;
-            
         }
 
         protected override void OnLoad()
         {
             base.OnLoad();
             Input.Initialize(this);
+
             Console.WriteLine("Engine started!");
+
             _sceneManager = new SceneManager(this, typeof(LogoScene));
 
-            //SceneManager.LoadScene(typeof(LogoScene));
-
-
-            return;
-                       
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -49,9 +44,6 @@ namespace Spacebox_OpenTK
                 SceneManager.CurrentScene.Render();
             }
 
-            return;
-
-            
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -75,12 +67,7 @@ namespace Spacebox_OpenTK
 
             if (Input.IsKeyDown(Keys.Escape))
             {
-                if(SceneManager.CurrentScene != null)
-                {
-                    SceneManager.CurrentScene.UnloadContent();
-                    
-                }
-                Close();
+                Quit();
             }
 
             if (SceneManager.CurrentScene != null)
@@ -94,6 +81,16 @@ namespace Spacebox_OpenTK
             return;
 
             
+        }
+
+        private void Quit()
+        {
+            if (SceneManager.CurrentScene != null)
+            {
+                SceneManager.CurrentScene.UnloadContent();
+
+            }
+            Close();
         }
 
         protected override void OnMouseWheel(MouseWheelEventArgs e)

@@ -1,24 +1,18 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox_OpenTK.Common;
+using Spacebox.Common;
 using System.Drawing;
 
-namespace Spacebox_OpenTK.Scenes
+namespace Spacebox.Scenes
 {
     internal class ErrorScene : Scene
     {
-        public ErrorScene()
-        {
-        }
-
 
         public override void LoadContent()
         {
            
 
             GL.ClearColor(Color.Red);
-
-            //GL.Enable(EnableCap.DepthTest);
 
         }
 

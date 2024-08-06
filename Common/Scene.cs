@@ -1,6 +1,6 @@
 ﻿using OpenTK.Windowing.Desktop;
 
-namespace Spacebox_OpenTK.Common
+namespace Spacebox.Common
 {
     public abstract class Scene
     {

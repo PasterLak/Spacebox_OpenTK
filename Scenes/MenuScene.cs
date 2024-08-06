@@ -1,8 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox_OpenTK.Common;
+using Spacebox.Common;
 
-namespace Spacebox_OpenTK.Scenes
+namespace Spacebox.Scenes
 {
     internal class MenuScene : Scene
     {

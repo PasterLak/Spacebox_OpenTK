@@ -3,7 +3,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 
-namespace Spacebox_OpenTK.Common
+namespace Spacebox.Common
 {
     public class Input
     {

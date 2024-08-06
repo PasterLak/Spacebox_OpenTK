@@ -2,10 +2,10 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox_OpenTK.Common;
+using Spacebox.Common;
 
 
-namespace Spacebox_OpenTK.Scenes
+namespace Spacebox.Scenes
 {
     internal class GameScene : Scene
     {

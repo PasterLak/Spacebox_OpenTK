@@ -5,7 +5,7 @@ using System.Threading;
 using OpenTK.Audio.OpenAL;
 using OpenTK.Mathematics;
 
-namespace Spacebox_OpenTK.Common
+namespace Spacebox.Common
 {
     public class AudioSource : IDisposable
     {

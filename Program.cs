@@ -3,7 +3,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 
 
-namespace Spacebox_OpenTK
+namespace Spacebox
 {
     public static class Program
     {
