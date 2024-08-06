@@ -1,0 +1,118 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <StartupObject>Spacebox_OpenTK.Program</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="NewFolder\**" />
+    <EmbeddedResource Remove="NewFolder\**" />
+    <None Remove="NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Audio\flashlight.wav" />
+    <None Remove="Resources\Audio\music.wav" />
+    <None Remove="Resources\Audio\music0.wav" />
+    <None Remove="Resources\Audio\shooting.wav" />
+    <None Remove="Resources\Textures\block.png" />
+    <None Remove="Resources\Textures\container2.png" />
+    <None Remove="Resources\Textures\container2_specular.png" />
+    <None Remove="Resources\Textures\logo.png" />
+    <None Remove="Shaders\axes.frag" />
+    <None Remove="Shaders\axes.glsl" />
+    <None Remove="Shaders\axes.vert" />
+    <None Remove="Shaders\lighting.frag" />
+    <None Remove="Shaders\lighting.glsl" />
+    <None Remove="Shaders\shader.frag" />
+    <None Remove="Shaders\shader.glsl" />
+    <None Remove="Shaders\shader.vert" />
+    <None Remove="Shaders\skybox.frag" />
+    <None Remove="Shaders\skybox.glsl" />
+    <None Remove="Shaders\skybox.vert" />
+    <None Remove="Shaders\sprite.frag" />
+    <None Remove="Shaders\sprite.glsl" />
+    <None Remove="Shaders\sprite.vert" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Audio\flashlight.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Audio\music.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Audio\music0.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Audio\shooting.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\block.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\container2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\container2_specular.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\axes.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\axes.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\axes.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\lighting.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\lighting.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\shader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\shader.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\shader.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\skybox.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\skybox.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\skybox.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\sprite.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\sprite.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\sprite.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenAL.Soft" Version="1.23.1" />
+    <PackageReference Include="OpenTK" Version="4.8.2" />
+    <PackageReference Include="StbImageSharp" Version="2.27.14" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.7" />
+  </ItemGroup>
+
+</Project>
