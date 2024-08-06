@@ -23,8 +23,7 @@ namespace Spacebox_OpenTK.Common
 
         private static SceneType? _nextSceneType = null;
         //private static Scene _nextScene;
-      
-
+     
         public GameWindow GameWindow {  get; private set; }
 
         public SceneManager(GameWindow gameWindow, Type startScene) 
@@ -124,7 +123,6 @@ namespace Spacebox_OpenTK.Common
                 CurrentScene.Awake();
                 CurrentScene.Start();
 
-                _nextSceneType = null;
             }
         }
     }

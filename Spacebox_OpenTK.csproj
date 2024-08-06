@@ -9,12 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="NewFolder\**" />
-    <EmbeddedResource Remove="NewFolder\**" />
-    <None Remove="NewFolder\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Resources\Audio\flashlight.wav" />
     <None Remove="Resources\Audio\music.wav" />
     <None Remove="Resources\Audio\music0.wav" />

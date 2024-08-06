@@ -223,7 +223,8 @@ namespace Spacebox_OpenTK.Scenes
 
         public override void UnloadContent()
         {
-           
+           audioManager.Dispose();
+            audio.Dispose();
         }
 
         public override void Update()
