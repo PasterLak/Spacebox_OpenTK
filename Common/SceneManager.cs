@@ -95,10 +95,17 @@ namespace Spacebox.Common
 
             if (types.Contains(sceneType))
             {
-                //CurrentScene.UnloadContent();
-
+                
                 _nextSceneType = new SceneType { typ = sceneType }; 
             }
+            else
+            {
+                Console.WriteLine($"Error: Scene of type {sceneType.Name} must inherit from class Scene!");
+
+                LoadScene(typeof(ErrorScene));
+                return;
+            }
+       
             StartNextScene();
 
         }

@@ -54,7 +54,7 @@ namespace Spacebox.Scenes
         {
           if(Input.IsKeyDown(Keys.Enter))
             {
-                SceneManager.LoadScene(typeof(MenuScene));
+                SceneManager.LoadScene(typeof(Skybox));
             }
         }
     }

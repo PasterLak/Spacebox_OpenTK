@@ -1,5 +1,4 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using System.Drawing;
 
@@ -22,7 +21,7 @@ namespace Spacebox.Scenes
         }
         public override void Start()
         {
-          
+            Console.Error.WriteLine("Error Scene!");
         }
 
 

@@ -30,12 +30,13 @@ namespace Spacebox.Scenes
         private Vector2 _lastPos;
 
         private Axes _axes;
+        private Axes _axes2;
         private Skybox _skybox;
 
         private bool flashLight = true;
 
         AudioSource audio;
-      
+
         AudioManager audioManager;
 
         public GameScene()
@@ -44,18 +45,19 @@ namespace Spacebox.Scenes
 
         public override void LoadContent()
         {
-        
+
 
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
             _axes = new Axes(new Vector3(0, 0, 0), 1000);
+            _axes2 = new Axes(new Vector3(1, 1, 1), 1);
 
 
             GL.ClearColor(Lighting.BackgroundColor);
 
             GL.Enable(EnableCap.DepthTest);
 
-        
+
             _vertexBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, GameData._vertices.Length * sizeof(float), GameData._vertices, BufferUsageHint.StaticDraw);
@@ -104,11 +106,11 @@ namespace Spacebox.Scenes
 
         public override void Awake()
         {
-          
+
         }
         public override void Start()
         {
-           
+
         }
 
 
@@ -120,6 +122,7 @@ namespace Spacebox.Scenes
 
             //_skybox.Render();
             _axes.Render(_camera.GetViewMatrix(), _camera.GetProjectionMatrix());
+            _axes2.Render(_camera.GetViewMatrix(), _camera.GetProjectionMatrix());
 
 
             GL.BindVertexArray(_vaoModel);
@@ -171,7 +174,7 @@ namespace Spacebox.Scenes
                 _lightingShader.SetVector3("spotLight.ambient", new Vector3(0.0f, 0.0f, 0.0f));
                 _lightingShader.SetVector3("spotLight.diffuse", new Vector3(0f, 0f, 0f));
                 _lightingShader.SetVector3("spotLight.specular", new Vector3(0f, 0f, 0f));
-              
+
             }
             else
             {
@@ -179,7 +182,7 @@ namespace Spacebox.Scenes
                 _lightingShader.SetVector3("spotLight.diffuse", new Vector3(1.0f, 1.0f, 1.0f));
                 _lightingShader.SetVector3("spotLight.specular", new Vector3(1.0f, 1.0f, 1.0f));
 
-              
+
             }
 
 
@@ -216,20 +219,20 @@ namespace Spacebox.Scenes
                 GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
             }
 
-           
+
 
             SceneManager.Instance.GameWindow.SwapBuffers();
         }
 
         public override void UnloadContent()
         {
-           audioManager.Dispose();
+            audioManager.Dispose();
             audio.Dispose();
         }
 
         public override void Update()
         {
-          if(Input.IsKeyDown(Keys.Enter))
+            if (Input.IsKeyDown(Keys.Enter))
             {
                 SceneManager.LoadScene(typeof(MenuScene));
             }
@@ -262,7 +265,7 @@ namespace Spacebox.Scenes
                 _camera.Position -= _camera.Up * cameraSpeed * (float)Time.Delta; // Down
             }
 
-            if(Input.IsKeyDown(Keys.F))
+            if (Input.IsKeyDown(Keys.F))
             {
                 flashLight = !flashLight;
                 audio.Play();

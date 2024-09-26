@@ -24,7 +24,7 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
 
-            GL.ClearColor(0.8f, 0.3f, 0.3f, 1.0f);
+            GL.ClearColor(0.8f, 0.5f, 0.3f, 1.0f);
             audioManager = new AudioManager();
             audio = new AudioSource("Resources/Audio/music.wav", audioManager.Device, audioManager.Context);
             audio.IsLooped = true;
