@@ -134,9 +134,9 @@ namespace Spacebox.Common
                 Matrix4.CreateScale(2) *
                 Matrix4.CreateTranslation(_camera.Position);
 
-            _shader.SetMatrix4("model", view);
-            _shader.SetMatrix4("view", _camera.GetViewMatrix());
-            _shader.SetMatrix4("projection", _camera.GetProjectionMatrix());
+            _shader.SetMatrix4("model", view, false);
+            _shader.SetMatrix4("view", _camera.GetViewMatrix(), false);
+            _shader.SetMatrix4("projection", _camera.GetProjectionMatrix(), false);
 
             // Bind the skybox texture
             GL.BindVertexArray(_vao);

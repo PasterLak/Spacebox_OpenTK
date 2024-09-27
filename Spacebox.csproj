@@ -21,6 +21,7 @@
     <None Remove="Shaders\axes.frag" />
     <None Remove="Shaders\axes.glsl" />
     <None Remove="Shaders\axes.vert" />
+    <None Remove="Shaders\debug.glsl" />
     <None Remove="Shaders\lighting.frag" />
     <None Remove="Shaders\lighting.glsl" />
     <None Remove="Shaders\shader.frag" />
@@ -69,6 +70,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\axes.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\debug.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\lighting.frag">

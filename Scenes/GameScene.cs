@@ -110,7 +110,7 @@ namespace Spacebox.Scenes
         }
         public override void Start()
         {
-
+            
         }
 
 
@@ -120,11 +120,11 @@ namespace Spacebox.Scenes
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            //_skybox.Render();
-            _axes.Render(_camera.GetViewMatrix(), _camera.GetProjectionMatrix());
-            _axes2.Render(_camera.GetViewMatrix(), _camera.GetProjectionMatrix());
+           // _skybox.Render();
+           // _axes.Render(_camera.GetViewMatrix(), _camera.GetProjectionMatrix());
+            //_axes2.Render(_camera.GetViewMatrix(), _camera.GetProjectionMatrix());
 
-
+            Debug.Render();
             GL.BindVertexArray(_vaoModel);
 
             _diffuseMap.Use(TextureUnit.Texture0);
@@ -219,6 +219,11 @@ namespace Spacebox.Scenes
                 GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
             }
 
+       
+            
+
+            // Re-enable face culling if it was enabled before
+            //GL.Enable(EnableCap.CullFace);
 
 
             SceneManager.Instance.GameWindow.SwapBuffers();
@@ -229,7 +234,7 @@ namespace Spacebox.Scenes
             audioManager.Dispose();
             audio.Dispose();
         }
-
+        Random rnd = new Random();
 
         public override void Update()
         {
@@ -240,8 +245,33 @@ namespace Spacebox.Scenes
 
             const float cameraSpeed = 1.5f;
             const float sensitivity = 0.2f;
-           
-            y++;
+
+            Debug.ProjectionMatrix = _camera.GetProjectionMatrix();
+            Debug.ViewMatrix = _camera.GetViewMatrix();
+
+            Debug.SetLineWidth(50);
+            // Add debug shapes
+            Debug.DrawPoint(new Vector3(0.3f, 3.0f, 0.0f),1000, Color4.Red);
+
+
+            for (int x = 0; x < 10000; x++)
+            {
+                Debug.DrawPoint(new Vector3((float)rnd.NextDouble() * 10, (float)rnd.NextDouble() * 10, (float)rnd.NextDouble() * 10), 2, Color4.Red);
+                Debug.DrawLine(new Vector3((float)rnd.NextDouble() * 100, (float)rnd.NextDouble() * 100, (float)rnd.NextDouble() * 100), new Vector3((float)rnd.NextDouble() * 10, (float)rnd.NextDouble() * 10, (float)rnd.NextDouble() * 10), Color4.Red);
+            }
+
+            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(-1.0f,- 1.0f,-1.0f), Color4.Purple);
+            Debug.DrawSquare(new Vector3(0.0f, 0.0f, 0.0f), new Vector2(1.0f, 1.0f), Color4.Purple);
+
+
+            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(10f, 0, 0), Color4.Red);
+            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 10, 0), Color4.Green);
+            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 0,10), Color4.Blue);
+            // Render your main scene here
+
+            // Render debug shapes
+
+
             if (Input.IsKey(Keys.W))
             {
                 _camera.Position += _camera.Front * cameraSpeed * (float)Time.Delta; // Forward

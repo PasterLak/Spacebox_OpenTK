@@ -12,6 +12,7 @@ namespace Spacebox.Common
         private const string ShaderFormat = ".glsl";
         private const string VertexShaderKey = "--Vert";
         private const string FragmentShaderKey = "--Frag";
+        private const string GeometryShaderKey = "--Geom";
 
         private FileSystemWatcher _watcher;
         private readonly string _shaderPath;
@@ -92,17 +93,24 @@ namespace Spacebox.Common
             // Compile shaders
             int vertexShader = 0;
             int fragmentShader = 0;
+            int geometryShader = 0;
 
             try
             {
                 vertexShader = CompileShader(ShaderType.VertexShader, shaderSources.vertexShaderSource);
                 fragmentShader = CompileShader(ShaderType.FragmentShader, shaderSources.fragmentShaderSource);
+
+                if (!string.IsNullOrWhiteSpace(shaderSources.geometryShaderSource))
+                {
+                    geometryShader = CompileShader(ShaderType.GeometryShader, shaderSources.geometryShaderSource);
+                }
             }
             catch (Exception ex)
             {
                 // Cleanup shaders if compilation failed
                 if (vertexShader != 0) GL.DeleteShader(vertexShader);
                 if (fragmentShader != 0) GL.DeleteShader(fragmentShader);
+                if (geometryShader != 0) GL.DeleteShader(geometryShader);
 
                 throw new Exception("Shader compilation failed: " + ex.Message);
             }
@@ -110,6 +118,8 @@ namespace Spacebox.Common
             // Create and link program
             int newHandle = GL.CreateProgram();
             GL.AttachShader(newHandle, vertexShader);
+            if (geometryShader != 0)
+                GL.AttachShader(newHandle, geometryShader);
             GL.AttachShader(newHandle, fragmentShader);
 
             try
@@ -121,8 +131,13 @@ namespace Spacebox.Common
                 // Cleanup shaders and program if linking failed
                 GL.DetachShader(newHandle, vertexShader);
                 GL.DetachShader(newHandle, fragmentShader);
+                if (geometryShader != 0)
+                    GL.DetachShader(newHandle, geometryShader);
+
                 GL.DeleteShader(vertexShader);
                 GL.DeleteShader(fragmentShader);
+                if (geometryShader != 0)
+                    GL.DeleteShader(geometryShader);
                 GL.DeleteProgram(newHandle);
 
                 throw new Exception("Shader linking failed: " + ex.Message);
@@ -131,8 +146,13 @@ namespace Spacebox.Common
             // Detach and delete shaders after successful linking
             GL.DetachShader(newHandle, vertexShader);
             GL.DetachShader(newHandle, fragmentShader);
+            if (geometryShader != 0)
+                GL.DetachShader(newHandle, geometryShader);
+
             GL.DeleteShader(vertexShader);
             GL.DeleteShader(fragmentShader);
+            if (geometryShader != 0)
+                GL.DeleteShader(geometryShader);
 
             // Cache uniform locations
             var newUniformLocations = CacheUniformLocations(newHandle);
@@ -186,15 +206,17 @@ namespace Spacebox.Common
             }
         }
 
-        public static (string vertexShaderSource, string fragmentShaderSource) ParseShaders(string filePath)
+        public static (string vertexShaderSource, string fragmentShaderSource, string geometryShaderSource) ParseShaders(string filePath)
         {
             var lines = File.ReadAllLines(filePath + ShaderFormat);
 
             bool inVertexShader = false;
             bool inFragmentShader = false;
+            bool inGeometryShader = false;
 
             string vertexShaderSource = "";
             string fragmentShaderSource = "";
+            string geometryShaderSource = "";
 
             foreach (var line in lines)
             {
@@ -202,6 +224,7 @@ namespace Spacebox.Common
                 {
                     inVertexShader = true;
                     inFragmentShader = false;
+                    inGeometryShader = false;
                     continue;
                 }
 
@@ -209,6 +232,15 @@ namespace Spacebox.Common
                 {
                     inVertexShader = false;
                     inFragmentShader = true;
+                    inGeometryShader = false;
+                    continue;
+                }
+
+                if (line.Contains(GeometryShaderKey))
+                {
+                    inVertexShader = false;
+                    inFragmentShader = false;
+                    inGeometryShader = true;
                     continue;
                 }
 
@@ -216,12 +248,14 @@ namespace Spacebox.Common
                     vertexShaderSource += line + "\n";
                 else if (inFragmentShader)
                     fragmentShaderSource += line + "\n";
+                else if (inGeometryShader)
+                    geometryShaderSource += line + "\n";
             }
 
             if (string.IsNullOrWhiteSpace(vertexShaderSource) || string.IsNullOrWhiteSpace(fragmentShaderSource))
                 throw new Exception("Failed to parse shaders: Both vertex and fragment shaders must be present in the file.");
 
-            return (vertexShaderSource, fragmentShaderSource);
+            return (vertexShaderSource, fragmentShaderSource, geometryShaderSource);
         }
 
         private int CompileShader(ShaderType type, string source)
@@ -313,6 +347,15 @@ namespace Spacebox.Common
 
             GL.UseProgram(Handle);
             GL.UniformMatrix4(_uniformLocations[name], true, ref data);
+        }
+
+        public void SetMatrix4(string name, Matrix4 data, bool transpose)
+        {
+            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+                return;
+
+            GL.UseProgram(Handle);
+            GL.UniformMatrix4(_uniformLocations[name], transpose, ref data);
         }
 
         public void SetVector2(string name, Vector2 data)

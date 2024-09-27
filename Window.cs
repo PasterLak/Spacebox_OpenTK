@@ -20,6 +20,10 @@ namespace Spacebox
         public static readonly ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
 
         public static Action<Vector2> OnResized;
+
+
+
+
         public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
         {
@@ -30,8 +34,11 @@ namespace Spacebox
         {
             base.OnLoad();
             Input.Initialize(this);
+    
 
             Console.WriteLine("Engine started!");
+
+
 
             _sceneManager = new SceneManager(this, typeof(LogoScene));
 
@@ -41,6 +48,8 @@ namespace Spacebox
         {
             base.OnRenderFrame(e);
             Time.Update(e);
+
+            //Debug.Render();
 
             if (SceneManager.CurrentScene != null)
             {
