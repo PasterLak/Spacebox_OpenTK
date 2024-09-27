@@ -28,10 +28,11 @@ uniform sampler2D spriteTexture; // 2D texture sampler
 void main()
 {
     // Sample the texture color, including the alpha channel
-    vec4 texColor = texture(spriteTexture, TexCoord);
+    //vec4 texColor = texture(spriteTexture, TexCoord);
     
     // Set the fragment color to the sampled texture color
     // The alpha channel is automatically included
-    FragColor = texColor;
+
+    FragColor = vec4(1,1,1,1);
 }
 

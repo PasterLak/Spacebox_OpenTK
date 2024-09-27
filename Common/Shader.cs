@@ -6,9 +6,9 @@ namespace Spacebox.Common
     // A simple class meant to help create shaders.
     public class Shader
     {
-        public readonly int Handle;
+        public int Handle;
 
-        private readonly Dictionary<string, int> _uniformLocations;
+        private Dictionary<string, int> _uniformLocations;
 
         private const string ShaderFormat = ".glsl";
         private const string VertexShaderKey = "--Vert";
@@ -18,9 +18,17 @@ namespace Spacebox.Common
         // Shaders are written in GLSL, which is a language very similar to C in its semantics.
         // The GLSL source is compiled *at runtime*, so it can optimize itself for the graphics card it's currently being used on.
         // A commented example of GLSL can be found in shader.vert.
+
+        private string shaderPath;
         public Shader(string shaderPath)
         {
-            if(!File.Exists(shaderPath + ShaderFormat))
+            this.shaderPath = shaderPath;
+            Load();
+        }
+
+        private void Load()
+        {
+            if (!File.Exists(shaderPath + ShaderFormat))
             {
                 throw new ArgumentException("Wrong shader path! " + shaderPath);
                 return;
@@ -91,8 +99,19 @@ namespace Spacebox.Common
                 // and then add it to the dictionary.
                 _uniformLocations.Add(key, location);
             }
+
+            Console.WriteLine($"[Shader] Compiled! ID:{Handle} Name: {Path.GetFileName(shaderPath)}");
         }
 
+        public void ReloadShader()
+        {
+            
+            GL.DeleteProgram(Handle);
+            Handle = 0;
+            _uniformLocations = null; 
+            Load();
+            Use();
+        }
 
         public static (string vertexShaderSource, string fragmentShaderSource) ParseShaders(string filePath)
         {

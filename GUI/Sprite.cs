@@ -107,6 +107,8 @@ namespace Spacebox.GUI
             GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
         }
 
+        public Shader GetShader() { return _shader; }
+
         public void Render()
         {
             _shader.Use();

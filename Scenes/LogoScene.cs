@@ -54,7 +54,12 @@ namespace Spacebox.Scenes
         {
           if(Input.IsKeyDown(Keys.Enter))
             {
-                SceneManager.LoadScene(typeof(Skybox));
+                SceneManager.LoadScene(typeof(MenuScene));
+            }
+
+            if (Input.IsKeyDown(Keys.R))
+            {
+                sprite.GetShader().ReloadShader();
             }
         }
     }
