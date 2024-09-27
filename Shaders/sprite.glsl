@@ -33,6 +33,6 @@ void main()
     // Set the fragment color to the sampled texture color
     // The alpha channel is automatically included
 
-    FragColor = vec4(1,1,1,1);
+    FragColor = vec4(1,1,0,1);
 }
 

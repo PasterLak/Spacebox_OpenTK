@@ -61,6 +61,7 @@ namespace Spacebox.Scenes
             {
                 sprite.GetShader().ReloadShader();
             }
+         
         }
     }
 }
