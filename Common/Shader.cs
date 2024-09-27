@@ -1,16 +1,12 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace Spacebox.Common
 {
     public class Shader : IDisposable
     {
-        public int Handle;
+        public int Handle { get; private set; }
 
         private Dictionary<string, int> _uniformLocations;
         private const string ShaderFormat = ".glsl";
@@ -18,15 +14,21 @@ namespace Spacebox.Common
         private const string FragmentShaderKey = "--Frag";
 
         private FileSystemWatcher _watcher;
-        private string _shaderPath;
+        private readonly string _shaderPath;
 
         private bool _isProcessingChange = false;
-        private readonly SynchronizationContext _syncContext;
+        private bool _isReloadingShader = false;
+
+        private readonly ConcurrentQueue<Action> _mainThreadActions;
+
+        // Store previous working shader and uniform locations
+        private int _previousHandle;
+        private Dictionary<string, int> _previousUniformLocations;
 
         public Shader(string shaderPath)
         {
             _shaderPath = shaderPath;
-            _syncContext = SynchronizationContext.Current ?? new SynchronizationContext();
+            _mainThreadActions = Window._mainThreadActions;
             Load();
             InitializeHotReload();
         }
@@ -35,7 +37,7 @@ namespace Spacebox.Common
         {
             _watcher = new FileSystemWatcher(Path.GetDirectoryName(_shaderPath), Path.GetFileName(_shaderPath) + ShaderFormat)
             {
-                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.Size,
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size,
                 EnableRaisingEvents = true
             };
 
@@ -51,8 +53,10 @@ namespace Spacebox.Common
 
             Task.Run(() =>
             {
-                Thread.Sleep(500);
+                // Delay to ensure file is ready
+                Task.Delay(100).Wait();
 
+                // Wait until the file is accessible
                 while (true)
                 {
                     try
@@ -64,16 +68,17 @@ namespace Spacebox.Common
                     }
                     catch (IOException)
                     {
-                        Thread.Sleep(500);
+                        Task.Delay(500).Wait();
                     }
                 }
 
-                _syncContext.Post(_ =>
+                // Enqueue the ReloadShader action to be executed on the main thread
+                _mainThreadActions.Enqueue(() =>
                 {
                     ReloadShader();
                     _isProcessingChange = false;
                     _watcher.EnableRaisingEvents = true;
-                }, null);
+                });
             });
         }
 
@@ -84,35 +89,101 @@ namespace Spacebox.Common
 
             var shaderSources = ParseShaders(_shaderPath);
 
-            var vertexShader = CompileShader(ShaderType.VertexShader, shaderSources.vertexShaderSource);
-            var fragmentShader = CompileShader(ShaderType.FragmentShader, shaderSources.fragmentShaderSource);
+            // Compile shaders
+            int vertexShader = 0;
+            int fragmentShader = 0;
 
-            Handle = GL.CreateProgram();
-            GL.AttachShader(Handle, vertexShader);
-            GL.AttachShader(Handle, fragmentShader);
-            LinkProgram(Handle);
+            try
+            {
+                vertexShader = CompileShader(ShaderType.VertexShader, shaderSources.vertexShaderSource);
+                fragmentShader = CompileShader(ShaderType.FragmentShader, shaderSources.fragmentShaderSource);
+            }
+            catch (Exception ex)
+            {
+                // Cleanup shaders if compilation failed
+                if (vertexShader != 0) GL.DeleteShader(vertexShader);
+                if (fragmentShader != 0) GL.DeleteShader(fragmentShader);
 
-            GL.DetachShader(Handle, vertexShader);
-            GL.DetachShader(Handle, fragmentShader);
-            GL.DeleteShader(fragmentShader);
+                throw new Exception("Shader compilation failed: " + ex.Message);
+            }
+
+            // Create and link program
+            int newHandle = GL.CreateProgram();
+            GL.AttachShader(newHandle, vertexShader);
+            GL.AttachShader(newHandle, fragmentShader);
+
+            try
+            {
+                LinkProgram(newHandle);
+            }
+            catch (Exception ex)
+            {
+                // Cleanup shaders and program if linking failed
+                GL.DetachShader(newHandle, vertexShader);
+                GL.DetachShader(newHandle, fragmentShader);
+                GL.DeleteShader(vertexShader);
+                GL.DeleteShader(fragmentShader);
+                GL.DeleteProgram(newHandle);
+
+                throw new Exception("Shader linking failed: " + ex.Message);
+            }
+
+            // Detach and delete shaders after successful linking
+            GL.DetachShader(newHandle, vertexShader);
+            GL.DetachShader(newHandle, fragmentShader);
             GL.DeleteShader(vertexShader);
+            GL.DeleteShader(fragmentShader);
 
-            CacheUniformLocations();
+            // Cache uniform locations
+            var newUniformLocations = CacheUniformLocations(newHandle);
+
+            // If we reach here, everything succeeded
+            // Store previous shader program and uniforms
+            if (Handle != 0)
+            {
+                // Delete previous shader program after successful compilation
+                GL.DeleteProgram(Handle);
+            }
+
+            _previousHandle = Handle;
+            _previousUniformLocations = _uniformLocations;
+
+            Handle = newHandle;
+            _uniformLocations = newUniformLocations;
+
             Console.WriteLine($"[Shader] Compiled! ID:{Handle} Name: {Path.GetFileName(_shaderPath)}");
         }
 
         public void ReloadShader()
         {
-            GL.UseProgram(0);
+            Console.WriteLine("Reloading shader...");
+            _isReloadingShader = true;
 
-            if (Handle != 0)
+            try
             {
-                Console.WriteLine("Deleting old shader program.");
-                GL.DeleteProgram(Handle);
+                Load();
+                Console.WriteLine("Shader reloaded successfully.");
             }
+            catch (Exception ex)
+            {
+                // If reloading failed, keep using the previous shader
+                Console.WriteLine("Shader reload failed: " + ex.Message);
+                Console.WriteLine("Using previous working shader.");
 
-            _uniformLocations = null;
-            Load();
+                // Restore previous shader and uniforms
+                if (Handle != _previousHandle)
+                {
+                    if (Handle != 0)
+                        GL.DeleteProgram(Handle);
+
+                    Handle = _previousHandle;
+                    _uniformLocations = _previousUniformLocations;
+                }
+            }
+            finally
+            {
+                _isReloadingShader = false;
+            }
         }
 
         public static (string vertexShaderSource, string fragmentShaderSource) ParseShaders(string filePath)
@@ -167,7 +238,7 @@ namespace Spacebox.Common
             if (code != (int)All.True)
             {
                 var infoLog = GL.GetShaderInfoLog(shader);
-                throw new Exception($"Error compiling shader ({shader}): {infoLog}");
+                throw new Exception($"Error compiling shader ({type}): {infoLog}");
             }
 
             return shader;
@@ -188,22 +259,27 @@ namespace Spacebox.Common
             }
         }
 
-        private void CacheUniformLocations()
+        private Dictionary<string, int> CacheUniformLocations(int programHandle)
         {
-            GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
+            GL.GetProgram(programHandle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
 
-            _uniformLocations = new Dictionary<string, int>();
+            var uniformLocations = new Dictionary<string, int>();
 
             for (var i = 0; i < numberOfUniforms; i++)
             {
-                var key = GL.GetActiveUniform(Handle, i, out _, out _);
-                var location = GL.GetUniformLocation(Handle, key);
-                _uniformLocations.Add(key, location);
+                var key = GL.GetActiveUniform(programHandle, i, out _, out _);
+                var location = GL.GetUniformLocation(programHandle, key);
+                uniformLocations.Add(key, location);
             }
+
+            return uniformLocations;
         }
 
         public void Use()
         {
+            if (_isReloadingShader || Handle == 0)
+                return;
+
             GL.UseProgram(Handle);
         }
 
@@ -214,24 +290,45 @@ namespace Spacebox.Common
 
         public void SetInt(string name, int data)
         {
+            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+                return;
+
             GL.UseProgram(Handle);
             GL.Uniform1(_uniformLocations[name], data);
         }
 
         public void SetFloat(string name, float data)
         {
+            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+                return;
+
             GL.UseProgram(Handle);
             GL.Uniform1(_uniformLocations[name], data);
         }
 
         public void SetMatrix4(string name, Matrix4 data)
         {
+            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+                return;
+
             GL.UseProgram(Handle);
             GL.UniformMatrix4(_uniformLocations[name], true, ref data);
         }
 
+        public void SetVector2(string name, Vector2 data)
+        {
+            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+                return;
+
+            GL.UseProgram(Handle);
+            GL.Uniform2(_uniformLocations[name], data);
+        }
+
         public void SetVector3(string name, Vector3 data)
         {
+            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+                return;
+
             GL.UseProgram(Handle);
             GL.Uniform3(_uniformLocations[name], data);
         }

@@ -230,6 +230,7 @@ namespace Spacebox.Scenes
             audio.Dispose();
         }
 
+
         public override void Update()
         {
             if (Input.IsKeyDown(Keys.Enter))
@@ -239,7 +240,8 @@ namespace Spacebox.Scenes
 
             const float cameraSpeed = 1.5f;
             const float sensitivity = 0.2f;
-
+           
+            y++;
             if (Input.IsKey(Keys.W))
             {
                 _camera.Position += _camera.Front * cameraSpeed * (float)Time.Delta; // Forward

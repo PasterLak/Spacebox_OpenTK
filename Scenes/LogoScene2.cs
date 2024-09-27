@@ -6,12 +6,12 @@ using Spacebox.GUI;
 
 namespace Spacebox.Scenes
 {
-    internal class LogoScene : Scene
+    internal class LogoScene2 : Scene
     {
 
         Sprite sprite;
 
-        public LogoScene()
+        public LogoScene2()
         {
         }
 
@@ -21,8 +21,8 @@ namespace Spacebox.Scenes
         
 
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            sprite = new Sprite("Resources/Textures/cat.png", new Vector2(0,0), new Vector2(250,250), Window.Instance.Size.X, Window.Instance.Size.Y);
-           
+            sprite = new Sprite("Resources/Textures/logo.png", new Vector2(0,0), new Vector2(250,250), Window.Instance.Size.X, Window.Instance.Size.Y);
+            
             //GL.Enable(EnableCap.DepthTest);
 
         }
@@ -56,7 +56,6 @@ namespace Spacebox.Scenes
 
             sprite.GetShader().SetFloat("time", (float)GLFW.GetTime());
             sprite.GetShader().SetVector2("screen", new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
-            sprite.GetShader().SetVector2("mouse", new Vector2(0,0));
 
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
             if (Input.IsKeyDown(Keys.Enter))

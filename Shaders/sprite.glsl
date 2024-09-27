@@ -9,9 +9,9 @@ out vec2 TexCoord;
 
 void main()
 {
-    // Pass the texture coordinates to the fragment shader
+  
     TexCoord = aTexCoord;
-    // Set the position of the vertex
+ 
     gl_Position = vec4(aPosition, 0.0, 1.0);
 }
 
@@ -20,19 +20,15 @@ void main()
 
 #version 330 core
 
-in vec2 TexCoord; // Incoming texture coordinates
-out vec4 FragColor; // Output fragment color
+in vec2 TexCoord;
+out vec4 FragColor;
 
-uniform sampler2D spriteTexture; // 2D texture sampler
+uniform sampler2D spriteTexture;
+uniform float time;    
 
 void main()
 {
-    // Sample the texture color, including the alpha channel
-    //vec4 texColor = texture(spriteTexture, TexCoord);
-    
-    // Set the fragment color to the sampled texture color
-    // The alpha channel is automatically included
-
-    FragColor = vec4(1,1,0,1);
+    vec4 br = vec4(1,1,1,1);
+    //vec4 br = vec4(1,sin(time),cos(time),1);
+    FragColor = texture(spriteTexture, TexCoord) * br;
 }
-

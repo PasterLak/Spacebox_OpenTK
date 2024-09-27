@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 
 namespace Spacebox.GUI
@@ -21,13 +22,26 @@ namespace Spacebox.GUI
             1, 2, 3    // Second Triangle
         };
 
-        public Sprite(string imagePath, Vector2 position, Vector2 size)
+        private Vector2 _position;
+        private Vector2 _size;
+
+        private int _windowWidth;
+        private int _windowHeight;
+
+        public Sprite(string imagePath, Vector2 position, Vector2 size, int windowWidth, int windowHeight)
         {
             _shader = new Shader("Shaders/sprite");
 
-            // Define vertices with position and size
-            SetVertices(position, size);
+            _position = position;
+            _size = size;
+            _windowWidth = windowWidth;
+            _windowHeight = windowHeight;
 
+            // Define vertices with position and size
+            SetVertices();
+
+            Window.OnResized += UpdateWindowSize;
+            Window.OnResized += UpdateSize;
             // Load the texture
             _texture = LoadTexture(imagePath);
 
@@ -35,13 +49,14 @@ namespace Spacebox.GUI
             _vao = GL.GenVertexArray();
             _vbo = GL.GenBuffer();
             _ebo = GL.GenBuffer();
+
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GL.BindVertexArray(_vao);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.DynamicDraw);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
@@ -54,9 +69,10 @@ namespace Spacebox.GUI
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 2 * sizeof(float));
             GL.EnableVertexAttribArray(1);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
         }
+
+      
 
         private int LoadTexture(string path)
         {
@@ -66,15 +82,28 @@ namespace Spacebox.GUI
             using (Bitmap bitmap = new Bitmap(path))
             {
                 bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                    ImageLockMode.ReadOnly,
+                    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bitmap.Width, bitmap.Height, 0, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+                GL.TexImage2D(TextureTarget.Texture2D,
+                    0,
+                    PixelInternalFormat.Rgba,
+                    bitmap.Width,
+                    bitmap.Height,
+                    0,
+                    OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
+                    PixelType.UnsignedByte,
+                    data.Scan0);
+
                 bitmap.UnlockBits(data);
             }
 
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 
@@ -82,32 +111,64 @@ namespace Spacebox.GUI
             return textureId;
         }
 
-        private void SetVertices(Vector2 position, Vector2 size)
+        private void SetVertices()
         {
-            float left = position.X - size.X / 2;
-            float right = position.X + size.X / 2;
-            float top = position.Y + size.Y / 2;
-            float bottom = position.Y - size.Y / 2;
+            // Convert pixel positions to OpenGL coordinates
+            float left = _position.X;
+            float right = _position.X + _size.X;
+            float top = _position.Y;
+            float bottom = _position.Y + _size.Y;
+
+            // Normalize to OpenGL coordinates (-1 to 1)
+            float normalizedLeft = (left / _windowWidth) * 2.0f - 1.0f;
+            float normalizedRight = (right / _windowWidth) * 2.0f - 1.0f;
+            float normalizedTop = 1.0f - (top / _windowHeight) * 2.0f;
+            float normalizedBottom = 1.0f - (bottom / _windowHeight) * 2.0f;
 
             _vertices = new float[]
             {
-                // Positions     // Texture Coords
-                right, top,     1.0f, 1.0f, // Top Right
-                right, bottom,  1.0f, 0.0f, // Bottom Right
-                left, bottom,   0.0f, 0.0f, // Bottom Left
-                left, top,      0.0f, 1.0f  // Top Left 
+                // Positions          // Texture Coords
+                normalizedRight, normalizedTop,     1.0f, 1.0f, // Top Right
+                normalizedRight, normalizedBottom,  1.0f, 0.0f, // Bottom Right
+                normalizedLeft,  normalizedBottom,  0.0f, 0.0f, // Bottom Left
+                normalizedLeft,  normalizedTop,      0.0f, 1.0f  // Top Left
             };
         }
 
-        public void UpdatePosition(Vector2 newPosition, Vector2 newSize)
+        public void UpdatePosition(Vector2 newPosition)
         {
-            SetVertices(newPosition, newSize);
+            _position = newPosition;
+            SetVertices();
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, _vertices.Length * sizeof(float), _vertices);
         }
 
-        public Shader GetShader() { return _shader; }
+        public void UpdateSize(Vector2 newSize)
+        {
+            _size = newSize;
+            SetVertices();
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, _vertices.Length * sizeof(float), _vertices);
+        }
+
+        public void UpdateWindowSize(Vector2 v)
+        {
+            UpdateWindowSize((int)v.X, (int)v.Y);
+        }
+
+        public void UpdateWindowSize(int newWindowWidth, int newWindowHeight)
+        {
+            _windowWidth = newWindowWidth;
+            _windowHeight = newWindowHeight;
+            SetVertices();
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, _vertices.Length * sizeof(float), _vertices);
+        }
+
+        public Shader GetShader() => _shader;
 
         public void Render()
         {

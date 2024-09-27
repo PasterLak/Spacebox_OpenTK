@@ -6,6 +6,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
 using Spacebox.Scenes;
+using System.Collections.Concurrent;
 
 namespace Spacebox
 {
@@ -16,7 +17,9 @@ namespace Spacebox
         public static Window Instance;
         
         private SceneManager _sceneManager;
+        public static readonly ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
 
+        public static Action<Vector2> OnResized;
         public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
         {
@@ -51,10 +54,24 @@ namespace Spacebox
             base.OnUpdateFrame(e);
             Time.Update(e);
 
+            while (_mainThreadActions.TryDequeue(out var action))
+            {
+                try
+                {
+                    Console.WriteLine("Executing action from main thread actions queue.");
+                    action.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Exception in main thread action: {ex}");
+                }
+            }
+
             if (!IsFocused)
             {
-                return;
+               // return;
             }
+
 
           if(Input.IsKeyDown(Keys.F11))
             {
@@ -75,6 +92,7 @@ namespace Spacebox
                 SceneManager.CurrentScene.Update();
                 SceneManager.CurrentScene.LateUpdate();
             }
+
 
             //SceneManager.StartNextScene();
 
@@ -105,7 +123,10 @@ namespace Spacebox
             base.OnResize(e);
 
             GL.Viewport(0, 0, Size.X, Size.Y);
+
+            OnResized?.Invoke(Size);
             //_camera.AspectRatio = Size.X / (float)Size.Y;
         }
+
     }
 }
