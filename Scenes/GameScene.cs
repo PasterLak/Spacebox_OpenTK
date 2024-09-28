@@ -39,6 +39,11 @@ namespace Spacebox.Scenes
 
         AudioManager audioManager;
 
+
+        BitmapFont font;
+   
+        TextRenderer textRenderer;
+
         public GameScene()
         {
         }
@@ -102,6 +107,14 @@ namespace Spacebox.Scenes
             audioManager = new AudioManager();
             audio = new AudioSource("Resources/Audio/flashlight.wav", audioManager.Device, audioManager.Context);
 
+
+            font = new BitmapFont("Resources/Font/arial.png", 256, 256, 16, 16);
+
+
+
+            textRenderer = new TextRenderer(font, Window.Instance.Size.X, Window.Instance.Size.Y);
+
+
         }
 
         public override void Awake()
@@ -120,11 +133,13 @@ namespace Spacebox.Scenes
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-           // _skybox.Render();
-           // _axes.Render(_camera.GetViewMatrix(), _camera.GetProjectionMatrix());
+            // _skybox.Render();
+            // _axes.Render(_camera.GetViewMatrix(), _camera.GetProjectionMatrix());
             //_axes2.Render(_camera.GetViewMatrix(), _camera.GetProjectionMatrix());
-
+            
             Debug.Render();
+           
+
             GL.BindVertexArray(_vaoModel);
 
             _diffuseMap.Use(TextureUnit.Texture0);
@@ -219,12 +234,13 @@ namespace Spacebox.Scenes
                 GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
             }
 
-       
-            
+            //textRenderer.SetProjection(_camera.GetProjectionMatrix());
+            //textRenderer.RenderText("ABABABABAB", 50, 50, 500, new Vector3(1, 1, 1));
+
 
             // Re-enable face culling if it was enabled before
             //GL.Enable(EnableCap.CullFace);
-
+            textRenderer.RenderText("FPS: " + Time.FPS, 10, 50, 1f, new Vector3(252 / 256f, 186 / 256f, 3 / 256f));
 
             SceneManager.Instance.GameWindow.SwapBuffers();
         }
@@ -254,11 +270,11 @@ namespace Spacebox.Scenes
             Debug.DrawPoint(new Vector3(0.3f, 3.0f, 0.0f),1000, Color4.Red);
 
 
-            for (int x = 0; x < 10000; x++)
+           /* for (int x = 0; x < 10000; x++)
             {
                 Debug.DrawPoint(new Vector3((float)rnd.NextDouble() * 10, (float)rnd.NextDouble() * 10, (float)rnd.NextDouble() * 10), 2, Color4.Red);
                 Debug.DrawLine(new Vector3((float)rnd.NextDouble() * 100, (float)rnd.NextDouble() * 100, (float)rnd.NextDouble() * 100), new Vector3((float)rnd.NextDouble() * 10, (float)rnd.NextDouble() * 10, (float)rnd.NextDouble() * 10), Color4.Red);
-            }
+            }*/
 
             Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(-1.0f,- 1.0f,-1.0f), Color4.Purple);
             Debug.DrawSquare(new Vector3(0.0f, 0.0f, 0.0f), new Vector2(1.0f, 1.0f), Color4.Purple);

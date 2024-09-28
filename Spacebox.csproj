@@ -9,10 +9,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Libs\**" />
+    <EmbeddedResource Remove="Libs\**" />
+    <None Remove="Libs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\Audio\flashlight.wav" />
     <None Remove="Resources\Audio\music.wav" />
     <None Remove="Resources\Audio\music0.wav" />
     <None Remove="Resources\Audio\shooting.wav" />
+    <None Remove="Resources\Font\arial.png" />
+    <None Remove="Resources\Font\meta.json" />
     <None Remove="Resources\Textures\block.png" />
     <None Remove="Resources\Textures\cat.png" />
     <None Remove="Resources\Textures\container2.png" />
@@ -22,6 +30,7 @@
     <None Remove="Shaders\axes.glsl" />
     <None Remove="Shaders\axes.vert" />
     <None Remove="Shaders\debug.glsl" />
+    <None Remove="Shaders\font.glsl" />
     <None Remove="Shaders\lighting.frag" />
     <None Remove="Shaders\lighting.glsl" />
     <None Remove="Shaders\shader.frag" />
@@ -46,6 +55,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Audio\shooting.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Font\arial.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Font\arial.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\block.png">
@@ -73,6 +88,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\debug.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\font.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\lighting.frag">
@@ -111,10 +129,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenAL.Soft" Version="1.23.1" />
     <PackageReference Include="OpenTK" Version="4.8.2" />
+    <PackageReference Include="SharpFont" Version="4.0.1" />
     <PackageReference Include="StbImageSharp" Version="2.27.14" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="Resources\Font\meta.json" />
   </ItemGroup>
 
 </Project>

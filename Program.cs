@@ -1,6 +1,8 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using Spacebox.Common;
+using System.IO;
 
 
 namespace Spacebox
@@ -11,15 +13,19 @@ namespace Spacebox
         {
             
            var monitor = Monitors.GetPrimaryMonitor();
-         
+
+           // string path = "Resources/WindowPosition.txt";
+           // var (x, y) = NumberStorage.LoadNumbers(path);
+
             var nativeWindowSettings = new NativeWindowSettings()
             {
 
                 // ClientSize = new Vector2i(monitor.HorizontalResolution, monitor.VerticalResolution),
                 ClientSize = new Vector2i(1280, 720),
-              
+                // Location = new Vector2i((int)x, (int)y),
                 Title = "Spacebox",
                 // This is needed to run on macos
+                
                 Flags = ContextFlags.ForwardCompatible,
             };
 
