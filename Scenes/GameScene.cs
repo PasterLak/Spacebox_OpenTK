@@ -170,13 +170,13 @@ namespace Spacebox.Scenes
             renderer.AddDrawable(skybox);
             renderer.AddDrawable(terrain);
             renderer.AddDrawable(tv);
-
+            player.Transform.Name = "Player";
             //collisionManager.Add(terrain);
-            collisionManager.Add(tv);
-            collisionManager.Add(arrow);
-            collisionManager.Add(player);
+            collisionManager.Add(tv.Collision);
+            collisionManager.Add(arrow.Collision);
+            collisionManager.Add(player.Collision);
 
-            Console.WriteLine(arrow.BoundingBox.ToString());
+            Console.WriteLine(arrow.Collision.BoundingVolume.ToString());
             Console.WriteLine(arrow.Mesh.GetBounds().ToString());
         }
 

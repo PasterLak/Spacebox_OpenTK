@@ -35,28 +35,32 @@ namespace Spacebox.Common
             if (_currentColliders.Contains(other))
                 return;
             _currentColliders.Add(other);
-            /*if (Transform is Model model)
+
+            if (Transform.Name == "Player")
             {
-                model.Material.Color = new Vector4(1, 0, 0, 1);
+                Console.WriteLine("Player enter !");
+                //model.Material.Color = new Vector4(1, 0, 0, 1);
             }
-            else if (Transform is Player player)
+            else
             {
-                // Implement player-specific collision response if needed
-            }*/
+                //Console.WriteLine("Player 2!");
+            }
+           
         }
 
         public void OnCollisionExit(ICollidable other)
         {
             if (_currentColliders.Contains(other))
             {
-                /*if (Transform is Model model)
+                if (Transform.Name == "Player")
                 {
-                    model.Material.Color = new Vector4(1, 1, 1, 1);
+                    Console.WriteLine("Player exit!");
+                    //model.Material.Color = new Vector4(1, 0, 0, 1);
                 }
-                else if (Transform is Player player)
+                else
                 {
-                    // Implement player-specific collision response if needed
-                }*/
+                    //Console.WriteLine("Player 2 exed!");
+                }
                 _currentColliders.Remove(other);
             }
         }

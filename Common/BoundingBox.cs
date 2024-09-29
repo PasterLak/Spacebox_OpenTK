@@ -7,12 +7,14 @@ namespace Spacebox.Common
     /// </summary>
     public abstract class BoundingVolume
     {
+        public Vector3 Center { get; set; }
         public abstract bool Intersects(BoundingVolume other);
+        
     }
 
     public class BoundingBox : BoundingVolume
     {
-        public Vector3 Center { get; set; }
+        
         public Vector3 Size { get; set; }
 
         public Vector3 Extents => Size * 0.5f;
@@ -67,7 +69,7 @@ namespace Spacebox.Common
 
     public class BoundingSphere : BoundingVolume
     {
-        public Vector3 Center { get; set; }
+       
         public float Radius { get; set; }
 
         public BoundingSphere(Vector3 center, float radius)

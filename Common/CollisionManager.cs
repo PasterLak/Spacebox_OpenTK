@@ -1,4 +1,6 @@
 ﻿//public List<ICollidable> Collidables = new List<ICollidable>();
+
+
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
@@ -9,8 +11,6 @@ namespace Spacebox.Common
     {
         private readonly float _cellSize;
         private readonly Dictionary<(int, int, int), List<ICollidable>> _spatialHash;
-
-        // Хранит текущие активные коллизии
         private HashSet<(ICollidable, ICollidable)> _activeCollisions;
         public List<ICollidable> Collidables = new List<ICollidable>();
         public CollisionManager(float cellSize = 10.0f)
@@ -48,7 +48,6 @@ namespace Spacebox.Common
                 }
             }
 
-            // Удаляем все активные коллизии с этим объектом
             var toRemove = new List<(ICollidable, ICollidable)>();
             foreach (var pair in _activeCollisions)
             {
@@ -99,14 +98,10 @@ namespace Spacebox.Common
             }
         }
 
-        /// <summary>
-        /// Проверяет коллизии между всеми объектами и уведомляет их о начале и окончании коллизий.
-        /// </summary>
         public void CheckCollisions()
         {
             var currentCollisions = new HashSet<(ICollidable, ICollidable)>(new CollisionPairComparer());
 
-            // Проходим по всем ячейкам и проверяем пары объектов
             foreach (var cell in _spatialHash.Values)
             {
                 for (int i = 0; i < cell.Count; i++)
@@ -118,19 +113,15 @@ namespace Spacebox.Common
                         if (a == b)
                             continue;
 
-                        // Упорядочиваем пару для уникальности
                         var pair = (a, b);
                         if (a.GetHashCode() > b.GetHashCode())
                         {
                             pair = (b, a);
                         }
 
-                        // Добавляем пару в текущие коллизии, если они пересекаются
                         if (a.BoundingVolume.Intersects(b.BoundingVolume))
                         {
                             currentCollisions.Add(pair);
-
-                            // Если пара новая, вызываем OnCollisionEnter
                             if (!_activeCollisions.Contains(pair))
                             {
                                 a.OnCollisionEnter(b);
@@ -142,7 +133,6 @@ namespace Spacebox.Common
                 }
             }
 
-            // Определяем пары, которые больше не пересекаются и вызываем OnCollisionExit
             var collisionsToRemove = new List<(ICollidable, ICollidable)>();
             foreach (var pair in _activeCollisions)
             {
@@ -154,10 +144,14 @@ namespace Spacebox.Common
                 }
             }
 
-            // Удаляем завершившиеся коллизии из активных
             foreach (var pair in collisionsToRemove)
             {
                 _activeCollisions.Remove(pair);
+            }
+
+            foreach (var pair in currentCollisions)
+            {
+                _activeCollisions.Add(pair);
             }
         }
 
