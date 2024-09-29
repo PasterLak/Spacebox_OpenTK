@@ -23,16 +23,10 @@ namespace Spacebox.Scenes
         private Texture _diffuseMap;
 
         private Texture _specularMap;
+        private List<Light> _lights;
 
-        
         private Player player;
-        private bool _firstMove = true;
-
-        private Vector2 _lastPos;
-
-        private Axes _axes;
-        private Axes _axes2;
-        private Skybox _skybox;
+  private CollisionManager collisionManager;
 
         private bool flashLight = true;
 
@@ -48,6 +42,8 @@ namespace Spacebox.Scenes
         Model[] planes = new Model[4];
         Renderer renderer = new Renderer();
 
+        Model arrow;
+
         public GameScene()
         {
         }
@@ -58,9 +54,7 @@ namespace Spacebox.Scenes
 
             GL.ClearColor(0.400f, 0.339f, 0.216f, 1f); 
 
-            _axes = new Axes(new Vector3(0, 0, 0), 1000);
-            _axes2 = new Axes(new Vector3(1, 1, 1), 1);
-
+          
 
             //GL.ClearColor(Lighting.BackgroundColor);
 
@@ -104,7 +98,7 @@ namespace Spacebox.Scenes
             _specularMap = Texture.LoadFromFile("Resources/Textures/container2_specular.png");
 
             //_camera = new Camera(Vector3.UnitZ * 3, Window.Instance.Size.X / (float)Window.Instance.Size.Y);
-            player = new Player(new Vector3(2,1,2), Window.Instance.Size.X / (float)Window.Instance.Size.Y);
+            player = new Player(new Vector3(5,1,5), Window.Instance.Size.X / (float)Window.Instance.Size.Y);
 
 
             Input.SetCursorState(CursorState.Grabbed);
@@ -120,14 +114,25 @@ namespace Spacebox.Scenes
             textRenderer = new TextRenderer(font, Window.Instance.Size.X, Window.Instance.Size.Y);
 
             // var texture2 = new Texture2D("Resources/Textures/tile.png");
+            collisionManager = new CollisionManager(10);
+            LoadModels();
 
+            
+
+
+        }
+
+        private void LoadModels()
+        {
             Material mat = new Material(_lightingShader, new Texture2D("Resources/Textures/base.png", true));
 
 
             for (int i = 0; i < 4; i++)
             {
-                planes[i] = new Model("Resources/Models/plane.obj",mat);
+                planes[i] = new Model("Resources/Models/plane.obj", mat);
                 renderer.AddDrawable(planes[i]);
+
+                
             }
 
 
@@ -137,25 +142,42 @@ namespace Spacebox.Scenes
             planes[2].Transform.Position = new Vector3(0, 0, 4);
             planes[3].Transform.Position = new Vector3(1, 0, 4);
 
+            //planes[0].Transform.Scale = new Vector3(5, 0, 5);
+            //planes[0].Material.Tiling = new Vector2(5,5);
+
+           
 
             Texture2D skyboxTexture = new Texture2D("Resources/Textures/dom.png", true);
-
-            // Load the skybox shader
             Shader skyboxShader = new Shader("Shaders/skybox");
 
-            // Create the skybox material
             Material skyboxMaterial = new Material(skyboxShader, skyboxTexture);
 
-            // Initialize the skybox model
             Skybox skybox = new Skybox("Resources/Models/dom.obj", skyboxShader, skyboxTexture);
 
 
+             arrow = new Model("Resources/Models/arrow.obj");
+            arrow.Material.Color = new Vector4(0, 1, 0, 1);
+            arrow.Transform.Position = new Vector3(1,1,1);
+
             Model terrain = new Model("Resources/Models/terrain.obj", new Material(_lightingShader, new Texture2D("Resources/Textures/grass1.jpg", false)));
+            terrain.Material.Tiling = new Vector2(50, 50);
 
-            terrain.Material.Tiling = new Vector2(50,50);
+            Model tv = new Model("Resources/Models/tv.obj", new Material(_lightingShader, new Texture2D("Resources/Textures/tv.png", true)));
+            tv.Transform.Position = new Vector3(2, 0.5f, 3);
+            tv.Transform.Rotation = new Vector3(0, 45, 0);
 
+            renderer.AddDrawable(arrow);
             renderer.AddDrawable(skybox);
             renderer.AddDrawable(terrain);
+            renderer.AddDrawable(tv);
+
+            //collisionManager.Add(terrain);
+            collisionManager.Add(tv);
+            collisionManager.Add(arrow);
+            collisionManager.Add(player);
+
+            Console.WriteLine(arrow.BoundingBox.ToString());
+            Console.WriteLine(arrow.Mesh.GetBounds().ToString());
         }
 
         public override void Awake()
@@ -173,12 +195,9 @@ namespace Spacebox.Scenes
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            // _skybox.Render();
-            // _axes.Render(_camera.GetViewMatrix(), _camera.GetProjectionMatrix());
-            //_axes2.Render(_camera.GetViewMatrix(), _camera.GetProjectionMatrix());
             
             Debug.Render();
-            
+            GL.Disable(EnableCap.CullFace);
 
             GL.BindVertexArray(_vaoModel);
 
@@ -186,13 +205,13 @@ namespace Spacebox.Scenes
             _lightingShader.SetVector2("tiling", Vector2.One);
 
             _diffuseMap.Use(TextureUnit.Texture0);
-            _specularMap.Use(TextureUnit.Texture1);
+            //_specularMap.Use(TextureUnit.Texture1);
             _lightingShader.Use();
 
-            _lightingShader.SetMatrix4("view", _camera.GetViewMatrix());
-            _lightingShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
+            _lightingShader.SetMatrix4("view", player.Camera.GetViewMatrix());
+            _lightingShader.SetMatrix4("projection", player.Camera.GetProjectionMatrix());
 
-            _lightingShader.SetVector3("viewPos", _camera.Position);
+            _lightingShader.SetVector3("viewPos", player.Camera.Position);
 
            
             _lightingShader.SetInt("material.diffuse", 0);
@@ -213,20 +232,20 @@ namespace Spacebox.Scenes
             _lightingShader.SetVector3("dirLight.specular", new Vector3(0.5f, 0.5f, 0.5f));
 
             // Point lights
-            for (int i = 0; i < GameData._pointLightPositions.Length; i++)
+            for (int j = 0; j < GameData._pointLightPositions.Length; j++)
             {
-                _lightingShader.SetVector3($"pointLights[{i}].position", GameData._pointLightPositions[i]);
-                _lightingShader.SetVector3($"pointLights[{i}].ambient", Lighting.AmbientColor);
-                _lightingShader.SetVector3($"pointLights[{i}].diffuse", new Vector3(0.8f, 0.8f, 0.8f));
-                _lightingShader.SetVector3($"pointLights[{i}].specular", new Vector3(1.0f, 1.0f, 1.0f));
-                _lightingShader.SetFloat($"pointLights[{i}].constant", 1.0f);
-                _lightingShader.SetFloat($"pointLights[{i}].linear", 0.09f);
-                _lightingShader.SetFloat($"pointLights[{i}].quadratic", 0.032f);
+                _lightingShader.SetVector3($"pointLights[{j}].position", GameData._pointLightPositions[j]);
+                _lightingShader.SetVector3($"pointLights[{j}].ambient", Lighting.AmbientColor);
+                _lightingShader.SetVector3($"pointLights[{j}].diffuse", new Vector3(0.8f, 0.8f, 0.8f));
+                _lightingShader.SetVector3($"pointLights[{j}].specular", new Vector3(1.0f, 1.0f, 1.0f));
+                _lightingShader.SetFloat($"pointLights[{j}].constant", 1.0f);
+                _lightingShader.SetFloat($"pointLights[{j}].linear", 0.09f);
+                _lightingShader.SetFloat($"pointLights[{j}].quadratic", 0.032f);
             }
 
             // Spot light
-            _lightingShader.SetVector3("spotLight.position", _camera.Position);
-            _lightingShader.SetVector3("spotLight.direction", _camera.Front);
+            _lightingShader.SetVector3("spotLight.position", player.Camera.Position);
+            _lightingShader.SetVector3("spotLight.direction", player.Camera.Front);
 
             if (flashLight)
             {
@@ -265,8 +284,8 @@ namespace Spacebox.Scenes
 
             _lampShader.Use();
 
-            _lampShader.SetMatrix4("view", _camera.GetViewMatrix());
-            _lampShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
+            _lampShader.SetMatrix4("view", player.Camera.GetViewMatrix());
+            _lampShader.SetMatrix4("projection", player.Camera.GetProjectionMatrix());
             // We use a loop to draw all the lights at the proper position
             for (int i = 0; i < GameData._pointLightPositions.Length; i++)
             {
@@ -286,8 +305,13 @@ namespace Spacebox.Scenes
             //GL.Enable(EnableCap.CullFace);
             textRenderer.RenderText("FPS: " + Time.FPS, 10, 50, 1f, new Vector3(252 / 256f, 186 / 256f, 3 / 256f));
 
+
+            collisionManager.CheckCollisions();
+
             SceneManager.Instance.GameWindow.SwapBuffers();
         }
+
+       
 
         public override void UnloadContent()
         {
@@ -303,16 +327,11 @@ namespace Spacebox.Scenes
                 SceneManager.LoadScene(typeof(MenuScene));
             }
 
-            const float cameraSpeed = 1.5f;
-            const float sensitivity = 0.2f;
+            
+            Debug.ProjectionMatrix = player.Camera.GetProjectionMatrix();
+            Debug.ViewMatrix = player.Camera.GetViewMatrix();
 
-            Debug.ProjectionMatrix = _camera.GetProjectionMatrix();
-            Debug.ViewMatrix = _camera.GetViewMatrix();
-
-            Debug.SetLineWidth(50);
-            // Add debug shapes
-            Debug.DrawPoint(new Vector3(0.3f, 3.0f, 0.0f),1000, Color4.Red);
-
+           
 
            /* for (int x = 0; x < 10000; x++)
             {
@@ -320,17 +339,27 @@ namespace Spacebox.Scenes
                 Debug.DrawLine(new Vector3((float)rnd.NextDouble() * 100, (float)rnd.NextDouble() * 100, (float)rnd.NextDouble() * 100), new Vector3((float)rnd.NextDouble() * 10, (float)rnd.NextDouble() * 10, (float)rnd.NextDouble() * 10), Color4.Red);
             }*/
 
-            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(-1.0f,- 1.0f,-1.0f), Color4.Purple);
-            Debug.DrawSquare(new Vector3(0.0f, 0.0f, 0.0f), new Vector2(1.0f, 1.0f), Color4.Purple);
-
+       
 
             Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(100f, 0, 0), Color4.Red);
             Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 100, 0), Color4.Green);
             Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 0,100), Color4.Blue);
-            // Render your main scene here
+   
+            player.Update();
 
-            // Render debug shapes
+            // Обновление всех объектов и их коллизий
+            foreach (var obj in collisionManager.Collidables)
+            {
+                // Сохраняем старый BoundingVolume для обновления
+                BoundingVolume oldVolume = obj.BoundingVolume;
 
+                // Обновляем объект (перемещение, вращение и т.д.)
+
+                obj.UpdateBounding();
+
+                // Обновляем CollisionManager с новым BoundingVolume
+                collisionManager.Update(obj, oldVolume);
+            }
 
             if (Input.IsKeyDown(Keys.F))
             {
@@ -338,22 +367,7 @@ namespace Spacebox.Scenes
                 audio.Play();
             }
 
-            var mouse = Input.MouseState;
-
-            if (_firstMove)
-            {
-                _lastPos = new Vector2(mouse.X, mouse.Y);
-                _firstMove = false;
-            }
-            else
-            {
-                var deltaX = mouse.X - _lastPos.X;
-                var deltaY = mouse.Y - _lastPos.Y;
-                _lastPos = new Vector2(mouse.X, mouse.Y);
-
-                _camera.Yaw += deltaX * sensitivity;
-                player.Camera.Pitch -= deltaY * sensitivity;
-            }
+         
         }
     }
 }

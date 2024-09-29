@@ -77,7 +77,7 @@ uniform vec3 ambientColor = vec3(1,1,1);
 
 uniform vec2 offset;  
 uniform vec2 tiling = vec2(1,1);
-
+uniform vec4 color = vec4(1,1,1,1); 
 out vec4 FragColor;
 
 in vec3 Normal;
@@ -107,7 +107,7 @@ void main()
     //phase 3: Spot light
     result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
 
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(result, 1.0) * color;
 }
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)

@@ -24,6 +24,8 @@ namespace Spacebox.Common
         public static Matrix4 ProjectionMatrix { get; set; }
         public static Matrix4 ViewMatrix { get; set; }
 
+        public static bool ShowDebug = false;
+
         static Debug()
         {
             Initialize();
@@ -96,7 +98,7 @@ namespace Spacebox.Common
         {
             if (transform == null) return;
 
-            DrawLine(transform.Position, transform.Position + new Vector3(0,0,1), new Color4(0,0,1,1));
+            DrawLine(transform.Position, transform.Position + new Vector3(0, 0, 1), new Color4(0, 0, 1, 1));
         }
 
         public static void DrawPoint(Vector3 position, float size, Color4 color)
@@ -162,8 +164,115 @@ namespace Spacebox.Common
             _triangles.Add(color.A);
         }
 
+        /// <summary>
+        /// Рисует BoundingBox как набор линий.
+        /// </summary>
+        /// <param name="box">BoundingBox для отрисовки.</param>
+        /// <param name="color">Цвет линий.</param>
+        public static void DrawBoundingBox(BoundingBox box, Color4 color)
+        {
+            if (box == null) return;
+
+            Vector3 min = box.Min;
+            Vector3 max = box.Max;
+
+            // Определение 8 углов BoundingBox
+            Vector3[] corners = new Vector3[8];
+            corners[0] = new Vector3(min.X, min.Y, min.Z);
+            corners[1] = new Vector3(max.X, min.Y, min.Z);
+            corners[2] = new Vector3(max.X, max.Y, min.Z);
+            corners[3] = new Vector3(min.X, max.Y, min.Z);
+            corners[4] = new Vector3(min.X, min.Y, max.Z);
+            corners[5] = new Vector3(max.X, min.Y, max.Z);
+            corners[6] = new Vector3(max.X, max.Y, max.Z);
+            corners[7] = new Vector3(min.X, max.Y, max.Z);
+
+            // Нижняя грань
+            DrawLine(corners[0], corners[1], color);
+            DrawLine(corners[1], corners[2], color);
+            DrawLine(corners[2], corners[3], color);
+            DrawLine(corners[3], corners[0], color);
+
+            // Верхняя грань
+            DrawLine(corners[4], corners[5], color);
+            DrawLine(corners[5], corners[6], color);
+            DrawLine(corners[6], corners[7], color);
+            DrawLine(corners[7], corners[4], color);
+
+            // Вертикальные линии
+            DrawLine(corners[0], corners[4], color);
+            DrawLine(corners[1], corners[5], color);
+            DrawLine(corners[2], corners[6], color);
+            DrawLine(corners[3], corners[7], color);
+        }
+
+        /// <summary>
+        /// Рисует BoundingSphere как набор линий (wireframe).
+        /// </summary>
+        /// <param name="sphere">BoundingSphere для отрисовки.</param>
+        /// <param name="color">Цвет линий.</param>
+        public static void DrawBoundingSphere(BoundingSphere sphere, Color4 color)
+        {
+            if (sphere == null) return;
+
+            int slices = 16; // Количество сегментов по долготе
+            int stacks = 16; // Количество сегментов по широте
+            float radius = sphere.Radius;
+            Vector3 center = sphere.Center;
+
+            // Рисуем линии по широте
+            for (int i = 0; i <= stacks; i++)
+            {
+                float theta = MathHelper.Pi * i / stacks;
+                float sinTheta = MathF.Sin(theta);
+                float cosTheta = MathF.Cos(theta);
+
+                Vector3 prevPoint = new Vector3(
+                    radius * sinTheta * MathF.Cos(0),
+                    radius * cosTheta,
+                    radius * sinTheta * MathF.Sin(0)) + center;
+
+                for (int j = 1; j <= slices; j++)
+                {
+                    float phi = 2 * MathHelper.Pi * j / slices;
+                    Vector3 currentPoint = new Vector3(
+                        radius * sinTheta * MathF.Cos(phi),
+                        radius * cosTheta,
+                        radius * sinTheta * MathF.Sin(phi)) + center;
+
+                    DrawLine(prevPoint, currentPoint, color);
+                    prevPoint = currentPoint;
+                }
+            }
+
+            // Рисуем линии по долготе
+            for (int j = 0; j < slices; j++)
+            {
+                float phi = 2 * MathHelper.Pi * j / slices;
+                Vector3 prevPoint = new Vector3(
+                    radius * MathF.Sin(0) * MathF.Cos(phi),
+                    radius * MathF.Cos(0),
+                    radius * MathF.Sin(0) * MathF.Sin(phi)) + center;
+
+                for (int i = 1; i <= stacks; i++)
+                {
+                    float theta = MathHelper.Pi * i / stacks;
+                    Vector3 currentPoint = new Vector3(
+                        radius * MathF.Sin(theta) * MathF.Cos(phi),
+                        radius * MathF.Cos(theta),
+                        radius * MathF.Sin(theta) * MathF.Sin(phi)) + center;
+
+                    DrawLine(prevPoint, currentPoint, color);
+                    prevPoint = currentPoint;
+                }
+            }
+        }
+
+
         public static void Render()
         {
+            if (!ShowDebug) return;
+
             if (_points.Count == 0 && _lines.Count == 0 && _triangles.Count == 0)
                 return;
 

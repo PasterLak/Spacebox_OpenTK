@@ -11,9 +11,21 @@ namespace Spacebox.Common
         public TextureCube CubeTexture { get; private set; }
 
 
-        public Vector3 Color { get; set; } = Vector3.One;
+        public Vector4 Color { get; set; } = Vector4.One;
         public Vector2 Offset { get;  set; } = Vector2.Zero;
         public Vector2 Tiling { get;  set; } = Vector2.One;
+
+        public Material()
+        {
+            Shader = new Shader("Shaders/colored");
+
+        }
+
+        public Material(Shader shader)
+        {
+            Shader = shader;
+           
+        }
 
         public Material(Shader shader, Texture2D texture)
         {
@@ -31,7 +43,7 @@ namespace Spacebox.Common
         {
             Shader.SetVector2("offset", Offset);
             Shader.SetVector2("tiling", Tiling);
-
+            Shader.SetVector4("color", Color);
             Shader.Use();
             
             Texture?.Use();

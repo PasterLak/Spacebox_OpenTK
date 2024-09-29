@@ -21,6 +21,8 @@
     <None Remove="Resources\Audio\shooting.wav" />
     <None Remove="Resources\Font\arial.png" />
     <None Remove="Resources\Font\meta.json" />
+    <None Remove="Resources\Models\arrow.mtl" />
+    <None Remove="Resources\Models\arrow.obj" />
     <None Remove="Resources\Models\cube.mtl" />
     <None Remove="Resources\Models\cube.obj" />
     <None Remove="Resources\Models\dom.mtl" />
@@ -34,6 +36,8 @@
     <None Remove="Resources\Models\testObj.fbx" />
     <None Remove="Resources\Models\testObj.mtl" />
     <None Remove="Resources\Models\testObj.obj" />
+    <None Remove="Resources\Models\tv.mtl" />
+    <None Remove="Resources\Models\tv.obj" />
     <None Remove="Resources\Textures\base.png" />
     <None Remove="Resources\Textures\block.png" />
     <None Remove="Resources\Textures\cat.png" />
@@ -49,9 +53,11 @@
     <None Remove="Resources\Textures\skybox.png" />
     <None Remove="Resources\Textures\terrain.jpg" />
     <None Remove="Resources\Textures\tile.png" />
+    <None Remove="Resources\Textures\tv.png" />
     <None Remove="Shaders\axes.frag" />
     <None Remove="Shaders\axes.glsl" />
     <None Remove="Shaders\axes.vert" />
+    <None Remove="Shaders\colored.glsl" />
     <None Remove="Shaders\debug.glsl" />
     <None Remove="Shaders\font.glsl" />
     <None Remove="Shaders\lighting.frag" />
@@ -59,6 +65,7 @@
     <None Remove="Shaders\shader.frag" />
     <None Remove="Shaders\shader.glsl" />
     <None Remove="Shaders\shader.vert" />
+    <None Remove="Shaders\shaders.txt" />
     <None Remove="Shaders\skybox.frag" />
     <None Remove="Shaders\skybox.glsl" />
     <None Remove="Shaders\skybox.vert" />
@@ -92,6 +99,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Font\arial.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Models\arrow.mtl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Models\arrow.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Models\cube.mtl">
@@ -133,6 +146,12 @@
     <Content Include="Resources\Models\testObj.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Models\tv.mtl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Models\tv.obj">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Textures\base.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -172,6 +191,9 @@
     <Content Include="Resources\Textures\skybox.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Textures\tv.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Textures\terrain.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -185,6 +207,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\axes.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\colored.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\debug.glsl">
@@ -206,6 +231,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\shader.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\shaders.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\skybox.frag">
@@ -260,6 +288,8 @@
     <PackageReference Include="StbImageSharp" Version="2.27.14" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.7" />
   </ItemGroup>
+
+  
 
   <ItemGroup>
     <Page Include="Resources\Font\meta.json" />

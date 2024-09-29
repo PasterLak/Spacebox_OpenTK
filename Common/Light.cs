@@ -1,4 +1,6 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Entities;
+using Spacebox.Scenes;
 
 namespace Spacebox.Common
 {
@@ -20,10 +22,28 @@ namespace Spacebox.Common
         public float Constant { get; set; } = 1.0f;
         public float Linear { get; set; } = 0.09f;
         public float Quadratic { get; set; } = 0.032f;
-
+        
+        private Shader shader;
         public PointLight(Vector3 position)
         {
             Position = position;
+            
+        }
+
+        public void Render(Shader shader, Camera camera)
+        {
+            shader.SetMatrix4("view", camera.GetViewMatrix());
+            shader.SetMatrix4("projection", camera.GetProjectionMatrix());
+
+            shader.SetVector3("viewPos", camera.Position);
+/*
+            shader.SetVector3($"pointLights[{j}].position", Position);
+            shader.SetVector3($"pointLights[{j}].ambient", new Vector3(0, 0, 1));
+            shader.SetVector3($"pointLights[{j}].diffuse", new Vector3(0.8f, 0.8f, 0.8f));
+            shader.SetVector3($"pointLights[{j}].specular", new Vector3(1.0f, 1.0f, 1.0f));
+            shader.SetFloat($"pointLights[{j}].constant", 1.0f);
+            shader.SetFloat($"pointLights[{j}].linear", 0.09f);
+            shader.SetFloat($"pointLights[{j}].quadratic", 0.032f);*/
         }
     }
 

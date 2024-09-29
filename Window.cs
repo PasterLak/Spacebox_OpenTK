@@ -72,7 +72,7 @@ namespace Spacebox
             base.OnRenderFrame(e);
             FrameLimiter.Update();
             Time.Update(e);
-
+           
             //Debug.Render();
 
             if (SceneManager.CurrentScene != null)
@@ -137,6 +137,11 @@ namespace Spacebox
 
 
                 _isFullscreen = !_isFullscreen;
+            }
+
+            if (Input.IsKeyDown(Keys.F4))
+            {
+                Debug.ShowDebug = !Debug.ShowDebug;
             }
 
             if (Input.IsKeyDown(Keys.Escape))

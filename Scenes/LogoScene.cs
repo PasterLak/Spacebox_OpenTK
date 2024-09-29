@@ -43,7 +43,7 @@ namespace Spacebox.Scenes
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             //x += 0.01f;
-            sprite.Render(new Vector2(x,0), new Vector2(2,2));
+            sprite.Render(new Vector2(x,0), new Vector2(1,1));
 
             SceneManager.Instance.GameWindow.SwapBuffers();
         }
@@ -60,6 +60,8 @@ namespace Spacebox.Scenes
             sprite.GetShader().SetVector2("screen", new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
             sprite.GetShader().SetVector2("mouse", new Vector2(0,0));
 
+            sprite.UpdateWindowSize(Window.Instance.Size);
+            sprite.UpdateSize(Window.Instance.Size);
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
             if (Input.IsKeyDown(Keys.Enter))
             {

@@ -1,4 +1,5 @@
-﻿using OpenTK.Windowing.Common;
+﻿
+using OpenTK.Windowing.Common;
 using System;
 
 namespace Spacebox.Common
