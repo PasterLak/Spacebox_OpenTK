@@ -91,8 +91,9 @@ namespace Spacebox.Common
         // Returns the projection matrix for the camera
         public Matrix4 GetProjectionMatrix()
         {
-            return Matrix4.CreatePerspectiveFieldOfView(_fov, AspectRatio, 0.01f, 100f);
+            return Matrix4.CreatePerspectiveFieldOfView(_fov, AspectRatio, 0.01f, 1000f);
         }
+     
 
         // Update the front, right, and up vectors based on the current pitch and yaw
         private void UpdateVectors()

@@ -1,4 +1,5 @@
---Vert
+﻿--Vert
+
 
 #version 330 core
 
@@ -7,11 +8,13 @@ layout(location = 1) in vec2 aTexCoord;
 
 out vec2 TexCoord;
 
+
+
 void main()
 {
-  
+    
     TexCoord = aTexCoord;
- 
+
     gl_Position = vec4(aPosition, 0.0, 1.0);
 }
 
@@ -24,11 +27,15 @@ in vec2 TexCoord;
 out vec4 FragColor;
 
 uniform sampler2D spriteTexture;
-uniform float time;    
+uniform vec2 offset;  
+uniform vec2 tiling;
+
+uniform float time;
+uniform vec2 screen;
+uniform vec2 mouse;
 
 void main()
 {
-    vec4 br = vec4(1,1,1,1);
-    //vec4 br = vec4(1,sin(time),cos(time),1);
-    FragColor = texture(spriteTexture, TexCoord) * br;
+    vec2 adjustedTexCoord = TexCoord * tiling + offset;
+    FragColor = texture(spriteTexture, adjustedTexCoord);
 }

@@ -92,6 +92,13 @@ namespace Spacebox.Common
             GL.BindVertexArray(0);
         }
 
+        public static void DrawTransform(Transform transform)
+        {
+            if (transform == null) return;
+
+            DrawLine(transform.Position, transform.Position + new Vector3(0,0,1), new Color4(0,0,1,1));
+        }
+
         public static void DrawPoint(Vector3 position, float size, Color4 color)
         {
             _points.Add(position.X);

@@ -60,7 +60,7 @@ namespace Spacebox
 
             //this.VSync = VSyncMode.On;
 
-            FrameLimiter.Initialize(120);
+            FrameLimiter.Initialize(60);
             FrameLimiter.IsRunning = true;
 
             _sceneManager = new SceneManager(this, typeof(LogoScene));
@@ -125,10 +125,14 @@ namespace Spacebox
                
                 if(!_isFullscreen)
                 {
+                    //WindowState = WindowState.Fullscreen;
+                    WindowBorder = WindowBorder.Hidden;
                     CenterWindow();
                 }else
                 {
+                    WindowBorder = WindowBorder.Resizable;
                     Location = _previousPos;
+                   // WindowState = WindowState.Normal;
                 }
 
 
@@ -157,7 +161,7 @@ namespace Spacebox
         private void CenterWindow()
         {
             // Получаем разрешение монитора
-            var (monitorWidth, monitorHeight) = Monitors.GetMonitorFromWindow(this).ClientArea.Size;
+            var (monitorWidth, monitorHeight) = Monitors.GetMonitorFromWindow(this).WorkArea.Size;
 
             // Получаем размер окна
             int windowWidth = Size.X;

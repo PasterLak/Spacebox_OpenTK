@@ -1,153 +1,58 @@
-﻿using System;
-using System.Drawing;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
 namespace Spacebox.Common
 {
-    public class Skybox
+    public class Skybox : IDrawable
     {
-        private readonly int _vao;
-        private readonly int _vbo;
-        private readonly int _texture;
-        private readonly Shader _shader;
-        private readonly Camera _camera;
-        private readonly float _size;
+        public Mesh Mesh { get; private set; }
+        public Material Material { get; private set; }
+        public Transform Transform { get; private set; }
+        public Texture2D Texture { get; private set; }
 
-        // Define the vertices for a cube
-        private readonly float[] _vertices = {
-            // positions          
-            -1.0f,  1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f,  1.0f, -1.0f,
-            -1.0f,  1.0f, -1.0f,
-
-            -1.0f, -1.0f,  1.0f,
-            -1.0f, -1.0f, -1.0f,
-            -1.0f,  1.0f, -1.0f,
-            -1.0f,  1.0f,  1.0f,
-            -1.0f,  1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-
-             1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f,  1.0f,
-             1.0f,  1.0f,  1.0f,
-             1.0f,  1.0f,  1.0f,
-             1.0f,  1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-
-            -1.0f, -1.0f,  1.0f,
-            -1.0f,  1.0f,  1.0f,
-             1.0f,  1.0f, -1.0f,
-             1.0f,  1.0f, -1.0f,
-            -1.0f,  1.0f, -1.0f,
-            -1.0f, -1.0f,  1.0f,
-
-            -1.0f,  1.0f, -1.0f,
-             1.0f,  1.0f, -1.0f,
-             1.0f,  1.0f,  1.0f,
-             1.0f,  1.0f,  1.0f,
-            -1.0f,  1.0f,  1.0f,
-            -1.0f,  1.0f, -1.0f,
-
-            -1.0f, -1.0f, -1.0f,
-            -1.0f, -1.0f,  1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-            -1.0f, -1.0f,  1.0f,
-             1.0f, -1.0f,  1.0f
-        };
-
-        public Skybox(Camera camera, float size, string texturePath)
+        public Skybox(string objPath, Shader shader, Texture2D texture)
         {
-            _camera = camera;
-            _size = size;
+            var (vertices, indices) = ObjLoader.Load(objPath);
+            Mesh = new Mesh(vertices, indices);
+            Material = new Material(shader, texture);
+            Texture = texture;
+            Transform = new Transform();
 
-            // Load the shader for the skybox
-            _shader = new Shader("Shaders/shader");
-
-            // Generate VAO and VBO for the cube
-            _vao = GL.GenVertexArray();
-            _vbo = GL.GenBuffer();
-
-            GL.BindVertexArray(_vao);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
-
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-
-            GL.BindVertexArray(0);
-
-            // Load the texture
-            _texture = LoadTexture(texturePath);
+            Transform.Scale = new Vector3(100, 100, 100);
         }
-
-        private int LoadTexture(string path)
+       
+        public void Draw(Camera camera)
         {
-            int texture = GL.GenTexture();
-            GL.BindTexture(TextureTarget.TextureCubeMap, texture);
+            //Transform.Rotation += new Vector3(0,0.01f,0);
+            Transform.Position = camera.Position;
+            // Save previous OpenGL state
+            bool cullFaceEnabled = GL.IsEnabled(EnableCap.CullFace);
+            GL.GetInteger(GetPName.CullFaceMode, out int prevCullFaceMode);
+            GL.GetInteger(GetPName.DepthFunc, out int prevDepthFunc);
 
-            // Load texture data for all six faces
-            for (int i = 0; i < 6; i++)
-            {
-                using (var image = new Bitmap(path))
-                {
-                    var data = image.LockBits(
-                        new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
-                        System.Drawing.Imaging.ImageLockMode.ReadOnly,
-                        System.Drawing.Imaging.PixelFormat.Format32bppArgb
-                    );
-
-                    GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i,
-                        0, PixelInternalFormat.Rgba, image.Width, image.Height, 0,
-                        PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-
-                    image.UnlockBits(data);
-                }
-            }
-
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
-
-            GL.BindTexture(TextureTarget.TextureCubeMap, 0);
-
-            return texture;
-        }
-
-        public void Render()
-        {
+            // Set OpenGL state for skybox rendering
             GL.DepthFunc(DepthFunction.Lequal);
+            GL.Disable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.FrontAndBack); // Cull front faces to render inside of the cube
 
-            _shader.Use();
+            Material.Use();
+            Texture.Use();
+            Material.Shader.SetInt("skybox", 0);
+            
+            // Use view matrix without translation
+            //var viewMatrix = new Matrix4(new Matrix3(camera.GetViewMatrix()));
+            //Material.Shader.SetVector2("offset", new Vector2(x,x) );
+            Material.Shader.SetMatrix4("view", camera.GetViewMatrix());
+            Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
+            Material.Shader.SetMatrix4("model", Transform.GetModelMatrix());
 
-            // Set the view and projection matrix
-            Matrix4 view = 
-                Matrix4.CreateTranslation(new Vector3(-0.5f, -0.5f, -0.5f)) * 
-                Matrix4.CreateRotationY(0) *
-                Matrix4.CreateScale(2) *
-                Matrix4.CreateTranslation(_camera.Position);
+            Mesh.Draw();
 
-            _shader.SetMatrix4("model", view, false);
-            _shader.SetMatrix4("view", _camera.GetViewMatrix(), false);
-            _shader.SetMatrix4("projection", _camera.GetProjectionMatrix(), false);
-
-            // Bind the skybox texture
-            GL.BindVertexArray(_vao);
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.TextureCubeMap, _texture);
-
-            // Render the skybox cube
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
-
-            GL.BindVertexArray(0);
-            GL.DepthFunc(DepthFunction.Less);
+            // Restore previous OpenGL state
+            if (!cullFaceEnabled)
+                GL.Disable(EnableCap.CullFace);
+            GL.CullFace((CullFaceMode)prevCullFaceMode);
+            GL.DepthFunc((DepthFunction)prevDepthFunc);
         }
     }
 }

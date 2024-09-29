@@ -3,6 +3,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.Entities;
 
 
 namespace Spacebox.Scenes
@@ -23,8 +24,8 @@ namespace Spacebox.Scenes
 
         private Texture _specularMap;
 
-        private Camera _camera;
-
+        
+        private Player player;
         private bool _firstMove = true;
 
         private Vector2 _lastPos;
@@ -44,6 +45,9 @@ namespace Spacebox.Scenes
    
         TextRenderer textRenderer;
 
+        Model[] planes = new Model[4];
+        Renderer renderer = new Renderer();
+
         public GameScene()
         {
         }
@@ -52,13 +56,13 @@ namespace Spacebox.Scenes
         {
 
 
-            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            GL.ClearColor(0.400f, 0.339f, 0.216f, 1f); 
 
             _axes = new Axes(new Vector3(0, 0, 0), 1000);
             _axes2 = new Axes(new Vector3(1, 1, 1), 1);
 
 
-            GL.ClearColor(Lighting.BackgroundColor);
+            //GL.ClearColor(Lighting.BackgroundColor);
 
             GL.Enable(EnableCap.DepthTest);
 
@@ -96,11 +100,12 @@ namespace Spacebox.Scenes
                 GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
             }
 
-            _diffuseMap = Texture.LoadFromFile("Resources/Textures/block.png");
+            _diffuseMap = Texture.LoadFromFile("Resources/Textures/container2.png");
             _specularMap = Texture.LoadFromFile("Resources/Textures/container2_specular.png");
 
-            _camera = new Camera(Vector3.UnitZ * 3, Window.Instance.Size.X / (float)Window.Instance.Size.Y);
-            _skybox = new Skybox(_camera, 2, "Resources/Textures/container2.png");
+            //_camera = new Camera(Vector3.UnitZ * 3, Window.Instance.Size.X / (float)Window.Instance.Size.Y);
+            player = new Player(new Vector3(2,1,2), Window.Instance.Size.X / (float)Window.Instance.Size.Y);
+
 
             Input.SetCursorState(CursorState.Grabbed);
 
@@ -114,7 +119,43 @@ namespace Spacebox.Scenes
 
             textRenderer = new TextRenderer(font, Window.Instance.Size.X, Window.Instance.Size.Y);
 
+            // var texture2 = new Texture2D("Resources/Textures/tile.png");
 
+            Material mat = new Material(_lightingShader, new Texture2D("Resources/Textures/base.png", true));
+
+
+            for (int i = 0; i < 4; i++)
+            {
+                planes[i] = new Model("Resources/Models/plane.obj",mat);
+                renderer.AddDrawable(planes[i]);
+            }
+
+
+
+            planes[0].Transform.Position = new Vector3(0, 0, 3);
+            planes[1].Transform.Position = new Vector3(1, 0, 3);
+            planes[2].Transform.Position = new Vector3(0, 0, 4);
+            planes[3].Transform.Position = new Vector3(1, 0, 4);
+
+
+            Texture2D skyboxTexture = new Texture2D("Resources/Textures/dom.png", true);
+
+            // Load the skybox shader
+            Shader skyboxShader = new Shader("Shaders/skybox");
+
+            // Create the skybox material
+            Material skyboxMaterial = new Material(skyboxShader, skyboxTexture);
+
+            // Initialize the skybox model
+            Skybox skybox = new Skybox("Resources/Models/dom.obj", skyboxShader, skyboxTexture);
+
+
+            Model terrain = new Model("Resources/Models/terrain.obj", new Material(_lightingShader, new Texture2D("Resources/Textures/grass1.jpg", false)));
+
+            terrain.Material.Tiling = new Vector2(50,50);
+
+            renderer.AddDrawable(skybox);
+            renderer.AddDrawable(terrain);
         }
 
         public override void Awake()
@@ -125,7 +166,6 @@ namespace Spacebox.Scenes
         {
             
         }
-
 
         public override void Render()
         {
@@ -138,9 +178,12 @@ namespace Spacebox.Scenes
             //_axes2.Render(_camera.GetViewMatrix(), _camera.GetProjectionMatrix());
             
             Debug.Render();
-           
+            
 
             GL.BindVertexArray(_vaoModel);
+
+            _lightingShader.SetVector2("offset", Vector2.Zero);
+            _lightingShader.SetVector2("tiling", Vector2.One);
 
             _diffuseMap.Use(TextureUnit.Texture0);
             _specularMap.Use(TextureUnit.Texture1);
@@ -151,10 +194,11 @@ namespace Spacebox.Scenes
 
             _lightingShader.SetVector3("viewPos", _camera.Position);
 
+           
             _lightingShader.SetInt("material.diffuse", 0);
             _lightingShader.SetInt("material.specular", 1);
             _lightingShader.SetVector3("material.specular", new Vector3(0.5f, 0.5f, 0.5f));
-            _lightingShader.SetFloat("material.shininess", 32.0f);
+            _lightingShader.SetFloat("material.shininess", 16.0f);
 
             /*
                Here we set all the uniforms for the 5/6 types of lights we have. We have to set them manually and index
@@ -164,7 +208,7 @@ namespace Spacebox.Scenes
             */
             // Directional light
             _lightingShader.SetVector3("dirLight.direction", new Vector3(-0.2f, -1.0f, -0.3f));
-            _lightingShader.SetVector3("dirLight.ambient", new Vector3(0.05f, 0.05f, 0.05f));
+            _lightingShader.SetVector3("dirLight.ambient", Lighting.AmbientColor); // new Vector3(0.05f, 0.05f, 0.05f)
             _lightingShader.SetVector3("dirLight.diffuse", new Vector3(0.4f, 0.4f, 0.4f));
             _lightingShader.SetVector3("dirLight.specular", new Vector3(0.5f, 0.5f, 0.5f));
 
@@ -172,7 +216,7 @@ namespace Spacebox.Scenes
             for (int i = 0; i < GameData._pointLightPositions.Length; i++)
             {
                 _lightingShader.SetVector3($"pointLights[{i}].position", GameData._pointLightPositions[i]);
-                _lightingShader.SetVector3($"pointLights[{i}].ambient", new Vector3(0.05f, 0.05f, 0.05f));
+                _lightingShader.SetVector3($"pointLights[{i}].ambient", Lighting.AmbientColor);
                 _lightingShader.SetVector3($"pointLights[{i}].diffuse", new Vector3(0.8f, 0.8f, 0.8f));
                 _lightingShader.SetVector3($"pointLights[{i}].specular", new Vector3(1.0f, 1.0f, 1.0f));
                 _lightingShader.SetFloat($"pointLights[{i}].constant", 1.0f);
@@ -236,8 +280,8 @@ namespace Spacebox.Scenes
 
             //textRenderer.SetProjection(_camera.GetProjectionMatrix());
             //textRenderer.RenderText("ABABABABAB", 50, 50, 500, new Vector3(1, 1, 1));
-
-
+           
+            renderer.RenderAll(player.Camera); //model.Transform.Rotation -= new Vector3(0,0f,0.0f);
             // Re-enable face culling if it was enabled before
             //GL.Enable(EnableCap.CullFace);
             textRenderer.RenderText("FPS: " + Time.FPS, 10, 50, 1f, new Vector3(252 / 256f, 186 / 256f, 3 / 256f));
@@ -280,38 +324,13 @@ namespace Spacebox.Scenes
             Debug.DrawSquare(new Vector3(0.0f, 0.0f, 0.0f), new Vector2(1.0f, 1.0f), Color4.Purple);
 
 
-            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(10f, 0, 0), Color4.Red);
-            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 10, 0), Color4.Green);
-            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 0,10), Color4.Blue);
+            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(100f, 0, 0), Color4.Red);
+            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 100, 0), Color4.Green);
+            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 0,100), Color4.Blue);
             // Render your main scene here
 
             // Render debug shapes
 
-
-            if (Input.IsKey(Keys.W))
-            {
-                _camera.Position += _camera.Front * cameraSpeed * (float)Time.Delta; // Forward
-            }
-            if (Input.IsKey(Keys.S))
-            {
-                _camera.Position -= _camera.Front * cameraSpeed * (float)Time.Delta; // Backwards
-            }
-            if (Input.IsKey(Keys.A))
-            {
-                _camera.Position -= _camera.Right * cameraSpeed * (float)Time.Delta; // Left
-            }
-            if (Input.IsKey(Keys.D))
-            {
-                _camera.Position += _camera.Right * cameraSpeed * (float)Time.Delta; // Right
-            }
-            if (Input.IsKey(Keys.Space))
-            {
-                _camera.Position += _camera.Up * cameraSpeed * (float)Time.Delta; // Up
-            }
-            if (Input.IsKey(Keys.LeftShift))
-            {
-                _camera.Position -= _camera.Up * cameraSpeed * (float)Time.Delta; // Down
-            }
 
             if (Input.IsKeyDown(Keys.F))
             {
@@ -333,7 +352,7 @@ namespace Spacebox.Scenes
                 _lastPos = new Vector2(mouse.X, mouse.Y);
 
                 _camera.Yaw += deltaX * sensitivity;
-                _camera.Pitch -= deltaY * sensitivity;
+                player.Camera.Pitch -= deltaY * sensitivity;
             }
         }
     }

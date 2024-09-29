@@ -1,9 +1,5 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 
 namespace Spacebox.GUI
@@ -13,7 +9,6 @@ namespace Spacebox.GUI
         private readonly int _vao;
         private readonly int _vbo;
         private readonly int _ebo;
-        private readonly int _texture;
         private readonly Shader _shader;
 
         private float[] _vertices;
@@ -28,7 +23,9 @@ namespace Spacebox.GUI
         private int _windowWidth;
         private int _windowHeight;
 
-        public Sprite(string imagePath, Vector2 position, Vector2 size, int windowWidth, int windowHeight)
+        private Texture2D _texture;
+
+        public Sprite(string imagePath, Vector2 position, Vector2 size, int windowWidth, int windowHeight, bool pixelated = false)
         {
             _shader = new Shader("Shaders/sprite");
 
@@ -37,13 +34,11 @@ namespace Spacebox.GUI
             _windowWidth = windowWidth;
             _windowHeight = windowHeight;
 
+            // Load the texture using Texture2D
+            _texture = new Texture2D(imagePath, pixelated);
+
             // Define vertices with position and size
             SetVertices();
-
-            Window.OnResized += UpdateWindowSize;
-            Window.OnResized += UpdateSize;
-            // Load the texture
-            _texture = LoadTexture(imagePath);
 
             // Generate buffers
             _vao = GL.GenVertexArray();
@@ -62,53 +57,17 @@ namespace Spacebox.GUI
             GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
 
             // Vertex positions
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
+            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
 
             // Texture coordinates
-            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 2 * sizeof(float));
             GL.EnableVertexAttribArray(1);
+            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 2 * sizeof(float));
 
             GL.BindVertexArray(0);
-        }
 
-      
-
-        private int LoadTexture(string path)
-        {
-            int textureId = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, textureId);
-
-            using (Bitmap bitmap = new Bitmap(path))
-            {
-                bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                    ImageLockMode.ReadOnly,
-                    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-                GL.TexImage2D(TextureTarget.Texture2D,
-                    0,
-                    PixelInternalFormat.Rgba,
-                    bitmap.Width,
-                    bitmap.Height,
-                    0,
-                    OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
-                    PixelType.UnsignedByte,
-                    data.Scan0);
-
-                bitmap.UnlockBits(data);
-            }
-
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-            return textureId;
+            // Event handlers for window resize (if applicable)
+            Window.OnResized += UpdateWindowSize;
         }
 
         private void SetVertices()
@@ -153,15 +112,10 @@ namespace Spacebox.GUI
             GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, _vertices.Length * sizeof(float), _vertices);
         }
 
-        public void UpdateWindowSize(Vector2 v)
+        public void UpdateWindowSize(Vector2 newWindowSize)
         {
-            UpdateWindowSize((int)v.X, (int)v.Y);
-        }
-
-        public void UpdateWindowSize(int newWindowWidth, int newWindowHeight)
-        {
-            _windowWidth = newWindowWidth;
-            _windowHeight = newWindowHeight;
+            _windowWidth = (int)newWindowSize.X;
+            _windowHeight = (int)newWindowSize.Y;
             SetVertices();
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
@@ -170,13 +124,30 @@ namespace Spacebox.GUI
 
         public Shader GetShader() => _shader;
 
-        public void Render()
+        public void Render(Vector2 offset, Vector2 tiling)
         {
             _shader.Use();
-            GL.BindTexture(TextureTarget.Texture2D, _texture);
+
+            // Set offset and tiling uniforms
+            _shader.SetVector2("offset", offset);
+            _shader.SetVector2("tiling", tiling);
+
+            // Bind texture
+            _texture.Use(TextureUnit.Texture0);
+            _shader.SetInt("spriteTexture", 0);
+
             GL.BindVertexArray(_vao);
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
+        }
+
+        public void Dispose()
+        {
+            GL.DeleteVertexArray(_vao);
+            GL.DeleteBuffer(_vbo);
+            GL.DeleteBuffer(_ebo);
+            _texture.Dispose();
+            _shader.Dispose();
         }
     }
 }
