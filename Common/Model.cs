@@ -1,46 +1,51 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace Spacebox.Common
 {
-    public class Model : IDrawable
+    public class Model : StaticBody, IDrawable
     {
         public Mesh Mesh { get; private set; }
         public Material Material { get; private set; }
-        public Transform Transform { get; private set; }
         public bool BackfaceCulling { get; set; } = true;
-        public Collision Collision { get; private set; }
         private Axes _axes;
 
         public Model(string objPath)
+            : this(objPath, new Material())
         {
-            Init(objPath, new Material());
         }
 
         public Model(string objPath, Material material)
-        {
-            Init(objPath, material);
-        }
-
-        private void Init(string objPath, Material material)
+            : base(new Transform(), new BoundingBox(Vector3.Zero, Vector3.One))
         {
             var (vertices, indices) = ObjLoader.Load(objPath);
             Mesh = new Mesh(vertices, indices);
             Material = material;
             Transform = new Transform();
-            var boundingBox = new BoundingBox(Transform.Position, Mesh.GetBounds().Size);
-            Collision = new Collision(Transform, boundingBox, true);
-            _axes = new Axes(Transform.Position, boundingBox.GetLongestSide() - boundingBox.GetLongestSide() / 4);
+            BoundingVolume = new BoundingBox(Transform.Position, Mesh.GetBounds().Size);
+            _axes = new Axes(Transform.Position, BoundingVolume.GetLongestSide() - BoundingVolume.GetLongestSide() / 4);
             ComputeBoundingVolumes();
         }
 
         private void ComputeBoundingVolumes()
         {
-            Collision.UpdateBounding();
+            UpdateBounding();
         }
 
-        public void UpdateBounding()
+        public override void OnCollisionEnter(Collision other)
         {
-            ComputeBoundingVolumes();
+            if (other is DynamicBody)
+            {
+                Material.Color = new Vector4(1, 0, 0, 1);
+            }
+        }
+
+        public override void OnCollisionExit(Collision other)
+        {
+            if (other is DynamicBody)
+            {
+                Material.Color = new Vector4(1, 1, 1, 1);
+            }
         }
 
         public void Draw(Camera camera)
@@ -52,7 +57,7 @@ namespace Spacebox.Common
 
             if (Debug.ShowDebug)
             {
-                Collision.DrawDebug();
+                DrawDebug();
                 _axes.SetPosition(Transform.Position);
                 _axes.SetRotation(Transform.Rotation);
                 _axes.Render(camera.GetViewMatrix(), camera.GetProjectionMatrix());

@@ -172,11 +172,11 @@ namespace Spacebox.Scenes
             renderer.AddDrawable(tv);
             player.Transform.Name = "Player";
             //collisionManager.Add(terrain);
-            collisionManager.Add(tv.Collision);
-            collisionManager.Add(arrow.Collision);
+            collisionManager.Add(tv);
+            collisionManager.Add(arrow);
             collisionManager.Add(player.Collision);
 
-            Console.WriteLine(arrow.Collision.BoundingVolume.ToString());
+            Console.WriteLine(arrow.BoundingVolume.ToString());
             Console.WriteLine(arrow.Mesh.GetBounds().ToString());
         }
 

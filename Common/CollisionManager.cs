@@ -10,31 +10,31 @@ namespace Spacebox.Common
     public class CollisionManager
     {
         private readonly float _cellSize;
-        private readonly Dictionary<(int, int, int), List<ICollidable>> _spatialHash;
-        private HashSet<(ICollidable, ICollidable)> _activeCollisions;
-        public List<ICollidable> Collidables = new List<ICollidable>();
+        private readonly Dictionary<(int, int, int), List<Collision>> _spatialHash;
+        private HashSet<(Collision, Collision)> _activeCollisions;
+        public List<Collision> Collidables = new List<Collision>();
         public CollisionManager(float cellSize = 10.0f)
         {
             _cellSize = cellSize;
-            _spatialHash = new Dictionary<(int, int, int), List<ICollidable>>();
-            _activeCollisions = new HashSet<(ICollidable, ICollidable)>(new CollisionPairComparer());
+            _spatialHash = new Dictionary<(int, int, int), List<Collision>>();
+            _activeCollisions = new HashSet<(Collision, Collision)>(new CollisionPairComparer());
         }
 
-        public void Add(ICollidable obj)
+        public void Add(Collision obj)
         {
             foreach (var cell in GetOccupiedCells(obj.BoundingVolume))
             {
                 if (!_spatialHash.TryGetValue(cell, out var list))
                 {
-                    list = new List<ICollidable>();
+                    list = new List<Collision>();
                     _spatialHash[cell] = list;
                 }
-                Collidables.Add(obj);
                 list.Add(obj);
+                Collidables.Add(obj);
             }
         }
 
-        public void Remove(ICollidable obj)
+        public void Remove(Collision obj)
         {
             foreach (var cell in GetOccupiedCells(obj.BoundingVolume))
             {
@@ -48,7 +48,7 @@ namespace Spacebox.Common
                 }
             }
 
-            var toRemove = new List<(ICollidable, ICollidable)>();
+            var toRemove = new List<(Collision, Collision)>();
             foreach (var pair in _activeCollisions)
             {
                 if (pair.Item1 == obj || pair.Item2 == obj)
@@ -64,7 +64,7 @@ namespace Spacebox.Common
             }
         }
 
-        public void Update(ICollidable obj, BoundingVolume oldVolume)
+        public void Update(Collision obj, BoundingVolume oldVolume)
         {
             var oldCells = GetOccupiedCells(oldVolume);
             var newCells = GetOccupiedCells(obj.BoundingVolume);
@@ -91,7 +91,7 @@ namespace Spacebox.Common
             {
                 if (!_spatialHash.TryGetValue(cell, out var list))
                 {
-                    list = new List<ICollidable>();
+                    list = new List<Collision>();
                     _spatialHash[cell] = list;
                 }
                 list.Add(obj);
@@ -100,7 +100,7 @@ namespace Spacebox.Common
 
         public void CheckCollisions()
         {
-            var currentCollisions = new HashSet<(ICollidable, ICollidable)>(new CollisionPairComparer());
+            var currentCollisions = new HashSet<(Collision, Collision)>(new CollisionPairComparer());
 
             foreach (var cell in _spatialHash.Values)
             {
@@ -133,7 +133,7 @@ namespace Spacebox.Common
                 }
             }
 
-            var collisionsToRemove = new List<(ICollidable, ICollidable)>();
+            var collisionsToRemove = new List<(Collision, Collision)>();
             foreach (var pair in _activeCollisions)
             {
                 if (!currentCollisions.Contains(pair))
@@ -211,15 +211,15 @@ namespace Spacebox.Common
             }
         }
 
-        private class CollisionPairComparer : IEqualityComparer<(ICollidable, ICollidable)>
+        private class CollisionPairComparer : IEqualityComparer<(Collision, Collision)>
         {
-            public bool Equals((ICollidable, ICollidable) x, (ICollidable, ICollidable) y)
+            public bool Equals((Collision, Collision) x, (Collision, Collision) y)
             {
                 return (x.Item1 == y.Item1 && x.Item2 == y.Item2) ||
                        (x.Item1 == y.Item2 && x.Item2 == y.Item1);
             }
 
-            public int GetHashCode((ICollidable, ICollidable) obj)
+            public int GetHashCode((Collision, Collision) obj)
             {
                 int hash1 = obj.Item1.GetHashCode();
                 int hash2 = obj.Item2.GetHashCode();

@@ -22,7 +22,7 @@ namespace Spacebox.Entities
             Transform.Position = position;
             Camera = new Camera(position, aspectRatio);
             var boundingSphere = new BoundingSphere(position, 1);
-            Collision = new Collision(Transform, boundingSphere, false);
+            Collision = new DynamicBody(Transform, boundingSphere);
         }
 
         public void Update()

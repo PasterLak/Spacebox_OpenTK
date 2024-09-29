@@ -1,17 +1,16 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Entities;
 
 namespace Spacebox.Common
 {
-    public class Collision : ICollidable
+    public abstract class Collision
     {
-        public bool IsStatic { get; private set; }
-        public BoundingVolume BoundingVolume { get; private set; }
-        public Transform Transform { get; private set; }
+        public bool IsStatic { get; protected set; }
+        public BoundingVolume BoundingVolume { get; protected set; }
+        public Transform Transform { get; protected set; }
 
-        private HashSet<ICollidable> _currentColliders = new HashSet<ICollidable>();
+        private HashSet<Collision> _currentColliders = new HashSet<Collision>();
 
-        public Collision(Transform transform, BoundingVolume boundingVolume, bool isStatic)
+        protected Collision(Transform transform, BoundingVolume boundingVolume, bool isStatic)
         {
             Transform = transform;
             BoundingVolume = boundingVolume;
@@ -30,40 +29,9 @@ namespace Spacebox.Common
             }
         }
 
-        public void OnCollisionEnter(ICollidable other)
-        {
-            if (_currentColliders.Contains(other))
-                return;
-            _currentColliders.Add(other);
+        public virtual void OnCollisionEnter(Collision other) { }
 
-            if (Transform.Name == "Player")
-            {
-                Console.WriteLine("Player enter !");
-                //model.Material.Color = new Vector4(1, 0, 0, 1);
-            }
-            else
-            {
-                //Console.WriteLine("Player 2!");
-            }
-           
-        }
-
-        public void OnCollisionExit(ICollidable other)
-        {
-            if (_currentColliders.Contains(other))
-            {
-                if (Transform.Name == "Player")
-                {
-                    Console.WriteLine("Player exit!");
-                    //model.Material.Color = new Vector4(1, 0, 0, 1);
-                }
-                else
-                {
-                    //Console.WriteLine("Player 2 exed!");
-                }
-                _currentColliders.Remove(other);
-            }
-        }
+        public virtual void OnCollisionExit(Collision other) { }
 
         public void DrawDebug()
         {

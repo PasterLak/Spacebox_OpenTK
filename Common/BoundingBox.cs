@@ -9,7 +9,7 @@ namespace Spacebox.Common
     {
         public Vector3 Center { get; set; }
         public abstract bool Intersects(BoundingVolume other);
-        
+        public abstract float GetLongestSide();
     }
 
     public class BoundingBox : BoundingVolume
@@ -34,12 +34,7 @@ namespace Spacebox.Common
             return new BoundingBox(center, size);
         }
 
-        public float GetLongestSide()
-        {
-            if (Size.X > Size.Y && Size.X > Size.Z) return Size.X;
-
-            return Size.Y > Size.Z ? Size.Y : Size.Z;
-        }
+        
 
 
 
@@ -64,6 +59,13 @@ namespace Spacebox.Common
         public override string ToString()
         {
             return $"Box center: {Center}, size: {Size}";
+        }
+
+        public override float GetLongestSide()
+        {
+            if (Size.X > Size.Y && Size.X > Size.Z) return Size.X;
+
+            return Size.Y > Size.Z ? Size.Y : Size.Z;
         }
     }
 
@@ -97,6 +99,11 @@ namespace Spacebox.Common
         public override string ToString()
         {
             return $"Sphere center: {Center}, radius: {Radius}";
+        }
+
+        public override float GetLongestSide()
+        {
+            return Radius;
         }
     }
 
