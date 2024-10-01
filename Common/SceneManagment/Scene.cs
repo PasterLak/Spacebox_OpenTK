@@ -1,6 +1,6 @@
 ﻿using OpenTK.Windowing.Desktop;
 
-namespace Spacebox.Common
+namespace Spacebox.Common.SceneManagment
 {
     public abstract class Scene
     {
@@ -10,7 +10,7 @@ namespace Spacebox.Common
         public Scene()
         {
 
-            
+
         }
 
         public abstract void LoadContent();

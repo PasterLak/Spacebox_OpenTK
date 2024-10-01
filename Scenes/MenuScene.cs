@@ -2,6 +2,8 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.Common.Audio;
+using Spacebox.Common.SceneManagment;
 
 namespace Spacebox.Scenes
 {
@@ -10,11 +12,13 @@ namespace Spacebox.Scenes
 
         AudioSource audio;
         AudioSource audio2;
-        AudioManager audioManager;
+     
 
         BitmapFont font;
 
         TextRenderer textRenderer;
+
+        SoundManager soundManager;
         public MenuScene()
         {
         }
@@ -30,10 +34,17 @@ namespace Spacebox.Scenes
         {
 
             GL.ClearColor(0.8f, 0.5f, 0.3f, 1.0f);
-            audioManager = new AudioManager();
-            audio = new AudioSource("Resources/Audio/music.wav", audioManager.Device, audioManager.Context);
+
+
+            // music music.wave (Music/) 
+            soundManager = new SoundManager();
+
+            soundManager.AddAudioClip("music");
+            soundManager.AddAudioClip("shooting");
+
+            audio = new AudioSource(soundManager.GetClip("music"));
             audio.IsLooped = true;
-            audio2 = new AudioSource("Resources/Audio/shooting.wav", audioManager.Device, audioManager.Context);
+            audio2 = new AudioSource(new AudioClip("shooting", soundManager));
 
             font = new BitmapFont("Resources/Font/arial.png", 256,256,16,16);
             font.Spacing = 10;
@@ -88,9 +99,9 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
-            audio.Dispose();
-            audio2.Dispose();
-            audioManager.Dispose();
+            //audio.Dispose();
+            //audio2.Dispose();
+            soundManager.Dispose();
 
             textRenderer.Dispose();
             font.Dispose();

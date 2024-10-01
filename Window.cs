@@ -7,8 +7,9 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
 using Spacebox.Scenes;
 using System.Collections.Concurrent;
-using System.IO;
-using Spacebox.Entities;
+using Spacebox.Common.Audio;
+using Spacebox.Common.SceneManagment;
+
 
 namespace Spacebox
 {
@@ -23,7 +24,7 @@ namespace Spacebox
 
         public static Action<Vector2> OnResized;
 
-
+        private AudioManager _audioManager;
         private bool _isFullscreen = false;
         private Vector2i _previousSize;
         private Vector2i _previousPos;
@@ -57,8 +58,11 @@ namespace Spacebox
 
             _previousSize = Size;
             
-            Console.WriteLine("Engine started!");
+            Console.WriteLine("[Engine started!]");
 
+           // _audioManager = AudioManager.Instance;
+
+            Console.WriteLine("[Engine started!]");
             //this.VSync = VSyncMode.On;
 
             FrameLimiter.Initialize(60);
@@ -210,6 +214,7 @@ namespace Spacebox
 
 
             }
+            AudioManager.Instance.Dispose();
             NumberStorage.SaveNumbers(path, Location.X, Location.Y);
             Close();
         }

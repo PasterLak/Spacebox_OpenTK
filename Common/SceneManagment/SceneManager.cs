@@ -3,7 +3,7 @@ using Spacebox.Scenes;
 using System.Reflection;
 
 
-namespace Spacebox.Common
+namespace Spacebox.Common.SceneManagment
 {
 
     public class SceneType
@@ -23,10 +23,10 @@ namespace Spacebox.Common
 
         private static SceneType? _nextSceneType = null;
         //private static Scene _nextScene;
-     
-        public GameWindow GameWindow {  get; private set; }
 
-        public SceneManager(GameWindow gameWindow, Type startScene) 
+        public GameWindow GameWindow { get; private set; }
+
+        public SceneManager(GameWindow gameWindow, Type startScene)
         {
             GameWindow = gameWindow;
 
@@ -42,7 +42,7 @@ namespace Spacebox.Common
             if (!typeof(Scene).IsAssignableFrom(startScene))
             {
                 Console.WriteLine("The startSceneType must inherit from Scene.", nameof(startScene));
-                
+
                 LoadScene(typeof(ErrorScene));
 
                 return;
@@ -74,11 +74,11 @@ namespace Spacebox.Common
             List<Type> derivedClasses = assembly.GetTypes()
                 .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(Scene)))
                 .ToList();
-         
+
             foreach (var derivedClass in derivedClasses)
             {
                 AddScene(derivedClass);
-                
+
             }
         }
 
@@ -86,7 +86,7 @@ namespace Spacebox.Common
         {
             if (!types.Contains(scene))
             {
-                types.Add (scene);
+                types.Add(scene);
             }
         }
 
@@ -95,8 +95,8 @@ namespace Spacebox.Common
 
             if (types.Contains(sceneType))
             {
-                
-                _nextSceneType = new SceneType { typ = sceneType }; 
+
+                _nextSceneType = new SceneType { typ = sceneType };
             }
             else
             {
@@ -105,7 +105,7 @@ namespace Spacebox.Common
                 LoadScene(typeof(ErrorScene));
                 return;
             }
-       
+
             StartNextScene();
 
         }
@@ -114,12 +114,13 @@ namespace Spacebox.Common
         {
             if (_nextSceneType != null)
             {
-                if(CurrentScene != null)
+                if (CurrentScene != null)
                 {
+                    DisposablesUnloader.Dispose();
                     CurrentScene.UnloadContent();
                     Debug.Clear();
                 }
-                
+
 
 
                 _currentSceneType = _nextSceneType;

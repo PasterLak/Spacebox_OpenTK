@@ -180,7 +180,7 @@ namespace Spacebox.Entities
             }
         }
 
-        Ray ray ;
+        Ray ray;
         public void Shoot(float rayLength)
         {
           
@@ -193,7 +193,7 @@ namespace Spacebox.Entities
                 out Collision hitObject, layerMask))
             {
                 Console.WriteLine($"Hit {hitObject.Name} at position {hitPosition}");
-         
+               // hitObject.Position = new Vector3(0,-100,0);
                 Debug.DrawRay(ray, Color4.Red);
                 Debug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.1f), Color4.Red);
             }

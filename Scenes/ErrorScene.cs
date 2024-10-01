@@ -1,5 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using Spacebox.Common;
+using Spacebox.Common.SceneManagment;
 using System.Drawing;
 
 namespace Spacebox.Scenes

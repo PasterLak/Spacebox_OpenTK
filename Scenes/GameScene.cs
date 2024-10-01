@@ -3,6 +3,8 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.Common.Audio;
+using Spacebox.Common.SceneManagment;
 using Spacebox.Entities;
 
 
@@ -26,17 +28,14 @@ namespace Spacebox.Scenes
         private List<Light> _lights;
 
         private Player player;
-  private CollisionManager collisionManager;
+        private CollisionManager collisionManager;
 
         private bool flashLight = true;
 
         AudioSource audio;
 
-        AudioManager audioManager;
-
-
         BitmapFont font;
-   
+        private SoundManager soundManager;
         TextRenderer textRenderer;
 
         Model[] planes = new Model[4];
@@ -107,8 +106,8 @@ namespace Spacebox.Scenes
 
             Input.SetCursorState(CursorState.Grabbed);
 
-            audioManager = new AudioManager();
-            audio = new AudioSource("Resources/Audio/flashlight.wav", audioManager.Device, audioManager.Context);
+        
+            audio = new AudioSource(new AudioClip("Resources/Audio/flashlight.wav", soundManager));
 
 
             font = new BitmapFont("Resources/Font/arial.png", 256, 256, 16, 16);
@@ -389,7 +388,7 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
-            audioManager.Dispose();
+            
             audio.Dispose();
         }
         Random rnd = new Random();

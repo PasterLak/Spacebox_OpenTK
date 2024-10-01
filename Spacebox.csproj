@@ -61,7 +61,7 @@
     <None Remove="Resources\Textures\logo.png" />
     <None Remove="Resources\Textures\sky.jpg" />
     <None Remove="Resources\Textures\skybox.png" />
-    <None Remove="Resources\Textures\skybox2.png" />
+    
     <None Remove="Resources\Textures\Skybox\dom.png" />
     <None Remove="Resources\Textures\Skybox\domBig.png" />
     <None Remove="Resources\Textures\Skybox\skybox_01.jpg" />
@@ -123,7 +123,7 @@
     <Content Include="Resources\Audio\flashlight.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Audio\music.wav">
+    <Content Include="Resources\Audio\Music\music.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Audio\music0.wav">

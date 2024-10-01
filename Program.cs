@@ -2,6 +2,7 @@
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Spacebox.Common;
+using Spacebox.Common.Audio;
 using System.IO;
 
 
@@ -13,9 +14,9 @@ namespace Spacebox
         {
             
            var monitor = Monitors.GetPrimaryMonitor();
-
-           // string path = "Resources/WindowPosition.txt";
-           // var (x, y) = NumberStorage.LoadNumbers(path);
+            var _audioManager = AudioManager.Instance;
+            // string path = "Resources/WindowPosition.txt";
+            // var (x, y) = NumberStorage.LoadNumbers(path);
 
             var nativeWindowSettings = new NativeWindowSettings()
             {
@@ -25,7 +26,7 @@ namespace Spacebox
                 // Location = new Vector2i((int)x, (int)y),
                 Title = "Spacebox",
                 // This is needed to run on macos
-                
+                 
                 Flags = ContextFlags.ForwardCompatible,
             };
 

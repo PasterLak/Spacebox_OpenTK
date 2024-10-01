@@ -362,12 +362,31 @@ namespace Spacebox.Common
             LineWidth = width;
         }
 
+        public static void Log(string data)
+        {
+            Console.WriteLine(data);
+        }
+        public static void Log(int data)
+        {
+            Console.WriteLine(data);
+        }
+        public static void Log(float data)
+        {
+            Console.WriteLine(data);
+        }
+        public static void Log(byte data)
+        {
+            Console.WriteLine(data);
+        }
+        
+
         public static void Clear()
         {
             _points.Clear();
             _lines.Clear();
             _triangles.Clear();
             _collisions.Clear();
+            Console.Clear();
         }
     }
 }

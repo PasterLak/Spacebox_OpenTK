@@ -2,6 +2,8 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.Common.Audio;
+using Spacebox.Common.SceneManagment;
 using Spacebox.GUI;
 
 namespace Spacebox.Scenes
