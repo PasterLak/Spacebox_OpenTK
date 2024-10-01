@@ -2,8 +2,6 @@
 
 
 using OpenTK.Mathematics;
-using System;
-using System.Collections.Generic;
 
 namespace Spacebox.Common
 {
@@ -22,6 +20,22 @@ namespace Spacebox.Common
 
         public void Add(Collision obj)
         {
+            if (obj is Trigger)
+            {
+
+            }
+            else
+            {
+                obj.SetCollisionDebugColor(Color4.Yellow);
+            }
+            
+
+            if (!Collidables.Contains(obj))
+            {
+                Collidables.Add(obj);
+                obj.CollisionManager = this;
+            }
+
             foreach (var cell in GetOccupiedCells(obj.BoundingVolume))
             {
                 if (!_spatialHash.TryGetValue(cell, out var list))
@@ -30,12 +44,14 @@ namespace Spacebox.Common
                     _spatialHash[cell] = list;
                 }
                 list.Add(obj);
-                Collidables.Add(obj);
+               
             }
         }
 
         public void Remove(Collision obj)
         {
+            obj.SetCollisionDebugColor(Color4.Gray);
+
             foreach (var cell in GetOccupiedCells(obj.BoundingVolume))
             {
                 if (_spatialHash.TryGetValue(cell, out var list))
@@ -62,6 +78,8 @@ namespace Spacebox.Common
             {
                 _activeCollisions.Remove(pair);
             }
+
+            Collidables.Remove(obj);
         }
 
         public void Update(Collision obj, BoundingVolume oldVolume)
@@ -210,6 +228,241 @@ namespace Spacebox.Common
                 throw new NotSupportedException("Unsupported BoundingVolume type.");
             }
         }
+
+        public bool IsColliding(BoundingVolume volume, Collision exclude = null)
+        {
+            foreach (var cell in GetOccupiedCells(volume))
+            {
+                if (_spatialHash.TryGetValue(cell, out var list))
+                {
+                    foreach (var obj in list)
+                    {
+                        if (obj.IsTrigger) continue;
+                        if (obj == exclude)
+                            continue;
+
+                        if (volume.Intersects(obj.BoundingVolume))
+                            return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public BoundingVolume GetBoundingVolume(Collision obj)
+        {
+            return obj.BoundingVolume.Clone();
+        }
+
+
+        /// <summary>
+        /// Проверяет пересечение луча с объектами сцены с учётом слоёв.
+        /// </summary>
+        /// <param name="ray">Луч, который нужно проверить.</param>
+        /// <param name="hitPosition">Позиция точки пересечения, если есть пересечение.</param>
+        /// <param name="hitObject">Объект, с которым произошло пересечение.</param>
+        /// <param name="layerMask">Маска слоёв для фильтрации объектов. По умолчанию все слои.</param>
+        /// <returns>True, если произошло пересечение; иначе False.</returns>
+        public bool Raycast(Ray ray, out Vector3 hitPosition, out Collision hitObject, CollisionLayer layerMask = CollisionLayer.All)
+        {
+            hitPosition = Vector3.Zero;
+            hitObject = null;
+            float closestDistance = float.MaxValue;
+
+            // Определяем ячейки, через которые проходит луч
+            foreach (var cell in GetRayOccupiedCells(ray))
+            {
+                if (_spatialHash.TryGetValue(cell, out var list))
+                {
+                    foreach (var obj in list)
+                    {
+                        if (obj.IsTrigger) continue; // Пропускаем триггеры, если необходимо
+
+                        // Проверяем, входит ли объект в маску слоёв
+                        if (!layerMask.HasFlag(obj.Layer))
+                            continue;
+
+                        // Проверяем пересечение луча с ограничивающим объемом объекта
+                        bool intersects = false;
+                        float distance = 0f;
+
+                        if (obj.BoundingVolume is BoundingSphere sphere)
+                        {
+                            intersects = ray.Intersects(sphere, out distance);
+                        }
+                        else if (obj.BoundingVolume is BoundingBox box)
+                        {
+                            intersects = ray.Intersects(box, out distance);
+                        }
+
+                        if (intersects)
+                        {
+                            if (distance < closestDistance && distance >= 0 && distance <= ray.Length)
+                            {
+                                closestDistance = distance;
+                                hitPosition = ray.Origin + ray.Direction * distance;
+                                hitObject = obj;
+                            }
+                        }
+                    }
+                }
+
+                // Если нашли очень близкое пересечение, можно прервать раннее
+                if (closestDistance < _cellSize)
+                    break;
+
+                // Прекращаем, если достигли максимальной длины луча
+                if (closestDistance >= ray.Length)
+                    break;
+            }
+
+            return hitObject != null;
+        }
+
+
+        private bool IntersectRayWithBoundingVolume(Ray ray, BoundingVolume volume, out float distance)
+        {
+            distance = 0f;
+            if (volume is BoundingBox box)
+            {
+                return IntersectRayWithBoundingBox(ray, box, out distance);
+            }
+            else if (volume is BoundingSphere sphere)
+            {
+                return ray.Intersects(sphere, out distance);
+            }
+            else
+            {
+                throw new NotSupportedException("Unsupported BoundingVolume type.");
+            }
+        }
+
+        private bool IntersectRayWithBoundingBox(Ray ray, BoundingBox box, out float distance)
+        {
+            distance = 0f;
+            float tMin = (box.Min.X - ray.Origin.X) / ray.Direction.X;
+            float tMax = (box.Max.X - ray.Origin.X) / ray.Direction.X;
+
+            if (tMin > tMax)
+            {
+                float temp = tMin;
+                tMin = tMax;
+                tMax = temp;
+            }
+
+            float tyMin = (box.Min.Y - ray.Origin.Y) / ray.Direction.Y;
+            float tyMax = (box.Max.Y - ray.Origin.Y) / ray.Direction.Y;
+
+            if (tyMin > tyMax)
+            {
+                float temp = tyMin;
+                tyMin = tyMax;
+                tyMax = temp;
+            }
+
+            if ((tMin > tyMax) || (tyMin > tMax))
+                return false;
+
+            if (tyMin > tMin)
+                tMin = tyMin;
+
+            if (tyMax < tMax)
+                tMax = tyMax;
+
+            float tzMin = (box.Min.Z - ray.Origin.Z) / ray.Direction.Z;
+            float tzMax = (box.Max.Z - ray.Origin.Z) / ray.Direction.Z;
+
+            if (tzMin > tzMax)
+            {
+                float temp = tzMin;
+                tzMin = tzMax;
+                tzMax = temp;
+            }
+
+            if ((tMin > tzMax) || (tzMin > tMax))
+                return false;
+
+            if (tzMin > tMin)
+                tMin = tzMin;
+
+            if (tzMax < tMax)
+                tMax = tzMax;
+
+            distance = tMin;
+
+            if (distance < 0)
+            {
+                distance = tMax;
+                if (distance < 0)
+                    return false;
+            }
+
+            return true;
+        }
+
+
+        private IEnumerable<(int, int, int)> GetRayOccupiedCells(Ray ray)
+        {
+            Vector3 origin = ray.Origin;
+            Vector3 direction = ray.Direction;
+
+            // Преобразуем координаты в индексы ячеек
+            int x = (int)Math.Floor(origin.X / _cellSize);
+            int y = (int)Math.Floor(origin.Y / _cellSize);
+            int z = (int)Math.Floor(origin.Z / _cellSize);
+
+            int stepX = direction.X > 0 ? 1 : (direction.X < 0 ? -1 : 0);
+            int stepY = direction.Y > 0 ? 1 : (direction.Y < 0 ? -1 : 0);
+            int stepZ = direction.Z > 0 ? 1 : (direction.Z < 0 ? -1 : 0);
+
+            float tMaxX = stepX != 0 ? ((_cellSize * (x + (stepX > 0 ? 1 : 0))) - origin.X) / direction.X : float.MaxValue;
+            float tMaxY = stepY != 0 ? ((_cellSize * (y + (stepY > 0 ? 1 : 0))) - origin.Y) / direction.Y : float.MaxValue;
+            float tMaxZ = stepZ != 0 ? ((_cellSize * (z + (stepZ > 0 ? 1 : 0))) - origin.Z) / direction.Z : float.MaxValue;
+
+            float tDeltaX = stepX != 0 ? _cellSize / Math.Abs(direction.X) : float.MaxValue;
+            float tDeltaY = stepY != 0 ? _cellSize / Math.Abs(direction.Y) : float.MaxValue;
+            float tDeltaZ = stepZ != 0 ? _cellSize / Math.Abs(direction.Z) : float.MaxValue;
+
+            // Ограничение по максимальному количеству ячеек или расстоянию
+            int maxIterations = 1000;
+            while (maxIterations-- > 0)
+            {
+                yield return (x, y, z);
+
+                if (tMaxX < tMaxY)
+                {
+                    if (tMaxX < tMaxZ)
+                    {
+                        x += stepX;
+                        tMaxX += tDeltaX;
+                    }
+                    else
+                    {
+                        z += stepZ;
+                        tMaxZ += tDeltaZ;
+                    }
+                }
+                else
+                {
+                    if (tMaxY < tMaxZ)
+                    {
+                        y += stepY;
+                        tMaxY += tDeltaY;
+                    }
+                    else
+                    {
+                        z += stepZ;
+                        tMaxZ += tDeltaZ;
+                    }
+                }
+
+                // Прекращаем, если достигли определённого расстояния
+                float currentDistance = Math.Min(tMaxX, Math.Min(tMaxY, tMaxZ));
+                if (currentDistance > 1000) // Например, максимальное расстояние луча
+                    break;
+            }
+        }
+
+
 
         private class CollisionPairComparer : IEqualityComparer<(Collision, Collision)>
         {

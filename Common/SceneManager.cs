@@ -115,7 +115,12 @@ namespace Spacebox.Common
             if (_nextSceneType != null)
             {
                 if(CurrentScene != null)
-                CurrentScene.UnloadContent();
+                {
+                    CurrentScene.UnloadContent();
+                    Debug.Clear();
+                }
+                
+
 
                 _currentSceneType = _nextSceneType;
                 _nextSceneType = null;

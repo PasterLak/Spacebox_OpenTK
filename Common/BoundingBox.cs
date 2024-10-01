@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using System.Drawing;
 
 namespace Spacebox.Common
 {
@@ -10,6 +11,7 @@ namespace Spacebox.Common
         public Vector3 Center { get; set; }
         public abstract bool Intersects(BoundingVolume other);
         public abstract float GetLongestSide();
+        public abstract BoundingVolume Clone();
     }
 
     public class BoundingBox : BoundingVolume
@@ -34,7 +36,11 @@ namespace Spacebox.Common
             return new BoundingBox(center, size);
         }
 
-        
+
+        public override BoundingVolume Clone()
+        {
+            return new BoundingBox(Center, Size);
+        }
 
 
 
@@ -63,9 +69,8 @@ namespace Spacebox.Common
 
         public override float GetLongestSide()
         {
-            if (Size.X > Size.Y && Size.X > Size.Z) return Size.X;
-
-            return Size.Y > Size.Z ? Size.Y : Size.Z;
+           
+            return Extents.X ;
         }
     }
 
@@ -96,6 +101,11 @@ namespace Spacebox.Common
             return false;
         }
 
+        public override BoundingVolume Clone()
+        {
+            return new BoundingSphere(Center, Radius);
+        }
+
         public override string ToString()
         {
             return $"Sphere center: {Center}, radius: {Radius}";
@@ -111,15 +121,24 @@ namespace Spacebox.Common
     {
         public Vector3 Origin { get; set; }
         public Vector3 Direction { get; set; } // Должен быть нормализован
+        public float Length { get; set; } // Максимальная длина луча
 
-        public Ray(Vector3 origin, Vector3 direction)
+        /// <summary>
+        /// Создаёт новый луч с заданным началом, направлением и длиной.
+        /// </summary>
+        /// <param name="origin">Начальная точка луча.</param>
+        /// <param name="direction">Направление луча (нормализованное).</param>
+        /// <param name="length">Максимальная длина луча.</param>
+        public Ray(Vector3 origin, Vector3 direction, float length)
         {
             Origin = origin;
             Direction = direction.Normalized();
+            Length = length;
         }
 
         /// <summary>
-        /// Проверяет пересечение с BoundingSphere. Возвращает true, если есть пересечение, и расстояние до точки пересечения.
+        /// Проверяет пересечение луча с BoundingSphere.
+        /// Возвращает true, если есть пересечение в пределах длины луча, и расстояние до точки пересечения.
         /// </summary>
         public bool Intersects(BoundingSphere sphere, out float distance)
         {
@@ -136,9 +155,100 @@ namespace Spacebox.Common
             }
             else
             {
-                distance = (-b - MathF.Sqrt(discriminant)) / (2.0f * a);
-                return true;
+                float sqrtDiscriminant = MathF.Sqrt(discriminant);
+                float t1 = (-b - sqrtDiscriminant) / (2.0f * a);
+                float t2 = (-b + sqrtDiscriminant) / (2.0f * a);
+
+                // Проверяем, попадает ли одно из решений в диапазон [0, Length]
+                if (t1 >= 0 && t1 <= Length)
+                {
+                    distance = t1;
+                    return true;
+                }
+
+                if (t2 >= 0 && t2 <= Length)
+                {
+                    distance = t2;
+                    return true;
+                }
+
+                distance = 0f;
+                return false;
             }
         }
+
+        /// <summary>
+        /// Проверяет пересечение луча с BoundingBox.
+        /// Возвращает true, если есть пересечение в пределах длины луча, и расстояние до точки пересечения.
+        /// </summary>
+        public bool Intersects(BoundingBox box, out float distance)
+        {
+            distance = 0f;
+            float tMin = (box.Min.X - Origin.X) / Direction.X;
+            float tMax = (box.Max.X - Origin.X) / Direction.X;
+
+            if (tMin > tMax)
+            {
+                float temp = tMin;
+                tMin = tMax;
+                tMax = temp;
+            }
+
+            float tyMin = (box.Min.Y - Origin.Y) / Direction.Y;
+            float tyMax = (box.Max.Y - Origin.Y) / Direction.Y;
+
+            if (tyMin > tyMax)
+            {
+                float temp = tyMin;
+                tyMin = tyMax;
+                tyMax = temp;
+            }
+
+            if ((tMin > tyMax) || (tyMin > tMax))
+                return false;
+
+            if (tyMin > tMin)
+                tMin = tyMin;
+
+            if (tyMax < tMax)
+                tMax = tyMax;
+
+            float tzMin = (box.Min.Z - Origin.Z) / Direction.Z;
+            float tzMax = (box.Max.Z - Origin.Z) / Direction.Z;
+
+            if (tzMin > tzMax)
+            {
+                float temp = tzMin;
+                tzMin = tzMax;
+                tzMax = temp;
+            }
+
+            if ((tMin > tzMax) || (tzMin > tMax))
+                return false;
+
+            if (tzMin > tMin)
+                tMin = tzMin;
+
+            if (tzMax < tMax)
+                tMax = tzMax;
+
+            distance = tMin;
+
+            if (distance < 0)
+            {
+                distance = tMax;
+                if (distance < 0)
+                    return false;
+            }
+
+            if (distance > Length)
+                return false;
+
+            return true;
+        }
     }
+
+
+
+
 }

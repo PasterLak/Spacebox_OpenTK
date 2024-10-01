@@ -1,71 +1,168 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
-using System;
+
 
 namespace Spacebox.Entities
 {
-    public class Player
+    public class Player : Camera, INotTransparent
     {
-        public Camera Camera { get; private set; }
-        public Transform Transform { get; private set; }
-        public Collision Collision { get; private set; }
+        private float _cameraSpeed = 2.5f;
+        private float _shiftSpeed = 5.5f;
 
-        private float _cameraSpeed = 1.5f;
         private float _sensitivity = 0.2f;
         private bool _firstMove = true;
         private Vector2 _lastMousePosition;
+        
+
+        SpotLight spotLight;
 
         public Player(Vector3 position, float aspectRatio)
+            : base(position, aspectRatio)
         {
-            Transform = new Transform();
-            Transform.Position = position;
-            Camera = new Camera(position, aspectRatio);
-            var boundingSphere = new BoundingSphere(position, 1);
-            Collision = new DynamicBody(Transform, boundingSphere);
+            spotLight = new SpotLight(new Shader("Shaders/lighting"), Front);
+
+            Layer = CollisionLayer.Player;
+            Debug.RemoveCollisionToDraw(this);
+        }
+
+        public Player(Vector3 position, float aspectRatio, Shader shader)
+            : base(position, aspectRatio)
+        {
+            spotLight = new SpotLight(shader, Front);
+            spotLight.IsActive = false;
+            Layer = CollisionLayer.Player;
+            Debug.RemoveCollisionToDraw(this);
+        }
+
+        public override void OnCollisionEnter(Collision other)
+        {
+            Console.WriteLine($"Camera collided with {other.GetType().Name}");
+        }
+
+        public override void OnCollisionExit(Collision other)
+        {
+            Console.WriteLine($"Camera stopped colliding with {other.GetType().Name}");
         }
 
         public void Update()
         {
-            HandleInput();
-            //Debug.DrawBoundingSphere((BoundingSphere)Collision.BoundingVolume, Color4.Green);
-            Collision.UpdateBounding();
+            if (Input.IsKeyDown(Keys.F))
+            {
+                spotLight.IsActive = !spotLight.IsActive;
+                //audio.Play();
+            }
 
-            Collision.DrawDebug();
+            HandleInput();
+            UpdateBounding();
+           
         }
 
+        private float currentSpeed = 0;
+
+        float jump = 0;
         private void HandleInput()
         {
             var mouse = Input.MouseState;
 
+            currentSpeed = _cameraSpeed;
+
+            if (Input.IsKey(Keys.LeftShift))
+            {
+                currentSpeed = _shiftSpeed;
+            }
+
+            Vector3 movement = Vector3.Zero;
+
+            if (Input.IsKeyDown(Keys.J) && jump == 0)
+            {
+                
+               // jump = 2;
+
+               
+            }
+
+            if(jump > 0)
+            {
+                movement = new Vector3(0, 0.1f, 0);
+                jump -= 10f * Time.Delta;
+
+                if (jump < 0) jump = 0;
+            }
+            else
+            {
+               // movement = new Vector3(0, -0.1f, 0);
+            }
+
+            //Debug.DrawRay( new Ray(new Vector3(3,3,3), Vector3.UnitY, 10), Color4.Red);
+            if(Input.IsKeyDown(Keys.T))
+            {
+                
+
+                Shoot(10);
+            }
+            Debug.DrawRay(ray, Color4.Red);
+
             if (Input.IsKey(Keys.W))
             {
-                Camera.Position += Camera.Front * _cameraSpeed * (float)Time.Delta;
+                movement += Front * currentSpeed * (float)Time.Delta;
             }
             if (Input.IsKey(Keys.S))
             {
-                Camera.Position -= Camera.Front * _cameraSpeed * (float)Time.Delta;
+                movement -= Front * currentSpeed * (float)Time.Delta;
             }
             if (Input.IsKey(Keys.A))
             {
-                Camera.Position -= Camera.Right * _cameraSpeed * (float)Time.Delta;
+                movement -= Right * currentSpeed * (float)Time.Delta;
             }
             if (Input.IsKey(Keys.D))
             {
-                Camera.Position += Camera.Right * _cameraSpeed * (float)Time.Delta;
+                movement += Right * currentSpeed * (float)Time.Delta;
             }
             if (Input.IsKey(Keys.Space))
             {
-                Camera.Position += Camera.Up * _cameraSpeed * (float)Time.Delta;
+                movement += Up * currentSpeed * (float)Time.Delta;
             }
-            if (Input.IsKey(Keys.LeftShift))
+            if (Input.IsKey(Keys.LeftControl))
             {
-                Camera.Position -= Camera.Up * _cameraSpeed * (float)Time.Delta;
+                movement -= Up * currentSpeed * (float)Time.Delta;
             }
 
-            Transform.Position = Camera.Position;
-            Collision.BoundingVolume.Center = Camera.Position;
+            if( Input.IsKeyDown(Keys.F5))
+            {
+                Debug.ShowPlayerCollision = !Debug.ShowPlayerCollision;
 
+                if(Debug.ShowPlayerCollision)
+                {
+                    Debug.AddCollisionToDraw(this);
+                }
+                else
+                {
+                    Debug.RemoveCollisionToDraw(this);
+                }
+
+            }
+
+            if (movement != Vector3.Zero)
+            {
+                Vector3 newPosition = Position + movement;
+                BoundingVolume newBounding = GetBoundingVolumeAt(newPosition);
+
+                if (!CollisionManager.IsColliding(newBounding, this))
+                {
+                   
+                    Position = newPosition;
+                    UpdateBounding();
+                    CollisionManager.Update(this, CollisionManager.GetBoundingVolume(this)); // Предполагается, что есть метод для получения текущего BoundingVolume
+                }
+                else
+                {
+                    // Коллизия обнаружена, движение отменяется или корректируется
+                    //Console.WriteLine("Movement blocked by collision.");
+                }
+            }
+
+            
             if (_firstMove)
             {
                 _lastMousePosition = new Vector2(mouse.X, mouse.Y);
@@ -76,19 +173,43 @@ namespace Spacebox.Entities
                 var deltaX = mouse.X - _lastMousePosition.X;
                 var deltaY = mouse.Y - _lastMousePosition.Y;
                 _lastMousePosition = new Vector2(mouse.X, mouse.Y);
-                Camera.Yaw += deltaX * _sensitivity;
-                Camera.Pitch -= deltaY * _sensitivity;
+                Yaw += deltaX * _sensitivity;
+                Pitch -= deltaY * _sensitivity;
+
+                // Ограничение угла наклона камеры
+                Pitch = MathHelper.Clamp(Pitch, -89f, 89f);
             }
         }
 
-        public void OnCollisionEnter(ICollidable other)
+        Ray ray ;
+        public void Shoot(float rayLength)
         {
-            Console.WriteLine($"Camera collided with {other}");
+            // Создаём луч, исходящий из позиции игрока в направлении взгляда, с указанной длиной
+             ray = new Ray(Position, Front, rayLength);
+            CollisionLayer ignoreLayers =
+                    CollisionLayer.Player | CollisionLayer.Projectile;
+            CollisionLayer layerMask = CollisionLayer.All & ~ignoreLayers;
+
+            if (CollisionManager.Raycast(ray, out Vector3 hitPosition,
+                out Collision hitObject, layerMask))
+            {
+                Console.WriteLine($"Hit {hitObject.Name} at position {hitPosition}");
+                // Дополнительная логика при попадании (например, повреждение объекта)
+                Debug.DrawRay(ray, Color4.Red);
+                Debug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.1f), Color4.Red);
+            }
+            else
+            {
+                Console.WriteLine("No hit detected.");
+            }
         }
 
-        public void OnCollisionExit(ICollidable other)
+
+
+        public void Draw(Camera camera)
         {
-            Console.WriteLine($"Camera stopped colliding with {other}");
+            
+            spotLight.Draw(this);
         }
     }
 }

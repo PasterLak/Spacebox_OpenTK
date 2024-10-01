@@ -4,8 +4,8 @@ namespace Spacebox.Common
 {
     public class DynamicBody : Collision
     {
-        public DynamicBody(Transform transform, BoundingVolume boundingVolume)
-            : base(transform, boundingVolume, false)
+        public DynamicBody(BoundingVolume boundingVolume)
+            : base( boundingVolume, false)
         {
         }
 

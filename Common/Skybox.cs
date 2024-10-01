@@ -3,11 +3,11 @@ using OpenTK.Mathematics;
 
 namespace Spacebox.Common
 {
-    public class Skybox : IDrawable
+    public class Skybox :Transform, ITransparent
     {
         public Mesh Mesh { get; private set; }
         public Material Material { get; private set; }
-        public Transform Transform { get; private set; }
+      
         public Texture2D Texture { get; private set; }
 
         public Skybox(string objPath, Shader shader, Texture2D texture)
@@ -16,17 +16,26 @@ namespace Spacebox.Common
             Mesh = new Mesh(vertices, indices);
             Material = new Material(shader, texture);
             Texture = texture;
-            Transform = new Transform();
+        
 
-            Transform.Scale = new Vector3(100, 100, 100);
+           Scale = new Vector3(100, 100, 100);
+            
         }
        
-        public void Draw(Camera camera)
+        public void DrawTransparent(Camera camera)
         {
             //Transform.Rotation += new Vector3(0,0.01f,0);
-            Transform.Position = camera.Position;
+            Position = camera.Position ;
             // Save previous OpenGL state
             bool cullFaceEnabled = GL.IsEnabled(EnableCap.CullFace);
+
+            // Включение смешивания
+            GL.Enable(EnableCap.Blend);
+
+            // Установка функции смешивания
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+
             GL.GetInteger(GetPName.CullFaceMode, out int prevCullFaceMode);
             GL.GetInteger(GetPName.DepthFunc, out int prevDepthFunc);
 
@@ -38,13 +47,14 @@ namespace Spacebox.Common
             Material.Use();
             Texture.Use();
             Material.Shader.SetInt("skybox", 0);
-            
+
             // Use view matrix without translation
             //var viewMatrix = new Matrix4(new Matrix3(camera.GetViewMatrix()));
             //Material.Shader.SetVector2("offset", new Vector2(x,x) );
+            Material.Shader.SetVector3("ambient", Lighting.AmbientColor);
             Material.Shader.SetMatrix4("view", camera.GetViewMatrix());
             Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
-            Material.Shader.SetMatrix4("model", Transform.GetModelMatrix());
+            Material.Shader.SetMatrix4("model", GetModelMatrix());
 
             Mesh.Draw();
 

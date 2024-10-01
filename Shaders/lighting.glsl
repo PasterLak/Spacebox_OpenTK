@@ -21,6 +21,10 @@ void main()
     Normal = aNormal * mat3(transpose(inverse(model)));
     TexCoords = aTexCoords;
 }
+
+
+
+
 --Frag
 #version 330 core
 //In this tutorial it might seem like a lot is going on, but really we just combine the last tutorials, 3 pieces of source code into one
@@ -94,7 +98,7 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 void main()
 {
 
-
+    vec4 texColor = texture(material.diffuse, TexCoords);
     //properties
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
@@ -107,7 +111,7 @@ void main()
     //phase 3: Spot light
     result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
 
-    FragColor = vec4(result, 1.0) * color;
+    FragColor = vec4(result, texColor.a ) * color;
 }
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)

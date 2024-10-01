@@ -9,9 +9,8 @@ namespace Spacebox.Common
         public SceneManager SceneManager { get; private set; }
         public Scene()
         {
-            //SceneManager = sceneManager;
-            //Name = name;
 
+            
         }
 
         public abstract void LoadContent();
@@ -27,6 +26,6 @@ namespace Spacebox.Common
 
         public abstract void Render();
 
-
+        public abstract void OnGUI();
     }
 }

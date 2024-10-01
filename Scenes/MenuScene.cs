@@ -73,12 +73,17 @@ namespace Spacebox.Scenes
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
+            
+           
+        }
+
+        public override void OnGUI()
+        {
             //textRenderer.RenderText("FPS      " + Time.FPS.ToString(), 50f, 50f, 1f, new Vector3(0,0,0));
             textRenderer.RenderText("FPS: " + Time.FPS, 50f, 50f, 3f, new Vector3(0, 0, 0));
 
             textRenderer.RenderText("Spacebox\nGame\nversion 0.2", 300, 300, 3f, new Vector3(0, 0.4f, 0));
 
-            SceneManager.Instance.GameWindow.SwapBuffers();
         }
 
         public override void UnloadContent()

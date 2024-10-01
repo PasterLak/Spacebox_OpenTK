@@ -45,7 +45,11 @@ namespace Spacebox.Scenes
             //x += 0.01f;
             sprite.Render(new Vector2(x,0), new Vector2(1,1));
 
-            SceneManager.Instance.GameWindow.SwapBuffers();
+          
+        }
+
+        public override void OnGUI()
+        {
         }
 
         public override void UnloadContent()

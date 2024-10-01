@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System;
+using System.Collections.Generic;
 
 namespace Spacebox.Common
 {
@@ -13,9 +14,15 @@ namespace Spacebox.Common
 
         private BoundingBox _bounds;
 
+        // Добавляем список для хранения позиций вершин
+        public List<Vector3> VerticesPositions { get; private set; }
+
         public Mesh(float[] vertices, int[] indices)
         {
             _indexCount = indices.Length;
+
+            // Сохраняем позиции вершин
+            VerticesPositions = new List<Vector3>();
 
             ComputeBoundingBox(vertices);
 
@@ -32,19 +39,22 @@ namespace Spacebox.Common
 
             int stride = (3 + 3 + 2) * sizeof(float); // position, normal, texcoord
 
+            // Позиция
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, stride, 0);
 
+            // Нормаль
             GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, stride, 3 * sizeof(float));
 
+            // Текстурные координаты
             GL.EnableVertexAttribArray(2);
             GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, stride, 6 * sizeof(float));
 
             GL.BindVertexArray(0);
         }
 
-        public BoundingBox GetBounds() { return _bounds?? new BoundingBox(Vector3.Zero, Vector3.Zero) ; }
+        public BoundingBox GetBounds() { return _bounds ?? new BoundingBox(Vector3.Zero, Vector3.Zero); }
 
         private void ComputeBoundingBox(float[] vertices)
         {
@@ -59,7 +69,8 @@ namespace Spacebox.Common
 
             for (int i = 0; i < vertices.Length; i += 8) // Предполагается, что каждая вершина содержит 8 float (позиция, нормаль, текстура)
             {
-                Vector3 pos = new Vector3(vertices[i], vertices[i + 1], vertices[i + 2]) * 2;  // SIZE fix
+                Vector3 pos = new Vector3(vertices[i], vertices[i + 1], vertices[i + 2]) * 2 ;  // SIZE fix
+                VerticesPositions.Add(pos); // Сохраняем позицию вершины
                 min = Vector3.ComponentMin(min, pos);
                 max = Vector3.ComponentMax(max, pos);
             }
@@ -80,5 +91,38 @@ namespace Spacebox.Common
             GL.DeleteBuffer(_vbo);
             GL.DeleteBuffer(_ebo);
         }
+
+        private static Random _random = new Random();
+
+     
+        public List<Vector3> GetRandomPoints(int count)
+        {
+            if (VerticesPositions == null || VerticesPositions.Count == 0)
+               return new List<Vector3>();
+
+            if (count <= 0)
+                return new List<Vector3>();
+
+            if (count > VerticesPositions.Count)
+                return new List<Vector3>();
+
+        
+            HashSet<int> indices = new HashSet<int>();
+            while (indices.Count < count)
+            {
+                int index = _random.Next(VerticesPositions.Count);
+                indices.Add(index);
+            }
+
+        
+            List<Vector3> randomPoints = new List<Vector3>(count);
+            foreach (int index in indices)
+            {
+                randomPoints.Add(VerticesPositions[index]);
+            }
+
+            return randomPoints;
+        }
     }
+
 }

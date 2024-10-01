@@ -19,6 +19,8 @@ void main()
     Normal = aNormal * mat3(transpose(inverse(model)));
     TexCoords = aTexCoords;
 }
+
+
 --Frag
 #version 330 core
 out vec4 FragColor;

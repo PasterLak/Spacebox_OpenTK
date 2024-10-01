@@ -27,17 +27,26 @@ void main()
 }
 
 --Frag
+
+
 #version 330 core
 
 in vec2 TexCoords;
 
-uniform vec3 ambient = vec3(0.8,0.8,0.8); 
+uniform vec3 ambient = vec3(1, 0.8, 0.8); 
 out vec4 FragColor;
 
 uniform sampler2D spriteTexture;
 
 void main()
 {
-
-    FragColor = texture(spriteTexture, TexCoords) * vec4(ambient, 1);
+    vec4 texColor = texture(spriteTexture, TexCoords);
+    
+    vec3 color = texColor.rgb * ambient;
+  
+    //color = clamp(color, 0, 1);
+    FragColor = vec4(color, texColor.a);
 }
+
+
+ 

@@ -29,7 +29,12 @@ namespace Spacebox.Scenes
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            SceneManager.Instance.GameWindow.SwapBuffers();
+           
+        }
+
+        public override void OnGUI()
+        {
+           
         }
 
         public override void UnloadContent()

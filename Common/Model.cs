@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 
 namespace Spacebox.Common
 {
-    public class Model : StaticBody, IDrawable
+    public class Model : StaticBody, INotTransparent
     {
         public Mesh Mesh { get; private set; }
         public Material Material { get; private set; }
@@ -16,36 +16,59 @@ namespace Spacebox.Common
         }
 
         public Model(string objPath, Material material)
-            : base(new Transform(), new BoundingBox(Vector3.Zero, Vector3.One))
+        : base(new BoundingBox(Vector3.Zero, Vector3.One))
         {
             var (vertices, indices) = ObjLoader.Load(objPath);
             Mesh = new Mesh(vertices, indices);
             Material = material;
-            Transform = new Transform();
-            BoundingVolume = new BoundingBox(Transform.Position, Mesh.GetBounds().Size);
-            _axes = new Axes(Transform.Position, BoundingVolume.GetLongestSide() - BoundingVolume.GetLongestSide() / 4);
-            ComputeBoundingVolumes();
+
+            // Корректное вычисление BoundingVolume с учётом позиции и масштаба
+            Matrix4 modelMatrix = GetModelMatrix();
+
+            Vector3 worldMin = Vector3.TransformPosition(Mesh.GetBounds().Min, modelMatrix);
+            Vector3 worldMax = Vector3.TransformPosition(Mesh.GetBounds().Max, modelMatrix);
+
+            var b = BoundingBox.CreateFromMinMax(worldMin, worldMax);
+            b.Size = b.Size * Scale;
+
+            BoundingVolume = b;
+            _axes = new Axes(Position, BoundingVolume.GetLongestSide() * 2);
+            //UpdateBounding();
+
+            oldColor = Material.Color;
+            Name = GetModelName(objPath);
         }
 
-        private void ComputeBoundingVolumes()
-        {
-            UpdateBounding();
-        }
 
+        private Vector4 oldColor;
         public override void OnCollisionEnter(Collision other)
         {
+
+            
             if (other is DynamicBody)
             {
-                Material.Color = new Vector4(1, 0, 0, 1);
+                oldColor = Material.Color;
+                Material.Color = new Vector4(0, 1, 0, 1f);
+                base.OnCollisionEnter(other);
             }
         }
 
         public override void OnCollisionExit(Collision other)
         {
+            
             if (other is DynamicBody)
             {
-                Material.Color = new Vector4(1, 1, 1, 1);
+                Material.Color = oldColor;
+                base.OnCollisionExit(other);
             }
+        }
+
+        public static string GetModelName(string modelPath)
+        {
+            if (string.IsNullOrEmpty(modelPath))
+                return "Error";
+
+            return Path.GetFileNameWithoutExtension(modelPath);
         }
 
         public void Draw(Camera camera)
@@ -55,16 +78,18 @@ namespace Spacebox.Common
             else
                 GL.Disable(EnableCap.CullFace);
 
+           
+
             if (Debug.ShowDebug)
             {
-                DrawDebug();
-                _axes.SetPosition(Transform.Position);
-                _axes.SetRotation(Transform.Rotation);
+              
+                _axes.SetPosition(Position);
+                _axes.SetRotation(Rotation);
                 _axes.Render(camera.GetViewMatrix(), camera.GetProjectionMatrix());
             }
 
             Material.Use();
-            Material.Shader.SetMatrix4("model", Transform.GetModelMatrix());
+            Material.Shader.SetMatrix4("model", GetModelMatrix());
             Material.Shader.SetMatrix4("view", camera.GetViewMatrix());
             Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
             Mesh.Draw();

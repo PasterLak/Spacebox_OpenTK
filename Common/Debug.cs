@@ -25,6 +25,9 @@ namespace Spacebox.Common
         public static Matrix4 ViewMatrix { get; set; }
 
         public static bool ShowDebug = false;
+        public static bool ShowPlayerCollision = false;
+
+        private static List<Collision> _collisions = new List<Collision>();
 
         static Debug()
         {
@@ -101,6 +104,16 @@ namespace Spacebox.Common
             DrawLine(transform.Position, transform.Position + new Vector3(0, 0, 1), new Color4(0, 0, 1, 1));
         }
 
+        public static void AddCollisionToDraw(Collision collision)
+        {
+            _collisions.Add(collision);
+        }
+        public static void RemoveCollisionToDraw(Collision collision)
+        {
+            if(_collisions.Contains(collision))
+            _collisions.Remove(collision);
+        }
+
         public static void DrawPoint(Vector3 position, float size, Color4 color)
         {
             _points.Add(position.X);
@@ -145,6 +158,18 @@ namespace Spacebox.Common
             AddTriangle(corners[0], corners[1], corners[2], color);
             AddTriangle(corners[2], corners[3], corners[0], color);
         }
+
+        public static void DrawRay(Ray ray, Color4 color)
+        {
+          
+            if(ray == null) return;
+
+            Vector3 endPoint = ray.Origin + ray.Direction * ray.Length;
+   
+            DrawLine(ray.Origin, endPoint, color);
+        }
+
+     
 
         private static void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, Color4 color)
         {
@@ -276,6 +301,10 @@ namespace Spacebox.Common
             if (_points.Count == 0 && _lines.Count == 0 && _triangles.Count == 0)
                 return;
 
+            foreach(var col in _collisions) {
+                col.DrawDebug();
+            }
+
             _shader.Use();
 
             _shader.SetMatrix4("model", Matrix4.Identity, false);
@@ -331,6 +360,14 @@ namespace Spacebox.Common
         public static void SetLineWidth(float width)
         {
             LineWidth = width;
+        }
+
+        public static void Clear()
+        {
+            _points.Clear();
+            _lines.Clear();
+            _triangles.Clear();
+            _collisions.Clear();
         }
     }
 }

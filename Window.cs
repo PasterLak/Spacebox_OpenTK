@@ -8,6 +8,7 @@ using OpenTK.Windowing.Desktop;
 using Spacebox.Scenes;
 using System.Collections.Concurrent;
 using System.IO;
+using Spacebox.Entities;
 
 namespace Spacebox
 {
@@ -78,7 +79,17 @@ namespace Spacebox
             if (SceneManager.CurrentScene != null)
             {
                 SceneManager.CurrentScene.Render();
+                Debug.Render();
+                GL.Enable(EnableCap.Blend);
+                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+                SceneManager.CurrentScene.OnGUI();
+
+                GL.Disable(EnableCap.Blend);
+
             }
+
+            SwapBuffers();
 
         }
 
@@ -139,6 +150,17 @@ namespace Spacebox
                 _isFullscreen = !_isFullscreen;
             }
 
+
+            if (Input.IsKeyDown(Keys.KeyPadAdd))
+            {
+                Lighting.AddAmbient();
+            }
+
+            if (Input.IsKeyDown(Keys.KeyPadSubtract))
+            {
+                Lighting.RemoveAmbient();
+            }
+
             if (Input.IsKeyDown(Keys.F4))
             {
                 Debug.ShowDebug = !Debug.ShowDebug;
@@ -185,6 +207,7 @@ namespace Spacebox
             if (SceneManager.CurrentScene != null)
             {
                 SceneManager.CurrentScene.UnloadContent();
+
 
             }
             NumberStorage.SaveNumbers(path, Location.X, Location.Y);
