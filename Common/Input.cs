@@ -10,6 +10,8 @@ namespace Spacebox.Common
         private static Input _instance;
         private static GameWindow _gameWindow;
         private static KeyboardState _lastState;
+        public static MouseState Mouse => _gameWindow.MouseState;
+
 
         public Input() { }
 
@@ -63,7 +65,7 @@ namespace Spacebox.Common
             _gameWindow.CursorState = state;
         }
 
-        public static MouseState MouseState => _gameWindow.MouseState;
+       
 
 
     }

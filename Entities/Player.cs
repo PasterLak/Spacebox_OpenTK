@@ -63,7 +63,7 @@ namespace Spacebox.Entities
         float jump = 0;
         private void HandleInput()
         {
-            var mouse = Input.MouseState;
+            var mouse = Input.Mouse;
 
             currentSpeed = _cameraSpeed;
 
@@ -95,9 +95,8 @@ namespace Spacebox.Entities
             }
 
             //Debug.DrawRay( new Ray(new Vector3(3,3,3), Vector3.UnitY, 10), Color4.Red);
-            if(Input.IsKeyDown(Keys.T))
+            if(Input.Mouse.IsButtonDown(MouseButton.Button1))
             {
-                
 
                 Shoot(10);
             }
@@ -176,7 +175,7 @@ namespace Spacebox.Entities
                 Yaw += deltaX * _sensitivity;
                 Pitch -= deltaY * _sensitivity;
 
-                // Ограничение угла наклона камеры
+        
                 Pitch = MathHelper.Clamp(Pitch, -89f, 89f);
             }
         }
@@ -184,7 +183,7 @@ namespace Spacebox.Entities
         Ray ray ;
         public void Shoot(float rayLength)
         {
-            // Создаём луч, исходящий из позиции игрока в направлении взгляда, с указанной длиной
+          
              ray = new Ray(Position, Front, rayLength);
             CollisionLayer ignoreLayers =
                     CollisionLayer.Player | CollisionLayer.Projectile;
@@ -194,7 +193,7 @@ namespace Spacebox.Entities
                 out Collision hitObject, layerMask))
             {
                 Console.WriteLine($"Hit {hitObject.Name} at position {hitPosition}");
-                // Дополнительная логика при попадании (например, повреждение объекта)
+         
                 Debug.DrawRay(ray, Color4.Red);
                 Debug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.1f), Color4.Red);
             }

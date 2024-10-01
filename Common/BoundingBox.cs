@@ -1,11 +1,9 @@
 ﻿using OpenTK.Mathematics;
-using System.Drawing;
+
 
 namespace Spacebox.Common
 {
-    /// <summary>
-    /// Базовый класс для ограничивающих объемов.
-    /// </summary>
+    
     public abstract class BoundingVolume
     {
         public Vector3 Center { get; set; }
