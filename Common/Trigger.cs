@@ -24,6 +24,8 @@ namespace Spacebox.Common
         {
             SetCollisionDebugColor(Color4.Cyan);
             IsTrigger = true;
+
+            Name = "Trigger";
         }
 
         public override void OnCollisionEnter(Collision other)

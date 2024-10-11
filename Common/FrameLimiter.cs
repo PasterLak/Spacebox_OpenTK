@@ -18,6 +18,14 @@ namespace Spacebox.Common
             _stopwatch.Start();
         }
 
+        public static void SetUnlimited()
+        {
+            _stopwatch.Stop();
+
+            _targetFrameTime = 1.0 / 9999;
+            _stopwatch.Start();
+        }
+
         public static void Update()
         {
             if(!IsRunning)  return; 

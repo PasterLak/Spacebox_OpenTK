@@ -4,7 +4,7 @@ using Spacebox.Entities;
 
 namespace Spacebox.Common
 {
-    public abstract class Light : Transform, INotTransparent
+    public abstract class Light : Node3D, INotTransparent
     {
         public Vector3 Ambient { get; set; } = new Vector3(0.2f);
         public Vector3 Diffuse { get; set; } = new Vector3(0.5f);

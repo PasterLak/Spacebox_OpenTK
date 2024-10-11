@@ -117,6 +117,10 @@ namespace Spacebox.Common.SceneManagment
                 if (CurrentScene != null)
                 {
                     DisposablesUnloader.Dispose();
+
+                    Scene sceneBase = CurrentScene as Scene;
+                    sceneBase.Dispose();
+
                     CurrentScene.UnloadContent();
                     Debug.Clear();
                 }

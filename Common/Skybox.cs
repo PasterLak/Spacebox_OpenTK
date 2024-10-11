@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 
 namespace Spacebox.Common
 {
-    public class Skybox :Transform, ITransparent
+    public class Skybox : Node3D, ITransparent
     {
         public Mesh Mesh { get; private set; }
         public Material Material { get; private set; }

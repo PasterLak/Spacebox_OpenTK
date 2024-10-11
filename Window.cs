@@ -9,6 +9,8 @@ using Spacebox.Scenes;
 using System.Collections.Concurrent;
 using Spacebox.Common.Audio;
 using Spacebox.Common.SceneManagment;
+using Dear_ImGui_Sample;
+using ImGuiNET;
 
 
 namespace Spacebox
@@ -28,7 +30,7 @@ namespace Spacebox
         private bool _isFullscreen = false;
         private Vector2i _previousSize;
         private Vector2i _previousPos;
-
+        ImGuiController _controller;
         string path = "Resources/WindowPosition.txt";
 
         public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
@@ -44,7 +46,7 @@ namespace Spacebox
 
             
 
-            if(!File.Exists(path))
+            /*if(!File.Exists(path))
             {
                 NumberStorage.SaveNumbers(path, Location.X, Location.Y);
                 _previousPos = Location;
@@ -54,7 +56,7 @@ namespace Spacebox
                 var(x,y) = NumberStorage.LoadNumbers(path);
                 _previousPos = new Vector2i(x,y);
                 Location = _previousPos;
-            }
+            }*/
 
             _previousSize = Size;
             
@@ -65,33 +67,64 @@ namespace Spacebox
             Console.WriteLine("[Engine started!]");
             //this.VSync = VSyncMode.On;
 
-            FrameLimiter.Initialize(60);
+            FrameLimiter.Initialize(120);
             FrameLimiter.IsRunning = true;
+
+           
 
             _sceneManager = new SceneManager(this, typeof(LogoScene));
 
+            _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
+            
+            Theme.ApplyDarkTheme();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             base.OnRenderFrame(e);
+
+            Time.StartRender();
+
             FrameLimiter.Update();
             Time.Update(e);
-           
+            _controller.Update(this, (float)e.Time);
+
             //Debug.Render();
 
             if (SceneManager.CurrentScene != null)
             {
+                GL.Clear(ClearBufferMask.ColorBufferBit);
+
+                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
                 SceneManager.CurrentScene.Render();
+
                 Debug.Render();
-                GL.Enable(EnableCap.Blend);
+                /*GL.Enable(EnableCap.Blend);
                 GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
                 SceneManager.CurrentScene.OnGUI();
 
                 GL.Disable(EnableCap.Blend);
+                */
+                //ImGui.ShowDemoWindow();
+                Time.StartOnGUI();
+                SceneManager.CurrentScene.OnGUI();
+                Time.EndOnGUI();
+
+                _controller.Render();
+
+                ImGuiController.CheckGLError("End of frame");
 
             }
+
+            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+
+            // Enable Docking
+            // ImGui.DockSpaceOverViewport();
+
+
+            Time.EndRender();
 
             SwapBuffers();
 
@@ -100,8 +133,11 @@ namespace Spacebox
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
-            Time.Update(e);
+            Time.StartUpdate();
 
+
+            Time.Update(e);
+            //_controller.Update(this, Time.Delta);
             while (_mainThreadActions.TryDequeue(out var action))
             {
                 try
@@ -151,6 +187,7 @@ namespace Spacebox
                 }
 
 
+                _controller.WindowResized(ClientSize.X, ClientSize.Y);
                 _isFullscreen = !_isFullscreen;
             }
 
@@ -182,11 +219,9 @@ namespace Spacebox
             }
 
 
-            //SceneManager.StartNextScene();
+            Time.EndUpdate();
 
-            return;
 
-            
         }
 
         private void CenterWindow()
@@ -206,7 +241,7 @@ namespace Spacebox
             Location = new Vector2i(posX, posY);
         }
 
-        private void Quit()
+        public void Quit()
         {
             if (SceneManager.CurrentScene != null)
             {
@@ -223,17 +258,28 @@ namespace Spacebox
         {
             base.OnMouseWheel(e);
 
-           // _camera.Fov -= e.OffsetY;
+            _controller.MouseScroll(e.Offset);
+        }
+
+        protected override void OnTextInput(TextInputEventArgs e)
+        {
+            base.OnTextInput(e);
+
+
+            _controller.PressChar((char)e.Unicode);
         }
 
         protected override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
 
-            GL.Viewport(0, 0, Size.X, Size.Y);
+            //GL.Viewport(0, 0, Size.X, Size.Y);
+            GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
 
             OnResized?.Invoke(Size);
-            //_camera.AspectRatio = Size.X / (float)Size.Y;
+        
+
+            _controller.WindowResized(ClientSize.X, ClientSize.Y);
         }
 
 

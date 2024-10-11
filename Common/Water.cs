@@ -13,6 +13,8 @@ namespace Spacebox.Common
 
             Material.Tiling = new Vector2(40, 40);
             Material.Color = new Vector4(1,1,1,0.5f);
+
+            
         }
 
         public void DrawTransparent(Camera camera)

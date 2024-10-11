@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
@@ -17,8 +18,7 @@ namespace Spacebox.Scenes
         BitmapFont font;
 
         TextRenderer textRenderer;
-
-        SoundManager soundManager;
+        Menu menu = new Menu();
         public MenuScene()
         {
         }
@@ -37,14 +37,14 @@ namespace Spacebox.Scenes
 
 
             // music music.wave (Music/) 
-            soundManager = new SoundManager();
 
-            soundManager.AddAudioClip("music");
-            soundManager.AddAudioClip("shooting");
 
-            audio = new AudioSource(soundManager.GetClip("music"));
+            SoundManager.AddAudioClip("music");
+            SoundManager.AddAudioClip("shooting");
+
+            audio = new AudioSource(SoundManager.GetClip("music"));
             audio.IsLooped = true;
-            audio2 = new AudioSource(new AudioClip("shooting", soundManager));
+            audio2 = new AudioSource(new AudioClip("shooting", SoundManager));
 
             font = new BitmapFont("Resources/Font/arial.png", 256,256,16,16);
             font.Spacing = 10;
@@ -62,6 +62,8 @@ namespace Spacebox.Scenes
         public override void Awake()
         {
             audio.Play();
+
+            Input.SetCursorState(CursorState.Normal);
         }
         public override void Start()
         {
@@ -95,14 +97,13 @@ namespace Spacebox.Scenes
 
             textRenderer.RenderText("Spacebox\nGame\nversion 0.2", 300, 300, 3f, new Vector3(0, 0.4f, 0));
 
+            menu.OnGUI();
+
         }
 
         public override void UnloadContent()
         {
-            //audio.Dispose();
-            //audio2.Dispose();
-            soundManager.Dispose();
-
+           
             textRenderer.Dispose();
             font.Dispose();
             
@@ -114,7 +115,12 @@ namespace Spacebox.Scenes
             {
                 SceneManager.LoadScene(typeof(GameScene));
             }
-           
+
+            if (Input.IsKeyDown(Keys.S))
+            {
+                SceneManager.LoadScene(typeof(SpaceScene));
+            }
+
 
             if (Input.IsKeyDown(Keys.T))
             {

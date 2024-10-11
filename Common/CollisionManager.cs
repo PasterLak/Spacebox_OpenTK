@@ -17,6 +17,7 @@ namespace Spacebox.Common
             _spatialHash = new Dictionary<(int, int, int), List<Collision>>();
             _activeCollisions = new HashSet<(Collision, Collision)>(new CollisionPairComparer());
         }
+     
 
         public void Add(Collision obj)
         {

@@ -1,9 +1,8 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
-using Spacebox.Common;
 using Spacebox.Common.Audio;
-using System.IO;
 
 
 namespace Spacebox
@@ -25,15 +24,24 @@ namespace Spacebox
                 ClientSize = new Vector2i(1280, 720),
                 // Location = new Vector2i((int)x, (int)y),
                 Title = "Spacebox",
+                APIVersion = new Version(3, 3),
                 // This is needed to run on macos
-                 
+
                 Flags = ContextFlags.ForwardCompatible,
             };
 
+
+            //GameWindowSettings.Default, nativeWindowSettings
             // To create a new window, create a class that extends GameWindow, then call Run() on it.
-            using (var window = new Window(GameWindowSettings.Default, nativeWindowSettings))
+            /*using (var window = new Window2())
             {
                 
+                window.Run();
+            }*/
+
+            using (var window = new Window(GameWindowSettings.Default, nativeWindowSettings))
+            {
+
                 window.Run();
             }
 

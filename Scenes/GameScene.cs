@@ -6,6 +6,8 @@ using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Common.SceneManagment;
 using Spacebox.Entities;
+using Spacebox.GUI;
+using Spacebox.UI;
 
 
 namespace Spacebox.Scenes
@@ -28,19 +30,18 @@ namespace Spacebox.Scenes
         private List<Light> _lights;
 
         private Player player;
-        private CollisionManager collisionManager;
+   
 
         private bool flashLight = true;
 
         AudioSource audio;
 
         BitmapFont font;
-        private SoundManager soundManager;
+      
         TextRenderer textRenderer;
 
         Model[] planes = new Model[4];
-        Renderer renderer = new Renderer();
-
+       
         Model arrow;
 
         Water water;
@@ -106,8 +107,8 @@ namespace Spacebox.Scenes
 
             Input.SetCursorState(CursorState.Grabbed);
 
-        
-            audio = new AudioSource(new AudioClip("Resources/Audio/flashlight.wav", soundManager));
+          
+                audio = new AudioSource(new AudioClip("Resources/Audio/flashlight.wav", SoundManager));
 
 
             font = new BitmapFont("Resources/Font/arial.png", 256, 256, 16, 16);
@@ -117,7 +118,7 @@ namespace Spacebox.Scenes
             textRenderer = new TextRenderer(font, Window.Instance.Size.X, Window.Instance.Size.Y);
 
             // var texture2 = new Texture2D("Resources/Textures/tile.png");
-            collisionManager = new CollisionManager(10);
+          
             LoadModels();
 
             LoadLights();
@@ -129,7 +130,7 @@ namespace Spacebox.Scenes
         {
             DirectionalLight sun = new DirectionalLight(_lightingShader);
            
-            renderer.AddDrawable(sun);
+            Renderer.AddDrawable(sun);
         }
 
         private void LoadModels()
@@ -140,9 +141,9 @@ namespace Spacebox.Scenes
             for (int i = 0; i < 4; i++)
             {
                 planes[i] = new Model("Resources/Models/plane.obj", mat);
-                renderer.AddDrawable(planes[i]);
+                Renderer.AddDrawable(planes[i]);
 
-                collisionManager.Add(planes[i]);
+                CollisionManager.Add(planes[i]);
             }
 
 
@@ -184,7 +185,7 @@ namespace Spacebox.Scenes
             Model terrain = new Model("Resources/Models/terrain.obj", 
                 new Material(_lightingShader,
                 new Texture2D("Resources/Textures/grass2.jpg", false)));
-            terrain.Material.Tiling = new Vector2(50, 50);
+            terrain.Material.Tiling = new Vector2(25, 25);
           
 
             Model tv = new Model("Resources/Models/tv.obj", new Material(_lightingShader, new Texture2D("Resources/Textures/tv.png", true)));
@@ -208,30 +209,30 @@ namespace Spacebox.Scenes
 
             //Tree tree = new Tree(new Vector3(5, 0, 5), _lightingShader);
 
-            renderer.AddDrawable(player);
+            Renderer.AddDrawable(player);
 
-           // renderer.AddDrawable(tree);
-            renderer.AddDrawable(stone1);
-            renderer.AddDrawable(cube);
-            renderer.AddDrawable(arrow);
-           // renderer.AddDrawable(water);
+            // renderer.AddDrawable(tree);
+            Renderer.AddDrawable(stone1);
+            Renderer.AddDrawable(cube);
+            Renderer.AddDrawable(arrow);
+            // renderer.AddDrawable(water);
             //renderer.AddDrawable(skybox);
             //renderer.AddDrawable(skybox2);
-            renderer.AddDrawable(terrain);
-            renderer.AddDrawable(tv);
+            Renderer.AddDrawable(terrain);
+            Renderer.AddDrawable(tv);
             player.Name = "Player";
 
 
             //collisionManager.Add(terrain);
             
-            collisionManager.Add(stone1);
-            collisionManager.Add(cube);
-            collisionManager.Add(tv);
-            collisionManager.Add(arrow);
-            collisionManager.Add(player);
+            CollisionManager.Add(stone1);
+            CollisionManager.Add(cube);
+            CollisionManager.Add(tv);
+            CollisionManager.Add(arrow);
+            CollisionManager.Add(player);
 
             Trigger trigger = new Trigger(new Vector3(3,1,5), new Vector3(1,2,1.5f));
-            collisionManager.Add(trigger);
+            CollisionManager.Add(trigger);
 
             var points = terrain.Mesh.GetRandomPoints(20);
 
@@ -240,8 +241,8 @@ namespace Spacebox.Scenes
 
                 Tree t = new Tree(point - new Vector3(10,0,10), _lightingShader);
 
-                renderer.AddDrawable(t);
-                collisionManager.Add(t.GetModel());
+                Renderer.AddDrawable(t);
+                //CollisionManager.Add(t.GetModel());
             }
         }
 
@@ -336,7 +337,7 @@ namespace Spacebox.Scenes
             }
 
 
-            
+
 
             //textRenderer.SetProjection(_camera.GetProjectionMatrix());
             //textRenderer.RenderText("ABABABABAB", 50, 50, 500, new Vector3(1, 1, 1));
@@ -344,14 +345,14 @@ namespace Spacebox.Scenes
             //model.Transform.Rotation -= new Vector3(0,0f,0.0f);
             // Re-enable face culling if it was enabled before
             //GL.Enable(EnableCap.CullFace);
-           
+
             // textRenderer.RenderText("Pos: " + $" {(Vector3i)player.Position}", 10, 110, 2f, new Vector3(0, 0, 0));
 
-            Debug.ProjectionMatrix = player.GetProjectionMatrix();
-            Debug.ViewMatrix = player.GetViewMatrix();
-            
+            //Debug.ProjectionMatrix = player.GetProjectionMatrix();
+            //Debug.ViewMatrix = player.GetViewMatrix();
 
-            collisionManager.CheckCollisions();
+
+            CollisionManager.CheckCollisions();
 
            
 
@@ -370,18 +371,18 @@ namespace Spacebox.Scenes
             GL.Disable(EnableCap.Blend);
             water.DrawTransparent(player);
 
-            renderer.RenderAll(player);
+            Renderer.RenderAll(player);
 
 
         }
 
         public override void OnGUI()
         {
-
-            textRenderer.RenderText("FPS: " + Time.FPS, 10, 50, 2f, new Vector3(1, 1, 1));
-            textRenderer.RenderText("Delta: " + Time.Delta, 10, 80, 2f, new Vector3(1, 1, 1));
-            textRenderer.RenderText("Pos: " + $" {(Vector3i)player.Position}", 10, 110, 2f, new Vector3(1, 1, 1));
-
+            Overlay.OnGUI(player);
+            //textRenderer.RenderText("FPS: " + Time.FPS, 10, 50, 2f, new Vector3(1, 1, 1));
+            //textRenderer.RenderText("Delta: " + Time.Delta, 10, 80, 2f, new Vector3(1, 1, 1));
+            // textRenderer.RenderText("Pos: " + $" {(Vector3i)player.Position}", 10, 110, 2f, new Vector3(1, 1, 1));
+            SceneObjectPanel.Render(Renderer.GetObjects());
         }
 
 
@@ -389,22 +390,40 @@ namespace Spacebox.Scenes
         public override void UnloadContent()
         {
             
-            audio.Dispose();
+            //audio.Dispose();
+            
         }
         Random rnd = new Random();
 
         float x = 0;
         public override void Update()
         {
-            if (Input.IsKeyDown(Keys.Enter))
+            if (Input.IsKeyDown(Keys.Backspace))
             {
                 SceneManager.LoadScene(typeof(MenuScene));
             }
 
-            
-            
+            if (Input.IsKeyDown(Keys.Tab))
+            {
+                SceneObjectPanel.IsVisible = !SceneObjectPanel.IsVisible;
 
-            
+               
+                if( !SceneObjectPanel.IsVisible )
+                {
+                    Input.SetCursorState(CursorState.Grabbed);
+
+                    player.CameraActive = true;
+                }
+                else
+                {
+                    Input.SetCursorState(CursorState.Normal);
+                    player.CameraActive = false;
+                }
+                   
+                
+            }
+
+
 
             if (skybox.Rotation.Y == 360) skybox.Rotation = new Vector3(0,0,0);
             skybox.Rotation -= new Vector3(0,1f * Time.Delta,0);
@@ -424,7 +443,7 @@ namespace Spacebox.Scenes
             player.Update();
 
             // Обновление всех объектов и их коллизий
-            foreach (var obj in collisionManager.Collidables)
+            foreach (var obj in CollisionManager.Collidables)
             {
                 // Сохраняем старый BoundingVolume для обновления
                 BoundingVolume oldVolume = obj.BoundingVolume.Clone();
@@ -435,7 +454,7 @@ namespace Spacebox.Scenes
                 obj.UpdateBounding();
 
                 // Обновляем CollisionManager с новым BoundingVolume
-                collisionManager.Update(obj, oldVolume);
+                CollisionManager.Update(obj, oldVolume);
             }
 
             if (Input.IsKeyDown(Keys.F))

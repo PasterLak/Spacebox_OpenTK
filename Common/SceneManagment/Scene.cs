@@ -1,16 +1,30 @@
 ﻿using OpenTK.Windowing.Desktop;
+using Spacebox.Common;
+using OpenTK.Graphics.OpenGL4;
+using Spacebox.Common.Audio;
 
 namespace Spacebox.Common.SceneManagment
 {
-    public abstract class Scene
+    public abstract class Scene : Node3D, IDisposable
     {
         protected GameWindow Content;
-        public string Name { get; private set; }
+      
         public SceneManager SceneManager { get; private set; }
+
+
+        public SoundManager SoundManager { get; private set; }
+        public CollisionManager CollisionManager { get; private set; }
+        public Renderer Renderer { get; private set; }
+
+
         public Scene()
         {
+            SoundManager = new SoundManager();
+            CollisionManager = new CollisionManager();
+            Renderer = new Renderer();
 
-
+            Name = "DefaultName";
+            Resizable = false;
         }
 
         public abstract void LoadContent();
@@ -27,5 +41,13 @@ namespace Spacebox.Common.SceneManagment
         public abstract void Render();
 
         public abstract void OnGUI();
+
+        public void Dispose()
+        {
+            SoundManager.Dispose();
+            
+        }
+
+      
     }
 }

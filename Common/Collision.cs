@@ -3,7 +3,7 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace Spacebox.Common
 {
-    public abstract class Collision : Transform
+    public abstract class Collision : Node3D
     {
         public bool IsStatic { get; protected set; }
         public bool IsTrigger { get; protected set; } = false;

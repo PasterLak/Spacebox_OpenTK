@@ -97,7 +97,7 @@ namespace Spacebox.Common
             GL.BindVertexArray(0);
         }
 
-        public static void DrawTransform(Transform transform)
+        public static void DrawTransform(Node3D transform)
         {
             if (transform == null) return;
 

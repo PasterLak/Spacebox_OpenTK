@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 
@@ -13,7 +14,8 @@ namespace Spacebox.Entities
         private float _sensitivity = 0.2f;
         private bool _firstMove = true;
         private Vector2 _lastMousePosition;
-        
+
+        public bool CameraActive = true;
 
         SpotLight spotLight;
 
@@ -45,7 +47,7 @@ namespace Spacebox.Entities
             Console.WriteLine($"Camera stopped colliding with {other.GetType().Name}");
         }
 
-        public void Update()
+        public new void Update()
         {
             if (Input.IsKeyDown(Keys.F))
             {
@@ -53,8 +55,12 @@ namespace Spacebox.Entities
                 //audio.Play();
             }
 
+            
+
             HandleInput();
             UpdateBounding();
+
+            base.Update();
            
         }
 
@@ -169,14 +175,18 @@ namespace Spacebox.Entities
             }
             else
             {
-                var deltaX = mouse.X - _lastMousePosition.X;
-                var deltaY = mouse.Y - _lastMousePosition.Y;
-                _lastMousePosition = new Vector2(mouse.X, mouse.Y);
-                Yaw += deltaX * _sensitivity;
-                Pitch -= deltaY * _sensitivity;
+                if(CameraActive)
+                {
+                    var deltaX = mouse.X - _lastMousePosition.X;
+                    var deltaY = mouse.Y - _lastMousePosition.Y;
+                    _lastMousePosition = new Vector2(mouse.X, mouse.Y);
+                    Yaw += deltaX * _sensitivity;
+                    Pitch -= deltaY * _sensitivity;
 
-        
-                Pitch = MathHelper.Clamp(Pitch, -89f, 89f);
+
+                    Pitch = MathHelper.Clamp(Pitch, -89f, 89f);
+                }
+          
             }
         }
 

@@ -27,7 +27,7 @@ namespace Spacebox.Common
             {
                 Console.WriteLine("There are already an Input Object!");
             }
-           
+            
         }
 
         public static void Update()
@@ -64,8 +64,11 @@ namespace Spacebox.Common
         {
             _gameWindow.CursorState = state;
         }
+        public static CursorState GetCursorState()
+        {
+            return _gameWindow.CursorState;
+        }
 
-       
 
 
     }

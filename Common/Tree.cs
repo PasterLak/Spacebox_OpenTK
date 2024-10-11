@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Spacebox.Common
 {
-    internal class Tree : Transform, INotTransparent, ITransparent
+    internal class Tree : Node3D, INotTransparent, ITransparent
     {
 
         Model trunk;
@@ -27,8 +27,8 @@ namespace Spacebox.Common
                 new Material(shader, new Texture2D("Resources/Textures/leaves.png", false)));
 
             leaves.Position = pos;
-          
 
+            Name = "tree";
         }
 
 

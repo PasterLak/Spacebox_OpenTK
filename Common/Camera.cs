@@ -1,4 +1,7 @@
 ﻿using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using Spacebox.Entities;
 
 namespace Spacebox.Common
 {
@@ -11,7 +14,7 @@ namespace Spacebox.Common
         private float _pitch;
         private float _yaw = -MathHelper.PiOver2;
 
-        private float _fov = MathHelper.PiOver2;
+        private float _fov = MathHelper.DegreesToRadians(80f);
 
         public float AspectRatio { private get; set; }
 
@@ -56,6 +59,18 @@ namespace Spacebox.Common
             Position = position;
             AspectRatio = aspectRatio;
             UpdateVectors();
+        }
+
+        public void Update()
+        {
+            if(Debug.ShowDebug)
+            {
+                Debug.ProjectionMatrix = GetProjectionMatrix();
+                Debug.ViewMatrix = GetViewMatrix();
+            }
+
+            
+
         }
 
         public Matrix4 GetViewMatrix()
