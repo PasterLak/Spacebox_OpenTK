@@ -8,7 +8,7 @@ layout (location = 2) in vec3 aColor;
 
 out vec2 TexCoord;
 out vec3 Color;
-out float FogFactor; // fog
+out float FogFactor; 
 
 uniform mat4 model;
 uniform mat4 view;
@@ -44,18 +44,27 @@ in float FogFactor;
 
 out vec4 FragColor;
 
-uniform sampler2D texture0;
+uniform sampler2D texture0;     
+uniform sampler2D textureAtlas; 
 
 uniform vec3 fogColor = vec3(1,0,0);
 uniform vec3 ambientColor = vec3(1,1,1);
 
-vec4 fog(vec4 texColor)
+vec4 applyFog(vec4 texColor)
 {
     return mix(vec4(fogColor, 1.0), texColor, FogFactor);
 }
 
 void main()
 {
-    vec4 texColor = texture(texture0, TexCoord) * vec4(Color, 1.0) * vec4(ambientColor, 1);
-    FragColor = fog(texColor);
+  
+    vec4 baseTexColor = texture(texture0, TexCoord) * vec4(Color, 1.0) * vec4(ambientColor, 1.0);
+
+ 
+    vec4 atlasTexColor = texture(textureAtlas, TexCoord);
+
+    vec4 finalColor = mix(baseTexColor, atlasTexColor, atlasTexColor.a);
+
+  
+    FragColor = applyFog(finalColor);
 }

@@ -53,8 +53,13 @@ namespace Spacebox.Game
 
                         if (distance <= radius)
                         {
-                            // Внутри сферы
-                            Vector2 textureCoords = new Vector2(4, 0); // Координаты текстуры
+                            
+                            Random random = new Random();
+
+                            var r = random.Next(0, 10);
+
+                            Vector2 textureCoords = r < 9 ? new Vector2(4, 1) : new Vector2(4, 0); 
+
                             Vector3 color = new Vector3(1f, 1f, 1f); // Белый цвет
                             Blocks[x, y, z] = new Block(BlockType.Solid, textureCoords, color);
                         }

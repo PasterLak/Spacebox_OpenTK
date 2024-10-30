@@ -57,6 +57,7 @@
     <None Remove="Resources\Textures\grass1.jpg" />
     <None Remove="Resources\Textures\grass2.jpg" />
     <None Remove="Resources\Textures\Leaves.png" />
+    <None Remove="Resources\Textures\lightAtlas.png" />
     <None Remove="Resources\Textures\sky.jpg" />
     <None Remove="Resources\Textures\skybox.png" />
     
@@ -113,6 +114,9 @@
     </Content>
     <Content Include="Resources\Textures\leaves.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\lightAtlas.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\Skybox\dom.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

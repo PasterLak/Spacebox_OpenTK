@@ -23,12 +23,15 @@ namespace Spacebox.Scenes
         private Chunk chunk;
         Shader blocksShader;
         private Texture2D blockTexture;
+        private Texture2D lightAtlas;
         // to base
 
         public override void LoadContent()
         {
             float q = 5;
             player = new Player(new Vector3(q + 3,0,q), 16/9f);
+
+
             skyboxShader = new Shader("Shaders/skybox");
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader, 
                 new Texture2D("Resources/Textures/Skybox/space6.png", true) );
@@ -50,8 +53,11 @@ namespace Spacebox.Scenes
             blocksShader = new Shader("Shaders/block");
             blockTexture = new Texture2D("Resources/Textures/blocks.png", true);
 
+            lightAtlas = new Texture2D("Resources/Textures/lightAtlas.png", true);
+
             blocksShader.Use();
             blocksShader.SetInt("texture0", 0);
+            blocksShader.SetInt("textureAtlas", 1);
 
             blocksShader.SetVector3("fogColor", new Vector3(0,0,0));
             blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
@@ -97,7 +103,10 @@ namespace Spacebox.Scenes
 
             blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
 
+           
+
             blockTexture.Use(TextureUnit.Texture0);
+            lightAtlas.Use(TextureUnit.Texture1);
 
             chunk.Draw(blocksShader);
 
@@ -117,6 +126,7 @@ namespace Spacebox.Scenes
         {
             blocksShader.Dispose();
             blockTexture.Dispose();
+            lightAtlas.Dispose();
         }
 
     }
