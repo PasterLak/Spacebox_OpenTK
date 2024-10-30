@@ -9,6 +9,11 @@ namespace Spacebox.Common
     {
         public int Handle { get; private set; }
 
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+
+        public bool IsReadOnly { get; private set; } = true;
+
         public Texture2D(string path, bool pixelated = false)
         {
             Handle = GL.GenTexture();
@@ -19,6 +24,9 @@ namespace Spacebox.Common
                 using (var image = new Bitmap(path))
                 {
                     image.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
+                    Width = image.Width;
+                    Height = image.Height;
 
                     var data = image.LockBits(
                         new Rectangle(0, 0, image.Width, image.Height),
@@ -42,7 +50,8 @@ namespace Spacebox.Common
             }
             catch
             {
-                CreatePinkTexture();
+                CreateSpaceTexture();
+                
             }
 
             var minFilter = pixelated ? TextureMinFilter.Nearest : TextureMinFilter.LinearMipmapLinear;
@@ -59,6 +68,10 @@ namespace Spacebox.Common
         private void CreatePinkTexture()
         {
             byte[] pinkPixel = { 255, 0, 255, 255 };
+
+            Width = 1;
+            Height = 1;
+
             GL.TexImage2D(TextureTarget.Texture2D,
                 0,
                 PixelInternalFormat.Rgba,
@@ -68,6 +81,43 @@ namespace Spacebox.Common
                 PixelFormat.Rgba,
                 PixelType.UnsignedByte,
                 pinkPixel
+            );
+        }
+
+        private void CreateSpaceTexture()
+        {
+            const int size = 1024;
+            byte[] pixels = new byte[size * size * 4];
+
+            Width = size;
+            Height = size;
+
+            for ( int i = 0; i < pixels.Length; i+=4 )
+            {
+
+                Random random = new Random();
+
+                var x = random.Next( 10000 );
+
+                byte color = x < 9995 ? (byte)0 : (byte)random.Next(250);
+
+
+                pixels[i] = color;
+                pixels[i+1] = color;
+                pixels[i+2] = color;
+                pixels[i+3] = 255;
+            }
+
+
+            GL.TexImage2D(TextureTarget.Texture2D,
+                0,
+                PixelInternalFormat.Rgba,
+                size,
+                size,
+                0,
+                PixelFormat.Rgba,
+                PixelType.UnsignedByte,
+                pixels
             );
         }
 

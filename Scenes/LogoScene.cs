@@ -56,7 +56,7 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
-           
+            sprite.Dispose();
         }
 
         public override void Update()

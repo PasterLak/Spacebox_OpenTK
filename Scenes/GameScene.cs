@@ -362,9 +362,9 @@ namespace Spacebox.Scenes
             GL.DepthMask(false); // Отключаем запись в буфер глубины
 
 
-            
             skyboxExtern.DrawTransparent(player);
-            skybox.DrawTransparent(player);
+           
+             skybox.DrawTransparent(player);
 
 
             GL.DepthMask(true); // Включаем запись в буфер глубины
