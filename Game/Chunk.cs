@@ -58,10 +58,24 @@ namespace Spacebox.Game
 
                             var r = random.Next(0, 10);
 
-                            Vector2 textureCoords = r < 9 ? new Vector2(4, 1) : new Vector2(4, 0); 
+                            Vector2 textureCoords = Vector2.Zero;
+
+                            if (r < 8) textureCoords = new Vector2(4, 1);
+                            if (r == 8) textureCoords = new Vector2(4, 0);
+                            if (r == 9)
+                            {
+                                textureCoords = new Vector2(3, 1);
+
+                            }
 
                             Vector3 color = new Vector3(1f, 1f, 1f); // Белый цвет
                             Blocks[x, y, z] = new Block(BlockType.Solid, textureCoords, color);
+                            if (r == 9)
+                            {
+                                Blocks[x, y, z].IsTransparent = true;
+
+                            }
+
                         }
                         else
                         {
@@ -107,7 +121,9 @@ namespace Spacebox.Game
             if (x < 0 || x >= Size || y < 0 || y >= Size || z < 0 || z >= Size)
                 return true;
 
-            return Blocks[x, y, z].IsTransparent();
+            if(Blocks[x, y, z].IsAir()) return true;
+
+            return Blocks[x, y, z].IsTransparent;
         }
 
         private void AddFace(List<float> vertices, List<uint> indices, int x, int y, int z, Face face, Block block, ref uint index)

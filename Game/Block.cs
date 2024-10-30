@@ -14,6 +14,8 @@ namespace Spacebox.Game
         public Vector2 TextureCoords { get; set; } // Координаты блока на атласе
         public Vector3 Color { get; set; }
 
+        public bool IsTransparent { get; set; } = false;
+
         public Block(BlockType type, Vector2 textureCoords, Vector3? color = null)
         {
             Type = type;
@@ -21,7 +23,7 @@ namespace Spacebox.Game
             Color = color ?? new Vector3(1.0f, 1.0f, 1.0f);
         }
 
-        public bool IsTransparent()
+        public bool IsAir()
         {
             return Type == BlockType.Air;
         }

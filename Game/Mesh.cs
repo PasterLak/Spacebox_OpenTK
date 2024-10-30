@@ -45,6 +45,11 @@ namespace Spacebox.Game
             shader.Use();
             GL.Enable(EnableCap.CullFace);
 
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+
             GL.BindVertexArray(_vao);
             GL.DrawElements(PrimitiveType.Triangles, _vertexCount, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
