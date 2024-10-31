@@ -42,6 +42,8 @@ namespace Spacebox.Game
 
             UpdateSectors();
 
+            sectorOctree.
+
             foreach (var sector in GetSectorsInRange(Player.Position, playerVisibilityDistance))
             {
                 sector.Update();

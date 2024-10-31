@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using OpenTK.Mathematics;
-using Spacebox.Common;
+
 
 namespace Spacebox.Common
 {
