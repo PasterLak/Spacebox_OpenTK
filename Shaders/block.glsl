@@ -15,7 +15,9 @@ uniform mat4 view;
 uniform mat4 projection;
 
 uniform vec3 cameraPosition = vec3(0,0,0);
-uniform float fogDensity = 0.05;
+uniform float fogDensity = 0.08; // standart 0.05
+
+uniform vec3 globalOffset;
 
 void fog(vec4 worldPosition)
 {
@@ -25,6 +27,8 @@ void fog(vec4 worldPosition)
 
 void main()
 {
+
+
     vec4 worldPosition = vec4(aPosition, 1.0) * model;
     gl_Position = vec4(aPosition, 1.0) * model * view * projection;
     TexCoord = aTexCoord;
@@ -58,13 +62,18 @@ vec4 applyFog(vec4 texColor)
 void main()
 {
     vec4 baseTexColor = texture(texture0, TexCoord) * vec4(Color, 1.0) * vec4(ambientColor, 1.0);
-    vec4 atlasTexColor = texture(textureAtlas, TexCoord);
-    vec4 mixedColor = mix(baseTexColor, atlasTexColor, atlasTexColor.a);
-    mixedColor.a = max(baseTexColor.a, atlasTexColor.a);
 
-    if (mixedColor.a < 0.1)
+    if (baseTexColor.a < 0.1)
         discard;
 
-    FragColor = applyFog(mixedColor);
+    vec4 foggedBaseColor = applyFog(baseTexColor);
+    vec4 atlasTexColor = texture(textureAtlas, TexCoord);
+    vec4 mixedColor = mix(foggedBaseColor, atlasTexColor, atlasTexColor.a);
+    mixedColor.a = max(foggedBaseColor.a, atlasTexColor.a);
+
+    
+
+    FragColor = mixedColor;
 }
+
 

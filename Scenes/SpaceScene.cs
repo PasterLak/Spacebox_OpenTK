@@ -18,6 +18,7 @@ namespace Spacebox.Scenes
 
         Player player;
         Skybox skybox;
+        World world;
         private Shader skyboxShader;
 
         private Chunk chunk;
@@ -48,7 +49,7 @@ namespace Spacebox.Scenes
 
             Input.SetCursorState(CursorState.Grabbed);
 
-            chunk = new Chunk();
+            chunk = new Chunk(new Vector3(0,0,0));
 
             blocksShader = new Shader("Shaders/block");
             blockTexture = new Texture2D("Resources/Textures/blocks.png", true);
@@ -62,7 +63,10 @@ namespace Spacebox.Scenes
             blocksShader.SetVector3("fogColor", new Vector3(0,0,0));
             blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
 
-            chunk.RemoveBlock(0,0,0);
+            //chunk.RemoveBlock(0,0,0);
+
+            world = new World(player);
+          
         }
 
         
@@ -75,8 +79,13 @@ namespace Spacebox.Scenes
             {
                 SceneManager.LoadScene(typeof(MenuScene));
             }
-            
 
+            if (Input.IsKeyDown(Keys.R))
+            {
+                player.Position = new Vector3(0,0,0);
+            }
+
+            world.Update();
         }
 
         public override void Render()
@@ -95,7 +104,7 @@ namespace Spacebox.Scenes
             Matrix4 view = player.GetViewMatrix();
             Matrix4 projection = player.GetProjectionMatrix();
 
-            blocksShader.SetMatrix4("model", model);
+            //blocksShader.SetMatrix4("model", model);
             blocksShader.SetMatrix4("view", view);
             blocksShader.SetMatrix4("projection", projection);
 
@@ -109,6 +118,8 @@ namespace Spacebox.Scenes
             lightAtlas.Use(TextureUnit.Texture1);
 
             chunk.Draw(blocksShader);
+
+            world.Render(blocksShader);
 
 
             Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(100f, 0, 0), Color4.Red);

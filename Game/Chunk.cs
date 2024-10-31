@@ -1,24 +1,24 @@
 ﻿using Spacebox.Common;
 using OpenTK.Mathematics;
-using System;
-using System.Collections.Generic;
 
 namespace Spacebox.Game
 {
     public class Chunk
     {
-        public const byte Size = 8;
+        public const sbyte Size = 16;
 
+        public Vector3 Position { get; private set; }
         public Block[,,] Blocks { get; private set; }
 
         private Mesh _mesh;
 
-        public Chunk()
+        public Chunk(Vector3 position)
         {
+            Position = position;
             Blocks = new Block[Size, Size, Size];
-            // Вы можете выбрать, какую функцию использовать для генерации блоков
-            // GenerateBlocks(); // Генерация случайных блоков
-            GenerateSphereBlocks(); // Генерация блоков в форме сферы
+        
+            // GenerateBlocks(); 
+            GenerateSphereBlocks(); 
             GenerateMesh();
         }
 
@@ -30,9 +30,9 @@ namespace Spacebox.Game
                     for (int z = 0; z < Size; z++)
                     {
                         float xx = (float)r.NextDouble() * 5;
-                        // Задаем координаты текстуры для блока
-                        Vector2 textureCoords = new Vector2(xx, 0); // Координаты блока на атласе
-                        Vector3 color = new Vector3(1f, 1f, 1f); // Белый цвет
+                     
+                        Vector2 textureCoords = new Vector2(xx, 0); 
+                        Vector3 color = new Vector3(1f, 1f, 1f);
 
                         Blocks[x, y, z] = xx < 1 ? new Block(BlockType.Air, textureCoords, color)
                                                  : new Block(BlockType.Solid, textureCoords, color);
@@ -60,11 +60,11 @@ namespace Spacebox.Game
 
                             Vector2 textureCoords = Vector2.Zero;
 
-                            if (r < 8) textureCoords = new Vector2(4, 1);
-                            if (r == 8) textureCoords = new Vector2(4, 0);
+                            if (r < 8) textureCoords = new Vector2(1, 2);
+                            if (r == 8) textureCoords = new Vector2(2, 2);
                             if (r == 9)
                             {
-                                textureCoords = new Vector2(3, 1);
+                                textureCoords = new Vector2(3, 2);
 
                             }
 
@@ -155,8 +155,17 @@ namespace Spacebox.Game
             index += 4;
         }
 
+        public void Shift(Vector3 shift)
+        {
+
+            Position -= shift;
+        }
+
         public void Draw(Shader shader)
         {
+            Matrix4 model = Matrix4.CreateTranslation(Position);
+            shader.SetMatrix4("model", model);
+
             _mesh.Draw(shader);
         }
 

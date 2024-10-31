@@ -40,7 +40,12 @@ namespace Spacebox.Common
             return new BoundingBox(Center, Size);
         }
 
-
+        public bool Contains(Vector3 point)
+        {
+            return (point.X >= Min.X && point.X <= Max.X) &&
+                   (point.Y >= Min.Y && point.Y <= Max.Y) &&
+                   (point.Z >= Min.Z && point.Z <= Max.Z);
+        }
 
         public override bool Intersects(BoundingVolume other)
         {
