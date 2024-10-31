@@ -112,7 +112,7 @@ namespace Spacebox.Common
                 if (fragmentShader != 0) GL.DeleteShader(fragmentShader);
                 if (geometryShader != 0) GL.DeleteShader(geometryShader);
 
-                throw new Exception("Shader compilation failed: " + ex.Message);
+                throw new Exception($"Shader <{_shaderPath}> compilation failed: " + ex.Message);
             }
 
             // Create and link program

@@ -19,6 +19,7 @@ namespace Spacebox.Common.SceneManagment
 
         public Scene()
         {
+           
             SoundManager = new SoundManager();
             CollisionManager = new CollisionManager();
             Renderer = new Renderer();

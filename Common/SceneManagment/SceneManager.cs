@@ -134,6 +134,8 @@ namespace Spacebox.Common.SceneManagment
 
                 CurrentScene = sceneInstance;
 
+               
+
                 Console.WriteLine("Scene Loaded: " + _currentSceneType.typ.Name);
 
                 CurrentScene.LoadContent();
