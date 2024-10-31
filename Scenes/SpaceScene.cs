@@ -37,8 +37,9 @@ namespace Spacebox.Scenes
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader, 
                 new Texture2D("Resources/Textures/Skybox/space6.png", true) );
             skybox.Scale = new Vector3(100,100,100);
+            skybox.IsAmbientAffected = false;
 
-         
+
 
 
             CollisionManager.Add(player);
@@ -85,6 +86,8 @@ namespace Spacebox.Scenes
                 player.Position = new Vector3(0,0,0);
             }
 
+            chunk.Test(player);
+
             world.Update();
         }
 
@@ -120,6 +123,7 @@ namespace Spacebox.Scenes
             chunk.Draw(blocksShader);
 
             world.Render(blocksShader);
+
 
 
             Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(100f, 0, 0), Color4.Red);

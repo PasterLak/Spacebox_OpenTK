@@ -294,7 +294,7 @@ namespace Spacebox.Common
         }
 
 
-        public static void Render()
+        public static void Render() // in Window loop
         {
             if (!ShowDebug) return;
 

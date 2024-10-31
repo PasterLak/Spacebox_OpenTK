@@ -55,6 +55,26 @@ namespace Spacebox.Common
 
         }
 
+        public static bool IsMouseButton(MouseButton key)
+        {
+
+            return Mouse.IsButtonDown(key);
+
+        }
+        public static bool IsMouseButtonUp(MouseButton key)
+        {
+
+            return Mouse.IsButtonReleased(key);
+
+        }
+
+        public static bool IsMouseButtonDown(MouseButton key)
+        {
+
+            return Mouse.IsButtonPressed(key);
+
+        }
+
         public static bool IsAnyKeyDown()
         {
             return _lastState.IsAnyKeyDown;

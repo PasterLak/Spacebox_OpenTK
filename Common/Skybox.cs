@@ -10,6 +10,8 @@ namespace Spacebox.Common
       
         public Texture2D Texture { get; private set; }
 
+        public bool IsAmbientAffected = true; 
+
         public Skybox(string objPath, Shader shader, Texture2D texture)
         {
             var (vertices, indices) = ObjLoader.Load(objPath);
@@ -19,7 +21,9 @@ namespace Spacebox.Common
         
 
            Scale = new Vector3(100, 100, 100);
-            
+
+          
+
         }
        
         public void DrawTransparent(Camera camera)
@@ -51,7 +55,10 @@ namespace Spacebox.Common
             // Use view matrix without translation
             //var viewMatrix = new Matrix4(new Matrix3(camera.GetViewMatrix()));
             //Material.Shader.SetVector2("offset", new Vector2(x,x) );
+            if(IsAmbientAffected)
             Material.Shader.SetVector3("ambient", Lighting.AmbientColor);
+            else
+                Material.Shader.SetVector3("ambient", new Vector3(1, 1, 1));  // can be optimized
             Material.Shader.SetMatrix4("view", camera.GetViewMatrix());
             Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
             Material.Shader.SetMatrix4("model", GetModelMatrix());

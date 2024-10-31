@@ -15,7 +15,7 @@ uniform mat4 view;
 uniform mat4 projection;
 
 uniform vec3 cameraPosition = vec3(0,0,0);
-uniform float fogDensity = 0.08; // standart 0.05
+uniform float fogDensity = 0.2; // standart 0.05
 
 uniform vec3 globalOffset;
 

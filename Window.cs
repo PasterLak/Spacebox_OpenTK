@@ -67,7 +67,7 @@ namespace Spacebox
             Console.WriteLine("[Engine started!]");
             //this.VSync = VSyncMode.On;
 
-            FrameLimiter.Initialize(120);
+            FrameLimiter.Initialize(9999);
             FrameLimiter.IsRunning = true;
 
            

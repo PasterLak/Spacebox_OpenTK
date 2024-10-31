@@ -22,7 +22,7 @@ namespace Spacebox.Game
             Player = player;
             sectorOctree = new Octree<Sector>(SectorSize * 8, Vector3.Zero, SectorSize, 1.0f);
             sectorsByIndex = new Dictionary<Vector3i, Sector>();
-            InitializeSectors();
+            //InitializeSectors();
         }
 
         private void InitializeSectors()
@@ -40,9 +40,9 @@ namespace Spacebox.Game
                 ShiftWorld(playerPosition);
             }
 
-            UpdateSectors();
+            //UpdateSectors();
 
-            sectorOctree.
+            //sectorOctree.
 
             foreach (var sector in GetSectorsInRange(Player.Position, playerVisibilityDistance))
             {
