@@ -25,14 +25,14 @@ namespace Spacebox.GUI
 
         private Texture2D _texture;
 
-        public Sprite(string imagePath, Vector2 position, Vector2 size, int windowWidth, int windowHeight, bool pixelated = false)
+        public Sprite(string imagePath, Vector2 position, Vector2 size,  bool pixelated = false)
         {
             _shader = new Shader("Shaders/sprite");
 
             _position = position;
             _size = size;
-            _windowWidth = windowWidth;
-            _windowHeight = windowHeight;
+            _windowWidth = Window.Instance.Size.X;
+            _windowHeight = Window.Instance.Size.Y;
 
             // Load the texture using Texture2D
             _texture = new Texture2D(imagePath, pixelated);

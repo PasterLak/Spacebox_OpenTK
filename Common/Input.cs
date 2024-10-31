@@ -1,4 +1,5 @@
-﻿using OpenTK.Windowing.Common;
+﻿using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
@@ -23,12 +24,13 @@ namespace Spacebox.Common
                 _gameWindow = gameWindow;
                 _lastState = gameWindow.KeyboardState;
             }
-            else
+            else  
             {
                 Console.WriteLine("There are already an Input Object!");
             }
             
         }
+
 
         public static void Update()
         {
@@ -74,6 +76,8 @@ namespace Spacebox.Common
             return Mouse.IsButtonPressed(key);
 
         }
+
+        public static Vector2 MouseScrollDelta => Mouse.ScrollDelta;
 
         public static bool IsAnyKeyDown()
         {

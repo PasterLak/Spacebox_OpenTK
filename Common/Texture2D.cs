@@ -14,6 +14,13 @@ namespace Spacebox.Common
 
         public bool IsReadOnly { get; private set; } = true;
 
+        public Texture2D(int width, int height)
+        {
+            Width = width;
+            Height = height;
+
+            IsReadOnly = false;
+        }
         public Texture2D(string path, bool pixelated = false)
         {
             Handle = GL.GenTexture();

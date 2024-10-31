@@ -6,7 +6,7 @@ using Spacebox.Common;
 
 namespace Spacebox.Entities
 {
-    public class Player : Camera, INotTransparent
+    public class Player : CameraBasic, INotTransparent
     {
         private float _cameraSpeed = 2.5f;
         private float _shiftSpeed = 5.5f;

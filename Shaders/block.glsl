@@ -15,7 +15,7 @@ uniform mat4 view;
 uniform mat4 projection;
 
 uniform vec3 cameraPosition = vec3(0,0,0);
-uniform float fogDensity = 0.2; // standart 0.05
+uniform float fogDensity = 0.08; // standart 0.05
 
 uniform vec3 globalOffset;
 
@@ -52,28 +52,33 @@ uniform sampler2D texture0;
 uniform sampler2D textureAtlas; 
 
 uniform vec3 fogColor = vec3(1,0,0);
-uniform vec3 ambientColor = vec3(1,1,1);
+uniform vec3 ambientColor = vec3(0.2, 0.2, 0.2); 
 
 vec4 applyFog(vec4 texColor)
 {
-    return mix(vec4(fogColor, 1.0), texColor, FogFactor);
+    return mix(vec4(fogColor, texColor.a), texColor, FogFactor);
 }
 
 void main()
 {
-    vec4 baseTexColor = texture(texture0, TexCoord) * vec4(Color, 1.0) * vec4(ambientColor, 1.0);
+    vec4 baseTexColor = texture(texture0, TexCoord);
+    vec4 atlasTexColor = texture(textureAtlas, TexCoord);
 
     if (baseTexColor.a < 0.1)
         discard;
 
-    vec4 foggedBaseColor = applyFog(baseTexColor);
-    vec4 atlasTexColor = texture(textureAtlas, TexCoord);
-    vec4 mixedColor = mix(foggedBaseColor, atlasTexColor, atlasTexColor.a);
-    mixedColor.a = max(foggedBaseColor.a, atlasTexColor.a);
+    
+    vec3 finalColor = baseTexColor.rgb * (Color + ambientColor);
+
+   
+    vec4 foggedColor = applyFog(vec4(finalColor, baseTexColor.a));
 
     
+    vec3 combinedColor = mix(foggedColor.rgb, atlasTexColor.rgb, atlasTexColor.a);
 
-    FragColor = mixedColor;
+    FragColor = vec4(combinedColor, foggedColor.a);
 }
+
+
 
 

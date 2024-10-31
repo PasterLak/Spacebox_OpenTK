@@ -10,14 +10,14 @@ namespace Spacebox.Game
     {
         private Octree<Sector> sectorOctree;
         private Dictionary<Vector3i, Sector> sectorsByIndex;
-        public Player Player { get; private set; }
+        public Astronaut Player { get; private set; }
         private const float SectorSize = 20f; 
         private const float HalfSectorSize = SectorSize / 2f;
         private float playerVisibilityDistance = 50f;
 
         private const float ShiftThreshold = 40;
 
-        public World(Player player)
+        public World(Astronaut player)
         {
             Player = player;
             sectorOctree = new Octree<Sector>(SectorSize * 8, Vector3.Zero, SectorSize, 1.0f);

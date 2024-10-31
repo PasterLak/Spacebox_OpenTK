@@ -8,7 +8,7 @@ namespace Spacebox.GUI
 {
     public class Overlay
     {
-        public static void OnGUI(Player player)
+        public static void OnGUI(Node3D player)
         {
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new System.Numerics.Vector4(0, 0, 0, 0.8f));
             ImGui.Begin("Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoMove);

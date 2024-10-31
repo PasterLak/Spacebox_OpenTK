@@ -51,29 +51,25 @@ namespace Spacebox.Game
 
                             Vector2 textureCoords = Vector2.Zero;
 
-                            if (r < 8) textureCoords = new Vector2(1, 2);
-                            if (r == 8) textureCoords = new Vector2(2, 2);
+                            if (r < 8) Blocks[x, y, z] = GameBlocks.CreateFromId(1);
+                            if (r == 8) Blocks[x, y, z] = GameBlocks.CreateFromId(2);
                             if (r == 9)
                             {
-                                textureCoords = new Vector2(3, 2);
+                                Blocks[x, y, z] = GameBlocks.CreateFromId(1);
 
                             }
 
-                            var c  = random.Next(1, 10);
+                           
 
-                            Vector3 color = new Vector3(1f / c, 1f / c, 1f / c); // Белый цвет
-                            Blocks[x, y, z] = new Block(BlockType.Solid, textureCoords, color);
-                            if (r == 9)
-                            {
-                                Blocks[x, y, z].IsTransparent = true;
-
-                            }
+                            //Vector3 color = new Vector3(1f , 1f , 1f ); // Белый цвет
+                          
+                           
 
                         }
                         else
                         {
                             // Вне сферы
-                            Blocks[x, y, z] = new Block(BlockType.Air, new Vector2(0, 0));
+                            Blocks[x, y, z] = GameBlocks.CreateFromId(0);
                         }
                     }
         }
@@ -137,6 +133,35 @@ namespace Spacebox.Game
             Vector3[] faceVertices = CubeMeshData.GetFaceVertices(face);
             Vector2[] faceUVs = UVAtlas.GetUVs((int)block.TextureCoords.X, (int)block.TextureCoords.Y);
 
+            // Получаем уровень света и цвет освещения блока
+            float currentLightLevel = block.LightLevel / 15f;
+            Vector3 currentLightColor = block.LightColor;
+
+            // Получаем соседний блок в направлении грани
+            Vector3i neighborPos = new Vector3i(x, y, z) + GetFaceNormal(face);
+            float neighborLightLevel = 0f;
+            Vector3 neighborLightColor = Vector3.Zero;
+
+            if (IsInRange(neighborPos.X, neighborPos.Y, neighborPos.Z))
+            {
+                Block neighborBlock = Blocks[neighborPos.X, neighborPos.Y, neighborPos.Z];
+                neighborLightLevel = neighborBlock.LightLevel / 15f;
+                neighborLightColor = neighborBlock.LightColor;
+            }
+
+            // Средний уровень света и цвет между блоками
+            float averageLightLevel = (currentLightLevel + neighborLightLevel) / 2f;
+            Vector3 averageLightColor = (currentLightColor * currentLightLevel + neighborLightColor * neighborLightLevel) / (currentLightLevel + neighborLightLevel + 0.001f);
+
+            // Корректируем значение ambient-освещения
+            Vector3 ambient = new Vector3(0.2f, 0.2f, 0.2f); // Настройте по своему усмотрению
+
+            // Итоговый цвет вершины
+            Vector3 vertexColor = block.Color * (averageLightColor + ambient);
+
+            // Нормализуем цвет, чтобы значения не превышали 1.0
+            vertexColor = Vector3.Clamp(vertexColor, Vector3.Zero, Vector3.One);
+
             for (int i = 0; i < faceVertices.Length; i++)
             {
                 Vector3 vertex = faceVertices[i];
@@ -147,9 +172,9 @@ namespace Spacebox.Game
                 vertices.Add(faceUVs[i].X);
                 vertices.Add(faceUVs[i].Y);
 
-                vertices.Add(block.Color.X);
-                vertices.Add(block.Color.Y);
-                vertices.Add(block.Color.Z);
+                vertices.Add(vertexColor.X);
+                vertices.Add(vertexColor.Y);
+                vertices.Add(vertexColor.Z);
             }
 
             uint[] faceIndices = { 0, 1, 2, 2, 3, 0 };
@@ -160,6 +185,24 @@ namespace Spacebox.Game
 
             index += 4;
         }
+
+
+
+        private Vector3i GetFaceNormal(Face face)
+        {
+            switch (face)
+            {
+                case Face.Left: return new Vector3i(-1, 0, 0);
+                case Face.Right: return new Vector3i(1, 0, 0);
+                case Face.Bottom: return new Vector3i(0, -1, 0);
+                case Face.Top: return new Vector3i(0, 1, 0);
+                case Face.Back: return new Vector3i(0, 0, -1);
+                case Face.Front: return new Vector3i(0, 0, 1);
+                default: return Vector3i.Zero;
+            }
+        }
+
+
 
         public void Shift(Vector3 shift)
         {
@@ -191,10 +234,37 @@ namespace Spacebox.Game
             if (IsInRange(x, y, z))
             {
                 Blocks[x, y, z] = block;
+
+                // Если блок является источником света, задаем уровень света и цвет
+                if (block.LightLevel > 0f)
+                {
+                    Blocks[x, y, z].LightLevel = block.LightLevel;
+                    Blocks[x, y, z].LightColor = block.LightColor;
+                }
+
+                // После установки блока обновляем освещение
+                PropagateLight();
                 GenerateMesh();
             }
         }
 
+
+        public void RemoveBlock(int x, int y, int z)
+        {
+            if (IsInRange(x, y, z))
+            {
+                Blocks[x, y, z] = new Block(BlockType.Air, new Vector2(0, 0));
+
+                // После удаления блока обновляем освещение
+                PropagateLight();
+                GenerateMesh();
+            }
+        }
+
+        public Block GetBlock(Vector3 pos)
+        {
+            return GetBlock((int)pos.X, (int)pos.Y, (int)pos.Z);
+        }
         public Block GetBlock(int x, int y, int z)
         {
             if (IsInRange(x, y, z))
@@ -203,14 +273,7 @@ namespace Spacebox.Game
                 return new Block(BlockType.Air, new Vector2(0, 0));
         }
 
-        public void RemoveBlock(int x, int y, int z)
-        {
-            if (IsInRange(x, y, z))
-            {
-                Blocks[x, y, z] = new Block(BlockType.Air, new Vector2(0, 0));
-                GenerateMesh();
-            }
-        }
+      
 
         private bool IsInRange(int x, int y, int z)
         {
@@ -323,29 +386,141 @@ namespace Spacebox.Game
             return false;
         }
 
-        public byte currentBlock = 1;
+        public short currentBlock = 1;
 
-        public Dictionary<byte, Vector2> blocks = new Dictionary<byte, Vector2>
+       /* public Dictionary<byte, Vector2> blocks = new Dictionary<byte, Vector2>
+{
+    {0, new Vector2(9, 0)}, // Новый блок света
+    {1, new Vector2(1,2) }, {2, new Vector2(2,2)},
+    {3, new Vector2(0,1)},{4, new Vector2(0,2)},
+    {5, new Vector2(4,2)}, {6, new Vector2(4,0)},
+    {7, new Vector2(5,0)},{8, new Vector2(6,0)},
+    {9, new Vector2(8,0)}
+};*/
+
+
+        public void PropagateLight()
         {
-            {1, new Vector2(1,2) }, {2, new Vector2(2,2)},
-            {3, new Vector2(0,1)},{4, new Vector2(0,2)},
-            {5, new Vector2(4,2)}, {6, new Vector2(4,0)},
-            {7, new Vector2(5,0)},{8, new Vector2(6,0)}
 
-        };
+            
 
-        public void Test(Player player)
+            // Сброс уровня света и цвета всех блоков, кроме источников
+            for (int x = 0; x < Size; x++)
+                for (int y = 0; y < Size; y++)
+                    for (int z = 0; z < Size; z++)
+                    {
+                        Block block = Blocks[x, y, z];
+                        if (block.LightLevel < 15f)
+                        {
+                            block.LightLevel = 0f;
+                            block.LightColor = Vector3.Zero;
+                        }
+                    }
+
+            Queue<Vector3i> lightQueue = new Queue<Vector3i>();
+
+            // Находим все источники света и добавляем их в очередь
+            for (int x = 0; x < Size; x++)
+                for (int y = 0; y < Size; y++)
+                    for (int z = 0; z < Size; z++)
+                    {
+                        if (Blocks[x, y, z].LightLevel > 0f)
+                            lightQueue.Enqueue(new Vector3i(x, y, z));
+                    }
+
+            // BFS для распространения света
+            while (lightQueue.Count > 0)
+            {
+                Vector3i pos = lightQueue.Dequeue();
+                Block currentBlock = Blocks[pos.X, pos.Y, pos.Z];
+                float lightLevel = currentBlock.LightLevel;
+
+                if (lightLevel <= 0.1f)
+                    continue;
+
+                foreach (Vector3i offset in GetAdjacentOffsets())
+                {
+                    int nx = pos.X + offset.X;
+                    int ny = pos.Y + offset.Y;
+                    int nz = pos.Z + offset.Z;
+
+                    if (!IsInRange(nx, ny, nz))
+                        continue;
+
+                    Block neighborBlock = Blocks[nx, ny, nz];
+
+                    // Проверяем, можно ли свету пройти через этот блок
+                    if (neighborBlock.Type == BlockType.Air || neighborBlock.IsTransparent)
+                    {
+                        float attenuation = 0.8f; // Коэффициент затухания света
+                        float newLightLevel = lightLevel * attenuation;
+
+                        Vector3 newLightColor = currentBlock.LightColor * attenuation;
+
+                        // Если новый уровень света больше, чем текущий у соседнего блока
+                        if (newLightLevel > neighborBlock.LightLevel)
+                        {
+                            neighborBlock.LightLevel = newLightLevel;
+                            neighborBlock.LightColor = newLightColor;
+                            Blocks[nx, ny, nz] = neighborBlock; // Обновляем блок
+                            lightQueue.Enqueue(new Vector3i(nx, ny, nz));
+                        }
+                        else if (MathF.Abs(newLightLevel - neighborBlock.LightLevel) < 0.01f)
+                        {
+                            // Если уровни света примерно равны, смешиваем цвета
+                            neighborBlock.LightColor += newLightColor;
+                            neighborBlock.LightColor /= 2f;
+                            Blocks[nx, ny, nz] = neighborBlock; // Обновляем блок
+                        }
+                    }
+                }
+            }
+        }
+
+
+        private List<Vector3i> GetAdjacentOffsets()
+        {
+            return new List<Vector3i>
+    {
+        new Vector3i(1, 0, 0),
+        new Vector3i(-1, 0, 0),
+        new Vector3i(0, 1, 0),
+        new Vector3i(0, -1, 0),
+        new Vector3i(0, 0, 1),
+        new Vector3i(0, 0, -1),
+    };
+        }
+
+
+        public void Test(Astronaut player)
         {
 
 
-            if (Input.IsKeyDown(Keys.D1)) currentBlock = 1;
-            if (Input.IsKeyDown(Keys.D2)) currentBlock = 2;
-            if (Input.IsKeyDown(Keys.D3)) currentBlock = 3;
-            if (Input.IsKeyDown(Keys.D4)) currentBlock = 4;
-            if (Input.IsKeyDown(Keys.D5)) currentBlock = 5;
-            if (Input.IsKeyDown(Keys.D6)) currentBlock = 6;
-            if (Input.IsKeyDown(Keys.D7)) currentBlock = 7;
-            if (Input.IsKeyDown(Keys.D8)) currentBlock = 8;
+            if(Input.MouseScrollDelta.Y > 0)
+            {
+                currentBlock++;
+
+                
+
+                if(currentBlock > GameBlocks.MaxBlockId)
+                {
+                    currentBlock = 1;
+                }
+
+                Console.WriteLine(currentBlock);
+            }
+
+            if (Input.MouseScrollDelta.Y < 0)
+            {
+                currentBlock--;
+
+                if (currentBlock < 1)
+                {
+                    currentBlock = GameBlocks.MaxBlockId;
+                }
+
+                Console.WriteLine(currentBlock);
+            }
 
 
             // Получаем направление взгляда игрока
@@ -375,6 +550,12 @@ namespace Spacebox.Game
                     GenerateMesh();
                 }
 
+                if(Input.IsMouseButtonDown(MouseButton.Middle))
+                {
+                    Block b = GetBlock(hitBlockPosition);
+                    Console.WriteLine(b + " Pos: " + hitBlockPosition);
+                }
+
                 // Добавление блока при нажатии G
                 if (Input.IsMouseButtonDown(MouseButton.Right))
                 {
@@ -386,8 +567,22 @@ namespace Spacebox.Game
                     {
                         if (Blocks[placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z].Type == BlockType.Air)
                         {
-                            // Добавляем новый блок
-                            SetBlock(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z, new Block(BlockType.Solid, blocks[currentBlock]));
+
+                            Block newBlock = GameBlocks.CreateFromId(currentBlock);
+
+                            // Если выбран блок-источник света
+                            if (currentBlock == 9)
+                            {
+                                newBlock.LightLevel = 15f; // Максимальный уровень света
+                                newBlock.LightColor = new Vector3(1.0f, 1.0f, 1.0f); // Белый свет
+                            }
+                            else if (currentBlock == 0)
+                            {
+                                newBlock.LightLevel = 15f;
+                                newBlock.LightColor = new Vector3(0f, 0.0f, 1.0f); // Красный свет
+                            }
+
+                            SetBlock(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z, newBlock);
                             GenerateMesh();
                         }
                     }
@@ -419,8 +614,22 @@ namespace Spacebox.Game
                     {
                         if (Blocks[x, y, z].Type == BlockType.Air)
                         {
-                            // Добавляем новый блок
-                            SetBlock(x, y, z, new Block(BlockType.Solid, new Vector2(1, 2)));
+
+                            Block newBlock = GameBlocks.CreateFromId(currentBlock);
+
+                            // Если выбран блок-источник света
+                            if (currentBlock == 9)
+                            {
+                                newBlock.LightLevel = 15f; // Максимальный уровень света
+                                newBlock.LightColor = new Vector3(1.0f, 1.0f, 1.0f); // Белый свет
+                            }
+                            else if (currentBlock == 0)
+                            {
+                                newBlock.LightLevel = 15f;
+                                newBlock.LightColor = new Vector3(0, 0.0f, 1f); // Красный свет
+                            }
+
+                            SetBlock(x, y, z, newBlock);
                             GenerateMesh();
                         }
                     }

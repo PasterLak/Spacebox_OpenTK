@@ -16,7 +16,7 @@ namespace Spacebox.Scenes
     internal class SpaceScene : Scene
     {
 
-        Player player;
+        Astronaut player;
         Skybox skybox;
         World world;
         private Shader skyboxShader;
@@ -30,7 +30,7 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
             float q = 5;
-            player = new Player(new Vector3(q + 3,0,q), 16/9f);
+            player = new Astronaut(new Vector3(q + 3,0,q), 16/9f);
 
 
             skyboxShader = new Shader("Shaders/skybox");
@@ -39,7 +39,7 @@ namespace Spacebox.Scenes
             skybox.Scale = new Vector3(100,100,100);
             skybox.IsAmbientAffected = false;
 
-
+            Lighting.AmbientColor = new Vector3(0.5f, 0.5f, 0.5f);
 
 
             CollisionManager.Add(player);
@@ -135,6 +135,7 @@ namespace Spacebox.Scenes
         public override void OnGUI()
         {
             Overlay.OnGUI(player);
+            BlocksOverlay.OnGUI(player);
         }
 
         public override void UnloadContent()
