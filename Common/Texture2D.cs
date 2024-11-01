@@ -1,7 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using System;
 using System.Drawing;
-
+using System.Drawing.Imaging;
 
 namespace Spacebox.Common
 {
@@ -12,15 +13,38 @@ namespace Spacebox.Common
         public int Width { get; private set; }
         public int Height { get; private set; }
 
+        private Color4[,] pixels;
+
         public bool IsReadOnly { get; private set; } = true;
 
-        public Texture2D(int width, int height)
+        /// <summary>
+        /// Конструктор для создания пустой текстуры.
+        /// </summary>
+        public Texture2D(int width, int height, bool pixelated = false)
         {
             Width = width;
             Height = height;
-
+            pixels = new Color4[width, height];
+            Handle = GL.GenTexture();
             IsReadOnly = false;
+
+            // Инициализируем пиксели белым цветом
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    pixels[x, y] = new Color4(1f, 1f, 1f, 1f);
+                }
+            }
+
+            Use();
+            LoadTextureFromPixels();
+            SetTextureParameters(pixelated);
         }
+
+        /// <summary>
+        /// Конструктор для загрузки текстуры из файла.
+        /// </summary>
         public Texture2D(string path, bool pixelated = false)
         {
             Handle = GL.GenTexture();
@@ -28,39 +52,112 @@ namespace Spacebox.Common
 
             try
             {
-                using (var image = new Bitmap(path))
+                LoadTextureFromFile(path);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load texture from {path}: {ex.Message}");
+                CreatePinkTexture();
+            }
+
+            SetTextureParameters(pixelated);
+        }
+
+        /// <summary>
+        /// Загружает текстуру из файла.
+        /// </summary>
+        private void LoadTextureFromFile(string path)
+        {
+            using (var image = new Bitmap(path))
+            {
+                image.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
+                Width = image.Width;
+                Height = image.Height;
+                pixels = new Color4[Width, Height];
+
+                var data = image.LockBits(
+                    new Rectangle(0, 0, image.Width, image.Height),
+                    ImageLockMode.ReadOnly,
+                    System.Drawing.Imaging.PixelFormat.Format32bppArgb
+                );
+
+                unsafe
                 {
-                    image.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                    byte* ptr = (byte*)data.Scan0.ToPointer();
+                    for (int y = 0; y < Height; y++)
+                    {
+                        for (int x = 0; x < Width; x++)
+                        {
+                            int index = (y * Width + x) * 4;
+                            byte b = ptr[index + 0];
+                            byte g = ptr[index + 1];
+                            byte r = ptr[index + 2];
+                            byte a = ptr[index + 3];
 
-                    Width = image.Width;
-                    Height = image.Height;
+                            pixels[x, y] = new Color4(r / 255f, g / 255f, b / 255f, a / 255f);
+                        }
+                    }
+                }
 
-                    var data = image.LockBits(
-                        new Rectangle(0, 0, image.Width, image.Height),
-                        System.Drawing.Imaging.ImageLockMode.ReadOnly,
-                        System.Drawing.Imaging.PixelFormat.Format32bppArgb
-                    );
+                image.UnlockBits(data);
+            }
 
-                    GL.TexImage2D(TextureTarget.Texture2D,
-                        0,
-                        PixelInternalFormat.Rgba,
-                        image.Width,
-                        image.Height,
-                        0,
-                        PixelFormat.Bgra,
-                        PixelType.UnsignedByte,
-                        data.Scan0
-                    );
+            LoadTextureFromPixels();
+        }
 
-                    image.UnlockBits(data);
+        /// <summary>
+        /// Загружает пиксели из двумерного массива в OpenGL.
+        /// </summary>
+        private void LoadTextureFromPixels()
+        {
+            // Конвертируем двумерный массив Color4[,] в одномерный массив байтов
+            byte[] pixelData = new byte[Width * Height * 4];
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    int index = (y * Width + x) * 4;
+                    Color4 color = pixels[x, y];
+
+                    pixelData[index + 0] = (byte)(color.R * 255);
+                    pixelData[index + 1] = (byte)(color.G * 255);
+                    pixelData[index + 2] = (byte)(color.B * 255);
+                    pixelData[index + 3] = (byte)(color.A * 255);
                 }
             }
-            catch
-            {
-                CreateSpaceTexture();
-                
-            }
 
+            // Загружаем пиксели в OpenGL
+            GL.TexImage2D(TextureTarget.Texture2D,
+                0,
+                PixelInternalFormat.Rgba,
+                Width,
+                Height,
+                0,
+                OpenTK.Graphics.OpenGL4.PixelFormat.Rgba,
+                PixelType.UnsignedByte,
+                pixelData
+            );
+        }
+
+        /// <summary>
+        /// Создаёт розовую текстуру при ошибке загрузки.
+        /// </summary>
+        private void CreatePinkTexture()
+        {
+            Width = 1;
+            Height = 1;
+            pixels = new Color4[1, 1];
+            pixels[0, 0] = new Color4(1f, 0f, 1f, 1f); // Розовый цвет
+
+            LoadTextureFromPixels();
+        }
+
+        /// <summary>
+        /// Устанавливает параметры текстуры.
+        /// </summary>
+        private void SetTextureParameters(bool pixelated)
+        {
             var minFilter = pixelated ? TextureMinFilter.Nearest : TextureMinFilter.LinearMipmapLinear;
             var magFilter = pixelated ? TextureMagFilter.Nearest : TextureMagFilter.Linear;
 
@@ -72,68 +169,81 @@ namespace Spacebox.Common
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
-        private void CreatePinkTexture()
+        /// <summary>
+        /// Устанавливает фильтрацию текстуры на пикселизированную или линейную.
+        /// </summary>
+        public void SetPixelated(bool state)
         {
-            byte[] pinkPixel = { 255, 0, 255, 255 };
-
-            Width = 1;
-            Height = 1;
-
-            GL.TexImage2D(TextureTarget.Texture2D,
-                0,
-                PixelInternalFormat.Rgba,
-                1,
-                1,
-                0,
-                PixelFormat.Rgba,
-                PixelType.UnsignedByte,
-                pinkPixel
-            );
+            SetTextureParameters(state);
         }
 
-        private void CreateSpaceTexture()
+        /// <summary>
+        /// Получает цвет пикселя по координатам.
+        /// </summary>
+        public Color4 GetPixel(int x, int y)
         {
-            const int size = 1024;
-            byte[] pixels = new byte[size * size * 4];
+            if (x < 0 || x >= Width || y < 0 || y >= Height)
+                throw new ArgumentOutOfRangeException();
 
-            Width = size;
-            Height = size;
-
-            for ( int i = 0; i < pixels.Length; i+=4 )
-            {
-
-                Random random = new Random();
-
-                var x = random.Next( 10000 );
-
-                byte color = x < 9995 ? (byte)0 : (byte)random.Next(250);
-
-
-                pixels[i] = color;
-                pixels[i+1] = color;
-                pixels[i+2] = color;
-                pixels[i+3] = 255;
-            }
-
-
-            GL.TexImage2D(TextureTarget.Texture2D,
-                0,
-                PixelInternalFormat.Rgba,
-                size,
-                size,
-                0,
-                PixelFormat.Rgba,
-                PixelType.UnsignedByte,
-                pixels
-            );
+            return pixels[x, y];
         }
 
+        /// <summary>
+        /// Устанавливает цвет пикселя по координатам.
+        /// </summary>
+        public void SetPixel(int x, int y, Color4 color)
+        {
+            if (x < 0 || x >= Width || y < 0 || y >= Height)
+                throw new ArgumentOutOfRangeException();
+
+            pixels[x, y] = color;
+            IsReadOnly = false;
+        }
+
+        /// <summary>
+        /// Обновляет текстуру в OpenGL с текущими пикселями.
+        /// </summary>
+        public void UpdateTexture()
+        {
+            if (IsReadOnly)
+                throw new InvalidOperationException("Cannot modify a read-only texture.");
+
+            Use();
+            LoadTextureFromPixels();
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+        }
+
+        /// <summary>
+        /// Привязывает текстуру к указанному текстурному юниту.
+        /// </summary>
         public void Use(TextureUnit unit = TextureUnit.Texture0)
         {
             GL.ActiveTexture(unit);
             GL.BindTexture(TextureTarget.Texture2D, Handle);
         }
 
+        /// <summary>
+        /// Устанавливает новые данные пикселей для текстуры.
+        /// </summary>
+        public void SetPixelsData(Color4[,] newPixels)
+        {
+            if (newPixels.GetLength(0) != Width || newPixels.GetLength(1) != Height)
+                throw new ArgumentException("Pixel data does not match texture size.");
+
+            pixels = newPixels;
+        }
+
+        /// <summary>
+        /// Получает массив пикселей.
+        /// </summary>
+        public Color4[,] GetPixelData()
+        {
+            return pixels;
+        }
+
+        /// <summary>
+        /// Освобождает ресурсы текстуры.
+        /// </summary>
         public void Dispose()
         {
             GL.DeleteTexture(Handle);

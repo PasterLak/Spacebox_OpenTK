@@ -26,7 +26,9 @@ namespace Spacebox.Scenes
         private Texture2D blockTexture;
         private Texture2D lightAtlas;
         // to base
+        private Sprite sprite;
 
+        private bool ShowBlocksList = false;
         public override void LoadContent()
         {
             float q = 5;
@@ -35,7 +37,7 @@ namespace Spacebox.Scenes
 
             skyboxShader = new Shader("Shaders/skybox");
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader, 
-                new Texture2D("Resources/Textures/Skybox/space6.png", true) );
+                new SpaceTexture(512,512) );
             skybox.Scale = new Vector3(100,100,100);
             skybox.IsAmbientAffected = false;
 
@@ -44,8 +46,8 @@ namespace Spacebox.Scenes
 
             CollisionManager.Add(player);
 
+            
 
-        
             //renderer.AddDrawable(skybox);
 
             Input.SetCursorState(CursorState.Grabbed);
@@ -53,7 +55,7 @@ namespace Spacebox.Scenes
             chunk = new Chunk(new Vector3(0,0,0));
 
             blocksShader = new Shader("Shaders/block");
-            blockTexture = new Texture2D("Resources/Textures/blocks.png", true);
+            blockTexture = GameBlocks.AtlasTexture;
 
             lightAtlas = new Texture2D("Resources/Textures/lightAtlas.png", true);
 
@@ -64,6 +66,10 @@ namespace Spacebox.Scenes
             blocksShader.SetVector3("fogColor", new Vector3(0,0,0));
             blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
 
+            Texture2D block = UVAtlas.GetBlockTexture(blockTexture, 0,0);
+
+            //sprite = new Sprite(block, new Vector2(0,0) , new Vector2(500,500));
+            sprite = new Sprite("Resources/Textures/cat.png", new Vector2(0, 0), new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
             //chunk.RemoveBlock(0,0,0);
 
             world = new World(player);
@@ -86,7 +92,18 @@ namespace Spacebox.Scenes
                 player.Position = new Vector3(0,0,0);
             }
 
+            if(Input.IsKeyDown(Keys.Tab))
+            {
+                ShowBlocksList = !ShowBlocksList;
+            }
+
             chunk.Test(player);
+
+            sprite.Shader.SetFloat("time", (float)GLFW.GetTime());
+            sprite.Shader.SetVector2("screen", new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
+            sprite.Shader.SetVector2("mouse", new Vector2(0, 0));
+
+            sprite.UpdateSize(Window.Instance.Size);
 
             world.Update();
         }
@@ -124,7 +141,11 @@ namespace Spacebox.Scenes
 
             world.Render(blocksShader);
 
+            GL.Disable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
+            sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
 
             Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(100f, 0, 0), Color4.Red);
             Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 100, 0), Color4.Green);
@@ -134,7 +155,10 @@ namespace Spacebox.Scenes
 
         public override void OnGUI()
         {
+            
             Overlay.OnGUI(player);
+
+            if(ShowBlocksList)
             BlocksOverlay.OnGUI(player);
         }
 
@@ -143,6 +167,7 @@ namespace Spacebox.Scenes
             blocksShader.Dispose();
             blockTexture.Dispose();
             lightAtlas.Dispose();
+            sprite.Dispose();
         }
 
     }

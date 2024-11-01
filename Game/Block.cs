@@ -39,7 +39,12 @@ namespace Spacebox.Game
             TextureCoords = blockData.TextureCoords;
             Color =  new Vector3(1.0f, 1.0f, 1.0f);
             LightLevel = 0;
-            LightColor = Vector3.Zero;
+            LightColor = blockData.LightColor;
+
+            if(LightColor != Vector3.Zero)
+            {
+                LightLevel = 15;
+            }
         }
 
         public bool IsAir()

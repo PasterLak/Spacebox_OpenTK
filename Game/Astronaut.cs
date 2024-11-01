@@ -1,5 +1,5 @@
 ﻿using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
+
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 
@@ -7,6 +7,20 @@ namespace Spacebox.Game
 {
     public class Astronaut : Camera360, INotTransparent
     {
+        private short _currentBlockId = 1;
+        public short CurrentBlockId
+        {
+            get { return _currentBlockId; }
+            set
+            {
+                _currentBlockId = value;
+                OnCurrentBlockChanged?.Invoke(_currentBlockId);
+            }
+        }
+
+        public Action<short> OnCurrentBlockChanged;
+
+
         private float _cameraSpeed = 2.5f;
         private float _shiftSpeed = 5.5f;
 
@@ -65,6 +79,39 @@ namespace Spacebox.Game
 
         private void HandleInput()
         {
+            if (Input.MouseScrollDelta.Y < 0)
+            {
+                CurrentBlockId++;
+
+
+
+                if (CurrentBlockId > GameBlocks.MaxBlockId)
+                {
+                    CurrentBlockId = 1;
+                }
+
+            }
+
+            if (Input.MouseScrollDelta.Y > 0)
+            {
+                CurrentBlockId--;
+
+                if (CurrentBlockId < 1)
+                {
+                    CurrentBlockId = GameBlocks.MaxBlockId;
+                }
+
+              
+            }
+
+            bool isAltPressed = Input.IsKey(Keys.LeftAlt) || Input.IsKey(Keys.RightAlt);
+
+            if (isAltPressed)
+            {
+                
+                return;
+            }
+
             var mouse = Input.Mouse;
 
             _currentSpeed = _cameraSpeed;

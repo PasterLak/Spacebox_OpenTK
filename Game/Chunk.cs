@@ -15,8 +15,6 @@ namespace Spacebox.Game
         public bool ShowChunkBounds { get; set; } = true;
         public bool MeasureGenerationTime { get; set; } = true;
 
-
-
         private Mesh _mesh;
 
         public Chunk(Vector3 position)
@@ -51,12 +49,26 @@ namespace Spacebox.Game
 
                             Vector2 textureCoords = Vector2.Zero;
 
-                            if (r < 8) Blocks[x, y, z] = GameBlocks.CreateFromId(1);
-                            if (r == 8) Blocks[x, y, z] = GameBlocks.CreateFromId(2);
+                            if (r < 8)
+                            {
+                                if(distance < radius/2f)
+                                Blocks[x, y, z] = GameBlocks.CreateFromId(2);
+                                else
+                                    Blocks[x, y, z] = GameBlocks.CreateFromId(1);
+                            }
+                            if (r == 8)
+                            {
+                                if (distance < radius / 2f)
+                                    Blocks[x, y, z] = GameBlocks.CreateFromId(4);
+                                else
+                                    Blocks[x, y, z] = GameBlocks.CreateFromId(3);
+                            }
                             if (r == 9)
                             {
-                                Blocks[x, y, z] = GameBlocks.CreateFromId(1);
-
+                                if (distance < radius / 2f)
+                                    Blocks[x, y, z] = GameBlocks.CreateFromId(2);
+                                else
+                                    Blocks[x, y, z] = GameBlocks.CreateFromId(5);
                             }
 
                            
@@ -386,7 +398,7 @@ namespace Spacebox.Game
             return false;
         }
 
-        public short currentBlock = 1;
+       
 
        /* public Dictionary<byte, Vector2> blocks = new Dictionary<byte, Vector2>
 {
@@ -496,31 +508,7 @@ namespace Spacebox.Game
         {
 
 
-            if(Input.MouseScrollDelta.Y > 0)
-            {
-                currentBlock++;
-
-                
-
-                if(currentBlock > GameBlocks.MaxBlockId)
-                {
-                    currentBlock = 1;
-                }
-
-                Console.WriteLine(currentBlock);
-            }
-
-            if (Input.MouseScrollDelta.Y < 0)
-            {
-                currentBlock--;
-
-                if (currentBlock < 1)
-                {
-                    currentBlock = GameBlocks.MaxBlockId;
-                }
-
-                Console.WriteLine(currentBlock);
-            }
+            
 
 
             // Получаем направление взгляда игрока
@@ -568,15 +556,15 @@ namespace Spacebox.Game
                         if (Blocks[placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z].Type == BlockType.Air)
                         {
 
-                            Block newBlock = GameBlocks.CreateFromId(currentBlock);
+                            Block newBlock = GameBlocks.CreateFromId(player.CurrentBlockId);
 
                             // Если выбран блок-источник света
-                            if (currentBlock == 9)
+                            if (player.CurrentBlockId == 9)
                             {
                                 newBlock.LightLevel = 15f; // Максимальный уровень света
                                 newBlock.LightColor = new Vector3(1.0f, 1.0f, 1.0f); // Белый свет
                             }
-                            else if (currentBlock == 0)
+                            else if (player.CurrentBlockId == 0)
                             {
                                 newBlock.LightLevel = 15f;
                                 newBlock.LightColor = new Vector3(0f, 0.0f, 1.0f); // Красный свет
@@ -615,15 +603,15 @@ namespace Spacebox.Game
                         if (Blocks[x, y, z].Type == BlockType.Air)
                         {
 
-                            Block newBlock = GameBlocks.CreateFromId(currentBlock);
+                            Block newBlock = GameBlocks.CreateFromId(player.CurrentBlockId);
 
                             // Если выбран блок-источник света
-                            if (currentBlock == 9)
+                            if (player.CurrentBlockId == 9)
                             {
                                 newBlock.LightLevel = 15f; // Максимальный уровень света
                                 newBlock.LightColor = new Vector3(1.0f, 1.0f, 1.0f); // Белый свет
                             }
-                            else if (currentBlock == 0)
+                            else if (player.CurrentBlockId == 0)
                             {
                                 newBlock.LightLevel = 15f;
                                 newBlock.LightColor = new Vector3(0, 0.0f, 1f); // Красный свет
