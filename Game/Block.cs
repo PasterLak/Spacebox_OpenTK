@@ -10,8 +10,8 @@ namespace Spacebox.Game
 
     public class Block
     {
-        public short BlockId { get; set; }
-        public BlockType Type { get; set; }
+        public short BlockId { get; set; } = 0;
+       
         public Vector2 TextureCoords { get; set; }
         public Vector3 Color { get; set; }
 
@@ -21,9 +21,9 @@ namespace Spacebox.Game
         public float LightLevel { get; set; } = 0; //0 - 15
         public Vector3 LightColor { get; set; } = Vector3.Zero; // Цвет света
 
-        public Block(BlockType type, Vector2 textureCoords, Vector3? color = null, float lightLevel = 0f, Vector3? lightColor = null)
+        public Block(Vector2 textureCoords, Vector3? color = null, float lightLevel = 0f, Vector3? lightColor = null)
         {
-            Type = type;
+           
             TextureCoords = textureCoords;
             Color = color ?? new Vector3(1.0f, 1.0f, 1.0f);
             LightLevel = lightLevel;
@@ -34,7 +34,6 @@ namespace Spacebox.Game
         {
             BlockId = blockData.Id;
 
-            Type = BlockType.Solid;
             IsTransparent = blockData.IsTransparent;
             TextureCoords = blockData.TextureCoords;
             Color =  new Vector3(1.0f, 1.0f, 1.0f);
@@ -49,12 +48,12 @@ namespace Spacebox.Game
 
         public bool IsAir()
         {
-            return Type == BlockType.Air;
+            return BlockId == 0;
         }
 
         public override string ToString()
         {
-            return $"Block type: {Type}, LightLevel: {LightLevel}";
+            return $"Block id: {BlockId}, LightLevel: {LightLevel}";
         }
     }
 

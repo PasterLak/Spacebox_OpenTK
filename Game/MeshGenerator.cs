@@ -11,7 +11,7 @@ namespace Spacebox.Game.Rendering
 {
     public class MeshGenerator
     {
-        private const sbyte Size = 16;
+        private const sbyte Size = Chunk.Size;
         private readonly Block[,,] _blocks;
         private readonly bool _measureGenerationTime;
 
@@ -40,7 +40,7 @@ namespace Spacebox.Game.Rendering
                     for (int z = 0; z < Size; z++)
                     {
                         Block block = _blocks[x, y, z];
-                        if (block.Type == BlockType.Air)
+                        if (block.IsAir())
                             continue;
 
                         foreach (Face face in Enum.GetValues(typeof(Face)))

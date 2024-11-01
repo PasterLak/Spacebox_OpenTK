@@ -160,6 +160,11 @@ namespace Spacebox.Game
                 Roll(roll);
             }
 
+            if(Input.IsKeyDown(Keys.P))
+            {
+                Console.WriteLine("Saving Player");
+                PlayerSaveLoadManager.SavePlayer(this);
+            }
 
            
             if (Input.IsKeyDown(Keys.F5))

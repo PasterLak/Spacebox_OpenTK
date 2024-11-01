@@ -1,17 +1,17 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Entities;
-using System.Collections.Generic;
+
 
 namespace Spacebox.Game.Lighting
 {
     public class LightManager
     {
-        private const sbyte Size = 16;
+        private const sbyte Size = Chunk.Size;
         private readonly Block[,,] _blocks;
 
         public LightManager(Block[,,] blocks)
         {
             _blocks = blocks;
+           
         }
 
         public void PropagateLight()
@@ -42,7 +42,7 @@ namespace Spacebox.Game.Lighting
 
                     Block neighborBlock = _blocks[nx, ny, nz];
 
-                    if (neighborBlock.Type == BlockType.Air || neighborBlock.IsTransparent)
+                    if (neighborBlock.IsAir() || neighborBlock.IsTransparent)
                     {
                         float attenuation = 0.8f;
                         float newLightLevel = lightLevel * attenuation;

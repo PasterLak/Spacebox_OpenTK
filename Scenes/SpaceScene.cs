@@ -1,15 +1,13 @@
 ﻿using Spacebox.Common.SceneManagment;
-using Spacebox.Entities;
 using OpenTK.Mathematics;
 using Spacebox.Common;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
-using Spacebox.Common.Audio;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.GUI;
 using Spacebox.Game;
-using System.Drawing;
-using System.Resources;
+using Spacebox.Entities;
+using Spacebox.Common.Audio;
 
 namespace Spacebox.Scenes
 {
@@ -22,17 +20,21 @@ namespace Spacebox.Scenes
         private Shader skyboxShader;
 
         private Chunk chunk;
+        private Sector sector;
         Shader blocksShader;
         private Texture2D blockTexture;
         private Texture2D lightAtlas;
         // to base
         private Sprite sprite;
-
+        private AudioSource blockPlace;
+        private AudioSource blockDestroy;
         private bool ShowBlocksList = false;
         public override void LoadContent()
         {
             float q = 5;
             player = new Astronaut(new Vector3(q + 3,0,q), 16/9f);
+
+            PlayerSaveLoadManager.LoadPlayer(player);
 
 
             skyboxShader = new Shader("Shaders/skybox");
@@ -46,13 +48,19 @@ namespace Spacebox.Scenes
 
             CollisionManager.Add(player);
 
+            SoundManager.AddAudioClip("blockPlace");
+            SoundManager.AddAudioClip("blockDestroy");
+            blockPlace = new AudioSource(SoundManager.GetClip("blockPlace"));
+            blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroy"));
+           
+            //audio2 = new AudioSource(new AudioClip("shooting", SoundManager));
             
-
             //renderer.AddDrawable(skybox);
 
             Input.SetCursorState(CursorState.Grabbed);
 
-            chunk = new Chunk(new Vector3(0,0,0));
+            //chunk = new Chunk(new Vector3(0,0,0));
+            
 
             blocksShader = new Shader("Shaders/block");
             blockTexture = GameBlocks.AtlasTexture;
@@ -73,7 +81,11 @@ namespace Spacebox.Scenes
             //chunk.RemoveBlock(0,0,0);
 
             world = new World(player);
-          
+
+            sector = new Sector(new Vector3(0, 0, 0), new Vector3i(0, 0, 0), world);
+
+
+            AmbientSaveLoadManager.LoadAmbient();
         }
 
         
@@ -97,7 +109,16 @@ namespace Spacebox.Scenes
                 ShowBlocksList = !ShowBlocksList;
             }
 
-            chunk.Test(player);
+            if (Input.IsMouseButtonDown(MouseButton.Right))
+            {
+                blockPlace.Play();
+            }
+            if (Input.IsMouseButtonDown(MouseButton.Left))
+            {
+                blockDestroy.Play();
+            }
+
+            //chunk.Test(player);
 
             sprite.Shader.SetFloat("time", (float)GLFW.GetTime());
             sprite.Shader.SetVector2("screen", new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
@@ -105,7 +126,9 @@ namespace Spacebox.Scenes
 
             sprite.UpdateSize(Window.Instance.Size);
 
-            world.Update();
+            //world.Update();
+
+            sector.Update();
         }
 
         public override void Render()
@@ -137,15 +160,16 @@ namespace Spacebox.Scenes
             blockTexture.Use(TextureUnit.Texture0);
             lightAtlas.Use(TextureUnit.Texture1);
 
-            chunk.Draw(blocksShader);
+            //chunk.Draw(blocksShader);
+            sector.Render(blocksShader);
 
-            world.Render(blocksShader);
+            //world.Render(blocksShader);
 
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
+            //sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
 
             Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(100f, 0, 0), Color4.Red);
             Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 100, 0), Color4.Green);
@@ -168,6 +192,8 @@ namespace Spacebox.Scenes
             blockTexture.Dispose();
             lightAtlas.Dispose();
             sprite.Dispose();
+            blockPlace.Dispose();
+            blockDestroy.Dispose();
         }
 
     }
