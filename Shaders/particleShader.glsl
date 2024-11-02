@@ -35,11 +35,19 @@ in vec4 ParticleColor;
 out vec4 FragColor;
 
 uniform sampler2D particleTexture;
+uniform vec3 color = vec3(1,1,1);
+
 
 void main()
 {
     vec4 texColor = texture(particleTexture, TexCoords);
-    FragColor = texColor * ParticleColor;
+
+   
+    vec3 clampedColor = clamp(color, vec3(0.5), vec3(0.9)) ;
+
+
+    FragColor = texColor * ParticleColor * vec4(clampedColor,1);
+
 }
 
 

@@ -19,7 +19,7 @@ namespace Spacebox.Game
 
         // local data
         public float LightLevel { get; set; } = 0; //0 - 15
-        public Vector3 LightColor { get; set; } = Vector3.Zero; // Цвет света
+        public Vector3 LightColor { get; set; } = Vector3.Zero; 
 
         public Block(Vector2 textureCoords, Vector3? color = null, float lightLevel = 0f, Vector3? lightColor = null)
         {

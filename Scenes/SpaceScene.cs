@@ -35,9 +35,11 @@ namespace Spacebox.Scenes
 
         private DustSpawner dustSpawner;
 
-        private BlockDestructionEffect blockDestroyEffect;
+      
 
         private BlockDestructionManager blockDestructionManager;
+
+        Builder builder;
 
         public override void LoadContent()
         {
@@ -53,7 +55,7 @@ namespace Spacebox.Scenes
             skybox.Scale = new Vector3(100,100,100);
             skybox.IsAmbientAffected = false;
 
-            Lighting.AmbientColor = new Vector3(0.5f, 0.5f, 0.5f);
+            Lighting.AmbientColor = new Vector3(0,0,0);
 
 
             CollisionManager.Add(player);
@@ -104,7 +106,9 @@ namespace Spacebox.Scenes
 
             dustSpawner = new DustSpawner(player);
 
-            blockDestroyEffect = new BlockDestructionEffect(player, new Vector3(0,0,0));
+            builder = new Builder();
+
+            //builder.AddCube(Vector3.Zero, CubeType.Wireframe, Color4.Yellow, new Vector2(0,0));
 
         }
 
@@ -115,7 +119,7 @@ namespace Spacebox.Scenes
             player.Update();
             blockDestructionManager.Update();
             dustSpawner.Update();
-            blockDestroyEffect.Update();
+          
 
             if (Input.IsKeyDown(Keys.Backspace))
             {
@@ -195,7 +199,7 @@ namespace Spacebox.Scenes
             //world.Render(blocksShader);
             blockDestructionManager.Render();
             dustSpawner.Render();
-            blockDestroyEffect.Render();
+            builder.Render(player, GameBlocks.AtlasTexture.Handle);
 
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
@@ -229,7 +233,7 @@ namespace Spacebox.Scenes
             music.Dispose();
 
             dustSpawner.Dispose();
-            blockDestroyEffect.Dispose();
+           
             blockDestructionManager.Dispose();
         }
 

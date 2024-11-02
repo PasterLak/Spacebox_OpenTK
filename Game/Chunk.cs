@@ -116,14 +116,21 @@ namespace Spacebox.Game
             if (!IsInRange(x, y, z))
                 return;
 
+            Vector3 worldBlockPosition = new Vector3(x, y, z);
+            Console.WriteLine(Blocks[x, y, z].LightColor);
+            destructionManager?.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor);
+
             Blocks[x, y, z] = GameBlocks.CreateFromId(0);
+
+            
+
             IsModified = true;
 
             GenerateMesh();
 
            
-            Vector3 worldBlockPosition = new Vector3(x, y, z) ;
-            destructionManager?.DestroyBlock(worldBlockPosition);
+            
+            
             
         }
 

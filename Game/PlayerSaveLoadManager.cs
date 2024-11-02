@@ -7,8 +7,8 @@ namespace Spacebox.Game
 {
     public static class PlayerSaveLoadManager
     {
-        private static readonly string SaveFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "player.json");
-
+        private static readonly string SaveFileDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory , "Chunks");
+        private static readonly string SaveFilePath = Path.Combine(SaveFileDirectory, "player.json");
         /// <summary>
         /// Saves the player's position and rotation to a JSON file.
         /// </summary>
@@ -17,6 +17,10 @@ namespace Spacebox.Game
         {
             try
             {
+
+                if(Directory.Exists(SaveFileDirectory)) {
+                    Directory.CreateDirectory(SaveFileDirectory);
+                }
                 PlayerData data = new PlayerData
                 {
                     PositionX = player.Position.X,

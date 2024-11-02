@@ -8,7 +8,7 @@ namespace Spacebox.Common
     {
         private List<Particle> particles = new List<Particle>();
         public Emitter Emitter { get; set; }
-        private ParticleRenderer renderer;
+        public ParticleRenderer Renderer { get; private set; }
 
         public int MaxParticles { get; set; } = 1000;
         public float SpawnRate { get; set; } = 100f;
@@ -35,7 +35,7 @@ namespace Spacebox.Common
                 SpeedMax = 0f
                 //UseLocalCoordinates = true
             };
-            renderer = new ParticleRenderer(texture, this, debugShader: false);
+            Renderer = new ParticleRenderer(texture, this, debugShader: false);
         }
 
         public void Update()
@@ -58,7 +58,7 @@ namespace Spacebox.Common
                 }
             }
 
-            renderer.UpdateBuffers();
+            Renderer.UpdateBuffers();
         }
 
         public void AddParticle(Particle particle)
@@ -76,14 +76,14 @@ namespace Spacebox.Common
 
         public void Draw(Camera camera)
         {
-            renderer.Render(camera);
+            Renderer.Render(camera);
 
             Debug.DrawBoundingBox(new BoundingBox(Position, Vector3.One), Color4.Cyan);
         }
 
         public void Dispose()
         {
-            renderer.Dispose();
+            Renderer.Dispose();
         }
     }
 }

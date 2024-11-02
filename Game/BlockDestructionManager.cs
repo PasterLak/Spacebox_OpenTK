@@ -1,6 +1,7 @@
 ﻿// BlockDestructionManager.cs
 using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.Game;
 using Spacebox.Scenes;
 
 
@@ -20,11 +21,11 @@ namespace Spacebox.Managers
         /// Инициирует разрушение блока на заданной позиции.
         /// </summary>
         /// <param name="position">Позиция разрушенного блока.</param>
-        public void DestroyBlock(Vector3 position)
+        public void DestroyBlock(Vector3 position, Vector3 color)
         {
             Console.WriteLine("Block destroyed: " + position);
             var destructionEffect = new BlockDestructionEffect(camera, position + 
-                new Vector3(0.5f, 0.5f, 0.5f));
+                new Vector3(0.5f, 0.5f, 0.5f), color);
             activeEffects.Add(destructionEffect);
         }
 

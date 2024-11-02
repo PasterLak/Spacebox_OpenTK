@@ -8,7 +8,7 @@ namespace Spacebox.Common
 {
     public class ParticleRenderer : IDisposable
     {
-        private Shader shader;
+        public readonly Shader shader;
         private Texture2D texture;
         private ParticleSystem particleSystem;
 
@@ -152,7 +152,8 @@ namespace Spacebox.Common
 
             texture.Use(TextureUnit.Texture0);
             shader.SetInt("particleTexture", 0);
-
+          
+           
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 

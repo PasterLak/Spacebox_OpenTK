@@ -2,6 +2,7 @@
 using OpenTK.Mathematics;
 using Spacebox.Common;
 using System;
+using System.Drawing;
 
 namespace Spacebox.Scenes
 {
@@ -17,10 +18,12 @@ namespace Spacebox.Scenes
 
         public bool IsFinished => elapsedTime >= duration && particleSystem.GetParticles().Count == 0;
 
-        public BlockDestructionEffect(Camera camera, Vector3 position)
+        public BlockDestructionEffect(Camera camera, Vector3 position, Vector3 color)
         {
             this.camera = camera;
+            
             Initialize(position);
+            particleSystem.Renderer.shader.SetVector3("color", color);
         }
 
         private void Initialize(Vector3 position)
@@ -82,6 +85,8 @@ namespace Spacebox.Scenes
 
         public void Render()
         {
+           
+            
             particleSystem.Draw(camera);
         }
 
