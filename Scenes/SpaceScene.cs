@@ -8,6 +8,7 @@ using Spacebox.GUI;
 using Spacebox.Game;
 using Spacebox.Entities;
 using Spacebox.Common.Audio;
+using Spacebox.Managers;
 
 namespace Spacebox.Scenes
 {
@@ -33,6 +34,11 @@ namespace Spacebox.Scenes
 
 
         private DustSpawner dustSpawner;
+
+        private BlockDestructionEffect blockDestroyEffect;
+
+        private BlockDestructionManager blockDestructionManager;
+
         public override void LoadContent()
         {
             float q = 5;
@@ -88,6 +94,8 @@ namespace Spacebox.Scenes
 
             world = new World(player);
 
+            blockDestructionManager = new BlockDestructionManager(player);
+
             sector = new Sector(new Vector3(0, 0, 0), new Vector3i(0, 0, 0), world);
 
 
@@ -96,6 +104,7 @@ namespace Spacebox.Scenes
 
             dustSpawner = new DustSpawner(player);
 
+            blockDestroyEffect = new BlockDestructionEffect(player, new Vector3(0,0,0));
 
         }
 
@@ -104,8 +113,9 @@ namespace Spacebox.Scenes
         public override void Update()
         {
             player.Update();
-
+            blockDestructionManager.Update();
             dustSpawner.Update();
+            blockDestroyEffect.Update();
 
             if (Input.IsKeyDown(Keys.Backspace))
             {
@@ -183,8 +193,9 @@ namespace Spacebox.Scenes
             sector.Render(blocksShader);
 
             //world.Render(blocksShader);
+            blockDestructionManager.Render();
             dustSpawner.Render();
-
+            blockDestroyEffect.Render();
 
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
@@ -218,6 +229,8 @@ namespace Spacebox.Scenes
             music.Dispose();
 
             dustSpawner.Dispose();
+            blockDestroyEffect.Dispose();
+            blockDestructionManager.Dispose();
         }
 
     }

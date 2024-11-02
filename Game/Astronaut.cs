@@ -249,7 +249,7 @@ namespace Spacebox.Game
             }
             else
             {
-                Console.WriteLine("No hit detected.");
+                //Console.WriteLine("No hit detected.");
             }
         }
 

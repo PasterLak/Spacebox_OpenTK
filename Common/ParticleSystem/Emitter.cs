@@ -21,7 +21,11 @@ namespace Spacebox.Common
         public float SpawnRadius { get; set; } = 50f;
         public float SpeedMin { get; set; } = 0f;
         public float SpeedMax { get; set; } = 0f;
-        private bool UseLocalCoordinates { get; set; } = true;
+        public Vector3 EmitterDirection { get; set; } = Vector3.UnitY; // Направление эмиттера
+        public bool UseLocalCoordinates { get; set; } = true;
+
+        // Новый флаг для управления случайным направлением
+        public bool EnableRandomDirection { get; set; } = false;
 
         public Emitter(ParticleSystem system)
         {
@@ -34,22 +38,40 @@ namespace Spacebox.Common
             Vector3 position = UseLocalCoordinates
                 ? particleSystem.Position + randomPosition + particleSystem.EmitterPositionOffset
                 : randomPosition;
-            float speed = MathHelper.Lerp(SpeedMin, SpeedMax, (float)random.NextDouble());
-            Vector3 velocity = Vector3.Zero; // No movement
+
+            Vector3 velocity;
+
+            if (EnableRandomDirection)
+            {
+                // Генерация случайного направления
+                Vector3 randomDirection = RandomUnitVector();
+                // Генерация скорости на основе направления и диапазона скоростей
+                float speed = MathHelper.Lerp(SpeedMin, SpeedMax, (float)random.NextDouble());
+                velocity = randomDirection * speed;
+            }
+            else
+            {
+                // Использование фиксированного направления эмиттера
+                velocity = EmitterDirection * MathHelper.Lerp(SpeedMin, SpeedMax, (float)random.NextDouble());
+            }
+
             float lifetime = MathHelper.Lerp(LifetimeMin, LifetimeMax, (float)random.NextDouble());
             float size = MathHelper.Lerp(SizeMin, SizeMax, (float)random.NextDouble());
+
             Vector4 startColor = new Vector4(
                 MathHelper.Lerp(StartColorMin.X, StartColorMax.X, (float)random.NextDouble()),
                 MathHelper.Lerp(StartColorMin.Y, StartColorMax.Y, (float)random.NextDouble()),
                 MathHelper.Lerp(StartColorMin.Z, StartColorMax.Z, (float)random.NextDouble()),
                 MathHelper.Lerp(StartColorMin.W, StartColorMax.W, (float)random.NextDouble())
             );
+
             Vector4 endColor = new Vector4(
                 MathHelper.Lerp(EndColorMin.X, EndColorMax.X, (float)random.NextDouble()),
                 MathHelper.Lerp(EndColorMin.Y, EndColorMax.Y, (float)random.NextDouble()),
                 MathHelper.Lerp(EndColorMin.Z, EndColorMax.Z, (float)random.NextDouble()),
                 MathHelper.Lerp(EndColorMin.W, EndColorMax.W, (float)random.NextDouble())
             );
+
             Particle particle = new Particle(position, velocity, lifetime, startColor, endColor, size);
             particleSystem.AddParticle(particle);
         }
@@ -66,6 +88,16 @@ namespace Spacebox.Common
             float y = r * sinPhi * MathF.Sin(theta);
             float z = r * MathF.Cos(phi);
             return new Vector3(x, y, z);
+        }
+
+        private Vector3 RandomUnitVector()
+        {
+            float theta = (float)(random.NextDouble() * Math.PI * 2);
+            float phi = (float)(Math.Acos(2 * random.NextDouble() - 1));
+            float x = MathF.Sin(phi) * MathF.Cos(theta);
+            float y = MathF.Sin(phi) * MathF.Sin(theta);
+            float z = MathF.Cos(phi);
+            return new Vector3(x, y, z).Normalized();
         }
     }
 }

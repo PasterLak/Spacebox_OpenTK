@@ -14,7 +14,7 @@ namespace Spacebox.Scenes
 
       
         public Vector3 Position { get; set; } = Vector3.Zero;
-        public bool UseLocalCoordinates { get; set; } = false;
+        
         public Vector3 EmitterDirection { get; set; } = new Vector3(0, 0, 0);
 
         public DustSpawner(Camera camera)
@@ -32,10 +32,10 @@ namespace Spacebox.Scenes
             particleSystem = new ParticleSystem(dustTexture)
             {
                 Position = Position,
-                UseLocalCoordinates = UseLocalCoordinates,
+                UseLocalCoordinates = false,
                 EmitterDirection = EmitterDirection,
-                MaxParticles = 200,
-                SpawnRate = 50f
+                MaxParticles = 300,
+                SpawnRate = 40f
             };
 
 
@@ -58,7 +58,6 @@ namespace Spacebox.Scenes
 
             particleSystem.Emitter = emitter;
 
-            // Загрузка шейдера для частиц
             particleShader = new Shader("Shaders/particleShader");
             particleShader.Use();
             particleShader.SetInt("particleTexture", 0);
@@ -67,8 +66,7 @@ namespace Spacebox.Scenes
         public void Update()
         {
           
-            particleSystem.Position = UseLocalCoordinates ? camera.Position : Position;
-
+            particleSystem.Position = camera.Position;
             particleSystem.Update();
 
         }

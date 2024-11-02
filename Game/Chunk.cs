@@ -1,9 +1,11 @@
-﻿using OpenTK.Mathematics;
+﻿// Chunk.cs
+using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Lighting;
 using Spacebox.Game.Rendering;
+using Spacebox.Managers;
 using System;
 
 namespace Spacebox.Game
@@ -23,24 +25,20 @@ namespace Spacebox.Game
         private readonly LightManager _lightManager;
         private bool _isLoadedOrGenerated = false;
 
-        /// <summary>
-        /// Constructor for generating new chunks.
-        /// </summary>
-        /// <param name="position">The position of the chunk.</param>
-        public Chunk(Vector3 position) : this(position, null, isLoaded: false)
+        private BlockDestructionManager destructionManager;
+
+        // Новый конструктор, принимающий BlockDestructionManager
+        public Chunk(Vector3 position)
+            : this(position, null, isLoaded: false)
         {
         }
 
-        /// <summary>
-        /// Private constructor used by ChunkSaveLoadManager for loading chunks.
-        /// </summary>
-        /// <param name="position">The position of the chunk.</param>
-        /// <param name="loadedBlocks">The loaded Blocks array.</param>
-        /// <param name="isLoaded">Indicates whether the chunk is loaded from saved data.</param>
+        // Внутренний конструктор с передачей BlockDestructionManager
         internal Chunk(Vector3 position, Block[,,] loadedBlocks, bool isLoaded)
         {
             Position = position;
             Blocks = new Block[Size, Size, Size];
+            this.destructionManager = new BlockDestructionManager(Camera.Main);
 
             if (isLoaded && loadedBlocks != null)
             {
@@ -49,25 +47,19 @@ namespace Spacebox.Game
             }
             else
             {
-                // Initialize BlockGenerator and generate blocks
                 BlockGenerator blockGenerator = new BlockGenerator(Blocks, position);
                 blockGenerator.GenerateSphereBlocks();
                 IsGenerated = true;
             }
 
-            // Initialize LightManager and propagate light
             _lightManager = new LightManager(Blocks);
             _lightManager.PropagateLight();
 
-            // Initialize MeshGenerator and generate initial mesh
             _meshGenerator = new MeshGenerator(Blocks, MeasureGenerationTime);
             _mesh = _meshGenerator.GenerateMesh();
             _isLoadedOrGenerated = true;
         }
 
-        /// <summary>
-        /// Generates or updates the mesh for the chunk.
-        /// </summary>
         public void GenerateMesh()
         {
             if (!_isLoadedOrGenerated) return;
@@ -78,20 +70,11 @@ namespace Spacebox.Game
             _mesh = newMesh;
         }
 
-        /// <summary>
-        /// Shifts the chunk's position by the specified vector.
-        /// </summary>
-        /// <param name="shift">The vector to shift the chunk by.</param>
         public void Shift(Vector3 shift)
         {
             Position -= shift;
-            // Additional logic if necessary
         }
 
-        /// <summary>
-        /// Draws the chunk using the provided shader.
-        /// </summary>
-        /// <param name="shader">The shader to use for drawing.</param>
         public void Draw(Shader shader)
         {
             if (!_isLoadedOrGenerated) return;
@@ -107,15 +90,10 @@ namespace Spacebox.Game
                 BoundingBox chunkBounds = BoundingBox.CreateFromMinMax(chunkMin, chunkMax);
                 Spacebox.Common.Debug.DrawBoundingBox(chunkBounds, new Color4(0.5f, 0f, 0.5f, 1f));
             }
+            destructionManager.Render();
+
         }
 
-        /// <summary>
-        /// Sets a block at the specified coordinates.
-        /// </summary>
-        /// <param name="x">The x-coordinate within the chunk.</param>
-        /// <param name="y">The y-coordinate within the chunk.</param>
-        /// <param name="z">The z-coordinate within the chunk.</param>
-        /// <param name="block">The block to set.</param>
         public void SetBlock(int x, int y, int z, Block block)
         {
             if (!IsInRange(x, y, z))
@@ -133,68 +111,39 @@ namespace Spacebox.Game
             GenerateMesh();
         }
 
-        /// <summary>
-        /// Removes a block at the specified coordinates, setting it to Air.
-        /// </summary>
-        /// <param name="x">The x-coordinate within the chunk.</param>
-        /// <param name="y">The y-coordinate within the chunk.</param>
-        /// <param name="z">The z-coordinate within the chunk.</param>
         public void RemoveBlock(int x, int y, int z)
         {
             if (!IsInRange(x, y, z))
                 return;
 
-            Blocks[x, y, z] = GameBlocks.CreateFromId(0); // Air
+            Blocks[x, y, z] = GameBlocks.CreateFromId(0);
             IsModified = true;
 
             GenerateMesh();
+
+           
+            Vector3 worldBlockPosition = new Vector3(x, y, z) ;
+            destructionManager?.DestroyBlock(worldBlockPosition);
+            
         }
 
-        /// <summary>
-        /// Retrieves a block based on a position vector.
-        /// </summary>
-        /// <param name="pos">The position vector within the chunk.</param>
-        /// <returns>The block at the specified position.</returns>
         public Block GetBlock(Vector3 pos)
         {
             return GetBlock((int)pos.X, (int)pos.Y, (int)pos.Z);
         }
 
-        /// <summary>
-        /// Retrieves a block based on x, y, z coordinates.
-        /// </summary>
-        /// <param name="x">The x-coordinate within the chunk.</param>
-        /// <param name="y">The y-coordinate within the chunk.</param>
-        /// <param name="z">The z-coordinate within the chunk.</param>
-        /// <returns>The block at the specified coordinates.</returns>
         public Block GetBlock(int x, int y, int z)
         {
             if (IsInRange(x, y, z))
                 return Blocks[x, y, z];
-            return GameBlocks.CreateFromId(0); // Air
+            return GameBlocks.CreateFromId(0);
         }
 
-        /// <summary>
-        /// Checks if the specified coordinates are within the chunk's bounds.
-        /// </summary>
-        /// <param name="x">The x-coordinate to check.</param>
-        /// <param name="y">The y-coordinate to check.</param>
-        /// <param name="z">The z-coordinate to check.</param>
-        /// <returns>True if within range; otherwise, false.</returns>
         private bool IsInRange(int x, int y, int z)
         {
             return x >= 0 && x < Size && y >= 0 && y < Size && z >= 0 && z < Size;
         }
 
-        /// <summary>
-        /// Performs a raycast within the chunk to detect block intersections.
-        /// </summary>
-        /// <param name="ray">The ray to cast.</param>
-        /// <param name="hitPosition">The position where the ray hit a block.</param>
-        /// <param name="hitBlockPosition">The block coordinates that were hit.</param>
-        /// <param name="hitNormal">The normal of the hit block face.</param>
-        /// <param name="maxDistance">The maximum distance to cast the ray.</param>
-        /// <returns>True if a block was hit; otherwise, false.</returns>
         public bool Raycast(Ray ray, out Vector3 hitPosition, out Vector3i hitBlockPosition, out Vector3 hitNormal, float maxDistance = 100f)
         {
             hitPosition = Vector3.Zero;
@@ -295,21 +244,17 @@ namespace Spacebox.Game
             return false;
         }
 
-        /// <summary>
-        /// Handles player interactions with the chunk, including saving and modifying blocks.
-        /// </summary>
-        /// <param name="player">The player interacting with the chunk.</param>
         public void Test(Astronaut player)
         {
             if (!_isLoadedOrGenerated) return;
 
-            // Handle saving on pressing P
             if (Input.IsKeyDown(Keys.P))
             {
                 ChunkSaveLoadManager.SaveChunk(this);
             }
 
-            // Existing test logic
+            destructionManager.Update();
+
             Vector3 rayOrigin = player.Position;
             Vector3 rayDirection = player.Front;
             float maxDistance = 100f;
@@ -320,8 +265,7 @@ namespace Spacebox.Game
             if (hit)
             {
                 Vector3 worldBlockPosition = hitBlockPosition + Position;
-                Spacebox.Common.Debug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f) + hitNormal,
-                    Vector3.One * 1.01f), Color4.White);
+                Spacebox.Common.Debug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.White);
 
                 if (Input.IsMouseButtonDown(MouseButton.Left))
                 {
@@ -342,9 +286,6 @@ namespace Spacebox.Game
                         Blocks[placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z].IsAir())
                     {
                         Block newBlock = GameBlocks.CreateFromId(player.CurrentBlockId);
-
-                        
-
                         SetBlock(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z, newBlock);
                     }
                 }
@@ -360,24 +301,18 @@ namespace Spacebox.Game
                 int z = (int)MathF.Floor(localPosition.Z);
 
                 Vector3 worldBlockPosition = new Vector3(x, y, z) + Position;
-                Spacebox.Common.Debug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f),
-                    Vector3.One * 1.01f), Color4.Gray);
+                Spacebox.Common.Debug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.Gray);
 
                 if (Input.IsMouseButtonDown(MouseButton.Right) &&
                     IsInRange(x, y, z) &&
                     Blocks[x, y, z].IsAir())
                 {
                     Block newBlock = GameBlocks.CreateFromId(player.CurrentBlockId);
-
-
                     SetBlock(x, y, z, newBlock);
                 }
             }
         }
 
-        /// <summary>
-        /// Disposes of the mesh resources.
-        /// </summary>
         public void Dispose()
         {
             _mesh?.Dispose();

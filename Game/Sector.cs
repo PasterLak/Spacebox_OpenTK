@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.Managers;
 using System.Collections.Generic;
 
 namespace Spacebox.Game
@@ -11,6 +12,8 @@ namespace Spacebox.Game
         public List<Chunk> Chunks { get; private set; }
 
         public World World { get; private set; }
+
+       
         public Sector(Vector3 position, Vector3i index, World world)
         {
             Position = position;

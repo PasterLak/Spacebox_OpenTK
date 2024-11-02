@@ -5,6 +5,8 @@ namespace Spacebox.Common
 {
     public abstract class Camera : DynamicBody
     {
+
+        public static Camera Main;
         protected Vector3 _front = -Vector3.UnitZ;
         protected Vector3 _up = Vector3.UnitY;
         protected Vector3 _right = Vector3.UnitX;
@@ -30,6 +32,7 @@ namespace Spacebox.Common
         protected Camera(Vector3 position, float aspectRatio)
             : base(new BoundingSphere(position, 0.5f))
         {
+            Main = this;
             Position = position;
             AspectRatio = aspectRatio;
             UpdateVectors();
