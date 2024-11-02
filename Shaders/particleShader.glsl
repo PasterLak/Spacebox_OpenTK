@@ -5,7 +5,6 @@
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoord;
 
-
 layout (location = 2) in mat4 instanceModel;
 layout (location = 6) in vec4 instanceColor;
 
@@ -17,21 +16,17 @@ uniform mat4 projection;
 
 void main()
 {
- 
     vec4 worldPos = instanceModel * vec4(aPos, 1.0);
-
-  
     mat4 viewNoTranslation = mat4(mat3(view));
-
-  
     vec4 viewPos = viewNoTranslation * worldPos;
-
-   
     gl_Position = projection * viewPos;
-
     TexCoord = aTexCoord;
     ParticleColor = instanceColor;
 }
+
+
+
+
 
 
 
@@ -50,8 +45,7 @@ void main()
 {
     vec4 texColor = texture(particleTexture, TexCoord);
     FragColor = texColor * ParticleColor;
-    
-   
     if (FragColor.a < 0.1)
         discard;
 }
+

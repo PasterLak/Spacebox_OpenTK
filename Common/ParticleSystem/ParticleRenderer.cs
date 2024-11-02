@@ -128,7 +128,7 @@ namespace Spacebox.Common
                 Matrix4 mat = instanceTransforms[i];
                 Vector4 color = instanceColors[i];
 
-                // Матрица модели
+                // Матрица модели (16 элементов)
                 data[i * 20 + 0] = mat.M11;
                 data[i * 20 + 1] = mat.M12;
                 data[i * 20 + 2] = mat.M13;
@@ -149,7 +149,7 @@ namespace Spacebox.Common
                 data[i * 20 + 14] = mat.M43;
                 data[i * 20 + 15] = mat.M44;
 
-                // Цвет
+                // Цвет (4 элемента)
                 data[i * 20 + 16] = color.X;
                 data[i * 20 + 17] = color.Y;
                 data[i * 20 + 18] = color.Z;
@@ -161,31 +161,47 @@ namespace Spacebox.Common
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
+
         public void Render(Camera camera)
         {
             shader.Use();
 
-            shader.SetMatrix4("view", camera.GetViewMatrix(), true);
-            shader.SetMatrix4("projection", camera.GetProjectionMatrix(),true);
+            // Извлекаем матрицу вида
+            Matrix4 view = camera.GetViewMatrix();
+            // Извлекаем матрицу проекции
+            Matrix4 projection = camera.GetProjectionMatrix();
 
+            // Передаём матрицы в шейдер
+            shader.SetMatrix4("view", view);
+            shader.SetMatrix4("projection", projection);
+
+            // Связываем текстуру
             texture.Use(TextureUnit.Texture0);
             shader.SetInt("particleTexture", 0);
 
+            // Включаем альфа-блендинг для прозрачности
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            // Включаем глубину и отключаем запись в depth buffer для частиц
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(false);
 
-         
+            // Рендерим частицы
             GL.BindVertexArray(vao);
             GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, instanceTransforms.Count);
             GL.BindVertexArray(0);
 
-          
+            // Восстанавливаем настройки OpenGL
             GL.DepthMask(true);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
         }
+
+
+
+
+
 
 
 

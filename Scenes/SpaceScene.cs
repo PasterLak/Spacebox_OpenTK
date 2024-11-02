@@ -104,16 +104,16 @@ namespace Spacebox.Scenes
             var emitter = new Emitter(particleSystem)
             {
                 SpeedMin = 0.1f,
-                SpeedMax = 0.2f,
+                SpeedMax = 1f,
                 LifetimeMin = 1f,
                 LifetimeMax = 4f,
                 SizeMin = 0.01f,
                 SizeMax = 0.3f,
-                ColorMin = new Vector4(0.8f, 0.8f, 0.8f, 0.1f),
+                ColorMin = new Vector4(0.2f, 0.2f, 0.2f, 0.1f),
                 ColorMax = new Vector4(1f, 1f, 1f, 1f)
             };
 
-            //particleSystem.Emitter = emitter;
+            particleSystem.Emitter = emitter;
 
             particleSystem.MaxParticles = 200;
             particleSystem.SpawnRate = 50f;

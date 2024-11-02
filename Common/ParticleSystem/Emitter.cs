@@ -30,24 +30,18 @@ namespace Spacebox.Common
             Vector3 position = particleSystem.Position + particleSystem.EmitterPositionOffset;
             Vector3 direction = particleSystem.EmitterDirection.Normalized();
 
-            // Рандомная скорость
-            float speed = (float)(random.NextDouble() * (particleSystem.SpawnRate > 0 ? 1f : 0f)) * (Direction.LengthFast != 0 ? Direction.LengthFast : 1f);
-            speed = MathHelper.Lerp(SpeedMin, SpeedMax, (float)random.NextDouble());
+            float speed = MathHelper.Lerp(SpeedMin, SpeedMax, (float)random.NextDouble());
 
-            // Рандомное направление с небольшой рассеиванием
-            Vector3 velocity = direction + new Vector3(
+            Vector3 velocity = (direction + new Vector3(
                 (float)(random.NextDouble() - 0.5) * 0.2f,
                 (float)(random.NextDouble() - 0.5) * 0.2f,
                 (float)(random.NextDouble() - 0.5) * 0.2f
-            ).Normalized() * speed;
+            ).Normalized()) * speed;
 
-            // Рандомный возраст и время жизни
             float lifetime = MathHelper.Lerp(LifetimeMin, LifetimeMax, (float)random.NextDouble());
 
-            // Рандомный размер
             float size = MathHelper.Lerp(SizeMin, SizeMax, (float)random.NextDouble());
 
-            // Рандомный цвет
             Vector4 color = new Vector4(
                 MathHelper.Lerp(ColorMin.X, ColorMax.X, (float)random.NextDouble()),
                 MathHelper.Lerp(ColorMin.Y, ColorMax.Y, (float)random.NextDouble()),
@@ -58,5 +52,6 @@ namespace Spacebox.Common
             Particle particle = new Particle(position, velocity, lifetime, color, size);
             particleSystem.AddParticle(particle);
         }
+
     }
 }

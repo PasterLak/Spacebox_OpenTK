@@ -13,7 +13,7 @@ uniform mat4 projection;
 void main()
 {
     vec4 worldPos = instanceModel * vec4(aPos, 1.0);
-    gl_Position = worldPos * view * projection ;
+    gl_Position = worldPos * view * projection;
 }
 
 --Frag

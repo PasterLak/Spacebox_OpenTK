@@ -8,7 +8,7 @@ namespace Spacebox.Common
         public Vector3 Velocity;
         public float Age;
         public float Lifetime;
-        public Vector4 Color; // RGBA
+        public Vector4 Color;
         public float Size;
 
         public bool IsAlive => Age < Lifetime;
@@ -29,7 +29,7 @@ namespace Spacebox.Common
             if (IsAlive)
             {
                 Position += Velocity * deltaTime;
-                // Можно добавить влияние гравитации или других сил
+                
                 // Velocity += gravity * deltaTime;
             }
         }

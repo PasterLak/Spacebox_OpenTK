@@ -1,6 +1,4 @@
 ﻿using OpenTK.Mathematics;
-using System;
-using System.Collections.Generic;
 
 namespace Spacebox.Common
 {
@@ -22,7 +20,7 @@ namespace Spacebox.Common
         public ParticleSystem(Texture2D texture)
         {
             Emitter = new Emitter(this);
-            renderer = new ParticleRenderer(texture, this, false);
+            renderer = new ParticleRenderer(texture, this, true);
         }
 
         public void Update()
