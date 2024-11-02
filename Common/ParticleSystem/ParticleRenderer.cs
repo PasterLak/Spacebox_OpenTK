@@ -1,5 +1,8 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿// ParticleRenderer.cs
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using System;
+using System.Collections.Generic;
 
 namespace Spacebox.Common
 {
@@ -19,35 +22,23 @@ namespace Spacebox.Common
 
         public ParticleRenderer(Texture2D texture, ParticleSystem system, bool debugShader)
         {
-            if(debugShader)
-            {
-                this.shader = new Shader("Shaders/particleDebug");
-            }
-            else
-            {
-                this.shader = new Shader("Shaders/particleShader");
-            }
-            
+            shader = debugShader ? new Shader("Shaders/particleDebug") : new Shader("Shaders/particleShader");
             this.texture = texture;
             this.particleSystem = system;
-
             Initialize();
         }
 
         public ParticleRenderer(Texture2D texture, ParticleSystem system)
         {
-            this.shader = new Shader("Shaders/particleShader");
+            shader = new Shader("Shaders/particleShader");
             this.texture = texture;
             this.particleSystem = system;
-
             Initialize();
         }
 
         private void Initialize()
         {
-            // Вершины квадрата (билборда)
             float[] vertices = {
-                // Positions     // Texture Coords
                 -0.5f, -0.5f, 0f, 0f, 0f,
                  0.5f, -0.5f, 0f, 1f, 0f,
                  0.5f,  0.5f, 0f, 1f, 1f,
@@ -65,28 +56,22 @@ namespace Spacebox.Common
 
             GL.BindVertexArray(vao);
 
-            // Вершинный буфер
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
 
-            // Индексный буфер
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
 
-            // Позиции вершин
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
 
-            // Координаты текстуры
             GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
 
-            // Буфер для инстансных данных (матрица модели и цвет)
             instanceVBO = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, instanceVBO);
             GL.BufferData(BufferTarget.ArrayBuffer, particleSystem.MaxParticles * (16 + 4) * sizeof(float), IntPtr.Zero, BufferUsageHint.DynamicDraw);
 
-            // Матрица модели (mat4)
             for (int i = 0; i < 4; i++)
             {
                 GL.EnableVertexAttribArray(2 + i);
@@ -94,7 +79,6 @@ namespace Spacebox.Common
                 GL.VertexAttribDivisor(2 + i, 1);
             }
 
-            // Цвет (vec4)
             GL.EnableVertexAttribArray(6);
             GL.VertexAttribPointer(6, 4, VertexAttribPointerType.Float, false, (16 + 4) * sizeof(float), 16 * sizeof(float));
             GL.VertexAttribDivisor(6, 1);
@@ -110,25 +94,22 @@ namespace Spacebox.Common
 
             foreach (var particle in particleSystem.GetParticles())
             {
-                // Матрица трансформации для билборда (только масштаб и трансляция)
-                Matrix4 model = Matrix4.CreateScale(particle.Size) *
-                                Matrix4.CreateTranslation(particle.Position);
-
+                Vector3 finalPosition = particleSystem.UseLocalCoordinates
+                    ? particle.Position + particleSystem.Position
+                    : particle.Position;
+                Matrix4 model = Matrix4.CreateScale(particle.Size) * Matrix4.CreateTranslation(finalPosition);
                 instanceTransforms.Add(model);
-                instanceColors.Add(particle.Color * particle.GetAlpha());
+                instanceColors.Add(particle.GetCurrentColor());
             }
 
-            // Обновляем буфер инстансных данных
             GL.BindBuffer(BufferTarget.ArrayBuffer, instanceVBO);
 
-            // Создаём массив данных
             float[] data = new float[instanceTransforms.Count * (16 + 4)];
             for (int i = 0; i < instanceTransforms.Count; i++)
             {
                 Matrix4 mat = instanceTransforms[i];
                 Vector4 color = instanceColors[i];
 
-                // Матрица модели (16 элементов)
                 data[i * 20 + 0] = mat.M11;
                 data[i * 20 + 1] = mat.M12;
                 data[i * 20 + 2] = mat.M13;
@@ -149,61 +130,43 @@ namespace Spacebox.Common
                 data[i * 20 + 14] = mat.M43;
                 data[i * 20 + 15] = mat.M44;
 
-                // Цвет (4 элемента)
                 data[i * 20 + 16] = color.X;
                 data[i * 20 + 17] = color.Y;
                 data[i * 20 + 18] = color.Z;
                 data[i * 20 + 19] = color.W;
             }
 
-            // Буферинг данных
             GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, data.Length * sizeof(float), data);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
-
 
         public void Render(Camera camera)
         {
             shader.Use();
 
-            // Извлекаем матрицу вида
             Matrix4 view = camera.GetViewMatrix();
-            // Извлекаем матрицу проекции
             Matrix4 projection = camera.GetProjectionMatrix();
 
-            // Передаём матрицы в шейдер
-            shader.SetMatrix4("view", view);
-            shader.SetMatrix4("projection", projection);
+            shader.SetMatrix4("view", view, false);
+            shader.SetMatrix4("projection", projection, false);
 
-            // Связываем текстуру
             texture.Use(TextureUnit.Texture0);
             shader.SetInt("particleTexture", 0);
 
-            // Включаем альфа-блендинг для прозрачности
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            // Включаем глубину и отключаем запись в depth buffer для частиц
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(false);
 
-            // Рендерим частицы
             GL.BindVertexArray(vao);
             GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, instanceTransforms.Count);
             GL.BindVertexArray(0);
 
-            // Восстанавливаем настройки OpenGL
             GL.DepthMask(true);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
         }
-
-
-
-
-
-
-
 
         public void Dispose()
         {

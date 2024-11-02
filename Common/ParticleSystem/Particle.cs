@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿// Particle.cs
+using OpenTK.Mathematics;
 
 namespace Spacebox.Common
 {
@@ -8,18 +9,20 @@ namespace Spacebox.Common
         public Vector3 Velocity;
         public float Age;
         public float Lifetime;
-        public Vector4 Color;
+        public Vector4 StartColor;
+        public Vector4 EndColor;
         public float Size;
 
         public bool IsAlive => Age < Lifetime;
 
-        public Particle(Vector3 position, Vector3 velocity, float lifetime, Vector4 color, float size)
+        public Particle(Vector3 position, Vector3 velocity, float lifetime, Vector4 startColor, Vector4 endColor, float size)
         {
             Position = position;
             Velocity = velocity;
             Lifetime = lifetime;
             Age = 0f;
-            Color = color;
+            StartColor = startColor;
+            EndColor = endColor;
             Size = size;
         }
 
@@ -29,15 +32,13 @@ namespace Spacebox.Common
             if (IsAlive)
             {
                 Position += Velocity * deltaTime;
-                
-                // Velocity += gravity * deltaTime;
             }
         }
 
-        public float GetAlpha()
+        public Vector4 GetCurrentColor()
         {
-            // Плавное исчезновение
-            return MathHelper.Clamp(1f - (Age / Lifetime), 0f, 1f);
+            float t = MathHelper.Clamp(Age / Lifetime, 0f, 1f);
+            return Vector4.Lerp(StartColor, EndColor, t);
         }
     }
 }

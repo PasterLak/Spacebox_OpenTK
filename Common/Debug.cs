@@ -1,6 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using System.Collections.Generic;
 
 namespace Spacebox.Common
 {
@@ -307,9 +306,9 @@ namespace Spacebox.Common
 
             _shader.Use();
 
-            _shader.SetMatrix4("model", Matrix4.Identity, false);
-            _shader.SetMatrix4("view", ViewMatrix, false);
-            _shader.SetMatrix4("projection", ProjectionMatrix, false);
+            _shader.SetMatrix4("model", Matrix4.Identity);
+            _shader.SetMatrix4("view", ViewMatrix);
+            _shader.SetMatrix4("projection", ProjectionMatrix);
 
             GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);

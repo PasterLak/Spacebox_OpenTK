@@ -1,4 +1,7 @@
-﻿using OpenTK.Mathematics;
+﻿// ParticleSystem.cs
+using OpenTK.Mathematics;
+using System;
+using System.Collections.Generic;
 
 namespace Spacebox.Common
 {
@@ -8,28 +11,38 @@ namespace Spacebox.Common
         public Emitter Emitter { get; set; }
         private ParticleRenderer renderer;
 
-        // Настройки системы частиц
         public int MaxParticles { get; set; } = 1000;
-        public float SpawnRate { get; set; } = 100f; // Частиц в секунду
+        public float SpawnRate { get; set; } = 100f;
         private float spawnAccumulator = 0f;
 
-        // Настройки эмиттера
         public Vector3 EmitterPositionOffset { get; set; } = Vector3.Zero;
         public Vector3 EmitterDirection { get; set; } = Vector3.UnitY;
+        public bool UseLocalCoordinates { get; set; } = true;
 
         public ParticleSystem(Texture2D texture)
         {
-            Emitter = new Emitter(this);
-            renderer = new ParticleRenderer(texture, this, true);
+            Emitter = new Emitter(this)
+            {
+                LifetimeMin = 2f,
+                LifetimeMax = 4f,
+                SizeMin = 0.5f,
+                SizeMax = 1f,
+                StartColorMin = new Vector4(1f, 1f, 1f, 0f),
+                StartColorMax = new Vector4(1f, 1f, 1f, 0f),
+                EndColorMin = new Vector4(1f, 1f, 1f, 0f),
+                EndColorMax = new Vector4(1f, 1f, 1f, 0f),
+                SpawnRadius = 50f,
+                SpeedMin = 0f,
+                SpeedMax = 0f,
+                UseLocalCoordinates = true
+            };
+            renderer = new ParticleRenderer(texture, this, debugShader: false);
         }
 
         public void Update()
         {
-          
-
             float deltaTime = Time.Delta;
 
-            // Генерация частиц
             spawnAccumulator += SpawnRate * deltaTime;
             while (spawnAccumulator >= 1f)
             {
@@ -37,7 +50,6 @@ namespace Spacebox.Common
                 spawnAccumulator -= 1f;
             }
 
-            // Обновление частиц
             for (int i = particles.Count - 1; i >= 0; i--)
             {
                 particles[i].Update(deltaTime);
@@ -46,8 +58,6 @@ namespace Spacebox.Common
                     particles.RemoveAt(i);
                 }
             }
-
-            Console.WriteLine($"Alive Particles: {particles.Count}");
 
             renderer.UpdateBuffers();
         }
@@ -67,7 +77,6 @@ namespace Spacebox.Common
 
         public void Draw(Camera camera)
         {
-            //base.Draw(camera);
             renderer.Render(camera);
         }
 
