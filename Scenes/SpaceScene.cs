@@ -28,7 +28,11 @@ namespace Spacebox.Scenes
         private Sprite sprite;
         private AudioSource blockPlace;
         private AudioSource blockDestroy;
+        private AudioSource music;
         private bool ShowBlocksList = false;
+
+
+        private ParticleSystem particleSystem;
         public override void LoadContent()
         {
             float q = 5;
@@ -52,9 +56,11 @@ namespace Spacebox.Scenes
             SoundManager.AddAudioClip("blockDestroy");
             blockPlace = new AudioSource(SoundManager.GetClip("blockPlace"));
             blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroy"));
-           
+            music = new AudioSource(SoundManager.GetClip("music"));
+            music.Volume = 80;
+            music.Play();
             //audio2 = new AudioSource(new AudioClip("shooting", SoundManager));
-            
+
             //renderer.AddDrawable(skybox);
 
             Input.SetCursorState(CursorState.Grabbed);
@@ -86,6 +92,31 @@ namespace Spacebox.Scenes
 
 
             AmbientSaveLoadManager.LoadAmbient();
+
+            //------
+
+            particleSystem = new ParticleSystem( 
+                new Texture2D("Resources/Textures/dust.png"));
+
+            particleSystem.Position = Vector3.Zero;
+            particleSystem.EmitterDirection = Vector3.UnitY;
+
+            var emitter = new Emitter(particleSystem)
+            {
+                SpeedMin = 0.1f,
+                SpeedMax = 0.2f,
+                LifetimeMin = 1f,
+                LifetimeMax = 4f,
+                SizeMin = 0.01f,
+                SizeMax = 0.3f,
+                ColorMin = new Vector4(0.8f, 0.8f, 0.8f, 0.1f),
+                ColorMax = new Vector4(1f, 1f, 1f, 1f)
+            };
+
+            //particleSystem.Emitter = emitter;
+
+            particleSystem.MaxParticles = 200;
+            particleSystem.SpawnRate = 50f;
         }
 
         
@@ -118,6 +149,16 @@ namespace Spacebox.Scenes
                 blockDestroy.Play();
             }
 
+            particleSystem.Update();
+            if (Input.IsKeyDown(Keys.Z))
+            {
+                particleSystem.SpawnRate += 10f;
+            }
+            if (Input.IsKeyDown(Keys.H))
+            {
+                particleSystem.SpawnRate = MathHelper.Clamp(particleSystem.SpawnRate - 10f, 0f, 1000f);
+            }
+
             //chunk.Test(player);
 
             sprite.Shader.SetFloat("time", (float)GLFW.GetTime());
@@ -135,7 +176,10 @@ namespace Spacebox.Scenes
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+            
             skybox.DrawTransparent(player);
+
+            
 
             Renderer.RenderAll(player);
 
@@ -164,6 +208,8 @@ namespace Spacebox.Scenes
             sector.Render(blocksShader);
 
             //world.Render(blocksShader);
+            particleSystem.Draw(player);
+
 
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
@@ -194,6 +240,9 @@ namespace Spacebox.Scenes
             sprite.Dispose();
             blockPlace.Dispose();
             blockDestroy.Dispose();
+            music.Dispose();
+
+            particleSystem.Dispose();
         }
 
     }

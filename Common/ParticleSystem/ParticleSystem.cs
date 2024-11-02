@@ -4,10 +4,10 @@ using System.Collections.Generic;
 
 namespace Spacebox.Common
 {
-    public class ParticleSystem : Node3D
+    public class ParticleSystem : Node3D, IDisposable
     {
         private List<Particle> particles = new List<Particle>();
-        private Emitter emitter;
+        public Emitter Emitter { get; set; }
         private ParticleRenderer renderer;
 
         // Настройки системы частиц
@@ -19,10 +19,10 @@ namespace Spacebox.Common
         public Vector3 EmitterPositionOffset { get; set; } = Vector3.Zero;
         public Vector3 EmitterDirection { get; set; } = Vector3.UnitY;
 
-        public ParticleSystem(Shader shader, Texture2D texture)
+        public ParticleSystem(Texture2D texture)
         {
-            emitter = new Emitter(this);
-            renderer = new ParticleRenderer(shader, texture, this);
+            Emitter = new Emitter(this);
+            renderer = new ParticleRenderer(texture, this, false);
         }
 
         public void Update()
@@ -35,7 +35,7 @@ namespace Spacebox.Common
             spawnAccumulator += SpawnRate * deltaTime;
             while (spawnAccumulator >= 1f)
             {
-                emitter.Emit();
+                Emitter.Emit();
                 spawnAccumulator -= 1f;
             }
 
@@ -48,6 +48,8 @@ namespace Spacebox.Common
                     particles.RemoveAt(i);
                 }
             }
+
+            Console.WriteLine($"Alive Particles: {particles.Count}");
 
             renderer.UpdateBuffers();
         }
@@ -69,6 +71,11 @@ namespace Spacebox.Common
         {
             //base.Draw(camera);
             renderer.Render(camera);
+        }
+
+        public void Dispose()
+        {
+            renderer.Dispose();
         }
     }
 }

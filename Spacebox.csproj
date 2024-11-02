@@ -59,6 +59,7 @@
     <None Remove="Resources\Textures\dom.png" />
     <None Remove="Resources\Textures\dom3.png" />
     <None Remove="Resources\Textures\domBig.png" />
+    <None Remove="Resources\Textures\dust.png" />
     <None Remove="Resources\Textures\grass1.jpg" />
     <None Remove="Resources\Textures\grass2.jpg" />
     <None Remove="Resources\Textures\Leaves.png" />
@@ -86,6 +87,7 @@
     <None Remove="Shaders\debug.glsl" />
     <None Remove="Shaders\font.glsl" />
     <None Remove="Shaders\lighting.glsl" />
+    <None Remove="Shaders\particleDebug.glsl" />
     <None Remove="Shaders\particleShader.glsl" />
     <None Remove="Shaders\shader.glsl" />
     <None Remove="Shaders\skybox.glsl" />
@@ -132,6 +134,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\blocks2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\dust.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\leaves.png">
@@ -307,6 +312,9 @@
     </Content>
     <Content Include="Shaders\lighting.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\particleDebug.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\particleShader.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
