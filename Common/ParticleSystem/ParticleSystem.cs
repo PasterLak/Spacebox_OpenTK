@@ -1,7 +1,6 @@
 ﻿// ParticleSystem.cs
 using OpenTK.Mathematics;
-using System;
-using System.Collections.Generic;
+
 
 namespace Spacebox.Common
 {
@@ -33,8 +32,8 @@ namespace Spacebox.Common
                 EndColorMax = new Vector4(1f, 1f, 1f, 0f),
                 SpawnRadius = 50f,
                 SpeedMin = 0f,
-                SpeedMax = 0f,
-                UseLocalCoordinates = true
+                SpeedMax = 0f
+                //UseLocalCoordinates = true
             };
             renderer = new ParticleRenderer(texture, this, debugShader: false);
         }
@@ -78,6 +77,8 @@ namespace Spacebox.Common
         public void Draw(Camera camera)
         {
             renderer.Render(camera);
+
+            Debug.DrawBoundingBox(new BoundingBox(Position, Vector3.One), Color4.Cyan);
         }
 
         public void Dispose()

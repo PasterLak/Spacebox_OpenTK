@@ -99,7 +99,7 @@ namespace Spacebox.Scenes
                 new Texture2D("Resources/Textures/dust.png", true));
 
             particleSystem.Position = Vector3.Zero;
-            particleSystem.UseLocalCoordinates = true;
+            particleSystem.UseLocalCoordinates = false;
             particleSystem.EmitterDirection = Vector3.Zero;
 
             var emitter = new Emitter(particleSystem)
@@ -115,7 +115,7 @@ namespace Spacebox.Scenes
                 EndColorMin = new Vector4(1f, 1f, 1f, 1f),
                 EndColorMax = new Vector4(1f, 1f, 1f, 1f),
                 SpawnRadius = 50f,
-                UseLocalCoordinates = true
+                //UseLocalCoordinates = true
               
             };
 
@@ -131,7 +131,7 @@ namespace Spacebox.Scenes
         {
             player.Update();
 
-            particleSystem.Position += new Vector3(0,0,2 * Time.Delta);
+            particleSystem.Position = player.Position;
 
             if(Input.IsKeyDown(Keys.Backspace))
             {

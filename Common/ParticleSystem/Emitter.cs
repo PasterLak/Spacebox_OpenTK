@@ -21,7 +21,7 @@ namespace Spacebox.Common
         public float SpawnRadius { get; set; } = 50f;
         public float SpeedMin { get; set; } = 0f;
         public float SpeedMax { get; set; } = 0f;
-        public bool UseLocalCoordinates { get; set; } = true;
+        private bool UseLocalCoordinates { get; set; } = true;
 
         public Emitter(ParticleSystem system)
         {
