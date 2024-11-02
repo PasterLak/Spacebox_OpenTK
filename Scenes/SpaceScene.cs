@@ -32,7 +32,7 @@ namespace Spacebox.Scenes
         private bool ShowBlocksList = false;
 
 
-        private ParticleSystem particleSystem;
+        private DustSpawner dustSpawner;
         public override void LoadContent()
         {
             float q = 5;
@@ -93,36 +93,10 @@ namespace Spacebox.Scenes
 
             AmbientSaveLoadManager.LoadAmbient();
 
-            //------
 
-            particleSystem = new ParticleSystem( 
-                new Texture2D("Resources/Textures/dust.png", true));
+            dustSpawner = new DustSpawner(player);
 
-            particleSystem.Position = Vector3.Zero;
-            particleSystem.UseLocalCoordinates = false;
-            particleSystem.EmitterDirection = Vector3.Zero;
 
-            var emitter = new Emitter(particleSystem)
-            {
-               // SpeedMin = 0f,
-                //SpeedMax = 0f,
-                LifetimeMin = 10f,
-                LifetimeMax = 20f,
-                SizeMin = 0.1f,
-                SizeMax = 0.3f,
-                StartColorMin = new Vector4(1f, 1f, 1f, 0f),
-                StartColorMax = new Vector4(1f, 1f, 1f, 0f),
-                EndColorMin = new Vector4(1f, 1f, 1f, 1f),
-                EndColorMax = new Vector4(1f, 1f, 1f, 1f),
-                SpawnRadius = 50f,
-                //UseLocalCoordinates = true
-              
-            };
-
-            particleSystem.Emitter = emitter;
-
-            particleSystem.MaxParticles = 200;
-            particleSystem.SpawnRate = 50f;
         }
 
         
@@ -131,9 +105,9 @@ namespace Spacebox.Scenes
         {
             player.Update();
 
-            particleSystem.Position = player.Position;
+            dustSpawner.Update();
 
-            if(Input.IsKeyDown(Keys.Backspace))
+            if (Input.IsKeyDown(Keys.Backspace))
             {
                 SceneManager.LoadScene(typeof(MenuScene));
             }
@@ -157,15 +131,8 @@ namespace Spacebox.Scenes
                 blockDestroy.Play();
             }
 
-            particleSystem.Update();
-            if (Input.IsKeyDown(Keys.Z))
-            {
-                particleSystem.SpawnRate += 10f;
-            }
-            if (Input.IsKeyDown(Keys.H))
-            {
-                particleSystem.SpawnRate = MathHelper.Clamp(particleSystem.SpawnRate - 10f, 0f, 1000f);
-            }
+            dustSpawner.Update();
+          
 
             //chunk.Test(player);
 
@@ -216,7 +183,7 @@ namespace Spacebox.Scenes
             sector.Render(blocksShader);
 
             //world.Render(blocksShader);
-            particleSystem.Draw(player);
+            dustSpawner.Render();
 
 
             GL.Disable(EnableCap.DepthTest);
@@ -250,7 +217,7 @@ namespace Spacebox.Scenes
             blockDestroy.Dispose();
             music.Dispose();
 
-            particleSystem.Dispose();
+            dustSpawner.Dispose();
         }
 
     }
