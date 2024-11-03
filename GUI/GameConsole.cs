@@ -1,0 +1,361 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using System.IO;
+using ImGuiNET;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using Spacebox.Common.Commands;
+
+namespace Spacebox.Common
+{
+    public static class GameConsole
+    {
+        private static bool _isVisible = false;
+        private static CursorState _previousCursorState;
+        private static string _inputBuffer = "";
+        private static List<ConsoleMessage> _messages = new List<ConsoleMessage>();
+        private static List<string> _commandHistory = new List<string>();
+        private static int _historyPos = -1;
+        private static bool _focusInput = false;
+
+        public static Action<bool> OnVisibilityWasChanged;
+
+        private struct ConsoleMessage
+        {
+            public string Text;
+            public Vector4 Color;
+
+            public ConsoleMessage(string text, Vector4 color)
+            {
+                Text = text;
+                Color = color;
+            }
+        }
+
+        private static readonly string HistoryFilePath = "command_history.txt";
+        private static int _autoCompleteIndex = 0;
+        private static List<ICommand> _autoCompleteMatches = new List<ICommand>();
+
+        static GameConsole()
+        {
+            LoadHistory();
+            RegisterCommand(new ClearCommand());
+            RegisterCommand(new VersionCommand());
+            RegisterCommand(new ColorCommand());
+            RegisterCommand(new HelpCommand());
+            RegisterCommand(new ExitCommand());
+        }
+
+        public static void RegisterCommand(ICommand command)
+        {
+            CommandManager.RegisterCommand(command);
+           
+        }
+
+        public static void ToggleVisibility()
+        {
+            _isVisible = !_isVisible;
+
+            if (_isVisible)
+            {
+                _previousCursorState = Input.GetCursorState();
+                Input.SetCursorState(CursorState.Normal);
+                _focusInput = true;
+             
+            }
+            else
+            {
+                Input.SetCursorState(_previousCursorState);
+                SaveHistory();
+               
+            }
+
+            OnVisibilityWasChanged?.Invoke(_isVisible);
+        }
+
+        public static bool IsVisible => _isVisible;
+
+        public static void AddMessage(string message, Vector4? color = null)
+        {
+            _messages.Add(new ConsoleMessage(message, color ?? new Vector4(1f, 1f, 1f, 1f)));
+        }
+
+        public static void Debug(string message)
+        {
+            AddMessage($"[DEBUG] {message}", new Vector4(0.2f, 0.7f, 1f, 1f));
+            Console.WriteLine($"[DEBUG] {message}");
+        }
+
+        public static void DebugError(string message)
+        {
+            AddMessage($"[ERROR] {message}", new Vector4(1f, 0f, 0f, 1f));
+            Console.Error.WriteLine($"[ERROR] {message}");
+        }
+
+        public static void ClearMessages()
+        {
+            _messages.Clear();
+            Debug("Console messages cleared.");
+        }
+
+        public static void Render(Vector2 windowSize)
+        {
+            if (!_isVisible)
+                return;
+
+            ImGui.SetNextWindowPos(new Vector2(0, 0), ImGuiCond.Always);
+            ImGui.SetNextWindowSize(new Vector2(windowSize.X * 0.4f, windowSize.Y), ImGuiCond.Always);
+            ImGui.SetNextWindowSizeConstraints(new Vector2(300, 200), new Vector2(float.MaxValue, float.MaxValue));
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(10, 10));
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0f, 0f, 0f, 0.8f));
+            ImGui.Begin("Console", ref _isVisible, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
+
+            ImGui.Text("Console");
+            ImGui.Separator();
+
+            float childHeight = ImGui.GetContentRegionAvail().Y - ImGui.GetFrameHeightWithSpacing() - 40f;
+            if (childHeight < 100f)
+                childHeight = 100f;
+
+            ImGui.BeginChild("ScrollingRegion", new Vector2(0, childHeight), ImGuiChildFlags.AlwaysAutoResize);
+            foreach (var msg in _messages)
+            {
+                ImGui.PushStyleColor(ImGuiCol.Text, msg.Color);
+                ImGui.TextWrapped(msg.Text);
+                ImGui.PopStyleColor();
+            }
+            if (ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
+                ImGui.SetScrollHereY(1.0f);
+            ImGui.EndChild();
+
+            ImGui.Separator();
+
+            float buttonWidth = 120f;
+            float inputWidth = ImGui.GetContentRegionAvail().X - buttonWidth - ImGui.GetStyle().ItemSpacing.X;
+
+            // 1. Обработка нажатий клавиш и кнопок
+            if (ImGui.IsWindowFocused(ImGuiFocusedFlags.AnyWindow))
+            {
+                if (ImGui.IsKeyPressed(ImGuiKey.UpArrow))
+                {
+                    
+                    NavigateHistory(-1);
+                    _focusInput = true; // Запрос фокуса после навигации
+                }
+                if (ImGui.IsKeyPressed(ImGuiKey.DownArrow))
+                {
+                   
+                    NavigateHistory(1);
+                    _focusInput = true; // Запрос фокуса после навигации
+                }
+                if (ImGui.IsKeyPressed(ImGuiKey.Tab))
+                {
+                   
+                    AutoComplete();
+                    _focusInput = true; // Запрос фокуса после автозаполнения
+                }
+            }
+
+            // Обработка нажатия кнопки "Send"
+            if (ImGui.Button("Send", new Vector2(buttonWidth, 0)))
+            {
+               
+                ProcessCommand(_inputBuffer);
+                _inputBuffer = "";
+                _focusInput = true; // Запрос фокуса после отправки команды
+            }
+
+            ImGui.SameLine();
+
+           
+            ImGui.SetNextItemWidth(inputWidth);
+            bool inputActivated = ImGui.InputText("##Input", ref _inputBuffer, 256, ImGuiInputTextFlags.EnterReturnsTrue);
+
+            if (_focusInput)
+            {
+                ImGui.SetKeyboardFocusHere(-1);
+              
+                _focusInput = false;
+            }
+
+            if (inputActivated)
+            {
+               
+                ProcessCommand(_inputBuffer);
+                _inputBuffer = "";
+                _focusInput = true;
+            }
+
+            ImGui.End();
+            ImGui.PopStyleColor();
+            ImGui.PopStyleVar();
+        }
+
+        private static void AddToHistory(string command)
+        {
+            if (string.IsNullOrWhiteSpace(command))
+                return;
+
+            _commandHistory.Add(command);
+          
+
+            if (_commandHistory.Count > 20)
+            {
+                _commandHistory.RemoveAt(0);
+              
+            }
+            _historyPos = -1;
+        }
+
+        private static void NavigateHistory(int direction)
+        {
+            if (_commandHistory.Count == 0)
+            {
+               
+                return;
+            }
+
+            _historyPos += direction;
+          
+
+            if (_historyPos < 0)
+            {
+                _historyPos = 0;
+               
+            }
+            else if (_historyPos >= _commandHistory.Count)
+            {
+                _historyPos = _commandHistory.Count;
+                _inputBuffer = "";
+                
+                return;
+            }
+
+            _inputBuffer = _commandHistory[_historyPos];
+            
+            _focusInput = true; 
+        }
+
+        private static void AutoComplete()
+        {
+            string[] tokens = _inputBuffer.Split(' ');
+            if (tokens.Length == 0)
+                return;
+
+            string lastToken = tokens[^1];
+            List<ICommand> matches = CommandManager.FindCommandsStartingWith(lastToken).ToList();
+          
+
+            if (matches.Count == 1)
+            {
+                tokens[^1] = matches[0].Name;
+                _inputBuffer = string.Join(" ", tokens) + " ";
+            
+                _focusInput = true; 
+            }
+            else if (matches.Count > 1)
+            {
+               
+                foreach (var cmd in matches)
+                {
+                    AddMessage($"- {cmd.Name}: {cmd.Description}", new Vector4(0.5f, 0.5f, 1f, 1f));
+                }
+             
+                _focusInput = true; 
+            }
+        }
+
+        private static void ProcessCommand(string command)
+        {
+            if (string.IsNullOrWhiteSpace(command))
+                return;
+
+            AddToHistory(command);
+
+            var parts = SplitCommand(command);
+            if (parts.Length == 0)
+                return;
+
+            var cmdName = parts[0].ToLower();
+            var args = parts.Length > 1 ? parts.Skip(1).ToArray() : Array.Empty<string>();
+
+            var commandObj = CommandManager.GetCommand(cmdName);
+            if (commandObj != null)
+            {
+                try
+                {
+                   
+                    commandObj.Execute(args);
+                }
+                catch (Exception ex)
+                {
+                    AddMessage($"Error executing command '{cmdName}': {ex.Message}", new Vector4(1f, 0f, 0f, 1f));
+                    DebugError($"Error executing command '{cmdName}': {ex}");
+                }
+            }
+            else
+            {
+                AddMessage($"Unknown command: {cmdName}", new Vector4(1f, 0f, 0f, 1f));
+               
+            }
+        }
+
+        private static string[] SplitCommand(string input)
+        {
+            var parts = new List<string>();
+            bool inQuotes = false;
+            var current = new System.Text.StringBuilder();
+
+            foreach (var c in input)
+            {
+                if (c == '"')
+                {
+                    inQuotes = !inQuotes;
+                    continue;
+                }
+
+                if (char.IsWhiteSpace(c) && !inQuotes)
+                {
+                    if (current.Length > 0)
+                    {
+                        parts.Add(current.ToString());
+                        current.Clear();
+                    }
+                }
+                else
+                {
+                    current.Append(c);
+                }
+            }
+
+            if (current.Length > 0)
+                parts.Add(current.ToString());
+
+            return parts.ToArray();
+        }
+
+        private static void LoadHistory()
+        {
+            if (File.Exists(HistoryFilePath))
+            {
+                _commandHistory = File.ReadAllLines(HistoryFilePath).ToList();
+                if (_commandHistory.Count > 20)
+                    _commandHistory = _commandHistory.TakeLast(20).ToList();
+
+              
+            }
+            else
+            {
+               
+            }
+        }
+
+        private static void SaveHistory()
+        {
+            File.WriteAllLines(HistoryFilePath, _commandHistory);
+          
+        }
+    }
+}

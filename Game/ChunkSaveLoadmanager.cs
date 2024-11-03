@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using OpenTK.Mathematics;
+using Spacebox.Common;
 
 namespace Spacebox.Game
 {
@@ -49,11 +50,11 @@ namespace Spacebox.Game
 
                 // Write to file
                 File.WriteAllText(filePath, jsonString);
-                Console.WriteLine($"Chunk saved at {filePath}");
+                GameConsole.Debug($"Chunk saved at {filePath}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving chunk: {ex.Message}");
+                GameConsole.DebugError($"Error saving chunk: {ex.Message}");
             }
         }
 
@@ -91,12 +92,12 @@ namespace Spacebox.Game
 
                 // Create and return the loaded chunk
                 Chunk chunk = new Chunk(loadedPosition, loadedBlocks, isLoaded: true);
-                Console.WriteLine($"Chunk loaded from {filePath}");
+                GameConsole.Debug($"Chunk loaded from {filePath}");
                 return chunk;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading chunk: {ex.Message}");
+                GameConsole.DebugError($"Error loading chunk: {ex.Message}");
                 return null;
             }
         }

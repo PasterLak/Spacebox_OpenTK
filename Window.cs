@@ -1,5 +1,4 @@
-﻿using System;
-using Spacebox.Common;
+﻿using Spacebox.Common;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -10,8 +9,8 @@ using System.Collections.Concurrent;
 using Spacebox.Common.Audio;
 using Spacebox.Common.SceneManagment;
 using Dear_ImGui_Sample;
-using ImGuiNET;
-
+using System;
+using Spacebox.Extensions;
 
 namespace Spacebox
 {
@@ -59,12 +58,12 @@ namespace Spacebox
             }*/
 
             _previousSize = Size;
-            
-            Console.WriteLine("[Engine started!]");
 
-           // _audioManager = AudioManager.Instance;
+            // _audioManager = AudioManager.Instance;
 
-            Console.WriteLine("[Engine started!]");
+           
+            GameConsole.Debug("[Engine started!]");
+
             //this.VSync = VSyncMode.On;
 
             FrameLimiter.Initialize(120);
@@ -110,6 +109,9 @@ namespace Spacebox
                 //ImGui.ShowDemoWindow();
                 Time.StartOnGUI();
                 SceneManager.CurrentScene.OnGUI();
+
+                Vector2 windowSize = new Vector2(ClientSize.X, ClientSize.Y);
+                GameConsole.Render(windowSize.ToSystemVector2());
                 Time.EndOnGUI();
 
                 _controller.Render();
@@ -157,7 +159,12 @@ namespace Spacebox
             }
             //Console.WriteLine("FPS: " + Time.FPS);
 
-          if(Input.IsKeyDown(Keys.F11))
+            if (Input.IsKeyDown(Keys.F1))
+            {
+                GameConsole.ToggleVisibility();
+            }
+
+            if (Input.IsKeyDown(Keys.F11))
             {
                 var size = Monitors.GetMonitorFromWindow(this).ClientArea.Size;
 
@@ -226,18 +233,18 @@ namespace Spacebox
 
         private void CenterWindow()
         {
-            // Получаем разрешение монитора
+        
             var (monitorWidth, monitorHeight) = Monitors.GetMonitorFromWindow(this).WorkArea.Size;
 
-            // Получаем размер окна
+          
             int windowWidth = Size.X;
             int windowHeight = Size.Y;
 
-            // Вычисляем позицию для центрирования
+            
             int posX = (monitorWidth - windowWidth) / 2;
             int posY = (monitorHeight - windowHeight) / 2;
 
-            // Устанавливаем позицию окна
+       
             Location = new Vector2i(posX, posY);
         }
 
@@ -246,7 +253,6 @@ namespace Spacebox
             if (SceneManager.CurrentScene != null)
             {
                 SceneManager.CurrentScene.UnloadContent();
-
 
             }
             AudioManager.Instance.Dispose();

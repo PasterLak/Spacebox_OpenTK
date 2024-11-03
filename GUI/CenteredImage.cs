@@ -11,7 +11,7 @@ namespace Spacebox.Common
         private static bool _isVisible = true;
         private static float _displayDuration = 0f;
         private static float _elapsedTime = 0f;
-        private const string GameVersion = "0.4";
+      
 
         private static float _parallaxIntensity = 0.01f; // Intensity of parallax effect
 
@@ -124,14 +124,14 @@ namespace Spacebox.Common
 
         private static void DrawGameVersion(Vector2 displaySize)
         {
-            Vector2 textSize = ImGui.CalcTextSize($"Version {GameVersion}");
-            float textPosX = 10f;
-            float textPosY = displaySize.Y - textSize.Y - 10f;
+            Vector2 textSize = ImGui.CalcTextSize($"Version {Application.Version}    ") + new Vector2(5,0);
+            float textPosX = 15f;
+            float textPosY = displaySize.Y - textSize.Y - 20f;
 
             ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
             ImGui.Begin("VersionTextWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
             ImGui.SetCursorPos(new Vector2(textPosX, textPosY));
-            ImGui.Text($"Version {GameVersion}");
+            ImGui.Text($"Version {Application.Version}");
             ImGui.End();
         }
 

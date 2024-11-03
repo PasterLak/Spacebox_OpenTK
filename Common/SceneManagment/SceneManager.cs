@@ -32,7 +32,7 @@ namespace Spacebox.Common.SceneManagment
 
             if (Instance != null)
             {
-                Console.WriteLine("Error! There is already a SceneManager!");
+                GameConsole.DebugError("Error! There is already a SceneManager!");
                 return;
             }
 
@@ -41,7 +41,7 @@ namespace Spacebox.Common.SceneManagment
             AddScene(typeof(ErrorScene));
             if (!typeof(Scene).IsAssignableFrom(startScene))
             {
-                Console.WriteLine("The startSceneType must inherit from Scene.", nameof(startScene));
+                GameConsole.DebugError("The startSceneType must inherit from Scene." + nameof(startScene));
 
                 LoadScene(typeof(ErrorScene));
 
@@ -59,7 +59,7 @@ namespace Spacebox.Common.SceneManagment
             if (!types.Contains(startSceneType))
             {
                 types.Add(startSceneType);
-                Console.WriteLine($"{startSceneType.Name} added as start scene.");
+                GameConsole.Debug($"{startSceneType.Name} added as start scene.");
             }
 
             _nextSceneType = new SceneType { typ = startSceneType };
@@ -100,7 +100,7 @@ namespace Spacebox.Common.SceneManagment
             }
             else
             {
-                Console.WriteLine($"Error: Scene of type {sceneType.Name} must inherit from class Scene!");
+                GameConsole.DebugError($"Error: Scene of type {sceneType.Name} must inherit from class Scene!");
 
                 LoadScene(typeof(ErrorScene));
                 return;
@@ -134,9 +134,9 @@ namespace Spacebox.Common.SceneManagment
 
                 CurrentScene = sceneInstance;
 
-               
 
-                Console.WriteLine("Scene Loaded: " + _currentSceneType.typ.Name);
+
+                GameConsole.Debug("Scene Loaded: " + _currentSceneType.typ.Name);
 
                 CurrentScene.LoadContent();
                 CurrentScene.Awake();

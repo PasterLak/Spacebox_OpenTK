@@ -256,10 +256,8 @@ namespace Spacebox.Game
         {
             if (!_isLoadedOrGenerated) return;
 
-            if (Input.IsKeyDown(Keys.P))
-            {
-                ChunkSaveLoadManager.SaveChunk(this);
-            }
+            if (GameConsole.IsVisible) return;
+            
 
             destructionManager.Update();
 

@@ -9,6 +9,7 @@ using Spacebox.Game;
 using Spacebox.Entities;
 using Spacebox.Common.Audio;
 using Spacebox.Managers;
+using Spacebox.Game.Commands;
 
 namespace Spacebox.Scenes
 {
@@ -110,6 +111,8 @@ namespace Spacebox.Scenes
 
             //builder.AddCube(Vector3.Zero, CubeType.Wireframe, Color4.Yellow, new Vector2(0,0));
 
+            GameConsole.RegisterCommand(new TeleportCommand(player));
+
         }
 
         
@@ -120,30 +123,30 @@ namespace Spacebox.Scenes
             blockDestructionManager.Update();
             dustSpawner.Update();
           
+            if(!GameConsole.IsVisible)
+            {
+                if (Input.IsKeyDown(Keys.RightShift))
+                {
+                    SceneManager.LoadScene(typeof(SpaceMenuScene));
+                }
 
-            if (Input.IsKeyDown(Keys.Backspace))
-            {
-                SceneManager.LoadScene(typeof(SpaceMenuScene));
-            }
 
-            if (Input.IsKeyDown(Keys.R))
-            {
-                player.Position = new Vector3(0,0,0);
-            }
 
-            if(Input.IsKeyDown(Keys.Tab))
-            {
-                ShowBlocksList = !ShowBlocksList;
-            }
+                if (Input.IsKeyDown(Keys.Tab))
+                {
+                    ShowBlocksList = !ShowBlocksList;
+                }
 
-            if (Input.IsMouseButtonDown(MouseButton.Right))
-            {
-                blockPlace.Play();
+                if (Input.IsMouseButtonDown(MouseButton.Right))
+                {
+                    blockPlace.Play();
+                }
+                if (Input.IsMouseButtonDown(MouseButton.Left))
+                {
+                    blockDestroy.Play();
+                }
             }
-            if (Input.IsMouseButtonDown(MouseButton.Left))
-            {
-                blockDestroy.Play();
-            }
+            
 
             dustSpawner.Update();
           

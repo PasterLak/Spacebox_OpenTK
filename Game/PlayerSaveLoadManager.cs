@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.Json;
 using OpenTK.Mathematics;
+using Spacebox.Common;
 
 namespace Spacebox.Game
 {
@@ -38,11 +39,11 @@ namespace Spacebox.Game
                 });
 
                 File.WriteAllText(SaveFilePath, jsonString);
-                Console.WriteLine($"Player data saved at {SaveFilePath}");
+                GameConsole.Debug($"Player data saved at {SaveFilePath}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving player data: {ex.Message}");
+                GameConsole.DebugError($"Error saving player data: {ex.Message}");
             }
         }
 
@@ -56,7 +57,7 @@ namespace Spacebox.Game
             {
                 if (!File.Exists(SaveFilePath))
                 {
-                    Console.WriteLine("Player save file does not exist.");
+                    GameConsole.Debug("Player save file does not exist.");
                     return;
                 }
 
@@ -65,7 +66,7 @@ namespace Spacebox.Game
 
                 if (data == null)
                 {
-                    Console.WriteLine("Failed to deserialize player data.");
+                    GameConsole.DebugError("Failed to deserialize player data.");
                     return;
                 }
 
@@ -76,11 +77,11 @@ namespace Spacebox.Game
                 Quaternion loadedRotation = new Quaternion(data.RotationX, data.RotationY, data.RotationZ, data.RotationW);
                 player.SetRotation(loadedRotation);
 
-                Console.WriteLine("Player data loaded successfully.");
+                GameConsole.Debug("Player data loaded successfully.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading player data: {ex.Message}");
+                GameConsole.DebugError($"Error loading player data: {ex.Message}");
             }
         }
 

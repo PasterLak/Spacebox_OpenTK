@@ -8,8 +8,18 @@ namespace Spacebox.GUI
 {
     public class Overlay
     {
+
+        public static bool IsVisible = false;
+
+
         public static void OnGUI(Node3D player)
         {
+            if(Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F2))
+            {
+                IsVisible = !IsVisible;
+            }
+            if (!IsVisible) return;
+
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new System.Numerics.Vector4(0, 0, 0, 0.8f));
             ImGui.Begin("Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoMove);
             ImGui.SetWindowPos(new System.Numerics.Vector2(20, 40), ImGuiCond.Always);

@@ -28,6 +28,7 @@ namespace Spacebox.Game
         private Vector2 _lastMousePosition;
 
         public bool CameraActive = true;
+        public bool CanMove = true;
 
         private SpotLight _spotLight;
 
@@ -44,6 +45,8 @@ namespace Spacebox.Game
 
             SetInertia();
             SetCameraSway();
+
+            SetData();
         }
 
         public Astronaut(Vector3 position, float aspectRatio, Shader shader)
@@ -57,6 +60,22 @@ namespace Spacebox.Game
 
             SetInertia();
             SetCameraSway();
+
+            SetData();
+        }
+
+        ~Astronaut() {
+            GameConsole.OnVisibilityWasChanged -= OnGameConsole;
+        }
+
+        private void SetData()
+        {
+            GameConsole.OnVisibilityWasChanged += OnGameConsole;
+        }
+
+        private void OnGameConsole(bool state)
+        {
+            CanMove = !state;
         }
 
         private void SetInertia()
@@ -71,7 +90,6 @@ namespace Spacebox.Game
         {
             _cameraSway.InitialIntensity = 0.0015f;
             _cameraSway.MaxIntensity = 0.003f;
-
 
             _cameraSway.InitialFrequency = 15f;
             _cameraSway.MaxFrequency = 50f;
@@ -93,6 +111,9 @@ namespace Spacebox.Game
 
         public new void Update()
         {
+
+            if (!CanMove) return;
+
             if (Input.IsKeyDown(Keys.F))
             {
                 _spotLight.IsActive = !_spotLight.IsActive;
