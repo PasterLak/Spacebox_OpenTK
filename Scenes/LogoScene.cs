@@ -83,6 +83,11 @@ namespace Spacebox.Scenes
                 SceneManager.LoadScene(typeof(SpaceMenuScene));
             }
 
+            if (Input.IsKeyDown(Keys.G))
+            {
+                SceneManager.LoadScene(typeof(SpaceScene));
+            }
+
             if (Input.IsKeyDown(Keys.R))
             {
                 sprite.Shader.ReloadShader();

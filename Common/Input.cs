@@ -81,7 +81,8 @@ namespace Spacebox.Common
 
         public static bool IsAnyKeyDown()
         {
-            return _lastState.IsAnyKeyDown;
+            
+            return _lastState.IsAnyKeyDown || Mouse.IsAnyButtonDown;
         }
 
         public static void SetCursorState(CursorState state)

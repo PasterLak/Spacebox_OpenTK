@@ -10,7 +10,7 @@ namespace Spacebox.Common
       
         public Texture2D Texture { get; private set; }
 
-        public bool IsAmbientAffected = true; 
+        public bool IsAmbientAffected = false; 
 
         public Skybox(string objPath, Shader shader, Texture2D texture)
         {

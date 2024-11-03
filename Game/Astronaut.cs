@@ -1,7 +1,7 @@
 ﻿using OpenTK.Mathematics;
-
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using System;
 
 namespace Spacebox.Game
 {
@@ -20,17 +20,18 @@ namespace Spacebox.Game
 
         public Action<short> OnCurrentBlockChanged;
 
-
         private float _cameraSpeed = 2.5f;
         private float _shiftSpeed = 5.5f;
 
-        private float _sensitivity = 0.002f; // Изменил чувствительность для соответствия с методом Rotate
+        private float _sensitivity = 0.002f;
         private bool _firstMove = true;
         private Vector2 _lastMousePosition;
 
         public bool CameraActive = true;
 
         private SpotLight _spotLight;
+
+        private InertiaController _inertiaController = new InertiaController();
 
         public Astronaut(Vector3 position, float aspectRatio)
             : base(position, aspectRatio)
@@ -39,16 +40,26 @@ namespace Spacebox.Game
             FOV = MathHelper.DegreesToRadians(90);
             Layer = CollisionLayer.Player;
             Debug.RemoveCollisionToDraw(this);
+
+           
+            _inertiaController.Enabled = true;
+            _inertiaController.DecelerationRate = 0.5f;
+            _inertiaController.MaxSpeed = 10.0f; 
         }
 
         public Astronaut(Vector3 position, float aspectRatio, Shader shader)
             : base(position, aspectRatio)
         {
-            FOV =  MathHelper.DegreesToRadians(90);
+            FOV = MathHelper.DegreesToRadians(90);
             _spotLight = new SpotLight(shader, Front);
             _spotLight.IsActive = false;
             Layer = CollisionLayer.Player;
             Debug.RemoveCollisionToDraw(this);
+
+            // Настройка инерции
+            _inertiaController.Enabled = true;
+            _inertiaController.DecelerationRate = 0.5f;
+            _inertiaController.MaxSpeed = 10.0f;
         }
 
         public override void OnCollisionEnter(Collision other)
@@ -75,82 +86,92 @@ namespace Spacebox.Game
             base.Update();
         }
 
-        private float _currentSpeed = 0f;
+        /// <summary>
+        /// Включает или выключает инерцию.
+        /// </summary>
+        /// <param name="enabled">Включить или выключить инерцию.</param>
+        public void EnableInertia(bool enabled)
+        {
+            _inertiaController.Enabled = enabled;
+        }
+
+        /// <summary>
+        /// Устанавливает параметры инерции.
+        /// </summary>
+        /// <param name="decelerationRate">Коэффициент замедления.</param>
+        /// <param name="maxSpeed">Максимальная скорость.</param>
+        public void SetInertiaParameters(float decelerationRate, float maxSpeed)
+        {
+            _inertiaController.DecelerationRate = decelerationRate;
+            _inertiaController.MaxSpeed = maxSpeed;
+        }
 
         private void HandleInput()
         {
-            if (Input.MouseScrollDelta.Y < 0)
-            {
-                CurrentBlockId++;
+            Vector3 acceleration = Vector3.Zero;
+            bool isMoving = false;
 
-
-
-                if (CurrentBlockId > GameBlocks.MaxBlockId)
-                {
-                    CurrentBlockId = 1;
-                }
-
-            }
-
-            if (Input.MouseScrollDelta.Y > 0)
-            {
-                CurrentBlockId--;
-
-                if (CurrentBlockId < 1)
-                {
-                    CurrentBlockId = GameBlocks.MaxBlockId;
-                }
-
-              
-            }
-
-            bool isAltPressed = Input.IsKey(Keys.LeftAlt) || Input.IsKey(Keys.RightAlt);
-
-            if (isAltPressed)
-            {
-                
-                return;
-            }
-
-            var mouse = Input.Mouse;
-
-            _currentSpeed = _cameraSpeed;
-
-            if (Input.IsKey(Keys.LeftShift))
-            {
-                _currentSpeed = _shiftSpeed;
-            }
-
-            Vector3 movement = Vector3.Zero;
-
-            // Обработка движения вперед, назад, влево, вправо, вверх, вниз
             if (Input.IsKey(Keys.W))
             {
-                movement += Front * _currentSpeed * (float)Time.Delta;
+                acceleration += Front;
+                isMoving = true;
             }
             if (Input.IsKey(Keys.S))
             {
-                movement -= Front * _currentSpeed * (float)Time.Delta;
+                acceleration -= Front;
+                isMoving = true;
             }
             if (Input.IsKey(Keys.A))
             {
-                movement -= Right * _currentSpeed * (float)Time.Delta;
+                acceleration -= Right;
+                isMoving = true;
             }
             if (Input.IsKey(Keys.D))
             {
-                movement += Right * _currentSpeed * (float)Time.Delta;
+                acceleration += Right;
+                isMoving = true;
             }
             if (Input.IsKey(Keys.Space))
             {
-                movement += Up * _currentSpeed * (float)Time.Delta;
+                acceleration += Up;
+                isMoving = true;
             }
             if (Input.IsKey(Keys.LeftControl))
             {
-                movement -= Up * _currentSpeed * (float)Time.Delta;
+                acceleration -= Up;
+                isMoving = true;
             }
 
-            var roll = 1000f * Time.Delta;
-            // Обработка вращения вокруг оси Z (ролл)
+            float currentSpeed = _cameraSpeed;
+            if (Input.IsKey(Keys.LeftShift))
+            {
+                currentSpeed = _shiftSpeed;
+            }
+
+            if (isMoving)
+            {
+                _inertiaController.ApplyInput(acceleration, currentSpeed, (float)Time.Delta);
+            }
+
+            _inertiaController.Update((float)Time.Delta);
+
+            Vector3 velocity = _inertiaController.Velocity;
+
+            if (velocity != Vector3.Zero)
+            {
+                Vector3 newPosition = Position + velocity * (float)Time.Delta;
+                BoundingVolume newBounding = GetBoundingVolumeAt(newPosition);
+
+                if (!CollisionManager.IsColliding(newBounding, this))
+                {
+                    Position = newPosition;
+                    UpdateBounding();
+                    CollisionManager.Update(this, CollisionManager.GetBoundingVolume(this));
+                }
+            }
+
+            float roll = 1000f * (float)Time.Delta;
+
             if (Input.IsKey(Keys.Q))
             {
                 Roll(-roll);
@@ -160,13 +181,12 @@ namespace Spacebox.Game
                 Roll(roll);
             }
 
-            if(Input.IsKeyDown(Keys.P))
+            if (Input.IsKeyDown(Keys.P))
             {
                 Console.WriteLine("Saving Player");
                 PlayerSaveLoadManager.SavePlayer(this);
             }
 
-           
             if (Input.IsKeyDown(Keys.F5))
             {
                 Debug.ShowPlayerCollision = !Debug.ShowPlayerCollision;
@@ -181,51 +201,30 @@ namespace Spacebox.Game
                 }
             }
 
-            // Обработка движения с учетом коллизий
-            if (movement != Vector3.Zero)
-            {
-                Vector3 newPosition = Position + movement;
-                BoundingVolume newBounding = GetBoundingVolumeAt(newPosition);
+            var mouse = Input.Mouse;
 
-                if (!CollisionManager.IsColliding(newBounding, this))
-                {
-                    Position = newPosition;
-                    UpdateBounding();
-                    CollisionManager.Update(this, CollisionManager.GetBoundingVolume(this));
-                }
-                else
-                {
-                    // Обработка столкновения
-                    // Console.WriteLine("Movement blocked by collision.");
-                }
-            }
-
-            // Обработка вращения камеры с помощью мыши
             if (_firstMove)
             {
-                _lastMousePosition = new Vector2(mouse.X, mouse.Y);
+                _lastMousePosition = new Vector2(mouse.Position.X, mouse.Position.Y);
                 _firstMove = false;
             }
             else
             {
                 if (CameraActive)
                 {
-                    var deltaX = mouse.X - _lastMousePosition.X;
-                    var deltaY = mouse.Y - _lastMousePosition.Y;
-                    _lastMousePosition = new Vector2(mouse.X, mouse.Y);
+                    var deltaX = mouse.Position.X - _lastMousePosition.X;
+                    var deltaY = mouse.Position.Y - _lastMousePosition.Y;
+                    _lastMousePosition = new Vector2(mouse.Position.X, mouse.Position.Y);
 
-                    // Используем метод Rotate из новой реализации камеры
                     Rotate(deltaX, deltaY);
                 }
             }
 
-            // Обработка стрельбы
-            if (Input.Mouse.IsButtonDown(MouseButton.Button1))
+            if (Input.IsMouseButtonDown(MouseButton.Button1))
             {
                 Shoot(100f);
             }
 
-            // Рисуем луч стрельбы для отладки
             if (_ray != null)
             {
                 Debug.DrawRay(_ray, Color4.Red);
@@ -243,13 +242,12 @@ namespace Spacebox.Game
             if (CollisionManager.Raycast(_ray, out Vector3 hitPosition, out Collision hitObject, layerMask))
             {
                 Console.WriteLine($"Hit {hitObject.Name} at position {hitPosition}");
-                // hitObject.Position = new Vector3(0, -100, 0);
                 Debug.DrawRay(_ray, Color4.Red);
                 Debug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.1f), Color4.Red);
             }
             else
             {
-                //Console.WriteLine("No hit detected.");
+                // No hit detected
             }
         }
 

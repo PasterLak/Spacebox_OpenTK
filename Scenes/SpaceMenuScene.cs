@@ -51,6 +51,9 @@ namespace Spacebox.Scenes
             skyboxShader = new Shader("Shaders/skybox");
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader,
                 new SpaceTexture(512, 512));
+            skybox.IsAmbientAffected = false;
+
+
             CenteredImage.LoadImage("Resources/Textures/spaceboxLogo.png", true);
 
 
@@ -142,6 +145,7 @@ namespace Spacebox.Scenes
             //sprite.UpdateWindowSize(Window.Instance.Size);
             sprite.UpdateSize(Window.Instance.Size);
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
+
             if (Input.IsKeyDown(Keys.Enter))
             {
                 SceneManager.LoadScene(typeof(SpaceScene));

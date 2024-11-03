@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using Spacebox.Extensions;
 using System;
 using System.Numerics;
 
@@ -10,6 +11,9 @@ namespace Spacebox.Common
         private static bool _isVisible = true;
         private static float _displayDuration = 0f;
         private static float _elapsedTime = 0f;
+        private const string GameVersion = "0.4";
+
+        private static float _parallaxIntensity = 0.01f; // Intensity of parallax effect
 
         public static void LoadImage(string path, bool pixelated = false)
         {
@@ -51,6 +55,11 @@ namespace Spacebox.Common
             }
         }
 
+        public static void SetParallaxIntensity(float intensity)
+        {
+            _parallaxIntensity = intensity;
+        }
+
         public static void Draw(float scale = 0.5f)
         {
             if (!_isVisible || _imageTexture == null)
@@ -58,6 +67,14 @@ namespace Spacebox.Common
 
             ImGuiIOPtr io = ImGui.GetIO();
             Vector2 displaySize = io.DisplaySize;
+
+            DrawImage(displaySize, scale);
+            DrawCenterText(displaySize);
+            DrawGameVersion(displaySize);
+        }
+
+        private static void DrawImage(Vector2 displaySize, float scale)
+        {
             float maxWidth = displaySize.X * scale;
             float maxHeight = displaySize.Y * scale;
             float imageAspect = (float)_imageTexture.Width / _imageTexture.Height;
@@ -74,26 +91,47 @@ namespace Spacebox.Common
                 imageWidth = maxHeight * imageAspect;
             }
 
-            float posX = (displaySize.X - imageWidth) / 2f;
-            float posY = (displaySize.Y - imageHeight) / 2f - imageHeight / 1.2f;
+            // Позиция изображения с учетом параллакс-эффекта
+            Vector2 mousePosition = Input.Mouse.Position.ToSystemVector2();
+            Vector2 offset = (mousePosition - displaySize / 2f) * _parallaxIntensity;
 
-            ImGui.SetNextWindowPos(new Vector2(0, 0), ImGuiCond.Always, new Vector2(0, 0));
+            float posX = (displaySize.X - imageWidth) / 2f + offset.X;
+            float posY = (displaySize.Y - imageHeight) / 2f - imageHeight / 1.2f + offset.Y;
+
+            ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
             ImGui.SetNextWindowSize(displaySize, ImGuiCond.Always);
             ImGui.Begin("CenteredImageWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoBringToFrontOnFocus);
             ImGui.SetCursorPos(new Vector2(posX, posY));
             ImGui.Image((IntPtr)_imageTexture.Handle, new Vector2(imageWidth, imageHeight));
+            ImGui.End();
+        }
 
-            // Плавное изменение прозрачности текста
-            float alpha = (float)(0.5 * (Math.Sin(_elapsedTime * 2.0f) + 1)); // Альфа меняется от 0 до 1
+        private static void DrawCenterText(Vector2 displaySize)
+        {
+            float alpha = (float)(0.5 * (Math.Sin(_elapsedTime * 2.0f) + 1));
             Vector4 textColor = new Vector4(1, 1, 1, alpha);
 
             Vector2 textSize = ImGui.CalcTextSize("Press Enter to start");
             float textPosX = (displaySize.X - textSize.X) / 2f;
             float textPosY = displaySize.Y - displaySize.Y / 3f;
 
+            ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
+            ImGui.Begin("CenterTextWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
             ImGui.SetCursorPos(new Vector2(textPosX, textPosY));
             ImGui.TextColored(textColor, "Press Enter to start");
+            ImGui.End();
+        }
 
+        private static void DrawGameVersion(Vector2 displaySize)
+        {
+            Vector2 textSize = ImGui.CalcTextSize($"Version {GameVersion}");
+            float textPosX = 10f;
+            float textPosY = displaySize.Y - textSize.Y - 10f;
+
+            ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
+            ImGui.Begin("VersionTextWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+            ImGui.SetCursorPos(new Vector2(textPosX, textPosY));
+            ImGui.Text($"Version {GameVersion}");
             ImGui.End();
         }
 

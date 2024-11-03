@@ -20,11 +20,7 @@ namespace Spacebox.Game
             _right = Vector3.Transform(Vector3.UnitX, _rotation);
         }
 
-        /// <summary>
-        /// Rotates the camera based on mouse movement.
-        /// </summary>
-        /// <param name="deltaX">Change in mouse X position.</param>
-        /// <param name="deltaY">Change in mouse Y position.</param>
+  
         public void Rotate(float deltaX, float deltaY)
         {
             float sensitivity = 0.002f;
@@ -48,10 +44,7 @@ namespace Spacebox.Game
             UpdateVectors();
         }
 
-        /// <summary>
-        /// Rolls the camera around the front axis.
-        /// </summary>
-        /// <param name="deltaZ">Amount to roll.</param>
+     
         public void Roll(float deltaZ)
         {
             float sensitivity = 0.002f;
@@ -72,20 +65,14 @@ namespace Spacebox.Game
             UpdateVectors();
         }
 
-        /// <summary>
-        /// Sets the camera's rotation directly from a quaternion.
-        /// </summary>
-        /// <param name="rotation">The rotation quaternion.</param>
+     
         public void SetRotation(Quaternion rotation)
         {
             _rotation = Quaternion.Normalize(rotation);
             UpdateVectors();
         }
 
-        /// <summary>
-        /// Gets the current rotation quaternion of the camera.
-        /// </summary>
-        /// <returns>The rotation quaternion.</returns>
+       
         public Quaternion GetRotation()
         {
             return _rotation;
