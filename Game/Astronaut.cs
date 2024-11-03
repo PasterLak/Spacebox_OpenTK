@@ -169,6 +169,31 @@ namespace Spacebox.Game
             Vector3 acceleration = Vector3.Zero;
             bool isMoving = false;
 
+            if (Input.MouseScrollDelta.Y < 0)
+            {
+                CurrentBlockId++;
+
+
+
+                if (CurrentBlockId > GameBlocks.MaxBlockId)
+                {
+                    CurrentBlockId = 1;
+                }
+
+            }
+
+            if (Input.MouseScrollDelta.Y > 0)
+            {
+                CurrentBlockId--;
+
+                if (CurrentBlockId < 1)
+                {
+                    CurrentBlockId = GameBlocks.MaxBlockId;
+                }
+
+
+            }
+
             if (Input.IsKey(Keys.W))
             {
                 acceleration += Front;

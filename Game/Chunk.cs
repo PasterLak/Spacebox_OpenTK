@@ -257,7 +257,12 @@ namespace Spacebox.Game
             if (!_isLoadedOrGenerated) return;
 
             if (GameConsole.IsVisible) return;
-            
+
+
+            if (Input.IsKeyDown(Keys.P))
+            {
+                ChunkSaveLoadManager.SaveChunk(this);
+            }
 
             destructionManager.Update();
 
