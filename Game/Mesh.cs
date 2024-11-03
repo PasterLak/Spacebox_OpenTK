@@ -10,6 +10,8 @@ namespace Spacebox.Game
         private int _ebo;
         private int _vertexCount;
 
+        PolygonMode polygonMode = PolygonMode.Fill;
+
         public Mesh(float[] vertices, uint[] indices)
         {
             _vertexCount = indices.Length;
@@ -43,16 +45,31 @@ namespace Spacebox.Game
         public void Draw(Shader shader)
         {
             shader.Use();
+            if(Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F10))
+            {
+                if(polygonMode == PolygonMode.Line)
+                {
+                    polygonMode = PolygonMode.Fill; 
+                }
+               
+                else
+                {
+                    polygonMode = PolygonMode.Line;
+                }
+            }
+            GL.PolygonMode(MaterialFace.FrontAndBack, polygonMode);
             GL.Enable(EnableCap.CullFace);
 
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
+            
 
             GL.BindVertexArray(_vao);
             GL.DrawElements(PrimitiveType.Triangles, _vertexCount, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
+
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
         }
 
         public void Dispose()

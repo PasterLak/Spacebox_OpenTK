@@ -267,8 +267,8 @@ namespace Spacebox.Game
             destructionManager.Update();
 
             Vector3 rayOrigin = player.Position;
-            Vector3 rayDirection = player.Front;
 
+            Vector3 rayDirection = player.Front;
             float maxDistance = 5f;
 
             Ray ray = new Ray(rayOrigin, rayDirection, maxDistance);
