@@ -35,7 +35,7 @@ namespace Spacebox.Scenes
                 Position = position,
                 UseLocalCoordinates = false,
                 EmitterPositionOffset = Vector3.Zero,
-                EmitterDirection = new Vector3(0, 1, 0), 
+                //EmitterDirection = new Vector3(0, 1, 0), 
                 MaxParticles = 30,
                 SpawnRate = 1000f
             };

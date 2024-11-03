@@ -2,12 +2,7 @@
 
 namespace Spacebox.Game
 {
-    public enum BlockType
-    {
-        Air,
-        Solid
-    }
-
+   
     public class Block
     {
         public short BlockId { get; set; } = 0;

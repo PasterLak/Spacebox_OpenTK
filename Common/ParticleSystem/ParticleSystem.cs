@@ -15,7 +15,7 @@ namespace Spacebox.Common
         private float spawnAccumulator = 0f;
 
         public Vector3 EmitterPositionOffset { get; set; } = Vector3.Zero;
-        public Vector3 EmitterDirection { get; set; } = Vector3.UnitY;
+        //public Vector3 EmitterDirection { get; set; } = Vector3.UnitY;
         public bool UseLocalCoordinates { get; set; } = true;
 
         public ParticleSystem(Texture2D texture)

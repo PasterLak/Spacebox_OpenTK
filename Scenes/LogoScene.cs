@@ -28,8 +28,8 @@ namespace Spacebox.Scenes
             Texture2D block = UVAtlas.GetBlockTexture(new Texture2D("Resources/Textures/blocks.png", true), 5, 0);
 
             Texture2D iso = IsometricIcon.CreateIsometricIcon(block);
-            //sprite = new Sprite("Resources/Textures/cat.png", new Vector2(0,0), new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
-            sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
+            sprite = new Sprite("Resources/Textures/cat.png", new Vector2(0,0), new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
+            //sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
             //GL.Enable(EnableCap.DepthTest);
 
         }
@@ -77,6 +77,10 @@ namespace Spacebox.Scenes
             if (Input.IsKeyDown(Keys.Enter))
             {
                 SceneManager.LoadScene(typeof(MenuScene));
+            }
+            if (Input.IsKeyDown(Keys.S))
+            {
+                SceneManager.LoadScene(typeof(SpaceMenuScene));
             }
 
             if (Input.IsKeyDown(Keys.R))

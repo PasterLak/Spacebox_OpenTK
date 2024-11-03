@@ -7,7 +7,7 @@ namespace Spacebox.Scenes
 {
     public class DustSpawner : IDisposable
     {
-        private ParticleSystem particleSystem;
+        public ParticleSystem ParticleSystem { get; private set; }
         private Shader particleShader;
         private Texture2D dustTexture;
         private Camera camera;
@@ -29,17 +29,17 @@ namespace Spacebox.Scenes
             dustTexture = new Texture2D("Resources/Textures/dust.png", true);
 
           
-            particleSystem = new ParticleSystem(dustTexture)
+            ParticleSystem = new ParticleSystem(dustTexture)
             {
                 Position = Position,
                 UseLocalCoordinates = false,
-                EmitterDirection = EmitterDirection,
+                //EmitterDirection = EmitterDirection,
                 MaxParticles = 300,
                 SpawnRate = 40f
             };
 
 
-            var emitter = new Emitter(particleSystem)
+            var emitter = new Emitter(ParticleSystem)
             {
                 SpeedMin = 0f,
                 SpeedMax = 0f,
@@ -56,7 +56,7 @@ namespace Spacebox.Scenes
 
             };
 
-            particleSystem.Emitter = emitter;
+            ParticleSystem.Emitter = emitter;
 
             particleShader = new Shader("Shaders/particleShader");
             particleShader.Use();
@@ -66,20 +66,20 @@ namespace Spacebox.Scenes
         public void Update()
         {
           
-            particleSystem.Position = camera.Position;
-            particleSystem.Update();
+            ParticleSystem.Position = camera.Position;
+            ParticleSystem.Update();
 
         }
 
         public void Render()
         {
             
-            particleSystem.Draw(camera);
+            ParticleSystem.Draw(camera);
         }
 
         public void Dispose()
         {
-            particleSystem.Dispose();
+            ParticleSystem.Dispose();
             dustTexture.Dispose();
             particleShader.Dispose();
         }

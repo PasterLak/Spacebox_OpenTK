@@ -32,7 +32,7 @@ namespace Spacebox.Game
                     }
                     else
                     {
-                        SetPixel(x, y, Color4.Black); // Черный цвет для космоса
+                        SetPixel(x, y, Color4.Black); 
                     }
                 }
             }

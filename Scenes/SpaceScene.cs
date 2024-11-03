@@ -64,9 +64,9 @@ namespace Spacebox.Scenes
             SoundManager.AddAudioClip("blockDestroy");
             blockPlace = new AudioSource(SoundManager.GetClip("blockPlace"));
             blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroy"));
-            music = new AudioSource(SoundManager.GetClip("music"));
-            music.Volume = 80;
-            music.Play();
+            //music = new AudioSource(SoundManager.GetClip("music"));
+            //music.Volume = 80;
+            //music.Play();
             //audio2 = new AudioSource(new AudioClip("shooting", SoundManager));
 
             //renderer.AddDrawable(skybox);
@@ -123,7 +123,7 @@ namespace Spacebox.Scenes
 
             if (Input.IsKeyDown(Keys.Backspace))
             {
-                SceneManager.LoadScene(typeof(MenuScene));
+                SceneManager.LoadScene(typeof(SpaceMenuScene));
             }
 
             if (Input.IsKeyDown(Keys.R))
@@ -220,18 +220,20 @@ namespace Spacebox.Scenes
 
             if(ShowBlocksList)
             BlocksOverlay.OnGUI(player);
+            CenteredText.Draw();
         }
 
         public override void UnloadContent()
         {
             blocksShader.Dispose();
-            blockTexture.Dispose();
+            //blockTexture.Dispose();
             lightAtlas.Dispose();
             sprite.Dispose();
             blockPlace.Dispose();
             blockDestroy.Dispose();
-            music.Dispose();
-
+            //music.Dispose();
+            skybox.Texture.Dispose  ();
+            skyboxShader.Dispose();
             dustSpawner.Dispose();
            
             blockDestructionManager.Dispose();

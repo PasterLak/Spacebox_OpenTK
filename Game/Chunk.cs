@@ -5,6 +5,7 @@ using Spacebox.Common;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Lighting;
 using Spacebox.Game.Rendering;
+using Spacebox.GUI;
 using Spacebox.Managers;
 using System;
 
@@ -264,7 +265,9 @@ namespace Spacebox.Game
 
             Vector3 rayOrigin = player.Position;
             Vector3 rayDirection = player.Front;
-            float maxDistance = 100f;
+
+            float maxDistance = 5f;
+
             Ray ray = new Ray(rayOrigin, rayDirection, maxDistance);
 
             bool hit = Raycast(ray, out Vector3 hitPosition, out Vector3i hitBlockPosition, out Vector3 hitNormal);
@@ -273,6 +276,22 @@ namespace Spacebox.Game
             {
                 Vector3 worldBlockPosition = hitBlockPosition + Position;
                 Spacebox.Common.Debug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.White);
+
+                Block selectedBlock = Blocks[hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z];
+
+                if (selectedBlock.BlockId == 20 || selectedBlock.BlockId == 22)
+                {
+                    float dis = Vector3.Distance(player.Position, hitBlockPosition);
+
+                    if (dis < 3f)
+                    CenteredText.Show();
+                    else
+                        CenteredText.Hide();
+                }
+                else
+                {
+                    CenteredText.Hide();
+                }
 
                 if (Input.IsMouseButtonDown(MouseButton.Left))
                 {
@@ -309,6 +328,11 @@ namespace Spacebox.Game
 
                 Vector3 worldBlockPosition = new Vector3(x, y, z) + Position;
                 Spacebox.Common.Debug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.Gray);
+
+                if(CenteredText.IsVisible)
+                {
+                    CenteredText.Hide();
+                }
 
                 if (Input.IsMouseButtonDown(MouseButton.Right) &&
                     IsInRange(x, y, z) &&

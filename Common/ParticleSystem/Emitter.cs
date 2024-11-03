@@ -21,7 +21,7 @@ namespace Spacebox.Common
         public float SpawnRadius { get; set; } = 50f;
         public float SpeedMin { get; set; } = 0f;
         public float SpeedMax { get; set; } = 0f;
-        public Vector3 EmitterDirection { get; set; } = Vector3.UnitY; // Направление эмиттера
+        public Vector3 EmitterDirection { get; set; } = Vector3.UnitY; 
         public bool UseLocalCoordinates { get; set; } = true;
 
         // Новый флаг для управления случайным направлением
