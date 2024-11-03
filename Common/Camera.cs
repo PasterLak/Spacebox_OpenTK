@@ -1,18 +1,15 @@
-﻿
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 
 namespace Spacebox.Common
 {
     public abstract class Camera : DynamicBody
     {
-
         public static Camera Main;
         protected Vector3 _front = -Vector3.UnitZ;
         protected Vector3 _up = Vector3.UnitY;
         protected Vector3 _right = Vector3.UnitX;
 
         public float FOV = MathHelper.DegreesToRadians(80f);
-
         public float AspectRatio { get; set; }
 
         public Vector3 Front => _front;
@@ -47,7 +44,7 @@ namespace Spacebox.Common
             }
         }
 
-        public Matrix4 GetViewMatrix()
+        public virtual Matrix4 GetViewMatrix()
         {
             return Matrix4.LookAt(Position, Position + _front, _up);
         }

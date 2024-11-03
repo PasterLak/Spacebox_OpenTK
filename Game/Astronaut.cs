@@ -32,6 +32,7 @@ namespace Spacebox.Game
         private SpotLight _spotLight;
 
         private InertiaController _inertiaController = new InertiaController();
+        private CameraSway _cameraSway = new CameraSway();
 
         public Astronaut(Vector3 position, float aspectRatio)
             : base(position, aspectRatio)
@@ -41,10 +42,8 @@ namespace Spacebox.Game
             Layer = CollisionLayer.Player;
             Debug.RemoveCollisionToDraw(this);
 
-           
-            _inertiaController.Enabled = true;
-            _inertiaController.DecelerationRate = 0.5f;
-            _inertiaController.MaxSpeed = 10.0f; 
+            SetInertia();
+            SetCameraSway();
         }
 
         public Astronaut(Vector3 position, float aspectRatio, Shader shader)
@@ -56,10 +55,30 @@ namespace Spacebox.Game
             Layer = CollisionLayer.Player;
             Debug.RemoveCollisionToDraw(this);
 
-            // Настройка инерции
+            SetInertia();
+            SetCameraSway();
+        }
+
+        private void SetInertia()
+        {
             _inertiaController.Enabled = true;
-            _inertiaController.DecelerationRate = 0.5f;
+            _inertiaController.DecelerationRate = 1.5f;
             _inertiaController.MaxSpeed = 10.0f;
+            _inertiaController.AccelerationRate = 4.0f;
+        }
+
+        private void SetCameraSway()
+        {
+            _cameraSway.InitialIntensity = 0.0015f;
+            _cameraSway.MaxIntensity = 0.003f;
+
+
+            _cameraSway.InitialFrequency = 15f;
+            _cameraSway.MaxFrequency = 50f;
+
+            _cameraSway.SpeedThreshold = 5.0f;
+         
+            _cameraSway.Enabled = true;
         }
 
         public override void OnCollisionEnter(Collision other)
@@ -77,7 +96,16 @@ namespace Spacebox.Game
             if (Input.IsKeyDown(Keys.F))
             {
                 _spotLight.IsActive = !_spotLight.IsActive;
-                // audio.Play();
+            }
+
+            if (Input.IsKeyDown(Keys.I))
+            {
+                EnableInertia(!_inertiaController.Enabled);
+            }
+
+            if (Input.IsKeyDown(Keys.C))
+            {
+                EnableCameraSway(!_cameraSway.Enabled);
             }
 
             HandleInput();
@@ -86,24 +114,33 @@ namespace Spacebox.Game
             base.Update();
         }
 
-        /// <summary>
-        /// Включает или выключает инерцию.
-        /// </summary>
-        /// <param name="enabled">Включить или выключить инерцию.</param>
         public void EnableInertia(bool enabled)
         {
-            _inertiaController.Enabled = enabled;
+            _inertiaController.EnableInertia(enabled);
         }
 
-        /// <summary>
-        /// Устанавливает параметры инерции.
-        /// </summary>
-        /// <param name="decelerationRate">Коэффициент замедления.</param>
-        /// <param name="maxSpeed">Максимальная скорость.</param>
-        public void SetInertiaParameters(float decelerationRate, float maxSpeed)
+        public void SetInertiaParameters(float accelerationRate, float decelerationRate, float maxSpeed)
         {
-            _inertiaController.DecelerationRate = decelerationRate;
-            _inertiaController.MaxSpeed = maxSpeed;
+            _inertiaController.SetParameters(accelerationRate, decelerationRate, maxSpeed);
+        }
+
+        public void EnableCameraSway(bool enabled)
+        {
+            _cameraSway.EnableSway(enabled);
+        }
+
+        public void SetCameraSwayParameters(float initialIntensity, float initialFrequency, float maxIntensity, float maxFrequency, float speedThreshold, float intensityRampRate = 2.0f, float frequencyRampRate = 2.0f)
+        {
+            _cameraSway.SetParameters(initialIntensity, initialFrequency, maxIntensity, maxFrequency, speedThreshold, intensityRampRate, frequencyRampRate);
+        }
+
+        public override Matrix4 GetViewMatrix()
+        {
+            Quaternion sway = _cameraSway.GetSwayRotation();
+            Quaternion combinedRotation = sway * GetRotation();
+            Vector3 newFront = Vector3.Transform(-Vector3.UnitZ, combinedRotation);
+            Vector3 newUp = Vector3.Transform(Vector3.UnitY, combinedRotation);
+            return Matrix4.LookAt(Position, Position + newFront, newUp);
         }
 
         private void HandleInput()
@@ -148,29 +185,76 @@ namespace Spacebox.Game
                 currentSpeed = _shiftSpeed;
             }
 
-            if (isMoving)
+            float deltaTime = (float)Time.Delta;
+
+            if (_inertiaController.Enabled)
             {
-                _inertiaController.ApplyInput(acceleration, currentSpeed, (float)Time.Delta);
-            }
-
-            _inertiaController.Update((float)Time.Delta);
-
-            Vector3 velocity = _inertiaController.Velocity;
-
-            if (velocity != Vector3.Zero)
-            {
-                Vector3 newPosition = Position + velocity * (float)Time.Delta;
-                BoundingVolume newBounding = GetBoundingVolumeAt(newPosition);
-
-                if (!CollisionManager.IsColliding(newBounding, this))
+                if (isMoving)
                 {
-                    Position = newPosition;
-                    UpdateBounding();
-                    CollisionManager.Update(this, CollisionManager.GetBoundingVolume(this));
+                    _inertiaController.ApplyInput(acceleration, currentSpeed, deltaTime);
+                }
+                _inertiaController.Update(deltaTime);
+                Vector3 velocity = _inertiaController.Velocity;
+
+                if (velocity != Vector3.Zero)
+                {
+                    Vector3 newPosition = Position + velocity * deltaTime;
+                    BoundingVolume newBounding = GetBoundingVolumeAt(newPosition);
+
+                    if (!CollisionManager.IsColliding(newBounding, this))
+                    {
+                        Position = newPosition;
+                        UpdateBounding();
+                        CollisionManager.Update(this, CollisionManager.GetBoundingVolume(this));
+                    }
+                }
+
+                _cameraSway.Update(_inertiaController.Velocity.Length, deltaTime);
+            }
+            else
+            {
+                Vector3 movement = Vector3.Zero;
+
+                if (Input.IsKey(Keys.W))
+                {
+                    movement += Front * currentSpeed * deltaTime;
+                }
+                if (Input.IsKey(Keys.S))
+                {
+                    movement -= Front * currentSpeed * deltaTime;
+                }
+                if (Input.IsKey(Keys.A))
+                {
+                    movement -= Right * currentSpeed * deltaTime;
+                }
+                if (Input.IsKey(Keys.D))
+                {
+                    movement += Right * currentSpeed * deltaTime;
+                }
+                if (Input.IsKey(Keys.Space))
+                {
+                    movement += Up * currentSpeed * deltaTime;
+                }
+                if (Input.IsKey(Keys.LeftControl))
+                {
+                    movement -= Up * currentSpeed * deltaTime;
+                }
+
+                if (movement != Vector3.Zero)
+                {
+                    Vector3 newPosition = Position + movement;
+                    BoundingVolume newBounding = GetBoundingVolumeAt(newPosition);
+
+                    if (!CollisionManager.IsColliding(newBounding, this))
+                    {
+                        Position = newPosition;
+                        UpdateBounding();
+                        CollisionManager.Update(this, CollisionManager.GetBoundingVolume(this));
+                    }
                 }
             }
 
-            float roll = 1000f * (float)Time.Delta;
+            float roll = 1000f * deltaTime;
 
             if (Input.IsKey(Keys.Q))
             {
@@ -244,10 +328,6 @@ namespace Spacebox.Game
                 Console.WriteLine($"Hit {hitObject.Name} at position {hitPosition}");
                 Debug.DrawRay(_ray, Color4.Red);
                 Debug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.1f), Color4.Red);
-            }
-            else
-            {
-                // No hit detected
             }
         }
 
