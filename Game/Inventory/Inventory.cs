@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Spacebox.Game.Inventory
 {
-    internal class Inventory
+    internal class Inventory : Storage
     {
+        public Inventory(byte sizeX, byte sizeY) : base(sizeX, sizeY)
+        {
+        }
     }
 }

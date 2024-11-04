@@ -25,9 +25,7 @@ namespace Spacebox.Scenes
 
            // GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             GL.ClearColor(0,0,0,0);
-            Texture2D block = UVAtlas.GetBlockTexture(TextureManager.GetTexture("Resources/Textures/blocks.png"), 5, 0);
-
-            Texture2D iso = IsometricIcon.CreateIsometricIcon(block);
+           
             sprite = new Sprite("Resources/Textures/cat.png", new Vector2(0,0),
                 new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
             //sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
@@ -41,19 +39,25 @@ namespace Spacebox.Scenes
         }
         public override void Start()
         {
-           
+            if(!Directory.Exists("Mods"))
+            {
+                Directory.CreateDirectory("Mods");
+            }
+            if (!Directory.Exists("Saves"))
+            {
+                Directory.CreateDirectory("Saves");
+            }
+
+            SceneManager.LoadScene(typeof(SpaceMenuScene));
         }
-        float x = 0;
-        
+
         public override void Render()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
             
 
-            //x += 0.01f;
-            sprite.Render(new Vector2(x,0), new Vector2(1,1));
+            sprite.Render(new Vector2(0,0), new Vector2(1,1));
 
-          
         }
 
         public override void OnGUI()

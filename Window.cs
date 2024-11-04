@@ -88,7 +88,6 @@ namespace Spacebox
             Time.Update(e);
             _controller.Update(this, (float)e.Time);
 
-            //Debug.Render();
 
             if (SceneManager.CurrentScene != null)
             {

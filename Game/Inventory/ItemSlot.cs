@@ -1,12 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
 namespace Spacebox.Game.Inventory
 {
     internal class ItemSlot
     {
+        public Item? Item;
+        public byte Count;
+
+        
+        public bool IsEmpty => Item == null;
+
+
+
+        public void DeleteItem()
+        {
+            if (Item != null)
+            {
+                Item = null;
+            }
+        }
+        
+
     }
 }

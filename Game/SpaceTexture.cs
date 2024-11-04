@@ -27,7 +27,7 @@ namespace Spacebox.Game
                     // С вероятностью 0.05% ставим белую точку (звезду)
                     if (rand < 10)
                     {
-                        byte brightness = (byte)random.Next(0, 256); // Яркость звезды
+                        byte brightness = (byte)random.Next(1, 256); // Яркость звезды
                         SetPixel(x, y, new Color4(brightness / 255f, brightness / 255f, brightness / 255f, 1f));
                     }
                     else

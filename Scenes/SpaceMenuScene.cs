@@ -33,10 +33,7 @@ namespace Spacebox.Scenes
 
             // GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             GL.ClearColor(0, 0, 0, 0);
-            Texture2D block = UVAtlas.GetBlockTexture(TextureManager.GetTexture("Resources/Textures/blocks.png",true), 5, 0);
-
-            Texture2D iso = IsometricIcon.CreateIsometricIcon(block);
-
+            
             float winX = Window.Instance.Size.X;
             float winY = Window.Instance.Size.Y;
 
@@ -58,6 +55,7 @@ namespace Spacebox.Scenes
             SetDustSpawner();
 
             music = new AudioSource(SoundManager.GetClip("music"));
+            music.IsLooped = true;
             music.Play();
         }
 

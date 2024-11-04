@@ -11,7 +11,7 @@ namespace Spacebox.Scenes
     internal class MenuScene : Scene
     {
 
-        AudioSource audio;
+       
         AudioSource audio2;
      
 
@@ -25,7 +25,7 @@ namespace Spacebox.Scenes
 
          ~MenuScene()
         {
-            audio.Dispose();
+           
             audio2.Dispose();
         }
 
@@ -42,8 +42,7 @@ namespace Spacebox.Scenes
             SoundManager.AddAudioClip("music");
             SoundManager.AddAudioClip("shooting");
 
-            audio = new AudioSource(SoundManager.GetClip("music"));
-            audio.IsLooped = true;
+           
             audio2 = new AudioSource(new AudioClip("shooting", SoundManager));
 
             font = new BitmapFont("Resources/Font/arial.png", 256,256,16,16);
@@ -61,7 +60,7 @@ namespace Spacebox.Scenes
         string characters;
         public override void Awake()
         {
-            audio.Play();
+           
 
             Input.SetCursorState(CursorState.Normal);
         }

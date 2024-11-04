@@ -1,4 +1,5 @@
-﻿using OpenTK.Windowing.Desktop;
+﻿using OpenTK.Mathematics;
+using OpenTK.Windowing.Desktop;
 using Spacebox.Scenes;
 using System.Reflection;
 
@@ -139,11 +140,13 @@ namespace Spacebox.Common.SceneManagment
 
 
 
-                GameConsole.Debug("Scene Loaded: " + _currentSceneType.typ.Name);
-
+               
                 CurrentScene.LoadContent();
                 CurrentScene.Awake();
                 CurrentScene.Start();
+
+                GameConsole.Debug("[SceneManager] Scene Loaded: [" + _currentSceneType.typ.Name + "] ", 
+                    Color4.Yellow);
 
             }
         }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text.Json;
+﻿using System.Text.Json;
 using OpenTK.Mathematics;
 using System.Drawing;
 
@@ -10,9 +8,7 @@ namespace Spacebox.Common
     {
         private static readonly string SaveFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ambient.json");
 
-        /// <summary>
-        /// Сохраняет текущие настройки AmbientColor и BackgroundColor в JSON файл.
-        /// </summary>
+
         public static void SaveAmbient()
         {
             try
@@ -42,9 +38,7 @@ namespace Spacebox.Common
             }
         }
 
-        /// <summary>
-        /// Загружает настройки AmbientColor и BackgroundColor из JSON файла и применяет их к Lighting.
-        /// </summary>
+    
         public static void LoadAmbient()
         {
             try
@@ -64,7 +58,7 @@ namespace Spacebox.Common
                     return;
                 }
 
-                // Применяем загруженные данные к Lighting
+               
                 Lighting.AmbientColor = new Vector3(data.AmbientColorX, data.AmbientColorY, data.AmbientColorZ);
                 Lighting.BackgroundColor = Color.FromArgb(data.BackgroundColorA, data.BackgroundColorR, data.BackgroundColorG, data.BackgroundColorB);
 
@@ -76,17 +70,14 @@ namespace Spacebox.Common
             }
         }
 
-        /// <summary>
-        /// Вспомогательный класс для сериализации данных освещения.
-        /// </summary>
         private class AmbientData
         {
-            // AmbientColor компоненты
+          
             public float AmbientColorX { get; set; }
             public float AmbientColorY { get; set; }
             public float AmbientColorZ { get; set; }
 
-            // BackgroundColor компоненты (ARGB)
+           
             public byte BackgroundColorA { get; set; }
             public byte BackgroundColorR { get; set; }
             public byte BackgroundColorG { get; set; }

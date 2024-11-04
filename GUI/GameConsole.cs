@@ -82,9 +82,27 @@ namespace Spacebox.Common
             _messages.Add(new ConsoleMessage(message, color ?? new Vector4(1f, 1f, 1f, 1f)));
         }
 
+        public static void AddMessage(string message, OpenTK.Mathematics.Color4 color)
+        {
+            _messages.Add(new ConsoleMessage(message, new Vector4(color.R, color.G, color.B, color.A)));
+        }
+
+        public static void Debug(string message, OpenTK.Mathematics.Color4 color)
+        {
+            AddMessage($"[DEBUG] {message}", color);
+            Console.WriteLine($"[DEBUG] {message}");
+        }
+
+        public static void Debug(string message, Vector4 color)
+        {
+            AddMessage($"[DEBUG] {message}", color);
+            Console.WriteLine($"[DEBUG] {message}");
+        }
+
         public static void Debug(string message)
         {
-            AddMessage($"[DEBUG] {message}", new Vector4(0.2f, 0.7f, 1f, 1f));
+            //AddMessage($"[DEBUG] {message}", new Vector4(0.2f, 0.7f, 1f, 1f));
+            AddMessage($"[DEBUG] {message}", new Vector4(1,1, 1f, 1f));
             Console.WriteLine($"[DEBUG] {message}");
         }
 

@@ -84,17 +84,17 @@ namespace Spacebox.Game
 
             RegisterBlock(new BlockData("Analyzer", new Vector2(4, 0))); //9
           
-            RegisterBlock(new BlockData("Alluminium Block", new Vector2(6, 1)));
-            RegisterBlock(new BlockData("Alluminium Block", new Vector2(7, 1)));
-            RegisterBlock(new BlockData("Alluminium Block", new Vector2(8, 1)));
+            RegisterBlock(new BlockData("Alluminium Light Block", new Vector2(6, 1)));
+            RegisterBlock(new BlockData("Alluminium Medium Block", new Vector2(7, 1)));
+            RegisterBlock(new BlockData("Alluminium Heavy Block", new Vector2(8, 1)));
 
-            RegisterBlock(new BlockData("Iron Block", new Vector2(9, 1)));
-            RegisterBlock(new BlockData("Iron Block", new Vector2(10, 1)));
-            RegisterBlock(new BlockData("Iron Block", new Vector2(11, 1)));
+            RegisterBlock(new BlockData("Iron Light Block", new Vector2(9, 1)));
+            RegisterBlock(new BlockData("Iron Medium Block", new Vector2(10, 1)));
+            RegisterBlock(new BlockData("Iron Heavy Block", new Vector2(11, 1)));
 
-            RegisterBlock(new BlockData("Titanium Block", new Vector2(12, 1)));
-            RegisterBlock(new BlockData("Titanium Block", new Vector2(13, 1)));
-            RegisterBlock(new BlockData("Titanium Block", new Vector2(14, 1)));
+            RegisterBlock(new BlockData("Titanium Light Block", new Vector2(12, 1)));
+            RegisterBlock(new BlockData("Titanium Medium Block", new Vector2(13, 1)));
+            RegisterBlock(new BlockData("Titanium Heavy Block", new Vector2(14, 1)));
 
             RegisterBlock(new BlockData("Window", new Vector2(3,2), true)); // 19
             RegisterBlock(new BlockData("Crafting Table", new Vector2(0, 3), false));

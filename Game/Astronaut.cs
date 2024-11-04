@@ -1,7 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
-using System;
 
 namespace Spacebox.Game
 {

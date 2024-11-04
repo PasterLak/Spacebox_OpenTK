@@ -30,13 +30,12 @@ namespace Spacebox.Common
         static TextureManager()
         {
             DefaultTexture = CreateDefaultPinkTexture();
-            GameConsole.Debug("[TextureManager] Default pink texture has been created.");
-        }
+        }        
 
         private static Texture2D CreateDefaultPinkTexture()
         {
             var texture = new Texture2D(1, 1, pixelated: true);
-            texture.SetPixel(0, 0, new Color4(1f, 0f, 1f, 1f)); // Pink color
+            texture.SetPixel(0, 0, new Color4(1f, 0f, 1f, 1f)); // Pink
             texture.UpdateTexture();
             texture.Use();
             return texture;
