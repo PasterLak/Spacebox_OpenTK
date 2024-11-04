@@ -219,6 +219,18 @@ namespace Spacebox
                 Quit();
             }
 
+            if (Input.IsKeyDown(Keys.F7))
+            {
+                if(FrameLimiter.TargetFPS == 120)
+                {
+                    FrameLimiter.TargetFPS = 9999;
+                }
+                else
+                {
+                    FrameLimiter.TargetFPS = 120;
+                }
+            }
+
             if (SceneManager.CurrentScene != null)
             {
                 SceneManager.CurrentScene.Update();

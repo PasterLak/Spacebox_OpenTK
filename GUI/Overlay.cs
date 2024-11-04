@@ -40,7 +40,13 @@ namespace Spacebox.GUI
             ImGui.Text($"OnGUI Time: {Time.OnGUITime:F2} ms");
             ImGui.Text($"Avg OnGUI Time: {Time.AverageOnGUITime:F2} ms");
             ImGui.Text($" ");
+            ImGui.Text($"Console On (F1): {GameConsole.IsVisible}");
             ImGui.Text($"Debug On (F4): {Debug.ShowDebug}");
+            ImGui.Text($"FrameLimiter On (F7): {(FrameLimiter.TargetFPS == 120 ? true : false)}");
+            ImGui.Text($"Wireframe Mode (F10) ");
+            ImGui.Text($" ");
+            ImGui.Text($"Shaders Cached: {ShaderManager.Count}");
+            ImGui.Text($"Textures Cached: {TextureManager.Count}");
             ImGui.End();
             ImGui.PopStyleColor();
         }

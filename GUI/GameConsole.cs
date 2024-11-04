@@ -45,6 +45,7 @@ namespace Spacebox.Common
             RegisterCommand(new HelpCommand());
             RegisterCommand(new ExitCommand());
             RegisterCommand(new ResourcesCommand());
+            RegisterCommand(new SaveMessagesCommand());
         }
 
         public static void RegisterCommand(ICommand command)
@@ -355,6 +356,30 @@ namespace Spacebox.Common
         {
             File.WriteAllLines(HistoryFilePath, _commandHistory);
           
+        }
+
+        public static void SaveMessagesToFile()
+        {
+            string debugFolderPath = "Debug";
+            if (!Directory.Exists(debugFolderPath))
+            {
+                Directory.CreateDirectory(debugFolderPath);
+            }
+
+          
+
+            string filename = $"console_log_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}.txt";
+            string filepath = Path.Combine(debugFolderPath, filename);
+
+            try
+            {
+                File.WriteAllLines(filepath, _messages.Select(m => m.Text));
+                Debug($"Console messages saved to '{filepath}'.");
+            }
+            catch (Exception ex)
+            {
+                DebugError($"Failed to save console messages to file '{filepath}': {ex.Message}");
+            }
         }
     }
 }

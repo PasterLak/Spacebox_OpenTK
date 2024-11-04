@@ -8,8 +8,26 @@ namespace Spacebox.Common
     {
         public static bool IsRunning { get;  set; } = true;
 
+
+        private static int _targetFPS = 120;
+        public static int TargetFPS
+        {
+            get
+            {
+                return _targetFPS;
+            }
+            set
+            {
+                _targetFPS = value;
+                _stopwatch.Stop();
+
+                _targetFrameTime = 1.0 / _targetFPS;
+                _stopwatch.Start();
+            }
+        }
+
         private static Stopwatch _stopwatch = new Stopwatch();
-        private static double _targetFrameTime; // В секундах
+        private static double _targetFrameTime; // sec
         private static double _accumulator = 0.0;
 
         public static void Initialize(int targetFPS)
@@ -22,6 +40,7 @@ namespace Spacebox.Common
         {
             _stopwatch.Stop();
 
+            _targetFPS = 9999;
             _targetFrameTime = 1.0 / 9999;
             _stopwatch.Start();
         }
