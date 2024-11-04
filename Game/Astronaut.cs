@@ -38,7 +38,7 @@ namespace Spacebox.Game
         public Astronaut(Vector3 position, float aspectRatio)
             : base(position, aspectRatio)
         {
-            _spotLight = new SpotLight(new Shader("Shaders/lighting"), Front);
+            _spotLight = new SpotLight(ShaderManager.GetShader("Shaders/lighting"), Front);
             FOV = MathHelper.DegreesToRadians(90);
             Layer = CollisionLayer.Player;
             Debug.RemoveCollisionToDraw(this);

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
 namespace Spacebox.Common
@@ -21,7 +18,7 @@ namespace Spacebox.Common
 
         public TextRenderer( BitmapFont font, int screenWidth, int screenHeight)
         {
-            _shader =  new Shader("Shaders/font"); 
+            _shader =  ShaderManager.GetShader("Shaders/font"); 
             _font = font;
 
             // Создаем ортографическую проекцию для 2D отрисовки

@@ -121,6 +121,9 @@ namespace Spacebox.Common.SceneManagment
                     Scene sceneBase = CurrentScene as Scene;
                     sceneBase.Dispose();
 
+                    ShaderManager.Dispose();
+                    TextureManager.Dispose();
+
                     CurrentScene.UnloadContent();
                     Debug.Clear();
                 }

@@ -17,7 +17,7 @@ namespace Spacebox.Common
 
         public Material()
         {
-            Shader = new Shader("Shaders/colored");
+            Shader = ShaderManager.GetShader("Shaders/colored");
 
         }
 

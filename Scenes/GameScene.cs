@@ -68,8 +68,8 @@ namespace Spacebox.Scenes
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, GameData._vertices.Length * sizeof(float), GameData._vertices, BufferUsageHint.StaticDraw);
 
-            _lightingShader = new Shader("Shaders/lighting"); // shader vert lighting frag
-            _lampShader = new Shader("Shaders/shader");
+            _lightingShader = ShaderManager.GetShader("Shaders/lighting"); // shader vert lighting frag
+            _lampShader = ShaderManager.GetShader("Shaders/shader");
 
             {
                 _vaoModel = GL.GenVertexArray();
@@ -159,7 +159,7 @@ namespace Spacebox.Scenes
            
 
             Texture2D skyboxTexture = new Texture2D("Resources/Textures/Skybox/skybox2.png", true);
-            Shader skyboxShader = new Shader("Shaders/skybox");
+            Shader skyboxShader = ShaderManager.GetShader("Shaders/skybox");
 
             Material skyboxMaterial = new Material(skyboxShader, skyboxTexture);
 
@@ -168,7 +168,7 @@ namespace Spacebox.Scenes
 
             Texture2D skyboxTexture2 = new Texture2D
                 ("Resources/Textures/Skybox/skybox_01.jpg", false);
-            Shader skyboxShader2 = new Shader("Shaders/skybox");
+            Shader skyboxShader2 = ShaderManager.GetShader("Shaders/skybox");
 
             Material skyboxMaterial2 = new Material(skyboxShader2, skyboxTexture2);
 

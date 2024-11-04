@@ -91,6 +91,8 @@ namespace Spacebox.Common
             }
 
             LoadTextureFromPixels();
+
+            GameConsole.Debug("[Texture2D] Loaded: " + path);
         }
 
         private void LoadTextureFromPixels()

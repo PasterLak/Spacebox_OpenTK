@@ -11,28 +11,27 @@ namespace Spacebox.Managers
     {
         private List<BlockDestructionEffect> activeEffects = new List<BlockDestructionEffect>();
         private Camera camera;
-
+        Texture2D texture;
+        Shader shader;
         public BlockDestructionManager(Camera camera)
         {
             this.camera = camera;
+
+           
+            texture = TextureManager.GetTexture("Resources/Textures/blockDust.png", true); 
+
+            shader = ShaderManager.GetShader("Shaders/particleShader");
         }
 
-        /// <summary>
-        /// Инициирует разрушение блока на заданной позиции.
-        /// </summary>
-        /// <param name="position">Позиция разрушенного блока.</param>
+    
         public void DestroyBlock(Vector3 position, Vector3 color)
         {
             Console.WriteLine("Block destroyed: " + position);
             var destructionEffect = new BlockDestructionEffect(camera, position + 
-                new Vector3(0.5f, 0.5f, 0.5f), color);
+                new Vector3(0.5f, 0.5f, 0.5f), color, texture, shader);
             activeEffects.Add(destructionEffect);
         }
 
-        /// <summary>
-        /// Обновляет все активные эффекты разрушения блоков.
-        /// </summary>
-        /// <param name="deltaTime">Прошедшее время с последнего обновления.</param>
         public void Update()
         {
             for (int i = activeEffects.Count - 1; i >= 0; i--)

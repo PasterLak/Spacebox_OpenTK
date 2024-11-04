@@ -1,6 +1,5 @@
 ﻿using ImGuiNET;
 using Spacebox.Extensions;
-using System;
 using System.Numerics;
 
 namespace Spacebox.Common

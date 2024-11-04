@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿
 using System.Numerics;
 using System.IO;
 using ImGuiNET;
@@ -46,6 +44,7 @@ namespace Spacebox.Common
             RegisterCommand(new ColorCommand());
             RegisterCommand(new HelpCommand());
             RegisterCommand(new ExitCommand());
+            RegisterCommand(new ResourcesCommand());
         }
 
         public static void RegisterCommand(ICommand command)

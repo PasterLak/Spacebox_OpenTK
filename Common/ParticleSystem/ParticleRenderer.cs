@@ -20,21 +20,15 @@ namespace Spacebox.Common
         private List<Matrix4> instanceTransforms = new List<Matrix4>();
         private List<Vector4> instanceColors = new List<Vector4>();
 
-        public ParticleRenderer(Texture2D texture, ParticleSystem system, bool debugShader)
+        public ParticleRenderer(Texture2D texture, ParticleSystem system, Shader shader)
         {
-            shader = debugShader ? new Shader("Shaders/particleDebug") : new Shader("Shaders/particleShader");
+            this.shader = shader;
             this.texture = texture;
             this.particleSystem = system;
             Initialize();
         }
 
-        public ParticleRenderer(Texture2D texture, ParticleSystem system)
-        {
-            shader = new Shader("Shaders/particleShader");
-            this.texture = texture;
-            this.particleSystem = system;
-            Initialize();
-        }
+   
 
         private void Initialize()
         {

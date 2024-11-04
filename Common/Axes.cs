@@ -27,7 +27,7 @@ public class Axes
         Length = length;
         Rotation = Vector3.Zero;
 
-        _shader = new Shader("Shaders/axes");
+        _shader = ShaderManager.GetShader("Shaders/axes");
 
         UpdateVertices();
         SetupBuffers();
@@ -39,7 +39,7 @@ public class Axes
         Length = length;
         Rotation = rotation;
 
-        _shader = new Shader("Shaders/axes");
+        _shader = ShaderManager.GetShader("Shaders/axes");
 
         UpdateVertices();
         SetupBuffers();

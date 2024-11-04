@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using System.Diagnostics;
 
 namespace Spacebox.Common
 {
@@ -35,7 +36,8 @@ namespace Spacebox.Common
 
         private static void Initialize()
         {
-            _shader = new Shader("Shaders/debug");
+            
+            _shader = ShaderManager.AddPermanentShader("Shaders/debug");
 
             // Initialize Points VAO and VBO
             _vaoPoints = GL.GenVertexArray();

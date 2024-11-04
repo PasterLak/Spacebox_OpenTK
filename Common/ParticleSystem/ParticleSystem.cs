@@ -8,7 +8,7 @@ namespace Spacebox.Common
     {
         private List<Particle> particles = new List<Particle>();
         public Emitter Emitter { get; set; }
-        public ParticleRenderer Renderer { get; private set; }
+        public ParticleRenderer Renderer { get;  set; }
 
         public int MaxParticles { get; set; } = 1000;
         public float SpawnRate { get; set; } = 100f;
@@ -18,7 +18,7 @@ namespace Spacebox.Common
         //public Vector3 EmitterDirection { get; set; } = Vector3.UnitY;
         public bool UseLocalCoordinates { get; set; } = true;
 
-        public ParticleSystem(Texture2D texture)
+        public ParticleSystem(Texture2D texture, Shader shader)
         {
             Emitter = new Emitter(this)
             {
@@ -35,7 +35,7 @@ namespace Spacebox.Common
                 SpeedMax = 0f
                 //UseLocalCoordinates = true
             };
-            Renderer = new ParticleRenderer(texture, this, debugShader: false);
+            Renderer = new ParticleRenderer(texture, this, shader);
         }
 
         public void Update()

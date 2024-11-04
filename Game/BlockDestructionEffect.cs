@@ -18,19 +18,20 @@ namespace Spacebox.Scenes
 
         public bool IsFinished => elapsedTime >= duration && particleSystem.GetParticles().Count == 0;
 
-        public BlockDestructionEffect(Camera camera, Vector3 position, Vector3 color)
+        public BlockDestructionEffect(Camera camera, Vector3 position, Vector3 color, Texture2D texture, Shader shader)
         {
             this.camera = camera;
             
-            Initialize(position);
+            Initialize(position,  texture,  shader);
             particleSystem.Renderer.shader.SetVector3("color", color);
         }
 
-        private void Initialize(Vector3 position)
+        private void Initialize(Vector3 position, Texture2D texture, Shader shader)
         {
-            dustTexture = new Texture2D("Resources/Textures/blockDust.png", true);
+            //dustTexture = new Texture2D("Resources/Textures/blockDust.png", true);
+            dustTexture = texture;
 
-            particleSystem = new ParticleSystem(dustTexture)
+            particleSystem = new ParticleSystem(dustTexture, shader)
             {
                 Position = position,
                 UseLocalCoordinates = false,
@@ -39,6 +40,8 @@ namespace Spacebox.Scenes
                 MaxParticles = 30,
                 SpawnRate = 1000f
             };
+
+            //particleSystem.Renderer = new ParticleRenderer(texture, particleSystem, shader);
 
             var emitter = new Emitter(particleSystem)
             {
@@ -60,9 +63,10 @@ namespace Spacebox.Scenes
 
             particleSystem.Emitter = emitter;
 
-            particleShader = new Shader("Shaders/particleShader");
-            particleShader.Use();
-            particleShader.SetInt("particleTexture", 0);
+            //particleShader = new Shader("Shaders/particleShader");
+            particleShader = shader;
+            //particleShader.Use();
+            //particleShader.SetInt("particleTexture", 0);
         }
 
         public void Update()
@@ -93,8 +97,8 @@ namespace Spacebox.Scenes
         public void Dispose()
         {
             particleSystem.Dispose();
-            dustTexture.Dispose();
-            particleShader.Dispose();
+            //dustTexture.Dispose();
+            //particleShader.Dispose();
         }
     }
 }

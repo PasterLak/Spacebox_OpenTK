@@ -14,8 +14,6 @@ namespace Spacebox.Scenes
     internal class SpaceMenuScene : Scene
     {
 
-        Sprite sprite;
-
         Skybox skybox;
        
         private Shader skyboxShader;
@@ -35,20 +33,20 @@ namespace Spacebox.Scenes
 
             // GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             GL.ClearColor(0, 0, 0, 0);
-            Texture2D block = UVAtlas.GetBlockTexture(new Texture2D("Resources/Textures/blocks.png", true), 5, 0);
+            Texture2D block = UVAtlas.GetBlockTexture(TextureManager.GetTexture("Resources/Textures/blocks.png",true), 5, 0);
 
             Texture2D iso = IsometricIcon.CreateIsometricIcon(block);
 
             float winX = Window.Instance.Size.X;
             float winY = Window.Instance.Size.Y;
 
-            sprite = new Sprite("Resources/Textures/cat.png", new Vector2(winX/2,300), new Vector2(50,50));
+            
             //sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
             //GL.Enable(EnableCap.DepthTest);
 
             player = new Astronaut(new Vector3(0,0,0), 16 / 9f);
 
-            skyboxShader = new Shader("Shaders/skybox");
+            skyboxShader = ShaderManager.GetShader("Shaders/skybox");
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader,
                 new SpaceTexture(512, 512));
             skybox.IsAmbientAffected = false;
@@ -124,7 +122,7 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
-            sprite.Dispose();
+          
 
             skybox.Texture.Dispose();
 
@@ -136,14 +134,11 @@ namespace Spacebox.Scenes
         public override void Update()
         {
 
-            sprite.Shader.SetFloat("time", (float)GLFW.GetTime());
-            sprite.Shader.SetVector2("screen", new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
-            sprite.Shader.SetVector2("mouse", new Vector2(0, 0));
-
+            
             CenteredImage.Update();
             spawner.Update();
             //sprite.UpdateWindowSize(Window.Instance.Size);
-            sprite.UpdateSize(Window.Instance.Size);
+           
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
 
             if (Input.IsKeyDown(Keys.Enter))
@@ -156,10 +151,7 @@ namespace Spacebox.Scenes
                 SceneManager.LoadScene(typeof(MenuScene));
             }
 
-            if (Input.IsKeyDown(Keys.R))
-            {
-                sprite.Shader.ReloadShader();
-            }
+           
 
         }
     }

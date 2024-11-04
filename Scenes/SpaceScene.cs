@@ -50,7 +50,7 @@ namespace Spacebox.Scenes
             PlayerSaveLoadManager.LoadPlayer(player);
 
 
-            skyboxShader = new Shader("Shaders/skybox");
+            skyboxShader = ShaderManager.GetShader("Shaders/skybox");
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader, 
                 new SpaceTexture(512,512) );
             skybox.Scale = new Vector3(100,100,100);
@@ -77,10 +77,10 @@ namespace Spacebox.Scenes
             //chunk = new Chunk(new Vector3(0,0,0));
             
 
-            blocksShader = new Shader("Shaders/block");
+            blocksShader = ShaderManager.GetShader("Shaders/block");
             blockTexture = GameBlocks.AtlasTexture;
 
-            lightAtlas = new Texture2D("Resources/Textures/lightAtlas.png", true);
+            lightAtlas = TextureManager.GetTexture("Resources/Textures/lightAtlas.png", true);
 
             blocksShader.Use();
             blocksShader.SetInt("texture0", 0);

@@ -75,7 +75,7 @@ namespace Spacebox
 
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
             
-            Theme.ApplyDarkTheme();
+            //Theme.ApplyDarkTheme();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -257,6 +257,10 @@ namespace Spacebox
             }
             AudioManager.Instance.Dispose();
             NumberStorage.SaveNumbers(path, Location.X, Location.Y);
+
+            ShaderManager.DisposeAll();
+            TextureManager.DisposeAll();
+
             Close();
         }
 

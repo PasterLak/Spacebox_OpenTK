@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+
 using Spacebox.Common;
 
 namespace Spacebox.GUI
@@ -36,20 +37,20 @@ namespace Spacebox.GUI
             _windowWidth = Window.Instance.Size.X;
             _windowHeight = Window.Instance.Size.Y;
 
-            _shader = shader ?? new Shader("Shaders/sprite");
+            _shader = shader ?? ShaderManager.GetShader("Shaders/sprite");
 
             Initialize();
         }
 
         public Sprite(string imagePath, Vector2 position, Vector2 size, bool pixelated = false, Shader shader = null)
         {
-            _texture = new Texture2D(imagePath, pixelated);
+            _texture = TextureManager.GetTexture(imagePath, pixelated);
             _position = position;
             _size = size;
             _windowWidth = Window.Instance.Size.X;
             _windowHeight = Window.Instance.Size.Y;
 
-            _shader = shader ?? new Shader("Shaders/sprite");
+            _shader = shader ?? ShaderManager.GetShader("Shaders/sprite");
 
             Initialize();
         }
