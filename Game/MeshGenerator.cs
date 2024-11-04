@@ -1,10 +1,4 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Entities;
-using Spacebox.Game.Generation;
-using Spacebox.Game.Lighting;
-using Spacebox.Game.Rendering;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Spacebox.Game.Rendering

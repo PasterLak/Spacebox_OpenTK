@@ -1,7 +1,7 @@
 ﻿
-namespace Spacebox.Game.Inventory
+namespace Spacebox.Game
 {
-    internal class Inventory : Storage
+    public class Inventory : Storage
     {
         public Inventory(byte sizeX, byte sizeY) : base(sizeX, sizeY)
         {

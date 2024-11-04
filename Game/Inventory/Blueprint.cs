@@ -1,8 +1,8 @@
 ﻿
 
-namespace Spacebox.Game.Inventory
+namespace Spacebox.Game
 {
-    internal class Blueprint
+    public class Blueprint
     {
     }
 }

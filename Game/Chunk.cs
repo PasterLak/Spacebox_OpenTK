@@ -7,7 +7,6 @@ using Spacebox.Game.Lighting;
 using Spacebox.Game.Rendering;
 using Spacebox.GUI;
 using Spacebox.Managers;
-using System;
 
 namespace Spacebox.Game
 {
@@ -28,7 +27,7 @@ namespace Spacebox.Game
 
         private BlockDestructionManager destructionManager;
 
-        // Новый конструктор, принимающий BlockDestructionManager
+        
         public Chunk(Vector3 position)
             : this(position, null, isLoaded: false)
         {
@@ -129,10 +128,6 @@ namespace Spacebox.Game
 
             GenerateMesh();
 
-           
-            
-            
-            
         }
 
         public Block GetBlock(Vector3 pos)

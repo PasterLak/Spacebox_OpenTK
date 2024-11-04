@@ -24,7 +24,7 @@ namespace Spacebox.Common
         public Vector3 EmitterDirection { get; set; } = Vector3.UnitY; 
         public bool UseLocalCoordinates { get; set; } = true;
 
-        // Новый флаг для управления случайным направлением
+        
         public bool EnableRandomDirection { get; set; } = false;
 
         public Emitter(ParticleSystem system)
@@ -43,15 +43,15 @@ namespace Spacebox.Common
 
             if (EnableRandomDirection)
             {
-                // Генерация случайного направления
+               
                 Vector3 randomDirection = RandomUnitVector();
-                // Генерация скорости на основе направления и диапазона скоростей
+               
                 float speed = MathHelper.Lerp(SpeedMin, SpeedMax, (float)random.NextDouble());
                 velocity = randomDirection * speed;
             }
             else
             {
-                // Использование фиксированного направления эмиттера
+               
                 velocity = EmitterDirection * MathHelper.Lerp(SpeedMin, SpeedMax, (float)random.NextDouble());
             }
 

@@ -1,6 +1,6 @@
 ﻿
 
-namespace Spacebox.Game.Inventory
+namespace Spacebox.Game
 {
     public interface IStorage
     {
@@ -10,7 +10,7 @@ namespace Spacebox.Game.Inventory
         public void UpdateItem();
     }
 
-    public class Storage : IStorage
+    public class Storage
     {
         private static uint MaxId = 0;
 
@@ -34,9 +34,9 @@ namespace Spacebox.Game.Inventory
             Slots = new ItemSlot[SizeX, SizeY];
         }
 
-        public void AddItem()
+        public bool TryAddItem(Item item, short count)
         {
-
+            return false;
         }
 
         public void DeleteItem()
@@ -46,6 +46,19 @@ namespace Spacebox.Game.Inventory
 
         public bool HasItem()
         {
+            return true;
+        }
+
+        public bool HasFreeSlots()
+        {
+            for(int x = 0; x < Slots.GetLength(0); x++)
+            {
+                for (int y = 0; y < Slots.GetLength(1); y++)
+                {
+
+                }
+            }
+
             return true;
         }
 

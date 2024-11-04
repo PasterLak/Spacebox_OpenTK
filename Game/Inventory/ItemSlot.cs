@@ -1,8 +1,8 @@
 ﻿
 
-namespace Spacebox.Game.Inventory
+namespace Spacebox.Game
 {
-    internal class ItemSlot
+    public class ItemSlot
     {
         public Item? Item;
         public byte Count;

@@ -23,8 +23,8 @@ namespace Spacebox.Scenes
 
         private void Initialize()
         {
-         
-            dustTexture = new Texture2D("Resources/Textures/dust.png", true);
+
+            dustTexture = TextureManager.GetTexture("Resources/Textures/dust.png", true);
             
             particleShader = ShaderManager.GetShader("Shaders/particleShader");
 

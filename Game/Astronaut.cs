@@ -6,6 +6,9 @@ namespace Spacebox.Game
 {
     public class Astronaut : Camera360, INotTransparent
     {
+
+        public string Name { get; private set; } = "Player";
+
         private short _currentBlockId = 1;
         public short CurrentBlockId
         {
@@ -18,6 +21,8 @@ namespace Spacebox.Game
         }
 
         public Action<short> OnCurrentBlockChanged;
+
+        public Inventory Inventory { get; private set; }
 
         private float _cameraSpeed = 2.5f;
         private float _shiftSpeed = 5.5f;
@@ -33,6 +38,8 @@ namespace Spacebox.Game
 
         private InertiaController _inertiaController = new InertiaController();
         private CameraSway _cameraSway = new CameraSway();
+
+       
 
         public Astronaut(Vector3 position, float aspectRatio)
             : base(position, aspectRatio)
@@ -70,6 +77,8 @@ namespace Spacebox.Game
         private void SetData()
         {
             GameConsole.OnVisibilityWasChanged += OnGameConsole;
+
+            Inventory = new Inventory(10,6);
         }
 
         private void OnGameConsole(bool state)
@@ -81,7 +90,7 @@ namespace Spacebox.Game
         {
             _inertiaController.Enabled = true;
             _inertiaController.DecelerationRate = 1.5f;
-            _inertiaController.MaxSpeed = 10.0f;
+            _inertiaController.MaxSpeed = 15.0f;
             _inertiaController.AccelerationRate = 4.0f;
         }
 

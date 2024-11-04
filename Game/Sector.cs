@@ -1,17 +1,20 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
-using Spacebox.Managers;
-using System.Collections.Generic;
 
 namespace Spacebox.Game
 {
     public class Sector
     {
+        public const short SizeBlocks = 32;
+        public const short SizeBlocksHalf = SizeBlocks / 2;
+
         public Vector3 Position { get; private set; }
         public Vector3i Index { get; private set; }
         public List<Chunk> Chunks { get; private set; }
 
         public World World { get; private set; }
+
+        public BoundingBox BoundingBox { get; private set; }
 
        
         public Sector(Vector3 position, Vector3i index, World world)
@@ -22,6 +25,8 @@ namespace Spacebox.Game
 
             InitializeChunks();
             World = world;
+
+            BoundingBox = new BoundingBox(position + new Vector3(SizeBlocksHalf, SizeBlocksHalf, SizeBlocksHalf), new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));
         }
 
         private void InitializeChunks()
@@ -50,6 +55,8 @@ namespace Spacebox.Game
             {
                 chunk.Test(World.Player); // Assuming you have a reference to the player
             }
+
+            Debug.DrawBoundingBox(BoundingBox, Color4.Yellow);
         }
 
         public void Render(Shader shader)

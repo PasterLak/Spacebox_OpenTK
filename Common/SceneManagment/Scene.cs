@@ -1,6 +1,4 @@
 ﻿using OpenTK.Windowing.Desktop;
-using Spacebox.Common;
-using OpenTK.Graphics.OpenGL4;
 using Spacebox.Common.Audio;
 
 namespace Spacebox.Common.SceneManagment
@@ -10,7 +8,6 @@ namespace Spacebox.Common.SceneManagment
         protected GameWindow Content;
       
         public SceneManager SceneManager { get; private set; }
-
 
         public SoundManager SoundManager { get; private set; }
         public CollisionManager CollisionManager { get; private set; }

@@ -1,8 +1,8 @@
 ﻿
 
-namespace Spacebox.Game.Inventory
+namespace Spacebox.Game
 {
-    internal class Item
+    public class Item
     {
         public short Id;
         public byte StackSize;

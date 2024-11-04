@@ -5,6 +5,7 @@ namespace Spacebox.Game
 {
     public class World
     {
+        public static Random Random;
         private Octree<Sector> sectorOctree;
         private Dictionary<Vector3i, Sector> sectorsByIndex;
         public Astronaut Player { get; private set; }
@@ -14,14 +15,23 @@ namespace Spacebox.Game
 
         private const float ShiftThreshold = 40;
 
+        private WorldData worldData;
+
         public World(Astronaut player)
         {
+            Random = new Random(LoadSeed());
+
             Player = player;
             sectorOctree = new Octree<Sector>(SectorSize * 8, Vector3.Zero, SectorSize, 1.0f);
             sectorsByIndex = new Dictionary<Vector3i, Sector>();
             //InitializeSectors();
             AddSector(new Vector3i(0,0,0));
 
+        }
+
+        private int LoadSeed()
+        {
+            return 481516234;
         }
 
         private void InitializeSectors()
