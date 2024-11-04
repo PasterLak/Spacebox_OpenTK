@@ -16,6 +16,8 @@ namespace Spacebox.Common
         public Vector3 Up => _up;
         public Vector3 Right => _right;
 
+        public CameraFrustum Frustum { get; private set; } = new CameraFrustum();
+
         public float Fov
         {
             get => MathHelper.RadiansToDegrees(FOV);
@@ -37,15 +39,13 @@ namespace Spacebox.Common
 
         public virtual void Update()
         {
-            if (Debug.ShowDebug)
-            {
-                Debug.ProjectionMatrix = GetProjectionMatrix();
-                Debug.ViewMatrix = GetViewMatrix();
-            }
+
+            
         }
 
         public virtual Matrix4 GetViewMatrix()
         {
+            
             return Matrix4.LookAt(Position, Position + _front, _up);
         }
 

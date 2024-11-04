@@ -7,6 +7,7 @@ version 0.0.5
 - texture manager
 - resources optimization
 - inventory, items code
+- Camera Frustum
 
 
 

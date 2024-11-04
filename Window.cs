@@ -11,6 +11,7 @@ using Spacebox.Common.SceneManagment;
 using Dear_ImGui_Sample;
 using System;
 using Spacebox.Extensions;
+using Spacebox.Entities;
 
 namespace Spacebox
 {
@@ -298,8 +299,11 @@ namespace Spacebox
             GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
 
             OnResized?.Invoke(Size);
-        
 
+            if (Camera.Main != null)
+            {
+                Camera.Main.AspectRatio = (float)Size.X / Size.Y;
+            }
             _controller.WindowResized(ClientSize.X, ClientSize.Y);
         }
 

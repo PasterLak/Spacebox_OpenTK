@@ -117,8 +117,47 @@ namespace Spacebox.Game
             Console.WriteLine($"Astronaut stopped colliding with {other.GetType().Name}");
         }
 
-        public new void Update()
+        public static void PrintMatrix(Matrix4 matrix)
         {
+            Console.WriteLine("Matrix4:");
+            for (int i = 0; i < 4; i++)
+            {
+                Console.WriteLine($"{matrix[i, 0]}, {matrix[i, 1]}, {matrix[i, 2]}, {matrix[i, 3]}");
+            }
+            Console.WriteLine();
+        }
+
+        public override void Update()
+        {
+            Matrix4 viewMatrix = GetViewMatrix();
+            Matrix4 projectionMatrix = GetProjectionMatrix();
+            Frustum.UpdateFrustum(viewMatrix, projectionMatrix);
+
+            Debug.ProjectionMatrix = projectionMatrix;
+            Debug.ViewMatrix = viewMatrix;
+
+            Debug.DrawLine(Vector3.Zero, new Vector3(-1,-1,-1),Color4.Red);
+
+            if (Debug.ShowDebug)
+            {
+                Debug.ProjectionMatrix = GetProjectionMatrix();
+                Debug.ViewMatrix = GetViewMatrix();
+            }
+
+            if(Input.IsKeyDown(Keys.K))
+            {
+                PrintMatrix(GetModelMatrix());
+                Debug.CameraFrustum = Frustum.Copy();
+                
+            }
+
+            if(Debug.CameraFrustum != null)
+            {
+                Debug.DrawFrustum(Debug.CameraFrustum, Color4.Green);
+            }
+
+           
+
 
             if (!CanMove) return;
 
@@ -166,11 +205,13 @@ namespace Spacebox.Game
         public override Matrix4 GetViewMatrix()
         {
             Quaternion sway = _cameraSway.GetSwayRotation();
-            Quaternion combinedRotation = sway * GetRotation();
+            Quaternion combinedRotation = GetRotation() * sway;
             Vector3 newFront = Vector3.Transform(-Vector3.UnitZ, combinedRotation);
             Vector3 newUp = Vector3.Transform(Vector3.UnitY, combinedRotation);
             return Matrix4.LookAt(Position, Position + newFront, newUp);
         }
+
+
 
         private void HandleInput()
         {

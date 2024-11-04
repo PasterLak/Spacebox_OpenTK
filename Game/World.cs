@@ -25,7 +25,7 @@ namespace Spacebox.Game
             sectorOctree = new Octree<Sector>(SectorSize * 8, Vector3.Zero, SectorSize, 1.0f);
             sectorsByIndex = new Dictionary<Vector3i, Sector>();
             //InitializeSectors();
-            AddSector(new Vector3i(0,0,0));
+            //AddSector(new Vector3i(0,0,0));
 
         }
 

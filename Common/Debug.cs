@@ -29,6 +29,8 @@ namespace Spacebox.Common
 
         private static List<Collision> _collisions = new List<Collision>();
 
+
+        public static CameraFrustum CameraFrustum;
         static Debug()
         {
             Initialize();
@@ -190,11 +192,7 @@ namespace Spacebox.Common
             _triangles.Add(color.A);
         }
 
-        /// <summary>
-        /// Рисует BoundingBox как набор линий.
-        /// </summary>
-        /// <param name="box">BoundingBox для отрисовки.</param>
-        /// <param name="color">Цвет линий.</param>
+
         public static void DrawBoundingBox(BoundingBox box, Color4 color)
         {
             if (box == null) return;
@@ -293,6 +291,32 @@ namespace Spacebox.Common
                 }
             }
         }
+
+        public static void DrawFrustum(CameraFrustum frustum, Color4 color)
+        {
+           
+            Vector3[] frustumCorners = frustum.GetCorners();
+
+            // Рисуем 12 ребер фрустума
+            // Нижняя грань
+            DrawLine(frustumCorners[0], frustumCorners[1], color);
+            DrawLine(frustumCorners[1], frustumCorners[2], color);
+            DrawLine(frustumCorners[2], frustumCorners[3], color);
+            DrawLine(frustumCorners[3], frustumCorners[0], color);
+
+            // Верхняя грань
+            DrawLine(frustumCorners[4], frustumCorners[5], color);
+            DrawLine(frustumCorners[5], frustumCorners[6], color);
+            DrawLine(frustumCorners[6], frustumCorners[7], color);
+            DrawLine(frustumCorners[7], frustumCorners[4], color);
+
+            // Вертикальные ребра
+            DrawLine(frustumCorners[0], frustumCorners[4], color);
+            DrawLine(frustumCorners[1], frustumCorners[5], color);
+            DrawLine(frustumCorners[2], frustumCorners[6], color);
+            DrawLine(frustumCorners[3], frustumCorners[7], color);
+        }
+
 
 
         public static void Render() // in Window loop

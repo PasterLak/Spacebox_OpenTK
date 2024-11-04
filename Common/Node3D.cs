@@ -36,6 +36,7 @@ namespace Spacebox.Common
             var rotationZ = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(Rotation.Z));
             var rotation = rotationZ * rotationY * rotationX;
             var scale = Matrix4.CreateScale(Scale);
+
             return scale * rotation * translation;
         }
 

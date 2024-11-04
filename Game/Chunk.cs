@@ -27,10 +27,12 @@ namespace Spacebox.Game
 
         private BlockDestructionManager destructionManager;
 
-        
+        private BoundingBox boundingBox;
         public Chunk(Vector3 position)
             : this(position, null, isLoaded: false)
         {
+
+            CreateBoundingBox();
         }
 
         // Внутренний конструктор с передачей BlockDestructionManager
@@ -38,6 +40,7 @@ namespace Spacebox.Game
         {
             Position = position;
             Blocks = new Block[Size, Size, Size];
+            CreateBoundingBox();
             this.destructionManager = new BlockDestructionManager(Camera.Main);
 
             if (isLoaded && loadedBlocks != null)
@@ -58,6 +61,15 @@ namespace Spacebox.Game
             _meshGenerator = new MeshGenerator(Blocks, MeasureGenerationTime);
             _mesh = _meshGenerator.GenerateMesh();
             _isLoadedOrGenerated = true;
+        }
+
+        private void CreateBoundingBox()
+        {
+            Vector3 chunkMin = Position;
+            Vector3 chunkMax = Position + new Vector3(Size);
+            boundingBox = BoundingBox.CreateFromMinMax(chunkMin, chunkMax);
+
+            GameConsole.Debug("CHUNK new");
         }
 
         public void GenerateMesh()
@@ -85,10 +97,8 @@ namespace Spacebox.Game
 
             if (ShowChunkBounds && Spacebox.Common.Debug.ShowDebug)
             {
-                Vector3 chunkMin = Position;
-                Vector3 chunkMax = Position + new Vector3(Size);
-                BoundingBox chunkBounds = BoundingBox.CreateFromMinMax(chunkMin, chunkMax);
-                Spacebox.Common.Debug.DrawBoundingBox(chunkBounds, new Color4(0.5f, 0f, 0.5f, 1f));
+               
+                Spacebox.Common.Debug.DrawBoundingBox(boundingBox, new Color4(0.5f, 0f, 0.5f, 1f));
             }
             destructionManager.Render();
 
@@ -259,7 +269,20 @@ namespace Spacebox.Game
                 ChunkSaveLoadManager.SaveChunk(this);
             }
 
-            destructionManager.Update();
+            if (player.Frustum.IsInFrustum(boundingBox))
+            {
+                //Console.WriteLine("Visible!" + boundingBox);
+                TagText.SetText("Visible");
+               
+            }
+            else
+            {
+                // Console.WriteLine("Not Visible!");
+                TagText.SetText("Not Visible");
+                
+            }
+
+                destructionManager.Update();
 
             Vector3 rayOrigin = player.Position;
 

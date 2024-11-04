@@ -21,7 +21,7 @@ namespace Spacebox.Scenes
         World world;
         private Shader skyboxShader;
 
-        private Chunk chunk;
+        
         private Sector sector;
         Shader blocksShader;
         private Texture2D blockTexture;
@@ -224,6 +224,7 @@ namespace Spacebox.Scenes
             if(ShowBlocksList)
             BlocksOverlay.OnGUI(player);
             CenteredText.Draw();
+            TagText.Draw();
         }
 
         public override void UnloadContent()

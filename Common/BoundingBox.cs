@@ -123,15 +123,10 @@ namespace Spacebox.Common
     public class Ray
     {
         public Vector3 Origin { get; set; }
-        public Vector3 Direction { get; set; } // Должен быть нормализован
-        public float Length { get; set; } // Максимальная длина луча
+        public Vector3 Direction { get; set; } 
+        public float Length { get; set; } 
 
-        /// <summary>
-        /// Создаёт новый луч с заданным началом, направлением и длиной.
-        /// </summary>
-        /// <param name="origin">Начальная точка луча.</param>
-        /// <param name="direction">Направление луча (нормализованное).</param>
-        /// <param name="length">Максимальная длина луча.</param>
+ 
         public Ray(Vector3 origin, Vector3 direction, float length)
         {
             Origin = origin;
@@ -139,10 +134,7 @@ namespace Spacebox.Common
             Length = length;
         }
 
-        /// <summary>
-        /// Проверяет пересечение луча с BoundingSphere.
-        /// Возвращает true, если есть пересечение в пределах длины луча, и расстояние до точки пересечения.
-        /// </summary>
+
         public bool Intersects(BoundingSphere sphere, out float distance)
         {
             Vector3 oc = Origin - sphere.Center;
@@ -180,10 +172,7 @@ namespace Spacebox.Common
             }
         }
 
-        /// <summary>
-        /// Проверяет пересечение луча с BoundingBox.
-        /// Возвращает true, если есть пересечение в пределах длины луча, и расстояние до точки пересечения.
-        /// </summary>
+   
         public bool Intersects(BoundingBox box, out float distance)
         {
             distance = 0f;

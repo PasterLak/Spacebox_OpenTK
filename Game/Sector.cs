@@ -5,7 +5,7 @@ namespace Spacebox.Game
 {
     public class Sector
     {
-        public const short SizeBlocks = 32;
+        public const short SizeBlocks = 1024;
         public const short SizeBlocksHalf = SizeBlocks / 2;
 
         public Vector3 Position { get; private set; }
@@ -34,6 +34,7 @@ namespace Spacebox.Game
             // Position chunks relative to the sector's position
             Vector3 chunkPosition = Position; // Adjust if multiple chunks per sector
             Chunk loadedChunk = ChunkSaveLoadManager.LoadChunk(chunkPosition);
+            GameConsole.Debug("SECTOR CHUNK new");
             Console.WriteLine(" InitializeChunks!");
             if (loadedChunk != null)
             {
