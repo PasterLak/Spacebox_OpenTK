@@ -11,11 +11,11 @@ namespace Spacebox.Common.Audio
             if (string.IsNullOrWhiteSpace(inputPath))
                 return null;
 
-            // Проверка, является ли inputPath абсолютным путем и существует ли файл
+            
             if (Path.IsPathRooted(inputPath) && File.Exists(inputPath))
                 return Path.GetFullPath(inputPath);
 
-            // Если inputPath содержит подкаталоги, рассматриваем его как относительный к baseDirectory
+         
             string combinedPath = Path.Combine(baseDirectory, inputPath);
             if (File.Exists(combinedPath))
                 return Path.GetFullPath(combinedPath);
@@ -23,7 +23,7 @@ namespace Spacebox.Common.Audio
             string filename = Path.GetFileName(inputPath);
             string relativePath = Path.GetDirectoryName(inputPath) ?? string.Empty;
 
-            // Попытка добавить разрешенные расширения
+          
             foreach (var ext in allowedExtensions)
             {
                 string searchPath = string.IsNullOrEmpty(relativePath) ? filename + ext : Path.Combine(relativePath, filename + ext);
@@ -32,7 +32,7 @@ namespace Spacebox.Common.Audio
                     return Path.GetFullPath(fullPath);
             }
 
-            // Если inputPath не имеет расширения, попробуем все разрешенные расширения
+          
             if (Path.GetExtension(inputPath).Length == 0)
             {
                 foreach (var ext in allowedExtensions)
@@ -44,7 +44,7 @@ namespace Spacebox.Common.Audio
                 }
             }
 
-            // Поиск рекурсивно во всех подкаталогах
+          
             foreach (var ext in allowedExtensions)
             {
                 string searchPattern = Path.GetFileNameWithoutExtension(filename) + ext;

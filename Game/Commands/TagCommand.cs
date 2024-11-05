@@ -13,7 +13,7 @@ namespace Spacebox.Game.Commands
     {
         public string Name => "tag";
 
-        public string Description => "Create or delete tags";
+        public string Description => "tag <create/delete> <name>";
 
         public Astronaut Astronaut { get; set; }
 
@@ -37,6 +37,7 @@ namespace Spacebox.Game.Commands
                 if(args.Length == 2)
                 {
                     TagManager.UnregisterTagByText(args[1]);
+                    Debug.AddMessage("Tag deleted!: " + args[1], Color4.Green);
                 }
             }
 
@@ -45,6 +46,7 @@ namespace Spacebox.Game.Commands
                 if(args.Length == 2)
                 {
                     TagManager.RegisterTag(new Tag(args[1], Astronaut.Position, Color4.Yellow, true));
+                    Debug.AddMessage("Tag added!: " + args[1], Color4.Green);
                 }
 
                 if (args.Length == 5)
@@ -54,6 +56,8 @@ namespace Spacebox.Game.Commands
                     var b = int.Parse(args[3]);
 
                     TagManager.RegisterTag(new Tag(args[1], Astronaut.Position, new Color4(r,g,b,1), true));
+
+                    Debug.AddMessage("Tag added!: " + args[1], Color4.Green);
                 }
             }
             else

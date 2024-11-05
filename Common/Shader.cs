@@ -187,7 +187,7 @@ namespace Spacebox.Common
             catch (Exception ex)
             {
                 // If reloading failed, keep using the previous shader
-                Debug.DebugError("Shader reload failed: " + ex.Message);
+                Debug.Error("Shader reload failed: " + ex.Message);
                 Debug.Log("Using previous working shader.");
 
                 // Restore previous shader and uniforms

@@ -18,13 +18,13 @@ namespace Spacebox.Common
             Position = pos;
 
              trunk = new Model("Resources/Models/tree0.obj", 
-                new Material(shader, TextureManager.GetTexture("Resources/Textures/wood.png")));
+                new Material(shader, TextureManager.GetTexture("Resources/Textures/Game/wood.png")));
 
             trunk.Position = pos;
            
 
             leaves = new Model("Resources/Models/leaves.obj",
-                new Material(shader, TextureManager.GetTexture("Resources/Textures/leaves.png")));
+                new Material(shader, TextureManager.GetTexture("Resources/Textures/Game/leaves.png")));
 
             leaves.Position = pos;
 

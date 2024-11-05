@@ -1,5 +1,7 @@
 
 
+version 0.0.6
+
 version 0.0.5
 
 - wareframe mode
@@ -12,8 +14,12 @@ version 0.0.5
 - hide interface
 - Octree
 - Block painting test
+- exe icon
+- window icon
 
 
 version 0.0.4
+
+- inertia
 
 version 0.0.3

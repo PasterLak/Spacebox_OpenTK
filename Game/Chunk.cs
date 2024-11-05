@@ -282,7 +282,7 @@ namespace Spacebox.Game
             
         }
 
-
+        float maxDistance = 5f;
         public void Test(Astronaut player)
         {
             if (!_isLoadedOrGenerated) return;
@@ -301,7 +301,7 @@ namespace Spacebox.Game
             Vector3 rayOrigin = player.Position;
 
             Vector3 rayDirection = player.Front;
-            float maxDistance = 5f;
+           
 
             Ray ray = new Ray(rayOrigin, rayDirection, maxDistance);
 
@@ -312,6 +312,7 @@ namespace Spacebox.Game
 
                 Vector3 worldBlockPosition = hitBlockPosition + Position;
                 VisualDebug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.White);
+                
 
                 Block selectedBlock = Blocks[hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z];
 
@@ -336,7 +337,9 @@ namespace Spacebox.Game
 
 
 
-                VisualDebug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.05f), Color4.Red);
+                VisualDebug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.02f), Color4.Red);
+                VisualDebug.DrawLine(hitPosition, hitPosition + hitNormal * 0.5f, Color4.Red);
+               
 
                 if (selectedBlock.BlockId == 20 || selectedBlock.BlockId == 22)
                 {

@@ -46,7 +46,7 @@ namespace Spacebox.Common.Audio
 
         public AudioClip(string filename, AudioLoadMode loadMode, SoundManager soundManager)
         {
-            // Разрешаем полный путь к файлу
+            
             string resolvedPath = AudioPathResolver.ResolvePath(filename, soundManager.BaseDirectory, soundManager.AllowedExtensions);
             if (resolvedPath == null)
             {

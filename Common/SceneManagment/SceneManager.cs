@@ -33,7 +33,7 @@ namespace Spacebox.Common.SceneManagment
 
             if (Instance != null)
             {
-                Debug.DebugError("Error! There is already a SceneManager!");
+                Debug.Error("Error! There is already a SceneManager!");
                 return;
             }
 
@@ -42,7 +42,7 @@ namespace Spacebox.Common.SceneManagment
             AddScene(typeof(ErrorScene));
             if (!typeof(Scene).IsAssignableFrom(startScene))
             {
-                Debug.DebugError("The startSceneType must inherit from Scene." + nameof(startScene));
+                Debug.Error("The startSceneType must inherit from Scene." + nameof(startScene));
 
                 LoadScene(typeof(ErrorScene));
 
@@ -101,7 +101,7 @@ namespace Spacebox.Common.SceneManagment
             }
             else
             {
-                Debug.DebugError($"Error: Scene of type {sceneType.Name} must inherit from class Scene!");
+                Debug.Error($"Error: Scene of type {sceneType.Name} must inherit from class Scene!");
 
                 LoadScene(typeof(ErrorScene));
                 return;
@@ -139,14 +139,14 @@ namespace Spacebox.Common.SceneManagment
                 CurrentScene = sceneInstance;
 
 
+                Debug.Log("[SceneManager] Scene Loaded: [" + _currentSceneType.typ.Name + "] ",
+                    Color4.Yellow);
 
-               
                 CurrentScene.LoadContent();
                 CurrentScene.Awake();
                 CurrentScene.Start();
 
-                Debug.Log("[SceneManager] Scene Loaded: [" + _currentSceneType.typ.Name + "] ", 
-                    Color4.Yellow);
+                
 
             }
         }

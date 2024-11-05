@@ -60,7 +60,7 @@ namespace Spacebox.Common
 
                 if (!File.Exists(texturePath))
                 {
-                    Debug.DebugError($"[TextureManager] Texture file '{texturePath}' does not exist.");
+                    Debug.Error($"[TextureManager] Texture file '{texturePath}' does not exist.");
                     return DefaultTexture;
                 }
 
@@ -73,7 +73,7 @@ namespace Spacebox.Common
                 }
                 catch (Exception ex)
                 {
-                    Debug.DebugError($"[TextureManager] Failed to load texture '{texturePath}': {ex.Message}");
+                    Debug.Error($"[TextureManager] Failed to load texture '{texturePath}': {ex.Message}");
                     return DefaultTexture;
                 }
             }
@@ -99,7 +99,7 @@ namespace Spacebox.Common
 
                 if (!File.Exists(texturePath))
                 {
-                    Debug.DebugError($"[TextureManager] Texture file '{texturePath}' does not exist.");
+                    Debug.Error($"[TextureManager] Texture file '{texturePath}' does not exist.");
                     return DefaultTexture;
                 }
 
@@ -112,7 +112,7 @@ namespace Spacebox.Common
                 }
                 catch (Exception ex)
                 {
-                    Debug.DebugError($"[TextureManager] Failed to load permanent texture '{texturePath}': {ex.Message}");
+                    Debug.Error($"[TextureManager] Failed to load permanent texture '{texturePath}': {ex.Message}");
                     return DefaultTexture;
                 }
             }

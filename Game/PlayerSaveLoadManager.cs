@@ -43,7 +43,7 @@ namespace Spacebox.Game
             }
             catch (Exception ex)
             {
-                Debug.DebugError($"Error saving player data: {ex.Message}");
+                Debug.Error($"Error saving player data: {ex.Message}");
             }
         }
 
@@ -66,7 +66,7 @@ namespace Spacebox.Game
 
                 if (data == null)
                 {
-                    Debug.DebugError("Failed to deserialize player data.");
+                    Debug.Error("Failed to deserialize player data.");
                     return;
                 }
 
@@ -81,7 +81,7 @@ namespace Spacebox.Game
             }
             catch (Exception ex)
             {
-                Debug.DebugError($"Error loading player data: {ex.Message}");
+                Debug.Error($"Error loading player data: {ex.Message}");
             }
         }
 

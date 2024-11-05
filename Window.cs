@@ -12,6 +12,7 @@ using Dear_ImGui_Sample;
 using System;
 using Spacebox.Extensions;
 using Spacebox.Entities;
+using Spacebox.GUI;
 
 namespace Spacebox
 {
@@ -42,6 +43,7 @@ namespace Spacebox
         protected override void OnLoad()
         {
             base.OnLoad();
+            AppIconLoader.LoadAndSetIcon(this, "Resources/Textures/icon.png");
             Debug.Log("[Engine started!]");
             Input.Initialize(this);
 
@@ -113,6 +115,7 @@ namespace Spacebox
 
                 Vector2 windowSize = new Vector2(ClientSize.X, ClientSize.Y);
                 Debug.Render(windowSize.ToSystemVector2());
+                InputOverlay.OnGUI();
                 Time.EndOnGUI();
 
                 _controller.Render();
@@ -150,7 +153,7 @@ namespace Spacebox
                 }
                 catch (Exception ex)
                 {
-                    Debug.DebugError($"Exception in main thread action: {ex}");
+                    Debug.Error($"Exception in main thread action: {ex}");
                 }
             }
 

@@ -118,10 +118,10 @@ namespace Spacebox.Common
             Console.WriteLine($"[DEBUG] {message}");
         }
 
-        public static void DebugError(string message)
+        public static void Error(string message)
         {
             AddMessage($"[ERROR] {message}", new Vector4(1f, 0f, 0f, 1f));
-            Console.Error.WriteLine($"[ERROR] {message}");
+            Console.WriteLine($"[ERROR] {message}");
         }
 
         public static void ClearMessages()
@@ -322,7 +322,7 @@ namespace Spacebox.Common
                 catch (Exception ex)
                 {
                     AddMessage($"Error executing command '{cmdName}': {ex.Message}", new Vector4(1f, 0f, 0f, 1f));
-                    DebugError($"Error executing command '{cmdName}': {ex}");
+                    Error($"Error executing command '{cmdName}': {ex}");
                 }
             }
             else
@@ -408,7 +408,7 @@ namespace Spacebox.Common
             }
             catch (Exception ex)
             {
-                DebugError($"Failed to save console messages to file '{filepath}': {ex.Message}");
+                Error($"Failed to save console messages to file '{filepath}': {ex.Message}");
             }
         }
     }

@@ -30,11 +30,11 @@ namespace Spacebox.Common
                 });
 
                 File.WriteAllText(SaveFilePath, jsonString);
-                Console.WriteLine($"Ambient data saved at {SaveFilePath}");
+                //Debug.WriteLine($"Ambient data saved at {SaveFilePath}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving ambient data: {ex.Message}");
+                Debug.Error($"Error saving ambient data: {ex.Message}");
             }
         }
 
@@ -45,7 +45,7 @@ namespace Spacebox.Common
             {
                 if (!File.Exists(SaveFilePath))
                 {
-                    Console.WriteLine("Ambient save file does not exist.");
+                    //Console.WriteLine("Ambient save file does not exist.");
                     return;
                 }
 
@@ -54,7 +54,7 @@ namespace Spacebox.Common
 
                 if (data == null)
                 {
-                    Console.WriteLine("Failed to deserialize ambient data.");
+                    Debug.Error("Failed to deserialize ambient data.");
                     return;
                 }
 
@@ -62,11 +62,11 @@ namespace Spacebox.Common
                 Lighting.AmbientColor = new Vector3(data.AmbientColorX, data.AmbientColorY, data.AmbientColorZ);
                 Lighting.BackgroundColor = Color.FromArgb(data.BackgroundColorA, data.BackgroundColorR, data.BackgroundColorG, data.BackgroundColorB);
 
-                Console.WriteLine("Ambient data loaded successfully.");
+                //Console.WriteLine("Ambient data loaded successfully.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading ambient data: {ex.Message}");
+                Debug.Error($"Error loading ambient data: {ex.Message}");
             }
         }
 

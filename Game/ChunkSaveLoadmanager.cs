@@ -54,7 +54,7 @@ namespace Spacebox.Game
             }
             catch (Exception ex)
             {
-                Debug.DebugError($"Error saving chunk: {ex.Message}");
+                Debug.Error($"Error saving chunk: {ex.Message}");
             }
         }
 
@@ -97,7 +97,7 @@ namespace Spacebox.Game
             }
             catch (Exception ex)
             {
-                Debug.DebugError($"Error loading chunk: {ex.Message}");
+                Debug.Error($"Error loading chunk: {ex.Message}");
                 return null;
             }
         }

@@ -8,7 +8,7 @@ namespace Spacebox.Common
     {
         public Water(Shader shader) : 
             base("Resources/Models/plane.obj", new Material(shader,
-                TextureManager.GetTexture("Resources/Textures/water.png")))
+                TextureManager.GetTexture("Resources/Textures/Game/water.png")))
         {
 
             Material.Tiling = new Vector2(40, 40);

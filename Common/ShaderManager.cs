@@ -42,7 +42,7 @@ namespace Spacebox.Common
                 }
                 catch (Exception ex)
                 {
-                    Debug.DebugError($"[ShaderManager] Failed to load shader '{shaderPath}': {ex.Message}");
+                    Debug.Error($"[ShaderManager] Failed to load shader '{shaderPath}': {ex.Message}");
                     if (shaderPath != DefaultShaderPath)
                     {
                         try
@@ -53,7 +53,7 @@ namespace Spacebox.Common
                         }
                         catch (Exception defaultEx)
                         {
-                            Debug.DebugError($"[ShaderManager] Failed to load default shader '{DefaultShaderPath}': {defaultEx.Message}");
+                            Debug.Error($"[ShaderManager] Failed to load default shader '{DefaultShaderPath}': {defaultEx.Message}");
                             throw new Exception($"Failed to load shader '{shaderPath}' and default shader '{DefaultShaderPath}'.", ex);
                         }
                     }
@@ -83,7 +83,7 @@ namespace Spacebox.Common
                         }
                         catch (Exception ex)
                         {
-                            Debug.DebugError($"[ShaderManager] Failed to mark shader '{shaderPath}' as permanent: {ex.Message}");
+                            Debug.Error($"[ShaderManager] Failed to mark shader '{shaderPath}' as permanent: {ex.Message}");
                             throw;
                         }
                     }
@@ -99,7 +99,7 @@ namespace Spacebox.Common
                 }
                 catch (Exception ex)
                 {
-                    Debug.DebugError($"[ShaderManager] Failed to load permanent shader '{shaderPath}': {ex.Message}");
+                    Debug.Error($"[ShaderManager] Failed to load permanent shader '{shaderPath}': {ex.Message}");
                     if (shaderPath != DefaultShaderPath)
                     {
                         try
@@ -110,7 +110,7 @@ namespace Spacebox.Common
                         }
                         catch (Exception defaultEx)
                         {
-                            Debug.DebugError($"[ShaderManager] Failed to load default shader '{DefaultShaderPath}': {defaultEx.Message}");
+                            Debug.Error($"[ShaderManager] Failed to load default shader '{DefaultShaderPath}': {defaultEx.Message}");
                             throw new Exception($"Failed to load permanent shader '{shaderPath}' and default shader '{DefaultShaderPath}'.", ex);
                         }
                     }

@@ -62,7 +62,7 @@ namespace Spacebox.Common.Audio
             ALC.CloseDevice(Device);
 
             isDisposed = true;
-            Console.WriteLine("AudioManager disposed.");
+            //Debug.WriteLine("AudioManager disposed.");
         }
 
         private void CheckALError(string operation)

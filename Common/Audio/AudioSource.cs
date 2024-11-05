@@ -88,7 +88,7 @@ namespace Spacebox.Common.Audio
 
                 isPlaying = true;
                 isPaused = false;
-                Console.WriteLine("Playback started.");
+                //Console.WriteLine("Playback started.");
 
                 if (playbackThread == null || !playbackThread.IsAlive)
                 {
@@ -112,7 +112,7 @@ namespace Spacebox.Common.Audio
 
                 isPaused = true;
                 isPlaying = false;
-                Console.WriteLine("Playback paused.");
+                //Console.WriteLine("Playback paused.");
             }
         }
 
@@ -127,7 +127,7 @@ namespace Spacebox.Common.Audio
 
                 isPlaying = false;
                 isPaused = false;
-                Console.WriteLine("Playback stopped.");
+               // Console.WriteLine("Playback stopped.");
             }
         }
 
@@ -147,7 +147,7 @@ namespace Spacebox.Common.Audio
 
                 AL.SourceStop(source);
                 AL.DeleteSource(source);
-                Console.WriteLine("AudioSource disposed.");
+                //Console.WriteLine("AudioSource disposed.");
             }
         }
 
@@ -181,7 +181,7 @@ namespace Spacebox.Common.Audio
                         {
                             isPlaying = false;
                         }
-                        Console.WriteLine("Playback finished.");
+                       // Console.WriteLine("Playback finished.");
                         break;
                     }
                 }

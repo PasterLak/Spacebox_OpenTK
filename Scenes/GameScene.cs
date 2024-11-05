@@ -24,9 +24,9 @@ namespace Spacebox.Scenes
 
         private Shader _lightingShader;
 
-        private Texture _diffuseMap;
+        private Texture2D _diffuseMap;
 
-        private Texture _specularMap;
+        private Texture2D _specularMap;
         private List<Light> _lights;
 
         private Player player;
@@ -97,8 +97,8 @@ namespace Spacebox.Scenes
                 GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
             }
 
-            _diffuseMap = Texture.LoadFromFile("Resources/Textures/container2.png");
-            _specularMap = Texture.LoadFromFile("Resources/Textures/container2_specular.png");
+            _diffuseMap = TextureManager.GetTexture("Resources/Textures/Game/container2.png");
+            _specularMap = TextureManager.GetTexture("Resources/Textures/Game/container2_specular.png");
 
             //_camera = new Camera(Vector3.UnitZ * 3, Window.Instance.Size.X / (float)Window.Instance.Size.Y);
             player = new Player(new Vector3(5,2,5), Window.Instance.Size.X / (float)Window.Instance.Size.Y,
@@ -135,7 +135,7 @@ namespace Spacebox.Scenes
 
         private void LoadModels()
         {
-            Material mat = new Material(_lightingShader, new Texture2D("Resources/Textures/base.png", true));
+            Material mat = new Material(_lightingShader, new Texture2D("Resources/Textures/Game/base.png", true));
 
 
             for (int i = 0; i < 4; i++)
@@ -184,19 +184,19 @@ namespace Spacebox.Scenes
 
             Model terrain = new Model("Resources/Models/terrain.obj", 
                 new Material(_lightingShader,
-                new Texture2D("Resources/Textures/grass2.jpg", false)));
+                new Texture2D("Resources/Textures/Game/grass2.jpg", false)));
             terrain.Material.Tiling = new Vector2(25, 25);
           
 
-            Model tv = new Model("Resources/Models/tv.obj", new Material(_lightingShader, new Texture2D("Resources/Textures/tv.png", true)));
+            Model tv = new Model("Resources/Models/tv.obj", new Material(_lightingShader, new Texture2D("Resources/Textures/Game/tv.png", true)));
             tv.Position = new Vector3(2, 0.5f, 3);
             tv.Rotation = new Vector3(0, 0, 0);
 
-            Model stone1 = new Model("Resources/Models/stone1.obj", new Material(_lightingShader, new Texture2D("Resources/Textures/stone1.jpg", true)));
+            Model stone1 = new Model("Resources/Models/stone1.obj", new Material(_lightingShader, new Texture2D("Resources/Textures/Game/stone1.jpg", true)));
             stone1.Position = new Vector3(8, 0, 3);
             stone1.Rotation = new Vector3(0,45, 0);
 
-            Model cube = new Model("Resources/Models/cube.obj", new Material(_lightingShader, new Texture2D("Resources/Textures/container2.png", false)));
+            Model cube = new Model("Resources/Models/cube.obj", new Material(_lightingShader, new Texture2D("Resources/Textures/Game/container2.png", false)));
             cube.Position = new Vector3(8,0,8);
             //cube.Rotation = new Vector3(0,45,0);
 

@@ -103,7 +103,7 @@ namespace Spacebox.Common.Audio
                 }
                 else
                 {
-                    Console.WriteLine($"Attempted to release AudioClip '{name}' which is not loaded.");
+                    Debug.Error($"Attempted to release AudioClip '{name}' which is not loaded.");
                 }
             }
         }
@@ -171,7 +171,7 @@ namespace Spacebox.Common.Audio
             }
 
             isDisposed = true;
-            Console.WriteLine("SoundManager disposed.");
+            
         }
 
         public int LoadAudioClip(string name, out int sampleRate)

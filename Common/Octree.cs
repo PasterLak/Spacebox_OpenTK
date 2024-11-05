@@ -22,7 +22,7 @@ namespace Spacebox.Common
         {
             if (minNodeSize > initialWorldSize)
             {
-                Debug.DebugError("Minimum node size must be at least as big as the initial world size. Adjusted to: " + initialWorldSize);
+                Debug.Error("Minimum node size must be at least as big as the initial world size. Adjusted to: " + initialWorldSize);
                 minSize = initialWorldSize;
             }
             else
@@ -46,7 +46,7 @@ namespace Spacebox.Common
                 Grow(objBounds.Center - rootNode.Center);
                 if (++count > 20)
                 {
-                    Debug.DebugError("Aborted Add operation after too many attempts at growing the octree.");
+                    Debug.Error("Aborted Add operation after too many attempts at growing the octree.");
                     return;
                 }
             }
