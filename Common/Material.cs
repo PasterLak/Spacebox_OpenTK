@@ -1,6 +1,8 @@
 ﻿
 
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Spacebox.Common
 {
@@ -38,9 +40,13 @@ namespace Spacebox.Common
             Shader = shader;
             CubeTexture = cubeTexture;
         }
-
+        
         public void Use()
         {
+            
+
+            //GL.PolygonMode(MaterialFace.FrontAndBack, polygonMode);
+
             Shader.SetVector2("offset", Offset);
             Shader.SetVector2("tiling", Tiling);
             Shader.SetVector4("color", Color);
@@ -48,6 +54,8 @@ namespace Spacebox.Common
             
             Texture?.Use();
             CubeTexture?.Use();
+
+            //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
         }
     }
 }

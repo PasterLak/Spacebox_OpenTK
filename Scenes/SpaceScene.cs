@@ -115,7 +115,12 @@ namespace Spacebox.Scenes
 
         }
 
-        
+        public override void Start()
+        {
+            Input.HideCursor();
+        }
+
+
 
         public override void Update()
         {
@@ -224,7 +229,7 @@ namespace Spacebox.Scenes
         public override void OnGUI()
         {
             
-            Overlay.OnGUI(player);
+            
 
             if(ShowBlocksList)
             BlocksOverlay.OnGUI(player);

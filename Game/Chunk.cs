@@ -104,7 +104,7 @@ namespace Spacebox.Game
                 shader.SetMatrix4("model", model);
                 _mesh.Draw(shader);
 
-                if (ShowChunkBounds && Spacebox.Common.VisualDebug.ShowDebug)
+                if (ShowChunkBounds && VisualDebug.ShowDebug)
                 {
 
                     VisualDebug.DrawBoundingBox(boundingBox, new Color4(0.5f, 0f, 0.5f, 1f));

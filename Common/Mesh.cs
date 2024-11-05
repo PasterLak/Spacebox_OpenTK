@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
 
@@ -17,12 +18,18 @@ namespace Spacebox.Common
         // Добавляем список для хранения позиций вершин
         public List<Vector3> VerticesPositions { get; private set; }
 
+        
+
         public Mesh(float[] vertices, int[] indices)
         {
             _indexCount = indices.Length;
 
-            // Сохраняем позиции вершин
+            
             VerticesPositions = new List<Vector3>();
+
+
+            
+            
 
             ComputeBoundingBox(vertices);
 
@@ -52,6 +59,8 @@ namespace Spacebox.Common
             GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, stride, 6 * sizeof(float));
 
             GL.BindVertexArray(0);
+            
+
         }
 
         public BoundingBox GetBounds() { return _bounds ?? new BoundingBox(Vector3.Zero, Vector3.Zero); }
@@ -81,8 +90,14 @@ namespace Spacebox.Common
 
         public void Draw()
         {
+            
+
+            
+
             GL.BindVertexArray(_vao);
             GL.DrawElements(PrimitiveType.Triangles, _indexCount, DrawElementsType.UnsignedInt, 0);
+
+            //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
         }
 
         public void Dispose()

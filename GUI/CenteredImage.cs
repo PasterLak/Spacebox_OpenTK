@@ -61,11 +61,11 @@ namespace Spacebox.Common
 
         public static void Draw(float scale = 0.5f)
         {
-            if (!_isVisible || _imageTexture == null)
+            if (_imageTexture == null)
                 return;
 
             ImGuiIOPtr io = ImGui.GetIO();
-            Vector2 displaySize = io.DisplaySize;
+            Vector2 displaySize = new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y);
 
             DrawImage(displaySize, scale);
             DrawCenterText(displaySize);
@@ -115,7 +115,8 @@ namespace Spacebox.Common
             float textPosY = displaySize.Y - displaySize.Y / 3f;
 
             ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
-            ImGui.Begin("CenterTextWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+            ImGui.SetNextWindowSize(displaySize, ImGuiCond.Always); // Set the window size
+            ImGui.Begin("CenterTextWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs);
             ImGui.SetCursorPos(new Vector2(textPosX, textPosY));
             ImGui.TextColored(textColor, "Press Enter to start");
             ImGui.End();
@@ -123,16 +124,18 @@ namespace Spacebox.Common
 
         private static void DrawGameVersion(Vector2 displaySize)
         {
-            Vector2 textSize = ImGui.CalcTextSize($"Version {Application.Version}    ") + new Vector2(5,0);
+            Vector2 textSize = ImGui.CalcTextSize($"Version {Application.Version}") + new Vector2(5, 0);
             float textPosX = 15f;
             float textPosY = displaySize.Y - textSize.Y - 20f;
 
             ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
-            ImGui.Begin("VersionTextWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+            ImGui.SetNextWindowSize(displaySize, ImGuiCond.Always); // Set the window size
+            ImGui.Begin("VersionTextWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs);
             ImGui.SetCursorPos(new Vector2(textPosX, textPosY));
             ImGui.Text($"Version {Application.Version}");
             ImGui.End();
         }
+
 
         public static void Dispose()
         {

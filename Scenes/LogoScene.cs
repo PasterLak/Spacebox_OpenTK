@@ -49,6 +49,8 @@ namespace Spacebox.Scenes
             }
 
             SceneManager.LoadScene(typeof(SpaceMenuScene));
+
+            Input.HideCursor();
         }
 
         public override void Render()

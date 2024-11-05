@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Spacebox.Common
 {
@@ -71,6 +72,8 @@ namespace Spacebox.Common
             return Path.GetFileNameWithoutExtension(modelPath);
         }
 
+       
+
         public void Draw(Camera camera)
         {
             if (BackfaceCulling)
@@ -78,7 +81,9 @@ namespace Spacebox.Common
             else
                 GL.Disable(EnableCap.CullFace);
 
-           
+
+            
+
 
             if (VisualDebug.ShowDebug)
             {
@@ -88,11 +93,15 @@ namespace Spacebox.Common
                 _axes.Render(camera.GetViewMatrix(), camera.GetProjectionMatrix());
             }
 
+            
+
             Material.Use();
             Material.Shader.SetMatrix4("model", GetModelMatrix());
             Material.Shader.SetMatrix4("view", camera.GetViewMatrix());
             Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
             Mesh.Draw();
+
+            
         }
     }
 }

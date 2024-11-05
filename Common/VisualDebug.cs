@@ -411,7 +411,7 @@ namespace Spacebox.Common
             _lines.Clear();
             _triangles.Clear();
             _collisions.Clear();
-            Console.Clear();
+            
         }
     }
 }

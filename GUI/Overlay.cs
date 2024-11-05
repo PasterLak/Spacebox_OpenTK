@@ -1,6 +1,7 @@
 ﻿// Overlay.cs
 using ImGuiNET;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Entities;
 
@@ -11,10 +12,10 @@ namespace Spacebox.GUI
 
         public static bool IsVisible = false;
 
-
-        public static void OnGUI(Node3D player)
+        
+        public static void OnGUI()
         {
-            if(Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F2))
+            if(Input.IsKeyDown(Keys.F2))
             {
                 IsVisible = !IsVisible;
             }
@@ -28,8 +29,13 @@ namespace Spacebox.GUI
             ImGui.Text($" ");
             ImGui.Text($"FPS: {Time.FPS}");
 
-            Vector3i playerPosInt = new Vector3i((int)player.Position.X, (int)player.Position.Y, (int)player.Position.Z);
-            ImGui.Text($"Camera Position: {playerPosInt}");
+            if(Camera.Main != null)
+            {
+                var cam = Camera.Main;
+                Vector3i playerPosInt = new Vector3i((int)cam.Position.X, (int)cam.Position.Y, (int)cam.Position.Z);
+                ImGui.Text($"Camera Position: {playerPosInt}");
+            }
+            
             ImGui.Text($" ");
             ImGui.Text($"[GAME LOOP DEBUG]");
             ImGui.Text($" ");

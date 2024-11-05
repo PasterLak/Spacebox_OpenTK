@@ -96,7 +96,7 @@ namespace Spacebox.Scenes
         }
         public override void Start()
         {
-
+            Input.ShowCursor();
         }
         float x = 0;
 

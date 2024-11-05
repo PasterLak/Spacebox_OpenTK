@@ -89,6 +89,17 @@ namespace Spacebox.Common
         {
             _gameWindow.CursorState = state;
         }
+        public static void HideCursor()
+        {
+            SetCursorState(CursorState.Grabbed);
+        }
+
+        public static void ShowCursor()
+        {
+            SetCursorState(CursorState.Normal);
+           
+        }
+
         public static CursorState GetCursorState()
         {
             return _gameWindow.CursorState;

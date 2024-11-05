@@ -378,7 +378,7 @@ namespace Spacebox.Scenes
 
         public override void OnGUI()
         {
-            Overlay.OnGUI(player);
+           
             //textRenderer.RenderText("FPS: " + Time.FPS, 10, 50, 2f, new Vector3(1, 1, 1));
             //textRenderer.RenderText("Delta: " + Time.Delta, 10, 80, 2f, new Vector3(1, 1, 1));
             // textRenderer.RenderText("Pos: " + $" {(Vector3i)player.Position}", 10, 110, 2f, new Vector3(1, 1, 1));

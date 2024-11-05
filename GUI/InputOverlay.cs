@@ -34,11 +34,14 @@ namespace Spacebox.GUI
             ImGui.SetNextWindowSize(new System.Numerics.Vector2(windowSize.X, windowSize.Y), ImGuiCond.Always);
 
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new System.Numerics.Vector4(0, 0, 0, 0.8f));
-            ImGui.Begin("Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
+            ImGui.Begin("InputOverlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
 
-            
 
-            ImGui.Separator();
+            // dotnet publish -c Debug - r win - x64--self - contained true
+            // dotnet publish -c Release - r win - x64--self - contained true
+            // dotnet publish -c Release -r win-x64 --self-contained true --output ./publish
+
+            //ImGui.Separator();
 
             ImGui.Text($"");
             ImGui.Text($"Press F6 to hide/show");
@@ -47,7 +50,7 @@ namespace Spacebox.GUI
             ImGui.Text($"");
             ImGui.Text($"[F1] Console");
             ImGui.Text($"[F2] Show FPS");
-            ImGui.Text($"[F4] VisualDebug");
+            ImGui.Text($"[F4] Visual Debug");
             ImGui.Text($"[F7] FPS Limiter on/off");
             ImGui.Text($"[F10] Wireframe Mesh on/off");
             ImGui.Text($"");
@@ -61,15 +64,19 @@ namespace Spacebox.GUI
             ImGui.Text($"[Shift] Speed-up");
             ImGui.Text($"[Q,E] Camera roll");
             ImGui.Text($"");
-            
+
             ImGui.Text($"[Building]");
             ImGui.Text($"");
-
+            ImGui.Text($"[P] Save the world");
+            ImGui.Text($"");
             ImGui.Text($"[Tab] Blocks selector");
             ImGui.Text($"[Scroll] Select block");
             ImGui.Text($"[LMB] Destroy block");
             ImGui.Text($"[RMB] Place block");
-            
+
+            ImGui.Text($"");
+            ImGui.Text($"");
+            ImGui.Text($"[ESC] Close the game");
 
             ImGui.End();
             ImGui.PopStyleColor();

@@ -34,6 +34,9 @@ namespace Spacebox
         ImGuiController _controller;
         string path = "Resources/WindowPosition.txt";
 
+
+        private static PolygonMode polygonMode = PolygonMode.Fill;
+
         public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
         {
@@ -115,8 +118,10 @@ namespace Spacebox
 
                 Vector2 windowSize = new Vector2(ClientSize.X, ClientSize.Y);
                 Debug.Render(windowSize.ToSystemVector2());
+                Overlay.OnGUI();
                 InputOverlay.OnGUI();
                 Time.EndOnGUI();
+                
 
                 _controller.Render();
 
@@ -166,6 +171,20 @@ namespace Spacebox
             if (Input.IsKeyDown(Keys.F1))
             {
                 Debug.ToggleVisibility();
+            }
+
+            if (Input.IsKeyDown(Keys.F10))
+            {
+                if(polygonMode == PolygonMode.Fill)
+                {
+                    polygonMode = PolygonMode.Line;
+                }
+                else
+                {
+                    polygonMode = PolygonMode.Fill;
+                }
+
+                GL.PolygonMode(MaterialFace.FrontAndBack, polygonMode);
             }
 
             if (Input.IsKeyDown(Keys.F11))
