@@ -18,6 +18,8 @@ namespace Spacebox.Common
         //public Vector3 EmitterDirection { get; set; } = Vector3.UnitY;
         public bool UseLocalCoordinates { get; set; } = true;
 
+        public bool AllowDebug { get; set; } = true;
+
         public ParticleSystem(Texture2D texture, Shader shader)
         {
             Emitter = new Emitter(this)
@@ -78,7 +80,8 @@ namespace Spacebox.Common
         {
             Renderer.Render(camera);
 
-            Debug.DrawBoundingBox(new BoundingBox(Position, Vector3.One), Color4.Cyan);
+            if(AllowDebug)
+            VisualDebug.DrawBoundingBox(new BoundingBox(Position, Vector3.One), Color4.Cyan);
         }
 
         public void Dispose()

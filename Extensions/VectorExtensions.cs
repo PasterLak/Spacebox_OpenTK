@@ -35,5 +35,10 @@ namespace Spacebox.Extensions
         {
             return new OpenTK.Mathematics.Vector4(vec.X, vec.Y, vec.Z, vec.W);
         }
+
+        public static System.Numerics.Vector4 ToSystemVector4(this OpenTK.Mathematics.Color4 vec)
+        {
+            return new System.Numerics.Vector4(vec.R, vec.G, vec.B, vec.A);
+        }
     }
 }

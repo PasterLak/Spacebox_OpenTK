@@ -9,10 +9,10 @@ namespace Spacebox.Common.Commands
 
         public void Execute(string[] args)
         {
-            GameConsole.AddMessage("Available commands:", new Vector4(0.5f, 0.5f, 1f, 1f));
+            Debug.AddMessage("Available commands:", new Vector4(0.5f, 0.5f, 1f, 1f));
             foreach (var command in CommandManager.GetCommands())
             {
-                GameConsole.AddMessage($"- {command.Name}: {command.Description}", new Vector4(0.5f, 0.5f, 1f, 1f));
+                Debug.AddMessage($"- {command.Name}: {command.Description}", new Vector4(0.5f, 0.5f, 1f, 1f));
             }
         }
     }

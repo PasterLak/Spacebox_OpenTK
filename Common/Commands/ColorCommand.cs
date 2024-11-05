@@ -12,7 +12,7 @@ namespace Spacebox.Common.Commands
         {
             if (args.Length < 2)
             {
-                GameConsole.AddMessage("Usage: color [color_name] [message]", new Vector4(1f, 0f, 0f, 1f));
+                Debug.AddMessage("Usage: color [color_name] [message]", new Vector4(1f, 0f, 0f, 1f));
                 return;
             }
 
@@ -22,11 +22,11 @@ namespace Spacebox.Common.Commands
 
             if (color == Vector4.Zero)
             {
-                GameConsole.AddMessage($"Unknown color: {colorName}", new Vector4(1f, 0f, 0f, 1f));
+                Debug.AddMessage($"Unknown color: {colorName}", new Vector4(1f, 0f, 0f, 1f));
                 return;
             }
 
-            GameConsole.AddMessage(message, color);
+            Debug.AddMessage(message, color);
         }
 
         private Vector4 GetColorByName(string colorName)

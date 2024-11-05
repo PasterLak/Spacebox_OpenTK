@@ -22,7 +22,7 @@ namespace Spacebox.Common
 
         private BoundingBox[] childBounds;
 
-        private const int NUM_OBJECTS_ALLOWED = 8;
+        private const int NUM_OBJECTS_ALLOWED = 1;
 
         private struct OctreeObject
         {
@@ -576,5 +576,27 @@ namespace Spacebox.Common
             }
             return totalObjects <= NUM_OBJECTS_ALLOWED;
         }
+
+        public void DrawDebug()
+        {
+
+            
+
+            if (children != null)
+            {
+                foreach (var child in children)
+                {
+                    child.DrawDebug();
+                }
+            }else
+            {
+                VisualDebug.DrawBoundingBox(bounds, new Color4(255, 192, 200, 50));
+            }
+
+            
+        }
+
     }
+
+    
 }

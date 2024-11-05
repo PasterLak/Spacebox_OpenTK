@@ -42,18 +42,18 @@ namespace Spacebox.Common
                 }
                 catch (Exception ex)
                 {
-                    GameConsole.DebugError($"[ShaderManager] Failed to load shader '{shaderPath}': {ex.Message}");
+                    Debug.DebugError($"[ShaderManager] Failed to load shader '{shaderPath}': {ex.Message}");
                     if (shaderPath != DefaultShaderPath)
                     {
                         try
                         {
                             var defaultShader = GetShader(DefaultShaderPath);
-                            GameConsole.Debug($"[ShaderManager] Loaded default shader '{DefaultShaderPath}' instead.");
+                            Debug.Log($"[ShaderManager] Loaded default shader '{DefaultShaderPath}' instead.");
                             return defaultShader;
                         }
                         catch (Exception defaultEx)
                         {
-                            GameConsole.DebugError($"[ShaderManager] Failed to load default shader '{DefaultShaderPath}': {defaultEx.Message}");
+                            Debug.DebugError($"[ShaderManager] Failed to load default shader '{DefaultShaderPath}': {defaultEx.Message}");
                             throw new Exception($"Failed to load shader '{shaderPath}' and default shader '{DefaultShaderPath}'.", ex);
                         }
                     }
@@ -83,7 +83,7 @@ namespace Spacebox.Common
                         }
                         catch (Exception ex)
                         {
-                            GameConsole.DebugError($"[ShaderManager] Failed to mark shader '{shaderPath}' as permanent: {ex.Message}");
+                            Debug.DebugError($"[ShaderManager] Failed to mark shader '{shaderPath}' as permanent: {ex.Message}");
                             throw;
                         }
                     }
@@ -99,18 +99,18 @@ namespace Spacebox.Common
                 }
                 catch (Exception ex)
                 {
-                    GameConsole.DebugError($"[ShaderManager] Failed to load permanent shader '{shaderPath}': {ex.Message}");
+                    Debug.DebugError($"[ShaderManager] Failed to load permanent shader '{shaderPath}': {ex.Message}");
                     if (shaderPath != DefaultShaderPath)
                     {
                         try
                         {
                             var defaultShader = AddPermanentShader(DefaultShaderPath);
-                            GameConsole.Debug($"[ShaderManager] Loaded default shader '{DefaultShaderPath}' as permanent instead.");
+                            Debug.Log($"[ShaderManager] Loaded default shader '{DefaultShaderPath}' as permanent instead.");
                             return defaultShader;
                         }
                         catch (Exception defaultEx)
                         {
-                            GameConsole.DebugError($"[ShaderManager] Failed to load default shader '{DefaultShaderPath}': {defaultEx.Message}");
+                            Debug.DebugError($"[ShaderManager] Failed to load default shader '{DefaultShaderPath}': {defaultEx.Message}");
                             throw new Exception($"Failed to load permanent shader '{shaderPath}' and default shader '{DefaultShaderPath}'.", ex);
                         }
                     }
@@ -133,7 +133,7 @@ namespace Spacebox.Common
                     Shaders.Remove(kv.Key);
                 }
 
-                GameConsole.Debug($"[ShaderManager] {unloadableShaders.Count} shaders have been disposed.");
+                Debug.Log($"[ShaderManager] {unloadableShaders.Count} shaders have been disposed.");
             }
         }
 
@@ -147,7 +147,7 @@ namespace Spacebox.Common
                     kv.Value.Shader.Dispose();
                 }
                 Shaders.Clear();
-                GameConsole.Debug($"[ShaderManager] {count} shaders have been disposed.");
+                Debug.Log($"[ShaderManager] {count} shaders have been disposed.");
             }
         }
     }

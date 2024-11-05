@@ -63,7 +63,7 @@ namespace Spacebox
             // _audioManager = AudioManager.Instance;
 
            
-            GameConsole.Debug("[Engine started!]");
+            Debug.Log("[Engine started!]");
 
             //this.VSync = VSyncMode.On;
 
@@ -98,7 +98,7 @@ namespace Spacebox
 
                 SceneManager.CurrentScene.Render();
 
-                Debug.Render();
+                VisualDebug.Render();
                 /*GL.Enable(EnableCap.Blend);
                 GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
@@ -111,7 +111,7 @@ namespace Spacebox
                 SceneManager.CurrentScene.OnGUI();
 
                 Vector2 windowSize = new Vector2(ClientSize.X, ClientSize.Y);
-                GameConsole.Render(windowSize.ToSystemVector2());
+                Debug.Render(windowSize.ToSystemVector2());
                 Time.EndOnGUI();
 
                 _controller.Render();
@@ -161,7 +161,7 @@ namespace Spacebox
 
             if (Input.IsKeyDown(Keys.F1))
             {
-                GameConsole.ToggleVisibility();
+                Debug.ToggleVisibility();
             }
 
             if (Input.IsKeyDown(Keys.F11))
@@ -211,7 +211,7 @@ namespace Spacebox
 
             if (Input.IsKeyDown(Keys.F4))
             {
-                Debug.ShowDebug = !Debug.ShowDebug;
+                VisualDebug.ShowDebug = !VisualDebug.ShowDebug;
             }
 
             if (Input.IsKeyDown(Keys.Escape))

@@ -5,7 +5,7 @@ namespace Spacebox.Game
 {
     public class Sector
     {
-        public const short SizeBlocks = 1024;
+        public const short SizeBlocks = 512;
         public const short SizeBlocksHalf = SizeBlocks / 2;
 
         public Vector3 Position { get; private set; }
@@ -34,8 +34,7 @@ namespace Spacebox.Game
             // Position chunks relative to the sector's position
             Vector3 chunkPosition = Position; // Adjust if multiple chunks per sector
             Chunk loadedChunk = ChunkSaveLoadManager.LoadChunk(chunkPosition);
-            GameConsole.Debug("SECTOR CHUNK new");
-            Console.WriteLine(" InitializeChunks!");
+         
             if (loadedChunk != null)
             {
                 Console.WriteLine("Loaded Chunk!");
@@ -57,7 +56,7 @@ namespace Spacebox.Game
                 chunk.Test(World.Player); // Assuming you have a reference to the player
             }
 
-            Debug.DrawBoundingBox(BoundingBox, Color4.Yellow);
+            VisualDebug.DrawBoundingBox(BoundingBox, Color4.Yellow);
         }
 
         public void Render(Shader shader)

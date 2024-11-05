@@ -436,9 +436,9 @@ namespace Spacebox.Scenes
 
        
 
-            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(100f, 0, 0), Color4.Red);
-            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 100, 0), Color4.Green);
-            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 0,100), Color4.Blue);
+            VisualDebug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(100f, 0, 0), Color4.Red);
+            VisualDebug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 100, 0), Color4.Green);
+            VisualDebug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 0,100), Color4.Blue);
    
             player.Update();
 

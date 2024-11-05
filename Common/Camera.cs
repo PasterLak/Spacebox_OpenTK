@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Game;
 
 namespace Spacebox.Common
 {
@@ -51,9 +52,41 @@ namespace Spacebox.Common
 
         public Matrix4 GetProjectionMatrix()
         {
-            return Matrix4.CreatePerspectiveFieldOfView(FOV, AspectRatio, 0.01f, 1000f);
+            return Matrix4.CreatePerspectiveFieldOfView(FOV, AspectRatio, 0.01f, Settings.ViewDistance);
         }
 
         protected abstract void UpdateVectors();
+
+        public Vector2 WorldToScreenPoint(Vector3 worldPosition, int screenWidth, int screenHeight)
+        {
+            Matrix4 viewMatrix = GetViewMatrix();
+            Matrix4 projectionMatrix = GetProjectionMatrix();
+
+            Vector4 worldPos = new Vector4(worldPosition, 1.0f);
+
+            Vector4 viewPos =   worldPos * viewMatrix;
+            Vector4 projPos =  viewPos * projectionMatrix;
+
+            if (projPos.W == 0.0f)
+                return Vector2.Zero;
+
+            Vector3 ndc = new Vector3(
+                projPos.X / projPos.W,
+                projPos.Y / projPos.W,
+                projPos.Z / projPos.W
+            );
+
+            if (ndc.X < -1.0f || ndc.X > 1.0f ||
+                ndc.Y < -1.0f || ndc.Y > 1.0f ||
+                ndc.Z < -1.0f || ndc.Z > 1.0f)
+                return Vector2.Zero;
+
+            Vector2 screenPos = new Vector2(
+                (ndc.X + 1.0f) * 0.5f * screenWidth,
+                (1.0f - ndc.Y) * 0.5f * screenHeight
+            );
+
+            return screenPos;
+        }
     }
 }

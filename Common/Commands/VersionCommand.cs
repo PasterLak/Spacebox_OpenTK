@@ -10,7 +10,7 @@ namespace Spacebox.Common.Commands
         public void Execute(string[] args)
         {
             string version = Application.Version; 
-            GameConsole.AddMessage($"Game version: {version}", new Vector4(1f, 1f, 0f, 1f));
+            Debug.AddMessage($"Game version: {version}", new Vector4(1f, 1f, 0f, 1f));
         }
     }
 }

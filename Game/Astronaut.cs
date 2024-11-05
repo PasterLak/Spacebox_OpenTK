@@ -47,7 +47,7 @@ namespace Spacebox.Game
             _spotLight = new SpotLight(ShaderManager.GetShader("Shaders/lighting"), Front);
             FOV = MathHelper.DegreesToRadians(90);
             Layer = CollisionLayer.Player;
-            Debug.RemoveCollisionToDraw(this);
+            VisualDebug.RemoveCollisionToDraw(this);
 
             SetInertia();
             SetCameraSway();
@@ -62,7 +62,7 @@ namespace Spacebox.Game
             _spotLight = new SpotLight(shader, Front);
             _spotLight.IsActive = false;
             Layer = CollisionLayer.Player;
-            Debug.RemoveCollisionToDraw(this);
+            VisualDebug.RemoveCollisionToDraw(this);
 
             SetInertia();
             SetCameraSway();
@@ -71,12 +71,12 @@ namespace Spacebox.Game
         }
 
         ~Astronaut() {
-            GameConsole.OnVisibilityWasChanged -= OnGameConsole;
+            Debug.OnVisibilityWasChanged -= OnGameConsole;
         }
 
         private void SetData()
         {
-            GameConsole.OnVisibilityWasChanged += OnGameConsole;
+            Debug.OnVisibilityWasChanged += OnGameConsole;
 
             Inventory = new Inventory(10,6);
         }
@@ -133,27 +133,20 @@ namespace Spacebox.Game
             Matrix4 projectionMatrix = GetProjectionMatrix();
             Frustum.UpdateFrustum(viewMatrix, projectionMatrix);
 
-            Debug.ProjectionMatrix = projectionMatrix;
-            Debug.ViewMatrix = viewMatrix;
+            VisualDebug.ProjectionMatrix = projectionMatrix;
+            VisualDebug.ViewMatrix = viewMatrix;
 
-            Debug.DrawLine(Vector3.Zero, new Vector3(-1,-1,-1),Color4.Red);
 
-            if (Debug.ShowDebug)
+            if (VisualDebug.ShowDebug)
             {
-                Debug.ProjectionMatrix = GetProjectionMatrix();
-                Debug.ViewMatrix = GetViewMatrix();
+                VisualDebug.ProjectionMatrix = GetProjectionMatrix();
+                VisualDebug.ViewMatrix = GetViewMatrix();
             }
 
-            if(Input.IsKeyDown(Keys.K))
-            {
-                PrintMatrix(GetModelMatrix());
-                Debug.CameraFrustum = Frustum.Copy();
-                
-            }
 
-            if(Debug.CameraFrustum != null)
+            if(VisualDebug.CameraFrustum != null)
             {
-                Debug.DrawFrustum(Debug.CameraFrustum, Color4.Green);
+                VisualDebug.DrawFrustum(VisualDebug.CameraFrustum, Color4.Green);
             }
 
            
@@ -368,15 +361,15 @@ namespace Spacebox.Game
 
             if (Input.IsKeyDown(Keys.F5))
             {
-                Debug.ShowPlayerCollision = !Debug.ShowPlayerCollision;
+                VisualDebug.ShowPlayerCollision = !VisualDebug.ShowPlayerCollision;
 
-                if (Debug.ShowPlayerCollision)
+                if (VisualDebug.ShowPlayerCollision)
                 {
-                    Debug.AddCollisionToDraw(this);
+                    VisualDebug.AddCollisionToDraw(this);
                 }
                 else
                 {
-                    Debug.RemoveCollisionToDraw(this);
+                    VisualDebug.RemoveCollisionToDraw(this);
                 }
             }
 
@@ -406,7 +399,7 @@ namespace Spacebox.Game
 
             if (_ray != null)
             {
-                Debug.DrawRay(_ray, Color4.Red);
+                VisualDebug.DrawRay(_ray, Color4.Red);
             }
         }
 
@@ -421,8 +414,8 @@ namespace Spacebox.Game
             if (CollisionManager.Raycast(_ray, out Vector3 hitPosition, out Collision hitObject, layerMask))
             {
                 Console.WriteLine($"Hit {hitObject.Name} at position {hitPosition}");
-                Debug.DrawRay(_ray, Color4.Red);
-                Debug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.1f), Color4.Red);
+                VisualDebug.DrawRay(_ray, Color4.Red);
+                VisualDebug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.1f), Color4.Red);
             }
         }
 

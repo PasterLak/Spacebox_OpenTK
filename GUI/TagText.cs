@@ -1,4 +1,6 @@
 ﻿using ImGuiNET;
+using Spacebox.Common;
+using Spacebox.Extensions;
 using System.Numerics;
 
 namespace Spacebox.GUI
@@ -6,7 +8,7 @@ namespace Spacebox.GUI
     public static class TagText
     {
 
-        private static string _text = "Press F to use";
+        private static string _text = "";
 
         public static bool IsVisible { get; private set; } = true;
 
@@ -49,30 +51,6 @@ namespace Spacebox.GUI
         {
 
             if (!IsVisible)
-            {
-
-
-                ImGui.SetNextWindowPos(new Vector2(0, 0), ImGuiCond.Always, new Vector2(0, 0));
-                ImGui.SetNextWindowSize(new Vector2(ImGui.GetIO().DisplaySize.X, ImGui.GetIO().DisplaySize.Y));
-                ImGui.Begin("CenteredTextWindow2", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoInputs);
-
-
-                Vector2 textSize1 = ImGui.CalcTextSize("+");
-
-
-                float posX1 = (ImGui.GetWindowWidth() - textSize1.X) * 0.5f;
-                float posY1 = (ImGui.GetWindowHeight() - textSize1.Y) * 0.5f;
-
-                ImGui.SetCursorPos(new Vector2(posX1, posY1));
-
-                ImGui.PushStyleColor(ImGuiCol.Text, _color);
-                ImGui.TextUnformatted("+");
-                ImGui.PopStyleColor();
-
-                ImGui.End();
-            }
-
-            if (!IsVisible)
                 return;
 
             ImGui.SetNextWindowPos(new Vector2(0, 0), ImGuiCond.Always, new Vector2(0, 0));
@@ -82,15 +60,22 @@ namespace Spacebox.GUI
 
             Vector2 textSize = ImGui.CalcTextSize(_text);
 
+            Vector2 pos = Camera.Main.WorldToScreenPoint(Vector3.Zero.ToOpenTKVector3(), 
+                (int)ImGui.GetIO().DisplaySize.X, 
+               (int) ImGui.GetIO().DisplaySize.Y).ToSystemVector2();
 
-            float posX = (ImGui.GetWindowWidth() - textSize.X) * 0.5f;
-            float posY = (ImGui.GetWindowHeight() - textSize.Y) * 0.5f;
 
-            ImGui.SetCursorPos(new Vector2(posX, posY));
+            //float posX = (ImGui.GetWindowWidth() - textSize.X) * 0.5f;
+            //float posY = (ImGui.GetWindowHeight() - textSize.Y) * 0.5f;
+            if(pos != Vector2.Zero)
+            {
+                ImGui.SetCursorPos(new Vector2(pos.X, pos.Y));
 
-            ImGui.PushStyleColor(ImGuiCol.Text, _color);
-            ImGui.TextUnformatted(_text);
-            ImGui.PopStyleColor();
+                ImGui.PushStyleColor(ImGuiCol.Text, _color);
+                ImGui.TextUnformatted(_text);
+                ImGui.PopStyleColor();
+            }
+            
 
             ImGui.End();
         }

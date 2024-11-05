@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Extensions;
 using System.Diagnostics;
 
 namespace Spacebox.Game.Rendering

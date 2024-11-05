@@ -36,7 +36,7 @@ namespace Spacebox.Common
             IsStatic = isStatic;
             Position = boundingVolume.Center;
 
-            Debug.AddCollisionToDraw(this);
+            VisualDebug.AddCollisionToDraw(this);
             //UpdateBounding();
         }
 
@@ -117,11 +117,11 @@ namespace Spacebox.Common
         {
             if (BoundingVolume is BoundingBox box)
             {
-                Debug.DrawBoundingBox(box, color);
+                VisualDebug.DrawBoundingBox(box, color);
             }
             else if (BoundingVolume is BoundingSphere sphere)
             {
-                Debug.DrawBoundingSphere(sphere, color);
+                VisualDebug.DrawBoundingSphere(sphere, color);
             }
         }
 

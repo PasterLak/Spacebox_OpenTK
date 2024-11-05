@@ -33,7 +33,7 @@ namespace Spacebox.Common.SceneManagment
 
             if (Instance != null)
             {
-                GameConsole.DebugError("Error! There is already a SceneManager!");
+                Debug.DebugError("Error! There is already a SceneManager!");
                 return;
             }
 
@@ -42,7 +42,7 @@ namespace Spacebox.Common.SceneManagment
             AddScene(typeof(ErrorScene));
             if (!typeof(Scene).IsAssignableFrom(startScene))
             {
-                GameConsole.DebugError("The startSceneType must inherit from Scene." + nameof(startScene));
+                Debug.DebugError("The startSceneType must inherit from Scene." + nameof(startScene));
 
                 LoadScene(typeof(ErrorScene));
 
@@ -60,7 +60,7 @@ namespace Spacebox.Common.SceneManagment
             if (!types.Contains(startSceneType))
             {
                 types.Add(startSceneType);
-                GameConsole.Debug($"{startSceneType.Name} added as start scene.");
+                Debug.Log($"{startSceneType.Name} added as start scene.");
             }
 
             _nextSceneType = new SceneType { typ = startSceneType };
@@ -101,7 +101,7 @@ namespace Spacebox.Common.SceneManagment
             }
             else
             {
-                GameConsole.DebugError($"Error: Scene of type {sceneType.Name} must inherit from class Scene!");
+                Debug.DebugError($"Error: Scene of type {sceneType.Name} must inherit from class Scene!");
 
                 LoadScene(typeof(ErrorScene));
                 return;
@@ -126,7 +126,7 @@ namespace Spacebox.Common.SceneManagment
                     TextureManager.Dispose();
 
                     CurrentScene.UnloadContent();
-                    Debug.Clear();
+                    VisualDebug.Clear();
                 }
 
 
@@ -145,7 +145,7 @@ namespace Spacebox.Common.SceneManagment
                 CurrentScene.Awake();
                 CurrentScene.Start();
 
-                GameConsole.Debug("[SceneManager] Scene Loaded: [" + _currentSceneType.typ.Name + "] ", 
+                Debug.Log("[SceneManager] Scene Loaded: [" + _currentSceneType.typ.Name + "] ", 
                     Color4.Yellow);
 
             }

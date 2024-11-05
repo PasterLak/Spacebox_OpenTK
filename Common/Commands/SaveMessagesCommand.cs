@@ -9,9 +9,9 @@ namespace Spacebox.Common.Commands
 
         public void Execute(string[] args)
         {
-            GameConsole.AddMessage("Data: " + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
+            Debug.AddMessage("Data: " + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
 
-            GameConsole.SaveMessagesToFile();
+            Debug.SaveMessagesToFile();
         }
     }
 }

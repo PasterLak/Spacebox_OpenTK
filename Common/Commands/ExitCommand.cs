@@ -9,8 +9,8 @@ namespace Spacebox.Common.Commands
 
         public void Execute(string[] args)
         {
-            GameConsole.ToggleVisibility();
-            GameConsole.AddMessage("Console closed.", new Vector4(1f, 1f, 1f, 1f));
+            Debug.ToggleVisibility();
+            Debug.AddMessage("Console closed.", new Vector4(1f, 1f, 1f, 1f));
         }
     }
 }

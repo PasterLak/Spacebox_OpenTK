@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Spacebox.Common
 {
-    public static class Debug
+    public static class VisualDebug
     {
         private static Shader _shader;
 
@@ -31,7 +31,7 @@ namespace Spacebox.Common
 
 
         public static CameraFrustum CameraFrustum;
-        static Debug()
+        static VisualDebug()
         {
             Initialize();
         }

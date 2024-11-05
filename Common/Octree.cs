@@ -14,11 +14,15 @@ namespace Spacebox.Common
         private readonly float initialSize;
         private readonly float minSize;
 
+        private BoundingBox boundingBox;
+
+        public Vector3 Position => boundingBox.Center;
+
         public Octree(float initialWorldSize, Vector3 initialWorldPos, float minNodeSize, float loosenessVal)
         {
             if (minNodeSize > initialWorldSize)
             {
-                Console.WriteLine("Minimum node size must be at least as big as the initial world size. Adjusted to: " + initialWorldSize);
+                Debug.DebugError("Minimum node size must be at least as big as the initial world size. Adjusted to: " + initialWorldSize);
                 minSize = initialWorldSize;
             }
             else
@@ -30,6 +34,8 @@ namespace Spacebox.Common
             initialSize = initialWorldSize;
             looseness = MathHelper.Clamp(loosenessVal, 1.0f, 2.0f);
             rootNode = new OctreeNode<T>(initialSize, minSize, looseness, initialWorldPos);
+
+            boundingBox = new BoundingBox(initialWorldPos, new Vector3(initialWorldSize, initialWorldSize, initialWorldSize));
         }
 
         public void Add(T obj, BoundingBox objBounds)
@@ -40,7 +46,7 @@ namespace Spacebox.Common
                 Grow(objBounds.Center - rootNode.Center);
                 if (++count > 20)
                 {
-                    Console.WriteLine("Aborted Add operation after too many attempts at growing the octree.");
+                    Debug.DebugError("Aborted Add operation after too many attempts at growing the octree.");
                     return;
                 }
             }
@@ -161,6 +167,15 @@ namespace Spacebox.Common
         private void Shrink()
         {
             rootNode = rootNode.ShrinkIfPossible(initialSize);
+        }
+
+        public void DrawDebug()
+        {
+            VisualDebug.DrawBoundingBox(boundingBox, Color4.Pink);
+
+
+            rootNode.DrawDebug();
+            
         }
     }
 }

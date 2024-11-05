@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using Spacebox.Game;
 using System.Numerics;
 
 namespace Spacebox.GUI
@@ -47,7 +48,7 @@ namespace Spacebox.GUI
       
         public static void Draw()
         {
-
+            if(!Settings.ShowInterface) return;
             if (!IsVisible)
             {
 

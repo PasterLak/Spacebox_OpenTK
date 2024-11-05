@@ -80,7 +80,7 @@ namespace Spacebox.Common
 
            
 
-            if (Debug.ShowDebug)
+            if (VisualDebug.ShowDebug)
             {
               
                 _axes.SetPosition(Position);

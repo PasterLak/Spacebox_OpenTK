@@ -37,6 +37,7 @@ namespace Spacebox.Scenes
                 SpawnRate = 40f
             };
 
+            ParticleSystem.AllowDebug = false;
 
             var emitter = new Emitter(ParticleSystem)
             {

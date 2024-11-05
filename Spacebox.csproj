@@ -103,7 +103,6 @@
     <None Remove="Shaders\S_Sound.glsl" />
     <None Remove="Shaders\S_Sphere.glsl" />
     <None Remove="Shaders\S_Wave.glsl" />
-    <None Remove="Shaders\vertex_shader.glsl" />
   </ItemGroup>
 
 	
@@ -359,9 +358,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\SSAO\ssao_blur.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\vertex_shader.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

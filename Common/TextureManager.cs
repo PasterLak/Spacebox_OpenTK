@@ -60,7 +60,7 @@ namespace Spacebox.Common
 
                 if (!File.Exists(texturePath))
                 {
-                    GameConsole.DebugError($"[TextureManager] Texture file '{texturePath}' does not exist.");
+                    Debug.DebugError($"[TextureManager] Texture file '{texturePath}' does not exist.");
                     return DefaultTexture;
                 }
 
@@ -73,7 +73,7 @@ namespace Spacebox.Common
                 }
                 catch (Exception ex)
                 {
-                    GameConsole.DebugError($"[TextureManager] Failed to load texture '{texturePath}': {ex.Message}");
+                    Debug.DebugError($"[TextureManager] Failed to load texture '{texturePath}': {ex.Message}");
                     return DefaultTexture;
                 }
             }
@@ -92,14 +92,14 @@ namespace Spacebox.Common
                     {
                         var newEntry = new TextureEntry(existingEntry.Texture, isPermanent: true);
                         Textures[texturePath] = newEntry;
-                        GameConsole.Debug($"[TextureManager] Texture '{texturePath}' marked as permanent.");
+                        Debug.Log($"[TextureManager] Texture '{texturePath}' marked as permanent.");
                     }
                     return existingEntry.Texture;
                 }
 
                 if (!File.Exists(texturePath))
                 {
-                    GameConsole.DebugError($"[TextureManager] Texture file '{texturePath}' does not exist.");
+                    Debug.DebugError($"[TextureManager] Texture file '{texturePath}' does not exist.");
                     return DefaultTexture;
                 }
 
@@ -112,7 +112,7 @@ namespace Spacebox.Common
                 }
                 catch (Exception ex)
                 {
-                    GameConsole.DebugError($"[TextureManager] Failed to load permanent texture '{texturePath}': {ex.Message}");
+                    Debug.DebugError($"[TextureManager] Failed to load permanent texture '{texturePath}': {ex.Message}");
                     return DefaultTexture;
                 }
             }
@@ -129,7 +129,7 @@ namespace Spacebox.Common
                     Textures.Remove(kv.Key);
                 }
 
-                GameConsole.Debug($"[TextureManager] {unloadableTextures.Count} texture(s) have been disposed.");
+                Debug.Log($"[TextureManager] {unloadableTextures.Count} texture(s) have been disposed.");
             }
         }
 
@@ -143,7 +143,7 @@ namespace Spacebox.Common
                     kv.Value.Texture.Dispose();
                 }
                 Textures.Clear();
-                GameConsole.Debug($"[TextureManager] All {allTextures.Count} textures have been disposed.");
+                Debug.Log($"[TextureManager] All {allTextures.Count} textures have been disposed.");
             }
         }
     }

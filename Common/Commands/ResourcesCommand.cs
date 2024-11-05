@@ -10,8 +10,8 @@ namespace Spacebox.Common.Commands
         public void Execute(string[] args)
         {
           
-            GameConsole.AddMessage($"[Shaders cached: {ShaderManager.Count}]", new Vector4(1f, 1f, 0f, 1f));
-            GameConsole.AddMessage($"[Textures cached: {TextureManager.Count}]", new Vector4(1f, 1f, 0f, 1f));
+            Debug.AddMessage($"[Shaders cached: {ShaderManager.Count}]", new Vector4(1f, 1f, 0f, 1f));
+            Debug.AddMessage($"[Textures cached: {TextureManager.Count}]", new Vector4(1f, 1f, 0f, 1f));
         }
     }
 }

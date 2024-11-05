@@ -8,7 +8,10 @@ version 0.0.5
 - resources optimization
 - inventory, items code
 - Camera Frustum
-
+- WorldToScreenPoint
+- hide interface
+- Octree
+- Block painting test
 
 
 version 0.0.4

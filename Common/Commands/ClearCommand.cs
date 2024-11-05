@@ -9,8 +9,8 @@ namespace Spacebox.Common.Commands
 
         public void Execute(string[] args)
         {
-            GameConsole.ClearMessages();
-            GameConsole.AddMessage("Console cleared.", new Vector4(1f, 1f, 0f, 1f));
+            Debug.ClearMessages();
+            Debug.AddMessage("Console cleared.", new Vector4(1f, 1f, 0f, 1f));
         }
     }
 }

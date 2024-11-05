@@ -1,6 +1,7 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Game;
 
-namespace Spacebox.Game
+namespace Spacebox.Extensions
 {
     public static class FaceExtensions
     {

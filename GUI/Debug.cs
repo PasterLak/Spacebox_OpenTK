@@ -8,7 +8,7 @@ using Spacebox.Common.Commands;
 
 namespace Spacebox.Common
 {
-    public static class GameConsole
+    public static class Debug
     {
         private static bool _isVisible = false;
         private static CursorState _previousCursorState;
@@ -36,7 +36,7 @@ namespace Spacebox.Common
         private static int _autoCompleteIndex = 0;
         private static List<ICommand> _autoCompleteMatches = new List<ICommand>();
 
-        static GameConsole()
+        static Debug()
         {
             LoadHistory();
             RegisterCommand(new ClearCommand());
@@ -87,19 +87,31 @@ namespace Spacebox.Common
             _messages.Add(new ConsoleMessage(message, new Vector4(color.R, color.G, color.B, color.A)));
         }
 
-        public static void Debug(string message, OpenTK.Mathematics.Color4 color)
+        public static void WriteLine(string message)
+        {
+            AddMessage($"[DEBUG] {message}");
+            Console.WriteLine($"[DEBUG] {message}");
+        }
+
+        public static void Write(string message)
+        {
+            AddMessage($"[DEBUG] {message}");
+            Console.WriteLine($"[DEBUG] {message}");
+        }
+
+        public static void Log(string message, OpenTK.Mathematics.Color4 color)
         {
             AddMessage($"[DEBUG] {message}", color);
             Console.WriteLine($"[DEBUG] {message}");
         }
 
-        public static void Debug(string message, Vector4 color)
+        public static void Log(string message, Vector4 color)
         {
             AddMessage($"[DEBUG] {message}", color);
             Console.WriteLine($"[DEBUG] {message}");
         }
 
-        public static void Debug(string message)
+        public static void Log(string message)
         {
             //AddMessage($"[DEBUG] {message}", new Vector4(0.2f, 0.7f, 1f, 1f));
             AddMessage($"[DEBUG] {message}", new Vector4(1,1, 1f, 1f));
@@ -115,7 +127,7 @@ namespace Spacebox.Common
         public static void ClearMessages()
         {
             _messages.Clear();
-            Debug("Console messages cleared.");
+            Log("Console messages cleared.");
         }
 
         public static void Render(Vector2 windowSize)
@@ -392,7 +404,7 @@ namespace Spacebox.Common
             try
             {
                 File.WriteAllLines(filepath, _messages.Select(m => m.Text));
-                Debug($"Console messages saved to '{filepath}'.");
+                Log($"Console messages saved to '{filepath}'.");
             }
             catch (Exception ex)
             {

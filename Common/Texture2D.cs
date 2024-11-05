@@ -92,7 +92,7 @@ namespace Spacebox.Common
 
             LoadTextureFromPixels();
 
-            GameConsole.Debug("[Texture2D] Loaded: " + path, Color4.DeepPink);
+            Debug.Log("[Texture2D] Loaded: " + path, Color4.DeepPink);
         }
 
         private void LoadTextureFromPixels()

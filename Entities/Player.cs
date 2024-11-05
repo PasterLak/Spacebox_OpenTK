@@ -25,7 +25,7 @@ namespace Spacebox.Entities
             spotLight = new SpotLight(new Shader("Shaders/lighting"), Front);
 
             Layer = CollisionLayer.Player;
-            Debug.RemoveCollisionToDraw(this);
+            VisualDebug.RemoveCollisionToDraw(this);
         }
 
         public Player(Vector3 position, float aspectRatio, Shader shader)
@@ -34,7 +34,7 @@ namespace Spacebox.Entities
             spotLight = new SpotLight(shader, Front);
             spotLight.IsActive = false;
             Layer = CollisionLayer.Player;
-            Debug.RemoveCollisionToDraw(this);
+            VisualDebug.RemoveCollisionToDraw(this);
         }
 
         public override void OnCollisionEnter(Collision other)
@@ -106,7 +106,7 @@ namespace Spacebox.Entities
 
                 Shoot(10);
             }
-            Debug.DrawRay(ray, Color4.Red);
+            VisualDebug.DrawRay(ray, Color4.Red);
 
             if (Input.IsKey(Keys.W))
             {
@@ -135,15 +135,15 @@ namespace Spacebox.Entities
 
             if( Input.IsKeyDown(Keys.F5))
             {
-                Debug.ShowPlayerCollision = !Debug.ShowPlayerCollision;
+                VisualDebug.ShowPlayerCollision = !VisualDebug.ShowPlayerCollision;
 
-                if(Debug.ShowPlayerCollision)
+                if(VisualDebug.ShowPlayerCollision)
                 {
-                    Debug.AddCollisionToDraw(this);
+                    VisualDebug.AddCollisionToDraw(this);
                 }
                 else
                 {
-                    Debug.RemoveCollisionToDraw(this);
+                    VisualDebug.RemoveCollisionToDraw(this);
                 }
 
             }
@@ -204,8 +204,8 @@ namespace Spacebox.Entities
             {
                 Console.WriteLine($"Hit {hitObject.Name} at position {hitPosition}");
                // hitObject.Position = new Vector3(0,-100,0);
-                Debug.DrawRay(ray, Color4.Red);
-                Debug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.1f), Color4.Red);
+                VisualDebug.DrawRay(ray, Color4.Red);
+                VisualDebug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.1f), Color4.Red);
             }
             else
             {

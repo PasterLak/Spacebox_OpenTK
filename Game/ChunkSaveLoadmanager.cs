@@ -50,11 +50,11 @@ namespace Spacebox.Game
 
                 // Write to file
                 File.WriteAllText(filePath, jsonString);
-                GameConsole.Debug($"Chunk saved at {filePath}");
+                Debug.Log($"Chunk saved at {filePath}");
             }
             catch (Exception ex)
             {
-                GameConsole.DebugError($"Error saving chunk: {ex.Message}");
+                Debug.DebugError($"Error saving chunk: {ex.Message}");
             }
         }
 
@@ -92,12 +92,12 @@ namespace Spacebox.Game
 
                 // Create and return the loaded chunk
                 Chunk chunk = new Chunk(loadedPosition, loadedBlocks, isLoaded: true);
-                GameConsole.Debug($"Chunk loaded from {filePath}");
+                Debug.Log($"Chunk loaded from {filePath}");
                 return chunk;
             }
             catch (Exception ex)
             {
-                GameConsole.DebugError($"Error loading chunk: {ex.Message}");
+                Debug.DebugError($"Error loading chunk: {ex.Message}");
                 return null;
             }
         }

@@ -6,10 +6,8 @@ namespace Spacebox.Game
     public class Block
     {
         public short BlockId { get; set; } = 0;
-       
         public Vector2 TextureCoords { get; set; }
         public Vector3 Color { get; set; }
-
         public bool IsTransparent { get; set; } = false;
 
         // local data
@@ -23,6 +21,8 @@ namespace Spacebox.Game
             Color = color ?? new Vector3(1.0f, 1.0f, 1.0f);
             LightLevel = lightLevel;
             LightColor = lightColor ?? Vector3.Zero;
+
+          
         }
 
         public Block(BlockData blockData)
@@ -39,6 +39,9 @@ namespace Spacebox.Game
             {
                 LightLevel = 15;
             }
+            
+            
+
         }
 
         public bool IsAir()

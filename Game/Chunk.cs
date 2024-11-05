@@ -28,6 +28,8 @@ namespace Spacebox.Game
         private BlockDestructionManager destructionManager;
 
         private BoundingBox boundingBox;
+
+        private Tag tag;
         public Chunk(Vector3 position)
             : this(position, null, isLoaded: false)
         {
@@ -68,8 +70,10 @@ namespace Spacebox.Game
             Vector3 chunkMin = Position;
             Vector3 chunkMax = Position + new Vector3(Size);
             boundingBox = BoundingBox.CreateFromMinMax(chunkMin, chunkMax);
+            tag = new Tag("", boundingBox.Center, Color4.DarkGreen);
+            //GameConsole.Debug(boundingBox.Center.ToString());
+            TagManager.RegisterTag(tag);
 
-            GameConsole.Debug("CHUNK new");
         }
 
         public void GenerateMesh()
@@ -91,16 +95,23 @@ namespace Spacebox.Game
         {
             if (!_isLoadedOrGenerated) return;
 
-            Matrix4 model = Matrix4.CreateTranslation(Position);
-            shader.SetMatrix4("model", model);
-            _mesh.Draw(shader);
-
-            if (ShowChunkBounds && Spacebox.Common.Debug.ShowDebug)
+            if(Camera.Main.Frustum.IsInFrustum(boundingBox))
             {
-               
-                Spacebox.Common.Debug.DrawBoundingBox(boundingBox, new Color4(0.5f, 0f, 0.5f, 1f));
+                Matrix4 model = Matrix4.CreateTranslation(Position);
+                shader.SetMatrix4("model", model);
+                _mesh.Draw(shader);
+
+                if (ShowChunkBounds && Spacebox.Common.VisualDebug.ShowDebug)
+                {
+
+                    VisualDebug.DrawBoundingBox(boundingBox, new Color4(0.5f, 0f, 0.5f, 1f));
+                }
+
+                destructionManager.Render();
+
             }
-            destructionManager.Render();
+
+           
 
         }
 
@@ -257,31 +268,31 @@ namespace Spacebox.Game
             return false;
         }
 
+        public void ChangeBlockColor(Block block, Vector3 color, bool regenerateMesh)
+        {
+            block.Color = color;
+
+            if (regenerateMesh)
+            {
+                GenerateMesh();
+            }
+            
+        }
+
+
         public void Test(Astronaut player)
         {
             if (!_isLoadedOrGenerated) return;
 
-            if (GameConsole.IsVisible) return;
+            if (Debug.IsVisible) return;
 
 
             if (Input.IsKeyDown(Keys.P))
             {
                 ChunkSaveLoadManager.SaveChunk(this);
             }
-
-            if (player.Frustum.IsInFrustum(boundingBox))
-            {
-                //Console.WriteLine("Visible!" + boundingBox);
-                TagText.SetText("Visible");
-               
-            }
-            else
-            {
-                // Console.WriteLine("Not Visible!");
-                TagText.SetText("Not Visible");
-                
-            }
-
+           
+            tag.Text =  (int)Vector3.Distance(boundingBox.Center, player.Position) + " m";
                 destructionManager.Update();
 
             Vector3 rayOrigin = player.Position;
@@ -295,10 +306,34 @@ namespace Spacebox.Game
 
             if (hit)
             {
+
                 Vector3 worldBlockPosition = hitBlockPosition + Position;
-                Spacebox.Common.Debug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.White);
+                VisualDebug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.White);
 
                 Block selectedBlock = Blocks[hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z];
+
+                if(Input.IsKeyDown(Keys.R))
+                {
+                    
+                    ChangeBlockColor(selectedBlock, new Vector3(1, 0, 0), true);
+                    GenerateMesh();
+                }
+                if (Input.IsKeyDown(Keys.T))
+                {
+                    Blocks[hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z].Color = new Vector3(1, 1, 0);
+
+                    GenerateMesh();
+                }
+                if (Input.IsKeyDown(Keys.Z))
+                {
+                    Blocks[hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z].Color = new Vector3(1, 1, 1);
+
+                    GenerateMesh();
+                }
+
+
+
+                VisualDebug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.05f), Color4.Red);
 
                 if (selectedBlock.BlockId == 20 || selectedBlock.BlockId == 22)
                 {
@@ -348,7 +383,7 @@ namespace Spacebox.Game
                 int z = (int)MathF.Floor(localPosition.Z);
 
                 Vector3 worldBlockPosition = new Vector3(x, y, z) + Position;
-                Spacebox.Common.Debug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.Gray);
+                Spacebox.Common.VisualDebug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.Gray);
 
                 if(CenteredText.IsVisible)
                 {

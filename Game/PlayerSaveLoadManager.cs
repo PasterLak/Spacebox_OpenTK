@@ -39,11 +39,11 @@ namespace Spacebox.Game
                 });
 
                 File.WriteAllText(SaveFilePath, jsonString);
-                GameConsole.Debug($"Player data saved at {SaveFilePath}");
+                Debug.Log($"Player data saved at {SaveFilePath}");
             }
             catch (Exception ex)
             {
-                GameConsole.DebugError($"Error saving player data: {ex.Message}");
+                Debug.DebugError($"Error saving player data: {ex.Message}");
             }
         }
 
@@ -57,7 +57,7 @@ namespace Spacebox.Game
             {
                 if (!File.Exists(SaveFilePath))
                 {
-                    GameConsole.Debug("Player save file does not exist.");
+                    Debug.Log("Player save file does not exist.");
                     return;
                 }
 
@@ -66,7 +66,7 @@ namespace Spacebox.Game
 
                 if (data == null)
                 {
-                    GameConsole.DebugError("Failed to deserialize player data.");
+                    Debug.DebugError("Failed to deserialize player data.");
                     return;
                 }
 
@@ -77,11 +77,11 @@ namespace Spacebox.Game
                 Quaternion loadedRotation = new Quaternion(data.RotationX, data.RotationY, data.RotationZ, data.RotationW);
                 player.SetRotation(loadedRotation);
 
-                GameConsole.Debug("Player data loaded successfully.");
+                Debug.Log("Player data loaded successfully.");
             }
             catch (Exception ex)
             {
-                GameConsole.DebugError($"Error loading player data: {ex.Message}");
+                Debug.DebugError($"Error loading player data: {ex.Message}");
             }
         }
 

@@ -171,24 +171,24 @@ namespace Spacebox.Common
             Handle = newHandle;
             _uniformLocations = newUniformLocations;
 
-            GameConsole.Debug($"[Shader] Compiled! ID:{Handle} Name: {Path.GetFileName(_shaderPath)}", Color4.BlueViolet);
+            Debug.Log($"[Shader] Compiled! ID:{Handle} Name: {Path.GetFileName(_shaderPath)}", Color4.BlueViolet);
         }
 
         public void ReloadShader()
         {
-            GameConsole.Debug("Reloading shader...");
+            Debug.Log("Reloading shader...");
             _isReloadingShader = true;
 
             try
             {
                 Load();
-                GameConsole.Debug("Shader reloaded successfully.");
+                Debug.Log("Shader reloaded successfully.");
             }
             catch (Exception ex)
             {
                 // If reloading failed, keep using the previous shader
-                GameConsole.DebugError("Shader reload failed: " + ex.Message);
-                GameConsole.Debug("Using previous working shader.");
+                Debug.DebugError("Shader reload failed: " + ex.Message);
+                Debug.Log("Using previous working shader.");
 
                 // Restore previous shader and uniforms
                 if (Handle != _previousHandle)

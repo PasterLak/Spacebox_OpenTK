@@ -6,7 +6,6 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.GUI;
 using Spacebox.Game;
-using Spacebox.Entities;
 using Spacebox.Common.Audio;
 using Spacebox.Managers;
 using Spacebox.Game.Commands;
@@ -36,12 +35,11 @@ namespace Spacebox.Scenes
 
         private DustSpawner dustSpawner;
 
-      
 
         private BlockDestructionManager blockDestructionManager;
 
-        Builder builder;
-
+        
+        private TestOctree testOctree = new TestOctree();
         public override void LoadContent()
         {
             float q = 5;
@@ -53,7 +51,7 @@ namespace Spacebox.Scenes
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader, 
                 new SpaceTexture(512,512) );
-            skybox.Scale = new Vector3(100,100,100);
+            skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
             skybox.IsAmbientAffected = false;
 
             Lighting.AmbientColor = new Vector3(0,0,0);
@@ -86,6 +84,7 @@ namespace Spacebox.Scenes
             blocksShader.SetInt("texture0", 0);
             blocksShader.SetInt("textureAtlas", 1);
 
+            blocksShader.SetFloat("fogDensity", Lighting.FogDensity);
             blocksShader.SetVector3("fogColor", new Vector3(0,0,0));
             blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
 
@@ -107,11 +106,12 @@ namespace Spacebox.Scenes
 
             dustSpawner = new DustSpawner(player);
 
-            builder = new Builder();
+            
 
             //builder.AddCube(Vector3.Zero, CubeType.Wireframe, Color4.Yellow, new Vector2(0,0));
 
-            GameConsole.RegisterCommand(new TeleportCommand(player));
+            Debug.RegisterCommand(new TeleportCommand(player));
+            Debug.RegisterCommand(new TagCommand(player));
 
         }
 
@@ -123,14 +123,17 @@ namespace Spacebox.Scenes
             blockDestructionManager.Update();
             dustSpawner.Update();
           
-            if(!GameConsole.IsVisible)
+            if(!Debug.IsVisible)
             {
                 if (Input.IsKeyDown(Keys.RightShift))
                 {
                     SceneManager.LoadScene(typeof(SpaceMenuScene));
                 }
 
-
+                if (Input.IsKeyDown(Keys.F8))
+                {
+                    Settings.ShowInterface = !Settings.ShowInterface;
+                }
 
                 if (Input.IsKeyDown(Keys.Tab))
                 {
@@ -202,7 +205,7 @@ namespace Spacebox.Scenes
             //world.Render(blocksShader);
             blockDestructionManager.Render();
             dustSpawner.Render();
-            builder.Render(player, GameBlocks.AtlasTexture.Handle);
+            
 
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
@@ -210,9 +213,11 @@ namespace Spacebox.Scenes
 
             //sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
 
-            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(100f, 0, 0), Color4.Red);
-            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 100, 0), Color4.Green);
-            Debug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 0, 100), Color4.Blue);
+            VisualDebug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(100f, 0, 0), Color4.Red);
+            VisualDebug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 100, 0), Color4.Green);
+            VisualDebug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 0, 100), Color4.Blue);
+
+            testOctree.Draw(player);
 
         }
 
@@ -225,6 +230,13 @@ namespace Spacebox.Scenes
             BlocksOverlay.OnGUI(player);
             CenteredText.Draw();
             TagText.Draw();
+
+            if(VisualDebug.ShowDebug)
+            {
+                WorldTextDebug.Draw();
+            }
+
+            TagManager.DrawTags(player,  Window.Instance.Size.X, Window.Instance.Size.Y);
         }
 
         public override void UnloadContent()
@@ -241,6 +253,8 @@ namespace Spacebox.Scenes
             dustSpawner.Dispose();
            
             blockDestructionManager.Dispose();
+
+            TagManager.ClearTags();
         }
 
     }
