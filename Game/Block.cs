@@ -6,9 +6,12 @@ namespace Spacebox.Game
     public class Block
     {
         public short BlockId { get; set; } = 0;
+        public byte Mass { get; private set; } = 5;
+        public byte Health { get; private set; } = 10;
         public Vector2 TextureCoords { get; set; }
         public Vector3 Color { get; set; }
         public bool IsTransparent { get; set; } = false;
+
 
         // local data
         public float LightLevel { get; set; } = 0; //0 - 15

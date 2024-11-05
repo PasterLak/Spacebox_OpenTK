@@ -80,8 +80,11 @@ namespace Spacebox.Game
         {
             if (!_isLoadedOrGenerated) return;
 
+            
             _lightManager.PropagateLight();
+           
             Mesh newMesh = _meshGenerator.GenerateMesh();
+            
             _mesh.Dispose();
             _mesh = newMesh;
         }

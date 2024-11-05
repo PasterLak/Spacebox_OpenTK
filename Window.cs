@@ -42,6 +42,7 @@ namespace Spacebox
         protected override void OnLoad()
         {
             base.OnLoad();
+            Debug.Log("[Engine started!]");
             Input.Initialize(this);
 
             
@@ -63,7 +64,7 @@ namespace Spacebox
             // _audioManager = AudioManager.Instance;
 
            
-            Debug.Log("[Engine started!]");
+            
 
             //this.VSync = VSyncMode.On;
 
@@ -144,12 +145,12 @@ namespace Spacebox
             {
                 try
                 {
-                    Console.WriteLine("Executing action from main thread actions queue.");
+                    //Console.WriteLine("Executing action from main thread actions queue.");
                     action.Invoke();
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Exception in main thread action: {ex}");
+                    Debug.DebugError($"Exception in main thread action: {ex}");
                 }
             }
 

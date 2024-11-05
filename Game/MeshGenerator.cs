@@ -101,7 +101,7 @@ namespace Spacebox.Game.Rendering
             if (_measureGenerationTime && stopwatch != null)
             {
                 stopwatch.Stop();
-                Console.WriteLine($"Chunk mesh generation time: {stopwatch.ElapsedMilliseconds} ms");
+                Debug.WriteLine($"Chunk mesh generation time: {stopwatch.ElapsedMilliseconds} ms");
             }
 
             return mesh;
