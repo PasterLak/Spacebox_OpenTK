@@ -9,6 +9,7 @@ using Spacebox.Game;
 using Spacebox.Common.Audio;
 using Spacebox.Managers;
 using Spacebox.Game.Commands;
+using Spacebox.UI;
 
 namespace Spacebox.Scenes
 {
@@ -76,7 +77,7 @@ namespace Spacebox.Scenes
             
 
             blocksShader = ShaderManager.GetShader("Shaders/block");
-            blockTexture = GameBlocks.AtlasTexture;
+            blockTexture = GameBlocks.BlocksTexture;
 
             lightAtlas = TextureManager.GetTexture("Resources/Textures/lightAtlas.png", true);
 
@@ -85,7 +86,7 @@ namespace Spacebox.Scenes
             blocksShader.SetInt("textureAtlas", 1);
 
             blocksShader.SetFloat("fogDensity", Lighting.FogDensity);
-            blocksShader.SetVector3("fogColor", new Vector3(0,0,0));
+            blocksShader.SetVector3("fogColor", Lighting.FogColor);
             blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
 
             Texture2D block = UVAtlas.GetBlockTexture(blockTexture, 0,0);
@@ -113,6 +114,13 @@ namespace Spacebox.Scenes
             Debug.RegisterCommand(new TeleportCommand(player));
             Debug.RegisterCommand(new TagCommand(player));
 
+            Texture2D c = TextureManager.GetTexture("Resources/Textures/slot.png", true, false);
+            Texture2D c2 = TextureManager.GetTexture("Resources/Textures/selectedSlot.png", true, false);
+            InventoryUI.SetDefaultIcon(c.Handle);
+            PanelUI.Initialize(c.Handle, c2.Handle);
+        
+            InventoryUI.Player = player;
+
         }
 
         public override void Start()
@@ -130,7 +138,7 @@ namespace Spacebox.Scenes
           
             if(!Debug.IsVisible)
             {
-                if (Input.IsKeyDown(Keys.RightShift))
+                if (Input.IsKeyDown(Keys.KeyPadEnter))
                 {
                     SceneManager.LoadScene(typeof(SpaceMenuScene));
                 }
@@ -157,7 +165,7 @@ namespace Spacebox.Scenes
             
 
             dustSpawner.Update();
-          
+            PanelUI.Update();
 
             //chunk.Test(player);
 
@@ -226,6 +234,7 @@ namespace Spacebox.Scenes
 
         }
 
+       
         public override void OnGUI()
         {
             
@@ -235,8 +244,12 @@ namespace Spacebox.Scenes
             BlocksOverlay.OnGUI(player);
             CenteredText.Draw();
             TagText.Draw();
+            PanelUI.Render(player.Panel);
 
-            if(VisualDebug.ShowDebug)
+            InventoryUI.Render(player.Inventory);
+            
+
+            if (VisualDebug.ShowDebug)
             {
                 WorldTextDebug.Draw();
             }

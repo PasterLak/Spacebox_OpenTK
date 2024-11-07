@@ -119,6 +119,8 @@ namespace Spacebox.Common
 
         public static void DrawPoint(Vector3 position, float size, Color4 color)
         {
+            if (!ShowDebug) return;
+
             _points.Add(position.X);
             _points.Add(position.Y);
             _points.Add(position.Z);
@@ -131,6 +133,8 @@ namespace Spacebox.Common
 
         public static void DrawLine(Vector3 start, Vector3 end, Color4 color)
         {
+            if (!ShowDebug) return;
+
             // Start point
             _lines.Add(start.X);
             _lines.Add(start.Y);
@@ -152,6 +156,7 @@ namespace Spacebox.Common
 
         public static void DrawSquare(Vector3 position, Vector2 size, Color4 color)
         {
+            if (!ShowDebug) return;
             Vector3[] corners = new Vector3[4];
             corners[0] = position;
             corners[1] = position + new Vector3(size.X, 0, 0);
@@ -164,8 +169,8 @@ namespace Spacebox.Common
 
         public static void DrawRay(Ray ray, Color4 color)
         {
-          
-            if(ray == null) return;
+            if (!ShowDebug) return;
+            if (ray == null) return;
 
             Vector3 endPoint = ray.Origin + ray.Direction * ray.Length;
    
@@ -176,6 +181,7 @@ namespace Spacebox.Common
 
         private static void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, Color4 color)
         {
+            if (!ShowDebug) return;
             AddVertexToTriangles(v1, color);
             AddVertexToTriangles(v2, color);
             AddVertexToTriangles(v3, color);
@@ -183,6 +189,7 @@ namespace Spacebox.Common
 
         private static void AddVertexToTriangles(Vector3 position, Color4 color)
         {
+            if (!ShowDebug) return;
             _triangles.Add(position.X);
             _triangles.Add(position.Y);
             _triangles.Add(position.Z);
@@ -195,6 +202,7 @@ namespace Spacebox.Common
 
         public static void DrawBoundingBox(BoundingBox box, Color4 color)
         {
+            if (!ShowDebug) return;
             if (box == null) return;
 
             Vector3 min = box.Min;
@@ -230,13 +238,10 @@ namespace Spacebox.Common
             DrawLine(corners[3], corners[7], color);
         }
 
-        /// <summary>
-        /// Рисует BoundingSphere как набор линий (wireframe).
-        /// </summary>
-        /// <param name="sphere">BoundingSphere для отрисовки.</param>
-        /// <param name="color">Цвет линий.</param>
+
         public static void DrawBoundingSphere(BoundingSphere sphere, Color4 color)
         {
+            if (!ShowDebug) return;
             if (sphere == null) return;
 
             int slices = 16; // Количество сегментов по долготе
@@ -294,7 +299,7 @@ namespace Spacebox.Common
 
         public static void DrawFrustum(CameraFrustum frustum, Color4 color)
         {
-           
+            if (!ShowDebug) return;
             Vector3[] frustumCorners = frustum.GetCorners();
 
             // Рисуем 12 ребер фрустума

@@ -9,6 +9,7 @@ version 0.0.5
 - texture manager
 - resources optimization
 - inventory, items code
+- tags
 - Camera Frustum
 - WorldToScreenPoint
 - hide interface
@@ -16,6 +17,13 @@ version 0.0.5
 - Block painting test
 - exe icon
 - window icon
+- fullscreen mode
+- inventory, panel UI
+- inventory shift items
+- isometric icon generator
+- input help (keys)
+
+
 
 
 version 0.0.4

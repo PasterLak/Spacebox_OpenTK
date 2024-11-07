@@ -25,9 +25,11 @@ namespace Spacebox.Common.SceneManagment
         private static SceneType? _nextSceneType = null;
         //private static Scene _nextScene;
 
-        public GameWindow GameWindow { get; private set; }
+        public static GameWindow GameWindow { get; private set; }
 
-        public SceneManager(GameWindow gameWindow, Type startScene)
+
+
+        public static void Initialize(GameWindow gameWindow, Type startScene)
         {
             GameWindow = gameWindow;
 
@@ -38,7 +40,7 @@ namespace Spacebox.Common.SceneManagment
             }
 
 
-            Instance = this;
+            //Instance = this;
             AddScene(typeof(ErrorScene));
             if (!typeof(Scene).IsAssignableFrom(startScene))
             {
@@ -55,7 +57,8 @@ namespace Spacebox.Common.SceneManagment
             LoadScene(startScene);
         }
 
-        private void AddStartScene(Type startSceneType)
+
+        private static void AddStartScene(Type startSceneType)
         {
             if (!types.Contains(startSceneType))
             {
@@ -67,7 +70,7 @@ namespace Spacebox.Common.SceneManagment
 
         }
 
-        private void GetAllScenes()
+        private static void GetAllScenes()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
 
@@ -83,7 +86,7 @@ namespace Spacebox.Common.SceneManagment
             }
         }
 
-        private void AddScene(Type scene)
+        private static void AddScene(Type scene)
         {
             if (!types.Contains(scene))
             {

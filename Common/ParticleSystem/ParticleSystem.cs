@@ -38,6 +38,8 @@ namespace Spacebox.Common
                 //UseLocalCoordinates = true
             };
             Renderer = new ParticleRenderer(texture, this, shader);
+
+            SetShaderDebug(false);
         }
 
         public void Update()
@@ -82,6 +84,11 @@ namespace Spacebox.Common
 
             if(AllowDebug)
             VisualDebug.DrawBoundingBox(new BoundingBox(Position, Vector3.One), Color4.Cyan);
+        }
+
+        public void SetShaderDebug(bool state)
+        {
+            Renderer.shader.SetBool("debug", state);
         }
 
         public void Dispose()

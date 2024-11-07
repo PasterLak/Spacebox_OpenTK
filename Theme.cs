@@ -11,10 +11,10 @@ namespace Spacebox
             var style = ImGui.GetStyle();
 
             // Customize style parameters
-            style.WindowPadding = new Vector2(15, 15);
-            style.WindowRounding = 10.0f;
-            style.FramePadding = new Vector2(5, 5);
-            style.FrameRounding = 8.0f;
+            style.WindowPadding = new Vector2(20, 20);
+            style.WindowRounding = 12f;
+            style.FramePadding = new Vector2(0, 0);
+            style.FrameRounding = 0f;
             style.ItemSpacing = new Vector2(12, 8);
             style.ItemInnerSpacing = new Vector2(8, 6);
             style.IndentSpacing = 25.0f;
@@ -22,6 +22,9 @@ namespace Spacebox
             style.ScrollbarRounding = 9.0f;
             style.GrabMinSize = 10.0f;
             style.GrabRounding = 3.0f;
+            style.WindowTitleAlign = new Vector2(0.5f,0);
+
+            style.CellPadding = new Vector2(0,0);
 
             // Customize colors
             var colors = ImGui.GetStyle().Colors;

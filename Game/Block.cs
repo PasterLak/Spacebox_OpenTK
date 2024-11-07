@@ -54,7 +54,21 @@ namespace Spacebox.Game
 
         public override string ToString()
         {
-            return $"Block id: {BlockId}, LightLevel: {LightLevel}";
+            var c = RoundVector3(Color);
+            var ll = RoundFloat(LightLevel);
+            var lc = RoundVector3(LightColor);
+
+            return $"Id: {BlockId} ({GameBlocks.Block[BlockId].Name})\nC: {c}, LL: {ll}, LC: {lc}\nTransparent: {IsTransparent}";
+        }
+
+        private static float RoundFloat(float x)
+        {
+            return (float)Math.Round(x, 1);
+        }
+
+        private static Vector3 RoundVector3(Vector3 v)
+        {
+            return new Vector3(RoundFloat(v.X), RoundFloat(v.Y), RoundFloat(v.Z));
         }
     }
 

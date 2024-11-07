@@ -43,10 +43,15 @@ namespace Spacebox.Common
 
         public static Texture2D GetTexture(string texturePath)
         {
-            return GetTexture(texturePath, pixelated: false);
+            return GetTexture(texturePath, pixelated: false, true);
         }
 
         public static Texture2D GetTexture(string texturePath, bool pixelated)
+        {
+            return GetTexture(texturePath, pixelated, true);
+        }
+
+        public static Texture2D GetTexture(string texturePath, bool pixelated, bool mirrowY)
         {
             if (string.IsNullOrWhiteSpace(texturePath))
                 throw new ArgumentException("Texture path cannot be null or empty.", nameof(texturePath));
@@ -66,7 +71,7 @@ namespace Spacebox.Common
 
                 try
                 {
-                    var texture = new Texture2D(texturePath, pixelated);
+                    var texture = new Texture2D(texturePath, pixelated, mirrowY);
                     var entry = new TextureEntry(texture, isPermanent: false);
                     Textures.Add(texturePath, entry);
                     return texture;

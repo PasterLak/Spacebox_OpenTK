@@ -4,6 +4,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Entities;
+using Spacebox.Game;
 
 namespace Spacebox.GUI
 {
@@ -12,7 +13,7 @@ namespace Spacebox.GUI
 
         public static bool IsVisible = false;
 
-        
+        public static Block? AimedBlock = null;
         public static void OnGUI()
         {
             if(Input.IsKeyDown(Keys.F2))
@@ -34,6 +35,13 @@ namespace Spacebox.GUI
                 var cam = Camera.Main;
                 Vector3i playerPosInt = new Vector3i((int)cam.Position.X, (int)cam.Position.Y, (int)cam.Position.Z);
                 ImGui.Text($"Camera Position: {playerPosInt}");
+            }
+
+            if(AimedBlock != null)
+            {
+                ImGui.Text($" ");
+                ImGui.Text($"Block");
+                ImGui.Text(AimedBlock.ToString());
             }
             
             ImGui.Text($" ");

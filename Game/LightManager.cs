@@ -5,7 +5,7 @@ namespace Spacebox.Game.Lighting
 {
     public class LightManager
     {
-        private const sbyte Size = Chunk.Size;
+        private const byte Size = Chunk.Size;
         private readonly Block[,,] _blocks;
 
         public LightManager(Block[,,] blocks)

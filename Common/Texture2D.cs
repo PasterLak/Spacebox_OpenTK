@@ -12,7 +12,7 @@ namespace Spacebox.Common
         public int Width { get; private set; }
         public int Height { get; private set; }
         private Color4[,] pixels;
-        public bool IsReadOnly { get; private set; } = true;
+       
 
         public Texture2D(int width, int height, bool pixelated = false)
         {
@@ -20,7 +20,7 @@ namespace Spacebox.Common
             Height = height;
             pixels = new Color4[width, height];
             Handle = GL.GenTexture();
-            IsReadOnly = false;
+           
 
             for (int y = 0; y < Height; y++)
             {
@@ -162,7 +162,7 @@ namespace Spacebox.Common
             if (x < 0 || x >= Width || y < 0 || y >= Height)
                 throw new ArgumentOutOfRangeException();
             pixels[x, y] = color;
-            IsReadOnly = false;
+          
         }
 
         public void FlipX()
@@ -195,8 +195,7 @@ namespace Spacebox.Common
 
         public void UpdateTexture()
         {
-            if (IsReadOnly)
-                throw new InvalidOperationException("Cannot modify a read-only texture.");
+           
             Use();
             LoadTextureFromPixels();
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);

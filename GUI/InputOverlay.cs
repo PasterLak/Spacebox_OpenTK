@@ -46,12 +46,16 @@ namespace Spacebox.GUI
             ImGui.Text($"");
             ImGui.Text($"Press F6 to hide/show");
             ImGui.Text($"");
+            ImGui.Separator();
+            ImGui.Text($"");
             ImGui.Text($"[Debug]");
             ImGui.Text($"");
             ImGui.Text($"[F1] Console");
             ImGui.Text($"[F2] Show FPS");
             ImGui.Text($"[F4] Visual Debug");
             ImGui.Text($"[F7] FPS Limiter on/off");
+            ImGui.Text($"[F8] Show/Hide Interface");
+            ImGui.Text($"[F9] UI Debugger on/off");
             ImGui.Text($"[F10] Wireframe Mesh on/off");
             ImGui.Text($"");
             ImGui.Text($"[F11] Fullscreen");
@@ -63,6 +67,7 @@ namespace Spacebox.GUI
             ImGui.Text($"[Ctrl] Down");
             ImGui.Text($"[Shift] Speed-up");
             ImGui.Text($"[Q,E] Camera roll");
+            ImGui.Text($"[C] Inventory");
             ImGui.Text($"");
 
             ImGui.Text($"[Building]");

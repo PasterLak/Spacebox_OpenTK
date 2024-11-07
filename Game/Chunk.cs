@@ -12,7 +12,7 @@ namespace Spacebox.Game
 {
     public class Chunk : IDisposable
     {
-        public const sbyte Size = 32;
+        public const byte Size = 32; // 32700+ blocks
         public Vector3 Position { get; private set; }
         public Block[,,] Blocks { get; private set; }
         public bool ShowChunkBounds { get; set; } = true;
@@ -141,8 +141,9 @@ namespace Spacebox.Game
                 return;
 
             Vector3 worldBlockPosition = new Vector3(x, y, z);
-            Console.WriteLine(Blocks[x, y, z].LightColor);
+           
             destructionManager?.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor);
+
 
             Blocks[x, y, z] = GameBlocks.CreateFromId(0);
 
@@ -294,6 +295,12 @@ namespace Spacebox.Game
             {
                 ChunkSaveLoadManager.SaveChunk(this);
             }
+
+            if(Input.IsKeyDown(Keys.KeyPad9))
+            {
+                ClearChunk();
+                GenerateMesh();
+            }
            
             tag.Text =  (int)Vector3.Distance(boundingBox.Center, player.Position) + " m";
                 destructionManager.Update();
@@ -314,12 +321,15 @@ namespace Spacebox.Game
                 VisualDebug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.White);
                 
 
-                Block selectedBlock = Blocks[hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z];
+                Block aimedBlock = Blocks[hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z];
+
+
+                Overlay.AimedBlock = aimedBlock;
 
                 if(Input.IsKeyDown(Keys.R))
                 {
                     
-                    ChangeBlockColor(selectedBlock, new Vector3(1, 0, 0), true);
+                    ChangeBlockColor(aimedBlock, new Vector3(1, 0, 0), true);
                     GenerateMesh();
                 }
                 if (Input.IsKeyDown(Keys.T))
@@ -341,7 +351,7 @@ namespace Spacebox.Game
                 VisualDebug.DrawLine(hitPosition, hitPosition + hitNormal * 0.5f, Color4.Red);
                
 
-                if (selectedBlock.BlockId == 20 || selectedBlock.BlockId == 22)
+                if (aimedBlock.BlockId == 20 || aimedBlock.BlockId == 22)
                 {
                     float dis = Vector3.Distance(player.Position, hitBlockPosition);
 
@@ -357,14 +367,14 @@ namespace Spacebox.Game
 
                 if (Input.IsMouseButtonDown(MouseButton.Left))
                 {
+
+                    player.Panel.TryAddItem( 
+                        GameBlocks.GetBlockDataById(aimedBlock.BlockId).Item , 1);
+                     
+
                     RemoveBlock(hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z);
                 }
 
-                if (Input.IsMouseButtonDown(MouseButton.Middle))
-                {
-                    Block b = GetBlock(hitBlockPosition);
-                    Console.WriteLine($"{b} Pos: {hitBlockPosition}");
-                }
 
                 if (Input.IsMouseButtonDown(MouseButton.Right))
                 {
@@ -380,6 +390,9 @@ namespace Spacebox.Game
             }
             else
             {
+
+                Overlay.AimedBlock = null;
+
                 float placeDistance = 5f;
                 Vector3 placePosition = rayOrigin + rayDirection * placeDistance;
                 Vector3 localPosition = placePosition - Position;
@@ -402,6 +415,20 @@ namespace Spacebox.Game
                 {
                     Block newBlock = GameBlocks.CreateFromId(player.CurrentBlockId);
                     SetBlock(x, y, z, newBlock);
+                }
+            }
+        }
+
+        private void ClearChunk()
+        {
+            for(int x = 0; x < Size; x++)
+            {
+                for (int y = 0; y < Size; y++)
+                {
+                    for (int z = 0; z < Size; z++)
+                    {
+                        Blocks[x, y, z] = GameBlocks.CreateFromId(0);
+                    }
                 }
             }
         }

@@ -17,7 +17,7 @@ namespace Spacebox.Scenes
         Skybox skybox;
        
         private Shader skyboxShader;
-        private Astronaut player;
+        private Camera player;
 
         private DustSpawner spawner;
 
@@ -41,7 +41,7 @@ namespace Spacebox.Scenes
             //sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
             //GL.Enable(EnableCap.DepthTest);
 
-            player = new Astronaut(new Vector3(0,0,0), 16 / 9f);
+            player = new Camera360(new Vector3(0,0,0), 16 / 9f);
 
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader,

@@ -1,6 +1,5 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
-using System;
 
 namespace Spacebox.GUI
 {
@@ -22,14 +21,26 @@ namespace Spacebox.GUI
             Texture2D isometricTexture = new Texture2D(size, size, pixelated: true);
 
             Color4[,] originalPixels = block.GetPixelData();
+
+            
+
             Color4[,] isometricPixels = InitializePixels(size);
 
-            ApplyRightSide(size, originalSize, originalPixels, isometricPixels, ShadowIntensity);
-            ApplyLeftSide(size, originalSize, originalPixels, isometricPixels, ShadowIntensity);
-            ApplyTop(size, originalSize, originalPixels, isometricPixels, LightIntensity);
+            ApplyRightSide(size, originalPixels, isometricPixels, ShadowIntensity);
+            ApplyLeftSide(size, originalPixels, isometricPixels, ShadowIntensity);
+            ApplyTop(size, originalPixels, isometricPixels, LightIntensity);
+
+         
+            isometricPixels = ImageProcessing.MirrorX(isometricPixels);
+
+            //isometricPixels = ImageProcessing.MirrorX(isometricPixels);
 
             isometricTexture.SetPixelsData(isometricPixels);
             isometricTexture.UpdateTexture();
+
+            
+
+            block.Dispose();
 
             return isometricTexture;
         }
@@ -43,7 +54,7 @@ namespace Spacebox.GUI
             return pixels;
         }
 
-        private static void ApplyRightSide(int size, int originalSize, Color4[,] original, Color4[,] isometric, float intensity)
+        private static void ApplyRightSide(int size,Color4[,] original, Color4[,] isometric, float intensity)
         {
             int halfSize = size / 2;
             int startY = 0;
@@ -55,83 +66,82 @@ namespace Spacebox.GUI
                     int newX = halfSize + x;
                     int newY = startY + y;
 
-                    if (IsWithinBounds(newX, newY, size))
-                    {
+                    
                         Color4 color = original[x, y];
                         color = ModifyColor(color, intensity);
                         isometric[newX, newY] = color;
-                    }
+                    
                 }
 
                 if (x % 2 == 0) startY++;
             }
         }
 
-        private static void ApplyLeftSide(int size, int originalSize, Color4[,] original, Color4[,] isometric, float shadowIntensity)
+        private static void ApplyLeftSide(int size,  Color4[,] original, Color4[,] isometric, float shadowIntensity)
         {
             int halfSize = size / 2;
+            int startX = 0;
             int startY = size / 4;
 
             for (int x = 0; x < halfSize; x++)
             {
                 for (int y = 0; y < halfSize; y++)
                 {
-                    int newX = x;
+                    int newX = startX + x;
                     int newY = startY + y;
 
-                    if (IsWithinBounds(newX, newY, size))
-                    {
+                    
                         Color4 color = original[x, y];
                         color = DarkenColor(color, 0.05f);
                         isometric[newX, newY] = color;
-                    }
+                    
                 }
 
                 if (x % 2 == 0) startY--;
             }
         }
 
-        private static void ApplyTop(int size, int originalSize, Color4[,] original, Color4[,] isometric, float lightIntensity)
+        private static void ApplyTop(int size, Color4[,] original, Color4[,] isometric, float lightIntensity)
         {
             int halfSize = size / 2;
+
             int startX = 0;
             int startY = size - size / 4;
 
             for (int y = 0; y < halfSize; y++)
             {
-                int currentStartY = startY;
+                int s = startY;
 
                 for (int x = 0; x < halfSize; x++)
                 {
                     int newX = startX + x;
-                    int newY = currentStartY;
+                    int newY = startY;
 
-                    if (IsWithinBounds(newX, newY, size))
-                    {
                         Color4 color = original[x, y];
                         color = LightenColor(color, lightIntensity);
                         isometric[newX, newY] = color;
-                    }
+                    
 
-                    if (x % 2 == 0) currentStartY++;
+                    if (x % 2 == 0) startY--;
                 }
+
+                startY = s;
 
                 for (int x = 0; x < halfSize - 1; x++)
                 {
                     int newX = startX + x + 1;
-                    int newY = currentStartY;
+                    int newY = startY;
 
-                    if (IsWithinBounds(newX, newY, size))
-                    {
+                   
                         Color4 color = original[x, y];
                         color = LightenColor(color, 0.1f);
                         isometric[newX, newY] = color;
-                    }
+                    
 
-                    if (x % 2 == 0) currentStartY++;
+                    if (x % 2 == 0) startY--;
                 }
 
-                startY = currentStartY;
+                startY = s;
 
                 if (y != 0 && y % 2 == 0)
                     startY++;

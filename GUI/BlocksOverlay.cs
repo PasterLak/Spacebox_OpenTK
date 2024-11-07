@@ -40,10 +40,13 @@ namespace Spacebox.GUI
             if (isAltPressed)
             {
                 Input.SetCursorState(CursorState.Normal);
+
+                astronaut.CanMove = false;
             }
             else
             {
                 Input.SetCursorState(CursorState.Grabbed);
+                astronaut.CanMove = true;
             }
 
             var io = ImGui.GetIO();
@@ -86,7 +89,7 @@ namespace Spacebox.GUI
                     int atlasY = (int)blockData.TextureCoords.Y;
 
                     // Получаем текстуру блока из атласа
-                    blockIcon = IsometricIcon.CreateIsometricIcon(UVAtlas.GetBlockTexture(GameBlocks.AtlasTexture, atlasX, atlasY));
+                    blockIcon = IsometricIcon.CreateIsometricIcon(UVAtlas.GetBlockTexture(GameBlocks.BlocksTexture, atlasX, atlasY));
                     _blockIcons[id] = blockIcon;
                 }
 

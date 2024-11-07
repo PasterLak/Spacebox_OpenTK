@@ -23,6 +23,7 @@ namespace Spacebox.Game
         public Action<short> OnCurrentBlockChanged;
 
         public Inventory Inventory { get; private set; }
+        public Storage Panel { get; private set; }
 
         private float _cameraSpeed = 2.5f;
         private float _shiftSpeed = 5.5f;
@@ -32,7 +33,20 @@ namespace Spacebox.Game
         private Vector2 _lastMousePosition;
 
         public bool CameraActive = true;
-        public bool CanMove = true;
+
+        private bool _canMove = true;
+        public bool CanMove
+        {
+            get
+            {
+                return _canMove;
+            }
+            set
+            {
+                _canMove = value;
+                _lastMousePosition = Input.Mouse.Position;
+            }
+        }
 
         private SpotLight _spotLight;
 
@@ -78,12 +92,29 @@ namespace Spacebox.Game
         {
             Debug.OnVisibilityWasChanged += OnGameConsole;
 
-            Inventory = new Inventory(10,6);
+            Inventory = new Inventory(8,5);
+            Panel = new Storage(1,10);
+
+            Inventory.Name = "Inventory";
+            Panel.Name = "Panel";
+
+            Panel.ConnectStorage(Inventory, true);
+            Inventory.ConnectStorage(Panel);
+
+            Panel.TryAddItem(GameBlocks.GetItemByName("Drill"), 1);
+            Panel.TryAddItem(GameBlocks.GetItemByName("Weapone"), 1);
+            Panel.TryAddItem(GameBlocks.GetItemByName("Powder"), 52);
+            Panel.TryAddItem(GameBlocks.GetItemByName("Iron Lens"), 8);
+
+            Inventory.TryAddItem(GameBlocks.GetItemByName("Titanium Heavy Block"), 42);
+            Inventory.TryAddItem(GameBlocks.GetItemByName("AI Core"), 12);
         }
 
         private void OnGameConsole(bool state)
         {
             CanMove = !state;
+
+            _lastMousePosition = Input.Mouse.Position;
         }
 
         private void SetInertia()
@@ -159,15 +190,11 @@ namespace Spacebox.Game
                 _spotLight.IsActive = !_spotLight.IsActive;
             }
 
-            if (Input.IsKeyDown(Keys.I))
+            if (Input.IsKeyDown(Keys.O))
             {
                 EnableInertia(!_inertiaController.Enabled);
             }
 
-            if (Input.IsKeyDown(Keys.C))
-            {
-                EnableCameraSway(!_cameraSway.Enabled);
-            }
 
             HandleInput();
             UpdateBounding();

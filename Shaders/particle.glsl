@@ -36,6 +36,7 @@ out vec4 FragColor;
 
 uniform sampler2D particleTexture;
 uniform vec3 color = vec3(1,1,1);
+uniform bool debug = false;
 
 
 void main()
@@ -43,10 +44,20 @@ void main()
     vec4 texColor = texture(particleTexture, TexCoords);
 
    
-    vec3 clampedColor = clamp(color, vec3(0.5), vec3(0.9)) ;
+    vec3 clampedColor = clamp(color, vec3(0.5), vec3(0.9));
 
+    vec4 finalColor;
 
-    FragColor = texColor * ParticleColor * vec4(clampedColor,1);
+    if(debug == false)
+    {
+        finalColor = texColor * ParticleColor * vec4(clampedColor,1);
+    }
+    else
+    {
+        finalColor = vec4(1,0,1,1);
+    }
+
+    FragColor = finalColor;
 
 }
 

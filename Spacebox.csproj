@@ -62,15 +62,19 @@
     <None Remove="Resources\Textures\grass2.jpg" />
     <None Remove="Resources\Textures\icon.ico" />
     <None Remove="Resources\Textures\icon.png" />
+    <None Remove="Resources\Textures\item.png" />
+    <None Remove="Resources\Textures\items.png" />
     <None Remove="Resources\Textures\Leaves.png" />
     <None Remove="Resources\Textures\lightAtlas.png" />
     <None Remove="Resources\Textures\myBlocks.png" />
+    <None Remove="Resources\Textures\selectedSlot.png" />
     <None Remove="Resources\Textures\sky.jpg" />
     <None Remove="Resources\Textures\skybox.png" />
     
     <None Remove="Resources\Textures\Skybox\dom.png" />
     <None Remove="Resources\Textures\Skybox\domBig.png" />
     <None Remove="Resources\Textures\Skybox\skybox_01.jpg" />
+    <None Remove="Resources\Textures\slot.png" />
     <None Remove="Resources\Textures\snow.jpg" />
     <None Remove="Resources\Textures\spaceboxLogo.png" />
     <None Remove="Resources\Textures\stone1.jpg" />
@@ -85,11 +89,9 @@
     <None Remove="Shaders\debug.glsl" />
     <None Remove="Shaders\font.glsl" />
     <None Remove="Shaders\lighting.glsl" />
-    <None Remove="Shaders\particleDebug.glsl" />
-    <None Remove="Shaders\particleShader.glsl" />
+    <None Remove="Shaders\particle.glsl" />
     <None Remove="Shaders\shader.glsl" />
     <None Remove="Shaders\skybox.glsl" />
-    <None Remove="Shaders\skyboxTest.glsl" />
     <None Remove="Shaders\sprite.glsl" />
     <None Remove="Shaders\SSAO\block_gbuffer.glsl" />
     <None Remove="Shaders\SSAO\lighting.glsl" />
@@ -143,10 +145,19 @@
     <Content Include="Resources\Textures\icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Textures\item.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\items.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Textures\lightAtlas.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\myBlocks.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\selectedSlot.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\Skybox\dom.png">
@@ -263,6 +274,9 @@
     <Content Include="Resources\Textures\Game\snow.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Textures\slot.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Textures\spaceboxLogo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -302,19 +316,13 @@
     <Content Include="Shaders\lighting.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Shaders\particleDebug.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\particleShader.glsl">
+    <Content Include="Shaders\particle.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\shader.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\skybox.glsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\skyboxTest.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\sprite.glsl">

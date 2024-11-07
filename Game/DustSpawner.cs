@@ -26,7 +26,7 @@ namespace Spacebox.Scenes
 
             dustTexture = TextureManager.GetTexture("Resources/Textures/dust.png", true);
             
-            particleShader = ShaderManager.GetShader("Shaders/particleShader");
+            particleShader = ShaderManager.GetShader("Shaders/particle");
 
             ParticleSystem = new ParticleSystem(dustTexture, particleShader)
             {

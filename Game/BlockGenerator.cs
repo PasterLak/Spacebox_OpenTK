@@ -6,7 +6,7 @@ namespace Spacebox.Game.Generation
 {
     public class BlockGenerator
     {
-        private const sbyte Size = Chunk.Size;
+        private const byte Size = Chunk.Size;
         private readonly Block[,,] _blocks;
         private readonly Vector3 _position;
 

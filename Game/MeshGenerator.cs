@@ -6,7 +6,7 @@ namespace Spacebox.Game.Rendering
 {
     public class MeshGenerator
     {
-        private const sbyte Size = Chunk.Size;
+        private const byte Size = Chunk.Size;
         private readonly Block[,,] _blocks;
         private readonly bool _measureGenerationTime;
 

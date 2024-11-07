@@ -13,6 +13,7 @@ using System;
 using Spacebox.Extensions;
 using Spacebox.Entities;
 using Spacebox.GUI;
+using ImGuiNET;
 
 namespace Spacebox
 {
@@ -22,25 +23,28 @@ namespace Spacebox
 
         public static Window Instance;
         
-        private SceneManager _sceneManager;
+        
         public static readonly ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
 
         public static Action<Vector2> OnResized;
 
-        private AudioManager _audioManager;
+
         private bool _isFullscreen = false;
-        private Vector2i _previousSize;
-        private Vector2i _previousPos;
-        ImGuiController _controller;
-        string path = "Resources/WindowPosition.txt";
+        private bool _debugUI = false;
+
+        private ImGuiController _controller;
+        private string path = "Resources/WindowPosition.txt";
 
 
         private static PolygonMode polygonMode = PolygonMode.Fill;
+        private Vector2i minimizedWindowSize = new Vector2i(500, 500);
 
         public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
         {
             Instance = this;
+            minimizedWindowSize = nativeWindowSettings.ClientSize;
+
         }
 
         protected override void OnLoad()
@@ -50,39 +54,14 @@ namespace Spacebox
             Debug.Log("[Engine started!]");
             Input.Initialize(this);
 
-            
-
-            /*if(!File.Exists(path))
-            {
-                NumberStorage.SaveNumbers(path, Location.X, Location.Y);
-                _previousPos = Location;
-            }
-            else
-            { 
-                var(x,y) = NumberStorage.LoadNumbers(path);
-                _previousPos = new Vector2i(x,y);
-                Location = _previousPos;
-            }*/
-
-            _previousSize = Size;
-
-            // _audioManager = AudioManager.Instance;
-
-           
-            
-
-            //this.VSync = VSyncMode.On;
-
             FrameLimiter.Initialize(120);
             FrameLimiter.IsRunning = true;
 
-           
-
-            _sceneManager = new SceneManager(this, typeof(LogoScene));
+            SceneManager.Initialize(this, typeof(LogoScene));
 
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
             
-            //Theme.ApplyDarkTheme();
+            Theme.ApplyDarkTheme();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -105,14 +84,7 @@ namespace Spacebox
                 SceneManager.CurrentScene.Render();
 
                 VisualDebug.Render();
-                /*GL.Enable(EnableCap.Blend);
-                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-                SceneManager.CurrentScene.OnGUI();
-
-                GL.Disable(EnableCap.Blend);
-                */
-                //ImGui.ShowDemoWindow();
                 Time.StartOnGUI();
                 SceneManager.CurrentScene.OnGUI();
 
@@ -120,6 +92,13 @@ namespace Spacebox
                 Debug.Render(windowSize.ToSystemVector2());
                 Overlay.OnGUI();
                 InputOverlay.OnGUI();
+
+                if(_debugUI)
+                {
+                    ImGui.ShowDemoWindow();
+                }
+
+
                 Time.EndOnGUI();
                 
 
@@ -129,17 +108,13 @@ namespace Spacebox
 
             }
 
-            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-
-            // Enable Docking
-            // ImGui.DockSpaceOverViewport();
-
-
             Time.EndRender();
 
             SwapBuffers();
 
         }
+
+        
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
@@ -148,12 +123,11 @@ namespace Spacebox
 
 
             Time.Update(e);
-            //_controller.Update(this, Time.Delta);
+            
             while (_mainThreadActions.TryDequeue(out var action))
             {
                 try
                 {
-                    //Console.WriteLine("Executing action from main thread actions queue.");
                     action.Invoke();
                 }
                 catch (Exception ex)
@@ -162,12 +136,23 @@ namespace Spacebox
                 }
             }
 
-            if (!IsFocused)
-            {
-               // return;
-            }
-            //Console.WriteLine("FPS: " + Time.FPS);
 
+            UpdateInputs();
+
+            if (SceneManager.CurrentScene != null)
+            {
+                SceneManager.CurrentScene.Update();
+                SceneManager.CurrentScene.LateUpdate();
+            }
+
+
+            Time.EndUpdate();
+
+
+        }
+
+        private void UpdateInputs()
+        {
             if (Input.IsKeyDown(Keys.F1))
             {
                 Debug.ToggleVisibility();
@@ -175,52 +160,13 @@ namespace Spacebox
 
             if (Input.IsKeyDown(Keys.F10))
             {
-                if(polygonMode == PolygonMode.Fill)
-                {
-                    polygonMode = PolygonMode.Line;
-                }
-                else
-                {
-                    polygonMode = PolygonMode.Fill;
-                }
-
-                GL.PolygonMode(MaterialFace.FrontAndBack, polygonMode);
+                TogglePolygonMode();
             }
 
             if (Input.IsKeyDown(Keys.F11))
             {
-                var size = Monitors.GetMonitorFromWindow(this).ClientArea.Size;
-
-                if (_isFullscreen)
-                {
-                 
-                    size = _previousSize;
-               
-
-                }
-                
-
-                ClientSize = size;
-                GL.Viewport(0, 0, size.X,size.Y);
-                //_camera.AspectRatio = 1920f / 1080f;
-               
-                if(!_isFullscreen)
-                {
-                    //WindowState = WindowState.Fullscreen;
-                    WindowBorder = WindowBorder.Hidden;
-                    CenterWindow();
-                }else
-                {
-                    WindowBorder = WindowBorder.Resizable;
-                    Location = _previousPos;
-                   // WindowState = WindowState.Normal;
-                }
-
-
-                _controller.WindowResized(ClientSize.X, ClientSize.Y);
-                _isFullscreen = !_isFullscreen;
+                ToggleFullScreen();
             }
-
 
             if (Input.IsKeyDown(Keys.KeyPadAdd))
             {
@@ -244,29 +190,65 @@ namespace Spacebox
 
             if (Input.IsKeyDown(Keys.F7))
             {
-                if(FrameLimiter.TargetFPS == 120)
-                {
-                    FrameLimiter.TargetFPS = 9999;
-                }
-                else
-                {
-                    FrameLimiter.TargetFPS = 120;
-                }
+                ToggleFrameLimiter();
             }
 
-            if (SceneManager.CurrentScene != null)
+            if(Input.IsKeyDown(Keys.F9))
             {
-                SceneManager.CurrentScene.Update();
-                SceneManager.CurrentScene.LateUpdate();
+                _debugUI = !_debugUI;
             }
-
-
-            Time.EndUpdate();
-
-
         }
 
-        private void CenterWindow()
+        public void ToggleFrameLimiter()
+        {
+            if (FrameLimiter.TargetFPS == 120)
+            {
+                FrameLimiter.TargetFPS = 9999;
+            }
+            else
+            {
+                FrameLimiter.TargetFPS = 120;
+            }
+        }
+
+        public void ToggleFullScreen()
+        {
+            if (!_isFullscreen)
+            {
+
+                WindowBorder = WindowBorder.Hidden;
+                WindowState = WindowState.Fullscreen;
+                FrameLimiter.IsRunning = false;
+                VSync = VSyncMode.On;
+
+            }
+            else
+            {
+                WindowBorder = WindowBorder.Resizable;
+                WindowState = WindowState.Normal;
+                ClientSize = minimizedWindowSize;
+                FrameLimiter.IsRunning = true;
+                VSync = VSyncMode.Off;
+            }
+
+            _isFullscreen = !_isFullscreen;
+        }
+
+        public void TogglePolygonMode()
+        {
+            if (polygonMode == PolygonMode.Fill)
+            {
+                polygonMode = PolygonMode.Line;
+            }
+            else
+            {
+                polygonMode = PolygonMode.Fill;
+            }
+
+            GL.PolygonMode(MaterialFace.FrontAndBack, polygonMode);
+        }
+
+        public void CenterWindow()
         {
         
             var (monitorWidth, monitorHeight) = Monitors.GetMonitorFromWindow(this).WorkArea.Size;
@@ -320,6 +302,8 @@ namespace Spacebox
 
             //GL.Viewport(0, 0, Size.X, Size.Y);
             GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
+
+            minimizedWindowSize = ClientSize;
 
             OnResized?.Invoke(Size);
 

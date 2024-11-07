@@ -61,7 +61,7 @@ namespace Spacebox.Common
             if (_isVisible)
             {
                 _previousCursorState = Input.GetCursorState();
-                Input.SetCursorState(CursorState.Normal);
+                Input.ShowCursor();
                 _focusInput = true;
              
             }
