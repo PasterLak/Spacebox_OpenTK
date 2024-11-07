@@ -1,6 +1,6 @@
 
 
 
-
+- one color for all particles
 + game logo can be moved away
 - 

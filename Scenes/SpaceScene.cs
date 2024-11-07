@@ -31,7 +31,7 @@ namespace Spacebox.Scenes
         private AudioSource blockPlace;
         private AudioSource blockDestroy;
         private AudioSource music;
-        private bool ShowBlocksList = false;
+       
 
 
         private DustSpawner dustSpawner;
@@ -117,9 +117,12 @@ namespace Spacebox.Scenes
             Texture2D c = TextureManager.GetTexture("Resources/Textures/slot.png", true, false);
             Texture2D c2 = TextureManager.GetTexture("Resources/Textures/selectedSlot.png", true, false);
             InventoryUI.SetDefaultIcon(c.Handle);
-            PanelUI.Initialize(c.Handle, c2.Handle);
-        
+            PanelUI.Initialize(player.Panel, c.Handle, c2.Handle);
+          
             InventoryUI.Player = player;
+
+            CreativeWindowUI.SetDefaultIcon(c.Handle);
+            CreativeWindowUI.Player = player;
 
         }
 
@@ -148,10 +151,7 @@ namespace Spacebox.Scenes
                     Settings.ShowInterface = !Settings.ShowInterface;
                 }
 
-                if (Input.IsKeyDown(Keys.Tab))
-                {
-                    ShowBlocksList = !ShowBlocksList;
-                }
+
 
                 if (Input.IsMouseButtonDown(MouseButton.Right))
                 {
@@ -234,20 +234,18 @@ namespace Spacebox.Scenes
 
         }
 
-       
+        Storage creative = new Storage(5,8);
         public override void OnGUI()
         {
             
+           
             
-
-            if(ShowBlocksList)
-            BlocksOverlay.OnGUI(player);
             CenteredText.Draw();
             TagText.Draw();
-            PanelUI.Render(player.Panel);
+            PanelUI.Render();
 
             InventoryUI.Render(player.Inventory);
-            
+            CreativeWindowUI.Render();
 
             if (VisualDebug.ShowDebug)
             {

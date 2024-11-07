@@ -1,5 +1,4 @@
-﻿
-using Spacebox.Common;
+﻿using Spacebox.Common;
 
 namespace Spacebox.Game
 {
@@ -70,7 +69,7 @@ namespace Spacebox.Game
         {
             if(item == null) return false;
             
-            if(TryFindSameItem(item, out ItemSlot slot))
+            if(TryFindUnfilledSlotWithItem(item, out ItemSlot slot))
             {
                 
 
@@ -124,11 +123,12 @@ namespace Spacebox.Game
                         return ConnectedStorage.TryAddItem(item, count);
                     }
 
+                    Debug.Error($"{Name}: no empty slots and no connected storage. Items was not added: {count}");
                     return false;
                 }
             }
 
-
+            Debug.Error($"{Name}: failed to add items. Items was not added: {count}");
             return false;
         }
 
@@ -137,12 +137,12 @@ namespace Spacebox.Game
 
         }
 
-        public bool HasItem()
+        public bool HasItem(Item item)
         {
-            return true;
+            return TryFindUnfilledSlotWithItem(item, out ItemSlot slot);
         }
 
-        public bool HasFreeSlots()
+        private bool HasFreeSlots()
         {
             for(int x = 0; x < SizeX; x++)
             {
@@ -155,7 +155,7 @@ namespace Spacebox.Game
             return false;
         }
 
-        public bool TryGetFirstFreeSlot(out ItemSlot slot)
+        private bool TryGetFirstFreeSlot(out ItemSlot slot)
         {
             slot = null;
 
@@ -174,7 +174,7 @@ namespace Spacebox.Game
             return false;
         }
 
-        public bool TryFindSameItem(Item item, out ItemSlot slot)
+        private bool TryFindUnfilledSlotWithItem(Item item, out ItemSlot slot)
         {
             slot = null;
 

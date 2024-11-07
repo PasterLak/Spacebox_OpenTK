@@ -1,6 +1,4 @@
-﻿
-
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using Spacebox.Common;
 
 namespace Spacebox.Game
@@ -32,14 +30,22 @@ namespace Spacebox.Game
             Count = 0;
         }
 
+        public void TakeOne()
+        {
+            if (!HasItem) return;
+
+            Count--;
+        }
+
+        public void DropOne()
+        {
+            TakeOne();
+        }
+
 
         public void Clear()
         {
-            if (Item != null)
-            {
-                Item = null;
-            }
-
+            
             Count = 0;
         }
 
@@ -83,9 +89,7 @@ namespace Spacebox.Game
                 
                 byte count = Count;
 
-                Count = 0;
-
-                
+                Clear();
 
                 if (storage.TryAddItem(Item, count))
                 {
@@ -96,7 +100,7 @@ namespace Spacebox.Game
                 {
                     
 
-                    Debug.Error("Failed to add item to " + storage.Name);
+                    Debug.Error("Failed to add item to " + storage.Name + " by moving from " + Storage.Name);
                     Debug.Error("Item name: " + Item.Name);
 
                     Count = count;

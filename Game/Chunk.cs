@@ -7,6 +7,7 @@ using Spacebox.Game.Lighting;
 using Spacebox.Game.Rendering;
 using Spacebox.GUI;
 using Spacebox.Managers;
+using Spacebox.UI;
 
 namespace Spacebox.Game
 {
@@ -145,7 +146,7 @@ namespace Spacebox.Game
             destructionManager?.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor);
 
 
-            Blocks[x, y, z] = GameBlocks.CreateFromId(0);
+            Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
 
             
 
@@ -164,7 +165,7 @@ namespace Spacebox.Game
         {
             if (IsInRange(x, y, z))
                 return Blocks[x, y, z];
-            return GameBlocks.CreateFromId(0);
+            return GameBlocks.CreateBlockFromId(0);
         }
 
         private bool IsInRange(int x, int y, int z)
@@ -351,7 +352,7 @@ namespace Spacebox.Game
                 VisualDebug.DrawLine(hitPosition, hitPosition + hitNormal * 0.5f, Color4.Red);
                
 
-                if (aimedBlock.BlockId == 20 || aimedBlock.BlockId == 22)
+                if (aimedBlock.BlockId == 20 || aimedBlock.BlockId == 22) // use
                 {
                     float dis = Vector3.Distance(player.Position, hitBlockPosition);
 
@@ -367,12 +368,15 @@ namespace Spacebox.Game
 
                 if (Input.IsMouseButtonDown(MouseButton.Left))
                 {
+                    if(PanelUI.IsHoldingDrill())
+                    {
+                        player.Panel.TryAddItem(
+                        GameBlocks.GetBlockDataById(aimedBlock.BlockId).Item, 1);
 
-                    player.Panel.TryAddItem( 
-                        GameBlocks.GetBlockDataById(aimedBlock.BlockId).Item , 1);
-                     
 
-                    RemoveBlock(hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z);
+                        RemoveBlock(hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z);
+                    }
+                    
                 }
 
 
@@ -383,8 +387,13 @@ namespace Spacebox.Game
                     if (IsInRange(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z) &&
                         Blocks[placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z].IsAir())
                     {
-                        Block newBlock = GameBlocks.CreateFromId(player.CurrentBlockId);
-                        SetBlock(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z, newBlock);
+                        if (PanelUI.TryPlaceItem(out var id))
+                        {
+                            
+                            Block newBlock = GameBlocks.CreateBlockFromId(id);
+                            SetBlock(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z, newBlock);
+                        }
+                       
                     }
                 }
             }
@@ -413,8 +422,12 @@ namespace Spacebox.Game
                     IsInRange(x, y, z) &&
                     Blocks[x, y, z].IsAir())
                 {
-                    Block newBlock = GameBlocks.CreateFromId(player.CurrentBlockId);
-                    SetBlock(x, y, z, newBlock);
+                    if (PanelUI.TryPlaceItem(out var blockId))
+                    {
+
+                        Block newBlock = GameBlocks.CreateBlockFromId(blockId);
+                        SetBlock(x,y,z, newBlock);
+                    }
                 }
             }
         }
@@ -427,7 +440,7 @@ namespace Spacebox.Game
                 {
                     for (int z = 0; z < Size; z++)
                     {
-                        Blocks[x, y, z] = GameBlocks.CreateFromId(0);
+                        Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
                     }
                 }
             }

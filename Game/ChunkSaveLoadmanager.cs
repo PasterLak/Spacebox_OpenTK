@@ -150,7 +150,7 @@ namespace Spacebox.Game
                 for (int y = 0; y < Chunk.Size; y++)
                     for (int z = 0; z < Chunk.Size; z++)
                     {
-                        blocks[x, y, z] = GameBlocks.CreateFromId(ids[index++]);
+                        blocks[x, y, z] = GameBlocks.CreateBlockFromId(ids[index++]);
                     }
             return blocks;
         }

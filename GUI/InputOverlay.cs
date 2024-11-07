@@ -10,7 +10,7 @@ namespace Spacebox.GUI
 {
     public class InputOverlay
     {
-        public static bool IsVisible = true;
+        public static bool IsVisible = false;
         private static bool WireframeModeEnabled = false;
 
         public static void OnGUI()

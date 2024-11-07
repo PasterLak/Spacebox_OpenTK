@@ -16,10 +16,12 @@ namespace Spacebox.UI
         private static IntPtr SelectedTexture = IntPtr.Zero;
         public static bool IsVisible { get; set; } = true;
 
+        public static Storage Storage;
 
+        private static ItemSlot SelectedSlot;
 
         private static short _selectedSlotId = 0;
-        public static short SelectedSlot
+        public static short SelectedSlotId
         {
             get { return _selectedSlotId; }
             set
@@ -31,54 +33,162 @@ namespace Spacebox.UI
 
         public static Action<short> OnSlotChanged;
 
-        public static void Initialize(IntPtr slotTexture, IntPtr selectedTexture )
+        public static void Initialize(Storage storage, IntPtr slotTexture, IntPtr selectedTexture )
         {
+            Storage = storage;
             SlotTexture = slotTexture;
             SelectedTexture = selectedTexture;
             //ItemTexture = new Texture2D("Resources/Textures/item.png", true, false).Handle;
+
+            SetSelectedSlot(0);
+        }
+
+        public static bool IsHoldingDrill()
+        {
+            if (SelectedSlot == null) return false;
+
+            if (!SelectedSlot.HasItem) return false;
+
+            if (InventoryUI.IsVisible) return false;
+
+            if (SelectedSlot.Item.GetType() != typeof(DrillItem)) return false;
+            
+
+            return true;
+        }
+
+        public static bool TryPlaceItem(out short id)
+        {
+            id = 0;
+
+            if (SelectedSlot == null) return false;
+
+            if(!SelectedSlot.HasItem) return false;
+
+            if(InventoryUI.IsVisible) return false;
+
+            if(SelectedSlot.Item.GetType() != typeof(BlockItem)) return false;
+
+           
+            BlockItem itemBlock = (BlockItem)SelectedSlot.Item;
+
+            if(itemBlock == null) return false;
+
+            id = itemBlock.BlockId;
+
+            SelectedSlot.TakeOne();
+
+            return true;
         }
 
         public static void Update()
         {
+            if (InventoryUI.IsVisible) return;
+
+
+           
             if (Input.MouseScrollDelta.Y < 0)
             {
-                SelectedSlot++;
+                SelectedSlotId++;
 
 
 
-                if (SelectedSlot > 9)
+                if (SelectedSlotId > (short)(Storage.SizeY - 1))
                 {
-                    SelectedSlot = 0;
+                    SelectedSlotId = 0;
                 }
-
+                SelectSlot(SelectedSlotId);
             }
 
             if (Input.MouseScrollDelta.Y > 0)
             {
-                SelectedSlot--;
+                SelectedSlotId--;
 
-                if (SelectedSlot < 0)
+                if (SelectedSlotId < 0)
                 {
-                    SelectedSlot = 9;
+                    SelectedSlotId = (short)(Storage.SizeY-1);
                 }
 
+                SelectSlot(SelectedSlotId);
+            }
 
+            if (Input.IsKeyDown(Keys.G))
+            {
+                if(SelectedSlot != null)
+                {
+                    SelectedSlot.DropOne();
+                }
+            }
+
+            if (Input.IsKeyDown(Keys.D1))
+            {
+                SetSelectedSlot(0);
+            }
+            if (Input.IsKeyDown(Keys.D2))
+            {
+                SetSelectedSlot(1);
+            }
+            if (Input.IsKeyDown(Keys.D3))
+            {
+                SetSelectedSlot(2);
+            }
+            if (Input.IsKeyDown(Keys.D4))
+            {
+                SetSelectedSlot(3);
+            }
+            if (Input.IsKeyDown(Keys.D5))
+            {
+                SetSelectedSlot(4);
+            }
+            if (Input.IsKeyDown(Keys.D6))
+            {
+                SetSelectedSlot(5);
+            }
+            if (Input.IsKeyDown(Keys.D7))
+            {
+                SetSelectedSlot(6);
+            }
+            if (Input.IsKeyDown(Keys.D8))
+            {
+                SetSelectedSlot(7);
+            }
+            if (Input.IsKeyDown(Keys.D9))
+            {
+                SetSelectedSlot(8);
+            }
+            if (Input.IsKeyDown(Keys.D0))
+            {
+                SetSelectedSlot(9);
             }
         }
 
-        public static void Render(Storage storage)
+        private static void SetSelectedSlot(short id)
+        {
+            SelectedSlotId = id;
+            SelectSlot(id);
+        }
+        private static void SelectSlot(short slot)
+        {
+            if (Storage != null)
+            {
+                SelectedSlot = Storage.GetSlot(0,slot);
+               
+            }
+        }
+
+        public static void Render()
         {
             if (!Settings.ShowInterface) return;
             if (!IsVisible) return;
-            if (storage == null) return;
+            if (Storage == null) return;
 
             ImGuiIOPtr io = ImGui.GetIO();
             var style = ImGui.GetStyle();
 
             // Swap SizeX and SizeY for window dimensions
             SlotSize = Math.Clamp(io.DisplaySize.X * 0.04f, 32.0f, 128.0f);
-            float windowWidth = (storage.SizeY * SlotSize);
-            float windowHeight = (storage.SizeX * SlotSize) + style.WindowTitleAlign.Y;
+            float windowWidth = (Storage.SizeY * SlotSize);
+            float windowHeight = (Storage.SizeX * SlotSize) + style.WindowTitleAlign.Y;
             Vector2 displaySize = io.DisplaySize;
             Vector2 windowPos = new Vector2(
                 (displaySize.X - windowWidth) / 2,
@@ -102,29 +212,29 @@ namespace Spacebox.UI
 
             ImGui.Begin("Panel", windowFlags);
 
-            if (ImGui.BeginTable("PanelTable", storage.SizeY, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit))
+            if (ImGui.BeginTable("PanelTable", Storage.SizeY, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit))
             {
                 // Set up columns based on SizeY
-                for (int y = 0; y < storage.SizeY; y++)
+                for (int y = 0; y < Storage.SizeY; y++)
                 {
                     ImGui.TableSetupColumn($"##columnPanel_{y}", ImGuiTableColumnFlags.WidthFixed, SlotSize);
                 }
 
                 // Iterate over SizeX for rows
-                for (int x = 0; x < storage.SizeX; x++)
+                for (int x = 0; x < Storage.SizeX; x++)
                 {
                     ImGui.TableNextRow();
-                    for (int y = 0; y < storage.SizeY; y++)
+                    for (int y = 0; y < Storage.SizeY; y++)
                     {
                         ImGui.TableSetColumnIndex(y);
 
                         // Access slot with swapped indices
-                        ItemSlot slot = storage.GetSlot(x,y);
+                        ItemSlot slot = Storage.GetSlot(x,y);
                         if (slot == null)
                         {
                             continue;
                         }
-                        string id = $"slotPanel_{y}_{x}";
+                        string id = $"slotPanel_{x}_{y}";
                         IntPtr slotTextureId = SlotTexture;
 
                         ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.5f, 0.5f, 0.5f, 1.0f));
@@ -153,7 +263,7 @@ namespace Spacebox.UI
 
                         Vector2 posCenter = pos + new Vector2(SlotSize * 0.5f, SlotSize * 0.5f);
 
-                        if (y == SelectedSlot)
+                        if (y == SelectedSlotId)
                         {
                             drawList.AddImage(SelectedTexture, posCenter - sizeSlot * 0.5f,
                                 posCenter + sizeSlot * 0.5f);
@@ -175,8 +285,12 @@ namespace Spacebox.UI
                             if (slot.Count > 1)
                             {
                                 Vector2 textPos = pos + new Vector2(SlotSize * 0.05f, SlotSize * 0.05f);
+
+                                drawList.AddText(textPos + new Vector2(2, 2), ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 1)),
+                                    slot.Count.ToString());
                                 drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1)),
                                     slot.Count.ToString());
+                                
                             }
                         }
 
@@ -192,6 +306,7 @@ namespace Spacebox.UI
                             ImGui.BeginTooltip();
                             ImGui.Text($"Id:{slot.Item.Id}\n{slot.Item.Name}\n" +
                                 $"Count: {slot.Count}");
+                           
                             ImGui.EndTooltip();
                       
                         }

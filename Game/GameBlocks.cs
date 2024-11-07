@@ -13,7 +13,7 @@ namespace Spacebox.Game
         public bool IsTransparent { get; set; } = false;
         public Vector3 LightColor { get; set; } = new Vector3(0,0,0);
 
-        public ItemBlock Item;
+        public BlockItem Item;
         public BlockData(string name, Vector2 textureCoords)
         {
             Name = name;
@@ -36,16 +36,7 @@ namespace Spacebox.Game
         }
     }
 
-    public class ItemBlock : Item
-    {
-
-        public short BlockId;
-
-        public ItemBlock(short blockId, short id, byte stackSize, string name) : base(id, stackSize, name)
-        {
-            BlockId = blockId;
-        }
-    }
+    
 
     // --------------------------------------------------
     public static class GameBlocks
@@ -64,6 +55,7 @@ namespace Spacebox.Game
 
         public static Dictionary<short, Texture2D> ItemIcon = new Dictionary<short, Texture2D>();
 
+
         private static void RegisterBlock(BlockData blockData)
         {
             MaxBlockId++;
@@ -77,9 +69,11 @@ namespace Spacebox.Game
 
         private static void RegisterItem(BlockData blockData)
         {
+            if (blockData.Id == 0) return;
+
             MaxItemId++;
 
-            ItemBlock item = new ItemBlock(blockData.Id, MaxItemId, 64, blockData.Name);
+            BlockItem item = new BlockItem(blockData.Id, MaxItemId, 64, blockData.Name);
 
             blockData.Item = item;
 
@@ -120,7 +114,7 @@ namespace Spacebox.Game
             return Block[id];
         }
 
-        public static Block CreateFromId(short id)
+        public static Block CreateBlockFromId(short id)
         {
             if (!Block.ContainsKey(id)) return new Block(new Vector2(0,0));
 
@@ -156,6 +150,56 @@ namespace Spacebox.Game
             ItemIcon.Add(item.Id, texture);
         }
 
+        public static Storage CreateCreativeStorage(byte sizeX)   // 32
+        {
+            byte sizeY = (byte) (Item.Count / sizeX);
+
+            byte rest = (byte)(Item.Count % sizeX);
+
+
+
+            if(rest > 0)
+            {
+                sizeY++;
+            }
+
+            Storage storage = new Storage(sizeX, sizeY);
+
+            List<short> itemsIds = new List<short>();
+            itemsIds.AddRange(Item.Keys.ToArray<short>());
+
+            //itemsIds.RemoveAt(0);
+
+            short i = 0;
+
+            for (int x = 0; x < sizeX; x++)
+            {
+                for (int y = 0; y < sizeY; y++)
+                {
+                    if (i >= itemsIds.Count) break;
+
+                    if(!itemsIds.Contains(i))
+                    {
+                        i++;
+                        continue;
+                    }
+                    else
+                    {
+                        ItemSlot slot = storage.GetSlot(x, y);
+                        slot.Item = Item[itemsIds[i]];
+                        slot.Count = 1;
+                        i++;
+                    }
+                }
+
+                if (i >= itemsIds.Count) break;
+            }
+
+            //Debug.Log($"Created creative storage: X:{sizeX} Y:{sizeY} Sum: {sizeX*sizeY}. ItemIds: {Item.Keys.Count}");
+
+            return storage;
+        }
+
         static GameBlocks()
          {
             BlocksTexture = new Texture2D("Resources/Textures/myBlocks.png", true);
@@ -169,16 +213,16 @@ namespace Spacebox.Game
             RegisterBlock(new BlockData("Ice", new Vector2(4, 3))); // 4
 
             RegisterBlock(new BlockData("Iron Ore", new Vector2(2,3))); // 5
-            RegisterBlock(new BlockData("Alluminium Ore", new Vector2(3, 3)));
+            RegisterBlock(new BlockData("Aluminium Ore", new Vector2(3, 3)));
             RegisterBlock(new BlockData("Green Ore", new Vector2(2, 2)));
             RegisterBlock(new BlockData("Pink Ore", new Vector2(6,3)));
 
 
             RegisterBlock(new BlockData("Analyzer", new Vector2(4, 0))); //9
           
-            RegisterBlock(new BlockData("Alluminium Light Block", new Vector2(6, 1)));
-            RegisterBlock(new BlockData("Alluminium Medium Block", new Vector2(7, 1)));
-            RegisterBlock(new BlockData("Alluminium Heavy Block", new Vector2(8, 1)));
+            RegisterBlock(new BlockData("Aluminium Light Block", new Vector2(6, 1)));
+            RegisterBlock(new BlockData("Aluminium Medium Block", new Vector2(7, 1)));
+            RegisterBlock(new BlockData("Aluminium Heavy Block", new Vector2(8, 1)));
 
             RegisterBlock(new BlockData("Iron Light Block", new Vector2(9, 1)));
             RegisterBlock(new BlockData("Iron Medium Block", new Vector2(10, 1)));
@@ -211,10 +255,15 @@ namespace Spacebox.Game
 
 
 
-            RegisterItem(new Item(1, "Drill", 0,0));
+            RegisterItem(new DrillItem(1, "Drill", 0,0));
             RegisterItem(new Item(1, "Weapone", 1,0));
             RegisterItem(new Item(64, "Powder", 2,0));
-            RegisterItem(new Item(64, "Iron Lens", 1,1));
+            RegisterItem(new Item(64, "Iron Lens", 2,1));
+            RegisterItem(new Item(64, "Aluminium Panels", 1, 1));
+            RegisterItem(new Item(64, "Iron Panels", 0, 1));
+            RegisterItem(new Item(64, "Titanium Ignot", 0, 2));
+
+
 
         }
     }
