@@ -105,6 +105,8 @@ namespace Spacebox.Common
             if (transform == null) return;
 
             DrawLine(transform.Position, transform.Position + new Vector3(0, 0, 1), new Color4(0, 0, 1, 1));
+            DrawBoundingSphere(new BoundingSphere(transform.Position, 0.1f), Color4.Blue);
+            
         }
 
         public static void AddCollisionToDraw(Collision collision)

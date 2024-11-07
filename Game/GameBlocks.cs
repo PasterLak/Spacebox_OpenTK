@@ -51,7 +51,7 @@ namespace Spacebox.Game
 
         public static Dictionary<short, BlockData> Block = new Dictionary<short, BlockData>();
         public static Dictionary<short, Item> Item = new Dictionary<short, Item>();
-       
+        public static Dictionary<short, ItemModel> ItemModels = new Dictionary<short, ItemModel>();
 
         public static Dictionary<short, Texture2D> ItemIcon = new Dictionary<short, Texture2D>();
 
@@ -91,8 +91,15 @@ namespace Spacebox.Game
 
             Item.Add(item.Id, item);
 
-            CacheIcon(item, (byte)item.TextureCoord.X, (byte)item.TextureCoord.Y);
+            byte coordX = (byte)item.TextureCoord.X;
+            byte coordY = (byte)item.TextureCoord.Y;
 
+            CacheIcon(item, coordX, coordY);
+
+            ItemModel model = ItemModelGenerator.GenerateModel(
+                ItemsTexture, coordX, coordY, 0.01f, 0.01f);
+
+            ItemModels.Add(MaxItemId, model);
         }
 
         public static Item GetItemByName(string name)
@@ -143,7 +150,7 @@ namespace Spacebox.Game
                 UVAtlas.GetBlockTexture(ItemsTexture, x, y);
 
             texture.FlipY();
-
+            texture.UpdateTexture(true);
             item.IconTextureId = texture.Handle;
 
 

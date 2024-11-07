@@ -34,7 +34,9 @@ namespace Spacebox.GUI
             {
                 var cam = Camera.Main;
                 Vector3i playerPosInt = new Vector3i((int)cam.Position.X, (int)cam.Position.Y, (int)cam.Position.Z);
+                Vector3i playerRotInt = new Vector3i((int)cam.Rotation.X, (int)cam.Rotation.Y, (int)cam.Rotation.Z);
                 ImGui.Text($"Camera Position: {playerPosInt}");
+                ImGui.Text($"Camera Rotation: {playerRotInt}");
             }
 
             if(AimedBlock != null)

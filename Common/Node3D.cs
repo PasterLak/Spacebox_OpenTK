@@ -23,9 +23,10 @@ namespace Spacebox.Common
 
         public virtual void AddChild(Node3D node)
         {
-            if (!Children.Contains(node)) return;
+            if (Children.Contains(node)) return;
            
             Children.Add(node);
+            node.Parent = this;
         }
 
         public Matrix4 GetModelMatrix()
@@ -37,7 +38,18 @@ namespace Spacebox.Common
             var rotation = rotationZ * rotationY * rotationX;
             var scale = Matrix4.CreateScale(Scale);
 
-            return scale * rotation * translation;
+            //return scale * rotation * translation;
+
+            Matrix4 localTransform = scale * rotation * translation;
+
+            if (Parent != null)
+            {
+                return  Parent.GetModelMatrix() * localTransform; // ???
+            }
+            else
+            {
+                return localTransform;
+            }
         }
 
         public override bool Equals(object obj)

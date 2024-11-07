@@ -193,13 +193,14 @@ namespace Spacebox.Common
             UpdateTexture();
         }
 
-        public void UpdateTexture()
+        public void UpdateTexture(bool pixelated = false)
         {
-           
             Use();
             LoadTextureFromPixels();
+            SetTextureParameters(pixelated);
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
+
 
         public void Use(TextureUnit unit = TextureUnit.Texture0)
         {

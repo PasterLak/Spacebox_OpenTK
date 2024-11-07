@@ -17,7 +17,7 @@ namespace Spacebox.UI
         public static bool IsVisible { get; set; } = true;
 
         public static Storage Storage;
-
+        private static ItemModel ItemModel;
         private static ItemSlot SelectedSlot;
 
         private static short _selectedSlotId = 0;
@@ -32,7 +32,7 @@ namespace Spacebox.UI
         }
 
         public static Action<short> OnSlotChanged;
-
+        private static Shader itemModelShader;
         public static void Initialize(Storage storage, IntPtr slotTexture, IntPtr selectedTexture )
         {
             Storage = storage;
@@ -40,7 +40,17 @@ namespace Spacebox.UI
             SelectedTexture = selectedTexture;
             //ItemTexture = new Texture2D("Resources/Textures/item.png", true, false).Handle;
 
+            itemModelShader = ShaderManager.GetShader("Shaders/textured");
             SetSelectedSlot(0);
+        }
+
+        public static void DrawItemModel()
+        {
+            if (ItemModel == null) return;
+
+            
+             ItemModel.Draw(itemModelShader);
+            
         }
 
         public static bool IsHoldingDrill()
@@ -79,6 +89,34 @@ namespace Spacebox.UI
             SelectedSlot.TakeOne();
 
             return true;
+        }
+
+        private static void ShowItemModel()
+        {
+            if (SelectedSlot == null) return;
+            
+            if(!SelectedSlot.HasItem) return;
+
+            if(SelectedSlot.Item.GetType() == typeof(BlockItem)) return;
+
+            ItemModel = GameBlocks.ItemModels[SelectedSlot.Item.Id];
+        }
+
+        private static void HideItemModel()
+        {
+            if (SelectedSlot == null) return;
+
+            if(!SelectedSlot.HasItem)
+            {
+                ItemModel = null;
+                return;
+            }
+
+            if (SelectedSlot.Item.GetType() == typeof(BlockItem))
+            {
+                ItemModel = null;
+            }
+
         }
 
         public static void Update()
@@ -172,7 +210,8 @@ namespace Spacebox.UI
             if (Storage != null)
             {
                 SelectedSlot = Storage.GetSlot(0,slot);
-               
+                ShowItemModel();
+                HideItemModel();
             }
         }
 

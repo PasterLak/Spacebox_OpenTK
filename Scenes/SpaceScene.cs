@@ -39,6 +39,8 @@ namespace Spacebox.Scenes
 
         private BlockDestructionManager blockDestructionManager;
 
+        private ItemModel itemModel;
+        private Shader itemModelShader;
         
         private TestOctree testOctree = new TestOctree();
         public override void LoadContent()
@@ -124,6 +126,12 @@ namespace Spacebox.Scenes
             CreativeWindowUI.SetDefaultIcon(c.Handle);
             CreativeWindowUI.Player = player;
 
+
+
+            itemModel = ItemModelGenerator.GenerateModel(GameBlocks.ItemsTexture, 0,0,0.01f,0.01f);
+            itemModel.Position = new Vector3(0.5f, -0.5f, -1.0f);
+            //player.AddChild(itemModel);
+            //itemModelShader = ShaderManager.GetShader("Shaders/textured");
         }
 
         public override void Start()
@@ -132,14 +140,15 @@ namespace Spacebox.Scenes
         }
 
 
-
+        float x;
         public override void Update()
         {
             player.Update();
             blockDestructionManager.Update();
             dustSpawner.Update();
-          
-            if(!Debug.IsVisible)
+            //itemModel.Rotation = player.Rotation;
+           
+            if (!Debug.IsVisible)
             {
                 if (Input.IsKeyDown(Keys.KeyPadEnter))
                 {
@@ -214,11 +223,12 @@ namespace Spacebox.Scenes
 
             //chunk.Draw(blocksShader);
             sector.Render(blocksShader);
-
+            //itemModel.Draw(itemModelShader);
             //world.Render(blocksShader);
             blockDestructionManager.Render();
             dustSpawner.Render();
-            
+
+            PanelUI.DrawItemModel();
 
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
@@ -229,7 +239,7 @@ namespace Spacebox.Scenes
             VisualDebug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(100f, 0, 0), Color4.Red);
             VisualDebug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 100, 0), Color4.Green);
             VisualDebug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 0, 100), Color4.Blue);
-
+           
             testOctree.Draw(player);
 
         }
@@ -264,10 +274,10 @@ namespace Spacebox.Scenes
             blockPlace.Dispose();
             blockDestroy.Dispose();
             //music.Dispose();
-            skybox.Texture.Dispose  ();
+            skybox.Texture.Dispose();
             skyboxShader.Dispose();
             dustSpawner.Dispose();
-           
+            itemModel.Dispose();
             blockDestructionManager.Dispose();
 
             TagManager.ClearTags();

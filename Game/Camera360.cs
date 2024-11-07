@@ -18,6 +18,8 @@ namespace Spacebox.Game
             _front = Vector3.Transform(-Vector3.UnitZ, _rotation);
             _up = Vector3.Transform(Vector3.UnitY, _rotation);
             _right = Vector3.Transform(Vector3.UnitX, _rotation);
+
+            //Rotation = _rotation.ToEulerAngles() * 360f;
         }
 
   
@@ -70,6 +72,7 @@ namespace Spacebox.Game
         {
             _rotation = Quaternion.Normalize(rotation);
             UpdateVectors();
+            
         }
 
        

@@ -228,6 +228,7 @@ namespace Spacebox.Game
             Quaternion combinedRotation = GetRotation() * sway;
             Vector3 newFront = Vector3.Transform(-Vector3.UnitZ, combinedRotation);
             Vector3 newUp = Vector3.Transform(Vector3.UnitY, combinedRotation);
+
             return Matrix4.LookAt(Position, Position + newFront, newUp);
         }
 
