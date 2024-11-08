@@ -5,6 +5,8 @@ version 0.0.6
 - item count shadow
 - creative window (blocks picker)
 - drop items
+- generation of models for game items with greedy meshing
+- shader and light/ssao effect for the model
 
 version 0.0.5
 

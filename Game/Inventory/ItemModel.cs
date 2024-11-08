@@ -27,71 +27,92 @@ namespace Spacebox.Game
 
         Vector3 offset = new Vector3(0.19f, -0.35f, 0.25f);
         float additionalRotationAngle = MathHelper.DegreesToRadians(90.0f);
+
+        public bool debug = false;
+        Matrix4 model;
+
+        private Shader shader;
+        public void SetColor(Vector3 color)
+        {
+            if (shader == null) return;
+
+            shader.SetVector3("color", color);
+        }
         public void Draw(Shader shader)
         {
-
-            if(Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.V))
+            if(this.shader == null)
             {
-                offset.X += 0.05f;
-                Debug.Log(offset.ToString());
+                this.shader = shader;
             }
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.B))
-            {
-                offset.X -= 0.05f;
-                Debug.Log(offset.ToString());
-            }
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.N))
-            {
-                offset.Z += 0.05f;
-                Debug.Log(offset.ToString());
-            }
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.M))
-            {
-                offset.Z -= 0.05f;
-                Debug.Log(offset.ToString());
-            }
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.J))
-            {
-                offset.Y += 0.05f;
-                Debug.Log(offset.ToString());
-            }
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.K))
-            {
-                offset.Y -= 0.05f;
-                Debug.Log(offset.ToString());
-            }
-            Astronaut player = Camera.Main as Astronaut;
-            GL.Disable(EnableCap.DepthTest);
-            Matrix4 model = player.GetModelMatrix();
-
             
+            if (!debug)
+            {
+                if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.V))
+                {
+                    offset.X += 0.05f;
+                    Debug.Log(offset.ToString());
+                }
+                if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.B))
+                {
+                    offset.X -= 0.05f;
+                    Debug.Log(offset.ToString());
+                }
+                if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.N))
+                {
+                    offset.Z += 0.05f;
+                    Debug.Log(offset.ToString());
+                }
+                if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.M))
+                {
+                    offset.Z -= 0.05f;
+                    Debug.Log(offset.ToString());
+                }
+                if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.J))
+                {
+                    offset.Y += 0.05f;
+                    Debug.Log(offset.ToString());
+                }
+                if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.K))
+                {
+                    offset.Y -= 0.05f;
+                    Debug.Log(offset.ToString());
+                }
+                Astronaut player = Camera.Main as Astronaut;
+                GL.Disable(EnableCap.DepthTest);
+                 model = player.GetModelMatrix();
 
-            Matrix4 view = player.GetViewMatrix();
-
-            // Извлеките только вращение из матрицы вида
-            Matrix4 rotation = new Matrix4(
-                view.M11, view.M12, view.M13, 0,
-                view.M21, view.M22, view.M23, 0,
-                view.M31, view.M32, view.M33, 0,
-                0, 0, 0, 1
-            );
-            rotation.Transpose();
-
-            
-            Matrix4 additionalRotation = Matrix4.CreateRotationY(additionalRotationAngle);
 
 
-            model =
-                 Matrix4.CreateTranslation(offset) *
-                 additionalRotation *
-                rotation *
-                Matrix4.CreateTranslation(player.Position);
+                Matrix4 view = player.GetViewMatrix();
+
+                Matrix4 rotation = new Matrix4(
+                    view.M11, view.M12, view.M13, 0,
+                    view.M21, view.M22, view.M23, 0,
+                    view.M31, view.M32, view.M33, 0,
+                    0, 0, 0, 1
+                );
+                rotation.Transpose();
+
+
+                Matrix4 additionalRotation = Matrix4.CreateRotationY(additionalRotationAngle);
+
+
+                model =
+                     Matrix4.CreateTranslation(offset) *
+                     additionalRotation *
+                    rotation *
+                    Matrix4.CreateTranslation(player.Position);
+            }
+            if(debug)
+            {
+                model = Matrix4.Identity;
+            }
 
             shader.Use();
             shader.SetMatrix4("model", model);
             shader.SetMatrix4("view", Camera.Main.GetViewMatrix());
             shader.SetMatrix4("projection", Camera.Main.GetProjectionMatrix());
-            shader.SetVector4("color", new Vector4(1,1f, 1, 1));
+            
 
             Texture.Use(TextureUnit.Texture0);
             shader.SetInt("texture0", 0);

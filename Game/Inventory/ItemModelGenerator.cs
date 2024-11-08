@@ -43,12 +43,6 @@ namespace Spacebox.Game
                 topRight = topRight * modelSize;
                 topLeft = topLeft * modelSize;
 
-                Vector3 normalFront = Vector3.UnitZ;
-                Vector3 normalBack = -Vector3.UnitZ;
-                Vector3 normalLeft = -Vector3.UnitX;
-                Vector3 normalRight = Vector3.UnitX;
-                Vector3 normalTop = Vector3.UnitY;
-                Vector3 normalBottom = -Vector3.UnitY;
                 var uv = GetUVs(quad);
                 Vector2 uv1 = new Vector2(quad.U, quad.V);
                 Vector2 uv2 = new Vector2(quad.U + quad.UWidth, quad.V);
@@ -56,10 +50,50 @@ namespace Spacebox.Game
                 Vector2 uv4 = new Vector2(quad.U, quad.V + quad.UHeight);
 
 
-                ItemModelGeneratorHelper.AddFace(vertices, indices, indexOffset, 
+               AddFace(vertices, indices, indexOffset, 
                     topLeft, topRight, bottomRight, bottomLeft,
                     new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
                 indexOffset += 4;
+
+
+                if(quad.NeedsTopSide) // ++
+                {
+                    ItemModelGeneratorHelper.AddFaceButton(vertices, indices, indexOffset,
+                        quad, modelDepth, modelSize,
+                     new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
+
+                    indexOffset += 4;
+                }
+
+                if (quad.NeedsBottomSide)
+                {
+                    ItemModelGeneratorHelper.AddFaceTop(vertices, indices, indexOffset,
+                        quad, modelDepth, modelSize,
+                     new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
+
+                    indexOffset += 4;
+                }
+
+                /*if (quad.NeedsRightSide)
+                {
+                    ItemModelGeneratorHelper.AddFaceForward(vertices, indices, indexOffset,
+                        quad, modelDepth, modelSize,
+                     new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
+
+                    indexOffset += 4;
+                }*/
+                if (quad.NeedsLeftSide) // ++
+                {
+                    ItemModelGeneratorHelper.AddFaceBack
+                        (vertices, indices, indexOffset,
+                        quad, modelDepth, modelSize,
+                     new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
+
+                    indexOffset += 4;
+                }
+
+
+
             }
             
             
@@ -81,16 +115,6 @@ namespace Spacebox.Game
                 topRight = topRight + new Vector3(0, 0, modelDepth);
                 topLeft = topLeft + new Vector3(0, 0, modelDepth);
 
-                
-
-
-                Vector3 normalFront = Vector3.UnitZ;
-                Vector3 normalBack = -Vector3.UnitZ;
-                Vector3 normalLeft = -Vector3.UnitX;
-                Vector3 normalRight = Vector3.UnitX;
-                Vector3 normalTop = Vector3.UnitY;
-                Vector3 normalBottom = -Vector3.UnitY;
-
 
                 var uv = GetUVs(quad);
 
@@ -107,13 +131,7 @@ namespace Spacebox.Game
 
                 indexOffset += 4;
             }
-            /*var uv2 = new Vector2[] { Vector2.Zero, Vector2.UnitX, Vector2.One, Vector2.UnitY };
-
-            var uv = new Vector2[] { Vector2.Zero, Vector2.UnitY, Vector2.One, Vector2.UnitX };
-            ItemModelGeneratorHelper.AddFace(vertices, indices, indexOffset,
-                    new Vector3(0,1,0), new Vector3(0, 0, 0), new Vector3(1, 0, 0), new Vector3(1, 1, 0),
-                    new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
-            */
+           
             float[] vertexArray = vertices.ToArray();
             uint[] indexArray = indices.ToArray();
             Mesh mesh = new Mesh(vertexArray, indexArray);
@@ -132,7 +150,7 @@ namespace Spacebox.Game
 
              return new Vector2[] { uvLeft, uvRight, uvTopRight, uvTop };
 
-            //return new Vector2[] {Vector2.Zero, Vector2.UnitX, Vector2.One, Vector2.UnitY };
+           
         }
 
 

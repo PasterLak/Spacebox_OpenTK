@@ -2,6 +2,7 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.Extensions;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Lighting;
 using Spacebox.Game.Rendering;
@@ -306,9 +307,17 @@ namespace Spacebox.Game
             tag.Text =  (int)Vector3.Distance(boundingBox.Center, player.Position) + " m";
                 destructionManager.Update();
 
+            var pos = new Vector3Byte((byte)player.Position.X, (byte)player.Position.Y, (byte)player.Position.Z); 
+            if(IsInRange(pos.x,pos.y,pos.z))
+            {
+                //PanelUI.SetItemColor(Blocks[pos.x, pos.y, pos.z].LightColor.ToSystemVector3());
+            }
+
             Vector3 rayOrigin = player.Position;
 
             Vector3 rayDirection = player.Front;
+
+
            
 
             Ray ray = new Ray(rayOrigin, rayDirection, maxDistance);

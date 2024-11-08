@@ -35,10 +35,16 @@ namespace Spacebox.Common
         public static int FPS => (int)_fps;
         public static double RenderTime => _renderTime;
         public static double AverageRenderTime => _averageRenderTime;
+        public static byte RenderTimePercent = 0;
+
         public static double UpdateTime => _updateTime;
         public static double AverageUpdateTime => _averageUpdateTime;
+        public static byte UpdateTimePercent = 0;
+
         public static double OnGUITime => _onGUITime;
         public static double AverageOnGUITime => _averageOnGUITime;
+
+        public static byte OnGUITimePercent = 0;
 
         public static bool EnableProfiling { get; set; } = true;
 
@@ -64,6 +70,16 @@ namespace Spacebox.Common
         {
             if (EnableProfiling)
                 _renderStopwatch.Restart();
+        }
+
+        private static void CalculatePercent()
+        {
+            var max = AverageRenderTime + AverageUpdateTime + AverageOnGUITime; // 50 8 5
+            float onePercent = (float)(max / 100f);
+
+            RenderTimePercent = (byte)(AverageRenderTime / onePercent);
+            UpdateTimePercent = (byte)(AverageUpdateTime / onePercent);
+            OnGUITimePercent = (byte)(AverageOnGUITime / onePercent);
         }
 
         public static void EndRender()
@@ -126,6 +142,8 @@ namespace Spacebox.Common
                     _totalOnGUITime = 0.0;
                     _onGUiframeCount = 0;
                 }
+
+                CalculatePercent();
             }
         }
     }

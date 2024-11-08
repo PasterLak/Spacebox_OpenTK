@@ -34,9 +34,9 @@ namespace Spacebox.GUI
             {
                 var cam = Camera.Main;
                 Vector3i playerPosInt = new Vector3i((int)cam.Position.X, (int)cam.Position.Y, (int)cam.Position.Z);
-                Vector3i playerRotInt = new Vector3i((int)cam.Rotation.X, (int)cam.Rotation.Y, (int)cam.Rotation.Z);
+                //Vector3i playerRotInt = new Vector3i((int)cam.Rotation.X, (int)cam.Rotation.Y, (int)cam.Rotation.Z);
                 ImGui.Text($"Camera Position: {playerPosInt}");
-                ImGui.Text($"Camera Rotation: {playerRotInt}");
+                //ImGui.Text($"Camera Rotation: {playerRotInt}");
             }
 
             if(AimedBlock != null)
@@ -55,6 +55,8 @@ namespace Spacebox.GUI
             ImGui.Text($"Avg Update Time: {Time.AverageUpdateTime:F2} ms");
             ImGui.Text($"OnGUI Time: {Time.OnGUITime:F2} ms");
             ImGui.Text($"Avg OnGUI Time: {Time.AverageOnGUITime:F2} ms");
+            ImGui.Text($" ");
+            ImGui.Text($"Render: {Time.RenderTimePercent} %, Update: {Time.UpdateTimePercent}%, OnGUI: {Time.OnGUITimePercent}%");
             ImGui.Text($" ");
             ImGui.Text($"Console On (F1): {Debug.IsVisible}");
             ImGui.Text($"Debug On (F4): {VisualDebug.ShowDebug}");

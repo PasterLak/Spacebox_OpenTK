@@ -96,8 +96,13 @@ namespace Spacebox.Game
 
             CacheIcon(item, coordX, coordY);
 
+            GenerateItemModel(coordX, coordY, item.ModelDepth);
+        }
+
+        private static void GenerateItemModel(byte coordX, byte coordY, float depth)
+        {
             ItemModel model = ItemModelGenerator.GenerateModel(
-                ItemsTexture, coordX, coordY, 0.01f, 0.01f);
+                ItemsTexture, coordX, coordY, 0.01f, depth);
 
             ItemModels.Add(MaxItemId, model);
         }
@@ -163,8 +168,6 @@ namespace Spacebox.Game
 
             byte rest = (byte)(Item.Count % sizeX);
 
-
-
             if(rest > 0)
             {
                 sizeY++;
@@ -201,8 +204,6 @@ namespace Spacebox.Game
 
                 if (i >= itemsIds.Count) break;
             }
-
-            //Debug.Log($"Created creative storage: X:{sizeX} Y:{sizeY} Sum: {sizeX*sizeY}. ItemIds: {Item.Keys.Count}");
 
             return storage;
         }
@@ -262,13 +263,15 @@ namespace Spacebox.Game
 
 
 
-            RegisterItem(new DrillItem(1, "Drill", 0,0));
-            RegisterItem(new Item(1, "Weapone", 1,0));
+            RegisterItem(new DrillItem(1, "Drill", 3,0,0.02f));
+            RegisterItem(new Item(1, "Weapone", 4,0, 0.02f));
             RegisterItem(new Item(64, "Powder", 2,0));
             RegisterItem(new Item(64, "Iron Lens", 2,1));
-            RegisterItem(new Item(64, "Aluminium Panels", 1, 1));
-            RegisterItem(new Item(64, "Iron Panels", 0, 1));
-            RegisterItem(new Item(64, "Titanium Ignot", 0, 2));
+            RegisterItem(new Item(64, "Aluminium Panels", 1, 1,0.01f));
+            RegisterItem(new Item(64, "Iron Panels", 0, 1, 0.01f));
+            RegisterItem(new Item(64, "Titanium Ignot", 0, 2, 0.02f));
+            RegisterItem(new Item(64, "Health", 2, 2, 0.02f));
+            RegisterItem(new Item(64, "Ice Shards", 3, 1, 0.02f));
 
 
 

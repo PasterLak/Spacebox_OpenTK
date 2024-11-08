@@ -1,115 +1,77 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
+using static Spacebox.Game.ItemModelGeneratorHelper;
 
 namespace Spacebox.Game
 {
     public static class ItemModelGeneratorHelper
     {
-        private const int CellSize = 32; // Размер одной ячейки в UV атласе (32x32 пикселя)
 
-        public static ItemModel GenerateModel(Texture2D atlasTexture, int cellX, int cellY, float modelSize = 1.0f, float modelDepth = 0.2f)
+
+        public static void CheckTop(byte size, Color4[,] colors)
         {
-            // Извлечение конкретной ячейки текстуры из атласа
-            Texture2D cellTexture = UVAtlas.GetBlockTexture(atlasTexture, cellX, cellY);
+            int[,] data = new int[size, size];
 
-            // Получение данных пикселей
-            Color4[,] pixels = cellTexture.GetPixelData();
-            int width = cellTexture.Width;
-            int height = cellTexture.Height;
-
-            // Выполнение greedy meshing на текстуре ячейки
-            var quads = GreedyMesh(pixels, width, height);
-
-            // Создание карты покрытия пикселей для быстрого поиска соседей
-            bool[,] coverage = new bool[width, height];
-            foreach (var quad in quads)
+            for (int x = 0; x < size; x++)
             {
-                for (int dy = 0; dy < quad.Height; dy++)
+                for (int y = 0; y < size; y++)
                 {
-                    for (int dx = 0; dx < quad.Width; dx++)
+                    if (colors[x, y].A != 1)
                     {
-                        coverage[quad.X + dx, quad.Y + dy] = true;
+                        continue;
+                    }
+
+                    if (y - 1 >= 0)
+                    {
+                        if (colors[x, y - 1].A < 1)
+                        {
+                            data[x, y] = x + y;
+                        }
+                    }
+                    else
+                    {
+                        data[x, y] = x + y;
+                    }
+
+                }
+            }
+
+            List<Quad> quadList = new List<Quad>();
+
+            Quad quad = null;
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    if(data[x, y] == 0)
+                    {
+                        if(quad != null)
+                        {
+                            quadList.Add(quad);
+                            quad = null;
+                        }
+                    }
+                    else
+                    {
+                        if(quad == null)
+                        {
+                            quad = new Quad();
+                            quad.X = x;
+                            quad.Y = y;
+                            quad.Width = 1;
+                            quad.id = data[x, y];
+                        }
+                        else
+                        {
+                            if(data[x-1, y] != 0)
+                            {
+
+                            }
+                        }
                     }
                 }
             }
-
-            // Генерация данных вершин и индексов
-            List<float> vertices = new List<float>();
-            List<uint> indices = new List<uint>();
-            uint indexOffset = 0;
-
-            foreach (var quad in quads)
-            {
-                // Определение позиций вершин квадрата
-                Vector3 frontBottomLeft = new Vector3(quad.X * modelSize, quad.Y * modelSize, 0);
-                Vector3 frontBottomRight = new Vector3((quad.X + quad.Width) * modelSize, quad.Y * modelSize, 0);
-                Vector3 frontTopRight = new Vector3((quad.X + quad.Width) * modelSize, (quad.Y + quad.Height) * modelSize, 0);
-                Vector3 frontTopLeft = new Vector3(quad.X * modelSize, (quad.Y + quad.Height) * modelSize, 0);
-
-                Vector3 backBottomLeft = frontBottomLeft + new Vector3(0, 0, modelDepth);
-                Vector3 backBottomRight = frontBottomRight + new Vector3(0, 0, modelDepth);
-                Vector3 backTopRight = frontTopRight + new Vector3(0, 0, modelDepth);
-                Vector3 backTopLeft = frontTopLeft + new Vector3(0, 0, modelDepth);
-
-                // Нормали
-                Vector3 normalFront = Vector3.UnitZ;
-                Vector3 normalBack = -Vector3.UnitZ;
-                Vector3 normalLeft = -Vector3.UnitX;
-                Vector3 normalRight = Vector3.UnitX;
-                Vector3 normalTop = Vector3.UnitY;
-                Vector3 normalBottom = -Vector3.UnitY;
-
-                // UV координаты для фронтальной и задней граней
-                Vector2 uv1 = new Vector2(quad.U, quad.V);
-                Vector2 uv2 = new Vector2(quad.U + quad.UWidth, quad.V);
-                Vector2 uv3 = new Vector2(quad.U + quad.UWidth, quad.V + quad.UHeight);
-                Vector2 uv4 = new Vector2(quad.U, quad.V + quad.UHeight);
-
-                // Добавление фронтальной грани
-                AddFace(vertices, indices, indexOffset, frontTopLeft, 
-                    frontTopRight, frontBottomRight, frontBottomLeft, normalFront, uv1, uv2, uv3, uv4);
-                indexOffset += 4;
-
-                // Добавление задней грани
-                AddFace(vertices, indices, indexOffset, backTopLeft, backBottomLeft, backBottomRight, backTopRight, normalBack, uv1, uv2, uv3, uv4);
-                indexOffset += 4;
-
-                // Проверка и добавление боковых граней
-                // 1. Левая грань
-                if (quad.NeedsLeftSide)
-                {
-                    AddSideFace(vertices, indices, indexOffset, backTopLeft, backBottomLeft, frontBottomLeft, frontTopLeft, normalLeft, uv1, uv2, uv3, uv4);
-                    indexOffset += 4;
-                }
-
-                // 2. Правая грань
-                if (quad.NeedsRightSide)
-                {
-                    AddSideFace(vertices, indices, indexOffset, backBottomRight, backTopRight, frontTopRight, frontBottomRight, normalRight, uv1, uv2, uv3, uv4);
-                    indexOffset += 4;
-                }
-
-                // 3. Верхняя грань (можно добавить аналогично боковым граням, если требуется)
-                if (quad.NeedsTopSide)
-                {
-                    AddTopOrBottomFace(vertices, indices, indexOffset, backTopLeft, backTopRight, frontTopRight, frontTopLeft, normalTop, uv1, uv2, uv3, uv4);
-                    indexOffset += 4;
-                }
-
-                // 4. Нижняя грань (можно добавить аналогично боковым граням, если требуется)
-                if (quad.NeedsBottomSide)
-                {
-                    AddTopOrBottomFace(vertices, indices, indexOffset, backBottomLeft, backBottomRight, frontBottomRight, frontBottomLeft, normalBottom, uv1, uv2, uv3, uv4);
-                    indexOffset += 4;
-                }
-            }
-
-            // Создание Mesh
-            float[] vertexArray = vertices.ToArray();
-            uint[] indexArray = indices.ToArray();
-            Mesh mesh = new Mesh(vertexArray, indexArray);
-
-            return new ItemModel(mesh, cellTexture);
         }
 
         // position(3) + uv(2) + color(3)
@@ -134,56 +96,186 @@ namespace Spacebox.Game
             });
         }
 
-
-        private static void AddSideFace(List<float> vertices, List<uint> indices, uint indexOffset,
-                                        Vector3 backTop, Vector3 backBottom, Vector3 frontBottom, Vector3 frontTop,
-                                        Vector3 normal,
-                                        Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
+        public static void AddFaceBack(List<float> vertices, List<uint> indices, uint indexOffset,
+                            Quad quad, float depth, float modelSize,
+                            Vector3 color,
+                            Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
         {
-            // Для боковых граней можно использовать отдельные UV координаты или повторять текстуру
-            // Здесь используется повторение текстуры по высоте грани
-            // Можно изменить UV по своему усмотрению
 
-            // Расчет высоты грани для UV
-            float height = (frontTop - frontBottom).Length;
-            Vector2 uvScale = new Vector2(1.0f, height);
+            Vector3 v3, v2, v1, v4;
 
+            v1 = new Vector3(0, 0, 0);
+            v2 = new Vector3(0, 0, 1);
+            v3 = new Vector3(1, 0, 1);
+            v4 = new Vector3(1, 0, 0);
+
+
+            v1 = new Vector3(quad.X, quad.Y, 0);
+            v2 = new Vector3(quad.X, quad.Y, 0);
+            v3 = new Vector3(quad.X, quad.Y + quad.Height, 0);
+            v4 = new Vector3(quad.X, quad.Y + quad.Height, 0);
+
+            v1 = v1 * modelSize;
+            v2 = v2 * modelSize;
+            v3 = v3 * modelSize;
+            v4 = v4 * modelSize;
+
+            v2 += new Vector3(0, 0, depth);
+            v3 += new Vector3(0, 0, depth);
+
+            color = new Vector3(-1, 0, 0);
             vertices.AddRange(new float[]
             {
-                backTop.X, backTop.Y, backTop.Z, normal.X, normal.Y, normal.Z, uv1.X, uv1.Y,
-                backBottom.X, backBottom.Y, backBottom.Z, normal.X, normal.Y, normal.Z, uv2.X, uv2.Y,
-                frontBottom.X, frontBottom.Y, frontBottom.Z, normal.X, normal.Y, normal.Z, uv3.X, uv3.Y,
-                frontTop.X, frontTop.Y, frontTop.Z, normal.X, normal.Y, normal.Z, uv4.X, uv4.Y
+        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,
+        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,
+        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,
+        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z
             });
 
-            // Индексы для боковой грани
+
             indices.AddRange(new uint[]
             {
-                indexOffset, indexOffset + 1, indexOffset + 2,
-                indexOffset, indexOffset + 2, indexOffset + 3
+        indexOffset, indexOffset + 1, indexOffset + 2,
+        indexOffset, indexOffset + 2, indexOffset + 3
             });
         }
 
-        private static void AddTopOrBottomFace(List<float> vertices, List<uint> indices, uint indexOffset,
-                                              Vector3 back1, Vector3 back2, Vector3 front2, Vector3 front1,
-                                              Vector3 normal,
-                                              Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
+        public static void AddFaceForward(List<float> vertices, List<uint> indices, uint indexOffset,
+                            Quad quad, float depth, float modelSize,
+                            Vector3 color,
+                            Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
         {
+           
+            Vector3 v3, v2, v1, v4;
+
+            v1 = new Vector3(0, 0, 0);
+            v2 = new Vector3(0, 0, 1);
+            v3 = new Vector3(1, 0, 1);
+            v4 = new Vector3(1, 0, 0);
+
+
+            v1 = new Vector3(quad.X + quad.Width, quad.Y, 0);
+            v4 = new Vector3(quad.X + quad.Width, quad.Y, 0);
+            v3 = new Vector3(quad.X + quad.Width, quad.Y + quad.Height, 0);
+            v2 = new Vector3(quad.X + quad.Width, quad.Y + quad.Height, 0);
+
+            v1 = v1 * modelSize;
+            v2 = v2 * modelSize;
+            v3 = v3 * modelSize;
+            v4 = v4 * modelSize;
+
+            v3 += new Vector3(0, 0, depth);
+            v4 += new Vector3(0, 0, depth);
+
+            color = new Vector3(1,0,0);
+
             vertices.AddRange(new float[]
             {
-                back1.X, back1.Y, back1.Z, normal.X, normal.Y, normal.Z, uv1.X, uv1.Y,
-                back2.X, back2.Y, back2.Z, normal.X, normal.Y, normal.Z, uv2.X, uv2.Y,
-                front2.X, front2.Y, front2.Z, normal.X, normal.Y, normal.Z, uv3.X, uv3.Y,
-                front1.X, front1.Y, front1.Z, normal.X, normal.Y, normal.Z, uv4.X, uv4.Y
+        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,
+        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,
+        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,
+        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z
             });
 
-            // Индексы для верхней или нижней грани
+
             indices.AddRange(new uint[]
             {
-                indexOffset, indexOffset + 1, indexOffset + 2,
-                indexOffset, indexOffset + 2, indexOffset + 3
+        indexOffset, indexOffset + 1, indexOffset + 2,
+        indexOffset, indexOffset + 2, indexOffset + 3
             });
         }
+
+
+        public static void AddFaceTop(List<float> vertices, List<uint> indices, uint indexOffset,
+                            Quad quad, float depth, float modelSize,
+                            Vector3 color, 
+                            Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
+        {
+          
+            Vector3 v3, v2, v1, v4;
+
+            v1 = new Vector3(0, 0, 0);
+            v2 = new Vector3(0, 0, 1);
+            v3 = new Vector3(1, 0, 1);
+            v4 = new Vector3(1, 0, 0);
+
+
+            v1 = new Vector3(quad.X, quad.Y + quad.Height, 0);
+            v2 = new Vector3(quad.X, quad.Y + quad.Height, 0);
+            v3 = new Vector3((quad.X + quad.Width), quad.Y + quad.Height, 0);
+            v4 = new Vector3(quad.X + quad.Width, quad.Y + quad.Height, 0);
+
+            v1 = v1 * modelSize;
+            v2 = v2 * modelSize;
+            v3 = v3 * modelSize;
+            v4 = v4 * modelSize;
+
+            v2 += new Vector3(0, 0, depth);
+            v3 += new Vector3(0, 0, depth);
+            color = new Vector3(0, 1, 0);
+
+            vertices.AddRange(new float[]
+            {
+        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,
+        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,
+        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,
+        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z
+            });
+
+
+            indices.AddRange(new uint[]
+            {
+        indexOffset, indexOffset + 1, indexOffset + 2,
+        indexOffset, indexOffset + 2, indexOffset + 3
+            });
+        }
+
+        public static void AddFaceButton(List<float> vertices, List<uint> indices, uint indexOffset,
+                            Quad quad, float depth, float modelSize,
+                            Vector3 color, // Используем цвет вместо нормали
+                            Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
+        {
+           
+            Vector3 v3,  v2,  v1,  v4;
+           
+            v1 = new Vector3(0, 0, 0);
+            v2 = new Vector3(0,0, 1);
+            v3 = new Vector3(1, 0, 1);
+            v4 = new Vector3(1, 0, 0);
+
+          
+            v1 = new Vector3(quad.X, quad.Y, 0);
+            v4 = new Vector3(quad.X, quad.Y, 0);
+            v3 = new Vector3((quad.X + quad.Width), quad.Y , 0);
+            v2 = new Vector3(quad.X + quad.Width, quad.Y , 0);
+
+            v1 = v1 * modelSize;
+            v2 = v2 * modelSize;
+            v3 = v3 * modelSize;
+            v4 = v4 * modelSize;
+
+            v4 += new Vector3(0,0,depth);
+            v3 += new Vector3(0, 0, depth);
+            color = new Vector3(0, -1, 0);
+
+            vertices.AddRange(new float[]
+            {
+        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,
+        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,
+        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,
+        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z
+            });
+
+
+            indices.AddRange(new uint[]
+            {
+        indexOffset, indexOffset + 1, indexOffset + 2,
+        indexOffset, indexOffset + 2, indexOffset + 3
+            });
+        }
+
+
+   
 
         public class Quad
         {
@@ -196,6 +288,7 @@ namespace Spacebox.Game
             public float UWidth { get; set; }
             public float UHeight { get; set; }
             public Color4 Color { get; set; }
+            public int id = 0;
 
             // Свойства для определения необходимости боковых граней
             public bool NeedsLeftSide { get; set; }

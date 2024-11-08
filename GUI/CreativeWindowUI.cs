@@ -184,7 +184,15 @@ namespace Spacebox.UI
             {
                 if(Player != null)
                 {
-                    Player.Panel.TryAddItem(slot.Item, slot.Item.StackSize);
+                    if(Input.IsKey(Keys.LeftControl))
+                    {
+                        Player.Panel.TryAddItem(slot.Item, slot.Item.StackSize);
+                    }
+                    else
+                    {
+                        Player.Panel.TryAddItem(slot.Item, 1);
+                    }
+                    
                 }
             }
             else

@@ -67,6 +67,13 @@ namespace Spacebox.UI
             return true;
         }
 
+        public static void SetItemColor(Vector3 color)
+        {
+            if (ItemModel == null) return;
+
+            ItemModel.SetColor(color.ToOpenTKVector3());
+        }
+
         public static bool TryPlaceItem(out short id)
         {
             id = 0;
@@ -198,6 +205,8 @@ namespace Spacebox.UI
             {
                 SetSelectedSlot(9);
             }
+
+            
         }
 
         private static void SetSelectedSlot(short id)

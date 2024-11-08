@@ -128,10 +128,11 @@ namespace Spacebox.Scenes
 
 
 
-            itemModel = ItemModelGenerator.GenerateModel(GameBlocks.ItemsTexture, 0,0,0.01f,0.01f);
-            itemModel.Position = new Vector3(0.5f, -0.5f, -1.0f);
+            itemModel = ItemModelGenerator.GenerateModel(GameBlocks.ItemsTexture, 2,2,0.05f,1f);
+            itemModel.Position = new Vector3(0,0,0);
+            itemModel.debug = true;
             //player.AddChild(itemModel);
-            //itemModelShader = ShaderManager.GetShader("Shaders/textured");
+            itemModelShader = ShaderManager.GetShader("Shaders/textured");
         }
 
         public override void Start()

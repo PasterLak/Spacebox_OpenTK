@@ -10,7 +10,7 @@ namespace Spacebox.Game
         public byte StackSize;
         public string Name;
         public string Discription;
-
+        public float ModelDepth = 0.02f;
         public Vector2i TextureCoord = new Vector2i(0,0);
         public IntPtr IconTextureId { get; set; }
 
@@ -42,6 +42,15 @@ namespace Spacebox.Game
             StackSize = stackSize;
             Name = name;
             TextureCoord = new Vector2i(x,y);
+        }
+
+        public Item(byte stackSize, string name, byte x, byte y, float modelDepth)
+        {
+
+            StackSize = stackSize;
+            Name = name;
+            TextureCoord = new Vector2i(x, y);
+            ModelDepth = modelDepth;
         }
 
         public Item Copy()
