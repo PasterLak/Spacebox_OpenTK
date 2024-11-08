@@ -25,7 +25,9 @@ namespace Spacebox.Game
             model =  Matrix4.CreateFromQuaternion(player.GetRotation())* Matrix4.CreateTranslation(player.Front);
         */
 
-        Vector3 offset = new Vector3(0.19f, -0.35f, 0.25f);
+        //Vector3 offset = new Vector3(0.19f, -0.35f, 0.25f);   // model size 0.01
+
+        Vector3 offset = new Vector3(0.19f, -0.6f, 0.35f); // 0.02
         float additionalRotationAngle = MathHelper.DegreesToRadians(90.0f);
 
         public bool debug = false;

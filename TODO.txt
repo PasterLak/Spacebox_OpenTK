@@ -1,0 +1,6 @@
+
+
+
+version 0.0.6
+
+- render item model with static camera

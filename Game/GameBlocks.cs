@@ -102,7 +102,7 @@ namespace Spacebox.Game
         private static void GenerateItemModel(byte coordX, byte coordY, float depth)
         {
             ItemModel model = ItemModelGenerator.GenerateModel(
-                ItemsTexture, coordX, coordY, 0.01f, depth);
+                ItemsTexture, coordX, coordY, 0.02f, depth * 1.5f);
 
             ItemModels.Add(MaxItemId, model);
         }
@@ -263,6 +263,7 @@ namespace Spacebox.Game
 
 
 
+           
             RegisterItem(new DrillItem(1, "Drill", 3,0,0.02f));
             RegisterItem(new Item(1, "Weapone", 4,0, 0.02f));
             RegisterItem(new Item(64, "Powder", 2,0));
@@ -270,9 +271,10 @@ namespace Spacebox.Game
             RegisterItem(new Item(64, "Aluminium Panels", 1, 1,0.01f));
             RegisterItem(new Item(64, "Iron Panels", 0, 1, 0.01f));
             RegisterItem(new Item(64, "Titanium Ignot", 0, 2, 0.02f));
+            RegisterItem(new Item(64, "Aluminium Ignot", 1, 2, 0.02f));
             RegisterItem(new Item(64, "Health", 2, 2, 0.02f));
             RegisterItem(new Item(64, "Ice Shards", 3, 1, 0.02f));
-
+            RegisterItem(new Item(64, "Power", 3, 2, 0.02f));
 
 
         }

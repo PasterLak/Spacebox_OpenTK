@@ -22,6 +22,10 @@ namespace Spacebox.Scenes
         private DustSpawner spawner;
 
         AudioSource music;
+
+
+        private ItemModel itemModel;
+        private Shader itemModelShader;
         public SpaceMenuScene()
         {
         }
@@ -41,7 +45,7 @@ namespace Spacebox.Scenes
             //sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
             //GL.Enable(EnableCap.DepthTest);
 
-            player = new Camera360(new Vector3(0,0,0), 16 / 9f);
+            player = new Astronaut(new Vector3(0,0,0), 16 / 9f);
 
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader,
@@ -56,7 +60,13 @@ namespace Spacebox.Scenes
 
             music = new AudioSource(SoundManager.GetClip("music"));
             music.IsLooped = true;
+         
             music.Play();
+
+            itemModel = ItemModelGenerator.GenerateModel(GameBlocks.ItemsTexture, 3, 0, 0.02f, 0.02f);
+            itemModel.Position = new Vector3(0, 0, 0);
+
+            itemModelShader = ShaderManager.GetShader("Shaders/textured");
         }
 
         private void SetDustSpawner()
@@ -96,7 +106,7 @@ namespace Spacebox.Scenes
         }
         public override void Start()
         {
-            Input.ShowCursor();
+            Input.HideCursor();
         }
         float x = 0;
 
@@ -109,7 +119,7 @@ namespace Spacebox.Scenes
             spawner.Render();
             //x += 0.01f;
             //sprite.Render(new Vector2(x, 0), new Vector2(1, 1));
-
+            itemModel.Draw(itemModelShader);
 
         }
 
