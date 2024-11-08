@@ -103,7 +103,7 @@ namespace Spacebox.Game
 
             Panel.TryAddItem(GameBlocks.GetItemByName("Drill"), 1);
             Panel.TryAddItem(GameBlocks.GetItemByName("Weapone"), 1);
-            Panel.TryAddItem(GameBlocks.GetItemByName("Powder"), 52);
+            Panel.TryAddItem(GameBlocks.GetItemByName("Titanium Ingot"), 52);
             Panel.TryAddItem(GameBlocks.GetItemByName("Iron Lens"), 8);
 
             Inventory.TryAddItem(GameBlocks.GetItemByName("Titanium Heavy Block"), 42);
@@ -174,13 +174,7 @@ namespace Spacebox.Game
                 VisualDebug.ViewMatrix = GetViewMatrix();
             }
 
-
-            if(VisualDebug.CameraFrustum != null)
-            {
-                VisualDebug.DrawFrustum(VisualDebug.CameraFrustum, Color4.Green);
-            }
-
-           
+            
 
 
             if (!CanMove) return;
@@ -305,11 +299,12 @@ namespace Spacebox.Game
 
             if (_inertiaController.Enabled)
             {
+                _inertiaController.Update();
                 if (isMoving)
                 {
                     _inertiaController.ApplyInput(acceleration, currentSpeed, deltaTime);
                 }
-                _inertiaController.Update(deltaTime);
+                
                 Vector3 velocity = _inertiaController.Velocity;
 
                 if (velocity != Vector3.Zero)

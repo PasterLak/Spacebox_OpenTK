@@ -11,8 +11,7 @@ namespace Spacebox.UI
     {
         private static float SlotSize = 64.0f;
         private static IntPtr SlotTexture = IntPtr.Zero;
-        private static IntPtr ItemTexture = IntPtr.Zero;
-
+      
         public static bool IsVisible { get; set; } = false;
 
         public static Astronaut Player;
@@ -23,14 +22,12 @@ namespace Spacebox.UI
         {
             SlotTexture = textureId;
 
-            ItemTexture = new Texture2D("Resources/Textures/item.png", true, false).Handle;
-
             storage = GameBlocks.CreateCreativeStorage(5);
         }
 
         public static void Render()
         {
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.C))
+            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.C) && !Debug.IsVisible)
             {
                 IsVisible = !IsVisible;
 
@@ -162,7 +159,9 @@ namespace Spacebox.UI
                         if (ImGui.IsItemHovered() && slot.HasItem)
                         {
                             ImGui.BeginTooltip();
-                            ImGui.Text($"Id:{slot.Item.Id}\n{slot.Item.Name}\n");
+                            ImGui.Text($"Id:{slot.Item.Id}\n" +
+                                $"Stack size: {slot.Item.StackSize}\n" +
+                                $"{slot.Item.Name}\n");
                             ImGui.EndTooltip();
                         }
 
@@ -187,6 +186,10 @@ namespace Spacebox.UI
                     if(Input.IsKey(Keys.LeftControl))
                     {
                         Player.Panel.TryAddItem(slot.Item, slot.Item.StackSize);
+                    }
+                    else if (Input.IsKey(Keys.LeftShift))
+                    {
+                        Player.Panel.TryAddItem(slot.Item, (byte)(slot.Item.StackSize / 2));
                     }
                     else
                     {

@@ -1,24 +1,25 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.GUI;
 
 namespace Spacebox.Game
 {
     public class ItemSlot
     {
+        public short SlotId;
         public Item? Item;
         public byte Count;
 
         public Storage Storage;
         public Vector2i Position;
         
-        public bool IsEmpty => Item == null;
-
-
+  
         public ItemSlot(Storage storage, Vector2i position)
         {
             Storage = storage;
             Position = position;
-            Item = null;
+            SlotId = (short)(position.X * position.Y);
+            Item = new Item(1,"");
             Count = 0;
         }
 
@@ -26,7 +27,7 @@ namespace Spacebox.Game
         {
             Storage = storage;
             Position = new Vector2i(x,y);
-            Item = null;
+            Item = new Item(1, "");
             Count = 0;
         }
 
@@ -35,6 +36,8 @@ namespace Spacebox.Game
             if (!HasItem) return;
 
             Count--;
+
+            Storage.OnDataWasChanged?.Invoke(Storage);
         }
 
         public void DropOne()
@@ -47,9 +50,11 @@ namespace Spacebox.Game
         {
             
             Count = 0;
+
+            Storage.OnDataWasChanged?.Invoke(Storage);
         }
 
-        public bool HasItem => Count > 0;
+        public bool HasItem => Item != null && Count > 0;
 
         public void Split()
         {
@@ -65,6 +70,8 @@ namespace Spacebox.Game
             if (Storage.TryAddItem(Item, split2))
             {
                 //Item = item;
+                Storage.OnDataWasChanged?.Invoke(Storage);
+               
                 Count = split1;
             }
             else
@@ -93,8 +100,8 @@ namespace Spacebox.Game
 
                 if (storage.TryAddItem(Item, count))
                 {
-                    //Item = item;
-                    //Count = count;
+                    Storage.OnDataWasChanged?.Invoke(Storage);
+                    storage.OnDataWasChanged?.Invoke(storage);
                 }
                 else
                 {

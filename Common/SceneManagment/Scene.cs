@@ -13,6 +13,7 @@ namespace Spacebox.Common.SceneManagment
         public CollisionManager CollisionManager { get; private set; }
         public Renderer Renderer { get; private set; }
 
+        public List<IDisposable> Disposables { get; private set; } = new List<IDisposable>();
 
         public Scene()
         {
@@ -42,7 +43,18 @@ namespace Spacebox.Common.SceneManagment
 
         public void Dispose()
         {
+
             SoundManager.Dispose();
+
+            if(Disposables.Count > 0)
+            {
+                foreach(IDisposable disposable in Disposables)
+                {
+                    disposable.Dispose();
+                }
+
+                Disposables = null;
+            }
             
         }
 

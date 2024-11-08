@@ -128,6 +128,7 @@ namespace Spacebox.Common.SceneManagment
                     ShaderManager.Dispose();
                     TextureManager.Dispose();
 
+                    CurrentScene.Dispose();
                     CurrentScene.UnloadContent();
                     VisualDebug.Clear();
                 }

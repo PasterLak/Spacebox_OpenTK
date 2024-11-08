@@ -89,6 +89,7 @@
     <None Remove="Shaders\colored.glsl" />
     <None Remove="Shaders\debug.glsl" />
     <None Remove="Shaders\font.glsl" />
+    <None Remove="Shaders\itemModel.glsl" />
     <None Remove="Shaders\lighting.glsl" />
     <None Remove="Shaders\particle.glsl" />
     <None Remove="Shaders\shader.glsl" />
@@ -105,7 +106,6 @@
     <None Remove="Shaders\S_Sound.glsl" />
     <None Remove="Shaders\S_Sphere.glsl" />
     <None Remove="Shaders\S_Wave.glsl" />
-    <None Remove="Shaders\textured.glsl" />
   </ItemGroup>
 
 	
@@ -366,7 +366,7 @@
     <Content Include="Shaders\SSAO\ssao_blur.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Shaders\textured.glsl">
+    <Content Include="Shaders\itemModel.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

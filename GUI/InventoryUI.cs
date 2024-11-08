@@ -26,7 +26,7 @@ namespace Spacebox.UI
 
         public static void Render(Storage storage)
         {
-            if(Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.C))
+            if(Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.C) && !Debug.IsVisible)
             {
                 IsVisible = !IsVisible;
 

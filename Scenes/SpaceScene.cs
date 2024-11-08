@@ -41,6 +41,7 @@ namespace Spacebox.Scenes
 
         private ItemModel itemModel;
         private Shader itemModelShader;
+        private HealthBar healthBar;
         
         private TestOctree testOctree = new TestOctree();
         public override void LoadContent()
@@ -109,12 +110,13 @@ namespace Spacebox.Scenes
 
             dustSpawner = new DustSpawner(player);
 
+            healthBar = new HealthBar();
             
-
             //builder.AddCube(Vector3.Zero, CubeType.Wireframe, Color4.Yellow, new Vector2(0,0));
 
             Debug.RegisterCommand(new TeleportCommand(player));
             Debug.RegisterCommand(new TagCommand(player));
+            Debug.RegisterCommand(new ClearInventoryCommand(player));
 
             Texture2D c = TextureManager.GetTexture("Resources/Textures/slot.png", true, false);
             Texture2D c2 = TextureManager.GetTexture("Resources/Textures/selectedSlot.png", true, false);
@@ -128,11 +130,11 @@ namespace Spacebox.Scenes
 
 
 
-            itemModel = ItemModelGenerator.GenerateModel(GameBlocks.ItemsTexture, 2,2,0.05f,1f);
+            itemModel = ItemModelGenerator.GenerateModel(GameBlocks.ItemsTexture, 2,2,0.05f,0.5f, false);
             itemModel.Position = new Vector3(0,0,0);
             itemModel.debug = true;
             //player.AddChild(itemModel);
-            itemModelShader = ShaderManager.GetShader("Shaders/textured");
+            itemModelShader = ShaderManager.GetShader("Shaders/itemModel");
         }
 
         public override void Start()
@@ -245,14 +247,15 @@ namespace Spacebox.Scenes
 
         }
 
-        Storage creative = new Storage(5,8);
+        
         public override void OnGUI()
         {
-            
-           
-            
+
             CenteredText.Draw();
             TagText.Draw();
+
+            //healthBar.OnGUI();
+
             PanelUI.Render();
 
             InventoryUI.Render(player.Inventory);

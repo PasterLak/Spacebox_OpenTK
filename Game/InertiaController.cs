@@ -29,11 +29,11 @@ namespace Spacebox.Common
             }
         }
 
-        public void Update(float deltaTime)
+        public void Update()
         {
             if (_enabled && _velocity.Length > 0)
             {
-                float damping = 1.0f - _decelerationRate * deltaTime;
+                float damping = 1.0f - _decelerationRate * Time.Delta;
                 damping = MathHelper.Clamp(damping, 0.0f, 1.0f);
                 _velocity *= damping;
                 if (_velocity.Length < 0.01f)

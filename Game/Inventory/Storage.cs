@@ -1,4 +1,5 @@
 ﻿using Spacebox.Common;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Spacebox.Game
 {
@@ -14,18 +15,19 @@ namespace Spacebox.Game
     {
         private static uint MaxId = 0;
 
-        public uint Id { get; private set; }
+        public readonly uint Id;
 
         public string Name { get;  set; } = "Default";
         public string Tag { get;  set; } = "Default";
 
-        public byte SizeX { get; private set; } 
-        public byte SizeY { get; private set; }
+        public readonly byte SizeX;
+        public readonly byte SizeY;
 
         private ItemSlot[,] Slots;
 
         public Action<ItemSlot> OnItemAdded;
         public Action<ItemSlot> OnItemDeleted;
+        public Action<Storage> OnDataWasChanged;
 
 
         public Storage ConnectedStorage { get; set; }
@@ -38,7 +40,8 @@ namespace Spacebox.Game
             SizeX = sizeX;
             SizeY = sizeY;
 
-            TakeId();
+            Id = MaxId;
+            MaxId++;
 
             Slots = new ItemSlot[SizeX, SizeY];
 
@@ -65,6 +68,20 @@ namespace Spacebox.Game
             }
         }
 
+        public void Clear()
+        {
+            Slots = null;
+            Slots = new ItemSlot[SizeX, SizeY];
+            FillSlots();
+            OnDataWasChanged?.Invoke(this);
+        }
+
+        private void OnSlotSuccessfullyUpdated()
+        {
+            
+            OnDataWasChanged?.Invoke(this);
+        }
+
         public bool TryAddItem(Item item, byte count)
         {
             if(item == null) return false;
@@ -76,6 +93,7 @@ namespace Spacebox.Game
                 if(slot.Count + count <= item.StackSize)
                 {
                     slot.Count += count;
+                    OnSlotSuccessfullyUpdated();
                     return true;
                 }
                 else
@@ -108,6 +126,7 @@ namespace Spacebox.Game
                         slot2.Item = item;
                         slot2.Count = count;
 
+                        OnSlotSuccessfullyUpdated();
                         return true;
                     }
                     else
@@ -199,12 +218,6 @@ namespace Spacebox.Game
             return false;
         }
 
-
-        private void TakeId()
-        {
-            Id = MaxId;
-            MaxId++;
-        }
 
         public void UpdateItem()
         {

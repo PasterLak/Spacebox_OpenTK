@@ -63,10 +63,10 @@ namespace Spacebox.Scenes
          
             music.Play();
 
-            itemModel = ItemModelGenerator.GenerateModel(GameBlocks.ItemsTexture, 3, 0, 0.02f, 0.02f);
+            itemModel = ItemModelGenerator.GenerateModel(GameBlocks.ItemsTexture, 3, 0, 0.02f, 0.02f, true);
             itemModel.Position = new Vector3(0, 0, 0);
 
-            itemModelShader = ShaderManager.GetShader("Shaders/textured");
+            itemModelShader = ShaderManager.GetShader("Shaders/itemModel");
         }
 
         private void SetDustSpawner()
@@ -119,7 +119,7 @@ namespace Spacebox.Scenes
             spawner.Render();
             //x += 0.01f;
             //sprite.Render(new Vector2(x, 0), new Vector2(1, 1));
-            itemModel.Draw(itemModelShader);
+            //itemModel.Draw(itemModelShader);
 
         }
 

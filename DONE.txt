@@ -7,6 +7,7 @@ version 0.0.6
 - drop items
 - generation of models for game items with greedy meshing
 - shader and light/ssao effect for the model
+- selected item name under the items panel
 
 version 0.0.5
 

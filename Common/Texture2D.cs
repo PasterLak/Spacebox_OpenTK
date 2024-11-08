@@ -6,7 +6,7 @@ using System.Drawing.Imaging;
 
 namespace Spacebox.Common
 {
-    public class Texture2D : IDisposable
+    public class Texture2D : IResource
     {
         public int Handle { get; private set; }
         public int Width { get; private set; }

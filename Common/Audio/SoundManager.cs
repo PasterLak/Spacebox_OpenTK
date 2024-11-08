@@ -98,7 +98,7 @@ namespace Spacebox.Common.Audio
                         clip.Dispose();
                         audioClips.Remove(name);
                         audioClipRefCount.Remove(name);
-                        Console.WriteLine($"AudioClip for '{name}' deleted.");
+                        
                     }
                 }
                 else

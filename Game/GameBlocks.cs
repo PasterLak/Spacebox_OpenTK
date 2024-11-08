@@ -102,7 +102,7 @@ namespace Spacebox.Game
         private static void GenerateItemModel(byte coordX, byte coordY, float depth)
         {
             ItemModel model = ItemModelGenerator.GenerateModel(
-                ItemsTexture, coordX, coordY, 0.02f, depth * 1.5f);
+                ItemsTexture, coordX, coordY, 0.02f, depth / 100f * 2f, true);
 
             ItemModels.Add(MaxItemId, model);
         }
@@ -111,7 +111,7 @@ namespace Spacebox.Game
         {
             foreach(var item in Item.Values)
             {
-                if(item.Name == name) return item;
+                if(item.Name.ToLower() == name.ToLower()) return item;
             }
 
             Debug.Error("GetItemByName error: Wrong name - " + name);
@@ -262,20 +262,21 @@ namespace Spacebox.Game
             RegisterBlock(new BlockData("Block", new Vector2(7,2)));
 
 
+            //  ----------  Items  ----------
 
-           
-            RegisterItem(new DrillItem(1, "Drill", 3,0,0.02f));
-            RegisterItem(new Item(1, "Weapone", 4,0, 0.02f));
+            RegisterItem(new DrillItem(1, "Drill", 3,0,1.5f));
+            RegisterItem(new Item(1, "Weapone", 4,0, 1.5f));
             RegisterItem(new Item(64, "Powder", 2,0));
             RegisterItem(new Item(64, "Iron Lens", 2,1));
-            RegisterItem(new Item(64, "Aluminium Panels", 1, 1,0.01f));
-            RegisterItem(new Item(64, "Iron Panels", 0, 1, 0.01f));
-            RegisterItem(new Item(64, "Titanium Ignot", 0, 2, 0.02f));
-            RegisterItem(new Item(64, "Aluminium Ignot", 1, 2, 0.02f));
-            RegisterItem(new Item(64, "Health", 2, 2, 0.02f));
-            RegisterItem(new Item(64, "Ice Shards", 3, 1, 0.02f));
-            RegisterItem(new Item(64, "Power", 3, 2, 0.02f));
-
+            RegisterItem(new Item(64, "Aluminium Panels", 1, 1, 1));
+            RegisterItem(new Item(64, "Iron Panels", 0, 1, 1));
+            RegisterItem(new Item(64, "Titanium Ingot", 0, 2, 2));
+            RegisterItem(new Item(64, "Aluminium Ingot", 1, 2, 2));
+            RegisterItem(new Item(64, "Health", 2, 2, 2));
+            RegisterItem(new Item(64, "Ice Shards", 3, 1, 1.5f));
+            RegisterItem(new Item(64, "Power", 3, 2, 2));
+            RegisterItem(new Item(64, "Beer", 4, 1, 3));
+            RegisterItem(new Item(64, "Cat", 5,0, 2));
 
         }
     }

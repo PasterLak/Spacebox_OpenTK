@@ -9,6 +9,7 @@ namespace Spacebox.Game
         public Mesh Mesh { get; private set; }
         public Texture2D Texture { get; private set; }
 
+        
         public ItemModel(Mesh mesh, Texture2D texture)
         {
             Mesh = mesh;

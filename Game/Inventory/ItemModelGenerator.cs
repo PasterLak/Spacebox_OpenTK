@@ -12,7 +12,7 @@ namespace Spacebox.Game
 
 
         public static ItemModel GenerateModel(Texture2D atlasTexture,
-            int cellX, int cellY, float modelSize = 1.0f, float modelDepth = 0.2f)
+            int cellX, int cellY, float modelSize = 1.0f, float modelDepth = 0.2f, bool drawOnlyVisibleSides = true)
         {
             Texture2D cellTexture = UVAtlas.GetBlockTexture(atlasTexture, cellX, cellY);
             cellTexture.FlipX();
@@ -56,7 +56,7 @@ namespace Spacebox.Game
                 indexOffset += 4;
 
 
-                if(quad.NeedsTopSide) // ++
+                if(quad.NeedsTopSide && !drawOnlyVisibleSides) 
                 {
                     ItemModelGeneratorHelper.AddFaceButton(vertices, indices, indexOffset,
                         quad, modelDepth, modelSize,
@@ -74,14 +74,14 @@ namespace Spacebox.Game
                     indexOffset += 4;
                 }
 
-                /*if (quad.NeedsRightSide)
+                if (quad.NeedsRightSide && !drawOnlyVisibleSides)
                 {
                     ItemModelGeneratorHelper.AddFaceForward(vertices, indices, indexOffset,
                         quad, modelDepth, modelSize,
                      new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
 
                     indexOffset += 4;
-                }*/
+                }
                 if (quad.NeedsLeftSide) // ++
                 {
                     ItemModelGeneratorHelper.AddFaceBack
@@ -96,41 +96,44 @@ namespace Spacebox.Game
 
             }
             
-            
-            foreach (var quad in quads)
+            if (!drawOnlyVisibleSides)
             {
-                Vector3 bottomLeft = new Vector3(quad.X, quad.Y, 0);
-                Vector3 bottomRight = new Vector3((quad.X + quad.Width), quad.Y, 0);
-                Vector3 topRight = new Vector3((quad.X + quad.Width), (quad.Y + quad.Height), 0);
-                Vector3 topLeft = new Vector3(quad.X, (quad.Y + quad.Height), 0);
+                foreach (var quad in quads)
+                {
+                    Vector3 bottomLeft = new Vector3(quad.X, quad.Y, 0);
+                    Vector3 bottomRight = new Vector3((quad.X + quad.Width), quad.Y, 0);
+                    Vector3 topRight = new Vector3((quad.X + quad.Width), (quad.Y + quad.Height), 0);
+                    Vector3 topLeft = new Vector3(quad.X, (quad.Y + quad.Height), 0);
 
 
-                bottomLeft = bottomLeft * modelSize;
-                bottomRight = bottomRight * modelSize;
-                topRight = topRight * modelSize;
-                topLeft = topLeft * modelSize;
+                    bottomLeft = bottomLeft * modelSize;
+                    bottomRight = bottomRight * modelSize;
+                    topRight = topRight * modelSize;
+                    topLeft = topLeft * modelSize;
 
-                bottomLeft = bottomLeft + new Vector3(0, 0, modelDepth);
-                bottomRight = bottomRight + new Vector3(0, 0, modelDepth);
-                topRight = topRight + new Vector3(0, 0, modelDepth);
-                topLeft = topLeft + new Vector3(0, 0, modelDepth);
-
-
-                var uv = GetUVs(quad);
-
-                Vector2 uv1 = new Vector2(quad.U, quad.V);
-                Vector2 uv2 = new Vector2(quad.U + quad.UWidth, quad.V);
-                Vector2 uv3 = new Vector2(quad.U + quad.UWidth, quad.V + quad.UHeight);
-                Vector2 uv4 = new Vector2(quad.U, quad.V + quad.UHeight);
+                    bottomLeft = bottomLeft + new Vector3(0, 0, modelDepth);
+                    bottomRight = bottomRight + new Vector3(0, 0, modelDepth);
+                    topRight = topRight + new Vector3(0, 0, modelDepth);
+                    topLeft = topLeft + new Vector3(0, 0, modelDepth);
 
 
-              
-                ItemModelGeneratorHelper.AddFace(vertices, indices, indexOffset,
-                     topLeft, bottomLeft, bottomRight, topRight,
-                     new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
+                    var uv = GetUVs(quad);
 
-                indexOffset += 4;
+                    Vector2 uv1 = new Vector2(quad.U, quad.V);
+                    Vector2 uv2 = new Vector2(quad.U + quad.UWidth, quad.V);
+                    Vector2 uv3 = new Vector2(quad.U + quad.UWidth, quad.V + quad.UHeight);
+                    Vector2 uv4 = new Vector2(quad.U, quad.V + quad.UHeight);
+
+
+
+                    ItemModelGeneratorHelper.AddFace(vertices, indices, indexOffset,
+                         topLeft, bottomLeft, bottomRight, topRight,
+                         new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
+
+                    indexOffset += 4;
+                }
             }
+            
            
             float[] vertexArray = vertices.ToArray();
             uint[] indexArray = indices.ToArray();
