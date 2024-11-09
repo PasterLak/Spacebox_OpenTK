@@ -14,6 +14,16 @@ namespace Spacebox.Game
 
     public static class CubeMeshData
     {
+        public static Vector2[] GetBasicUVs()
+        {
+            return new Vector2[]
+                    {
+                        new Vector2(0, 0),
+                        new Vector2(1, 0),
+                        new Vector2(1, 1),
+                        new Vector2(0, 1)
+                    };
+        }
         public static Vector3[] GetFaceVertices(Face face)
         {
             switch (face)

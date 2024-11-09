@@ -7,29 +7,30 @@ namespace Spacebox.Game
         public int Count { get; set; } = 0;
         public int MaxCount { get; set; } = 100;
         public string Name { get; set; } = "Default";
+
+        public event Action DataChanged;
+
         public StatsBarData() 
         {
         }
 
-        public StatsBarData(int min)
-        {
-        }
 
-        public void Add(int count)
+        public void Increment(int amount)
         {
 
             if (Count == MaxCount) return;
 
-            Count = MathHelper.Min(Count + count, MaxCount);
-
+            Count = MathHelper.Min(Count + amount, MaxCount);
+            DataChanged?.Invoke();
         }
 
-        public void Remove(int count)
+        public void Decrement(int amount)
         {
 
             if (Count == 0) return;
 
-            Count = MathHelper.Max(Count - count, 0);
+            Count = MathHelper.Max(Count - amount, 0);
+            DataChanged?.Invoke();
 
         }
     }

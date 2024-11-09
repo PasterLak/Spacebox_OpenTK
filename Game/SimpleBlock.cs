@@ -17,6 +17,8 @@ namespace Spacebox.Common
 
         public bool IsUsingDefaultUV { get; private set; } = true;
 
+        private Dictionary<Face, Vector2[]> _uvs = new Dictionary<Face, Vector2[]>();
+
         public SimpleBlock(Shader shader, Texture2D texture, Vector3 position)
         {
             Transform = new Node3D
@@ -27,8 +29,13 @@ namespace Spacebox.Common
             _shader = shader;
             Texture = texture;
             Texture.Use(TextureUnit.Texture0);
-            (_vertices, _indices) = GenerateMeshData();
-            InitializeBuffers();
+
+            foreach (var face in Enum.GetValues(typeof(Face)))
+            {
+                _uvs.Add((Face)face, CubeMeshData.GetBasicUVs());
+            }
+
+            RegenerateMesh();
         }
 
         public void ResetUV()
@@ -36,8 +43,13 @@ namespace Spacebox.Common
             _vertices = null;
             _indices = null;
             IsUsingDefaultUV = true;
-            (_vertices, _indices) = GenerateMeshData();
-            InitializeBuffers();
+
+            foreach (var uv in _uvs.Keys)
+            {
+                _uvs[uv] = CubeMeshData.GetBasicUVs();
+            }
+
+            RegenerateMesh();
         }
 
         public void ChangeUV(Vector2[] uv)
@@ -45,20 +57,37 @@ namespace Spacebox.Common
             _vertices = null;
             _indices = null;
             IsUsingDefaultUV = false;
-            (_vertices, _indices) = GenerateMeshData(uv);
+
+            foreach (var uvk in _uvs.Keys)
+            {
+                _uvs[uvk] = uv;
+            }
+
+            RegenerateMesh();
+        }
+
+        public void ChangeUV(Vector2[] uv, Face face, bool regenerateMesh)
+        {
+            _vertices = null;
+            _indices = null;
+            IsUsingDefaultUV = false;
+
+           
+            _uvs[face] = uv;
+
+            if (regenerateMesh)
+                RegenerateMesh();
+        }
+
+        public void RegenerateMesh()
+        {
+            (_vertices, _indices) = GenerateMeshData();
             InitializeBuffers();
         }
 
-        private (float[] vertices, uint[] indices) GenerateMeshData()
-        {
-            IsUsingDefaultUV = true;
-            return GenerateMeshData(new Vector2[] {new Vector2(0f, 0f),
-                    new Vector2(1f, 0f),
-                    new Vector2(1f, 1f),
-                    new Vector2(0f, 1f) });
-        }
+    
 
-        private (float[] vertices, uint[] indices) GenerateMeshData(Vector2[] uv)
+        private (float[] vertices, uint[] indices) GenerateMeshData()
         {
             List<float> vertices = new List<float>();
             List<uint> indices = new List<uint>();
@@ -68,7 +97,7 @@ namespace Spacebox.Common
             {
                 Vector3[] faceVertices = CubeMeshData.GetFaceVertices(face);
                 Vector3 normal = GetNormal(face);
-                Vector2[] texCoords = uv;
+                Vector2[] texCoords = _uvs[face];
 
                 for (int i = 0; i < 4; i++)
                 {

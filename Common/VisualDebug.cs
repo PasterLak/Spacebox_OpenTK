@@ -324,7 +324,12 @@ namespace Spacebox.Common
             DrawLine(frustumCorners[3], frustumCorners[7], color);
         }
 
-
+        public static void DrawAxes(Vector3 pos)
+        {
+            DrawLine(pos, pos + Vector3.UnitX * 2 , Color4.Red);
+            DrawLine(pos, pos + Vector3.UnitY * 2, Color4.Green);
+            DrawLine(pos, pos + Vector3.UnitZ * 2, Color4.Blue);
+        }
 
         public static void Render() // in Window loop
         {

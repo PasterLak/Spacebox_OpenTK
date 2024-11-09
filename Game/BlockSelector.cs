@@ -18,6 +18,8 @@ namespace Spacebox.Game
 
         private SimpleBlock block;
         private Texture2D currentTexture;
+
+        private Direction blockDirection = Direction.Up;
         public BlockSelector() 
         {
             Instance = this;
@@ -55,24 +57,47 @@ namespace Spacebox.Game
                 //{
                     block.Texture = GameBlocks.BlocksTexture;
                 block.Transform.Scale = new Vector3(1,1,1);
-                block.ChangeUV(PanelUI.GetSelectedBlockUV());
+                UpdateUV();
                 // }
 
-               
+
             }
            
 
         }
 
-        public void UpdatePosition(Vector3 position)
+        private void UpdateUV()
+        {
+            block.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Left, blockDirection), Face.Left, false);
+            block.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Right, blockDirection), Face.Right, false);
+            block.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Back, blockDirection), Face.Back, false);
+            block.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Front, blockDirection), Face.Front, false);
+            block.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Top, blockDirection), Face.Top, false);
+            block.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Bottom, blockDirection), Face.Bottom, false);
+
+
+            block.RegenerateMesh();
+        }
+
+        public void UpdatePosition(Vector3 position, Direction direction)
         {
             if(block.Transform.Position == position) return;
 
- 
-
             position += Vector3.One * 0.5f;
 
-           
+
+            if(!block.IsUsingDefaultUV)
+            {
+                if (blockDirection != direction)
+                {
+                    blockDirection = direction;
+
+                    UpdateUV();
+                }
+            }
+            
+
+
             block.Transform.Position = position;
         }
 

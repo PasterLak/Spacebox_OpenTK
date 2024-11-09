@@ -46,6 +46,7 @@ namespace Spacebox.Scenes
         
         private TestOctree testOctree = new TestOctree();
         private SimpleBlock simpleBlock;
+        Axes axes;
         public override void LoadContent()
         {
             float q = 5;
@@ -144,7 +145,53 @@ namespace Spacebox.Scenes
 
             blockSelector = new BlockSelector();
 
-           
+            
+            
+            /*var size = 10000;
+            int[,] arr = new int[size, size];
+            int i = 0;
+            Testing.Start();
+            for (int x = 0; x < size; x++)
+            {
+                for (int y = 0; y < size; y++)
+                {
+                    arr[x, y] = ++i;
+                }
+            }
+            ulong sum = 0;
+            /*for (int x = 0; x < size; x++)
+            {
+                for (int y = 0; y < size; y++)
+                {
+                    sum = (sum + (ulong)arr[x, y]);
+                }
+            }*/
+            //Testing.End();
+            //Debug.Log(sum.ToString());
+
+            /*
+            //var size = 10000;
+            Array2D<int> arr2 = new Array2D<int>(size,size);
+             i = 0;
+            Testing.Start();
+            for (int x = 0; x < size; x++)
+            {
+                for (int y = 0; y < size; y++)
+                {
+                    arr2[x, y] = ++i;
+                }
+            }
+             sum = 0;
+            /*for (int x = 0; x < size; x++)
+            {
+                for (int y = 0; y < size; y++)
+                {
+                    sum = (sum + (ulong)arr2[x, y]);
+                }
+            }
+            Testing.End();
+            Debug.Log(sum.ToString());
+            */
         }
 
         public override void Start()
@@ -258,12 +305,13 @@ namespace Spacebox.Scenes
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             //sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
+            const float sm = 0.02f;
+            VisualDebug.DrawLine(Vector3.Zero + new Vector3(sm,sm, sm), new Vector3(100f, 0, 0), Color4.Red);
+            VisualDebug.DrawLine(Vector3.Zero + new Vector3(sm, sm, sm), new Vector3(0, 100, 0), Color4.Green);
+            VisualDebug.DrawLine(Vector3.Zero + new Vector3(sm, sm, sm), new Vector3(0, 0, 100), Color4.Blue);
+            
 
-            VisualDebug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(100f, 0, 0), Color4.Red);
-            VisualDebug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 100, 0), Color4.Green);
-            VisualDebug.DrawLine(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 0, 100), Color4.Blue);
-           
-            testOctree.Draw(player);
+            //testOctree.Draw(player);
 
         }
 

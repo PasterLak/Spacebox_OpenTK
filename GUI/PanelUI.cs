@@ -50,20 +50,14 @@ namespace Spacebox.UI
             Storage.OnDataWasChanged += OnStorageDataWasChanged;
         }
 
-        public static OpenTK.Mathematics.Vector2[] GetSelectedBlockUV()
+        public static OpenTK.Mathematics.Vector2[] GetSelectedBlockUV(Face face, Direction direction)
         {
-            OpenTK.Mathematics.Vector2[] def = new OpenTK.Mathematics.Vector2[] {new OpenTK.Mathematics.Vector2(0f, 0f),
-                    new OpenTK.Mathematics.Vector2(1f, 0f),
-                    new OpenTK.Mathematics.Vector2(1f, 1f),
-                    new OpenTK.Mathematics.Vector2(0f, 1f) };
-
-           
+            
                 var blockID = (SelectedSlot.Item as BlockItem).BlockId;
 
-          
-                return UVAtlas.GetUVs(GameBlocks.GetBlockDataById(blockID).TextureCoords);
+
+            return GameBlocks.GetBlockUVsByIdAndDirection(blockID, face, direction);
            
-            return def;
         }
 
         private static void OnStorageDataWasChanged(Storage storage)

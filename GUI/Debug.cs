@@ -105,6 +105,12 @@ namespace Spacebox.Common
             Console.WriteLine($"[DEBUG] {message}");
         }
 
+        public static void Log(object sender, string message, OpenTK.Mathematics.Color4 color)
+        {
+            AddMessage($"[DEBUG][{sender.GetType().Name}] {message}", color);
+            Console.WriteLine($"[DEBUG][{sender.GetType().Name}] {message}");
+        }
+
         public static void Log(string message, Vector4 color)
         {
             AddMessage($"[DEBUG] {message}", color);

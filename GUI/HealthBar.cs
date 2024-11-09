@@ -44,7 +44,7 @@ namespace Spacebox.GUI
         {
             if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.U))
             {
-                _statsData.Remove(2);
+                _statsData.Decrement(2);
             }
 
             var io = ImGui.GetIO();

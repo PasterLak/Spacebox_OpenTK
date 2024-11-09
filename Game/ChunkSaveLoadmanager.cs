@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using OpenTK.Mathematics;
 using Spacebox.Common;
 
@@ -19,36 +19,30 @@ namespace Spacebox.Game
             }
         }
 
-        /// <summary>
-        /// Saves the chunk data by serializing its position and block IDs as a one-dimensional array.
-        /// </summary>
-        /// <param name="chunk">The chunk to save.</param>
         public static void SaveChunk(Chunk chunk)
         {
             try
             {
-                // Extract Block IDs from the chunk as a one-dimensional array
                 short[] blockIds = GetBlockIdsAs1D(chunk.Blocks);
-
-                // Create a serializable data structure
+                List<DirectionData> directions = new List<DirectionData>();
+                for (int i = 0; i < blockIds.Length; i++)
+                {
+                    Block block = chunk.Blocks[i / (Chunk.Size * Chunk.Size), (i / Chunk.Size) % Chunk.Size, i % Chunk.Size];
+                    if (block.Direction != Direction.Up)
+                    {
+                        directions.Add(new DirectionData { Index = i, Direction = block.Direction });
+                    }
+                }
                 ChunkData data = new ChunkData
                 {
                     PositionX = chunk.Position.X,
                     PositionY = chunk.Position.Y,
                     PositionZ = chunk.Position.Z,
-                    BlockIds = blockIds
+                    BlockIds = blockIds,
+                    Directions = directions
                 };
-
-                // Serialize to JSON
-                string jsonString = JsonSerializer.Serialize(data, new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                });
-
-                // Determine the file path
+                string jsonString = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
                 string filePath = GetChunkFilePath(chunk.Position);
-
-                // Write to file
                 File.WriteAllText(filePath, jsonString);
                 Debug.Log($"Chunk saved at {filePath}");
             }
@@ -58,11 +52,6 @@ namespace Spacebox.Game
             }
         }
 
-        /// <summary>
-        /// Loads the chunk data by deserializing its position and block IDs from a one-dimensional array.
-        /// </summary>
-        /// <param name="position">The position of the chunk to load.</param>
-        /// <returns>The loaded chunk if successful; otherwise, null.</returns>
         public static Chunk LoadChunk(Vector3 position)
         {
             try
@@ -72,25 +61,22 @@ namespace Spacebox.Game
                 {
                     return null;
                 }
-
-                // Read JSON from file
                 string jsonString = File.ReadAllText(filePath);
-
-                // Deserialize JSON to ChunkData
                 ChunkData data = JsonSerializer.Deserialize<ChunkData>(jsonString);
-
                 if (data == null)
                 {
                     return null;
                 }
-
-                // Reconstruct Blocks from Block IDs
                 Block[,,] loadedBlocks = ReconstructBlocksFrom1D(data.BlockIds);
-
-                // Reconstruct Position from separate coordinates
+                foreach (var directionData in data.Directions)
+                {
+                    int index = directionData.Index;
+                    int x = index / (Chunk.Size * Chunk.Size);
+                    int y = (index / Chunk.Size) % Chunk.Size;
+                    int z = index % Chunk.Size;
+                    loadedBlocks[x, y, z].Direction = directionData.Direction;
+                }
                 Vector3 loadedPosition = new Vector3(data.PositionX, data.PositionY, data.PositionZ);
-
-                // Create and return the loaded chunk
                 Chunk chunk = new Chunk(loadedPosition, loadedBlocks, isLoaded: true);
                 Debug.Log($"Chunk loaded from {filePath}");
                 return chunk;
@@ -102,22 +88,11 @@ namespace Spacebox.Game
             }
         }
 
-        /// <summary>
-        /// Generates the file path for a chunk based on its position.
-        /// </summary>
-        /// <param name="position">The position of the chunk.</param>
-        /// <returns>The file path where the chunk is saved.</returns>
         private static string GetChunkFilePath(Vector3 position)
         {
             return Path.Combine(SaveDirectory, $"chunk_{position.X}_{position.Y}_{position.Z}.json");
         }
 
-        /// <summary>
-        /// Extracts Block IDs from the Blocks array and flattens them into a one-dimensional array.
-        /// The order is x, then y, then z (nested loops).
-        /// </summary>
-        /// <param name="blocks">The 3D Blocks array of the chunk.</param>
-        /// <returns>A one-dimensional array of Block IDs.</returns>
         private static short[] GetBlockIdsAs1D(Block[,,] blocks)
         {
             short[] ids = new short[Chunk.Size * Chunk.Size * Chunk.Size];
@@ -131,19 +106,12 @@ namespace Spacebox.Game
             return ids;
         }
 
-        /// <summary>
-        /// Reconstructs the Blocks array from a one-dimensional array of Block IDs.
-        /// The order is x, then y, then z (same as during serialization).
-        /// </summary>
-        /// <param name="ids">A one-dimensional array of Block IDs.</param>
-        /// <returns>The reconstructed 3D Blocks array.</returns>
         private static Block[,,] ReconstructBlocksFrom1D(short[] ids)
         {
             if (ids.Length != Chunk.Size * Chunk.Size * Chunk.Size)
             {
                 throw new ArgumentException("Invalid number of Block IDs for chunk reconstruction.");
             }
-
             Block[,,] blocks = new Block[Chunk.Size, Chunk.Size, Chunk.Size];
             int index = 0;
             for (int x = 0; x < Chunk.Size; x++)
@@ -155,15 +123,19 @@ namespace Spacebox.Game
             return blocks;
         }
 
-        /// <summary>
-        /// A helper class for serialization containing chunk position and block IDs as a one-dimensional array.
-        /// </summary>
         private class ChunkData
         {
             public float PositionX { get; set; }
             public float PositionY { get; set; }
             public float PositionZ { get; set; }
             public short[] BlockIds { get; set; }
+            public List<DirectionData> Directions { get; set; }
+        }
+
+        private class DirectionData
+        {
+            public int Index { get; set; }
+            public Direction Direction { get; set; }
         }
     }
 }

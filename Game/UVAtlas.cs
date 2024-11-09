@@ -1,15 +1,20 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Common; // Добавьте этот using для использования Texture2D
+using Spacebox.Common; 
 
 namespace Spacebox.Game
 {
     public static class UVAtlas
     {
-        private static int _textureAtlasSize = 16;
+        private static int _textureAtlasSize = 16; // todo   dynamic
 
         public static Vector2[] GetUVs(Vector2 v)
         {
             return GetUVs((int)v.X, (int)v.Y);
+        }
+
+        public static Vector2[] GetUVs(Vector2Byte v)
+        {
+            return GetUVs(v.x, v.y);
         }
         public static Vector2[] GetUVs(int x, int y)
         {
@@ -38,6 +43,10 @@ namespace Spacebox.Game
             return _textureAtlasSize;
         }
 
+        public static Texture2D GetBlockTexture(Texture2D atlasTexture, Vector2Byte v)
+        {
+            return GetBlockTexture(atlasTexture,v.x,v.y);
+        }
         public static Texture2D GetBlockTexture(Texture2D atlasTexture, int x, int y)
         {
             int atlasSize = _textureAtlasSize; 

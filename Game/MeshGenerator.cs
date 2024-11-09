@@ -48,7 +48,11 @@ namespace Spacebox.Game.Rendering
                             if (IsTransparentBlock(nx, ny, nz))
                             {
                                 Vector3[] faceVertices = CubeMeshData.GetFaceVertices(face);
-                                Vector2[] faceUVs = UVAtlas.GetUVs((int)block.TextureCoords.X, (int)block.TextureCoords.Y);
+
+
+                                Vector2[] faceUVs = GameBlocks.GetBlockUVsByIdAndDirection(block.BlockId, face, block.Direction);
+
+
 
                                 float currentLightLevel = block.LightLevel / 15f;
                                 Vector3 currentLightColor = block.LightColor;

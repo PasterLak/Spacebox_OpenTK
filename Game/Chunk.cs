@@ -341,16 +341,17 @@ namespace Spacebox.Game
 
                 Vector3 worldBlockPosition = hitBlockPosition + Position;
                 VisualDebug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.White);
-                
+
 
                 Block aimedBlock = Blocks[hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z];
 
+                VisualDebug.DrawAxes(hitBlockPosition + Vector3.One * 0.5f);
 
                 Overlay.AimedBlock = aimedBlock;
 
-                if(Input.IsKeyDown(Keys.R))
+                if (Input.IsKeyDown(Keys.R))
                 {
-                    
+
                     ChangeBlockColor(aimedBlock, new Vector3(1, 0, 0), true);
                     GenerateMesh();
                 }
@@ -367,32 +368,32 @@ namespace Spacebox.Game
                     GenerateMesh();
                 }
 
-                if(PanelUI.IsHoldingBlock())
+                if (PanelUI.IsHoldingBlock())
                 {
                     BlockSelector.IsVisible = true;
-                    BlockSelector.Instance.UpdatePosition(hitBlockPosition + hitNormal);
+                    BlockSelector.Instance.UpdatePosition(hitBlockPosition + hitNormal, Block.GetDirectionFromNormal(hitNormal));
                 }
                 else if (PanelUI.IsHoldingDrill())
                 {
                     BlockSelector.IsVisible = true;
-                    BlockSelector.Instance.UpdatePosition(hitBlockPosition);
+                    BlockSelector.Instance.UpdatePosition(hitBlockPosition, Block.GetDirectionFromNormal(hitNormal));
                 }
                 else
                 {
                     BlockSelector.IsVisible = false;
                 }
-                
+
 
                 VisualDebug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.02f), Color4.Red);
                 VisualDebug.DrawLine(hitPosition, hitPosition + hitNormal * 0.5f, Color4.Red);
-               
+
 
                 if (aimedBlock.BlockId == 20 || aimedBlock.BlockId == 22) // use  : todo 
                 {
                     float dis = Vector3.Distance(player.Position, hitBlockPosition);
 
                     if (dis < 3f)
-                    CenteredText.Show();
+                        CenteredText.Show();
                     else
                         CenteredText.Hide();
                 }
@@ -401,7 +402,14 @@ namespace Spacebox.Game
                     CenteredText.Hide();
                 }
 
-                if (Input.IsMouseButtonDown(MouseButton.Left))
+                if (Input.IsMouseButtonDown(MouseButton.Middle))
+                {
+                    aimedBlock.SetDirectionFromNormal(hitNormal);
+                    GenerateMesh();
+                }
+                    
+
+                 if (Input.IsMouseButtonDown(MouseButton.Left))
                 {
                     if(PanelUI.IsHoldingDrill())
                     {
@@ -427,6 +435,7 @@ namespace Spacebox.Game
                         {
                             
                             Block newBlock = GameBlocks.CreateBlockFromId(id);
+                            newBlock.SetDirectionFromNormal(hitNormal);
                             SetBlock(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z, newBlock);
                         }
                        
@@ -454,7 +463,7 @@ namespace Spacebox.Game
                 if (PanelUI.IsHoldingBlock())
                 {
                     BlockSelector.IsVisible = true;
-                    BlockSelector.Instance.UpdatePosition(worldBlockPosition);
+                    BlockSelector.Instance.UpdatePosition(worldBlockPosition, Direction.Up);
                 }
                 else
                 {

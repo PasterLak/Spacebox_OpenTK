@@ -8,3 +8,6 @@ version 0.0.6
 - pool for effects
 - texture manager unload texture
 - unload dust pattern
+
+
+

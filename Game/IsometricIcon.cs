@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
+using System.Runtime.CompilerServices;
 
 namespace Spacebox.GUI
 {
@@ -8,27 +9,27 @@ namespace Spacebox.GUI
         private const float ShadowIntensity = 0.1f;
         private const float LightIntensity = 0.03f;
 
-        public static Texture2D CreateIsometricIcon(Texture2D block)
+        
+        public static Texture2D CreateIsometricIcon(Texture2D walls,  Texture2D topSide)
         {
-            if (block.Width != block.Height)
+            if (!ValidateTextures(walls,topSide))
             {
-                Console.WriteLine("Invalid Texture Width and Height! Should be the same.");
                 return new Texture2D(32, 32, pixelated: true);
             }
 
-            int originalSize = block.Width;
+            int originalSize = walls.Width;
             int size = originalSize * 2;
             Texture2D isometricTexture = new Texture2D(size, size, pixelated: true);
 
-            Color4[,] originalPixels = block.GetPixelData();
-
-            
+            Color4[,] origLeftPixels = walls.GetPixelData();
+          
+            Color4[,] origTopPixels = topSide.GetPixelData();
 
             Color4[,] isometricPixels = InitializePixels(size);
 
-            ApplyRightSide(size, originalPixels, isometricPixels, ShadowIntensity);
-            ApplyLeftSide(size, originalPixels, isometricPixels, ShadowIntensity);
-            ApplyTop(size, originalPixels, isometricPixels, LightIntensity);
+            ApplyRightSide(size, origLeftPixels, isometricPixels, ShadowIntensity);
+            ApplyLeftSide(size, origLeftPixels, isometricPixels, ShadowIntensity);
+            ApplyTop(size, origTopPixels, isometricPixels, LightIntensity);
 
          
             isometricPixels = ImageProcessing.MirrorX(isometricPixels);
@@ -40,9 +41,32 @@ namespace Spacebox.GUI
 
             
 
-            block.Dispose();
+            walls.Dispose();
 
             return isometricTexture;
+        }
+
+        private static bool ValidateTextures(Texture2D leftSide, Texture2D topSide)
+        {
+            if (leftSide.Width != leftSide.Height)
+            {
+                Debug.Log("Invalid Texture Width and Height! Should be the same.");
+                return false;
+            }
+           
+            if (topSide.Width != topSide.Height)
+            {
+                Debug.Log("Invalid Texture Width and Height! Should be the same.");
+                return false;
+            }
+
+            if (leftSide.Width != topSide.Width)
+            {
+                Debug.Log("[IsometricIcon] All sides must have the same size!");
+                return false;
+            }
+
+            return true;
         }
 
         private static Color4[,] InitializePixels(int size)
