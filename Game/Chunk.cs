@@ -2,7 +2,6 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
-using Spacebox.Extensions;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Lighting;
 using Spacebox.Game.Rendering;
@@ -137,16 +136,31 @@ namespace Spacebox.Game
             GenerateMesh();
         }
 
-        public void RemoveBlock(int x, int y, int z)
+     
+        public void RemoveBlock(int x, int y, int z, sbyte xNormal, sbyte yNormal, sbyte zNormal)
         {
             if (!IsInRange(x, y, z))
                 return;
-
+            
             Vector3 worldBlockPosition = new Vector3(x, y, z);
-           
-            destructionManager?.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor);
 
-
+            if(Blocks[x, y, z].IsTransparent)
+            {
+                destructionManager?.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
+            }
+            else
+            {
+                if(IsInRange(x + xNormal, y + yNormal, z + zNormal))
+                {
+                  
+                    destructionManager?.DestroyBlock(worldBlockPosition, Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
+                }
+                else
+                {
+                    destructionManager?.DestroyBlock(worldBlockPosition, Blocks[x, y , z ].LightColor, Blocks[x, y, z]);
+                }
+            }
+ 
             Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
 
             
@@ -318,8 +332,6 @@ namespace Spacebox.Game
             Vector3 rayDirection = player.Front;
 
 
-           
-
             Ray ray = new Ray(rayOrigin, rayDirection, maxDistance);
 
             bool hit = Raycast(ray, out Vector3 hitPosition, out Vector3i hitBlockPosition, out Vector3 hitNormal);
@@ -355,13 +367,27 @@ namespace Spacebox.Game
                     GenerateMesh();
                 }
 
-
+                if(PanelUI.IsHoldingBlock())
+                {
+                    BlockSelector.IsVisible = true;
+                    BlockSelector.Instance.UpdatePosition(hitBlockPosition + hitNormal);
+                }
+                else if (PanelUI.IsHoldingDrill())
+                {
+                    BlockSelector.IsVisible = true;
+                    BlockSelector.Instance.UpdatePosition(hitBlockPosition);
+                }
+                else
+                {
+                    BlockSelector.IsVisible = false;
+                }
+                
 
                 VisualDebug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.02f), Color4.Red);
                 VisualDebug.DrawLine(hitPosition, hitPosition + hitNormal * 0.5f, Color4.Red);
                
 
-                if (aimedBlock.BlockId == 20 || aimedBlock.BlockId == 22) // use
+                if (aimedBlock.BlockId == 20 || aimedBlock.BlockId == 22) // use  : todo 
                 {
                     float dis = Vector3.Distance(player.Position, hitBlockPosition);
 
@@ -382,8 +408,9 @@ namespace Spacebox.Game
                         player.Panel.TryAddItem(
                         GameBlocks.GetBlockDataById(aimedBlock.BlockId).Item, 1);
 
-
-                        RemoveBlock(hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z);
+                      
+                        RemoveBlock(hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z,
+                            (sbyte)hitNormal.X, (sbyte)hitNormal.Y, (sbyte)hitNormal.Z);
                     }
                     
                 }
@@ -408,6 +435,8 @@ namespace Spacebox.Game
             }
             else
             {
+                if(BlockSelector.IsVisible)
+                BlockSelector.IsVisible = false;
 
                 Overlay.AimedBlock = null;
 
@@ -422,7 +451,17 @@ namespace Spacebox.Game
                 Vector3 worldBlockPosition = new Vector3(x, y, z) + Position;
                 Spacebox.Common.VisualDebug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.Gray);
 
-                if(CenteredText.IsVisible)
+                if (PanelUI.IsHoldingBlock())
+                {
+                    BlockSelector.IsVisible = true;
+                    BlockSelector.Instance.UpdatePosition(worldBlockPosition);
+                }
+                else
+                {
+                    BlockSelector.IsVisible = false;
+                }
+
+                if (CenteredText.IsVisible)
                 {
                     CenteredText.Hide();
                 }

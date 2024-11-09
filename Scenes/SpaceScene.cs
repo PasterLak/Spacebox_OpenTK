@@ -42,8 +42,10 @@ namespace Spacebox.Scenes
         private ItemModel itemModel;
         private Shader itemModelShader;
         private HealthBar healthBar;
+        private BlockSelector blockSelector;
         
         private TestOctree testOctree = new TestOctree();
+        private SimpleBlock simpleBlock;
         public override void LoadContent()
         {
             float q = 5;
@@ -128,13 +130,21 @@ namespace Spacebox.Scenes
             CreativeWindowUI.SetDefaultIcon(c.Handle);
             CreativeWindowUI.Player = player;
 
+            Shader shader = ShaderManager.GetShader("Shaders/textured");
 
+            Texture2D gg = TextureManager.GetTexture("Resources/Textures/selector.png", true);
+
+            simpleBlock = new SimpleBlock(shader, gg, Vector3.Zero);
 
             itemModel = ItemModelGenerator.GenerateModel(GameBlocks.ItemsTexture, 2,2,0.05f,0.5f, false);
             itemModel.Position = new Vector3(0,0,0);
             itemModel.debug = true;
             //player.AddChild(itemModel);
             itemModelShader = ShaderManager.GetShader("Shaders/itemModel");
+
+            blockSelector = new BlockSelector();
+
+           
         }
 
         public override void Start()
@@ -224,15 +234,25 @@ namespace Spacebox.Scenes
             blockTexture.Use(TextureUnit.Texture0);
             lightAtlas.Use(TextureUnit.Texture1);
 
+            
             //chunk.Draw(blocksShader);
+
             sector.Render(blocksShader);
+
+            simpleBlock.Render(player);
             //itemModel.Draw(itemModelShader);
             //world.Render(blocksShader);
             blockDestructionManager.Render();
+            
             dustSpawner.Render();
 
-            PanelUI.DrawItemModel();
 
+            
+            blockSelector.Draw(player);
+           
+
+            PanelUI.DrawItemModel();
+            
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);

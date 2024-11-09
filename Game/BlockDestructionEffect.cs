@@ -16,6 +16,8 @@ namespace Spacebox.Scenes
         private float elapsedTime = 0f;
         private const float duration = 2f;
 
+        private Vector3 color = Vector3.One;
+
         public bool IsFinished => elapsedTime >= duration && particleSystem.GetParticles().Count == 0;
 
         public BlockDestructionEffect(Camera camera, Vector3 position, Vector3 color, Texture2D texture, Shader shader)
@@ -23,7 +25,8 @@ namespace Spacebox.Scenes
             this.camera = camera;
             
             Initialize(position,  texture,  shader);
-            particleSystem.Renderer.shader.SetVector3("color", color);
+            this.color = color;
+            
         }
 
         private void Initialize(Vector3 position, Texture2D texture, Shader shader)
@@ -89,8 +92,8 @@ namespace Spacebox.Scenes
 
         public void Render()
         {
-           
-            
+
+            particleSystem.Renderer.shader.SetVector3("color", color);
             particleSystem.Draw(camera);
         }
 

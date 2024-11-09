@@ -1,6 +1,6 @@
-﻿
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.Game;
 using Spacebox.Scenes;
 
 
@@ -16,16 +16,15 @@ namespace Spacebox.Managers
         {
             this.camera = camera;
 
-           
-            texture = TextureManager.GetTexture("Resources/Textures/blockDust.png", true); 
 
             shader = ShaderManager.GetShader("Shaders/particle");
         }
 
     
-        public void DestroyBlock(Vector3 position, Vector3 color)
+        public void DestroyBlock(Vector3 position, Vector3 color, Block block)
         {
-          
+            texture = GameBlocks.BlockDust[block.BlockId];
+
             var destructionEffect = new BlockDestructionEffect(camera, position + 
                 new Vector3(0.5f, 0.5f, 0.5f), color, texture, shader);
             activeEffects.Add(destructionEffect);

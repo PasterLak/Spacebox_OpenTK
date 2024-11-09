@@ -1,6 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
+
 
 namespace Spacebox.Common
 {
@@ -23,7 +23,7 @@ namespace Spacebox.Common
             Mesh = new Mesh(vertices, indices);
             Material = material;
 
-            // Корректное вычисление BoundingVolume с учётом позиции и масштаба
+         
             Matrix4 modelMatrix = GetModelMatrix();
 
             Vector3 worldMin = Vector3.TransformPosition(Mesh.GetBounds().Min, modelMatrix);
@@ -80,10 +80,6 @@ namespace Spacebox.Common
                 GL.Enable(EnableCap.CullFace);
             else
                 GL.Disable(EnableCap.CullFace);
-
-
-            
-
 
             if (VisualDebug.ShowDebug)
             {

@@ -10,7 +10,7 @@ namespace Spacebox.Scenes
         private Texture2D dustTexture;
         private Camera camera;
 
-      
+        
         public Vector3 Position { get; set; } = Vector3.Zero;
         
         public Vector3 EmitterDirection { get; set; } = new Vector3(0, 0, 0);
@@ -73,7 +73,7 @@ namespace Spacebox.Scenes
 
         public void Render()
         {
-            
+            ParticleSystem.Renderer.shader.SetVector3("color", new Vector3(1,1,1));
             ParticleSystem.Draw(camera);
         }
 

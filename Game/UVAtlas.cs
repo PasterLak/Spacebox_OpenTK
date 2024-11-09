@@ -7,6 +7,10 @@ namespace Spacebox.Game
     {
         private static int _textureAtlasSize = 16;
 
+        public static Vector2[] GetUVs(Vector2 v)
+        {
+            return GetUVs((int)v.X, (int)v.Y);
+        }
         public static Vector2[] GetUVs(int x, int y)
         {
             float unit = 1.0f / _textureAtlasSize;

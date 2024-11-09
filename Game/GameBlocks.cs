@@ -54,7 +54,7 @@ namespace Spacebox.Game
         public static Dictionary<short, ItemModel> ItemModels = new Dictionary<short, ItemModel>();
 
         public static Dictionary<short, Texture2D> ItemIcon = new Dictionary<short, Texture2D>();
-
+        public static Dictionary<short, Texture2D> BlockDust = new Dictionary<short, Texture2D>();
 
         private static void RegisterBlock(BlockData blockData)
         {
@@ -64,7 +64,7 @@ namespace Spacebox.Game
             Block.Add(blockData.Id, blockData);
 
             RegisterItem(blockData);
-
+            CreateDust(blockData);
         }
 
         private static void RegisterItem(BlockData blockData)
@@ -136,6 +136,13 @@ namespace Spacebox.Game
             //if (id == 0) block.Type = BlockType.Air;
 
             return block;
+        }
+
+        private static void CreateDust(BlockData block)
+        {
+            Texture2D texture = BlockDestructionTexture.Generate(block.TextureCoords);
+
+            BlockDust.Add(block.Id, texture);
         }
 
         private static void CacheIcon(BlockData blockData)

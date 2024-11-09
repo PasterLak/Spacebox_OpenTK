@@ -5,6 +5,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Extensions;
 using Spacebox.Game;
+using Spacebox.Scenes;
 
 namespace Spacebox.UI
 {
@@ -27,7 +28,7 @@ namespace Spacebox.UI
             set
             {
                 _selectedSlotId = value;
-                OnSlotChanged?.Invoke(_selectedSlotId);
+               
             }
         }
 
@@ -46,11 +47,28 @@ namespace Spacebox.UI
             itemModelShader = ShaderManager.GetShader("Shaders/itemModel");
             SetSelectedSlot(0);
 
-            storage.OnDataWasChanged += OnStorageDataWasChanged;
+            Storage.OnDataWasChanged += OnStorageDataWasChanged;
+        }
+
+        public static OpenTK.Mathematics.Vector2[] GetSelectedBlockUV()
+        {
+            OpenTK.Mathematics.Vector2[] def = new OpenTK.Mathematics.Vector2[] {new OpenTK.Mathematics.Vector2(0f, 0f),
+                    new OpenTK.Mathematics.Vector2(1f, 0f),
+                    new OpenTK.Mathematics.Vector2(1f, 1f),
+                    new OpenTK.Mathematics.Vector2(0f, 1f) };
+
+           
+                var blockID = (SelectedSlot.Item as BlockItem).BlockId;
+
+          
+                return UVAtlas.GetUVs(GameBlocks.GetBlockDataById(blockID).TextureCoords);
+           
+            return def;
         }
 
         private static void OnStorageDataWasChanged(Storage storage)
         {
+           
             SelectSlot(SelectedSlotId);
         }
 
@@ -69,10 +87,24 @@ namespace Spacebox.UI
 
             if (!SelectedSlot.HasItem) return false;
 
-            if (InventoryUI.IsVisible) return false;
+            //if (InventoryUI.IsVisible) return false;
 
             if (SelectedSlot.Item.GetType() != typeof(DrillItem)) return false;
             
+
+            return true;
+        }
+
+        public static bool IsHoldingBlock()
+        {
+            if (SelectedSlot == null) return false;
+
+            if (!SelectedSlot.HasItem) return false;
+
+            //if (InventoryUI.IsVisible) return false;
+
+            if (SelectedSlot.Item.GetType() != typeof(BlockItem)) return false;
+
 
             return true;
         }
@@ -108,6 +140,7 @@ namespace Spacebox.UI
             return true;
         }
 
+      
         private static void ShowItemModel()
         {
             if (SelectedSlot == null) return;
@@ -248,6 +281,8 @@ namespace Spacebox.UI
                 {
                     _time = TimeToHideItemName;
                 }
+
+                OnSlotChanged?.Invoke(slot);
 
             }
         }

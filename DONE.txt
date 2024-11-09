@@ -8,6 +8,9 @@ version 0.0.6
 - generation of models for game items with greedy meshing
 - shader and light/ssao effect for the model
 - selected item name under the items panel
+- dust texture generation from block texture
+- selector 
+
 
 version 0.0.5
 

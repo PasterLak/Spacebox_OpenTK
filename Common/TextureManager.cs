@@ -41,6 +41,8 @@ namespace Spacebox.Common
             return texture;
         }
 
+      
+
         public static Texture2D GetTexture(string texturePath)
         {
             return GetTexture(texturePath, pixelated: false, true);

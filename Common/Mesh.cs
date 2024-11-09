@@ -15,7 +15,6 @@ namespace Spacebox.Common
 
         private BoundingBox _bounds;
 
-        // Добавляем список для хранения позиций вершин
         public List<Vector3> VerticesPositions { get; private set; }
 
         
@@ -56,7 +55,7 @@ namespace Spacebox.Common
 
             // Текстурные координаты
             GL.EnableVertexAttribArray(2);
-            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, stride, 6 * sizeof(float));
+            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, stride, 6 * sizeof(float)); 
 
             GL.BindVertexArray(0);
             
@@ -79,7 +78,7 @@ namespace Spacebox.Common
             for (int i = 0; i < vertices.Length; i += 8) // Предполагается, что каждая вершина содержит 8 float (позиция, нормаль, текстура)
             {
                 Vector3 pos = new Vector3(vertices[i], vertices[i + 1], vertices[i + 2]) * 2 ;  // SIZE fix
-                VerticesPositions.Add(pos); // Сохраняем позицию вершины
+                VerticesPositions.Add(pos); 
                 min = Vector3.ComponentMin(min, pos);
                 max = Vector3.ComponentMax(max, pos);
             }
@@ -90,12 +89,19 @@ namespace Spacebox.Common
 
         public void Draw()
         {
-            
 
+
+            ////GL.Enable(EnableCap.DepthTest);
+           // GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            //GL.Enable(EnableCap.CullFace);
+
+            //GL.Enable(EnableCap.DepthTest);
             
 
             GL.BindVertexArray(_vao);
             GL.DrawElements(PrimitiveType.Triangles, _indexCount, DrawElementsType.UnsignedInt, 0);
+
+            //GL.Disable(EnableCap.DepthTest);
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
         }
