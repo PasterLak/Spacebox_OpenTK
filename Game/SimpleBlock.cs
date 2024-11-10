@@ -191,6 +191,9 @@ namespace Spacebox.Common
             GL.BindVertexArray(0);
 
             GL.Disable(EnableCap.DepthTest);
+
+            if (FramebufferCapture.IsActive)
+                FramebufferCapture.SaveFrame();
         }
 
         public void Dispose()

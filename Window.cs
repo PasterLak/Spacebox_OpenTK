@@ -110,6 +110,7 @@ namespace Spacebox
 
             Time.EndRender();
 
+            if (FramebufferCapture.IsActive) FramebufferCapture.IsActive = false;
             SwapBuffers();
 
         }
@@ -196,6 +197,17 @@ namespace Spacebox
             if(Input.IsKeyDown(Keys.F9))
             {
                 _debugUI = !_debugUI;
+            }
+
+            if (Input.IsKeyDown(Keys.KeyPad2))
+            {
+                FramebufferCapture.IsActive = true;
+
+            }
+            if (Input.IsKeyDown(Keys.F12))
+            {
+                FramebufferCapture.SaveScreenshot();
+
             }
         }
 

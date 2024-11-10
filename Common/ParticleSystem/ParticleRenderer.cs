@@ -159,6 +159,9 @@ namespace Spacebox.Common
             GL.DepthMask(true);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
+
+            if (FramebufferCapture.IsActive)
+                FramebufferCapture.SaveFrame();
         }
 
         public void Dispose()

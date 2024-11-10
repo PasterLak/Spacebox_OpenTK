@@ -374,6 +374,8 @@ namespace Spacebox.Scenes
             Renderer.RenderAll(player);
 
 
+            
+
         }
 
         public override void OnGUI()
@@ -383,6 +385,8 @@ namespace Spacebox.Scenes
             //textRenderer.RenderText("Delta: " + Time.Delta, 10, 80, 2f, new Vector3(1, 1, 1));
             // textRenderer.RenderText("Pos: " + $" {(Vector3i)player.Position}", 10, 110, 2f, new Vector3(1, 1, 1));
             SceneObjectPanel.Render(Renderer.GetObjects());
+
+            
         }
 
 
@@ -422,7 +426,6 @@ namespace Spacebox.Scenes
                    
                 
             }
-
 
 
             if (skybox.Rotation.Y == 360) skybox.Rotation = new Vector3(0,0,0);

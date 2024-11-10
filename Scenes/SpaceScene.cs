@@ -45,7 +45,7 @@ namespace Spacebox.Scenes
         private BlockSelector blockSelector;
         
         private TestOctree testOctree = new TestOctree();
-        
+        private bool f = false;
         Axes axes;
         public override void LoadContent()
         {
@@ -177,7 +177,9 @@ namespace Spacebox.Scenes
                     blockDestroy.Play();
                 }
             }
+
             
+
 
             dustSpawner.Update();
             PanelUI.Update();
@@ -207,8 +209,6 @@ namespace Spacebox.Scenes
             Renderer.RenderAll(player);
 
             GL.Enable(EnableCap.DepthTest);
-           
-
 
             Matrix4 model = Matrix4.Identity;
             Matrix4 view = player.GetViewMatrix();
@@ -231,7 +231,7 @@ namespace Spacebox.Scenes
             //chunk.Draw(blocksShader);
 
             sector.Render(blocksShader);
-
+            
             //itemModel.Draw(itemModelShader);
             //world.Render(blocksShader);
             blockDestructionManager.Render();
@@ -247,7 +247,6 @@ namespace Spacebox.Scenes
 
             GL.Disable(EnableCap.DepthTest);
 
-            
 
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -260,7 +259,7 @@ namespace Spacebox.Scenes
 
             
             //testOctree.Draw(player);
-
+            
         }
 
         

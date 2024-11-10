@@ -5,6 +5,7 @@ using ImGuiNET;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common.Commands;
+using System.Drawing;
 
 
 namespace Spacebox.Common
@@ -109,6 +110,11 @@ namespace Spacebox.Common
         public static void Log(object sender, string message, OpenTK.Mathematics.Color4 color)
         {
             AddMessage($"[DEBUG][{sender.GetType().Name}] {message}", color);
+            Console.WriteLine($"[DEBUG][{sender.GetType().Name}] {message}");
+        }
+        public static void Log(object sender, string message)
+        {
+            AddMessage($"[DEBUG][{sender.GetType().Name}] {message}", Color.White);
             Console.WriteLine($"[DEBUG][{sender.GetType().Name}] {message}");
         }
 

@@ -83,6 +83,9 @@ namespace Spacebox.Game
             GL.Disable(EnableCap.Blend);
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+            if(FramebufferCapture.IsActive)
+                FramebufferCapture.SaveFrame();
+            
         }
 
         public void Dispose()

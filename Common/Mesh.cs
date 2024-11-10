@@ -104,6 +104,8 @@ namespace Spacebox.Common
             //GL.Disable(EnableCap.DepthTest);
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+            if (FramebufferCapture.IsActive)
+                FramebufferCapture.SaveFrame();
         }
 
         public void Dispose()
