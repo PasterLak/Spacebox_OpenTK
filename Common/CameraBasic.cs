@@ -30,8 +30,8 @@ namespace Spacebox.Common
             }
         }
 
-        public CameraBasic(Vector3 position, float aspectRatio)
-            : base(position, aspectRatio)
+        public CameraBasic(Vector3 position)
+            : base(position)
         {
         }
 

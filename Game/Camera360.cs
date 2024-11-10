@@ -7,8 +7,8 @@ namespace Spacebox.Game
     {
         private Quaternion _rotation = Quaternion.Identity;
 
-        public Camera360(Vector3 position, float aspectRatio)
-            : base(position, aspectRatio)
+        public Camera360(Vector3 position, bool isMainCamera = true)
+            : base(position, isMainCamera)
         {
         }
 

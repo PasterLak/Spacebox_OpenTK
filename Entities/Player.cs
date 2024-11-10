@@ -19,8 +19,8 @@ namespace Spacebox.Entities
 
         SpotLight spotLight;
 
-        public Player(Vector3 position, float aspectRatio)
-            : base(position, aspectRatio)
+        public Player(Vector3 position)
+            : base(position)
         {
             spotLight = new SpotLight(new Shader("Shaders/lighting"), Front);
 
@@ -28,8 +28,8 @@ namespace Spacebox.Entities
             VisualDebug.RemoveCollisionToDraw(this);
         }
 
-        public Player(Vector3 position, float aspectRatio, Shader shader)
-            : base(position, aspectRatio)
+        public Player(Vector3 position, Shader shader)
+            : base(position)
         {
             spotLight = new SpotLight(shader, Front);
             spotLight.IsActive = false;

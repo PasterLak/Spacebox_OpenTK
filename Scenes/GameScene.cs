@@ -101,7 +101,7 @@ namespace Spacebox.Scenes
             _specularMap = TextureManager.GetTexture("Resources/Textures/Game/container2_specular.png");
 
             //_camera = new Camera(Vector3.UnitZ * 3, Window.Instance.Size.X / (float)Window.Instance.Size.Y);
-            player = new Player(new Vector3(5,2,5), Window.Instance.Size.X / (float)Window.Instance.Size.Y,
+            player = new Player(new Vector3(5,2,5), 
                 _lightingShader);
 
 

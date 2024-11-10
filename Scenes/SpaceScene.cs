@@ -50,7 +50,7 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
             float q = 5;
-            player = new Astronaut(new Vector3(q + 3,0,q), 16/9f);
+            player = new Astronaut(new Vector3(q + 3,0,q));
 
             PlayerSaveLoadManager.LoadPlayer(player);
 

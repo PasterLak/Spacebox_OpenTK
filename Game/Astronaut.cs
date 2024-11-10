@@ -55,8 +55,8 @@ namespace Spacebox.Game
 
        
 
-        public Astronaut(Vector3 position, float aspectRatio)
-            : base(position, aspectRatio)
+        public Astronaut(Vector3 position)
+            : base(position)
         {
             _spotLight = new SpotLight(ShaderManager.GetShader("Shaders/lighting"), Front);
             FOV = MathHelper.DegreesToRadians(90);
@@ -69,8 +69,8 @@ namespace Spacebox.Game
             SetData();
         }
 
-        public Astronaut(Vector3 position, float aspectRatio, Shader shader)
-            : base(position, aspectRatio)
+        public Astronaut(Vector3 position, Shader shader)
+            : base(position)
         {
             FOV = MathHelper.DegreesToRadians(90);
             _spotLight = new SpotLight(shader, Front);

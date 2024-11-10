@@ -29,22 +29,34 @@ namespace Spacebox.Common
             }
         }
 
-        protected Camera(Vector3 position, float aspectRatio)
+        protected Camera(Vector3 position, bool isMainCamera = true)
             : base(new BoundingSphere(position, 0.5f))
         {
+            if(isMainCamera)
             Main = this;
             Position = position;
-            AspectRatio = aspectRatio;
+           
             UpdateVectors();
+
+            Window.OnResized += OnWindowResize;
+            AspectRatio = (float)Window.Instance.Size.X / Window.Instance.Size.Y;
         }
 
-        public virtual void Update()
-        {
+  
+    ~Camera()
+    {
+        Window.OnResized -= OnWindowResize;
+    }
 
-            
-        }
+    public virtual void Update() { }
 
-        public virtual Matrix4 GetViewMatrix()
+
+    public void OnWindowResize(Vector2 size)
+    {
+        AspectRatio = size.X / size.Y;
+    }
+
+    public virtual Matrix4 GetViewMatrix()
         {
             
             return Matrix4.LookAt(Position, Position + _front, _up);

@@ -232,6 +232,8 @@ namespace Spacebox
             }
 
             _isFullscreen = !_isFullscreen;
+
+            OnResized?.Invoke(Size);
         }
 
         public void TogglePolygonMode()

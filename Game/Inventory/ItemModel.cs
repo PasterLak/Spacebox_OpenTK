@@ -9,13 +9,15 @@ namespace Spacebox.Game
         public Mesh Mesh { get; private set; }
         public Texture2D Texture { get; private set; }
 
-        
+        private Camera itemCamera;
         public ItemModel(Mesh mesh, Texture2D texture)
         {
             Mesh = mesh;
             Texture = texture;
 
             Texture.UpdateTexture(true);
+
+            itemCamera = new Camera360(Vector3.Zero, false);
 
         }
 
