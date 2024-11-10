@@ -12,6 +12,9 @@ namespace Spacebox.Game
 
         private static PolygonMode polygonMode = PolygonMode.Fill;
 
+        public bool EnableBlend = true;
+        public bool EnableDepthTest = true;
+        public bool EnableAlpha = true;
         public Mesh(float[] vertices, uint[] indices)
         {
             _vertexCount = indices.Length;
@@ -58,16 +61,26 @@ namespace Spacebox.Game
                 }
             }
             //GL.PolygonMode(MaterialFace.FrontAndBack, polygonMode);
+            
             GL.Enable(EnableCap.CullFace);
 
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            
+            if (EnableDepthTest)
+                GL.Enable(EnableCap.DepthTest);
+            if (EnableBlend)
+                GL.Enable(EnableCap.Blend);
+
+            if (EnableAlpha)
+                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+          
 
             GL.BindVertexArray(_vao);
             GL.DrawElements(PrimitiveType.Triangles, _vertexCount, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
+
+            GL.Disable(EnableCap.CullFace);
+           
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.Blend);
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
         }

@@ -13,6 +13,9 @@ namespace Spacebox.Game
         public ItemModel(Mesh mesh, Texture2D texture)
         {
             Mesh = mesh;
+            Mesh.EnableDepthTest = false;
+            Mesh.EnableBlend = false;
+            Mesh.EnableAlpha = false;
             Texture = texture;
 
             Texture.UpdateTexture(true);
@@ -30,7 +33,7 @@ namespace Spacebox.Game
 
         //Vector3 offset = new Vector3(0.19f, -0.35f, 0.25f);   // model size 0.01
 
-        Vector3 offset = new Vector3(0.19f, -0.6f, 0.35f); // 0.02
+        Vector3 offset = new Vector3(0.29f, -0.6f, 0.35f); // 0.02
         float additionalRotationAngle = MathHelper.DegreesToRadians(90.0f);
 
         public bool debug = false;
@@ -82,13 +85,14 @@ namespace Spacebox.Game
                     offset.Y -= 0.05f;
                     Debug.Log(offset.ToString());
                 }
-                Astronaut player = Camera.Main as Astronaut;
-                GL.Disable(EnableCap.DepthTest);
-                 model = player.GetModelMatrix();
+
+                
+
+                model = itemCamera.GetModelMatrix();
 
 
 
-                Matrix4 view = player.GetViewMatrix();
+                Matrix4 view = itemCamera.GetViewMatrix();
 
                 Matrix4 rotation = new Matrix4(
                     view.M11, view.M12, view.M13, 0,
@@ -106,7 +110,7 @@ namespace Spacebox.Game
                      Matrix4.CreateTranslation(offset) *
                      additionalRotation *
                     rotation *
-                    Matrix4.CreateTranslation(player.Position);
+                    Matrix4.CreateTranslation(itemCamera.Position);
             }
             if(debug)
             {
@@ -115,16 +119,20 @@ namespace Spacebox.Game
 
             shader.Use();
             shader.SetMatrix4("model", model);
-            shader.SetMatrix4("view", Camera.Main.GetViewMatrix());
-            shader.SetMatrix4("projection", Camera.Main.GetProjectionMatrix());
-            
+            shader.SetMatrix4("view", itemCamera.GetViewMatrix());
+            shader.SetMatrix4("projection", itemCamera.GetProjectionMatrix());
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthMask(false);
 
             Texture.Use(TextureUnit.Texture0);
             shader.SetInt("texture0", 0);
 
 
             Mesh.Draw(shader);
-            GL.Enable(EnableCap.DepthTest);
+
+            GL.DepthMask(true);
+            GL.Disable(EnableCap.DepthTest);
 
         }
 

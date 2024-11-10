@@ -202,8 +202,8 @@ namespace Spacebox.Scenes
             
             skybox.DrawTransparent(player);
 
-            
 
+            
             Renderer.RenderAll(player);
 
             GL.Enable(EnableCap.DepthTest);
@@ -241,21 +241,24 @@ namespace Spacebox.Scenes
 
             
             blockSelector.Draw(player);
-           
 
-            PanelUI.DrawItemModel();
             
+
+
             GL.Disable(EnableCap.DepthTest);
+
+            
+
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
+            PanelUI.DrawItemModel();
             //sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
             const float sm = 0.02f;
             VisualDebug.DrawLine(Vector3.Zero + new Vector3(sm,sm, sm), new Vector3(100f, 0, 0), Color4.Red);
             VisualDebug.DrawLine(Vector3.Zero + new Vector3(sm, sm, sm), new Vector3(0, 100, 0), Color4.Green);
             VisualDebug.DrawLine(Vector3.Zero + new Vector3(sm, sm, sm), new Vector3(0, 0, 100), Color4.Blue);
-            
 
+            
             //testOctree.Draw(player);
 
         }
