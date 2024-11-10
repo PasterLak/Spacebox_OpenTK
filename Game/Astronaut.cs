@@ -101,6 +101,7 @@ namespace Spacebox.Game
             Panel.ConnectStorage(Inventory, true);
             Inventory.ConnectStorage(Panel);
 
+            /*
             Panel.TryAddItem(GameBlocks.GetItemByName("Drill"), 1);
             Panel.TryAddItem(GameBlocks.GetItemByName("Weapone"), 1);
             Panel.TryAddItem(GameBlocks.GetItemByName("Titanium Ingot"), 52);
@@ -108,6 +109,7 @@ namespace Spacebox.Game
 
             Inventory.TryAddItem(GameBlocks.GetItemByName("Titanium Heavy Block"), 42);
             Inventory.TryAddItem(GameBlocks.GetItemByName("AI Core"), 12);
+            */
         }
 
         private void OnGameConsole(bool state)

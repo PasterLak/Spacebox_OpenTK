@@ -1,0 +1,123 @@
+[
+    {
+        "Info": "Tags:  Name, Type<Drill,Weapone,Item>, TextureCoord, MaxStack, ModelDepth",
+
+        "Name": "Drill",
+        "Type": "Drill",
+        "TextureCoord": {
+            "x": 3,
+            "y": 0
+        },
+        "MaxStack": 1,
+        "ModelDepth": 1.5
+    },
+    {
+        "Name": "Weapone",
+        "Type": "Weapone",
+        "TextureCoord": {
+            "x": 4,
+            "y": 0
+        },
+        "MaxStack": 1,
+        "ModelDepth": 1.5
+    },
+    {
+        "Name": "Powder",
+        "TextureCoord": {
+            "x": 2,
+            "y": 0
+        },
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
+        "Name": "Iron Lens",
+        "TextureCoord": {
+            "x": 2,
+            "y": 1
+        },
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
+        "Name": "Aluminium Panels",
+        "TextureCoord": {
+            "x": 1,
+            "y": 1
+        },
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
+        "Name": "Iron Panels",
+        "TextureCoord": {
+            "x": 0,
+            "y": 1
+        },
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
+        "Name": "Titanium Ingot",
+        "TextureCoord": {
+            "x": 0,
+            "y": 2
+        },
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+    {
+        "Name": "Aluminium Ingot",
+        "TextureCoord": {
+            "x": 1,
+            "y": 2
+        },
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+    {
+        "Name": "Health",
+        "TextureCoord": {
+            "x": 2,
+            "y": 2
+        },
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+    {
+        "Name": "Ice Shards",
+        "TextureCoord": {
+            "x": 3,
+            "y": 1
+        },
+        "MaxStack": 64,
+        "ModelDepth": 1.5
+    },
+    {
+        "Name": "Power",
+        "TextureCoord": {
+            "x": 3,
+            "y": 2
+        },
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+    {
+        "Name": "Beer",
+        "TextureCoord": {
+            "x": 4,
+            "y": 1
+        },
+        "MaxStack": 64,
+        "ModelDepth": 3.0
+    },
+    {
+        "Name": "Cat",
+        "TextureCoord": {
+            "x": 5,
+            "y": 0
+        },
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    }
+]

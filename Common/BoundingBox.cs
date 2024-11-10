@@ -154,7 +154,7 @@ namespace Spacebox.Common
                 float t1 = (-b - sqrtDiscriminant) / (2.0f * a);
                 float t2 = (-b + sqrtDiscriminant) / (2.0f * a);
 
-                // Проверяем, попадает ли одно из решений в диапазон [0, Length]
+               
                 if (t1 >= 0 && t1 <= Length)
                 {
                     distance = t1;

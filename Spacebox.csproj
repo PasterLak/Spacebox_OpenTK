@@ -14,6 +14,20 @@
 
   <ItemGroup>
   
+    <None Remove="Mods\Default\blocks.json" />
+  
+    <None Remove="Mods\Default\config.json" />
+  
+    <None Remove="Mods\Default\items.json" />
+  
+    <None Remove="Mods\Default\Textures\lightAtlas - Copy.png" />
+  
+    <None Remove="Mods\Horror\blocks.json" />
+  
+    <None Remove="Mods\Horror\config.json" />
+  
+    <None Remove="Mods\Horror\Textures\blocks.png" />
+  
     <None Remove="Resources\Audio\blockDestroy.wav" />
   
     <None Remove="Resources\Audio\blockPlace.wav" />
@@ -58,7 +72,6 @@
     <None Remove="Resources\Textures\dom.png" />
     <None Remove="Resources\Textures\dom3.png" />
     <None Remove="Resources\Textures\domBig.png" />
-    <None Remove="Resources\Textures\dust.png" />
     <None Remove="Resources\Textures\grass1.jpg" />
     <None Remove="Resources\Textures\grass2.jpg" />
     <None Remove="Resources\Textures\icon.ico" />
@@ -67,6 +80,8 @@
     <None Remove="Resources\Textures\items.png" />
     <None Remove="Resources\Textures\Leaves.png" />
     <None Remove="Resources\Textures\lightAtlas.png" />
+    <None Remove="Resources\Textures\modBlocks.png" />
+    <None Remove="Resources\Textures\modItems.png" />
     <None Remove="Resources\Textures\myBlocks.png" />
     <None Remove="Resources\Textures\selectedSlot.png" />
     <None Remove="Resources\Textures\selector.png" />
@@ -114,6 +129,34 @@
 
 	<ItemGroup>
 
+    <Content Include="Mods\Default\blocks.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Mods\Default\config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Mods\Default\items.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Mods\Horror\blocks.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Mods\Horror\config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Mods\Horror\Textures\lightAtlas.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Mods\Horror\Textures\blocks.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <Content Include="Resources\Audio\blockDestroy.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -137,9 +180,6 @@
     <Content Include="Resources\Textures\blockDust.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\debugItem.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Resources\Textures\dust.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -155,13 +195,19 @@
     <Content Include="Resources\Textures\item.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\items.png">
+    <Content Include="Mods\Default\Textures\items.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\lightAtlas.png">
+    <Content Include="Mods\Default\Textures\lightAtlas.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\myBlocks.png">
+    <Content Include="Mods\Horror\Textures\blocks0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Mods\Horror\Textures\items.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Mods\Default\Textures\blocks.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\selectedSlot.png">

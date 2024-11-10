@@ -43,7 +43,7 @@ namespace Spacebox.Game
             BlockId = blockData.Id;
 
             IsTransparent = blockData.IsTransparent;
-            TextureCoords = new Vector2(blockData.WallsUVIndex.x, blockData.WallsUVIndex.y);
+            TextureCoords = new Vector2(blockData.WallsUVIndex.X, blockData.WallsUVIndex.Y);
             Color =  new Vector3(1.0f, 1.0f, 1.0f);
             LightLevel = 0;
             LightColor = blockData.LightColor;
@@ -76,10 +76,10 @@ namespace Spacebox.Game
 
         private static float RoundFloat(float x)
         {
-            return (float)Math.Round(x, 1);
+            return (float)Math.Round(x, MidpointRounding.ToEven);
         }
 
-        private static Vector3 RoundVector3(Vector3 v)
+        public static Vector3 RoundVector3(Vector3 v)
         {
             return new Vector3(RoundFloat(v.X), RoundFloat(v.Y), RoundFloat(v.Z));
         }
@@ -100,8 +100,8 @@ namespace Spacebox.Game
             if (Math.Abs(normal.Z - 1f) < epsilon) return Direction.Forward;
             if (Math.Abs(normal.Z + 1f) < epsilon) return Direction.Back;
 
-            Common.Debug.Error("Wrong normal");
-            return Direction.Right;
+           
+            return Direction.Up;
         }
     }
 

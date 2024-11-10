@@ -163,11 +163,29 @@ namespace Spacebox.UI
                         if (ImGui.IsItemHovered() && slot.HasItem)
                         {
 
+                            var text = "";
+                            var type = slot.Item.GetType();
 
+                            if (type == typeof(DrillItem)) 
+                            {
+                                var itemType = slot.Item as DrillItem;
+                                text = "Power: " + itemType.Power;
+                            }
+                            else if(type == typeof(WeaponeItem))
+                            {
+                                var itemType = slot.Item as WeaponeItem;
+                                text = "Damage: " + itemType.Damage;
+                            }
+                            else if (type == typeof(BlockItem))
+                            {
+                                var itemType = slot.Item as BlockItem;
+                                text = "Mass: " + itemType.Mass;
+                                text += "\nDurability: " + itemType.Durability;
+                            }
 
                             ImGui.BeginTooltip();
                             ImGui.Text($"Id:{slot.Item.Id}\n{slot.Item.Name}\n" +
-                                $"Count: {slot.Count}");
+                                text);
                             ImGui.EndTooltip();
 
                         }
@@ -199,7 +217,12 @@ namespace Spacebox.UI
                     slot.MoveItemToConnectedStorage();
 
                 }
+                if (Input.IsKey(Keys.X))
+                {
 
+                    slot.Clear();
+
+                }
                 if (Input.IsKey(Keys.LeftAlt))
                 {
 

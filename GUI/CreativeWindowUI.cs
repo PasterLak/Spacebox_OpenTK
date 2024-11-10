@@ -160,8 +160,10 @@ namespace Spacebox.UI
                         {
                             ImGui.BeginTooltip();
                             ImGui.Text($"Id:{slot.Item.Id}\n" +
-                                $"Stack size: {slot.Item.StackSize}\n" +
-                                $"{slot.Item.Name}\n");
+                                
+                                $"{slot.Item.Name}\n" +
+                                $"Type:{slot.Item.GetType().Name}\n" +
+                                $"Stack: {slot.Item.StackSize}" );
                             ImGui.EndTooltip();
                         }
 

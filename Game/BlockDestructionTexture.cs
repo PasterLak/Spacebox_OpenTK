@@ -17,7 +17,7 @@ namespace Spacebox.Game
 
         public static Texture2D Generate(Vector2Byte coords)
         {
-            return Generate(UVAtlas.GetBlockTexture(GameBlocks.BlocksTexture, (byte)coords.x, (byte)coords.y));
+            return Generate(UVAtlas.GetBlockTexture(GameBlocks.BlocksTexture, (byte)coords.X, (byte)coords.Y));
         }
 
         public static Texture2D Generate(Texture2D blockTexture)
@@ -29,7 +29,7 @@ namespace Spacebox.Game
                 return CreateEmptyTexture();
             }
 
-            Texture2D pattern = TextureManager.GetTexture("Resources/Textures/dust.png", true); // todo unload
+            Texture2D pattern = TextureManager.GetTexture("Resources/Textures/dust.png"); 
             
             if (pattern == null)
             {

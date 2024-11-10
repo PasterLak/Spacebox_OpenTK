@@ -409,15 +409,32 @@ namespace Spacebox.UI
                         ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(0.15f, 0.15f, 0.15f, 1.0f));
                         if (ImGui.IsItemHovered() && slot.HasItem)
                         {
-                            
-                            
+
+                            var text = "";
+                            var type = slot.Item.GetType();
+
+                            if (type == typeof(DrillItem))
+                            {
+                                var itemType = slot.Item as DrillItem;
+                                text = "Power: " + itemType.Power;
+                            }
+                            else if (type == typeof(WeaponeItem))
+                            {
+                                var itemType = slot.Item as WeaponeItem;
+                                text = "Damage: " + itemType.Damage;
+                            }
+                            else if (type == typeof(BlockItem))
+                            {
+                                var itemType = slot.Item as BlockItem;
+                                text = "Mass: " + itemType.Mass;
+                                text += "\nDurability: " + itemType.Durability;
+                            }
 
                             ImGui.BeginTooltip();
                             ImGui.Text($"Id:{slot.Item.Id}\n{slot.Item.Name}\n" +
-                                $"Count: {slot.Count}");
-                           
+                                text);
                             ImGui.EndTooltip();
-                      
+
                         }
 
                         ImGui.PopStyleColor();
@@ -495,7 +512,14 @@ namespace Spacebox.UI
 
                 }
 
-                if(Input.IsMouseButton(MouseButton.Left))
+                if (Input.IsKey(Keys.X))
+                {
+
+                    slot.Clear();
+
+                }
+
+                if (Input.IsMouseButton(MouseButton.Left))
                 {
                     mousePos = Input.Mouse.Position.ToSystemVector2();
                 }

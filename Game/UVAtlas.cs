@@ -14,7 +14,7 @@ namespace Spacebox.Game
 
         public static Vector2[] GetUVs(Vector2Byte v)
         {
-            return GetUVs(v.x, v.y);
+            return GetUVs(v.X, v.Y);
         }
         public static Vector2[] GetUVs(int x, int y)
         {
@@ -45,7 +45,7 @@ namespace Spacebox.Game
 
         public static Texture2D GetBlockTexture(Texture2D atlasTexture, Vector2Byte v)
         {
-            return GetBlockTexture(atlasTexture,v.x,v.y);
+            return GetBlockTexture(atlasTexture,v.X,v.Y);
         }
         public static Texture2D GetBlockTexture(Texture2D atlasTexture, int x, int y)
         {

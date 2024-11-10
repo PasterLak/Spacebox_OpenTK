@@ -46,7 +46,7 @@ namespace Spacebox.Common
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to load texture from {path}: {ex.Message}");
+                Debug.Error($"Failed to load texture from {path}: {ex.Message}");
                 CreatePinkTexture();
             }
 

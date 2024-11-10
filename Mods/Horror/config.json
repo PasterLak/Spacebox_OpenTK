@@ -1,0 +1,28 @@
+{
+    "ModeName": "Horror",
+    "Author": "PasterLak",
+    "Version": "0.0.6",
+
+    "Textures": [
+        {
+            "Type": "Blocks",
+            "Name": "blocks",
+            "Path": "Textures/blocks.png"
+        },
+        {
+            "Type": "Items",
+            "Name": "items",
+            "Path": "Textures/items.png"
+        },
+        {
+            "Type": "LightAtlas",
+            "Name": "lightAtlas",
+            "Path": "Textures/lightAtlas.png"
+        },
+        {
+            "Type": "Dust",
+            "Name": "dust",
+            "Path": "Textures/dust.png"
+        }
+    ]
+}

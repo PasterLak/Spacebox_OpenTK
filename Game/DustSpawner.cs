@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.Game;
 
 namespace Spacebox.Scenes
 {
@@ -24,7 +25,9 @@ namespace Spacebox.Scenes
         private void Initialize()
         {
 
-            dustTexture = TextureManager.GetTexture("Resources/Textures/dust.png", true);
+            dustTexture = TextureManager.GetTexture("Resources/Textures/dust.png");
+
+            //Debug.Log("Dust " + GameBlocks.DustTexture.Handle);
             
             particleShader = ShaderManager.GetShader("Shaders/particle");
 
@@ -80,7 +83,7 @@ namespace Spacebox.Scenes
         public void Dispose()
         {
             ParticleSystem.Dispose();
-            dustTexture.Dispose();
+            //dustTexture = null;
             particleShader.Dispose();
         }
     }

@@ -1,6 +1,5 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
-using Spacebox.GUI;
 
 namespace Spacebox.Game
 {
@@ -50,7 +49,6 @@ namespace Spacebox.Game
         {
             
             Count = 0;
-
             Storage.OnDataWasChanged?.Invoke(Storage);
         }
 
@@ -92,8 +90,7 @@ namespace Spacebox.Game
 
             if (storage != null)
             {
-                
-                
+
                 byte count = Count;
 
                 Clear();
@@ -105,8 +102,7 @@ namespace Spacebox.Game
                 }
                 else
                 {
-                    
-
+    
                     Debug.Error("Failed to add item to " + storage.Name + " by moving from " + Storage.Name);
                     Debug.Error("Item name: " + Item.Name);
 

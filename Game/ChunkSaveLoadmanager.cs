@@ -78,7 +78,7 @@ namespace Spacebox.Game
                 }
                 Vector3 loadedPosition = new Vector3(data.PositionX, data.PositionY, data.PositionZ);
                 Chunk chunk = new Chunk(loadedPosition, loadedBlocks, isLoaded: true);
-                Debug.Log($"Chunk loaded from {filePath}");
+                Debug.Success($"Chunk loaded from {filePath}");
                 return chunk;
             }
             catch (Exception ex)

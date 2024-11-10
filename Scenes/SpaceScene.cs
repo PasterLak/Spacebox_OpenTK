@@ -45,7 +45,7 @@ namespace Spacebox.Scenes
         private BlockSelector blockSelector;
         
         private TestOctree testOctree = new TestOctree();
-        private SimpleBlock simpleBlock;
+        
         Axes axes;
         public override void LoadContent()
         {
@@ -85,7 +85,7 @@ namespace Spacebox.Scenes
             blocksShader = ShaderManager.GetShader("Shaders/block");
             blockTexture = GameBlocks.BlocksTexture;
 
-            lightAtlas = TextureManager.GetTexture("Resources/Textures/lightAtlas.png", true);
+            lightAtlas = GameBlocks.LightAtlas;
 
             blocksShader.Use();
             blocksShader.SetInt("texture0", 0);
@@ -110,7 +110,7 @@ namespace Spacebox.Scenes
 
             AmbientSaveLoadManager.LoadAmbient();
 
-
+            
             dustSpawner = new DustSpawner(player);
 
             healthBar = new HealthBar();
@@ -131,11 +131,6 @@ namespace Spacebox.Scenes
             CreativeWindowUI.SetDefaultIcon(c.Handle);
             CreativeWindowUI.Player = player;
 
-            Shader shader = ShaderManager.GetShader("Shaders/textured");
-
-            Texture2D gg = TextureManager.GetTexture("Resources/Textures/selector.png", true);
-
-            simpleBlock = new SimpleBlock(shader, gg, Vector3.Zero);
 
             itemModel = ItemModelGenerator.GenerateModel(GameBlocks.ItemsTexture, 2,2,0.05f,0.5f, false);
             itemModel.Position = new Vector3(0,0,0);
@@ -145,58 +140,16 @@ namespace Spacebox.Scenes
 
             blockSelector = new BlockSelector();
 
-            
-            
-            /*var size = 10000;
-            int[,] arr = new int[size, size];
-            int i = 0;
-            Testing.Start();
-            for (int x = 0; x < size; x++)
-            {
-                for (int y = 0; y < size; y++)
-                {
-                    arr[x, y] = ++i;
-                }
-            }
-            ulong sum = 0;
-            /*for (int x = 0; x < size; x++)
-            {
-                for (int y = 0; y < size; y++)
-                {
-                    sum = (sum + (ulong)arr[x, y]);
-                }
-            }*/
-            //Testing.End();
-            //Debug.Log(sum.ToString());
 
-            /*
-            //var size = 10000;
-            Array2D<int> arr2 = new Array2D<int>(size,size);
-             i = 0;
-            Testing.Start();
-            for (int x = 0; x < size; x++)
-            {
-                for (int y = 0; y < size; y++)
-                {
-                    arr2[x, y] = ++i;
-                }
-            }
-             sum = 0;
-            /*for (int x = 0; x < size; x++)
-            {
-                for (int y = 0; y < size; y++)
-                {
-                    sum = (sum + (ulong)arr2[x, y]);
-                }
-            }
-            Testing.End();
-            Debug.Log(sum.ToString());
-            */
+
+            
+            
         }
 
         public override void Start()
         {
             Input.HideCursor();
+            
         }
 
 
@@ -286,7 +239,6 @@ namespace Spacebox.Scenes
 
             sector.Render(blocksShader);
 
-            simpleBlock.Render(player);
             //itemModel.Draw(itemModelShader);
             //world.Render(blocksShader);
             blockDestructionManager.Render();

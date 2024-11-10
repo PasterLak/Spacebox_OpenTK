@@ -9,7 +9,11 @@ version 0.0.6
 - shader and light/ssao effect for the model
 - selected item name under the items panel
 - dust texture generation from block texture
-- selector 
+- selector and block preview
+- rotate blocks
+- save blocks direction
+- save player inventory
+- mods support
 
 
 version 0.0.5

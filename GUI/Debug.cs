@@ -6,6 +6,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common.Commands;
 
+
 namespace Spacebox.Common
 {
     public static class Debug
@@ -109,6 +110,18 @@ namespace Spacebox.Common
         {
             AddMessage($"[DEBUG][{sender.GetType().Name}] {message}", color);
             Console.WriteLine($"[DEBUG][{sender.GetType().Name}] {message}");
+        }
+
+        public static void Success(object sender, string message)
+        {
+            AddMessage($"[DEBUG][{sender.GetType().Name}] {message}", new Vector4(0,1,0,1));
+            Console.WriteLine($"[DEBUG][{sender.GetType().Name}] {message}");
+        }
+
+        public static void Success(string message)
+        {
+            AddMessage($"[DEBUG] {message}", new Vector4(0, 1, 0, 1));
+            Console.WriteLine($"[DEBUG] {message}");
         }
 
         public static void Log(string message, Vector4 color)

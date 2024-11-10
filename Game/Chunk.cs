@@ -124,7 +124,9 @@ namespace Spacebox.Game
             if (!IsInRange(x, y, z))
                 return;
 
+           
             Blocks[x, y, z] = block;
+
             IsModified = true;
 
             if (block.LightLevel > 0f)
@@ -188,7 +190,7 @@ namespace Spacebox.Game
             return x >= 0 && x < Size && y >= 0 && y < Size && z >= 0 && z < Size;
         }
 
-        public bool Raycast(Ray ray, out Vector3 hitPosition, out Vector3i hitBlockPosition, out Vector3 hitNormal, float maxDistance = 100f)
+        public bool Raycast(Ray ray, out Vector3 hitPosition, out Vector3i hitBlockPosition, out Vector3 hitNormal)
         {
             hitPosition = Vector3.Zero;
             hitBlockPosition = new Vector3i(-1, -1, -1);
@@ -218,7 +220,7 @@ namespace Spacebox.Game
             float distanceTraveled = 0f;
             int side = -1;
 
-            while (distanceTraveled < maxDistance)
+            while (distanceTraveled < ray.Length)
             {
                 if (IsInRange(x, y, z))
                 {
@@ -299,7 +301,7 @@ namespace Spacebox.Game
             
         }
 
-        float maxDistance = 5f;
+       
         public void Test(Astronaut player)
         {
             if (!_isLoadedOrGenerated) return;
@@ -322,7 +324,7 @@ namespace Spacebox.Game
                 destructionManager.Update();
 
             var pos = new Vector3Byte((byte)player.Position.X, (byte)player.Position.Y, (byte)player.Position.Z); 
-            if(IsInRange(pos.x,pos.y,pos.z))
+            if(IsInRange(pos.X,pos.Y,pos.Z))
             {
                 //PanelUI.SetItemColor(Blocks[pos.x, pos.y, pos.z].LightColor.ToSystemVector3());
             }
@@ -332,7 +334,7 @@ namespace Spacebox.Game
             Vector3 rayDirection = player.Front;
 
 
-            Ray ray = new Ray(rayOrigin, rayDirection, maxDistance);
+            Ray ray = new Ray(rayOrigin, rayDirection, 5);
 
             bool hit = Raycast(ray, out Vector3 hitPosition, out Vector3i hitBlockPosition, out Vector3 hitNormal);
 
@@ -404,8 +406,12 @@ namespace Spacebox.Game
 
                 if (Input.IsMouseButtonDown(MouseButton.Middle))
                 {
-                    aimedBlock.SetDirectionFromNormal(hitNormal);
-                    GenerateMesh();
+                    if(!GameBlocks.GetBlockDataById(aimedBlock.BlockId).AllSidesAreSame)
+                    {
+                        aimedBlock.SetDirectionFromNormal(hitNormal);
+                        GenerateMesh();
+                    }
+                    
                 }
                     
 
@@ -435,7 +441,12 @@ namespace Spacebox.Game
                         {
                             
                             Block newBlock = GameBlocks.CreateBlockFromId(id);
+
+                            bool hasSameSides = GameBlocks.GetBlockDataById(id).AllSidesAreSame;
+
+                            if(!hasSameSides)
                             newBlock.SetDirectionFromNormal(hitNormal);
+
                             SetBlock(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z, newBlock);
                         }
                        
@@ -460,10 +471,44 @@ namespace Spacebox.Game
                 Vector3 worldBlockPosition = new Vector3(x, y, z) + Position;
                 Spacebox.Common.VisualDebug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.Gray);
 
+               
+
                 if (PanelUI.IsHoldingBlock())
                 {
+
+                    //Debug.Log("holding");
+                    var norm = (player.Position - worldBlockPosition).Normalized();
+
+                    norm = Block.RoundVector3(norm);
+
                     BlockSelector.IsVisible = true;
-                    BlockSelector.Instance.UpdatePosition(worldBlockPosition, Direction.Up);
+
+                    var direction = Block.GetDirectionFromNormal(norm);
+                    BlockSelector.Instance.UpdatePosition(worldBlockPosition, direction);
+
+
+                    if (Input.IsMouseButtonDown(MouseButton.Right) &&
+                    IsInRange(x, y, z) &&
+                    Blocks[x, y, z].IsAir())
+                    {
+                        
+                        if (PanelUI.TryPlaceItem(out var blockId))
+                        {
+                           
+                            Block newBlock = GameBlocks.CreateBlockFromId(blockId);
+
+                            bool hasSameSides = GameBlocks.GetBlockDataById(blockId).AllSidesAreSame;
+
+                            if(!hasSameSides)
+                            newBlock.Direction = direction;
+
+                            SetBlock(x, y, z, newBlock);
+                        }
+                        else
+                        {
+                            
+                        }
+                    }
                 }
                 else
                 {
@@ -475,17 +520,7 @@ namespace Spacebox.Game
                     CenteredText.Hide();
                 }
 
-                if (Input.IsMouseButtonDown(MouseButton.Right) &&
-                    IsInRange(x, y, z) &&
-                    Blocks[x, y, z].IsAir())
-                {
-                    if (PanelUI.TryPlaceItem(out var blockId))
-                    {
-
-                        Block newBlock = GameBlocks.CreateBlockFromId(blockId);
-                        SetBlock(x,y,z, newBlock);
-                    }
-                }
+                
             }
         }
 

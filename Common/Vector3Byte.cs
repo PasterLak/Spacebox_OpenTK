@@ -1,28 +1,32 @@
 ﻿using OpenTK.Mathematics;
+using System.Text.Json.Serialization;
 
 public struct Vector3Byte
 {
-	public byte x;
-	public byte y;
-	public byte z;
+    [JsonPropertyName("x")]
+    public byte X { get; set; }
+    [JsonPropertyName("y")]
+    public byte Y { get; set; }
+    [JsonPropertyName("z")]
+    public byte Z { get; set; }
 
-	public Vector3Byte(byte x, byte y, byte z)
+    public Vector3Byte(byte x, byte y, byte z)
 	{
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.X = x;
+		this.Y = y;
+		this.Z = z;
 	}
 	public Vector3Byte(Vector3i v)
 	{
-		this.x = (byte)v.X;
-		this.y = (byte)v.Y;
-		this.z = (byte)v.Z;
+		this.X = (byte)v.X;
+		this.Y = (byte)v.Y;
+		this.Z = (byte)v.Z;
 	}
 	public Vector3Byte(Vector3 v)
 	{
-		this.x = (byte)v.X;
-		this.y = (byte)v.Y;
-		this.z = (byte)v.Z;
+		this.X = (byte)v.X;
+		this.Y = (byte)v.Y;
+		this.Z = (byte)v.Z;
 	}
 	public static Vector3Byte Zero
 	{
@@ -48,14 +52,14 @@ public struct Vector3Byte
 	{
 		Vector3Byte result = new Vector3Byte();
 
-		if (v1.x + v2.x <= Byte.MaxValue) result.x = (byte)(v1.x + v2.x);
-		else result.x = Byte.MaxValue;
+		if (v1.X + v2.X <= Byte.MaxValue) result.X = (byte)(v1.X + v2.X);
+		else result.X = Byte.MaxValue;
 
-		if (v1.y + v2.y <= Byte.MaxValue) result.y = (byte)(v1.y + v2.y);
-		else result.y = Byte.MaxValue;
+		if (v1.Y + v2.Y <= Byte.MaxValue) result.Y = (byte)(v1.Y + v2.Y);
+		else result.Y = Byte.MaxValue;
 
-		if (v1.z + v2.z <= Byte.MaxValue) result.z = (byte)(v1.z + v2.z);
-		else result.z = Byte.MaxValue;
+		if (v1.Z + v2.Z <= Byte.MaxValue) result.Z = (byte)(v1.Z + v2.Z);
+		else result.Z = Byte.MaxValue;
 
 		return result;
 	}
@@ -64,14 +68,14 @@ public struct Vector3Byte
 	{
 		Vector3Byte result = new Vector3Byte();
 
-		if (v1.x - v2.x >= 0) result.x = (byte)(v1.x - v2.x);
-		else result.x = 0;
+		if (v1.X - v2.X >= 0) result.X = (byte)(v1.X - v2.X);
+		else result.X = 0;
 
-		if (v1.y - v2.y >= 0) result.y = (byte)(v1.y - v2.y);
-		else result.y = 0;
+		if (v1.Y - v2.Y >= 0) result.Y = (byte)(v1.Y - v2.Y);
+		else result.Y = 0;
 
-		if (v1.z - v2.z >= 0) result.z = (byte)(v1.z - v2.z);
-		else result.z = 0;
+		if (v1.Z - v2.Z >= 0) result.Z = (byte)(v1.Z - v2.Z);
+		else result.Z = 0;
 
 
 		return result;
@@ -79,7 +83,7 @@ public struct Vector3Byte
 
 	public static explicit operator Vector3i(Vector3Byte v)
 	{
-		return new Vector3i(v.x, v.y, v.z);
+		return new Vector3i(v.X, v.Y, v.Z);
 	}
 	public static explicit operator Vector3Byte(Vector3i v)
 	{
@@ -88,7 +92,7 @@ public struct Vector3Byte
 
 	public static explicit operator Vector3(Vector3Byte v)
 	{
-		return new Vector3(v.x, v.y, v.z);
+		return new Vector3(v.X, v.Y, v.Z);
 	}
 	public static explicit operator Vector3Byte(Vector3 v)
 	{
@@ -97,12 +101,12 @@ public struct Vector3Byte
 
 	public static ushort Distance(Vector3Byte a, Vector3Byte b)
 	{
-		return (ushort)Math.Sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z));
+		return (ushort)Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y) + (a.Z - b.Z) * (a.Z - b.Z));
 	}
 	
 	public static ushort DistanceSquared(Vector3Byte a, Vector3Byte b)
 	{
-		return (ushort)((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z));
+		return (ushort)((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y) + (a.Z - b.Z) * (a.Z - b.Z));
 	}
 
 
@@ -110,7 +114,7 @@ public struct Vector3Byte
 	public override string ToString()
 	{
 		
-		return string.Format("({0},{1},{2})", x, y, z);
+		return string.Format("({0},{1},{2})", X, Y, Z);
 	}
 
 
