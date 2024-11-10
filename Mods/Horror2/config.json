@@ -1,7 +1,10 @@
 {
-    "ModeName": "Horror",
+    "ModId": "horror",
+    "ModeName": "Lightmare Mod",
+    "Description": "",
     "Author": "PasterLak",
     "Version": "0.0.6",
+    "BlockSize": 32,
 
     "Textures": [
         {

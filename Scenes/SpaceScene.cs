@@ -61,9 +61,6 @@ namespace Spacebox.Scenes
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
             skybox.IsAmbientAffected = false;
 
-            Lighting.AmbientColor = new Vector3(0,0,0);
-
-
             CollisionManager.Add(player);
 
             SoundManager.AddAudioClip("blockPlace");
@@ -107,10 +104,6 @@ namespace Spacebox.Scenes
 
             sector = new Sector(new Vector3(0, 0, 0), new Vector3i(0, 0, 0), world);
 
-
-            AmbientSaveLoadManager.LoadAmbient();
-
-            
             dustSpawner = new DustSpawner(player);
 
             healthBar = new HealthBar();

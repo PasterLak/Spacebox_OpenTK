@@ -1,0 +1,336 @@
+[
+
+    {
+        "Name": "Light Rock",
+        "Walls": {
+            "x": 1,
+            "y": 3
+        }
+    },
+    {
+        "Name": "Medium Rock",
+        "Walls": {
+            "x": 1,
+            "y": 2
+        }
+    },
+    {
+        "Name": "Heavy Rock",
+        "Walls": {
+            "x": 5,
+            "y": 3
+        }
+    },
+    {
+        "Name": "Ice",
+        "Walls": {
+            "x": 4,
+            "y": 3
+        }
+    },
+    {
+        "Name": "Iron Ore",
+        "Walls": {
+            "x": 2,
+            "y": 3
+        }
+    },
+    {
+        "Name": "Aluminium Ore",
+        "Walls": {
+            "x": 3,
+            "y": 3
+        }
+    },
+    {
+        "Name": "Green Ore",
+        "Walls": {
+            "x": 2,
+            "y": 2
+        }
+    },
+    {
+        "Name": "Pink Ore",
+        "Walls": {
+            "x": 6,
+            "y": 3
+        }
+    },
+    {
+        "Name": "Analyzer",
+        "Walls": {
+            "x": 1,
+            "y": 4
+        },
+        "Top": {
+            "x": 4,
+            "y": 0
+        },
+        "Bottom": {
+            "x": 7,
+            "y": 2
+        }
+    },
+    {
+        "Name": "Aluminium Light Block",
+        "Walls": {
+            "x": 6,
+            "y": 1
+        }
+    },
+    {
+        "Name": "Aluminium Medium Block",
+        "Walls": {
+            "x": 7,
+            "y": 1
+        }
+    },
+    {
+        "Name": "Aluminium Heavy Block",
+        "Walls": {
+            "x": 8,
+            "y": 1
+        }
+    },
+    {
+        "Name": "Iron Light Block",
+        "Walls": {
+            "x": 9,
+            "y": 1
+        }
+    },
+    {
+        "Name": "Iron Medium Block",
+        "Walls": {
+            "x": 10,
+            "y": 1
+        }
+    },
+    {
+        "Name": "Iron Heavy Block",
+        "Walls": {
+            "x": 11,
+            "y": 1
+        }
+    },
+    {
+        "Name": "Titanium Light Block",
+        "Walls": {
+            "x": 12,
+            "y": 1
+        }
+    },
+    {
+        "Name": "Titanium Medium Block",
+        "Walls": {
+            "x": 13,
+            "y": 1
+        }
+    },
+    {
+        "Name": "Titanium Heavy Block",
+        "Walls": {
+            "x": 14,
+            "y": 1
+        }
+    },
+    {
+        "Name": "Window",
+        "Walls": {
+            "x": 3,
+            "y": 2
+        },
+        "IsTransparent": true
+    },
+    {
+        "Name": "Crafting Table",
+        "Walls": {
+            "x": 2,
+            "y": 4
+        },
+        "Top": {
+            "x": 0,
+            "y": 3
+        },
+        "Bottom": {
+            "x": 7,
+            "y": 2
+        }
+    },
+    {
+        "Name": "Wire",
+        "Walls": {
+            "x": 0,
+            "y": 2
+        }
+    },
+    {
+        "Name": "Radar",
+        "Walls": {
+            "x": 1,
+            "y": 4
+        },
+        "Top": {
+            "x": 0,
+            "y": 4
+        },
+        "Bottom": {
+            "x": 7,
+            "y": 2
+        }
+    },
+    {
+        "Name": "Light White",
+        "Walls": {
+            "x": 8,
+            "y": 0
+        },
+        "LightColor": {
+            "x": 150,
+            "y": 150,
+            "z": 150
+        }
+    },
+    {
+        "Name": "Light Blue",
+        "Walls": {
+            "x": 9,
+            "y": 0
+        },
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 255
+        }
+    },
+    {
+        "Name": "Light Red",
+        "Walls": {
+            "x": 10,
+            "y": 0
+        },
+        "LightColor": {
+            "x": 255,
+            "y": 0,
+            "z": 0
+        }
+    },
+    {
+        "Name": "Light Yellow",
+        "Walls": {
+            "x": 11,
+            "y": 0
+        },
+        "LightColor": {
+            "x": 255,
+            "y": 216,
+            "z": 0
+        }
+    },
+    {
+        "Name": "Light Cyan",
+        "Walls": {
+            "x": 12,
+            "y": 0
+        },
+        "LightColor": {
+            "x": 0,
+            "y": 255,
+            "z": 255
+        }
+    },
+    {
+        "Name": "Light Orange",
+        "Walls": {
+            "x": 13,
+            "y": 0
+        },
+        "LightColor": {
+            "x": 255,
+            "y": 106,
+            "z": 0
+        }
+    },
+    {
+        "Name": "Light Green",
+        "Walls": {
+            "x": 14,
+            "y": 0
+        },
+        "LightColor": {
+            "x": 0,
+            "y": 255,
+            "z": 0
+        }
+    },
+    {
+        "Name": "Wires Pro",
+        "Walls": {
+            "x": 4,
+            "y": 2
+        },
+        "IsTransparent": true
+    },
+    {
+        "Name": "AI Core",
+        "Walls": {
+            "x": 6,
+            "y": 2
+        },
+        "IsTransparent": true
+    },
+    {
+        "Name": "Table1",
+        "Walls": {
+            "x": 5,
+            "y": 4
+        },
+        "Top": {
+            "x": 4,
+            "y": 4
+        },
+        "Bottom": {
+            "x": 4,
+            "y": 4
+        },
+        "IsTransparent": true
+    },
+    {
+        "Name": "Table2",
+        "Walls": {
+            "x": 6,
+            "y": 4
+        },
+        "Top": {
+            "x": 4,
+            "y": 4
+        },
+        "Bottom": {
+            "x": 4,
+            "y": 4
+        },
+        "IsTransparent": true
+    },
+    {
+        "Name": "Books",
+        "Walls": {
+            "x": 6,
+            "y": 3
+        },
+        "Top": {
+            "x": 7,
+            "y": 3
+        },
+        "Bottom": {
+            "x": 7,
+            "y": 3
+        }
+    },
+    {
+        "Name": "eyes",
+        "Walls": {
+            "x": 8,
+            "y": 3
+        }
+    }
+]

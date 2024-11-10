@@ -25,7 +25,7 @@ namespace Spacebox.Scenes
         private void Initialize()
         {
 
-            dustTexture = TextureManager.GetTexture("Resources/Textures/dust.png");
+            dustTexture = TextureManager.GetTexture("Resources/Textures/dust.png", true);
 
             //Debug.Log("Dust " + GameBlocks.DustTexture.Handle);
             

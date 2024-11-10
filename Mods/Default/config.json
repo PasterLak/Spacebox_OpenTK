@@ -1,27 +1,30 @@
 {
-    "ModeName": "Default",
+    "ModId": "default",
+    "ModeName": "Default Mod",
+    "Description": "Basic set of blocks and items",
     "Author": "PasterLak",
     "Version": "0.0.6",
+    "BlockSize": 32,
 
     "Textures": [
         {
             "Type": "Blocks",
-            "Name": "blocks",
+            "Name": "Blocks Texture",
             "Path": "Textures/blocks.png"
         },
         {
             "Type": "Items",
-            "Name": "items",
+            "Name": "items Texture",
             "Path": "Textures/items.png"
         },
         {
             "Type": "LightAtlas",
-            "Name": "lightAtlas",
+            "Name": "Light Atlas",
             "Path": "Textures/lightAtlas.png"
         },
         {
             "Type": "Dust",
-            "Name": "dust",
+            "Name": "Dust Texture",
             "Path": "Textures/dust.png"
         }
     ]

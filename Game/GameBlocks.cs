@@ -252,7 +252,7 @@ namespace Spacebox.Game
         static GameBlocks()
          {
 
-            ModLoader.Load("Default");
+            ModLoader.Load("default");
 
             return;
 

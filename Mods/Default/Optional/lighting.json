@@ -1,0 +1,14 @@
+{
+    "Info" : "RGB values between 0 and 255.  Standard fog density: 0.05 ",
+    "AmbientColor": {
+        "x": 20,
+        "y": 20,
+        "z": 20
+    },
+    "FogColor": {
+        "x": 5,
+        "y": 5,
+        "z": 5
+    },
+    "FogDensity" :  0.045
+}

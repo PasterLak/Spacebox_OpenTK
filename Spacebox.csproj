@@ -20,13 +20,15 @@
   
     <None Remove="Mods\Default\items.json" />
   
+    <None Remove="Mods\Default\Optional\lighting.json" />
+  
     <None Remove="Mods\Default\Textures\lightAtlas - Copy.png" />
   
-    <None Remove="Mods\Horror\blocks.json" />
+    <None Remove="Mods\Horror2\blocks.json" />
   
-    <None Remove="Mods\Horror\config.json" />
+    <None Remove="Mods\Horror2\config.json" />
   
-    <None Remove="Mods\Horror\Textures\blocks.png" />
+    <None Remove="Mods\Horror2\Textures\blocks.png" />
   
     <None Remove="Resources\Audio\blockDestroy.wav" />
   
@@ -141,19 +143,23 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="Mods\Horror\blocks.json">
+    <Content Include="Mods\Default\Optional\lighting.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="Mods\Horror\config.json">
+    <Content Include="Mods\Horror2\blocks.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="Mods\Horror\Textures\lightAtlas.png">
+    <Content Include="Mods\Horror2\config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="Mods\Horror\Textures\blocks.png">
+    <Content Include="Mods\Horror2\Textures\lightAtlas.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Mods\Horror2\Textures\blocks.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
@@ -201,10 +207,10 @@
     <Content Include="Mods\Default\Textures\lightAtlas.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Mods\Horror\Textures\blocks0.png">
+    <Content Include="Mods\Horror2\Textures\blocks0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Mods\Horror\Textures\items.png">
+    <Content Include="Mods\Horror2\Textures\items.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Mods\Default\Textures\blocks.png">

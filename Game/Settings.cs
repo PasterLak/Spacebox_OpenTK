@@ -2,7 +2,7 @@
 
 namespace Spacebox.Game
 {
-    internal class Settings
+    public class Settings
     {
         public static float FOV = 90;
         public static int ViewDistance = 2000;

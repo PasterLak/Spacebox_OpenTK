@@ -6,9 +6,9 @@ namespace Spacebox.Common
 {
     public static class Lighting
     {
-        public static Vector3 AmbientColor = new Vector3(0.973f, 0.911f, 0.980f);
+        public static Vector3 AmbientColor ;
         public static Color BackgroundColor = Color.Black;
-        public static Color FogColor = Color.Black;
+        public static Vector3 FogColor;
         public static float FogDensity = 0.05f;
 
         public static void AddAmbient()

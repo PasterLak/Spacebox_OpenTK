@@ -28,7 +28,12 @@ public struct Vector3Byte
 		this.Y = (byte)v.Y;
 		this.Z = (byte)v.Z;
 	}
-	public static Vector3Byte Zero
+
+    public static Vector3Byte One
+    {
+        get { return new Vector3Byte(1,1,1); }
+    }
+    public static Vector3Byte Zero
 	{
 		get { return new Vector3Byte(0, 0, 0); }
 	}

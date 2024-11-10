@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
+﻿using System.Text.Json;
 using OpenTK.Mathematics;
 using Spacebox.Common;
 
@@ -9,11 +6,12 @@ namespace Spacebox.Game
 {
     public static class ModLoader
     {
-        public static void Load(string modName)
+        public static ModConfig ModInfo;
+        public static void Load(string modId)
         {
             string modsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Mods");
-            string defaultModName = "Default";
-            string defaultModPath = Path.Combine(modsDirectory, defaultModName);
+            const string defaultModId = "Default";
+            string defaultModPath = Path.Combine(modsDirectory, "Default");
 
             if (!Directory.Exists(modsDirectory))
             {
@@ -22,37 +20,66 @@ namespace Spacebox.Game
                 return;
             }
 
-            string modPath = Path.Combine(modsDirectory, modName);
-            if (!Directory.Exists(modPath))
+            string modPath = modId.ToLower() == defaultModId.ToLower() ? defaultModPath : FindModPath(modsDirectory, modId);
+
+            if (modPath == string.Empty)
             {
-                Debug.Error($"Mod '{modName}' not found in Mods directory.");
+                
+                Debug.Error($"Mod with ID '{modId}' not found in Mods directory.");
                 return;
             }
 
-            
             string configFile = Path.Combine(modPath, "config.json");
-            
+
             if (!File.Exists(configFile))
             {
-                Debug.Error($"Config file not found for mod '{modName}'.");
+                Debug.Error($"Config file not found for mod '{modId}'.");
                 return;
             }
 
-            ModConfig config = LoadConfig(configFile);
-            if (config == null)
+            ModInfo = LoadConfig(configFile);
+            if (ModInfo == null)
             {
-                Debug.Error($"Failed to load config for mod '{modName}'.");
+                Debug.Error($"Failed to load config for mod '{modId}'.");
                 return;
             }
 
-            
-
-            LoadTextures(modPath, defaultModPath, config.Textures);
+            LoadTextures(modPath, defaultModPath, ModInfo.Textures);
             LoadBlocks(modPath, defaultModPath);
             LoadItems(modPath, defaultModPath);
             LoadSettings(modPath);
             LoadOptionalFiles(modPath);
-            Debug.Log($"Mod '{modName}' loaded successfully.");
+
+            Debug.Success($"Mod '{modId}' loaded successfully.");
+        }
+
+        private static string FindModPath(string modsDirectory, string modId)
+        {
+            foreach (var directory in Directory.GetDirectories(modsDirectory))
+            {
+                string configPath = Path.Combine(directory, "config.json");
+               
+                if (File.Exists(configPath))
+                {
+                    try
+                    {
+                        string json = File.ReadAllText(configPath);
+                        ModConfig config = JsonSerializer.Deserialize<ModConfig>(json);
+
+
+                        if (config != null && config.ModId.ToLower() == modId)
+                        {
+                            return directory;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Error($"Error reading config from '{directory}': {ex.Message}");
+                    }
+                }
+            }
+
+            return string.Empty;
         }
 
         private static ModConfig LoadConfig(string configFile)
@@ -75,7 +102,7 @@ namespace Spacebox.Game
             {
                 string texturePath = Path.Combine(modPath, texture.Path);
                 string fallbackPath = Path.Combine(defaultModPath, texture.Path);
-                
+
                 if (!File.Exists(texturePath))
                 {
                     if (File.Exists(fallbackPath))
@@ -90,8 +117,6 @@ namespace Spacebox.Game
                     }
                 }
 
-               
-
                 Texture2D loadedTexture = new Texture2D(texturePath, true);
                 switch (texture.Type.ToLower())
                 {
@@ -105,8 +130,6 @@ namespace Spacebox.Game
                         GameBlocks.LightAtlas = loadedTexture;
                         break;
                     case "dust":
-                        
-
                         GameBlocks.DustTexture = loadedTexture;
                         break;
                     default:
@@ -120,7 +143,7 @@ namespace Spacebox.Game
         {
             string blocksFile = Path.Combine(modPath, "blocks.json");
             string defaultBlocksFile = Path.Combine(defaultModPath, "blocks.json");
-            
+
             if (!File.Exists(blocksFile))
             {
                 blocksFile = defaultBlocksFile;
@@ -141,7 +164,6 @@ namespace Spacebox.Game
 
                 foreach (var block in blocks)
                 {
-                   
                     var c = block.LightColor;
 
                     bool sameSides = false;
@@ -149,21 +171,17 @@ namespace Spacebox.Game
                     if (block.Top == Vector2Byte.Zero) sameSides = true;
                     if (block.Bottom == Vector2Byte.Zero) sameSides = true;
 
-                    if(block.Walls == block.Bottom && block.Walls == block.Top)
+                    if (block.Walls == block.Bottom && block.Walls == block.Top)
                         sameSides = true;
 
+                    bool hasLightColor = !(c.X == 0 && c.Y == 0 && c.Z == 0);
 
-                    BlockData blockData = new BlockData(block.Name, block.Walls, 
-                        block.IsTransparent, new Vector3(c.X/255f,c.Y/255f, c.Z/255f ))
+                    BlockData blockData = new BlockData(block.Name, block.Walls, block.IsTransparent, hasLightColor ? new Vector3(c.X / 255f, c.Y / 255f, c.Z / 255f) : Vector3.Zero)
                     {
-                       
-                        
+                        AllSidesAreSame = sameSides
                     };
 
-                  
-                        blockData.AllSidesAreSame = sameSides;
-
-                    if(sameSides)
+                    if (sameSides)
                     {
                         blockData.TopUVIndex = block.Walls;
                         blockData.BottomUVIndex = block.Walls;
@@ -173,11 +191,8 @@ namespace Spacebox.Game
                         blockData.TopUVIndex = block.Top;
                         blockData.BottomUVIndex = block.Bottom;
                     }
-                
 
-                    //blockData.CacheUVsByDirection();
                     GameBlocks.RegisterBlock(blockData);
-
                 }
             }
             catch (Exception ex)
@@ -210,31 +225,25 @@ namespace Spacebox.Game
                 {
                     string type = item.Type.ToLower();
 
-                    
                     if (type == "weapone")
                     {
-                        var newItem = new WeaponeItem((byte)item.MaxStack, item.Name,
-                            item.TextureCoord.X, item.TextureCoord.Y, item.ModelDepth);
-
+                        var newItem = new WeaponeItem((byte)item.MaxStack, item.Name, item.TextureCoord.X, item.TextureCoord.Y, item.ModelDepth);
                         GameBlocks.RegisterItem(newItem);
                     }
                     else if (type == "drill")
                     {
-                        var newItem = new DrillItem((byte)item.MaxStack, item.Name,
-                           item.TextureCoord.X, item.TextureCoord.Y, item.ModelDepth);
-
+                        var newItem = new DrillItem((byte)item.MaxStack, item.Name, item.TextureCoord.X, item.TextureCoord.Y, item.ModelDepth);
                         GameBlocks.RegisterItem(newItem);
                     }
-                    else if(type == "item")
+                    else if (type == "item")
                     {
-
-                        var newItem = new Item((byte)item.MaxStack, item.Name,
-                            item.TextureCoord.X, item.TextureCoord.Y, item.ModelDepth);
-
+                        var newItem = new Item((byte)item.MaxStack, item.Name, item.TextureCoord.X, item.TextureCoord.Y, item.ModelDepth);
                         GameBlocks.RegisterItem(newItem);
                     }
-
-
+                    else
+                    {
+                        Debug.Error($"Unknown item type '{item.Type}' for item '{item.Name}'.");
+                    }
                 }
             }
             catch (Exception ex)
@@ -264,39 +273,77 @@ namespace Spacebox.Game
         private static void LoadOptionalFiles(string modPath)
         {
             string optionalPath = Path.Combine(modPath, "Optional");
+
             if (Directory.Exists(optionalPath))
             {
                 foreach (string file in Directory.GetFiles(optionalPath))
                 {
                     string extension = Path.GetExtension(file).ToLower();
-                    // Implement handling for additional file types if needed
+
+                    if (Path.GetFileNameWithoutExtension(file).Equals("lighting", StringComparison.OrdinalIgnoreCase))
+                    {
+                        LoadLighting(optionalPath);
+                        Debug.Log("Lighting file was loaded!");
+                    }
+                }
+            }
+        }
+
+        private static void LoadLighting(string path)
+        {
+            string file = Path.Combine(path, "lighting.json");
+            if (File.Exists(file))
+            {
+                try
+                {
+                    string json = File.ReadAllText(file);
+                    Modlighting settings = JsonSerializer.Deserialize<Modlighting>(json);
+
+                    if (settings != null)
+                    {
+                        Common.Lighting.AmbientColor = new Vector3(settings.AmbientColor.X/255f, settings.AmbientColor.Y / 255f, settings.AmbientColor.Z / 255f);
+                        Common.Lighting.FogColor = new Vector3(settings.FogColor.X / 255f, settings.FogColor.Y / 255f, settings.FogColor.Z / 255f);
+                        Common.Lighting.FogDensity = settings.FogDensity;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.Error($"Error loading lighting settings: {ex.Message}");
                 }
             }
         }
 
         private static void ApplySettings(ModSettings settings)
         {
-            // Implement settings application logic as needed
         }
 
-        private class ModConfig
+        public class ModConfig
         {
-            public string ModeName { get; set; }
-            public string Author { get; set; }
-            public string Version { get; set; }
-            public List<TextureConfig> Textures { get; set; }
+            public string ModId { get; set; } = "default";
+            public string ModeName { get; set; } = "Default mod name";
+            public string Description { get; set; } = "";
+            public string Author { get; set; } = "";
+            public string Version { get; set; } = "0";
+            public int BlockSize { get; set; } = 32;
+            public List<TextureConfig> Textures { get; set; } = new List<TextureConfig>();
         }
 
-        private class TextureConfig
+        public class Modlighting
+        {
+            public Vector3Byte AmbientColor { get; set; } = Vector3Byte.One;
+            public Vector3Byte FogColor { get; set; } = Vector3Byte.Zero;
+            public float FogDensity { get; set; } = 0.05f;
+        }
+
+        public class TextureConfig
         {
             public string Type { get; set; }
-            public string Name { get; set; }
+            public string Name { get; set; } = "NoName Texture";
             public string Path { get; set; }
         }
 
-        private class ModBlockData // all data = 600 lines, without all sides = 500, optional param = 300 
+        private class ModBlockData
         {
-
             public string Name { get; set; } = "NoName";
             public Vector2Byte Walls { get; set; } = new Vector2Byte(0, 0);
             public Vector2Byte Top { get; set; } = new Vector2Byte(0, 0);
@@ -309,16 +356,16 @@ namespace Spacebox.Game
         {
             public string Info { get; set; } = "";
             public string Name { get; set; } = "NoName";
-            public string Type { get; set; } = "Item";// "Item" or "BlockItem"
+            public string Type { get; set; } = "Item";
             public Vector2Byte TextureCoord { get; set; } = Vector2Byte.Zero;
-            public short BlockId { get; set; } = 0; // For BlockItem
+            public short BlockId { get; set; } = 0;
             public int MaxStack { get; set; } = 1;
             public float ModelDepth { get; set; } = 1.0f;
         }
 
         private class ModSettings
         {
-            public Dictionary<string, string> Settings { get; set; }
+            public Dictionary<string, string> Settings { get; set; } = new Dictionary<string, string>();
         }
     }
 }
