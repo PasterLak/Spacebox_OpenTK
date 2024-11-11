@@ -1,15 +1,15 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
-using System.Runtime.CompilerServices;
 
 namespace Spacebox.GUI
 {
     public static class IsometricIcon
     {
-        private const float ShadowIntensity = 0.1f;
-        private const float LightIntensity = 0.03f;
+        private const float ShadowIntensityLeftSide = 0.1f; // 0.1
+        private const float ShadowIntensityRightSide = 0; // 0.1
+        private const float LightIntensity = 0.1f; // 0.03, left side
 
-        
+       
         public static Texture2D CreateIsometricIcon(Texture2D walls,  Texture2D topSide)
         {
             if (!ValidateTextures(walls,topSide))
@@ -27,8 +27,8 @@ namespace Spacebox.GUI
 
             Color4[,] isometricPixels = InitializePixels(size);
 
-            ApplyRightSide(size, origLeftPixels, isometricPixels, ShadowIntensity);
-            ApplyLeftSide(size, origLeftPixels, isometricPixels, ShadowIntensity);
+            ApplyRightSide(size, origLeftPixels, isometricPixels, ShadowIntensityRightSide);
+            ApplyLeftSide(size, origLeftPixels, isometricPixels, ShadowIntensityLeftSide);
             ApplyTop(size, origTopPixels, isometricPixels, LightIntensity);
 
          
@@ -39,8 +39,8 @@ namespace Spacebox.GUI
             isometricTexture.SetPixelsData(isometricPixels);
             isometricTexture.UpdateTexture();
 
-            
 
+           
             walls.Dispose();
 
             return isometricTexture;
@@ -92,7 +92,7 @@ namespace Spacebox.GUI
 
                     
                         Color4 color = original[x, y];
-                        color = ModifyColor(color, intensity);
+                        color = LightenColor(color, intensity + 0.001f * x);
                         isometric[newX, newY] = color;
                     
                 }
@@ -116,7 +116,9 @@ namespace Spacebox.GUI
 
                     
                         Color4 color = original[x, y];
-                        color = DarkenColor(color, 0.05f);
+                        color = DarkenColor(color, shadowIntensity + 0.001f * x);
+
+                        if(x == halfSize-1) color = DarkenColor(color, shadowIntensity);
                         isometric[newX, newY] = color;
                     
                 }
@@ -171,21 +173,6 @@ namespace Spacebox.GUI
                     startY++;
                 startX++;
             }
-        }
-
-        private static bool IsWithinBounds(int x, int y, int size)
-        {
-            return x >= 0 && y >= 0 && x < size && y < size;
-        }
-
-        private static Color4 ModifyColor(Color4 color, float intensity)
-        {
-            return new Color4(
-                MathHelper.Clamp(color.R + intensity, 0f, 1f),
-                MathHelper.Clamp(color.G + intensity, 0f, 1f),
-                MathHelper.Clamp(color.B + intensity, 0f, 1f),
-                color.A
-            );
         }
 
         private static Color4 LightenColor(Color4 color, float intensity)

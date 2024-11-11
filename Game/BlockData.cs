@@ -6,6 +6,7 @@ namespace Spacebox.Game
     {
         public short Id;
         public string Name;
+        public string Type;
         //public Vector2 TextureCoords; // replace with byte
 
         public Vector2Byte WallsUVIndex = new Vector2Byte(0, 1);
@@ -29,10 +30,10 @@ namespace Spacebox.Game
         private Dictionary<Direction, Vector2[]> FrontUvsByDirection;
         private Dictionary<Direction, Vector2[]> BackUvsByDirection;
 
-        public BlockData(string name, Vector2Byte textureCoords)
+        public BlockData(string name, string type, Vector2Byte textureCoords)
         {
             Name = name;
-
+            Type= type;
             WallsUVIndex = textureCoords;
             TopUVIndex = textureCoords;
             BottomUVIndex = textureCoords;
@@ -40,10 +41,10 @@ namespace Spacebox.Game
             AllSidesAreSame = true;
         }
 
-        public BlockData(string name, Vector2Byte textureCoords, bool isTransparent)
+        public BlockData(string name, string type, Vector2Byte textureCoords, bool isTransparent)
         {
             Name = name;
-
+            Type = type;
             WallsUVIndex = textureCoords;
             TopUVIndex = textureCoords;
             BottomUVIndex = textureCoords;
@@ -52,10 +53,10 @@ namespace Spacebox.Game
             AllSidesAreSame = true;
         }
 
-        public BlockData(string name, Vector2Byte textureCoords, bool isTransparent, Vector3 color)
+        public BlockData(string name, string type, Vector2Byte textureCoords, bool isTransparent, Vector3 color)
         {
             Name = name;
-
+            Type = type;
             WallsUVIndex = textureCoords;
             TopUVIndex = textureCoords;
             BottomUVIndex = textureCoords;
@@ -65,19 +66,19 @@ namespace Spacebox.Game
             AllSidesAreSame = true;
         }
 
-        public BlockData(string name, Vector2Byte textureCoords, Vector2Byte topCoords)
+        public BlockData(string name, string type, Vector2Byte textureCoords, Vector2Byte topCoords)
         {
             Name = name;
-
+            Type = type;
             WallsUVIndex = textureCoords;
             TopUVIndex = topCoords;
             BottomUVIndex = textureCoords;
         }
 
-        public BlockData(string name, Vector2Byte textureCoords, Vector2Byte topCoords, bool isTransparent)
+        public BlockData(string name, string type, Vector2Byte textureCoords, Vector2Byte topCoords, bool isTransparent)
         {
             Name = name;
-
+            Type = type;
             WallsUVIndex = textureCoords;
             TopUVIndex = topCoords;
             BottomUVIndex = textureCoords;
@@ -85,10 +86,10 @@ namespace Spacebox.Game
             IsTransparent = isTransparent;
         }
 
-        public BlockData(string name, Vector2Byte textureCoords, Vector2Byte topCoords, bool isTransparent, Vector3 color)
+        public BlockData(string name, string type, Vector2Byte textureCoords, Vector2Byte topCoords, bool isTransparent, Vector3 color)
         {
             Name = name;
-
+            Type = type;
             WallsUVIndex = textureCoords;
             TopUVIndex = topCoords;
             BottomUVIndex = textureCoords;
@@ -97,19 +98,19 @@ namespace Spacebox.Game
             LightColor = color;
         }
 
-        public BlockData(string name, Vector2Byte textureCoords, Vector2Byte topCoords, Vector2Byte bottomCoords)
+        public BlockData(string name, string type, Vector2Byte textureCoords, Vector2Byte topCoords, Vector2Byte bottomCoords)
         {
             Name = name;
-
+            Type = type;
             WallsUVIndex = textureCoords;
             TopUVIndex = topCoords;
             BottomUVIndex = bottomCoords;
         }
 
-        public BlockData(string name, Vector2Byte textureCoords, Vector2Byte topCoords, Vector2Byte bottomCoords, bool isTransparent)
+        public BlockData(string name, string type, Vector2Byte textureCoords, Vector2Byte topCoords, Vector2Byte bottomCoords, bool isTransparent)
         {
             Name = name;
-
+            Type = type;
             WallsUVIndex = textureCoords;
             TopUVIndex = topCoords;
             BottomUVIndex = bottomCoords;
@@ -117,10 +118,10 @@ namespace Spacebox.Game
             IsTransparent = isTransparent;
         }
 
-        public BlockData(string name, Vector2Byte textureCoords, Vector2Byte topCoords, Vector2Byte bottomCoords, bool isTransparent, Vector3 color)
+        public BlockData(string name, string type, Vector2Byte textureCoords, Vector2Byte topCoords, Vector2Byte bottomCoords, bool isTransparent, Vector3 color)
         {
             Name = name;
-
+            Type = type;
             WallsUVIndex = textureCoords;
             TopUVIndex = topCoords;
             BottomUVIndex = bottomCoords;

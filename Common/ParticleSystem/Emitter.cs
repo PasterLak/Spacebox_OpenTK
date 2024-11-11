@@ -21,6 +21,7 @@ namespace Spacebox.Common
         public float SpawnRadius { get; set; } = 50f;
         public float SpeedMin { get; set; } = 0f;
         public float SpeedMax { get; set; } = 0f;
+        public bool RandomUVRotation { get; set; } = false; // -90 90 180
         public Vector3 EmitterDirection { get; set; } = Vector3.UnitY; 
         public bool UseLocalCoordinates { get; set; } = true;
 

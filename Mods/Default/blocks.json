@@ -184,5 +184,14 @@
         "Name": "Light Pink",
         "Walls": {"x": 15, "y": 0},
         "LightColor": {"x": 178, "y": 0, "z": 255}
+    },
+    {
+        "Name": "Extractor",
+        "Type" : "interactive",
+        "Walls": {"x": 5, "y": 4},
+        "Top": {"x": 4, "y": 4},
+        "Bottom": {"x": 7, "y": 2},
+        "IsTransparent": false,
+        "LightColor": {"x": 0, "y": 0, "z": 0}
     }
 ]

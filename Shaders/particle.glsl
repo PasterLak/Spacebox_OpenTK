@@ -13,6 +13,34 @@ out vec4 ParticleColor;
 uniform mat4 view;
 uniform mat4 projection;
 
+uniform int rotationCase = 0;
+
+vec2 RandomRotateUV(vec2 uv, int rotationCase)
+{
+    // rotationCase: 1 = 90 , 2 = -90 , 3 = 180 
+    if (rotationCase == 1)
+    {
+     
+        return vec2(uv.y, 1.0 - uv.x);
+    }
+    else if (rotationCase == 2)
+    {
+       
+        return vec2(1.0 - uv.y, uv.x);
+    }
+    else if (rotationCase == 3)
+    {
+     
+        return vec2(1.0 - uv.x, 1.0 - uv.y);
+    }
+    else
+    {
+       
+        return uv;
+    }
+}
+
+
 void main()
 {
     vec3 translation = vec3(instanceModel[3]);
@@ -21,7 +49,7 @@ void main()
     float scale = length(vec3(instanceModel[0]));
     vec3 worldPos = translation + (aPos.x * camRight + aPos.y * camUp) * scale;
     gl_Position = projection * view * vec4(worldPos, 1.0);
-    TexCoords = aTexCoords;
+    TexCoords = RandomRotateUV(aTexCoords,rotationCase);
     ParticleColor = instanceColor;
 }
     

@@ -37,10 +37,7 @@ namespace Spacebox.GUI
             ImGui.Begin("InputOverlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
 
 
-            // dotnet publish -c Debug - r win - x64--self - contained true
-            // dotnet publish -c Release - r win - x64--self - contained true
-            // dotnet publish -c Release -r win-x64 --self-contained true --output ./publish
-
+         
             //ImGui.Separator();
 
             ImGui.Text($"");
@@ -57,8 +54,8 @@ namespace Spacebox.GUI
             ImGui.Text($"[F8] Show/Hide Interface");
             ImGui.Text($"[F9] UI Debugger on/off");
             ImGui.Text($"[F10] Wireframe Mesh on/off");
-            ImGui.Text($"");
             ImGui.Text($"[F11] Fullscreen");
+            ImGui.Text($"[F12] Screenshot");
             ImGui.Text($"");
             ImGui.Text($"[Player]");
             ImGui.Text($"");
@@ -69,7 +66,7 @@ namespace Spacebox.GUI
             ImGui.Text($"[Q,E] Camera roll");
             ImGui.Text($"[C] Inventory");
             ImGui.Text($"");
-
+            
             ImGui.Text($"[Building]");
             ImGui.Text($"");
             ImGui.Text($"[P] Save the world");

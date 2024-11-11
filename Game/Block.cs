@@ -18,7 +18,7 @@ namespace Spacebox.Game
         public short BlockId { get; set; } = 0;
         public byte Mass { get; private set; } = 5;
         public byte Health { get; private set; } = 10;
-        public Vector2 TextureCoords { get; set; }
+       
         public Vector3 Color { get; set; }
         public bool IsTransparent { get; set; } = false;
 
@@ -29,13 +29,11 @@ namespace Spacebox.Game
 
         public Block(Vector2 textureCoords, Vector3? color = null, float lightLevel = 0f, Vector3? lightColor = null)
         {
-           
-            TextureCoords = textureCoords;
+
             Color = color ?? new Vector3(1.0f, 1.0f, 1.0f);
             LightLevel = lightLevel;
             LightColor = lightColor ?? Vector3.Zero;
 
-          
         }
 
         public Block(BlockData blockData)
@@ -43,7 +41,7 @@ namespace Spacebox.Game
             BlockId = blockData.Id;
 
             IsTransparent = blockData.IsTransparent;
-            TextureCoords = new Vector2(blockData.WallsUVIndex.X, blockData.WallsUVIndex.Y);
+           
             Color =  new Vector3(1.0f, 1.0f, 1.0f);
             LightLevel = 0;
             LightColor = blockData.LightColor;

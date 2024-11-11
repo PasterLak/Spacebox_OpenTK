@@ -160,10 +160,18 @@ namespace Spacebox.Game
                 string json = File.ReadAllText(blocksFile);
                 List<ModBlockData> blocks = JsonSerializer.Deserialize<List<ModBlockData>>(json);
 
-                GameBlocks.RegisterBlock(new BlockData("Air", new Vector2Byte(0, 0)));
+                GameBlocks.RegisterBlock(new BlockData("Air", "Block", new Vector2Byte(0, 0)));
 
                 foreach (var block in blocks)
                 {
+                    block.Type = block.Type.ToLower();
+
+                    if (!ValidateBlockType(block.Type))
+                    {
+                        Debug.Error($"[GameSetLoader] Block '{block.Name}' has an invalid type and was skipped" );
+                        Debug.Error($"[GameSetLoader] Valid types are: {BlockTypesToString()}");
+                        continue;
+                    }
                     var c = block.LightColor;
 
                     bool sameSides = false;
@@ -176,7 +184,9 @@ namespace Spacebox.Game
 
                     bool hasLightColor = !(c.X == 0 && c.Y == 0 && c.Z == 0);
 
-                    BlockData blockData = new BlockData(block.Name, block.Walls, block.IsTransparent, hasLightColor ? new Vector3(c.X / 255f, c.Y / 255f, c.Z / 255f) : Vector3.Zero)
+                    var blockColor = hasLightColor ? new Vector3(c.X / 255f, c.Y / 255f, c.Z / 255f) : Vector3.Zero;
+
+                    BlockData blockData = new BlockData(block.Name, block.Type, block.Walls, block.IsTransparent, blockColor)
                     {
                         AllSidesAreSame = sameSides
                     };
@@ -199,6 +209,29 @@ namespace Spacebox.Game
             {
                 Debug.Error($"Error loading blocks: {ex.Message}");
             }
+        }
+        private static string[] BlockTypes = { "block", "interactive", "door" };
+
+        private static string BlockTypesToString()
+        {
+            string types = "";
+
+            for (int i = 0; i < BlockTypes.Length; i++)
+            {
+                types += BlockTypes[i];
+                if(i < BlockTypes.Length - 1) types += ", ";
+            }
+
+            return types;
+        }
+        private static bool ValidateBlockType(string type)
+        {
+            foreach (string t in BlockTypes)
+            {
+                if(t.ToLower() == type.ToLower()) return true;
+            }
+
+            return false;
         }
 
         private static void LoadItems(string modPath, string defaultModPath)
@@ -345,6 +378,7 @@ namespace Spacebox.Game
         private class ModBlockData
         {
             public string Name { get; set; } = "NoName";
+            public string Type { get; set; } = "block";
             public Vector2Byte Walls { get; set; } = new Vector2Byte(0, 0);
             public Vector2Byte Top { get; set; } = new Vector2Byte(0, 0);
             public Vector2Byte Bottom { get; set; } = new Vector2Byte(0, 0);

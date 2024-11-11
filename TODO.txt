@@ -1,9 +1,31 @@
 
 
+Pool
+
+- generation
+- doors
+- maps manager
+- health/power
+- blocks IU
+- new icon
+- dependensies between windows manager
+- shooting
+- animation for items
+- drag and drop in inventory
+- inventory refactoring, less static
+- delete item slot
+- drop particle
+- mass calculation
+- mass and protection in mods
+- collision
+- auto generation of texture atlas
+- save icons, textures to png
+
+version 0.0.7
 
 version 0.0.6
 
-- render item model with static camera
++ render item model with static camera
 - object pool
 - pool for effects
 - texture manager unload texture

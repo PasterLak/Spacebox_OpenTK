@@ -18,11 +18,16 @@ namespace Spacebox.Common
         private List<Matrix4> instanceTransforms = new List<Matrix4>();
         private List<Vector4> instanceColors = new List<Vector4>();
 
+        private bool _randomRotation;
+        private byte rotationCase = 0;
+
         public ParticleRenderer(Texture2D texture, ParticleSystem system, Shader shader)
         {
             this.shader = shader;
             this.texture = texture;
             this.particleSystem = system;
+
+            _randomRotation = system.Emitter.RandomUVRotation;
             Initialize();
         }
 
@@ -36,6 +41,12 @@ namespace Spacebox.Common
                  0.5f,  0.5f, 0f, 1f, 1f,
                 -0.5f,  0.5f, 0f, 0f, 1f
             };
+
+            if(_randomRotation)
+            {
+                Random random = new Random();
+                rotationCase = (byte)random.Next(0, 4);
+            }
 
             uint[] indices = {
                 0, 1, 2,
@@ -131,7 +142,8 @@ namespace Spacebox.Common
             GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, data.Length * sizeof(float), data);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
-
+        
+        
         public void Render(Camera camera)
         {
             shader.Use();
@@ -141,6 +153,9 @@ namespace Spacebox.Common
 
             shader.SetMatrix4("view", view, false);
             shader.SetMatrix4("projection", projection, false);
+
+            if(_randomRotation)
+            shader.SetInt("rotationCase", rotationCase );
 
             texture.Use(TextureUnit.Texture0);
             shader.SetInt("particleTexture", 0);

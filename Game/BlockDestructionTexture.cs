@@ -52,22 +52,22 @@ namespace Spacebox.Game
 
             Color4[,] pixels = pattern.GetPixelData();
             
-            var size = pattern.Width;
-            var blockSize = pattern.Width;
+            var patternSize = pattern.Width;
+            var blockSize = blockTexture.Width;
 
-            if (size > blockSize)
+            if (patternSize > blockSize)
             {
                 Debug.Error($"[BlockDestructionTexture] Error: Pattern size is bigger than block texture");
                 return CreateEmptyTexture();
             }
 
-            var delta = blockSize / size;
+            var delta = blockSize / patternSize;
 
-            Color4[,] newPixels = new Color4[size, size];
+            Color4[,] newPixels = new Color4[patternSize, patternSize];
 
-            for (int x = 0;x < size; x++)
+            for (int x = 0;x < patternSize; x++)
             {
-                for (int y = 0; y < size; y++)
+                for (int y = 0; y < patternSize; y++)
                 {
                     if (pixels[x, y].A == 0)
                     {
@@ -80,7 +80,7 @@ namespace Spacebox.Game
                 }
             }
 
-            Texture2D finalTexture = new Texture2D(size, size);
+            Texture2D finalTexture = new Texture2D(patternSize, patternSize);
 
             finalTexture.SetPixelsData(newPixels);
             finalTexture.UpdateTexture(true);

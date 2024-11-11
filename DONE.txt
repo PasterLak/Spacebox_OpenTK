@@ -1,9 +1,19 @@
+// dotnet publish -c Debug - r win - x64--self - contained true
+// dotnet publish -c Release - r win - x64--self - contained true
+// dotnet publish -c Release -r win-x64 --self-contained true --output ./publish
+
+
+// dir P:\C#\Spacebox_OpenTK\*.cs /S /B | find /C ":"
+// Get-ChildItem -Path "P:\C#\Spacebox_OpenTK" -Recurse -Filter *.cs | Get-Content | Measure-Object -Line
+
 
 
 version 0.0.7
 
-
-
+- fix for block destruction effect and texture
+- rotation for effect uvs
+- new icon
+- better shading for block icons
 
 version 0.0.6
 

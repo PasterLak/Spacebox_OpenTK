@@ -56,12 +56,13 @@ namespace Spacebox.Scenes
                 StartColorMax = new Vector4(1f, 1f, 1f, 1f),
                 EndColorMin = new Vector4(0.8f, 0.5f, 0.5f, 0f),
                 EndColorMax = new Vector4(1f, 1f, 0.5f, 0f),
-                SpawnRadius = 0.3f,
+                SpawnRadius = 0.4f,
                 SpeedMin = 0.005f,
                 SpeedMax = 0.1f,
                 EmitterDirection = Vector3.UnitY,
                 UseLocalCoordinates = true,
-                EnableRandomDirection = true 
+                EnableRandomDirection = true,
+                RandomUVRotation = true,
             };
 
             particleSystem.Emitter = emitter;

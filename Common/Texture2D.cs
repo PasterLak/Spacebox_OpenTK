@@ -1,5 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -65,7 +68,7 @@ namespace Spacebox.Common
                 pixels = new Color4[Width, Height];
 
                 var data = image.LockBits(
-                    new Rectangle(0, 0, image.Width, image.Height),
+                    new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
                     ImageLockMode.ReadOnly,
                     System.Drawing.Imaging.PixelFormat.Format32bppArgb
                 );
@@ -220,9 +223,94 @@ namespace Spacebox.Common
             return pixels;
         }
 
+
+
         public void Dispose()
         {
             GL.DeleteTexture(Handle);
         }
+
+        public void SaveToPng(string path)
+        {
+            if (pixels == null)
+            {
+                Debug.Error("[Texture2D] No pixel data available to save.");
+                return;
+            }
+
+            Task.Run(() =>
+            {
+                try
+                {
+                    using (var image = new Image<Rgba32>(Width, Height))
+                    {
+                        for (int y = 0; y < Height; y++)
+                        {
+                            for (int x = 0; x < Width; x++)
+                            {
+                                var color = pixels[x, y];
+                                image[x, y] = new Rgba32(
+                                    (byte)(color.R * 255),
+                                    (byte)(color.G * 255),
+                                    (byte)(color.B * 255),
+                                    (byte)(color.A * 255)
+                                );
+                            }
+                        }
+
+                        image.Save(path, new PngEncoder());
+                        Debug.Success($"Texture saved to: {Path.GetFullPath(path)}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.Error($"Failed to save texture to {path}: {ex.Message}");
+                }
+            });
+        }
+
+
+        public static void SavePixelsToPng(string path, Color4[,] pixels)
+        {
+            if (pixels == null)
+            {
+                Debug.Error("[Texture2D] No pixel data available to save.");
+                return;
+            }
+
+            int width = pixels.GetLength(0);
+            int height = pixels.GetLength(1);
+
+            Task.Run(() =>
+            {
+                try
+                {
+                    using (var image = new Image<Rgba32>(width, height))
+                    {
+                        for (int y = 0; y < height; y++)
+                        {
+                            for (int x = 0; x < width; x++)
+                            {
+                                var color = pixels[x, y];
+                                image[x, y] = new Rgba32(
+                                    (byte)(color.R * 255),
+                                    (byte)(color.G * 255),
+                                    (byte)(color.B * 255),
+                                    (byte)(color.A * 255)
+                                );
+                            }
+                        }
+
+                        image.Save(path, new PngEncoder());
+                        Debug.Success($"Image saved to: {Path.GetFullPath(path)}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.Error($"Failed to save image to {path}: {ex.Message}");
+                }
+            });
+        }
+
     }
 }
