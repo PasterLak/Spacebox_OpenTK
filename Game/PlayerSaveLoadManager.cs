@@ -30,6 +30,7 @@ namespace Spacebox.Game
                     RotationY = player.GetRotation().Y,
                     RotationZ = player.GetRotation().Z,
                     RotationW = player.GetRotation().W,
+                    IsFlashlightOn = player.Flashlight.IsActive,
                     InventorySlots = new List<SavedItemSlot>(),
                     PanelSlots = new List<SavedItemSlot>()
                 };
@@ -100,7 +101,7 @@ namespace Spacebox.Game
                 player.SetRotation(loadedRotation);
                 player.Inventory.Clear();
                 player.Panel.Clear();
-
+                player.Flashlight.IsActive = data.IsFlashlightOn;
                 foreach (var savedSlot in data.InventorySlots)
                 {
                     if (GameBlocks.Item.TryGetValue(savedSlot.ItemId, out var item))
@@ -161,6 +162,7 @@ namespace Spacebox.Game
             public float RotationY { get; set; }
             public float RotationZ { get; set; }
             public float RotationW { get; set; }
+            public bool IsFlashlightOn { get; set; } = false;
             public List<SavedItemSlot> InventorySlots { get; set; }
             public List<SavedItemSlot> PanelSlots { get; set; }
         }

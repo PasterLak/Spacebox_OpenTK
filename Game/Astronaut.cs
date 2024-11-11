@@ -1,6 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.Common.Audio;
 
 namespace Spacebox.Game
 {
@@ -48,17 +49,18 @@ namespace Spacebox.Game
             }
         }
 
-        private SpotLight _spotLight;
+        public SpotLight Flashlight { get; private set; }
 
         private InertiaController _inertiaController = new InertiaController();
         private CameraSway _cameraSway = new CameraSway();
-
-       
+        private AudioSource flashlightOn;
+        private AudioSource flashlightOff;
 
         public Astronaut(Vector3 position)
             : base(position)
         {
-            _spotLight = new SpotLight(ShaderManager.GetShader("Shaders/lighting"), Front);
+            Flashlight = new SpotLight(ShaderManager.GetShader("Shaders/block"), Front);
+            Flashlight.UseSpecular = false;
             FOV = MathHelper.DegreesToRadians(90);
             Layer = CollisionLayer.Player;
             VisualDebug.RemoveCollisionToDraw(this);
@@ -73,8 +75,8 @@ namespace Spacebox.Game
             : base(position)
         {
             FOV = MathHelper.DegreesToRadians(90);
-            _spotLight = new SpotLight(shader, Front);
-            _spotLight.IsActive = false;
+            Flashlight = new SpotLight(shader, Front);
+            Flashlight.UseSpecular = false;
             Layer = CollisionLayer.Player;
             VisualDebug.RemoveCollisionToDraw(this);
 
@@ -100,6 +102,8 @@ namespace Spacebox.Game
 
             Panel.ConnectStorage(Inventory, true);
             Inventory.ConnectStorage(Panel);
+
+            flashlightOn = 
 
             /*
             Panel.TryAddItem(GameBlocks.GetItemByName("Drill"), 1);
@@ -176,14 +180,14 @@ namespace Spacebox.Game
                 VisualDebug.ViewMatrix = GetViewMatrix();
             }
 
-            
+           
 
 
             if (!CanMove) return;
 
             if (Input.IsKeyDown(Keys.F))
             {
-                _spotLight.IsActive = !_spotLight.IsActive;
+                Flashlight.IsActive = !Flashlight.IsActive;
             }
 
             if (Input.IsKeyDown(Keys.O))
@@ -443,10 +447,13 @@ namespace Spacebox.Game
                 VisualDebug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.1f), Color4.Red);
             }
         }
-
+        public void Draw()
+        {
+            Draw(this);
+        }
         public void Draw(Camera camera)
         {
-            //_spotLight.Draw(this);
+            Flashlight.Draw(this);
         }
     }
 }

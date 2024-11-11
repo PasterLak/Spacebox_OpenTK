@@ -268,6 +268,11 @@ namespace Spacebox.Game
                         var newItem = new DrillItem((byte)item.MaxStack, item.Name, item.TextureCoord.X, item.TextureCoord.Y, item.ModelDepth);
                         GameBlocks.RegisterItem(newItem);
                     }
+                    else if (type == "consumable")
+                    {
+                        var newItem = new ConsumableItem((byte)item.MaxStack, item.Name, item.TextureCoord.X, item.TextureCoord.Y, item.ModelDepth);
+                        GameBlocks.RegisterItem(newItem);
+                    }
                     else if (type == "item")
                     {
                         var newItem = new Item((byte)item.MaxStack, item.Name, item.TextureCoord.X, item.TextureCoord.Y, item.ModelDepth);

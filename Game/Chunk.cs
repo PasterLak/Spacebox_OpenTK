@@ -311,6 +311,7 @@ namespace Spacebox.Game
 
             if (Input.IsKeyDown(Keys.P))
             {
+                if(!Debug.IsVisible )
                 ChunkSaveLoadManager.SaveChunk(this);
             }
 
@@ -419,12 +420,16 @@ namespace Spacebox.Game
                 {
                     if(PanelUI.IsHoldingDrill())
                     {
-                        player.Panel.TryAddItem(
+                        if(!InventoryUI.IsVisible && !Debug.IsVisible)
+                        {
+                            player.Panel.TryAddItem(
                         GameBlocks.GetBlockDataById(aimedBlock.BlockId).Item, 1);
 
-                      
-                        RemoveBlock(hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z,
-                            (sbyte)hitNormal.X, (sbyte)hitNormal.Y, (sbyte)hitNormal.Z);
+
+                            RemoveBlock(hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z,
+                                (sbyte)hitNormal.X, (sbyte)hitNormal.Y, (sbyte)hitNormal.Z);
+                        }
+                        
                     }
                     
                 }

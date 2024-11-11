@@ -14,6 +14,8 @@ version 0.0.7
 - rotation for effect uvs
 - new icon
 - better shading for block icons
+- flashlight 
+- consumable items
 
 version 0.0.6
 

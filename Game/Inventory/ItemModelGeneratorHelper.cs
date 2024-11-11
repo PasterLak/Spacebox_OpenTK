@@ -1,6 +1,4 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Common;
-using static Spacebox.Game.ItemModelGeneratorHelper;
 
 namespace Spacebox.Game
 {
@@ -74,7 +72,7 @@ namespace Spacebox.Game
             }
         }
 
-        // position(3) + uv(2) + color(3)
+        // position(3) + uv(2) + color(3) + normal
         public static void AddFace(List<float> vertices, List<uint> indices, uint indexOffset,
                             Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4,
                             Vector3 color, // Используем цвет вместо нормали
@@ -82,10 +80,10 @@ namespace Spacebox.Game
         {
             vertices.AddRange(new float[]
             {
-        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,
-        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,
-        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,
-        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z
+        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
+        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
+        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
+        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
             });
 
            
@@ -126,10 +124,10 @@ namespace Spacebox.Game
             color = new Vector3(-1, 0, 0);
             vertices.AddRange(new float[]
             {
-        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,
-        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,
-        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,
-        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z
+        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
+        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
+        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
+        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
             });
 
 
@@ -171,10 +169,10 @@ namespace Spacebox.Game
 
             vertices.AddRange(new float[]
             {
-        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,
-        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,
-        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,
-        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z
+        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
+        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
+        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
+        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
             });
 
 
@@ -216,10 +214,10 @@ namespace Spacebox.Game
 
             vertices.AddRange(new float[]
             {
-        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,
-        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,
-        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,
-        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z
+        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
+        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
+        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
+        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z
             });
 
 
@@ -260,10 +258,10 @@ namespace Spacebox.Game
 
             vertices.AddRange(new float[]
             {
-        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,
-        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,
-        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,
-        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z
+        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
+        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
+        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,
+        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z
             });
 
 

@@ -1,8 +1,13 @@
 --Vert
 #version 330 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec2 aTexCoords;
-layout (location = 2) in vec3 aNormal;
+
+
+layout (location = 0) in vec3 aPosition;
+layout (location = 1) in vec2 aTexCoord;
+layout (location = 2) in vec3 aColor;
+layout (location = 3) in vec3 aNormal;
+
+
 
 uniform mat4 projection;
 uniform mat4 view;
@@ -11,15 +16,15 @@ uniform mat4 model;
 out vec3 Normal;
 out vec3 FragPos;
 out vec2 TexCoords;
-out vec3 Color;
+
 
 void main()
 {
-    gl_Position = vec4(aPos, 1.0) * model * view * projection;
-    FragPos = vec3(vec4(aPos, 1.0) * model);
+    gl_Position = vec4(aPosition, 1.0) * model * view * projection;
+    FragPos = vec3(vec4(aPosition, 1.0) * model);
     //Normal = aNormal * mat3(transpose(inverse(model)));
-    Normal = aNormal ;
-    TexCoords = aTexCoords;
+    Normal = aNormal;
+    TexCoords = aTexCoord;
     //Color = aColor;
 }
 
@@ -66,7 +71,7 @@ void main()
     else
     {
      vec3 lightDirection = normalize(-lightDir);
-    float diff = max(dot(norm, lightDirection), 0.0);
+    float diff = max(dot(norm, lightDirection), 0.1);
     vec3 diffuse = diff * lightColor;
     vec3 ambient = 0.1 * lightColor;
      result = (ambient + diffuse) * objectColor * vec3(texColor);

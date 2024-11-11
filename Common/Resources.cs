@@ -13,6 +13,7 @@ namespace Spacebox.Common
             throw new NotImplementedException();
         }
     }
+
     public static class Resources
     {
 

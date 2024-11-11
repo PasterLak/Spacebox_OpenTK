@@ -95,13 +95,25 @@ namespace Spacebox.Common
     public class SpotLight : Light
     {
        
-        public bool IsActive = true;
+        public bool IsActive = false;
+        public bool UseSpecular = true;
         public Vector3 Direction { get; set; }
-        public float CutOff { get; set; } = MathF.Cos(MathHelper.DegreesToRadians(12.5f));
-        public float OuterCutOff { get; set; } = MathF.Cos(MathHelper.DegreesToRadians(17.5f));
-        public float Constant { get; set; } = 1.0f;
-        public float Linear { get; set; } = 0.09f;
-        public float Quadratic { get; set; } = 0.032f;
+        public float CutOffRadians { get; set; } = 
+            MathF.Cos(MathHelper.DegreesToRadians(12.5f)); // 12.5f
+        public float OuterCutOffRadians { get; set; } = 
+            MathF.Cos(MathHelper.DegreesToRadians(27.5f)); // 17.5f
+        public float Constant { get; set; } = 1.0f; // 1
+        public float Linear { get; set; } = 0.09f; // 0.09f
+        public float Quadratic { get; set; } = 0.032f; // 0.032f
+
+        public Vector3 DiffuseOnColor = new Vector3(1.0f, 1.0f, 0.9f);
+        public Vector3 DiffuseOffColor = new Vector3(0.0f, 0.0f, 0.0f);
+
+        public Vector3 AmbientOnColor = new Vector3(0.2f, 0.2f, 0.2f);
+        public Vector3 AmbientOffColor = new Vector3(0.0f, 0.0f, 0.0f);
+
+        public Vector3 SpecularOnColor = new Vector3(1.0f, 1.0f, 1.0f);
+        public Vector3 SpecularOffColor = new Vector3(0.0f, 0.0f, 0.0f);
 
         public SpotLight(Shader shader, Vector3 direction) : base(null)
         {
@@ -115,25 +127,28 @@ namespace Spacebox.Common
 
             Shader.SetVector3("spotLight.position", camera.Position);
             Shader.SetVector3("spotLight.direction", camera.Front);
+            Shader.SetFloat("material_shininess", 32.0f);
 
-            if(!IsActive)
+            if (!IsActive)
             {
-                Shader.SetVector3("spotLight.ambient", new Vector3(0.0f, 0.0f, 0.0f));
-                Shader.SetVector3("spotLight.diffuse", new Vector3(0f, 0f, 0f));
-                Shader.SetVector3("spotLight.specular", new Vector3(0f, 0f, 0f));
+                Shader.SetVector3("spotLight.ambient", AmbientOffColor);
+                Shader.SetVector3("spotLight.diffuse", DiffuseOffColor);
+                if (UseSpecular)
+                Shader.SetVector3("spotLight.specular", SpecularOffColor);
             }
             else
             {
-                Shader.SetVector3("spotLight.ambient", new Vector3(0.0f, 0.0f, 0.0f));
-                Shader.SetVector3("spotLight.diffuse", new Vector3(1.0f, 1.0f, 1.0f));
-                Shader.SetVector3("spotLight.specular", new Vector3(1.0f, 1.0f, 1.0f));
+                Shader.SetVector3("spotLight.ambient", AmbientOnColor);
+                Shader.SetVector3("spotLight.diffuse", DiffuseOnColor);
+                if(UseSpecular)
+               Shader.SetVector3("spotLight.specular", SpecularOnColor);
             }
 
-            Shader.SetFloat("spotLight.constant", 1.0f);
-            Shader.SetFloat("spotLight.linear", 0.09f);
-            Shader.SetFloat("spotLight.quadratic", 0.032f);
-            Shader.SetFloat("spotLight.cutOff", CutOff);
-            Shader.SetFloat("spotLight.outerCutOff", OuterCutOff);
+            Shader.SetFloat("spotLight.constant", Constant);
+            Shader.SetFloat("spotLight.linear", Linear);
+            Shader.SetFloat("spotLight.quadratic", Quadratic);
+            Shader.SetFloat("spotLight.cutOff", CutOffRadians);
+            Shader.SetFloat("spotLight.outerCutOff", OuterCutOffRadians);
 
         }
 

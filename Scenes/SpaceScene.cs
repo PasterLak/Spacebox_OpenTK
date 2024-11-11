@@ -227,9 +227,9 @@ namespace Spacebox.Scenes
             blockTexture.Use(TextureUnit.Texture0);
             lightAtlas.Use(TextureUnit.Texture1);
 
-            
-            //chunk.Draw(blocksShader);
 
+            //chunk.Draw(blocksShader);
+            player.Draw();
             sector.Render(blocksShader);
             
             //itemModel.Draw(itemModelShader);

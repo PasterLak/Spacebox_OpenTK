@@ -186,7 +186,7 @@
         "LightColor": {"x": 178, "y": 0, "z": 255}
     },
     {
-        "Name": "Extractor",
+        "Name": "Crusher",
         "Type" : "interactive",
         "Walls": {"x": 5, "y": 4},
         "Top": {"x": 4, "y": 4},

@@ -52,7 +52,7 @@ namespace Spacebox.Game.Rendering
 
                                 Vector2[] faceUVs = GameBlocks.GetBlockUVsByIdAndDirection(block.BlockId, face, block.Direction);
 
-
+                                //Vector3i normald = FaceExtensions.GetNormal(face);
 
                                 float currentLightLevel = block.LightLevel / 15f;
                                 Vector3 currentLightColor = block.LightColor;
@@ -73,7 +73,7 @@ namespace Spacebox.Game.Rendering
 
                                 Vector3 ambient = new Vector3(0.2f, 0.2f, 0.2f);
                                 Vector3 vertexColor = Vector3.Clamp(block.Color * (averageLightColor + ambient), Vector3.Zero, Vector3.One);
-
+                                //vertexColor = new Vector3(0,0,0);
                                 for (int i = 0; i < faceVertices.Length; i++)
                                 {
                                     var vertex = faceVertices[i];
@@ -85,6 +85,9 @@ namespace Spacebox.Game.Rendering
                                     vertices.Add(vertexColor.X);
                                     vertices.Add(vertexColor.Y);
                                     vertices.Add(vertexColor.Z);
+                                    vertices.Add(normal.X);
+                                    vertices.Add(normal.Y);
+                                    vertices.Add(normal.Z);
                                 }
 
                                 uint[] faceIndices = { 0, 1, 2, 2, 3, 0 };

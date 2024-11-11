@@ -31,16 +31,29 @@ namespace Spacebox.Game
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
 
-            int stride = (3 + 2 + 3) * sizeof(float); // position(3) + uv(2) + color(3)
+            // Assuming you have a VBO that includes position, texCoord, color, and normal
+            int stride = sizeof(float) * (3 + 2 + 3 + 3); // Adjust stride based on your vertex structure
+            int offset = 0;
 
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, stride, 0);
+            // Position
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, stride, offset);
             GL.EnableVertexAttribArray(0);
+            offset += sizeof(float) * 3;
 
-            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, stride, 3 * sizeof(float));
+            // TexCoord
+            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, stride, offset);
             GL.EnableVertexAttribArray(1);
+            offset += sizeof(float) * 2;
 
-            GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, stride, (3 + 2) * sizeof(float));
+            // Color
+            GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, stride, offset);
             GL.EnableVertexAttribArray(2);
+            offset += sizeof(float) * 3;
+
+            // Normal
+            GL.VertexAttribPointer(3, 3, VertexAttribPointerType.Float, false, stride, offset);
+            GL.EnableVertexAttribArray(3);
+
 
             GL.BindVertexArray(0);
         }

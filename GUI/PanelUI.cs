@@ -75,6 +75,20 @@ namespace Spacebox.UI
             
         }
 
+        public static bool IsHoldingConsumable()
+        {
+            if (SelectedSlot == null) return false;
+
+            if (!SelectedSlot.HasItem) return false;
+
+            //if (InventoryUI.IsVisible) return false;
+
+            if (SelectedSlot.Item.GetType() != typeof(ConsumableItem)) return false;
+
+
+            return true;
+        }
+
         public static bool IsHoldingDrill()
         {
             if (SelectedSlot == null) return false;
@@ -192,8 +206,16 @@ namespace Spacebox.UI
 
                 SelectSlot(SelectedSlotId);
             }
+            if (Input.IsMouseButtonDown(MouseButton.Right))
+            {
+                if(IsHoldingConsumable())
+                {
+                    SelectedSlot.DropOne();
+                }
+            }
 
-            if (Input.IsKeyDown(Keys.G))
+
+                if (Input.IsKeyDown(Keys.G))
             {
                 if (SelectedSlot != null)
                 {
