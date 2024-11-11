@@ -1,15 +1,13 @@
 ﻿
-
 namespace Spacebox.Game
 {
     public static class Globals
     {
-        public static class Money
+        public static class GameSet
         {
-            public static class Money2
-            {
-
-            }
+            public const string Folder = "Mods";
+            public const string Default = "Default";
+           
         }
     }
 }

@@ -103,7 +103,7 @@ namespace Spacebox.Game
             Panel.ConnectStorage(Inventory, true);
             Inventory.ConnectStorage(Panel);
 
-            flashlightOn = 
+           
 
             /*
             Panel.TryAddItem(GameBlocks.GetItemByName("Drill"), 1);

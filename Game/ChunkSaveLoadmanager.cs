@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿
 using System.Text.Json;
 using OpenTK.Mathematics;
 using Spacebox.Common;
-using static Spacebox.Common.Testing;
+
 
 namespace Spacebox.Game
 {
@@ -36,7 +34,7 @@ namespace Spacebox.Game
                 }
                 ChunkData data = new ChunkData
                 {
-                    ModeId = ModLoader.ModInfo.ModId,
+                    ModeId = GameSetLoader.ModInfo.ModId,
                     PositionX = chunk.Position.X,
                     PositionY = chunk.Position.Y,
                     PositionZ = chunk.Position.Z,

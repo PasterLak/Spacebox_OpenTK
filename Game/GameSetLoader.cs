@@ -4,14 +4,14 @@ using Spacebox.Common;
 
 namespace Spacebox.Game
 {
-    public static class ModLoader
+    public static class GameSetLoader
     {
         public static ModConfig ModInfo;
         public static void Load(string modId)
         {
-            string modsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Mods");
-            const string defaultModId = "Default";
-            string defaultModPath = Path.Combine(modsDirectory, "Default");
+            string modsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.Folder);
+            const string defaultModId = Globals.GameSet.Default;
+            string defaultModPath = Path.Combine(modsDirectory, Globals.GameSet.Default);
 
             if (!Directory.Exists(modsDirectory))
             {
@@ -253,34 +253,67 @@ namespace Spacebox.Game
             try
             {
                 string json = File.ReadAllText(itemsFile);
-                List<ModItemData> items = JsonSerializer.Deserialize<List<ModItemData>>(json);
-                foreach (var item in items)
-                {
-                    string type = item.Type.ToLower();
+                JsonDocument jsonDoc = JsonDocument.Parse(json);
+                JsonElement root = jsonDoc.RootElement;
 
-                    if (type == "weapone")
+                foreach (JsonElement itemElement in root.EnumerateArray())
+                {
+                    string type = "item";
+                    if (itemElement.TryGetProperty("Type", out JsonElement typeElement))
                     {
-                        var newItem = new WeaponeItem((byte)item.MaxStack, item.Name, item.TextureCoord.X, item.TextureCoord.Y, item.ModelDepth);
-                        GameBlocks.RegisterItem(newItem);
+                        type = typeElement.GetString().ToLower();
                     }
-                    else if (type == "drill")
+
+                    switch (type)
                     {
-                        var newItem = new DrillItem((byte)item.MaxStack, item.Name, item.TextureCoord.X, item.TextureCoord.Y, item.ModelDepth);
-                        GameBlocks.RegisterItem(newItem);
-                    }
-                    else if (type == "consumable")
-                    {
-                        var newItem = new ConsumableItem((byte)item.MaxStack, item.Name, item.TextureCoord.X, item.TextureCoord.Y, item.ModelDepth);
-                        GameBlocks.RegisterItem(newItem);
-                    }
-                    else if (type == "item")
-                    {
-                        var newItem = new Item((byte)item.MaxStack, item.Name, item.TextureCoord.X, item.TextureCoord.Y, item.ModelDepth);
-                        GameBlocks.RegisterItem(newItem);
-                    }
-                    else
-                    {
-                        Debug.Error($"Unknown item type '{item.Type}' for item '{item.Name}'.");
+                        case "weapon":
+                            if (WeaponItemData.TryParse(itemElement) == false) continue;
+                            break;
+
+                        case "drill":
+                            var drillData = itemElement.Deserialize<DrillItemData>();
+                            if (drillData == null) continue;
+
+                            var drillItem = new DrillItem(
+                                (byte)drillData.MaxStack,
+                                drillData.Name,
+                                drillData.TextureCoord.X,
+                                drillData.TextureCoord.Y,
+                                drillData.ModelDepth);
+
+                            drillItem.Power = drillData.Power;
+                            GameBlocks.RegisterItem(drillItem);
+                            break;
+
+                        case "consumable":
+                            var consumableData = itemElement.Deserialize<ConsumableItemData>();
+                            if (consumableData == null) continue;
+
+                            var consumableItem = new ConsumableItem(
+                                (byte)consumableData.MaxStack,
+                                consumableData.Name,
+                                consumableData.TextureCoord.X,
+                                consumableData.TextureCoord.Y,
+                                consumableData.ModelDepth);
+
+                            consumableItem.HealAmount = consumableData.HealAmount;
+                            GameBlocks.RegisterItem(consumableItem);
+                            break;
+
+                        case "item":
+                        default:
+                            var itemData = itemElement.Deserialize<ModItemData>();
+                            if (itemData == null) continue;
+
+                            var item = new Item(
+                                (byte)itemData.MaxStack,
+                                itemData.Name,
+                                itemData.TextureCoord.X,
+                                itemData.TextureCoord.Y,
+                                itemData.ModelDepth);
+
+                            GameBlocks.RegisterItem(item);
+                            break;
                     }
                 }
             }
@@ -289,6 +322,7 @@ namespace Spacebox.Game
                 Debug.Error($"Error loading items: {ex.Message}");
             }
         }
+
 
         private static void LoadSettings(string modPath)
         {
@@ -391,16 +425,7 @@ namespace Spacebox.Game
             public Vector3Byte LightColor { get; set; } = Vector3Byte.Zero;
         }
 
-        private class ModItemData
-        {
-            public string Info { get; set; } = "";
-            public string Name { get; set; } = "NoName";
-            public string Type { get; set; } = "Item";
-            public Vector2Byte TextureCoord { get; set; } = Vector2Byte.Zero;
-            public short BlockId { get; set; } = 0;
-            public int MaxStack { get; set; } = 1;
-            public float ModelDepth { get; set; } = 1.0f;
-        }
+        
 
         private class ModSettings
         {

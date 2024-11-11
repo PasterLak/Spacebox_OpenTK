@@ -2,17 +2,19 @@
     {
         "Info": "Tags:  Name, Type<Drill,Weapone,Item>, TextureCoord, MaxStack, ModelDepth",
         "Name": "Drill",
-        "Type": "Drill",
+        "Type": "drill",
         "TextureCoord": {"x": 3, "y": 0},
         "MaxStack": 1,
-        "ModelDepth": 1.5
+        "ModelDepth": 1.5,
+        "Power" : 2
     },
     {
         "Name": "Weapone",
-        "Type": "Weapone",
+        "Type": "Weapon",
         "TextureCoord": {"x": 4, "y": 0},
         "MaxStack": 1,
-        "ModelDepth": 1.5
+        "ModelDepth": 1.5,
+        "Damage" : 5
     },
     {
         "Name": "Powder",
