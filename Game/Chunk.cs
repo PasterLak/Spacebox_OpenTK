@@ -7,6 +7,7 @@ using Spacebox.Game.Lighting;
 using Spacebox.Game.Rendering;
 using Spacebox.GUI;
 using Spacebox.Managers;
+using Spacebox.Scenes;
 using Spacebox.UI;
 
 namespace Spacebox.Game
@@ -486,10 +487,16 @@ namespace Spacebox.Game
 
                             RemoveBlock(hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z,
                                 (sbyte)hitNormal.X, (sbyte)hitNormal.Y, (sbyte)hitNormal.Z);
+
+                            SpaceScene.blockDestroy.Play();
                         }
                         
                     }
-                    
+
+                   
+                        
+                   
+
                 }
 
 
@@ -511,9 +518,13 @@ namespace Spacebox.Game
                             newBlock.SetDirectionFromNormal(hitNormal);
 
                             SetBlock(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z, newBlock);
+
+                            SpaceScene.blockPlace.Play();
                         }
                        
                     }
+
+                    
                 }
             }
             else
@@ -566,6 +577,8 @@ namespace Spacebox.Game
                             newBlock.Direction = direction;
 
                             SetBlock(x, y, z, newBlock);
+
+                            SpaceScene.blockPlace.Play();
                         }
                         else
                         {

@@ -15,10 +15,7 @@ namespace Spacebox.GUI
         public static Block? AimedBlock = null;
         public static void OnGUI()
         {
-            if(Input.IsKeyDown(Keys.F2))
-            {
-                IsVisible = !IsVisible;
-            }
+           
             if (!IsVisible) return;
 
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new System.Numerics.Vector4(0, 0, 0, 0.8f));

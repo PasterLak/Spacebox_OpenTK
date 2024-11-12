@@ -34,7 +34,7 @@ namespace Spacebox.Common
 
         public static void Update()
         {
-            _lastState = _gameWindow.KeyboardState;
+           // _lastState = _gameWindow.KeyboardState;
         }
 
         public static bool IsKey(Keys key)

@@ -61,7 +61,11 @@ namespace Spacebox.Scenes
          
             music.Play();
 
-   
+            InputManager.AddAction("inputOverlay", Keys.F6);
+            InputManager.RegisterCallback("inputOverlay", () => 
+            { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
+
+
         }
 
         private void SetDustSpawner()

@@ -62,6 +62,37 @@ namespace Spacebox
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
             
             Theme.ApplyDarkTheme();
+
+            InputManager.AddAction("debug", Keys.GraveAccent, true);
+            InputManager.RegisterCallback("debug", () => { Debug.ToggleVisibility(); });
+
+            InputManager.AddAction("overlay", Keys.F3, true);
+            InputManager.RegisterCallback("overlay", () => { Overlay.IsVisible = !Overlay.IsVisible; });
+
+            InputManager.AddAction("polygodMode", Keys.F10, true);
+            InputManager.RegisterCallback("polygodMode", () => { TogglePolygonMode(); });
+
+            InputManager.AddAction("fullscreen", Keys.F11, true);
+            InputManager.RegisterCallback("fullscreen", () => { ToggleFullScreen(); });
+
+            InputManager.AddAction("visualDebug", Keys.F4, true);
+            InputManager.RegisterCallback("visualDebug", () => { VisualDebug.ShowDebug = !VisualDebug.ShowDebug; });
+
+            InputManager.AddAction("quit", Keys.Escape, true);
+            InputManager.RegisterCallback("quit", () => { Quit(); });
+
+            InputManager.AddAction("frameLimiter", Keys.F7, true);
+            InputManager.RegisterCallback("frameLimiter", () => { ToggleFrameLimiter(); });
+
+            InputManager.AddAction("debugUI", Keys.F9, true);
+            InputManager.RegisterCallback("debugUI", () => { _debugUI = !_debugUI; });
+
+            InputManager.AddAction("screenshot", Keys.F12, true);
+            InputManager.RegisterCallback("screenshot", () => { FramebufferCapture.SaveScreenshot(); });
+
+
+    
+        
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -124,6 +155,7 @@ namespace Spacebox
 
 
             Time.Update(e);
+            InputManager.Update();
             
             while (_mainThreadActions.TryDequeue(out var action))
             {
@@ -154,20 +186,7 @@ namespace Spacebox
 
         private void UpdateInputs()
         {
-            if (Input.IsKeyDown(Keys.F1))
-            {
-                Debug.ToggleVisibility();
-            }
-
-            if (Input.IsKeyDown(Keys.F10))
-            {
-                TogglePolygonMode();
-            }
-
-            if (Input.IsKeyDown(Keys.F11))
-            {
-                ToggleFullScreen();
-            }
+           
 
             if (Input.IsKeyDown(Keys.KeyPadAdd))
             {
@@ -179,36 +198,14 @@ namespace Spacebox
                 Lighting.RemoveAmbient();
             }
 
-            if (Input.IsKeyDown(Keys.F4))
-            {
-                VisualDebug.ShowDebug = !VisualDebug.ShowDebug;
-            }
-
-            if (Input.IsKeyDown(Keys.Escape))
-            {
-                Quit();
-            }
-
-            if (Input.IsKeyDown(Keys.F7))
-            {
-                ToggleFrameLimiter();
-            }
-
-            if(Input.IsKeyDown(Keys.F9))
-            {
-                _debugUI = !_debugUI;
-            }
+         
 
             if (Input.IsKeyDown(Keys.KeyPad2))
             {
                 FramebufferCapture.IsActive = true;
 
             }
-            if (Input.IsKeyDown(Keys.F12))
-            {
-                FramebufferCapture.SaveScreenshot();
-
-            }
+         
         }
 
         public void ToggleFrameLimiter()

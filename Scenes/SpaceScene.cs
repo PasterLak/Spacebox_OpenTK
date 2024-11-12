@@ -28,8 +28,9 @@ namespace Spacebox.Scenes
         private Texture2D lightAtlas;
         // to base
         private Sprite sprite;
-        private AudioSource blockPlace;
-        private AudioSource blockDestroy;
+        public static AudioSource blockPlace;
+        public static AudioSource blockDestroy;
+        private AudioSource flashLight;
         public static AudioSource Death;
         public static bool DeathOn = false;
         public static AudioSource Uii;
@@ -69,6 +70,7 @@ namespace Spacebox.Scenes
             Uii = new AudioSource(SoundManager.GetClip("uii"));
             blockPlace = new AudioSource(SoundManager.GetClip("blockPlace"));
             blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroy"));
+            flashLight = new AudioSource(SoundManager.GetClip("flashlight"));
             //music = new AudioSource(SoundManager.GetClip("music"));
             //music.Volume = 80;
             //music.Play();
@@ -79,7 +81,13 @@ namespace Spacebox.Scenes
             Input.SetCursorState(CursorState.Grabbed);
 
             //chunk = new Chunk(new Vector3(0,0,0));
-            
+            InputManager.AddAction("inputOverlay", Keys.F6);
+            InputManager.RegisterCallback("inputOverlay", () =>
+            { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
+
+            InputManager.AddAction("flashlight", Keys.F);
+            InputManager.RegisterCallback("flashlight", () =>
+            { flashLight.Play(); });
 
             blocksShader = ShaderManager.GetShader("Shaders/block");
             blockTexture = GameBlocks.BlocksTexture;
@@ -170,14 +178,7 @@ namespace Spacebox.Scenes
 
 
 
-                if (Input.IsMouseButtonDown(MouseButton.Right))
-                {
-                    blockPlace.Play();
-                }
-                if (Input.IsMouseButtonDown(MouseButton.Left))
-                {
-                    blockDestroy.Play();
-                }
+                
             }
 
             if(DeathOn)

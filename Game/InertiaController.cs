@@ -19,13 +19,13 @@ namespace Spacebox.Common
         public float RunMaxSpeed { get; set; } = 20.0f;
         public float MaxSpeed { get; set; } = 10.0f;
 
-        // Новые параметры времени для ходьбы и бега
+     
         public float WalkTimeToMaxSpeed { get; set; } = 1.0f;
         public float WalkTimeToStop { get; set; } = 1.0f;
         public float RunTimeToMaxSpeed { get; set; } = 0.5f;
         public float RunTimeToStop { get; set; } = 0.5f;
 
-        // Внутренние параметры для текущего режима
+     
         private float _currentTimeToMaxSpeed;
         private float _currentTimeToStop;
 
@@ -37,7 +37,7 @@ namespace Spacebox.Common
             set => _enabled = value;
         }
 
-        // Метод для установки текущих параметров в зависимости от режима
+      
         public void SetMode(bool isRunning)
         {
             if (isRunning)
@@ -79,7 +79,7 @@ namespace Spacebox.Common
                         break;
                 }
 
-                // Ограничение максимальной скорости
+              
                 if (Velocity.Length > MaxSpeed)
                 {
                     Velocity = Vector3.Normalize(Velocity) * MaxSpeed;

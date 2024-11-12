@@ -16,6 +16,10 @@ version 0.0.7
 - better shading for block icons
 - flashlight 
 - consumable items
+- collision detection
+- damage by hitting wall
+- better player controller and inertia
+- 
 
 version 0.0.6
 

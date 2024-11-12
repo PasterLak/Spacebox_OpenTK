@@ -15,10 +15,7 @@ namespace Spacebox.GUI
 
         public static void OnGUI()
         {
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F6))
-            {
-                IsVisible = !IsVisible;
-            }
+           
 
             if (!IsVisible) return;
 
