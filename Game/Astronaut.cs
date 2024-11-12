@@ -102,7 +102,7 @@ namespace Spacebox.Game
             InertiaController.SetParameters(
                 walkAccelerationRate: 5,
                 runAccelerationRate: 7,
-                decelerationFactor: 0.15f, 
+                decelerationRate: 0.15f, 
                 walkMaxSpeed: 8,
                 runMaxSpeed: 20
             );
