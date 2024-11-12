@@ -1,5 +1,4 @@
 ﻿using OpenTK.Mathematics;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Spacebox.Common
 {

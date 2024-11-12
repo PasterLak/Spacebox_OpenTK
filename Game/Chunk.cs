@@ -13,6 +13,7 @@ namespace Spacebox.Game
 {
     public class Chunk : IDisposable
     {
+        public static Chunk CurrentChunk { get; set; }
         public const byte Size = 32; // 32700+ blocks
         public Vector3 Position { get; private set; }
         public Block[,,] Blocks { get; private set; }
@@ -43,6 +44,8 @@ namespace Spacebox.Game
         {
             Position = position;
             Blocks = new Block[Size, Size, Size];
+            if (CurrentChunk != null) Debug.Error("Many chunks");
+            CurrentChunk = this;
             CreateBoundingBox();
             this.destructionManager = new BlockDestructionManager(Camera.Main);
 
@@ -77,6 +80,8 @@ namespace Spacebox.Game
 
         }
 
+
+
         public void GenerateMesh()
         {
             if (!_isLoadedOrGenerated) return;
@@ -88,6 +93,59 @@ namespace Spacebox.Game
             
             _mesh.Dispose();
             _mesh = newMesh;
+        }
+
+        public bool IsColliding(BoundingVolume volume)
+        {
+            
+            BoundingSphere sphere = volume as BoundingSphere;
+            if (sphere == null)
+            {
+               
+                return false;
+            }
+
+            Vector3 sphereMin = sphere.Center - new Vector3(sphere.Radius);
+            Vector3 sphereMax = sphere.Center + new Vector3(sphere.Radius);
+
+       
+            Vector3 localMin = sphereMin - Position;
+            Vector3 localMax = sphereMax - Position;
+
+         
+            int minX = Math.Max((int)Math.Floor(localMin.X), 0);
+            int minY = Math.Max((int)Math.Floor(localMin.Y), 0);
+            int minZ = Math.Max((int)Math.Floor(localMin.Z), 0);
+
+            int maxX = Math.Min((int)Math.Ceiling(localMax.X), Size - 1);
+            int maxY = Math.Min((int)Math.Ceiling(localMax.Y), Size - 1);
+            int maxZ = Math.Min((int)Math.Ceiling(localMax.Z), Size - 1);
+
+           
+            for (int x = minX; x <= maxX; x++)
+            {
+                for (int y = minY; y <= maxY; y++)
+                {
+                    for (int z = minZ; z <= maxZ; z++)
+                    {
+                        Block block = Blocks[x, y, z];
+                        if (!block.IsAir())
+                        {
+                          
+                            Vector3 blockMin = Position + new Vector3(x, y, z);
+                            BoundingBox blockBox = new BoundingBox(blockMin + new Vector3(0.5f), Vector3.One);
+
+                           
+                            if (CollisionDetection.SphereIntersectsAABB(sphere, blockBox))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
 
         public void Shift(Vector3 shift)

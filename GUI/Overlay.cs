@@ -3,7 +3,6 @@ using ImGuiNET;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
-using Spacebox.Entities;
 using Spacebox.Game;
 
 namespace Spacebox.GUI
@@ -36,6 +35,15 @@ namespace Spacebox.GUI
                 Vector3i playerPosInt = new Vector3i((int)cam.Position.X, (int)cam.Position.Y, (int)cam.Position.Z);
                 //Vector3i playerRotInt = new Vector3i((int)cam.Rotation.X, (int)cam.Rotation.Y, (int)cam.Rotation.Z);
                 ImGui.Text($"Camera Position: {playerPosInt}");
+
+                Astronaut ast = (cam as Astronaut);
+
+                if(ast != null)
+                {
+                    string formatted = ast.InertiaController.Velocity.Length.ToString("0.0");
+                    ImGui.Text($"Speed: {formatted}");
+                }
+                
                 //ImGui.Text($"Camera Rotation: {playerRotInt}");
             }
 
