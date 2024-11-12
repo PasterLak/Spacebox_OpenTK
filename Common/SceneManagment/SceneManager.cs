@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Desktop;
+using Spacebox.Common.Audio;
 using Spacebox.Scenes;
 using System.Reflection;
 
@@ -125,6 +126,7 @@ namespace Spacebox.Common.SceneManagment
                     Scene sceneBase = CurrentScene as Scene;
                     sceneBase.Dispose();
 
+                    SoundManager.Dispose();
                     ShaderManager.Dispose();
                     TextureManager.Dispose();
                     InputManager.RemoveAllActions(true);

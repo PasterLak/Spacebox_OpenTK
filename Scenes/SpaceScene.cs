@@ -64,19 +64,13 @@ namespace Spacebox.Scenes
 
             CollisionManager.Add(player);
 
-            SoundManager.AddAudioClip("blockPlace");
-            SoundManager.AddAudioClip("blockDestroy");
+           
             Death = new AudioSource(SoundManager.GetClip("death2"));
             Uii = new AudioSource(SoundManager.GetClip("uii"));
             blockPlace = new AudioSource(SoundManager.GetClip("blockPlace"));
-            blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroy"));
+            blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroy2"));
             flashLight = new AudioSource(SoundManager.GetClip("flashlight"));
-            //music = new AudioSource(SoundManager.GetClip("music"));
-            //music.Volume = 80;
-            //music.Play();
-            //audio2 = new AudioSource(new AudioClip("shooting", SoundManager));
-
-            //renderer.AddDrawable(skybox);
+         
 
             Input.SetCursorState(CursorState.Grabbed);
 

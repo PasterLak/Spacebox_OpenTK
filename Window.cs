@@ -283,7 +283,10 @@ namespace Spacebox
                 SceneManager.CurrentScene.UnloadContent();
 
             }
+
+            SoundManager.DisposeAll();
             AudioManager.Instance.Dispose();
+
             NumberStorage.SaveNumbers(path, Location.X, Location.Y);
 
             ShaderManager.DisposeAll();

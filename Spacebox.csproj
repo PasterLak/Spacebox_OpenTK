@@ -32,11 +32,15 @@
   
     <None Remove="Resources\Audio\blockDestroy.wav" />
   
+    <None Remove="Resources\Audio\blockDestroy2.wav" />
+  
     <None Remove="Resources\Audio\blockPlace.wav" />
   
     <None Remove="Resources\Audio\death.wav" />
   
     <None Remove="Resources\Audio\death2.wav" />
+  
+    <None Remove="Resources\Audio\error.wav" />
   
     <None Remove="Resources\Audio\flashlight.wav" />
     <None Remove="Resources\Audio\music.wav" />
@@ -172,6 +176,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
+    <Content Include="Resources\Audio\blockDestroy2.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <Content Include="Resources\Audio\blockPlace.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -181,6 +189,10 @@
     </Content>
 
     <Content Include="Resources\Audio\death2.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Resources\Audio\error.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 

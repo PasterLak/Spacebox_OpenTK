@@ -39,11 +39,11 @@ namespace Spacebox.Scenes
             // music music.wave (Music/) 
 
 
-            SoundManager.AddAudioClip("music");
-            SoundManager.AddAudioClip("shooting");
+            SoundManager.AddClip("music");
+            SoundManager.AddClip("shooting");
 
            
-            audio2 = new AudioSource(new AudioClip("shooting", SoundManager));
+            audio2 = new AudioSource(new AudioClip("shooting"));
 
             font = new BitmapFont("Resources/Font/arial.png", 256,256,16,16);
             font.Spacing = 10;

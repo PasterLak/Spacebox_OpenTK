@@ -1,198 +1,167 @@
-﻿using OpenTK.Audio.OpenAL;
-
+﻿
 namespace Spacebox.Common.Audio
 {
-    public class SoundManager : IDisposable
+    public static class SoundManager
     {
-        private readonly Dictionary<string, AudioClip> audioClips = new Dictionary<string, AudioClip>();
-        private readonly Dictionary<string, int> audioClipRefCount = new Dictionary<string, int>();
-        private readonly object cacheLock = new object();
-
-        private bool isDisposed = false;
-
-        private readonly string baseDirectory;
-        private readonly List<string> allowedExtensions;
-
-        public string BaseDirectory => baseDirectory;
-        public List<string> AllowedExtensions => allowedExtensions;
-
-        public SoundManager()
+        private class AudioClipEntry
         {
-            baseDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Audio");
+            public AudioClip Clip { get; }
+            public bool IsPermanent { get; }
 
-            if (string.IsNullOrWhiteSpace(baseDirectory))
-                throw new ArgumentException("Base directory cannot be null or whitespace.", nameof(baseDirectory));
-
-            if (!Directory.Exists(baseDirectory))
-                throw new DirectoryNotFoundException($"The base directory '{baseDirectory}' does not exist.");
-
-            baseDirectory = Path.GetFullPath(baseDirectory);
-            allowedExtensions = new List<string> { ".wav", ".ogg" };
-
-            //DisposablesUnloader.Add(this);
-        }
-
-        public void AddAudioClip(string name)
-        {
-            AddAudioClip(name, AudioLoadMode.LoadIntoMemory);
-        }
-
-        public void AddAudioClip(string name, AudioLoadMode loadMode)
-        {
-            lock (cacheLock)
+            public AudioClipEntry(AudioClip clip, bool isPermanent)
             {
-                if (audioClips.ContainsKey(name))
-                {
-                    throw new InvalidOperationException($"AudioClip with name '{name}' is already loaded.");
-                }
-
-                string filePath = AudioPathResolver.ResolvePath(name, baseDirectory, allowedExtensions);
-                if (filePath == null)
-                {
-                    throw new FileNotFoundException($"Audio file for '{name}' not found in '{baseDirectory}' or its subdirectories with allowed extensions.");
-                }
-
-                var clip = new AudioClip(filePath, loadMode, this);
-                audioClips[name] = clip;
-                audioClipRefCount[name] = 1;
+                Clip = clip;
+                IsPermanent = isPermanent;
             }
         }
 
-        public AudioClip GetClip(string name, AudioLoadMode loadMode = AudioLoadMode.LoadIntoMemory)
+        private static readonly Dictionary<string, AudioClipEntry> audioClips = new Dictionary<string, AudioClipEntry>();
+        private static readonly object cacheLock = new object();
+        private const string DefaultAudioPath = "Resources/Audio/error.wav";
+        public static readonly List<string> AllowedExtensions = new List<string> { ".wav", ".ogg" };
+
+
+        public static AudioClip AddClip(string name, AudioLoadMode loadMode = AudioLoadMode.LoadIntoMemory)
+        {
+            return GetClip(name, loadMode);
+        }
+        public static AudioClip GetClip(string name, AudioLoadMode loadMode = AudioLoadMode.LoadIntoMemory)
         {
             lock (cacheLock)
             {
-                if (audioClips.TryGetValue(name, out AudioClip clip))
+                if (audioClips.TryGetValue(name, out var existingEntry))
                 {
-                    audioClipRefCount[name]++;
-                    return clip;
+                    return existingEntry.Clip;
                 }
-                else
+
+                try
                 {
-                    string filePath = AudioPathResolver.ResolvePath(name, baseDirectory, allowedExtensions);
+                    string filePath = AudioPathResolver.ResolvePath(name, AppDomain.CurrentDomain.BaseDirectory, AllowedExtensions);
                     if (filePath == null)
                     {
-                        throw new FileNotFoundException($"Audio file for '{name}' not found in '{baseDirectory}' or its subdirectories with allowed extensions.");
+                        throw new FileNotFoundException($"Audio file for '{name}' not found.");
                     }
 
-                    clip = new AudioClip(filePath, loadMode, this);
-                    audioClips[name] = clip;
-                    audioClipRefCount[name] = 1;
+                    var clip = new AudioClip(filePath);
+                    var entry = new AudioClipEntry(clip, isPermanent: false);
+                    audioClips[name] = entry;
                     return clip;
                 }
-            }
-        }
-
-        public void ReleaseAudioClip(string name)
-        {
-            lock (cacheLock)
-            {
-                if (audioClips.TryGetValue(name, out AudioClip clip))
+                catch (Exception ex)
                 {
-                    audioClipRefCount[name]--;
-                    if (audioClipRefCount[name] <= 0)
+                    Debug.Error($"[SoundManager] Failed to load audio clip '{name}': {ex.Message}");
+                    if (name != DefaultAudioPath)
                     {
-                        clip.Dispose();
-                        audioClips.Remove(name);
-                        audioClipRefCount.Remove(name);
-                        
+                        try
+                        {
+                            var defaultClip = GetClip(DefaultAudioPath, loadMode);
+                            Debug.Log($"[SoundManager] Loaded default audio clip '{DefaultAudioPath}' instead.");
+                            return defaultClip;
+                        }
+                        catch (Exception defaultEx)
+                        {
+                            Debug.Error($"[SoundManager] Failed to load default audio clip '{DefaultAudioPath}': {defaultEx.Message}");
+                            throw new Exception($"Failed to load audio clip '{name}' and default audio clip '{DefaultAudioPath}'.", ex);
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception($"Failed to load default audio clip '{DefaultAudioPath}'.", ex);
                     }
                 }
-                else
-                {
-                    Debug.Error($"Attempted to release AudioClip '{name}' which is not loaded.");
-                }
             }
         }
 
-        public bool TryAddAudioClip(string name, AudioLoadMode loadMode)
+        public static AudioClip AddPermanentClip(string name, AudioLoadMode loadMode = AudioLoadMode.LoadIntoMemory)
         {
             lock (cacheLock)
             {
-                if (audioClips.ContainsKey(name))
+                if (audioClips.TryGetValue(name, out var existingEntry))
                 {
-                    return false;
+                    if (!existingEntry.IsPermanent)
+                    {
+                        var newEntry = new AudioClipEntry(existingEntry.Clip, isPermanent: true);
+                        audioClips[name] = newEntry;
+                    }
+                    return existingEntry.Clip;
                 }
 
-                string filePath = AudioPathResolver.ResolvePath(name, baseDirectory, allowedExtensions);
-                if (filePath == null)
+                try
                 {
-                    return false;
-                }
-
-                var clip = new AudioClip(filePath, loadMode, this);
-                audioClips[name] = clip;
-                audioClipRefCount[name] = 1;
-                return true;
-            }
-        }
-
-        public bool TryGetAudioClip(string name, out AudioClip clip, AudioLoadMode loadMode = AudioLoadMode.LoadIntoMemory)
-        {
-            lock (cacheLock)
-            {
-                if (audioClips.TryGetValue(name, out clip))
-                {
-                    audioClipRefCount[name]++;
-                    return true;
-                }
-                else
-                {
-                    string filePath = AudioPathResolver.ResolvePath(name, baseDirectory, allowedExtensions);
+                    string filePath = AudioPathResolver.ResolvePath(name, AppDomain.CurrentDomain.BaseDirectory, AllowedExtensions);
                     if (filePath == null)
                     {
-                        clip = null;
-                        return false;
+                        throw new FileNotFoundException($"Audio file for '{name}' not found.");
                     }
 
-                    clip = new AudioClip(filePath, loadMode, this);
-                    audioClips[name] = clip;
-                    audioClipRefCount[name] = 1;
-                    return true;
+                    var clip = new AudioClip(filePath);
+                    var entry = new AudioClipEntry(clip, isPermanent: true);
+                    audioClips[name] = entry;
+                    return clip;
+                }
+                catch (Exception ex)
+                {
+                    Debug.Error($"[SoundManager] Failed to load permanent audio clip '{name}': {ex.Message}");
+                    if (name != DefaultAudioPath)
+                    {
+                        try
+                        {
+                            var defaultClip = AddPermanentClip(DefaultAudioPath, loadMode);
+                            Debug.Log($"[SoundManager] Loaded default audio clip '{DefaultAudioPath}' as permanent instead.");
+                            return defaultClip;
+                        }
+                        catch (Exception defaultEx)
+                        {
+                            Debug.Error($"[SoundManager] Failed to load default audio clip '{DefaultAudioPath}': {defaultEx.Message}");
+                            throw new Exception($"Failed to load permanent audio clip '{name}' and default audio clip '{DefaultAudioPath}'.", ex);
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception($"Failed to load default audio clip '{DefaultAudioPath}'.", ex);
+                    }
                 }
             }
         }
 
-        public void Dispose()
+        public static void RemoveClip(string name)
         {
-            if (isDisposed) return;
-
             lock (cacheLock)
             {
-                foreach (var clip in audioClips.Values)
+                if (audioClips.TryGetValue(name, out var entry))
                 {
-                    clip.Dispose();
+                    entry.Clip.Dispose();
+                    audioClips.Remove(name);
+                }
+            }
+        }
+
+        public static void Dispose()
+        {
+            lock (cacheLock)
+            {
+                var unloadableClips = audioClips.Where(kv => !kv.Value.IsPermanent).ToList();
+                foreach (var kv in unloadableClips)
+                {
+                    kv.Value.Clip.Dispose();
+                    audioClips.Remove(kv.Key);
+                }
+
+                Debug.Log($"[SoundManager] {unloadableClips.Count} audio clips have been disposed.");
+            }
+        }
+
+        public static void DisposeAll()
+        {
+            lock (cacheLock)
+            {
+                var count = audioClips.Count;
+                foreach (var kv in audioClips.ToList())
+                {
+                    kv.Value.Clip.Dispose();
                 }
                 audioClips.Clear();
-                audioClipRefCount.Clear();
-            }
-
-            isDisposed = true;
-            
-        }
-
-        public int LoadAudioClip(string name, out int sampleRate)
-        {
-            string filePath = AudioPathResolver.ResolvePath(name, baseDirectory, allowedExtensions);
-            if (filePath == null)
-            {
-                throw new FileNotFoundException($"Audio file for '{name}' not found in '{baseDirectory}' or its subdirectories with allowed extensions.");
-            }
-            return SoundLoader.LoadSound(filePath, out sampleRate);
-        }
-
-        public void ReleaseAudioClipBuffer(string filename, int buffer)
-        {
-            AL.DeleteBuffer(buffer);
-            CheckALError($"Releasing buffer for '{filename}'");
-        }
-
-        private void CheckALError(string operation)
-        {
-            ALError error = AL.GetError();
-            if (error != ALError.NoError)
-            {
-                throw new InvalidOperationException($"OpenAL error during {operation}: {AL.GetErrorString(error)}");
+                Debug.Log($"[SoundManager] {count} audio clips have been disposed.");
             }
         }
     }

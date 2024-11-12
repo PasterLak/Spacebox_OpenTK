@@ -9,7 +9,7 @@ namespace Spacebox.Common.SceneManagment
       
         public SceneManager SceneManager { get; private set; }
 
-        public SoundManager SoundManager { get; private set; }
+       
         public CollisionManager CollisionManager { get; private set; }
         public Renderer Renderer { get; private set; }
 
@@ -18,7 +18,7 @@ namespace Spacebox.Common.SceneManagment
         public Scene()
         {
            
-            SoundManager = new SoundManager();
+         
             CollisionManager = new CollisionManager();
             Renderer = new Renderer();
 

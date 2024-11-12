@@ -10,7 +10,7 @@ namespace Spacebox.Common.Audio
         public int Buffer { get; private set; }
 
         private bool isDisposed = false;
-        private SoundManager soundManager;
+      
 
         private FileStream fileStream;
         private BinaryReader reader;
@@ -20,45 +20,20 @@ namespace Spacebox.Common.Audio
         private bool isStreamFinished = false;
         private int sampleRate;
 
-        public AudioClip(string filename, SoundManager soundManager)
+        public AudioClip(string filename, AudioLoadMode loadMode = AudioLoadMode.LoadIntoMemory)
         {
             // Разрешаем полный путь к файлу
-            string resolvedPath = AudioPathResolver.ResolvePath(filename, soundManager.BaseDirectory, soundManager.AllowedExtensions);
-            if (resolvedPath == null)
-            {
-                throw new FileNotFoundException($"Audio file for '{filename}' not found.");
-            }
-            Filename = resolvedPath;
-            IsStreaming = false;
-            this.soundManager = soundManager;
-
-            if (!IsStreaming)
-            {
-                Buffer = soundManager.LoadAudioClip(Filename, out sampleRate);
-            }
-            else
-            {
-                InitializeStreaming();
-            }
-
-            //DisposablesUnloader.Add(this);
-        }
-
-        public AudioClip(string filename, AudioLoadMode loadMode, SoundManager soundManager)
-        {
-            
-            string resolvedPath = AudioPathResolver.ResolvePath(filename, soundManager.BaseDirectory, soundManager.AllowedExtensions);
+            string resolvedPath = AudioPathResolver.ResolvePath(filename, AppDomain.CurrentDomain.BaseDirectory, SoundManager.AllowedExtensions);
             if (resolvedPath == null)
             {
                 throw new FileNotFoundException($"Audio file for '{filename}' not found.");
             }
             Filename = resolvedPath;
             IsStreaming = loadMode == AudioLoadMode.Stream;
-            this.soundManager = soundManager;
 
             if (!IsStreaming)
             {
-                Buffer = soundManager.LoadAudioClip(Filename, out sampleRate);
+                Buffer = SoundLoader.LoadSound(Filename, out sampleRate);
             }
             else
             {
@@ -67,6 +42,7 @@ namespace Spacebox.Common.Audio
 
             //DisposablesUnloader.Add(this);
         }
+
 
         private void InitializeStreaming()
         {
@@ -136,7 +112,7 @@ namespace Spacebox.Common.Audio
 
             if (!IsStreaming)
             {
-                soundManager.ReleaseAudioClipBuffer(Filename, Buffer);
+                SoundManager.RemoveClip(Filename);
             }
             else
             {

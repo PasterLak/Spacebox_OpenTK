@@ -108,7 +108,7 @@ namespace Spacebox.Scenes
             Input.SetCursorState(CursorState.Grabbed);
 
           
-                audio = new AudioSource(new AudioClip("Resources/Audio/flashlight.wav", SoundManager));
+                audio = new AudioSource(new AudioClip("Resources/Audio/flashlight.wav"));
 
 
             font = new BitmapFont("Resources/Font/arial.png", 256, 256, 16, 16);
