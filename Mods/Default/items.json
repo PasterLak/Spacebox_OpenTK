@@ -1,20 +1,24 @@
 [
     {
         "Info": "Tags:  Name, Type<Drill,Weapone,Item>, TextureCoord, MaxStack, ModelDepth",
+
         "Name": "Drill",
         "Type": "drill",
         "TextureCoord": {"x": 3, "y": 0},
         "MaxStack": 1,
         "ModelDepth": 1.5,
-        "Power" : 2
+        "Power" : 1
     },
     {
-        "Name": "Weapone",
+        "Name": "AKF-24",
         "Type": "Weapon",
         "TextureCoord": {"x": 4, "y": 0},
         "MaxStack": 1,
         "ModelDepth": 1.5,
-        "Damage" : 5
+        "Damage" : 5,
+        "ReloadTime" : 400,
+        "Spread" : 0,
+        "Pushback" : 0
     },
     {
         "Name": "Powder",
@@ -76,7 +80,7 @@
         "Name": "Beer",
         "Type": "consumable",
         "TextureCoord": {"x": 4, "y": 1},
-        "MaxStack": 64,
+        "MaxStack": 20,
         "ModelDepth": 3.0
     },
     {

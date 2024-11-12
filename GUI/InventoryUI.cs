@@ -65,7 +65,7 @@ namespace Spacebox.UI
             Vector2 displaySize = io.DisplaySize;
             Vector2 windowPos = new Vector2(
                 (displaySize.X - windowWidth) / 2,
-                (displaySize.Y - windowHeight) / 2
+                (displaySize.Y - windowHeight) / 1.6f
             );
             ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
             ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight));

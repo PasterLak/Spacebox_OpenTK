@@ -94,7 +94,7 @@ namespace Spacebox.Game
         {
             Debug.OnVisibilityWasChanged += OnGameConsole;
 
-            Inventory = new Inventory(8,5);
+            Inventory = new Inventory(8,4);
             Panel = new Storage(1,10);
 
             Inventory.Name = "Inventory";
@@ -102,18 +102,6 @@ namespace Spacebox.Game
 
             Panel.ConnectStorage(Inventory, true);
             Inventory.ConnectStorage(Panel);
-
-           
-
-            /*
-            Panel.TryAddItem(GameBlocks.GetItemByName("Drill"), 1);
-            Panel.TryAddItem(GameBlocks.GetItemByName("Weapone"), 1);
-            Panel.TryAddItem(GameBlocks.GetItemByName("Titanium Ingot"), 52);
-            Panel.TryAddItem(GameBlocks.GetItemByName("Iron Lens"), 8);
-
-            Inventory.TryAddItem(GameBlocks.GetItemByName("Titanium Heavy Block"), 42);
-            Inventory.TryAddItem(GameBlocks.GetItemByName("AI Core"), 12);
-            */
         }
 
         private void OnGameConsole(bool state)
@@ -180,8 +168,6 @@ namespace Spacebox.Game
                 VisualDebug.ViewMatrix = GetViewMatrix();
             }
 
-           
-
 
             if (!CanMove) return;
 
@@ -190,7 +176,7 @@ namespace Spacebox.Game
                 Flashlight.IsActive = !Flashlight.IsActive;
             }
 
-            if (Input.IsKeyDown(Keys.O))
+            if (Input.IsKeyDown(Keys.I))
             {
                 EnableInertia(!_inertiaController.Enabled);
             }

@@ -101,7 +101,7 @@ namespace Spacebox.Common
         public float CutOffRadians { get; set; } = 
             MathF.Cos(MathHelper.DegreesToRadians(12.5f)); // 12.5f
         public float OuterCutOffRadians { get; set; } = 
-            MathF.Cos(MathHelper.DegreesToRadians(27.5f)); // 17.5f
+            MathF.Cos(MathHelper.DegreesToRadians(20.5f)); // 17.5f
         public float Constant { get; set; } = 1.0f; // 1
         public float Linear { get; set; } = 0.09f; // 0.09f
         public float Quadratic { get; set; } = 0.032f; // 0.032f
@@ -109,7 +109,7 @@ namespace Spacebox.Common
         public Vector3 DiffuseOnColor = new Vector3(1.0f, 1.0f, 0.9f);
         public Vector3 DiffuseOffColor = new Vector3(0.0f, 0.0f, 0.0f);
 
-        public Vector3 AmbientOnColor = new Vector3(0.2f, 0.2f, 0.2f);
+        public Vector3 AmbientOnColor = new Vector3(0.15f, 0.15f, 0.15f);
         public Vector3 AmbientOffColor = new Vector3(0.0f, 0.0f, 0.0f);
 
         public Vector3 SpecularOnColor = new Vector3(1.0f, 1.0f, 1.0f);

@@ -7,10 +7,11 @@ namespace Spacebox.Game
     public static class GameSetLoader
     {
         public static ModConfig ModInfo;
+
         public static void Load(string modId)
         {
             string modsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.Folder);
-            const string defaultModId = Globals.GameSet.Default;
+            string defaultModId = Globals.GameSet.Default.ToLower();
             string defaultModPath = Path.Combine(modsDirectory, Globals.GameSet.Default);
 
             if (!Directory.Exists(modsDirectory))
@@ -20,11 +21,10 @@ namespace Spacebox.Game
                 return;
             }
 
-            string modPath = modId.ToLower() == defaultModId.ToLower() ? defaultModPath : FindModPath(modsDirectory, modId);
+            string modPath = modId.ToLower() == defaultModId ? defaultModPath : FindModPath(modsDirectory, modId);
 
-            if (modPath == string.Empty)
+            if (string.IsNullOrEmpty(modPath))
             {
-                
                 Debug.Error($"Mod with ID '{modId}' not found in Mods directory.");
                 return;
             }
@@ -55,30 +55,26 @@ namespace Spacebox.Game
 
         private static string FindModPath(string modsDirectory, string modId)
         {
+            modId = modId.ToLower();
             foreach (var directory in Directory.GetDirectories(modsDirectory))
             {
                 string configPath = Path.Combine(directory, "config.json");
-               
-                if (File.Exists(configPath))
+                if (!File.Exists(configPath)) continue;
+
+                try
                 {
-                    try
+                    string json = File.ReadAllText(configPath);
+                    ModConfig config = JsonSerializer.Deserialize<ModConfig>(json);
+                    if (config != null && config.ModId.ToLower() == modId)
                     {
-                        string json = File.ReadAllText(configPath);
-                        ModConfig config = JsonSerializer.Deserialize<ModConfig>(json);
-
-
-                        if (config != null && config.ModId.ToLower() == modId)
-                        {
-                            return directory;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.Error($"Error reading config from '{directory}': {ex.Message}");
+                        return directory;
                     }
                 }
+                catch (Exception ex)
+                {
+                    Debug.Error($"Error reading config from '{directory}': {ex.Message}");
+                }
             }
-
             return string.Empty;
         }
 
@@ -141,26 +137,15 @@ namespace Spacebox.Game
 
         private static void LoadBlocks(string modPath, string defaultModPath)
         {
-            string blocksFile = Path.Combine(modPath, "blocks.json");
-            string defaultBlocksFile = Path.Combine(defaultModPath, "blocks.json");
-
-            if (!File.Exists(blocksFile))
-            {
-                blocksFile = defaultBlocksFile;
-                Debug.Error("blocks.json not found in mod. Using default blocks.");
-                if (!File.Exists(blocksFile))
-                {
-                    Debug.Error("Default blocks.json not found.");
-                    return;
-                }
-            }
+            string blocksFile = GetFilePath(modPath, defaultModPath, "blocks.json");
+            if (blocksFile == null) return;
 
             try
             {
                 string json = File.ReadAllText(blocksFile);
                 List<ModBlockData> blocks = JsonSerializer.Deserialize<List<ModBlockData>>(json);
 
-                GameBlocks.RegisterBlock(new BlockData("Air", "Block", new Vector2Byte(0, 0)));
+                GameBlocks.RegisterBlock(new BlockData("Air", "block", new Vector2Byte(0, 0)));
 
                 foreach (var block in blocks)
                 {
@@ -168,39 +153,21 @@ namespace Spacebox.Game
 
                     if (!ValidateBlockType(block.Type))
                     {
-                        Debug.Error($"[GameSetLoader] Block '{block.Name}' has an invalid type and was skipped" );
-                        Debug.Error($"[GameSetLoader] Valid types are: {BlockTypesToString()}");
+                        Debug.Error($"Block '{block.Name}' has an invalid type and was skipped");
+                        Debug.Error($"Valid types are: {string.Join(", ", BlockTypes)}");
                         continue;
                     }
-                    var c = block.LightColor;
 
-                    bool sameSides = false;
-
-                    if (block.Top == Vector2Byte.Zero) sameSides = true;
-                    if (block.Bottom == Vector2Byte.Zero) sameSides = true;
-
-                    if (block.Walls == block.Bottom && block.Walls == block.Top)
-                        sameSides = true;
-
-                    bool hasLightColor = !(c.X == 0 && c.Y == 0 && c.Z == 0);
-
-                    var blockColor = hasLightColor ? new Vector3(c.X / 255f, c.Y / 255f, c.Z / 255f) : Vector3.Zero;
+                    bool sameSides = block.Top == Vector2Byte.Zero || block.Bottom == Vector2Byte.Zero || (block.Walls == block.Bottom && block.Walls == block.Top);
+                    bool hasLightColor = block.LightColor != Vector3Byte.Zero;
+                    var blockColor = hasLightColor ? new Vector3(block.LightColor.X / 255f, block.LightColor.Y / 255f, block.LightColor.Z / 255f) : Vector3.Zero;
 
                     BlockData blockData = new BlockData(block.Name, block.Type, block.Walls, block.IsTransparent, blockColor)
                     {
-                        AllSidesAreSame = sameSides
+                        AllSidesAreSame = sameSides,
+                        TopUVIndex = sameSides ? block.Walls : block.Top,
+                        BottomUVIndex = sameSides ? block.Walls : block.Bottom
                     };
-
-                    if (sameSides)
-                    {
-                        blockData.TopUVIndex = block.Walls;
-                        blockData.BottomUVIndex = block.Walls;
-                    }
-                    else
-                    {
-                        blockData.TopUVIndex = block.Top;
-                        blockData.BottomUVIndex = block.Bottom;
-                    }
 
                     GameBlocks.RegisterBlock(blockData);
                 }
@@ -210,45 +177,18 @@ namespace Spacebox.Game
                 Debug.Error($"Error loading blocks: {ex.Message}");
             }
         }
+
         private static string[] BlockTypes = { "block", "interactive", "door" };
 
-        private static string BlockTypesToString()
-        {
-            string types = "";
-
-            for (int i = 0; i < BlockTypes.Length; i++)
-            {
-                types += BlockTypes[i];
-                if(i < BlockTypes.Length - 1) types += ", ";
-            }
-
-            return types;
-        }
         private static bool ValidateBlockType(string type)
         {
-            foreach (string t in BlockTypes)
-            {
-                if(t.ToLower() == type.ToLower()) return true;
-            }
-
-            return false;
+            return BlockTypes.Contains(type.ToLower());
         }
 
         private static void LoadItems(string modPath, string defaultModPath)
         {
-            string itemsFile = Path.Combine(modPath, "items.json");
-            string defaultItemsFile = Path.Combine(defaultModPath, "items.json");
-
-            if (!File.Exists(itemsFile))
-            {
-                itemsFile = defaultItemsFile;
-                Debug.Error("items.json not found in mod. Using default items.");
-                if (!File.Exists(itemsFile))
-                {
-                    Debug.Error("Default items.json not found.");
-                    return;
-                }
-            }
+            string itemsFile = GetFilePath(modPath, defaultModPath, "items.json");
+            if (itemsFile == null) return;
 
             try
             {
@@ -259,60 +199,39 @@ namespace Spacebox.Game
                 foreach (JsonElement itemElement in root.EnumerateArray())
                 {
                     string type = "item";
+
                     if (itemElement.TryGetProperty("Type", out JsonElement typeElement))
                     {
                         type = typeElement.GetString().ToLower();
                     }
 
+                   
+
                     switch (type)
                     {
                         case "weapon":
-                            if (WeaponItemData.TryParse(itemElement) == false) continue;
+                            var weaponData = itemElement.Deserialize<WeaponItemData>();
+                            if (weaponData == null) continue;
+                            RegisterWeaponItem(weaponData);
                             break;
 
                         case "drill":
                             var drillData = itemElement.Deserialize<DrillItemData>();
                             if (drillData == null) continue;
-
-                            var drillItem = new DrillItem(
-                                (byte)drillData.MaxStack,
-                                drillData.Name,
-                                drillData.TextureCoord.X,
-                                drillData.TextureCoord.Y,
-                                drillData.ModelDepth);
-
-                            drillItem.Power = drillData.Power;
-                            GameBlocks.RegisterItem(drillItem);
+                            RegisterDrillItem(drillData);
                             break;
 
                         case "consumable":
                             var consumableData = itemElement.Deserialize<ConsumableItemData>();
                             if (consumableData == null) continue;
-
-                            var consumableItem = new ConsumableItem(
-                                (byte)consumableData.MaxStack,
-                                consumableData.Name,
-                                consumableData.TextureCoord.X,
-                                consumableData.TextureCoord.Y,
-                                consumableData.ModelDepth);
-
-                            consumableItem.HealAmount = consumableData.HealAmount;
-                            GameBlocks.RegisterItem(consumableItem);
+                            RegisterConsumableItem(consumableData);
                             break;
 
                         case "item":
                         default:
                             var itemData = itemElement.Deserialize<ModItemData>();
                             if (itemData == null) continue;
-
-                            var item = new Item(
-                                (byte)itemData.MaxStack,
-                                itemData.Name,
-                                itemData.TextureCoord.X,
-                                itemData.TextureCoord.Y,
-                                itemData.ModelDepth);
-
-                            GameBlocks.RegisterItem(item);
+                            RegisterItem(itemData);
                             break;
                     }
                 }
@@ -323,6 +242,63 @@ namespace Spacebox.Game
             }
         }
 
+        private static void RegisterWeaponItem(WeaponItemData data)
+        {
+            data.MaxStack = 1;
+            var weaponItem = new WeaponeItem(
+                (byte)data.MaxStack,
+                data.Name,
+                data.TextureCoord.X,
+                data.TextureCoord.Y,
+                data.ModelDepth)
+            {
+                Damage = data.Damage
+            };
+            
+            GameBlocks.RegisterItem(weaponItem);
+        }
+
+        private static void RegisterDrillItem(DrillItemData data)
+        {
+            data.MaxStack = 1;
+            var drillItem = new DrillItem(
+                (byte)data.MaxStack,
+                data.Name,
+                data.TextureCoord.X,
+                data.TextureCoord.Y,
+                data.ModelDepth)
+            {
+                Power = data.Power
+            };
+            GameBlocks.RegisterItem(drillItem);
+        }
+
+        private static void RegisterConsumableItem(ConsumableItemData data)
+        {
+            data.ValidateMaxStack();
+            var consumableItem = new ConsumableItem(
+                (byte)data.MaxStack,
+                data.Name,
+                data.TextureCoord.X,
+                data.TextureCoord.Y,
+                data.ModelDepth)
+            {
+                HealAmount = data.HealAmount
+            };
+            GameBlocks.RegisterItem(consumableItem);
+        }
+
+        private static void RegisterItem(ModItemData data)
+        {
+            data.ValidateMaxStack();
+            var item = new Item(
+                (byte)data.MaxStack,
+                data.Name,
+                data.TextureCoord.X,
+                data.TextureCoord.Y,
+                data.ModelDepth);
+            GameBlocks.RegisterItem(item);
+        }
 
         private static void LoadSettings(string modPath)
         {
@@ -350,8 +326,6 @@ namespace Spacebox.Game
             {
                 foreach (string file in Directory.GetFiles(optionalPath))
                 {
-                    string extension = Path.GetExtension(file).ToLower();
-
                     if (Path.GetFileNameWithoutExtension(file).Equals("lighting", StringComparison.OrdinalIgnoreCase))
                     {
                         LoadLighting(optionalPath);
@@ -373,7 +347,7 @@ namespace Spacebox.Game
 
                     if (settings != null)
                     {
-                        Common.Lighting.AmbientColor = new Vector3(settings.AmbientColor.X/255f, settings.AmbientColor.Y / 255f, settings.AmbientColor.Z / 255f);
+                        Common.Lighting.AmbientColor = new Vector3(settings.AmbientColor.X / 255f, settings.AmbientColor.Y / 255f, settings.AmbientColor.Z / 255f);
                         Common.Lighting.FogColor = new Vector3(settings.FogColor.X / 255f, settings.FogColor.Y / 255f, settings.FogColor.Z / 255f);
                         Common.Lighting.FogDensity = settings.FogDensity;
                     }
@@ -387,6 +361,25 @@ namespace Spacebox.Game
 
         private static void ApplySettings(ModSettings settings)
         {
+            // Apply mod-specific settings here
+        }
+
+        private static string GetFilePath(string modPath, string defaultModPath, string fileName)
+        {
+            string filePath = Path.Combine(modPath, fileName);
+            string defaultFilePath = Path.Combine(defaultModPath, fileName);
+
+            if (!File.Exists(filePath))
+            {
+                filePath = defaultFilePath;
+                Debug.Error($"{fileName} not found in mod. Using default.");
+                if (!File.Exists(filePath))
+                {
+                    Debug.Error($"Default {fileName} not found.");
+                    return null;
+                }
+            }
+            return filePath;
         }
 
         public class ModConfig
@@ -409,23 +402,24 @@ namespace Spacebox.Game
 
         public class TextureConfig
         {
-            public string Type { get; set; }
+            public string Type { get; set; } = "unknown";
             public string Name { get; set; } = "NoName Texture";
-            public string Path { get; set; }
+            public string Path { get; set; } = "";
         }
 
         private class ModBlockData
         {
             public string Name { get; set; } = "NoName";
             public string Type { get; set; } = "block";
-            public Vector2Byte Walls { get; set; } = new Vector2Byte(0, 0);
-            public Vector2Byte Top { get; set; } = new Vector2Byte(0, 0);
-            public Vector2Byte Bottom { get; set; } = new Vector2Byte(0, 0);
+            public int PowerToDrill { get; set; } = 1;
+            public int Mass { get; set; } = 1;
+            public int Durability { get; set; } = 1;
+            public Vector2Byte Walls { get; set; } = Vector2Byte.Zero;
+            public Vector2Byte Top { get; set; } = Vector2Byte.Zero;
+            public Vector2Byte Bottom { get; set; } = Vector2Byte.Zero;
             public bool IsTransparent { get; set; } = false;
             public Vector3Byte LightColor { get; set; } = Vector3Byte.Zero;
         }
-
-        
 
         private class ModSettings
         {

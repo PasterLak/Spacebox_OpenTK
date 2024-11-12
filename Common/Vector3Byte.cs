@@ -85,8 +85,18 @@ public struct Vector3Byte
 
 		return result;
 	}
+    public static bool operator ==(Vector3Byte left, Vector3Byte right)
+    {
+        return left.X == right.X && left.Y == right.Y && left.Z == right.Z;
+    }
 
-	public static explicit operator Vector3i(Vector3Byte v)
+    public static bool operator !=(Vector3Byte left, Vector3Byte right)
+    {
+        return !(left == right);
+    }
+
+
+    public static explicit operator Vector3i(Vector3Byte v)
 	{
 		return new Vector3i(v.X, v.Y, v.Z);
 	}
