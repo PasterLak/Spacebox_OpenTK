@@ -10,7 +10,7 @@ namespace Spacebox.Common
         public float WalkAccelerationRate { get; set; } = 10.0f;
         public float RunAccelerationRate { get; set; } = 20.0f;
 
-        public float DecelerationFactor { get; set; } = 0.99f; // Фактор демпфирования
+        public float DecelerationRate { get; set; } = 5.0f;
 
         public float WalkMaxSpeed { get; set; } = 10.0f;
         public float RunMaxSpeed { get; set; } = 20.0f;
@@ -39,21 +39,26 @@ namespace Spacebox.Common
             {
                 if (!isMoving && Velocity.Length > 0)
                 {
-                  
-                    Velocity *= MathF.Pow(DecelerationFactor, deltaTime);
-                    if (Velocity.Length < 0.01f)
+                    
+                    float speed = Velocity.Length;
+                    float decelerationAmount = DecelerationRate * deltaTime;
+                    if (speed <= decelerationAmount)
                     {
                         Velocity = Vector3.Zero;
+                    }
+                    else
+                    {
+                        Velocity -= Velocity.Normalized() * decelerationAmount;
                     }
                 }
             }
         }
 
-        public void SetParameters(float walkAccelerationRate, float runAccelerationRate, float decelerationFactor, float walkMaxSpeed, float runMaxSpeed)
+        public void SetParameters(float walkAccelerationRate, float runAccelerationRate, float decelerationRate, float walkMaxSpeed, float runMaxSpeed)
         {
             WalkAccelerationRate = walkAccelerationRate;
             RunAccelerationRate = runAccelerationRate;
-            DecelerationFactor = decelerationFactor;
+            DecelerationRate = decelerationRate;
             WalkMaxSpeed = walkMaxSpeed;
             RunMaxSpeed = runMaxSpeed;
         }

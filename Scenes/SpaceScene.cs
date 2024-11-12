@@ -30,9 +30,9 @@ namespace Spacebox.Scenes
         private Sprite sprite;
         private AudioSource blockPlace;
         private AudioSource blockDestroy;
-        private AudioSource music;
-       
-
+        public static AudioSource Death;
+        public static bool DeathOn = false;
+        public static AudioSource Uii;
 
         private DustSpawner dustSpawner;
 
@@ -65,6 +65,8 @@ namespace Spacebox.Scenes
 
             SoundManager.AddAudioClip("blockPlace");
             SoundManager.AddAudioClip("blockDestroy");
+            Death = new AudioSource(SoundManager.GetClip("death2"));
+            Uii = new AudioSource(SoundManager.GetClip("uii"));
             blockPlace = new AudioSource(SoundManager.GetClip("blockPlace"));
             blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroy"));
             //music = new AudioSource(SoundManager.GetClip("music"));
@@ -178,8 +180,17 @@ namespace Spacebox.Scenes
                 }
             }
 
-            
-
+            if(DeathOn)
+            {
+                if(!Death.IsPlaying)
+                {
+                    Window.Instance.Quit();
+                }
+            }
+            if (Input.IsKeyDown(Keys.B))
+            {
+                Uii.Play();
+            }
 
             dustSpawner.Update();
             PanelUI.Update();
@@ -268,7 +279,7 @@ namespace Spacebox.Scenes
 
             CenteredText.Draw();
             TagText.Draw();
-
+            
             //healthBar.OnGUI();
 
             PanelUI.Render();
@@ -282,6 +293,8 @@ namespace Spacebox.Scenes
             }
 
             TagManager.DrawTags(player,  Window.Instance.Size.X, Window.Instance.Size.Y);
+
+            BlackScreenOverlay.Render();
         }
 
         public override void UnloadContent()

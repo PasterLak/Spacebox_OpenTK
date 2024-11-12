@@ -1,6 +1,8 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.GUI;
+using Spacebox.Scenes;
 
 namespace Spacebox.Game
 {
@@ -102,12 +104,12 @@ namespace Spacebox.Game
             InertiaController.SetParameters(
                 walkAccelerationRate: 5,
                 runAccelerationRate: 7,
-                decelerationRate: 0.15f, 
+                decelerationRate: 3f, 
                 walkMaxSpeed: 8,
                 runMaxSpeed: 20
             );
 
-            // Инициализируем параметры ходьбы
+           
             InertiaController.MaxSpeed = InertiaController.WalkMaxSpeed;
             InertiaController.AccelerationRate = InertiaController.WalkAccelerationRate;
         }
@@ -385,9 +387,24 @@ namespace Spacebox.Game
 
         private void ApplyVelocityDamage(float value)
         {
+           
             if (Math.Abs(value) > 10)
             {
-                Debug.Log($"Damaged from hitting a wall! Damage: {(int)(Math.Abs(value) - 10f)}  Speed: {value}");
+
+                float damage = (int)(Math.Abs(value) - 10f);
+                Debug.Log($"Damaged from hitting a wall! Damage: {damage}  Speed: {value}");
+                
+
+                if(damage > 5)
+                {
+                    SpaceScene.Uii.Stop();
+                    BlackScreenOverlay.IsEnabled = true;
+                    CanMove = false;
+                    Settings.ShowInterface = false;
+
+                    SpaceScene.Death.Play();
+                    SpaceScene.DeathOn = true;
+                }
             }
         }
 

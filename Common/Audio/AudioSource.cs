@@ -15,6 +15,8 @@ namespace Spacebox.Common.Audio
         private readonly object playLock = new object();
         private Thread playbackThread;
 
+        public bool IsPlaying => isPlaying;
+
         public bool IsLooped
         {
             get
