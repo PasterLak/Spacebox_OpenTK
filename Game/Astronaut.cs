@@ -102,16 +102,21 @@ namespace Spacebox.Game
         {
             InertiaController.Enabled = true;
             InertiaController.SetParameters(
-                walkAccelerationRate: 5,
-                runAccelerationRate: 7,
-                decelerationRate: 3f, 
+                walkTimeToMaxSpeed: 0.6f,
+                 walkTimeToStop: 0.5f,
+                 runTimeToMaxSpeed: 1.5f,
+                  runTimeToStop: 0.4f,
+               
                 walkMaxSpeed: 8,
                 runMaxSpeed: 20
             );
 
-           
+
+
+            InertiaController.SetMode(isRunning: false);
             InertiaController.MaxSpeed = InertiaController.WalkMaxSpeed;
-            InertiaController.AccelerationRate = InertiaController.WalkAccelerationRate;
+            //InertiaController.AccelerationRate = InertiaController.WalkAccelerationRate;
+            InertiaController.InertiaType = InertiaType.Damping;
         }
 
         private void SetCameraSway()
@@ -189,7 +194,7 @@ namespace Spacebox.Game
 
         public void SetInertiaParameters(float walkAccelerationRate, float runAccelerationRate, float decelerationFactor, float walkMaxSpeed, float runMaxSpeed)
         {
-            InertiaController.SetParameters(walkAccelerationRate, runAccelerationRate, decelerationFactor, walkMaxSpeed, runMaxSpeed);
+           // InertiaController.SetParameters(walkAccelerationRate, runAccelerationRate, decelerationFactor, walkMaxSpeed, runMaxSpeed);
         }
 
         public void EnableCameraSway(bool enabled)
@@ -263,19 +268,22 @@ namespace Spacebox.Game
 
             Vector3 movement = Vector3.Zero;
 
+            bool isRunning = Input.IsKey(Keys.LeftShift);
+            InertiaController.SetMode(isRunning);
+
             if (InertiaController.Enabled)
             {
                
-                if (Input.IsKey(Keys.LeftShift))
+                /*if (Input.IsKey(Keys.LeftShift))
                 {
                     InertiaController.MaxSpeed = InertiaController.RunMaxSpeed;
-                    InertiaController.AccelerationRate = InertiaController.RunAccelerationRate;
+                    //InertiaController.AccelerationRate = InertiaController.RunAccelerationRate;
                 }
                 else
                 {
                     InertiaController.MaxSpeed = InertiaController.WalkMaxSpeed;
-                    InertiaController.AccelerationRate = InertiaController.WalkAccelerationRate;
-                }
+                    //InertiaController.AccelerationRate = InertiaController.WalkAccelerationRate;
+                }*/
 
                 if (isMoving)
                 {
@@ -290,7 +298,7 @@ namespace Spacebox.Game
             }
             else
             {
-                float currentSpeed = Input.IsKey(Keys.LeftShift) ? _shiftSpeed : _cameraSpeed;
+                float currentSpeed = isRunning ? _shiftSpeed : _cameraSpeed;
 
                 if (isMoving)
                 {
