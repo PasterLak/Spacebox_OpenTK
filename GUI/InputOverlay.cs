@@ -44,8 +44,8 @@ namespace Spacebox.GUI
             ImGui.Text($"");
             ImGui.Text($"[Debug]");
             ImGui.Text($"");
-            ImGui.Text($"[F1] Console");
-            ImGui.Text($"[F2] Show FPS");
+            ImGui.Text($"[^] Console");
+            ImGui.Text($"[F3] Show FPS");
             ImGui.Text($"[F4] Visual Debug");
             ImGui.Text($"[F7] FPS Limiter on/off");
             ImGui.Text($"[F8] Show/Hide Interface");
@@ -53,6 +53,7 @@ namespace Spacebox.GUI
             ImGui.Text($"[F10] Wireframe Mesh on/off");
             ImGui.Text($"[F11] Fullscreen");
             ImGui.Text($"[F12] Screenshot");
+            ImGui.Text($"[I] Inertia on/off");
             ImGui.Text($"");
             ImGui.Text($"[Player]");
             ImGui.Text($"");
@@ -62,13 +63,23 @@ namespace Spacebox.GUI
             ImGui.Text($"[Shift] Speed-up");
             ImGui.Text($"[Q,E] Camera roll");
             ImGui.Text($"[C] Inventory");
+            ImGui.Text($"[G] Drop item");
+            ImGui.Text($"[F] Flashlight");
+      
+
             ImGui.Text($"");
-            
+            ImGui.Text($"[Inventory]");
+            ImGui.Text($"");
+            ImGui.Text($"[X+Click] Delete slot item");
+            ImGui.Text($"[Shift+Click] Move item to another storage");
+            ImGui.Text($"[Alt+Click] Split the stack");
+            ImGui.Text($"");
+
             ImGui.Text($"[Building]");
             ImGui.Text($"");
             ImGui.Text($"[P] Save the world");
+            ImGui.Text($"[Numpad9] Delete all chunk blocks");
             ImGui.Text($"");
-            ImGui.Text($"[Tab] Blocks selector");
             ImGui.Text($"[Scroll] Select block");
             ImGui.Text($"[LMB] Destroy block");
             ImGui.Text($"[RMB] Place block");

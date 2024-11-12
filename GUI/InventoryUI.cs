@@ -211,7 +211,7 @@ namespace Spacebox.UI
         {
             if (slot.HasItem)
             {
-                if (Input.IsKey(Keys.LeftControl))
+                if (Input.IsKey(Keys.LeftShift))
                 {
 
                     slot.MoveItemToConnectedStorage();

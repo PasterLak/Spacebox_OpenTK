@@ -19,7 +19,7 @@ version 0.0.7
 - collision detection
 - damage by hitting wall
 - better player controller and inertia
-- 
+- Input Manager
 
 version 0.0.6
 

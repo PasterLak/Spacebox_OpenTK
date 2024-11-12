@@ -7,16 +7,31 @@ namespace Spacebox.Common
     {
         private static Dictionary<string, InputAction> actions = new Dictionary<string, InputAction>();
 
-        public static void AddAction(string name, Keys key, bool isGlobal = false)
+        public static InputAction AddAction(string name, Keys key, bool isGlobal = false)
         {
             if (!actions.ContainsKey(name))
+            {
                 actions[name] = new InputAction(name, key, isGlobal);
+
+                return actions[name];
+            }
+
+            Debug.Error($"[InputManager] Action with name <{name}> was already added!");
+            return new InputAction(name + "2", key, isGlobal);
         }
 
-        public static void AddAction(string name, MouseButton button, bool isGlobal = false)
+        public static InputAction AddAction(string name, MouseButton button, bool isGlobal = false)
         {
             if (!actions.ContainsKey(name))
+            {
                 actions[name] = new InputAction(name, button, isGlobal);
+
+                return actions[name];
+            }
+    
+            Debug.Error($"[InputManager] Action with name <{name}> was already added!");
+
+            return new InputAction(name + "2", button, isGlobal);
         }
 
         public static void RemoveAction(string name)
@@ -43,6 +58,14 @@ namespace Spacebox.Common
             else
             {
                 actions.Clear();
+            }
+        }
+
+        public static void SetDescription(string name, string description)
+        {
+            if (actions.ContainsKey(name))
+            {
+                actions[name].Description = description;
             }
         }
 
@@ -107,9 +130,10 @@ namespace Spacebox.Common
             }
         }
 
-        private class InputAction
+        public class InputAction
         {
             public string Name { get; private set; }
+            public string Description { get; set; } = "";
             public Keys? Key { get; set; }
             public MouseButton? MouseButton { get; set; }
             public List<Action> Callbacks { get; private set; }

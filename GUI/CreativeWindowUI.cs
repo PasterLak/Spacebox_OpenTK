@@ -185,11 +185,11 @@ namespace Spacebox.UI
             {
                 if(Player != null)
                 {
-                    if(Input.IsKey(Keys.LeftControl))
+                    if(Input.IsKey(Keys.LeftShift))
                     {
                         Player.Panel.TryAddItem(slot.Item, slot.Item.StackSize);
                     }
-                    else if (Input.IsKey(Keys.LeftShift))
+                    else if (Input.IsKey(Keys.LeftControl))
                     {
                         Player.Panel.TryAddItem(slot.Item, (byte)(slot.Item.StackSize / 2));
                     }

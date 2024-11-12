@@ -172,7 +172,7 @@ namespace Spacebox.Common
             Handle = newHandle;
             _uniformLocations = newUniformLocations;
 
-            Debug.Log($"[Shader] Compiled! ID:{Handle} Name: {Path.GetFileName(_shaderPath)}", Color4.BlueViolet);
+            Debug.Log($"[Shader] Compiled! Handle:{Handle} Name: {Path.GetFileName(_shaderPath)}", Color4.BlueViolet);
         }
 
         public void ReloadShader()

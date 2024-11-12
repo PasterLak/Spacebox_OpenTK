@@ -2,10 +2,8 @@
 using Spacebox.Common;
 using Spacebox.GUI;
 
-
 namespace Spacebox.Game
 {
-    
 
     public static class GameBlocks
     {

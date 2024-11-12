@@ -1,6 +1,5 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
-using Spacebox.Game;
 
 namespace Spacebox.Scenes
 {
@@ -26,9 +25,9 @@ namespace Spacebox.Scenes
         {
 
             dustTexture = TextureManager.GetTexture("Resources/Textures/dust.png", true);
-
+            dustTexture.UpdateTexture(true);
             //Debug.Log("Dust " + GameBlocks.DustTexture.Handle);
-            
+
             particleShader = ShaderManager.GetShader("Shaders/particle");
 
             ParticleSystem = new ParticleSystem(dustTexture, particleShader)

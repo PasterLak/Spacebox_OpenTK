@@ -91,56 +91,56 @@ namespace Spacebox.Common
 
         public static void WriteLine(string message)
         {
-            AddMessage($"[DEBUG] {message}");
-            Console.WriteLine($"[DEBUG] {message}");
+            AddMessage($"{message}");
+            Console.WriteLine($"{message}");
         }
 
         public static void Write(string message)
         {
-            AddMessage($"[DEBUG] {message}");
-            Console.WriteLine($"[DEBUG] {message}");
+            AddMessage($"{message}");
+            Console.WriteLine($"{message}");
         }
 
         public static void Log(string message, OpenTK.Mathematics.Color4 color)
         {
-            AddMessage($"[DEBUG] {message}", color);
-            Console.WriteLine($"[DEBUG] {message}");
+            AddMessage($"{message}", color);
+            Console.WriteLine($"{message}");
         }
 
         public static void Log(object sender, string message, OpenTK.Mathematics.Color4 color)
         {
-            AddMessage($"[DEBUG][{sender.GetType().Name}] {message}", color);
-            Console.WriteLine($"[DEBUG][{sender.GetType().Name}] {message}");
+            AddMessage($"[{sender.GetType().Name}] {message}", color);
+            Console.WriteLine($"[{sender.GetType().Name}] {message}");
         }
         public static void Log(object sender, string message)
         {
-            AddMessage($"[DEBUG][{sender.GetType().Name}] {message}", Color.White);
-            Console.WriteLine($"[DEBUG][{sender.GetType().Name}] {message}");
+            AddMessage($"[{sender.GetType().Name}] {message}", Color.White);
+            Console.WriteLine($"[{sender.GetType().Name}] {message}");
         }
 
         public static void Success(object sender, string message)
         {
-            AddMessage($"[DEBUG][{sender.GetType().Name}] {message}", new Vector4(0,1,0,1));
-            Console.WriteLine($"[DEBUG][{sender.GetType().Name}] {message}");
+            AddMessage($"[Success][{sender.GetType().Name}] {message}", new Vector4(0,1,0,1));
+            Console.WriteLine($"[Success][{sender.GetType().Name}] {message}");
         }
 
         public static void Success(string message)
         {
-            AddMessage($"[DEBUG] {message}", new Vector4(0, 1, 0, 1));
-            Console.WriteLine($"[DEBUG] {message}");
+            AddMessage($"[Success] {message}", new Vector4(0, 1, 0, 1));
+            Console.WriteLine($"[Success] {message}");
         }
 
         public static void Log(string message, Vector4 color)
         {
-            AddMessage($"[DEBUG] {message}", color);
-            Console.WriteLine($"[DEBUG] {message}");
+            AddMessage($"{message}", color);
+            Console.WriteLine($"{message}");
         }
 
         public static void Log(string message)
         {
             //AddMessage($"[DEBUG] {message}", new Vector4(0.2f, 0.7f, 1f, 1f));
-            AddMessage($"[DEBUG] {message}", new Vector4(1,1, 1f, 1f));
-            Console.WriteLine($"[DEBUG] {message}");
+            AddMessage($"{message}", new Vector4(1,1, 1f, 1f));
+            Console.WriteLine($"{message}");
         }
 
         public static void Error(string message)
