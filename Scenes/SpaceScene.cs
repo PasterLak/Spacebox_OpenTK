@@ -67,10 +67,10 @@ namespace Spacebox.Scenes
            
             Death = new AudioSource(SoundManager.GetClip("death2"));
             Uii = new AudioSource(SoundManager.GetClip("uii"));
-            blockPlace = new AudioSource(SoundManager.GetClip("blockPlace"));
-            blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroy2"));
+            blockPlace = new AudioSource(SoundManager.GetClip("blockPlace3"));
+            blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroy"));
             flashLight = new AudioSource(SoundManager.GetClip("flashlight"));
-         
+            flashLight.Volume = 0.8f;
 
             Input.SetCursorState(CursorState.Grabbed);
 

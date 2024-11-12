@@ -3,6 +3,7 @@ using System.Numerics;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.Common.Audio;
 using Spacebox.Extensions;
 using Spacebox.Game;
 using Spacebox.Scenes;
@@ -21,6 +22,8 @@ namespace Spacebox.UI
         private static ItemModel ItemModel;
         private static ItemSlot SelectedSlot;
 
+        private static AudioSource scrollAudio;
+
         private static short _selectedSlotId = 0;
         public static short SelectedSlotId
         {
@@ -37,17 +40,20 @@ namespace Spacebox.UI
 
         private static float TimeToHideItemName = 2f;
         private static float _time = 0;
+        private static bool wasPlayerOnes = false;
         public static void Initialize(Storage storage, IntPtr slotTexture, IntPtr selectedTexture )
         {
             Storage = storage;
             SlotTexture = slotTexture;
             SelectedTexture = selectedTexture;
             //ItemTexture = new Texture2D("Resources/Textures/item.png", true, false).Handle;
-
+            scrollAudio = new AudioSource(SoundManager.GetClip("scroll"));
             itemModelShader = ShaderManager.GetShader("Shaders/itemModel");
             SetSelectedSlot(0);
 
             Storage.OnDataWasChanged += OnStorageDataWasChanged;
+
+            
         }
 
         public static OpenTK.Mathematics.Vector2[] GetSelectedBlockUV(Face face, Direction direction)
@@ -192,7 +198,7 @@ namespace Spacebox.UI
                 {
                     SelectedSlotId = 0;
                 }
-                SelectSlot(SelectedSlotId);
+                SetSelectedSlot(SelectedSlotId);
             }
 
             if (Input.MouseScrollDelta.Y > 0)
@@ -204,7 +210,7 @@ namespace Spacebox.UI
                     SelectedSlotId = (short)(Storage.SizeY - 1);
                 }
 
-                SelectSlot(SelectedSlotId);
+                SetSelectedSlot(SelectedSlotId);
             }
             if (Input.IsMouseButtonDown(MouseButton.Right))
             {
@@ -283,6 +289,19 @@ namespace Spacebox.UI
         {
             SelectedSlotId = id;
             SelectSlot(id);
+
+            if (wasPlayerOnes)
+            {
+                if (scrollAudio.IsPlaying)
+                {
+                    scrollAudio.Stop();
+                }
+                scrollAudio.Play();
+            }
+            else
+            {
+                wasPlayerOnes = true;
+            }
         }
         private static void SelectSlot(short slot)
         {
@@ -300,6 +319,7 @@ namespace Spacebox.UI
 
                 OnSlotChanged?.Invoke(slot);
 
+                
             }
         }
 

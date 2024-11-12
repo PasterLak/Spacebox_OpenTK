@@ -21,6 +21,7 @@ version 0.0.7
 - Improved player controller and inertia
 - Input Manager
 - Improved Sound Manager
+- new sound effects (scroll, block place/destroy, death, wall hit)
 
 version 0.0.6
 

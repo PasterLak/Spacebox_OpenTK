@@ -14,27 +14,33 @@
 
   <ItemGroup>
   
-    <None Remove="Mods\Default\blocks.json" />
+    <None Remove="GameSets\Default\blocks.json" />
   
-    <None Remove="Mods\Default\config.json" />
+    <None Remove="GameSets\Default\config.json" />
   
-    <None Remove="Mods\Default\items.json" />
+    <None Remove="GameSets\Default\items.json" />
   
-    <None Remove="Mods\Default\Optional\lighting.json" />
+    <None Remove="GameSets\Default\Optional\lighting.json" />
   
-    <None Remove="Mods\Default\Textures\lightAtlas - Copy.png" />
+    <None Remove="GameSets\Default\Textures\lightAtlas - Copy.png" />
   
-    <None Remove="Mods\Horror2\blocks.json" />
+    <None Remove="GameSets\Horror2\blocks.json" />
   
-    <None Remove="Mods\Horror2\config.json" />
+    <None Remove="GameSets\Horror2\config.json" />
   
-    <None Remove="Mods\Horror2\Textures\blocks.png" />
+    <None Remove="GameSets\Horror2\Textures\blocks.png" />
   
     <None Remove="Resources\Audio\blockDestroy.wav" />
   
     <None Remove="Resources\Audio\blockDestroy2.wav" />
   
+    <None Remove="Resources\Audio\blockDestroy3.wav" />
+  
     <None Remove="Resources\Audio\blockPlace.wav" />
+  
+    <None Remove="Resources\Audio\blockPlace2.wav" />
+  
+    <None Remove="Resources\Audio\blockPlace3.wav" />
   
     <None Remove="Resources\Audio\death.wav" />
   
@@ -44,8 +50,10 @@
   
     <None Remove="Resources\Audio\flashlight.wav" />
     <None Remove="Resources\Audio\music.wav" />
+    <None Remove="Resources\Audio\scroll.wav" />
     <None Remove="Resources\Audio\shooting.wav" />
     <None Remove="Resources\Audio\uii.wav" />
+    <None Remove="Resources\Audio\wallhit.wav" />
     <None Remove="Resources\Font\arial.png" />
     <None Remove="Resources\Font\meta.json" />
     <None Remove="Resources\Models\arrow.mtl" />
@@ -140,35 +148,35 @@
 
 	<ItemGroup>
 
-    <Content Include="Mods\Default\blocks.json">
+    <Content Include="GameSets\Default\blocks.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="Mods\Default\config.json">
+    <Content Include="GameSets\Default\config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="Mods\Default\items.json">
+    <Content Include="GameSets\Default\items.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="Mods\Default\Optional\lighting.json">
+    <Content Include="GameSets\Default\Optional\lighting.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="Mods\Horror2\blocks.json">
+    <Content Include="GameSets\Horror2\blocks.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="Mods\Horror2\config.json">
+    <Content Include="GameSets\Horror2\config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="Mods\Horror2\Textures\lightAtlas.png">
+    <Content Include="GameSets\Horror2\Textures\lightAtlas.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="Mods\Horror2\Textures\blocks.png">
+    <Content Include="GameSets\Horror2\Textures\blocks.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
@@ -180,7 +188,19 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
+    <Content Include="Resources\Audio\blockDestroy3.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <Content Include="Resources\Audio\blockPlace.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Resources\Audio\blockPlace2.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Resources\Audio\blockPlace3.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
@@ -196,7 +216,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
+    <Content Include="Resources\Audio\scroll.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <Content Include="Resources\Audio\uii.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Resources\Audio\wallhit.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
@@ -230,19 +258,19 @@
     <Content Include="Resources\Textures\item.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Mods\Default\Textures\items.png">
+    <Content Include="GameSets\Default\Textures\items.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Mods\Default\Textures\lightAtlas.png">
+    <Content Include="GameSets\Default\Textures\lightAtlas.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Mods\Horror2\Textures\blocks0.png">
+    <Content Include="GameSets\Horror2\Textures\blocks0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Mods\Horror2\Textures\items.png">
+    <Content Include="GameSets\Horror2\Textures\items.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Mods\Default\Textures\blocks.png">
+    <Content Include="GameSets\Default\Textures\blocks.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\selectedSlot.png">

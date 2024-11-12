@@ -1,6 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.Common.Audio;
 using Spacebox.GUI;
 using Spacebox.Scenes;
 
@@ -36,6 +37,8 @@ namespace Spacebox.Game
         public InertiaController InertiaController { get; private set; } = new InertiaController();
         private CameraSway _cameraSway = new CameraSway();
 
+        private AudioSource wallhitAudio;
+
         private bool _collisionEnabled = true;
         public bool CollisionEnabled
         {
@@ -49,6 +52,7 @@ namespace Spacebox.Game
             Flashlight = new SpotLight(ShaderManager.GetShader("Shaders/block"), Front);
             Flashlight.UseSpecular = false;
             FOV = MathHelper.DegreesToRadians(90);
+          
             Layer = CollisionLayer.Player;
             VisualDebug.RemoveCollisionToDraw(this);
 
@@ -56,21 +60,8 @@ namespace Spacebox.Game
             SetCameraSway();
 
             SetData();
-        }
 
-        public Astronaut(Vector3 position, Shader shader)
-            : base(position)
-        {
-            FOV = MathHelper.DegreesToRadians(90);
-            Flashlight = new SpotLight(shader, Front);
-            Flashlight.UseSpecular = false;
-            Layer = CollisionLayer.Player;
-            VisualDebug.RemoveCollisionToDraw(this);
-
-            SetInertia();
-            SetCameraSway();
-
-            SetData();
+            wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
         }
 
         ~Astronaut()
@@ -362,7 +353,7 @@ namespace Spacebox.Game
                 if (chunk.IsColliding(BoundingVolume))
                 {
                     position.X -= movement.X;
-                    ApplyVelocityDamage(InertiaController.Velocity.X);
+                    ApplyVelocityDamage(InertiaController.Velocity.Length);
                     InertiaController.Velocity = new Vector3(0, InertiaController.Velocity.Y, InertiaController.Velocity.Z);
                 }
            
@@ -372,7 +363,7 @@ namespace Spacebox.Game
                 if (chunk.IsColliding(BoundingVolume))
                 {
                     position.Y -= movement.Y;
-                    ApplyVelocityDamage(InertiaController.Velocity.Y);
+                    ApplyVelocityDamage(InertiaController.Velocity.Length);
                     InertiaController.Velocity = new Vector3(InertiaController.Velocity.X, 0, InertiaController.Velocity.Z);
                 }
 
@@ -381,7 +372,7 @@ namespace Spacebox.Game
                 if (chunk.IsColliding(BoundingVolume))
                 {
                     position.Z -= movement.Z;
-                    ApplyVelocityDamage(InertiaController.Velocity.Z);
+                    ApplyVelocityDamage(InertiaController.Velocity.Length);
                     InertiaController.Velocity = new Vector3(InertiaController.Velocity.X, InertiaController.Velocity.Y, 0);
                 }
 
@@ -393,21 +384,28 @@ namespace Spacebox.Game
             }
         }
 
-        private void ApplyVelocityDamage(float value)
+        private void ApplyVelocityDamage(float speed)
         {
-           
-            if (Math.Abs(value) > 10)
+
+            if(speed > 7)
+            {
+                wallhitAudio.Volume = 0;
+                wallhitAudio.Volume = MathHelper.Min(wallhitAudio.Volume + speed * 0.04f , 1);
+                wallhitAudio.Play();
+            }
+            if (speed > 10)
             {
 
-                float damage = (int)(Math.Abs(value) - 10f);
-                Debug.Log($"Damaged from hitting a wall! Damage: {damage}  Speed: {value}");
+                float damage = (int)(Math.Abs(speed) - 10f);
+                Debug.Log($"Damaged from hitting a wall! Damage: {damage}  Speed: {speed}");
                 
 
-                if(damage > 5)
+                if (damage > 5)
                 {
+                    SpaceScene.DeathOn = false;
                     SpaceScene.Uii.Stop();
                     BlackScreenOverlay.IsEnabled = true;
-                    CanMove = false;
+                     CanMove = false;
                     Settings.ShowInterface = false;
 
                     SpaceScene.Death.Play();

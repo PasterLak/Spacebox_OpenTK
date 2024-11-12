@@ -82,6 +82,19 @@ namespace Spacebox.Game
                 if (!File.Exists(SaveFilePath))
                 {
                     Debug.Log("Player save file does not exist.");
+
+                   
+                        foreach (var item in GameBlocks.Item)
+                        {
+                            if(item.Value.GetType() == typeof(DrillItem))
+                        {
+                            player.Panel.TryAddItem(item.Value, 1);
+                            break;
+                        }
+
+                          
+                        }
+                    
                     return;
                 }
 
@@ -96,7 +109,12 @@ namespace Spacebox.Game
 
                 player.Position = new Vector3(data.PositionX, data.PositionY, data.PositionZ);
                 Quaternion loadedRotation = new Quaternion(data.RotationX, data.RotationY, data.RotationZ, data.RotationW);
+
+              
                 player.SetRotation(loadedRotation);
+
+            
+                
                 player.Inventory.Clear();
                 player.Panel.Clear();
                 player.Flashlight.IsActive = data.IsFlashlightOn;
@@ -143,6 +161,8 @@ namespace Spacebox.Game
                     }
                 }
 
+                
+
                 Debug.Success("Player data loaded successfully.");
             }
             catch (Exception ex)
@@ -157,9 +177,9 @@ namespace Spacebox.Game
             public float PositionY { get; set; }
             public float PositionZ { get; set; }
             public float RotationX { get; set; }
-            public float RotationY { get; set; }
+            public float RotationY { get; set; } 
             public float RotationZ { get; set; }
-            public float RotationW { get; set; }
+            public float RotationW { get; set; } = 1;
             public bool IsFlashlightOn { get; set; } = false;
             public List<SavedItemSlot> InventorySlots { get; set; }
             public List<SavedItemSlot> PanelSlots { get; set; }

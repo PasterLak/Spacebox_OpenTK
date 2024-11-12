@@ -5,7 +5,7 @@ namespace Spacebox.Game
     {
         public static class GameSet
         {
-            public const string Folder = "Mods";
+            public const string Folder = "GameSets";
             public const string Default = "Default";
            
         }
