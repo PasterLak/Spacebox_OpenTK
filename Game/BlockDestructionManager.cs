@@ -23,6 +23,7 @@ namespace Spacebox.Managers
     
         public void DestroyBlock(Vector3 position, Vector3 color, Block block)
         {
+           
             texture = GameBlocks.BlockDust[block.BlockId];
 
             var destructionEffect = new BlockDestructionEffect(camera, position + 

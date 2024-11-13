@@ -21,6 +21,11 @@ namespace Spacebox.Common
         private bool _randomRotation;
         private byte rotationCase = 0;
 
+        public void RotateUV180()
+        {
+            rotationCase = 3;
+        }
+
         public ParticleRenderer(Texture2D texture, ParticleSystem system, Shader shader)
         {
             this.shader = shader;
@@ -100,7 +105,8 @@ namespace Spacebox.Common
                 Vector3 finalPosition = particleSystem.UseLocalCoordinates
                     ? particle.Position + particleSystem.Position
                     : particle.Position;
-                Matrix4 model = Matrix4.CreateScale(particle.Size) * Matrix4.CreateTranslation(finalPosition);
+                Matrix4 model = Matrix4.CreateScale(particle.Size) * 
+                    Matrix4.CreateTranslation(finalPosition);
                 instanceTransforms.Add(model);
                 instanceColors.Add(particle.GetCurrentColor());
             }
@@ -154,7 +160,7 @@ namespace Spacebox.Common
             shader.SetMatrix4("view", view, false);
             shader.SetMatrix4("projection", projection, false);
 
-            if(_randomRotation)
+            if(_randomRotation || rotationCase != 0)
             shader.SetInt("rotationCase", rotationCase );
 
             texture.Use(TextureUnit.Texture0);

@@ -23,8 +23,7 @@ namespace Spacebox.Common
         public float SpeedMax { get; set; } = 0f;
         public bool RandomUVRotation { get; set; } = false; // -90 90 180
         public Vector3 EmitterDirection { get; set; } = Vector3.UnitY; 
-        public bool UseLocalCoordinates { get; set; } = true;
-
+     
         
         public bool EnableRandomDirection { get; set; } = false;
 
@@ -36,9 +35,10 @@ namespace Spacebox.Common
         public void Emit()
         {
             Vector3 randomPosition = RandomPointInSphere(SpawnRadius);
-            Vector3 position = UseLocalCoordinates
-                ? particleSystem.Position + randomPosition + particleSystem.EmitterPositionOffset
-                : randomPosition;
+            Vector3 position = particleSystem.UseLocalCoordinates
+     ? randomPosition + particleSystem.EmitterPositionOffset
+     : particleSystem.Position + randomPosition + particleSystem.EmitterPositionOffset;
+
 
             Vector3 velocity;
 

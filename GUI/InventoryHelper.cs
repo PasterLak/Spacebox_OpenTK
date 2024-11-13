@@ -115,28 +115,44 @@ namespace Spacebox.UI
             ImGui.PopStyleColor(3);
         }
 
-        public static void ShowTooltip(ItemSlot slot)
+        public static void ShowTooltip(ItemSlot slot, bool showStackSize = false)
         {
             if (ImGui.IsItemHovered() && slot.HasItem)
             {
                 var text = "";
                 var type = slot.Item.GetType();
 
+                if(showStackSize)
+                {
+                    if(slot.Item.StackSize > 1)
+                    {
+                        text += "Stack: " + slot.Item.StackSize;
+                    }
+                }
+
                 if (type == typeof(DrillItem))
                 {
                     var itemType = slot.Item as DrillItem;
-                    text = "Power: " + itemType.Power;
+                    text += "\nPower: " + itemType.Power;
                 }
                 else if (type == typeof(WeaponItem))
                 {
                     var itemType = slot.Item as WeaponItem;
-                    text = "Damage: " + itemType.Damage;
+                    text += "\nDamage: " + itemType.Damage;
                 }
                 else if (type == typeof(BlockItem))
                 {
                     var itemType = slot.Item as BlockItem;
-                    text = "Mass: " + itemType.Mass;
+                    text += "\nMass: " + itemType.Mass;
                     text += "\nDurability: " + itemType.Durability;
+
+                }
+                else if (type == typeof(ConsumableItem))
+                {
+                    var itemType = slot.Item as ConsumableItem;
+                    text = "Healing: +" + itemType.HealAmount;
+                
+
                 }
 
                 ImGui.BeginTooltip();

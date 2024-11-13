@@ -82,6 +82,17 @@ namespace Spacebox.Game
             OnDataWasChanged?.Invoke(this);
         }
 
+        public bool TryAddBlock(Block block, byte count)
+        {
+    
+            if(GameBlocks.TryGetItemByBlockID(block.BlockId, out var item))
+            {
+                return TryAddItem(item, count);
+            }
+
+            return false;
+
+        }
         public bool TryAddItem(Item item, byte count)
         {
             if(item == null) return false;

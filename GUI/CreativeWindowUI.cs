@@ -155,17 +155,8 @@ namespace Spacebox.UI
                         ImGui.PopStyleColor(3);
                       
                         ImGui.PopStyleVar();
-                        ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(0.15f, 0.15f, 0.15f, 1.0f));
-                        if (ImGui.IsItemHovered() && slot.HasItem)
-                        {
-                            ImGui.BeginTooltip();
-                            ImGui.Text($"Id:{slot.Item.Id}\n" +
-                                
-                                $"{slot.Item.Name}\n" +
-                                $"Type:{slot.Item.GetType().Name}\n" +
-                                $"Stack: {slot.Item.StackSize}" );
-                            ImGui.EndTooltip();
-                        }
+
+                        InventoryUIHelper.ShowTooltip(slot, true);
 
 
                     }

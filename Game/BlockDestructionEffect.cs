@@ -1,8 +1,8 @@
-﻿// BlockDestructionEffect.cs
+﻿
 using OpenTK.Mathematics;
 using Spacebox.Common;
-using System;
-using System.Drawing;
+using Spacebox.Game;
+
 
 namespace Spacebox.Scenes
 {
@@ -18,6 +18,7 @@ namespace Spacebox.Scenes
 
         private Vector3 color = Vector3.One;
 
+        
         public bool IsFinished => elapsedTime >= duration && particleSystem.GetParticles().Count == 0;
 
         public BlockDestructionEffect(Camera camera, Vector3 position, Vector3 color, Texture2D texture, Shader shader)
@@ -60,13 +61,13 @@ namespace Spacebox.Scenes
                 SpeedMin = 0.005f,
                 SpeedMax = 0.1f,
                 EmitterDirection = Vector3.UnitY,
-                UseLocalCoordinates = true,
+               
                 EnableRandomDirection = true,
                 RandomUVRotation = true,
             };
 
             particleSystem.Emitter = emitter;
-
+            particleSystem.UseLocalCoordinates = true;
             //particleShader = new Shader("Shaders/particleShader");
             particleShader = shader;
             //particleShader.Use();

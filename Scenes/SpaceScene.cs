@@ -157,7 +157,7 @@ namespace Spacebox.Scenes
             blockDestructionManager.Update();
             dustSpawner.Update();
             //itemModel.Rotation = player.Rotation;
-           
+            world.Update();
             if (!Debug.IsVisible)
             {
                 if (Input.IsKeyDown(Keys.KeyPadEnter))
@@ -237,7 +237,7 @@ namespace Spacebox.Scenes
             //chunk.Draw(blocksShader);
             player.Draw();
             sector.Render(blocksShader);
-            
+            world.Render(blocksShader);
             //itemModel.Draw(itemModelShader);
             //world.Render(blocksShader);
             blockDestructionManager.Render();
@@ -306,7 +306,7 @@ namespace Spacebox.Scenes
             dustSpawner.Dispose();
             itemModel.Dispose();
             blockDestructionManager.Dispose();
-
+            World.DropEffectManager.Dispose();
             TagManager.ClearTags();
         }
 

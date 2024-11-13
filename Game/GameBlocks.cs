@@ -117,6 +117,18 @@ namespace Spacebox.Game
             return new Block(data); 
         }
 
+        public static bool TryGetItemByBlockID(int blockID, out Item item)
+        {
+            item = null;
+            blockID--;
+            if (Item.ContainsKey((short)blockID))
+            {
+                item = Item[(short)blockID];
+                return true;
+            }
+            return false;
+        }
+
         public static Vector2[] GetBlockUVsById(short id)
         {
             if (!Block.ContainsKey(id)) 
@@ -180,7 +192,7 @@ namespace Spacebox.Game
                 UVAtlas.GetBlockTexture(BlocksTexture,
                 blockData.TopUVIndex)
                 );
-            
+            texture.UpdateTexture(true);
 
             ItemIcon.Add(blockData.Item.Id, texture);
         }

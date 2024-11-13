@@ -208,6 +208,8 @@ namespace Spacebox.Game
             if(Blocks[x, y, z].IsTransparent)
             {
                 destructionManager?.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
+                World.DropEffectManager.
+                    DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
             }
             else
             {
@@ -215,10 +217,15 @@ namespace Spacebox.Game
                 {
                   
                     destructionManager?.DestroyBlock(worldBlockPosition, Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
+                    World.DropEffectManager.
+                       DestroyBlock(worldBlockPosition, Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
                 }
                 else
                 {
-                    destructionManager?.DestroyBlock(worldBlockPosition, Blocks[x, y , z ].LightColor, Blocks[x, y, z]);
+                    destructionManager?.
+                        DestroyBlock(worldBlockPosition, Blocks[x, y , z ].LightColor, Blocks[x, y, z]);
+                    World.DropEffectManager.
+                   DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
                 }
             }
  
@@ -394,7 +401,7 @@ namespace Spacebox.Game
             Vector3 rayDirection = player.Front;
 
 
-            Ray ray = new Ray(rayOrigin, rayDirection, 5);
+            Ray ray = new Ray(rayOrigin, rayDirection, 6);
 
             bool hit = Raycast(ray, out Vector3 hitPosition, out Vector3i hitBlockPosition, out Vector3 hitNormal);
 
@@ -481,8 +488,8 @@ namespace Spacebox.Game
                     {
                         if(!InventoryUI.IsVisible && !Debug.IsVisible)
                         {
-                            player.Panel.TryAddItem(
-                        GameBlocks.GetBlockDataById(aimedBlock.BlockId).Item, 1);
+                           // player.Panel.TryAddItem(
+                      //  GameBlocks.GetBlockDataById(aimedBlock.BlockId).Item, 1);
 
 
                             RemoveBlock(hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z,

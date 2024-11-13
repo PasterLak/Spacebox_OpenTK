@@ -5,6 +5,8 @@ namespace Spacebox.Game
 {
     public class World
     {
+        public static World Instance;
+
         public static Random Random;
         private Octree<Sector> sectorOctree;
         private Dictionary<Vector3i, Sector> sectorsByIndex;
@@ -16,9 +18,11 @@ namespace Spacebox.Game
         private const float ShiftThreshold = 40;
 
         private WorldData worldData;
+        public static DropEffectManager DropEffectManager;
 
         public World(Astronaut player)
         {
+            Instance = this;
             Random = new Random(LoadSeed());
 
             Player = player;
@@ -26,6 +30,8 @@ namespace Spacebox.Game
             sectorsByIndex = new Dictionary<Vector3i, Sector>();
             //InitializeSectors();
             //AddSector(new Vector3i(0,0,0));
+
+            DropEffectManager = new DropEffectManager(player);
 
         }
 
@@ -41,35 +47,39 @@ namespace Spacebox.Game
 
         public void Update()
         {
-            Vector3 playerPosition = Player.Position;
+            DropEffectManager.Update();
+            /* Vector3 playerPosition = Player.Position;
 
-            // Shift world if player is too far from origin
-            if (playerPosition.Length >= ShiftThreshold)
-            {
-                ShiftWorld(playerPosition);
-            }
+             // Shift world if player is too far from origin
+             if (playerPosition.Length >= ShiftThreshold)
+             {
+                 ShiftWorld(playerPosition);
+             }
 
-            //UpdateSectors();
 
-            //sectorOctree.
+             //UpdateSectors();
 
-            foreach (var sector in GetSectorsInRange(Player.Position, 1000))
-            {
-                sector.Update();
-            }
+             //sectorOctree.
 
-            foreach (var sector in GetSectorsInRange(Player.Position, playerVisibilityDistance))
-            {
-                sector.Update();
-            }
+             foreach (var sector in GetSectorsInRange(Player.Position, 1000))
+             {
+                 sector.Update();
+             }
+
+             foreach (var sector in GetSectorsInRange(Player.Position, playerVisibilityDistance))
+             {
+                 sector.Update();
+             }*/
         }
 
         public void Render(Shader shader)
         {
             foreach (var sector in GetSectorsInRange(Player.Position, playerVisibilityDistance))
             {
-                sector.Render(shader);
+                //sector.Render(shader);
             }
+
+            DropEffectManager.Render();
         }
 
         private void UpdateSectors()

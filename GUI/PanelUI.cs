@@ -376,36 +376,9 @@ namespace Spacebox.UI
                         ImGui.PopStyleColor(3);
                         ImGui.PopStyleVar(3);
                         
-                        ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(0.15f, 0.15f, 0.15f, 1.0f));
-                        if (ImGui.IsItemHovered() && slot.HasItem)
-                        {
+                        //ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(0.15f, 0.15f, 0.15f, 1.0f));
 
-                            var text = "";
-                            var type = slot.Item.GetType();
-
-                            if (type == typeof(DrillItem))
-                            {
-                                var itemType = slot.Item as DrillItem;
-                                text = "Power: " + itemType.Power;
-                            }
-                            else if (type == typeof(WeaponItem))
-                            {
-                                var itemType = slot.Item as WeaponItem;
-                                text = "Damage: " + itemType.Damage;
-                            }
-                            else if (type == typeof(BlockItem))
-                            {
-                                var itemType = slot.Item as BlockItem;
-                                text = "Mass: " + itemType.Mass;
-                                text += "\nDurability: " + itemType.Durability;
-                            }
-
-                            ImGui.BeginTooltip();
-                            ImGui.Text($"Id:{slot.Item.Id}\n{slot.Item.Name}\n" +
-                                text);
-                            ImGui.EndTooltip();
-
-                        }
+                        InventoryUIHelper.ShowTooltip(slot);
 
                         ImGui.PopStyleColor();
                     }
