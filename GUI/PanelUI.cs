@@ -53,6 +53,7 @@ namespace Spacebox.UI
             //ItemTexture = new Texture2D("Resources/Textures/item.png", true, false).Handle;
             scrollAudio = new AudioSource(SoundManager.GetClip("scroll"));
             itemModelShader = ShaderManager.GetShader("Shaders/itemModel");
+            InventoryUIHelper.SetDefaultIcon(slotTexture, selectedTexture);
             SetSelectedSlot(0);
 
             Storage.OnDataWasChanged += OnStorageDataWasChanged;
@@ -76,57 +77,26 @@ namespace Spacebox.UI
             SelectSlot(SelectedSlotId);
         }
 
+        private static bool IsHoldingItem<T>() where T : Item
+        {
+            if (SelectedSlot == null) return false;
+            if (!SelectedSlot.HasItem) return false;
+            //if (InventoryUI.IsVisible) return false;
+            return SelectedSlot.Item is T;
+        }
+
+        public static bool IsHoldingConsumable() => IsHoldingItem<ConsumableItem>();
+        public static bool IsHoldingDrill() => IsHoldingItem<DrillItem>();
+        public static bool IsHoldingBlock() => IsHoldingItem<BlockItem>();
+
         public static void DrawItemModel()
         {
             if (ItemModel == null) return;
 
-            
              ItemModel.Draw(itemModelShader);
-            
         }
 
-        public static bool IsHoldingConsumable()
-        {
-            if (SelectedSlot == null) return false;
-
-            if (!SelectedSlot.HasItem) return false;
-
-            //if (InventoryUI.IsVisible) return false;
-
-            if (SelectedSlot.Item.GetType() != typeof(ConsumableItem)) return false;
-
-
-            return true;
-        }
-
-        public static bool IsHoldingDrill()
-        {
-            if (SelectedSlot == null) return false;
-
-            if (!SelectedSlot.HasItem) return false;
-
-            //if (InventoryUI.IsVisible) return false;
-
-            if (SelectedSlot.Item.GetType() != typeof(DrillItem)) return false;
-            
-
-            return true;
-        }
-
-        public static bool IsHoldingBlock()
-        {
-            if (SelectedSlot == null) return false;
-
-            if (!SelectedSlot.HasItem) return false;
-
-            //if (InventoryUI.IsVisible) return false;
-
-            if (SelectedSlot.Item.GetType() != typeof(BlockItem)) return false;
-
-
-            return true;
-        }
-
+    
         public static void SetItemColor(Vector3 color)
         {
             if (ItemModel == null) return;
@@ -137,54 +107,32 @@ namespace Spacebox.UI
         public static bool TryPlaceItem(out short id)
         {
             id = 0;
-
             if (SelectedSlot == null) return false;
-
-            if(!SelectedSlot.HasItem) return false;
-
-            if(InventoryUI.IsVisible) return false;
-
-            if(SelectedSlot.Item.GetType() != typeof(BlockItem)) return false;
-
-           
-            BlockItem itemBlock = (BlockItem)SelectedSlot.Item;
-
-            if(itemBlock == null) return false;
+            if (!SelectedSlot.HasItem) return false;
+            if (InventoryUI.IsVisible) return false;
+            if (!(SelectedSlot.Item is BlockItem itemBlock)) return false;
 
             id = itemBlock.BlockId;
-
             SelectedSlot.TakeOne();
-
             return true;
         }
 
-      
+
         private static void ShowItemModel()
         {
-            if (SelectedSlot == null) return;
-            
-            if(!SelectedSlot.HasItem) return;
-
-            if(SelectedSlot.Item.GetType() == typeof(BlockItem)) return;
-
-            ItemModel = GameBlocks.ItemModels[SelectedSlot.Item.Id];
+            if (SelectedSlot?.HasItem == true && !(SelectedSlot.Item is BlockItem))
+            {
+                ItemModel = GameBlocks.ItemModels[SelectedSlot.Item.Id];
+            }
         }
 
         private static void HideItemModel()
         {
             if (SelectedSlot == null) return;
-
-            if(!SelectedSlot.HasItem)
-            {
-                ItemModel = null;
-                return;
-            }
-
-            if (SelectedSlot.Item.GetType() == typeof(BlockItem))
+            if (!SelectedSlot.HasItem || SelectedSlot.Item is BlockItem)
             {
                 ItemModel = null;
             }
-
         }
 
         private static void UpdateInput()
@@ -235,47 +183,21 @@ namespace Spacebox.UI
                 }
             }
 
-            if (Input.IsKeyDown(Keys.D1))
+            if (Input.IsKeyDown(Keys.D0))
+            {
+                SetSelectedSlot((short)(9));
+               
+            }
+
+            for (int i = 0; i <= 9; i++)
+            {
+                if (Input.IsKeyDown(Keys.D1 + i % 10))
                 {
-                    SetSelectedSlot(0);
+                    SetSelectedSlot((short)(i % Storage.SizeY));
+                    break;
                 }
-                if (Input.IsKeyDown(Keys.D2))
-                {
-                    SetSelectedSlot(1);
-                }
-                if (Input.IsKeyDown(Keys.D3))
-                {
-                    SetSelectedSlot(2);
-                }
-                if (Input.IsKeyDown(Keys.D4))
-                {
-                    SetSelectedSlot(3);
-                }
-                if (Input.IsKeyDown(Keys.D5))
-                {
-                    SetSelectedSlot(4);
-                }
-                if (Input.IsKeyDown(Keys.D6))
-                {
-                    SetSelectedSlot(5);
-                }
-                if (Input.IsKeyDown(Keys.D7))
-                {
-                    SetSelectedSlot(6);
-                }
-                if (Input.IsKeyDown(Keys.D8))
-                {
-                    SetSelectedSlot(7);
-                }
-                if (Input.IsKeyDown(Keys.D9))
-                {
-                    SetSelectedSlot(8);
-                }
-                if (Input.IsKeyDown(Keys.D0))
-                {
-                    SetSelectedSlot(9);
-                }
-            
+            }
+
         }
 
         public static void Update()
@@ -541,8 +463,11 @@ namespace Spacebox.UI
 
         private static void OnSlotClicked(ItemSlot slot)
         {
-
-            if (slot.HasItem)
+            if (Input.IsMouseButton(MouseButton.Left))
+            {
+                Debug.Log("left click");
+            }
+                if (slot.HasItem)
             {
                 clickedSlot = slot;
 

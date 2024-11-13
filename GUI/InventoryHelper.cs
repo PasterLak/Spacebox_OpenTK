@@ -18,10 +18,24 @@ namespace Spacebox.UI
             SlotTexture = slotTextureId;
             SelectedTexture = selectedTextureId;
             ItemTexture = new Texture2D("Resources/Textures/item.png", true, false).Handle;
+
+            Window.OnResized += OnResize;
+
+            OnResize(Window.Instance.Size);
+        }
+
+        private static void OnResize(OpenTK.Mathematics.Vector2 w)
+        {
+            SlotSize = Math.Clamp(w.X * 0.04f, 32.0f, 128.0f);
         }
 
         public static void RenderStorage(Storage storage, Action<ItemSlot> onSlotClicked, int columns, bool isPanel = false, short selectedSlotId = -1)
         {
+
+            ImGuiIOPtr io = ImGui.GetIO();
+
+            //SlotSize = Math.Clamp(io.DisplaySize.X * 0.04f, 32.0f, 128.0f);
+
             if (ImGui.BeginTable("StorageTable", columns, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit))
             {
                 for (int x = 0; x < columns; x++)

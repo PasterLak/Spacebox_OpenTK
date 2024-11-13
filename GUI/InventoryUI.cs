@@ -22,31 +22,32 @@ namespace Spacebox.UI
             SlotTexture = textureId;
 
             ItemTexture = new Texture2D("Resources/Textures/item.png", true, false).Handle;
+            InventoryUIHelper.SetDefaultIcon(textureId, IntPtr.Zero);
         }
-
-        public static void Render(Storage storage)
+        private static void HandleInput()
         {
-            if(Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.C) && !Debug.IsVisible)
+            if (Input.IsKeyDown(Keys.C) && !Debug.IsVisible)
             {
                 IsVisible = !IsVisible;
 
-                if(IsVisible)
+                if (IsVisible)
                 {
                     Input.ShowCursor();
-
                     if (Player != null)
                         Player.CanMove = false;
-
-
                 }
                 else
                 {
                     Input.HideCursor();
-
-                    if(Player != null)
+                    if (Player != null)
                         Player.CanMove = true;
                 }
             }
+        }
+        public static void Render(Storage storage)
+        {
+            HandleInput();
+
             if (!IsVisible) return;
 
             if (storage == null) return;
@@ -85,122 +86,11 @@ namespace Spacebox.UI
             //ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Vector2.Zero);
             //ImGui.PushStyleVar(ImGuiStyleVar.ItemInnerSpacing, Vector2.Zero);
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(15, 15));
-         
+
             //ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(2,2));
 
 
-            if (ImGui.BeginTable("InventoryTable", storage.SizeX, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit))
-            {
-                for (int x = 0; x < storage.SizeX; x++)
-                {
-                    ImGui.TableSetupColumn($"##column_{x}", ImGuiTableColumnFlags.WidthFixed, SlotSize);
-                }
-                for (int y = 0; y < storage.SizeY; y++)
-                {
-                    ImGui.TableNextRow();
-                    for (int x = 0; x < storage.SizeX; x++)
-                    {
-                        ImGui.TableSetColumnIndex(x);
-                        ItemSlot slot = storage.GetSlot(x, y);
-                        if (slot == null)
-                        {
-                            continue;
-                        }
-                        string id = $"slot_{x}_{y}";
-                        IntPtr slotTextureId = SlotTexture;
-
-                        ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.5f, 0.5f, 0.5f, 1.0f));
-                        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
-                        ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
-
-                        if (slotTextureId == IntPtr.Zero)
-                        {
-                            if (ImGui.Button("", new Vector2(SlotSize, SlotSize)))
-                            {
-                                OnSlotClicked(slot);
-                            }
-                        }
-                        else
-                        {
-                            if (ImGui.ImageButton(id, slotTextureId, new Vector2(SlotSize, SlotSize)))
-                            {
-                                OnSlotClicked(slot);
-                            }
-                        }
-
-                        /*if (ImGui.ImageButton(id, iconTextureId, new Vector2(SlotSize, SlotSize)))
-                        {
-                            OnSlotClicked(slot);
-                        }*/
-
-                        if (slot.HasItem)
-                        {
-                            Vector2 pos = ImGui.GetItemRectMin();
-
-
-                            Vector2 size = new Vector2(SlotSize, SlotSize) * 0.8f;
-
-                            Vector2 posCenter = ImGui.GetItemRectMin() + new Vector2(SlotSize * 0.5f, SlotSize * 0.5f);
-
-                            ImDrawListPtr drawList = ImGui.GetWindowDrawList();
-                            drawList.AddImage(GameBlocks.ItemIcon[slot.Item.Id].Handle, posCenter - size * 0.5f, posCenter + size * 0.5f);
-
-                            if (slot.Count > 1)
-                            {
-                                Vector2 textPos = pos + new Vector2(SlotSize * 0.05f, SlotSize * 0.05f);
-
-                                drawList.AddText(textPos + new Vector2(2, 2), ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 1)),
-                                    slot.Count.ToString());
-                                drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1)), 
-                                    slot.Count.ToString());
-                            }
-                        }
-
-                        ImGui.PopStyleColor(3);
-                        ImGui.PopStyleVar(3);
-
-                        ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(0.15f, 0.15f, 0.15f, 1.0f));
-                        if (ImGui.IsItemHovered() && slot.HasItem)
-                        {
-
-                            var text = "";
-                            var type = slot.Item.GetType();
-
-                            if (type == typeof(DrillItem)) 
-                            {
-                                var itemType = slot.Item as DrillItem;
-                                text = "Power: " + itemType.Power;
-                            }
-                            else if(type == typeof(WeaponItem))
-                            {
-                                var itemType = slot.Item as WeaponItem;
-                                text = "Damage: " + itemType.Damage;
-                            }
-                            else if (type == typeof(BlockItem))
-                            {
-                                var itemType = slot.Item as BlockItem;
-                                text = "Mass: " + itemType.Mass;
-                                text += "\nDurability: " + itemType.Durability;
-                            }
-
-                            ImGui.BeginTooltip();
-                            ImGui.Text($"Id:{slot.Item.Id}\n{slot.Item.Name}\n" +
-                                text);
-                            ImGui.EndTooltip();
-
-                        }
-
-                    
-                        if (slot.HasItem && slot.Count > 1)
-                        {
-                            Vector2 cursorPos = ImGui.GetCursorPos();
-                            ImGui.SetCursorPos(new Vector2(cursorPos.X + SlotSize - 20, cursorPos.Y + SlotSize - 20));
-                            //ImGui.TextColored(new Vector4(1, 1, 1, 1), slot.Count.ToString());
-                        }
-                    }
-                }
-                ImGui.EndTable();
-            }
+            InventoryUIHelper.RenderStorage(storage, OnSlotClicked, storage.SizeX);
 
             ImGui.PopStyleColor(3);
             ImGui.PopStyleVar(3);
