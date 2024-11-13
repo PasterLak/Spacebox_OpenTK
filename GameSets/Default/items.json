@@ -59,6 +59,7 @@
     {
         "Name": "Health",
         "Type": "consumable",
+        "HealAmount" : 50,
         "TextureCoord": {"x": 2, "y": 2},
         "MaxStack": 64,
         "ModelDepth": 2.0
@@ -72,6 +73,7 @@
     {
         "Name": "Power",
         "Type": "consumable",
+        "HealAmount" : 5,
         "TextureCoord": {"x": 3, "y": 2},
         "MaxStack": 64,
         "ModelDepth": 2.0
@@ -79,6 +81,7 @@
     {
         "Name": "Beer",
         "Type": "consumable",
+        "HealAmount" : 10,
         "TextureCoord": {"x": 4, "y": 1},
         "MaxStack": 20,
         "ModelDepth": 3.0

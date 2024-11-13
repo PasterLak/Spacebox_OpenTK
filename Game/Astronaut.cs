@@ -38,7 +38,8 @@ namespace Spacebox.Game
         private CameraSway _cameraSway = new CameraSway();
 
         private AudioSource wallhitAudio;
-
+        public HealthBar HealthBar { get; private set; }
+        public PowerBar PowerBar { get; private set; }
         private bool _collisionEnabled = true;
         public bool CollisionEnabled
         {
@@ -55,7 +56,8 @@ namespace Spacebox.Game
           
             Layer = CollisionLayer.Player;
             VisualDebug.RemoveCollisionToDraw(this);
-
+            HealthBar = new HealthBar();
+            PowerBar = new PowerBar();
             SetInertia();
             SetCameraSway();
 
@@ -93,9 +95,9 @@ namespace Spacebox.Game
         {
             InertiaController.Enabled = true;
             InertiaController.SetParameters(
-                walkTimeToMaxSpeed: 0.6f,
+                walkTimeToMaxSpeed: 1f,
                  walkTimeToStop: 0.5f,
-                 runTimeToMaxSpeed: 1.5f,
+                 runTimeToMaxSpeed: 2f,
                   runTimeToStop: 0.4f,
                
                 walkMaxSpeed: 8,
@@ -106,7 +108,7 @@ namespace Spacebox.Game
 
             InertiaController.SetMode(isRunning: false);
             InertiaController.MaxSpeed = InertiaController.WalkMaxSpeed;
-            //InertiaController.AccelerationRate = InertiaController.WalkAccelerationRate;
+        
             InertiaController.InertiaType = InertiaType.Damping;
         }
 
@@ -134,6 +136,9 @@ namespace Spacebox.Game
                 VisualDebug.ProjectionMatrix = GetProjectionMatrix();
                 VisualDebug.ViewMatrix = GetViewMatrix();
             }
+
+            PowerBar.Update();
+            HealthBar.Update();
 
             if (!CanMove) return;
 
@@ -262,19 +267,13 @@ namespace Spacebox.Game
             bool isRunning = Input.IsKey(Keys.LeftShift);
             InertiaController.SetMode(isRunning);
 
+            if (isRunning) PowerBar.Use();
+
+            if (PowerBar.StatsData.IsMinReached) isRunning = false;
+
             if (InertiaController.Enabled)
             {
                
-                /*if (Input.IsKey(Keys.LeftShift))
-                {
-                    InertiaController.MaxSpeed = InertiaController.RunMaxSpeed;
-                    //InertiaController.AccelerationRate = InertiaController.RunAccelerationRate;
-                }
-                else
-                {
-                    InertiaController.MaxSpeed = InertiaController.WalkMaxSpeed;
-                    //InertiaController.AccelerationRate = InertiaController.WalkAccelerationRate;
-                }*/
 
                 if (isMoving)
                 {
@@ -384,11 +383,14 @@ namespace Spacebox.Game
             }
         }
 
+        byte damageMultiplayer = 4;
         private void ApplyVelocityDamage(float speed)
         {
 
             if(speed > 7)
             {
+                if (wallhitAudio.IsPlaying) wallhitAudio.Stop();
+
                 wallhitAudio.Volume = 0;
                 wallhitAudio.Volume = MathHelper.Min(wallhitAudio.Volume + speed * 0.04f , 1);
                 wallhitAudio.Play();
@@ -396,10 +398,9 @@ namespace Spacebox.Game
             if (speed > 10)
             {
 
-                float damage = (int)(Math.Abs(speed) - 10f);
-                Debug.Log($"Damaged from hitting a wall! Damage: {damage}  Speed: {speed}");
-                
+                int damage = (int)(Math.Abs(speed) - 10f);
 
+                HealthBar.StatsData.Decrement(damage * damageMultiplayer);
                 if (damage > 5)
                 {
                     SpaceScene.DeathOn = false;
@@ -412,6 +413,19 @@ namespace Spacebox.Game
                     SpaceScene.DeathOn = true;
                 }
             }
+        }
+
+        public void ApplyConsumable(ConsumableItem consumable)
+        {
+            if(consumable != null)
+            {
+                HealthBar.StatsData.Increment(consumable.HealAmount);
+            }
+            else
+            {
+                Debug.Error($"[Astrounaut] ApplyConsumable consumable was null!");
+            }
+            
         }
 
         private void UpdateBoundingAt(Vector3 position)
@@ -434,6 +448,12 @@ namespace Spacebox.Game
         public void Draw(Camera camera)
         {
             Flashlight.Draw(this);
+        }
+
+        public void OnGUI()
+        {
+            PowerBar.OnGUI();
+            HealthBar.OnGUI();
         }
     }
 }

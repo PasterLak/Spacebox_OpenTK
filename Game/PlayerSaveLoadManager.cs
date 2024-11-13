@@ -28,10 +28,13 @@ namespace Spacebox.Game
                     RotationY = player.GetRotation().Y,
                     RotationZ = player.GetRotation().Z,
                     RotationW = player.GetRotation().W,
+                    Health = player.HealthBar.StatsData.Count,
+                    Power = player.PowerBar.StatsData.Count,
                     IsFlashlightOn = player.Flashlight.IsActive,
                     InventorySlots = new List<SavedItemSlot>(),
                     PanelSlots = new List<SavedItemSlot>()
                 };
+               
 
                 foreach (var slot in player.Inventory.GetAllSlots())
                 {
@@ -112,9 +115,10 @@ namespace Spacebox.Game
 
               
                 player.SetRotation(loadedRotation);
+                player.HealthBar.StatsData.Count = data.Health;
+                player.PowerBar.StatsData.Count = data.Power;
 
-            
-                
+
                 player.Inventory.Clear();
                 player.Panel.Clear();
                 player.Flashlight.IsActive = data.IsFlashlightOn;
@@ -180,6 +184,8 @@ namespace Spacebox.Game
             public float RotationY { get; set; } 
             public float RotationZ { get; set; }
             public float RotationW { get; set; } = 1;
+            public int Health { get; set; } = 100;
+            public int Power { get; set; } = 100;
             public bool IsFlashlightOn { get; set; } = false;
             public List<SavedItemSlot> InventorySlots { get; set; }
             public List<SavedItemSlot> PanelSlots { get; set; }

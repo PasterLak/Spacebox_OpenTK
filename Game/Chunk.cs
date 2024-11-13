@@ -450,7 +450,7 @@ namespace Spacebox.Game
                 VisualDebug.DrawLine(hitPosition, hitPosition + hitNormal * 0.5f, Color4.Red);
 
 
-                if (aimedBlock.BlockId == 20 || aimedBlock.BlockId == 22) // use  : todo 
+                if (aimedBlock.GetType() == typeof(InteractiveBlock) )
                 {
                     float dis = Vector3.Distance(player.Position, hitBlockPosition);
 

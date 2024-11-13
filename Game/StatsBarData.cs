@@ -1,4 +1,4 @@
-﻿using OpenTK.Mathematics;
+﻿using System;
 
 namespace Spacebox.Game
 {
@@ -9,29 +9,33 @@ namespace Spacebox.Game
         public string Name { get; set; } = "Default";
 
         public event Action DataChanged;
-
-        public StatsBarData() 
-        {
-        }
+        public event Action OnEqualZero;
 
 
+       
+
+        public bool IsMaxReached => Count >= MaxCount;
+        public bool IsMinReached => Count <= 0;
         public void Increment(int amount)
         {
+            if (Count >= MaxCount) return;
 
-            if (Count == MaxCount) return;
-
-            Count = MathHelper.Min(Count + amount, MaxCount);
+            Count = Math.Min(Count + amount, MaxCount);
             DataChanged?.Invoke();
         }
 
         public void Decrement(int amount)
         {
+            if (Count <= 0) return;
 
-            if (Count == 0) return;
+            Count = Math.Max(Count - amount, 0);
 
-            Count = MathHelper.Max(Count - amount, 0);
+            if (Count == 0)
+            {
+                OnEqualZero?.Invoke();
+            }
+
             DataChanged?.Invoke();
-
         }
     }
 }

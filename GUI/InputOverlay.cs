@@ -24,8 +24,8 @@ namespace Spacebox.GUI
             var x = Window.Instance.Size.X;
             var y = Window.Instance.Size.Y;
 
-            Vector2 windowSize = new Vector2(x * 0.2f, y * 0.8f);
-            Vector2 windowPos = new Vector2(io.DisplaySize.X - windowSize.X - 20, y * 0.05f);
+            Vector2 windowSize = new Vector2(x * 0.2f, y * 0.98f);
+            Vector2 windowPos = new Vector2(io.DisplaySize.X - windowSize.X - 20, y * 0.01f);
 
             ImGui.SetNextWindowPos(new System.Numerics.Vector2(windowPos.X, windowPos.Y), ImGuiCond.Always);
             ImGui.SetNextWindowSize(new System.Numerics.Vector2(windowSize.X, windowSize.Y), ImGuiCond.Always);
@@ -37,11 +37,8 @@ namespace Spacebox.GUI
          
             //ImGui.Separator();
 
-            ImGui.Text($"");
             ImGui.Text($"Press F6 to hide/show");
-            ImGui.Text($"");
             ImGui.Separator();
-            ImGui.Text($"");
             ImGui.Text($"[Debug]");
             ImGui.Text($"");
             ImGui.Text($"[^] Console");
@@ -84,7 +81,6 @@ namespace Spacebox.GUI
             ImGui.Text($"[LMB] Destroy block");
             ImGui.Text($"[RMB] Place block");
 
-            ImGui.Text($"");
             ImGui.Text($"");
             ImGui.Text($"[ESC] Close the game");
 

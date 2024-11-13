@@ -22,6 +22,7 @@ version 0.0.7
 - Input Manager
 - Improved Sound Manager
 - new sound effects (scroll, block place/destroy, death, wall hit)
+- health and power bar
 
 version 0.0.6
 

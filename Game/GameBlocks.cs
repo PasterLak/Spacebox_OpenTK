@@ -104,12 +104,17 @@ namespace Spacebox.Game
         {
             if (!Block.ContainsKey(id)) return new Block(new Vector2(0,0));
 
+            BlockData  data = Block[id];
+       
 
-            Block block = new Block(Block[id]);
+            if(data.Type.ToLower() == "interactive")
+            {
+                return new InteractiveBlock(data);
+            }
 
             //if (id == 0) block.Type = BlockType.Air;
 
-            return block;
+            return new Block(data); 
         }
 
         public static Vector2[] GetBlockUVsById(short id)

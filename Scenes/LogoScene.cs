@@ -39,14 +39,7 @@ namespace Spacebox.Scenes
         }
         public override void Start()
         {
-            if(!Directory.Exists("Mods"))
-            {
-                Directory.CreateDirectory("Mods");
-            }
-            if (!Directory.Exists("Saves"))
-            {
-                Directory.CreateDirectory("Saves");
-            }
+           
 
             SceneManager.LoadScene(typeof(SpaceMenuScene));
 

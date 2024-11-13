@@ -16,10 +16,10 @@ Pool
 - delete item slot
 - drop particle
 - mass calculation
-- mass and protection in mods
-- collision
++ mass and protection in mods
++ collision
 - auto generation of texture atlas
-- save icons, textures to png
++ save icons, textures to png
 
 version 0.0.7
 

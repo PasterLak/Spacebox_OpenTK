@@ -4,6 +4,7 @@ using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
+using Spacebox.Entities;
 using Spacebox.Extensions;
 using Spacebox.Game;
 using Spacebox.Scenes;
@@ -41,9 +42,12 @@ namespace Spacebox.UI
         private static float TimeToHideItemName = 2f;
         private static float _time = 0;
         private static bool wasPlayerOnes = false;
-        public static void Initialize(Storage storage, IntPtr slotTexture, IntPtr selectedTexture )
+
+        private static Astronaut Player;
+        public static void Initialize(Astronaut player, IntPtr slotTexture, IntPtr selectedTexture )
         {
-            Storage = storage;
+            Player = player;
+            Storage = Player.Panel;
             SlotTexture = slotTexture;
             SelectedTexture = selectedTexture;
             //ItemTexture = new Texture2D("Resources/Textures/item.png", true, false).Handle;
@@ -216,7 +220,9 @@ namespace Spacebox.UI
             {
                 if(IsHoldingConsumable())
                 {
+                    Player.ApplyConsumable((ConsumableItem)SelectedSlot.Item);
                     SelectedSlot.DropOne();
+                    
                 }
             }
 
