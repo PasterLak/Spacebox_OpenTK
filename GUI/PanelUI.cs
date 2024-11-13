@@ -466,9 +466,9 @@ namespace Spacebox.UI
                                 var itemType = slot.Item as DrillItem;
                                 text = "Power: " + itemType.Power;
                             }
-                            else if (type == typeof(WeaponeItem))
+                            else if (type == typeof(WeaponItem))
                             {
-                                var itemType = slot.Item as WeaponeItem;
+                                var itemType = slot.Item as WeaponItem;
                                 text = "Damage: " + itemType.Damage;
                             }
                             else if (type == typeof(BlockItem))

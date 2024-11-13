@@ -105,7 +105,6 @@ namespace Spacebox.Game
             );
 
 
-
             InertiaController.SetMode(isRunning: false);
             InertiaController.MaxSpeed = InertiaController.WalkMaxSpeed;
         

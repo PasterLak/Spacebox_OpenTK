@@ -120,7 +120,7 @@ namespace Spacebox.Scenes
 
             Texture2D c = TextureManager.GetTexture("Resources/Textures/slot.png", true, false);
             Texture2D c2 = TextureManager.GetTexture("Resources/Textures/selectedSlot.png", true, false);
-            InventoryUI.SetDefaultIcon(c.Handle);
+            InventoryUI.Initialize(c.Handle);
             PanelUI.Initialize(player, c.Handle, c2.Handle);
           
             InventoryUI.Player = player;

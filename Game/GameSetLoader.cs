@@ -245,7 +245,7 @@ namespace Spacebox.Game
         private static void RegisterWeaponItem(WeaponItemData data)
         {
             data.MaxStack = 1;
-            var weaponItem = new WeaponeItem(
+            var weaponItem = new WeaponItem(
                 (byte)data.MaxStack,
                 data.Name,
                 data.TextureCoord.X,
