@@ -6,6 +6,9 @@ namespace Spacebox.Scenes
 {
     internal class ErrorScene : Scene
     {
+        public ErrorScene(string[] args) : base(args)
+        {
+        }
 
         public override void LoadContent()
         {

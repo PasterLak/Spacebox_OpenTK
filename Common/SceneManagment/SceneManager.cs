@@ -94,8 +94,11 @@ namespace Spacebox.Common.SceneManagment
                 types.Add(scene);
             }
         }
-
         public static void LoadScene(Type sceneType)
+        {
+            LoadScene(sceneType, new string[0]);
+        }
+        public static void LoadScene(Type sceneType, string[] args)
         {
 
             if (types.Contains(sceneType))
@@ -111,11 +114,11 @@ namespace Spacebox.Common.SceneManagment
                 return;
             }
 
-            StartNextScene();
+            StartNextScene(args);
 
         }
 
-        public static void StartNextScene()
+        private static void StartNextScene(string[] args)
         {
             if (_nextSceneType != null)
             {
@@ -143,7 +146,9 @@ namespace Spacebox.Common.SceneManagment
                 _currentSceneType = _nextSceneType;
                 _nextSceneType = null;
 
-                Scene sceneInstance = Activator.CreateInstance(_currentSceneType.typ) as Scene;
+                Scene sceneInstance = Activator.CreateInstance(_currentSceneType.typ, new object[] { args }) as Scene; 
+
+      
 
                 CurrentScene = sceneInstance;
 

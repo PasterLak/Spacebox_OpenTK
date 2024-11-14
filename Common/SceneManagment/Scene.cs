@@ -15,10 +15,16 @@ namespace Spacebox.Common.SceneManagment
 
         public List<IDisposable> Disposables { get; private set; } = new List<IDisposable>();
 
-        public Scene()
+      
+
+        public Scene(string[] args)
         {
-           
-         
+
+            Init();
+        }
+
+        private void Init()
+        {
             CollisionManager = new CollisionManager();
             Renderer = new Renderer();
 

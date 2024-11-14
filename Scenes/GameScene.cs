@@ -47,7 +47,7 @@ namespace Spacebox.Scenes
         Water water;
         Skybox skybox; Skybox skyboxExtern;
 
-        public GameScene()
+        public GameScene(string[] args) : base(args)
         {
         }
 

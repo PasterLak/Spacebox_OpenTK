@@ -6,6 +6,7 @@ using Spacebox.Common.Audio;
 using Spacebox.Common.SceneManagment;
 using Spacebox.Entities;
 using Spacebox.Game;
+using Spacebox.Game.GUI;
 using Spacebox.GUI;
 
 
@@ -22,9 +23,9 @@ namespace Spacebox.Scenes
         private DustSpawner spawner;
 
         AudioSource music;
+        private GameMenu menu;
 
-
-        public SpaceMenuScene()
+        public SpaceMenuScene(string[] args) : base(args)
         {
         }
 
@@ -52,7 +53,7 @@ namespace Spacebox.Scenes
 
 
             CenteredImage.LoadImage("Resources/Textures/spaceboxLogo.png", true);
-
+            menu = new GameMenu();
 
             SetDustSpawner();
 
@@ -105,7 +106,8 @@ namespace Spacebox.Scenes
         }
         public override void Start()
         {
-            Input.HideCursor(); 
+            // Input.HideCursor(); 
+            
         }
       
 
@@ -122,7 +124,9 @@ namespace Spacebox.Scenes
 
         public override void OnGUI()
         {
+            Input.ShowCursor();
             CenteredImage.Draw();
+            menu.Render();
         }
 
         public override void UnloadContent()
@@ -146,12 +150,13 @@ namespace Spacebox.Scenes
            
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
 
-            if (Input.IsKeyDown(Keys.Enter))
+            if (Input.IsKeyDown(Keys.Enter) || Input.Mouse.IsButtonDown(MouseButton.Left))
             {
-                SceneManager.LoadScene(typeof(SpaceScene));
+                CenteredImage.ShowText = false;
+                GameMenu.IsVisible = true;
             }
 
-            if (Input.IsKeyDown(Keys.Backspace))
+            if (Input.IsKeyDown(Keys.KeyPadEnter))
             {
                 SceneManager.LoadScene(typeof(MenuScene));
             }

@@ -10,6 +10,7 @@ using Spacebox.Common.Audio;
 using Spacebox.Managers;
 using Spacebox.Game.Commands;
 using Spacebox.UI;
+using static Spacebox.Game.ChunkSaveLoadManager;
 
 namespace Spacebox.Scenes
 {
@@ -48,12 +49,27 @@ namespace Spacebox.Scenes
         private TestOctree testOctree = new TestOctree();
         private bool f = false;
         Axes axes;
+
+        private string worldName;
+        public SpaceScene(string[] args) : base(args) // name mod seed
+        {
+       
+            if(args.Length == 3 )
+            {
+                worldName = args[0];
+            }
+
+            BlackScreenOverlay.IsEnabled = true;
+            BlackScreenOverlay.Render();
+        }
         public override void LoadContent()
         {
+            
             float q = 5;
             player = new Astronaut(new Vector3(q + 3,0,q));
-
-            PlayerSaveLoadManager.LoadPlayer(player);
+            world = new World(player);
+            world.LoadWorldInfo(worldName);
+            PlayerSaveLoadManager.LoadPlayer(player, worldName);
 
 
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
@@ -102,7 +118,7 @@ namespace Spacebox.Scenes
             sprite = new Sprite("Resources/Textures/cat.png", new Vector2(0, 0), new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
             //chunk.RemoveBlock(0,0,0);
 
-            world = new World(player);
+            
 
             blockDestructionManager = new BlockDestructionManager(player);
 
@@ -146,7 +162,7 @@ namespace Spacebox.Scenes
         public override void Start()
         {
             Input.HideCursor();
-            
+            BlackScreenOverlay.IsEnabled = false;
         }
 
 

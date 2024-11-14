@@ -378,7 +378,7 @@ namespace Spacebox.Game
             if (Input.IsKeyDown(Keys.P))
             {
                 if(!Debug.IsVisible )
-                ChunkSaveLoadManager.SaveChunk(this);
+                ChunkSaveLoadManager.SaveChunk(this, World.Instance.WorldData.GetName());
             }
 
             if(Input.IsKeyDown(Keys.KeyPad9))

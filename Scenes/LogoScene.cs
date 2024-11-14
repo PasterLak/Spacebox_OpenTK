@@ -9,12 +9,12 @@ using Spacebox.GUI;
 
 namespace Spacebox.Scenes
 {
-    internal class LogoScene : Scene
+    public class LogoScene : Scene
     {
 
         Sprite sprite;
 
-        public LogoScene()
+        public LogoScene(string[] args) : base(args)
         {
         }
 

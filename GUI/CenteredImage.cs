@@ -7,6 +7,7 @@ namespace Spacebox.Common
 {
     public static class CenteredImage
     {
+        public static bool ShowText = true;
         private static Texture2D _imageTexture;
         private static bool _isVisible = true;
         private static float _displayDuration = 0f;
@@ -42,6 +43,8 @@ namespace Spacebox.Common
 
         public static void Update()
         {
+            if (!ShowText) return;
+
             _elapsedTime += Time.Delta;
             if (_isVisible && _displayDuration > 0f && _elapsedTime >= _displayDuration)
             {
@@ -106,6 +109,7 @@ namespace Spacebox.Common
 
         private static void DrawCenterText(Vector2 displaySize)
         {
+            if (!ShowText) return;
             float alpha = 0.5f * (float)(Math.Sin(_elapsedTime * 2.0f) + 1);
             Vector4 textColor = new Vector4(1, 1, 1, alpha);
 

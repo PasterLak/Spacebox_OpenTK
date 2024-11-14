@@ -7,16 +7,15 @@ namespace Spacebox.Game
 {
     public static class PlayerSaveLoadManager
     {
-        private static readonly string SaveFileDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Chunks");
-        private static readonly string SaveFilePath = Path.Combine(SaveFileDirectory, "player.json");
-
-        public static void SavePlayer(Astronaut player)
+        public static void SavePlayer(Astronaut player, string worldFolder)
         {
             try
             {
-                if (!Directory.Exists(SaveFileDirectory))
+                string saveFilePath = Path.Combine(worldFolder, "player.json");
+
+                if (!Directory.Exists(worldFolder))
                 {
-                    Directory.CreateDirectory(SaveFileDirectory);
+                    Directory.CreateDirectory(worldFolder);
                 }
 
                 PlayerData data = new PlayerData
@@ -34,7 +33,6 @@ namespace Spacebox.Game
                     InventorySlots = new List<SavedItemSlot>(),
                     PanelSlots = new List<SavedItemSlot>()
                 };
-               
 
                 foreach (var slot in player.Inventory.GetAllSlots())
                 {
@@ -69,8 +67,8 @@ namespace Spacebox.Game
                     WriteIndented = true
                 });
 
-                File.WriteAllText(SaveFilePath, jsonString);
-                Debug.Log($"Player data saved at {SaveFilePath}");
+                File.WriteAllText(saveFilePath, jsonString);
+                Debug.Log($"Player data saved at {saveFilePath}");
             }
             catch (Exception ex)
             {
@@ -78,30 +76,29 @@ namespace Spacebox.Game
             }
         }
 
-        public static void LoadPlayer(Astronaut player)
+        public static void LoadPlayer(Astronaut player, string worldFolder)
         {
             try
             {
-                if (!File.Exists(SaveFilePath))
+                string saveFilePath = Path.Combine(worldFolder, "player.json");
+
+                if (!File.Exists(saveFilePath))
                 {
                     Debug.Log("Player save file does not exist.");
 
-                   
-                        foreach (var item in GameBlocks.Item)
-                        {
-                            if(item.Value.GetType() == typeof(DrillItem))
+                    foreach (var item in GameBlocks.Item)
+                    {
+                        if (item.Value.GetType() == typeof(DrillItem))
                         {
                             player.Panel.TryAddItem(item.Value, 1);
                             break;
                         }
+                    }
 
-                          
-                        }
-                    
                     return;
                 }
 
-                string jsonString = File.ReadAllText(SaveFilePath);
+                string jsonString = File.ReadAllText(saveFilePath);
                 PlayerData data = JsonSerializer.Deserialize<PlayerData>(jsonString);
 
                 if (data == null)
@@ -113,15 +110,14 @@ namespace Spacebox.Game
                 player.Position = new Vector3(data.PositionX, data.PositionY, data.PositionZ);
                 Quaternion loadedRotation = new Quaternion(data.RotationX, data.RotationY, data.RotationZ, data.RotationW);
 
-              
                 player.SetRotation(loadedRotation);
                 player.HealthBar.StatsData.Count = data.Health;
                 player.PowerBar.StatsData.Count = data.Power;
 
-
                 player.Inventory.Clear();
                 player.Panel.Clear();
                 player.Flashlight.IsActive = data.IsFlashlightOn;
+
                 foreach (var savedSlot in data.InventorySlots)
                 {
                     if (GameBlocks.Item.TryGetValue(savedSlot.ItemId, out var item))
@@ -129,7 +125,6 @@ namespace Spacebox.Game
                         var slot = player.Inventory.GetSlot(savedSlot.SlotX, savedSlot.SlotY);
                         if (slot != null)
                         {
-                            
                             slot.Item = item;
                             slot.Count = savedSlot.Count;
                         }
@@ -165,8 +160,6 @@ namespace Spacebox.Game
                     }
                 }
 
-                
-
                 Debug.Success("Player data loaded successfully.");
             }
             catch (Exception ex)
@@ -181,7 +174,7 @@ namespace Spacebox.Game
             public float PositionY { get; set; }
             public float PositionZ { get; set; }
             public float RotationX { get; set; }
-            public float RotationY { get; set; } 
+            public float RotationY { get; set; }
             public float RotationZ { get; set; }
             public float RotationW { get; set; } = 1;
             public int Health { get; set; } = 100;

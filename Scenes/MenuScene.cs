@@ -19,7 +19,7 @@ namespace Spacebox.Scenes
 
         TextRenderer textRenderer;
         Menu menu = new Menu();
-        public MenuScene()
+        public MenuScene(string[] args) : base(args)
         {
         }
 

@@ -169,7 +169,7 @@ namespace Spacebox.Game
             if (Input.IsKeyDown(Keys.P))
             {
                 Console.WriteLine("Saving Player");
-                PlayerSaveLoadManager.SavePlayer(this);
+                PlayerSaveLoadManager.SavePlayer(this, World.Instance.WorldData.GetName());
             }
 
             if (Input.IsKeyDown(Keys.U))

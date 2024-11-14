@@ -17,7 +17,7 @@ namespace Spacebox.Game
 
         private const float ShiftThreshold = 40;
 
-        private WorldData worldData;
+        public WorldLoader.LoadedWorld WorldData { get; private set; }
         public static DropEffectManager DropEffectManager;
 
         public World(Astronaut player)
@@ -33,6 +33,16 @@ namespace Spacebox.Game
 
             DropEffectManager = new DropEffectManager(player);
 
+        }
+
+        public void LoadWorldInfo(string worldName)
+        {
+            WorldData = WorldLoader.LoadWorldByName(worldName);
+
+            if(WorldData == null)
+            {
+                Debug.Log("Data founded!");
+            }
         }
 
         private int LoadSeed()
