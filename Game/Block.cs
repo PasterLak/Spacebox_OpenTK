@@ -25,8 +25,10 @@ namespace Spacebox.Game
         public Direction Direction = Direction.Up;
         // local data
         public float LightLevel { get; set; } = 0; //0 - 15
-        public Vector3 LightColor { get; set; } = Vector3.Zero; 
+        public Vector3 LightColor { get; set; } = Vector3.Zero;
 
+        public const float Diagonal = 1.5f;
+        public const float DiagonalSquared = Diagonal * Diagonal;
         public Block(Vector2 textureCoords, Vector3? color = null, float lightLevel = 0f, Vector3? lightColor = null)
         {
 

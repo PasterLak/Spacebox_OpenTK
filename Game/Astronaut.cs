@@ -36,7 +36,7 @@ namespace Spacebox.Game
 
         public InertiaController InertiaController { get; private set; } = new InertiaController();
         private CameraSway _cameraSway = new CameraSway();
-
+        private HitImage _hitImage;
         private AudioSource wallhitAudio;
         public HealthBar HealthBar { get; private set; }
         public PowerBar PowerBar { get; private set; }
@@ -63,6 +63,8 @@ namespace Spacebox.Game
 
             SetData();
 
+            _hitImage = new HitImage();
+           
             wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
         }
 
@@ -138,7 +140,7 @@ namespace Spacebox.Game
 
             PowerBar.Update();
             HealthBar.Update();
-
+            _hitImage.Update();
             if (!CanMove) return;
 
             if (Input.IsKeyDown(Keys.F))
@@ -400,7 +402,9 @@ namespace Spacebox.Game
                 int damage = (int)(Math.Abs(speed) - 10f);
 
                 HealthBar.StatsData.Decrement(damage * damageMultiplayer);
-                if (damage > 5)
+                _hitImage.Show();
+             
+                 if (damage > 5)
                 {
                     SpaceScene.DeathOn = false;
                     SpaceScene.Uii.Stop();
@@ -453,6 +457,7 @@ namespace Spacebox.Game
         {
             PowerBar.OnGUI();
             HealthBar.OnGUI();
+            _hitImage.Draw();
         }
     }
 }

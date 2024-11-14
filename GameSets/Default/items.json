@@ -91,5 +91,13 @@
         "TextureCoord": {"x": 5, "y": 0},
         "MaxStack": 64,
         "ModelDepth": 2.0
+    },
+    {
+         "Name": "Drill 2",
+        "Type": "drill",
+        "TextureCoord": {"x": 0, "y": 0},
+        "MaxStack": 1,
+        "ModelDepth": 1.5,
+        "Power" : 2
     }
 ]

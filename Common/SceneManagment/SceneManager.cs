@@ -134,7 +134,8 @@ namespace Spacebox.Common.SceneManagment
                     CurrentScene.UnloadContent();
                     VisualDebug.Clear();
 
-                    
+                  
+
                 }
 
 

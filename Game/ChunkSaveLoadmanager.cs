@@ -8,7 +8,7 @@ namespace Spacebox.Game
 {
     public static class ChunkSaveLoadManager
     {
-        private static readonly string SaveDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Chunks");
+        private static readonly string SaveDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Worlds");
 
         static ChunkSaveLoadManager()
         {

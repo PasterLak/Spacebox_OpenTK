@@ -437,7 +437,9 @@ namespace Spacebox.Game
                     GenerateMesh();
                 }
 
-                if (PanelUI.IsHoldingBlock())
+                float dis = Vector3.DistanceSquared(hitBlockPosition + hitNormal, player.Position);
+
+                if (PanelUI.IsHoldingBlock() && dis > Block.DiagonalSquared)
                 {
                     BlockSelector.IsVisible = true;
                     BlockSelector.Instance.UpdatePosition(hitBlockPosition + hitNormal, Block.GetDirectionFromNormal(hitNormal));
@@ -459,9 +461,9 @@ namespace Spacebox.Game
 
                 if (aimedBlock.GetType() == typeof(InteractiveBlock) )
                 {
-                    float dis = Vector3.Distance(player.Position, hitBlockPosition);
+                    float dis2 = Vector3.Distance(player.Position, hitBlockPosition);
 
-                    if (dis < 3f)
+                    if (dis2 < 3f)
                         CenteredText.Show();
                     else
                         CenteredText.Hide();
@@ -483,7 +485,7 @@ namespace Spacebox.Game
                     
 
                  if (Input.IsMouseButtonDown(MouseButton.Left))
-                {
+                 {
                     if(PanelUI.IsHoldingDrill())
                     {
                         if(!InventoryUI.IsVisible && !Debug.IsVisible)
@@ -511,25 +513,30 @@ namespace Spacebox.Game
                 {
                     Vector3i placeBlockPosition = hitBlockPosition + new Vector3i((int)hitNormal.X, (int)hitNormal.Y, (int)hitNormal.Z);
 
-                    if (IsInRange(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z) &&
-                        Blocks[placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z].IsAir())
+                    if(Vector3.DistanceSquared(player.Position, hitBlockPosition + hitNormal) > Block.DiagonalSquared)
                     {
-                        if (PanelUI.TryPlaceItem(out var id))
+                        if (IsInRange(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z) &&
+                       Blocks[placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z].IsAir())
                         {
-                            
-                            Block newBlock = GameBlocks.CreateBlockFromId(id);
+                            if (PanelUI.TryPlaceItem(out var id))
+                            {
 
-                            bool hasSameSides = GameBlocks.GetBlockDataById(id).AllSidesAreSame;
+                                Block newBlock = GameBlocks.CreateBlockFromId(id);
 
-                            if(!hasSameSides)
-                            newBlock.SetDirectionFromNormal(hitNormal);
+                                bool hasSameSides = GameBlocks.GetBlockDataById(id).AllSidesAreSame;
 
-                            SetBlock(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z, newBlock);
+                                if (!hasSameSides)
+                                    newBlock.SetDirectionFromNormal(hitNormal);
 
-                            SpaceScene.blockPlace.Play();
+                                SetBlock(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z, newBlock);
+
+                                SpaceScene.blockPlace.Play();
+                            }
+
                         }
-                       
                     }
+
+                   
 
                     
                 }
@@ -552,9 +559,10 @@ namespace Spacebox.Game
                 Vector3 worldBlockPosition = new Vector3(x, y, z) + Position;
                 Spacebox.Common.VisualDebug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.Gray);
 
-               
 
-                if (PanelUI.IsHoldingBlock())
+                float dis = Vector3.DistanceSquared(worldBlockPosition, player.Position);
+
+                if (PanelUI.IsHoldingBlock() && dis > Block.DiagonalSquared)
                 {
 
                     //Debug.Log("holding");

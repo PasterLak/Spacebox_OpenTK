@@ -1,5 +1,6 @@
 ﻿using ImGuiNET;
 using Spacebox.Extensions;
+using System;
 using System.Numerics;
 
 namespace Spacebox.Common
@@ -10,17 +11,12 @@ namespace Spacebox.Common
         private static bool _isVisible = true;
         private static float _displayDuration = 0f;
         private static float _elapsedTime = 0f;
-      
-
-        private static float _parallaxIntensity = 0.01f; // Intensity of parallax effect
+        private static float _parallaxIntensity = 0.01f;
 
         public static void LoadImage(string path, bool pixelated = false)
         {
-            if (_imageTexture != null)
-            {
-                _imageTexture.Dispose();
-            }
-            _imageTexture = new Texture2D(path, pixelated, false);
+            _imageTexture?.Dispose();
+            _imageTexture = TextureManager.GetTexture(path, pixelated, false);
         }
 
         public static void Show(float duration = 0f)
@@ -47,7 +43,6 @@ namespace Spacebox.Common
         public static void Update()
         {
             _elapsedTime += Time.Delta;
-
             if (_isVisible && _displayDuration > 0f && _elapsedTime >= _displayDuration)
             {
                 Hide();
@@ -61,15 +56,24 @@ namespace Spacebox.Common
 
         public static void Draw(float scale = 0.5f)
         {
-            if (_imageTexture == null)
+            if (_imageTexture == null || !_isVisible)
                 return;
 
             ImGuiIOPtr io = ImGui.GetIO();
-            Vector2 displaySize = new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y);
+            Vector2 displaySize = io.DisplaySize;
+
+            ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
+            ImGui.SetNextWindowSize(displaySize, ImGuiCond.Always);
+            ImGui.Begin("OverlayWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs |
+                                         ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoScrollbar |
+                                         ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoBringToFrontOnFocus);
 
             DrawImage(displaySize, scale);
             DrawCenterText(displaySize);
             DrawGameVersion(displaySize);
+            DrawAuthor(displaySize);
+
+            ImGui.End();
         }
 
         private static void DrawImage(Vector2 displaySize, float scale)
@@ -90,60 +94,70 @@ namespace Spacebox.Common
                 imageWidth = maxHeight * imageAspect;
             }
 
-            // Позиция изображения с учетом параллакс-эффекта
             Vector2 mousePosition = Input.Mouse.Position.ToSystemVector2();
             Vector2 offset = (mousePosition - displaySize / 2f) * _parallaxIntensity;
 
             float posX = (displaySize.X - imageWidth) / 2f + offset.X;
             float posY = (displaySize.Y - imageHeight) / 2f - imageHeight / 1.2f + offset.Y;
 
-            ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(displaySize, ImGuiCond.Always);
-            ImGui.Begin("CenteredImageWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoBringToFrontOnFocus);
             ImGui.SetCursorPos(new Vector2(posX, posY));
             ImGui.Image((IntPtr)_imageTexture.Handle, new Vector2(imageWidth, imageHeight));
-            ImGui.End();
         }
 
         private static void DrawCenterText(Vector2 displaySize)
         {
-            float alpha = (float)(0.5 * (Math.Sin(_elapsedTime * 2.0f) + 1));
+            float alpha = 0.5f * (float)(Math.Sin(_elapsedTime * 2.0f) + 1);
             Vector4 textColor = new Vector4(1, 1, 1, alpha);
 
-            Vector2 textSize = ImGui.CalcTextSize("Press Enter to start");
+            string centerText = "Press Enter to start";
+            Vector2 textSize = ImGui.CalcTextSize(centerText);
+            float padding = 20f;
+
             float textPosX = (displaySize.X - textSize.X) / 2f;
             float textPosY = displaySize.Y - displaySize.Y / 3f;
+            float maxTextPosY = displaySize.Y - textSize.Y - padding;
+            textPosY = Math.Min(textPosY, maxTextPosY);
+            textPosY = Math.Max(textPosY, padding);
 
-            ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(displaySize, ImGuiCond.Always); // Set the window size
-            ImGui.Begin("CenterTextWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs);
             ImGui.SetCursorPos(new Vector2(textPosX, textPosY));
-            ImGui.TextColored(textColor, "Press Enter to start");
-            ImGui.End();
+            ImGui.TextColored(textColor, centerText);
         }
 
         private static void DrawGameVersion(Vector2 displaySize)
         {
-            Vector2 textSize = ImGui.CalcTextSize($"Version {Application.Version}") + new Vector2(5, 0);
-            float textPosX = 15f;
-            float textPosY = displaySize.Y - textSize.Y - 20f;
+            string versionText = $"Version {Application.Version}";
+            Vector2 textSize = ImGui.CalcTextSize(versionText);
+            float padding = 20f;
 
-            ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(displaySize, ImGuiCond.Always); // Set the window size
-            ImGui.Begin("VersionTextWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs);
+            float textPosX = padding;
+            float textPosY = displaySize.Y - textSize.Y - padding;
+            textPosY = Math.Max(textPosY, padding);
+
             ImGui.SetCursorPos(new Vector2(textPosX, textPosY));
-            ImGui.Text($"Version {Application.Version}");
-            ImGui.End();
+            ImGui.Text(versionText);
+        }
+
+        private static void DrawAuthor(Vector2 displaySize)
+        {
+            string author = "Made by PasterLak";
+            Vector2 textSize = ImGui.CalcTextSize(author);
+            float padding = 20f;
+
+            float textPosX = displaySize.X - textSize.X - padding;
+            float textPosY = displaySize.Y - textSize.Y - padding;
+
+            textPosX = Math.Max(textPosX, padding);
+            textPosY = Math.Max(textPosY, padding);
+
+            ImGui.SetCursorPos(new Vector2(textPosX, textPosY));
+            ImGui.Text(author);
         }
 
 
         public static void Dispose()
         {
-            if (_imageTexture != null)
-            {
-                _imageTexture.Dispose();
-                _imageTexture = null;
-            }
+            _imageTexture?.Dispose();
+            _imageTexture = null;
         }
     }
 }

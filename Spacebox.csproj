@@ -50,6 +50,7 @@
   
     <None Remove="Resources\Audio\flashlight.wav" />
     <None Remove="Resources\Audio\music.wav" />
+    <None Remove="Resources\Audio\pickup.wav" />
     <None Remove="Resources\Audio\scroll.wav" />
     <None Remove="Resources\Audio\shooting.wav" />
     <None Remove="Resources\Audio\uii.wav" />
@@ -93,6 +94,7 @@
     <None Remove="Resources\Textures\domBig.png" />
     <None Remove="Resources\Textures\grass1.jpg" />
     <None Remove="Resources\Textures\grass2.jpg" />
+    <None Remove="Resources\Textures\hit.png" />
     <None Remove="Resources\Textures\icon.ico" />
     <None Remove="Resources\Textures\icon.png" />
     <None Remove="Resources\Textures\item.png" />
@@ -216,6 +218,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
+    <Content Include="Resources\Audio\pickup.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <Content Include="Resources\Audio\scroll.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -247,6 +253,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\Game\leaves.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\hit.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\icon.ico">

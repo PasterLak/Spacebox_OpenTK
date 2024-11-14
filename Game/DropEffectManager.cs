@@ -2,6 +2,7 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.Common.Audio;
 using Spacebox.Game;
 using Spacebox.Scenes;
 using System;
@@ -23,18 +24,27 @@ namespace Spacebox.Game
 
         private readonly Stack<DropEffect> effectPool = new Stack<DropEffect>();
 
+        private AudioSource[] pickupSound = new AudioSource[3];
+
         public DropEffectManager(
             Astronaut player,
             // Removed moveAcceleration parameter
             float maxSpeed = 20f,
-            float moveDistance = 2.5f,
-            float pickupDistance = 0.5f)
+            float moveDistance = 2f,
+            float pickupDistance = 0.3f)
         {
             this.player = player;
             this.maxSpeed = maxSpeed;
             this.moveDistanceSquared = moveDistance * moveDistance;
             this.pickupDistanceSquared = pickupDistance * pickupDistance;
             shader = ShaderManager.GetShader("Shaders/particle");
+
+            for(int i = 0; i < 3; i++)
+            {
+                pickupSound[i] = new AudioSource(SoundManager.AddClip("pickup"));
+                pickupSound[i].Volume = 0.8f;
+            }
+         
         }
 
         public void DestroyBlock(Vector3 position, Vector3 color, Block block)
@@ -132,6 +142,21 @@ namespace Spacebox.Game
         private void Pickup(DropEffect effect)
         {
             player.Panel.TryAddBlock(effect.Block, 1);
+            
+            bool canPlay = false;
+            foreach(var sound in pickupSound)
+            {
+                if (sound.IsPlaying) continue;
+
+                sound.Play();
+                canPlay = true;
+            }
+
+            if (!canPlay)
+            {
+                pickupSound[0].Stop();
+                pickupSound[0].Play();
+            }
         }
 
         private DropEffect GetDropEffect()
