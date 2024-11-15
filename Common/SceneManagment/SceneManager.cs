@@ -22,12 +22,9 @@ namespace Spacebox.Common.SceneManagment
         private static Scene _currentScene;
         public static Scene CurrentScene { get { return _currentScene; } private set { _currentScene = value; } }
 
-
         private static SceneType? _nextSceneType = null;
-        //private static Scene _nextScene;
 
         public static GameWindow GameWindow { get; private set; }
-
 
 
         public static void Initialize(GameWindow gameWindow, Type startScene)
@@ -124,6 +121,8 @@ namespace Spacebox.Common.SceneManagment
             {
                 if (CurrentScene != null)
                 {
+                    Debug.Log("[SceneManager] Unloading content ",
+                    Color4.White);
                     DisposablesUnloader.Dispose();
 
                     Scene sceneBase = CurrentScene as Scene;
@@ -137,12 +136,13 @@ namespace Spacebox.Common.SceneManagment
                     CurrentScene.UnloadContent();
                     VisualDebug.Clear();
 
-                  
 
+                    Debug.Log("[SceneManager] Content was unloaded ",
+                    Color4.White);
                 }
 
 
-
+                Debug.Log("[SceneManager] Loading scene ", Color4.White);
                 _currentSceneType = _nextSceneType;
                 _nextSceneType = null;
 

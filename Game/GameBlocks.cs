@@ -26,7 +26,21 @@ namespace Spacebox.Game
 
         public static Dictionary<short, Texture2D> ItemIcon = new Dictionary<short, Texture2D>();
         public static Dictionary<short, Texture2D> BlockDust = new Dictionary<short, Texture2D>();
-      
+
+        public static AtlasTexture Atlas;
+
+
+        public static void ProcessBlockDataTexture(BlockData blockData)
+        {
+            if(Atlas == null)
+            {
+                Debug.Error("[GameBlocks] AtlasTexture is not created!");
+            }
+
+            blockData.WallsUV = Atlas.GetUVByName(blockData.WallsTexture);
+            blockData.TopUV = Atlas.GetUVByName(blockData.TopTexture);
+            blockData.BottomUV = Atlas.GetUVByName(blockData.BottomTexture);
+        }
         public static void RegisterBlock(BlockData blockData)
         {
             MaxBlockId++;
@@ -286,6 +300,8 @@ namespace Spacebox.Game
             ItemModels.Clear();
             ItemIcon.Clear();
             BlockDust.Clear();
+            Atlas.Dispose();
+            Atlas = null;
             MaxBlockId = -1;
             MaxItemId = -1;
             modId = "";

@@ -3,6 +3,7 @@ using ImGuiNET;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.Common.Audio;
 using Spacebox.Game;
 using System.Diagnostics;
 
@@ -110,6 +111,7 @@ namespace Spacebox.GUI
             ImGui.Text($" ");
             ImGui.Text($"Shaders Cached: {ShaderManager.Count}");
             ImGui.Text($"Textures Cached: {TextureManager.Count}");
+            ImGui.Text($"Sounds Cached: {SoundManager.Count}");
             ImGui.End();
             ImGui.PopStyleColor();
         }

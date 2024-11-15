@@ -9,6 +9,10 @@ namespace Spacebox.Game
         public string Type;
         //public Vector2 TextureCoords; // replace with byte
 
+        public string WallsTexture = "";
+        public string TopTexture = "";
+        public string BottomTexture ="";
+
         public Vector2Byte WallsUVIndex = new Vector2Byte(0, 1);
         public Vector2Byte TopUVIndex = new Vector2Byte(0, 0);
         public Vector2Byte BottomUVIndex = new Vector2Byte(0, 0);

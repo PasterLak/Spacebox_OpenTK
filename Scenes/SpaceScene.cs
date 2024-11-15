@@ -67,12 +67,19 @@ namespace Spacebox.Scenes
                     else
                     {
                         GameBlocks.DisposeAll();
+
+                        GameBlocks.Atlas = new AtlasTexture();
+                        GameBlocks.BlocksTexture = GameBlocks.Atlas.CreateTexture("P:\\C#\\Spacebox_OpenTK\\bin\\Debug\\net8.0-windows\\Test", 32, false);
+
                         GameSetLoader.Load(args[1]);
                         GameBlocks.IsInitialized = true;
                     }
                 }
                 else
                 {
+                    GameBlocks.Atlas = new AtlasTexture();
+                    GameBlocks.BlocksTexture = GameBlocks.Atlas.CreateTexture("P:\\C#\\Spacebox_OpenTK\\bin\\Debug\\net8.0-windows\\Test", 32, false);
+
                     GameSetLoader.Load(args[1]);
                     GameBlocks.IsInitialized = true;
                    
@@ -102,7 +109,7 @@ namespace Spacebox.Scenes
             player = new Astronaut(new Vector3(q + 3,0,q));
             world = new World(player);
             world.LoadWorldInfo(worldName);
-            PlayerSaveLoadManager.LoadPlayer(player, worldName);
+            PlayerSaveLoadManager.LoadPlayer(player, World.Instance.WorldData.WorldFolderPath);
 
 
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
@@ -119,7 +126,7 @@ namespace Spacebox.Scenes
             blockPlace = new AudioSource(SoundManager.GetClip("blockPlace3"));
             blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroy"));
             flashLight = new AudioSource(SoundManager.GetClip("flashlight"));
-            flashLight.Volume = 0.8f;
+            flashLight.Volume = 0.5f;
 
             Input.SetCursorState(CursorState.Grabbed);
 

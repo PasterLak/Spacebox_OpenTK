@@ -166,8 +166,13 @@ namespace Spacebox.Game
                     {
                         AllSidesAreSame = sameSides,
                         TopUVIndex = sameSides ? block.Walls : block.Top,
-                        BottomUVIndex = sameSides ? block.Walls : block.Bottom
+                        BottomUVIndex = sameSides ? block.Walls : block.Bottom,
+
+                        
                     };
+                    blockData.WallsTexture = block.WallsTexture;
+                    blockData.TopTexture = block.TopTexture;
+                    blockData.BottomTexture = block.BottomTexture;
 
                     GameBlocks.RegisterBlock(blockData);
                 }

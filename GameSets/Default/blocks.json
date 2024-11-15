@@ -1,6 +1,7 @@
 [
     {
         "Name": "Light Rock",
+        "WallsTexture": "lightRock.png",
         "Walls": {"x": 1, "y": 3},
         "PowerToDrill" : 1,
         "Mass" : 1,

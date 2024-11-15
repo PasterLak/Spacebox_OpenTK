@@ -50,7 +50,7 @@ namespace Spacebox.Common.SceneManagment
         public void Dispose()
         {
 
-            SoundManager.Dispose();
+          
 
             if(Disposables.Count > 0)
             {

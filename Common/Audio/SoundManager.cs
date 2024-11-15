@@ -1,4 +1,7 @@
 ﻿
+using OpenTK.Mathematics;
+using System.IO;
+
 namespace Spacebox.Common.Audio
 {
     public static class SoundManager
@@ -20,6 +23,7 @@ namespace Spacebox.Common.Audio
         private const string DefaultAudioPath = "Resources/Audio/error.wav";
         public static readonly List<string> AllowedExtensions = new List<string> { ".wav", ".ogg" };
 
+        public static int Count => audioClips.Count;
 
         public static AudioClip AddClip(string name, AudioLoadMode loadMode = AudioLoadMode.LoadIntoMemory)
         {
@@ -45,6 +49,8 @@ namespace Spacebox.Common.Audio
                     var clip = new AudioClip(filePath);
                     var entry = new AudioClipEntry(clip, isPermanent: false);
                     audioClips[name] = entry;
+
+                    Debug.Log("[SoundManager] Loaded: " + name, Color4.DarkKhaki);
                     return clip;
                 }
                 catch (Exception ex)

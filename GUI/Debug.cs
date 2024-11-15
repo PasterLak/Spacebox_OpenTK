@@ -165,6 +165,7 @@ namespace Spacebox.Common
             ImGui.SetNextWindowSizeConstraints(new Vector2(300, 200), new Vector2(float.MaxValue, float.MaxValue));
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(10, 10));
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0f, 0f, 0f, 0.8f));
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0f, 0f, 0f, 0.8f));
             ImGui.Begin("Console", ref _isVisible, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
 
             ImGui.Text("Console");

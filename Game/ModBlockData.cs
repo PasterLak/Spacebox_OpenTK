@@ -9,6 +9,10 @@ namespace Spacebox.Game
         public int PowerToDrill { get; set; } = 1;
         public int Mass { get; set; } = 1;
         public int Durability { get; set; } = 1;
+
+        public string WallsTexture { get; set; } = "";
+        public string TopTexture { get; set; } = "";
+        public string BottomTexture { get; set; } = "";
         public Vector2Byte Walls { get; set; } = Vector2Byte.Zero;
         public Vector2Byte Top { get; set; } = Vector2Byte.Zero;
         public Vector2Byte Bottom { get; set; } = Vector2Byte.Zero;

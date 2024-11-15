@@ -64,7 +64,8 @@ namespace Spacebox.Game.GUI
             ImGui.PushStyleColor(ImGuiCol.HeaderHovered, new Vector4(1f, 0.75f, 0f, 1.0f));
             ImGui.PushStyleColor(ImGuiCol.HeaderActive, new Vector4(1f, 0.8f, 0f, 1.0f));
             ImGui.PushStyleColor(ImGuiCol.Header, new Vector4(1f, 0.72f, 0f, 1.0f));
-           
+
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
 
             switch (currentState)
             {
@@ -454,12 +455,14 @@ namespace Spacebox.Game.GUI
 
             float windowWidth = windowSize.X * 0.3f;
             float windowHeight = windowSize.Y * 0.4f;
-            CenterNextWindow2(windowWidth, windowHeight);
+            var windowPos = CenterNextWindow2(windowWidth, windowHeight);
 
             ImGui.Begin("Options", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse);
 
             float buttonWidth = windowWidth * 0.5f;
             float buttonHeight = windowHeight * 0.1f;
+
+            DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), windowSize.Y, 0.005f);
 
             ImGui.SetCursorPosY(windowHeight - buttonHeight - ImGui.GetStyle().WindowPadding.Y * 2);
             ImGui.SetCursorPosX((windowWidth - buttonWidth) / 2);
@@ -476,16 +479,6 @@ namespace Spacebox.Game.GUI
         private void LoadWorlds()
         {
             worlds.Clear();
-
-            worlds.Add(new WorldInfo
-            {
-                Name = "Test Old World",
-                Author = "Test Author",
-                Seed = "12345",
-                ModId = "default",
-                GameVersion = "0.0.5",
-                LastEditDate = DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd HH:mm:ss")
-            });
 
             string worldsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Worlds");
 
@@ -569,13 +562,13 @@ namespace Spacebox.Game.GUI
                 Directory.CreateDirectory(chunksDirectory);
             }
 
-            string playerJsonPath = Path.Combine(newWorldDirectory, "player.json");
+            /*string playerJsonPath = Path.Combine(newWorldDirectory, "player.json");
             PlayerInfo playerInfo = new PlayerInfo
             {
             };
             string playerJsonContent = JsonSerializer.Serialize(playerInfo, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(playerJsonPath, playerJsonContent);
-
+            */
             worlds.Add(newWorld);
             selectedWorld = newWorld;
         }
