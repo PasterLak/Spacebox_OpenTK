@@ -4,6 +4,7 @@ using System.IO;
 using System.Numerics;
 using System.Text.Json;
 using ImGuiNET;
+using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Common.SceneManagment;
 using Spacebox.Scenes;
@@ -37,6 +38,8 @@ namespace Spacebox.Game.GUI
         private Vector2 oldItemSpacing;
         private Vector2 oldWindowPadding;
         private AudioSource click1;
+
+     
         public GameMenu()
         {
             LoadWorlds();
@@ -84,19 +87,40 @@ namespace Spacebox.Game.GUI
             ImGui.GetStyle().WindowPadding = oldWindowPadding;
         }
 
+        private void DrawElementColors(Vector2 windowPos,Vector2 windowSize, float displayY, float offsetMultiplayer)
+        {
+            float offsetValue = displayY * offsetMultiplayer;
+            Vector2 offset = new Vector2(offsetValue, offsetValue);
+
+            uint backgroundColor = ImGui.GetColorU32(new Vector4(0.75f, 0.75f, 0.75f, 1f));
+            uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
+            uint borderColor2 = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
+
+            var drawList = ImGui.GetWindowDrawList();
+
+            drawList.AddRectFilled(windowPos, windowPos + windowSize
+                 , borderColor2);
+            drawList.AddRectFilled(windowPos, windowPos + windowSize - offset, borderColor);
+
+            drawList.AddRectFilled(windowPos + offset, windowPos + windowSize - offset,
+                backgroundColor);
+        }
+
         private void RenderMainMenu()
         {
             Vector2 windowSize = ImGui.GetIO().DisplaySize;
-
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
             float windowWidth = windowSize.X * 0.15f;
             float windowHeight = windowSize.Y * 0.3f;
-            CenterNextWindow2(windowWidth, windowHeight);
+            var windowPos = CenterNextWindow2(windowWidth, windowHeight);
 
-            ImGui.Begin("Main Menu", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
+            ImGui.Begin("Main Menu", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar );
 
             float buttonWidth = windowWidth * 0.9f;
-            float buttonHeight = windowHeight * 0.15f;
+            float buttonHeight = windowHeight * 0.12f;
             float spacing = windowHeight * 0.03f;
+
+            DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), windowSize.Y, 0.005f);
 
             float totalButtonsHeight = buttonHeight * 3 + spacing * 2;
             ImGui.Dummy(new Vector2(0, (windowHeight - totalButtonsHeight) / 4));
@@ -107,7 +131,7 @@ namespace Spacebox.Game.GUI
             ImGui.Dummy(new Vector2(0, spacing));
             ImGui.Dummy(new Vector2(0, (windowHeight - totalButtonsHeight) / 2));
             CenterButtonWithBackground("Exit", buttonWidth, buttonHeight , () => Window.Instance.Quit());
-
+            ImGui.PopStyleColor(6);
             ImGui.End();
         }
 
@@ -124,10 +148,10 @@ namespace Spacebox.Game.GUI
         private void RenderWorldSelectMenu()
         {
             Vector2 windowSize = ImGui.GetIO().DisplaySize;
-
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
             float windowWidth = windowSize.X * 0.3f;
             float windowHeight = windowSize.Y * 0.4f;
-            CenterNextWindow2(windowWidth, windowHeight);
+            var windowPos = CenterNextWindow2(windowWidth, windowHeight);
             
             ImGui.Begin("Select World", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse);
 
@@ -136,36 +160,41 @@ namespace Spacebox.Game.GUI
 
             float listHeight = windowHeight * 0.4f;
             float infoHeight = windowHeight * 0.25f;
-            float buttonAreaHeight = windowHeight - listHeight - infoHeight - verticalSpacing * 4; // Учтем отступы
+            float buttonAreaHeight = windowHeight - listHeight - infoHeight - verticalSpacing * 4;
 
-            // Ширина для списка миров и информации о мире с учетом отступов
+            DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), windowSize.Y, 0.004f);
+
             float contentWidth = windowWidth - horizontalMargin * 2;
             ImGui.Dummy(new Vector2(0, verticalSpacing));
-            // Список миров
+         
             ImGui.SetCursorPosX(horizontalMargin);
             ImGui.BeginChild("WorldList", new Vector2(contentWidth, listHeight));
 
+            
             for (int i = 0; i < worlds.Count; i++)
             {
                 var world = worlds[i];
                 bool isSelected = (selectedWorld == world);
+              
 
                 if (ImGui.Selectable($" {world.Name} ", isSelected))
                 {
                     click1.Play();
                     selectedWorld = world;
                 }
-            }
 
+            }
+          
             ImGui.EndChild();
 
-            // Отступ между списком миров и информацией о мире
+           
             ImGui.Dummy(new Vector2(0, verticalSpacing));
 
-            // Информация о мире
+           
             ImGui.SetCursorPosX(horizontalMargin);
             ImGui.BeginChild("WorldInfo", new Vector2(contentWidth, infoHeight ));
-
+           
+            DrawElementColors(ImGui.GetCursorPos(), new Vector2(contentWidth, infoHeight), windowSize.Y, 0.004f);
             if (selectedWorld != null)
             {
                 ImGui.Text($" Name: {selectedWorld.Name}");
@@ -211,7 +240,7 @@ namespace Spacebox.Game.GUI
                });
 
 
-                ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.84f, 0.54f, 0.54f, 1.0f));
+                ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.8f, 0.25f, 0.25f, 1.0f));
                 // Кнопка "Delete World"
         
                 ButtonWithBackground("Delete World", new Vector2(buttonWidth, buttonHeight),
@@ -225,8 +254,8 @@ namespace Spacebox.Game.GUI
                       selectedWorld = worlds[0];
                   }
               });
-
-                ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.54f, 0.54f, 0.54f, 1.0f));
+                ImGui.PopStyleColor(6);
+                //ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.54f, 0.54f, 0.54f, 1.0f));
             }
 
             // Отступ между кнопками "Play"/"Delete" и кнопками "Create New World"/"Back"
@@ -259,7 +288,7 @@ namespace Spacebox.Game.GUI
                   click1.Play();
                   currentState = MenuState.Main;
               });
-
+           
             ImGui.End();
         }
 
@@ -268,10 +297,10 @@ namespace Spacebox.Game.GUI
         private void RenderNewWorldMenu()
         {
             Vector2 windowSize = ImGui.GetIO().DisplaySize;
-
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
             float windowWidth = windowSize.X * 0.3f;
             float windowHeight = windowSize.Y * 0.4f;
-            CenterNextWindow2(windowWidth, windowHeight);
+            var windowPos = CenterNextWindow2(windowWidth, windowHeight);
 
             ImGui.Begin("Create New World", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse);
 
@@ -282,6 +311,7 @@ namespace Spacebox.Game.GUI
             float spacing = windowHeight * 0.02f;
             float labelHeight = ImGui.CalcTextSize("A").Y;
 
+            DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), windowSize.Y, 0.004f);
             // Корректировка общей высоты ввода для учета меток и полей ввода
             float totalInputHeight = (labelHeight + inputHeight + spacing) * 4;
             float topPadding = (windowHeight - totalInputHeight - buttonHeight - ImGui.GetStyle().WindowPadding.Y * 2) / 2;
@@ -349,8 +379,8 @@ namespace Spacebox.Game.GUI
                     click1.Play();
                     currentState = MenuState.WorldSelect;
                 });
-         
 
+            ImGui.PopStyleColor(6);
             ImGui.End();
         }
 
@@ -586,13 +616,16 @@ namespace Spacebox.Game.GUI
             ImGui.SetNextWindowSize(new Vector2(width, height));
         }
 
-        private void CenterNextWindow2(float width, float height)
+        private Vector2 CenterNextWindow2(float width, float height)
         {
-            ImGui.SetNextWindowPos(new Vector2(
+            var pos = new Vector2(
                 (ImGui.GetIO().DisplaySize.X - width) * 0.5f,
-                (ImGui.GetIO().DisplaySize.Y - height) * 0.7f),
+                (ImGui.GetIO().DisplaySize.Y - height) * 0.7f);
+            ImGui.SetNextWindowPos(pos,
                 ImGuiCond.Always);
             ImGui.SetNextWindowSize(new Vector2(width, height));
+
+            return pos;
         }
 
         private void CenterButton(string label, float width, float height, Action onClick)
@@ -616,14 +649,16 @@ namespace Spacebox.Game.GUI
             float offsetValue = size.Y * 0.1f;
             Vector2 offset = new Vector2(offsetValue, offsetValue);
 
-            uint backgroundColor = ImGui.GetColorU32(new Vector4(0.0f, 0.0f, 0.0f, 0.5f));
-            uint borderColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 0.5f));
+       
+            uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
+            uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
 
             var drawList = ImGui.GetWindowDrawList();
 
 
-            drawList.AddRectFilled(buttonPos, buttonPos + size + offset, backgroundColor);
+
             drawList.AddRectFilled(buttonPos - offset, buttonPos + size + offset, borderColor);
+            drawList.AddRectFilled(buttonPos, buttonPos + size + offset, lightColor);
 
             if (ImGui.Button(label, size))
             {
@@ -631,8 +666,10 @@ namespace Spacebox.Game.GUI
                 onClick?.Invoke();
             }
         }
-
-
+        /*
+        uint backgroundColor = ImGui.GetColorU32(new Vector4(0.75f, 0.75f, 0.75f, 1f));
+        uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
+        uint borderColor2 = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));*/
         public void CenterButtonWithBackground(string label, float width, float height, Action onClick)
         {
             float windowWidth = ImGui.GetWindowWidth();
@@ -643,14 +680,15 @@ namespace Spacebox.Game.GUI
             float offsetValue = height * 0.1f;
             Vector2 offset = new Vector2(offsetValue, offsetValue);
 
-            uint backgroundColor = ImGui.GetColorU32(new Vector4(0.0f, 0.0f, 0.0f, 0.5f));
-            uint borderColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 0.5f));
+            uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
+            uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
 
             var drawList = ImGui.GetWindowDrawList();
 
          
-            drawList.AddRectFilled(buttonPos, buttonPos + new Vector2(width, height) + offset, backgroundColor);
+            
             drawList.AddRectFilled(buttonPos - offset, buttonPos + new Vector2(width, height) + offset, borderColor);
+            drawList.AddRectFilled(buttonPos, buttonPos + new Vector2(width, height) + offset, lightColor);
 
             if (ImGui.Button(label, new Vector2(width, height)))
             {
@@ -684,6 +722,17 @@ namespace Spacebox.Game.GUI
         public string ModId { get; set; }
         public string GameVersion { get; set; }
         public string LastEditDate { get; set; }
+
+        /*
+        public static bool operator == (WorldInfo left, WorldInfo right)
+        {
+            return left.Name == right.Name;
+        }
+
+        public static bool operator !=(WorldInfo left, WorldInfo right)
+        {
+            return !(left == right);
+        }*/
     }
 
     public class PlayerInfo

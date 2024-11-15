@@ -28,6 +28,8 @@
   
     <None Remove="GameSets\Horror2\config.json" />
   
+    <None Remove="GameSets\Horror2\Optional\lighting.json" />
+  
     <None Remove="GameSets\Horror2\Textures\blocks.png" />
   
     <None Remove="Resources\Audio\blockDestroy.wav" />
@@ -173,6 +175,10 @@
     </Content>
 
     <Content Include="GameSets\Horror2\config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Horror2\Optional\lighting.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 

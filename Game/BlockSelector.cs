@@ -33,6 +33,8 @@ namespace Spacebox.Game
             currentTexture = selectorTexture;
             PanelUI.OnSlotChanged += OnSelectedSlotWasChanged;
             //block.ChangeUV(UVAtlas.GetUVs(3,3));
+
+            OnSelectedSlotWasChanged(PanelUI.SelectedSlotId);
         }
 
         public void OnSelectedSlotWasChanged(short slot)

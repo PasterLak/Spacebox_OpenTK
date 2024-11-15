@@ -104,7 +104,7 @@ namespace Spacebox
             colors[(int)ImGuiCol.CheckMark] = new Vector4(0.90f, 0.90f, 0.90f, 0.50f);
             colors[(int)ImGuiCol.SliderGrab] = new Vector4(1.00f, 1.00f, 1.00f, 0.30f);
             colors[(int)ImGuiCol.SliderGrabActive] = new Vector4(0.84f, 0.70f, 0.10f, 0.60f);
-            colors[(int)ImGuiCol.Button] = new Vector4(0.54f, 0.54f, 0.54f, 1.00f);
+            colors[(int)ImGuiCol.Button] = new Vector4(0.75f, 0.75f, 0.75f, 1f);
             colors[(int)ImGuiCol.ButtonHovered] = new Vector4(0.6f, 0.6f, 0.6f, 1f);
             colors[(int)ImGuiCol.ButtonActive] = new Vector4(0.7f, 0.7f, 0.7f, 1f);
             colors[(int)ImGuiCol.Header] = new Vector4(0.89f, 0.90f, 0.40f, 0.45f);

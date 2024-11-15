@@ -22,6 +22,9 @@ namespace Spacebox.Game
 
             itemCamera = new Camera360(Vector3.Zero, false);
 
+            //shader.SetVector3("lightColor", new Vector3(1, 1, 1));
+           // shader.SetVector3("objectColor", new Vector3(1, 1, 1));
+
         }
 
         /*
@@ -121,6 +124,9 @@ namespace Spacebox.Game
             shader.SetMatrix4("model", model);
             shader.SetMatrix4("view", itemCamera.GetViewMatrix());
             shader.SetMatrix4("projection", itemCamera.GetProjectionMatrix());
+
+            shader.SetVector3("lightColor", new Vector3(1, 1, 1));  // can be opt
+            shader.SetVector3("objectColor", new Vector3(1, 1, 1));
 
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(false);

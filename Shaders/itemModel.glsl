@@ -40,19 +40,22 @@ in vec2 TexCoords;
 out vec4 FragColor;
 
 uniform sampler2D texture0;
+
+// Diffuse
 uniform vec3 lightDir = vec3(-1,-1,-1);
-uniform vec3 lightColor = vec3(1,1,1);
+uniform vec3 lightColor = vec3(1,1,1); 
 uniform vec3 objectColor = vec3(1,1,1);
 
+
+// SSAO
 uniform bool useSsao = false;
-
-
 uniform float aoIntensity = 0.5; 
 uniform vec3 aoDirection = vec3(0.0, 0.0, 1.0); 
 
 
 void main()
 {
+ 
     vec4 texColor = texture(texture0, TexCoords);
     if(texColor.a < 0.1)
         discard;

@@ -246,7 +246,7 @@ namespace Spacebox.UI
                 }
 
                 OnSlotChanged?.Invoke(slot);
-
+              
                 
             }
         }
