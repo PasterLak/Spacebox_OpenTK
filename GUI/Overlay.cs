@@ -112,6 +112,14 @@ namespace Spacebox.GUI
             ImGui.Text($"Shaders Cached: {ShaderManager.Count}");
             ImGui.Text($"Textures Cached: {TextureManager.Count}");
             ImGui.Text($"Sounds Cached: {SoundManager.Count}");
+
+            if(GameBlocks.IsInitialized)
+            {
+                var size = GameBlocks.AtlasBlocks.SizeBlocks * GameBlocks.AtlasBlocks.BlockSizePixels;
+                var size2 = GameBlocks.AtlasItems.SizeBlocks * GameBlocks.AtlasItems.BlockSizePixels;
+                ImGui.Text($"Atlas Blocks: {size}x{size}, Items: {size2}x{size2}");
+            }
+            
             ImGui.End();
             ImGui.PopStyleColor();
         }

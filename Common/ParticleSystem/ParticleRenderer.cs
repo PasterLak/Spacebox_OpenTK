@@ -19,6 +19,12 @@ namespace Spacebox.Common
         private List<Vector4> instanceColors = new List<Vector4>();
 
         private bool _randomRotation;
+        public bool RandomRotation { get => _randomRotation; set
+            {
+                _randomRotation = value;
+
+                if(value ) { RandomUVRotation(); }
+            } }
         private byte rotationCase = 0;
 
         public void RotateUV180()
@@ -37,7 +43,14 @@ namespace Spacebox.Common
         }
 
    
-
+        private void RandomUVRotation()
+        {
+            if (_randomRotation)
+            {
+                Random random = new Random();
+                rotationCase = (byte)random.Next(0, 4);
+            }
+        }
         private void Initialize()
         {
             float[] vertices = {
@@ -47,11 +60,8 @@ namespace Spacebox.Common
                 -0.5f,  0.5f, 0f, 0f, 1f
             };
 
-            if(_randomRotation)
-            {
-                Random random = new Random();
-                rotationCase = (byte)random.Next(0, 4);
-            }
+            RandomUVRotation();
+
 
             uint[] indices = {
                 0, 1, 2,

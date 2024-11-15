@@ -8,21 +8,6 @@
 
     "Textures": [
         {
-            "Type": "Blocks",
-            "Name": "Blocks Texture",
-            "Path": "Textures/blocks.png"
-        },
-        {
-            "Type": "Items",
-            "Name": "items Texture",
-            "Path": "Textures/items.png"
-        },
-        {
-            "Type": "LightAtlas",
-            "Name": "Light Atlas",
-            "Path": "Textures/lightAtlas.png"
-        },
-        {
             "Type": "Dust",
             "Name": "Dust Texture",
             "Path": "Textures/dust.png"

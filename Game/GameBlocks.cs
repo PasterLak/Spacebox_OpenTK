@@ -27,19 +27,24 @@ namespace Spacebox.Game
         public static Dictionary<short, Texture2D> ItemIcon = new Dictionary<short, Texture2D>();
         public static Dictionary<short, Texture2D> BlockDust = new Dictionary<short, Texture2D>();
 
-        public static AtlasTexture Atlas;
-
+        public static AtlasTexture AtlasBlocks;
+        public static AtlasTexture AtlasItems;
+      
 
         public static void ProcessBlockDataTexture(BlockData blockData)
         {
-            if(Atlas == null)
+            if(AtlasBlocks == null)
             {
                 Debug.Error("[GameBlocks] AtlasTexture is not created!");
             }
 
-            blockData.WallsUV = Atlas.GetUVByName(blockData.WallsTexture);
-            blockData.TopUV = Atlas.GetUVByName(blockData.TopTexture);
-            blockData.BottomUV = Atlas.GetUVByName(blockData.BottomTexture);
+            blockData.WallsUV = AtlasBlocks.GetUVByName(blockData.Sides);
+            blockData.TopUV = AtlasBlocks.GetUVByName(blockData.Top);
+            blockData.BottomUV = AtlasBlocks.GetUVByName(blockData.Bottom);
+
+            blockData.WallsUVIndex = AtlasBlocks.GetUVIndexByName(blockData.Sides);
+            blockData.TopUVIndex = AtlasBlocks.GetUVIndexByName(blockData.Top);
+            blockData.BottomUVIndex = AtlasBlocks.GetUVIndexByName(blockData.Bottom);
         }
         public static void RegisterBlock(BlockData blockData)
         {
@@ -47,6 +52,7 @@ namespace Spacebox.Game
 
             blockData.Id = MaxBlockId;
             Block.Add(blockData.Id, blockData);
+
 
             CacheBlockUVs(blockData);
 
@@ -74,7 +80,7 @@ namespace Spacebox.Game
 
         }
 
-        public static void RegisterItem(Item item)
+        public static void RegisterItem(Item item, string spriteName)
         {
             MaxItemId++;
 
@@ -82,8 +88,12 @@ namespace Spacebox.Game
 
             Item.Add(item.Id, item);
 
-            byte coordX = (byte)item.TextureCoord.X;
-            byte coordY = (byte)item.TextureCoord.Y;
+            var uvIndex = AtlasItems.GetUVIndexByName(spriteName.ToLower());
+
+            byte coordX = uvIndex.X;
+            byte coordY = uvIndex.Y;
+
+            item.TextureCoord = new Vector2i(coordX, coordY) ;
 
             CacheIcon(item, coordX, coordY);
 
@@ -205,9 +215,9 @@ namespace Spacebox.Game
         {
             Texture2D texture = IsometricIcon.CreateIsometricIcon(
                 UVAtlas.GetBlockTexture(BlocksTexture,
-                blockData.WallsUVIndex),
+                blockData.WallsUVIndex, AtlasBlocks.SizeBlocks),
                 UVAtlas.GetBlockTexture(BlocksTexture,
-                blockData.TopUVIndex)
+                blockData.TopUVIndex, AtlasBlocks.SizeBlocks)
                 );
             texture.UpdateTexture(true);
 
@@ -217,7 +227,7 @@ namespace Spacebox.Game
         private static void CacheIcon(Item item, byte x, byte y)
         {
             Texture2D texture =
-                UVAtlas.GetBlockTexture(ItemsTexture, x, y);
+                UVAtlas.GetBlockTexture(ItemsTexture, x, y, AtlasItems.SizeBlocks);
 
             texture.FlipY();
             texture.UpdateTexture(true);
@@ -229,10 +239,7 @@ namespace Spacebox.Game
 
         private static void CacheBlockUVs(BlockData block)
         {
-
-            block.WallsUV = UVAtlas.GetUVs(block.WallsUVIndex);
-            block.TopUV = UVAtlas.GetUVs(block.TopUVIndex);
-            block.BottomUV = UVAtlas.GetUVs(block.BottomUVIndex);
+            ProcessBlockDataTexture(block);
         }
 
         public static Storage CreateCreativeStorage(byte sizeX)   // 32
@@ -300,8 +307,10 @@ namespace Spacebox.Game
             ItemModels.Clear();
             ItemIcon.Clear();
             BlockDust.Clear();
-            Atlas.Dispose();
-            Atlas = null;
+            AtlasBlocks.Dispose();
+            AtlasBlocks = null;
+            AtlasItems.Dispose();
+            AtlasItems = null;
             MaxBlockId = -1;
             MaxItemId = -1;
             modId = "";

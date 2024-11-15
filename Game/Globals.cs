@@ -7,7 +7,10 @@ namespace Spacebox.Game
         {
             public const string Folder = "GameSets";
             public const string Default = "Default";
-           
+            public const string Blocks = "Blocks";
+            public const string Items = "Items";
+            public const string Emissions = "Emissions";
+
         }
     }
 }

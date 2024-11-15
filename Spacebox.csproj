@@ -16,107 +16,171 @@
   
     <None Remove="GameSets\Default\blocks.json" />
   
-    <None Remove="GameSets\Default\BlockTextures\1.png" />
+    <None Remove="GameSets\Default\Blocks\1.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\3.png" />
+    <None Remove="GameSets\Default\Blocks\3.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\aluHeavy.png" />
+    <None Remove="GameSets\Default\Blocks\aluHeavy.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\aluLight.png" />
+    <None Remove="GameSets\Default\Blocks\aluLight.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\aluMedium.png" />
+    <None Remove="GameSets\Default\Blocks\aluMedium.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\aluOre.png" />
+    <None Remove="GameSets\Default\Blocks\aluOre.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\analyzer.png" />
+    <None Remove="GameSets\Default\Blocks\analyzer.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\block.png" />
+    <None Remove="GameSets\Default\Blocks\block.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\blocks_0181.png" />
+    <None Remove="GameSets\Default\Blocks\blocks_0181.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\blocks_0182.png" />
+    <None Remove="GameSets\Default\Blocks\blocks_0182.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\blue.png" />
+    <None Remove="GameSets\Default\Blocks\blue.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\bottom.png" />
+    <None Remove="GameSets\Default\Blocks\bottom.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\core.png" />
+    <None Remove="GameSets\Default\Blocks\core.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\core2.png" />
+    <None Remove="GameSets\Default\Blocks\core2.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\craftSide.png" />
+    <None Remove="GameSets\Default\Blocks\craftSide.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\craftTop.png" />
+    <None Remove="GameSets\Default\Blocks\craftTop.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\cyan.png" />
+    <None Remove="GameSets\Default\Blocks\crusherSide.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\furnace.png" />
+    <None Remove="GameSets\Default\Blocks\crusherTop.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\green.png" />
+    <None Remove="GameSets\Default\Blocks\cyan.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\greenOre.png" />
+    <None Remove="GameSets\Default\Blocks\furnace.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\heavyRock.png" />
+    <None Remove="GameSets\Default\Blocks\green.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\ice.png" />
+    <None Remove="GameSets\Default\Blocks\greenOre.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\ironHeavy.png" />
+    <None Remove="GameSets\Default\Blocks\heavyRock.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\ironLight.png" />
+    <None Remove="GameSets\Default\Blocks\ice.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\ironLight2.png" />
+    <None Remove="GameSets\Default\Blocks\ironHeavy.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\ironMedium.png" />
+    <None Remove="GameSets\Default\Blocks\ironLight.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\ironOre.png" />
+    <None Remove="GameSets\Default\Blocks\ironLight2.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\lightRock.png" />
+    <None Remove="GameSets\Default\Blocks\ironMedium.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\mediumRock.png" />
+    <None Remove="GameSets\Default\Blocks\ironOre.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\orange.png" />
+    <None Remove="GameSets\Default\Blocks\lightRock.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\pink.png" />
+    <None Remove="GameSets\Default\Blocks\mediumRock.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\pinkOre.png" />
+    <None Remove="GameSets\Default\Blocks\orange.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\radar.png" />
+    <None Remove="GameSets\Default\Blocks\pink.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\red.png" />
+    <None Remove="GameSets\Default\Blocks\pinkOre.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\sand.png" />
+    <None Remove="GameSets\Default\Blocks\radar.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\sand2.png" />
+    <None Remove="GameSets\Default\Blocks\red.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\sand3.png" />
+    <None Remove="GameSets\Default\Blocks\sand.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\sand4.png" />
+    <None Remove="GameSets\Default\Blocks\sand2.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\titHeavy.png" />
+    <None Remove="GameSets\Default\Blocks\sand3.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\titLight.png" />
+    <None Remove="GameSets\Default\Blocks\sand4.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\titMedium.png" />
+    <None Remove="GameSets\Default\Blocks\titHeavy.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\white.png" />
+    <None Remove="GameSets\Default\Blocks\titLight.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\window.png" />
+    <None Remove="GameSets\Default\Blocks\titMedium.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\wire.png" />
+    <None Remove="GameSets\Default\Blocks\white.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\wire2.png" />
+    <None Remove="GameSets\Default\Blocks\window.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\wirePro.png" />
+    <None Remove="GameSets\Default\Blocks\wire.png" />
   
-    <None Remove="GameSets\Default\BlockTextures\yellow.png" />
+    <None Remove="GameSets\Default\Blocks\wire2.png" />
+  
+    <None Remove="GameSets\Default\Blocks\wirePro.png" />
+  
+    <None Remove="GameSets\Default\Blocks\yellow.png" />
   
     <None Remove="GameSets\Default\config.json" />
   
+    <None Remove="GameSets\Default\Emissions\analyzer.png" />
+  
+    <None Remove="GameSets\Default\Emissions\blue.png" />
+  
+    <None Remove="GameSets\Default\Emissions\core.png" />
+  
+    <None Remove="GameSets\Default\Emissions\cyan.png" />
+  
+    <None Remove="GameSets\Default\Emissions\green.png" />
+  
+    <None Remove="GameSets\Default\Emissions\greenOre.png" />
+  
+    <None Remove="GameSets\Default\Emissions\ice.png" />
+  
+    <None Remove="GameSets\Default\Emissions\orange.png" />
+  
+    <None Remove="GameSets\Default\Emissions\pink.png" />
+  
+    <None Remove="GameSets\Default\Emissions\pinkOre.png" />
+  
+    <None Remove="GameSets\Default\Emissions\radar.png" />
+  
+    <None Remove="GameSets\Default\Emissions\red.png" />
+  
+    <None Remove="GameSets\Default\Emissions\white.png" />
+  
+    <None Remove="GameSets\Default\Emissions\wire.png" />
+  
+    <None Remove="GameSets\Default\Emissions\wirePro.png" />
+  
+    <None Remove="GameSets\Default\Emissions\yellow.png" />
+  
     <None Remove="GameSets\Default\items.json" />
   
-    <None Remove="GameSets\Default\Optional\lighting.json" />
+    <None Remove="GameSets\Default\Items\aluIngot.png" />
   
-    <None Remove="GameSets\Default\Textures\lightAtlas - Copy.png" />
+    <None Remove="GameSets\Default\Items\aluPanels.png" />
+  
+    <None Remove="GameSets\Default\Items\beer.png" />
+  
+    <None Remove="GameSets\Default\Items\cat.png" />
+  
+    <None Remove="GameSets\Default\Items\drill1.png" />
+  
+    <None Remove="GameSets\Default\Items\drill2.png" />
+  
+    <None Remove="GameSets\Default\Items\health.png" />
+  
+    <None Remove="GameSets\Default\Items\ice.png" />
+  
+    <None Remove="GameSets\Default\Items\ironLens.png" />
+  
+    <None Remove="GameSets\Default\Items\ironPanels.png" />
+  
+    <None Remove="GameSets\Default\Items\powder.png" />
+  
+    <None Remove="GameSets\Default\Items\power.png" />
+  
+    <None Remove="GameSets\Default\Items\titIngot.png" />
+  
+    <None Remove="GameSets\Default\Items\weapon1.png" />
+  
+    <None Remove="GameSets\Default\Items\weapon2.png" />
+  
+    <None Remove="GameSets\Default\Optional\lighting.json" />
   
     <None Remove="GameSets\Horror2\blocks.json" />
   
@@ -252,183 +316,183 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\aluHeavy.png">
+    <Content Include="GameSets\Default\Blocks\aluHeavy.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\aluLight.png">
+    <Content Include="GameSets\Default\Blocks\aluLight.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\aluMedium.png">
+    <Content Include="GameSets\Default\Blocks\aluMedium.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\aluOre.png">
+    <Content Include="GameSets\Default\Blocks\aluOre.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\analyzer.png">
+    <Content Include="GameSets\Default\Blocks\analyzer.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\block.png">
+    <Content Include="GameSets\Default\Blocks\block.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\blocks_0181.png">
+    <Content Include="GameSets\Default\Blocks\blue.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\blocks_0182.png">
+    <Content Include="GameSets\Default\Blocks\bottom.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\blue.png">
+    <Content Include="GameSets\Default\Blocks\core.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\bottom.png">
+    <Content Include="GameSets\Default\Blocks\core2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\core.png">
+    <Content Include="GameSets\Default\Blocks\craftSide.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\core2.png">
+    <Content Include="GameSets\Default\Blocks\craftTop.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\craftSide.png">
+    <Content Include="GameSets\Default\Blocks\crusherSide.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\craftTop.png">
+    <Content Include="GameSets\Default\Blocks\crusherTop.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\cyan.png">
+    <Content Include="GameSets\Default\Blocks\cyan.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\furnace.png">
+    <Content Include="GameSets\Default\Blocks\furnace.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\green.png">
+    <Content Include="GameSets\Default\Blocks\green.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\greenOre.png">
+    <Content Include="GameSets\Default\Blocks\greenOre.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\heavyRock.png">
+    <Content Include="GameSets\Default\Blocks\heavyRock.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\ice.png">
+    <Content Include="GameSets\Default\Blocks\ice.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\ironHeavy.png">
+    <Content Include="GameSets\Default\Blocks\ironHeavy.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\ironLight.png">
+    <Content Include="GameSets\Default\Blocks\ironLight.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\ironLight2.png">
+    <Content Include="GameSets\Default\Blocks\ironLight2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\ironMedium.png">
+    <Content Include="GameSets\Default\Blocks\ironMedium.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\ironOre.png">
+    <Content Include="GameSets\Default\Blocks\ironOre.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\lightRock.png">
+    <Content Include="GameSets\Default\Blocks\lightRock.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\mediumRock.png">
+    <Content Include="GameSets\Default\Blocks\mediumRock.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\orange.png">
+    <Content Include="GameSets\Default\Blocks\orange.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\pink.png">
+    <Content Include="GameSets\Default\Blocks\pink.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\pinkOre.png">
+    <Content Include="GameSets\Default\Blocks\pinkOre.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\radar.png">
+    <Content Include="GameSets\Default\Blocks\radar.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\red.png">
+    <Content Include="GameSets\Default\Blocks\red.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\sand.png">
+    <Content Include="GameSets\Default\Blocks\sand.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\sand2.png">
+    <Content Include="GameSets\Default\Blocks\sand2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\sand3.png">
+    <Content Include="GameSets\Default\Blocks\sand3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\sand4.png">
+    <Content Include="GameSets\Default\Blocks\sand4.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\titHeavy.png">
+    <Content Include="GameSets\Default\Blocks\titHeavy.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\titLight.png">
+    <Content Include="GameSets\Default\Blocks\titLight.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\titMedium.png">
+    <Content Include="GameSets\Default\Blocks\titMedium.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\white.png">
+    <Content Include="GameSets\Default\Blocks\white.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\window.png">
+    <Content Include="GameSets\Default\Blocks\window.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\wire.png">
+    <Content Include="GameSets\Default\Blocks\wire.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\wire2.png">
+    <Content Include="GameSets\Default\Blocks\wire2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\wirePro.png">
+    <Content Include="GameSets\Default\Blocks\wirePro.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="GameSets\Default\BlockTextures\yellow.png">
+    <Content Include="GameSets\Default\Blocks\yellow.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
@@ -436,7 +500,131 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
+    <Content Include="GameSets\Default\Emissions\analyzer.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\blue.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\core.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\cyan.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\green.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\greenOre.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\ice.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\orange.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\pink.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\pinkOre.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\radar.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\red.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\white.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\wire.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\wirePro.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\yellow.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <Content Include="GameSets\Default\items.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\aluIngot.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\aluPanels.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\beer.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\cat.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\drill1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\drill2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\health.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\ice.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\ironLens.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\ironPanels.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\powder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\power.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\titIngot.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\weapon1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\weapon2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
@@ -557,19 +745,10 @@
     <Content Include="Resources\Textures\item.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="GameSets\Default\Textures\items.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="GameSets\Default\Textures\lightAtlas.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="GameSets\Horror2\Textures\blocks0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="GameSets\Horror2\Textures\items.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="GameSets\Default\Textures\blocks.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\selectedSlot.png">

@@ -5,22 +5,22 @@ namespace Spacebox.Game
 {
     public static class UVAtlas
     {
-        private static int _textureAtlasSize = 16; // todo   dynamic
+       // public static int SideBlocksCount = 16;
 
-        public static Vector2[] GetUVs(Vector2 v)
+        public static Vector2[] GetUVs(Vector2 v, int sideInBlocks)
         {
-            return GetUVs((int)v.X, (int)v.Y);
+            return GetUVs((int)v.X, (int)v.Y, sideInBlocks);
         }
 
-        public static Vector2[] GetUVs(Vector2Byte v)
+        public static Vector2[] GetUVs(Vector2Byte v, int sideInBlocks)
         {
-            return GetUVs(v.X, v.Y);
+            return GetUVs(v.X, v.Y, sideInBlocks);
         }
-        public static Vector2[] GetUVs(int x, int y)
+        public static Vector2[] GetUVs(int x, int y, int sideInBlocks)
         {
-            float unit = 1.0f / _textureAtlasSize;
+            float unit = 1.0f / sideInBlocks;
 
-            if (x < 0 || x >= _textureAtlasSize || y < 0 || y >= _textureAtlasSize)
+            if (x < 0 || x >= sideInBlocks || y < 0 || y >= sideInBlocks)
             {
                 x = 0;
                 y = 0;
@@ -38,18 +38,15 @@ namespace Spacebox.Game
             };
         }
 
-        public static int GetAtlasSize()
-        {
-            return _textureAtlasSize;
-        }
+      
 
-        public static Texture2D GetBlockTexture(Texture2D atlasTexture, Vector2Byte v)
+        public static Texture2D GetBlockTexture(Texture2D atlasTexture, Vector2Byte v, int sideInBlocks)
         {
-            return GetBlockTexture(atlasTexture,v.X,v.Y);
+            return GetBlockTexture(atlasTexture,v.X,v.Y, sideInBlocks);
         }
-        public static Texture2D GetBlockTexture(Texture2D atlasTexture, int x, int y)
+        public static Texture2D GetBlockTexture(Texture2D atlasTexture, int x, int y, int sideInBlocks)
         {
-            int atlasSize = _textureAtlasSize; 
+            int atlasSize = sideInBlocks; 
 
            
             if (x < 0 || x >= atlasSize || y < 0 || y >= atlasSize)

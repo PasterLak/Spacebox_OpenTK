@@ -10,11 +10,10 @@ namespace Spacebox.Game
     {
         private static int CellSize = 32;
 
-
         public static ItemModel GenerateModel(Texture2D atlasTexture,
             int cellX, int cellY, float modelSize = 1.0f, float modelDepth = 0.2f, bool drawOnlyVisibleSides = true)
         {
-            Texture2D cellTexture = UVAtlas.GetBlockTexture(atlasTexture, cellX, cellY);
+            Texture2D cellTexture = UVAtlas.GetBlockTexture(atlasTexture, cellX, cellY, GameBlocks.AtlasItems.SizeBlocks);
             cellTexture.FlipX();
             CellSize = cellTexture.Width;
 

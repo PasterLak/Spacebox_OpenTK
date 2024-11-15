@@ -58,9 +58,12 @@ namespace Spacebox.Scenes
             {
                 worldName = args[0];
 
-                string gamesetspath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.Folder);
-                gamesetspath = Path.Combine(gamesetspath, args[3], "BlockTextures");
-                Debug.Log("block textures: "+ gamesetspath);
+                string modsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.Folder);
+                string blocksPath = Path.Combine(modsFolder, args[3], Globals.GameSet.Blocks);
+                string itemsPath = Path.Combine(modsFolder, args[3], Globals.GameSet.Items);
+                string emissionPath = Path.Combine(modsFolder, args[3], Globals.GameSet.Emissions);
+
+                Debug.Log("block textures: "+ modsFolder);
                 if (GameBlocks.IsInitialized)
                 {
                     if(GameBlocks.modId.ToLower() == args[1].ToLower())
@@ -71,22 +74,13 @@ namespace Spacebox.Scenes
                     {
                         GameBlocks.DisposeAll();
 
-                        GameBlocks.Atlas = new AtlasTexture();
-                        GameBlocks.BlocksTexture = GameBlocks.Atlas.CreateTexture(gamesetspath, 32, false);
-
-                        GameSetLoader.Load(args[1]);
-                        GameBlocks.IsInitialized = true;
+                        InitializeGamesetData(blocksPath, itemsPath, emissionPath, args[1],32);
                     }
                 }
                 else
                 {
-                    GameBlocks.Atlas = new AtlasTexture();
-                  
-                    GameBlocks.BlocksTexture = GameBlocks.Atlas.CreateTexture(gamesetspath, 32, false);
+                    InitializeGamesetData(blocksPath, itemsPath, emissionPath, args[1],32);
 
-                    GameSetLoader.Load(args[1]);
-                    GameBlocks.IsInitialized = true;
-                   
                 }
             
                 if (int.TryParse(args[2], out var result))
@@ -105,6 +99,33 @@ namespace Spacebox.Scenes
 
             BlackScreenOverlay.IsEnabled = true;
             BlackScreenOverlay.Render();
+        }
+
+        private void InitializeGamesetData(string blocksPath,string itemsPath, string emissionPath, string modId, byte blockSizePixels)
+        {
+            GameBlocks.AtlasBlocks = new AtlasTexture();
+            GameBlocks.AtlasItems = new AtlasTexture();
+
+            var texture = GameBlocks.AtlasBlocks.CreateTexture(blocksPath, blockSizePixels, false);
+            var items = GameBlocks.AtlasItems.CreateTexture(itemsPath, blockSizePixels, false);
+            var emissions = GameBlocks.AtlasBlocks.CreateEmission(emissionPath);
+
+
+            GameBlocks.BlocksTexture = texture;
+            GameBlocks.ItemsTexture = items;
+            GameBlocks.LightAtlas = emissions;
+
+            GameSetLoader.Load(modId);
+
+            GameBlocks.BlocksTexture = texture;
+            GameBlocks.ItemsTexture = items;
+            GameBlocks.LightAtlas = emissions;
+
+            //texture.SaveToPng($"blocks.png");
+            //items.SaveToPng($"items.png");
+            //emissions.SaveToPng($"emissions.png");
+
+            GameBlocks.IsInitialized = true;
         }
         public override void LoadContent()
         {
@@ -156,7 +177,7 @@ namespace Spacebox.Scenes
             blocksShader.SetVector3("fogColor", Lighting.FogColor);
             blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
 
-            Texture2D block = UVAtlas.GetBlockTexture(blockTexture, 0,0);
+            Texture2D block = UVAtlas.GetBlockTexture(blockTexture, 0,0, GameBlocks.AtlasBlocks.SizeBlocks);
 
             //sprite = new Sprite(block, new Vector2(0,0) , new Vector2(500,500));
             sprite = new Sprite("Resources/Textures/cat.png", new Vector2(0, 0), new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));

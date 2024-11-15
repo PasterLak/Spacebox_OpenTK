@@ -15,6 +15,7 @@ version 0.0.8
 - worlds work with mods 
 - scene args
 - better UI
+- automatic blocks,items and emissions atlas creation (block -75% of size, items -94%, emission -75%)  -81%
 ? versions converter
 
 

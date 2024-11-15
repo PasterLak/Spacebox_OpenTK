@@ -3,25 +3,11 @@
     "ModName": "Lightmare",
     "Description": "",
     "Author": "PasterLak",
-    "Version": "0.0.6",
+    "Version": "0.0.8",
     "BlockSize": 32,
 
     "Textures": [
-        {
-            "Type": "Blocks",
-            "Name": "blocks",
-            "Path": "Textures/blocks.png"
-        },
-        {
-            "Type": "Items",
-            "Name": "items",
-            "Path": "Textures/items.png"
-        },
-        {
-            "Type": "LightAtlas",
-            "Name": "lightAtlas",
-            "Path": "Textures/lightAtlas.png"
-        },
+      
         {
             "Type": "Dust",
             "Name": "dust",

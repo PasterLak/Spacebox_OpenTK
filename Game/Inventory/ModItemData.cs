@@ -8,7 +8,7 @@ namespace Spacebox.Game
         public string Info { get; set; } = "";
         public string Name { get; set; } = "NoName";
         public string Type { get; set; } = "item";
-        public Vector2Byte TextureCoord { get; set; } = Vector2Byte.Zero;
+        public string Sprite { get; set; } = "";
         public int MaxStack { get; set; } = 1;
         public float ModelDepth { get; set; } = 1.0f;
 

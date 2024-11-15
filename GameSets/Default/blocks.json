@@ -1,206 +1,204 @@
 [
     {
         "Name": "Light Rock",
-        "WallsTexture": "lightRock.png",
-        "Walls": {"x": 1, "y": 3},
-        "PowerToDrill" : 1,
-        "Mass" : 1,
-        "Durability" : 1
+        "Sides": "lightRock",
+        "PowerToDrill": 1,
+        "Mass": 1,
+        "Durability": 1
     },
-
     {
         "Name": "Medium Rock",
-        "Walls": {"x": 1, "y": 2}
+        "Sides": "mediumRock"
     },
     {
         "Name": "Heavy Rock",
-        "Walls": {"x": 5, "y": 3}
+        "Sides": "heavyRock"
     },
     {
         "Name": "Ice",
-        "Walls": {"x": 4, "y": 3}
+        "Sides": "ice"
     },
     {
         "Name": "Iron Ore",
-        "Walls": {"x": 2, "y": 3}
+        "Sides": "ironOre"
     },
     {
         "Name": "Aluminium Ore",
-        "Walls": {"x": 3, "y": 3}
+        "Sides": "aluOre"
     },
     {
         "Name": "Green Ore",
-        "Walls": {"x": 2, "y": 2}
+        "Sides": "greenOre"
     },
     {
         "Name": "Pink Ore",
-        "Walls": {"x": 6, "y": 3}
+        "Sides": "pinkOre"
     },
     {
         "Name": "Analyzer",
-        "Type" : "interactive",
-        "Walls": {"x": 1, "y": 4},
-        "Top": {"x": 4, "y": 0},
-        "Bottom": {"x": 7, "y": 2},
+        "Type": "interactive",
+        "Sides": "bottom",
+        "Top": "analyzer",
+        "Bottom": "bottom",
         "IsTransparent": false,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Aluminium Light Block",
-        "Walls": {"x": 6, "y": 1},
+        "Sides": "aluLight",
         "IsTransparent": false,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Aluminium Medium Block",
-        "Walls": {"x": 7, "y": 1},
+        "Sides": "aluMedium",
         "IsTransparent": false,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Aluminium Heavy Block",
-        "Walls": {"x": 8, "y": 1},
+        "Sides": "aluHeavy",
         "IsTransparent": false,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Iron Light Block",
-        "Walls": {"x": 9, "y": 1},
+        "Sides": "ironLight",
         "IsTransparent": false,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Iron Medium Block",
-        "Walls": {"x": 10, "y": 1},
+        "Sides": "ironMedium",
         "IsTransparent": false,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Iron Heavy Block",
-        "Walls": {"x": 11, "y": 1},
+        "Sides": "ironHeavy",
         "IsTransparent": false,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Titanium Light Block",
-        "Walls": {"x": 12, "y": 1},
+        "Sides": "titLight",
         "IsTransparent": false,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Titanium Medium Block",
-        "Walls": {"x": 13, "y": 1},
+        "Sides": "titMedium",
         "IsTransparent": false,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Titanium Heavy Block",
-        "Walls": {"x": 14, "y": 1},
+        "Sides": "titHeavy",
         "IsTransparent": false,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Window",
-        "Walls": {"x": 3, "y": 2},
+        "Sides": "window",
         "IsTransparent": true,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Crafting Table",
-        "Type" : "interactive",
-        "Walls": {"x": 2, "y": 4},
-        "Top": {"x": 0, "y": 3},
-        "Bottom": {"x": 7, "y": 2},
+        "Type": "interactive",
+        "Sides": "craftSide",
+        "Top": "craftTop",
+        "Bottom": "bottom",
         "IsTransparent": false,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Wire",
-        "Walls": {"x": 0, "y": 2},
+        "Sides": "wire",
         "IsTransparent": false,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Radar",
-        "Type" : "interactive",
-        "Walls": {"x": 1, "y": 4},
-        "Top": {"x": 0, "y": 4},
-        "Bottom": {"x": 7, "y": 2},
+        "Type": "interactive",
+        "Sides": "bottom",
+        "Top": "radar",
+        "Bottom": "bottom",
         "IsTransparent": false,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Light White",
-        "Walls": {"x": 8, "y": 0},
-        "LightColor": {"x": 255, "y": 255, "z": 255}
+        "Sides": "white",
+        "LightColor": { "x": 255, "y": 255, "z": 255 }
     },
     {
         "Name": "Light Blue",
-        "Walls": {"x": 9, "y": 0},
-        "LightColor": {"x": 0, "y": 0, "z": 255}
+        "Sides": "blue",
+        "LightColor": { "x": 0, "y": 0, "z": 255 }
     },
     {
         "Name": "Light Red",
-        "Walls": {"x": 10, "y": 0},
-        "LightColor": {"x": 255, "y": 0, "z": 0}
+        "Sides": "red",
+        "LightColor": { "x": 255, "y": 0, "z": 0 }
     },
     {
         "Name": "Light Yellow",
-        "Walls": {"x": 11, "y": 0},
-        "LightColor": {"x": 255, "y": 216, "z": 0}
+        "Sides": "yellow",
+        "LightColor": { "x": 255, "y": 216, "z": 0 }
     },
     {
         "Name": "Light Cyan",
-        "Walls": {"x": 12, "y": 0},
-        "LightColor": {"x": 0, "y": 255, "z": 255}
+        "Sides": "cyan",
+        "LightColor": { "x": 0, "y": 255, "z": 255 }
     },
     {
         "Name": "Light Orange",
-        "Walls": {"x": 13, "y": 0},
-        "LightColor": {"x": 255, "y": 106, "z": 0}
+        "Sides": "orange",
+        "LightColor": { "x": 255, "y": 106, "z": 0 }
     },
     {
         "Name": "Light Green",
-        "Walls": {"x": 14, "y": 0},
-        "LightColor": {"x": 0, "y": 255, "z": 0}
+        "Sides": "green",
+        "LightColor": { "x": 0, "y": 255, "z": 0 }
     },
     {
         "Name": "Wires Pro",
-        "Walls": {"x": 4, "y": 2},
+        "Sides": "wirePro",
         "IsTransparent": true,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "AI Core",
-        "Walls": {"x": 6, "y": 2},
+        "Sides": "core",
         "IsTransparent": true,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Just Block",
-        "Walls": {"x": 7, "y": 2},
+        "Sides": "block",
         "IsTransparent": false,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Furnace",
-        "Type" : "interactive",
-        "Walls": {"x": 3, "y": 4},
-        "Top": {"x": 1, "y": 4},
-        "Bottom": {"x": 7, "y": 2}
+        "Type": "interactive",
+        "Sides": "furnace",
+        "Top": "bottom",
+        "Bottom": "bottom"
     },
     {
         "Name": "Light Pink",
-        "Walls": {"x": 15, "y": 0},
-        "LightColor": {"x": 178, "y": 0, "z": 255}
+        "Sides": "pink",
+        "LightColor": { "x": 178, "y": 0, "z": 255 }
     },
     {
         "Name": "Crusher",
-        "Type" : "interactive",
-        "Walls": {"x": 5, "y": 4},
-        "Top": {"x": 4, "y": 4},
-        "Bottom": {"x": 7, "y": 2},
+        "Type": "interactive",
+        "Sides": "crusherSide",
+        "Top": "crusherTop",
+        "Bottom": "bottom",
         "IsTransparent": false,
-        "LightColor": {"x": 0, "y": 0, "z": 0}
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     }
 ]

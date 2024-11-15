@@ -53,13 +53,13 @@ namespace Spacebox.Scenes
                 StartColorMax = new Vector4(1f, 1f, 1f, 0f),
                 EndColorMin = new Vector4(1f, 1f, 1f, 1f),
                 EndColorMax = new Vector4(0.8f, 0.8f, 0.8f, 1f),
-                SpawnRadius = 70f,
-
+                SpawnRadius = 70f
+             
 
             };
 
             ParticleSystem.Emitter = emitter;
-
+            ParticleSystem.Renderer.RandomRotation = true;
             
             particleShader.Use();
             particleShader.SetInt("particleTexture", 0);

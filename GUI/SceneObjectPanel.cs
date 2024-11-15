@@ -1,9 +1,7 @@
-﻿// SceneObjectPanel.cs
+﻿
 using ImGuiNET;
 using Spacebox.Common;
 using Spacebox.Extensions;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
 
 namespace Spacebox.UI

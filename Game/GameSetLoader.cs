@@ -94,6 +94,8 @@ namespace Spacebox.Game
 
         private static void LoadTextures(string modPath, string defaultModPath, List<TextureConfig> textures)
         {
+            return;
+
             foreach (var texture in textures)
             {
                 string texturePath = Path.Combine(modPath, texture.Path);
@@ -117,13 +119,13 @@ namespace Spacebox.Game
                 switch (texture.Type.ToLower())
                 {
                     case "blocks":
-                        GameBlocks.BlocksTexture = loadedTexture;
+                        //loadedTexture.SaveToPng("blocks.png");
                         break;
                     case "items":
-                        GameBlocks.ItemsTexture = loadedTexture;
+                        //GameBlocks.ItemsTexture = loadedTexture;
                         break;
                     case "lightatlas":
-                        GameBlocks.LightAtlas = loadedTexture;
+                        //GameBlocks.LightAtlas = loadedTexture;
                         break;
                     case "dust":
                         GameBlocks.DustTexture = loadedTexture;
@@ -143,13 +145,23 @@ namespace Spacebox.Game
             try
             {
                 string json = File.ReadAllText(blocksFile);
+          
                 List<ModBlockData> blocks = JsonSerializer.Deserialize<List<ModBlockData>>(json);
 
-                GameBlocks.RegisterBlock(new BlockData("Air", "block", new Vector2Byte(0, 0)));
+                
 
+                var air = new BlockData("Air", "block", new Vector2Byte(0, 0));
+          
+                air.Sides = "sand";
+             
+                GameBlocks.RegisterBlock(air);
+         
                 foreach (var block in blocks)
                 {
                     block.Type = block.Type.ToLower();
+                    block.Sides = block.Sides.ToLower();
+                    block.Top = block.Top.ToLower();
+                    block.Bottom = block.Bottom.ToLower();
 
                     if (!ValidateBlockType(block.Type))
                     {
@@ -158,21 +170,21 @@ namespace Spacebox.Game
                         continue;
                     }
 
-                    bool sameSides = block.Top == Vector2Byte.Zero || block.Bottom == Vector2Byte.Zero || (block.Walls == block.Bottom && block.Walls == block.Top);
+                    bool sameSides = block.Top == "" || block.Top == "" || (block.Sides == block.Top && block.Sides == block.Top);
                     bool hasLightColor = block.LightColor != Vector3Byte.Zero;
                     var blockColor = hasLightColor ? new Vector3(block.LightColor.X / 255f, block.LightColor.Y / 255f, block.LightColor.Z / 255f) : Vector3.Zero;
 
-                    BlockData blockData = new BlockData(block.Name, block.Type, block.Walls, block.IsTransparent, blockColor)
+                    BlockData blockData = new BlockData(block.Name, block.Type, new Vector2Byte(0,0), block.IsTransparent, blockColor)
                     {
                         AllSidesAreSame = sameSides,
-                        TopUVIndex = sameSides ? block.Walls : block.Top,
-                        BottomUVIndex = sameSides ? block.Walls : block.Bottom,
+                        TopUVIndex = new Vector2Byte(),
+                        BottomUVIndex = new Vector2Byte(),
 
-                        
                     };
-                    blockData.WallsTexture = block.WallsTexture;
-                    blockData.TopTexture = block.TopTexture;
-                    blockData.BottomTexture = block.BottomTexture;
+
+                    blockData.Sides = block.Sides;
+                    blockData.Top = sameSides ? block.Sides : block.Top;
+                    blockData.Bottom = sameSides ? block.Sides : block.Bottom;
 
                     GameBlocks.RegisterBlock(blockData);
                 }
@@ -204,13 +216,15 @@ namespace Spacebox.Game
                 foreach (JsonElement itemElement in root.EnumerateArray())
                 {
                     string type = "item";
+                  
 
                     if (itemElement.TryGetProperty("Type", out JsonElement typeElement))
                     {
                         type = typeElement.GetString().ToLower();
                     }
-
                    
+
+
 
                     switch (type)
                     {
@@ -253,14 +267,13 @@ namespace Spacebox.Game
             var weaponItem = new WeaponItem(
                 (byte)data.MaxStack,
                 data.Name,
-                data.TextureCoord.X,
-                data.TextureCoord.Y,
+             
                 data.ModelDepth)
             {
                 Damage = data.Damage
             };
             
-            GameBlocks.RegisterItem(weaponItem);
+            GameBlocks.RegisterItem(weaponItem, data.Sprite);
         }
 
         private static void RegisterDrillItem(DrillItemData data)
@@ -269,13 +282,12 @@ namespace Spacebox.Game
             var drillItem = new DrillItem(
                 (byte)data.MaxStack,
                 data.Name,
-                data.TextureCoord.X,
-                data.TextureCoord.Y,
+            
                 data.ModelDepth)
             {
                 Power = data.Power
             };
-            GameBlocks.RegisterItem(drillItem);
+            GameBlocks.RegisterItem(drillItem, data.Sprite);
         }
 
         private static void RegisterConsumableItem(ConsumableItemData data)
@@ -284,13 +296,12 @@ namespace Spacebox.Game
             var consumableItem = new ConsumableItem(
                 (byte)data.MaxStack,
                 data.Name,
-                data.TextureCoord.X,
-                data.TextureCoord.Y,
+            
                 data.ModelDepth)
             {
                 HealAmount = data.HealAmount
             };
-            GameBlocks.RegisterItem(consumableItem);
+            GameBlocks.RegisterItem(consumableItem, data.Sprite);
         }
 
         private static void RegisterItem(ModItemData data)
@@ -299,10 +310,9 @@ namespace Spacebox.Game
             var item = new Item(
                 (byte)data.MaxStack,
                 data.Name,
-                data.TextureCoord.X,
-                data.TextureCoord.Y,
+            
                 data.ModelDepth);
-            GameBlocks.RegisterItem(item);
+            GameBlocks.RegisterItem(item, data.Sprite);
         }
 
         private static void LoadSettings(string modPath)

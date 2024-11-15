@@ -28,13 +28,7 @@ namespace Spacebox.Game
             Name = name;
         }
 
-        public Item(short id, byte stackSize, string name, Vector2i texture)
-        {
-            Id = id;
-            StackSize = stackSize;
-            Name = name;
-            TextureCoord = texture;
-        }
+  
 
         public Item(byte stackSize, string name, byte x, byte y)
         {
@@ -44,12 +38,12 @@ namespace Spacebox.Game
             TextureCoord = new Vector2i(x,y);
         }
 
-        public Item(byte stackSize, string name, byte x, byte y, float modelDepth)
+        public Item(byte stackSize, string name, float modelDepth)
         {
 
             StackSize = stackSize;
             Name = name;
-            TextureCoord = new Vector2i(x, y);
+          
             ModelDepth = modelDepth;
         }
 

@@ -7,7 +7,7 @@
         public byte Spread  = 0;
         public byte Pushback  = 0;
 
-        public WeaponItem(byte stackSize, string name, byte x, byte y, float modelDepth) : base(stackSize, name, x, y, modelDepth)
+        public WeaponItem(byte stackSize, string name, float modelDepth) : base(stackSize, name, modelDepth)
         {
         }
     }

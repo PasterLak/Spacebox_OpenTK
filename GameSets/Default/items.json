@@ -1,103 +1,102 @@
 [
     {
-        "Info": "Tags:  Name, Type<Drill,Weapone,Item>, TextureCoord, MaxStack, ModelDepth",
-
+        "Info": "Tags:  Name, Type<Drill,Weapone,Item>, Sprite, MaxStack, ModelDepth",
         "Name": "Drill",
         "Type": "drill",
-        "TextureCoord": {"x": 3, "y": 0},
+        "Sprite": "drill1",
         "MaxStack": 1,
         "ModelDepth": 1.5,
-        "Power" : 1
+        "Power": 1
     },
     {
         "Name": "AKF-24",
         "Type": "Weapon",
-        "TextureCoord": {"x": 4, "y": 0},
+        "Sprite": "weapon1",
         "MaxStack": 1,
         "ModelDepth": 1.5,
-        "Damage" : 5,
-        "ReloadTime" : 400,
-        "Spread" : 0,
-        "Pushback" : 0
+        "Damage": 5,
+        "ReloadTime": 400,
+        "Spread": 0,
+        "Pushback": 0
     },
     {
         "Name": "Powder",
-        "TextureCoord": {"x": 2, "y": 0},
+        "Sprite": "powder",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
     {
         "Name": "Iron Lens",
-        "TextureCoord": {"x": 2, "y": 1},
+        "Sprite": "ironLens",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
     {
         "Name": "Aluminium Panels",
-        "TextureCoord": {"x": 1, "y": 1},
+        "Sprite": "aluPanels",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
     {
         "Name": "Iron Panels",
-        "TextureCoord": {"x": 0, "y": 1},
+        "Sprite": "ironPanels",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
     {
         "Name": "Titanium Ingot",
-        "TextureCoord": {"x": 0, "y": 2},
+        "Sprite": "titIngot",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
     {
         "Name": "Aluminium Ingot",
-        "TextureCoord": {"x": 1, "y": 2},
+        "Sprite": "aluIngot",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
     {
         "Name": "Health",
+        "Sprite": "health",
         "Type": "consumable",
-        "HealAmount" : 50,
-        "TextureCoord": {"x": 2, "y": 2},
+        "HealAmount": 50,
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
     {
         "Name": "Ice Shards",
-        "TextureCoord": {"x": 3, "y": 1},
+        "Sprite": "ice",
         "MaxStack": 64,
         "ModelDepth": 1.5
     },
     {
         "Name": "Power",
+        "Sprite": "power",
         "Type": "consumable",
-        "HealAmount" : 5,
-        "TextureCoord": {"x": 3, "y": 2},
+        "HealAmount": 5,
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
     {
         "Name": "Beer",
+        "Sprite": "beer",
         "Type": "consumable",
-        "HealAmount" : 10,
-        "TextureCoord": {"x": 4, "y": 1},
+        "HealAmount": 10,
         "MaxStack": 20,
         "ModelDepth": 3.0
     },
     {
         "Name": "Cat",
-        "TextureCoord": {"x": 5, "y": 0},
+        "Sprite": "cat",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
     {
-         "Name": "Drill 2",
+        "Name": "Drill 2",
         "Type": "drill",
-        "TextureCoord": {"x": 0, "y": 0},
+        "Sprite": "drill2",
         "MaxStack": 1,
         "ModelDepth": 1.5,
-        "Power" : 2
+        "Power": 2
     }
 ]

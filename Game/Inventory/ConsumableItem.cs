@@ -6,7 +6,7 @@ namespace Spacebox.Game
     {
         public byte HealAmount = 5;
 
-        public ConsumableItem(byte stackSize, string name, byte x, byte y, float modelDepth) : base(stackSize, name, x, y, modelDepth)
+        public ConsumableItem(byte stackSize, string name, float modelDepth) : base(stackSize, name, modelDepth)
         {
         }
     }
