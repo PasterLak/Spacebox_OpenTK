@@ -21,7 +21,7 @@ namespace Spacebox.Game.Generation
             Vector3 center = new Vector3(Size / 2f, Size / 2f, Size / 2f);
             float radius = Size / 2f;
 
-            Random random = new Random();
+            Random random = World.Random;
 
             for (int x = 0; x < Size; x++)
                 for (int y = 0; y < Size; y++)

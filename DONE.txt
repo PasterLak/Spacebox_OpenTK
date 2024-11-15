@@ -12,8 +12,10 @@ version 0.0.8
 
 - game menu
 - list of worlds, having different worlds
+- worlds work with mods 
 - scene args
--
+- better UI
+? versions converter
 
 
 version 0.0.7

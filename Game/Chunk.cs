@@ -45,7 +45,7 @@ namespace Spacebox.Game
         {
             Position = position;
             Blocks = new Block[Size, Size, Size];
-            if (CurrentChunk != null) Debug.Error("Many chunks");
+            if (CurrentChunk != null) Debug.Error("[Chunk] Many chunks");
             CurrentChunk = this;
             CreateBoundingBox();
             this.destructionManager = new BlockDestructionManager(Camera.Main);

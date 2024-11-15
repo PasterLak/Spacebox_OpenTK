@@ -61,7 +61,7 @@ namespace Spacebox
 
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
             
-            Theme.ApplyDarkTheme();
+            Theme.ApplySpaceboxTheme();
 
             InputManager.AddAction("debug", Keys.GraveAccent, true);
             InputManager.RegisterCallback("debug", () => { Debug.ToggleVisibility(); });

@@ -36,6 +36,7 @@ namespace Spacebox.Scenes
 
             // GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             GL.ClearColor(0, 0, 0, 0);
+
             
             float winX = Window.Instance.Size.X;
             float winY = Window.Instance.Size.Y;
@@ -102,7 +103,8 @@ namespace Spacebox.Scenes
 
         public override void Awake()
         {
-
+            CenteredImage.ShowText = true;
+            GameMenu.IsVisible = false;
         }
         public override void Start()
         {

@@ -56,6 +56,8 @@ namespace Spacebox.UI
             ImGuiIOPtr io = ImGui.GetIO();
 
             var style = ImGui.GetStyle();
+
+          
             float titleBarHeight = ImGui.GetFontSize() + style.FramePadding.Y * 2;
 
       

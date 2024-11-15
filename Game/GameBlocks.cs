@@ -1,6 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.GUI;
+using static Spacebox.Common.Testing;
 
 namespace Spacebox.Game
 {
@@ -8,6 +9,8 @@ namespace Spacebox.Game
     public static class GameBlocks
     {
 
+        public static bool IsInitialized = false;
+        public static string modId = "";
         public static Texture2D BlocksTexture { get; set; }
         public static Texture2D ItemsTexture { get; set; }
         public static Texture2D LightAtlas { get; set; }
@@ -264,11 +267,31 @@ namespace Spacebox.Game
             return storage;
         }
 
-        static GameBlocks()
-         {
-
-            GameSetLoader.Load("default");
+        public static void DisposeAll()
+        {
+            BlocksTexture?.Dispose();
+            ItemsTexture?.Dispose();
+            LightAtlas?.Dispose();
+            DustTexture?.Dispose();
+            foreach (var texture in ItemIcon.Values)
+            {
+                texture.Dispose();
+            }
+            foreach (var texture in BlockDust.Values)
+            {
+                texture.Dispose();
+            }
+            Block.Clear();
+            Item.Clear();
+            ItemModels.Clear();
+            ItemIcon.Clear();
+            BlockDust.Clear();
+            MaxBlockId = -1;
+            MaxItemId = -1;
+            modId = "";
+            IsInitialized = false;
 
         }
+
     }
 }

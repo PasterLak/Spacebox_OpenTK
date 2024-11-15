@@ -23,7 +23,7 @@ namespace Spacebox.Game
         public World(Astronaut player)
         {
             Instance = this;
-            Random = new Random(LoadSeed());
+            
 
             Player = player;
             sectorOctree = new Octree<Sector>(SectorSize * 8, Vector3.Zero, SectorSize, 1.0f);

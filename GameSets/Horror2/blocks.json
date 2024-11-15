@@ -332,5 +332,136 @@
             "x": 8,
             "y": 3
         }
+    },
+    {
+        "Name": "soda1",
+        "Walls": {
+            "x": 0,
+            "y": 5
+        }
+
+    }
+    ,
+    {
+        "Name": "soda2",
+        "Walls": {
+            "x": 1,
+            "y": 5
+        }
+    }
+    ,
+    {
+        "Name": "doorh1",
+        "Walls": {
+            "x": 2,
+            "y": 5
+        }
+    },
+    
+    {
+        "Name": "doorh2",
+        "Walls": {
+            "x": 3,
+            "y": 5
+        }
+    },
+    
+    {
+        "Name": "power",
+        "Walls": {
+            "x": 4,
+            "y": 5
+        }
+    }
+    ,
+    
+    {
+        "Name": "exit1",
+        "Walls": {
+            "x": 5,
+            "y": 5
+        }
+    }
+    ,
+    {
+        "Name": "exit2",
+        "Walls": {
+            "x": 6,
+            "y": 5
+        }
+    }
+    ,
+    {
+        "Name": "box",
+        "Walls": {
+            "x": 9,
+            "y": 5
+        },
+         "Top": {
+            "x": 10,
+            "y": 5
+        },
+         
+        "Bottom": {
+            "x": 10,
+            "y": 5
+        }
+    }
+    ,
+    {
+        "Name": "floorMetall",
+        "Walls": {
+            "x": 11,
+            "y": 5
+        }
+    },
+    {
+        "Name": "open",
+        "Walls": {
+            "x": 12,
+            "y": 5
+        }
+    }
+    ,
+    {
+        "Name": "food1",
+        "Walls": {
+            "x": 13,
+            "y": 5
+        }
+    }
+    ,
+    {
+        "Name": "food2",
+        "Walls": {
+            "x": 13,
+            "y": 4
+        }
+    }
+    ,
+    {
+        "Name": "blood",
+        "Walls": {
+            "x": 14,
+            "y": 5
+        }
+    }
+    ,
+    {
+        "Name": "crab",
+        "IsTransparent" : true,
+        "Top": {
+            "x": 14,
+            "y": 4
+        },
+         "Walls": {
+            "x": 15,
+            "y": 15
+        }
+         ,
+         "Bottom": {
+            "x": 15,
+            "y": 15
+        }
     }
 ]

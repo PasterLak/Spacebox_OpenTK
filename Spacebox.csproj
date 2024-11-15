@@ -54,6 +54,8 @@
     <None Remove="Resources\Audio\scroll.wav" />
     <None Remove="Resources\Audio\shooting.wav" />
     <None Remove="Resources\Audio\uii.wav" />
+    <None Remove="Resources\Audio\UI\click1.wav" />
+    <None Remove="Resources\Audio\UI\click2.wav" />
     <None Remove="Resources\Audio\wallhit.wav" />
     <None Remove="Resources\Font\arial.png" />
     <None Remove="Resources\Font\meta.json" />
@@ -227,6 +229,14 @@
     </Content>
 
     <Content Include="Resources\Audio\uii.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Resources\Audio\UI\click1.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Resources\Audio\UI\click2.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 

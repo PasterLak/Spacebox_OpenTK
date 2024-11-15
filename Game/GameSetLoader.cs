@@ -385,7 +385,7 @@ namespace Spacebox.Game
         public class ModConfig
         {
             public string ModId { get; set; } = "default";
-            public string ModeName { get; set; } = "Default mod name";
+            public string ModName { get; set; } = "Default Name";
             public string Description { get; set; } = "";
             public string Author { get; set; } = "";
             public string Version { get; set; } = "0";

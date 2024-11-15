@@ -22,7 +22,7 @@ namespace Spacebox.Common.Audio
 
         public AudioClip(string filename, AudioLoadMode loadMode = AudioLoadMode.LoadIntoMemory)
         {
-            // Разрешаем полный путь к файлу
+        
             string resolvedPath = AudioPathResolver.ResolvePath(filename, AppDomain.CurrentDomain.BaseDirectory, SoundManager.AllowedExtensions);
             if (resolvedPath == null)
             {
@@ -40,7 +40,7 @@ namespace Spacebox.Common.Audio
                 InitializeStreaming();
             }
 
-            //DisposablesUnloader.Add(this);
+          
         }
 
 

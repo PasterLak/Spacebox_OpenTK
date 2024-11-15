@@ -53,10 +53,43 @@ namespace Spacebox.Scenes
         private string worldName;
         public SpaceScene(string[] args) : base(args) // name mod seed
         {
-       
+        
             if(args.Length == 3 )
             {
                 worldName = args[0];
+
+                if(GameBlocks.IsInitialized)
+                {
+                    if(GameBlocks.modId.ToLower() == args[1].ToLower())
+                    {
+                        
+                    }
+                    else
+                    {
+                        GameBlocks.DisposeAll();
+                        GameSetLoader.Load(args[1]);
+                        GameBlocks.IsInitialized = true;
+                    }
+                }
+                else
+                {
+                    GameSetLoader.Load(args[1]);
+                    GameBlocks.IsInitialized = true;
+                   
+                }
+            
+                if (int.TryParse(args[2], out var result))
+                {
+                    World.Random = new Random(result);
+                }
+                else
+                {
+                    World.Random = new Random();
+                    Debug.Error("Wrong seed format! Seed: " + args[2]);
+                }
+
+                
+
             }
 
             BlackScreenOverlay.IsEnabled = true;

@@ -37,7 +37,7 @@ namespace Spacebox.Game
                 }
                 ChunkData data = new ChunkData
                 {
-                    ModeId = GameSetLoader.ModInfo.ModId,
+                    ModId = GameSetLoader.ModInfo.ModId,
                     PositionX = chunk.Position.X,
                     PositionY = chunk.Position.Y,
                     PositionZ = chunk.Position.Z,
@@ -254,7 +254,7 @@ namespace Spacebox.Game
         /// </summary>
         private class ChunkData
         {
-            public string ModeId { get; set; } = "default";
+            public string ModId { get; set; } = "default";
             public float PositionX { get; set; }
             public float PositionY { get; set; }
             public float PositionZ { get; set; }

@@ -1,6 +1,6 @@
 {
     "ModId": "default",
-    "ModeName": "Default Mod",
+    "ModName": "Default",
     "Description": "Basic set of blocks and items",
     "Author": "PasterLak",
     "Version": "0.0.8",
