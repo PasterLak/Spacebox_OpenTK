@@ -51,14 +51,17 @@ namespace Spacebox.Scenes
         Axes axes;
 
         private string worldName;
-        public SpaceScene(string[] args) : base(args) // name mod seed
+        public SpaceScene(string[] args) : base(args) // name mod seed modfolder
         {
         
-            if(args.Length == 3 )
+            if(args.Length == 4 )
             {
                 worldName = args[0];
 
-                if(GameBlocks.IsInitialized)
+                string gamesetspath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.Folder);
+                gamesetspath = Path.Combine(gamesetspath, args[3], "BlockTextures");
+                Debug.Log("block textures: "+ gamesetspath);
+                if (GameBlocks.IsInitialized)
                 {
                     if(GameBlocks.modId.ToLower() == args[1].ToLower())
                     {
@@ -69,7 +72,7 @@ namespace Spacebox.Scenes
                         GameBlocks.DisposeAll();
 
                         GameBlocks.Atlas = new AtlasTexture();
-                        GameBlocks.BlocksTexture = GameBlocks.Atlas.CreateTexture("P:\\C#\\Spacebox_OpenTK\\bin\\Debug\\net8.0-windows\\Test", 32, false);
+                        GameBlocks.BlocksTexture = GameBlocks.Atlas.CreateTexture(gamesetspath, 32, false);
 
                         GameSetLoader.Load(args[1]);
                         GameBlocks.IsInitialized = true;
@@ -78,7 +81,8 @@ namespace Spacebox.Scenes
                 else
                 {
                     GameBlocks.Atlas = new AtlasTexture();
-                    GameBlocks.BlocksTexture = GameBlocks.Atlas.CreateTexture("P:\\C#\\Spacebox_OpenTK\\bin\\Debug\\net8.0-windows\\Test", 32, false);
+                  
+                    GameBlocks.BlocksTexture = GameBlocks.Atlas.CreateTexture(gamesetspath, 32, false);
 
                     GameSetLoader.Load(args[1]);
                     GameBlocks.IsInitialized = true;

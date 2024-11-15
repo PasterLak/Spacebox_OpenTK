@@ -524,6 +524,8 @@ namespace Spacebox.Game.GUI
                 {
                     string jsonContent = File.ReadAllText(configJsonPath);
                     ModConfig gameSetInfo = JsonSerializer.Deserialize<ModConfig>(jsonContent);
+                    gameSetInfo.FolderName = Path.GetFileName(modFolder);
+
                     if (gameSetInfo != null)
                     {
                         gameSets.Add(gameSetInfo);
@@ -577,9 +579,22 @@ namespace Spacebox.Game.GUI
         {
             List<string> args = new List<string>();
 
+            ModConfig modInfo = null;
+
+            foreach(var mod in gameSets)
+            {
+                if(mod.ModId == world.ModId)
+                {
+                    modInfo = mod;
+                    break;
+                }
+            }
+
+
             args.Add(world.Name);
             args.Add( world.ModId);
             args.Add( world.Seed);
+            args.Add(modInfo.FolderName);
 
             SceneManager.LoadScene(typeof(SpaceScene), args.ToArray());
         }
@@ -715,7 +730,7 @@ namespace Spacebox.Game.GUI
         public string ModId { get; set; }
         public string GameVersion { get; set; }
         public string LastEditDate { get; set; }
-
+        public string FolderName { get; set; } = "";
         /*
         public static bool operator == (WorldInfo left, WorldInfo right)
         {

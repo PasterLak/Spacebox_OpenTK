@@ -395,6 +395,7 @@ namespace Spacebox.Game
             public string Author { get; set; } = "";
             public string Version { get; set; } = "0";
             public int BlockSize { get; set; } = 32;
+            public string FolderName { get; set; } = "";
             public List<TextureConfig> Textures { get; set; } = new List<TextureConfig>();
         }
 
