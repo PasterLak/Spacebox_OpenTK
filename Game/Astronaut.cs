@@ -78,7 +78,7 @@ namespace Spacebox.Game
             Debug.OnVisibilityWasChanged += OnGameConsole;
 
             Inventory = new Inventory(8, 4);
-            Panel = new Storage(10, 1);
+            Panel = new Storage(1, 10);
             BoundingVolume = new BoundingSphere(Position, 0.4f);
             Inventory.Name = "Inventory";
             Panel.Name = "Panel";

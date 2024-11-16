@@ -315,63 +315,8 @@ namespace Spacebox.UI
                         string id = $"slotPanel_{x}_{y}";
                         IntPtr slotTextureId = SlotTexture;
 
-                        //ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.5f, 0.5f, 0.5f, 0.5f));
-                        ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.5f, 0.5f, 0.5f, 0.0f));
-                        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
-                        ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
-
-                        if (slotTextureId == IntPtr.Zero)
-                        {
-                            if (ImGui.Button("", new Vector2(SlotSize, SlotSize)))
-                            {
-                                OnSlotClicked(slot);
-                            }
-                        }
-                        else
-                        {
-                            if (ImGui.ImageButton(id, slotTextureId, new Vector2(SlotSize, SlotSize)))
-                            {
-                                OnSlotClicked(slot);
-                            }
-                        }
-                        ImDrawListPtr drawList = ImGui.GetWindowDrawList();
-                        Vector2 pos = ImGui.GetItemRectMin();
-
-                        Vector2 sizeSlot = new Vector2(SlotSize, SlotSize);
-                        Vector2 sizeItem = sizeSlot * 0.8f;
-
-                        Vector2 posCenter = pos + new Vector2(SlotSize * 0.5f, SlotSize * 0.5f);
-
-                        if (y == SelectedSlotId)
-                        {
-                            drawList.AddImage(SelectedTexture, posCenter - sizeSlot * 0.5f,
-                                posCenter + sizeSlot * 0.5f);
-                        }
-                        if (slot.HasItem)
-                        {
-                            
-                            if(clickedSlot != null)
-                            {
-                                if(mousePos != Vector2.Zero)
-                                {
-                                    posCenter = mousePos;
-                                }
-                            }
-                            drawList.AddImage(GameBlocks.ItemIcon[slot.Item.Id].Handle, posCenter - sizeItem * 0.5f, posCenter + sizeItem * 0.5f);
-
-                            
-
-                            if (slot.Count > 1)
-                            {
-                                Vector2 textPos = pos + new Vector2(SlotSize * 0.05f, SlotSize * 0.05f);
-
-                                drawList.AddText(textPos + new Vector2(2, 2), ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 1)),
-                                    slot.Count.ToString());
-                                drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1)),
-                                    slot.Count.ToString());
-                                
-                            }
-                        }
+                        bool isSelected = true && x == 0 && y == SelectedSlotId;
+                        InventoryUIHelper.DrawSlot(slot, id, OnSlotClicked, isSelected);
 
                         ImGui.PopStyleColor(3);
                         ImGui.PopStyleVar(3);

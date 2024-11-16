@@ -140,6 +140,8 @@ namespace Spacebox.UI
                     {
                         // Find the source slot using the slot ID
                         //ItemSlot? sourceSlot = startStorage.GetSlotByID(startId);
+
+                        if(startSlot != slot)
                         startSlot.SwapWith(slot);
 
                         /*if (sourceSlot != null && sourceSlot != slot)

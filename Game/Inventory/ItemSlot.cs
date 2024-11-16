@@ -59,11 +59,33 @@ namespace Spacebox.Game
             var item = Item;
             var count = Count;
 
-            Item = slotToSwapWith.Item;
-            Count = slotToSwapWith.Count;
+            if(Item.Id != slotToSwapWith.Item.Id)
+            {
+                Item = slotToSwapWith.Item;
+                Count = slotToSwapWith.Count;
 
-            slotToSwapWith.Item = item;
-            slotToSwapWith.Count = count;
+                slotToSwapWith.Item = item;
+                slotToSwapWith.Count = count;
+            }
+            else
+            {
+
+                if (slotToSwapWith.Count == Item.StackSize) return;
+
+                if(Count + slotToSwapWith.Count <= Item.StackSize)
+                {
+                    Count = 0;
+                    slotToSwapWith.Count = (byte)(count + slotToSwapWith.Count);
+                }
+                else
+                {
+                    var rest = (Count + slotToSwapWith.Count) - Item.StackSize;
+
+                    slotToSwapWith.Count = Item.StackSize;
+                    Count = (byte)rest;
+                }
+            }
+            
 
             Storage.OnDataWasChanged?.Invoke(Storage);
             slotToSwapWith.Storage.OnDataWasChanged?.Invoke(slotToSwapWith.Storage);
