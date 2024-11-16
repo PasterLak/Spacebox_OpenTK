@@ -2,6 +2,8 @@
 
 Pool
 
+- sounds for blocks
+- use sound for items
 - generation
 - doors
 - maps manager
@@ -20,6 +22,11 @@ Pool
 + collision
 + auto generation of texture atlas
 + save icons, textures to png
+
+
+textures:
+-battery
+- 
 
 version 0.0.7
 

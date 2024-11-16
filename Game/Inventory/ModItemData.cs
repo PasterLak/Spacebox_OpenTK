@@ -27,6 +27,7 @@ namespace Spacebox.Game
     public class ConsumableItemData : ModItemData
     {
         public byte HealAmount { get; set; } = 0;
+        public byte PowerAmount { get; set; } = 0;
     }
 
     public class WeaponItemData : ModItemData

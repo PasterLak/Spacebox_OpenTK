@@ -73,7 +73,7 @@
         "Name": "Power",
         "Sprite": "power",
         "Type": "consumable",
-        "HealAmount": 5,
+        "PowerAmount": 100,
         "MaxStack": 64,
         "ModelDepth": 2.0
     },

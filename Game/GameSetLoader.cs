@@ -299,7 +299,8 @@ namespace Spacebox.Game
             
                 data.ModelDepth)
             {
-                HealAmount = data.HealAmount
+                HealAmount = data.HealAmount,
+                PowerAmount = data.PowerAmount
             };
             GameBlocks.RegisterItem(consumableItem, data.Sprite);
         }

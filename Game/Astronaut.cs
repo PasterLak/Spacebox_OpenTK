@@ -13,8 +13,8 @@ namespace Spacebox.Game
         public Inventory Inventory { get; private set; }
         public Storage Panel { get; private set; }
 
-        private float _cameraSpeed = 2.5f;
-        private float _shiftSpeed = 5.5f;
+        private float _cameraSpeed = 3.5f;
+        private float _shiftSpeed = 7.5f;
 
         private bool _firstMove = true;
         private Vector2 _lastMousePosition;
@@ -266,15 +266,17 @@ namespace Spacebox.Game
             Vector3 movement = Vector3.Zero;
 
             bool isRunning = Input.IsKey(Keys.LeftShift);
+
+            if (PowerBar.StatsData.IsMinReached) isRunning = false;
+
             InertiaController.SetMode(isRunning);
 
             if (isRunning) PowerBar.Use();
 
-            if (PowerBar.StatsData.IsMinReached) isRunning = false;
+            
 
             if (InertiaController.Enabled)
             {
-               
 
                 if (isMoving)
                 {
@@ -423,6 +425,7 @@ namespace Spacebox.Game
             if(consumable != null)
             {
                 HealthBar.StatsData.Increment(consumable.HealAmount);
+                PowerBar.StatsData.Increment(consumable.PowerAmount);
             }
             else
             {
