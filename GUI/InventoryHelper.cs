@@ -65,6 +65,7 @@ namespace Spacebox.UI
             }
         }
 
+        private static bool IsDragging = false;
         private static ItemSlot startSlot = null;
         private static Storage startStorage = null;
         public static unsafe void DrawSlot(ItemSlot slot, string id, Action<ItemSlot> onSlotClicked, bool isSelected = false)
@@ -72,7 +73,8 @@ namespace Spacebox.UI
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.5f, 0.5f, 0.5f, 0.0f));
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
-
+            ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(1, 0, 0, 0));
+            ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1, 0, 0, 0));
             if (SlotTexture == IntPtr.Zero)
             {
                 if (ImGui.Button("", new Vector2(SlotSize, SlotSize)))
@@ -102,59 +104,50 @@ namespace Spacebox.UI
             {
                // Debug.Log("Right released!");
             }
+           
 
-            
-                // Begin Drag Source
-                if (slot.HasItem && ImGui.BeginDragDropSource(ImGuiDragDropFlags.None))
+            if (slot.HasItem )
+            {
+               
+                if ( ImGui.BeginDragDropSource(ImGuiDragDropFlags.None))
                 {
-                    // Set the payload to carry the slot ID
                     short slotId = slot.SlotId;
                     byte[] bytes = BitConverter.GetBytes(slotId);
                     startStorage = slot.Storage;
                     startSlot = slot;
+                    IsDragging = true;
                     fixed (byte* pBytes = bytes)
                     {
                         ImGui.SetDragDropPayload("ITEM_SLOT", (IntPtr)pBytes, sizeof(short));
                     }
 
-                    // Optional: Display the item icon and name as drag preview
-                    if (GameBlocks.ItemIcon.ContainsKey(slot.Item.Id))
-                    {
-                        ImGui.Image(GameBlocks.ItemIcon[slot.Item.Id].Handle, new Vector2(SlotSize * 0.8f, SlotSize * 0.8f));
-                    }
-                    ImGui.Text($"{slot.Item.Name} x{slot.Count}");
-                    
+                    ShowDragPreview(slot);
+
+
                     ImGui.EndDragDropSource();
                 }
-            
-            // Begin Drag Target
+            }
+       
             if (ImGui.BeginDragDropTarget())
             {
                 ImGuiPayloadPtr payload = ImGui.AcceptDragDropPayload("ITEM_SLOT", ImGuiDragDropFlags.None);
                 if (payload.NativePtr != null)
                 {
-                    // Retrieve the payload data as a short
+            
                     short sourceSlotId = Marshal.ReadInt16(payload.Data);
 
                     if(startStorage != null && startSlot != null)
                     {
-                        // Find the source slot using the slot ID
-                        //ItemSlot? sourceSlot = startStorage.GetSlotByID(startId);
-
+                    
                         if(startSlot != slot)
                         startSlot.SwapWith(slot);
 
-                        /*if (sourceSlot != null && sourceSlot != slot)
-                        {
-                            // Swap items between sourceSlot and current slot
-
-                            
-                        }*/
+                      
                     }
                    
                 }
-                
-              
+                IsDragging = false;
+
                 ImGui.EndDragDropTarget();
             }
 
@@ -188,11 +181,36 @@ namespace Spacebox.UI
                 }
             }
 
-            ImGui.PopStyleColor(3);
+            ImGui.PopStyleColor(5);
+        }
+
+        private static void ShowDragPreview(ItemSlot slot)
+        {
+          
+         
+            ImDrawListPtr drawList = ImGui.GetWindowDrawList();
+            Vector2 pos = ImGui.GetItemRectMin();
+
+            if (GameBlocks.ItemIcon.ContainsKey(slot.Item.Id))
+            {
+                ImGui.Image(GameBlocks.ItemIcon[slot.Item.Id].Handle, new Vector2(SlotSize * 0.8f, SlotSize * 0.8f));
+            }
+            if (slot.Count > 1)
+            {
+                Vector2 textPos = pos + new Vector2(SlotSize * 0.05f, SlotSize * 0.05f);
+
+               
+                drawList.AddText(textPos + new Vector2(2, 2), ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 1)),
+                    slot.Count.ToString());
+                drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1)),
+                    slot.Count.ToString());
+            }
+         
         }
 
         public static void ShowTooltip(ItemSlot slot, bool showStackSize = false)
         {
+            if (IsDragging) return;
             if (ImGui.IsItemHovered() && slot.HasItem)
             {
                 var text = "";
