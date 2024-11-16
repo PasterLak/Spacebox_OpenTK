@@ -230,9 +230,16 @@ namespace Spacebox.Game
         }
 
 
-        public void UpdateItem()
+        public ItemSlot GetSlotByID(int id) // opt todo
         {
-            
+            for(int x = 0;x < SizeX; x++)
+            {
+                for (int y = 0; y < SizeY; y++)
+                {
+                    if (Slots[x, y].SlotId == id) return Slots[x, y];
+                }
+            }
+            return Slots[0,0];
         }
         public ItemSlot GetSlot(int x, int y)
         {

@@ -5,20 +5,20 @@ Pool
 - generation
 - doors
 - maps manager
-- health/power
++ health/power
 - blocks IU
-- new icon
++ new icon
 - dependensies between windows manager
 - shooting
 - animation for items
 - drag and drop in inventory
 - inventory refactoring, less static
-- delete item slot
-- drop particle
+- trash item slot
++ drop particle
 - mass calculation
 + mass and protection in mods
 + collision
-- auto generation of texture atlas
++ auto generation of texture atlas
 + save icons, textures to png
 
 version 0.0.7

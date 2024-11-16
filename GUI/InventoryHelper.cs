@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using ImGuiNET;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Game;
 
@@ -63,7 +65,9 @@ namespace Spacebox.UI
             }
         }
 
-        public static void DrawSlot(ItemSlot slot, string id, Action<ItemSlot> onSlotClicked, bool isSelected = false)
+        private static ItemSlot startSlot = null;
+        private static Storage startStorage = null;
+        public static unsafe void DrawSlot(ItemSlot slot, string id, Action<ItemSlot> onSlotClicked, bool isSelected = false)
         {
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.5f, 0.5f, 0.5f, 0.0f));
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
@@ -83,6 +87,76 @@ namespace Spacebox.UI
                     onSlotClicked(slot);
                 }
             }
+            if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+            {
+               
+                OnSlotRightClicked(slot);
+            }
+            if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
+            {
+               
+                OnSlotClicked(slot);
+            }
+
+            if (!ImGui.IsItemActive() && ImGui.IsItemHovered())
+            {
+               // Debug.Log("Right released!");
+            }
+
+            
+                // Begin Drag Source
+                if (slot.HasItem && ImGui.BeginDragDropSource(ImGuiDragDropFlags.None))
+                {
+                    // Set the payload to carry the slot ID
+                    short slotId = slot.SlotId;
+                    byte[] bytes = BitConverter.GetBytes(slotId);
+                    startStorage = slot.Storage;
+                    startSlot = slot;
+                    fixed (byte* pBytes = bytes)
+                    {
+                        ImGui.SetDragDropPayload("ITEM_SLOT", (IntPtr)pBytes, sizeof(short));
+                    }
+
+                    // Optional: Display the item icon and name as drag preview
+                    if (GameBlocks.ItemIcon.ContainsKey(slot.Item.Id))
+                    {
+                        ImGui.Image(GameBlocks.ItemIcon[slot.Item.Id].Handle, new Vector2(SlotSize * 0.8f, SlotSize * 0.8f));
+                    }
+                    ImGui.Text($"{slot.Item.Name} x{slot.Count}");
+                    
+                    ImGui.EndDragDropSource();
+                }
+            
+            // Begin Drag Target
+            if (ImGui.BeginDragDropTarget())
+            {
+                ImGuiPayloadPtr payload = ImGui.AcceptDragDropPayload("ITEM_SLOT", ImGuiDragDropFlags.None);
+                if (payload.NativePtr != null)
+                {
+                    // Retrieve the payload data as a short
+                    short sourceSlotId = Marshal.ReadInt16(payload.Data);
+
+                    if(startStorage != null && startSlot != null)
+                    {
+                        // Find the source slot using the slot ID
+                        //ItemSlot? sourceSlot = startStorage.GetSlotByID(startId);
+                        startSlot.SwapWith(slot);
+
+                        /*if (sourceSlot != null && sourceSlot != slot)
+                        {
+                            // Swap items between sourceSlot and current slot
+
+                            
+                        }*/
+                    }
+                   
+                }
+                
+              
+                ImGui.EndDragDropTarget();
+            }
+
+
 
             ImDrawListPtr drawList = ImGui.GetWindowDrawList();
             Vector2 pos = ImGui.GetItemRectMin();
@@ -158,6 +232,43 @@ namespace Spacebox.UI
                 ImGui.BeginTooltip();
                 ImGui.Text($"Id:{slot.Item.Id}\n{slot.Item.Name}\n{text}");
                 ImGui.EndTooltip();
+            }
+        }
+
+
+        private static void OnSlotRightClicked(ItemSlot slot)
+        {
+
+
+            if (slot.HasItem)
+            {
+                slot.Split();
+            }
+         
+        }
+
+        private static void OnSlotClicked(ItemSlot slot)
+        {
+
+
+            if (slot.HasItem)
+            {
+                if (Input.IsKey(Keys.LeftShift))
+                {
+
+                    slot.MoveItemToConnectedStorage();
+
+                }
+                if (Input.IsKey(Keys.X))
+                {
+
+                    slot.Clear();
+
+                }
+            
+            }
+            else
+            {
             }
         }
 

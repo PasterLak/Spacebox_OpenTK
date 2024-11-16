@@ -5,6 +5,7 @@ namespace Spacebox.Game
 {
     public class ItemSlot
     {
+        private static short MaxSlotID = 0;
         public short SlotId;
         public Item? Item;
         public byte Count;
@@ -17,7 +18,7 @@ namespace Spacebox.Game
         {
             Storage = storage;
             Position = position;
-            SlotId = (short)(position.X * position.Y);
+            SlotId = MaxSlotID; MaxSlotID++;
             Item = new Item(1,"");
             Count = 0;
         }
@@ -26,6 +27,7 @@ namespace Spacebox.Game
         {
             Storage = storage;
             Position = new Vector2i(x,y);
+            SlotId = MaxSlotID; MaxSlotID++;
             Item = new Item(1, "");
             Count = 0;
         }
@@ -50,6 +52,21 @@ namespace Spacebox.Game
             
             Count = 0;
             Storage.OnDataWasChanged?.Invoke(Storage);
+        }
+
+        public void SwapWith(ItemSlot slotToSwapWith)
+        {
+            var item = Item;
+            var count = Count;
+
+            Item = slotToSwapWith.Item;
+            Count = slotToSwapWith.Count;
+
+            slotToSwapWith.Item = item;
+            slotToSwapWith.Count = count;
+
+            Storage.OnDataWasChanged?.Invoke(Storage);
+            slotToSwapWith.Storage.OnDataWasChanged?.Invoke(slotToSwapWith.Storage);
         }
 
         public bool HasItem => Item != null && Count > 0;

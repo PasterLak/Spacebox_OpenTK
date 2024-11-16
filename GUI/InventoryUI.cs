@@ -101,6 +101,8 @@ namespace Spacebox.UI
 
         private static void OnSlotClicked(ItemSlot slot)
         {
+            return;
+          
             if (slot.HasItem)
             {
                 if (Input.IsKey(Keys.LeftShift))
