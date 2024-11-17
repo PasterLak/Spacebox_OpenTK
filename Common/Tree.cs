@@ -1,7 +1,4 @@
-﻿
-
-using OpenTK.Mathematics;
-using System.Text;
+﻿using OpenTK.Mathematics;
 
 namespace Spacebox.Common
 {

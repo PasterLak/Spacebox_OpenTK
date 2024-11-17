@@ -974,8 +974,6 @@
     <PackageReference Include="OpenAL.Soft" Version="1.23.1" />
     <PackageReference Include="OpenTK" Version="4.8.2" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
-    <PackageReference Include="StbImageSharp" Version="2.27.14" />
-    <PackageReference Include="System.Drawing.Common" Version="8.0.7" />
   </ItemGroup>
 
   <ItemGroup>

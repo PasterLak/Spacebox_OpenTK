@@ -1,5 +1,4 @@
-﻿
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using Spacebox.Common;
 
 namespace Spacebox.Game

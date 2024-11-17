@@ -1,5 +1,4 @@
-﻿// ParticleSystem.cs
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 
 
 namespace Spacebox.Common

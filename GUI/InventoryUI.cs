@@ -3,7 +3,6 @@ using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Game;
-using Spacebox.GUI;
 
 namespace Spacebox.UI
 {

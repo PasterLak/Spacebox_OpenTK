@@ -1,6 +1,4 @@
-﻿// Emitter.cs
-using OpenTK.Mathematics;
-using System;
+﻿using OpenTK.Mathematics;
 
 namespace Spacebox.Common
 {

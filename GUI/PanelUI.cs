@@ -1,13 +1,12 @@
-﻿using System;
+﻿
 using System.Numerics;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
-using Spacebox.Entities;
 using Spacebox.Extensions;
 using Spacebox.Game;
-using Spacebox.Scenes;
+
 
 namespace Spacebox.UI
 {

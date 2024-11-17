@@ -1,7 +1,5 @@
-﻿// DropEffect.cs
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using Spacebox.Common;
-using System;
 
 namespace Spacebox.Game
 {

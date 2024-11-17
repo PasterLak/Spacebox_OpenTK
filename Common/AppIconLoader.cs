@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
-using OpenTK.Windowing.Common.Input;
+﻿using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
-using OpenTK.Mathematics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 

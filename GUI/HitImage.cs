@@ -1,7 +1,5 @@
 ﻿using ImGuiNET;
-using Spacebox.Extensions;
 using Spacebox.Game;
-using System;
 using System.Numerics;
 
 namespace Spacebox.Common

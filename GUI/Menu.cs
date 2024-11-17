@@ -1,6 +1,4 @@
-﻿// Menu.cs
-using ImGuiNET;
-
+﻿using ImGuiNET;
 using Spacebox.Common;
 using Spacebox.Common.SceneManagment;
 using Spacebox.Extensions;

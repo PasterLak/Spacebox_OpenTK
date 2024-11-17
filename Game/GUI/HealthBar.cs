@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Game;
 using Spacebox.Game.GUI;

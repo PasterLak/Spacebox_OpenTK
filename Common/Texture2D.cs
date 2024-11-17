@@ -5,7 +5,6 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
-
 namespace Spacebox.Common
 {
     public class Texture2D : IResource
@@ -14,7 +13,6 @@ namespace Spacebox.Common
         public int Width { get; private set; }
         public int Height { get; private set; }
         private Color4[,] pixels;
-       
 
         public Texture2D(int width, int height, bool pixelated = false)
         {

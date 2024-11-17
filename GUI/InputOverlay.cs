@@ -1,10 +1,5 @@
 ﻿using ImGuiNET;
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.Common.Input;
-using OpenTK.Windowing.Desktop;
-using Spacebox.Common;
-using Spacebox.Entities;
 
 namespace Spacebox.GUI
 {

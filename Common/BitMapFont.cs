@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
+﻿
 using Newtonsoft.Json;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace Spacebox.Common
 {
@@ -196,38 +195,42 @@ namespace Spacebox.Common
         private void LoadTexture(string path, int textureWidth, int textureHeight)
         {
             if (!File.Exists(path))
-                throw new FileNotFoundException($"Текстура шрифта не найдена: {path}");
+                throw new FileNotFoundException($"The font texture was not found: {path}");
 
-            using (Bitmap bitmap = new Bitmap(path))
+            using (Image<Rgba32> image = Image.Load<Rgba32>(path))
             {
                 _texture = GL.GenTexture();
                 GL.BindTexture(TextureTarget.Texture2D, _texture);
 
-                BitmapData data = bitmap.LockBits(
-                    new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                    ImageLockMode.ReadOnly,
-                    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                if (image.Width != textureWidth || image.Height != textureHeight)
+                {
+                    image.Mutate(x => x.Resize(textureWidth, textureHeight));
+                }
+
+                byte[] pixelData = new byte[textureWidth * textureHeight * 4];
+                image.CopyPixelDataTo(pixelData);
 
                 GL.TexImage2D(TextureTarget.Texture2D,
                               0,
                               PixelInternalFormat.Rgba,
-                              bitmap.Width,
-                              bitmap.Height,
+                              textureWidth,
+                              textureHeight,
                               0,
-                              OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
+                              OpenTK.Graphics.OpenGL4.PixelFormat.Rgba,
                               PixelType.UnsignedByte,
-                              data.Scan0);
-
-                bitmap.UnlockBits(data);
+                              pixelData);
 
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
                 GL.BindTexture(TextureTarget.Texture2D, 0);
             }
         }
+
 
         public bool ContainsGlyph(char c)
         {

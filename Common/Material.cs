@@ -1,8 +1,4 @@
-﻿
-
-using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
+﻿using OpenTK.Mathematics;
 
 namespace Spacebox.Common
 {
@@ -10,7 +6,7 @@ namespace Spacebox.Common
     {
         public Shader Shader { get; private set; }
         public Texture2D Texture { get; private set; }
-        public TextureCube CubeTexture { get; private set; }
+     
 
 
         public Vector4 Color { get; set; } = Vector4.One;
@@ -35,12 +31,6 @@ namespace Spacebox.Common
             Texture = texture;
         }
 
-        public Material(Shader shader, TextureCube cubeTexture)
-        {
-            Shader = shader;
-            CubeTexture = cubeTexture;
-        }
-        
         public void Use()
         {
             
@@ -53,7 +43,7 @@ namespace Spacebox.Common
             Shader.Use();
             
             Texture?.Use();
-            CubeTexture?.Use();
+           
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
         }

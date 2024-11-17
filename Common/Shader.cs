@@ -1,7 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System.Collections.Concurrent;
-using System.Drawing;
+
 
 namespace Spacebox.Common
 {
@@ -386,15 +386,6 @@ namespace Spacebox.Common
 
             GL.UseProgram(Handle);
             GL.Uniform3(_uniformLocations[name], data);
-        }
-
-        public void SetVector3(string name, Color data)
-        {
-            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
-                return;
-
-            GL.UseProgram(Handle);
-            GL.Uniform3(_uniformLocations[name], new Vector3(data.R, data.G, data.B));
         }
 
         public void SetVector4(string name, Vector4 data)
