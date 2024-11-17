@@ -4,9 +4,8 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
-using Spacebox.Game;
-using System.Diagnostics;
 
+using Spacebox.Game;
 using NumVector4 = System.Numerics.Vector4;
 using OpenTKVector4 = OpenTK.Mathematics.Vector4;
 
@@ -60,7 +59,7 @@ namespace Spacebox.GUI
 
             ImGui.TextColored(fpsColor, $"FPS: {fps}");
 
-            // Отображение использования памяти
+            /*// Отображение использования памяти
             Process currentProcess = Process.GetCurrentProcess();
 
             // Private Working Set
@@ -68,7 +67,7 @@ namespace Spacebox.GUI
             memoryMB = memoryBytes / MemData;
             ImGui.TextColored(new NumVector4(0.56f, 0.8f, 0.8f, 1f), $"Memory Usage: {memoryMB:F2} MB");
 
-          
+          */
 
             if (Camera.Main != null)
             {

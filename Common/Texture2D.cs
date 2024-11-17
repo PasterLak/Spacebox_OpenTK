@@ -3,9 +3,8 @@ using OpenTK.Mathematics;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
-using System;
-using System.Drawing;
-using System.Drawing.Imaging;
+using SixLabors.ImageSharp.Processing;
+
 
 namespace Spacebox.Common
 {
@@ -58,45 +57,38 @@ namespace Spacebox.Common
 
         private void LoadTextureFromFile(string path, bool flipY)
         {
-            using (var image = new Bitmap(path))
+            if (!File.Exists(path))
+                throw new FileNotFoundException($"Texture file was not found: {path}");
+
+            using (Image<Rgba32> image = Image.Load<Rgba32>(path))
             {
                 if (flipY)
-                    image.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                    image.Mutate(x => x.Flip(FlipMode.Vertical));
 
                 Width = image.Width;
                 Height = image.Height;
                 pixels = new Color4[Width, Height];
 
-                var data = image.LockBits(
-                    new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
-                    ImageLockMode.ReadOnly,
-                    System.Drawing.Imaging.PixelFormat.Format32bppArgb
-                );
-
-                unsafe
+                for (int y = 0; y < Height; y++)
                 {
-                    byte* ptr = (byte*)data.Scan0.ToPointer();
-                    for (int y = 0; y < Height; y++)
+                    for (int x = 0; x < Width; x++)
                     {
-                        for (int x = 0; x < Width; x++)
-                        {
-                            int index = (y * Width + x) * 4;
-                            byte b = ptr[index + 0];
-                            byte g = ptr[index + 1];
-                            byte r = ptr[index + 2];
-                            byte a = ptr[index + 3];
-                            pixels[x, y] = new Color4(r / 255f, g / 255f, b / 255f, a / 255f);
-                        }
+                        Rgba32 pixel = image[x, y];
+                        pixels[x, y] = new Color4(
+                            pixel.R / 255f,
+                            pixel.G / 255f,
+                            pixel.B / 255f,
+                            pixel.A / 255f
+                        );
                     }
                 }
-
-                image.UnlockBits(data);
             }
 
             LoadTextureFromPixels();
 
-            Debug.Log("[Texture2D] Loaded: " + path, Color4.Coral);
+            Debug.Log("[Texture2D] Loaded from: " + path, Color4.Coral);
         }
+
 
         private void LoadTextureFromPixels()
         {
