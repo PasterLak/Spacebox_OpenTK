@@ -1,13 +1,14 @@
 ﻿using System.Text.Json;
 using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.Common.Audio;
 
 namespace Spacebox.Game
 {
     public static class GameSetLoader
     {
         public static ModConfig ModInfo;
-
+        private static string modPath;
         public static void Load(string modId)
         {
             string modsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.Folder);
@@ -21,7 +22,7 @@ namespace Spacebox.Game
                 return;
             }
 
-            string modPath = modId.ToLower() == defaultModId ? defaultModPath : FindModPath(modsDirectory, modId);
+             modPath = modId.ToLower() == defaultModId ? defaultModPath : FindModPath(modsDirectory, modId);
 
             if (string.IsNullOrEmpty(modPath))
             {
@@ -44,7 +45,9 @@ namespace Spacebox.Game
                 return;
             }
 
+
             LoadTextures(modPath, defaultModPath, ModInfo.Textures);
+            LoadSounds(modPath);
             LoadBlocks(modPath, defaultModPath);
             LoadItems(modPath, defaultModPath);
             LoadSettings(modPath);
@@ -137,6 +140,37 @@ namespace Spacebox.Game
             }
         }
 
+        private static void LoadSounds(string modPath)
+        {
+          
+            var audioPath = Path.Combine(modPath, "Sounds");
+
+            if (!Directory.Exists(audioPath)) return;
+
+            string[] files = Directory.GetFiles(audioPath);
+        
+            try
+            {
+                foreach (string file in files)
+                {
+                    if(Path.GetExtension(file) != ".wav") continue;
+
+                    var soundName = Path.GetFileNameWithoutExtension(file);
+
+                   
+                    if (!GameBlocks.Sounds.ContainsKey(soundName))
+                    {
+                        GameBlocks.Sounds.Add(soundName, new AudioClip(file));
+                      
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"Error loading sounds: {ex.Message}");
+            }
+        }
+
         private static void LoadBlocks(string modPath, string defaultModPath)
         {
             string blocksFile = GetFilePath(modPath, defaultModPath, "blocks.json");
@@ -222,10 +256,7 @@ namespace Spacebox.Game
                     {
                         type = typeElement.GetString().ToLower();
                     }
-                   
-
-
-
+  
                     switch (type)
                     {
                         case "weapon":
@@ -257,7 +288,7 @@ namespace Spacebox.Game
             }
             catch (Exception ex)
             {
-                Debug.Error($"Error loading items: {ex.Message}");
+                Debug.Error($"[GamesetLoader] Error loading items: {ex.Message}");
             }
         }
 
@@ -296,11 +327,13 @@ namespace Spacebox.Game
             var consumableItem = new ConsumableItem(
                 (byte)data.MaxStack,
                 data.Name,
-            
+                
                 data.ModelDepth)
             {
+                
                 HealAmount = data.HealAmount,
-                PowerAmount = data.PowerAmount
+                PowerAmount = data.PowerAmount,
+                UseSound = data.Sound
             };
             GameBlocks.RegisterItem(consumableItem, data.Sprite);
         }
@@ -311,7 +344,7 @@ namespace Spacebox.Game
             var item = new Item(
                 (byte)data.MaxStack,
                 data.Name,
-            
+              
                 data.ModelDepth);
             GameBlocks.RegisterItem(item, data.Sprite);
         }

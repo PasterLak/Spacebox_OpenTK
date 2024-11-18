@@ -7,11 +7,31 @@ namespace Spacebox.Game
     {
         public Item Item;
         public byte Quantity;
+
+        public Ingredient(Item item, byte quantity)
+        {
+            Item = item;
+            Quantity = quantity;
+        }
     }
     public class Product
     {
         public Item Item;
         public byte Quantity;
+
+        public Product(Item item, byte quantity)
+        {
+            Item = item;
+            Quantity = quantity;
+        }
+    }
+
+    public class Recipe
+    {
+        public short Id;
+
+        public Ingredient Ingredient;
+        public Product Product;
     }
     public class Blueprint
     {

@@ -32,6 +32,11 @@ namespace Spacebox.Game
             Count = 0;
         }
 
+        public void SetCount(int count)
+        {
+            Count = (byte)MathHelper.Clamp(count, 0, Item.StackSize);
+        }
+
         public void TakeOne()
         {
             if (!HasItem) return;
@@ -39,6 +44,17 @@ namespace Spacebox.Game
             Count--;
 
             Storage.OnDataWasChanged?.Invoke(Storage);
+        }
+        public void AddOne()
+        {
+            if (!HasItem) return;
+            if(HasFreeSpace)
+            {
+                Count++;
+
+                Storage.OnDataWasChanged?.Invoke(Storage);
+            }
+            
         }
 
         public void DropOne()
@@ -92,7 +108,7 @@ namespace Spacebox.Game
         }
 
         public bool HasItem => Item != null && Count > 0;
-
+        public bool HasFreeSpace => Item != null && Count < Item.StackSize;
         public void Split()
         {
             if (Count < 2) return;

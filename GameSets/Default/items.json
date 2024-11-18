@@ -50,19 +50,39 @@
         "ModelDepth": 2.0
     },
     {
+        "Name": "Titanium Dust",
+        "Sprite": "titDust",
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
         "Name": "Aluminium Ingot",
         "Sprite": "aluIngot",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
     {
-        "Name": "Health",
+        "Name": "Aluminium Dust",
+        "Sprite": "aluDust",
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
+        "Name": "Iron Dust",
+        "Sprite": "ironDust",
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
+        "Name": "Med Kit",
         "Sprite": "health",
         "Type": "consumable",
+        "Sound" : "heal",
         "HealAmount": 50,
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
+   
     {
         "Name": "Ice Shards",
         "Sprite": "ice",
@@ -73,6 +93,7 @@
         "Name": "Power",
         "Sprite": "power",
         "Type": "consumable",
+        "Sound" : "use",
         "PowerAmount": 100,
         "MaxStack": 64,
         "ModelDepth": 2.0
@@ -81,6 +102,7 @@
         "Name": "Beer",
         "Sprite": "beer",
         "Type": "consumable",
+        "Sound" : "beer",
         "HealAmount": 10,
         "MaxStack": 20,
         "ModelDepth": 3.0
@@ -90,6 +112,12 @@
         "Sprite": "cat",
         "MaxStack": 64,
         "ModelDepth": 2.0
+    },
+    {
+        "Name": "Paint",
+        "Sprite": "paint",
+        "MaxStack": 1,
+        "ModelDepth": 1.0
     },
     {
         "Name": "Drill 2",

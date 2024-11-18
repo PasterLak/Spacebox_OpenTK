@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using OpenTK.Mathematics;
-using System.Drawing;
+
 
 namespace Spacebox.Common
 {
@@ -60,7 +60,7 @@ namespace Spacebox.Common
 
                
                 Lighting.AmbientColor = new Vector3(data.AmbientColorX, data.AmbientColorY, data.AmbientColorZ);
-                Lighting.BackgroundColor = Color.FromArgb(data.BackgroundColorA, data.BackgroundColorR, data.BackgroundColorG, data.BackgroundColorB);
+                //Lighting.BackgroundColor = Color.FromArgb(data.BackgroundColorA, data.BackgroundColorR, data.BackgroundColorG, data.BackgroundColorB);
 
                 //Console.WriteLine("Ambient data loaded successfully.");
             }

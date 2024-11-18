@@ -27,7 +27,7 @@ namespace Spacebox.Common
                 AmbientColor = new Vector3
                     (AmbientColor.X, AmbientColor.Y, 1);
 
-            AmbientSaveLoadManager.SaveAmbient();
+            //AmbientSaveLoadManager.SaveAmbient();
         }
 
         public static void RemoveAmbient()
@@ -46,7 +46,7 @@ namespace Spacebox.Common
                 AmbientColor = new Vector3
                     (AmbientColor.X, AmbientColor.Y, 0);
 
-            AmbientSaveLoadManager.SaveAmbient();
+            //AmbientSaveLoadManager.SaveAmbient();
         }
     }
 }

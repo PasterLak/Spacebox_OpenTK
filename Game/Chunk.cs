@@ -464,7 +464,15 @@ namespace Spacebox.Game
                     float dis2 = Vector3.Distance(player.Position, hitBlockPosition);
 
                     if (dis2 < 3f)
+                    {
                         CenteredText.Show();
+
+                        if(Input.IsKeyDown(Keys.F))
+                        {
+                            ((InteractiveBlock)aimedBlock).Use();
+                        }
+                    }
+                       
                     else
                         CenteredText.Hide();
                 }

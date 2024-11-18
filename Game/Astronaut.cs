@@ -38,6 +38,8 @@ namespace Spacebox.Game
         private CameraSway _cameraSway = new CameraSway();
         private HitImage _hitImage;
         private AudioSource wallhitAudio;
+        private AudioSource wallhitAudio2;
+        private AudioSource useConsumableAudio;
         public HealthBar HealthBar { get; private set; }
         public PowerBar PowerBar { get; private set; }
         private bool _collisionEnabled = true;
@@ -65,7 +67,8 @@ namespace Spacebox.Game
 
             _hitImage = new HitImage();
            
-            wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
+             wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
+            wallhitAudio2 = new AudioSource(SoundManager.GetClip("wallhit2"));
         }
 
         ~Astronaut()
@@ -143,7 +146,7 @@ namespace Spacebox.Game
             _hitImage.Update();
             if (!CanMove) return;
 
-            if (Input.IsKeyDown(Keys.F))
+            if (Input.IsKeyDown(Keys.L))
             {
                 Flashlight.IsActive = !Flashlight.IsActive;
             }
@@ -390,13 +393,19 @@ namespace Spacebox.Game
         private void ApplyVelocityDamage(float speed)
         {
 
-            if(speed > 7)
+            if(speed > 5 && speed <= 9)
             {
                 if (wallhitAudio.IsPlaying) wallhitAudio.Stop();
 
                 wallhitAudio.Volume = 0;
-                wallhitAudio.Volume = MathHelper.Min(wallhitAudio.Volume + speed * 0.04f , 1);
+                wallhitAudio.Volume = MathHelper.Min(wallhitAudio.Volume + speed * 0.05f , 1);
                 wallhitAudio.Play();
+            }
+            else if(speed > 9)
+            {
+                
+                wallhitAudio2.Volume = MathHelper.Min(0 + speed * 0.05f, 1);
+                wallhitAudio2.Play();
             }
             if (speed > 10)
             {
@@ -404,6 +413,7 @@ namespace Spacebox.Game
                 int damage = (int)(Math.Abs(speed) - 10f);
 
                 HealthBar.StatsData.Decrement(damage * damageMultiplayer);
+                HealthColorOverlay.SetActive(new System.Numerics.Vector3(1, 0, 0), 0.1f  + 1 / (10 - damage));
                 _hitImage.Show();
              
                  if (damage > 5)
@@ -424,6 +434,22 @@ namespace Spacebox.Game
         {
             if(consumable != null)
             {
+                if(GameBlocks.TryGetItemSound(consumable.Id, out AudioClip clip))
+                {
+                    if(useConsumableAudio != null)
+                    {
+                        useConsumableAudio.Stop();
+                    }
+                    useConsumableAudio = new AudioSource(clip);
+                    useConsumableAudio.Play();
+
+                    if(consumable.HealAmount > 0)
+                    HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,1,0), 0.2f);
+
+                    if (consumable.PowerAmount > 0)
+                        HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 1), 0.15f);
+                }
+
                 HealthBar.StatsData.Increment(consumable.HealAmount);
                 PowerBar.StatsData.Increment(consumable.PowerAmount);
             }

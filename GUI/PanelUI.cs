@@ -6,6 +6,7 @@ using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Extensions;
 using Spacebox.Game;
+using Spacebox.Game.GUI;
 
 
 namespace Spacebox.UI
@@ -289,8 +290,10 @@ namespace Spacebox.UI
 
             ImGui.Begin("Panel", windowFlags);
 
+            
             if (ImGui.BeginTable("PanelTable", Storage.SizeY, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit))
             {
+                //GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), io.DisplaySize.Y);
                 // Set up columns based on SizeY
                 for (int y = 0; y < Storage.SizeY; y++)
                 {

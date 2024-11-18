@@ -28,6 +28,7 @@ namespace Spacebox.Game
     {
         public byte HealAmount { get; set; } = 0;
         public byte PowerAmount { get; set; } = 0;
+        public string Sound { get; set; } = "default";
     }
 
     public class WeaponItemData : ModItemData

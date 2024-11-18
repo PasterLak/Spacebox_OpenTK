@@ -10,7 +10,7 @@ namespace Spacebox.Game
         {
             SetPixelated(true);
             GenerateSpaceTexture();
-            UpdateTexture();
+            UpdateTexture(true);
         }
 
         private void GenerateSpaceTexture()

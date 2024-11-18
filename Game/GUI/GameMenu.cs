@@ -84,7 +84,7 @@ namespace Spacebox.Game.GUI
             ImGui.GetStyle().WindowPadding = oldWindowPadding;
         }
 
-        private void DrawElementColors(Vector2 windowPos,Vector2 windowSize, float displayY, float offsetMultiplayer)
+        public static void DrawElementColors(Vector2 windowPos,Vector2 windowSize, float displayY, float offsetMultiplayer = 0.004f)
         {
             float offsetValue = displayY * offsetMultiplayer;
             Vector2 offset = new Vector2(offsetValue, offsetValue);
@@ -611,16 +611,19 @@ namespace Spacebox.Game.GUI
            
         }
 
-        private void CenterNextWindow(float width, float height)
+        public static Vector2 CenterNextWindow(float width, float height)
         {
-            ImGui.SetNextWindowPos(new Vector2(
+            var pos = new Vector2(
                 (ImGui.GetIO().DisplaySize.X - width) * 0.5f,
-                (ImGui.GetIO().DisplaySize.Y - height) * 0.5f),
+                (ImGui.GetIO().DisplaySize.Y - height) * 0.5f);
+            ImGui.SetNextWindowPos(pos,
                 ImGuiCond.Always);
             ImGui.SetNextWindowSize(new Vector2(width, height));
+
+            return pos;
         }
 
-        private Vector2 CenterNextWindow2(float width, float height)
+        public static Vector2 CenterNextWindow2(float width, float height)
         {
             var pos = new Vector2(
                 (ImGui.GetIO().DisplaySize.X - width) * 0.5f,
@@ -674,7 +677,7 @@ namespace Spacebox.Game.GUI
         uint backgroundColor = ImGui.GetColorU32(new Vector4(0.75f, 0.75f, 0.75f, 1f));
         uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
         uint borderColor2 = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));*/
-        public void CenterButtonWithBackground(string label, float width, float height, Action onClick)
+        public static void CenterButtonWithBackground(string label, float width, float height, Action onClick)
         {
             float windowWidth = ImGui.GetWindowWidth();
             float cursorX = (windowWidth - width) * 0.5f;
@@ -696,7 +699,7 @@ namespace Spacebox.Game.GUI
 
             if (ImGui.Button(label, new Vector2(width, height)))
             {
-                click1.Play(); 
+                //click1.Play(); 
                 onClick?.Invoke();
             }
         }

@@ -1,4 +1,19 @@
 
+For demo:
+
+- fix inventory, panel ui
+- categories in creative?
+- use sound effect
+- fix mod 2
+- modding guide
+- fist craft test
+- shooting?
+- items animation
+- space entity
+- local position and rotation
+- more chunks
+- 
+
 
 Pool
 
@@ -13,7 +28,7 @@ Pool
 - dependensies between windows manager
 - shooting
 - animation for items
-- drag and drop in inventory
++ drag and drop in inventory
 - inventory refactoring, less static
 - trash item slot
 + drop particle

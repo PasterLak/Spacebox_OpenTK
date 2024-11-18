@@ -78,14 +78,15 @@ namespace Spacebox.UI
             {
                 if (ImGui.Button("", new Vector2(SlotSize, SlotSize)))
                 {
-                    onSlotClicked(slot);
+                    onSlotClicked?.Invoke(slot);
                 }
             }
             else
             {
                 if (ImGui.ImageButton(id, SlotTexture, new Vector2(SlotSize, SlotSize)))
                 {
-                    onSlotClicked(slot);
+                    
+                    onSlotClicked?.Invoke(slot);
                 }
             }
             if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
@@ -95,8 +96,8 @@ namespace Spacebox.UI
             }
             if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
             {
-               
-                OnSlotClicked(slot);
+
+                onSlotClicked?.Invoke(slot);
             }
 
             if (!ImGui.IsItemActive() && ImGui.IsItemHovered())

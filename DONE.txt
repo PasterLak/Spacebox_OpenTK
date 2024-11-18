@@ -5,6 +5,8 @@
 
 // dir P:\C#\Spacebox_OpenTK\*.cs /S /B | find /C ":"
 // Get-ChildItem -Path "P:\C#\Spacebox_OpenTK" -Recurse -Filter *.cs | Get-Content | Measure-Object -Line
+// (008): 192, 19954
+
 
 version 0.0.9
 
@@ -21,6 +23,13 @@ version 0.0.8
 - automatic blocks,items and emissions atlas creation (block -75% of size, items -94%, emission -75%)  -81%
 - drag and drop
 - items adding power
+- non-cross-platform libraries replaced and removed
+- macOS support
+- scanner UI
+- new sound effects
+- damage, heal, charge overlay
+- consumable items can have a sound effect
+- crusher UI demo
 
 ? versions converter
 

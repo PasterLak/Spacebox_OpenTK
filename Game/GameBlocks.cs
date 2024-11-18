@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.Common.Audio;
 using Spacebox.GUI;
 using static Spacebox.Common.Testing;
 
@@ -26,6 +27,8 @@ namespace Spacebox.Game
 
         public static Dictionary<short, Texture2D> ItemIcon = new Dictionary<short, Texture2D>();
         public static Dictionary<short, Texture2D> BlockDust = new Dictionary<short, Texture2D>();
+        public static Dictionary<short, AudioClip> ItemSound = new Dictionary<short, AudioClip>();
+        public static Dictionary<string, AudioClip> Sounds = new Dictionary<string, AudioClip>();
 
         public static AtlasTexture AtlasBlocks;
         public static AtlasTexture AtlasItems;
@@ -80,6 +83,18 @@ namespace Spacebox.Game
 
         }
 
+        public static bool TryGetItemSound(short id, out AudioClip clip)
+        {
+            clip = null;
+            if (ItemSound.ContainsKey(id))
+            {
+                clip = ItemSound[id];
+                return true;
+            }
+
+            return false;
+        }
+
         public static void RegisterItem(Item item, string spriteName)
         {
             MaxItemId++;
@@ -98,6 +113,19 @@ namespace Spacebox.Game
             CacheIcon(item, coordX, coordY);
 
             GenerateItemModel(coordX, coordY, item.ModelDepth);
+
+            if( item is ConsumableItem )
+            {
+                var it = item as ConsumableItem;
+                if(!ItemSound.ContainsKey(it.Id))
+                {
+                    if(Sounds.ContainsKey(it.UseSound))
+                    {
+
+                    }
+                    ItemSound.Add(it.Id, Sounds[it.UseSound]);
+                }
+            }
         }
 
         private static void GenerateItemModel(byte coordX, byte coordY, float depth)
@@ -301,6 +329,18 @@ namespace Spacebox.Game
             foreach (var texture in BlockDust.Values)
             {
                 texture.Dispose();
+            }
+            foreach(var c in ItemSound.Values)
+            {
+                if (c != null)
+                {
+                    c.Dispose();
+                    
+                }
+            }
+            foreach (var c in Sounds.Values)
+            {
+                if (c != null) c.Dispose();
             }
             Block.Clear();
             Item.Clear();

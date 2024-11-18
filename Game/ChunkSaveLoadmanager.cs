@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.Json;
+﻿using System.Text.Json;
 using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Game.GUI;
@@ -55,11 +51,6 @@ namespace Spacebox.Game
             }
         }
 
-        /// <summary>
-        /// Загружает чанк из указанного файла.
-        /// </summary>
-        /// <param name="filePath">Полный путь к файлу чанка.</param>
-        /// <returns>Загруженный чанк или null в случае ошибки.</returns>
         public static Chunk LoadChunkFromFile(string filePath)
         {
             try
@@ -100,11 +91,6 @@ namespace Spacebox.Game
             }
         }
 
-        /// <summary>
-        /// Загружает мир по его названию.
-        /// </summary>
-        /// <param name="worldName">Название мира.</param>
-        /// <returns>Загруженный мир или null, если не удалось загрузить.</returns>
         public static WorldChunks LoadWorld(string worldName)
         {
             try
@@ -173,12 +159,7 @@ namespace Spacebox.Game
             }
         }
 
-        /// <summary>
-        /// Парсит позицию чанка из имени файла.
-        /// Ожидаемый формат: "chunk_X_Y_Z"
-        /// </summary>
-        /// <param name="fileName">Имя файла без расширения.</param>
-        /// <returns>Вектор позиции чанка или Vector3.Zero при ошибке.</returns>
+
         private static Vector3 ParseChunkPosition(string fileName)
         {
             string[] parts = fileName.Split('_');
@@ -197,23 +178,13 @@ namespace Spacebox.Game
             return Vector3.Zero;
         }
 
-        /// <summary>
-        /// Формирует полный путь к файлу чанка внутри папки мира.
-        /// </summary>
-        /// <param name="position">Позиция чанка.</param>
-        /// <param name="worldFolder">Папка мира.</param>
-        /// <returns>Полный путь к файлу чанка.</returns>
+
         private static string GetChunkFilePath(Vector3 position, string worldFolder)
         {
             string chunksDirectory = Path.Combine(worldFolder, "Chunks");
             return Path.Combine(chunksDirectory, $"chunk_{position.X}_{position.Y}_{position.Z}.json");
         }
 
-        /// <summary>
-        /// Преобразует 3D массив блоков в одномерный массив идентификаторов блоков.
-        /// </summary>
-        /// <param name="blocks">3D массив блоков.</param>
-        /// <returns>Одномерный массив идентификаторов блоков.</returns>
         private static short[] GetBlockIdsAs1D(Block[,,] blocks)
         {
             short[] ids = new short[Chunk.Size * Chunk.Size * Chunk.Size];
@@ -227,11 +198,7 @@ namespace Spacebox.Game
             return ids;
         }
 
-        /// <summary>
-        /// Восстанавливает 3D массив блоков из одномерного массива идентификаторов блоков.
-        /// </summary>
-        /// <param name="ids">Одномерный массив идентификаторов блоков.</param>
-        /// <returns>3D массив блоков.</returns>
+
         private static Block[,,] ReconstructBlocksFrom1D(short[] ids)
         {
             if (ids.Length != Chunk.Size * Chunk.Size * Chunk.Size)
@@ -249,9 +216,6 @@ namespace Spacebox.Game
             return blocks;
         }
 
-        /// <summary>
-        /// Класс данных чанка для сериализации/десериализации.
-        /// </summary>
         private class ChunkData
         {
             public string ModId { get; set; } = "default";
@@ -262,18 +226,13 @@ namespace Spacebox.Game
             public List<DirectionData> Directions { get; set; }
         }
 
-        /// <summary>
-        /// Класс данных направления блока.
-        /// </summary>
+
         private class DirectionData
         {
             public int Index { get; set; }
             public Direction Direction { get; set; }
         }
 
-        /// <summary>
-        /// Класс, представляющий мир.
-        /// </summary>
         public class WorldChunks
         {
             public WorldInfo Info { get; set; }

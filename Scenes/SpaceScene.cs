@@ -11,6 +11,8 @@ using Spacebox.Managers;
 using Spacebox.Game.Commands;
 using Spacebox.UI;
 using static Spacebox.Game.ChunkSaveLoadManager;
+using Spacebox.Game.GUI;
+using System.Reflection;
 
 namespace Spacebox.Scenes
 {
@@ -35,7 +37,7 @@ namespace Spacebox.Scenes
         public static AudioSource Death;
         public static bool DeathOn = false;
         public static AudioSource Uii;
-
+        private AudioSource ambient;
         private DustSpawner dustSpawner;
 
 
@@ -49,6 +51,7 @@ namespace Spacebox.Scenes
         private TestOctree testOctree = new TestOctree();
         private bool f = false;
         Axes axes;
+        private RadarWindow radarWindow;
 
         private string worldName;
         public SpaceScene(string[] args) : base(args) // name mod seed modfolder
@@ -151,6 +154,11 @@ namespace Spacebox.Scenes
             blockPlace = new AudioSource(SoundManager.GetClip("blockPlace3"));
             blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroy"));
             flashLight = new AudioSource(SoundManager.GetClip("flashlight"));
+            ambient = new AudioSource(SoundManager.GetClip("Music/ambientMain"));
+            ambient.IsLooped = true;
+            ambient.Volume = 0.05f;
+            ambient.Play();
+           
             flashLight.Volume = 0.5f;
 
             Input.SetCursorState(CursorState.Grabbed);
@@ -160,7 +168,7 @@ namespace Spacebox.Scenes
             InputManager.RegisterCallback("inputOverlay", () =>
             { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
 
-            InputManager.AddAction("flashlight", Keys.F);
+            InputManager.AddAction("flashlight", Keys.L);
             InputManager.RegisterCallback("flashlight", () =>
             { flashLight.Play(); });
 
@@ -183,7 +191,7 @@ namespace Spacebox.Scenes
             sprite = new Sprite("Resources/Textures/cat.png", new Vector2(0, 0), new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
             //chunk.RemoveBlock(0,0,0);
 
-            
+            radarWindow = new RadarWindow(skybox.Texture);
 
             blockDestructionManager = new BlockDestructionManager(player);
 
@@ -220,8 +228,9 @@ namespace Spacebox.Scenes
 
 
 
-            
-            
+            CrusherGUI.Init();
+
+
         }
 
         public override void Start()
@@ -353,11 +362,14 @@ namespace Spacebox.Scenes
         public override void OnGUI()
         {
 
+            HealthColorOverlay.Render();
             CenteredText.Draw();
-            TagText.Draw();
             
-            //healthBar.OnGUI();
+            TagText.Draw();
 
+            //healthBar.OnGUI();
+            radarWindow.Render();
+            //CrusherGUI.OnGUI();
             PanelUI.Render();
             player.OnGUI();
             InventoryUI.Render(player.Inventory);

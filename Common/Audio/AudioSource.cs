@@ -114,7 +114,7 @@ namespace Spacebox.Common.Audio
 
                 isPaused = true;
                 isPlaying = false;
-                //Console.WriteLine("Playback paused.");
+               
             }
         }
 
@@ -149,7 +149,7 @@ namespace Spacebox.Common.Audio
 
                 AL.SourceStop(source);
                 AL.DeleteSource(source);
-                //Console.WriteLine("AudioSource disposed.");
+              
             }
         }
 

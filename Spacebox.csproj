@@ -122,6 +122,12 @@
   
     <None Remove="GameSets\Default\Emissions\core.png" />
   
+    <None Remove="GameSets\Default\Emissions\craftSide.png" />
+  
+    <None Remove="GameSets\Default\Emissions\craftTop.png" />
+  
+    <None Remove="GameSets\Default\Emissions\crusherSide.png" />
+  
     <None Remove="GameSets\Default\Emissions\cyan.png" />
   
     <None Remove="GameSets\Default\Emissions\green.png" />
@@ -150,6 +156,8 @@
   
     <None Remove="GameSets\Default\items.json" />
   
+    <None Remove="GameSets\Default\Items\aluDust.png" />
+  
     <None Remove="GameSets\Default\Items\aluIngot.png" />
   
     <None Remove="GameSets\Default\Items\aluPanels.png" />
@@ -164,15 +172,23 @@
   
     <None Remove="GameSets\Default\Items\health.png" />
   
+    <None Remove="GameSets\Default\Items\health2.png" />
+  
     <None Remove="GameSets\Default\Items\ice.png" />
+  
+    <None Remove="GameSets\Default\Items\ironDust.png" />
   
     <None Remove="GameSets\Default\Items\ironLens.png" />
   
     <None Remove="GameSets\Default\Items\ironPanels.png" />
   
+    <None Remove="GameSets\Default\Items\paint.png" />
+  
     <None Remove="GameSets\Default\Items\powder.png" />
   
     <None Remove="GameSets\Default\Items\power.png" />
+  
+    <None Remove="GameSets\Default\Items\titDust.png" />
   
     <None Remove="GameSets\Default\Items\titIngot.png" />
   
@@ -181,6 +197,12 @@
     <None Remove="GameSets\Default\Items\weapon2.png" />
   
     <None Remove="GameSets\Default\Optional\lighting.json" />
+  
+    <None Remove="GameSets\Default\Sounds\beer.wav" />
+  
+    <None Remove="GameSets\Default\Sounds\heal.wav" />
+  
+    <None Remove="GameSets\Default\Sounds\use.wav" />
   
     <None Remove="GameSets\Horror2\blocks.json" />
   
@@ -210,13 +232,17 @@
   
     <None Remove="Resources\Audio\flashlight.wav" />
     <None Remove="Resources\Audio\music.wav" />
+    <None Remove="Resources\Audio\Music\ambientMain.wav" />
     <None Remove="Resources\Audio\pickup.wav" />
+    <None Remove="Resources\Audio\radarFound.wav" />
+    <None Remove="Resources\Audio\radarScanning.wav" />
     <None Remove="Resources\Audio\scroll.wav" />
     <None Remove="Resources\Audio\shooting.wav" />
     <None Remove="Resources\Audio\uii.wav" />
     <None Remove="Resources\Audio\UI\click1.wav" />
     <None Remove="Resources\Audio\UI\click2.wav" />
     <None Remove="Resources\Audio\wallhit.wav" />
+    <None Remove="Resources\Audio\wallHit2.wav" />
     <None Remove="Resources\Font\arial.png" />
     <None Remove="Resources\Font\meta.json" />
     <None Remove="Resources\Models\arrow.mtl" />
@@ -266,6 +292,10 @@
     <None Remove="Resources\Textures\modBlocks.png" />
     <None Remove="Resources\Textures\modItems.png" />
     <None Remove="Resources\Textures\myBlocks.png" />
+    <None Remove="Resources\Textures\radarGrid.png" />
+    <None Remove="Resources\Textures\radarLine.png" />
+    <None Remove="Resources\Textures\radarMask.png" />
+    <None Remove="Resources\Textures\scanning.png" />
     <None Remove="Resources\Textures\selectedSlot.png" />
     <None Remove="Resources\Textures\selector.png" />
     <None Remove="Resources\Textures\sky.jpg" />
@@ -512,6 +542,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
+    <Content Include="GameSets\Default\Emissions\craftSide.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\craftTop.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Emissions\crusherSide.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <Content Include="GameSets\Default\Emissions\cyan.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -568,6 +610,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
+    <Content Include="GameSets\Default\Items\aluDust.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <Content Include="GameSets\Default\Items\aluIngot.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -596,7 +642,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
+    <Content Include="GameSets\Default\Items\health2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <Content Include="GameSets\Default\Items\ice.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\ironDust.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
@@ -608,11 +662,19 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
+    <Content Include="GameSets\Default\Items\paint.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <Content Include="GameSets\Default\Items\powder.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
     <Content Include="GameSets\Default\Items\power.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\titDust.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
@@ -629,6 +691,18 @@
     </Content>
 
     <Content Include="GameSets\Default\Optional\lighting.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Sounds\beer.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Sounds\heal.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Sounds\use.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
@@ -688,7 +762,19 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
+    <Content Include="Resources\Audio\Music\ambientMain.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <Content Include="Resources\Audio\pickup.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Resources\Audio\radarFound.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Resources\Audio\radarScanning.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
@@ -709,6 +795,10 @@
     </Content>
 
     <Content Include="Resources\Audio\wallhit.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Resources\Audio\wallHit2.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
@@ -749,6 +839,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="GameSets\Horror2\Textures\items.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\radarGrid.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\radarLine.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\radarMask.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\scanning.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\selectedSlot.png">
