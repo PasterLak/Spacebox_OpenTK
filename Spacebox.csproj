@@ -231,6 +231,8 @@
     <None Remove="Resources\Audio\error.wav" />
   
     <None Remove="Resources\Audio\flashlight.wav" />
+  
+    <None Remove="Resources\Audio\flySpeedUp.wav" />
     <None Remove="Resources\Audio\music.wav" />
     <None Remove="Resources\Audio\Music\ambientMain.wav" />
     <None Remove="Resources\Audio\pickup.wav" />
@@ -311,6 +313,7 @@
     <None Remove="Resources\Textures\terrain.jpg" />
     <None Remove="Resources\Textures\tile.png" />
     <None Remove="Resources\Textures\tv.png" />
+    <None Remove="Resources\Textures\UI\trash.png" />
     <None Remove="Resources\Textures\water.png" />
     <None Remove="Resources\Textures\wood.png" />
     <None Remove="Shaders\axes.glsl" />
@@ -762,6 +765,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
+    <Content Include="Resources\Audio\flySpeedUp.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <Content Include="Resources\Audio\Music\ambientMain.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -995,6 +1002,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\Game\wood.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\UI\trash.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\axes.glsl">

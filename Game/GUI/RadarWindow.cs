@@ -124,7 +124,7 @@ namespace Spacebox.Game.GUI
                     time = 0;
                    
                 }
-                float distance = windowHeight * 0.3f;
+                float distance = windowHeight * 0.5f * 0.8f; // 0.1 min
                 Vector2 pointPos = center + direction * distance;
 
                 float pointRadius = windowHeight * 0.015f;

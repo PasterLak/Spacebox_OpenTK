@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Text.Json;
 using ImGuiNET;
+using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Common.SceneManagment;
 using Spacebox.Scenes;
@@ -16,7 +17,8 @@ namespace Spacebox.Game.GUI
             Main,
             WorldSelect,
             NewWorld,
-            Options
+            Options,
+            Delete
         }
 
         private MenuState currentState = MenuState.Main;
@@ -30,18 +32,20 @@ namespace Spacebox.Game.GUI
         private int selectedGameSetIndex = 0;
 
         private WorldInfo selectedWorld = null;
-
+        private Texture2D trashIcon;
         private Vector2 oldItemSpacing;
         private Vector2 oldWindowPadding;
         private AudioSource click1;
 
-     
+        private bool showDeleteWindow = false;
         public GameMenu()
         {
             LoadWorlds();
             LoadGameSets();
 
             click1 = new AudioSource(SoundManager.GetClip("UI/click1"));
+            trashIcon = TextureManager.GetTexture("Resources/textures/UI/trash.png", true);
+            trashIcon.FlipY();
         }
 
         public void Render()
@@ -77,6 +81,12 @@ namespace Spacebox.Game.GUI
                 case MenuState.Options:
                     RenderOptionsMenu();
                     break;
+                
+            }
+
+            if(showDeleteWindow)
+            {
+                RenderDeleteWindow();
             }
 
             ImGui.PopStyleColor(6);
@@ -237,21 +247,32 @@ namespace Spacebox.Game.GUI
                });
 
 
-                ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.8f, 0.25f, 0.25f, 1.0f));
+                //ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.8f, 0.25f, 0.25f, 1.0f));
                 // Кнопка "Delete World"
         
-                ButtonWithBackground("Delete World", new Vector2(buttonWidth, buttonHeight),
+                ButtonWithBackground("Edit", new Vector2(buttonWidth - buttonHeight - buttonSpacing, buttonHeight),
               new Vector2(buttonStartX + buttonWidth + buttonSpacing, buttonY + windowHeight * 0.02f), () =>
               {
                   click1.Play();
-                  DeleteWorld(selectedWorld);
-                  selectedWorld = null;
-                  if (worlds.Count > 0)
-                  {
-                      selectedWorld = worlds[0];
-                  }
+               
               });
-                ImGui.PopStyleColor(6);
+               // ImGui.PopStyleColor(6);
+
+                ButtonWithBackgroundAndIcon("", new Vector2(buttonHeight, buttonHeight),
+             new Vector2(buttonStartX + buttonWidth + buttonSpacing + buttonWidth - buttonHeight, buttonY + windowHeight * 0.02f), () =>
+             {
+                 click1.Play();
+                 showDeleteWindow = true;
+                 /*DeleteWorld(selectedWorld);
+                 selectedWorld = null;
+                 if (worlds.Count > 0)
+                 {
+                     selectedWorld = worlds[0];
+                 }*/
+             });
+
+
+                
                 //ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.54f, 0.54f, 0.54f, 1.0f));
             }
 
@@ -286,6 +307,58 @@ namespace Spacebox.Game.GUI
                   currentState = MenuState.Main;
               });
            
+            ImGui.End();
+        }
+
+
+        private void RenderDeleteWindow()
+        {
+            Vector2 displaySize = ImGui.GetIO().DisplaySize;
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
+            float windowWidth = displaySize.Y * 0.15f;
+            float windowHeight = displaySize.Y * 0.15f;
+            var windowPos = CenterNextWindow2(windowWidth, windowHeight);
+
+            ImGui.Begin("Main Menu", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse 
+                | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
+
+            float buttonWidth = windowWidth * 0.8f;
+            float buttonHeight = windowHeight * 0.12f;
+            float spacing = windowHeight * 0.03f;
+
+            DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y, 0.005f);
+
+            float totalButtonsHeight = buttonHeight * 3 + spacing * 2;
+
+            var textSize = ImGui.CalcTextSize("Are you sure?");
+            ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize.X * 0.5f, spacing));
+            ImGui.Text("Are you sure?");
+
+            ImGui.Dummy(new Vector2(0, (windowHeight - totalButtonsHeight) / 4));
+
+            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.8f, 0.25f, 0.25f, 1.0f));
+            CenterButtonWithBackground("Yes, delete", buttonWidth, buttonHeight, () =>
+            {
+                click1?.Play();
+                showDeleteWindow = false;
+                DeleteWorld(selectedWorld);
+                 selectedWorld = null;
+                 if (worlds.Count > 0)
+                 {
+                     selectedWorld = worlds[0];
+                 }
+            });
+            ImGui.PopStyleColor(1);
+            ImGui.Dummy(new Vector2(0, spacing));
+            CenterButtonWithBackground("No", buttonWidth, buttonHeight, () =>
+            {
+                showDeleteWindow = false;
+                click1?.Play();
+            });
+            ImGui.Dummy(new Vector2(0, spacing));
+            
+
+            ImGui.PopStyleColor(6);
             ImGui.End();
         }
 
@@ -672,6 +745,39 @@ namespace Spacebox.Game.GUI
                 click1.Play();
                 onClick?.Invoke();
             }
+        }
+        public void ButtonWithBackgroundAndIcon(string label, Vector2 size, Vector2 cursorPos, Action onClick)
+        {
+            float windowWidth = ImGui.GetWindowWidth();
+
+            ImGui.SetCursorPos(cursorPos);
+
+            Vector2 buttonPos = ImGui.GetCursorScreenPos();
+            float offsetValue = size.Y * 0.1f;
+            Vector2 offset = new Vector2(offsetValue, offsetValue);
+
+
+            uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
+            uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
+
+            var drawList = ImGui.GetWindowDrawList();
+
+
+
+            drawList.AddRectFilled(buttonPos - offset, buttonPos + size + offset, borderColor);
+            drawList.AddRectFilled(buttonPos, buttonPos + size + offset, lightColor);
+
+            
+
+            if (ImGui.Button(label, size))
+            {
+                click1.Play();
+                onClick?.Invoke();
+            }
+
+            Vector2 imagePosMin = buttonPos + offset;
+            Vector2 imagePosMax = buttonPos + size - offset;
+            drawList.AddImage(trashIcon.Handle, imagePosMin, imagePosMax);
         }
         /*
         uint backgroundColor = ImGui.GetColorU32(new Vector4(0.75f, 0.75f, 0.75f, 1f));

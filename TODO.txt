@@ -3,7 +3,7 @@ For demo:
 
 - fix inventory, panel ui
 - categories in creative?
-- use sound effect
++ use sound effect
 - fix mod 2
 - modding guide
 - fist craft test
@@ -17,11 +17,12 @@ For demo:
 
 Pool
 
+- flashlight class
 - sounds for blocks
-- use sound for items
++ use sound for items
 - generation
 - doors
-- maps manager
++ maps manager
 + health/power
 - blocks IU
 + new icon

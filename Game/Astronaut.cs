@@ -40,6 +40,8 @@ namespace Spacebox.Game
         private AudioSource wallhitAudio;
         private AudioSource wallhitAudio2;
         private AudioSource useConsumableAudio;
+        private AudioSource flySpeedUpAudio;
+        private float speedUpPower = 0;
         public HealthBar HealthBar { get; private set; }
         public PowerBar PowerBar { get; private set; }
         private bool _collisionEnabled = true;
@@ -69,6 +71,8 @@ namespace Spacebox.Game
            
              wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
             wallhitAudio2 = new AudioSource(SoundManager.GetClip("wallhit2"));
+            flySpeedUpAudio = new AudioSource(SoundManager.GetClip("flySpeedUp"));
+            flySpeedUpAudio.IsLooped = true;
         }
 
         ~Astronaut()
@@ -270,7 +274,38 @@ namespace Spacebox.Game
 
             bool isRunning = Input.IsKey(Keys.LeftShift);
 
+            if (!isMoving) isRunning = false;
             if (PowerBar.StatsData.IsMinReached) isRunning = false;
+
+            if (isRunning)
+            {
+                if(!flySpeedUpAudio.IsPlaying)
+                flySpeedUpAudio.Play();
+
+                const float maxVolume = 0.15f;
+                if(speedUpPower < maxVolume)
+                {
+                    speedUpPower += Time.Delta;
+
+                    if(speedUpPower > maxVolume) { speedUpPower = maxVolume; }
+                    flySpeedUpAudio.Volume = speedUpPower;
+                }
+            }
+            else
+            {
+                if (speedUpPower > 0)
+                {
+                    speedUpPower -= Time.Delta * 2f;
+
+                    if (speedUpPower <= 0) {
+                        speedUpPower = 0;
+                        flySpeedUpAudio.Pause();
+                    }
+                    flySpeedUpAudio.Volume = speedUpPower;
+
+                }
+                   
+            }
 
             InertiaController.SetMode(isRunning);
 
@@ -419,6 +454,7 @@ namespace Spacebox.Game
                  if (damage > 5)
                 {
                     SpaceScene.DeathOn = false;
+                    flySpeedUpAudio.Stop();
                     SpaceScene.Uii.Stop();
                     BlackScreenOverlay.IsEnabled = true;
                      CanMove = false;
@@ -455,7 +491,7 @@ namespace Spacebox.Game
             }
             else
             {
-                Debug.Error($"[Astrounaut] ApplyConsumable consumable was null!");
+                Debug.Error($"[Astrounaut] ApplyConsumable: consumable was null!");
             }
             
         }

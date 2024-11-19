@@ -4,7 +4,6 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Common.SceneManagment;
-using Spacebox.Entities;
 using Spacebox.Game;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
@@ -27,6 +26,7 @@ namespace Spacebox.Scenes
 
         public SpaceMenuScene(string[] args) : base(args)
         {
+            Debug.Log("Platform: " + Application.Platform);
         }
 
 
