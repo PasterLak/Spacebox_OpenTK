@@ -10,9 +10,8 @@ using Spacebox.Common.Audio;
 using Spacebox.Managers;
 using Spacebox.Game.Commands;
 using Spacebox.UI;
-using static Spacebox.Game.ChunkSaveLoadManager;
 using Spacebox.Game.GUI;
-using System.Reflection;
+
 
 namespace Spacebox.Scenes
 {
@@ -33,7 +32,7 @@ namespace Spacebox.Scenes
         private Sprite sprite;
         public static AudioSource blockPlace;
         public static AudioSource blockDestroy;
-        private AudioSource flashLight;
+       
         public static AudioSource Death;
         public static bool DeathOn = false;
         public static AudioSource Uii;
@@ -48,9 +47,7 @@ namespace Spacebox.Scenes
         private HealthBar healthBar;
         private BlockSelector blockSelector;
         
-        private TestOctree testOctree = new TestOctree();
-        private bool f = false;
-        Axes axes;
+    
         private RadarWindow radarWindow;
 
         private string worldName;
@@ -153,13 +150,13 @@ namespace Spacebox.Scenes
             Uii = new AudioSource(SoundManager.GetClip("uii"));
             blockPlace = new AudioSource(SoundManager.GetClip("blockPlace3"));
             blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroy"));
-            flashLight = new AudioSource(SoundManager.GetClip("flashlight"));
+          
             ambient = new AudioSource(SoundManager.GetClip("Music/ambientMain"));
             ambient.IsLooped = true;
             ambient.Volume = 0.05f;
             ambient.Play();
            
-            flashLight.Volume = 0.5f;
+          
 
             Input.SetCursorState(CursorState.Grabbed);
 
@@ -168,9 +165,6 @@ namespace Spacebox.Scenes
             InputManager.RegisterCallback("inputOverlay", () =>
             { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
 
-            InputManager.AddAction("flashlight", Keys.L);
-            InputManager.RegisterCallback("flashlight", () =>
-            { flashLight.Play(); });
 
             blocksShader = ShaderManager.GetShader("Shaders/block");
             blockTexture = GameBlocks.BlocksTexture;

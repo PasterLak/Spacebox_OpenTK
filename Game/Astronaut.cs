@@ -32,10 +32,10 @@ namespace Spacebox.Game
             }
         }
 
-        public SpotLight Flashlight { get; private set; }
-
         public InertiaController InertiaController { get; private set; } = new InertiaController();
         private CameraSway _cameraSway = new CameraSway();
+        public Flashlight Flashlight { get; private set; }
+
         private HitImage _hitImage;
         private AudioSource wallhitAudio;
         private AudioSource wallhitAudio2;
@@ -54,8 +54,7 @@ namespace Spacebox.Game
         public Astronaut(Vector3 position)
             : base(position)
         {
-            Flashlight = new SpotLight(ShaderManager.GetShader("Shaders/block"), Front);
-            Flashlight.UseSpecular = false;
+          
             FOV = MathHelper.DegreesToRadians(90);
           
             Layer = CollisionLayer.Player;
@@ -68,8 +67,9 @@ namespace Spacebox.Game
             SetData();
 
             _hitImage = new HitImage();
-          
-              wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
+            Flashlight = new Flashlight(this);
+
+                wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
             wallhitAudio2 = new AudioSource(SoundManager.GetClip("wallhit2"));
             flySpeedUpAudio = new AudioSource(SoundManager.GetClip("flySpeedUp"));
             flySpeedUpAudio.IsLooped = true;
@@ -149,16 +149,6 @@ namespace Spacebox.Game
             HealthBar.Update();
             _hitImage.Update();
             if (!CanMove) return;
-
-            if (Input.IsKeyDown(Keys.L))
-            {
-                Flashlight.IsActive = !Flashlight.IsActive;
-            }
-
-            if (Input.IsKeyDown(Keys.I))
-            {
-                EnableInertia(!InertiaController.Enabled);
-            }
 
             if (Input.IsKeyDown(Keys.F5))
             {
@@ -518,7 +508,7 @@ namespace Spacebox.Game
 
         public void Draw(Camera camera)
         {
-            Flashlight.Draw(this);
+            Flashlight.Draw(camera);
         }
 
         public void OnGUI()
