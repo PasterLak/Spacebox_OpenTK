@@ -1,6 +1,7 @@
 
 
 
+- after shift released speed = 8, not smooth transition
 - item model
 + one color for all particles
 + game logo can be moved away

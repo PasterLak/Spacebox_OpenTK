@@ -13,7 +13,7 @@ namespace Spacebox.Game
         public ItemModel(Mesh mesh, Texture2D texture)
         {
             Mesh = mesh;
-            Mesh.EnableDepthTest = false;
+            Mesh.EnableDepthTest = true;
             Mesh.EnableBlend = false;
             Mesh.EnableAlpha = false;
             Texture = texture;
@@ -36,7 +36,7 @@ namespace Spacebox.Game
 
         //Vector3 offset = new Vector3(0.19f, -0.35f, 0.25f);   // model size 0.01
 
-        Vector3 offset = new Vector3(0.29f, -0.6f, 0.35f); // 0.02
+        Vector3 offset = new Vector3(0.29f, -0.6f, 0.35f); // 0.02 
         float additionalRotationAngle = MathHelper.DegreesToRadians(90.0f);
 
         public bool debug = false;

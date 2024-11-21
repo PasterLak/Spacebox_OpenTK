@@ -13,7 +13,12 @@ namespace Spacebox.Game.GUI
         BottomLeft,
         BottomRight,
         Center,
-        
+        Top,
+        Bottom,
+        Left,
+        Right
+
+
     }
     public class StatsGUI
     {
@@ -76,7 +81,26 @@ namespace Spacebox.Game.GUI
                 case Anchor.BottomRight:
                     basePosition = new Vector2(io.DisplaySize.X - _size.X, io.DisplaySize.Y - _size.Y) - _position;
                     break;
-                // Добавьте другие случаи по мере необходимости
+
+                case Anchor.Right:
+                    basePosition = new Vector2(io.DisplaySize.X - _size.X,
+                        io.DisplaySize.Y * 0.5f - _size.Y * 0.5f)
+                        + new Vector2(-_position.X, _position.Y);
+                    break;
+                case Anchor.Left:
+                    basePosition = new Vector2(0, 
+                        io.DisplaySize.Y * 0.5f - _size.Y * 0.5f)
+                        + new Vector2(_position.X, _position.Y);
+                    break;
+                case Anchor.Top:
+                    basePosition = new Vector2(io.DisplaySize.X * 0.5f - _size.X * 0.5f, 0)
+                        + new Vector2(-_position.X, _position.Y);
+                    break;
+                case Anchor.Bottom:
+                    basePosition = new Vector2(io.DisplaySize.X * 0.5f - _size.X * 0.5f, io.DisplaySize.Y - _size.Y) 
+                        +new Vector2(_position.X, _position.Y); ;
+                    break;
+             
                 default:
                     break;
             }

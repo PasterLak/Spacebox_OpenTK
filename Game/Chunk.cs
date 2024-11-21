@@ -1,5 +1,4 @@
-﻿// Chunk.cs
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Game.Generation;
@@ -40,7 +39,6 @@ namespace Spacebox.Game
             CreateBoundingBox();
         }
 
-        // Внутренний конструктор с передачей BlockDestructionManager
         internal Chunk(Vector3 position, Block[,,] loadedBlocks, bool isLoaded)
         {
             Position = position;
@@ -76,12 +74,10 @@ namespace Spacebox.Game
             Vector3 chunkMax = Position + new Vector3(Size);
             boundingBox = BoundingBox.CreateFromMinMax(chunkMin, chunkMax);
             tag = new Tag("", boundingBox.Center, Color4.DarkGreen);
-            //GameConsole.Debug(boundingBox.Center.ToString());
+         
             TagManager.RegisterTag(tag);
 
         }
-
-
 
         public void GenerateMesh()
         {
@@ -640,6 +636,7 @@ namespace Spacebox.Game
         public void Dispose()
         {
             _mesh?.Dispose();
+            CurrentChunk = null;
         }
     }
 }

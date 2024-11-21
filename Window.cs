@@ -63,7 +63,7 @@ namespace Spacebox
             
             Theme.ApplySpaceboxTheme();
 
-            InputManager.AddAction("debug", Keys.GraveAccent, true);
+            InputManager.AddAction("debug", Keys.GraveAccent, true); // 161 mac
             InputManager.RegisterCallback("debug", () => { Debug.ToggleVisibility(); });
 
             InputManager.AddAction("overlay", Keys.F3, true);
@@ -188,7 +188,7 @@ namespace Spacebox
         {
            
 
-            if (Input.IsKeyDown(Keys.KeyPadAdd))
+            if (Input.IsKeyDown((Keys)161))
             {
                 Lighting.AddAmbient();
             }

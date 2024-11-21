@@ -75,7 +75,7 @@
     },
     {
         "Name": "Med Kit",
-        "Sprite": "health",
+        "Sprite": "health3",
         "Type": "consumable",
         "Sound" : "heal",
         "HealAmount": 50,

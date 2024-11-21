@@ -45,11 +45,6 @@ namespace Spacebox.Game
             }
         }
 
-        private int LoadSeed()
-        {
-            return 481516234;
-        }
-
         private void InitializeSectors()
         {
             UpdateSectors();

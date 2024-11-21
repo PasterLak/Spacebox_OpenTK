@@ -33,7 +33,7 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
 
-
+            NBTTest test = new NBTTest();
             // GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             GL.ClearColor(0, 0, 0, 0);
 

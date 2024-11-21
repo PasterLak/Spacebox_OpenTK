@@ -387,6 +387,7 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
+            sector.Dispose();
             blocksShader.Dispose();
             //blockTexture.Dispose();
             lightAtlas.Dispose();

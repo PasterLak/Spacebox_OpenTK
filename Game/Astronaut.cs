@@ -68,8 +68,8 @@ namespace Spacebox.Game
             SetData();
 
             _hitImage = new HitImage();
-           
-             wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
+          
+              wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
             wallhitAudio2 = new AudioSource(SoundManager.GetClip("wallhit2"));
             flySpeedUpAudio = new AudioSource(SoundManager.GetClip("flySpeedUp"));
             flySpeedUpAudio.IsLooped = true;
@@ -387,6 +387,8 @@ namespace Spacebox.Game
             if (CollisionEnabled)
             {
                 Chunk chunk = Chunk.CurrentChunk;
+                 
+                if (chunk == null)  return;
 
                 position.X += movement.X;
                 UpdateBoundingAt(position);
@@ -428,7 +430,7 @@ namespace Spacebox.Game
         private void ApplyVelocityDamage(float speed)
         {
 
-            if(speed > 5 && speed <= 9)
+            if(speed > 4 && speed <= 9)
             {
                 if (wallhitAudio.IsPlaying) wallhitAudio.Stop();
 
@@ -477,6 +479,7 @@ namespace Spacebox.Game
                         useConsumableAudio.Stop();
                     }
                     useConsumableAudio = new AudioSource(clip);
+                    useConsumableAudio.Volume = 0.7f;
                     useConsumableAudio.Play();
 
                     if(consumable.HealAmount > 0)

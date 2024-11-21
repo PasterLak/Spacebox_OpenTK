@@ -1,6 +1,4 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Entities;
-using System;
 
 namespace Spacebox.Game.Generation
 {

@@ -1,9 +1,7 @@
 ﻿using ImGuiNET;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
-using System;
 using System.Numerics;
-using System.Threading.Tasks;
 
 namespace Spacebox.Game.GUI
 {
@@ -124,7 +122,7 @@ namespace Spacebox.Game.GUI
                     time = 0;
                    
                 }
-                float distance = windowHeight * 0.5f * 0.8f; // 0.1 min
+                float distance = windowHeight * 0.5f * 0.7f; // 0.1 min  0.85 max
                 Vector2 pointPos = center + direction * distance;
 
                 float pointRadius = windowHeight * 0.015f;
