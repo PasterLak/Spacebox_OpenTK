@@ -102,6 +102,8 @@
   
     <None Remove="GameSets\Default\Blocks\titMedium.png" />
   
+    <None Remove="GameSets\Default\Blocks\uranOre.png" />
+  
     <None Remove="GameSets\Default\Blocks\white.png" />
   
     <None Remove="GameSets\Default\Blocks\window.png" />
@@ -193,6 +195,16 @@
     <None Remove="GameSets\Default\Items\titDust.png" />
   
     <None Remove="GameSets\Default\Items\titIngot.png" />
+  
+    <None Remove="GameSets\Default\Items\uran.png" />
+  
+    <None Remove="GameSets\Default\Items\uranIngot.png" />
+  
+    <None Remove="GameSets\Default\Items\water1.png" />
+  
+    <None Remove="GameSets\Default\Items\water2.png" />
+  
+    <None Remove="GameSets\Default\Items\water3.png" />
   
     <None Remove="GameSets\Default\Items\weapon1.png" />
   
@@ -510,6 +522,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
+    <Content Include="GameSets\Default\Blocks\uranOre.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <Content Include="GameSets\Default\Blocks\white.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -691,6 +707,26 @@
     </Content>
 
     <Content Include="GameSets\Default\Items\titIngot.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\uran.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\uranIngot.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\water1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\water2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="GameSets\Default\Items\water3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 

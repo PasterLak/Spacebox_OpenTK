@@ -126,5 +126,23 @@
         "MaxStack": 1,
         "ModelDepth": 1.5,
         "Power": 2
+    },
+     {
+        "Name": "Uranium Ingot",
+        "Sprite": "uranIngot",
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
+        "Name": "Uranium",
+        "Sprite": "uran",
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
+        "Name": "Water",
+        "Sprite": "water1",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
     }
 ]

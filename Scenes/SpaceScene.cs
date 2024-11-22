@@ -306,7 +306,8 @@ namespace Spacebox.Scenes
             blocksShader.SetMatrix4("view", view);
             blocksShader.SetMatrix4("projection", projection);
 
-            blocksShader.SetVector3("cameraPosition", player.Position);
+            var position = player.CameraRelativeRender ? Vector3.Zero : player.Position;
+            blocksShader.SetVector3("cameraPosition", position);
 
             blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
 

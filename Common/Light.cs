@@ -125,7 +125,9 @@ namespace Spacebox.Common
         {
             base.Draw(camera);
 
-            Shader.SetVector3("spotLight.position", camera.Position);
+            var position = camera.CameraRelativeRender ? Vector3.Zero : camera.Position;
+
+            Shader.SetVector3("spotLight.position", position);
             Shader.SetVector3("spotLight.direction", camera.Front);
             Shader.SetFloat("material_shininess", 32.0f);
 

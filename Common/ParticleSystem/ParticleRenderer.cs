@@ -115,6 +115,12 @@ namespace Spacebox.Common
                 Vector3 finalPosition = particleSystem.UseLocalCoordinates
                     ? particle.Position + particleSystem.Position
                     : particle.Position;
+
+                if(Camera.Main != null && Camera.Main.CameraRelativeRender)
+                {
+                    finalPosition = finalPosition - Camera.Main.Position;
+                }
+
                 Matrix4 model = Matrix4.CreateScale(particle.Size) * 
                     Matrix4.CreateTranslation(finalPosition);
                 instanceTransforms.Add(model);

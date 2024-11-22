@@ -56,13 +56,11 @@
         "Durability": 1
     },
     {
-        "Name": "Analyzer",
-        "Type": "interactive",
-        "Sides": "bottom",
-        "Top": "analyzer",
-        "Bottom": "bottom",
-        "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "Name": "Uranium Ore",
+        "Sides": "uranOre",
+         "PowerToDrill": 2,
+        "Mass": 1,
+        "Durability": 1
     },
     {
         "Name": "Aluminium Light Block",
@@ -214,10 +212,19 @@
         "LightColor": { "x": 178, "y": 0, "z": 255 }
     },
     {
-        "Name": "Crusher",
+        "Name": "Macerator",
         "Type": "interactive",
         "Sides": "crusherSide",
         "Top": "crusherTop",
+        "Bottom": "bottom",
+        "IsTransparent": false,
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+        "Name": "Analyzer",
+        "Type": "interactive",
+        "Sides": "bottom",
+        "Top": "analyzer",
         "Bottom": "bottom",
         "IsTransparent": false,
         "LightColor": { "x": 0, "y": 0, "z": 0 }

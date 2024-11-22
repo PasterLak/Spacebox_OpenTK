@@ -65,7 +65,7 @@ namespace Spacebox.Game
             SetCameraSway();
 
             SetData();
-            CameraRelativeRender = false;
+            CameraRelativeRender = true;
             _hitImage = new HitImage();
             Flashlight = new Flashlight(this);
 

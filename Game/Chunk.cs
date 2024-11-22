@@ -415,12 +415,7 @@ namespace Spacebox.Game
 
                 Overlay.AimedBlock = aimedBlock;
 
-                if (Input.IsKeyDown(Keys.R))
-                {
-
-                    ChangeBlockColor(aimedBlock, new Vector3(1, 0, 0), true);
-                    GenerateMesh();
-                }
+               
                 if (Input.IsKeyDown(Keys.T))
                 {
                     Blocks[hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z].Color = new Vector3(1, 1, 0);

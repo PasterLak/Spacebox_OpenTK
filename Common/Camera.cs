@@ -75,8 +75,10 @@ namespace Spacebox.Common
         protected abstract void UpdateVectors();
 
         public Vector2 WorldToScreenPoint(Vector3 worldPosition, int screenWidth, int screenHeight)
-        { 
-            Matrix4 viewMatrix = GetViewMatrix(); // ?? relative
+        {
+            if (CameraRelativeRender) worldPosition = worldPosition - Position;
+
+            Matrix4 viewMatrix = GetViewMatrix();
             Matrix4 projectionMatrix = GetProjectionMatrix();
 
             Vector4 worldPos = new Vector4(worldPosition, 1.0f);
