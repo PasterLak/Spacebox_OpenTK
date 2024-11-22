@@ -29,7 +29,7 @@ namespace Spacebox.Scenes
         private Texture2D blockTexture;
         private Texture2D lightAtlas;
         // to base
-        private Sprite sprite;
+       
         public static AudioSource blockPlace;
         public static AudioSource blockDestroy;
        
@@ -49,7 +49,7 @@ namespace Spacebox.Scenes
         
     
         private RadarWindow radarWindow;
-
+        private Model model;
         private string worldName;
         public SpaceScene(string[] args) : base(args) // name mod seed modfolder
         {
@@ -180,9 +180,7 @@ namespace Spacebox.Scenes
             blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
 
             Texture2D block = UVAtlas.GetBlockTexture(blockTexture, 0,0, GameBlocks.AtlasBlocks.SizeBlocks);
-
-            //sprite = new Sprite(block, new Vector2(0,0) , new Vector2(500,500));
-            sprite = new Sprite("Resources/Textures/cat.png", new Vector2(0, 0), new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
+          
             //chunk.RemoveBlock(0,0,0);
 
             radarWindow = new RadarWindow(skybox.Texture);
@@ -220,7 +218,12 @@ namespace Spacebox.Scenes
 
             blockSelector = new BlockSelector();
 
-
+            var tex = TextureManager.GetTexture("Resources/Textures/spacer.png");
+            tex.FlipY();
+            tex.UpdateTexture(true);
+            model = new Model("Resources/Models/spacer.obj", new Material(ShaderManager.GetShader("Shaders/textured"), tex));
+            model.Position = new Vector3(12,15,7);
+            model.Rotation = new Vector3(0,0,90);
 
             CrusherGUI.Init();
 
@@ -258,8 +261,8 @@ namespace Spacebox.Scenes
 
                 
             }
-
-            if(DeathOn)
+            //model.Position = player.Position;
+            if (DeathOn)
             {
                 if(!Death.IsPlaying)
                 {
@@ -276,11 +279,6 @@ namespace Spacebox.Scenes
 
             //chunk.Test(player);
 
-            sprite.Shader.SetFloat("time", (float)GLFW.GetTime());
-            sprite.Shader.SetVector2("screen", new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
-            sprite.Shader.SetVector2("mouse", new Vector2(0, 0));
-
-            sprite.UpdateSize(Window.Instance.Size);
 
             //world.Update();
 
@@ -325,7 +323,7 @@ namespace Spacebox.Scenes
             //itemModel.Draw(itemModelShader);
             //world.Render(blocksShader);
             blockDestructionManager.Render();
-            
+            this.model.Draw(player);
             dustSpawner.Render();
 
 
@@ -385,7 +383,7 @@ namespace Spacebox.Scenes
             blocksShader.Dispose();
             //blockTexture.Dispose();
             lightAtlas.Dispose();
-            sprite.Dispose();
+           
             blockPlace.Dispose();
             blockDestroy.Dispose();
             //music.Dispose();

@@ -53,8 +53,6 @@ namespace Spacebox.Game
                 LightLevel = 15;
             }
             
-            
-
         }
 
         public bool IsAir()

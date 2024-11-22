@@ -65,11 +65,11 @@ namespace Spacebox.Game
             SetCameraSway();
 
             SetData();
-
+            CameraRelativeRender = false;
             _hitImage = new HitImage();
             Flashlight = new Flashlight(this);
 
-                wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
+            wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
             wallhitAudio2 = new AudioSource(SoundManager.GetClip("wallhit2"));
             flySpeedUpAudio = new AudioSource(SoundManager.GetClip("flySpeedUp"));
             flySpeedUpAudio.IsLooped = true;
@@ -169,6 +169,11 @@ namespace Spacebox.Game
                 PlayerSaveLoadManager.SavePlayer(this, World.Instance.WorldData.WorldFolderPath);
             }
 
+            if(Input.IsKeyDown(Keys.R))
+            {
+                CameraRelativeRender = !CameraRelativeRender;
+            }
+
             if (Input.IsKeyDown(Keys.U))
             {
                 CollisionEnabled = !CollisionEnabled;
@@ -208,6 +213,10 @@ namespace Spacebox.Game
             Vector3 newFront = Vector3.Transform(-Vector3.UnitZ, combinedRotation);
             Vector3 newUp = Vector3.Transform(Vector3.UnitY, combinedRotation);
 
+            if(CameraRelativeRender)
+            {
+                return Matrix4.LookAt(Vector3.Zero, newFront, newUp);
+            }
             return Matrix4.LookAt(Position, Position + newFront, newUp);
         }
 

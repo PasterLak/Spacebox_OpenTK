@@ -263,6 +263,8 @@
     <None Remove="Resources\Models\plane.obj" />
     <None Remove="Resources\Models\skybox.mtl" />
     <None Remove="Resources\Models\skybox.obj" />
+    <None Remove="Resources\Models\spacer.mtl" />
+    <None Remove="Resources\Models\spacer.obj" />
     <None Remove="Resources\Models\stone1.mtl" />
     <None Remove="Resources\Models\stone1.obj" />
     <None Remove="Resources\Models\terrain.mtl" />
@@ -311,6 +313,7 @@
     <None Remove="Resources\Textures\slot.png" />
     <None Remove="Resources\Textures\snow.jpg" />
     <None Remove="Resources\Textures\spaceboxLogo.png" />
+    <None Remove="Resources\Textures\spacer.png" />
     <None Remove="Resources\Textures\stone1.jpg" />
     <None Remove="Resources\Textures\terrain.jpg" />
     <None Remove="Resources\Textures\tile.png" />
@@ -815,6 +818,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
+    <Content Include="Resources\Models\spacer.mtl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Resources\Models\spacer.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <Content Include="Resources\Models\tree0.mtl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1008,6 +1019,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\Game\wood.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\spacer.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\UI\trash.png">
