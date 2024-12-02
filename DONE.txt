@@ -2,6 +2,9 @@
 // dotnet publish -c Release - r win - x64--self - contained true
 // dotnet publish -c Release -r win-x64 --self-contained true --output ./publish
 
+// dotnet publish -c Release -r osx-x64 --self-contained true --output ./publish
+
+
 
 // dir P:\C#\Spacebox_OpenTK\*.cs /S /B | find /C ":"
 // Get-ChildItem -Path "P:\C#\Spacebox_OpenTK" -Recurse -Filter *.cs | Get-Content | Measure-Object -Line
