@@ -89,7 +89,8 @@ namespace Spacebox.Common
                 _axes.Render(camera.GetViewMatrix(), camera.GetProjectionMatrix());
             }
 
-            
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.Blend);
 
             Material.Use();
             Material.Shader.SetMatrix4("model", GetModelMatrix());
@@ -97,7 +98,9 @@ namespace Spacebox.Common
             Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
             Mesh.Draw();
 
-            
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.Blend);
+
         }
     }
 }

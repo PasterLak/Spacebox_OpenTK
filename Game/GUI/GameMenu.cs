@@ -247,39 +247,27 @@ namespace Spacebox.Game.GUI
                });
 
 
-                //ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.8f, 0.25f, 0.25f, 1.0f));
-                // Кнопка "Delete World"
-        
                 ButtonWithBackground("Edit", new Vector2(buttonWidth - buttonHeight - buttonSpacing, buttonHeight),
               new Vector2(buttonStartX + buttonWidth + buttonSpacing, buttonY + windowHeight * 0.02f), () =>
               {
                   click1.Play();
                
               });
-               // ImGui.PopStyleColor(6);
+            
 
                 ButtonWithBackgroundAndIcon("", new Vector2(buttonHeight, buttonHeight),
              new Vector2(buttonStartX + buttonWidth + buttonSpacing + buttonWidth - buttonHeight, buttonY + windowHeight * 0.02f), () =>
              {
                  click1.Play();
                  showDeleteWindow = true;
-                 /*DeleteWorld(selectedWorld);
-                 selectedWorld = null;
-                 if (worlds.Count > 0)
-                 {
-                     selectedWorld = worlds[0];
-                 }*/
+               
              });
 
-
-                
-                //ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.54f, 0.54f, 0.54f, 1.0f));
             }
 
-            // Отступ между кнопками "Play"/"Delete" и кнопками "Create New World"/"Back"
+           
             ImGui.Dummy(new Vector2(0, verticalSpacing));
 
-            // Кнопки внизу окна
             float bottomButtonSpacing = windowWidth * 0.02f; // Отступ между кнопками (6% ширины окна)
             float bottomButtonWidth = (contentWidth - bottomButtonSpacing) / 2;
             float bottomButtonHeight = windowHeight * 0.08f;
@@ -850,13 +838,6 @@ namespace Spacebox.Game.GUI
 
     public class PlayerInfo
     {
-    }
-
-    public static class Application
-    {
-        public const string Version = "0.0.8";
-        public const string Author = "PasterLak";
-        public const string EngineVersion = "1.3";
     }
 
     public static class ImGuiExtensions

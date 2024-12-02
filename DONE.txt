@@ -8,12 +8,12 @@
 
 // dir P:\C#\Spacebox_OpenTK\*.cs /S /B | find /C ":"
 // Get-ChildItem -Path "P:\C#\Spacebox_OpenTK" -Recurse -Filter *.cs | Get-Content | Measure-Object -Line
-// (008): 192, 19954
+// (008): 192, 19954 (009 early): 197, 20753
 
 
 version 0.0.9
 
-- 
+- test camera relative render
 
 
 version 0.0.8

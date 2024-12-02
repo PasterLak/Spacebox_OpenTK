@@ -7,6 +7,8 @@ namespace Spacebox.Game
     {
         public static World Instance;
 
+        public const int SizeSectors = 4;
+
         public static Random Random;
         private Octree<Sector> sectorOctree;
         private Dictionary<Vector3i, Sector> sectorsByIndex;
@@ -26,7 +28,7 @@ namespace Spacebox.Game
             
 
             Player = player;
-            sectorOctree = new Octree<Sector>(SectorSize * 8, Vector3.Zero, SectorSize, 1.0f);
+            sectorOctree = new Octree<Sector>(SectorSize * SizeSectors, Vector3.Zero, SectorSize, 1.0f);
             sectorsByIndex = new Dictionary<Vector3i, Sector>();
             //InitializeSectors();
             //AddSector(new Vector3i(0,0,0));
@@ -43,11 +45,6 @@ namespace Spacebox.Game
             {
                 Debug.Log("Data founded!");
             }
-        }
-
-        private int LoadSeed()
-        {
-            return 481516234;
         }
 
         private void InitializeSectors()

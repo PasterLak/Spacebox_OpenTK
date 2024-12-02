@@ -8,6 +8,8 @@ namespace Spacebox.GUI
         public const int VirtualScreenX = 1920;
         public static Vector2 CalculateSize(Vector2 virtualSize, OpenTK.Mathematics.Vector2 sizeNow)
         {
+            if (virtualSize == Vector2.Zero) return Vector2.Zero;
+
             var xyRatio = virtualSize.X / virtualSize.Y;
             var yDelta = VirtualScreenX / virtualSize.Y;
             var yNew = sizeNow.Y / yDelta;

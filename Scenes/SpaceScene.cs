@@ -10,9 +10,8 @@ using Spacebox.Common.Audio;
 using Spacebox.Managers;
 using Spacebox.Game.Commands;
 using Spacebox.UI;
-using static Spacebox.Game.ChunkSaveLoadManager;
 using Spacebox.Game.GUI;
-using System.Reflection;
+
 
 namespace Spacebox.Scenes
 {
@@ -30,10 +29,10 @@ namespace Spacebox.Scenes
         private Texture2D blockTexture;
         private Texture2D lightAtlas;
         // to base
-        private Sprite sprite;
+       
         public static AudioSource blockPlace;
         public static AudioSource blockDestroy;
-        private AudioSource flashLight;
+       
         public static AudioSource Death;
         public static bool DeathOn = false;
         public static AudioSource Uii;
@@ -48,11 +47,9 @@ namespace Spacebox.Scenes
         private HealthBar healthBar;
         private BlockSelector blockSelector;
         
-        private TestOctree testOctree = new TestOctree();
-        private bool f = false;
-        Axes axes;
+    
         private RadarWindow radarWindow;
-
+        private Model model;
         private string worldName;
         public SpaceScene(string[] args) : base(args) // name mod seed modfolder
         {
@@ -153,13 +150,13 @@ namespace Spacebox.Scenes
             Uii = new AudioSource(SoundManager.GetClip("uii"));
             blockPlace = new AudioSource(SoundManager.GetClip("blockPlace3"));
             blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroy"));
-            flashLight = new AudioSource(SoundManager.GetClip("flashlight"));
+          
             ambient = new AudioSource(SoundManager.GetClip("Music/ambientMain"));
             ambient.IsLooped = true;
             ambient.Volume = 0.05f;
             ambient.Play();
            
-            flashLight.Volume = 0.5f;
+          
 
             Input.SetCursorState(CursorState.Grabbed);
 
@@ -168,9 +165,6 @@ namespace Spacebox.Scenes
             InputManager.RegisterCallback("inputOverlay", () =>
             { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
 
-            InputManager.AddAction("flashlight", Keys.L);
-            InputManager.RegisterCallback("flashlight", () =>
-            { flashLight.Play(); });
 
             blocksShader = ShaderManager.GetShader("Shaders/block");
             blockTexture = GameBlocks.BlocksTexture;
@@ -186,9 +180,7 @@ namespace Spacebox.Scenes
             blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
 
             Texture2D block = UVAtlas.GetBlockTexture(blockTexture, 0,0, GameBlocks.AtlasBlocks.SizeBlocks);
-
-            //sprite = new Sprite(block, new Vector2(0,0) , new Vector2(500,500));
-            sprite = new Sprite("Resources/Textures/cat.png", new Vector2(0, 0), new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
+          
             //chunk.RemoveBlock(0,0,0);
 
             radarWindow = new RadarWindow(skybox.Texture);
@@ -226,7 +218,12 @@ namespace Spacebox.Scenes
 
             blockSelector = new BlockSelector();
 
-
+            var tex = TextureManager.GetTexture("Resources/Textures/spacer.png");
+            tex.FlipY();
+            tex.UpdateTexture(true);
+            model = new Model("Resources/Models/spacer.obj", new Material(ShaderManager.GetShader("Shaders/textured"), tex));
+            model.Position = new Vector3(12,15,7);
+            model.Rotation = new Vector3(0,0,90);
 
             CrusherGUI.Init();
 
@@ -264,8 +261,8 @@ namespace Spacebox.Scenes
 
                 
             }
-
-            if(DeathOn)
+            //model.Position = player.Position;
+            if (DeathOn)
             {
                 if(!Death.IsPlaying)
                 {
@@ -282,11 +279,6 @@ namespace Spacebox.Scenes
 
             //chunk.Test(player);
 
-            sprite.Shader.SetFloat("time", (float)GLFW.GetTime());
-            sprite.Shader.SetVector2("screen", new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
-            sprite.Shader.SetVector2("mouse", new Vector2(0, 0));
-
-            sprite.UpdateSize(Window.Instance.Size);
 
             //world.Update();
 
@@ -314,7 +306,8 @@ namespace Spacebox.Scenes
             blocksShader.SetMatrix4("view", view);
             blocksShader.SetMatrix4("projection", projection);
 
-            blocksShader.SetVector3("cameraPosition", player.Position);
+            var position = player.CameraRelativeRender ? Vector3.Zero : player.Position;
+            blocksShader.SetVector3("cameraPosition", position);
 
             blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
 
@@ -331,7 +324,7 @@ namespace Spacebox.Scenes
             //itemModel.Draw(itemModelShader);
             //world.Render(blocksShader);
             blockDestructionManager.Render();
-            
+            this.model.Draw(player);
             dustSpawner.Render();
 
 
@@ -387,10 +380,11 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
+            sector.Dispose();
             blocksShader.Dispose();
             //blockTexture.Dispose();
             lightAtlas.Dispose();
-            sprite.Dispose();
+           
             blockPlace.Dispose();
             blockDestroy.Dispose();
             //music.Dispose();

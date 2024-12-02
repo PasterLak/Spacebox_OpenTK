@@ -56,10 +56,10 @@ namespace Spacebox.Game
 
         public void Update()
         {
-            // Update contents of the sector if necessary
+         
             foreach (var chunk in Chunks)
             {
-                chunk.Test(World.Player); // Assuming you have a reference to the player
+                chunk.Test(World.Player); 
             }
 
             VisualDebug.DrawBoundingBox(BoundingBox, Color4.Yellow);
@@ -77,7 +77,7 @@ namespace Spacebox.Game
         {
             Position -= shiftAmount;
 
-            // Shift all chunks within the sector
+          
             foreach (var chunk in Chunks)
             {
                 chunk.Shift(shiftAmount);

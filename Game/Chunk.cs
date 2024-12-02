@@ -1,5 +1,4 @@
-﻿// Chunk.cs
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Game.Generation;
@@ -15,6 +14,7 @@ namespace Spacebox.Game
     public class Chunk : IDisposable
     {
         public static Chunk CurrentChunk { get; set; }
+
         public const byte Size = 32; // 32700+ blocks
         public Vector3 Position { get; private set; }
         public Block[,,] Blocks { get; private set; }
@@ -40,7 +40,6 @@ namespace Spacebox.Game
             CreateBoundingBox();
         }
 
-        // Внутренний конструктор с передачей BlockDestructionManager
         internal Chunk(Vector3 position, Block[,,] loadedBlocks, bool isLoaded)
         {
             Position = position;
@@ -76,12 +75,10 @@ namespace Spacebox.Game
             Vector3 chunkMax = Position + new Vector3(Size);
             boundingBox = BoundingBox.CreateFromMinMax(chunkMin, chunkMax);
             tag = new Tag("", boundingBox.Center, Color4.DarkGreen);
-            //GameConsole.Debug(boundingBox.Center.ToString());
+         
             TagManager.RegisterTag(tag);
 
         }
-
-
 
         public void GenerateMesh()
         {
@@ -158,9 +155,12 @@ namespace Spacebox.Game
         {
             if (!_isLoadedOrGenerated) return;
 
-            if(Camera.Main.Frustum.IsInFrustum(boundingBox))
-            {
-                Matrix4 model = Matrix4.CreateTranslation(Position);
+                Vector3 relativePosition = Position - Camera.Main.Position;
+
+                Vector3 position = Camera.Main.CameraRelativeRender ? relativePosition : Position;
+
+
+                Matrix4 model = Matrix4.CreateTranslation(position);
                 shader.SetMatrix4("model", model);
                 _mesh.Draw(shader);
 
@@ -172,9 +172,6 @@ namespace Spacebox.Game
 
                 destructionManager.Render();
 
-            }
-
-           
 
         }
 
@@ -418,12 +415,7 @@ namespace Spacebox.Game
 
                 Overlay.AimedBlock = aimedBlock;
 
-                if (Input.IsKeyDown(Keys.R))
-                {
-
-                    ChangeBlockColor(aimedBlock, new Vector3(1, 0, 0), true);
-                    GenerateMesh();
-                }
+               
                 if (Input.IsKeyDown(Keys.T))
                 {
                     Blocks[hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z].Color = new Vector3(1, 1, 0);
@@ -640,6 +632,7 @@ namespace Spacebox.Game
         public void Dispose()
         {
             _mesh?.Dispose();
+            CurrentChunk = null;
         }
     }
 }

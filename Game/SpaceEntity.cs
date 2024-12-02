@@ -6,6 +6,7 @@ namespace Spacebox.Game
     internal class SpaceEntity : Node3D
     {
         public const byte SizeChunks = 4;
+        public const byte SizeChunksHalf = SizeChunks / 2;
         public const short SizeBlocks = SizeChunks * Chunk.Size;
         public const short SizeBlocksHalf = SizeChunks * Chunk.Size / 2;
 

@@ -17,6 +17,8 @@ namespace Spacebox.Common
         public Vector3 Up => _up;
         public Vector3 Right => _right;
 
+        public bool CameraRelativeRender = false;
+
         public CameraFrustum Frustum { get; private set; } = new CameraFrustum();
 
         public float Fov
@@ -58,7 +60,10 @@ namespace Spacebox.Common
 
     public virtual Matrix4 GetViewMatrix()
         {
-            
+            if(CameraRelativeRender)
+            {
+                return Matrix4.LookAt(Vector3.Zero, _front, _up);
+            }
             return Matrix4.LookAt(Position, Position + _front, _up);
         }
 
@@ -71,6 +76,8 @@ namespace Spacebox.Common
 
         public Vector2 WorldToScreenPoint(Vector3 worldPosition, int screenWidth, int screenHeight)
         {
+            if (CameraRelativeRender) worldPosition = worldPosition - Position;
+
             Matrix4 viewMatrix = GetViewMatrix();
             Matrix4 projectionMatrix = GetProjectionMatrix();
 

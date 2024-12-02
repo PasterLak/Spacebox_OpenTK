@@ -32,10 +32,10 @@ namespace Spacebox.Game
             }
         }
 
-        public SpotLight Flashlight { get; private set; }
-
         public InertiaController InertiaController { get; private set; } = new InertiaController();
         private CameraSway _cameraSway = new CameraSway();
+        public Flashlight Flashlight { get; private set; }
+
         private HitImage _hitImage;
         private AudioSource wallhitAudio;
         private AudioSource wallhitAudio2;
@@ -54,8 +54,7 @@ namespace Spacebox.Game
         public Astronaut(Vector3 position)
             : base(position)
         {
-            Flashlight = new SpotLight(ShaderManager.GetShader("Shaders/block"), Front);
-            Flashlight.UseSpecular = false;
+          
             FOV = MathHelper.DegreesToRadians(90);
           
             Layer = CollisionLayer.Player;
@@ -66,10 +65,11 @@ namespace Spacebox.Game
             SetCameraSway();
 
             SetData();
-
+            CameraRelativeRender = true;
             _hitImage = new HitImage();
-           
-             wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
+            Flashlight = new Flashlight(this);
+
+            wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
             wallhitAudio2 = new AudioSource(SoundManager.GetClip("wallhit2"));
             flySpeedUpAudio = new AudioSource(SoundManager.GetClip("flySpeedUp"));
             flySpeedUpAudio.IsLooped = true;
@@ -150,16 +150,6 @@ namespace Spacebox.Game
             _hitImage.Update();
             if (!CanMove) return;
 
-            if (Input.IsKeyDown(Keys.L))
-            {
-                Flashlight.IsActive = !Flashlight.IsActive;
-            }
-
-            if (Input.IsKeyDown(Keys.I))
-            {
-                EnableInertia(!InertiaController.Enabled);
-            }
-
             if (Input.IsKeyDown(Keys.F5))
             {
                 VisualDebug.ShowPlayerCollision = !VisualDebug.ShowPlayerCollision;
@@ -177,6 +167,11 @@ namespace Spacebox.Game
             {
                 Console.WriteLine("Saving Player");
                 PlayerSaveLoadManager.SavePlayer(this, World.Instance.WorldData.WorldFolderPath);
+            }
+
+            if(Input.IsKeyDown(Keys.R))
+            {
+                CameraRelativeRender = !CameraRelativeRender;
             }
 
             if (Input.IsKeyDown(Keys.U))
@@ -218,6 +213,10 @@ namespace Spacebox.Game
             Vector3 newFront = Vector3.Transform(-Vector3.UnitZ, combinedRotation);
             Vector3 newUp = Vector3.Transform(Vector3.UnitY, combinedRotation);
 
+            if(CameraRelativeRender)
+            {
+                return Matrix4.LookAt(Vector3.Zero, newFront, newUp);
+            }
             return Matrix4.LookAt(Position, Position + newFront, newUp);
         }
 
@@ -387,6 +386,8 @@ namespace Spacebox.Game
             if (CollisionEnabled)
             {
                 Chunk chunk = Chunk.CurrentChunk;
+                 
+                if (chunk == null)  return;
 
                 position.X += movement.X;
                 UpdateBoundingAt(position);
@@ -428,7 +429,7 @@ namespace Spacebox.Game
         private void ApplyVelocityDamage(float speed)
         {
 
-            if(speed > 5 && speed <= 9)
+            if(speed > 4 && speed <= 9)
             {
                 if (wallhitAudio.IsPlaying) wallhitAudio.Stop();
 
@@ -477,6 +478,7 @@ namespace Spacebox.Game
                         useConsumableAudio.Stop();
                     }
                     useConsumableAudio = new AudioSource(clip);
+                    useConsumableAudio.Volume = 0.7f;
                     useConsumableAudio.Play();
 
                     if(consumable.HealAmount > 0)
@@ -515,7 +517,7 @@ namespace Spacebox.Game
 
         public void Draw(Camera camera)
         {
-            Flashlight.Draw(this);
+            Flashlight.Draw(camera);
         }
 
         public void OnGUI()

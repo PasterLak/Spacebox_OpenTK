@@ -192,8 +192,11 @@ namespace Spacebox.Scenes
             tv.Position = new Vector3(2, 0.5f, 3);
             tv.Rotation = new Vector3(0, 0, 0);
 
-            Model stone1 = new Model("Resources/Models/stone1.obj", new Material(_lightingShader, new Texture2D("Resources/Textures/Game/stone1.jpg", true)));
-            stone1.Position = new Vector3(8, 0, 3);
+            var tex = new Texture2D("Resources/Textures/spacer.png", true);
+            tex.FlipY();
+            tex.UpdateTexture(true);
+            Model stone1 = new Model("Resources/Models/spacer.obj", new Material(_lightingShader, tex));
+            stone1.Position = new Vector3(8, 1, 3);
             stone1.Rotation = new Vector3(0,45, 0);
 
             Model cube = new Model("Resources/Models/cube.obj", new Material(_lightingShader, new Texture2D("Resources/Textures/Game/container2.png", false)));

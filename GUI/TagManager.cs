@@ -69,7 +69,8 @@ namespace Spacebox.GUI
                     if (screenPos.X > 0 && screenPos.X <= screenWidth &&
                         screenPos.Y > 0 && screenPos.Y <= screenHeight)
                     {
-                        ImGui.SetCursorPos(screenPos.ToSystemVector2());
+                        var textSize = ImGui.CalcTextSize(tag.Text);
+                        ImGui.SetCursorPos(screenPos.ToSystemVector2()- textSize * 0.5f);
                         ImGui.PushStyleColor(ImGuiCol.Text, tag.Color.ToSystemVector4());
                         ImGui.TextUnformatted(tag.Text);
                         ImGui.PopStyleColor();

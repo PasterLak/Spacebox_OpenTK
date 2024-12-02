@@ -178,8 +178,14 @@ namespace Spacebox.Common
 
         public void Render(Camera camera)
         {
+            
             _shader.Use();
-            _shader.SetMatrix4("model", Transform.GetModelMatrix());
+
+    
+            Matrix4 model = camera.CameraRelativeRender ?  
+                Transform.GetModelMatrixRelativeToCamera(camera) : Transform.GetModelMatrix();
+
+            _shader.SetMatrix4("model", model);
             _shader.SetMatrix4("view", camera.GetViewMatrix());
             _shader.SetMatrix4("projection", camera.GetProjectionMatrix());
             _shader.SetInt("texture0", 0);
