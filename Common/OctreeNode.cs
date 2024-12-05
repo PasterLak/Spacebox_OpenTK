@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using OpenTK.Mathematics;
-using Spacebox.Common;
+﻿using OpenTK.Mathematics;
+
 
 namespace Spacebox.Common
 {
@@ -22,7 +20,7 @@ namespace Spacebox.Common
 
         private BoundingBox[] childBounds;
 
-        private const int NUM_OBJECTS_ALLOWED = 1;
+        private const byte NUM_OBJECTS_ALLOWED = 8;
 
         private struct OctreeObject
         {
@@ -545,21 +543,6 @@ namespace Spacebox.Common
                    outerBounds.Min.Z <= innerBounds.Min.Z && outerBounds.Max.Z >= innerBounds.Max.Z;
         }
 
-        public void Shift(Vector3 shiftAmount)
-        {
-            Center -= shiftAmount;
-            bounds = new BoundingBox(bounds.Min - shiftAmount, bounds.Max - shiftAmount);
-
-            if (children != null)
-            {
-                foreach (var child in children)
-                {
-                    child.Shift(shiftAmount);
-                }
-            }
-        }
-
-
         private bool ShouldMerge()
         {
             int totalObjects = objects.Count;
@@ -580,17 +563,24 @@ namespace Spacebox.Common
         public void DrawDebug()
         {
 
-            
-
-            if (children != null)
+            if (HasChildren)
             {
                 foreach (var child in children)
                 {
                     child.DrawDebug();
                 }
-            }else
+            }
+            else
             {
                 VisualDebug.DrawBoundingBox(bounds, new Color4(255, 192, 200, 50));
+
+                if(objects.Count > 0)
+                {
+                    foreach (var obj in objects)
+                    {
+                        //VisualDebug.DrawBoundingBox(obj.Bounds, new Color4(20, 192, 70, 80));
+                    }
+                }
             }
 
             

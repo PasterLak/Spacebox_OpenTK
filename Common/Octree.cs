@@ -1,6 +1,6 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
 using OpenTK.Mathematics;
-
 
 namespace Spacebox.Common
 {
@@ -36,6 +36,8 @@ namespace Spacebox.Common
             rootNode = new OctreeNode<T>(initialSize, minSize, looseness, initialWorldPos);
 
             boundingBox = new BoundingBox(initialWorldPos, new Vector3(initialWorldSize, initialWorldSize, initialWorldSize));
+
+            Debug.Log("World box: " + boundingBox);
         }
 
         public void Add(T obj, BoundingBox objBounds)
@@ -158,12 +160,6 @@ namespace Spacebox.Common
             }
         }
 
-        public void Shift(Vector3 shiftAmount)
-        {
-            rootNode.Shift(shiftAmount);
-        }
-
-
         private void Shrink()
         {
             rootNode = rootNode.ShrinkIfPossible(initialSize);
@@ -172,10 +168,7 @@ namespace Spacebox.Common
         public void DrawDebug()
         {
             VisualDebug.DrawBoundingBox(boundingBox, Color4.Pink);
-
-
             rootNode.DrawDebug();
-            
         }
     }
 }

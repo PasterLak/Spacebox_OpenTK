@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
+using System.Collections.Concurrent;
 
 namespace Spacebox.Game
 {
@@ -8,82 +9,99 @@ namespace Spacebox.Game
         public static World Instance;
 
         public const int SizeSectors = 4;
-
-        public static Random Random;
-        private Octree<Sector> sectorOctree;
-        private Dictionary<Vector3i, Sector> sectorsByIndex;
         public Astronaut Player { get; private set; }
-        private const float SectorSize = 20f; 
-        private const float HalfSectorSize = SectorSize / 2f;
-        private float playerVisibilityDistance = 50f;
-
-        private const float ShiftThreshold = 40;
-
+        public static Random Random;
         public WorldLoader.LoadedWorld WorldData { get; private set; }
         public static DropEffectManager DropEffectManager;
+
+        private readonly Octree<Sector> worldOctree;
+        private readonly ConcurrentDictionary<Vector3i, Sector> sectorsByIndex;
+        private readonly object octreeLock = new object();
+
+        private const float SECTOR_LOAD_RADIUS = 32 ;
+        private const float SECTOR_UPDATE_RADIUS = 32;
+
+        private readonly HashSet<Vector3i> sectorsBeingLoaded = new HashSet<Vector3i>();
+        private readonly HashSet<Vector3i> sectorsBeingUnloaded = new HashSet<Vector3i>();
+
+        private readonly Queue<Sector> sectorsToInitialize = new Queue<Sector>();
 
         public World(Astronaut player)
         {
             Instance = this;
-            
-
             Player = player;
-            sectorOctree = new Octree<Sector>(SectorSize * SizeSectors, Vector3.Zero, SectorSize, 1.0f);
-            sectorsByIndex = new Dictionary<Vector3i, Sector>();
-            //InitializeSectors();
-            //AddSector(new Vector3i(0,0,0));
+
+           
+            float initialWorldSize = Sector.SizeBlocks * SizeSectors;
+
+            worldOctree = new Octree<Sector>(initialWorldSize, Vector3.Zero, Sector.SizeBlocks, 1.0f);
+
+            sectorsByIndex = new ConcurrentDictionary<Vector3i, Sector>();
+
+            Vector3i initialSectorIndex = GetSectorIndex(Player.Position);
+            LoadSectorAsync(initialSectorIndex);
 
             DropEffectManager = new DropEffectManager(player);
-
         }
 
         public void LoadWorldInfo(string worldName)
         {
             WorldData = WorldLoader.LoadWorldByName(worldName);
 
-            if(WorldData == null)
+            if (WorldData == null)
             {
-                Debug.Log("Data founded!");
+                Debug.Log("Data not found!");
+                Random = new Random();
+            }
+            else
+            {
+                Random = new Random(int.Parse(WorldData.Info.Seed));
+            }
+        }
+
+        public void EnqueueSectorInitialization(Sector sector)
+        {
+            lock (sectorsToInitialize)
+            {
+                sectorsToInitialize.Enqueue(sector);
             }
         }
 
         private void InitializeSectors()
         {
-            UpdateSectors();
+            lock (sectorsToInitialize)
+            {
+                while (sectorsToInitialize.Count > 0)
+                {
+                    Sector sector = sectorsToInitialize.Dequeue();
+                    sector.InitializeSharedResources();
+                }
+            }
         }
 
         public void Update()
         {
             DropEffectManager.Update();
-            /* Vector3 playerPosition = Player.Position;
+            InitializeSectors();
+            worldOctree.DrawDebug();
+            UpdateSectors();
 
-             // Shift world if player is too far from origin
-             if (playerPosition.Length >= ShiftThreshold)
-             {
-                 ShiftWorld(playerPosition);
-             }
+            if(Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.H))
+            {
+                Debug.Log("Sector index: " + GetSectorIndex(Player.Position));
+            }
 
-
-             //UpdateSectors();
-
-             //sectorOctree.
-
-             foreach (var sector in GetSectorsInRange(Player.Position, 1000))
-             {
-                 sector.Update();
-             }
-
-             foreach (var sector in GetSectorsInRange(Player.Position, playerVisibilityDistance))
-             {
-                 sector.Update();
-             }*/
+            foreach (var sector in GetSectorsInRange(Player.Position, SECTOR_UPDATE_RADIUS))
+            {
+                sector.Update();
+            }
         }
 
         public void Render(Shader shader)
         {
-            foreach (var sector in GetSectorsInRange(Player.Position, playerVisibilityDistance))
+            foreach (var sector in GetSectorsInRange(Player.Position, SECTOR_LOAD_RADIUS))
             {
-                //sector.Render(shader);
+                sector.Render(shader);
             }
 
             DropEffectManager.Render();
@@ -92,129 +110,130 @@ namespace Spacebox.Game
         private void UpdateSectors()
         {
             Vector3 playerPosition = Player.Position;
-
             Vector3i currentSectorIndex = GetSectorIndex(playerPosition);
 
-            int visibilityRadiusInSectors = (int)(playerVisibilityDistance / SectorSize) + 1;
+            const int loadRadiusInSectors = (int)(SECTOR_LOAD_RADIUS / Sector.SizeBlocks) + 1;
+            //int updateRadiusInSectors = 0;
 
-            for (int x = currentSectorIndex.X - visibilityRadiusInSectors; x <= currentSectorIndex.X + visibilityRadiusInSectors; x++)
+            HashSet<Vector3i> sectorsToConsider = new HashSet<Vector3i>();
+
+            for (int x = currentSectorIndex.X - loadRadiusInSectors; x <= currentSectorIndex.X + loadRadiusInSectors; x++)
             {
-                for (int y = currentSectorIndex.Y - visibilityRadiusInSectors; y <= currentSectorIndex.Y + visibilityRadiusInSectors; y++)
+                for (int y = currentSectorIndex.Y - loadRadiusInSectors; y <= currentSectorIndex.Y + loadRadiusInSectors; y++)
                 {
-                    for (int z = currentSectorIndex.Z - visibilityRadiusInSectors; z <= currentSectorIndex.Z + visibilityRadiusInSectors; z++)
+                    for (int z = currentSectorIndex.Z - loadRadiusInSectors; z <= currentSectorIndex.Z + loadRadiusInSectors; z++)
                     {
                         Vector3i sectorIndex = new Vector3i(x, y, z);
-
-                        if (!SectorExists(sectorIndex))
-                        {
-                            Vector3 sectorPosition = GetSectorPosition(sectorIndex);
-
-                            BoundingBox sectorBounds = new BoundingBox(
-                                sectorPosition - new Vector3(HalfSectorSize),
-                                sectorPosition + new Vector3(HalfSectorSize)
-                            );
-
-                            float distanceToSector = GetDistanceToSectorBounds(sectorBounds, playerPosition);
-
-                            if (distanceToSector <= playerVisibilityDistance)
-                            {
-                                AddSector(sectorIndex);
-                            }
-                        }
+                        sectorsToConsider.Add(sectorIndex);
                     }
                 }
             }
 
-            RemoveFarSectors(playerPosition, playerVisibilityDistance);
-        }
-
-        private void RemoveFarSectors(Vector3 playerPosition, float maxDistance)
-        {
-            var sectorsToRemove = new List<Vector3i>();
-            foreach (var kvp in sectorsByIndex)
+            foreach (var sectorIndex in sectorsToConsider)
             {
-                Sector sector = kvp.Value;
-
-                BoundingBox sectorBounds = new BoundingBox(
-                    sector.Position - new Vector3(HalfSectorSize),
-                    sector.Position + new Vector3(HalfSectorSize)
-                );
-
-                float distanceToSector = GetDistanceToSectorBounds(sectorBounds, playerPosition);
-
-                if (distanceToSector > maxDistance)
+                if (!SectorExists(sectorIndex) && !sectorsBeingLoaded.Contains(sectorIndex))
                 {
-                    sectorsToRemove.Add(kvp.Key);
+                    Vector3 sectorPosition = GetSectorPosition(sectorIndex);
+
+                    float distanceToSector = GetDistanceToSector(sectorPosition, playerPosition);
+
+                    if (distanceToSector <= SECTOR_LOAD_RADIUS)
+                    {
+                        sectorsBeingLoaded.Add(sectorIndex);
+                        LoadSectorAsync(sectorIndex);
+                    }
                 }
             }
 
-            foreach (var index in sectorsToRemove)
+            foreach (var kvp in sectorsByIndex)
             {
-                RemoveSector(index);
+                Vector3i sectorIndex = kvp.Key;
+
+                if (!sectorsToConsider.Contains(sectorIndex) && !sectorsBeingUnloaded.Contains(sectorIndex))
+                {
+                    Vector3 sectorPosition = GetSectorPosition(sectorIndex);
+
+                    float distanceToSector = GetDistanceToSector(sectorPosition, playerPosition);
+
+                    if (distanceToSector > SECTOR_LOAD_RADIUS)
+                    {
+                        sectorsBeingUnloaded.Add(sectorIndex);
+                        UnloadSectorAsync(sectorIndex);
+                    }
+                }
             }
         }
 
-        private float GetDistanceToSectorBounds(BoundingBox sectorBounds, Vector3 position)
+        private void LoadSectorAsync(Vector3i sectorIndex)
         {
-            float sqrDistance = 0f;
+            Task.Run(() =>
+            {
+                Vector3 sectorPosition = GetSectorPosition(sectorIndex);
+                Sector newSector = new Sector(sectorPosition, sectorIndex, this);
 
-            // X axis
-            if (position.X < sectorBounds.Min.X)
-            {
-                float diff = sectorBounds.Min.X - position.X;
-                sqrDistance += diff * diff;
-            }
-            else if (position.X > sectorBounds.Max.X)
-            {
-                float diff = position.X - sectorBounds.Max.X;
-                sqrDistance += diff * diff;
-            }
+              
+                Vector3 sectorCenter = sectorPosition + new Vector3(Sector.SizeBlocksHalf);
+                Vector3 sectorSize = new Vector3(Sector.SizeBlocks, Sector.SizeBlocks, Sector.SizeBlocks);
 
-            // Y axis
-            if (position.Y < sectorBounds.Min.Y)
-            {
-                float diff = sectorBounds.Min.Y - position.Y;
-                sqrDistance += diff * diff;
-            }
-            else if (position.Y > sectorBounds.Max.Y)
-            {
-                float diff = position.Y - sectorBounds.Max.Y;
-                sqrDistance += diff * diff;
-            }
+                BoundingBox sectorBounds = new BoundingBox(sectorCenter, sectorSize);
 
-            // Z axis
-            if (position.Z < sectorBounds.Min.Z)
-            {
-                float diff = sectorBounds.Min.Z - position.Z;
-                sqrDistance += diff * diff;
-            }
-            else if (position.Z > sectorBounds.Max.Z)
-            {
-                float diff = position.Z - sectorBounds.Max.Z;
-                sqrDistance += diff * diff;
-            }
+                lock (octreeLock)
+                {
+                    worldOctree.Add(newSector, sectorBounds);
+                }
 
-            return MathF.Sqrt(sqrDistance);
+                sectorsByIndex[sectorIndex] = newSector;
+                sectorsBeingLoaded.Remove(sectorIndex);
+            });
         }
 
+        private void UnloadSectorAsync(Vector3i sectorIndex)
+        {
+            Task.Run(() =>
+            {
+                if (sectorsByIndex.TryRemove(sectorIndex, out Sector sector))
+                {
+                    Vector3 sectorPosition = GetSectorPosition(sectorIndex);
+
+                    Vector3 sectorCenter = sectorPosition + new Vector3(Sector.SizeBlocksHalf);
+                    Vector3 sectorSize = new Vector3(Sector.SizeBlocks, Sector.SizeBlocks, Sector.SizeBlocks);
+
+                    BoundingBox sectorBounds = new BoundingBox(sectorCenter, sectorSize);
+
+                    lock (octreeLock)
+                    {
+                        worldOctree.Remove(sector, sectorBounds);
+                    }
+
+                    sector.Dispose();
+                }
+
+                sectorsBeingUnloaded.Remove(sectorIndex);
+            });
+        }
 
         private Vector3i GetSectorIndex(Vector3 position)
         {
-            // Use integer division to ensure correct sector indexing
-            int x = (int)Math.Floor(position.X / SectorSize);
-            int y = (int)Math.Floor(position.Y / SectorSize);
-            int z = (int)Math.Floor(position.Z / SectorSize);
+            int x = (int)Math.Floor(position.X / Sector.SizeBlocks);
+            int y = (int)Math.Floor(position.Y / Sector.SizeBlocks);
+            int z = (int)Math.Floor(position.Z / Sector.SizeBlocks);
             return new Vector3i(x, y, z);
         }
 
         private Vector3 GetSectorPosition(Vector3i index)
         {
-            // Center the sector position
+            // Позиция сектора — это минимальная точка (Min) его BoundingBox
             return new Vector3(
-                index.X * SectorSize + HalfSectorSize,
-                index.Y * SectorSize + HalfSectorSize,
-                index.Z * SectorSize + HalfSectorSize
+                index.X * Sector.SizeBlocks,
+                index.Y * Sector.SizeBlocks,
+                index.Z * Sector.SizeBlocks
             );
+        }
+
+        private float GetDistanceToSector(Vector3 sectorPosition, Vector3 playerPosition)
+        {
+            Vector3 sectorCenter = sectorPosition + new Vector3(Sector.SizeBlocksHalf);
+            return Vector3.Distance(sectorCenter, playerPosition);
         }
 
         private bool SectorExists(Vector3i index)
@@ -222,57 +241,21 @@ namespace Spacebox.Game
             return sectorsByIndex.ContainsKey(index);
         }
 
-        private void AddSector(Vector3i index)
-        {
-            Vector3 sectorPosition = GetSectorPosition(index);
-            Sector newSector = new Sector(sectorPosition, index, this);
-
-            BoundingBox sectorBounds = new BoundingBox(
-                sectorPosition - new Vector3(HalfSectorSize),
-                sectorPosition + new Vector3(HalfSectorSize)
-            );
-
-            sectorOctree.Add(newSector, sectorBounds);
-            sectorsByIndex.Add(index, newSector);
-        }
-
-        private void RemoveSector(Vector3i index)
-        {
-            if (sectorsByIndex.TryGetValue(index, out Sector sector))
-            {
-                BoundingBox sectorBounds = new BoundingBox(
-                    sector.Position - new Vector3(HalfSectorSize),
-                    sector.Position + new Vector3(HalfSectorSize)
-                );
-                sectorOctree.Remove(sector, sectorBounds);
-                sectorsByIndex.Remove(index);
-            }
-        }
-
         private IEnumerable<Sector> GetSectorsInRange(Vector3 position, float range)
         {
-            BoundingBox searchBounds = new BoundingBox(
-                position - new Vector3(range),
-                position + new Vector3(range)
-            );
+            Vector3 searchCenter = position;
+            Vector3 searchSize = new Vector3(range * 2f);
+
+            BoundingBox searchBounds = new BoundingBox(searchCenter, searchSize);
+
+            VisualDebug.DrawBoundingBox(searchBounds, new Color4(0,255,0,255));
+
             var sectors = new List<Sector>();
-            sectorOctree.GetColliding(sectors, searchBounds);
-            return sectors;
-        }
-
-        private void ShiftWorld(Vector3 shiftAmount)
-        {
-            // Shift the player's position back to near the origin
-            Player.Position -= shiftAmount;
-
-            // Shift all sectors and their contents
-            foreach (var sector in sectorsByIndex.Values)
+            lock (octreeLock)
             {
-                sector.Shift(shiftAmount);
+                worldOctree.GetColliding(sectors, searchBounds);
             }
-
-            // Update the octree root position
-            sectorOctree.Shift(shiftAmount);
+            return sectors;
         }
     }
 }

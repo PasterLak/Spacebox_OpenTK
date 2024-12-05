@@ -24,7 +24,7 @@ namespace Spacebox.Scenes
         private Shader skyboxShader;
 
         
-        private Sector sector;
+        private Sector0 sector;
         Shader blocksShader;
         private Texture2D blockTexture;
         private Texture2D lightAtlas;
@@ -187,7 +187,7 @@ namespace Spacebox.Scenes
 
             blockDestructionManager = new BlockDestructionManager(player);
 
-            sector = new Sector(new Vector3(0, 0, 0), new Vector3i(0, 0, 0), world);
+            sector = new Sector0(new Vector3(0, 0, 0), new Vector3i(0, 0, 0), world);
 
             dustSpawner = new DustSpawner(player);
 
