@@ -70,7 +70,7 @@ namespace Spacebox.Game
             Flashlight = new Flashlight(this);
 
             wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
-            wallhitAudio2 = new AudioSource(SoundManager.GetClip("wallhit2"));
+            wallhitAudio2 = new AudioSource(SoundManager.GetClip("wallHit2"));
             flySpeedUpAudio = new AudioSource(SoundManager.GetClip("flySpeedUp"));
             flySpeedUpAudio.IsLooped = true;
         }
