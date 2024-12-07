@@ -4,6 +4,9 @@
 
 // dotnet publish -c Release -r osx-x64 --self-contained true --output ./publish
 
+// dotnet publish -c Release -r linux-x64 --self-contained true --output ./publish
+
+
 
 
 // dir P:\C#\Spacebox_OpenTK\*.cs /S /B | find /C ":"

@@ -44,7 +44,7 @@ namespace Spacebox.Game.GUI
             LoadGameSets();
 
             click1 = new AudioSource(SoundManager.GetClip("UI/click1"));
-            trashIcon = TextureManager.GetTexture("Resources/textures/UI/trash.png", true);
+            trashIcon = TextureManager.GetTexture("Resources/Textures/UI/trash.png", true);
             trashIcon.FlipY();
         }
 
