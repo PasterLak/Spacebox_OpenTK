@@ -12,10 +12,9 @@ namespace Spacebox.Game
         public event Action OnEqualZero;
 
 
-       
-
         public bool IsMaxReached => Count >= MaxCount;
         public bool IsMinReached => Count <= 0;
+
         public void Increment(int amount)
         {
             if (Count >= MaxCount) return;

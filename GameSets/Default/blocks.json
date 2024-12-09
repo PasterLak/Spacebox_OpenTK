@@ -30,7 +30,7 @@
     {
         "Name": "Iron Ore",
         "Sides": "ironOre",
-         "PowerToDrill": 2,
+        "PowerToDrill": 2,
         "Mass": 2,
         "Durability": 2
     },

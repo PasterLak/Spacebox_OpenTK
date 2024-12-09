@@ -33,7 +33,6 @@ namespace Spacebox.Common.SceneManagment
         }
 
         public abstract void LoadContent();
-
         public abstract void UnloadContent();
 
         public virtual void Awake() { }
@@ -49,8 +48,6 @@ namespace Spacebox.Common.SceneManagment
 
         public void Dispose()
         {
-
-          
 
             if(Disposables.Count > 0)
             {

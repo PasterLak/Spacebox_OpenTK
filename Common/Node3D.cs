@@ -8,12 +8,10 @@ namespace Spacebox.Common
         public string Name { get; set; } = "Tranform";
 
         public virtual Vector3 Position { get; set; } = Vector3.Zero;
-
-        public Vector3 Rotation { get; set; } = Vector3.Zero; // Euler angles in degrees
+        public Vector3 Rotation { get; set; } = Vector3.Zero; // Euler
+        public virtual Vector3 Scale { get; set; } = Vector3.One;
 
         public bool Resizable { get; protected set; } = true;
-
-        public virtual Vector3 Scale { get; set; } = Vector3.One;
 
         public Node3D Parent { get; protected set; } = null;
         public bool HasParent => Parent != null;
@@ -34,45 +32,20 @@ namespace Spacebox.Common
 
             bool relativeToCamera = false;
 
-            if (Camera.Main != null && Camera.Main.CameraRelativeRender) relativeToCamera = true;
+            if (Camera.Main != null && Camera.Main.CameraRelativeRender) relativeToCamera = true; 
 
             var translation = Matrix4.CreateTranslation(relativeToCamera ?  Position - Camera.Main.Position : Position);
             var rotationX = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(Rotation.X));
             var rotationY = Matrix4.CreateRotationY(MathHelper.DegreesToRadians(Rotation.Y));
             var rotationZ = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(Rotation.Z));
             var rotation = rotationZ * rotationY * rotationX;
-            var scale = Matrix4.CreateScale(Scale);
-
-            //return scale * rotation * translation;
+            var scale = Resizable ?  Matrix4.CreateScale(Scale) : Matrix4.Identity;
 
             Matrix4 localTransform = scale * rotation * translation;
 
             if (Parent != null)
             {
                 return  Parent.GetModelMatrix() * localTransform; // ???
-            }
-            else
-            {
-                return localTransform;
-            }
-        }
-
-        public Matrix4 GetModelMatrixRelativeToCamera(Camera camera)
-        {
-            var translation = Matrix4.CreateTranslation(Position - camera.Position);
-            var rotationX = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(Rotation.X));
-            var rotationY = Matrix4.CreateRotationY(MathHelper.DegreesToRadians(Rotation.Y));
-            var rotationZ = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(Rotation.Z));
-            var rotation = rotationZ * rotationY * rotationX;
-            var scale = Matrix4.CreateScale(Scale);
-
-            //return scale * rotation * translation;
-
-            Matrix4 localTransform = scale * rotation * translation;
-
-            if (Parent != null)
-            {
-                return Parent.GetModelMatrix() * localTransform; // ???
             }
             else
             {

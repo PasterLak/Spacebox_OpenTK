@@ -1,15 +1,7 @@
 ﻿using Spacebox.Common;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Spacebox.Game
 {
-    public interface IStorage
-    {
-        public void AddItem();
-        public void DeleteItem();
-        public bool HasItem();
-        public void UpdateItem();
-    }
 
     public class Storage
     {
@@ -32,7 +24,6 @@ namespace Spacebox.Game
 
         public Storage ConnectedStorage { get; set; }
         public bool MoveItemsToConnectedStorage = false;
-
 
 
         public Storage(byte sizeX, byte sizeY)
@@ -62,8 +53,6 @@ namespace Spacebox.Game
                 for (byte y = 0; y < SizeY; y++)
                 {
                     Slots[x,y] = new ItemSlot(this, x,y );
-
-   
                 }
             }
         }
@@ -160,11 +149,6 @@ namespace Spacebox.Game
 
             Debug.Error($"{Name}: failed to add items. Items was not added: {count}");
             return false;
-        }
-
-        public void DeleteItem()
-        {
-
         }
 
         public bool HasItem(Item item)

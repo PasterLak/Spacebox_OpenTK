@@ -149,8 +149,8 @@ namespace Spacebox.Common
             Player = 1 << 2,       // 4
             Enemy = 1 << 3,        // 8
             Projectile = 1 << 4,   // 16
-                                   // Добавьте другие слои по мере необходимости
-            All = ~0                // Все слои
+                                   // 
+            All = ~0                // All
         }
 
   

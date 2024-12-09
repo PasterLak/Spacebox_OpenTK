@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 
 namespace Spacebox.Common
 {

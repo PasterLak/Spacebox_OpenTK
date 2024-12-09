@@ -70,7 +70,7 @@ namespace Spacebox.Common
                     }
                     catch (IOException)
                     {
-                        Task.Delay(500).Wait();
+                        Task.Delay(100).Wait();
                     }
                 }
 

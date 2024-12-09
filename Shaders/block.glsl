@@ -20,10 +20,10 @@ uniform mat4 projection;
 uniform vec3 cameraPosition = vec3(0, 0, 0);
 uniform float fogDensity = 0.08;
 
-void fog(vec4 worldPosition)
+float calcFog(vec4 worldPosition)
 {
     float distance = length(worldPosition.xyz - cameraPosition);
-    FogFactor = exp(-pow(fogDensity * distance, 2.0));
+    return exp(-pow(fogDensity * distance, 2.0));
 }
 
 void main()
@@ -34,7 +34,7 @@ void main()
     Color = aColor;
     FragPos = vec3(worldPosition);
     Normal = aNormal * mat3(transpose(inverse(model)));
-    fog(worldPosition);
+    FogFactor = calcFog(worldPosition);
 }
 
 
@@ -74,7 +74,7 @@ in vec3 FragPos;
 out vec4 FragColor;
 
 
-vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseColor)
+vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseColor)
 {
     vec3 lightDir = normalize(light.position - fragPos);
     float diff = max(dot(normal, lightDir), 0.0);
@@ -111,7 +111,7 @@ void main()
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 ambient = baseTexColor.rgb * (ambientColor + Color);
-    vec3 lighting = CalcSpotLight(spotLight, norm, FragPos, viewDir, baseTexColor.rgb);
+    vec3 lighting = calcSpotLight(spotLight, norm, FragPos, viewDir, baseTexColor.rgb);
     vec3 finalColor = ambient + lighting;
     vec4 foggedColor = applyFog(vec4(finalColor, baseTexColor.a));
     vec3 combinedColor = mix(foggedColor.rgb, atlasTexColor.rgb, atlasTexColor.a);

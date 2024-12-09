@@ -6,7 +6,6 @@ namespace Spacebox.Common
     {
         public Shader Shader { get; private set; }
         public Texture2D Texture { get; private set; }
-     
 
 
         public Vector4 Color { get; set; } = Vector4.One;

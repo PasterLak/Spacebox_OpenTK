@@ -288,7 +288,7 @@ namespace Spacebox.Game
             public Color4 Color { get; set; }
             public int id = 0;
 
-            // Свойства для определения необходимости боковых граней
+         
             public bool NeedsLeftSide { get; set; }
             public bool NeedsRightSide { get; set; }
             public bool NeedsTopSide { get; set; }

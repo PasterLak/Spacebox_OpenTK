@@ -5,7 +5,6 @@ namespace Spacebox.Game
 {
     public static class UVAtlas
     {
-       // public static int SideBlocksCount = 16;
 
         public static Vector2[] GetUVs(Vector2 v, int sideInBlocks)
         {

@@ -34,7 +34,6 @@ namespace Spacebox.Scenes
             {
                 Position = Position,
                 UseLocalCoordinates = false,
-                //EmitterDirection = EmitterDirection,
                 MaxParticles = 350,
                 SpawnRate = 40f
             };
@@ -54,8 +53,6 @@ namespace Spacebox.Scenes
                 EndColorMin = new Vector4(1f, 1f, 1f, 1f),
                 EndColorMax = new Vector4(0.8f, 0.8f, 0.8f, 1f),
                 SpawnRadius = 70f
-             
-
             };
 
             ParticleSystem.Emitter = emitter;

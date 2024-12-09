@@ -23,8 +23,7 @@ namespace Spacebox.Common
             ViewMatrix = viewMatrix;
             ProjectionMatrix = projectionMatrix;
 
-            // Получаем комбинированную матрицу
-            Matrix4 clipMatrix =   ViewMatrix * ProjectionMatrix;
+            Matrix4 clipMatrix = ViewMatrix * ProjectionMatrix;
 
             // Извлекаем плоскости из комбинированной матрицы
             // Левая плоскость
@@ -101,7 +100,6 @@ namespace Spacebox.Common
         {
             Vector3[] corners = new Vector3[8];
 
-            // Инвертируем комбинированную матрицу
             Matrix4 inverseMatrix = (ProjectionMatrix * ViewMatrix).Inverted();
 
             int index = 0;
