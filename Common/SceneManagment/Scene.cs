@@ -1,5 +1,4 @@
 ﻿using OpenTK.Windowing.Desktop;
-using Spacebox.Common.Audio;
 
 namespace Spacebox.Common.SceneManagment
 {

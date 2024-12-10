@@ -95,7 +95,7 @@ namespace Spacebox.Game
         {
             try
             {
-                // Получаем все подпапки в директории Worlds
+              
                 string[] worldFolders = Directory.GetDirectories(SaveDirectory);
 
                 foreach (string worldFolder in worldFolders)
@@ -107,8 +107,7 @@ namespace Spacebox.Game
                         WorldInfo worldInfo = JsonSerializer.Deserialize<WorldInfo>(jsonContent);
                         if (worldInfo != null && string.Equals(worldInfo.Name, worldName, StringComparison.OrdinalIgnoreCase))
                         {
-                            // Найдено соответствие по имени мира
-                            // Загружаем чанки из папки Chunks
+                          
                             string chunksDirectory = Path.Combine(worldFolder, "Chunks");
                             if (!Directory.Exists(chunksDirectory))
                             {
@@ -121,7 +120,7 @@ namespace Spacebox.Game
 
                             foreach (string chunkFile in chunkFiles)
                             {
-                                string fileName = Path.GetFileNameWithoutExtension(chunkFile); // Например, "chunk_X_Y_Z"
+                                string fileName = Path.GetFileNameWithoutExtension(chunkFile); //"chunk_X_Y_Z"
                                 Vector3 chunkPosition = ParseChunkPosition(fileName);
                                 if (chunkPosition == Vector3.Zero)
                                 {
@@ -136,7 +135,7 @@ namespace Spacebox.Game
                                 }
                             }
 
-                            // Создаем объект World
+                         
                             WorldChunks loadedWorld = new WorldChunks
                             {
                                 Info = worldInfo,

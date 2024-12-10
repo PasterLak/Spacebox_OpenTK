@@ -230,7 +230,7 @@ namespace Spacebox.Game
 
         public static void AddFaceButton(List<float> vertices, List<uint> indices, uint indexOffset,
                             Quad quad, float depth, float modelSize,
-                            Vector3 color, // Используем цвет вместо нормали
+                            Vector3 color, 
                             Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
         {
            
@@ -314,14 +314,14 @@ namespace Spacebox.Game
                         continue;
                     }
 
-                    // Определение ширины квадрата
+                 
                     int quadWidth = 1;
                     while (x + quadWidth < width && !processed[x + quadWidth, y] && pixels[x + quadWidth, y].Equals(currentColor))
                     {
                         quadWidth++;
                     }
 
-                    // Определение высоты квадрата
+                  
                     int quadHeight = 1;
                     bool done = false;
                     while (y + quadHeight < height)
@@ -339,7 +339,7 @@ namespace Spacebox.Game
                         quadHeight++;
                     }
 
-                    // Пометка области квадрата как обработанной
+                  
                     for (int dy = 0; dy < quadHeight; dy++)
                     {
                         for (int dx = 0; dx < quadWidth; dx++)
@@ -348,16 +348,16 @@ namespace Spacebox.Game
                         }
                     }
 
-                    // Расчёт UV координат
+                 
                     float u = (float)x / width;
                     float v = (float)y / height;
                     float uWidth = (float)quadWidth / width;
                     float uHeight = (float)quadHeight / height;
 
-                    // Определение необходимости боковых граней
+                  
                     bool needsLeft = false, needsRight = false, needsTop = false, needsBottom = false;
 
-                    // Проверка левой стороны
+                
                     if (x == 0)
                     {
                         needsLeft = true;
@@ -374,7 +374,7 @@ namespace Spacebox.Game
                         }
                     }
 
-                    // Проверка правой стороны
+                 
                     if (x + quadWidth >= width)
                     {
                         needsRight = true;
@@ -391,7 +391,7 @@ namespace Spacebox.Game
                         }
                     }
 
-                    // Проверка верхней стороны
+                
                     if (y == 0)
                     {
                         needsTop = true;
@@ -408,7 +408,7 @@ namespace Spacebox.Game
                         }
                     }
 
-                    // Проверка нижней стороны
+                  
                     if (y + quadHeight >= height)
                     {
                         needsBottom = true;

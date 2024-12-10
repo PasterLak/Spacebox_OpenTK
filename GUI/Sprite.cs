@@ -14,8 +14,8 @@ namespace Spacebox.GUI
 
         private float[] _vertices;
         private readonly uint[] _indices = {
-            0, 1, 3,   // Первый треугольник
-            1, 2, 3    // Второй треугольник
+            0, 1, 3,  
+            1, 2, 3   
         };
 
         private Vector2 _position;
@@ -75,29 +75,29 @@ namespace Spacebox.GUI
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
 
-            // Позиции вершин
+            // pos
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
 
-            // Текстурные координаты
+            // uv
             GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 2 * sizeof(float));
 
             GL.BindVertexArray(0);
 
-            // Обработчик события изменения размера окна
+          
             Window.OnResized += UpdateWindowSize;
         }
 
         private void SetVertices()
         {
-            // Конвертируем пиксельные позиции в координаты OpenGL
+           
             float left = _position.X;
             float right = _position.X + _size.X;
             float top = _position.Y;
             float bottom = _position.Y + _size.Y;
 
-            // Нормализуем в координаты OpenGL (-1 до 1)
+           
             float normalizedLeft = (left / _windowWidth) * 2.0f - 1.0f;
             float normalizedRight = (right / _windowWidth) * 2.0f - 1.0f;
             float normalizedTop = 1.0f - (top / _windowHeight) * 2.0f;
@@ -105,11 +105,11 @@ namespace Spacebox.GUI
 
             _vertices = new float[]
             {
-                // Позиции          // Текстурные координаты
-                normalizedRight, normalizedTop,     1.0f, 1.0f, // Верхний правый
-                normalizedRight, normalizedBottom,  1.0f, 0.0f, // Нижний правый
-                normalizedLeft,  normalizedBottom,  0.0f, 0.0f, // Нижний левый
-                normalizedLeft,  normalizedTop,      0.0f, 1.0f  // Верхний левый
+            
+                normalizedRight, normalizedTop,     1.0f, 1.0f, 
+                normalizedRight, normalizedBottom,  1.0f, 0.0f, 
+                normalizedLeft,  normalizedBottom,  0.0f, 0.0f,
+                normalizedLeft,  normalizedTop,      0.0f, 1.0f  
             };
         }
 
@@ -155,11 +155,11 @@ namespace Spacebox.GUI
         {
             _shader.Use();
 
-            // Устанавливаем uniforms
+           
             _shader.SetVector2("offset", offset ?? Vector2.Zero);
             _shader.SetVector2("tiling", tiling ?? Vector2.One);
 
-            // Привязываем текстуру
+           
             _texture.Use(TextureUnit.Texture0);
             _shader.SetInt("spriteTexture", 0);
 

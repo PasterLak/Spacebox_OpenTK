@@ -6,10 +6,10 @@ namespace Spacebox.Common
 {
     public class PointOctree<T>
     {
-        // The total amount of objects currently in the tree
+        
         public int Count { get; private set; }
 
-        // Root node of the octree
+       
         PointOctreeNode<T> rootNode;
 
         // Size that the octree was on creation

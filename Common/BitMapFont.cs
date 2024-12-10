@@ -1,5 +1,4 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SixLabors.ImageSharp.PixelFormats;
@@ -12,11 +11,11 @@ namespace Spacebox.Common
     {
         public class Glyph
         {
-            public Vector2 Size;      // Размер глифа
-            public Vector2 Bearing;   // Смещение глифа относительно базовой линии
-            public float Advance;     // Расстояние до следующего глифа
-            public Vector2 TexOffset; // Смещение в текстуре (от 0 до 1)
-            public Vector2 TexSize;   // Размер в текстуре (от 0 до 1)
+            public Vector2 Size;
+            public Vector2 Bearing;
+            public float Advance;
+            public Vector2 TexOffset;
+            public Vector2 TexSize;
         }
 
         private readonly Dictionary<char, Glyph> _glyphs;
@@ -28,39 +27,32 @@ namespace Spacebox.Common
         public float Spacing
         {
             get { return _spacing; }
-             set
+            set
             {
                 _spacing = value;
-
                 foreach (var glyph in _glyphs.Values)
                 {
                     glyph.Advance = _spacing;
-
                 }
             }
         }
 
         public Dictionary<char, Glyph> Glyphs => _glyphs;
 
-
-        // Existing constructor that loads from JSON metadata
         public BitmapFont(string metadataPath)
         {
             if (!File.Exists(metadataPath))
-                throw new FileNotFoundException($"Файл метаданных шрифта не найден: {metadataPath}");
+                throw new FileNotFoundException($"\u0424\u0430\u0439\u043b \u043c\u0435\u0442\u0430\u0434\u0430\u043d\u043d\u044b\u0445 \u0448\u0440\u0438\u0444\u0442\u0430 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d: {metadataPath}");
 
             _glyphs = new Dictionary<char, Glyph>();
 
-            // Чтение и парсинг метаданных
             var json = File.ReadAllText(metadataPath);
             var fontData = JsonConvert.DeserializeObject<FontMetadata>(json);
 
             _texturePath = fontData.texturePath;
 
-            // Загрузка текстурного атласа
             LoadTexture(_texturePath, fontData.common.textureWidth, fontData.common.textureHeight);
 
-            // Загрузка глифов
             foreach (var kvp in fontData.characters)
             {
                 char c = kvp.Key[0];
@@ -89,19 +81,16 @@ namespace Spacebox.Common
             Console.WriteLine(_glyphs.Count);
         }
 
-        // New constructor that loads from a fixed grid without JSON
         public BitmapFont(string texturePath, int textureWidth = 256, int textureHeight = 256, int glyphWidth = 16, int glyphHeight = 16)
         {
             if (!File.Exists(texturePath))
-                throw new FileNotFoundException($"Текстура шрифта не найдена: {texturePath}");
+                throw new FileNotFoundException($"\u0422\u0435\u043a\u0441\u0442\u0443\u0440\u0430 \u0448\u0440\u0438\u0444\u0442\u0430 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u0430: {texturePath}");
 
             _glyphs = new Dictionary<char, Glyph>();
             _texturePath = texturePath;
 
-            // Загрузка текстурного атласа
             LoadTexture(_texturePath, textureWidth, textureHeight);
 
-            // Предопределенный массив символов
             char[,] characterGrid = GenerateCharacterGrid();
 
             Spacing = glyphWidth;
@@ -109,9 +98,8 @@ namespace Spacebox.Common
             int columns = textureWidth / glyphWidth;
             int rows = textureHeight / glyphHeight;
 
-            LineHeight = glyphHeight; // Assuming line height equals glyph height
+            LineHeight = glyphHeight;
 
-            // Предполагаемые значения смещения и аванса для моноширинного шрифта
             Vector2 defaultBearing = Vector2.Zero;
             float defaultAdvance = Spacing;
 
@@ -125,23 +113,18 @@ namespace Spacebox.Common
 
                     char currentChar = characterGrid[row, col];
                     if (currentChar == '\0')
-                        continue; // Skip undefined characters
+                        continue;
 
                     Glyph glyph = new Glyph
                     {
                         Size = new Vector2(glyphWidth, glyphHeight),
-                        Bearing = new Vector2(0,8),
+                        Bearing = new Vector2(0, 8),
                         Advance = defaultAdvance,
                         TexOffset = new Vector2(col * (glyphWidth / (float)textureWidth), row * (glyphHeight / (float)textureHeight)),
                         TexSize = new Vector2(glyphWidth / (float)textureWidth, glyphHeight / (float)textureHeight)
                     };
 
                     if (currentChar == 'p') glyph.Bearing.Y = 11;
-                    if (currentChar == '.')
-                    {
-                        //glyph.Bearing.X = -glyphWidth/2;
-                        //glyph.Advance = 0;
-                    }
 
                     _glyphs.Add(currentChar, glyph);
                 }
@@ -150,19 +133,17 @@ namespace Spacebox.Common
             Console.WriteLine($"Loaded {_glyphs.Count} glyphs from grid.");
         }
 
-        // Generates a 16x16 grid of characters
         private char[,] GenerateCharacterGrid()
         {
             char[,] grid = new char[16, 16];
 
-            // Define the sequence of characters
             string characters =
-                "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + // 26 uppercase
-                "abcdefghijklmnopqrstuvwxyz" + // 26 lowercase Aagtz
-                "0123456789" +                 // 10 digits
-                "!@#$%^&*()-_=+[]{}|;:',.<>/?`~\"\\ " + // 32 symbols
-                "¡¢£¤¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿" + // Additional symbols
-                "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞß" + // Extended Latin
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+                "abcdefghijklmnopqrstuvwxyz" +
+                "0123456789" +
+                "!@#$%^&*()-_=+[]{}|;:',.<>/?`~\"\\ " +
+                "¡¢£¤¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿" +
+                "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞß" +
                 "àáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ" +
                 "ĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚě" +
                 "ĜĝĞğĠġĢģĤĥĦħĨĩĪīĬĭĮįİıĴĵĶķĹĺ" +
@@ -183,7 +164,7 @@ namespace Spacebox.Common
                     }
                     else
                     {
-                        grid[row, col] = '\0'; // Undefined character
+                        grid[row, col] = '\0';
                         index++;
                     }
                 }
@@ -231,7 +212,6 @@ namespace Spacebox.Common
             }
         }
 
-
         public bool ContainsGlyph(char c)
         {
             return _glyphs.ContainsKey(c);
@@ -256,7 +236,6 @@ namespace Spacebox.Common
             }
         }
 
-        // Классы для десериализации JSON
         private class FontMetadata
         {
             public string texturePath { get; set; }

@@ -478,7 +478,7 @@ namespace Spacebox.Game
                         useConsumableAudio.Stop();
                     }
                     useConsumableAudio = new AudioSource(clip);
-                    useConsumableAudio.Volume = 0.7f;
+                    useConsumableAudio.Volume = 0.3f;
                     useConsumableAudio.Play();
 
                     if(consumable.HealAmount > 0)

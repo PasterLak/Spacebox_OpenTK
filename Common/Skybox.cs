@@ -30,29 +30,27 @@ namespace Spacebox.Common
         {
             //Transform.Rotation += new Vector3(0,0.01f,0);
             Position = camera.Position ;
-            // Save previous OpenGL state
+          
             bool cullFaceEnabled = GL.IsEnabled(EnableCap.CullFace);
 
-            // Включение смешивания
+        
             GL.Enable(EnableCap.Blend);
 
-            // Установка функции смешивания
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
 
             GL.GetInteger(GetPName.CullFaceMode, out int prevCullFaceMode);
             GL.GetInteger(GetPName.DepthFunc, out int prevDepthFunc);
 
-            // Set OpenGL state for skybox rendering
             GL.DepthFunc(DepthFunction.Lequal);
             GL.Disable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.FrontAndBack); // Cull front faces to render inside of the cube
+            GL.CullFace(CullFaceMode.FrontAndBack); 
 
             Material.Use();
             Texture.Use();
             Material.Shader.SetInt("skybox", 0);
 
-            // Use view matrix without translation
+            
             //var viewMatrix = new Matrix4(new Matrix3(camera.GetViewMatrix()));
             //Material.Shader.SetVector2("offset", new Vector2(x,x) );
             if(IsAmbientAffected)
@@ -65,7 +63,7 @@ namespace Spacebox.Common
 
             Mesh.Draw();
 
-            // Restore previous OpenGL state
+          
             if (!cullFaceEnabled)
                 GL.Disable(EnableCap.CullFace);
             GL.CullFace((CullFaceMode)prevCullFaceMode);

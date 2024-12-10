@@ -44,7 +44,7 @@ namespace Spacebox.Game
         {
             if (!File.Exists(FilePath))
             {
-                Console.WriteLine($"Файл {FilePath} не найден.");
+                Console.WriteLine($"File {FilePath} was not found.");
                 return;
             }
 

@@ -21,27 +21,27 @@ namespace Spacebox.Common
             _shader =  ShaderManager.GetShader("Shaders/font"); 
             _font = font;
 
-            // Создаем ортографическую проекцию для 2D отрисовки
+          
             _projection = Matrix4.CreateOrthographicOffCenter(
                 0, screenWidth,
                 screenHeight, 0,
                 -1, 1);
 
-            // Настраиваем VAO и VBO для отрисовки квадов символов
+        
             _vao = GL.GenVertexArray();
             _vbo = GL.GenBuffer();
 
             GL.BindVertexArray(_vao);
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
 
-            // Каждая вершина содержит 4 float: x, y, u, v
+         
             GL.BufferData(BufferTarget.ArrayBuffer, sizeof(float) * 6 * 4, IntPtr.Zero, BufferUsageHint.DynamicDraw);
 
-            // Атрибут позиции
+          
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
 
-            // Атрибут текстурных координат
+         
             GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 2 * sizeof(float));
 
@@ -87,7 +87,7 @@ namespace Spacebox.Common
 
                 int line = GetNewLine(lineIndex, (int)h);
 
-                // Обновляем VBO для каждого символа
+              
                 float[] vertices = {
             // x          y            u                         v
             xpos,        ypos + line,        glyph.TexOffset.X,        glyph.TexOffset.Y,

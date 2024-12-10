@@ -255,34 +255,26 @@ namespace Spacebox.Common
         }
 
 
-        /// <summary>
-        /// Проверяет пересечение луча с объектами сцены с учётом слоёв.
-        /// </summary>
-        /// <param name="ray">Луч, который нужно проверить.</param>
-        /// <param name="hitPosition">Позиция точки пересечения, если есть пересечение.</param>
-        /// <param name="hitObject">Объект, с которым произошло пересечение.</param>
-        /// <param name="layerMask">Маска слоёв для фильтрации объектов. По умолчанию все слои.</param>
-        /// <returns>True, если произошло пересечение; иначе False.</returns>
         public bool Raycast(Ray ray, out Vector3 hitPosition, out Collision hitObject, CollisionLayer layerMask = CollisionLayer.All)
         {
             hitPosition = Vector3.Zero;
             hitObject = null;
             float closestDistance = float.MaxValue;
 
-            // Определяем ячейки, через которые проходит луч
+            
             foreach (var cell in GetRayOccupiedCells(ray))
             {
                 if (_spatialHash.TryGetValue(cell, out var list))
                 {
                     foreach (var obj in list)
                     {
-                        if (obj.IsTrigger) continue; // Пропускаем триггеры, если необходимо
+                        if (obj.IsTrigger) continue; 
 
-                        // Проверяем, входит ли объект в маску слоёв
+                    
                         if (!layerMask.HasFlag(obj.Layer))
                             continue;
 
-                        // Проверяем пересечение луча с ограничивающим объемом объекта
+                    
                         bool intersects = false;
                         float distance = 0f;
 
@@ -307,11 +299,9 @@ namespace Spacebox.Common
                     }
                 }
 
-                // Если нашли очень близкое пересечение, можно прервать раннее
                 if (closestDistance < _cellSize)
                     break;
 
-                // Прекращаем, если достигли максимальной длины луча
                 if (closestDistance >= ray.Length)
                     break;
             }
@@ -406,7 +396,7 @@ namespace Spacebox.Common
             Vector3 origin = ray.Origin;
             Vector3 direction = ray.Direction;
 
-            // Преобразуем координаты в индексы ячеек
+        
             int x = (int)Math.Floor(origin.X / _cellSize);
             int y = (int)Math.Floor(origin.Y / _cellSize);
             int z = (int)Math.Floor(origin.Z / _cellSize);
@@ -423,7 +413,7 @@ namespace Spacebox.Common
             float tDeltaY = stepY != 0 ? _cellSize / Math.Abs(direction.Y) : float.MaxValue;
             float tDeltaZ = stepZ != 0 ? _cellSize / Math.Abs(direction.Z) : float.MaxValue;
 
-            // Ограничение по максимальному количеству ячеек или расстоянию
+         
             int maxIterations = 1000;
             while (maxIterations-- > 0)
             {
@@ -456,9 +446,9 @@ namespace Spacebox.Common
                     }
                 }
 
-                // Прекращаем, если достигли определённого расстояния
+              
                 float currentDistance = Math.Min(tMaxX, Math.Min(tMaxY, tMaxZ));
-                if (currentDistance > 1000) // Например, максимальное расстояние луча
+                if (currentDistance > 1000) 
                     break;
             }
         }

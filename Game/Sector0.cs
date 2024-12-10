@@ -33,8 +33,8 @@ namespace Spacebox.Game
 
         private void InitializeChunks()
         {
-            // Position chunks relative to the sector's position
-            Vector3 chunkPosition = Position; // Adjust if multiple chunks per sector
+          
+            Vector3 chunkPosition = Position; 
             ChunkSaveLoadManager.WorldChunks world = ChunkSaveLoadManager.LoadWorld(World.Instance.WorldData.Info.Name);
 
             Chunk loadedChunk = null;

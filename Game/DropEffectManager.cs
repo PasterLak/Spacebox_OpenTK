@@ -17,7 +17,7 @@ namespace Spacebox.Game
         private Shader shader;
 
         public const float DropLifeTime = 20f;
-        // Removed moveAcceleration since it's no longer needed
+       
         private readonly float maxSpeed = 20f;
         private readonly float moveDistanceSquared;
         private readonly float pickupDistanceSquared;
@@ -28,7 +28,7 @@ namespace Spacebox.Game
 
         public DropEffectManager(
             Astronaut player,
-            // Removed moveAcceleration parameter
+          
             float maxSpeed = 20f,
             float moveDistance = 2f,
             float pickupDistance = 0.3f)
@@ -131,11 +131,11 @@ namespace Spacebox.Game
 
         private void MoveTowardsPlayer(DropEffect effect, Vector3 targetPosition)
         {
-            // Calculate direction directly towards the player
+           
             Vector3 direction = (targetPosition - effect.Position).Normalized();
-            // Set velocity directly towards the player at maxSpeed
+           
             effect.Velocity = direction * maxSpeed;
-            // Update position based on the new velocity
+           
             effect.Position += effect.Velocity * Time.Delta;
         }
 

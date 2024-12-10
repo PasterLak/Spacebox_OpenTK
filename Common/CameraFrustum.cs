@@ -25,8 +25,8 @@ namespace Spacebox.Common
 
             Matrix4 clipMatrix = ViewMatrix * ProjectionMatrix;
 
-            // Извлекаем плоскости из комбинированной матрицы
-            // Левая плоскость
+           
+            // left
             _planes[0] = CreatePlane(
                 clipMatrix.M14 + clipMatrix.M11,
                 clipMatrix.M24 + clipMatrix.M21,
@@ -34,7 +34,7 @@ namespace Spacebox.Common
                 clipMatrix.M44 + clipMatrix.M41
             );
 
-            // Правая плоскость
+            // right
             _planes[1] = CreatePlane(
                 clipMatrix.M14 - clipMatrix.M11,
                 clipMatrix.M24 - clipMatrix.M21,
@@ -42,7 +42,7 @@ namespace Spacebox.Common
                 clipMatrix.M44 - clipMatrix.M41
             );
 
-            // Нижняя плоскость
+            // down
             _planes[2] = CreatePlane(
                 clipMatrix.M14 + clipMatrix.M12,
                 clipMatrix.M24 + clipMatrix.M22,
@@ -50,7 +50,7 @@ namespace Spacebox.Common
                 clipMatrix.M44 + clipMatrix.M42
             );
 
-            // Верхняя плоскость
+            // up
             _planes[3] = CreatePlane(
                 clipMatrix.M14 - clipMatrix.M12,
                 clipMatrix.M24 - clipMatrix.M22,
@@ -58,7 +58,7 @@ namespace Spacebox.Common
                 clipMatrix.M44 - clipMatrix.M42
             );
 
-            // Ближняя плоскость
+            // near
             _planes[4] = CreatePlane(
                 clipMatrix.M14 + clipMatrix.M13,
                 clipMatrix.M24 + clipMatrix.M23,
@@ -66,7 +66,7 @@ namespace Spacebox.Common
                 clipMatrix.M44 + clipMatrix.M43
             );
 
-            // Дальняя плоскость
+            // far
             _planes[5] = CreatePlane(
                 clipMatrix.M14 - clipMatrix.M13,
                 clipMatrix.M24 - clipMatrix.M23,
@@ -74,7 +74,7 @@ namespace Spacebox.Common
                 clipMatrix.M44 - clipMatrix.M43
             );
 
-            // Нормализуем плоскости
+           
             for (int i = 0; i < 6; i++)
             {
                 float length = (float)Math.Sqrt(_planes[i].Normal.X * _planes[i].Normal.X +
@@ -144,7 +144,7 @@ namespace Spacebox.Common
                             outside++;
                     }
                     if (outside == 8)
-                        return false; // Все вершины за плоскостью
+                        return false; 
                 }
                 return true;
             }

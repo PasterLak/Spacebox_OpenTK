@@ -188,7 +188,7 @@ namespace Spacebox
         {
            
 
-            if (Input.IsKeyDown((Keys)161))
+            if (Input.IsKeyDown(Keys.KeyPadAdd))
             {
                 Lighting.AddAmbient();
             }

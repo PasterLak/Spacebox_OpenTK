@@ -222,7 +222,7 @@ namespace Spacebox.Game
 
         private Vector3 GetSectorPosition(Vector3i index)
         {
-            // Позиция сектора — это минимальная точка (Min) его BoundingBox
+           
             return new Vector3(
                 index.X * Sector.SizeBlocks,
                 index.Y * Sector.SizeBlocks,

@@ -40,7 +40,6 @@ namespace Spacebox.Common
             
             _shader = ShaderManager.AddPermanentShader("Shaders/debug");
 
-            // Initialize Points VAO and VBO
             _vaoPoints = GL.GenVertexArray();
             _vboPoints = GL.GenBuffer();
             GL.BindVertexArray(_vaoPoints);
@@ -48,21 +47,21 @@ namespace Spacebox.Common
 
             int stridePoints = sizeof(float) * 8; // 3 position + 4 color + 1 size
 
-            // Position attribute
+            // Position 
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, stridePoints, 0);
 
-            // Color attribute
+            // Color 
             GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, stridePoints, sizeof(float) * 3);
 
-            // Point size attribute
+            // Point size 
             GL.EnableVertexAttribArray(2);
             GL.VertexAttribPointer(2, 1, VertexAttribPointerType.Float, false, stridePoints, sizeof(float) * 7);
 
             GL.BindVertexArray(0);
 
-            // Initialize Lines VAO and VBO
+           
             _vaoLines = GL.GenVertexArray();
             _vboLines = GL.GenBuffer();
             GL.BindVertexArray(_vaoLines);
@@ -70,17 +69,17 @@ namespace Spacebox.Common
 
             int strideLines = sizeof(float) * 7; // 3 position + 4 color
 
-            // Position attribute
+            // Position 
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, strideLines, 0);
 
-            // Color attribute
+            // Color 
             GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, strideLines, sizeof(float) * 3);
 
             GL.BindVertexArray(0);
 
-            // Initialize Triangles VAO and VBO
+          
             _vaoTriangles = GL.GenVertexArray();
             _vboTriangles = GL.GenBuffer();
             GL.BindVertexArray(_vaoTriangles);
@@ -88,11 +87,11 @@ namespace Spacebox.Common
 
             int strideTriangles = sizeof(float) * 7; // 3 position + 4 color
 
-            // Position attribute
+            // Position 
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, strideTriangles, 0);
 
-            // Color attribute
+            // Color 
             GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, strideTriangles, sizeof(float) * 3);
 
@@ -129,7 +128,7 @@ namespace Spacebox.Common
             _points.Add(color.G);
             _points.Add(color.B);
             _points.Add(color.A);
-            _points.Add(size); // Add point size
+            _points.Add(size); 
         }
 
         public static void DrawLine(Vector3 start, Vector3 end, Color4 color)
@@ -209,7 +208,7 @@ namespace Spacebox.Common
             Vector3 min = box.Min;
             Vector3 max = box.Max;
 
-            // Определение 8 углов BoundingBox
+          
             Vector3[] corners = new Vector3[8];
             corners[0] = new Vector3(min.X, min.Y, min.Z);
             corners[1] = new Vector3(max.X, min.Y, min.Z);
@@ -220,19 +219,19 @@ namespace Spacebox.Common
             corners[6] = new Vector3(max.X, max.Y, max.Z);
             corners[7] = new Vector3(min.X, max.Y, max.Z);
 
-            // Нижняя грань
+          
             DrawLine(corners[0], corners[1], color);
             DrawLine(corners[1], corners[2], color);
             DrawLine(corners[2], corners[3], color);
             DrawLine(corners[3], corners[0], color);
 
-            // Верхняя грань
+           
             DrawLine(corners[4], corners[5], color);
             DrawLine(corners[5], corners[6], color);
             DrawLine(corners[6], corners[7], color);
             DrawLine(corners[7], corners[4], color);
 
-            // Вертикальные линии
+           
             DrawLine(corners[0], corners[4], color);
             DrawLine(corners[1], corners[5], color);
             DrawLine(corners[2], corners[6], color);
@@ -245,12 +244,12 @@ namespace Spacebox.Common
             if (!ShowDebug) return;
             if (sphere == null) return;
 
-            int slices = 16; // Количество сегментов по долготе
-            int stacks = 16; // Количество сегментов по широте
+            int slices = 16; 
+            int stacks = 16; 
             float radius = sphere.Radius;
             Vector3 center = sphere.Center;
 
-            // Рисуем линии по широте
+         
             for (int i = 0; i <= stacks; i++)
             {
                 float theta = MathHelper.Pi * i / stacks;
@@ -275,7 +274,7 @@ namespace Spacebox.Common
                 }
             }
 
-            // Рисуем линии по долготе
+         
             for (int j = 0; j < slices; j++)
             {
                 float phi = 2 * MathHelper.Pi * j / slices;
@@ -303,20 +302,19 @@ namespace Spacebox.Common
             if (!ShowDebug) return;
             Vector3[] frustumCorners = frustum.GetCorners();
 
-            // Рисуем 12 ребер фрустума
-            // Нижняя грань
+        
             DrawLine(frustumCorners[0], frustumCorners[1], color);
             DrawLine(frustumCorners[1], frustumCorners[2], color);
             DrawLine(frustumCorners[2], frustumCorners[3], color);
             DrawLine(frustumCorners[3], frustumCorners[0], color);
 
-            // Верхняя грань
+          
             DrawLine(frustumCorners[4], frustumCorners[5], color);
             DrawLine(frustumCorners[5], frustumCorners[6], color);
             DrawLine(frustumCorners[6], frustumCorners[7], color);
             DrawLine(frustumCorners[7], frustumCorners[4], color);
 
-            // Вертикальные ребра
+          
             DrawLine(frustumCorners[0], frustumCorners[4], color);
             DrawLine(frustumCorners[1], frustumCorners[5], color);
             DrawLine(frustumCorners[2], frustumCorners[6], color);

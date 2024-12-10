@@ -198,29 +198,29 @@ namespace Spacebox.Common
                 {
                     
                     NavigateHistory(-1);
-                    _focusInput = true; // Запрос фокуса после навигации
+                    _focusInput = true; 
                 }
                 if (ImGui.IsKeyPressed(ImGuiKey.DownArrow))
                 {
                    
                     NavigateHistory(1);
-                    _focusInput = true; // Запрос фокуса после навигации
+                    _focusInput = true; 
                 }
                 if (ImGui.IsKeyPressed(ImGuiKey.Tab))
                 {
                    
                     AutoComplete();
-                    _focusInput = true; // Запрос фокуса после автозаполнения
+                    _focusInput = true; 
                 }
             }
 
-            // Обработка нажатия кнопки "Send"
+          
             if (ImGui.Button("Send", new Vector2(buttonWidth, 0)))
             {
                
                 ProcessCommand(_inputBuffer);
                 _inputBuffer = "";
-                _focusInput = true; // Запрос фокуса после отправки команды
+                _focusInput = true; 
             }
 
             ImGui.SameLine();

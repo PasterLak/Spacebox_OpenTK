@@ -410,7 +410,7 @@ namespace Spacebox.Game
 
         private static void ApplySettings(ModSettings settings)
         {
-            // Apply mod-specific settings here
+          
         }
 
         private static string GetFilePath(string modPath, string defaultModPath, string fileName)

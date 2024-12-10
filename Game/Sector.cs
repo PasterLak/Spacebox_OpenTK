@@ -43,16 +43,16 @@ namespace Spacebox.Game
 
         private void Initialize()
         {
-            // Defer initialization that requires shared resources to the main thread
+            
             World.EnqueueSectorInitialization(this);
 
-            // Spawn asteroids
+            
             SpawnAsteroids();
         }
 
         private void SpawnAsteroids()
         {
-            int numAsteroids = 5; // For example, adjust as needed
+            int numAsteroids = 5; 
             Random random = new Random();
 
             for (int i = 0; i < numAsteroids; i++)
@@ -77,7 +77,7 @@ namespace Spacebox.Game
 
         private bool IsPositionValid(Vector3 position)
         {
-            // Ensure the asteroid is not too close to the sector boundaries
+           
             float minDistance = SizeBlocks * 0.1f;
             BoundingBox innerBounds = new BoundingBox(
                 BoundingBox.Center,
@@ -90,7 +90,7 @@ namespace Spacebox.Game
 
         public void InitializeSharedResources()
         {
-            // This method should be called from the main thread
+          
 
             if (sharedShader == null)
             {
@@ -109,17 +109,17 @@ namespace Spacebox.Game
 
         public void Update()
         {
-            // Update asteroids or other entities if needed
+            
 
             VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 10, 100));
         }
 
         public void Render(Shader shader)
         {
-            // Render the simple block
+           
             //simple?.Render(Camera.Main);
             //VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 10, 100));
-            // Render asteroids
+          
             foreach (var asteroid in asteroids)
             {
                 //asteroid.Render(shader);
@@ -130,7 +130,7 @@ namespace Spacebox.Game
         {
             //simple?.Dispose();
 
-            // Dispose asteroids if necessary
+            
             foreach (var asteroid in asteroids)
             {
                 //asteroid.Dispose();

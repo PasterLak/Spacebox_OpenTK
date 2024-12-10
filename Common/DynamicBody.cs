@@ -11,12 +11,12 @@ namespace Spacebox.Common
 
         public override void OnCollisionEnter(Collision other)
         {
-            // Optional override in derived classes
+            
         }
 
         public override void OnCollisionExit(Collision other)
         {
-            // Optional override in derived classes
+           
         }
     }
 }

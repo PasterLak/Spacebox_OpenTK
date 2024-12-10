@@ -1,5 +1,4 @@
-﻿// Overlay.cs
-using ImGuiNET;
+﻿using ImGuiNET;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;

@@ -3,7 +3,7 @@ using Spacebox.Common;
 
 namespace Spacebox.Game
 {
-    public class Mesh // Digital Differential Analyzer for collision
+    public class Mesh // DDA Digital Differential Analyzer for collision
     {
         private int _vao;
         private int _vbo;

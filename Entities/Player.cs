@@ -162,7 +162,7 @@ namespace Spacebox.Entities
                 }
                 else
                 {
-                    // Коллизия обнаружена, движение отменяется или корректируется
+                   
                     //Console.WriteLine("Movement blocked by collision.");
                 }
             }

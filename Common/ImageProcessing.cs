@@ -41,7 +41,7 @@ public static class ImageProcessing
             int mirroredY = height - 1 - y;
             for (int x = 0; x < width; x++)
             {
-                // Меняем местами текущую строку с зеркальной
+             
                 Color4 temp = array[y, x];
                 array[y, x] = array[mirroredY, x];
                 array[mirroredY, x] = temp;

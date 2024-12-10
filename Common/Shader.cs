@@ -23,7 +23,7 @@ namespace Spacebox.Common
 
         private readonly ConcurrentQueue<Action> _mainThreadActions;
 
-        // Store previous working shader and uniform locations
+      
         private int _previousHandle;
         private Dictionary<string, int> _previousUniformLocations;
 
@@ -55,10 +55,10 @@ namespace Spacebox.Common
 
             Task.Run(() =>
             {
-                // Delay to ensure file is ready
+                
                 Task.Delay(100).Wait();
 
-                // Wait until the file is accessible
+              
                 while (true)
                 {
                     try
@@ -74,7 +74,7 @@ namespace Spacebox.Common
                     }
                 }
 
-                // Enqueue the ReloadShader action to be executed on the main thread
+               
                 _mainThreadActions.Enqueue(() =>
                 {
                     ReloadShader();
@@ -91,7 +91,7 @@ namespace Spacebox.Common
 
             var shaderSources = ParseShaders(_shaderPath);
 
-            // Compile shaders
+            
             int vertexShader = 0;
             int fragmentShader = 0;
             int geometryShader = 0;
@@ -108,7 +108,7 @@ namespace Spacebox.Common
             }
             catch (Exception ex)
             {
-                // Cleanup shaders if compilation failed
+                
                 if (vertexShader != 0) GL.DeleteShader(vertexShader);
                 if (fragmentShader != 0) GL.DeleteShader(fragmentShader);
                 if (geometryShader != 0) GL.DeleteShader(geometryShader);
