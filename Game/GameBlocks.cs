@@ -235,7 +235,7 @@ namespace Spacebox.Game
         private static void CreateDust(BlockData block)
         {
             Texture2D texture = BlockDestructionTexture.Generate(block.WallsUVIndex);
-            texture.SaveToPng("af" + DateTime.Now.Millisecond + ".png");
+           // texture.SaveToPng("af" + DateTime.Now.Millisecond + ".png");
             BlockDust.Add(block.Id, texture);
         }
 
