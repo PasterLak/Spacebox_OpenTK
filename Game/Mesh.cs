@@ -31,8 +31,8 @@ namespace Spacebox.Game
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
 
-            // Assuming you have a VBO that includes position, texCoord, color, and normal
-            int stride = sizeof(float) * (3 + 2 + 3 + 3); // Adjust stride based on your vertex structure
+          
+            int stride = sizeof(float) * (3 + 2 + 3 + 3);
             int offset = 0;
 
             // Position

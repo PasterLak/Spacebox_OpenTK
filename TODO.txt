@@ -17,7 +17,7 @@ For demo:
 
 Pool
 
-- flashlight class
++ flashlight class
 - sounds for blocks
 + use sound for items
 - generation
@@ -38,6 +38,9 @@ Pool
 + collision
 + auto generation of texture atlas
 + save icons, textures to png
+
+- electricity
+- 
 
 
 textures:

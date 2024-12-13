@@ -1,6 +1,4 @@
-﻿
-
-namespace Spacebox.Game
+﻿namespace Spacebox.Game
 {
     public class ModBlockData
     {

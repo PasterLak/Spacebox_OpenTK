@@ -16,8 +16,10 @@
 
 version 0.0.9
 
-- test camera relative render
-
+- camera relative render
+- refactoring
+- threads for sectors
+- flashlight class
 
 version 0.0.8
 
