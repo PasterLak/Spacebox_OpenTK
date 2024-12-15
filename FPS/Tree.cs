@@ -1,6 +1,7 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Common;
 
-namespace Spacebox.Common
+namespace Spacebox.FPS
 {
     internal class Tree : Node3D, INotTransparent, ITransparent
     {
@@ -10,15 +11,15 @@ namespace Spacebox.Common
 
         public Model GetModel() { return trunk; }
 
-        public Tree(Vector3 pos, Shader shader) 
-        { 
+        public Tree(Vector3 pos, Shader shader)
+        {
             Position = pos;
 
-             trunk = new Model("Resources/Models/tree0.obj", 
-                new Material(shader, TextureManager.GetTexture("Resources/Textures/Game/wood.png")));
+            trunk = new Model("Resources/Models/tree0.obj",
+               new Material(shader, TextureManager.GetTexture("Resources/Textures/Game/wood.png")));
 
             trunk.Position = pos;
-           
+
 
             leaves = new Model("Resources/Models/leaves.obj",
                 new Material(shader, TextureManager.GetTexture("Resources/Textures/Game/leaves.png")));
@@ -31,8 +32,8 @@ namespace Spacebox.Common
 
         public void Draw(Camera camera)
         {
-            trunk.Draw(camera); 
-            
+            trunk.Draw(camera);
+
         }
 
         public void DrawTransparent(Camera camera)

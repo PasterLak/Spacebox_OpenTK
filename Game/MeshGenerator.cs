@@ -28,11 +28,11 @@ namespace Spacebox.Game.Rendering
             List<uint> indices = new List<uint>();
             uint index = 0;
 
-            for (int x = 0; x < Size; x++)
+            for (byte x = 0; x < Size; x++)
             {
-                for (int y = 0; y < Size; y++)
+                for (byte y = 0; y < Size; y++)
                 {
-                    for (int z = 0; z < Size; z++)
+                    for (byte z = 0; z < Size; z++)
                     {
                         Block block = _blocks[x, y, z];
                         if (block.IsAir())

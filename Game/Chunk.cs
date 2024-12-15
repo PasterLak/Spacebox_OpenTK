@@ -1,8 +1,10 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.Common.Physics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Lighting;
+using Spacebox.Game.Physics;
 using Spacebox.Game.Rendering;
 using Spacebox.GUI;
 using Spacebox.Managers;
@@ -16,6 +18,8 @@ namespace Spacebox.Game
         public static Chunk CurrentChunk { get; set; }
 
         public const byte Size = 32; // 32700+ blocks
+
+        public long Mass { get; set; } = 0;
         public Vector3 Position { get; private set; }
         public Block[,,] Blocks { get; private set; }
         public bool ShowChunkBounds { get; set; } = true;
@@ -95,60 +99,9 @@ namespace Spacebox.Game
 
         public bool IsColliding(BoundingVolume volume)
         {
+
+            return VoxelPhysics.IsColliding(volume, Blocks, Position);
             
-            BoundingSphere sphere = volume as BoundingSphere;
-            if (sphere == null)
-            {
-               
-                return false;
-            }
-
-            Vector3 sphereMin = sphere.Center - new Vector3(sphere.Radius);
-            Vector3 sphereMax = sphere.Center + new Vector3(sphere.Radius);
-
-       
-            Vector3 localMin = sphereMin - Position;
-            Vector3 localMax = sphereMax - Position;
-
-         
-            int minX = Math.Max((int)Math.Floor(localMin.X), 0);
-            int minY = Math.Max((int)Math.Floor(localMin.Y), 0);
-            int minZ = Math.Max((int)Math.Floor(localMin.Z), 0);
-
-            int maxX = Math.Min((int)Math.Ceiling(localMax.X), Size - 1);
-            int maxY = Math.Min((int)Math.Ceiling(localMax.Y), Size - 1);
-            int maxZ = Math.Min((int)Math.Ceiling(localMax.Z), Size - 1);
-
-           
-            for (int x = minX; x <= maxX; x++)
-            {
-                for (int y = minY; y <= maxY; y++)
-                {
-                    for (int z = minZ; z <= maxZ; z++)
-                    {
-                        Block block = Blocks[x, y, z];
-                        if (!block.IsAir())
-                        {
-                          
-                            Vector3 blockMin = Position + new Vector3(x, y, z);
-                            BoundingBox blockBox = new BoundingBox(blockMin + new Vector3(0.5f), Vector3.One);
-
-                           
-                            if (CollisionDetection.SphereIntersectsAABB(sphere, blockBox))
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        public void Shift(Vector3 shift)
-        {
-            Position -= shift;
         }
 
         public void Draw(Shader shader)
@@ -225,7 +178,8 @@ namespace Spacebox.Game
                    DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
                 }
             }
- 
+
+            Mass -= Blocks[x, y, z].Mass;
             Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
 
             
@@ -253,104 +207,13 @@ namespace Spacebox.Game
             return x >= 0 && x < Size && y >= 0 && y < Size && z >= 0 && z < Size;
         }
 
-        public bool Raycast(Ray ray, out Vector3 hitPosition, out Vector3i hitBlockPosition, out Vector3 hitNormal)
+        public bool Raycast(Ray ray, out VoxelPhysics.HitInfo info)
         {
-            hitPosition = Vector3.Zero;
-            hitBlockPosition = new Vector3i(-1, -1, -1);
-            hitNormal = Vector3.Zero;
+            info = new VoxelPhysics.HitInfo();  
 
             if (!_isLoadedOrGenerated) return false;
 
-            Vector3 rayOrigin = ray.Origin - Position;
-            Vector3 rayDirection = ray.Direction;
-
-            int x = (int)MathF.Floor(rayOrigin.X);
-            int y = (int)MathF.Floor(rayOrigin.Y);
-            int z = (int)MathF.Floor(rayOrigin.Z);
-
-            float deltaDistX = rayDirection.X == 0 ? float.MaxValue : MathF.Abs(1 / rayDirection.X);
-            float deltaDistY = rayDirection.Y == 0 ? float.MaxValue : MathF.Abs(1 / rayDirection.Y);
-            float deltaDistZ = rayDirection.Z == 0 ? float.MaxValue : MathF.Abs(1 / rayDirection.Z);
-
-            int stepX = rayDirection.X < 0 ? -1 : 1;
-            int stepY = rayDirection.Y < 0 ? -1 : 1;
-            int stepZ = rayDirection.Z < 0 ? -1 : 1;
-
-            float sideDistX = rayDirection.X == 0 ? float.MaxValue : (rayDirection.X < 0 ? (rayOrigin.X - x) : (x + 1.0f - rayOrigin.X)) * deltaDistX;
-            float sideDistY = rayDirection.Y == 0 ? float.MaxValue : (rayDirection.Y < 0 ? (rayOrigin.Y - y) : (y + 1.0f - rayOrigin.Y)) * deltaDistY;
-            float sideDistZ = rayDirection.Z == 0 ? float.MaxValue : (rayDirection.Z < 0 ? (rayOrigin.Z - z) : (z + 1.0f - rayOrigin.Z)) * deltaDistZ;
-
-            float distanceTraveled = 0f;
-            int side = -1;
-
-            while (distanceTraveled < ray.Length)
-            {
-                if (IsInRange(x, y, z))
-                {
-                    Block block = Blocks[x, y, z];
-                    if (!block.IsAir())
-                    {
-                        hitBlockPosition = new Vector3i(x, y, z);
-                        hitPosition = ray.Origin + ray.Direction * distanceTraveled;
-
-                        switch (side)
-                        {
-                            case 0:
-                                hitNormal = new Vector3(-stepX, 0, 0);
-                                break;
-                            case 1:
-                                hitNormal = new Vector3(0, -stepY, 0);
-                                break;
-                            case 2:
-                                hitNormal = new Vector3(0, 0, -stepZ);
-                                break;
-                        }
-
-                        return true;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-
-                if (sideDistX < sideDistY)
-                {
-                    if (sideDistX < sideDistZ)
-                    {
-                        x += stepX;
-                        distanceTraveled = sideDistX;
-                        sideDistX += deltaDistX;
-                        side = 0;
-                    }
-                    else
-                    {
-                        z += stepZ;
-                        distanceTraveled = sideDistZ;
-                        sideDistZ += deltaDistZ;
-                        side = 2;
-                    }
-                }
-                else
-                {
-                    if (sideDistY < sideDistZ)
-                    {
-                        y += stepY;
-                        distanceTraveled = sideDistY;
-                        sideDistY += deltaDistY;
-                        side = 1;
-                    }
-                    else
-                    {
-                        z += stepZ;
-                        distanceTraveled = sideDistZ;
-                        sideDistZ += deltaDistZ;
-                        side = 2;
-                    }
-                }
-            }
-
-            return false;
+            return VoxelPhysics.Raycast(ray,Position, Blocks, out info);
         }
 
         public void ChangeBlockColor(Block block, Vector3 color, bool regenerateMesh)
@@ -400,46 +263,48 @@ namespace Spacebox.Game
 
             Ray ray = new Ray(rayOrigin, rayDirection, 6);
 
-            bool hit = Raycast(ray, out Vector3 hitPosition, out Vector3i hitBlockPosition, out Vector3 hitNormal);
+            VoxelPhysics.HitInfo hitInfo = new VoxelPhysics.HitInfo();
+
+            bool hit = Raycast(ray, out hitInfo);
 
             if (hit)
             {
 
-                Vector3 worldBlockPosition = hitBlockPosition + Position;
+                Vector3 worldBlockPosition = hitInfo.blockPosition + Position;
                 VisualDebug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.White);
 
 
-                Block aimedBlock = Blocks[hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z];
+                Block aimedBlock = Blocks[hitInfo.blockPosition.X, hitInfo.blockPosition.Y, hitInfo.blockPosition.Z];
 
-                VisualDebug.DrawAxes(hitBlockPosition + Vector3.One * 0.5f);
+                VisualDebug.DrawAxes(hitInfo.blockPosition + Vector3.One * 0.5f);
 
                 Overlay.AimedBlock = aimedBlock;
 
                
                 if (Input.IsKeyDown(Keys.T))
                 {
-                    Blocks[hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z].Color = new Vector3(1, 1, 0);
+                    Blocks[hitInfo.blockPosition.X, hitInfo.blockPosition.Y, hitInfo.blockPosition.Z].Color = new Vector3(1, 1, 0);
 
                     GenerateMesh();
                 }
                 if (Input.IsKeyDown(Keys.Z))
                 {
-                    Blocks[hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z].Color = new Vector3(1, 1, 1);
+                    Blocks[hitInfo.blockPosition.X, hitInfo.blockPosition.Y, hitInfo.blockPosition.Z].Color = new Vector3(1, 1, 1);
 
                     GenerateMesh();
                 }
 
-                float dis = Vector3.DistanceSquared(hitBlockPosition + hitNormal, player.Position);
+                float dis = Vector3.DistanceSquared(hitInfo.blockPosition + hitInfo.normal, player.Position);
 
                 if (PanelUI.IsHoldingBlock() && dis > Block.DiagonalSquared)
                 {
                     BlockSelector.IsVisible = true;
-                    BlockSelector.Instance.UpdatePosition(hitBlockPosition + hitNormal, Block.GetDirectionFromNormal(hitNormal));
+                    BlockSelector.Instance.UpdatePosition(hitInfo.blockPosition + hitInfo.normal, Block.GetDirectionFromNormal(hitInfo.normal));
                 }
                 else if (PanelUI.IsHoldingDrill())
                 {
                     BlockSelector.IsVisible = true;
-                    BlockSelector.Instance.UpdatePosition(hitBlockPosition, Block.GetDirectionFromNormal(hitNormal));
+                    BlockSelector.Instance.UpdatePosition(hitInfo.blockPosition, Block.GetDirectionFromNormal(hitInfo.normal));
                 }
                 else
                 {
@@ -447,13 +312,13 @@ namespace Spacebox.Game
                 }
 
 
-                VisualDebug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.02f), Color4.Red);
-                VisualDebug.DrawLine(hitPosition, hitPosition + hitNormal * 0.5f, Color4.Red);
+                VisualDebug.DrawBoundingSphere(new BoundingSphere(hitInfo.position, 0.02f), Color4.Red);
+                VisualDebug.DrawLine(hitInfo.position, hitInfo.position + hitInfo.normal * 0.5f, Color4.Red);
 
 
                 if (aimedBlock.GetType() == typeof(InteractiveBlock) )
                 {
-                    float dis2 = Vector3.Distance(player.Position, hitBlockPosition);
+                    float dis2 = Vector3.Distance(player.Position, hitInfo.blockPosition);
 
                     if (dis2 < 3f)
                     {
@@ -477,7 +342,7 @@ namespace Spacebox.Game
                 {
                     if(!GameBlocks.GetBlockDataById(aimedBlock.BlockId).AllSidesAreSame)
                     {
-                        aimedBlock.SetDirectionFromNormal(hitNormal);
+                        aimedBlock.SetDirectionFromNormal(hitInfo.normal);
                         GenerateMesh();
                     }
                     
@@ -494,8 +359,8 @@ namespace Spacebox.Game
                       //  GameBlocks.GetBlockDataById(aimedBlock.BlockId).Item, 1);
 
 
-                            RemoveBlock(hitBlockPosition.X, hitBlockPosition.Y, hitBlockPosition.Z,
-                                (sbyte)hitNormal.X, (sbyte)hitNormal.Y, (sbyte)hitNormal.Z);
+                            RemoveBlock(hitInfo.blockPosition.X, hitInfo.blockPosition.Y, hitInfo.blockPosition.Z,
+                                (sbyte)hitInfo.normal.X, (sbyte)hitInfo.normal.Y, (sbyte)hitInfo.normal.Z);
 
                             SpaceScene.blockDestroy.Play();
                         }
@@ -511,9 +376,9 @@ namespace Spacebox.Game
 
                 if (Input.IsMouseButtonDown(MouseButton.Right))
                 {
-                    Vector3i placeBlockPosition = hitBlockPosition + new Vector3i((int)hitNormal.X, (int)hitNormal.Y, (int)hitNormal.Z);
+                    Vector3i placeBlockPosition = hitInfo.blockPosition + new Vector3i((int)hitInfo.normal.X, (int)hitInfo.normal.Y, (int)hitInfo.normal.Z);
 
-                    if(Vector3.DistanceSquared(player.Position, hitBlockPosition + hitNormal) > Block.DiagonalSquared)
+                    if(Vector3.DistanceSquared(player.Position, hitInfo.blockPosition + hitInfo.normal) > Block.DiagonalSquared)
                     {
                         if (IsInRange(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z) &&
                        Blocks[placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z].IsAir())
@@ -526,7 +391,7 @@ namespace Spacebox.Game
                                 bool hasSameSides = GameBlocks.GetBlockDataById(id).AllSidesAreSame;
 
                                 if (!hasSameSides)
-                                    newBlock.SetDirectionFromNormal(hitNormal);
+                                    newBlock.SetDirectionFromNormal(hitInfo.normal);
 
                                 SetBlock(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z, newBlock);
 
@@ -536,9 +401,6 @@ namespace Spacebox.Game
                         }
                     }
 
-                   
-
-                    
                 }
             }
             else

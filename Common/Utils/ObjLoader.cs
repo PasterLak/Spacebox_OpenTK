@@ -2,7 +2,7 @@
 using System.Globalization;
 using OpenTK.Mathematics;
 
-namespace Spacebox.Common
+namespace Spacebox.Common.Utils
 {
     public static class ObjLoader
     {

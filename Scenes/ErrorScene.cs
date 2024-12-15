@@ -13,15 +13,11 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
            
-
+            Window.Instance.Title = "Error";
             GL.ClearColor(Color.Red);
 
         }
 
-        public override void Awake()
-        {
-           
-        }
         public override void Start()
         {
             Console.Error.WriteLine("Error Scene!");

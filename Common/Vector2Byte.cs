@@ -14,6 +14,11 @@ public struct Vector2Byte
         this.X = x;
         this.Y = y;
     }
+    public Vector2Byte(int x, int y)
+    {
+        this.X = (byte)x;
+        this.Y = (byte)y;
+    }
 
     public Vector2Byte(Vector2i v)
     {
@@ -30,6 +35,10 @@ public struct Vector2Byte
     public static Vector2Byte Zero
     {
         get { return new Vector2Byte(0, 0); }
+    }
+    public static Vector2Byte One
+    {
+        get { return new Vector2Byte(1, 1); }
     }
 
     public static Vector2Byte Right

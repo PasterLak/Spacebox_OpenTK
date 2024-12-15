@@ -73,7 +73,7 @@ namespace Spacebox.GUI
                 var cam = Camera.Main;
                 Vector3i playerPosInt = new Vector3i((int)cam.Position.X, (int)cam.Position.Y, (int)cam.Position.Z);
                 ImGui.Text($"Camera Position: {playerPosInt}");
-
+                ImGui.Text($"Camera-Relative Rendering: {cam.CameraRelativeRender}");
                 Astronaut ast = (cam as Astronaut);
 
                 if (ast != null)

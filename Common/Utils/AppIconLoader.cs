@@ -3,7 +3,7 @@ using OpenTK.Windowing.Desktop;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace Spacebox.Common
+namespace Spacebox.Common.Utils
 {
     public static class AppIconLoader
     {
@@ -42,7 +42,7 @@ namespace Spacebox.Common
 
                     var iconImage = new OpenTK.Windowing.Common.Input.Image(width, height, pixels);
                     window.Icon = new WindowIcon(iconImage);
-                   
+
                 }
             }
             catch (Exception ex)

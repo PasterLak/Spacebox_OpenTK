@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.Common.Physics;
 
 namespace Spacebox.Game
 {

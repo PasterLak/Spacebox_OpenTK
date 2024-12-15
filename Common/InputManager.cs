@@ -1,5 +1,4 @@
-﻿
-using OpenTK.Windowing.GraphicsLibraryFramework;
+﻿using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Spacebox.Common
 {
@@ -87,10 +86,15 @@ namespace Spacebox.Common
             }
         }
 
-        public static void RegisterCallback(string name, Action callback)
+        public static InputAction RegisterCallback(string name, Action callback)
         {
             if (actions.ContainsKey(name))
+            {
                 actions[name].Callbacks.Add(callback);
+                return actions[name];
+            }
+               
+            return null;
         }
 
         public static void UnregisterCallback(string name, Action callback)
@@ -130,30 +134,6 @@ namespace Spacebox.Common
             }
         }
 
-        public class InputAction
-        {
-            public string Name { get; private set; }
-            public string Description { get; set; } = "";
-            public Keys? Key { get; set; }
-            public MouseButton? MouseButton { get; set; }
-            public List<Action> Callbacks { get; private set; }
-            public bool IsStatic { get; set; }
-
-            public InputAction(string name, Keys key, bool isStatic = false)
-            {
-                Name = name;
-                Key = key;
-                IsStatic = isStatic;
-                Callbacks = new List<Action>();
-            }
-
-            public InputAction(string name, MouseButton button, bool isStatic = false)
-            {
-                Name = name;
-                MouseButton = button;
-                IsStatic = isStatic;
-                Callbacks = new List<Action>();
-            }
-        }
+       
     }
 }

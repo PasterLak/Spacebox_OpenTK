@@ -101,15 +101,12 @@ namespace Spacebox.Scenes
             spawner.ParticleSystem.Emitter = emitter;
         }
 
-        public override void Awake()
-        {
-            CenteredImage.ShowText = true;
-            GameMenu.IsVisible = false;
-        }
+      
         public override void Start()
         {
             // Input.HideCursor(); 
-          
+          CenteredImage.ShowText = true;
+            GameMenu.IsVisible = false;
         }
       
 

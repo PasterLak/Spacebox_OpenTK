@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
 
-namespace Spacebox.Common
+namespace Spacebox.Common.Physics
 {
     public struct Bounds
     {
@@ -56,7 +56,7 @@ namespace Spacebox.Common
 
             if (tymin > tymax) Swap(ref tymin, ref tymax);
 
-            if ((tmin > tymax) || (tymin > tmax))
+            if (tmin > tymax || tymin > tmax)
             {
                 return false;
             }
@@ -71,7 +71,7 @@ namespace Spacebox.Common
 
             if (tzmin > tzmax) Swap(ref tzmin, ref tzmax);
 
-            if ((tmin > tzmax) || (tzmin > tmax))
+            if (tmin > tzmax || tzmin > tmax)
             {
                 return false;
             }
@@ -103,5 +103,5 @@ namespace Spacebox.Common
         }
     }
 
-    
+
 }

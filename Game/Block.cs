@@ -12,11 +12,13 @@ namespace Spacebox.Game
         Back = 4,
         Forward = 5
     }
-    public class Block
+
+    // bit packing: id=16, dir=3, mass=8, health=8, trans=1
+    public class Block 
     {
         public short BlockId { get; set; } = 0;
-        public byte Mass { get; private set; } = 5;
-        public byte Health { get; private set; } = 10;
+        public byte Mass { get; private set; } = 0;
+        public byte Health { get; private set; } = 0;
        
         public Vector3 Color { get; set; }
         public bool IsTransparent { get; set; } = false;

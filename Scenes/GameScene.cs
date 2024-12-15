@@ -4,8 +4,9 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
+using Spacebox.Common.Physics;
 using Spacebox.Common.SceneManagment;
-using Spacebox.Entities;
+using Spacebox.FPS;
 using Spacebox.GUI;
 using Spacebox.UI;
 
@@ -249,10 +250,6 @@ namespace Spacebox.Scenes
             }
         }
 
-        public override void Awake()
-        {
-
-        }
         public override void Start()
         {
             

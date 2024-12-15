@@ -38,6 +38,7 @@ namespace Spacebox.Game.GUI
         private AudioSource click1;
 
         private bool showDeleteWindow = false;
+        private bool showVersionConvertWindow = false;
         public GameMenu()
         {
             LoadWorlds();
@@ -89,6 +90,11 @@ namespace Spacebox.Game.GUI
                 RenderDeleteWindow();
             }
 
+            if(showVersionConvertWindow)
+            {
+                RenderUpdateVersionWindow();
+            }
+
             ImGui.PopStyleColor(6);
             ImGui.GetStyle().ItemSpacing = oldItemSpacing;
             ImGui.GetStyle().WindowPadding = oldWindowPadding;
@@ -121,7 +127,7 @@ namespace Spacebox.Game.GUI
             float windowHeight = windowSize.Y * 0.3f;
             var windowPos = CenterNextWindow2(windowWidth, windowHeight);
 
-            ImGui.Begin("Main Menu", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar );
+            ImGui.Begin("Main Menu", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
 
             float buttonWidth = windowWidth * 0.9f;
             float buttonHeight = windowHeight * 0.12f;
@@ -132,12 +138,22 @@ namespace Spacebox.Game.GUI
             float totalButtonsHeight = buttonHeight * 3 + spacing * 2;
             ImGui.Dummy(new Vector2(0, (windowHeight - totalButtonsHeight) / 4));
 
-            CenterButtonWithBackground("Play", buttonWidth, buttonHeight, () => currentState = MenuState.WorldSelect);
+            CenterButtonWithBackground("Play", buttonWidth, buttonHeight, () => {
+                click1?.Play();
+                currentState = MenuState.WorldSelect; });
             ImGui.Dummy(new Vector2(0, spacing * 2));
-            CenterButtonWithBackground("Options", buttonWidth, buttonHeight, () => currentState = MenuState.Options);
+            CenterButtonWithBackground("Options", buttonWidth, buttonHeight, () =>
+            {
+                click1?.Play();
+                currentState = MenuState.Options;
+            });
             ImGui.Dummy(new Vector2(0, spacing));
             ImGui.Dummy(new Vector2(0, (windowHeight - totalButtonsHeight) / 2));
-            CenterButtonWithBackground("Exit", buttonWidth, buttonHeight , () => Window.Instance.Quit());
+            CenterButtonWithBackground("Exit", buttonWidth, buttonHeight , () =>
+            {
+                click1?.Play();
+                Window.Instance.Quit();
+            });
             ImGui.PopStyleColor(6);
             ImGui.End();
         }
@@ -162,8 +178,8 @@ namespace Spacebox.Game.GUI
             
             ImGui.Begin("Select World", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse);
 
-            float horizontalMargin = windowWidth * 0.06f; // Отступ от левого и правого краев (6% ширины окна)
-            float verticalSpacing = windowHeight * 0.03f; // Вертикальный отступ между элементами
+            float horizontalMargin = windowWidth * 0.06f; 
+            float verticalSpacing = windowHeight * 0.03f; 
 
             float listHeight = windowHeight * 0.4f;
             float infoHeight = windowHeight * 0.25f;
@@ -194,9 +210,7 @@ namespace Spacebox.Game.GUI
           
             ImGui.EndChild();
 
-           
             ImGui.Dummy(new Vector2(0, verticalSpacing));
-
            
             ImGui.SetCursorPosX(horizontalMargin);
             ImGui.BeginChild("WorldInfo", new Vector2(contentWidth, infoHeight ));
@@ -209,7 +223,7 @@ namespace Spacebox.Game.GUI
                
                 ImGui.Text($" Mod: {GetModNameById(selectedWorld.ModId)}");
 
-                bool isOldVersion = IsVersionOlder(selectedWorld.GameVersion, Application.Version);
+                bool isOldVersion = VersionConverter.IsVersionOlder(selectedWorld.GameVersion, Application.Version);
 
                 if (isOldVersion)
                 {
@@ -225,13 +239,13 @@ namespace Spacebox.Game.GUI
 
             ImGui.EndChild();
 
-            // Отступ между информацией о мире и кнопками "Play"/"Delete"
+          
             ImGui.Dummy(new Vector2(0, verticalSpacing));
 
-            // Кнопки "Play" и "Delete World"
+            
             if (selectedWorld != null)
             {
-                float buttonSpacing = windowWidth * 0.02f; // Отступ между кнопками (6% ширины окна)
+                float buttonSpacing = windowWidth * 0.02f; 
                 float buttonWidth = (contentWidth - buttonSpacing) / 2;
                 float buttonHeight = windowHeight * 0.08f;
 
@@ -243,7 +257,17 @@ namespace Spacebox.Game.GUI
                new Vector2(buttonStartX, buttonY + windowHeight * 0.02f), () =>
                {
                    click1.Play();
-                   LoadWorld(selectedWorld);
+
+
+                   if(VersionConverter.IsVersionOld(selectedWorld.GameVersion))
+                   {
+                       showVersionConvertWindow = true;
+                   }
+                   else
+                   {
+                       LoadWorld(selectedWorld);
+                   }
+                  
                });
 
 
@@ -268,10 +292,10 @@ namespace Spacebox.Game.GUI
            
             ImGui.Dummy(new Vector2(0, verticalSpacing));
 
-            float bottomButtonSpacing = windowWidth * 0.02f; // Отступ между кнопками (6% ширины окна)
+            float bottomButtonSpacing = windowWidth * 0.02f; 
             float bottomButtonWidth = (contentWidth - bottomButtonSpacing) / 2;
             float bottomButtonHeight = windowHeight * 0.08f;
-            float bottomMargin = windowHeight * 0.05f; // Отступ от нижнего края окна
+            float bottomMargin = windowHeight * 0.05f; 
 
             float bottomButtonY = windowHeight - bottomButtonHeight - bottomMargin;
             float bottomButtonStartX = horizontalMargin + (contentWidth - (bottomButtonWidth * 2 + bottomButtonSpacing)) / 2;
@@ -350,6 +374,59 @@ namespace Spacebox.Game.GUI
             ImGui.End();
         }
 
+        private void RenderUpdateVersionWindow()
+        {
+            Vector2 displaySize = ImGui.GetIO().DisplaySize;
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
+            float windowWidth = displaySize.Y * 0.5f;
+            float windowHeight = displaySize.Y * 0.12f;
+            var windowPos = CenterNextWindow2(windowWidth, windowHeight);
+
+            ImGui.Begin("UpdateVersionWindow", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse
+                | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
+
+            float buttonWidth = windowWidth * 0.8f;
+            float buttonHeight = windowHeight * 0.15f;
+            float spacing = windowHeight * 0.03f;
+
+            DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y, 0.005f);
+
+            float totalButtonsHeight = buttonHeight * 3 + spacing * 2;
+            string text = "This map is made on an older version of the game";
+
+            var textSize = ImGui.CalcTextSize(text);
+            ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize.X * 0.5f, spacing));
+            ImGui.Text(text);
+
+            string text2 = "Do you want to convert the map?";
+
+            var textSize2 = ImGui.CalcTextSize(text2);
+            ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize2.X * 0.5f, spacing * 2 + textSize.Y));
+            ImGui.Text(text2);
+
+            ImGui.Dummy(new Vector2(0, (windowHeight - totalButtonsHeight) / 4));
+
+            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.8f, 0.25f, 0.25f, 1.0f));
+            CenterButtonWithBackground("Yes, convert", buttonWidth, buttonHeight, () =>
+            {
+                click1?.Play();
+                VersionConverter.Convert(selectedWorld);
+                showVersionConvertWindow = false;
+            });
+            ImGui.PopStyleColor(1);
+            ImGui.Dummy(new Vector2(0, spacing));
+            CenterButtonWithBackground("No", buttonWidth, buttonHeight, () =>
+            {
+                showVersionConvertWindow = false;
+                click1?.Play();
+            });
+            ImGui.Dummy(new Vector2(0, spacing));
+
+
+            ImGui.PopStyleColor(6);
+            ImGui.End();
+        }
+
 
 
         private void RenderNewWorldMenu()
@@ -370,7 +447,7 @@ namespace Spacebox.Game.GUI
             float labelHeight = ImGui.CalcTextSize("A").Y;
 
             DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), windowSize.Y, 0.004f);
-            // Корректировка общей высоты ввода для учета меток и полей ввода
+            
             float totalInputHeight = (labelHeight + inputHeight + spacing) * 4;
             float topPadding = (windowHeight - totalInputHeight - buttonHeight - ImGui.GetStyle().WindowPadding.Y * 2) / 2;
             ImGui.Dummy(new Vector2(0, topPadding));
@@ -382,13 +459,13 @@ namespace Spacebox.Game.GUI
             CenterInputText("Seed", ref newWorldSeed, 100, inputWidth, inputHeight);
             ImGui.Dummy(new Vector2(0, spacing));
 
-            // Центрированная метка для GameSet
+          
             string comboLabel = "GameSet";
             Vector2 labelSize = ImGui.CalcTextSize(comboLabel);
             ImGui.SetCursorPosX((windowWidth - labelSize.X) * 0.5f);
             ImGui.Text(comboLabel);
 
-            // Поле выбора GameSet
+         
             ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(ImGui.GetStyle().FramePadding.X, (inputHeight - labelHeight) / 2));
             ImGui.SetNextItemWidth(inputWidth);
             ImGui.SetCursorPosX((windowWidth - inputWidth) / 2);
@@ -412,10 +489,10 @@ namespace Spacebox.Game.GUI
             }
             ImGui.PopStyleVar();
 
-            float totalButtonWidth = buttonWidth * 2 + spacing; // Используем spacing вместо ItemSpacing.X
-            float bottomMargin = windowHeight * 0.05f; // Отступ от нижнего края окна (5% от высоты окна)
+            float totalButtonWidth = buttonWidth * 2 + spacing; 
+            float bottomMargin = windowHeight * 0.05f; 
 
-            // Позиционирование кнопок с учетом отступа от низа и между ними
+        
             float buttonY = windowHeight - buttonHeight - bottomMargin;
             float buttonStartX = (windowWidth - totalButtonWidth) / 2;
 
@@ -487,17 +564,17 @@ namespace Spacebox.Game.GUI
             return nameRes;
             
         }
-        // Updated CenterInputText function
+      
         private void CenterInputText(string label, ref string input, uint maxLength, float width, float height)
         {
             float windowWidth = ImGui.GetWindowWidth();
 
-            // Draw the label centered
+          
             Vector2 labelSize = ImGui.CalcTextSize(label);
             ImGui.SetCursorPosX((windowWidth - labelSize.X) * 0.5f);
             ImGui.Text(label);
 
-            // Set the position for the input field
+           
             ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(ImGui.GetStyle().FramePadding.X, (height - labelSize.Y) / 2));
             ImGui.SetNextItemWidth(width);
             ImGui.SetCursorPosX((windowWidth - width) * 0.5f);
@@ -798,21 +875,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-
-
-
-
-
-
-        private bool IsVersionOlder(string worldVersion, string currentVersion)
-        {
-            Version worldVer, currentVer;
-            if (Version.TryParse(worldVersion, out worldVer) && Version.TryParse(currentVersion, out currentVer))
-            {
-                return worldVer < currentVer;
-            }
-            return false;
-        }
+        
     }
 
     public class WorldInfo

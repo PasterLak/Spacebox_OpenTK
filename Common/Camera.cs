@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Common.Physics;
 using Spacebox.Game;
 
 namespace Spacebox.Common
@@ -37,6 +38,8 @@ namespace Spacebox.Common
             if(isMainCamera)
             Main = this;
             Position = position;
+
+            AllowCollisionDebug = false;
            
             UpdateVectors();
 
@@ -44,7 +47,7 @@ namespace Spacebox.Common
             AspectRatio = (float)Window.Instance.Size.X / Window.Instance.Size.Y;
         }
 
-  
+     
     ~Camera()
     {
         Window.OnResized -= OnWindowResize;

@@ -48,12 +48,14 @@ namespace Spacebox.Common
             RegisterCommand(new ExitCommand());
             RegisterCommand(new ResourcesCommand());
             RegisterCommand(new SaveMessagesCommand());
+
         }
+
 
         public static void RegisterCommand(ICommand command)
         {
             CommandManager.RegisterCommand(command);
-           
+
         }
 
         public static void ToggleVisibility()
@@ -65,13 +67,13 @@ namespace Spacebox.Common
                 _previousCursorState = Input.GetCursorState();
                 Input.ShowCursor();
                 _focusInput = true;
-             
+
             }
             else
             {
                 Input.SetCursorState(_previousCursorState);
                 SaveHistory();
-               
+
             }
 
             OnVisibilityWasChanged?.Invoke(_isVisible);
@@ -120,7 +122,7 @@ namespace Spacebox.Common
 
         public static void Success(object sender, string message)
         {
-            AddMessage($"[Success][{sender.GetType().Name}] {message}", new Vector4(0,1,0,1));
+            AddMessage($"[Success][{sender.GetType().Name}] {message}", new Vector4(0, 1, 0, 1));
             Console.WriteLine($"[Success][{sender.GetType().Name}] {message}");
         }
 
@@ -139,7 +141,7 @@ namespace Spacebox.Common
         public static void Log(string message)
         {
             //AddMessage($"[DEBUG] {message}", new Vector4(0.2f, 0.7f, 1f, 1f));
-            AddMessage($"{message}", new Vector4(1,1, 1f, 1f));
+            AddMessage($"{message}", new Vector4(1, 1, 1f, 1f));
             Console.WriteLine($"{message}");
         }
 
@@ -196,49 +198,49 @@ namespace Spacebox.Common
             {
                 if (ImGui.IsKeyPressed(ImGuiKey.UpArrow))
                 {
-                    
+
                     NavigateHistory(-1);
-                    _focusInput = true; 
+                    _focusInput = true;
                 }
                 if (ImGui.IsKeyPressed(ImGuiKey.DownArrow))
                 {
-                   
+
                     NavigateHistory(1);
-                    _focusInput = true; 
+                    _focusInput = true;
                 }
                 if (ImGui.IsKeyPressed(ImGuiKey.Tab))
                 {
-                   
+
                     AutoComplete();
-                    _focusInput = true; 
+                    _focusInput = true;
                 }
             }
 
-          
+
             if (ImGui.Button("Send", new Vector2(buttonWidth, 0)))
             {
-               
+
                 ProcessCommand(_inputBuffer);
                 _inputBuffer = "";
-                _focusInput = true; 
+                _focusInput = true;
             }
 
             ImGui.SameLine();
 
-           
+
             ImGui.SetNextItemWidth(inputWidth);
             bool inputActivated = ImGui.InputText("##Input", ref _inputBuffer, 256, ImGuiInputTextFlags.EnterReturnsTrue);
 
             if (_focusInput)
             {
                 ImGui.SetKeyboardFocusHere(-1);
-              
+
                 _focusInput = false;
             }
 
             if (inputActivated)
             {
-               
+
                 ProcessCommand(_inputBuffer);
                 _inputBuffer = "";
                 _focusInput = true;
@@ -255,12 +257,12 @@ namespace Spacebox.Common
                 return;
 
             _commandHistory.Add(command);
-          
+
 
             if (_commandHistory.Count > 20)
             {
                 _commandHistory.RemoveAt(0);
-              
+
             }
             _historyPos = -1;
         }
@@ -269,29 +271,29 @@ namespace Spacebox.Common
         {
             if (_commandHistory.Count == 0)
             {
-               
+
                 return;
             }
 
             _historyPos += direction;
-          
+
 
             if (_historyPos < 0)
             {
                 _historyPos = 0;
-               
+
             }
             else if (_historyPos >= _commandHistory.Count)
             {
                 _historyPos = _commandHistory.Count;
                 _inputBuffer = "";
-                
+
                 return;
             }
 
             _inputBuffer = _commandHistory[_historyPos];
-            
-            _focusInput = true; 
+
+            _focusInput = true;
         }
 
         private static void AutoComplete()
@@ -302,24 +304,24 @@ namespace Spacebox.Common
 
             string lastToken = tokens[^1];
             List<ICommand> matches = CommandManager.FindCommandsStartingWith(lastToken).ToList();
-          
+
 
             if (matches.Count == 1)
             {
                 tokens[^1] = matches[0].Name;
                 _inputBuffer = string.Join(" ", tokens) + " ";
-            
-                _focusInput = true; 
+
+                _focusInput = true;
             }
             else if (matches.Count > 1)
             {
-               
+
                 foreach (var cmd in matches)
                 {
                     AddMessage($"- {cmd.Name}: {cmd.Description}", new Vector4(0.5f, 0.5f, 1f, 1f));
                 }
-             
-                _focusInput = true; 
+
+                _focusInput = true;
             }
         }
 
@@ -342,7 +344,7 @@ namespace Spacebox.Common
             {
                 try
                 {
-                   
+
                     commandObj.Execute(args);
                 }
                 catch (Exception ex)
@@ -354,7 +356,7 @@ namespace Spacebox.Common
             else
             {
                 AddMessage($"Unknown command: {cmdName}", new Vector4(1f, 0f, 0f, 1f));
-               
+
             }
         }
 
@@ -400,31 +402,32 @@ namespace Spacebox.Common
                 if (_commandHistory.Count > 20)
                     _commandHistory = _commandHistory.TakeLast(20).ToList();
 
-              
+
             }
             else
             {
-               
+
             }
         }
 
         private static void SaveHistory()
         {
             File.WriteAllLines(HistoryFilePath, _commandHistory);
-          
-        }
 
-        public static void SaveMessagesToFile()
+        }
+      
+        public static void SaveMessagesToFile(bool useDefaultFileName = false)
         {
-            string debugFolderPath = "Debug";
+            const string debugFolderPath = "Debug";
+
+            Write("Date: " + GetDateTimeNow());
+
             if (!Directory.Exists(debugFolderPath))
             {
                 Directory.CreateDirectory(debugFolderPath);
             }
 
-          
-
-            string filename = $"console_log_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}.txt";
+            string filename = useDefaultFileName ? "last_console_log.txt": $"console_log_{GetDateTimeNow()}.txt";
             string filepath = Path.Combine(debugFolderPath, filename);
 
             try
@@ -436,6 +439,11 @@ namespace Spacebox.Common
             {
                 Error($"Failed to save console messages to file '{filepath}': {ex.Message}");
             }
+        }
+
+        private static string GetDateTimeNow()
+        {
+            return DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
         }
     }
 }

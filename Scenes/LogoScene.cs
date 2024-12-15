@@ -33,10 +33,6 @@ namespace Spacebox.Scenes
 
         }
 
-        public override void Awake()
-        {
-          
-        }
         public override void Start()
         {
            

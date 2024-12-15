@@ -1,5 +1,4 @@
-﻿
-namespace Spacebox.Common
+﻿namespace Spacebox.Common
 {
     public interface IResource : IDisposable
     {

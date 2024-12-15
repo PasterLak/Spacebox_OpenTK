@@ -33,6 +33,7 @@ namespace Spacebox.Game
 
 
             InputManager.AddAction("flashlight", Keys.L);
+            
             InputManager.RegisterCallback("flashlight", () =>
             { 
                 audio.Play(); 

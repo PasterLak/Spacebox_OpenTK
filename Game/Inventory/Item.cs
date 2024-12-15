@@ -1,6 +1,4 @@
-﻿
-
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 
 namespace Spacebox.Game
 {

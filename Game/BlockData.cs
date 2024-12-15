@@ -7,6 +7,8 @@ namespace Spacebox.Game
         public short Id;
         public string Name;
         public string Type;
+        public byte Mass;
+        public byte Health = 0;
         //public Vector2 TextureCoords; // replace with byte
 
         public string Sides { get; set; } = "";

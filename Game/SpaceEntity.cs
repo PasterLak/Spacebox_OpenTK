@@ -1,9 +1,10 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.Common.Physics;
 
 namespace Spacebox.Game
 {
-    internal class SpaceEntity : Node3D
+    public class SpaceEntity : Node3D
     {
         public const byte SizeChunks = 4; // will be 16
         public const byte SizeChunksHalf = SizeChunks / 2;

@@ -1,7 +1,7 @@
 ﻿
 using System.Diagnostics;
 
-namespace Spacebox.Common
+namespace Spacebox.Common.Utils
 {
     public class Testing
     {
@@ -33,7 +33,7 @@ namespace Spacebox.Common
             {
                 TimeSpan ts = _stopwatch.Elapsed;
 
-                string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                string elapsedTime = string.Format("{0:00}:{1:00}:{2:00}.{3:00}",
                     ts.Hours, ts.Minutes, ts.Seconds,
                     ts.Milliseconds / 10);
 

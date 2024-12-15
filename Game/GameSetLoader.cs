@@ -185,7 +185,7 @@ namespace Spacebox.Game
                 
 
                 var air = new BlockData("Air", "block", new Vector2Byte(0, 0));
-          
+                air.Mass = 0;
                 air.Sides = "sand";
              
                 GameBlocks.RegisterBlock(air);

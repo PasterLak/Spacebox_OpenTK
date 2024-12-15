@@ -1,20 +1,12 @@
-﻿using OpenTK.Windowing.Desktop;
+﻿using Spacebox.Common.Physics;
 
 namespace Spacebox.Common.SceneManagment
 {
     public abstract class Scene : Node3D, IDisposable
     {
-        protected GameWindow Content;
-      
-        public SceneManager SceneManager { get; private set; }
-
-       
         public CollisionManager CollisionManager { get; private set; }
         public Renderer Renderer { get; private set; }
-
         public List<IDisposable> Disposables { get; private set; } = new List<IDisposable>();
-
-      
 
         public Scene(string[] args)
         {
@@ -34,7 +26,6 @@ namespace Spacebox.Common.SceneManagment
         public abstract void LoadContent();
         public abstract void UnloadContent();
 
-        public virtual void Awake() { }
         public virtual void Start() { }
 
         public abstract void Update();

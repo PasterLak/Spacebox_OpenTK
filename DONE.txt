@@ -13,6 +13,7 @@
 // Get-ChildItem -Path "P:\C#\Spacebox_OpenTK" -Recurse -Filter *.cs | Get-Content | Measure-Object -Line
 // (008): 192, 19954 (009 early): 197, 20753
 
+// ------------------------------------------------------------------------------------------------------------------------------
 
 version 0.0.9
 
@@ -20,6 +21,11 @@ version 0.0.9
 - refactoring
 - threads for sectors
 - flashlight class
+- camera relative render for visual debug
+- Awake() was removed
+- physics move to a own namespace, refactoring
+- auto save last console log
+- version converter demo
 
 version 0.0.8
 

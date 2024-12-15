@@ -1,5 +1,5 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Entities;
+using Spacebox.FPS;
 
 
 namespace Spacebox.Common

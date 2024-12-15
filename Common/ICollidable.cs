@@ -1,8 +1,9 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Common.Physics;
 
 namespace Spacebox.Common
 {
-   
+
     public interface ICollidable
     {
         bool IsStatic { get;  }

@@ -11,10 +11,16 @@ public struct Vector3Byte
     public byte Z { get; set; }
 
     public Vector3Byte(byte x, byte y, byte z)
+    {
+        this.X = x;
+        this.Y = y;
+        this.Z = z;
+    }
+    public Vector3Byte(int x, int y, int z)
 	{
-		this.X = x;
-		this.Y = y;
-		this.Z = z;
+		this.X = (byte)x;
+		this.Y = (byte)y;
+		this.Z = (byte)z;
 	}
 	public Vector3Byte(Vector3i v)
 	{
@@ -38,7 +44,7 @@ public struct Vector3Byte
 		get { return new Vector3Byte(0, 0, 0); }
 	}
 
-	public static Vector3Byte Right
+    public static Vector3Byte Right
 	{
 		get { return new Vector3Byte(1, 0, 0); }
 	}
@@ -46,14 +52,16 @@ public struct Vector3Byte
 	{
 		get { return new Vector3Byte(0, 0, 1); }
 	}
+  
 
-	
-	public static Vector3Byte Up
+    public static Vector3Byte Up
 	{
 		get { return new Vector3Byte(0, 1, 0); }
 	}
+ 
+ 
 
-	public static Vector3Byte operator + (Vector3Byte v1, Vector3Byte v2)
+    public static Vector3Byte operator + (Vector3Byte v1, Vector3Byte v2)
 	{
 		Vector3Byte result = new Vector3Byte();
 

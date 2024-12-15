@@ -72,7 +72,6 @@ namespace Spacebox.Common.SceneManagment
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
 
-            // Find all types that inherit from the Scene class
             List<Type> derivedClasses = assembly.GetTypes()
                 .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(Scene)))
                 .ToList();
@@ -157,7 +156,7 @@ namespace Spacebox.Common.SceneManagment
                     Color4.Yellow);
 
                 CurrentScene.LoadContent();
-                CurrentScene.Awake();
+                
                 CurrentScene.Start();
 
                 

@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Common.Physics;
 using Spacebox.Extensions;
 
 namespace Spacebox.Common

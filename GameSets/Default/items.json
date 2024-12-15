@@ -144,5 +144,11 @@
         "Sprite": "water1",
         "MaxStack": 64,
         "ModelDepth": 2.0
+    },
+    {
+        "Name": "Battery",
+        "Sprite": "battery2",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
     }
 ]

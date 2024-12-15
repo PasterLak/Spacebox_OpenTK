@@ -11,9 +11,10 @@ using Spacebox.Common.SceneManagment;
 using Dear_ImGui_Sample;
 using System;
 using Spacebox.Extensions;
-using Spacebox.Entities;
+using Spacebox.FPS;
 using Spacebox.GUI;
 using ImGuiNET;
+using Spacebox.Common.Utils;
 
 namespace Spacebox
 {
@@ -90,8 +91,6 @@ namespace Spacebox
             InputManager.AddAction("screenshot", Keys.F12, true);
             InputManager.RegisterCallback("screenshot", () => { FramebufferCapture.SaveScreenshot(); });
 
-
-    
         
         }
 
@@ -292,6 +291,7 @@ namespace Spacebox
             ShaderManager.DisposeAll();
             TextureManager.DisposeAll();
 
+            Debug.SaveMessagesToFile(true);
             Close();
         }
 

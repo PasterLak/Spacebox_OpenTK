@@ -1,7 +1,5 @@
-﻿// Time.cs
-using OpenTK.Windowing.Common;
+﻿using OpenTK.Windowing.Common;
 using System.Diagnostics;
-using OpenTK.Mathematics;
 
 namespace Spacebox.Common
 {

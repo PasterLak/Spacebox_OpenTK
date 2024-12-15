@@ -1,9 +1,6 @@
-﻿//public List<ICollidable> Collidables = new List<ICollidable>();
+﻿using OpenTK.Mathematics;
 
-
-using OpenTK.Mathematics;
-
-namespace Spacebox.Common
+namespace Spacebox.Common.Physics
 {
     public class CollisionManager
     {
@@ -17,7 +14,7 @@ namespace Spacebox.Common
             _spatialHash = new Dictionary<(int, int, int), List<Collision>>();
             _activeCollisions = new HashSet<(Collision, Collision)>(new CollisionPairComparer());
         }
-     
+
 
         public void Add(Collision obj)
         {
@@ -29,7 +26,6 @@ namespace Spacebox.Common
             {
                 obj.SetCollisionDebugColor(Color4.Yellow);
             }
-            
 
             if (!Collidables.Contains(obj))
             {
@@ -45,7 +41,7 @@ namespace Spacebox.Common
                     _spatialHash[cell] = list;
                 }
                 list.Add(obj);
-               
+
             }
         }
 
@@ -261,20 +257,20 @@ namespace Spacebox.Common
             hitObject = null;
             float closestDistance = float.MaxValue;
 
-            
+
             foreach (var cell in GetRayOccupiedCells(ray))
             {
                 if (_spatialHash.TryGetValue(cell, out var list))
                 {
                     foreach (var obj in list)
                     {
-                        if (obj.IsTrigger) continue; 
+                        if (obj.IsTrigger) continue;
 
-                    
+
                         if (!layerMask.HasFlag(obj.Layer))
                             continue;
 
-                    
+
                         bool intersects = false;
                         float distance = 0f;
 
@@ -315,7 +311,8 @@ namespace Spacebox.Common
             distance = 0f;
             if (volume is BoundingBox box)
             {
-                return IntersectRayWithBoundingBox(ray, box, out distance);
+                //return IntersectRayWithBoundingBox(ray, box, out distance);
+                return ray.Intersects(box, out distance);
             }
             else if (volume is BoundingSphere sphere)
             {
@@ -350,7 +347,7 @@ namespace Spacebox.Common
                 tyMax = temp;
             }
 
-            if ((tMin > tyMax) || (tyMin > tMax))
+            if (tMin > tyMax || tyMin > tMax)
                 return false;
 
             if (tyMin > tMin)
@@ -369,7 +366,7 @@ namespace Spacebox.Common
                 tzMax = temp;
             }
 
-            if ((tMin > tzMax) || (tzMin > tMax))
+            if (tMin > tzMax || tzMin > tMax)
                 return false;
 
             if (tzMin > tMin)
@@ -396,24 +393,24 @@ namespace Spacebox.Common
             Vector3 origin = ray.Origin;
             Vector3 direction = ray.Direction;
 
-        
+
             int x = (int)Math.Floor(origin.X / _cellSize);
             int y = (int)Math.Floor(origin.Y / _cellSize);
             int z = (int)Math.Floor(origin.Z / _cellSize);
 
-            int stepX = direction.X > 0 ? 1 : (direction.X < 0 ? -1 : 0);
-            int stepY = direction.Y > 0 ? 1 : (direction.Y < 0 ? -1 : 0);
-            int stepZ = direction.Z > 0 ? 1 : (direction.Z < 0 ? -1 : 0);
+            int stepX = direction.X > 0 ? 1 : direction.X < 0 ? -1 : 0;
+            int stepY = direction.Y > 0 ? 1 : direction.Y < 0 ? -1 : 0;
+            int stepZ = direction.Z > 0 ? 1 : direction.Z < 0 ? -1 : 0;
 
-            float tMaxX = stepX != 0 ? ((_cellSize * (x + (stepX > 0 ? 1 : 0))) - origin.X) / direction.X : float.MaxValue;
-            float tMaxY = stepY != 0 ? ((_cellSize * (y + (stepY > 0 ? 1 : 0))) - origin.Y) / direction.Y : float.MaxValue;
-            float tMaxZ = stepZ != 0 ? ((_cellSize * (z + (stepZ > 0 ? 1 : 0))) - origin.Z) / direction.Z : float.MaxValue;
+            float tMaxX = stepX != 0 ? (_cellSize * (x + (stepX > 0 ? 1 : 0)) - origin.X) / direction.X : float.MaxValue;
+            float tMaxY = stepY != 0 ? (_cellSize * (y + (stepY > 0 ? 1 : 0)) - origin.Y) / direction.Y : float.MaxValue;
+            float tMaxZ = stepZ != 0 ? (_cellSize * (z + (stepZ > 0 ? 1 : 0)) - origin.Z) / direction.Z : float.MaxValue;
 
             float tDeltaX = stepX != 0 ? _cellSize / Math.Abs(direction.X) : float.MaxValue;
             float tDeltaY = stepY != 0 ? _cellSize / Math.Abs(direction.Y) : float.MaxValue;
             float tDeltaZ = stepZ != 0 ? _cellSize / Math.Abs(direction.Z) : float.MaxValue;
 
-         
+
             int maxIterations = 1000;
             while (maxIterations-- > 0)
             {
@@ -446,9 +443,9 @@ namespace Spacebox.Common
                     }
                 }
 
-              
+
                 float currentDistance = Math.Min(tMaxX, Math.Min(tMaxY, tMaxZ));
-                if (currentDistance > 1000) 
+                if (currentDistance > 1000)
                     break;
             }
         }
@@ -459,8 +456,8 @@ namespace Spacebox.Common
         {
             public bool Equals((Collision, Collision) x, (Collision, Collision) y)
             {
-                return (x.Item1 == y.Item1 && x.Item2 == y.Item2) ||
-                       (x.Item1 == y.Item2 && x.Item2 == y.Item1);
+                return x.Item1 == y.Item1 && x.Item2 == y.Item2 ||
+                       x.Item1 == y.Item2 && x.Item2 == y.Item1;
             }
 
             public int GetHashCode((Collision, Collision) obj)

@@ -2,9 +2,10 @@
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.Common.Physics;
 
 
-namespace Spacebox.Entities
+namespace Spacebox.FPS
 {
     public class Player : CameraBasic, INotTransparent
     {

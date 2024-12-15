@@ -13,9 +13,14 @@ For demo:
 - local position and rotation
 - more chunks
 - 
-
++ camera relative render for visual debug
+- destroy block texture atlas  
+- item icons atlas
+- basic items to give player on start -> in mod
+- 
 
 Pool
+
 
 + flashlight class
 - sounds for blocks

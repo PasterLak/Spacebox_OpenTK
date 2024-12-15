@@ -58,15 +58,12 @@ namespace Spacebox.Scenes
             GL.Disable(EnableCap.CullFace);
         }
         string characters;
-        public override void Awake()
-        {
-           
 
-            Input.SetCursorState(CursorState.Normal);
-        }
         public override void Start()
         {
-             characters =
+            Input.SetCursorState(CursorState.Normal);
+
+            characters =
                 "A\nBCDEFGHIJKLMNOPQRSTUVWXYZ" + // 26 uppercase
                 "abcdefghijklmnopqrstuvwxyz" + // 26 lowercase Aagtz
                 "0123456789" +                 // 10 digits

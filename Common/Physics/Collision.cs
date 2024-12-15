@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
 
-namespace Spacebox.Common
+namespace Spacebox.Common.Physics
 {
     public abstract class Collision : Node3D
     {
@@ -13,23 +13,24 @@ namespace Spacebox.Common
         private Vector3 _offset = Vector3.Zero;
         public Vector3 Offset
         {
-            get => _offset; 
+            get => _offset;
             set
             {
                 Offset = value;
                 UpdateBounding();
             }
         }
-        public Vector3 CollisionScale { get;  set; } = Vector3.One;
+        public Vector3 CollisionScale { get; set; } = Vector3.One;
 
-        public CollisionManager CollisionManager { get;  set; }
+        public CollisionManager CollisionManager { get; set; }
         public CollisionLayer Layer { get; set; } = CollisionLayer.Default;
 
+        public bool AllowCollisionDebug = true;
         private HashSet<Collision> _currentColliders = new HashSet<Collision>();
 
         private Color4 debugColor = Color4.Gray;
         protected Collision(BoundingVolume boundingVolume, bool isStatic)
-           
+
         {
             BoundingVolume = boundingVolume;
             IsStatic = isStatic;
@@ -41,7 +42,7 @@ namespace Spacebox.Common
 
         public void UpdateBounding()
         {
- 
+
             if (BoundingVolume is BoundingBox box)
             {
                 box.Center = base.Position + Offset;
@@ -53,8 +54,12 @@ namespace Spacebox.Common
             }
         }
 
-        public override Vector3 Position { get { 
-                return base.Position; }
+        public override Vector3 Position
+        {
+            get
+            {
+                return base.Position;
+            }
             set
             {
                 base.Position = value;
@@ -77,12 +82,14 @@ namespace Spacebox.Common
 
         private Color4 colorBeforeContact;
 
-        public virtual void OnCollisionEnter(Collision other) {
+        public virtual void OnCollisionEnter(Collision other)
+        {
             colorBeforeContact = debugColor;
             SetCollisionDebugColor(Color4.Green);
         }
 
-        public virtual void OnCollisionExit(Collision other) {
+        public virtual void OnCollisionExit(Collision other)
+        {
             SetCollisionDebugColor(colorBeforeContact);
         }
 
@@ -110,6 +117,7 @@ namespace Spacebox.Common
         }
         public void DrawDebug()
         {
+            if (!AllowCollisionDebug) return;
             DrawDebug(debugColor);
         }
         public void DrawDebug(Color4 color)
@@ -140,20 +148,20 @@ namespace Spacebox.Common
 
 
 
-        [Flags]
-        public enum CollisionLayer
-        {
-            None = 0,
-            Default = 1 << 0,      // 1
-            Terrain = 1 << 1,      // 2
-            Player = 1 << 2,       // 4
-            Enemy = 1 << 3,        // 8
-            Projectile = 1 << 4,   // 16
-                                   // 
-            All = ~0                // All
-        }
+    [Flags]
+    public enum CollisionLayer
+    {
+        None = 0,
+        Default = 1 << 0,      // 1
+        Terrain = 1 << 1,      // 2
+        Player = 1 << 2,       // 4
+        Enemy = 1 << 3,        // 8
+        Projectile = 1 << 4,   // 16
+                               // 
+        All = ~0                // All
+    }
 
-  
+
 
 
 }

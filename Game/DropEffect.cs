@@ -32,9 +32,6 @@ namespace Spacebox.Game
 
         public Vector3 Velocity { get; set; }
 
-        public DropEffect()
-        {
-        }
 
         public void Initialize(Astronaut player, Vector3 position, Vector3 color, Texture2D texture, Shader shader, Block block)
         {

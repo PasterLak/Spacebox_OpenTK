@@ -2,6 +2,7 @@
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
+using Spacebox.Common.Physics;
 using Spacebox.GUI;
 using Spacebox.Scenes;
 
@@ -63,7 +64,6 @@ namespace Spacebox.Game
             PowerBar = new PowerBar();
             SetInertia();
             SetCameraSway();
-
             SetData();
             CameraRelativeRender = true;
             _hitImage = new HitImage();

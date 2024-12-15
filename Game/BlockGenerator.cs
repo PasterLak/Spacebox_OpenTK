@@ -18,15 +18,15 @@ namespace Spacebox.Game.Generation
         {
             Vector3 center = new Vector3(Size / 2f, Size / 2f, Size / 2f);
             float radius = Size / 2f;
-
+            radius = radius * radius;
             Random random = World.Random;
 
-            for (int x = 0; x < Size; x++)
-                for (int y = 0; y < Size; y++)
-                    for (int z = 0; z < Size; z++)
+            for (byte x = 0; x < Size; x++)
+                for (byte y = 0; y < Size; y++)
+                    for (byte z = 0; z < Size; z++)
                     {
                         Vector3 blockPosition = new Vector3(x + 0.5f, y + 0.5f, z + 0.5f);
-                        float distance = Vector3.Distance(blockPosition, center);
+                        float distance = Vector3.DistanceSquared(blockPosition, center);
 
                         if (distance <= radius)
                         {

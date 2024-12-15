@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using Spacebox.Common.Physics;
 
 namespace Spacebox.Common
 {
@@ -341,7 +342,14 @@ namespace Spacebox.Common
 
             _shader.Use();
 
-            _shader.SetMatrix4("model", Matrix4.Identity);
+            Matrix4 matrix = Matrix4.Identity;
+
+            if (Camera.Main != null && Camera.Main.CameraRelativeRender)
+            {
+                matrix *= Matrix4.CreateTranslation(Vector3.Zero - Camera.Main.Position);
+            }
+
+            _shader.SetMatrix4("model", matrix);
             _shader.SetMatrix4("view", ViewMatrix);
             _shader.SetMatrix4("projection", ProjectionMatrix);
 
