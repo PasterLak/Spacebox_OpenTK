@@ -32,7 +32,7 @@ namespace Spacebox.Game
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
 
           
-            int stride = sizeof(float) * (3 + 2 + 3 + 3);
+            int stride = sizeof(float) * (3 + 2 + 3 + 3 + 1);
             int offset = 0;
 
             // Position
@@ -54,6 +54,10 @@ namespace Spacebox.Game
             GL.VertexAttribPointer(3, 3, VertexAttribPointerType.Float, false, stride, offset);
             GL.EnableVertexAttribArray(3);
 
+            // AO
+            offset += sizeof(float) * 3;
+            GL.VertexAttribPointer(4, 1, VertexAttribPointerType.Float, false, stride, offset);
+            GL.EnableVertexAttribArray(4);
 
             GL.BindVertexArray(0);
         }

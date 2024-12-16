@@ -33,7 +33,6 @@ Pool
 + new icon
 - dependensies between windows manager
 - shooting
-- animation for items
 + drag and drop in inventory
 - inventory refactoring, less static
 - trash item slot

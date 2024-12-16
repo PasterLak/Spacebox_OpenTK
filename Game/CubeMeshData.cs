@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Common;
 
 namespace Spacebox.Game
 {
@@ -14,6 +15,19 @@ namespace Spacebox.Game
 
     public static class CubeMeshData
     {
+        public static Vector3SByte GetNormal(this Face face)
+        {
+            return face switch
+            {
+                Face.Left => new Vector3SByte(-1, 0, 0),
+                Face.Right => new Vector3SByte(1, 0, 0),
+                Face.Bottom => new Vector3SByte(0, -1, 0),
+                Face.Top => new Vector3SByte(0, 1, 0),
+                Face.Back => new Vector3SByte(0, 0, -1),
+                Face.Front => new Vector3SByte(0, 0, 1),
+                _ => Vector3SByte.Zero,
+            };
+        }
         public static Vector2[] GetBasicUVs()
         {
             return new Vector2[]

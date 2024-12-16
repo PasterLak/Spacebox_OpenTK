@@ -234,6 +234,15 @@ namespace Spacebox.Game
 
             if (Debug.IsVisible) return;
 
+            if (Input.IsKeyDown(Keys.O))
+            {
+                if (!Debug.IsVisible)
+                {
+                    _meshGenerator.EnableAO = !_meshGenerator.EnableAO;
+                    GenerateMesh();
+                }
+                    
+            }
 
             if (Input.IsKeyDown(Keys.P))
             {

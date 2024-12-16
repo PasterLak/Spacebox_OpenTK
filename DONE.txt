@@ -26,6 +26,7 @@ version 0.0.9
 - physics move to a own namespace, refactoring
 - auto save last console log
 - version converter
+- sbyte
 
 version 0.0.8
 

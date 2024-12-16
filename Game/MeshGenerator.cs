@@ -1,11 +1,21 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Extensions;
+using Spacebox.Common;
 using System.Diagnostics;
 
 namespace Spacebox.Game.Rendering
 {
     public class MeshGenerator
     {
+        private bool _EnableAO = true;
+        public bool EnableAO
+        {
+            get => _EnableAO;
+            set
+            {
+                _EnableAO = value;
+                //GenerateMesh();
+            }
+        }
         private const byte Size = Chunk.Size;
         private readonly Block[,,] _blocks;
         private readonly bool _measureGenerationTime;
@@ -28,11 +38,11 @@ namespace Spacebox.Game.Rendering
             List<uint> indices = new List<uint>();
             uint index = 0;
 
-            for (byte x = 0; x < Size; x++)
+            for (sbyte x = 0; x < Size; x++)
             {
-                for (byte y = 0; y < Size; y++)
+                for (sbyte y = 0; y < Size; y++)
                 {
-                    for (byte z = 0; z < Size; z++)
+                    for (sbyte z = 0; z < Size; z++)
                     {
                         Block block = _blocks[x, y, z];
                         if (block.IsAir())
@@ -40,10 +50,10 @@ namespace Spacebox.Game.Rendering
 
                         foreach (Face face in Enum.GetValues(typeof(Face)))
                         {
-                            Vector3i normal = face.GetNormal();
-                            int nx = x + normal.X;
-                            int ny = y + normal.Y;
-                            int nz = z + normal.Z;
+                            Vector3SByte normal = face.GetNormal();
+                            sbyte nx = (sbyte)(x + normal.X);
+                            sbyte ny = (sbyte)(y + normal.Y);
+                            sbyte nz = (sbyte)(z + normal.Z);
 
                             if (IsTransparentBlock(nx, ny, nz))
                             {
@@ -74,6 +84,7 @@ namespace Spacebox.Game.Rendering
                                 Vector3 ambient = new Vector3(0.2f, 0.2f, 0.2f);
                                 Vector3 vertexColor = Vector3.Clamp(block.Color * (averageLightColor + ambient), Vector3.Zero, Vector3.One);
                                 //vertexColor = new Vector3(0,0,0);
+                                byte mask = CreateMask(faceVertices);
                                 for (int i = 0; i < faceVertices.Length; i++)
                                 {
                                     var vertex = faceVertices[i];
@@ -88,6 +99,10 @@ namespace Spacebox.Game.Rendering
                                     vertices.Add(normal.X);
                                     vertices.Add(normal.Y);
                                     vertices.Add(normal.Z);
+                                    if(_EnableAO)
+                                        vertices.Add(ComputeAO(new Vector3SByte(x, y, z), vertex, normal, mask));
+                                    else
+                                        vertices.Add(1f);
                                 }
 
                                 uint[] faceIndices = { 0, 1, 2, 2, 3, 0 };
@@ -108,13 +123,131 @@ namespace Spacebox.Game.Rendering
             if (_measureGenerationTime && stopwatch != null)
             {
                 stopwatch.Stop();
-                Debug.WriteLine($"Chunk mesh generation time: {stopwatch.ElapsedMilliseconds} ms");
+                Common.Debug.Success($"Chunk mesh generation time: {stopwatch.ElapsedMilliseconds} ms");
             }
 
             return mesh;
         }
 
-        private bool IsTransparentBlock(int x, int y, int z)
+        private Vector3Byte GetUp(Face face)
+        {
+            return face switch
+            {
+                Face.Front => new Vector3Byte(0, 1, 0),
+                Face.Back => new Vector3Byte(0, 1, 0),
+                Face.Left => new Vector3Byte(0, 1, 0),
+                Face.Right => new Vector3Byte(0, 1, 0),
+                Face.Top => new Vector3Byte(0, 0, 1),
+                Face.Bottom => new Vector3Byte(0, 0, -1),
+                _ => new Vector3Byte(0, 1, 0),
+            };
+        }
+
+        private byte CreateMask(Vector3[] vertex)
+        {
+            byte[] verticesAsByte = new byte[4];
+
+            for (sbyte j = 0; j < vertex.Length; j++)
+            {
+                verticesAsByte[j] = VectorToBitNumber(Vector3SByte.CreateFrom(vertex[j]));
+            }
+
+            return CombineBits(verticesAsByte);
+        }
+
+        private float ComputeAO(Vector3SByte blockPos, Vector3 vertex, Vector3SByte normal, byte mask)
+        {
+            byte neighbours = 0;
+            var sidePos = blockPos + normal;
+
+            Vector3SByte[] neighboursPositions = ApplyMaskToPosition(sidePos, Vector3SByte.CreateFrom(vertex), mask);
+
+            for (sbyte i = 0; i < neighboursPositions.Length; i++)
+            {
+                if (neighboursPositions[i] != sidePos)
+                    if (IsSolid(neighboursPositions[i])) neighbours++;
+            }
+
+            return 1f - (neighbours * (1f / 4f));
+        }
+
+        private static Vector3SByte[] ApplyMaskToPosition(Vector3SByte position, Vector3SByte vertex, byte mask)
+        {
+            Vector3SByte[] result = new Vector3SByte[3];
+
+            for (byte i = 0; i < 3; i++)
+            {
+                Vector3SByte currentPosition = position;
+
+                sbyte maskValue = (sbyte)((mask >> (2 - i)) & 1);
+
+                if (maskValue == 1)
+                {
+                    if (i == 0)
+                    {
+                        currentPosition.X = ApplyShift(currentPosition.X, vertex.X);
+                    }
+                    if (i == 1)
+                    {
+                        currentPosition.Y = ApplyShift(currentPosition.Y, vertex.Y);
+                    }
+                    if (i == 2)
+                    {
+                        currentPosition.Z = ApplyShift(currentPosition.Z, vertex.Z);
+                    }
+                }
+                else
+                {
+                    result[i] = currentPosition;
+                }
+
+                result[i] = currentPosition;
+            }
+
+            return result;
+        }
+        private static sbyte ApplyShift(sbyte componentValue, sbyte shiftValue)
+        {
+            if (shiftValue == 0)
+            {
+                return (sbyte)(componentValue - 1);
+            }
+            else
+            {
+                return (sbyte)(componentValue + shiftValue);
+            }
+        }
+
+        private static byte VectorToBitNumber(Vector3SByte vertex)
+        {
+            byte bitNumber = (byte)((vertex.X << 2) | (vertex.Y << 1) | vertex.Z);
+            return bitNumber;
+        }
+        private static byte CombineBits(byte[] numbers)
+        {
+            byte result = 0;
+
+            for (byte i = 0; i < numbers.Length; i++)
+            {
+                result |= numbers[i];
+            }
+
+            return result;
+        }
+
+
+        private bool IsSolid(Vector3SByte pos)
+        {
+            return IsSolid(pos.X, pos.Y, pos.Z);
+        }
+
+        private bool IsSolid(sbyte x, sbyte y, sbyte z)
+        {
+            if (!IsInRange(x, y, z)) return false;
+            return !_blocks[x, y, z].IsAir();
+        }
+
+        private bool IsTransparentBlock(sbyte x, sbyte y, sbyte z)
         {
             if (x < 0 || x >= Size || y < 0 || y >= Size || z < 0 || z >= Size)
                 return true;
@@ -123,7 +256,7 @@ namespace Spacebox.Game.Rendering
             return block.IsAir() || block.IsTransparent;
         }
 
-        private bool IsInRange(int x, int y, int z)
+        private bool IsInRange(sbyte x, sbyte y, sbyte z)
         {
             return x >= 0 && x < Size && y >= 0 && y < Size && z >= 0 && z < Size;
         }
