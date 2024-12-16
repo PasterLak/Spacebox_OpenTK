@@ -25,7 +25,7 @@ version 0.0.9
 - Awake() was removed
 - physics move to a own namespace, refactoring
 - auto save last console log
-- version converter demo
+- version converter
 
 version 0.0.8
 

@@ -17,8 +17,7 @@ namespace Spacebox.Game.GUI
             Main,
             WorldSelect,
             NewWorld,
-            Options,
-            Delete
+            Options
         }
 
         private MenuState currentState = MenuState.Main;
@@ -41,7 +40,7 @@ namespace Spacebox.Game.GUI
         private bool showVersionConvertWindow = false;
         public GameMenu()
         {
-            LoadWorlds();
+            WorldInfoSaver.LoadWorlds(worlds);
             LoadGameSets();
 
             click1 = new AudioSource(SoundManager.GetClip("UI/click1"));
@@ -57,10 +56,6 @@ namespace Spacebox.Game.GUI
             oldWindowPadding = ImGui.GetStyle().WindowPadding;
 
             ImGui.GetStyle().ItemSpacing = Vector2.Zero;
-            ImGui.GetStyle().WindowPadding = Vector2.Zero;
-
-         
-         
 
             ImGui.PushStyleColor(ImGuiCol.HeaderHovered, new Vector4(1f, 0.75f, 0f, 1.0f));
             ImGui.PushStyleColor(ImGuiCol.HeaderActive, new Vector4(1f, 0.8f, 0f, 1.0f));
@@ -223,9 +218,9 @@ namespace Spacebox.Game.GUI
                
                 ImGui.Text($" Mod: {GetModNameById(selectedWorld.ModId)}");
 
-                bool isOldVersion = VersionConverter.IsVersionOlder(selectedWorld.GameVersion, Application.Version);
+                bool isAnotherVersion = selectedWorld.GameVersion != Application.Version;
 
-                if (isOldVersion)
+                if (isAnotherVersion)
                 {
                     ImGui.TextColored(new Vector4(1, 0, 0, 1), $" Version: {selectedWorld.GameVersion}");
                 }
@@ -233,8 +228,6 @@ namespace Spacebox.Game.GUI
                 {
                     ImGui.Text($" Version: {selectedWorld.GameVersion}");
                 }
-
-                //ImGui.Text($"Last Edited: {selectedWorld.LastEditDate}");
             }
 
             ImGui.EndChild();
@@ -410,7 +403,11 @@ namespace Spacebox.Game.GUI
             CenterButtonWithBackground("Yes, convert", buttonWidth, buttonHeight, () =>
             {
                 click1?.Play();
-                VersionConverter.Convert(selectedWorld);
+                if (VersionConverter.Convert(selectedWorld))
+                {
+                    selectedWorld.LastEditDate = DateTime.Now.ToString();
+                    WorldInfoSaver.Save(selectedWorld);
+                }
                 showVersionConvertWindow = false;
             });
             ImGui.PopStyleColor(1);
@@ -610,34 +607,6 @@ namespace Spacebox.Game.GUI
             ImGui.End();
         }
 
-        private void LoadWorlds()
-        {
-            worlds.Clear();
-
-            string worldsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Worlds");
-
-            if (!Directory.Exists(worldsDirectory))
-            {
-                Directory.CreateDirectory(worldsDirectory);
-            }
-
-            string[] worldFolders = Directory.GetDirectories(worldsDirectory);
-
-            foreach (string worldFolder in worldFolders)
-            {
-                string worldJsonPath = Path.Combine(worldFolder, "world.json");
-                if (File.Exists(worldJsonPath))
-                {
-                    string jsonContent = File.ReadAllText(worldJsonPath);
-                    WorldInfo worldInfo = JsonSerializer.Deserialize<WorldInfo>(jsonContent);
-                    if (worldInfo != null)
-                    {
-                        worlds.Add(worldInfo);
-                    }
-                }
-            }
-        }
-
         private void LoadGameSets()
         {
             gameSets.Clear();
@@ -677,7 +646,8 @@ namespace Spacebox.Game.GUI
                 Seed = newWorldSeed,
                 ModId = gameSets[selectedGameSetIndex].ModId,
                 GameVersion = Application.Version,
-                LastEditDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                LastEditDate = WorldInfo.GetCurrentDate(),
+                FolderName = newWorldName
             };
 
             string worldsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Worlds");
@@ -876,31 +846,6 @@ namespace Spacebox.Game.GUI
         }
 
         
-    }
-
-    public class WorldInfo
-    {
-        public string Name { get; set; }
-        public string Author { get; set; }
-        public string Seed { get; set; }
-        public string ModId { get; set; }
-        public string GameVersion { get; set; }
-        public string LastEditDate { get; set; }
-        public string FolderName { get; set; } = "";
-        /*
-        public static bool operator == (WorldInfo left, WorldInfo right)
-        {
-            return left.Name == right.Name;
-        }
-
-        public static bool operator !=(WorldInfo left, WorldInfo right)
-        {
-            return !(left == right);
-        }*/
-    }
-
-    public class PlayerInfo
-    {
     }
 
     public static class ImGuiExtensions

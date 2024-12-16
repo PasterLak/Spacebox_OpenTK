@@ -12,5 +12,10 @@ namespace Spacebox.Game
             public const string Emissions = "Emissions";
 
         }
+        
+        public static class Menu
+        {
+            public const string WorldsFolder = "Worlds";
+        }
     }
 }
