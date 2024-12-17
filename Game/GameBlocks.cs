@@ -32,11 +32,11 @@ namespace Spacebox.Game
 
         public static AtlasTexture AtlasBlocks;
         public static AtlasTexture AtlasItems;
-      
+
 
         public static void ProcessBlockDataTexture(BlockData blockData)
         {
-            if(AtlasBlocks == null)
+            if (AtlasBlocks == null)
             {
                 Debug.Error("[GameBlocks] AtlasTexture is not created!");
             }
@@ -108,18 +108,18 @@ namespace Spacebox.Game
             byte coordX = uvIndex.X;
             byte coordY = uvIndex.Y;
 
-            item.TextureCoord = new Vector2i(coordX, coordY) ;
+            item.TextureCoord = new Vector2i(coordX, coordY);
 
             CacheIcon(item, coordX, coordY);
 
             GenerateItemModel(coordX, coordY, item.ModelDepth);
 
-            if( item is ConsumableItem )
+            if (item is ConsumableItem)
             {
                 var it = item as ConsumableItem;
-                if(!ItemSound.ContainsKey(it.Id))
+                if (!ItemSound.ContainsKey(it.Id))
                 {
-                    if(Sounds.ContainsKey(it.UseSound))
+                    if (Sounds.ContainsKey(it.UseSound))
                     {
 
                     }
@@ -138,9 +138,9 @@ namespace Spacebox.Game
 
         public static Item GetItemByName(string name)
         {
-            foreach(var item in Item.Values)
+            foreach (var item in Item.Values)
             {
-                if(item.Name.ToLower() == name.ToLower()) return item;
+                if (item.Name.ToLower() == name.ToLower()) return item;
             }
 
             Debug.Error("GetItemByName error: Wrong name - " + name);
@@ -157,19 +157,19 @@ namespace Spacebox.Game
 
         public static Block CreateBlockFromId(short id)
         {
-            if (!Block.ContainsKey(id)) return new Block(new Vector2(0,0));
+            if (!Block.ContainsKey(id)) return new Block(new Vector2(0, 0));
 
-            BlockData  data = Block[id];
-       
+            BlockData data = Block[id];
 
-            if(data.Type.ToLower() == "interactive")
+
+            if (data.Type.ToLower() == "interactive")
             {
                 return new InteractiveBlock(data);
             }
 
             //if (id == 0) block.Type = BlockType.Air;
 
-            return new Block(data); 
+            return new Block(data);
         }
 
         public static bool TryGetItemByBlockID(int blockID, out Item item)
@@ -186,9 +186,9 @@ namespace Spacebox.Game
 
         public static Vector2[] GetBlockUVsById(short id)
         {
-            if (!Block.ContainsKey(id)) 
-                return 
-                    new  Vector2[] 
+            if (!Block.ContainsKey(id))
+                return
+                    new Vector2[]
                     {new Vector2(0f, 0f),
                     new Vector2(1f, 0f),
                     new Vector2(1f, 1f),
@@ -207,11 +207,11 @@ namespace Spacebox.Game
                     new Vector2(1f, 1f),
                     new Vector2(0f, 1f) };
 
-            if(face == Face.Top)
+            if (face == Face.Top)
             {
                 return Block[id].TopUV;
             }
-            else if(face == Face.Bottom)
+            else if (face == Face.Bottom)
             {
                 return Block[id].BottomUV;
             }
@@ -229,13 +229,13 @@ namespace Spacebox.Game
                     new Vector2(1f, 1f),
                     new Vector2(0f, 1f) };
 
-            return Block[id].GetUvsByFaceAndDirection(face,direction);
+            return Block[id].GetUvsByFaceAndDirection(face, direction);
         }
 
         private static void CreateDust(BlockData block)
         {
             Texture2D texture = BlockDestructionTexture.Generate(block.WallsUVIndex);
-           // texture.SaveToPng("af" + DateTime.Now.Millisecond + ".png");
+            // texture.SaveToPng("af" + DateTime.Now.Millisecond + ".png");
             BlockDust.Add(block.Id, texture);
         }
 
@@ -272,11 +272,11 @@ namespace Spacebox.Game
 
         public static Storage CreateCreativeStorage(byte sizeX)   // 32
         {
-            byte sizeY = (byte) (Item.Count / sizeX);
+            byte sizeY = (byte)(Item.Count / sizeX);
 
             byte rest = (byte)(Item.Count % sizeX);
 
-            if(rest > 0)
+            if (rest > 0)
             {
                 sizeY++;
             }
@@ -296,7 +296,7 @@ namespace Spacebox.Game
                 {
                     if (i >= itemsIds.Count) break;
 
-                    if(!itemsIds.Contains(i))
+                    if (!itemsIds.Contains(i))
                     {
                         i++;
                         continue;
@@ -330,12 +330,12 @@ namespace Spacebox.Game
             {
                 texture.Dispose();
             }
-            foreach(var c in ItemSound.Values)
+            foreach (var c in ItemSound.Values)
             {
                 if (c != null)
                 {
                     c.Dispose();
-                    
+
                 }
             }
             foreach (var c in Sounds.Values)

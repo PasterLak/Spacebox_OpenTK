@@ -42,9 +42,9 @@ namespace Spacebox.Game
             {
                 for (int x = 0; x < size; x++)
                 {
-                    if(data[x, y] == 0)
+                    if (data[x, y] == 0)
                     {
-                        if(quad != null)
+                        if (quad != null)
                         {
                             quadList.Add(quad);
                             quad = null;
@@ -52,7 +52,7 @@ namespace Spacebox.Game
                     }
                     else
                     {
-                        if(quad == null)
+                        if (quad == null)
                         {
                             quad = new Quad();
                             quad.X = x;
@@ -62,7 +62,7 @@ namespace Spacebox.Game
                         }
                         else
                         {
-                            if(data[x-1, y] != 0)
+                            if (data[x - 1, y] != 0)
                             {
 
                             }
@@ -86,7 +86,7 @@ namespace Spacebox.Game
         v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,
             });
 
-           
+
             indices.AddRange(new uint[]
             {
         indexOffset, indexOffset + 1, indexOffset + 2,
@@ -143,7 +143,7 @@ namespace Spacebox.Game
                             Vector3 color,
                             Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
         {
-           
+
             Vector3 v3, v2, v1, v4;
 
             v1 = new Vector3(0, 0, 0);
@@ -165,7 +165,7 @@ namespace Spacebox.Game
             v3 += new Vector3(0, 0, depth);
             v4 += new Vector3(0, 0, depth);
 
-            color = new Vector3(1,0,0);
+            color = new Vector3(1, 0, 0);
 
             vertices.AddRange(new float[]
             {
@@ -186,10 +186,10 @@ namespace Spacebox.Game
 
         public static void AddFaceTop(List<float> vertices, List<uint> indices, uint indexOffset,
                             Quad quad, float depth, float modelSize,
-                            Vector3 color, 
+                            Vector3 color,
                             Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
         {
-          
+
             Vector3 v3, v2, v1, v4;
 
             v1 = new Vector3(0, 0, 0);
@@ -230,29 +230,29 @@ namespace Spacebox.Game
 
         public static void AddFaceButton(List<float> vertices, List<uint> indices, uint indexOffset,
                             Quad quad, float depth, float modelSize,
-                            Vector3 color, 
+                            Vector3 color,
                             Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
         {
-           
-            Vector3 v3,  v2,  v1,  v4;
-           
+
+            Vector3 v3, v2, v1, v4;
+
             v1 = new Vector3(0, 0, 0);
-            v2 = new Vector3(0,0, 1);
+            v2 = new Vector3(0, 0, 1);
             v3 = new Vector3(1, 0, 1);
             v4 = new Vector3(1, 0, 0);
 
-          
+
             v1 = new Vector3(quad.X, quad.Y, 0);
             v4 = new Vector3(quad.X, quad.Y, 0);
-            v3 = new Vector3((quad.X + quad.Width), quad.Y , 0);
-            v2 = new Vector3(quad.X + quad.Width, quad.Y , 0);
+            v3 = new Vector3((quad.X + quad.Width), quad.Y, 0);
+            v2 = new Vector3(quad.X + quad.Width, quad.Y, 0);
 
             v1 = v1 * modelSize;
             v2 = v2 * modelSize;
             v3 = v3 * modelSize;
             v4 = v4 * modelSize;
 
-            v4 += new Vector3(0,0,depth);
+            v4 += new Vector3(0, 0, depth);
             v3 += new Vector3(0, 0, depth);
             color = new Vector3(0, -1, 0);
 
@@ -273,7 +273,7 @@ namespace Spacebox.Game
         }
 
 
-   
+
 
         public class Quad
         {
@@ -288,7 +288,7 @@ namespace Spacebox.Game
             public Color4 Color { get; set; }
             public int id = 0;
 
-         
+
             public bool NeedsLeftSide { get; set; }
             public bool NeedsRightSide { get; set; }
             public bool NeedsTopSide { get; set; }
@@ -308,20 +308,20 @@ namespace Spacebox.Game
                         continue;
 
                     Color4 currentColor = pixels[x, y];
-                    if (currentColor.A < 1) 
+                    if (currentColor.A < 1)
                     {
                         processed[x, y] = true;
                         continue;
                     }
 
-                 
+
                     int quadWidth = 1;
                     while (x + quadWidth < width && !processed[x + quadWidth, y] && pixels[x + quadWidth, y].Equals(currentColor))
                     {
                         quadWidth++;
                     }
 
-                  
+
                     int quadHeight = 1;
                     bool done = false;
                     while (y + quadHeight < height)
@@ -339,7 +339,7 @@ namespace Spacebox.Game
                         quadHeight++;
                     }
 
-                  
+
                     for (int dy = 0; dy < quadHeight; dy++)
                     {
                         for (int dx = 0; dx < quadWidth; dx++)
@@ -348,16 +348,16 @@ namespace Spacebox.Game
                         }
                     }
 
-                 
+
                     float u = (float)x / width;
                     float v = (float)y / height;
                     float uWidth = (float)quadWidth / width;
                     float uHeight = (float)quadHeight / height;
 
-                  
+
                     bool needsLeft = false, needsRight = false, needsTop = false, needsBottom = false;
 
-                
+
                     if (x == 0)
                     {
                         needsLeft = true;
@@ -374,7 +374,7 @@ namespace Spacebox.Game
                         }
                     }
 
-                 
+
                     if (x + quadWidth >= width)
                     {
                         needsRight = true;
@@ -391,7 +391,7 @@ namespace Spacebox.Game
                         }
                     }
 
-                
+
                     if (y == 0)
                     {
                         needsTop = true;
@@ -408,7 +408,7 @@ namespace Spacebox.Game
                         }
                     }
 
-                  
+
                     if (y + quadHeight >= height)
                     {
                         needsBottom = true;

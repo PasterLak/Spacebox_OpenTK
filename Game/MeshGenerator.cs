@@ -99,7 +99,7 @@ namespace Spacebox.Game.Rendering
                                     vertices.Add(normal.X);
                                     vertices.Add(normal.Y);
                                     vertices.Add(normal.Z);
-                                    if(_EnableAO)
+                                    if (_EnableAO)
                                         vertices.Add(ComputeAO(new Vector3SByte(x, y, z), vertex, normal, mask));
                                     else
                                         vertices.Add(1f);

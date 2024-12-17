@@ -22,7 +22,7 @@ namespace Spacebox.Game
                 return;
             }
 
-             modPath = modId.ToLower() == defaultModId ? defaultModPath : FindModPath(modsDirectory, modId);
+            modPath = modId.ToLower() == defaultModId ? defaultModPath : FindModPath(modsDirectory, modId);
 
             if (string.IsNullOrEmpty(modPath))
             {
@@ -142,26 +142,26 @@ namespace Spacebox.Game
 
         private static void LoadSounds(string modPath)
         {
-          
+
             var audioPath = Path.Combine(modPath, "Sounds");
 
             if (!Directory.Exists(audioPath)) return;
 
             string[] files = Directory.GetFiles(audioPath);
-        
+
             try
             {
                 foreach (string file in files)
                 {
-                    if(Path.GetExtension(file) != ".wav") continue;
+                    if (Path.GetExtension(file) != ".wav") continue;
 
                     var soundName = Path.GetFileNameWithoutExtension(file);
 
-                   
+
                     if (!GameBlocks.Sounds.ContainsKey(soundName))
                     {
                         GameBlocks.Sounds.Add(soundName, new AudioClip(file));
-                      
+
                     }
                 }
             }
@@ -179,17 +179,17 @@ namespace Spacebox.Game
             try
             {
                 string json = File.ReadAllText(blocksFile);
-          
+
                 List<ModBlockData> blocks = JsonSerializer.Deserialize<List<ModBlockData>>(json);
 
-                
+
 
                 var air = new BlockData("Air", "block", new Vector2Byte(0, 0));
                 air.Mass = 0;
                 air.Sides = "sand";
-             
+
                 GameBlocks.RegisterBlock(air);
-         
+
                 foreach (var block in blocks)
                 {
                     block.Type = block.Type.ToLower();
@@ -208,7 +208,7 @@ namespace Spacebox.Game
                     bool hasLightColor = block.LightColor != Vector3Byte.Zero;
                     var blockColor = hasLightColor ? new Vector3(block.LightColor.X / 255f, block.LightColor.Y / 255f, block.LightColor.Z / 255f) : Vector3.Zero;
 
-                    BlockData blockData = new BlockData(block.Name, block.Type, new Vector2Byte(0,0), block.IsTransparent, blockColor)
+                    BlockData blockData = new BlockData(block.Name, block.Type, new Vector2Byte(0, 0), block.IsTransparent, blockColor)
                     {
                         AllSidesAreSame = sameSides,
                         TopUVIndex = new Vector2Byte(),
@@ -250,13 +250,13 @@ namespace Spacebox.Game
                 foreach (JsonElement itemElement in root.EnumerateArray())
                 {
                     string type = "item";
-                  
+
 
                     if (itemElement.TryGetProperty("Type", out JsonElement typeElement))
                     {
                         type = typeElement.GetString().ToLower();
                     }
-  
+
                     switch (type)
                     {
                         case "weapon":
@@ -298,12 +298,12 @@ namespace Spacebox.Game
             var weaponItem = new WeaponItem(
                 (byte)data.MaxStack,
                 data.Name,
-             
+
                 data.ModelDepth)
             {
                 Damage = data.Damage
             };
-            
+
             GameBlocks.RegisterItem(weaponItem, data.Sprite);
         }
 
@@ -313,7 +313,7 @@ namespace Spacebox.Game
             var drillItem = new DrillItem(
                 (byte)data.MaxStack,
                 data.Name,
-            
+
                 data.ModelDepth)
             {
                 Power = data.Power
@@ -327,10 +327,10 @@ namespace Spacebox.Game
             var consumableItem = new ConsumableItem(
                 (byte)data.MaxStack,
                 data.Name,
-                
+
                 data.ModelDepth)
             {
-                
+
                 HealAmount = data.HealAmount,
                 PowerAmount = data.PowerAmount,
                 UseSound = data.Sound
@@ -344,7 +344,7 @@ namespace Spacebox.Game
             var item = new Item(
                 (byte)data.MaxStack,
                 data.Name,
-              
+
                 data.ModelDepth);
             GameBlocks.RegisterItem(item, data.Sprite);
         }
@@ -410,7 +410,7 @@ namespace Spacebox.Game
 
         private static void ApplySettings(ModSettings settings)
         {
-          
+
         }
 
         private static string GetFilePath(string modPath, string defaultModPath, string fileName)

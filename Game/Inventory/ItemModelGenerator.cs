@@ -49,13 +49,13 @@ namespace Spacebox.Game
                 Vector2 uv4 = new Vector2(quad.U, quad.V + quad.UHeight);
 
 
-               AddFace(vertices, indices, indexOffset, 
-                    topLeft, topRight, bottomRight, bottomLeft,
-                    new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
+                AddFace(vertices, indices, indexOffset,
+                     topLeft, topRight, bottomRight, bottomLeft,
+                     new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
                 indexOffset += 4;
 
 
-                if(quad.NeedsTopSide && !drawOnlyVisibleSides) 
+                if (quad.NeedsTopSide && !drawOnlyVisibleSides)
                 {
                     ItemModelGeneratorHelper.AddFaceButton(vertices, indices, indexOffset,
                         quad, modelDepth, modelSize,
@@ -94,7 +94,7 @@ namespace Spacebox.Game
 
 
             }
-            
+
             if (!drawOnlyVisibleSides)
             {
                 foreach (var quad in quads)
@@ -132,8 +132,8 @@ namespace Spacebox.Game
                     indexOffset += 4;
                 }
             }
-            
-           
+
+
             float[] vertexArray = vertices.ToArray();
             uint[] indexArray = indices.ToArray();
             Mesh mesh = new Mesh(vertexArray, indexArray);
@@ -150,9 +150,9 @@ namespace Spacebox.Game
             Vector2 uvTopRight = new Vector2((quad.X + quad.Width) * pixelUV, (quad.Y + quad.Height) * pixelUV);
             Vector2 uvTop = new Vector2(quad.X * pixelUV, (quad.Y + quad.Height) * pixelUV);
 
-             return new Vector2[] { uvLeft, uvRight, uvTopRight, uvTop };
+            return new Vector2[] { uvLeft, uvRight, uvTopRight, uvTop };
 
-           
+
         }
 
 
