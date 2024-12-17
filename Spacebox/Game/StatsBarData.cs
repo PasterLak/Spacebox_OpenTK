@@ -1,4 +1,4 @@
-﻿using System;
+﻿using OpenTK.Mathematics;
 
 namespace Spacebox.Game
 {
@@ -11,13 +11,14 @@ namespace Spacebox.Game
         public event Action DataChanged;
         public event Action OnEqualZero;
 
-
         public bool IsMaxReached => Count >= MaxCount;
         public bool IsMinReached => Count <= 0;
 
         public void Increment(int amount)
         {
             if (Count >= MaxCount) return;
+
+            amount = MathHelper.Abs(amount);
 
             Count = Math.Min(Count + amount, MaxCount);
             DataChanged?.Invoke();
@@ -26,6 +27,7 @@ namespace Spacebox.Game
         public void Decrement(int amount)
         {
             if (Count <= 0) return;
+            amount = MathHelper.Abs(amount);
 
             Count = Math.Max(Count - amount, 0);
 

@@ -252,7 +252,7 @@ namespace Spacebox.Game.GUI
                    click1.Play();
 
 
-                   if(VersionConverter.IsVersionOld(selectedWorld.GameVersion))
+                   if(VersionConverter.IsVersionOld(selectedWorld.GameVersion, Application.Version))
                    {
                        showVersionConvertWindow = true;
                    }
@@ -403,7 +403,7 @@ namespace Spacebox.Game.GUI
             CenterButtonWithBackground("Yes, convert", buttonWidth, buttonHeight, () =>
             {
                 click1?.Play();
-                if (VersionConverter.Convert(selectedWorld))
+                if (VersionConverter.Convert(selectedWorld, Application.Version))
                 {
                     selectedWorld.LastEditDate = DateTime.Now.ToString();
                     WorldInfoSaver.Save(selectedWorld);

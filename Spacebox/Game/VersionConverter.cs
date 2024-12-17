@@ -16,32 +16,34 @@ namespace Spacebox.Game
             return false;
         }
 
-        public static bool IsVersionOld(string worldVersion)
+        public static bool IsVersionOld(string worldVersion,string appVersion)
         {
-            return IsVersionOlder(worldVersion, Application.Version);
+            return IsVersionOlder(worldVersion, appVersion);
         }
 
 
-        public static bool Convert(WorldInfo worldInfo)
+        public static bool Convert(WorldInfo worldInfo, string appVersion)
         {
+
+            //if (worldInfo.GameVersion == appVersion) return true;
            
             if (worldInfo.GameVersion == "0.0.8" )
             {
                 worldInfo.GameVersion = "0.0.9";
 
-                return ConvertToNextVersion(worldInfo);
+                return ConvertToNextVersion(worldInfo,appVersion);
             }
 
-            Debug.Error($"[VersionConverter] Failed to convert map version {worldInfo.GameVersion} to newer {Application.Version} !");
+            Debug.Error($"[VersionConverter] Failed to convert map version {worldInfo.GameVersion} to newer {appVersion} !");
 
             return false;
         }
 
-        private static bool ConvertToNextVersion(WorldInfo worldInfo)
+        private static bool ConvertToNextVersion(WorldInfo worldInfo, string appVersion)
         {
-            if (worldInfo.GameVersion == Application.Version) return true;
+            if (worldInfo.GameVersion == appVersion) return true;
 
-            return Convert(worldInfo);
+            return Convert(worldInfo,appVersion);
         }
     }
 }
