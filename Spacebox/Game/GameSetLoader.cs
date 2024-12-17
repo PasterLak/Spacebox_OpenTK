@@ -2,6 +2,7 @@
 using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
+using Spacebox.FPS;
 
 namespace Spacebox.Game
 {
@@ -441,6 +442,7 @@ namespace Spacebox.Game
             public int BlockSize { get; set; } = 32;
             public string FolderName { get; set; } = "";
             public List<TextureConfig> Textures { get; set; } = new List<TextureConfig>();
+            public List<DefaultItem> ItemsOnStart { get; set; } = new List<DefaultItem>();
         }
 
         public class Modlighting
@@ -456,6 +458,60 @@ namespace Spacebox.Game
             public string Name { get; set; } = "NoName Texture";
             public string Path { get; set; } = "";
         }
+        
+        public class DefaultItem
+        {
+            public string Name { get; set; } = "unknown";
+            public byte Count { get; set; } = 0;
+           
+        }
+
+        public static void GiveStartItems(Astronaut player, Dictionary<short, Item> items)
+        {
+            if(player == null) return;
+
+            if (ModInfo == null)
+            {
+                Debug.Error("No ModInfo found.");
+                return;
+            }
+
+            if (items == null)
+            {
+                Debug.Error("No Items found.");
+                return;
+            }
+
+            if (items.Count == 0) return;
+            if(ModInfo.ItemsOnStart == null) return;
+            if(ModInfo.ItemsOnStart.Count == 0) return;
+
+            foreach (var itemData in ModInfo.ItemsOnStart)
+            {
+                if(itemData.Count < 1) continue;
+                if(itemData.Name == string.Empty) continue;
+
+                Item item = null;
+
+                foreach (var i in items)
+                {
+                    if (i.Value.Name.ToLower() == itemData.Name.ToLower())
+                    {
+                        item = i.Value;
+                        break;
+                    }
+                }
+
+                if (item != null)
+                {
+                    if (player.Panel.TryAddItem(item, itemData.Count))
+                    {
+                        Debug.Error($"Unknow error by adding a default item on start: {itemData.Name} [{itemData.Count}]");
+                    }
+                }
+            }
+        }
+        
 
 
         private class ModSettings

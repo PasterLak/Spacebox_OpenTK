@@ -86,14 +86,7 @@ namespace Spacebox.Game
                 {
                     Debug.Log("Player save file does not exist.");
 
-                    foreach (var item in GameBlocks.Item)
-                    {
-                        if (item.Value.GetType() == typeof(DrillItem))
-                        {
-                            player.Panel.TryAddItem(item.Value, 1);
-                            break;
-                        }
-                    }
+                    GameSetLoader.GiveStartItems(player, GameBlocks.Item);
 
                     return;
                 }

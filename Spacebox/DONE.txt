@@ -28,6 +28,8 @@ version 0.0.9
 - version converter
 - vector3sbyte
 - AO Effect
+- Unit tests
+- default items on start
 
 version 0.0.8
 

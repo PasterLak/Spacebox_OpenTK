@@ -2,7 +2,6 @@
 using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.GUI;
-using static Spacebox.Common.Utils.Testing;
 
 namespace Spacebox.Game
 {

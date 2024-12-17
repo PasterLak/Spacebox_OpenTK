@@ -1,6 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
 using System.Diagnostics;
+using Debug = Spacebox.Common.Debug;
 
 namespace Spacebox.Game.Rendering
 {
@@ -85,6 +86,18 @@ namespace Spacebox.Game.Rendering
                                 Vector3 vertexColor = Vector3.Clamp(block.Color * (averageLightColor + ambient), Vector3.Zero, Vector3.One);
                                 //vertexColor = new Vector3(0,0,0);
                                 byte mask = CreateMask(faceVertices);
+                                float[] ao = new float[4];
+
+                                if (_EnableAO)
+                                {
+                                    ao[0] = ComputeAO(new Vector3SByte(x, y, z), faceVertices[0], normal, mask);
+                                    ao[1] = ComputeAO(new Vector3SByte(x, y, z), faceVertices[1], normal, mask);
+                                    ao[2] = ComputeAO(new Vector3SByte(x, y, z), faceVertices[2], normal, mask);
+                                    ao[3] = ComputeAO(new Vector3SByte(x, y, z), faceVertices[3], normal, mask);
+
+                                    
+                                }
+                                
                                 for (int i = 0; i < faceVertices.Length; i++)
                                 {
                                     var vertex = faceVertices[i];
@@ -100,12 +113,30 @@ namespace Spacebox.Game.Rendering
                                     vertices.Add(normal.Y);
                                     vertices.Add(normal.Z);
                                     if (_EnableAO)
-                                        vertices.Add(ComputeAO(new Vector3SByte(x, y, z), vertex, normal, mask));
+                                        vertices.Add(ao[i]);
                                     else
                                         vertices.Add(1f);
                                 }
 
-                                uint[] faceIndices = { 0, 1, 2, 2, 3, 0 };
+                                uint[] faceIndices;
+                                
+                                //bool flip = 
+
+                                if (_EnableAO)
+                                {
+                                    if (ao[1] + ao[3] > ao[2] + ao[0])
+                                    {
+                                       // ao[2] = ao[3];
+                                       
+                                        faceIndices = new uint[6]{ 1,2,3,3,0,1};
+                                    }else
+                                    faceIndices = new uint[6]{ 0, 1, 2, 2, 3, 0 };
+                                }
+                                else
+                                {
+                                    faceIndices = new uint[6]{ 0, 1, 2, 2, 3, 0 };
+                                    
+                                }
                                 foreach (var fi in faceIndices)
                                 {
                                     indices.Add(index + fi);
@@ -160,15 +191,49 @@ namespace Spacebox.Game.Rendering
             byte neighbours = 0;
             var sidePos = blockPos + normal;
 
-            Vector3SByte[] neighboursPositions = ApplyMaskToPosition(sidePos, Vector3SByte.CreateFrom(vertex), mask);
+            Vector3SByte[] neighboursPositions = ApplyMaskToPosition(Vector3SByte.Zero, Vector3SByte.CreateFrom(vertex), mask);
 
+            var diagonal = Vector3SByte.Zero;
             for (sbyte i = 0; i < neighboursPositions.Length; i++)
             {
-                if (neighboursPositions[i] != sidePos)
-                    if (IsSolid(neighboursPositions[i])) neighbours++;
+                var newPos = sidePos + neighboursPositions[i];
+                if (newPos != sidePos)
+                    if (IsSolid(newPos)) neighbours++;
+
+                diagonal += neighboursPositions[i];
             }
 
+            if (diagonal != Vector3SByte.Zero)
+            {
+                diagonal += sidePos;
+            
+                if (diagonal != sidePos)
+                    if (IsSolid(diagonal)) neighbours++;
+
+            }
+            
             return 1f - (neighbours * (1f / 4f));
+        }
+
+        private static Vector3SByte ApplyDiagonalPosition(Vector3SByte sidePos, Vector3SByte normal)
+        {
+            if (normal.X != 0)
+            {
+                return sidePos + new Vector3SByte(0, 1, -1);
+            }
+            else if(normal.Y != 0)
+            {
+                return sidePos + new Vector3SByte(1, 0, 1);
+            }
+            else if(normal.Z != 0)
+            {
+                return sidePos + new Vector3SByte(1, 1, 0);
+            }
+            else
+            {
+                Debug.Error("[ApplyDiagonalPosition] normal vector is invalid!");
+                return sidePos + normal;
+            }
         }
 
         private static Vector3SByte[] ApplyMaskToPosition(Vector3SByte position, Vector3SByte vertex, byte mask)
