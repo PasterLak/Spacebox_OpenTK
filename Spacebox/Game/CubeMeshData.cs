@@ -49,6 +49,7 @@ namespace Spacebox.Game
                         new Vector3(1, 0, 1),
                         new Vector3(1, 1, 1),
                         new Vector3(0, 1, 1)
+                
                     };
                 case Face.Back:
                     return new Vector3[]

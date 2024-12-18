@@ -66,6 +66,13 @@ namespace Spacebox.Common
             get { return new Vector3SByte(0, 0, 1); }
         }
 
+        public bool HasNegativeValues()
+        {
+            if (X < 0) return true;
+            if (Y < 0) return true;
+            return Z < 0;
+        }
+
         public static Vector3SByte CreateFrom(Vector3 v)
         {
             return new Vector3SByte((sbyte)v.X, (sbyte)v.Y, (sbyte)v.Z);

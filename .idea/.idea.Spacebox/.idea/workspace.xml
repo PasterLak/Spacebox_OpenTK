@@ -5,14 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f9cc1faa-4ac5-4eb2-9068-249d362465ad" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Spacebox.Tests/Game/AOVoxelsTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Spacebox/Game/AOVoxels.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Spacebox/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Spacebox/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox.sln" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox.sln" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/DONE.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/DONE.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/GameBlocks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/GameBlocks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/GameSetLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/GameSetLoader.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox.Tests/Game/MeshGeneratorTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox.Tests/Game/MeshGeneratorTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Common/Vector3SByte.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Common/Vector3SByte.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Game/CubeMeshData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/CubeMeshData.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spacebox/Game/MeshGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/MeshGenerator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/PlayerSaveLoadManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/PlayerSaveLoadManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/GameSets/Default/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/GameSets/Default/config.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,6 +95,7 @@
       <workItem from="1734441618691" duration="30000" />
       <workItem from="1734441831104" duration="481000" />
       <workItem from="1734442325819" duration="12849000" />
+      <workItem from="1734527647713" duration="7525000" />
     </task>
     <servers />
   </component>

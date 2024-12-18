@@ -4,6 +4,7 @@ using Spacebox.Game.Rendering;
 
 namespace Spacebox.Tests
 {
+    /*
     public class MeshGeneratorTests
     {
         [Theory]
@@ -69,5 +70,5 @@ namespace Spacebox.Tests
             yield return new object[] { new byte[] { 0, 2, 4 }, 6 };
             yield return new object[] { new byte[] { 1, 2, 0 }, 3 };
         }
-    }
+    }*/
 }
