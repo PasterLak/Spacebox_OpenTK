@@ -1,7 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
 using System.Diagnostics;
-using Debug = Spacebox.Common.Debug;
 
 namespace Spacebox.Game.Rendering
 {
@@ -14,7 +13,6 @@ namespace Spacebox.Game.Rendering
             set
             {
                 _EnableAO = value;
-                //GenerateMesh();
             }
         }
         private const byte Size = Chunk.Size;
@@ -78,7 +76,7 @@ namespace Spacebox.Game.Rendering
                                     neighborLightColor = neighborBlock.LightColor;
                                 }
 
-                                float averageLightLevel = (currentLightLevel + neighborLightLevel) / 2f;
+                                float averageLightLevel = (currentLightLevel + neighborLightLevel) * 0.5f;
                                 Vector3 averageLightColor = (currentLightColor * currentLightLevel + neighborLightColor * neighborLightLevel) /
                                                             (currentLightLevel + neighborLightLevel + 0.001f);
 
@@ -120,11 +118,14 @@ namespace Spacebox.Game.Rendering
 
                                 uint[] faceIndices;
                                 
-                                //bool flip = 
+                                bool flip = false;
+
+                                flip = ao[1] + ao[3] > ao[2] + ao[0];
+                               
 
                                 if (_EnableAO)
                                 {
-                                    if (ao[1] + ao[3] > ao[2] + ao[0])
+                                    if (flip)
                                     {
                                        // ao[2] = ao[3];
                                        
@@ -158,20 +159,6 @@ namespace Spacebox.Game.Rendering
             }
 
             return mesh;
-        }
-
-        private Vector3Byte GetUp(Face face)
-        {
-            return face switch
-            {
-                Face.Front => new Vector3Byte(0, 1, 0),
-                Face.Back => new Vector3Byte(0, 1, 0),
-                Face.Left => new Vector3Byte(0, 1, 0),
-                Face.Right => new Vector3Byte(0, 1, 0),
-                Face.Top => new Vector3Byte(0, 0, 1),
-                Face.Bottom => new Vector3Byte(0, 0, -1),
-                _ => new Vector3Byte(0, 1, 0),
-            };
         }
 
         private byte CreateMask(Vector3[] vertex)
@@ -212,28 +199,7 @@ namespace Spacebox.Game.Rendering
 
             }
             
-            return 1f - (neighbours * (1f / 4f));
-        }
-
-        private static Vector3SByte ApplyDiagonalPosition(Vector3SByte sidePos, Vector3SByte normal)
-        {
-            if (normal.X != 0)
-            {
-                return sidePos + new Vector3SByte(0, 1, -1);
-            }
-            else if(normal.Y != 0)
-            {
-                return sidePos + new Vector3SByte(1, 0, 1);
-            }
-            else if(normal.Z != 0)
-            {
-                return sidePos + new Vector3SByte(1, 1, 0);
-            }
-            else
-            {
-                Debug.Error("[ApplyDiagonalPosition] normal vector is invalid!");
-                return sidePos + normal;
-            }
+            return 1f - (neighbours * (1f / 5f));
         }
 
         private static Vector3SByte[] ApplyMaskToPosition(Vector3SByte position, Vector3SByte vertex, byte mask)

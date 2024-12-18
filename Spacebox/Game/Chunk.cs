@@ -23,7 +23,7 @@ namespace Spacebox.Game
         public Vector3 Position { get; private set; }
         public Block[,,] Blocks { get; private set; }
         public bool ShowChunkBounds { get; set; } = true;
-        public bool MeasureGenerationTime { get; set; } = false;
+        public bool MeasureGenerationTime { get; set; } = true;
         public bool IsModified { get; private set; } = false;
         public bool IsGenerated { get; private set; } = false;
 
