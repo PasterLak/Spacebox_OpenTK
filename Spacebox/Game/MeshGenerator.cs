@@ -97,6 +97,7 @@ namespace Spacebox.Game.Rendering
 
                                 bool flip = false;
                                 int vStart = vertexCount / 12;
+                                float[] AO = new float[4];
                                 for (int i = 0; i < 4; i++)
                                 {
                                     var vertex = faceVertices[i];
@@ -114,10 +115,19 @@ namespace Spacebox.Game.Rendering
                                     if (_EnableAO)
                                     {
                                         bool hasDiagonalBlock;
-                                        float n = ComputeAO2(face, Vector3SByte.CreateFrom(vertex),
-                                            new Vector3SByte(x, y, z), normal, out hasDiagonalBlock);
+                                        float n = ComputeAO(face, Vector3SByte.CreateFrom(vertex),
+                                            new Vector3SByte(x, y, z), normal, out hasDiagonalBlock, out var cost);
+                                        AO[i] = cost;
                                         if (hasDiagonalBlock && (i == 0 || i == 2))
+                                        {
+                                            AO[i] += 0.5f;
                                             flip = true;
+                                        }
+                                        else
+                                        {
+                                            AO[i] -= 0.5f;
+                                        }
+                                           
                                         vertices[vertexCount++] = n;
                                     }
                                     else
@@ -126,6 +136,16 @@ namespace Spacebox.Game.Rendering
 
                                 if (_EnableAO)
                                 {
+                                    if (AO[0] + AO[2] > AO[1] + AO[3])
+                                    {
+                                        if(!flip)
+                                        flip = true;
+                                    }
+                                    else
+                                    {
+                                        if(!flip)
+                                        flip = false;
+                                    }
                                     if (flip)
                                     {
                                         indices[indexCount++] = (uint)(vStart + 1);
@@ -177,13 +197,13 @@ namespace Spacebox.Game.Rendering
             return mesh;
         }
 
-        private float ComputeAO2(Face face, Vector3SByte vertex, Vector3SByte blockPos, Vector3SByte normal, out bool hasDiagonalBlock)
+        private float ComputeAO(Face face, Vector3SByte vertex, Vector3SByte blockPos, Vector3SByte normal, out bool hasDiagonalBlock, out float cost)
         {
             byte neighbours = 0;
             var sidePos = new Vector3SByte((sbyte)(blockPos.X + normal.X), (sbyte)(blockPos.Y + normal.Y), (sbyte)(blockPos.Z + normal.Z));
             hasDiagonalBlock = false;
             var neigbordPositions = AOVoxels.GetNeigbordPositions(face, vertex);
-
+            cost = 0;
             sbyte dx = 0, dy = 0, dz = 0;
             for (int i = 0; i < neigbordPositions.Length; i++)
             {
@@ -191,6 +211,7 @@ namespace Spacebox.Game.Rendering
                                               (sbyte)(sidePos.Y + neigbordPositions[i].Y),
                                               (sbyte)(sidePos.Z + neigbordPositions[i].Z));
                 if (IsSolid(newPos.X, newPos.Y, newPos.Z)) neighbours++;
+                cost += 1;
                 dx += neigbordPositions[i].X;
                 dy += neigbordPositions[i].Y;
                 dz += neigbordPositions[i].Z;
@@ -203,8 +224,11 @@ namespace Spacebox.Game.Rendering
                 {
                     neighbours++;
                     hasDiagonalBlock = true;
+                    cost += 0.5f;
                 }
             }
+            
+            if(neighbours == 3) cost += 0.75f;
 
             return 1f - (neighbours * 0.25f);
         }
