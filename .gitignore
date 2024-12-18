@@ -399,3 +399,4 @@ FodyWeavers.xsd
 *.sln.iml
 .DS_Store
 .idea/.idea.Spacebox/.idea/workspace.xml
+.idea/.idea.Spacebox/.idea/
