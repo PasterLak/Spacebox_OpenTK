@@ -2,7 +2,6 @@
 using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
-using Spacebox.FPS;
 
 namespace Spacebox.Game
 {

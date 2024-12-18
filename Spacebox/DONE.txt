@@ -30,6 +30,8 @@ version 0.0.9
 - AO Effect
 - Unit tests
 - default items on start
+- fix emmision in shader
+- fog for light sources at long distances
 
 version 0.0.8
 

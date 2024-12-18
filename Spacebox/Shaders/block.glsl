@@ -10,6 +10,7 @@ layout (location = 4) in float aAO;
 out vec2 TexCoord;
 out vec3 Color;
 out float FogFactor;
+out float FogFactor2;
 out vec3 Normal;
 out vec3 FragPos;
 out float AO;
@@ -20,9 +21,9 @@ uniform mat4 projection;
 uniform vec3 cameraPosition = vec3(0,0,0);
 uniform float fogDensity = 0.08;
 
-float calcFog(vec4 worldPosition)
+float calcFog(vec4 worldPosition, float distanceMultiplicator)
 {
-    float distance = length(worldPosition.xyz - cameraPosition);
+    float distance = length(worldPosition.xyz - cameraPosition) * distanceMultiplicator;
     return exp(-pow(fogDensity*distance,2.0));
 }
 
@@ -34,7 +35,8 @@ void main()
     Color = aColor;
     FragPos = vec3(worldPosition);
     Normal = aNormal * mat3(transpose(inverse(model)));
-    FogFactor = calcFog(worldPosition);
+    FogFactor = calcFog(worldPosition,1);
+    FogFactor2 = calcFog(worldPosition,0.5f);
     AO = aAO;
 }
 
@@ -66,6 +68,7 @@ uniform vec3 ambientColor=vec3(0.2,0.2,0.2);
 in vec2 TexCoord;
 in vec3 Color;
 in float FogFactor;
+in float FogFactor2;
 in vec3 Normal;
 in vec3 FragPos;
 in float AO;
@@ -97,6 +100,11 @@ vec4 applyFog(vec4 texColor)
     return mix(vec4(fogColor,texColor.a),texColor,FogFactor);
 }
 
+vec4 applyFog2(vec4 texColor)
+{
+    return mix(vec4(fogColor,texColor.a),texColor,FogFactor2);
+}
+
 void main()
 {
     vec4 baseTexColor=texture(texture0,TexCoord);
@@ -106,8 +114,8 @@ void main()
     vec3 viewDir=normalize(viewPos-FragPos);
     vec3 ambient=baseTexColor.rgb*(ambientColor+Color);
     vec3 lighting=calcSpotLight(spotLight,norm,FragPos,viewDir,baseTexColor.rgb);
-    vec3 finalColor=(ambient+lighting)*AO;
+    vec3 finalColor=(ambient  *AO+lighting);
     vec4 foggedColor=applyFog(vec4(finalColor,baseTexColor.a));
-    vec3 combinedColor=mix(foggedColor.rgb,atlasTexColor.rgb,atlasTexColor.a);
+    vec3 combinedColor=mix(foggedColor.rgb,applyFog2(vec4(baseTexColor.rgb,1)).rgb,atlasTexColor.a);
     FragColor=vec4(combinedColor,foggedColor.a);
 }

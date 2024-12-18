@@ -122,7 +122,8 @@ namespace Spacebox.Game.GUI
             float windowHeight = windowSize.Y * 0.3f;
             var windowPos = CenterNextWindow2(windowWidth, windowHeight);
 
-            ImGui.Begin("Main Menu", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
+            ImGui.Begin("Main Menu", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse 
+                | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
 
             float buttonWidth = windowWidth * 0.9f;
             float buttonHeight = windowHeight * 0.12f;
@@ -171,7 +172,7 @@ namespace Spacebox.Game.GUI
             float windowHeight = windowSize.Y * 0.4f;
             var windowPos = CenterNextWindow2(windowWidth, windowHeight);
             
-            ImGui.Begin("Select World", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse);
+            ImGui.Begin("Select World", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar);
 
             float horizontalMargin = windowWidth * 0.06f; 
             float verticalSpacing = windowHeight * 0.03f; 
@@ -303,6 +304,16 @@ namespace Spacebox.Game.GUI
                   newWorldSeed = r.Next(int.MinValue, int.MaxValue).ToString();
                   newWorldName = GetNewWorldUniqueName();
                   currentState = MenuState.NewWorld;
+
+                  for (int i = 0; i < gameSets.Count; i++)
+                  {
+                      ModConfig? set = gameSets[i];
+
+                      if(set.ModId.ToLower() == "default")
+                      {
+                          selectedGameSetIndex = i;
+                      }
+                  }
               });
 
             ButtonWithBackground("Back", new Vector2(bottomButtonWidth, bottomButtonHeight),
@@ -434,7 +445,7 @@ namespace Spacebox.Game.GUI
             float windowHeight = windowSize.Y * 0.4f;
             var windowPos = CenterNextWindow2(windowWidth, windowHeight);
 
-            ImGui.Begin("Create New World", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse);
+            ImGui.Begin("Create New World", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar);
 
             float inputWidth = windowWidth * 0.8f;
             float inputHeight = windowHeight * 0.06f;
@@ -588,7 +599,7 @@ namespace Spacebox.Game.GUI
             float windowHeight = windowSize.Y * 0.4f;
             var windowPos = CenterNextWindow2(windowWidth, windowHeight);
 
-            ImGui.Begin("Options", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse);
+            ImGui.Begin("Options", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar);
 
             float buttonWidth = windowWidth * 0.5f;
             float buttonHeight = windowHeight * 0.1f;
@@ -632,6 +643,8 @@ namespace Spacebox.Game.GUI
                     if (gameSetInfo != null)
                     {
                         gameSets.Add(gameSetInfo);
+
+                        
                     }
                 }
             }
