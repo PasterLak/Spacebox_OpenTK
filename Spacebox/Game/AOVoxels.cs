@@ -11,9 +11,9 @@ public struct FaceData
 public class AOVoxels
 {
 
-    private static Dictionary<Face, byte> Masks = new Dictionary<Face, byte>();
+    private static Dictionary<Face, byte> CachedMasks = new Dictionary<Face, byte>();
     
-    private static Dictionary<Face, FaceData> SideBlockPositions = new Dictionary<Face, FaceData>();
+    private static Dictionary<Face, FaceData> CachedSidesToCheck = new Dictionary<Face, FaceData>();
     
     private static bool isPrecalculated = false;
     
@@ -29,14 +29,14 @@ public class AOVoxels
 
     public static Vector3SByte[] GetNeigbordPositions(Face face, Vector3SByte vertex)
     {
-        return SideBlockPositions[face].neigbordPositions[vertex];
+        return CachedSidesToCheck[face].neigbordPositions[vertex];
     }
 
     private static void CalculateMasks()
     {
         foreach (Face face in Enum.GetValues(typeof(Face)))
         {
-            Masks.Add(face,CreateMask(CubeMeshData.GetFaceVertices(face)));
+            CachedMasks.Add(face,CreateMask(CubeMeshData.GetFaceVertices(face)));
         }
     }
 
@@ -53,7 +53,7 @@ public class AOVoxels
             {
                 var ver = Vector3SByte.CreateFrom(v);
 
-                var sidePos = ApplyMaskToPosition(Vector3SByte.Zero, ver, Masks[face], face.GetNormal());
+                var sidePos = ApplyMaskToPosition(Vector3SByte.Zero, ver, CachedMasks[face], face.GetNormal());
 
                 foreach (var g in sidePos)
                 {
@@ -65,7 +65,7 @@ public class AOVoxels
                 faceData.neigbordPositions.Add(ver, sidePos);
             }
             
-            SideBlockPositions.Add(face, faceData);
+            CachedSidesToCheck.Add(face, faceData);
         }
     }
     

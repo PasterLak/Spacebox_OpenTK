@@ -7,148 +7,166 @@ namespace Spacebox.Game.Rendering
     public class MeshGenerator
     {
         private bool _EnableAO = true;
-        public bool EnableAO
-        {
-            get => _EnableAO;
-            set
-            {
-                _EnableAO = value;
-            }
-        }
+        public bool EnableAO { get => _EnableAO; set { _EnableAO = value; } }
+
         private const byte Size = Chunk.Size;
         private readonly Block[,,] _blocks;
         private readonly bool _measureGenerationTime;
+        
+        private static readonly Face[] faces = (Face[])Enum.GetValues(typeof(Face));
+        private static Vector3SByte[] faceNormals;
+
+        private float[] vertices;
+        private uint[] indices;
+        private int vertexCount;
+        private int indexCount;
+        Stopwatch stopwatch = null;
 
         public MeshGenerator(Block[,,] blocks, bool measureGenerationTime = true)
         {
             _blocks = blocks;
             _measureGenerationTime = measureGenerationTime;
-            
+
             AOVoxels.Init();
+            PrecomputeData();
+        }
+
+        private void PrecomputeData()
+        {
+            faceNormals = new Vector3SByte[faces.Length];
+            for (int i = 0; i < faces.Length; i++)
+                faceNormals[i] = faces[i].GetNormal();
         }
 
         public Mesh GenerateMesh()
         {
-            Stopwatch stopwatch = null;
+            
             if (_measureGenerationTime)
             {
                 stopwatch = Stopwatch.StartNew();
             }
 
-            List<float> vertices = new List<float>();
-            List<uint> indices = new List<uint>();
-            uint index = 0;
-            
+            int estimatedVertices = Size * Size * Size * 24;
+            int estimatedIndices = Size * Size * Size * 36;
+            vertices = new float[estimatedVertices];
+            indices = new uint[estimatedIndices];
+            vertexCount = 0;
+            indexCount = 0;
+
             for (sbyte x = 0; x < Size; x++)
             {
                 for (sbyte y = 0; y < Size; y++)
                 {
                     for (sbyte z = 0; z < Size; z++)
                     {
-                        Block block = _blocks[x, y, z];
-                        if (block.IsAir())
-                            continue;
+                        var block = _blocks[x, y, z];
+                        if (block.IsAir()) continue;
 
-                        foreach (Face face in Enum.GetValues(typeof(Face)))
+                        for (int fIndex = 0; fIndex < faces.Length; fIndex++)
                         {
-                            Vector3SByte normal = face.GetNormal();
+                            Face face = faces[fIndex];
+                            Vector3SByte normal = faceNormals[fIndex];
+
                             sbyte nx = (sbyte)(x + normal.X);
                             sbyte ny = (sbyte)(y + normal.Y);
                             sbyte nz = (sbyte)(z + normal.Z);
 
                             if (IsTransparentBlock(nx, ny, nz))
                             {
-                                Vector3[] faceVertices = CubeMeshData.GetFaceVertices(face);
-
-
-                                Vector2[] faceUVs = GameBlocks.GetBlockUVsByIdAndDirection(block.BlockId, face, block.Direction);
-
-                                //Vector3i normald = FaceExtensions.GetNormal(face);
+                                var faceVertices = CubeMeshData.GetFaceVertices(face);
+                                var faceUVs = GameBlocks.GetBlockUVsByIdAndDirection(block.BlockId, face, block.Direction);
 
                                 float currentLightLevel = block.LightLevel / 15f;
                                 Vector3 currentLightColor = block.LightColor;
-
                                 float neighborLightLevel = 0f;
                                 Vector3 neighborLightColor = Vector3.Zero;
 
                                 if (IsInRange(nx, ny, nz))
                                 {
-                                    Block neighborBlock = _blocks[nx, ny, nz];
+                                    var neighborBlock = _blocks[nx, ny, nz];
                                     neighborLightLevel = neighborBlock.LightLevel / 15f;
                                     neighborLightColor = neighborBlock.LightColor;
                                 }
 
                                 float averageLightLevel = (currentLightLevel + neighborLightLevel) * 0.5f;
-                                Vector3 averageLightColor = (currentLightColor * currentLightLevel + neighborLightColor * neighborLightLevel) /
+                                Vector3 averageLightColor = (currentLightColor * currentLightLevel + neighborLightColor * neighborLightLevel) / 
                                                             (currentLightLevel + neighborLightLevel + 0.001f);
 
                                 Vector3 ambient = new Vector3(0.2f, 0.2f, 0.2f);
                                 Vector3 vertexColor = Vector3.Clamp(block.Color * (averageLightColor + ambient), Vector3.Zero, Vector3.One);
 
                                 bool flip = false;
-                                for (int i = 0; i < faceVertices.Length; i++)
+                                int vStart = vertexCount / 12;
+                                for (int i = 0; i < 4; i++)
                                 {
                                     var vertex = faceVertices[i];
-                                    vertices.Add(vertex.X + x);
-                                    vertices.Add(vertex.Y + y);
-                                    vertices.Add(vertex.Z + z);
-                                    vertices.Add(faceUVs[i].X);
-                                    vertices.Add(faceUVs[i].Y);
-                                    vertices.Add(vertexColor.X);
-                                    vertices.Add(vertexColor.Y);
-                                    vertices.Add(vertexColor.Z);
-                                    vertices.Add(normal.X);
-                                    vertices.Add(normal.Y);
-                                    vertices.Add(normal.Z);
+                                    vertices[vertexCount++] = vertex.X + x;
+                                    vertices[vertexCount++] = vertex.Y + y;
+                                    vertices[vertexCount++] = vertex.Z + z;
+                                    vertices[vertexCount++] = faceUVs[i].X;
+                                    vertices[vertexCount++] = faceUVs[i].Y;
+                                    vertices[vertexCount++] = vertexColor.X;
+                                    vertices[vertexCount++] = vertexColor.Y;
+                                    vertices[vertexCount++] = vertexColor.Z;
+                                    vertices[vertexCount++] = normal.X;
+                                    vertices[vertexCount++] = normal.Y;
+                                    vertices[vertexCount++] = normal.Z;
                                     if (_EnableAO)
                                     {
-                                        var n = ComputeAO2(face, Vector3SByte.CreateFrom(vertex),
-                                            new Vector3SByte(x, y, z), normal, out var hasDiagonalBlock);
-
-                                        if (hasDiagonalBlock)
-                                        {
-                                            if (i == 0 || i == 2)
-                                            {
-                                                flip = true;    
-                                            }
-                                        }
-                                        
-                                        vertices.Add(n);
-                                  
+                                        bool hasDiagonalBlock;
+                                        float n = ComputeAO2(face, Vector3SByte.CreateFrom(vertex),
+                                            new Vector3SByte(x, y, z), normal, out hasDiagonalBlock);
+                                        if (hasDiagonalBlock && (i == 0 || i == 2))
+                                            flip = true;
+                                        vertices[vertexCount++] = n;
                                     }
-                                        
                                     else
-                                        vertices.Add(1f);
+                                        vertices[vertexCount++] = 1f;
                                 }
-
-                                uint[] faceIndices;
-
-                                //flip = ao[1] + ao[3] > ao[2] + ao[0];
 
                                 if (_EnableAO)
                                 {
                                     if (flip)
-                                        faceIndices = new uint[6]{ 1,2,3,3,0,1};
+                                    {
+                                        indices[indexCount++] = (uint)(vStart + 1);
+                                        indices[indexCount++] = (uint)(vStart + 2);
+                                        indices[indexCount++] = (uint)(vStart + 3);
+                                        indices[indexCount++] = (uint)(vStart + 3);
+                                        indices[indexCount++] = (uint)(vStart + 0);
+                                        indices[indexCount++] = (uint)(vStart + 1);
+                                    }
                                     else
-                                        faceIndices = new uint[6]{ 0, 1, 2, 2, 3, 0 };
+                                    {
+                                        indices[indexCount++] = (uint)(vStart + 0);
+                                        indices[indexCount++] = (uint)(vStart + 1);
+                                        indices[indexCount++] = (uint)(vStart + 2);
+                                        indices[indexCount++] = (uint)(vStart + 2);
+                                        indices[indexCount++] = (uint)(vStart + 3);
+                                        indices[indexCount++] = (uint)(vStart + 0);
+                                    }
                                 }
                                 else
                                 {
-                                    faceIndices = new uint[6]{ 0, 1, 2, 2, 3, 0 };
+                                    indices[indexCount++] = (uint)(vStart + 0);
+                                    indices[indexCount++] = (uint)(vStart + 1);
+                                    indices[indexCount++] = (uint)(vStart + 2);
+                                    indices[indexCount++] = (uint)(vStart + 2);
+                                    indices[indexCount++] = (uint)(vStart + 3);
+                                    indices[indexCount++] = (uint)(vStart + 0);
                                 }
-                                foreach (var fi in faceIndices)
-                                {
-                                    indices.Add(index + fi);
-                                }
-
-                                index += 4;
                             }
                         }
                     }
                 }
             }
 
-            Mesh mesh = new Mesh(vertices.ToArray(), indices.ToArray());
+            float[] finalVertices = new float[vertexCount];
+            Array.Copy(vertices, 0, finalVertices, 0, vertexCount);
+
+            uint[] finalIndices = new uint[indexCount];
+            Array.Copy(indices, 0, finalIndices, 0, indexCount);
+
+            Mesh mesh = new Mesh(finalVertices, finalIndices);
 
             if (_measureGenerationTime && stopwatch != null)
             {
@@ -159,46 +177,42 @@ namespace Spacebox.Game.Rendering
             return mesh;
         }
 
-        private float ComputeAO2(Face face, Vector3SByte vertex,Vector3SByte blockPos,Vector3SByte normal, out bool hasDiagonalBlock)
+        private float ComputeAO2(Face face, Vector3SByte vertex, Vector3SByte blockPos, Vector3SByte normal, out bool hasDiagonalBlock)
         {
             byte neighbours = 0;
-            var sidePos = blockPos + normal;
+            var sidePos = new Vector3SByte((sbyte)(blockPos.X + normal.X), (sbyte)(blockPos.Y + normal.Y), (sbyte)(blockPos.Z + normal.Z));
             hasDiagonalBlock = false;
             var neigbordPositions = AOVoxels.GetNeigbordPositions(face, vertex);
-            
-            var diagonal = Vector3SByte.Zero;
-            for (sbyte i = 0; i < neigbordPositions.Length; i++)
-            {
-                var newPos = sidePos + neigbordPositions[i];
-                
-                if (IsSolid(newPos)) neighbours++;
 
-                diagonal += neigbordPositions[i];
+            sbyte dx = 0, dy = 0, dz = 0;
+            for (int i = 0; i < neigbordPositions.Length; i++)
+            {
+                var newPos = new Vector3SByte((sbyte)(sidePos.X + neigbordPositions[i].X),
+                                              (sbyte)(sidePos.Y + neigbordPositions[i].Y),
+                                              (sbyte)(sidePos.Z + neigbordPositions[i].Z));
+                if (IsSolid(newPos.X, newPos.Y, newPos.Z)) neighbours++;
+                dx += neigbordPositions[i].X;
+                dy += neigbordPositions[i].Y;
+                dz += neigbordPositions[i].Z;
             }
 
-            if (diagonal != Vector3SByte.Zero)
+            if (dx != 0 || dy != 0 || dz != 0)
             {
-                diagonal += sidePos;
-
-                if (IsSolid(diagonal))
+                var diagonal = new Vector3SByte((sbyte)(sidePos.X + dx), (sbyte)(sidePos.Y + dy), (sbyte)(sidePos.Z + dz));
+                if (IsSolid(diagonal.X, diagonal.Y, diagonal.Z))
                 {
                     neighbours++;
                     hasDiagonalBlock = true;
                 }
-               
             }
-            
-            return 1f - (neighbours * (1f / 4f));
-        }
 
-        private bool IsSolid(Vector3SByte pos)
-        {
-            return IsSolid(pos.X, pos.Y, pos.Z);
+            return 1f - (neighbours * 0.25f);
         }
 
         private bool IsSolid(sbyte x, sbyte y, sbyte z)
         {
-            if (!IsInRange(x, y, z)) return false;
+            if (x < 0 || x >= Size || y < 0 || y >= Size || z < 0 || z >= Size)
+                return false;
             return !_blocks[x, y, z].IsAir();
         }
 
@@ -207,8 +221,8 @@ namespace Spacebox.Game.Rendering
             if (x < 0 || x >= Size || y < 0 || y >= Size || z < 0 || z >= Size)
                 return true;
 
-            Block block = _blocks[x, y, z];
-            return block.IsAir() || block.IsTransparent;
+            var b = _blocks[x, y, z];
+            return b.IsAir() || b.IsTransparent;
         }
 
         private bool IsInRange(sbyte x, sbyte y, sbyte z)
