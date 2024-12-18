@@ -1,16 +1,17 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.Game;
 
 namespace Spacebox.Game
 {
-    public enum Face
+    public enum Face : byte
     {
-        Left,
-        Right,
-        Bottom,
-        Top,
-        Back,
-        Front
+        Left = 0,
+        Right = 1,
+        Bottom = 2,
+        Top = 3,
+        Back = 4,
+        Front = 5
     }
 
     public static class CubeMeshData
@@ -97,3 +98,5 @@ namespace Spacebox.Game
         }
     }
 }
+
+

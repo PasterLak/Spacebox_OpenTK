@@ -61,6 +61,11 @@ namespace Spacebox.Game
             return BlockId == 0;
         }
 
+        public bool IsLight()
+        {
+            return LightLevel > 0;
+        }
+
         public override string ToString()
         {
             var c = RoundVector3(Color);
