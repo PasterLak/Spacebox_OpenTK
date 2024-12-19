@@ -57,7 +57,7 @@ namespace Spacebox.Game
         {
           
             FOV = MathHelper.DegreesToRadians(90);
-          
+            base.Name = Name;
             Layer = CollisionLayer.Player;
             VisualDebug.RemoveCollisionToDraw(this);
             HealthBar = new HealthBar();

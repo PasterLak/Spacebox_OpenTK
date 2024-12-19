@@ -29,7 +29,7 @@ namespace Spacebox.Game
           
 
             block = new SimpleBlock(shader, selectorTexture, Vector3.Zero);
-            block.Transform.Scale = new Vector3(1.05f, 1.05f, 1.05f);
+            block.Scale = new Vector3(1.05f, 1.05f, 1.05f);
             currentTexture = selectorTexture;
             PanelUI.OnSlotChanged += OnSelectedSlotWasChanged;
             //block.ChangeUV(UVAtlas.GetUVs(3,3));
@@ -46,7 +46,7 @@ namespace Spacebox.Game
                 if (!block.IsUsingDefaultUV)
                 {
                     block.Texture = selectorTexture;
-                    block.Transform.Scale = new Vector3(1.05f, 1.05f, 1.05f);
+                    block.Scale = new Vector3(1.05f, 1.05f, 1.05f);
                     block.ResetUV();
                 }
                 
@@ -58,7 +58,7 @@ namespace Spacebox.Game
                 //if (block.IsUsingDefaultUV)   // to do block was changed
                 //{
                     block.Texture = GameBlocks.BlocksTexture;
-                block.Transform.Scale = new Vector3(1,1,1);
+                block.Scale = new Vector3(1,1,1);
                 UpdateUV();
                 // }
 
@@ -83,7 +83,7 @@ namespace Spacebox.Game
 
         public void UpdatePosition(Vector3 position, Direction direction)
         {
-            if(block.Transform.Position == position) return;
+            if(block.Position == position) return;
 
             position += Vector3.One * 0.5f;
 
@@ -100,7 +100,7 @@ namespace Spacebox.Game
             
 
 
-            block.Transform.Position = position;
+            block.Position = position;
         }
 
 

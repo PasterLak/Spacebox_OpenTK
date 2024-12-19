@@ -22,7 +22,7 @@ namespace Spacebox.Common
         
 
            Scale = new Vector3(100, 100, 100);
-
+            Name = "Skybox";
           
 
         }

@@ -66,6 +66,7 @@ namespace Spacebox.Common
             if(CameraRelativeRender)
             {
                 return Matrix4.LookAt(Vector3.Zero, _front, _up);
+                   
             }
             return Matrix4.LookAt(Position, Position + _front, _up);
         }

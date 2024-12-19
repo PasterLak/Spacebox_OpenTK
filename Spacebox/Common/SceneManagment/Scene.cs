@@ -4,6 +4,7 @@ namespace Spacebox.Common.SceneManagment
 {
     public abstract class Scene : Node3D, IDisposable
     {
+        public SceneGraph SceneGraph { get; private set; }
         public CollisionManager CollisionManager { get; private set; }
         public Renderer Renderer { get; private set; }
         public List<IDisposable> Disposables { get; private set; } = new List<IDisposable>();
@@ -18,6 +19,7 @@ namespace Spacebox.Common.SceneManagment
         {
             CollisionManager = new CollisionManager();
             Renderer = new Renderer();
+            SceneGraph = new SceneGraph();
 
             Name = "DefaultName";
             Resizable = false;

@@ -4,7 +4,7 @@ using Spacebox.Game;
 
 namespace Spacebox.Common
 {
-    public class SimpleBlock : IDisposable
+    public class SimpleBlock : Node3D, IDisposable, IDrawable
     {
         private float[] _vertices;
         private uint[] _indices;
@@ -13,19 +13,17 @@ namespace Spacebox.Common
         private int _ebo;
         private Shader _shader;
         public Texture2D Texture;
-        public Node3D Transform { get; private set; }
-
+       
         public bool IsUsingDefaultUV { get; private set; } = true;
 
         private Dictionary<Face, Vector2[]> _uvs = new Dictionary<Face, Vector2[]>();
 
         public SimpleBlock(Shader shader, Texture2D texture, Vector3 position)
         {
-            Transform = new Node3D
-            {
-                Position = position,
-                Scale = Vector3.One
-            };
+
+            Position = position;
+            Scale = Vector3.One;
+            
             _shader = shader;
             Texture = texture;
             Texture.Use(TextureUnit.Texture0);
@@ -182,7 +180,7 @@ namespace Spacebox.Common
             _shader.Use();
 
 
-            _shader.SetMatrix4("model", Transform.GetModelMatrix());
+            _shader.SetMatrix4("model", GetModelMatrix());
             _shader.SetMatrix4("view", camera.GetViewMatrix());
             _shader.SetMatrix4("projection", camera.GetProjectionMatrix());
             _shader.SetInt("texture0", 0);

@@ -68,6 +68,7 @@ namespace Spacebox.Scenes
             { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
 
 
+            TestGraph.Test();
         }
 
         private void SetDustSpawner()

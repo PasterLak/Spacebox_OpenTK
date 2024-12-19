@@ -94,6 +94,16 @@ namespace Spacebox.Common
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
 
+            if(Name == "spacer")
+            {
+                if(Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.KeyPad1))
+                {
+                    Debug.Log(Position.ToString());
+                    Debug.Log(Camera.Main.Position.ToString());
+                }
+                
+            }
+
             Material.Use();
             Material.Shader.SetMatrix4("model", GetModelMatrix());
             Material.Shader.SetMatrix4("view", camera.GetViewMatrix());

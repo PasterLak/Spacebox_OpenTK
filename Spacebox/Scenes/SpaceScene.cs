@@ -11,6 +11,8 @@ using Spacebox.Managers;
 using Spacebox.Game.Commands;
 using Spacebox.UI;
 using Spacebox.Game.GUI;
+using static System.Formats.Asn1.AsnWriter;
+using Spacebox.Common.Physics;
 
 
 namespace Spacebox.Scenes
@@ -49,8 +51,11 @@ namespace Spacebox.Scenes
 
 
         private RadarWindow radarWindow;
-        private Model model;
+        private Model spacer;
         private string worldName;
+
+        private SimpleBlock block1;
+        private SimpleBlock block2;
         public SpaceScene(string[] args) : base(args) // name mod seed modfolder
         {
 
@@ -132,6 +137,8 @@ namespace Spacebox.Scenes
 
             float q = 5;
             player = new Astronaut(new Vector3(q + 3, 0, q));
+            SceneGraph.AddRoot(player);
+
             world = new World(player);
             world.LoadWorldInfo(worldName);
             PlayerSaveLoadManager.LoadPlayer(player, World.Instance.WorldData.WorldFolderPath);
@@ -142,6 +149,7 @@ namespace Spacebox.Scenes
                 new SpaceTexture(512, 512));
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
             skybox.IsAmbientAffected = false;
+            SceneGraph.AddRoot(skybox);
 
             CollisionManager.Add(player);
 
@@ -221,13 +229,28 @@ namespace Spacebox.Scenes
             var tex = TextureManager.GetTexture("Resources/Textures/spacer.png");
             tex.FlipY();
             tex.UpdateTexture(true);
-            model = new Model("Resources/Models/spacer.obj", new Material(ShaderManager.GetShader("Shaders/textured"), tex));
-            model.Position = new Vector3(12, 15, 7);
-            model.Rotation = new Vector3(0, 0, 90);
-
+            spacer = new Model("Resources/Models/spacer.obj", new Material(ShaderManager.GetShader("Shaders/textured"), tex));
+            
+            spacer.Position = new Vector3(12, 15, 7);
+            spacer.Rotation = new Vector3(0, 0, 90);
+            Renderer.AddDrawable(spacer);
+            SceneGraph.AddRoot(spacer);
+            SceneGraph.UpdateTransforms();
             CrusherGUI.Init();
 
+            block1 = new SimpleBlock(ShaderManager.GetShader("colored"), TextureManager.GetTexture("Resources/Textures/slot.png"), new Vector3(0,0,0));
+            block1.Position = new Vector3(-1,-1,0);
+            SceneGraph.AddRoot(block1);
+            Renderer.AddDrawable(block1);
 
+            block2 = new SimpleBlock(ShaderManager.GetShader("colored"), TextureManager.GetTexture("Resources/Textures/slot.png"), new Vector3(0, 0, 0));
+           
+            block1.AddChild(block2);
+            //Renderer.AddDrawable(block1);
+            block2.Position = new Vector3(2, 0, 0);
+            SceneGraph.PrintHierarchy();
+
+            Debug.Log("local" +Node3D.WorldToLocal(new Vector3(0,0,0), block1 ));
         }
 
         public override void Start()
@@ -256,7 +279,10 @@ namespace Spacebox.Scenes
                 {
                     Settings.ShowInterface = !Settings.ShowInterface;
                 }
-
+                if (Input.IsKeyDown(Keys.KeyPad7))
+                {
+                    SceneGraph.PrintHierarchy();
+                }
 
 
 
@@ -294,7 +320,7 @@ namespace Spacebox.Scenes
 
 
 
-            Renderer.RenderAll(player);
+           
 
             GL.Enable(EnableCap.DepthTest);
 
@@ -324,11 +350,16 @@ namespace Spacebox.Scenes
             //itemModel.Draw(itemModelShader);
             //world.Render(blocksShader);
             blockDestructionManager.Render();
-            this.model.Draw(player);
+
+            spacer.Draw(player);
             dustSpawner.Render();
+            block1.Rotate(0,12f * Time.Delta,0);
+            block1.Render(player);
+            block2.Render(player);
+           
 
-
-
+            var b = new BoundingSphere(block2.GetWorldPosition(), 0.7f);
+            VisualDebug.DrawBoundingSphere(b,Color4.AliceBlue);
             blockSelector.Draw(player);
 
 

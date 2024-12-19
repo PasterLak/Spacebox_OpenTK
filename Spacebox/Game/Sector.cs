@@ -104,7 +104,7 @@ namespace Spacebox.Game
             }
 
             simple = new SimpleBlock(sharedShader, sharedTexture, BoundingBox.Center);
-            simple.Transform.Scale = new Vector3(SizeBlocks, SizeBlocks, SizeBlocks);
+            simple.Scale = new Vector3(SizeBlocks, SizeBlocks, SizeBlocks);
             //simple.Transform.Position = simple.Transform.Position;
         }
 

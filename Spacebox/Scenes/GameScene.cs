@@ -198,7 +198,7 @@ namespace Spacebox.Scenes
             tex.UpdateTexture(true);
             Model stone1 = new Model("Resources/Models/spacer.obj", new Material(_lightingShader, tex));
             stone1.Position = new Vector3(8, 1, 3);
-            stone1.Rotation = new Vector3(0,45, 0);
+            stone1.Rotation = new Vector3(0,0, 0);
 
             Model cube = new Model("Resources/Models/cube.obj", new Material(_lightingShader, new Texture2D("Resources/Textures/Game/container2.png", false)));
             cube.Position = new Vector3(8,0,8);

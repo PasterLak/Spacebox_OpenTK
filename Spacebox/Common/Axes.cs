@@ -5,7 +5,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Spacebox.Common;
 
-public class Axes
+public class Axes : Node3D
 {
     private int vertexArray;
     private int vertexBuffer;
@@ -14,9 +14,7 @@ public class Axes
 
     private float[] vertices;
 
-    public Vector3 Position { get; set; }
     public float Length { get; set; }
-    public Vector3 Rotation { get; set; } // degrees
 
     public Axes(Vector3 position, float length)
     {
@@ -96,12 +94,7 @@ public class Axes
        
         _shader.Use();
 
-        Matrix4 model = Matrix4.Identity *
-                        Matrix4.CreateScale(Length) *
-                        Matrix4.CreateRotationX(MathHelper.DegreesToRadians(Rotation.X)) *
-                        Matrix4.CreateRotationY(MathHelper.DegreesToRadians(Rotation.Y)) *
-                        Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(Rotation.Z)) *
-                        Matrix4.CreateTranslation(Position);
+        Matrix4 model = GetModelMatrix();
 
       
         int modelLocation = GL.GetUniformLocation(_shader.Handle, "model");

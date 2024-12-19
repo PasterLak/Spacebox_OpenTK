@@ -11,7 +11,7 @@
 
 // dir P:\C#\Spacebox_OpenTK\*.cs /S /B | find /C ":"
 // Get-ChildItem -Path "P:\C#\Spacebox_OpenTK" -Recurse -Filter *.cs | Get-Content | Measure-Object -Line
-// (008): 192, 19954 (009 early): 197, 20753
+// (008): 192, 19954 (009 early): 197, 20753. AO: 217,23165
 
 // ------------------------------------------------------------------------------------------------------------------------------
 
@@ -32,6 +32,9 @@ version 0.0.9
 - default items on start
 - fix emmision in shader
 - fog for light sources at long distances
+- scene graph
+- rotate child objects, get world pos
+- WorldToLocal, LocalToWorld
 
 version 0.0.8
 
