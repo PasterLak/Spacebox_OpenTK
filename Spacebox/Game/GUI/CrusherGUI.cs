@@ -1,5 +1,7 @@
 ﻿using ImGuiNET;
 using Spacebox.Common;
+using Spacebox.Game.Generation;
+using Spacebox.Game.Player;
 using Spacebox.GUI;
 using Spacebox.UI;
 using System.Numerics;

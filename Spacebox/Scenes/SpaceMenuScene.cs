@@ -5,7 +5,9 @@ using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Common.SceneManagment;
 using Spacebox.Game;
+using Spacebox.Game.Effects;
 using Spacebox.Game.GUI;
+using Spacebox.Game.Player;
 using Spacebox.GUI;
 
 

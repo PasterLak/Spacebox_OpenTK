@@ -2,6 +2,7 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.Game.Generation;
 using Spacebox.UI;
 
 

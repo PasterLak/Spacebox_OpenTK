@@ -7,9 +7,24 @@ namespace Spacebox.Common
         public Guid Id { get; } = Guid.NewGuid();
         public string Name { get; set; } = "Tranform";
 
-        public virtual Vector3 Position { get; set; } = Vector3.Zero;
-        public Vector3 Rotation { get; set; } = Vector3.Zero; // Euler
-        public virtual Vector3 Scale { get; set; } = Vector3.One;
+        public virtual Vector3 Position
+        {
+            get => position;
+            set { position = value; MarkDirty(); }
+        }
+        Vector3 position = Vector3.Zero;
+        public Vector3 Rotation
+        {
+            get => rotation;
+            set { rotation = value; MarkDirty(); }
+        }
+        Vector3 rotation = Vector3.Zero; // Euler
+        public virtual Vector3 Scale
+        {
+            get => scale;
+            set { scale = value; MarkDirty(); }
+        }
+        Vector3 scale = Vector3.One;
 
         public bool Resizable { get; protected set; } = true;
 
@@ -18,6 +33,9 @@ namespace Spacebox.Common
 
         public List<Node3D> Children { get; protected set; } = new List<Node3D>();
         public bool HasChildren => Children.Count > 0;
+
+        private bool dirty = true;
+        private Matrix4 cachedModelMatrix;
 
         public virtual void AddChild(Node3D node)
         {
@@ -28,12 +46,22 @@ namespace Spacebox.Common
             
         }
 
+        private void MarkDirty()
+        {
+            if (!dirty)
+            {
+                dirty = true;
+                for (int i = 0; i < Children.Count; i++)
+                    Children[i].MarkDirty();
+            }
+        }
+
         public void Rotate(float x,float y,float z)
         {
             Rotation += new Vector3(x,y,z);
         }
 
-
+        private bool relative = false;
         public Matrix4 GetModelMatrix()
         {
 
@@ -41,27 +69,29 @@ namespace Spacebox.Common
 
             if (Camera.Main != null && Camera.Main.CameraRelativeRender) relativeToCamera = true;
 
+            if(relative != relativeToCamera)
+            {
+                relative = relativeToCamera;
+                dirty = true;
+            }
+
             var pos = Position;
 
             if(relativeToCamera )
             {
                 if(Parent == null)
                 pos = Position - Camera.Main.Position;
-                else
-                    pos = Position;
 
+                dirty = true;
             }
-
-
-            Matrix4 localTransform = GetModelMatrixPoor(pos); 
 
             if (Parent != null)
             {
-                return localTransform * Parent.GetModelMatrix() ; 
+                return GetModelMatrixPoor(pos) * Parent.GetModelMatrix(); 
             }
             else
             {
-                return localTransform;
+                return GetModelMatrixPoor(pos);
             }
         }
 
@@ -72,6 +102,11 @@ namespace Spacebox.Common
         }
         private Matrix4 GetModelMatrixPoor(Vector3 pos)
         {
+            if(!dirty)
+            {
+                return cachedModelMatrix;
+            }
+
             var translation = Matrix4.CreateTranslation(pos);
             var rotationX = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(Rotation.X));
             var rotationY = Matrix4.CreateRotationY(MathHelper.DegreesToRadians(Rotation.Y));
@@ -79,7 +114,9 @@ namespace Spacebox.Common
             var rotation = rotationZ * rotationY * rotationX;
             var scale = Resizable ? Matrix4.CreateScale(Scale) : Matrix4.Identity;
 
-            return  scale * rotation * translation;
+            dirty = false;
+            cachedModelMatrix = scale * rotation * translation;
+            return cachedModelMatrix;
         }
 
         public Vector3 GetWorldPosition()

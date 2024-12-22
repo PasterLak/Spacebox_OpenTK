@@ -1,4 +1,5 @@
 ﻿using Spacebox.Common;
+using Spacebox.Game.Generation;
 
 namespace Spacebox.Game
 {

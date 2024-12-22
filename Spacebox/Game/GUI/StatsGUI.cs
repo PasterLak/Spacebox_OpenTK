@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using ImGuiNET;
 using Spacebox.Common;
+using Spacebox.Game.Player;
 using Spacebox.GUI;
 
 namespace Spacebox.Game.GUI

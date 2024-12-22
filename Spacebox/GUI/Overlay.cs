@@ -5,6 +5,8 @@ using Spacebox.Common;
 using Spacebox.Common.Audio;
 
 using Spacebox.Game;
+using Spacebox.Game.Generation;
+using Spacebox.Game.Player;
 using NumVector4 = System.Numerics.Vector4;
 using OpenTKVector4 = OpenTK.Mathematics.Vector4;
 

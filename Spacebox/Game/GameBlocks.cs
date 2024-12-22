@@ -1,6 +1,9 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
+using Spacebox.Game.Effects;
+using Spacebox.Game.Generation;
+using Spacebox.Game.Resources;
 using Spacebox.GUI;
 
 namespace Spacebox.Game

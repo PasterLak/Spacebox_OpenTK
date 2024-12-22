@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using Spacebox.Common;
-using Spacebox.Game;
 using Spacebox.Game.GUI;
+using Spacebox.Game.Player;
 using Spacebox.GUI;
 
 namespace Spacebox.GUI

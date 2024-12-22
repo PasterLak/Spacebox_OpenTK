@@ -2,6 +2,7 @@
 
 using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.Game.Resources;
 using static Spacebox.Game.ItemModelGeneratorHelper;
 
 namespace Spacebox.Game

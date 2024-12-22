@@ -1,6 +1,6 @@
-using Spacebox.Game;
 using Spacebox.Common;
 using System.Reflection;
+using Spacebox.Game.Generation;
 
 namespace Spacebox.Tests
 {

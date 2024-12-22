@@ -7,12 +7,15 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.GUI;
 using Spacebox.Game;
 using Spacebox.Common.Audio;
-using Spacebox.Managers;
 using Spacebox.Game.Commands;
 using Spacebox.UI;
 using Spacebox.Game.GUI;
 using static System.Formats.Asn1.AsnWriter;
 using Spacebox.Common.Physics;
+using Spacebox.Game.Generation;
+using Spacebox.Game.Player;
+using Spacebox.Game.Effects;
+using Spacebox.Game.Resources;
 
 
 namespace Spacebox.Scenes
@@ -250,7 +253,6 @@ namespace Spacebox.Scenes
             block2.Position = new Vector3(2, 0, 0);
             SceneGraph.PrintHierarchy();
 
-            Debug.Log("local" +Node3D.WorldToLocal(new Vector3(0,0,0), block1 ));
         }
 
         public override void Start()

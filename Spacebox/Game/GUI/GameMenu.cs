@@ -5,7 +5,7 @@ using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Common.SceneManagment;
 using Spacebox.Scenes;
-using static Spacebox.Game.GameSetLoader;
+using static Spacebox.Game.Resources.GameSetLoader;
 
 namespace Spacebox.Game.GUI
 {

@@ -1,8 +1,8 @@
 ﻿using Spacebox.Game.GUI;
-using Spacebox.Game;
 using System.Numerics;
 using Spacebox.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Spacebox.Game.Player;
 
 
 namespace Spacebox.GUI
