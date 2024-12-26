@@ -30,6 +30,15 @@ namespace Spacebox.Common
         private static int _onGUiframeCount = 0;
         private static double _averageOnGUITime = 0.0;
 
+        private static int _tickCount = 0;
+        private static float _tickElapsedTime = 0.0f;
+        private static float _targetTPS = 20.0f; 
+        private static float _tickInterval = 1.0f / 20.0f;
+
+        private static float _tickAccumulatedTime = 0.0f;
+        private static float _currentTPS;
+
+        public static int TPS => (int)_currentTPS;
         public static int FPS => (int)_fps;
         public static double RenderTime => _renderTime;
         public static double AverageRenderTime => _averageRenderTime;
@@ -45,6 +54,21 @@ namespace Spacebox.Common
         public static byte OnGUITimePercent = 0;
 
         public static bool EnableProfiling { get; set; } = true;
+
+        public static float TargetTPS
+        {
+            get => _targetTPS;
+            set
+            {
+                if (value > 0)
+                {
+                    _targetTPS = value;
+                    _tickInterval = 1.0f / _targetTPS;
+                }
+            }
+        }
+
+        public static event Action OnTick;
 
         public static void Update(FrameEventArgs frame)
         {
@@ -145,6 +169,28 @@ namespace Spacebox.Common
                 }
 
                 CalculatePercent();
+            }
+        }
+
+        public static void HandleTicks()
+        {
+            _tickAccumulatedTime += Delta;
+
+            while (_tickAccumulatedTime > _tickInterval)
+            {
+                OnTick?.Invoke();
+                _tickAccumulatedTime -= _tickInterval;
+                _totalTicks++;
+                _tickCount++;
+                _tickElapsedTime += _tickInterval;
+
+            }
+
+            if (_tickElapsedTime > 1.0)
+            {
+                _currentTPS = _tickCount / _tickElapsedTime;
+                _tickCount = 0;
+                _tickElapsedTime = 0.0f;
             }
         }
     }

@@ -1,8 +1,4 @@
-﻿
-using DryIoc.ImTools;
-using ImGuiNET;
-using Spacebox.FPS;
-using System;
+﻿using ImGuiNET;
 
 namespace Spacebox.Common.GUI
 {
@@ -19,6 +15,7 @@ namespace Spacebox.Common.GUI
         public override void OnGUIText()
         {
             float fps = Time.FPS;
+            float tps = Time.TPS;
             NumVector4 fpsColor;
 
             if (fps < 20f)
@@ -38,7 +35,10 @@ namespace Spacebox.Common.GUI
                 fpsColor = Green;
             }
 
-            ImGui.TextColored(fpsColor, $"FPS: {fps}");
+            string t = tps > 0 ? $", TPS: {tps}" : $"";
+
+            ImGui.TextColored(fpsColor, $"FPS: {fps}" + t);
+            
         }
     }
 }

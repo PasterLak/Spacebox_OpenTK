@@ -271,6 +271,7 @@ namespace Spacebox.Scenes
         float x;
         public override void Update()
         {
+            Time.HandleTicks();
             player.Update();
             blockDestructionManager.Update();
             dustSpawner.Update();

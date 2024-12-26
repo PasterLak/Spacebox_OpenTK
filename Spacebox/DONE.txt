@@ -38,6 +38,10 @@ version 0.0.9
 - benchmarks
 - better project structure
 - better project xml file
+- DispoalManager for multi threading
+- better Overlay with Elements
+- ioc container
+- TPS
 
 version 0.0.8
 

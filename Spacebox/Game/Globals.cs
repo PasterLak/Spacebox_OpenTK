@@ -1,5 +1,4 @@
-﻿
-namespace Spacebox.Game
+﻿namespace Spacebox.Game
 {
     public static class Globals
     {
