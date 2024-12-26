@@ -88,6 +88,7 @@ namespace Spacebox.Common
                 _renderTime = _renderStopwatch.Elapsed.TotalMilliseconds;
                 _totalRenderTime += _renderTime;
                 _renderFrameCount++;
+
                 if (_renderFrameCount >= 100)
                 {
                     _averageRenderTime = _totalRenderTime / _renderFrameCount;
@@ -111,6 +112,7 @@ namespace Spacebox.Common
                 _updateTime = _updateStopwatch.Elapsed.TotalMilliseconds;
                 _totalUpdateTime += _updateTime;
                 _updateFrameCount++;
+
                 if (_updateFrameCount >= 100)
                 {
                     _averageUpdateTime = _totalUpdateTime / _updateFrameCount;
@@ -134,6 +136,7 @@ namespace Spacebox.Common
                 _onGUITime = _onGUIStopwatch.Elapsed.TotalMilliseconds;
                 _totalOnGUITime += _onGUITime;
                 _onGUiframeCount++;
+
                 if (_onGUiframeCount >= 100)
                 {
                     _averageOnGUITime = _totalOnGUITime / _onGUiframeCount;

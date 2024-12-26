@@ -15,7 +15,7 @@ namespace Spacebox.Game.Generation
         Forward = 5
     }
 
-    // bit packing: id=16, dir=3, mass=8, health=8, trans=1
+    // bit packing: id=12 from 16, dir=3, mass=8, health=8, trans=1
     public class Block
     {
         public short BlockId { get; set; } = 0;
@@ -32,6 +32,11 @@ namespace Spacebox.Game.Generation
 
         public const float Diagonal = 1.5f;
         public const float DiagonalSquared = Diagonal * Diagonal;
+
+        public Block()
+        {
+
+        }
         public Block(Vector2 textureCoords, Vector3? color = null, float lightLevel = 0f, Vector3? lightColor = null)
         {
 

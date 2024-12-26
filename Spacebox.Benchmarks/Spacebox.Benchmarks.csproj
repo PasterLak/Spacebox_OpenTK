@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
+    <PackageReference Include="DryIoc.dll" Version="5.4.3" />
   </ItemGroup>
 
   <ItemGroup>

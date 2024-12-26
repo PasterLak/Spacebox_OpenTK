@@ -1,13 +1,9 @@
-﻿// DropEffectManager.cs
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
-using Spacebox.Scenes;
-using System;
-using System.Collections.Generic;
 
 namespace Spacebox.Game.Effects
 {

@@ -35,6 +35,9 @@ version 0.0.9
 - scene graph
 - rotate child objects, get world pos
 - WorldToLocal, LocalToWorld
+- benchmarks
+- better project structure
+- better project xml file
 
 version 0.0.8
 

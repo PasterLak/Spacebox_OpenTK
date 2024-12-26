@@ -4,25 +4,26 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Game;
 using Spacebox.Game.Player;
+using Spacebox.UI;
 
-namespace Spacebox.UI
+namespace Spacebox.Game.GUI
 {
     public static class InventoryUI
     {
         private static float SlotSize = 64.0f;
-        private static IntPtr SlotTexture = IntPtr.Zero;
-        private static IntPtr ItemTexture = IntPtr.Zero;
+        private static nint SlotTexture = nint.Zero;
+        private static nint ItemTexture = nint.Zero;
 
         public static bool IsVisible { get; set; } = false;
 
         public static Astronaut Player;
 
-        public static void Initialize(IntPtr textureId)
+        public static void Initialize(nint textureId)
         {
             SlotTexture = textureId;
 
             ItemTexture = new Texture2D("Resources/Textures/item.png", true, false).Handle;
-            InventoryUIHelper.SetDefaultIcon(textureId, IntPtr.Zero);
+            InventoryUIHelper.SetDefaultIcon(textureId, nint.Zero);
         }
         private static void HandleInput()
         {
@@ -52,19 +53,19 @@ namespace Spacebox.UI
 
             if (storage == null) return;
 
-            
+
             ImGuiIOPtr io = ImGui.GetIO();
 
             var style = ImGui.GetStyle();
 
-          
+
             float titleBarHeight = ImGui.GetFontSize() + style.FramePadding.Y * 2;
 
-      
+
 
             SlotSize = Math.Clamp(io.DisplaySize.X * 0.04f, 32.0f, 128.0f);
-            float windowWidth = (storage.SizeX * SlotSize ) + titleBarHeight;
-            float windowHeight = (storage.SizeY * SlotSize ) + titleBarHeight + titleBarHeight;
+            float windowWidth = storage.SizeX * SlotSize + titleBarHeight;
+            float windowHeight = storage.SizeY * SlotSize + titleBarHeight + titleBarHeight;
             Vector2 displaySize = io.DisplaySize;
             Vector2 windowPos = new Vector2(
                 (displaySize.X - windowWidth) / 2,
@@ -75,7 +76,7 @@ namespace Spacebox.UI
             ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoResize |
                                            ImGuiWindowFlags.NoCollapse |
                                            //ImGuiWindowFlags.NoMove |
-                                           
+
                                            ImGuiWindowFlags.NoScrollbar |
                                            ImGuiWindowFlags.NoScrollWithMouse;
 
@@ -101,8 +102,8 @@ namespace Spacebox.UI
 
         private static void OnSlotClicked(ItemSlot slot)
         {
-            
-          
+
+
             if (slot.HasItem)
             {
                 if (Input.IsKey(Keys.LeftShift))

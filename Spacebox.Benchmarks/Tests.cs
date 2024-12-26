@@ -6,9 +6,9 @@ using BenchmarkDotNet.Running;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
 
-namespace Spacebox.Tests
+namespace Spacebox.Benchmarks
 {
-    [ShortRunJob]
+    //[ShortRunJob]
     //[SimpleJob(iterationCount: 100, warmupCount: 10)]
     public class MyConfig : ManualConfig
     {
@@ -23,7 +23,7 @@ namespace Spacebox.Tests
     }
 
     //[Config(typeof(MyConfig))]
-    //[MemoryDiagnoser]
+    [MemoryDiagnoser]
     public class Tests
     {
 
@@ -40,7 +40,7 @@ namespace Spacebox.Tests
         public void OldImplementation()
         {
             
-                var direction = Block.GetDirectionFromNormalOld(testNormal);
+                var direction = Spacebox.Game.Generation.Block.GetDirectionFromNormalOld(testNormal);
             
         }
 
@@ -48,18 +48,11 @@ namespace Spacebox.Tests
         public void NewImplementation()
         {
         
-                var direction = Block.GetDirectionFromNormal(testNormal);
+                var direction = Spacebox.Game.Generation.Block.GetDirectionFromNormal(testNormal);
             
         }
 
     }
 
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            Console.WriteLine("Tests...");
-            var summary = BenchmarkRunner.Run<Tests>();
-        }
-    }
+    
 }

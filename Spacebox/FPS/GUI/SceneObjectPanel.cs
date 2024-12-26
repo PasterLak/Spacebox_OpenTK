@@ -1,11 +1,10 @@
-﻿
-using ImGuiNET;
+﻿using ImGuiNET;
 using Spacebox.Common;
 using Spacebox.Common.Physics;
 using Spacebox.Extensions;
 using System.Numerics;
 
-namespace Spacebox.UI
+namespace Spacebox.FPS.GUI
 {
     public class SceneObjectPanel
     {
@@ -196,20 +195,20 @@ namespace Spacebox.UI
                     ImGui.Separator();
 
                     Collision col = transform as Collision;
-                    
-                    if(col != null)
+
+                    if (col != null)
                     {
                         var c = col.IsStatic;
                         var t = col.IsTrigger;
                         ImGui.Text("Collision   ");
                         ImGui.Separator();
                         ImGui.Text("IsStatic   ");
-                      
+
                         ImGui.SameLine();
                         ImGui.PushItemWidth(inputWidth);
-                        if (ImGui.Checkbox($"##check{transform.Id}",ref c))
+                        if (ImGui.Checkbox($"##check{transform.Id}", ref c))
                         {
-                           
+
                         }
                         ImGui.Text("IsTrigger   ");
 
@@ -224,13 +223,13 @@ namespace Spacebox.UI
 
                     Model model = transform as Model;
 
-                    if(model != null)
+                    if (model != null)
                     {
                         Vector4 color = model.Material.Color.ToSystemVector4();
                         ImGui.Text("Model   ");
                         ImGui.Separator();
                         ImGui.Text("Material  Color ");
-                        ImGui.PushItemWidth(inputWidth*1.5f);
+                        ImGui.PushItemWidth(inputWidth * 1.5f);
                         if (ImGui.ColorPicker4($"##color{transform.Id}", ref color))
                         {
                             model.Material.Color = color.ToOpenTKVector4();

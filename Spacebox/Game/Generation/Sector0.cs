@@ -48,12 +48,13 @@ namespace Spacebox.Game.Generation
             {
 
                 Chunks.Add(loadedChunk);
-
+                loadedChunk.GenerateMesh();
             }
             else
             {
 
                 Chunk newChunk = new Chunk(chunkPosition);
+                newChunk.GenerateMesh();
                 Chunks.Add(newChunk);
             }
         }

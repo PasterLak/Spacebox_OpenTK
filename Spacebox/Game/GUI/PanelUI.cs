@@ -1,5 +1,4 @@
-﻿
-using System.Numerics;
+﻿using System.Numerics;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
@@ -7,18 +6,18 @@ using Spacebox.Common.Audio;
 using Spacebox.Extensions;
 using Spacebox.Game;
 using Spacebox.Game.Generation;
-using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
+using Spacebox.UI;
 
 
-namespace Spacebox.UI
+namespace Spacebox.Game.GUI
 {
     public static class PanelUI
     {
         private static float SlotSize = 64.0f;
-        private static IntPtr SlotTexture = IntPtr.Zero;
-       // private static IntPtr ItemTexture = IntPtr.Zero;
-        private static IntPtr SelectedTexture = IntPtr.Zero;
+        private static nint SlotTexture = nint.Zero;
+        // private static IntPtr ItemTexture = IntPtr.Zero;
+        private static nint SelectedTexture = nint.Zero;
         public static bool IsVisible { get; set; } = true;
 
         public static Storage Storage;
@@ -34,7 +33,7 @@ namespace Spacebox.UI
             set
             {
                 _selectedSlotId = value;
-               
+
             }
         }
 
@@ -46,7 +45,7 @@ namespace Spacebox.UI
         private static bool wasPlayerOnes = false;
 
         private static Astronaut Player;
-        public static void Initialize(Astronaut player, IntPtr slotTexture, IntPtr selectedTexture )
+        public static void Initialize(Astronaut player, nint slotTexture, nint selectedTexture)
         {
             Player = player;
             Storage = Player.Panel;
@@ -59,23 +58,20 @@ namespace Spacebox.UI
             SetSelectedSlot(0);
 
             Storage.OnDataWasChanged += OnStorageDataWasChanged;
-
-            
         }
 
         public static OpenTK.Mathematics.Vector2[] GetSelectedBlockUV(Face face, Direction direction)
         {
-            
-                var blockID = (SelectedSlot.Item as BlockItem).BlockId;
 
+            var blockID = (SelectedSlot.Item as BlockItem).BlockId;
 
             return GameBlocks.GetBlockUVsByIdAndDirection(blockID, face, direction);
-           
+
         }
 
         private static void OnStorageDataWasChanged(Storage storage)
         {
-           
+
             SelectSlot(SelectedSlotId);
         }
 
@@ -95,10 +91,9 @@ namespace Spacebox.UI
         {
             if (ItemModel == null) return;
 
-             ItemModel.Draw(itemModelShader);
+            ItemModel.Draw(itemModelShader);
         }
 
-    
         public static void SetItemColor(Vector3 color)
         {
             if (ItemModel == null) return;
@@ -118,7 +113,6 @@ namespace Spacebox.UI
             SelectedSlot.TakeOne();
             return true;
         }
-
 
         private static void ShowItemModel()
         {
@@ -146,8 +140,6 @@ namespace Spacebox.UI
             {
                 SelectedSlotId++;
 
-
-
                 if (SelectedSlotId > (short)(Storage.SizeY - 1))
                 {
                     SelectedSlotId = 0;
@@ -168,16 +160,16 @@ namespace Spacebox.UI
             }
             if (Input.IsMouseButtonDown(MouseButton.Right))
             {
-                if(IsHoldingConsumable())
+                if (IsHoldingConsumable())
                 {
                     Player.ApplyConsumable((ConsumableItem)SelectedSlot.Item);
                     SelectedSlot.DropOne();
-                    
+
                 }
             }
 
 
-                if (Input.IsKeyDown(Keys.G))
+            if (Input.IsKeyDown(Keys.G))
             {
                 if (SelectedSlot != null)
                 {
@@ -187,8 +179,8 @@ namespace Spacebox.UI
 
             if (Input.IsKeyDown(Keys.D0))
             {
-                SetSelectedSlot((short)(9));
-               
+                SetSelectedSlot(9);
+
             }
 
             for (int i = 0; i <= 9; i++)
@@ -238,7 +230,7 @@ namespace Spacebox.UI
             if (Storage != null)
             {
 
-                SelectedSlot = Storage.GetSlot(0,slot);
+                SelectedSlot = Storage.GetSlot(0, slot);
                 ShowItemModel();
                 HideItemModel();
 
@@ -248,8 +240,8 @@ namespace Spacebox.UI
                 }
 
                 OnSlotChanged?.Invoke(slot);
-              
-                
+
+
             }
         }
 
@@ -265,8 +257,8 @@ namespace Spacebox.UI
 
             // Swap SizeX and SizeY for window dimensions
             SlotSize = Math.Clamp(io.DisplaySize.X * 0.04f, 32.0f, 128.0f);
-            float windowWidth = (Storage.SizeY * SlotSize);
-            float windowHeight = (Storage.SizeX * SlotSize) + style.WindowTitleAlign.Y;
+            float windowWidth = Storage.SizeY * SlotSize;
+            float windowHeight = Storage.SizeX * SlotSize + style.WindowTitleAlign.Y;
             Vector2 displaySize = io.DisplaySize;
             Vector2 windowPos = new Vector2(
                 (displaySize.X - windowWidth) / 2,
@@ -288,11 +280,11 @@ namespace Spacebox.UI
             ImGui.PushStyleColor(ImGuiCol.TitleBgActive, new Vector4(0.5f, 0.5f, 0.5f, 1f));
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
 
-            
+
 
             ImGui.Begin("Panel", windowFlags);
 
-            
+
             if (ImGui.BeginTable("PanelTable", Storage.SizeY, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit))
             {
                 //GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), io.DisplaySize.Y);
@@ -311,20 +303,20 @@ namespace Spacebox.UI
                         ImGui.TableSetColumnIndex(y);
 
                         // Access slot with swapped indices
-                        ItemSlot slot = Storage.GetSlot(x,y);
+                        ItemSlot slot = Storage.GetSlot(x, y);
                         if (slot == null)
                         {
                             continue;
                         }
                         string id = $"slotPanel_{x}_{y}";
-                        IntPtr slotTextureId = SlotTexture;
+                        nint slotTextureId = SlotTexture;
 
                         bool isSelected = true && x == 0 && y == SelectedSlotId;
                         InventoryUIHelper.DrawSlot(slot, id, OnSlotClicked, isSelected);
 
                         ImGui.PopStyleColor(3);
                         ImGui.PopStyleVar(3);
-                        
+
                         //ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(0.15f, 0.15f, 0.15f, 1.0f));
 
                         InventoryUIHelper.ShowTooltip(slot);
@@ -341,11 +333,11 @@ namespace Spacebox.UI
 
             if (SelectedSlot != null)
             {
-                if(SelectedSlot.HasItem && _time > 0)
+                if (SelectedSlot.HasItem && _time > 0)
                 {
                     DrawItemName(SelectedSlot.Item.Name);
                 }
-                
+
             }
         }
 
@@ -374,7 +366,7 @@ namespace Spacebox.UI
             ImGui.PushStyleColor(ImGuiCol.Text, colorWhite);
             ImGui.TextUnformatted(name);
 
-            
+
             ImGui.PopStyleColor();
 
             ImGui.End();
@@ -389,7 +381,7 @@ namespace Spacebox.UI
             {
                 Debug.Log("left click");
             }
-                if (slot.HasItem)
+            if (slot.HasItem)
             {
                 clickedSlot = slot;
 
@@ -397,7 +389,7 @@ namespace Spacebox.UI
                 {
 
                     slot.MoveItemToConnectedStorage();
-                    
+
                 }
 
                 if (Input.IsKey(Keys.LeftAlt))

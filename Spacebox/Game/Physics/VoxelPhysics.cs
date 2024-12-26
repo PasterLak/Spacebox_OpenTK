@@ -7,7 +7,11 @@ namespace Spacebox.Game.Physics
 {
     public class VoxelPhysics
     {
-        public static bool IsColliding(BoundingVolume volume,Block[,,] Blocks, Vector3 Position)
+        public static bool IsColliding(BoundingVolume volume, Chunk chunk, Vector3 Position)
+        {
+            return IsColliding(volume, chunk.Blocks, Position);
+        }
+        public static bool IsColliding(BoundingVolume volume, Block[,,] Blocks, Vector3 Position)
         {
 
             BoundingSphere sphere = volume as BoundingSphere;
@@ -68,14 +72,18 @@ namespace Spacebox.Game.Physics
             public Vector3 normal;
         }
 
-        public static bool Raycast(Spacebox.Common.Physics.Ray ray, Vector3 Position, Block[,,] blocks, out HitInfo hitInfo)
+        public static bool Raycast(Ray ray, Vector3 Position, Chunk chunk, out HitInfo hitInfo)
         {
-            
+            return Raycast(ray, Position, chunk, out hitInfo);
+        }
+        public static bool Raycast(Ray ray, Vector3 Position, Block[,,] blocks, out HitInfo hitInfo)
+        {
+
             hitInfo.position = Vector3.Zero;
             hitInfo.blockPosition = new Vector3i(-1, -1, -1);
             hitInfo.normal = Vector3.Zero;
 
-           // if (!_isLoadedOrGenerated) return false;
+            // if (!_isLoadedOrGenerated) return false;
 
             Vector3 rayOrigin = ray.Origin - Position;
             Vector3 rayDirection = ray.Direction;

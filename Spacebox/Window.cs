@@ -15,11 +15,15 @@ using Spacebox.FPS;
 using Spacebox.GUI;
 using ImGuiNET;
 using Spacebox.Common.Utils;
+using Spacebox.Common.GUI;
 
 namespace Spacebox
 {
-
-    public class Window : GameWindow
+    public interface IGameWindow
+    {
+        void Quit();
+    }
+    public class Window : GameWindow, IGameWindow
     {
 
         public static Window Instance;
@@ -52,6 +56,9 @@ namespace Spacebox
         {
             base.OnLoad();
             AppIconLoader.LoadAndSetIcon(this, "Resources/Textures/icon.png");
+
+            var container = IoCContainer.Instance;
+
             Debug.Log("[Engine started!]");
             Input.Initialize(this);
 

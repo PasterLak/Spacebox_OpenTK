@@ -10,12 +10,13 @@ using Spacebox.Common.Audio;
 using Spacebox.Game.Commands;
 using Spacebox.UI;
 using Spacebox.Game.GUI;
-using static System.Formats.Asn1.AsnWriter;
 using Spacebox.Common.Physics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Resources;
+using Spacebox.Common.GUI;
+using ImGuiNET;
 
 
 namespace Spacebox.Scenes
@@ -167,7 +168,12 @@ namespace Spacebox.Scenes
             ambient.Volume = 0.05f;
             ambient.Play();
 
+            var e = Overlay.GetElementByType(typeof(CameraElement));
 
+            if(e != null)
+            {
+                e.ElementAfter = new AstronautOverlayElement();
+            }
 
             Input.SetCursorState(CursorState.Grabbed);
 
@@ -251,7 +257,7 @@ namespace Spacebox.Scenes
             block1.AddChild(block2);
             //Renderer.AddDrawable(block1);
             block2.Position = new Vector3(2, 0, 0);
-            SceneGraph.PrintHierarchy();
+            //SceneGraph.PrintHierarchy();
 
         }
 
@@ -317,6 +323,7 @@ namespace Spacebox.Scenes
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+            DisposalManager.ProcessDisposals();
 
             skybox.DrawTransparent(player);
 

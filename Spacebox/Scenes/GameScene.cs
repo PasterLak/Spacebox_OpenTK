@@ -7,8 +7,8 @@ using Spacebox.Common.Audio;
 using Spacebox.Common.Physics;
 using Spacebox.Common.SceneManagment;
 using Spacebox.FPS;
+using Spacebox.FPS.GUI;
 using Spacebox.GUI;
-using Spacebox.UI;
 
 
 namespace Spacebox.Scenes

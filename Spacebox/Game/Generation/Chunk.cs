@@ -3,11 +3,11 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Physics;
 using Spacebox.Game.Effects;
+using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.GUI;
 using Spacebox.Scenes;
-using Spacebox.UI;
 
 namespace Spacebox.Game.Generation
 {
@@ -31,15 +31,13 @@ namespace Spacebox.Game.Generation
         private bool _isLoadedOrGenerated = false;
 
         private BlockDestructionManager destructionManager;
-
+        public SpaceEntity SpaceEntity { get; private set; }
         private BoundingBox boundingBox;
 
         private Tag tag;
         public Chunk(Vector3 position)
             : this(position, null, isLoaded: false)
         {
-
-            CreateBoundingBox();
         }
 
         internal Chunk(Vector3 position, Block[,,] loadedBlocks, bool isLoaded)
@@ -49,7 +47,9 @@ namespace Spacebox.Game.Generation
             if (CurrentChunk != null) Debug.Error("[Chunk] Many chunks");
             CurrentChunk = this;
             CreateBoundingBox();
-            destructionManager = new BlockDestructionManager(Camera.Main);
+            tag = CreateTag(boundingBox);
+
+            destructionManager = World.DestructionManager;
 
             if (isLoaded && loadedBlocks != null)
             {
@@ -67,7 +67,7 @@ namespace Spacebox.Game.Generation
             _lightManager.PropagateLight();
 
             _meshGenerator = new MeshGenerator(Blocks, MeasureGenerationTime);
-            _mesh = _meshGenerator.GenerateMesh();
+            
             _isLoadedOrGenerated = true;
         }
 
@@ -76,30 +76,32 @@ namespace Spacebox.Game.Generation
             Vector3 chunkMin = Position;
             Vector3 chunkMax = Position + new Vector3(Size);
             boundingBox = BoundingBox.CreateFromMinMax(chunkMin, chunkMax);
-            tag = new Tag("", boundingBox.Center, Color4.DarkGreen);
+        }
+
+        private Tag CreateTag(BoundingBox boundingBox)
+        {
+            var tag = new Tag("", boundingBox.Center, Color4.DarkGreen);
 
             TagManager.RegisterTag(tag);
 
+            return tag;
         }
 
         public void GenerateMesh()
         {
             if (!_isLoadedOrGenerated) return;
 
-
             _lightManager.PropagateLight();
 
             Mesh newMesh = _meshGenerator.GenerateMesh();
 
-            _mesh.Dispose();
+            _mesh?.Dispose();
             _mesh = newMesh;
         }
 
         public bool IsColliding(BoundingVolume volume)
         {
-
             return VoxelPhysics.IsColliding(volume, Blocks, Position);
-
         }
 
         public void Draw(Shader shader)
@@ -113,16 +115,14 @@ namespace Spacebox.Game.Generation
 
             Matrix4 model = Matrix4.CreateTranslation(position);
             shader.SetMatrix4("model", model);
+
+            if(_mesh != null)
             _mesh.Draw(shader);
 
             if (ShowChunkBounds && VisualDebug.ShowDebug)
             {
-
                 VisualDebug.DrawBoundingBox(boundingBox, new Color4(0.5f, 0f, 0.5f, 1f));
             }
-
-            destructionManager.Render();
-
 
         }
 
@@ -180,8 +180,6 @@ namespace Spacebox.Game.Generation
             Mass -= Blocks[x, y, z].Mass;
             Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
 
-
-
             IsModified = true;
 
             GenerateMesh();
@@ -214,7 +212,7 @@ namespace Spacebox.Game.Generation
             return VoxelPhysics.Raycast(ray, Position, Blocks, out info);
         }
 
-        public void ChangeBlockColor(Block block, Vector3 color, bool regenerateMesh)
+        private void ChangeBlockColor(Block block, Vector3 color, bool regenerateMesh)
         {
             block.Color = color;
 
@@ -228,6 +226,7 @@ namespace Spacebox.Game.Generation
 
         public void Test(Astronaut player)
         {
+           
             if (!_isLoadedOrGenerated) return;
 
             if (Debug.IsVisible) return;
@@ -255,7 +254,7 @@ namespace Spacebox.Game.Generation
             }
 
             tag.Text = (int)Vector3.Distance(boundingBox.Center, player.Position) + " m";
-            destructionManager.Update();
+           
 
             var pos = new Vector3Byte((byte)player.Position.X, (byte)player.Position.Y, (byte)player.Position.Z);
             if (IsInRange(pos.X, pos.Y, pos.Z))
@@ -285,7 +284,7 @@ namespace Spacebox.Game.Generation
 
                 VisualDebug.DrawAxes(hitInfo.blockPosition + Vector3.One * 0.5f);
 
-                Overlay.AimedBlock = aimedBlock;
+                AImedBlockElement.AimedBlock = aimedBlock;
 
 
                 if (Input.IsKeyDown(Keys.T))
@@ -415,7 +414,7 @@ namespace Spacebox.Game.Generation
                 if (BlockSelector.IsVisible)
                     BlockSelector.IsVisible = false;
 
-                Overlay.AimedBlock = null;
+                AImedBlockElement.AimedBlock = null;
 
                 float placeDistance = 5f;
                 Vector3 placePosition = rayOrigin + rayDirection * placeDistance;

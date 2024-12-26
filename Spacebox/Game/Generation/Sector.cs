@@ -4,7 +4,7 @@ using Spacebox.Common.Physics;
 
 namespace Spacebox.Game.Generation
 {
-    public class Sector
+    public class Sector : IDisposable
     {
         public const short SizeBlocks = 64; // 512
         public const short SizeBlocksHalf = SizeBlocks / 2;
@@ -44,16 +44,15 @@ namespace Spacebox.Game.Generation
 
         private void Initialize()
         {
-
+            
             World.EnqueueSectorInitialization(this);
-
 
             SpawnAsteroids();
         }
 
         private void SpawnAsteroids()
         {
-            int numAsteroids = 5;
+            int numAsteroids = 1;
             Random random = new Random();
 
             for (int i = 0; i < numAsteroids; i++)
@@ -70,7 +69,7 @@ namespace Spacebox.Game.Generation
 
                 } while (!IsPositionValid(asteroidPosition));
 
-                SpaceEntity asteroid = new SpaceEntity(asteroidPosition);
+                SpaceEntity asteroid = new SpaceEntity(asteroidPosition, this);
                 asteroids.Add(asteroid);
                 sectorOctree.Add(asteroid, asteroidPosition);
             }
@@ -92,7 +91,6 @@ namespace Spacebox.Game.Generation
         public void InitializeSharedResources()
         {
 
-
             if (sharedShader == null)
             {
                 sharedShader = ShaderManager.GetShader("Shaders/textured");
@@ -105,37 +103,43 @@ namespace Spacebox.Game.Generation
 
             simple = new SimpleBlock(sharedShader, sharedTexture, BoundingBox.Center);
             simple.Scale = new Vector3(SizeBlocks, SizeBlocks, SizeBlocks);
-            //simple.Transform.Position = simple.Transform.Position;
+            simple.Position = simple.Position;
         }
 
         public void Update()
         {
 
 
-            VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 10, 100));
+            //VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 10, 100));
         }
 
         public void Render(Shader shader)
         {
-
-            //simple?.Render(Camera.Main);
+            sharedShader.SetVector4("color", new Vector4(0, 1, 0, 1));
+            simple?.Render(Camera.Main);
             //VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 10, 100));
 
             foreach (var asteroid in asteroids)
             {
-                //asteroid.Render(shader);
+                asteroid.Render(Camera.Main);
             }
         }
 
         public void Dispose()
         {
-            //simple?.Dispose();
-
+           // DisposalManager.EnqueueForDispose(simple);
+            simple?.Dispose();
 
             foreach (var asteroid in asteroids)
             {
-                //asteroid.Dispose();
+                //DisposalManager.EnqueueForDispose(asteroid);
+                asteroid?.Dispose();    
             }
+        }
+
+        public override string ToString()
+        {
+            return $"[Sector] Pos: {Position.ToString()} Index: {Index.ToString()}";
         }
     }
 }

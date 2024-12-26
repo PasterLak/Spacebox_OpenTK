@@ -1,14 +1,13 @@
 ﻿
 using ImGuiNET;
-
 using Spacebox.Common;
 using System.Numerics;
 
-namespace Spacebox.GUI
+namespace Spacebox.Game.GUI
 {
     public static class HealthColorOverlay
     {
-        
+
         private static bool _isEnabled = false;
 
         public static bool IsEnabled
@@ -23,8 +22,8 @@ namespace Spacebox.GUI
         private static readonly float _fadeDuration = 1f;
         private static float _elapsedTime = 0f;
 
-        private static Vector3 Color = new Vector3(0,1,0);
-        
+        private static Vector3 Color = new Vector3(0, 1, 0);
+
         public static void SetActive(Vector3 color, float startAlpha = 0.4f)
         {
             Color = color;
@@ -49,7 +48,7 @@ namespace Spacebox.GUI
                 }
                 else
                 {
-                    _overlayAlpha = OpenTK.Mathematics. MathHelper.Lerp(_startAlpha, 0f, fadeProgress);
+                    _overlayAlpha = OpenTK.Mathematics.MathHelper.Lerp(_startAlpha, 0f, fadeProgress);
                 }
 
                 ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(Color.X, Color.Y, Color.Z, _overlayAlpha));

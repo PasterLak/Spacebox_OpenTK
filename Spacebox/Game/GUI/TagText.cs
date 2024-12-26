@@ -3,7 +3,7 @@ using Spacebox.Common;
 using Spacebox.Extensions;
 using System.Numerics;
 
-namespace Spacebox.GUI
+namespace Spacebox.Game.GUI
 {
     public static class TagText
     {
@@ -60,14 +60,14 @@ namespace Spacebox.GUI
 
             Vector2 textSize = ImGui.CalcTextSize(_text);
 
-            Vector2 pos = Camera.Main.WorldToScreenPoint(Vector3.Zero.ToOpenTKVector3(), 
-                (int)ImGui.GetIO().DisplaySize.X, 
-               (int) ImGui.GetIO().DisplaySize.Y).ToSystemVector2();
+            Vector2 pos = Camera.Main.WorldToScreenPoint(Vector3.Zero.ToOpenTKVector3(),
+                (int)ImGui.GetIO().DisplaySize.X,
+               (int)ImGui.GetIO().DisplaySize.Y).ToSystemVector2();
 
 
             //float posX = (ImGui.GetWindowWidth() - textSize.X) * 0.5f;
             //float posY = (ImGui.GetWindowHeight() - textSize.Y) * 0.5f;
-            if(pos != Vector2.Zero)
+            if (pos != Vector2.Zero)
             {
                 ImGui.SetCursorPos(new Vector2(pos.X, pos.Y));
 
@@ -75,7 +75,7 @@ namespace Spacebox.GUI
                 ImGui.TextUnformatted(_text);
                 ImGui.PopStyleColor();
             }
-            
+
 
             ImGui.End();
         }

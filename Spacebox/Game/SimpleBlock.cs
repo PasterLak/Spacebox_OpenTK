@@ -11,7 +11,7 @@ namespace Spacebox.Common
         private int _vao;
         private int _vbo;
         private int _ebo;
-        private Shader _shader;
+        public Shader Shader { get; private set; }
         public Texture2D Texture;
        
         public bool IsUsingDefaultUV { get; private set; } = true;
@@ -24,9 +24,9 @@ namespace Spacebox.Common
             Position = position;
             Scale = Vector3.One;
             
-            _shader = shader;
+            Shader = shader;
             Texture = texture;
-            Texture.Use(TextureUnit.Texture0);
+            //Texture.Use(TextureUnit.Texture0);
 
             foreach (var face in Enum.GetValues(typeof(Face)))
             {
@@ -177,13 +177,13 @@ namespace Spacebox.Common
         public void Render(Camera camera)
         {
             
-            _shader.Use();
+            Shader.Use();
 
 
-            _shader.SetMatrix4("model", GetModelMatrix());
-            _shader.SetMatrix4("view", camera.GetViewMatrix());
-            _shader.SetMatrix4("projection", camera.GetProjectionMatrix());
-            _shader.SetInt("texture0", 0);
+            Shader.SetMatrix4("model", GetModelMatrix());
+            Shader.SetMatrix4("view", camera.GetViewMatrix());
+            Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
+            Shader.SetInt("texture0", 0);
             Texture.Use(TextureUnit.Texture0);
 
             GL.Enable(EnableCap.DepthTest);
@@ -202,7 +202,7 @@ namespace Spacebox.Common
             GL.DeleteBuffer(_vbo);
             GL.DeleteBuffer(_ebo);
             GL.DeleteVertexArray(_vao);
-            _shader.Dispose();
+            Shader.Dispose();
             Texture.Dispose();
         }
     }

@@ -1,6 +1,7 @@
 using Xunit;
 using Spacebox.Game;
 using System;
+using Spacebox.Game.Player;
 
 namespace Spacebox.Tests
 {

@@ -49,7 +49,6 @@ namespace Spacebox.Common
             {
                 drawable.Draw(camera);
             }
-
          
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);

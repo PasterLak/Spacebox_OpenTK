@@ -3,7 +3,7 @@ using Spacebox.Common;
 using Spacebox.Extensions;
 using System.Numerics;
 
-namespace Spacebox.GUI
+namespace Spacebox.Common.GUI
 {
     public static class WorldTextDebug
     {
@@ -14,9 +14,9 @@ namespace Spacebox.GUI
 
         private static Vector4 _color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
-        private static Vector4 red = new Vector4(1.0f, 0,0, 1.0f);
-        private static Vector4 green = new Vector4(0,1, 0, 1.0f);
-        private static Vector4 blue = new Vector4(0,0,1, 1.0f);
+        private static Vector4 red = new Vector4(1.0f, 0, 0, 1.0f);
+        private static Vector4 green = new Vector4(0, 1, 0, 1.0f);
+        private static Vector4 blue = new Vector4(0, 0, 1, 1.0f);
 
         public static void SetColor(Vector4 color)
         {
@@ -50,7 +50,7 @@ namespace Spacebox.GUI
             if (!IsVisible)
                 return;
 
-            if(Camera.Main == null) return;
+            if (Camera.Main == null) return;
 
             ImGui.SetNextWindowPos(new Vector2(0, 0), ImGuiCond.Always, new Vector2(0, 0));
             ImGui.SetNextWindowSize(new Vector2(ImGui.GetIO().DisplaySize.X, ImGui.GetIO().DisplaySize.Y));
@@ -59,13 +59,13 @@ namespace Spacebox.GUI
 
             //Vector2 textSize = ImGui.CalcTextSize(_text);
 
-            
+
 
             Vector2 posCenter = Camera.Main.WorldToScreenPoint(Vector3.Zero.ToOpenTKVector3(),
                 (int)ImGui.GetIO().DisplaySize.X,
                (int)ImGui.GetIO().DisplaySize.Y).ToSystemVector2();
 
-            Vector2 posX = Camera.Main.WorldToScreenPoint(new Vector3(10,0,0).ToOpenTKVector3(),
+            Vector2 posX = Camera.Main.WorldToScreenPoint(new Vector3(10, 0, 0).ToOpenTKVector3(),
                (int)ImGui.GetIO().DisplaySize.X,
               (int)ImGui.GetIO().DisplaySize.Y).ToSystemVector2();
 
@@ -81,7 +81,7 @@ namespace Spacebox.GUI
             //float posX = (ImGui.GetWindowWidth() - textSize.X) * 0.5f;
             //float posY = (ImGui.GetWindowHeight() - textSize.Y) * 0.5f;
 
-            if(posCenter != Vector2.Zero)
+            if (posCenter != Vector2.Zero)
             {
                 ImGui.SetCursorPos(new Vector2(posCenter.X, posCenter.Y));
 
@@ -98,22 +98,22 @@ namespace Spacebox.GUI
                 ImGui.TextUnformatted("X");
                 ImGui.PopStyleColor();
             }
-                if (posY != Vector2.Zero)
-                {
-                    ImGui.SetCursorPos(new Vector2(posY.X, posY.Y));
+            if (posY != Vector2.Zero)
+            {
+                ImGui.SetCursorPos(new Vector2(posY.X, posY.Y));
 
-                    ImGui.PushStyleColor(ImGuiCol.Text, green);
-                    ImGui.TextUnformatted("Y");
-                    ImGui.PopStyleColor();
-                }
-                    if (posZ != Vector2.Zero)
-                    {
-                        ImGui.SetCursorPos(new Vector2(posZ.X, posZ.Y));
+                ImGui.PushStyleColor(ImGuiCol.Text, green);
+                ImGui.TextUnformatted("Y");
+                ImGui.PopStyleColor();
+            }
+            if (posZ != Vector2.Zero)
+            {
+                ImGui.SetCursorPos(new Vector2(posZ.X, posZ.Y));
 
-                        ImGui.PushStyleColor(ImGuiCol.Text, blue);
-                        ImGui.TextUnformatted("Z");
-                        ImGui.PopStyleColor();
-                    }
+                ImGui.PushStyleColor(ImGuiCol.Text, blue);
+                ImGui.TextUnformatted("Z");
+                ImGui.PopStyleColor();
+            }
             ImGui.End();
         }
     }

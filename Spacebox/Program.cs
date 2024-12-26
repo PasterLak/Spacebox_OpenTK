@@ -2,16 +2,21 @@
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Spacebox.Common.Audio;
+using System.Reflection;
 
 
 namespace Spacebox
 {
     public static class Program
     {
+
+      
+
         private static void Main()
         {
-            
-           var monitor = Monitors.GetPrimaryMonitor();
+          
+
+            var monitor = Monitors.GetPrimaryMonitor();
             var _audioManager = AudioManager.Instance;
             // string path = "Resources/WindowPosition.txt";
             // var (x, y) = NumberStorage.LoadNumbers(path);

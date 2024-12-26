@@ -1,7 +1,4 @@
 ﻿
-
-using System;
-
 namespace Spacebox.Common
 {
     public class SceneGraph

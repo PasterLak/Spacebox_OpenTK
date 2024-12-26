@@ -105,7 +105,7 @@ public class AOVoxels
 
         isPrecalculated = true;
 
-        PrintAO(0b0011_0110);
+        //PrintAO(0b0011_0110);
     }
 
     public static void PrintDirections(byte mask)

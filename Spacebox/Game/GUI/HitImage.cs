@@ -1,8 +1,9 @@
 ﻿using ImGuiNET;
+using Spacebox.Common;
 using Spacebox.Game;
 using System.Numerics;
 
-namespace Spacebox.Common
+namespace Spacebox.Game.GUI
 {
     public class HitImage : IDisposable
     {
@@ -34,7 +35,7 @@ namespace Spacebox.Common
         public void Show()
         {
             _isVisible = true;
-        
+
             _elapsedTime = 0f;
             _opacity = 1f;
             _isFadingOut = false;
@@ -76,7 +77,7 @@ namespace Spacebox.Common
             if (_isFadingOut)
             {
                 _fadeElapsed += Time.Delta;
-                _opacity = MathF.Max(1f - (_fadeElapsed / _fadeDuration), 0f);
+                _opacity = MathF.Max(1f - _fadeElapsed / _fadeDuration, 0f);
 
                 if (_fadeElapsed >= _fadeDuration)
                 {
@@ -126,7 +127,7 @@ namespace Spacebox.Common
 
             Vector4 tintColor = new Vector4(1f, 1f, 1f, _opacity);
             ImGui.SetCursorPos(new Vector2(posX, posY));
-            ImGui.Image((IntPtr)_imageTexture.Handle, new Vector2(imageWidth, imageHeight), Vector2.Zero, Vector2.One, tintColor, Vector4.Zero);
+            ImGui.Image(_imageTexture.Handle, new Vector2(imageWidth, imageHeight), Vector2.Zero, Vector2.One, tintColor, Vector4.Zero);
             ImGui.End();
         }
 

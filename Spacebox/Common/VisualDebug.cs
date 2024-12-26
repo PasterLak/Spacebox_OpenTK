@@ -200,6 +200,13 @@ namespace Spacebox.Common
             _triangles.Add(color.A);
         }
 
+        public static void DrawPosition(Vector3 pos, Color4 color)
+        {
+            BoundingSphere s = new BoundingSphere(pos, 1f);
+
+            DrawBoundingSphere(s, color);
+        }
+
 
         public static void DrawBoundingBox(BoundingBox box, Color4 color)
         {

@@ -39,5 +39,5 @@ void main()
     if (pixel.a < 0.1)
         discard;
 
-    FragColor = pixel;
+    FragColor = pixel * color;
 }

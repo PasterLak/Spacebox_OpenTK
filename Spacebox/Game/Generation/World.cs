@@ -1,7 +1,9 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.Common.GUI;
 using Spacebox.Common.Physics;
 using Spacebox.Game.Effects;
+using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 using System.Collections.Concurrent;
 
@@ -16,6 +18,9 @@ namespace Spacebox.Game.Generation
         public static Random Random;
         public WorldLoader.LoadedWorld WorldData { get; private set; }
         public static DropEffectManager DropEffectManager;
+        public static BlockDestructionManager DestructionManager;
+
+        public static Sector CurrentSector { get; private set; }
 
         private readonly Octree<Sector> worldOctree;
         private readonly ConcurrentDictionary<Vector3i, Sector> sectorsByIndex;
@@ -42,9 +47,19 @@ namespace Spacebox.Game.Generation
             sectorsByIndex = new ConcurrentDictionary<Vector3i, Sector>();
 
             Vector3i initialSectorIndex = GetSectorIndex(Player.Position);
-            LoadSectorAsync(initialSectorIndex);
+
+            CurrentSector = LoadSectorAsync(initialSectorIndex);
+
+            if (CurrentSector == null) Debug.Error("No current sector");
 
             DropEffectManager = new DropEffectManager(player);
+            DestructionManager = new BlockDestructionManager(player);
+
+            player.OnMoved += OnPlayerMoved;
+
+            SpaceEntity.InitializeSharedResources();
+
+            Overlay.AddElement(new WorldOverlayElement(this));
         }
 
         public void LoadWorldInfo(string worldName)
@@ -60,6 +75,17 @@ namespace Spacebox.Game.Generation
             {
                 Random = new Random(int.Parse(WorldData.Info.Seed));
             }
+        }
+
+        private void OnPlayerMoved(Astronaut player)
+        {
+            Vector3i initialSectorIndex = GetSectorIndex(Player.Position);
+
+            if (sectorsByIndex.TryGetValue(initialSectorIndex, out var sector))
+            {
+                CurrentSector = sector;
+            }
+
         }
 
         public void EnqueueSectorInitialization(Sector sector)
@@ -85,6 +111,8 @@ namespace Spacebox.Game.Generation
         public void Update()
         {
             DropEffectManager.Update();
+            DestructionManager.Update();
+
             InitializeSectors();
             worldOctree.DrawDebug();
             UpdateSectors();
@@ -108,6 +136,7 @@ namespace Spacebox.Game.Generation
             }
 
             DropEffectManager.Render();
+            DestructionManager.Render();
         }
 
         private void UpdateSectors()
@@ -143,7 +172,7 @@ namespace Spacebox.Game.Generation
                     if (distanceToSector <= SECTOR_LOAD_RADIUS)
                     {
                         sectorsBeingLoaded.Add(sectorIndex);
-                        LoadSectorAsync(sectorIndex);
+                        CurrentSector = LoadSectorAsync(sectorIndex);
                     }
                 }
             }
@@ -167,13 +196,15 @@ namespace Spacebox.Game.Generation
             }
         }
 
-        private void LoadSectorAsync(Vector3i sectorIndex)
+        private Sector LoadSectorAsync(Vector3i sectorIndex)
         {
+            Sector newSector = null;
+
             Task.Run(() =>
             {
                 Vector3 sectorPosition = GetSectorPosition(sectorIndex);
-                Sector newSector = new Sector(sectorPosition, sectorIndex, this);
-
+                newSector = new Sector(sectorPosition, sectorIndex, this);
+                CurrentSector = newSector;
 
                 Vector3 sectorCenter = sectorPosition + new Vector3(Sector.SizeBlocksHalf);
                 Vector3 sectorSize = new Vector3(Sector.SizeBlocks, Sector.SizeBlocks, Sector.SizeBlocks);
@@ -188,6 +219,8 @@ namespace Spacebox.Game.Generation
                 sectorsByIndex[sectorIndex] = newSector;
                 sectorsBeingLoaded.Remove(sectorIndex);
             });
+
+            return newSector;
         }
 
         private void UnloadSectorAsync(Vector3i sectorIndex)
@@ -208,7 +241,8 @@ namespace Spacebox.Game.Generation
                         worldOctree.Remove(sector, sectorBounds);
                     }
 
-                    sector.Dispose();
+                    DisposalManager.EnqueueForDispose(sector);
+                    //sector.Dispose();
                 }
 
                 sectorsBeingUnloaded.Remove(sectorIndex);

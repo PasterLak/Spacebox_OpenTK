@@ -5,7 +5,7 @@ using Spacebox.Common;
 using Spacebox.Extensions;
 using Spacebox.Game;
 
-namespace Spacebox.GUI
+namespace Spacebox.Game.GUI
 {
     public static class TagManager
     {
@@ -31,7 +31,7 @@ namespace Spacebox.GUI
         {
             foreach (Tag tag in _tags)
             {
-                if(tag.Text == text)
+                if (tag.Text == text)
                 {
                     _tags.Remove(tag);
                     return;
@@ -47,8 +47,8 @@ namespace Spacebox.GUI
         public static void DrawTags(Camera camera, int screenWidth, int screenHeight)
         {
             if (camera == null) return;
-            if(_tags.Count == 0) return;
-            if(!Settings.ShowInterface) return;
+            if (_tags.Count == 0) return;
+            if (!Settings.ShowInterface) return;
 
             ImGui.SetNextWindowPos(System.Numerics.Vector2.Zero, ImGuiCond.Always);
             ImGui.SetNextWindowSize(ImGui.GetIO().DisplaySize);
@@ -59,18 +59,18 @@ namespace Spacebox.GUI
 
             foreach (var tag in _tags)
             {
-                
+
                 Vector2? screenPosNullable = camera.WorldToScreenPoint(tag.WorldPosition, screenWidth, screenHeight);
                 if (screenPosNullable.HasValue)
                 {
                     Vector2 screenPos = screenPosNullable.Value;
 
-                    
+
                     if (screenPos.X > 0 && screenPos.X <= screenWidth &&
                         screenPos.Y > 0 && screenPos.Y <= screenHeight)
                     {
                         var textSize = ImGui.CalcTextSize(tag.Text);
-                        ImGui.SetCursorPos(screenPos.ToSystemVector2()- textSize * 0.5f);
+                        ImGui.SetCursorPos(screenPos.ToSystemVector2() - textSize * 0.5f);
                         ImGui.PushStyleColor(ImGuiCol.Text, tag.Color.ToSystemVector4());
                         ImGui.TextUnformatted(tag.Text);
                         ImGui.PopStyleColor();

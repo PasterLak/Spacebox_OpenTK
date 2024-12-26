@@ -4,6 +4,7 @@ using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Common.Physics;
 using Spacebox.Game.Generation;
+using Spacebox.Game.GUI;
 using Spacebox.GUI;
 using Spacebox.Scenes;
 
@@ -22,6 +23,8 @@ namespace Spacebox.Game.Player
         private Vector2 _lastMousePosition;
 
         public bool CameraActive = true;
+
+        public Action<Astronaut> OnMoved { get; set; }
 
         private bool _canMove = true;
         public bool CanMove
@@ -343,6 +346,7 @@ namespace Spacebox.Game.Player
             if (movement != Vector3.Zero)
             {
                 MoveAndCollide(movement);
+                OnMoved?.Invoke(this);
             }
 
             var mouse = Input.Mouse;

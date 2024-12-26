@@ -1,9 +1,6 @@
-﻿
-using System.Numerics;
-using System.IO;
+﻿using System.Numerics;
 using ImGuiNET;
 using OpenTK.Windowing.Common;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common.Commands;
 using System.Drawing;
 

@@ -1,9 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-
 using Spacebox.Common;
 
-namespace Spacebox.GUI
+namespace Spacebox.Common.GUI
 {
     public class Sprite : IDisposable
     {
@@ -14,8 +13,8 @@ namespace Spacebox.GUI
 
         private float[] _vertices;
         private readonly uint[] _indices = {
-            0, 1, 3,  
-            1, 2, 3   
+            0, 1, 3,
+            1, 2, 3
         };
 
         private Vector2 _position;
@@ -26,7 +25,6 @@ namespace Spacebox.GUI
 
         private Texture2D _texture;
 
-        // Событие для отписки
         private bool _isDisposed = false;
 
         public Sprite(Texture2D texture, Vector2 position, Vector2 size, Shader shader = null)
@@ -59,7 +57,7 @@ namespace Spacebox.GUI
         {
             SetVertices();
 
-         
+
             _vao = GL.GenVertexArray();
             _vbo = GL.GenBuffer();
             _ebo = GL.GenBuffer();
@@ -85,31 +83,31 @@ namespace Spacebox.GUI
 
             GL.BindVertexArray(0);
 
-          
+
             Window.OnResized += UpdateWindowSize;
         }
 
         private void SetVertices()
         {
-           
+
             float left = _position.X;
             float right = _position.X + _size.X;
             float top = _position.Y;
             float bottom = _position.Y + _size.Y;
 
-           
-            float normalizedLeft = (left / _windowWidth) * 2.0f - 1.0f;
-            float normalizedRight = (right / _windowWidth) * 2.0f - 1.0f;
-            float normalizedTop = 1.0f - (top / _windowHeight) * 2.0f;
-            float normalizedBottom = 1.0f - (bottom / _windowHeight) * 2.0f;
+
+            float normalizedLeft = left / _windowWidth * 2.0f - 1.0f;
+            float normalizedRight = right / _windowWidth * 2.0f - 1.0f;
+            float normalizedTop = 1.0f - top / _windowHeight * 2.0f;
+            float normalizedBottom = 1.0f - bottom / _windowHeight * 2.0f;
 
             _vertices = new float[]
             {
-            
-                normalizedRight, normalizedTop,     1.0f, 1.0f, 
-                normalizedRight, normalizedBottom,  1.0f, 0.0f, 
+
+                normalizedRight, normalizedTop,     1.0f, 1.0f,
+                normalizedRight, normalizedBottom,  1.0f, 0.0f,
                 normalizedLeft,  normalizedBottom,  0.0f, 0.0f,
-                normalizedLeft,  normalizedTop,      0.0f, 1.0f  
+                normalizedLeft,  normalizedTop,      0.0f, 1.0f
             };
         }
 
@@ -130,7 +128,7 @@ namespace Spacebox.GUI
             SetVertices();
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, _vertices.Length * sizeof(float), _vertices);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, nint.Zero, _vertices.Length * sizeof(float), _vertices);
         }
 
         private void UpdateWindowSize(Vector2 newWindowSize)
@@ -155,11 +153,11 @@ namespace Spacebox.GUI
         {
             _shader.Use();
 
-           
+
             _shader.SetVector2("offset", offset ?? Vector2.Zero);
             _shader.SetVector2("tiling", tiling ?? Vector2.One);
 
-           
+
             _texture.Use(TextureUnit.Texture0);
             _shader.SetInt("spriteTexture", 0);
 

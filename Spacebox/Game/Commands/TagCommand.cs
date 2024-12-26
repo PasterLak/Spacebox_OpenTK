@@ -1,8 +1,8 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Common.Commands;
+using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
-using Spacebox.GUI;
 using System;
 using System.Globalization;
 using System.Numerics;
