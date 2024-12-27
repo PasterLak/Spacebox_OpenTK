@@ -5,17 +5,17 @@ namespace Spacebox.Game
 {
     public class SpaceTexture : Texture2D
     {
-        public SpaceTexture(int width, int height)
+        
+        public SpaceTexture(int width, int height, Random random)
             : base(width, height)
         {
             SetPixelated(true);
-            GenerateSpaceTexture();
+            GenerateSpaceTexture(random);
             UpdateTexture(true);
         }
 
-        private void GenerateSpaceTexture()
+        private void GenerateSpaceTexture(Random random)
         {
-            Random random = new Random();
 
             for (int y = 0; y < Height; y++)
             {

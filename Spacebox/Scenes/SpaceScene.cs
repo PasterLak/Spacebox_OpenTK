@@ -16,8 +16,6 @@ using Spacebox.Game.Player;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Resources;
 using Spacebox.Common.GUI;
-using ImGuiNET;
-
 
 namespace Spacebox.Scenes
 {
@@ -150,7 +148,7 @@ namespace Spacebox.Scenes
 
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader,
-                new SpaceTexture(512, 512));
+                new SpaceTexture(512, 512, World.Random));
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
             skybox.IsAmbientAffected = false;
             SceneGraph.AddRoot(skybox);
@@ -316,7 +314,7 @@ namespace Spacebox.Scenes
 
 
             //world.Update();
-
+           
             sector.Update();
         }
 
@@ -361,6 +359,7 @@ namespace Spacebox.Scenes
             //world.Render(blocksShader);
             blockDestructionManager.Render();
 
+            spacer.LookAt3(player);
             spacer.Draw(player);
             dustSpawner.Render();
             block1.Rotate(0,12f * Time.Delta,0);

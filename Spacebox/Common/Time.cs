@@ -34,7 +34,7 @@ namespace Spacebox.Common
         private static float _tickElapsedTime = 0.0f;
         private static float _targetTPS = 20.0f; 
         private static float _tickInterval = 1.0f / 20.0f;
-
+        private static int _totalTicks = 0;
         private static float _tickAccumulatedTime = 0.0f;
         private static float _currentTPS;
 

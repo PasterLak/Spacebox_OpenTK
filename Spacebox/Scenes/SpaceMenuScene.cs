@@ -54,7 +54,7 @@ namespace Spacebox.Scenes
 
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader,
-                new SpaceTexture(512, 512));
+                new SpaceTexture(512, 512, new Random()));
             skybox.IsAmbientAffected = false;
 
 
