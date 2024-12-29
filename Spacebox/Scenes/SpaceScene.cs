@@ -238,21 +238,21 @@ namespace Spacebox.Scenes
             
             spacer.Position = new Vector3(12, 15, 7);
             spacer.Rotation = new Vector3(0, 0, 90);
-            Renderer.AddDrawable(spacer);
-            SceneGraph.AddRoot(spacer);
-            SceneGraph.UpdateTransforms();
+            //Renderer.AddDrawable(spacer);
+            //SceneGraph.AddRoot(spacer);
+            //SceneGraph.UpdateTransforms();
             CrusherGUI.Init();
 
             block1 = new SimpleBlock(ShaderManager.GetShader("colored"), TextureManager.GetTexture("Resources/Textures/slot.png"), new Vector3(0,0,0));
             block1.Position = new Vector3(-1,-1,0);
-            SceneGraph.AddRoot(block1);
-            Renderer.AddDrawable(block1);
+            //SceneGraph.AddRoot(block1);
+            //Renderer.AddDrawable(block1);
 
             block2 = new SimpleBlock(ShaderManager.GetShader("colored"), TextureManager.GetTexture("Resources/Textures/slot.png"), new Vector3(0, 0, 0));
            
-            block1.AddChild(block2);
+            //block1.AddChild(block2);
             //Renderer.AddDrawable(block1);
-            block2.Position = new Vector3(2, 0, 0);
+            //block2.Position = new Vector3(2, 0, 0);
             //SceneGraph.PrintHierarchy();
 
         }
@@ -357,12 +357,12 @@ namespace Spacebox.Scenes
             //world.Render(blocksShader);
             blockDestructionManager.Render();
 
-            spacer.LookAt3(player);
-            spacer.Draw(player);
+            //spacer.LookAt3(player);
+            //spacer.Draw(player);
             dustSpawner.Render();
-            block1.Rotate(0,12f * Time.Delta,0);
-            block1.Render(player);
-            block2.Render(player);
+           // block1.Rotate(0,12f * Time.Delta,0);
+            //block1.Render(player);
+           // block2.Render(player);
            
 
             var b = new BoundingSphere(block2.GetWorldPosition(), 0.7f);

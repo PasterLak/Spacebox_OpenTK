@@ -175,17 +175,32 @@ namespace Spacebox.Game.Generation
                 asteroids[i].Update();  
             }
         }
-
+        int lastCount = 0;
         public void Render(Shader shader)
         {
             sharedShader.SetVector4("color", new Vector4(0, 1, 0, 1));
             //simple?.Render(Camera.Main);
             VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 20, 100));
 
+            var cam = Camera.Main;
+
+            var asteroidsCount = 0;
+
             for (int i = 0; i < asteroids.Count; i++)
             {
-                asteroids[i].Render(Camera.Main);  
+                if (cam.Frustum.IsInFrustum(asteroids[i].GeometryBoundingBox))
+                {
+                    asteroids[i].Render(cam);
+                    asteroidsCount++;
+                }
+                
             }
+            if( lastCount != asteroidsCount)
+            {
+                lastCount = asteroidsCount;
+                Debug.Success("Asteroids rendering: " + asteroidsCount);
+            }
+            
            
         }
 

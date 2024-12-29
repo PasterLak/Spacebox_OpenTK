@@ -138,7 +138,6 @@ function AdjustableLookAt(targetTransform : Transform)
             var _up = Vector3.Transform(Vector3.UnitY, Quaternion.FromEulerAngles(target.Rotation));
             
 
-
             var toTarget = target.position - Position;
 
             if(MathF.Abs(Vector3.CalculateAngle(_front, toTarget)) > lookThreshold || MathF.Abs(Vector3.CalculateAngle(_front, toTarget)) > -lookThreshold)

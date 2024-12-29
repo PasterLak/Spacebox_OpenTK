@@ -90,6 +90,33 @@ namespace Spacebox.Game.GUI
                 RenderUpdateVersionWindow();
             }
 
+            if(Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.RightAlt))
+            {
+                
+                foreach(var w in worlds)
+                {
+                    if(w.Name == "Developer")
+                    {
+                        selectedWorld = w;
+
+                        click1.Play();
+
+
+                        if (VersionConverter.IsVersionOld(selectedWorld.GameVersion, Application.Version))
+                        {
+                            showVersionConvertWindow = true;
+                        }
+                        else
+                        {
+                            LoadWorld(selectedWorld);
+                        }
+                    }
+                }
+
+
+
+            }
+
             ImGui.PopStyleColor(6);
             ImGui.GetStyle().ItemSpacing = oldItemSpacing;
             ImGui.GetStyle().WindowPadding = oldWindowPadding;

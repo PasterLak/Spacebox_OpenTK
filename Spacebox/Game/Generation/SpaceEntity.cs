@@ -33,7 +33,7 @@ namespace Spacebox.Game.Generation
         private Dictionary<Vector3SByte, Chunk> chunkDictionary = new Dictionary<Vector3SByte, Chunk>();
         private Tag tag;
 
-        private BoundingBox geometryBoundingBox;
+        public BoundingBox GeometryBoundingBox { get; private set; }
 
         public SpaceEntity(Vector3 positionWorld, Sector sector, bool oneChunk)
         {
@@ -44,7 +44,7 @@ namespace Spacebox.Game.Generation
 
             octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
             Shader = ShaderManager.GetShader("Shaders/block");
-            geometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
+            GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
 
             AddChunk(new Chunk(positionWorld));
 
@@ -63,7 +63,7 @@ namespace Spacebox.Game.Generation
             blockTexture = GameBlocks.BlocksTexture;
             atlasTexture = GameBlocks.LightAtlas;
 // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
-            tag = CreateTag(geometryBoundingBox);
+            tag = CreateTag(GeometryBoundingBox);
 
             Debug.Log("------------ Entity -----------");
             foreach (var c in chunks)
@@ -120,7 +120,7 @@ namespace Spacebox.Game.Generation
             RecalculateGeometryBoundingBox();
 
             if (tag != null)
-                tag.WorldPosition = geometryBoundingBox.Center;
+                tag.WorldPosition = GeometryBoundingBox.Center;
         }
 
         private Tag CreateTag(BoundingBox boundingBox)
@@ -136,7 +136,7 @@ namespace Spacebox.Game.Generation
         {
             if (chunks.Count == 0)
             {
-                geometryBoundingBox = new BoundingBox(Vector3.Zero, Vector3.Zero);
+                GeometryBoundingBox = new BoundingBox(Vector3.Zero, Vector3.Zero);
                 return;
             }
 
@@ -149,7 +149,7 @@ namespace Spacebox.Game.Generation
                 max = Vector3.ComponentMax(max, chunk.GeometryBoundingBox.Max);
             }
 
-            geometryBoundingBox = BoundingBox.CreateFromMinMax(min, max);
+            GeometryBoundingBox = BoundingBox.CreateFromMinMax(min, max);
         }
 
         public Vector3SByte GetChunkIndex(Vector3 worldPosition)
@@ -203,7 +203,6 @@ namespace Spacebox.Game.Generation
                 tag.Text = (int)Vector3.Distance(BoundingBox.Center + new Vector3(0.5f, 0.5f, 0.5f), camera.Position) +
                            " m";
 
-            
         }
 
         public bool Raycast(Ray ray, out VoxelPhysics.HitInfo hitInfo)
@@ -239,7 +238,7 @@ namespace Spacebox.Game.Generation
             {
                 chunks[i].Render(Shader);
             }
-            VisualDebug.DrawBoundingBox(geometryBoundingBox, Color4.Orange);
+            VisualDebug.DrawBoundingBox(GeometryBoundingBox, Color4.Orange);
         }
 
         public bool IsColliding(BoundingVolume volume)
