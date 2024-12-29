@@ -43,7 +43,7 @@ version 0.0.9
 - ioc container
 - TPS
 - chunk geometry bounding box
--
+- many chunks, no sides for blocks between chunks
 
 version 0.0.8
 

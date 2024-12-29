@@ -36,14 +36,14 @@ namespace Spacebox.Game
                 ChunkData data = new ChunkData
                 {
                     ModId = GameSetLoader.ModInfo.ModId,
-                    PositionX = chunk.Position.X,
-                    PositionY = chunk.Position.Y,
-                    PositionZ = chunk.Position.Z,
+                    PositionX = chunk.PositionWorld.X,
+                    PositionY = chunk.PositionWorld.Y,
+                    PositionZ = chunk.PositionWorld.Z,
                     BlockIds = blockIds,
                     Directions = directions
                 };
                 string jsonString = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-                string filePath = GetChunkFilePath(chunk.Position, Path.Combine(SaveDirectory, worldFolder));
+                string filePath = GetChunkFilePath(chunk.PositionWorld, Path.Combine(SaveDirectory, worldFolder));
                 File.WriteAllText(filePath, jsonString);
                 Debug.Log($"Chunk saved at {filePath}");
             }
@@ -81,8 +81,8 @@ namespace Spacebox.Game
                     loadedBlocks[x, y, z].Direction = directionData.Direction;
                 }
 
-                Vector3 loadedPosition = new Vector3(data.PositionX, data.PositionY, data.PositionZ);
-                Chunk chunk = new Chunk(loadedPosition, loadedBlocks, isLoaded: true);
+                Vector3 loadedPositionWorld = new Vector3(data.PositionX, data.PositionY, data.PositionZ);
+                Chunk chunk = new Chunk(loadedPositionWorld, loadedBlocks, isLoaded: true);
                 Debug.Success($"Chunk loaded from {filePath}");
                 return chunk;
             }

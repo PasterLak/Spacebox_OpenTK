@@ -7,7 +7,7 @@ namespace Spacebox.Game.Generation
         private const byte Size = Chunk.Size;
         private readonly Block[,,] _blocks;
 
-        private const bool EnableLighting = false;
+        private const bool EnableLighting = true;
 
         public LightManager(Block[,,] blocks)
         {

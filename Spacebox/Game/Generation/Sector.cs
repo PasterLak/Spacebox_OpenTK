@@ -168,7 +168,7 @@ namespace Spacebox.Game.Generation
 
         public void Update()
         {
-            //VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 10, 100));
+           // VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 10, 100));
 
             for (int i = 0; i < asteroids.Count; i++)
             {
@@ -179,8 +179,8 @@ namespace Spacebox.Game.Generation
         public void Render(Shader shader)
         {
             sharedShader.SetVector4("color", new Vector4(0, 1, 0, 1));
-            simple?.Render(Camera.Main);
-            VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 10, 10, 100));
+            //simple?.Render(Camera.Main);
+            VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 20, 100));
 
             for (int i = 0; i < asteroids.Count; i++)
             {

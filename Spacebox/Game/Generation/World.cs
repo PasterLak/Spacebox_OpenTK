@@ -6,7 +6,6 @@ using Spacebox.Game.Effects;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 
-
 /*
   positionWorld
   positionLocal

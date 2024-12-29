@@ -1,12 +1,11 @@
 ﻿using OpenTK.Mathematics;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Spacebox.Common
 {
     public class Node3D :  IEquatable<Node3D>
     {
         public Guid Id { get; } = Guid.NewGuid();
-        public string Name { get; set; } = "Tranform";
+        public string Name { get; set; } = "Transform";
 
         public virtual Vector3 Position
         {

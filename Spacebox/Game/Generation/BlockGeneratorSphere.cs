@@ -18,7 +18,7 @@ namespace Spacebox.Game.Generation
         private void GenerateSphereBlocks()
         {
             Vector3 center = new Vector3(Size / 2f, Size / 2f, Size / 2f);
-            float radius = Size / 2f;
+            float radius = Size / 2f - 1;
             radius = radius * radius;
             Random random = World.Random;
 

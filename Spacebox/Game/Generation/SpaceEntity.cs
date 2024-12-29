@@ -37,8 +37,7 @@ namespace Spacebox.Game.Generation
 
         public SpaceEntity(Vector3 positionWorld, Sector sector, bool oneChunk)
         {
-            Debug.Success("<<<< New entity! " + positionWorld + "local 0 10 0: " 
-                          + LocalToWorld(new Vector3(0, 10, 0), this));
+            Debug.Success("<<<< New entity! " + positionWorld);
             PositionWorld = positionWorld;
             Sector = sector;
             BoundingBox = new BoundingBox(positionWorld, new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));
@@ -46,12 +45,12 @@ namespace Spacebox.Game.Generation
             octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
             Shader = ShaderManager.GetShader("Shaders/block");
             geometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
-   
+
             AddChunk(new Chunk(positionWorld));
 
             if (!oneChunk)
             {
-                AddChunk(new Chunk(positionWorld + new Vector3(0, Chunk.Size, 0)));
+                AddChunk(new Chunk(positionWorld + new Vector3(0, -Chunk.Size, 0)));
             }
 
             //GeometryMin = c.GeometryMin;
@@ -65,16 +64,28 @@ namespace Spacebox.Game.Generation
             atlasTexture = GameBlocks.LightAtlas;
 // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
             tag = CreateTag(geometryBoundingBox);
+
+            Debug.Log("------------ Entity -----------");
+            foreach (var c in chunks)
+            {
+                Debug.Success("Chunk " + c.PositionIndex + " neigbors: " + c.GetNeigborCount());
+                c.GenerateMesh();
+            }
+            Debug.Log("------------ Entity -----------");
+
+           
+            
         }
-        
+
         public void AddChunk(Chunk chunk)
         {
-            octree.Add(chunk, new BoundingBox(chunk.Position, Vector3.One * Chunk.Size));
+            chunk.PositionIndex = GetChunkIndex(chunk.PositionWorld);
+            octree.Add(chunk, new BoundingBox(chunk.PositionWorld, Vector3.One * Chunk.Size));
             chunks.Add(chunk);
-           // chunkDictionary.Add(chunk.Index, chunk);
+            chunkDictionary.Add(chunk.PositionIndex, chunk);
             chunk.OnChunkModified += UpdateEntityGeometryMinMax;
             chunk.GenerateMesh();
-
+            UpdateNeighbors(chunk);
             RecalculateGeometryBoundingBox();
         }
 
@@ -82,10 +93,11 @@ namespace Spacebox.Game.Generation
         {
             octree.Remove(chunk);
             chunks.Remove(chunk);
-            //chunkDictionary.Remove(chunk.Index);
+            chunkDictionary.Remove(chunk.PositionIndex);
             chunk.OnChunkModified -= UpdateEntityGeometryMinMax;
             chunk.Dispose();
 
+            UpdateNeighbors(chunk, true);
             RecalculateGeometryBoundingBox();
         }
 
@@ -140,6 +152,48 @@ namespace Spacebox.Game.Generation
             geometryBoundingBox = BoundingBox.CreateFromMinMax(min, max);
         }
 
+        public Vector3SByte GetChunkIndex(Vector3 worldPosition)
+        {
+            Vector3 relativePosition = worldPosition - PositionWorld;
+
+            int indexX = (int)MathF.Floor(relativePosition.X / Chunk.Size);
+            int indexY = (int)MathF.Floor(relativePosition.Y / Chunk.Size);
+            int indexZ = (int)MathF.Floor(relativePosition.Z / Chunk.Size);
+
+            return new Vector3SByte((sbyte)indexX, (sbyte)indexY, (sbyte)indexZ);
+        }
+
+        private static readonly Vector3SByte[] Directions = new Vector3SByte[]
+        {
+            new Vector3SByte(1, 0, 0), // X+
+            new Vector3SByte(-1, 0, 0), // X-
+            new Vector3SByte(0, 1, 0), // Y+
+            new Vector3SByte(0, -1, 0), // Y-
+            new Vector3SByte(0, 0, 1), // Z+
+            new Vector3SByte(0, 0, -1) // Z-
+        };
+
+        private void UpdateNeighbors(Chunk chunk, bool removing = false)
+        {
+            foreach (var dir in Directions)
+            {
+                Vector3SByte neighborCoord = chunk.PositionIndex + dir;
+                if (chunkDictionary.TryGetValue(neighborCoord, out Chunk neighbor))
+                {
+                    if (removing)
+                    {
+                        neighbor.RemoveNeighbor(chunk);
+                        chunk.RemoveNeighbor(neighbor);
+                    }
+                    else
+                    {
+                        neighbor.AddNeighbor(chunk);
+                        chunk.AddNeighbor(neighbor);
+                    }
+                }
+            }
+        }
+
 
         public void Update()
         {
@@ -149,7 +203,7 @@ namespace Spacebox.Game.Generation
                 tag.Text = (int)Vector3.Distance(BoundingBox.Center + new Vector3(0.5f, 0.5f, 0.5f), camera.Position) +
                            " m";
 
-            VisualDebug.DrawBoundingBox(geometryBoundingBox, Color4.Orange);
+            
         }
 
         public bool Raycast(Ray ray, out VoxelPhysics.HitInfo hitInfo)
@@ -185,6 +239,7 @@ namespace Spacebox.Game.Generation
             {
                 chunks[i].Render(Shader);
             }
+            VisualDebug.DrawBoundingBox(geometryBoundingBox, Color4.Orange);
         }
 
         public bool IsColliding(BoundingVolume volume)

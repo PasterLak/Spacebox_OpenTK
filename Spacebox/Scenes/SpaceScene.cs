@@ -100,12 +100,11 @@ namespace Spacebox.Scenes
                     Debug.Error("Wrong seed format! Seed: " + args[2]);
                 }
 
-
-
             }
 
             BlackScreenOverlay.IsEnabled = true;
             BlackScreenOverlay.Render();
+
         }
 
         private void InitializeGamesetData(string blocksPath, string itemsPath, string emissionPath, string modId, byte blockSizePixels)
@@ -116,7 +115,6 @@ namespace Spacebox.Scenes
             var texture = GameBlocks.AtlasBlocks.CreateTexture(blocksPath, blockSizePixels, false);
             var items = GameBlocks.AtlasItems.CreateTexture(itemsPath, blockSizePixels, false);
             var emissions = GameBlocks.AtlasBlocks.CreateEmission(emissionPath);
-
 
             GameBlocks.BlocksTexture = texture;
             GameBlocks.ItemsTexture = items;

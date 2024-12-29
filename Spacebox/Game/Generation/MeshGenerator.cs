@@ -2,12 +2,13 @@
 using Spacebox.Common;
 using System.Diagnostics;
 using Spacebox.Common.Physics;
+using Debug = Spacebox.Common.Debug;
 
 namespace Spacebox.Game.Generation
 {
     public class MeshGenerator
     {
-        private bool _EnableAO = false;
+        private bool _EnableAO = true;
 
         public bool EnableAO
         {
@@ -16,6 +17,7 @@ namespace Spacebox.Game.Generation
         }
 
         private const byte Size = Chunk.Size;
+        private readonly Chunk _chunk;
         private readonly Block[,,] _blocks;
         private readonly bool _measureGenerationTime;
 
@@ -27,18 +29,20 @@ namespace Spacebox.Game.Generation
         private int vertexCount;
         private int indexCount;
         Stopwatch stopwatch = null;
-
+        private Dictionary<Vector3SByte, Chunk> _neighbors;
 
         public BoundingBox GeometryBoundingBox { get; private set; }
 
-        public MeshGenerator(Block[,,] blocks, bool measureGenerationTime = true)
+        public MeshGenerator(Chunk chunk, Dictionary<Vector3SByte, Chunk> Neighbors, bool measureGenerationTime = true)
         {
-            _blocks = blocks;
+            _neighbors = Neighbors;
+            _blocks = chunk.Blocks;
+            _chunk = chunk;
             _measureGenerationTime = measureGenerationTime;
 
             AOVoxels.Init();
             PrecomputeData();
-
+    
             GeometryBoundingBox = BoundingBox.CreateFromMinMax(Vector3.Zero, Vector3.One * Chunk.Size);
         }
 
@@ -104,7 +108,7 @@ namespace Spacebox.Game.Generation
                             sbyte ny = (sbyte)(y + normal.Y);
                             sbyte nz = (sbyte)(z + normal.Z);
 
-                            if (IsTransparentBlock(nx, ny, nz))
+                            if (IsTransparentBlock(nx, ny, nz, normal))
                             {
                                 var faceVertices = CubeMeshData.GetFaceVertices(face);
                                 var faceUVs =
@@ -312,7 +316,7 @@ namespace Spacebox.Game.Generation
         {
             if (IsSolid(x, y, z))
             {
-                if (IsTransparentBlock(x, y, z)) return false;
+                if (IsTransparentBlock(x, y, z, norm)) return false;
 
                 if (IsLightBlock(x, y, z)) return false;
 
@@ -334,13 +338,48 @@ namespace Spacebox.Game.Generation
             return !_blocks[x, y, z].IsAir();
         }
 
-        private bool IsTransparentBlock(sbyte x, sbyte y, sbyte z)
+        private bool IsTransparentBlock(sbyte x, sbyte y, sbyte z, Vector3SByte normal)
         {
             if (x < 0 || x >= Size || y < 0 || y >= Size || z < 0 || z >= Size)
-                return true;
+            {
+                Chunk neighborChunk = _neighbors[normal];
+                
+                if (neighborChunk != null)
+                {
+                    Debug.Log("Neighbor Chunk exists! " + neighborChunk.PositionIndex);
+                    Block block = neighborChunk.GetBlock(WrapBlockCoordinate(x,y,z, Size));
+
+                    if (block != null)
+                    {
+                        return block.IsAir() || block.IsTransparent;
+                    }
+                }
+                else
+                {
+                    Debug.Log("Neighbor Chunk dont exists! " + normal);
+                    return true;
+                }
+            }
 
             var b = _blocks[x, y, z];
             return b.IsAir() || b.IsTransparent;
+        }
+        
+        public static Vector3SByte WrapBlockCoordinate(int x, int y, int z,  byte Size)
+        {
+            int Wrap(int coord, int size)
+            {
+                int wrapped = coord % size;
+                if (wrapped < 0)
+                    wrapped += size;
+                return wrapped;
+            }
+
+            return new Vector3SByte(
+                (sbyte)Wrap(x, Size),
+                (sbyte)Wrap(y, Size),
+                (sbyte)Wrap(z, Size)
+            );
         }
 
         private bool IsInRange(sbyte x, sbyte y, sbyte z)
