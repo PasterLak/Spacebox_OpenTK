@@ -1,16 +1,17 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Common.Physics;
+using Spacebox.Game.Physics;
 
 namespace Spacebox.Game.Generation
 {
     public class Sector : IDisposable
     {
-        public const short SizeBlocks = 64; // 512
+        public const short SizeBlocks = 256; // 512
         public const short SizeBlocksHalf = SizeBlocks / 2;
 
-        public Vector3 Position { get; private set; }
-        public Vector3i Index { get; private set; }
+        public Vector3 PositionWorld { get; private set; }
+        public Vector3i PositionIndex { get; private set; }
 
         private readonly PointOctree<SpaceEntity> sectorOctree;
         public World World { get; private set; }
@@ -24,35 +25,79 @@ namespace Spacebox.Game.Generation
 
         private List<SpaceEntity> asteroids;
 
-        public Sector(Vector3 position, Vector3i index, World world)
+        public Sector(Vector3 positionWorld, Vector3i positionIndex, World world)
         {
-            Position = position;
-            Index = index;
+            PositionWorld = positionWorld;
+            PositionIndex = positionIndex;
             World = world;
 
-            Vector3 sectorCenter = Position + new Vector3(SizeBlocksHalf);
+            Vector3 sectorCenter = PositionWorld + new Vector3(SizeBlocksHalf);
             Vector3 sectorSize = new Vector3(SizeBlocks, SizeBlocks, SizeBlocks);
 
             BoundingBox = new BoundingBox(sectorCenter, sectorSize);
 
-            sectorOctree = new PointOctree<SpaceEntity>(SizeBlocks, position, 1);
+            sectorOctree = new PointOctree<SpaceEntity>(SizeBlocks, positionWorld, 1);
 
             asteroids = new List<SpaceEntity>();
 
-            Initialize();
+            InitializeSharedResources();
+            SpawnAsteroids();
+            //Initialize();
         }
 
         private void Initialize()
         {
-            
-            World.EnqueueSectorInitialization(this);
+            //World.EnqueueSectorInitialization(this);
 
             SpawnAsteroids();
         }
 
+        public bool IsColliding(Vector3 positionWorld, BoundingVolume volume)
+        {
+            if (TryGetNearestEntity(positionWorld, out var entity))
+            {
+                return entity.IsColliding(volume);
+            }
+            
+            return false;
+        }
+
+        public bool Raycast(Ray ray, out VoxelPhysics.HitInfo hitInfo)
+        {
+            if (TryGetNearestEntity(ray.Origin, out var entity))
+            {
+                Debug.Log("Nearest entity found ");
+                return entity.Raycast(ray, out hitInfo);    
+            }
+
+            hitInfo = new VoxelPhysics.HitInfo();
+            return false;
+        }
+
+        public bool TryGetNearestEntity(Vector3 positionWorld, out SpaceEntity entity)
+        {
+            entity = null;
+            if(asteroids.Count == 0) return false;
+
+            float dis = float.MaxValue;
+
+            for (int i = 0; i < asteroids.Count; i++)
+            {
+                float check = Vector3.Distance(positionWorld, asteroids[i].PositionWorld);
+                
+                if (dis > check)
+                {
+                    dis = check;
+                    entity = asteroids[i];
+                }
+            }
+
+            return true;
+        }
+
         private void SpawnAsteroids()
         {
-            int numAsteroids = 1;
+            int numAsteroids = 3;
             Random random = new Random();
 
             for (int i = 0; i < numAsteroids; i++)
@@ -61,23 +106,39 @@ namespace Spacebox.Game.Generation
 
                 do
                 {
-                    float x = (float)(random.NextDouble() * (SizeBlocks - SizeBlocks * 0.2f) + Position.X - SizeBlocksHalf + SizeBlocks * 0.1f);
-                    float y = (float)(random.NextDouble() * (SizeBlocks - SizeBlocks * 0.2f) + Position.Y - SizeBlocksHalf + SizeBlocks * 0.1f);
-                    float z = (float)(random.NextDouble() * (SizeBlocks - SizeBlocks * 0.2f) + Position.Z - SizeBlocksHalf + SizeBlocks * 0.1f);
+                    asteroidPosition = GeneratePosition(PositionWorld, 0.2f, random);
+                } 
+                while (!IsPositionValid(asteroidPosition));
 
-                    asteroidPosition = new Vector3(x, y, z);
-
-                } while (!IsPositionValid(asteroidPosition));
-
-                SpaceEntity asteroid = new SpaceEntity(asteroidPosition, this);
+                SpaceEntity asteroid = new SpaceEntity(asteroidPosition, this, i != 0);
                 asteroids.Add(asteroid);
                 sectorOctree.Add(asteroid, asteroidPosition);
             }
         }
 
+        public Vector3 GeneratePosition(Vector3 chunkPosition, float margin01,  Random _random)
+        {
+            
+            float margin = SizeBlocks * margin01; 
+            
+            float minX = chunkPosition.X + margin;
+            float maxX = chunkPosition.X + SizeBlocks - margin;
+
+            float minY = chunkPosition.Y + margin;
+            float maxY = chunkPosition.Y + SizeBlocks - margin;
+
+            float minZ = chunkPosition.Z + margin;
+            float maxZ = chunkPosition.Z + SizeBlocks - margin;
+            
+            float x = (float)(_random.NextDouble() * (maxX - minX) + minX);
+            float y = (float)(_random.NextDouble() * (maxY - minY) + minY);
+            float z = (float)(_random.NextDouble() * (maxZ - minZ) + minZ);
+
+            return new Vector3(x, y, z);
+        }
+
         private bool IsPositionValid(Vector3 position)
         {
-
             float minDistance = SizeBlocks * 0.1f;
             BoundingBox innerBounds = new BoundingBox(
                 BoundingBox.Center,
@@ -90,7 +151,6 @@ namespace Spacebox.Game.Generation
 
         public void InitializeSharedResources()
         {
-
             if (sharedShader == null)
             {
                 sharedShader = ShaderManager.GetShader("Shaders/textured");
@@ -108,38 +168,44 @@ namespace Spacebox.Game.Generation
 
         public void Update()
         {
-
-
             //VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 10, 100));
+
+            for (int i = 0; i < asteroids.Count; i++)
+            {
+                asteroids[i].Update();  
+            }
         }
 
         public void Render(Shader shader)
         {
             sharedShader.SetVector4("color", new Vector4(0, 1, 0, 1));
             simple?.Render(Camera.Main);
-            //VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 10, 100));
+            VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 10, 10, 100));
 
-            foreach (var asteroid in asteroids)
+            for (int i = 0; i < asteroids.Count; i++)
             {
-                asteroid.Render(Camera.Main);
+                asteroids[i].Render(Camera.Main);  
             }
+           
         }
 
         public void Dispose()
         {
-           // DisposalManager.EnqueueForDispose(simple);
+            // DisposalManager.EnqueueForDispose(simple);
             simple?.Dispose();
 
             foreach (var asteroid in asteroids)
             {
                 //DisposalManager.EnqueueForDispose(asteroid);
-                asteroid?.Dispose();    
+                asteroid?.Dispose();
             }
+
+            asteroids = null;
         }
 
         public override string ToString()
         {
-            return $"[Sector] Pos: {Position.ToString()} Index: {Index.ToString()}";
+            return $"[Sector] Pos: {PositionWorld.ToString()} Index: {PositionIndex.ToString()}";
         }
     }
 }

@@ -7,6 +7,8 @@ namespace Spacebox.Game.Generation
         private const byte Size = Chunk.Size;
         private readonly Block[,,] _blocks;
 
+        private const bool EnableLighting = false;
+
         public LightManager(Block[,,] blocks)
         {
             _blocks = blocks;
@@ -15,6 +17,8 @@ namespace Spacebox.Game.Generation
 
         public void PropagateLight()
         {
+            if (!EnableLighting) return;
+            
             ResetLightLevels();
 
             Queue<Vector3Byte> lightQueue = new Queue<Vector3Byte>();

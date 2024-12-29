@@ -88,6 +88,17 @@ namespace Spacebox.Common
 
             return result;
         }
+        
+        public static Vector3 operator +(Vector3 v1, Vector3SByte v2)
+        {
+            Vector3 result = new Vector3();
+
+            result.X = v1.X + v2.X;
+            result.Y = v1.Y+v2.Y;
+            result.Z = v1.Z+ v2.Z;
+
+            return result;
+        }
 
         public static Vector3SByte operator -(Vector3SByte v1, Vector3SByte v2)
         {
@@ -145,6 +156,26 @@ namespace Spacebox.Common
         {
             return new Vector3SByte(v);
         }
+        
+        public static Vector3SByte operator *(Vector3SByte v, byte scalar)
+        {
+            Vector3SByte result = new Vector3SByte();
+
+            result.X = MultiplyWithClamp(v.X, scalar);
+            result.Y = MultiplyWithClamp(v.Y, scalar);
+            result.Z = MultiplyWithClamp(v.Z, scalar);
+
+            return result;
+        }
+
+        private static sbyte MultiplyWithClamp(sbyte value, byte scalar)
+        {
+            int product = value * scalar;
+            if (product > sbyte.MaxValue) return sbyte.MaxValue;
+            if (product < sbyte.MinValue) return sbyte.MinValue;
+            return (sbyte)product;
+        }
+
 
         public static double Distance(Vector3SByte a, Vector3SByte b)
         {

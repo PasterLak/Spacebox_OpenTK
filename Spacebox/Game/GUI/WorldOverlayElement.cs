@@ -17,7 +17,7 @@ namespace Spacebox.Game.GUI
             if (World.CurrentSector == null) { return; }
 
             ImGui.Text($" ");
-            ImGui.Text($"Sector. Pos: {World.CurrentSector.Position} Index: {World.CurrentSector.Index}");
+            ImGui.Text($"Sector. Pos: {World.CurrentSector.PositionWorld} Index: {World.CurrentSector.PositionIndex}");
         }
     }
 }

@@ -21,6 +21,12 @@ namespace Spacebox.Common.Physics
         public Vector3 Min => Center - Extents;
         public Vector3 Max => Center + Extents;
 
+        public BoundingBox(BoundingBox boundingBox)
+        {
+            Center = boundingBox.Center;
+            Size = boundingBox.Size;
+          
+        }
         public BoundingBox(Vector3 center, Vector3 size)
         {
             Center = center;
@@ -39,6 +45,24 @@ namespace Spacebox.Common.Physics
         {
             return new BoundingBox(Center, Size);
         }
+
+        
+        
+        public void Expand(BoundingBox other)
+        {
+            Vector3 currentMin = this.Min;
+            Vector3 currentMax = this.Max;
+    
+            Vector3 otherMin = other.Min;
+            Vector3 otherMax = other.Max;
+
+            Vector3 newMin = Vector3.ComponentMin(currentMin, otherMin);
+            Vector3 newMax = Vector3.ComponentMax(currentMax, otherMax);
+
+            this.Center = (newMin + newMax) * 0.5f;
+            this.Size = newMax - newMin;
+        }
+
 
         public bool Contains(Vector3 point)
         {

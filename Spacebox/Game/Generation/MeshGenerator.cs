@@ -1,13 +1,19 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
 using System.Diagnostics;
+using Spacebox.Common.Physics;
 
 namespace Spacebox.Game.Generation
 {
     public class MeshGenerator
     {
-        private bool _EnableAO = true;
-        public bool EnableAO { get => _EnableAO; set { _EnableAO = value; } }
+        private bool _EnableAO = false;
+
+        public bool EnableAO
+        {
+            get => _EnableAO;
+            set { _EnableAO = value; }
+        }
 
         private const byte Size = Chunk.Size;
         private readonly Block[,,] _blocks;
@@ -23,6 +29,7 @@ namespace Spacebox.Game.Generation
         Stopwatch stopwatch = null;
 
 
+        public BoundingBox GeometryBoundingBox { get; private set; }
 
         public MeshGenerator(Block[,,] blocks, bool measureGenerationTime = true)
         {
@@ -31,6 +38,8 @@ namespace Spacebox.Game.Generation
 
             AOVoxels.Init();
             PrecomputeData();
+
+            GeometryBoundingBox = BoundingBox.CreateFromMinMax(Vector3.Zero, Vector3.One * Chunk.Size);
         }
 
         private void PrecomputeData()
@@ -45,7 +54,6 @@ namespace Spacebox.Game.Generation
 
         public Mesh GenerateMesh()
         {
-
             if (_measureGenerationTime)
             {
                 stopwatch = Stopwatch.StartNew();
@@ -57,6 +65,17 @@ namespace Spacebox.Game.Generation
             vertexCount = 0;
             indexCount = 0;
 
+            sbyte SizeHalf = (sbyte)(Size * 0.5f);
+
+            sbyte xMin = sbyte.MaxValue;
+            sbyte xMax = sbyte.MinValue;
+
+            sbyte yMin = sbyte.MaxValue;
+            sbyte yMax = sbyte.MinValue;
+
+            sbyte zMin = sbyte.MaxValue;
+            sbyte zMax = sbyte.MinValue;
+
             for (sbyte x = 0; x < Size; x++)
             {
                 for (sbyte y = 0; y < Size; y++)
@@ -65,6 +84,16 @@ namespace Spacebox.Game.Generation
                     {
                         var block = _blocks[x, y, z];
                         if (block.IsAir()) continue;
+
+                        
+                        if(x < xMin) xMin = x;
+                        if(x > xMax) xMax = x;
+                        
+                        if(y < yMin) yMin = y;
+                        if(y > yMax) yMax = y;
+                        
+                        if(z < zMin) zMin = z;
+                        if(z > zMax) zMax = z;
 
                         for (int fIndex = 0; fIndex < faces.Length; fIndex++)
                         {
@@ -78,7 +107,8 @@ namespace Spacebox.Game.Generation
                             if (IsTransparentBlock(nx, ny, nz))
                             {
                                 var faceVertices = CubeMeshData.GetFaceVertices(face);
-                                var faceUVs = GameBlocks.GetBlockUVsByIdAndDirection(block.BlockId, face, block.Direction);
+                                var faceUVs =
+                                    GameBlocks.GetBlockUVsByIdAndDirection(block.BlockId, face, block.Direction);
 
                                 float currentLightLevel = block.LightLevel / 15f;
                                 Vector3 currentLightColor = block.LightColor;
@@ -93,11 +123,13 @@ namespace Spacebox.Game.Generation
                                 }
 
                                 float averageLightLevel = (currentLightLevel + neighborLightLevel) * 0.5f;
-                                Vector3 averageLightColor = (currentLightColor * currentLightLevel + neighborLightColor * neighborLightLevel) /
-                                                            (currentLightLevel + neighborLightLevel + 0.001f);
+                                Vector3 averageLightColor =
+                                    (currentLightColor * currentLightLevel + neighborLightColor * neighborLightLevel) /
+                                    (currentLightLevel + neighborLightLevel + 0.001f);
 
                                 Vector3 ambient = new Vector3(0.2f, 0.2f, 0.2f);
-                                Vector3 vertexColor = Vector3.Clamp(block.Color * (averageLightColor + ambient), Vector3.Zero, Vector3.One);
+                                Vector3 vertexColor = Vector3.Clamp(block.Color * (averageLightColor + ambient),
+                                    Vector3.Zero, Vector3.One);
 
                                 bool flip = false;
                                 int vStart = vertexCount / 12;
@@ -108,7 +140,9 @@ namespace Spacebox.Game.Generation
 
                                 bool isLightOrTransparent = block.IsTransparent || block.IsLight();
 
-                                var shading = isLightOrTransparent ? AOVoxels.GetLightedPoints : AOShading.GetAO(newMask);
+                                var shading = isLightOrTransparent
+                                    ? AOVoxels.GetLightedPoints
+                                    : AOShading.GetAO(newMask);
 
                                 bool same3 = false;
                                 bool diagonal = false;
@@ -125,8 +159,8 @@ namespace Spacebox.Game.Generation
                                             continue;
                                         }
                                         else another = i;
-
                                     }
+
                                     if (s == 3) same3 = true;
 
                                     if (same3)
@@ -155,7 +189,6 @@ namespace Spacebox.Game.Generation
                                     vertices[vertexCount++] = normal.Z;
                                     if (_EnableAO)
                                     {
-
                                         AO[i] = shading[i];
                                         vertices[vertexCount++] = AO[i];
 
@@ -177,9 +210,6 @@ namespace Spacebox.Game.Generation
                                         {
                                             if (AO[i] < 0.5f) AO[i] -= 0.5f;
                                         }
-
-
-
                                     }
                                     else
                                         vertices[vertexCount++] = 1f;
@@ -189,12 +219,10 @@ namespace Spacebox.Game.Generation
                                 {
                                     if (AO[0] + AO[2] < AO[1] + AO[3])
                                     {
-
                                         flip = true;
                                     }
                                     else
                                     {
-
                                         flip = false;
                                     }
 
@@ -247,6 +275,9 @@ namespace Spacebox.Game.Generation
                 Common.Debug.Success($"Chunk mesh generation time: {stopwatch.ElapsedMilliseconds} ms");
             }
 
+            GeometryBoundingBox = BoundingBox.CreateFromMinMax(new Vector3(xMin, yMin, zMin),
+                new Vector3(xMax +1 , yMax+1 , zMax+1 ));
+
             return mesh;
         }
 
@@ -289,13 +320,13 @@ namespace Spacebox.Game.Generation
             }
 
             return false;
-
         }
 
         private bool IsLightBlock(sbyte x, sbyte y, sbyte z)
         {
             return _blocks[x, y, z].LightLevel > 0;
         }
+
         private bool IsSolid(sbyte x, sbyte y, sbyte z)
         {
             if (x < 0 || x >= Size || y < 0 || y >= Size || z < 0 || z >= Size)

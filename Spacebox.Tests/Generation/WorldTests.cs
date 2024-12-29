@@ -23,8 +23,8 @@ namespace Spacebox.Tests.Generation
 
     public class MockSector : Sector
     {
-        public MockSector(Vector3 position, Vector3i index, World world)
-            : base(position, index, world)
+        public MockSector(Vector3 positionWorld, Vector3i positionIndex, World world)
+            : base(positionWorld, positionIndex, world)
         {
         }
 

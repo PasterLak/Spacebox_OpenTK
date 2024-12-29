@@ -38,10 +38,12 @@ version 0.0.9
 - benchmarks
 - better project structure
 - better project xml file
-- DispoalManager for multi threading
+- DisposalManager for multi threading
 - better Overlay with Elements
 - ioc container
 - TPS
+- chunk geometry bounding box
+-
 
 version 0.0.8
 

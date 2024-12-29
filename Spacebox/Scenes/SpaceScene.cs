@@ -28,7 +28,7 @@ namespace Spacebox.Scenes
         private Shader skyboxShader;
 
 
-        private Sector0 sector;
+        //private Sector0 sector;
         Shader blocksShader;
         private Texture2D blockTexture;
         private Texture2D lightAtlas;
@@ -202,7 +202,7 @@ namespace Spacebox.Scenes
 
             blockDestructionManager = new BlockDestructionManager(player);
 
-            sector = new Sector0(new Vector3(0, 0, 0), new Vector3i(0, 0, 0), world);
+            //sector = new Sector0(new Vector3(0, 0, 0), new Vector3i(0, 0, 0), world);
 
             dustSpawner = new DustSpawner(player);
 
@@ -315,7 +315,7 @@ namespace Spacebox.Scenes
 
             //world.Update();
            
-            sector.Update();
+            //sector.Update();
         }
 
         public override void Render()
@@ -353,7 +353,7 @@ namespace Spacebox.Scenes
 
             //chunk.Draw(blocksShader);
             player.Draw();
-            sector.Render(blocksShader);
+            //sector.Render(blocksShader);
             world.Render(blocksShader);
             //itemModel.Draw(itemModelShader);
             //world.Render(blocksShader);
@@ -420,7 +420,7 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
-            sector.Dispose();
+            //sector.Dispose();
             blocksShader.Dispose();
             //blockTexture.Dispose();
             lightAtlas.Dispose();

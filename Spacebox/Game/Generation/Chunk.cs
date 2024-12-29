@@ -17,8 +17,19 @@ namespace Spacebox.Game.Generation
 
         public const byte Size = 32; // 32700+ blocks
 
+        public Dictionary<Vector3SByte, Chunk> Neighbors = new Dictionary<Vector3SByte, Chunk>()
+        {
+            { new Vector3SByte(1, 0, 0), null },
+            { new Vector3SByte(0, 1, 0), null },
+            { new Vector3SByte(0, 0, 1), null },
+            { new Vector3SByte(-1, 0, 0), null },
+            { new Vector3SByte(0, -1, 0), null },
+            { new Vector3SByte(0, 0, -1), null },
+        };
+        
         public long Mass { get; set; } = 0;
         public Vector3 Position { get; private set; }
+        public Vector3SByte Index { get;  set; }
         public Block[,,] Blocks { get; private set; }
         public bool ShowChunkBounds { get; set; } = true;
         public bool MeasureGenerationTime { get; set; } = true;
@@ -33,8 +44,10 @@ namespace Spacebox.Game.Generation
         private BlockDestructionManager destructionManager;
         public SpaceEntity SpaceEntity { get; private set; }
         private BoundingBox boundingBox;
+        public BoundingBox GeometryBoundingBox { get; private set; }
 
-        private Tag tag;
+        public Action<Chunk> OnChunkModified;
+
         public Chunk(Vector3 position)
             : this(position, null, isLoaded: false)
         {
@@ -44,11 +57,10 @@ namespace Spacebox.Game.Generation
         {
             Position = position;
             Blocks = new Block[Size, Size, Size];
-            if (CurrentChunk != null) Debug.Error("[Chunk] Many chunks");
+
             CurrentChunk = this;
             CreateBoundingBox();
-            tag = CreateTag(boundingBox);
-
+            GeometryBoundingBox = new BoundingBox(boundingBox);
             destructionManager = World.DestructionManager;
 
             if (isLoaded && loadedBlocks != null)
@@ -58,8 +70,8 @@ namespace Spacebox.Game.Generation
             }
             else
             {
-                BlockGenerator blockGenerator = new BlockGenerator(Blocks, position);
-                blockGenerator.GenerateSphereBlocks();
+                BlockGenerator blockGenerator = new BlockGeneratorCross(Blocks, position);
+                blockGenerator.Generate();
                 IsGenerated = true;
             }
 
@@ -67,7 +79,7 @@ namespace Spacebox.Game.Generation
             _lightManager.PropagateLight();
 
             _meshGenerator = new MeshGenerator(Blocks, MeasureGenerationTime);
-            
+
             _isLoadedOrGenerated = true;
         }
 
@@ -76,15 +88,6 @@ namespace Spacebox.Game.Generation
             Vector3 chunkMin = Position;
             Vector3 chunkMax = Position + new Vector3(Size);
             boundingBox = BoundingBox.CreateFromMinMax(chunkMin, chunkMax);
-        }
-
-        private Tag CreateTag(BoundingBox boundingBox)
-        {
-            var tag = new Tag("", boundingBox.Center, Color4.DarkGreen);
-
-            TagManager.RegisterTag(tag);
-
-            return tag;
         }
 
         public void GenerateMesh()
@@ -97,6 +100,12 @@ namespace Spacebox.Game.Generation
 
             _mesh?.Dispose();
             _mesh = newMesh;
+
+            GeometryBoundingBox = BoundingBox.CreateFromMinMax(
+                boundingBox.Min + _meshGenerator.GeometryBoundingBox.Min,
+                boundingBox.Min + _meshGenerator.GeometryBoundingBox.Max);
+            
+            OnChunkModified?.Invoke(this);
         }
 
         public bool IsColliding(BoundingVolume volume)
@@ -104,7 +113,7 @@ namespace Spacebox.Game.Generation
             return VoxelPhysics.IsColliding(volume, Blocks, Position);
         }
 
-        public void Draw(Shader shader)
+        public void Render(Shader shader)
         {
             if (!_isLoadedOrGenerated) return;
 
@@ -116,16 +125,20 @@ namespace Spacebox.Game.Generation
             Matrix4 model = Matrix4.CreateTranslation(position);
             shader.SetMatrix4("model", model);
 
-            if(_mesh != null)
-            _mesh.Draw(shader);
+            if (_mesh != null)
+                _mesh.Draw(shader);
 
             if (ShowChunkBounds && VisualDebug.ShowDebug)
             {
-                VisualDebug.DrawBoundingBox(boundingBox, new Color4(0.5f, 0f, 0.5f, 1f));
-            }
+                //VisualDebug.DrawBoundingBox(boundingBox, new Color4(0.5f, 0f, 0.5f, 0.5f));
 
+
+               
+                //VisualDebug.DrawBoundingBox(GeometryBoundingBox, Color4.Orange);
+            }
         }
 
+       
         public void SetBlock(int x, int y, int z, Block block)
         {
             if (!IsInRange(x, y, z))
@@ -145,6 +158,10 @@ namespace Spacebox.Game.Generation
             GenerateMesh();
         }
 
+        public void RemoveBlock(Vector3i blockPos, Vector3SByte normal)
+        {
+            RemoveBlock(blockPos.X, blockPos.Y, blockPos.Z, normal.X, normal.Y, normal.Z);
+        }
 
         public void RemoveBlock(int x, int y, int z, sbyte xNormal, sbyte yNormal, sbyte zNormal)
         {
@@ -156,24 +173,22 @@ namespace Spacebox.Game.Generation
             if (Blocks[x, y, z].IsTransparent)
             {
                 destructionManager?.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
-                World.DropEffectManager.
-                    DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
+                World.DropEffectManager.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
             }
             else
             {
                 if (IsInRange(x + xNormal, y + yNormal, z + zNormal))
                 {
-
-                    destructionManager?.DestroyBlock(worldBlockPosition, Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
-                    World.DropEffectManager.
-                       DestroyBlock(worldBlockPosition, Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
+                    // destructionManager?.DestroyBlock(worldBlockPosition, Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
+                    // World.DropEffectManager.
+                    //    DestroyBlock(worldBlockPosition, Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
                 }
                 else
                 {
-                    destructionManager?.
-                        DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
-                    World.DropEffectManager.
-                   DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
+                    // destructionManager?.
+                    //     DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
+                    //   World.DropEffectManager.
+                    //  DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
                 }
             }
 
@@ -183,7 +198,6 @@ namespace Spacebox.Game.Generation
             IsModified = true;
 
             GenerateMesh();
-
         }
 
         public Block GetBlock(Vector3 pos)
@@ -209,7 +223,13 @@ namespace Spacebox.Game.Generation
 
             if (!_isLoadedOrGenerated) return false;
 
-            return VoxelPhysics.Raycast(ray, Position, Blocks, out info);
+            if (VoxelPhysics.Raycast(ray, Position, Blocks, out info))
+            {
+                info.chunk = this;
+                return true;
+            }
+
+            return false;
         }
 
         private void ChangeBlockColor(Block block, Vector3 color, bool regenerateMesh)
@@ -220,13 +240,13 @@ namespace Spacebox.Game.Generation
             {
                 GenerateMesh();
             }
-
         }
 
 
         public void Test(Astronaut player)
         {
-           
+            return;
+
             if (!_isLoadedOrGenerated) return;
 
             if (Debug.IsVisible) return;
@@ -238,7 +258,6 @@ namespace Spacebox.Game.Generation
                     _meshGenerator.EnableAO = !_meshGenerator.EnableAO;
                     GenerateMesh();
                 }
-
             }
 
             if (Input.IsKeyDown(Keys.P))
@@ -253,8 +272,6 @@ namespace Spacebox.Game.Generation
                 GenerateMesh();
             }
 
-            tag.Text = (int)Vector3.Distance(boundingBox.Center, player.Position) + " m";
-           
 
             var pos = new Vector3Byte((byte)player.Position.X, (byte)player.Position.Y, (byte)player.Position.Z);
             if (IsInRange(pos.X, pos.Y, pos.Z))
@@ -275,9 +292,9 @@ namespace Spacebox.Game.Generation
 
             if (hit)
             {
-
                 Vector3 worldBlockPosition = hitInfo.blockPosition + Position;
-                VisualDebug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.White);
+                VisualDebug.DrawBoundingBox(
+                    new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.White);
 
 
                 Block aimedBlock = Blocks[hitInfo.blockPosition.X, hitInfo.blockPosition.Y, hitInfo.blockPosition.Z];
@@ -289,13 +306,16 @@ namespace Spacebox.Game.Generation
 
                 if (Input.IsKeyDown(Keys.T))
                 {
-                    Blocks[hitInfo.blockPosition.X, hitInfo.blockPosition.Y, hitInfo.blockPosition.Z].Color = new Vector3(1, 1, 0);
+                    Blocks[hitInfo.blockPosition.X, hitInfo.blockPosition.Y, hitInfo.blockPosition.Z].Color =
+                        new Vector3(1, 1, 0);
 
                     GenerateMesh();
                 }
+
                 if (Input.IsKeyDown(Keys.Z))
                 {
-                    Blocks[hitInfo.blockPosition.X, hitInfo.blockPosition.Y, hitInfo.blockPosition.Z].Color = new Vector3(1, 1, 1);
+                    Blocks[hitInfo.blockPosition.X, hitInfo.blockPosition.Y, hitInfo.blockPosition.Z].Color =
+                        new Vector3(1, 1, 1);
 
                     GenerateMesh();
                 }
@@ -305,12 +325,14 @@ namespace Spacebox.Game.Generation
                 if (PanelUI.IsHoldingBlock() && dis > Block.DiagonalSquared)
                 {
                     BlockSelector.IsVisible = true;
-                    BlockSelector.Instance.UpdatePosition(hitInfo.blockPosition + hitInfo.normal, Block.GetDirectionFromNormal(hitInfo.normal));
+                    BlockSelector.Instance.UpdatePosition(hitInfo.blockPosition + hitInfo.normal,
+                        Block.GetDirectionFromNormal(hitInfo.normal));
                 }
                 else if (PanelUI.IsHoldingDrill())
                 {
                     BlockSelector.IsVisible = true;
-                    BlockSelector.Instance.UpdatePosition(hitInfo.blockPosition, Block.GetDirectionFromNormal(hitInfo.normal));
+                    BlockSelector.Instance.UpdatePosition(hitInfo.blockPosition,
+                        Block.GetDirectionFromNormal(hitInfo.normal));
                 }
                 else
                 {
@@ -351,7 +373,6 @@ namespace Spacebox.Game.Generation
                         aimedBlock.SetDirectionFromNormal(hitInfo.normal);
                         GenerateMesh();
                     }
-
                 }
 
 
@@ -370,28 +391,23 @@ namespace Spacebox.Game.Generation
 
                             SpaceScene.blockDestroy.Play();
                         }
-
                     }
-
-
-
-
-
                 }
 
 
                 if (Input.IsMouseButtonDown(MouseButton.Right))
                 {
-                    Vector3i placeBlockPosition = hitInfo.blockPosition + new Vector3i((int)hitInfo.normal.X, (int)hitInfo.normal.Y, (int)hitInfo.normal.Z);
+                    Vector3i placeBlockPosition = hitInfo.blockPosition + new Vector3i((int)hitInfo.normal.X,
+                        (int)hitInfo.normal.Y, (int)hitInfo.normal.Z);
 
-                    if (Vector3.DistanceSquared(player.Position, hitInfo.blockPosition + hitInfo.normal) > Block.DiagonalSquared)
+                    if (Vector3.DistanceSquared(player.Position, hitInfo.blockPosition + hitInfo.normal) >
+                        Block.DiagonalSquared)
                     {
                         if (IsInRange(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z) &&
-                       Blocks[placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z].IsAir())
+                            Blocks[placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z].IsAir())
                         {
                             if (PanelUI.TryPlaceItem(out var id))
                             {
-
                                 Block newBlock = GameBlocks.CreateBlockFromId(id);
 
                                 bool hasSameSides = GameBlocks.GetBlockDataById(id).AllSidesAreSame;
@@ -403,10 +419,8 @@ namespace Spacebox.Game.Generation
 
                                 SpaceScene.blockPlace.Play();
                             }
-
                         }
                     }
-
                 }
             }
             else
@@ -425,14 +439,14 @@ namespace Spacebox.Game.Generation
                 int z = (int)MathF.Floor(localPosition.Z);
 
                 Vector3 worldBlockPosition = new Vector3(x, y, z) + Position;
-                VisualDebug.DrawBoundingBox(new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.Gray);
+                VisualDebug.DrawBoundingBox(
+                    new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.Gray);
 
 
                 float dis = Vector3.DistanceSquared(worldBlockPosition, player.Position);
 
                 if (PanelUI.IsHoldingBlock() && dis > Block.DiagonalSquared)
                 {
-
                     //Debug.Log("holding");
                     var norm = (player.Position - worldBlockPosition).Normalized();
 
@@ -445,13 +459,11 @@ namespace Spacebox.Game.Generation
 
 
                     if (Input.IsMouseButtonDown(MouseButton.Right) &&
-                    IsInRange(x, y, z) &&
-                    Blocks[x, y, z].IsAir())
+                        IsInRange(x, y, z) &&
+                        Blocks[x, y, z].IsAir())
                     {
-
                         if (PanelUI.TryPlaceItem(out var blockId))
                         {
-
                             Block newBlock = GameBlocks.CreateBlockFromId(blockId);
 
                             bool hasSameSides = GameBlocks.GetBlockDataById(blockId).AllSidesAreSame;
@@ -465,7 +477,6 @@ namespace Spacebox.Game.Generation
                         }
                         else
                         {
-
                         }
                     }
                 }
@@ -478,8 +489,6 @@ namespace Spacebox.Game.Generation
                 {
                     CenteredText.Hide();
                 }
-
-
             }
         }
 

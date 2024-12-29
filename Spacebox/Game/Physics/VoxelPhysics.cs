@@ -70,6 +70,7 @@ namespace Spacebox.Game.Physics
             public Vector3 position;
             public Vector3i blockPosition;
             public Vector3 normal;
+            public Chunk chunk;
         }
 
         public static bool Raycast(Ray ray, Vector3 Position, Chunk chunk, out HitInfo hitInfo)
@@ -82,6 +83,7 @@ namespace Spacebox.Game.Physics
             hitInfo.position = Vector3.Zero;
             hitInfo.blockPosition = new Vector3i(-1, -1, -1);
             hitInfo.normal = Vector3.Zero;
+            hitInfo.chunk = null;
 
             // if (!_isLoadedOrGenerated) return false;
 

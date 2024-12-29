@@ -9,13 +9,18 @@ namespace Spacebox.Game.GUI
 {
     public static class TagManager
     {
-        private static List<Tag> _tags = new List<Tag>();
+        private static HashSet<Tag> _tags = new HashSet<Tag>();
 
         public static void RegisterTag(Tag tag)
         {
             if (!_tags.Contains(tag))
             {
                 _tags.Add(tag);
+                
+            }
+            else
+            {
+                Debug.Error("New Tag was not registered, this tag is already registered!");
             }
         }
 
@@ -24,6 +29,7 @@ namespace Spacebox.Game.GUI
             if (_tags.Contains(tag))
             {
                 _tags.Remove(tag);
+              
             }
         }
 

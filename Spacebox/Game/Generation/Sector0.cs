@@ -74,7 +74,7 @@ namespace Spacebox.Game.Generation
         {
             foreach (var chunk in Chunks)
             {
-                chunk.Draw(shader);
+                chunk.Render(shader);
             }
         }
 

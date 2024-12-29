@@ -228,6 +228,20 @@ namespace Spacebox.Game.Player
         {
             Vector3 acceleration = Vector3.Zero;
             bool isMoving = false;
+            
+            if (Input.IsMouseButtonDown(MouseButton.Left))
+            {
+                Ray ray = new Ray(Position, Front, 6);
+                if (World.CurrentSector.Raycast(ray, out var hitInfo))
+                {
+                    hitInfo.chunk.RemoveBlock(hitInfo.blockPosition, Vector3SByte.CreateFrom(hitInfo.normal));
+                    Debug.Log("Collision!");
+                }
+                else
+                {
+                    Debug.Log("No collision!");
+                }
+            }
 
             if (Input.IsKey(Keys.W))
             {
@@ -391,13 +405,13 @@ namespace Spacebox.Game.Player
 
             if (CollisionEnabled)
             {
-                Chunk chunk = Chunk.CurrentChunk;
+                World world = World.Instance;
 
-                if (chunk == null) return;
+                if (world == null) return;
 
                 position.X += movement.X;
                 UpdateBoundingAt(position);
-                if (chunk.IsColliding(BoundingVolume))
+                if (world.IsColliding(Position, BoundingVolume))
                 {
                     position.X -= movement.X;
                     ApplyVelocityDamage(InertiaController.Velocity.Length);
@@ -407,7 +421,7 @@ namespace Spacebox.Game.Player
 
                 position.Y += movement.Y;
                 UpdateBoundingAt(position);
-                if (chunk.IsColliding(BoundingVolume))
+                if (world.IsColliding(Position, BoundingVolume))
                 {
                     position.Y -= movement.Y;
                     ApplyVelocityDamage(InertiaController.Velocity.Length);
@@ -416,7 +430,7 @@ namespace Spacebox.Game.Player
 
                 position.Z += movement.Z;
                 UpdateBoundingAt(position);
-                if (chunk.IsColliding(BoundingVolume))
+                if (world.IsColliding(Position, BoundingVolume))
                 {
                     position.Z -= movement.Z;
                     ApplyVelocityDamage(InertiaController.Velocity.Length);
