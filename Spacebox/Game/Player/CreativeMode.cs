@@ -16,10 +16,11 @@ public class CreativeMode : GameModeBase
 
     private static InteractionHandler CreateInteractionHandler()
     {
-        return new InteractionHandler(new InteractionPlaceBlock(), new HashSet<Type>()
+        return new InteractionHandler(new InteractionDestroyBlock(), new HashSet<Type>()
         {
             typeof(InteractionDestroyBlock),
-            typeof(InteractionPlaceBlock)
+            typeof(InteractionPlaceBlock),
+            typeof(InteractionDefault)
         });
     }
 

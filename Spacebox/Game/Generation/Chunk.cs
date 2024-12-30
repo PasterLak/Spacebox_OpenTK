@@ -71,7 +71,7 @@ namespace Spacebox.Game.Generation
             }
             else
             {
-                BlockGenerator blockGenerator = new BlockGeneratorSphere(Blocks, positionWorld);
+                BlockGenerator blockGenerator = new BlockGeneratorAsteroids(Blocks, positionWorld);
                 blockGenerator.Generate();
                 IsGenerated = true;
             }

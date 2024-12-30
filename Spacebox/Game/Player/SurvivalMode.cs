@@ -6,7 +6,8 @@ public class SurvivalMode : GameModeBase
     {
         return new InteractionHandler(new InteractionDestroyBlock(), new HashSet<Type>()
         {
-            typeof(InteractionDestroyBlock)
+            typeof(InteractionDestroyBlock),
+            typeof(InteractionDefault)
         });
     }
 

@@ -9,12 +9,7 @@ public class SpectatorMode : GameModeBase
     private const float _cameraSpeed = 8f;
     private const float _shiftSpeed = 16f;
 
-    private static InteractionHandler CreateInteractionHandler()
-    {
-        return new InteractionHandler();
-    }
-
-    public SpectatorMode(Astronaut player) : base(player, CreateInteractionHandler())
+    public SpectatorMode(Astronaut player) : base(player, new InteractionHandler())
     {
         player.CollisionEnabled = false;
         player.EnableCameraSway(false);

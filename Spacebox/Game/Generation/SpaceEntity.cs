@@ -37,7 +37,7 @@ namespace Spacebox.Game.Generation
 
         public SpaceEntity(Vector3 positionWorld, Sector sector, bool oneChunk)
         {
-            Debug.Success("<<<< New entity! " + positionWorld);
+          
             PositionWorld = positionWorld;
             Sector = sector;
             BoundingBox = new BoundingBox(positionWorld, new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));

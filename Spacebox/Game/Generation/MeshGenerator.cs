@@ -52,9 +52,13 @@ namespace Spacebox.Game.Generation
             for (int i = 0; i < faces.Length; i++)
                 faceNormals[i] = faces[i].GetNormal();
         }
+        const int floatsPerVertex = 12;
+        const int vertsPerBlock = 24;
+        const int шndicesPerBlock = 36;
 
-        const int estimatedVertices = Size * Size * Size * 24;
-        const int estimatedIndices = Size * Size * Size * 36;
+
+        const int estimatedVertices = Size * Size * Size * vertsPerBlock * floatsPerVertex;
+        const int estimatedIndices = Size * Size * Size * шndicesPerBlock;
 
         public Mesh GenerateMesh()
         {
