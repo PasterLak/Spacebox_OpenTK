@@ -8,17 +8,33 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f9cc1faa-4ac5-4eb2-9068-249d362465ad" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Spacebox/Common/Utils/FastRandom.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Commands/GameModCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/CreativeMode.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/GameMode.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/GameModeBase.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/InteractionConsumeItem.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/InteractionDefault.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/InteractionDestroyBlock.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/InteractionHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/InteractionMode.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/SpectatorMode.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/SurvivalMode.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Spacebox/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Spacebox/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Common/Node3D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Common/Node3D.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Application.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Application.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spacebox/DONE.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/DONE.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/ChunkSaveLoadmanager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/ChunkSaveLoadmanager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Commands/TagCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Commands/TagCommand.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Game/GUI/Tag.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/GUI/Tag.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Game/GUI/TagManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/GUI/TagManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/BlockGeneratorSphere.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/BlockGeneratorSphere.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/Chunk.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/Chunk.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/LightManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/LightManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/MeshGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/MeshGenerator.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/Sector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/Sector.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/SpaceEntity.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/SpaceEntity.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/World.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/World.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Player/Astronaut.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Player/Astronaut.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Player/Camera360.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Player/Camera360.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Player/Flashlight.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Player/Flashlight.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Scenes/SpaceMenuScene.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Scenes/SpaceMenuScene.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spacebox/Scenes/SpaceScene.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Scenes/SpaceScene.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -51,21 +67,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Project.Spacebox.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "project.propDebugger",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Project.Spacebox.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propDebugger&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Spacebox" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="$PROJECT_DIR$/Spacebox/bin/Debug/net8.0/Spacebox" />
@@ -102,6 +118,7 @@
       <workItem from="1734441831104" duration="481000" />
       <workItem from="1734442325819" duration="12849000" />
       <workItem from="1734527647713" duration="11256000" />
+      <workItem from="1735548205535" duration="20107000" />
     </task>
     <servers />
   </component>

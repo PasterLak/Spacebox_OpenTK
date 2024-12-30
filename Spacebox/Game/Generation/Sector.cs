@@ -77,23 +77,24 @@ namespace Spacebox.Game.Generation
         public bool TryGetNearestEntity(Vector3 positionWorld, out SpaceEntity entity)
         {
             entity = null;
-            if(asteroids.Count == 0) return false;
+            if (asteroids.Count == 0) return false;
 
-            float dis = float.MaxValue;
+            float nearestDistSq = float.MaxValue;
 
-            for (int i = 0; i < asteroids.Count; i++)
+            for (byte i = 0; i < asteroids.Count; i++)
             {
-                float check = Vector3.Distance(positionWorld, asteroids[i].PositionWorld);
-                
-                if (dis > check)
+                Vector3 diff = positionWorld - asteroids[i].GeometryBoundingBox.Center;
+                float distSq = diff.LengthSquared;
+                if (distSq < nearestDistSq)
                 {
-                    dis = check;
+                    nearestDistSq = distSq;
                     entity = asteroids[i];
                 }
             }
 
             return true;
         }
+
 
         private void SpawnAsteroids()
         {
@@ -183,11 +184,14 @@ namespace Spacebox.Game.Generation
             VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 20, 100));
 
             var cam = Camera.Main;
-
+           
+            
             var asteroidsCount = 0;
 
             for (int i = 0; i < asteroids.Count; i++)
             {
+                asteroids[i].Render(cam);
+                continue;
                 if (cam.Frustum.IsInFrustum(asteroids[i].GeometryBoundingBox))
                 {
                     asteroids[i].Render(cam);

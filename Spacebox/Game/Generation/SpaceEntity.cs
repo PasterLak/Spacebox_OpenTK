@@ -65,15 +65,6 @@ namespace Spacebox.Game.Generation
 // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
             tag = CreateTag(GeometryBoundingBox);
 
-            Debug.Log("------------ Entity -----------");
-            foreach (var c in chunks)
-            {
-                Debug.Success("Chunk " + c.PositionIndex + " neigbors: " + c.GetNeigborCount());
-                c.GenerateMesh();
-            }
-            Debug.Log("------------ Entity -----------");
-
-           
             
         }
 
@@ -126,7 +117,7 @@ namespace Spacebox.Game.Generation
         private Tag CreateTag(BoundingBox boundingBox)
         {
             var tag = new Tag("", boundingBox.Center + new Vector3(0.5f, 0.5f, 0.5f), Color4.DarkGreen);
-
+            tag.TextAlignment = Tag.Alignment.Right;
             TagManager.RegisterTag(tag);
 
             return tag;
@@ -200,7 +191,7 @@ namespace Spacebox.Game.Generation
             Camera camera = Camera.Main;
 
             if (camera != null)
-                tag.Text = (int)Vector3.Distance(BoundingBox.Center + new Vector3(0.5f, 0.5f, 0.5f), camera.Position) +
+                tag.Text = "+ "+ (int)Vector3.Distance(BoundingBox.Center + new Vector3(0.5f, 0.5f, 0.5f), camera.Position) +
                            " m";
 
         }
@@ -223,8 +214,12 @@ namespace Spacebox.Game.Generation
 
         public void Render(Camera camera)
         {
-            VisualDebug.DrawPosition(PositionWorld, Color4.Cyan);
-
+            if (VisualDebug.ShowDebug)
+            {
+                VisualDebug.DrawPosition(PositionWorld, Color4.Cyan);
+                VisualDebug.DrawPosition(GeometryBoundingBox.Center, Color4.Orange);
+            }
+           
             /*if (simple != null)
             {
                 simple.Shader.SetVector4("color", new Vector4(0, 0, 1, 1));

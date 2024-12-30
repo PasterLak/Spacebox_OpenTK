@@ -1,4 +1,4 @@
-﻿
+﻿using System.Runtime.InteropServices;
 
 namespace Spacebox
 {
@@ -8,9 +8,8 @@ namespace Spacebox
         public const string Author = "PasterLak";
         public const string EngineVersion = "1.3";
 
-
-        public static PlatformName Platform => CheckPlatform2();
-       /* private static PlatformName CheckPlatform()
+        public static PlatformName Platform => CheckPlatform();
+        private static PlatformName CheckPlatform()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -28,26 +27,9 @@ namespace Spacebox
             {
                 return PlatformName.Unknown;
             }
-        }*/
-
-      
-            private static PlatformName CheckPlatform2()
-            {
-#if WINDOWS
-            return PlatformName.Windows;
-#elif LINUX
-       return PlatformName.Linux;
-#elif OSX
-       return PlatformName.OSX;
-#else
-        return PlatformName.Unknown;
-#endif
         }
 
-
-
-
-        public enum PlatformName
+        public enum PlatformName : byte
         {
             Windows,
             Linux,

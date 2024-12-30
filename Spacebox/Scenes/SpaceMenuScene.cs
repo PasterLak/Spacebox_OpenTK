@@ -4,13 +4,12 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Common.SceneManagment;
+using Spacebox.Common.Utils;
 using Spacebox.Game;
 using Spacebox.Game.Effects;
-using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 using Spacebox.GUI;
-using System.Runtime.InteropServices;
 
 
 namespace Spacebox.Scenes
@@ -71,8 +70,7 @@ namespace Spacebox.Scenes
             InputManager.AddAction("inputOverlay", Keys.F6);
             InputManager.RegisterCallback("inputOverlay", () => 
             { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
-
-
+            
         }
 
         private void SetDustSpawner()

@@ -19,6 +19,12 @@ namespace Spacebox.Game.Player
         private float _cameraSpeed = 3.5f;
         private float _shiftSpeed = 7.5f;
 
+        public void SetCameraSpeed(float speed, float shiftSpeed)
+        {
+            _cameraSpeed = speed;
+            _shiftSpeed = shiftSpeed;
+        }
+
         private bool _firstMove = true;
         private Vector2 _lastMousePosition;
 
@@ -27,6 +33,7 @@ namespace Spacebox.Game.Player
         public Action<Astronaut> OnMoved { get; set; }
 
         private bool _canMove = true;
+
         public bool CanMove
         {
             get => _canMove;
@@ -38,10 +45,10 @@ namespace Spacebox.Game.Player
         }
 
         public InertiaController InertiaController { get; private set; } = new InertiaController();
-        private CameraSway _cameraSway = new CameraSway();
+        public CameraSway CameraSway { get; private set; } = new CameraSway();
         public Flashlight Flashlight { get; private set; }
 
-        private HitImage _hitImage;
+        public HitImage HitImage { get; private set; }
         private AudioSource wallhitAudio;
         private AudioSource wallhitAudio2;
         private AudioSource useConsumableAudio;
@@ -49,7 +56,17 @@ namespace Spacebox.Game.Player
         private float speedUpPower = 0;
         public HealthBar HealthBar { get; private set; }
         public PowerBar PowerBar { get; private set; }
+        private GameModeBase _gameModeBase;
+        private GameMode _gameMode = GameMode.Spectator;
+
+        public GameMode GameMode
+        {
+            get { return _gameMode; }
+            set { SetGameMode(value); }
+        }
+
         private bool _collisionEnabled = true;
+
         public bool CollisionEnabled
         {
             get => _collisionEnabled;
@@ -59,24 +76,24 @@ namespace Spacebox.Game.Player
         public Astronaut(Vector3 position)
             : base(position)
         {
-
             FOV = MathHelper.DegreesToRadians(90);
             base.Name = Name;
             Layer = CollisionLayer.Player;
             VisualDebug.RemoveCollisionToDraw(this);
             HealthBar = new HealthBar();
             PowerBar = new PowerBar();
-            SetInertia();
-            SetCameraSway();
+
             SetData();
             CameraRelativeRender = true;
-            _hitImage = new HitImage();
+            HitImage = new HitImage();
             Flashlight = new Flashlight(this);
 
             wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
             wallhitAudio2 = new AudioSource(SoundManager.GetClip("wallHit2"));
             flySpeedUpAudio = new AudioSource(SoundManager.GetClip("flySpeedUp"));
             flySpeedUpAudio.IsLooped = true;
+
+            GameMode = GameMode.Creative;
         }
 
         ~Astronaut()
@@ -104,34 +121,22 @@ namespace Spacebox.Game.Player
             _lastMousePosition = Input.Mouse.Position;
         }
 
-        private void SetInertia()
+        private void SetGameMode(GameMode mode)
         {
-            InertiaController.Enabled = true;
-            InertiaController.SetParameters(
-                walkTimeToMaxSpeed: 1f,
-                 walkTimeToStop: 0.5f,
-                 runTimeToMaxSpeed: 2f,
-                  runTimeToStop: 0.4f,
+            _gameMode = mode;
+            switch (mode)
+            {
+                case GameMode.Survival:
 
-                walkMaxSpeed: 8,
-                runMaxSpeed: 20
-            );
-
-
-            InertiaController.SetMode(isRunning: false);
-            InertiaController.MaxSpeed = InertiaController.WalkMaxSpeed;
-
-            InertiaController.InertiaType = InertiaType.Damping;
-        }
-
-        private void SetCameraSway()
-        {
-            _cameraSway.InitialIntensity = 0.0015f;
-            _cameraSway.MaxIntensity = 0.003f;
-            _cameraSway.InitialFrequency = 15f;
-            _cameraSway.MaxFrequency = 50f;
-            _cameraSway.SpeedThreshold = 5.0f;
-            _cameraSway.Enabled = true;
+                    _gameModeBase = new SurvivalMode(this);
+                    break;
+                case GameMode.Creative:
+                    _gameModeBase = new CreativeMode(this);
+                    break;
+                default:
+                    _gameModeBase = new SpectatorMode(this);
+                    break;
+            }
         }
 
         public override void Update()
@@ -149,9 +154,8 @@ namespace Spacebox.Game.Player
                 VisualDebug.ViewMatrix = GetViewMatrix();
             }
 
-            PowerBar.Update();
-            HealthBar.Update();
-            _hitImage.Update();
+            _gameModeBase.Update(this);
+            HitImage.Update();
             if (!CanMove) return;
 
             if (Input.IsKeyDown(Keys.F5))
@@ -167,6 +171,7 @@ namespace Spacebox.Game.Player
                     VisualDebug.RemoveCollisionToDraw(this);
                 }
             }
+
             if (Input.IsKeyDown(Keys.P))
             {
                 Console.WriteLine("Saving Player");
@@ -190,29 +195,14 @@ namespace Spacebox.Game.Player
             base.Update();
         }
 
-        public void EnableInertia(bool enabled)
-        {
-            InertiaController.EnableInertia(enabled);
-        }
-
-        public void SetInertiaParameters(float walkAccelerationRate, float runAccelerationRate, float decelerationFactor, float walkMaxSpeed, float runMaxSpeed)
-        {
-            // InertiaController.SetParameters(walkAccelerationRate, runAccelerationRate, decelerationFactor, walkMaxSpeed, runMaxSpeed);
-        }
-
         public void EnableCameraSway(bool enabled)
         {
-            _cameraSway.EnableSway(enabled);
-        }
-
-        public void SetCameraSwayParameters(float initialIntensity, float initialFrequency, float maxIntensity, float maxFrequency, float speedThreshold, float intensityRampRate = 2.0f, float frequencyRampRate = 2.0f)
-        {
-            _cameraSway.SetParameters(initialIntensity, initialFrequency, maxIntensity, maxFrequency, speedThreshold, intensityRampRate, frequencyRampRate);
+            CameraSway.EnableSway(enabled);
         }
 
         public override Matrix4 GetViewMatrix()
         {
-            Quaternion sway = _cameraSway.GetSwayRotation();
+            Quaternion sway = CameraSway.GetSwayRotation();
             Quaternion combinedRotation = GetRotation() * sway;
             Vector3 newFront = Vector3.Transform(-Vector3.UnitZ, combinedRotation);
             Vector3 newUp = Vector3.Transform(Vector3.UnitY, combinedRotation);
@@ -221,147 +211,13 @@ namespace Spacebox.Game.Player
             {
                 return Matrix4.LookAt(Vector3.Zero, newFront, newUp);
             }
+
             return Matrix4.LookAt(Position, Position + newFront, newUp);
         }
 
         private void HandleInput()
         {
-            Vector3 acceleration = Vector3.Zero;
-            bool isMoving = false;
-            
-            if (Input.IsMouseButtonDown(MouseButton.Left))
-            {
-                Ray ray = new Ray(Position, Front, 6);
-                if (World.CurrentSector.Raycast(ray, out var hitInfo))
-                {
-                    hitInfo.chunk.RemoveBlock(hitInfo.blockPosition, Vector3SByte.CreateFrom(hitInfo.normal));
-                    Debug.Log("Collision!");
-                }
-                else
-                {
-                    Debug.Log("No collision!");
-                }
-            }
-
-            if (Input.IsKey(Keys.W))
-            {
-                acceleration += Front;
-                isMoving = true;
-            }
-            if (Input.IsKey(Keys.S))
-            {
-                acceleration -= Front;
-                isMoving = true;
-            }
-            if (Input.IsKey(Keys.A))
-            {
-                acceleration -= Right;
-                isMoving = true;
-            }
-            if (Input.IsKey(Keys.D))
-            {
-                acceleration += Right;
-                isMoving = true;
-            }
-            if (Input.IsKey(Keys.Space))
-            {
-                acceleration += Up;
-                isMoving = true;
-            }
-            if (Input.IsKey(Keys.LeftControl))
-            {
-                acceleration -= Up;
-                isMoving = true;
-            }
-
-            float roll = 1000f * Time.Delta;
-
-            if (Input.IsKey(Keys.Q))
-            {
-                Roll(-roll);
-            }
-            if (Input.IsKey(Keys.E))
-            {
-                Roll(roll);
-            }
-
-            float deltaTime = (float)Time.Delta;
-
-            Vector3 movement = Vector3.Zero;
-
-            bool isRunning = Input.IsKey(Keys.LeftShift);
-
-            if (!isMoving) isRunning = false;
-            if (PowerBar.StatsData.IsMinReached) isRunning = false;
-
-            if (isRunning)
-            {
-                if (!flySpeedUpAudio.IsPlaying)
-                    flySpeedUpAudio.Play();
-
-                const float maxVolume = 0.15f;
-                if (speedUpPower < maxVolume)
-                {
-                    speedUpPower += Time.Delta;
-
-                    if (speedUpPower > maxVolume) { speedUpPower = maxVolume; }
-                    flySpeedUpAudio.Volume = speedUpPower;
-                }
-            }
-            else
-            {
-                if (speedUpPower > 0)
-                {
-                    speedUpPower -= Time.Delta * 2f;
-
-                    if (speedUpPower <= 0)
-                    {
-                        speedUpPower = 0;
-                        flySpeedUpAudio.Pause();
-                    }
-                    flySpeedUpAudio.Volume = speedUpPower;
-
-                }
-
-            }
-
-            InertiaController.SetMode(isRunning);
-
-            if (isRunning) PowerBar.Use();
-
-
-
-            if (InertiaController.Enabled)
-            {
-
-                if (isMoving)
-                {
-                    InertiaController.ApplyInput(acceleration, deltaTime);
-                }
-
-                InertiaController.Update(isMoving, deltaTime);
-
-                movement = InertiaController.Velocity * deltaTime;
-
-                _cameraSway.Update(InertiaController.Velocity.Length, deltaTime);
-            }
-            else
-            {
-                float currentSpeed = isRunning ? _shiftSpeed : _cameraSpeed;
-
-                if (isMoving)
-                {
-                    movement = acceleration.Normalized() * currentSpeed * deltaTime;
-                }
-
-                _cameraSway.Update(movement.Length / deltaTime, deltaTime);
-            }
-
-            if (movement != Vector3.Zero)
-            {
-                MoveAndCollide(movement);
-                OnMoved?.Invoke(this);
-            }
+            _gameModeBase.HandleInput(this);
 
             var mouse = Input.Mouse;
 
@@ -383,110 +239,6 @@ namespace Spacebox.Game.Player
             }
         }
 
-        private Ray _ray;
-
-        public void Shoot(float rayLength)
-        {
-            _ray = new Ray(Position, Front, rayLength);
-            CollisionLayer ignoreLayers = CollisionLayer.Player | CollisionLayer.Projectile;
-            CollisionLayer layerMask = CollisionLayer.All & ~ignoreLayers;
-
-            if (CollisionManager.Raycast(_ray, out Vector3 hitPosition, out Collision hitObject, layerMask))
-            {
-                Console.WriteLine($"Hit {hitObject.Name} at position {hitPosition}");
-                VisualDebug.DrawRay(_ray, Color4.Red);
-                VisualDebug.DrawBoundingSphere(new BoundingSphere(hitPosition, 0.1f), Color4.Red);
-            }
-        }
-
-        public void MoveAndCollide(Vector3 movement)
-        {
-            Vector3 position = Position;
-
-            if (CollisionEnabled)
-            {
-                World world = World.Instance;
-
-                if (world == null) return;
-
-                position.X += movement.X;
-                UpdateBoundingAt(position);
-                if (world.IsColliding(Position, BoundingVolume))
-                {
-                    position.X -= movement.X;
-                    ApplyVelocityDamage(InertiaController.Velocity.Length);
-                    InertiaController.Velocity = new Vector3(0, InertiaController.Velocity.Y, InertiaController.Velocity.Z);
-                }
-
-
-                position.Y += movement.Y;
-                UpdateBoundingAt(position);
-                if (world.IsColliding(Position, BoundingVolume))
-                {
-                    position.Y -= movement.Y;
-                    ApplyVelocityDamage(InertiaController.Velocity.Length);
-                    InertiaController.Velocity = new Vector3(InertiaController.Velocity.X, 0, InertiaController.Velocity.Z);
-                }
-
-                position.Z += movement.Z;
-                UpdateBoundingAt(position);
-                if (world.IsColliding(Position, BoundingVolume))
-                {
-                    position.Z -= movement.Z;
-                    ApplyVelocityDamage(InertiaController.Velocity.Length);
-                    InertiaController.Velocity = new Vector3(InertiaController.Velocity.X, InertiaController.Velocity.Y, 0);
-                }
-
-                Position = position;
-            }
-            else
-            {
-                Position += movement;
-            }
-        }
-
-        byte damageMultiplayer = 4;
-        private void ApplyVelocityDamage(float speed)
-        {
-
-            if (speed > 4 && speed <= 9)
-            {
-                if (wallhitAudio.IsPlaying) wallhitAudio.Stop();
-
-                wallhitAudio.Volume = 0;
-                wallhitAudio.Volume = MathHelper.Min(wallhitAudio.Volume + speed * 0.05f, 1);
-                wallhitAudio.Play();
-            }
-            else if (speed > 9)
-            {
-
-                wallhitAudio2.Volume = MathHelper.Min(0 + speed * 0.05f, 1);
-                wallhitAudio2.Play();
-            }
-            if (speed > 10)
-            {
-
-                int damage = (int)(Math.Abs(speed) - 10f);
-
-                HealthBar.StatsData.Decrement(damage * damageMultiplayer);
-                HealthColorOverlay.SetActive(new System.Numerics.Vector3(1, 0, 0), 0.1f + 1 / (10 - damage));
-                _hitImage.Show();
-
-                if (damage > 5)
-                {
-                    SpaceScene.DeathOn = false;
-                    flySpeedUpAudio.Stop();
-                    SpaceScene.Uii.Stop();
-                    BlackScreenOverlay.IsEnabled = true;
-                    CanMove = false;
-                    Settings.ShowInterface = false;
-
-                    SpaceScene.Death.Play();
-                    SpaceScene.DeathOn = true;
-                }
-            }
-        }
-
         public void ApplyConsumable(ConsumableItem consumable)
         {
             if (consumable != null)
@@ -497,6 +249,7 @@ namespace Spacebox.Game.Player
                     {
                         useConsumableAudio.Stop();
                     }
+
                     useConsumableAudio = new AudioSource(clip);
                     useConsumableAudio.Volume = 0.3f;
                     useConsumableAudio.Play();
@@ -515,19 +268,13 @@ namespace Spacebox.Game.Player
             {
                 Debug.Error($"[Astrounaut] ApplyConsumable: consumable was null!");
             }
-
         }
 
-        private void UpdateBoundingAt(Vector3 position)
+        public void SetInteraction(InteractionMode mode)
         {
-            if (BoundingVolume is BoundingSphere sphere)
-            {
-                sphere.Center = position + Offset;
-            }
-            else if (BoundingVolume is BoundingBox box)
-            {
-                box.Center = position + Offset;
-            }
+            if(_gameModeBase == null) return;
+            
+            _gameModeBase.SetInteraction(mode);
         }
 
         public void Draw()
@@ -544,7 +291,7 @@ namespace Spacebox.Game.Player
         {
             PowerBar.OnGUI();
             HealthBar.OnGUI();
-            _hitImage.Draw();
+            HitImage.Draw();
         }
     }
 }

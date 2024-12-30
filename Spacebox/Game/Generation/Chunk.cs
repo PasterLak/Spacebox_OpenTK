@@ -43,7 +43,6 @@ namespace Spacebox.Game.Generation
         private readonly LightManager _lightManager;
         private bool _isLoadedOrGenerated = false;
 
-        private BlockDestructionManager destructionManager;
         public SpaceEntity SpaceEntity { get; private set; }
         private BoundingBox boundingBox;
         public BoundingBox GeometryBoundingBox { get; private set; }
@@ -63,7 +62,7 @@ namespace Spacebox.Game.Generation
             CurrentChunk = this;
             CreateBoundingBox();
             GeometryBoundingBox = new BoundingBox(boundingBox);
-            destructionManager = World.DestructionManager;
+            
 
             if (isLoaded && loadedBlocks != null)
             {
@@ -152,12 +151,9 @@ namespace Spacebox.Game.Generation
 
         public void AddNeighbor(Chunk neighbor)
         {
-            
             Vector3SByte direction = neighbor.PositionIndex - this.PositionIndex;
 
             Neighbors[direction] = neighbor;
-            
-            Debug.Log($"Added Neigbor! {neighbor.PositionIndex} to {PositionIndex}");
         }
 
         public void RemoveNeighbor(Chunk neighbor)
@@ -196,35 +192,38 @@ namespace Spacebox.Game.Generation
             if (!IsInRange(x, y, z))
                 return;
 
-            Vector3 worldBlockPosition = new Vector3(x, y, z);
+            Vector3 worldBlockPosition = new Vector3(x, y, z) + PositionWorld;
 
             if (Blocks[x, y, z].IsTransparent)
             {
-                destructionManager?.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
+                World.DestructionManager.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
                 World.DropEffectManager.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
             }
             else
             {
                 if (IsInRange(x + xNormal, y + yNormal, z + zNormal))
                 {
-                    // destructionManager?.DestroyBlock(worldBlockPosition, Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
-                    // World.DropEffectManager.
-                    //    DestroyBlock(worldBlockPosition, Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
+                   
+                    World.DestructionManager.DestroyBlock(worldBlockPosition, Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
+                     World.DropEffectManager.
+                        DestroyBlock(worldBlockPosition, Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
                 }
                 else
                 {
-                    // destructionManager?.
-                    //     DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
-                    //   World.DropEffectManager.
-                    //  DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
+                
+                    World.DestructionManager.
+                         DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
+                       World.DropEffectManager.
+                      DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
                 }
             }
 
+            
             Mass -= Blocks[x, y, z].Mass;
             Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
 
             IsModified = true;
-
+            CheckNeigborBlocks(new Vector3Byte(x,y,z));
             GenerateMesh();
         }
 
@@ -248,6 +247,64 @@ namespace Spacebox.Game.Generation
         private bool IsInRange(int x, int y, int z)
         {
             return x >= 0 && x < Size && y >= 0 && y < Size && z >= 0 && z < Size;
+        }
+
+        private void CheckNeigborBlocks(Vector3Byte pos)
+        {
+            if (pos.X == 0)
+            {
+                if(HasNeighbor( new Vector3SByte(-1, 0,0), out Chunk neighbor))
+                {
+                    neighbor.GenerateMesh();
+                }
+            }
+            if (pos.X == Size-1)
+            {
+                if(HasNeighbor(new Vector3SByte(1, 0,0), out Chunk neighbor))
+                {
+                    neighbor.GenerateMesh();
+                }
+            }
+            if (pos.Y == 0)
+            {
+                if(HasNeighbor(new Vector3SByte(0,-1,0), out Chunk neighbor))
+                {
+                    neighbor.GenerateMesh();
+                }
+            }
+            if (pos.Y == Size-1)
+            {
+                if(HasNeighbor(new Vector3SByte(0,1,0), out Chunk neighbor))
+                {
+                    neighbor.GenerateMesh();
+                }
+            }
+            if (pos.Z == 0)
+            {
+                if(HasNeighbor(new Vector3SByte(0,0,-1), out Chunk neighbor))
+                {
+                    neighbor.GenerateMesh();
+                }
+            }
+            if (pos.Z == Size-1)
+            {
+                if(HasNeighbor(new Vector3SByte(0,0,1), out Chunk neighbor))
+                {
+                    neighbor.GenerateMesh();
+                }
+            }
+        }
+
+        private bool HasNeighbor(Vector3SByte pos, out Chunk neighbor)
+        {
+            if (Neighbors.TryGetValue(pos, out neighbor))
+            {
+                return neighbor != null;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public bool Raycast(Ray ray, out VoxelPhysics.HitInfo info)

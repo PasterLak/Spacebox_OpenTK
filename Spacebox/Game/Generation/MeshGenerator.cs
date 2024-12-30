@@ -346,7 +346,6 @@ namespace Spacebox.Game.Generation
                 
                 if (neighborChunk != null)
                 {
-                    Debug.Log("Neighbor Chunk exists! " + neighborChunk.PositionIndex);
                     Block block = neighborChunk.GetBlock(WrapBlockCoordinate(x,y,z, Size));
 
                     if (block != null)
@@ -356,7 +355,6 @@ namespace Spacebox.Game.Generation
                 }
                 else
                 {
-                    Debug.Log("Neighbor Chunk dont exists! " + normal);
                     return true;
                 }
             }

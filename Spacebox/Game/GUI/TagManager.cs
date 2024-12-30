@@ -1,5 +1,4 @@
 ﻿using OpenTK.Mathematics;
-
 using ImGuiNET;
 using Spacebox.Common;
 using Spacebox.Extensions;
@@ -16,7 +15,6 @@ namespace Spacebox.Game.GUI
             if (!_tags.Contains(tag))
             {
                 _tags.Add(tag);
-                
             }
             else
             {
@@ -29,7 +27,6 @@ namespace Spacebox.Game.GUI
             if (_tags.Contains(tag))
             {
                 _tags.Remove(tag);
-              
             }
         }
 
@@ -60,12 +57,11 @@ namespace Spacebox.Game.GUI
             ImGui.SetNextWindowSize(ImGui.GetIO().DisplaySize);
 
             ImGui.Begin("TagWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground |
-                                       ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize |
-                                       ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs);
+                                     ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize |
+                                     ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs);
 
             foreach (var tag in _tags)
             {
-
                 Vector2? screenPosNullable = camera.WorldToScreenPoint(tag.WorldPosition, screenWidth, screenHeight);
                 if (screenPosNullable.HasValue)
                 {
@@ -76,7 +72,8 @@ namespace Spacebox.Game.GUI
                         screenPos.Y > 0 && screenPos.Y <= screenHeight)
                     {
                         var textSize = ImGui.CalcTextSize(tag.Text);
-                        ImGui.SetCursorPos(screenPos.ToSystemVector2() - textSize * 0.5f);
+
+                        ImGui.SetCursorPos(tag.GetTextPosition(screenPos.ToSystemVector2(), textSize));
                         ImGui.PushStyleColor(ImGuiCol.Text, tag.Color.ToSystemVector4());
                         ImGui.TextUnformatted(tag.Text);
                         ImGui.PopStyleColor();

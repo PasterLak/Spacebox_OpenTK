@@ -21,16 +21,15 @@ namespace Spacebox.Game.Player
 
         private SpotLight SpotLight;
         private AudioSource audio;
+
         public Flashlight(Camera camera)
         {
             SpotLight = new SpotLight(ShaderManager.GetShader("Shaders/block"),
                 camera.Front);
             SpotLight.UseSpecular = false;
 
-
             audio = new AudioSource(SoundManager.GetClip("flashlight"));
             audio.Volume = 0.5f;
-
 
             InputManager.AddAction("flashlight", Keys.L);
 
@@ -43,7 +42,6 @@ namespace Spacebox.Game.Player
 
         public void Draw(Camera camera)
         {
-
             SpotLight.Draw(camera);
         }
     }

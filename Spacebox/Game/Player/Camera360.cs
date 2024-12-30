@@ -14,7 +14,6 @@ namespace Spacebox.Game.Player
 
         protected override void UpdateVectors()
         {
-
             _front = Vector3.Transform(-Vector3.UnitZ, _rotation);
             _up = Vector3.Transform(Vector3.UnitY, _rotation);
             _right = Vector3.Transform(Vector3.UnitX, _rotation);
@@ -25,20 +24,17 @@ namespace Spacebox.Game.Player
 
         public void Rotate(float deltaX, float deltaY)
         {
-            float sensitivity = 0.002f;
-
+            const float sensitivity = 0.002f;
 
             Vector3 localUp = _up;
             Vector3 localRight = _right;
-
 
             Quaternion rotationYaw = Quaternion.FromAxisAngle(localUp, -deltaX * sensitivity);
             Quaternion rotationPitch = Quaternion.FromAxisAngle(localRight, -deltaY * sensitivity);
 
             _rotation = rotationYaw * _rotation;
             _rotation = rotationPitch * _rotation;
-
-
+            
             _rotation = Quaternion.Normalize(_rotation);
 
 
@@ -48,7 +44,7 @@ namespace Spacebox.Game.Player
 
         public void Roll(float deltaZ)
         {
-            float sensitivity = 0.002f;
+            const float sensitivity = 0.002f;
 
 
             Vector3 localFront = _front;
@@ -69,7 +65,6 @@ namespace Spacebox.Game.Player
         {
             _rotation = Quaternion.Normalize(rotation);
             UpdateVectors();
-
         }
 
 

@@ -56,6 +56,7 @@ namespace Spacebox.Game.Commands
                     var g = int.Parse(args[2]);
                     var b = int.Parse(args[3]);
 
+                    
                     TagManager.RegisterTag(new Tag(args[1], Astronaut.Position, new Color4(r,g,b,1), true));
 
                     Debug.AddMessage("Tag added!: " + args[1], Color4.Green);
