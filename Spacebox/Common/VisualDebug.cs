@@ -31,6 +31,7 @@ namespace Spacebox.Common
 
 
         public static CameraFrustum CameraFrustum;
+
         static VisualDebug()
         {
             Initialize();
@@ -38,7 +39,6 @@ namespace Spacebox.Common
 
         private static void Initialize()
         {
-            
             _shader = ShaderManager.AddPermanentShader("Shaders/debug");
 
             _vaoPoints = GL.GenVertexArray();
@@ -62,7 +62,7 @@ namespace Spacebox.Common
 
             GL.BindVertexArray(0);
 
-           
+
             _vaoLines = GL.GenVertexArray();
             _vboLines = GL.GenBuffer();
             GL.BindVertexArray(_vaoLines);
@@ -80,7 +80,7 @@ namespace Spacebox.Common
 
             GL.BindVertexArray(0);
 
-          
+
             _vaoTriangles = GL.GenVertexArray();
             _vboTriangles = GL.GenBuffer();
             GL.BindVertexArray(_vaoTriangles);
@@ -105,17 +105,17 @@ namespace Spacebox.Common
 
             DrawLine(transform.Position, transform.Position + new Vector3(0, 0, 1), new Color4(0, 0, 1, 1));
             DrawBoundingSphere(new BoundingSphere(transform.Position, 0.1f), Color4.Blue);
-            
         }
 
         public static void AddCollisionToDraw(Collision collision)
         {
             _collisions.Add(collision);
         }
+
         public static void RemoveCollisionToDraw(Collision collision)
         {
-            if(_collisions.Contains(collision))
-            _collisions.Remove(collision);
+            if (_collisions.Contains(collision))
+                _collisions.Remove(collision);
         }
 
         public static void DrawPoint(Vector3 position, float size, Color4 color)
@@ -129,7 +129,7 @@ namespace Spacebox.Common
             _points.Add(color.G);
             _points.Add(color.B);
             _points.Add(color.A);
-            _points.Add(size); 
+            _points.Add(size);
         }
 
         public static void DrawLine(Vector3 start, Vector3 end, Color4 color)
@@ -174,11 +174,10 @@ namespace Spacebox.Common
             if (ray == null) return;
 
             Vector3 endPoint = ray.Origin + ray.Direction * ray.Length;
-   
+
             DrawLine(ray.Origin, endPoint, color);
         }
 
-     
 
         private static void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, Color4 color)
         {
@@ -216,7 +215,7 @@ namespace Spacebox.Common
             Vector3 min = box.Min;
             Vector3 max = box.Max;
 
-          
+
             Vector3[] corners = new Vector3[8];
             corners[0] = new Vector3(min.X, min.Y, min.Z);
             corners[1] = new Vector3(max.X, min.Y, min.Z);
@@ -227,19 +226,19 @@ namespace Spacebox.Common
             corners[6] = new Vector3(max.X, max.Y, max.Z);
             corners[7] = new Vector3(min.X, max.Y, max.Z);
 
-          
+
             DrawLine(corners[0], corners[1], color);
             DrawLine(corners[1], corners[2], color);
             DrawLine(corners[2], corners[3], color);
             DrawLine(corners[3], corners[0], color);
 
-           
+
             DrawLine(corners[4], corners[5], color);
             DrawLine(corners[5], corners[6], color);
             DrawLine(corners[6], corners[7], color);
             DrawLine(corners[7], corners[4], color);
 
-           
+
             DrawLine(corners[0], corners[4], color);
             DrawLine(corners[1], corners[5], color);
             DrawLine(corners[2], corners[6], color);
@@ -252,12 +251,12 @@ namespace Spacebox.Common
             if (!ShowDebug) return;
             if (sphere == null) return;
 
-            int slices = 16; 
-            int stacks = 16; 
+            int slices = 16;
+            int stacks = 16;
             float radius = sphere.Radius;
             Vector3 center = sphere.Center;
 
-         
+
             for (int i = 0; i <= stacks; i++)
             {
                 float theta = MathHelper.Pi * i / stacks;
@@ -282,7 +281,7 @@ namespace Spacebox.Common
                 }
             }
 
-         
+
             for (int j = 0; j < slices; j++)
             {
                 float phi = 2 * MathHelper.Pi * j / slices;
@@ -310,19 +309,19 @@ namespace Spacebox.Common
             if (!ShowDebug) return;
             Vector3[] frustumCorners = frustum.GetCorners();
 
-        
+
             DrawLine(frustumCorners[0], frustumCorners[1], color);
             DrawLine(frustumCorners[1], frustumCorners[2], color);
             DrawLine(frustumCorners[2], frustumCorners[3], color);
             DrawLine(frustumCorners[3], frustumCorners[0], color);
 
-          
+
             DrawLine(frustumCorners[4], frustumCorners[5], color);
             DrawLine(frustumCorners[5], frustumCorners[6], color);
             DrawLine(frustumCorners[6], frustumCorners[7], color);
             DrawLine(frustumCorners[7], frustumCorners[4], color);
 
-          
+
             DrawLine(frustumCorners[0], frustumCorners[4], color);
             DrawLine(frustumCorners[1], frustumCorners[5], color);
             DrawLine(frustumCorners[2], frustumCorners[6], color);
@@ -331,7 +330,7 @@ namespace Spacebox.Common
 
         public static void DrawAxes(Vector3 pos)
         {
-            DrawLine(pos, pos + Vector3.UnitX * 2 , Color4.Red);
+            DrawLine(pos, pos + Vector3.UnitX * 2, Color4.Red);
             DrawLine(pos, pos + Vector3.UnitY * 2, Color4.Green);
             DrawLine(pos, pos + Vector3.UnitZ * 2, Color4.Blue);
         }
@@ -343,7 +342,8 @@ namespace Spacebox.Common
             if (_points.Count == 0 && _lines.Count == 0 && _triangles.Count == 0)
                 return;
 
-            foreach(var col in _collisions) {
+            foreach (var col in _collisions)
+            {
                 col.DrawDebug();
             }
 
@@ -368,7 +368,8 @@ namespace Spacebox.Common
             {
                 GL.BindVertexArray(_vaoPoints);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, _vboPoints);
-                GL.BufferData(BufferTarget.ArrayBuffer, _points.Count * sizeof(float), _points.ToArray(), BufferUsageHint.DynamicDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, _points.Count * sizeof(float), _points.ToArray(),
+                    BufferUsageHint.DynamicDraw);
 
                 GL.DrawArrays(PrimitiveType.Points, 0, _points.Count / 8);
                 _points.Clear();
@@ -379,7 +380,8 @@ namespace Spacebox.Common
             {
                 GL.BindVertexArray(_vaoLines);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, _vboLines);
-                GL.BufferData(BufferTarget.ArrayBuffer, _lines.Count * sizeof(float), _lines.ToArray(), BufferUsageHint.DynamicDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, _lines.Count * sizeof(float), _lines.ToArray(),
+                    BufferUsageHint.DynamicDraw);
 
                 // Set line width globally
                 GL.LineWidth(LineWidth);
@@ -393,7 +395,8 @@ namespace Spacebox.Common
             {
                 GL.BindVertexArray(_vaoTriangles);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, _vboTriangles);
-                GL.BufferData(BufferTarget.ArrayBuffer, _triangles.Count * sizeof(float), _triangles.ToArray(), BufferUsageHint.DynamicDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, _triangles.Count * sizeof(float), _triangles.ToArray(),
+                    BufferUsageHint.DynamicDraw);
 
                 GL.DrawArrays(PrimitiveType.Triangles, 0, _triangles.Count / 7);
                 _triangles.Clear();
@@ -415,19 +418,22 @@ namespace Spacebox.Common
         {
             Console.WriteLine(data);
         }
+
         public static void Log(int data)
         {
             Console.WriteLine(data);
         }
+
         public static void Log(float data)
         {
             Console.WriteLine(data);
         }
+
         public static void Log(byte data)
         {
             Console.WriteLine(data);
         }
-        
+
 
         public static void Clear()
         {
@@ -435,7 +441,6 @@ namespace Spacebox.Common
             _lines.Clear();
             _triangles.Clear();
             _collisions.Clear();
-            
         }
     }
 }

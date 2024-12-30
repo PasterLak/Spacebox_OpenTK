@@ -89,6 +89,10 @@ public class Axes : Node3D
         }
     }
 
+    public void Render(Camera camera)
+    {
+        Render(camera.GetViewMatrix(), camera.GetProjectionMatrix());
+    }
     public void Render(Matrix4 view, Matrix4 projection)
     {
        

@@ -12,10 +12,8 @@ namespace Spacebox.Scenes
 
         public override void LoadContent()
         {
-           
             Window.Instance.Title = "Error";
             GL.ClearColor(Color.Red);
-
         }
 
         public override void Start()
@@ -27,23 +25,18 @@ namespace Spacebox.Scenes
         public override void Render()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
-
-           
         }
 
         public override void OnGUI()
         {
-           
         }
 
         public override void UnloadContent()
         {
-           
         }
 
         public override void Update()
         {
-          
         }
     }
 }

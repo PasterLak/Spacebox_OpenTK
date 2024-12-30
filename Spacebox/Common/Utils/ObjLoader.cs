@@ -1,5 +1,4 @@
-﻿
-using System.Globalization;
+﻿using System.Globalization;
 using OpenTK.Mathematics;
 
 namespace Spacebox.Common.Utils
@@ -54,8 +53,12 @@ namespace Spacebox.Common.Utils
                                 {
                                     var v = key.Split('/');
                                     var position = positions[int.Parse(v[0]) - 1];
-                                    var texCoord = texCoords.Count > 0 && v.Length > 1 && !string.IsNullOrEmpty(v[1]) ? texCoords[int.Parse(v[1]) - 1] : Vector2.Zero;
-                                    var normal = normals.Count > 0 && v.Length > 2 && !string.IsNullOrEmpty(v[2]) ? normals[int.Parse(v[2]) - 1] : Vector3.UnitY;
+                                    var texCoord = texCoords.Count > 0 && v.Length > 1 && !string.IsNullOrEmpty(v[1])
+                                        ? texCoords[int.Parse(v[1]) - 1]
+                                        : Vector2.Zero;
+                                    var normal = normals.Count > 0 && v.Length > 2 && !string.IsNullOrEmpty(v[2])
+                                        ? normals[int.Parse(v[2]) - 1]
+                                        : Vector3.UnitY;
                                     vertices.Add(position.X);
                                     vertices.Add(position.Y);
                                     vertices.Add(position.Z);
@@ -68,12 +71,15 @@ namespace Spacebox.Common.Utils
                                     vertexIndices[key] = idx;
                                     index++;
                                 }
+
                                 faceIndices[j] = idx;
                             }
+
                             indices.Add(faceIndices[0]);
                             indices.Add(faceIndices[1]);
                             indices.Add(faceIndices[2]);
                         }
+
                         break;
                 }
             }

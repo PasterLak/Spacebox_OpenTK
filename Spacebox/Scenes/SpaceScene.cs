@@ -21,15 +21,14 @@ namespace Spacebox.Scenes
 {
     internal class SpaceScene : Scene
     {
-
-        Astronaut player;
-        Skybox skybox;
-        World world;
+        private Astronaut player;
+        private Skybox skybox;
+        private World world;
         private Shader skyboxShader;
 
 
         //private Sector0 sector;
-        Shader blocksShader;
+        private Shader blocksShader;
         private Texture2D blockTexture;
         private Texture2D lightAtlas;
         // to base
@@ -58,9 +57,9 @@ namespace Spacebox.Scenes
 
         private SimpleBlock block1;
         private SimpleBlock block2;
+
         public SpaceScene(string[] args) : base(args) // name mod seed modfolder
         {
-
             if (args.Length == 4)
             {
                 worldName = args[0];
@@ -75,7 +74,6 @@ namespace Spacebox.Scenes
                 {
                     if (GameBlocks.modId.ToLower() == args[1].ToLower())
                     {
-
                     }
                     else
                     {
@@ -87,7 +85,6 @@ namespace Spacebox.Scenes
                 else
                 {
                     InitializeGamesetData(blocksPath, itemsPath, emissionPath, args[1], 32);
-
                 }
 
                 if (int.TryParse(args[2], out var result))
@@ -99,15 +96,14 @@ namespace Spacebox.Scenes
                     World.Random = new Random();
                     Debug.Error("Wrong seed format! Seed: " + args[2]);
                 }
-
             }
 
             BlackScreenOverlay.IsEnabled = true;
             BlackScreenOverlay.Render();
-
         }
 
-        private void InitializeGamesetData(string blocksPath, string itemsPath, string emissionPath, string modId, byte blockSizePixels)
+        private void InitializeGamesetData(string blocksPath, string itemsPath, string emissionPath, string modId,
+            byte blockSizePixels)
         {
             GameBlocks.AtlasBlocks = new AtlasTexture();
             GameBlocks.AtlasItems = new AtlasTexture();
@@ -132,9 +128,9 @@ namespace Spacebox.Scenes
 
             GameBlocks.IsInitialized = true;
         }
+
         public override void LoadContent()
         {
-
             float q = 5;
             player = new Astronaut(new Vector3(q + 3, 0, q));
             SceneGraph.AddRoot(player);
@@ -166,7 +162,7 @@ namespace Spacebox.Scenes
 
             var e = Overlay.GetElementByType(typeof(CameraElement));
 
-            if(e != null)
+            if (e != null)
             {
                 e.ElementAfter = new AstronautOverlayElement();
             }
@@ -175,8 +171,7 @@ namespace Spacebox.Scenes
 
             //chunk = new Chunk(new Vector3(0,0,0));
             InputManager.AddAction("inputOverlay", Keys.F6);
-            InputManager.RegisterCallback("inputOverlay", () =>
-            { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
+            InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
 
 
             blocksShader = ShaderManager.GetShader("Shaders/block");
@@ -235,8 +230,9 @@ namespace Spacebox.Scenes
             var tex = TextureManager.GetTexture("Resources/Textures/spacer.png");
             tex.FlipY();
             tex.UpdateTexture(true);
-            spacer = new Model("Resources/Models/spacer.obj", new Material(ShaderManager.GetShader("Shaders/textured"), tex));
-            
+            spacer = new Model("Resources/Models/spacer.obj",
+                new Material(ShaderManager.GetShader("Shaders/textured"), tex));
+
             spacer.Position = new Vector3(12, 15, 7);
             spacer.Rotation = new Vector3(0, 0, 90);
             //Renderer.AddDrawable(spacer);
@@ -244,18 +240,19 @@ namespace Spacebox.Scenes
             //SceneGraph.UpdateTransforms();
             CrusherGUI.Init();
 
-            block1 = new SimpleBlock(ShaderManager.GetShader("colored"), TextureManager.GetTexture("Resources/Textures/slot.png"), new Vector3(0,0,0));
-            block1.Position = new Vector3(-1,-1,0);
+            block1 = new SimpleBlock(ShaderManager.GetShader("colored"),
+                TextureManager.GetTexture("Resources/Textures/slot.png"), new Vector3(0, 0, 0));
+            block1.Position = new Vector3(-1, -1, 0);
             //SceneGraph.AddRoot(block1);
             //Renderer.AddDrawable(block1);
 
-            block2 = new SimpleBlock(ShaderManager.GetShader("colored"), TextureManager.GetTexture("Resources/Textures/slot.png"), new Vector3(0, 0, 0));
-           
+            block2 = new SimpleBlock(ShaderManager.GetShader("colored"),
+                TextureManager.GetTexture("Resources/Textures/slot.png"), new Vector3(0, 0, 0));
+
             //block1.AddChild(block2);
             //Renderer.AddDrawable(block1);
             //block2.Position = new Vector3(2, 0, 0);
             //SceneGraph.PrintHierarchy();
-
         }
 
         public override void Start()
@@ -266,6 +263,7 @@ namespace Spacebox.Scenes
 
 
         float x;
+
         public override void Update()
         {
             Time.HandleTicks();
@@ -285,14 +283,13 @@ namespace Spacebox.Scenes
                 {
                     Settings.ShowInterface = !Settings.ShowInterface;
                 }
+
                 if (Input.IsKeyDown(Keys.KeyPad7))
                 {
                     SceneGraph.PrintHierarchy();
                 }
-
-
-
             }
+
             //model.Position = player.Position;
             if (DeathOn)
             {
@@ -301,6 +298,7 @@ namespace Spacebox.Scenes
                     Window.Instance.Quit();
                 }
             }
+
             if (Input.IsKeyDown(Keys.B))
             {
                 // Uii.Play();
@@ -313,7 +311,7 @@ namespace Spacebox.Scenes
 
 
             //world.Update();
-           
+
             //sector.Update();
         }
 
@@ -325,9 +323,6 @@ namespace Spacebox.Scenes
 
             skybox.DrawTransparent(player);
 
-
-
-           
 
             GL.Enable(EnableCap.DepthTest);
 
@@ -345,7 +340,6 @@ namespace Spacebox.Scenes
             blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
 
 
-
             blockTexture.Use(TextureUnit.Texture0);
             lightAtlas.Use(TextureUnit.Texture1);
 
@@ -361,16 +355,14 @@ namespace Spacebox.Scenes
             //spacer.LookAt3(player);
             //spacer.Draw(player);
             dustSpawner.Render();
-           // block1.Rotate(0,12f * Time.Delta,0);
+            // block1.Rotate(0,12f * Time.Delta,0);
             //block1.Render(player);
-           // block2.Render(player);
-           
+            // block2.Render(player);
+
 
             var b = new BoundingSphere(block2.GetWorldPosition(), 0.7f);
-            VisualDebug.DrawBoundingSphere(b,Color4.AliceBlue);
+            VisualDebug.DrawBoundingSphere(b, Color4.AliceBlue);
             blockSelector.Draw(player);
-
-
 
 
             GL.Disable(EnableCap.DepthTest);
@@ -387,13 +379,11 @@ namespace Spacebox.Scenes
 
 
             //testOctree.Draw(player);
-
         }
 
 
         public override void OnGUI()
         {
-
             HealthColorOverlay.Render();
             CenteredText.Draw();
 
@@ -435,6 +425,5 @@ namespace Spacebox.Scenes
             World.DropEffectManager.Dispose();
             TagManager.ClearTags();
         }
-
     }
 }

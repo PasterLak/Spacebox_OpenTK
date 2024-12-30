@@ -42,7 +42,6 @@ namespace Spacebox.Common.Utils
 
                     var iconImage = new OpenTK.Windowing.Common.Input.Image(width, height, pixels);
                     window.Icon = new WindowIcon(iconImage);
-
                 }
             }
             catch (Exception ex)

@@ -10,11 +10,9 @@ namespace Spacebox.Common
         {
             Position = center;
             Init();
-
-
-
         }
-        public Trigger( BoundingBox boundingBox)
+
+        public Trigger(BoundingBox boundingBox)
             : base(boundingBox)
         {
             Position = boundingBox.Center;
@@ -31,19 +29,24 @@ namespace Spacebox.Common
 
         public override void OnCollisionEnter(Collision other)
         {
-          if(other is StaticBody) { return; }
+            if (other is StaticBody)
+            {
+                return;
+            }
 
-                Console.WriteLine("Trigger Enter!");
+            Debug.WriteLine("Trigger Enter!");
             SetCollisionDebugColor(Color4.Green);
-
         }
 
         public override void OnCollisionExit(Collision other)
         {
-            if (other is StaticBody) { return; }
-            Console.WriteLine("Trigger Exit!");
+            if (other is StaticBody)
+            {
+                return;
+            }
+
+            Debug.WriteLine("Trigger Exit!");
             SetCollisionDebugColor(Color4.Cyan);
         }
-
     }
 }

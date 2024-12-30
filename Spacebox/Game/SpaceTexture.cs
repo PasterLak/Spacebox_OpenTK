@@ -1,11 +1,11 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.Common.Utils;
 
 namespace Spacebox.Game
 {
     public class SpaceTexture : Texture2D
     {
-        
         public SpaceTexture(int width, int height, Random random)
             : base(width, height)
         {
@@ -16,12 +16,12 @@ namespace Spacebox.Game
 
         private void GenerateSpaceTexture(Random random)
         {
-
+            //FastRandom r = new FastRandom();
+            
             for (int y = 0; y < Height; y++)
             {
                 for (int x = 0; x < Width; x++)
                 {
-                   
                     int rand = random.Next(10000);
 
                     if (rand < 10)
@@ -31,7 +31,7 @@ namespace Spacebox.Game
                     }
                     else
                     {
-                        SetPixel(x, y, Color4.Black); 
+                        SetPixel(x, y, Color4.Black);
                     }
                 }
             }

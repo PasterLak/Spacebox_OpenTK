@@ -1,17 +1,15 @@
-﻿
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 
 
 public static class ImageProcessing
 {
-
     public static Color4[,] MirrorY(Color4[,] original)
     {
         if (original == null)
             throw new ArgumentNullException(nameof(original));
 
-        int height = original.GetLength(0); 
-        int width = original.GetLength(1); 
+        int height = original.GetLength(0);
+        int width = original.GetLength(1);
 
         Color4[,] mirrored = new Color4[height, width];
 
@@ -27,21 +25,20 @@ public static class ImageProcessing
         return mirrored;
     }
 
-   
+
     public static void MirrorYInPlace(Color4[,] array)
     {
         if (array == null)
             throw new ArgumentNullException(nameof(array));
 
-        int height = array.GetLength(0); 
-        int width = array.GetLength(1);  
+        int height = array.GetLength(0);
+        int width = array.GetLength(1);
 
         for (int y = 0; y < height / 2; y++)
         {
             int mirroredY = height - 1 - y;
             for (int x = 0; x < width; x++)
             {
-             
                 Color4 temp = array[y, x];
                 array[y, x] = array[mirroredY, x];
                 array[mirroredY, x] = temp;
@@ -55,8 +52,8 @@ public static class ImageProcessing
         if (original == null)
             throw new ArgumentNullException(nameof(original));
 
-        int height = original.GetLength(0); 
-        int width = original.GetLength(1);  
+        int height = original.GetLength(0);
+        int width = original.GetLength(1);
 
         Color4[,] mirrored = new Color4[height, width];
 
@@ -77,15 +74,15 @@ public static class ImageProcessing
         if (array == null)
             throw new ArgumentNullException(nameof(array));
 
-        int height = array.GetLength(0); 
-        int width = array.GetLength(1); 
+        int height = array.GetLength(0);
+        int width = array.GetLength(1);
 
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width / 2; x++)
             {
                 int mirroredX = width - 1 - x;
-             
+
                 Color4 temp = array[y, x];
                 array[y, x] = array[y, mirroredX];
                 array[y, mirroredX] = temp;

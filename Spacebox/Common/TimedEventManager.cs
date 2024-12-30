@@ -1,4 +1,3 @@
-
 using Spacebox.Common;
 
 public sealed class TimedEventManager
@@ -48,8 +47,8 @@ public sealed class TimedEventManager
                 {
                     //Debug.LogError("Exeption thrown in timed event function: " + ex.Message);
                     events.RemoveAt(i);
-                   
                 }
+
                 timedEvent.ExecutionCount--;
                 timedEvent.TimeUntilExecution = timedEvent.ExecutionInterval;
 
@@ -58,7 +57,6 @@ public sealed class TimedEventManager
                     this.events.RemoveAt(i);
                 }
             }
-       
         }
     }
 
@@ -73,4 +71,3 @@ public sealed class TimedEventManager
         public int ExecutionCount;
     }
 }
-

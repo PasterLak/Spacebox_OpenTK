@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 
 namespace Spacebox.Game.Generation
 {
-
     public enum Direction : byte
     {
         Up = 0,
@@ -26,6 +25,7 @@ namespace Spacebox.Game.Generation
         public bool IsTransparent { get; set; } = false;
 
         public Direction Direction = Direction.Up;
+
         // local data
         public float LightLevel { get; set; } = 0; //0 - 15
         public Vector3 LightColor { get; set; } = Vector3.Zero;
@@ -35,15 +35,13 @@ namespace Spacebox.Game.Generation
 
         public Block()
         {
-
         }
+
         public Block(Vector2 textureCoords, Vector3? color = null, float lightLevel = 0f, Vector3? lightColor = null)
         {
-
             Color = color ?? new Vector3(1.0f, 1.0f, 1.0f);
             LightLevel = lightLevel;
             LightColor = lightColor ?? Vector3.Zero;
-
         }
 
         public Block(BlockData blockData)
@@ -60,7 +58,6 @@ namespace Spacebox.Game.Generation
             {
                 LightLevel = 15;
             }
-
         }
 
         public bool IsAir()
@@ -80,9 +77,9 @@ namespace Spacebox.Game.Generation
             var lc = RoundVector3(LightColor);
 
             return $"Id: {BlockId} ({GameBlocks.Block[BlockId].Name})\n" +
-                $"C: {c}, LL: {ll}, LC: {lc}\n" +
-                $"Direction: {Direction}" +
-                $"\nTransparent: {IsTransparent}";
+                   $"C: {c}, LL: {ll}, LC: {lc}\n" +
+                   $"Direction: {Direction}" +
+                   $"\nTransparent: {IsTransparent}";
         }
 
         private static float RoundFloat(float x)
@@ -101,9 +98,9 @@ namespace Spacebox.Game.Generation
         }
 
         private const float epsilon = 1e-6f;
+
         public static Direction GetDirectionFromNormalOld(Vector3 normal)
         {
-
             if (Math.Abs(normal.X - 1f) < epsilon) return Direction.Right;
             if (Math.Abs(normal.X + 1f) < epsilon) return Direction.Left;
             if (Math.Abs(normal.Y - 1f) < epsilon) return Direction.Up;
@@ -111,16 +108,15 @@ namespace Spacebox.Game.Generation
             if (Math.Abs(normal.Z - 1f) < epsilon) return Direction.Forward;
             if (Math.Abs(normal.Z + 1f) < epsilon) return Direction.Back;
 
-
             return Direction.Up;
         }
 
         const float a1 = 1f - epsilon;
         const float a2 = -1f + epsilon;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Direction GetDirectionFromNormal(Vector3 normal)
         {
-
             if (normal.X > a1)
                 return Direction.Right;
             if (normal.X < a2)
@@ -136,9 +132,5 @@ namespace Spacebox.Game.Generation
 
             return Direction.Up;
         }
-
-
     }
-
-
 }

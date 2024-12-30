@@ -20,7 +20,7 @@ namespace Spacebox.Common
             Height = height;
             pixels = new Color4[width, height];
             Handle = GL.GenTexture();
-           
+
 
             for (int y = 0; y < Height; y++)
             {
@@ -155,7 +155,6 @@ namespace Spacebox.Common
             if (x < 0 || x >= Width || y < 0 || y >= Height)
                 throw new ArgumentOutOfRangeException();
             pixels[x, y] = color;
-          
         }
 
         public void FlipX()
@@ -169,6 +168,7 @@ namespace Spacebox.Common
                     pixels[Width - 1 - x, y] = temp;
                 }
             }
+
             UpdateTexture();
         }
 
@@ -183,6 +183,7 @@ namespace Spacebox.Common
                     pixels[x, Height - 1 - y] = temp;
                 }
             }
+
             UpdateTexture();
         }
 
@@ -212,7 +213,6 @@ namespace Spacebox.Common
         {
             return pixels;
         }
-
 
 
         public void Dispose()
@@ -301,6 +301,5 @@ namespace Spacebox.Common
                 }
             });
         }
-
     }
 }

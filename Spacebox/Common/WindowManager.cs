@@ -9,10 +9,12 @@ namespace Spacebox.Common
 
         private Dictionary<string, IWindowUI> _windows = new Dictionary<string, IWindowUI>();
 
-      
+
         public event Action<bool> OnCursorVisibilityChanged;
 
-        private WindowManager() { }
+        private WindowManager()
+        {
+        }
 
         public void RegisterWindow(string name, IWindowUI window)
         {
@@ -61,7 +63,6 @@ namespace Spacebox.Common
 
         private void WindowOpened(string name)
         {
-          
             var window = _windows[name];
             if (window.ShowCursor)
             {
@@ -71,7 +72,6 @@ namespace Spacebox.Common
 
         private void WindowClosed(string name)
         {
-            
             bool anyWindowRequiresCursor = false;
             foreach (var win in _windows.Values)
             {

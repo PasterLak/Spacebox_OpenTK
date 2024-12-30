@@ -8,32 +8,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f9cc1faa-4ac5-4eb2-9068-249d362465ad" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Spacebox/Common/Utils/FastRandom.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Commands/GameModCommand.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/CreativeMode.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/GameMode.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/GameModeBase.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/InteractionConsumeItem.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/InteractionDefault.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/InteractionDestroyBlock.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/InteractionHandler.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/InteractionMode.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/SpectatorMode.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/SurvivalMode.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Spacebox/Game/Player/InteractionPlaceBlock.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Spacebox/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Spacebox/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Application.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Application.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/DONE.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/DONE.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Commands/TagCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Commands/TagCommand.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/GUI/Tag.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/GUI/Tag.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/GUI/TagManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/GUI/TagManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/BlockGeneratorSphere.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/BlockGeneratorSphere.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Common/Axes.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Common/Axes.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Common/Texture2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Common/Texture2D.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Common/TimedEventManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Common/TimedEventManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Common/Trigger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Common/Trigger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Common/Utils/AppIconLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Common/Utils/AppIconLoader.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Common/Utils/ImageProcessing.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Common/Utils/ImageProcessing.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Common/Utils/ObjLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Common/Utils/ObjLoader.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Common/Utils/Testing.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Common/Utils/Testing.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Common/VisualDebug.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Common/VisualDebug.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Common/WindowManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Common/WindowManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/Block.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/Block.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/Chunk.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/Chunk.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/MeshGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/MeshGenerator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/Sector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/Sector.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/SpaceEntity.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/SpaceEntity.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spacebox/Game/Player/Astronaut.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Player/Astronaut.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Player/Camera360.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Player/Camera360.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Player/Flashlight.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Player/Flashlight.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Player/CreativeMode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Player/CreativeMode.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Player/InertiaController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Player/InertiaController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Player/StatsBarData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Player/StatsBarData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Game/SpaceTexture.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/SpaceTexture.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Scenes/ErrorScene.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Scenes/ErrorScene.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Scenes/LogoScene.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Scenes/LogoScene.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spacebox/Scenes/SpaceMenuScene.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Scenes/SpaceMenuScene.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spacebox/Scenes/SpaceScene.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Scenes/SpaceScene.cs" afterDir="false" />
     </list>
@@ -118,7 +113,7 @@
       <workItem from="1734441831104" duration="481000" />
       <workItem from="1734442325819" duration="12849000" />
       <workItem from="1734527647713" duration="11256000" />
-      <workItem from="1735548205535" duration="20107000" />
+      <workItem from="1735548205535" duration="23633000" />
     </task>
     <servers />
   </component>

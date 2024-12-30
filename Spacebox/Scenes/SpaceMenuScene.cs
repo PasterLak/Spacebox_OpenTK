@@ -16,40 +16,33 @@ namespace Spacebox.Scenes
 {
     internal class SpaceMenuScene : Scene
     {
+        private Skybox skybox;
 
-        Skybox skybox;
-       
         private Shader skyboxShader;
         private Camera player;
-
         private DustSpawner spawner;
-
-        AudioSource music;
+        private AudioSource music;
         private GameMenu menu;
 
         public SpaceMenuScene(string[] args) : base(args)
         {
             Debug.Log("Platform: " + Application.Platform);
-
         }
-
 
         public override void LoadContent()
         {
-
-            NBTTest test = new NBTTest();
             // GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             GL.ClearColor(0, 0, 0, 0);
 
-            
+
             float winX = Window.Instance.Size.X;
             float winY = Window.Instance.Size.Y;
 
-            
+
             //sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
             //GL.Enable(EnableCap.DepthTest);
 
-            player = new Astronaut(new Vector3(0,0,0));
+            player = new Astronaut(new Vector3(0, 0, 0));
 
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader,
@@ -64,13 +57,11 @@ namespace Spacebox.Scenes
 
             music = new AudioSource(SoundManager.GetClip("music"));
             music.IsLooped = true;
-         
+
             music.Play();
 
             InputManager.AddAction("inputOverlay", Keys.F6);
-            InputManager.RegisterCallback("inputOverlay", () => 
-            { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
-            
+            InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
         }
 
         private void SetDustSpawner()
@@ -81,7 +72,6 @@ namespace Spacebox.Scenes
             spawner.ParticleSystem.MaxParticles = 1000;
             spawner.ParticleSystem.SpawnRate = 200;
             spawner.Position = new Vector3(0, 0, 10);
-
 
 
             var emitter = new Emitter(spawner.ParticleSystem)
@@ -98,20 +88,19 @@ namespace Spacebox.Scenes
                 EndColorMax = new Vector4(0.9f, 0.9f, 0.9f, 0f),
                 SpawnRadius = 70f,
                 EmitterDirection = new Vector3(0, 0, 1),
-
             };
 
             spawner.ParticleSystem.Emitter = emitter;
         }
 
-      
+
         public override void Start()
         {
             // Input.HideCursor(); 
-          CenteredImage.ShowText = true;
+            CenteredImage.ShowText = true;
             GameMenu.IsVisible = false;
         }
-      
+
 
         public override void Render()
         {
@@ -120,8 +109,6 @@ namespace Spacebox.Scenes
 
             skybox.DrawTransparent(player);
             spawner.Render();
-         
-
         }
 
         public override void OnGUI()
@@ -133,8 +120,6 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
-          
-
             skybox.Texture.Dispose();
 
             skyboxShader.Dispose();
@@ -144,12 +129,10 @@ namespace Spacebox.Scenes
 
         public override void Update()
         {
-
-            
             CenteredImage.Update();
             spawner.Update();
             //sprite.UpdateWindowSize(Window.Instance.Size);
-           
+
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
 
             if (Input.IsKeyDown(Keys.Enter) || Input.Mouse.IsButtonDown(MouseButton.Left))
@@ -162,9 +145,6 @@ namespace Spacebox.Scenes
             {
                 SceneManager.LoadScene(typeof(MenuScene));
             }
-
-           
-
         }
     }
 }

@@ -106,6 +106,7 @@ namespace Spacebox.Game.Player
                         {
                             Velocity -= Vector3.Normalize(Velocity) * decelerationAmount;
                         }
+
                         break;
 
                     case InertiaType.Quadratic:
@@ -119,6 +120,7 @@ namespace Spacebox.Game.Player
                         {
                             Velocity -= Vector3.Normalize(Velocity) * decelerationQuadratic;
                         }
+
                         break;
 
                     case InertiaType.Damping:
@@ -128,6 +130,7 @@ namespace Spacebox.Game.Player
                         {
                             Velocity = Vector3.Zero;
                         }
+
                         break;
                 }
             }
@@ -160,5 +163,4 @@ namespace Spacebox.Game.Player
             Velocity = Vector3.Zero;
         }
     }
-
 }

@@ -19,6 +19,8 @@ namespace Spacebox.Game.Player
         private float _cameraSpeed = 3.5f;
         private float _shiftSpeed = 7.5f;
 
+        private Axes _axes;
+
         public void SetCameraSpeed(float speed, float shiftSpeed)
         {
             _cameraSpeed = speed;
@@ -113,6 +115,8 @@ namespace Spacebox.Game.Player
 
             Panel.ConnectStorage(Inventory, true);
             Inventory.ConnectStorage(Panel);
+
+            _axes = new Axes(Position, 0.01f);
         }
 
         private void OnGameConsole(bool state)
@@ -272,8 +276,8 @@ namespace Spacebox.Game.Player
 
         public void SetInteraction(InteractionMode mode)
         {
-            if(_gameModeBase == null) return;
-            
+            if (_gameModeBase == null) return;
+
             _gameModeBase.SetInteraction(mode);
         }
 
@@ -285,6 +289,12 @@ namespace Spacebox.Game.Player
         public void Draw(Camera camera)
         {
             Flashlight.Draw(camera);
+
+            if (VisualDebug.ShowDebug)
+            {
+                _axes.Position = Position + Front * 0.1f;
+                _axes.Render(camera);
+            }
         }
 
         public void OnGUI()

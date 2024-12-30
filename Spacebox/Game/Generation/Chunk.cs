@@ -62,7 +62,7 @@ namespace Spacebox.Game.Generation
             CurrentChunk = this;
             CreateBoundingBox();
             GeometryBoundingBox = new BoundingBox(boundingBox);
-            
+
 
             if (isLoaded && loadedBlocks != null)
             {
@@ -203,27 +203,26 @@ namespace Spacebox.Game.Generation
             {
                 if (IsInRange(x + xNormal, y + yNormal, z + zNormal))
                 {
-                   
-                    World.DestructionManager.DestroyBlock(worldBlockPosition, Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
-                     World.DropEffectManager.
-                        DestroyBlock(worldBlockPosition, Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
+                    World.DestructionManager.DestroyBlock(worldBlockPosition,
+                        Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
+                    World.DropEffectManager.DestroyBlock(worldBlockPosition,
+                        Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
                 }
                 else
                 {
-                
-                    World.DestructionManager.
-                         DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
-                       World.DropEffectManager.
-                      DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
+                    World.DestructionManager.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor,
+                        Blocks[x, y, z]);
+                    World.DropEffectManager.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor,
+                        Blocks[x, y, z]);
                 }
             }
 
-            
+
             Mass -= Blocks[x, y, z].Mass;
             Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
 
             IsModified = true;
-            CheckNeigborBlocks(new Vector3Byte(x,y,z));
+            CheckNeigborBlocks(new Vector3Byte(x, y, z));
             GenerateMesh();
         }
 
@@ -253,42 +252,47 @@ namespace Spacebox.Game.Generation
         {
             if (pos.X == 0)
             {
-                if(HasNeighbor( new Vector3SByte(-1, 0,0), out Chunk neighbor))
+                if (HasNeighbor(new Vector3SByte(-1, 0, 0), out Chunk neighbor))
                 {
                     neighbor.GenerateMesh();
                 }
             }
-            if (pos.X == Size-1)
+
+            if (pos.X == Size - 1)
             {
-                if(HasNeighbor(new Vector3SByte(1, 0,0), out Chunk neighbor))
+                if (HasNeighbor(new Vector3SByte(1, 0, 0), out Chunk neighbor))
                 {
                     neighbor.GenerateMesh();
                 }
             }
+
             if (pos.Y == 0)
             {
-                if(HasNeighbor(new Vector3SByte(0,-1,0), out Chunk neighbor))
+                if (HasNeighbor(new Vector3SByte(0, -1, 0), out Chunk neighbor))
                 {
                     neighbor.GenerateMesh();
                 }
             }
-            if (pos.Y == Size-1)
+
+            if (pos.Y == Size - 1)
             {
-                if(HasNeighbor(new Vector3SByte(0,1,0), out Chunk neighbor))
+                if (HasNeighbor(new Vector3SByte(0, 1, 0), out Chunk neighbor))
                 {
                     neighbor.GenerateMesh();
                 }
             }
+
             if (pos.Z == 0)
             {
-                if(HasNeighbor(new Vector3SByte(0,0,-1), out Chunk neighbor))
+                if (HasNeighbor(new Vector3SByte(0, 0, -1), out Chunk neighbor))
                 {
                     neighbor.GenerateMesh();
                 }
             }
-            if (pos.Z == Size-1)
+
+            if (pos.Z == Size - 1)
             {
-                if(HasNeighbor(new Vector3SByte(0,0,1), out Chunk neighbor))
+                if (HasNeighbor(new Vector3SByte(0, 0, 1), out Chunk neighbor))
                 {
                     neighbor.GenerateMesh();
                 }
@@ -335,7 +339,7 @@ namespace Spacebox.Game.Generation
 
         public void Test(Astronaut player)
         {
-            return;
+            
 
             if (!_isLoadedOrGenerated) return;
 
@@ -348,12 +352,6 @@ namespace Spacebox.Game.Generation
                     _meshGenerator.EnableAO = !_meshGenerator.EnableAO;
                     GenerateMesh();
                 }
-            }
-
-            if (Input.IsKeyDown(Keys.P))
-            {
-                if (!Debug.IsVisible)
-                    ChunkSaveLoadManager.SaveChunk(this, World.Instance.WorldData.GetName());
             }
 
             if (Input.IsKeyDown(Keys.KeyPad9))
@@ -590,7 +588,7 @@ namespace Spacebox.Game.Generation
                 {
                     for (int z = 0; z < Size; z++)
                     {
-                        Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
+                        Blocks[x, y, z] = new Block(new Vector2(0, 0));
                     }
                 }
             }
