@@ -116,7 +116,7 @@ namespace Spacebox.Game.Generation
 
         private Tag CreateTag(BoundingBox boundingBox)
         {
-            var tag = new Tag("", boundingBox.Center + new Vector3(0.5f, 0.5f, 0.5f), Color4.DarkGreen);
+            var tag = new Tag("", boundingBox.Center, Color4.DarkGreen);
             tag.TextAlignment = Tag.Alignment.Right;
             TagManager.RegisterTag(tag);
 
@@ -191,7 +191,7 @@ namespace Spacebox.Game.Generation
             Camera camera = Camera.Main;
 
             if (camera != null)
-                tag.Text = "+ "+ (int)Vector3.Distance(BoundingBox.Center + new Vector3(0.5f, 0.5f, 0.5f), camera.Position) +
+                tag.Text = "+ "+ (int)Vector3.Distance(GeometryBoundingBox.Center, camera.Position) +
                            " m";
 
         }

@@ -2,13 +2,13 @@
 
 namespace Spacebox.Game.Generation
 {
-   
-    public class BlockGeneratorSphere : BlockGenerator
+
+    public class BlockGeneratorSphere2 : BlockGenerator
     {
 
-        public BlockGeneratorSphere(Block[,,] blocks, Vector3 position) : base(blocks, position)
+        public BlockGeneratorSphere2(Block[,,] blocks, Vector3 position) : base(blocks, position)
         {
-           
+
         }
 
         public override void Generate()
@@ -18,8 +18,8 @@ namespace Spacebox.Game.Generation
         private void GenerateSphereBlocks()
         {
             Vector3 center = new Vector3(Size / 2f, Size / 2f, Size / 2f);
-            float radius = Size / 2f ;
-           
+            float radius = Size / 2f;
+
             Random random = World.Random;
             radius = radius * radius;
 
@@ -29,53 +29,62 @@ namespace Spacebox.Game.Generation
                     {
                         Vector3 blockPosition = new Vector3(x + 0.5f, y + 0.5f, z + 0.5f);
                         float distance = Vector3.DistanceSquared(blockPosition, center);
+                       
+                        if (distance < radius - 32)
+                        {
+                            _blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
+                            continue;
+                        }
 
-            
+                        const int id = 15;
+
+                       
+
                         if (distance <= radius)
                         {
                             int r = random.Next(0, 11);
-                         
+
                             if (r < 8)
                             {
-                              
-                                    if (distance < radius / 4f)
-                                        _blocks[x, y, z] = GameBlocks.CreateBlockFromId(3);
-                                    else if (distance < radius / 2f)
-                                        _blocks[x, y, z] = GameBlocks.CreateBlockFromId(2);
-                                    else
-                                        _blocks[x, y, z] = GameBlocks.CreateBlockFromId(1);
-                               
+
+                                if (distance < radius / 4f)
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(id);
+                                else if (distance < radius / 2f)
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(id);
+                                else
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(id);
+
 
                             }
                             else if (r == 8)
                             {
                                 if (distance < radius / 4f)
-                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(8);
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(id);
                                 else if (distance < radius / 2f)
-                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(7);
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(id);
                                 else
-                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(6);
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(id);
                             }
                             else if (r == 9)
                             {
 
                                 if (distance < radius / 4f)
-                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(3);
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(id);
                                 else if (distance < radius / 2f)
-                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(2);
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(id);
                                 else
-                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(5);
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(id);
 
                             }
                             else if (r == 10)
                             {
 
                                 if (distance < radius / 4f)
-                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(3);
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(id);
                                 else if (distance < radius / 2f)
-                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(2);
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(id);
                                 else
-                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(4);
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(id);
                             }
                         }
                         else
@@ -94,6 +103,6 @@ namespace Spacebox.Game.Generation
 
 
     }
-    
-    
+
+
 }
