@@ -206,6 +206,7 @@ namespace Spacebox.Scenes
             Debug.RegisterCommand(new TagCommand(player));
             Debug.RegisterCommand(new ClearInventoryCommand(player));
             Debug.RegisterCommand(new GameModCommand(player));
+            Debug.RegisterCommand(new SpawnAroundAsteroidCommand(player));
 
             Texture2D c = TextureManager.GetTexture("Resources/Textures/slot.png", true, false);
             Texture2D c2 = TextureManager.GetTexture("Resources/Textures/selectedSlot.png", true, false);

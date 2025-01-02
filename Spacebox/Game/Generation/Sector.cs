@@ -8,7 +8,7 @@ namespace Spacebox.Game.Generation
 {
     public class Sector : IDisposable
     {
-        public const short SizeBlocks = 256; // 512
+        public const short SizeBlocks = 8192; // 256 512 2048 4096 8192
         public const short SizeBlocksHalf = SizeBlocks / 2;
 
         public Vector3 PositionWorld { get; private set; }
@@ -73,15 +73,33 @@ namespace Spacebox.Game.Generation
             return pos;
         }
 
+        public Vector3 GetRandomPositionNearAsteroid(Random random, SpaceEntity entity)
+        {
+            var geometryBox = entity.GeometryBoundingBox;
+
+            var radius = (geometryBox.Max.Length -
+                          geometryBox.Min.Length) / 2 + 10;
+
+            var pos = GetRandomPointOnSphere(geometryBox.Center, random, radius);
+
+            var near = IsPointInEntity(pos, out var nearest3);
+
+            while (near == true)
+            {
+                pos = GetRandomPointOnSphere(geometryBox.Center, random, radius);
+                near = IsPointInEntity(pos, out var nearest4);
+            }
+
+
+            return pos;
+        }
+
         public void SpawnPlayerNearAsteroid(Astronaut player, Random random)
         {
             if (IsPlayerSpawned) return;
             if (asteroids.Count == 0) return;
 
             var asteroidID = random.Next(0, asteroids.Count);
-
-            var radius = (asteroids[asteroidID].GeometryBoundingBox.Max.Length -
-                          asteroids[asteroidID].GeometryBoundingBox.Min.Length) / 2 + 10;
 
             /*for (int i = 0; i < 100; i++)
             {
@@ -100,17 +118,7 @@ namespace Spacebox.Game.Generation
                 positions.Add(pos2);
             }*/
 
-            var pos = GetRandomPointOnSphere(asteroids[asteroidID].GeometryBoundingBox.Center, random, radius);
-
-            var near = IsPointInEntity(pos, out var nearest3);
-
-            while (near == true)
-            {
-                pos = GetRandomPointOnSphere(asteroids[asteroidID].GeometryBoundingBox.Center, random, radius);
-                near = IsPointInEntity(pos, out var nearest4);
-            }
-
-            player.Position = pos;
+            player.Position = GetRandomPositionNearAsteroid(random, asteroids[asteroidID] );
 
             //sectorOctree.GetNearby(pos, radius);
 
