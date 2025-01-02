@@ -325,7 +325,7 @@ namespace Spacebox.Game.Resources
             }
 
             string[] files = Directory.GetFiles(path);
-
+            Texture2D.AllowDebug = false;
             foreach (string file in files)
             {
 
@@ -337,7 +337,7 @@ namespace Spacebox.Game.Resources
 
                 data.Add(textureData);
             }
-
+            Texture2D.AllowDebug = true;
 
             return data.ToArray();
 

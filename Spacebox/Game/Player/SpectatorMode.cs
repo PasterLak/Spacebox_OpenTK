@@ -17,6 +17,21 @@ public class SpectatorMode : GameModeBase
 
         player.SetCameraSpeed(_cameraSpeed, _shiftSpeed);
     }
+    
+    public override GameMode GetGameMode()
+    {
+        return GameMode.Spectator;
+    }
+    
+    public override void OnEnable()
+    {
+        
+    }
+
+    public override void OnDisable()
+    {
+        InteractionHandler.Interaction.OnDisable();
+    }
 
     public override void Update(Astronaut player)
     {

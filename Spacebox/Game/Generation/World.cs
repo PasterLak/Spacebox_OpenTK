@@ -34,7 +34,7 @@ namespace Spacebox.Game.Generation
 
         //private readonly HashSet<Vector3i> sectorsBeingLoaded = new HashSet<Vector3i>();
         // private readonly HashSet<Vector3i> sectorsBeingUnloaded = new HashSet<Vector3i>();
-
+        private readonly Dictionary<Vector3i, Sector> cachedSectors = new Dictionary<Vector3i, Sector>();
         private readonly Queue<Sector> sectorsToInitialize = new Queue<Sector>();
 
         public World(Astronaut player)
@@ -120,11 +120,6 @@ namespace Spacebox.Game.Generation
             worldOctree.DrawDebug();
             //UpdateSectors();
 
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.H))
-            {
-                Debug.Log("Sector index: " + GetSectorIndex(Player.Position));
-            }
-
             if (CurrentSector != null)
             {
                 CurrentSector.Update();
@@ -154,17 +149,25 @@ namespace Spacebox.Game.Generation
         private Sector LoadSector(Vector3i sectorIndex)
         {
             Sector newSector = null;
-            Vector3 sectorPosition = GetSectorPosition(sectorIndex);
-            newSector = new Sector(sectorPosition, sectorIndex, this);
-            CurrentSector = newSector;
 
-            Vector3 sectorCenter = sectorPosition + new Vector3(Sector.SizeBlocksHalf);
-            Vector3 sectorSize = new Vector3(Sector.SizeBlocks, Sector.SizeBlocks, Sector.SizeBlocks);
+            if (cachedSectors.TryGetValue(sectorIndex, out newSector))
+            {
+                worldOctree.Add(newSector, newSector.BoundingBox);
+                return newSector;
+            }
+            else
+            {
+                Vector3 sectorPosition = GetSectorPosition(sectorIndex);
+                newSector = new Sector(sectorPosition, sectorIndex, this);
+                CurrentSector = newSector;
 
-            BoundingBox sectorBounds = new BoundingBox(sectorCenter, sectorSize);
+                Vector3 sectorCenter = sectorPosition + new Vector3(Sector.SizeBlocksHalf);
+                Vector3 sectorSize = new Vector3(Sector.SizeBlocks, Sector.SizeBlocks, Sector.SizeBlocks);
 
-            worldOctree.Add(newSector, sectorBounds);
+                BoundingBox sectorBounds = new BoundingBox(sectorCenter, sectorSize);
 
+                worldOctree.Add(newSector, sectorBounds);
+            }
 
             //sectorsByIndex[sectorIndex] = newSector;
             //sectorsBeingLoaded.Remove(sectorIndex);
@@ -177,10 +180,17 @@ namespace Spacebox.Game.Generation
         {
             if (CurrentSector == null) return;
 
-            //sectorsByIndex.TryRemove(CurrentSector.Index, out Sector sector);
+            if (cachedSectors.ContainsKey(CurrentSector.PositionIndex))
+            {
+                return;
+            }
+
+            cachedSectors.Add(CurrentSector.PositionIndex, CurrentSector);
             worldOctree.Remove(CurrentSector, CurrentSector.BoundingBox);
-            CurrentSector.Dispose();
+            //CurrentSector.Dispose();
             CurrentSector = null;
+
+            //sectorsByIndex.TryRemove(CurrentSector.Index, out Sector sector);
         }
 
         private Vector3i GetSectorIndex(Vector3 position)

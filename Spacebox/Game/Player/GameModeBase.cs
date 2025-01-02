@@ -4,6 +4,7 @@ public abstract class GameModeBase
 {
     protected Astronaut Player;
     public InteractionHandler InteractionHandler  { get; private set; }
+    public abstract GameMode GetGameMode();
 
     public GameModeBase(Astronaut player,  InteractionHandler interactionHandler)
     {
@@ -20,6 +21,8 @@ public abstract class GameModeBase
         }
     }
     
+    public abstract void OnEnable();
+    public abstract void OnDisable();
     public abstract void Update(Astronaut player);
     public abstract void HandleInput(Astronaut player);
 }

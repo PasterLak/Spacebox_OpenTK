@@ -15,6 +15,21 @@ public class SurvivalMode : GameModeBase
     {
         SetInertia(player.InertiaController);
     }
+    
+    public override GameMode GetGameMode()
+    {
+        return GameMode.Survival;
+    }
+    
+    public override void OnEnable()
+    {
+        
+    }
+
+    public override void OnDisable()
+    {
+        InteractionHandler.Interaction.OnDisable();
+    }
 
     public override void Update(Astronaut player)
     {

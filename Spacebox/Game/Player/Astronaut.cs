@@ -59,8 +59,9 @@ namespace Spacebox.Game.Player
         public HealthBar HealthBar { get; private set; }
         public PowerBar PowerBar { get; private set; }
         private GameModeBase _gameModeBase;
-        private GameMode _gameMode = GameMode.Spectator;
+        private GameMode _gameMode => _gameModeBase.GetGameMode();
         public InteractionMode CurrentInteraction => _gameModeBase.InteractionHandler.Interaction;
+
         public GameMode GameMode
         {
             get { return _gameMode; }
@@ -127,7 +128,9 @@ namespace Spacebox.Game.Player
 
         private void SetGameMode(GameMode mode)
         {
-            _gameMode = mode;
+            if(_gameModeBase != null)
+            _gameModeBase.OnDisable();
+
             switch (mode)
             {
                 case GameMode.Survival:
@@ -141,6 +144,8 @@ namespace Spacebox.Game.Player
                     _gameModeBase = new SpectatorMode(this);
                     break;
             }
+
+            _gameModeBase.OnEnable();
         }
 
         public override void Update()

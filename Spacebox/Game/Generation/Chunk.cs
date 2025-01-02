@@ -66,7 +66,6 @@ namespace Spacebox.Game.Generation
             CreateBoundingBox();
             GeometryBoundingBox = new BoundingBox(boundingBox);
 
-
             if (isLoaded && loadedBlocks != null)
             {
                 Array.Copy(loadedBlocks, Blocks, loadedBlocks.Length);
@@ -384,21 +383,6 @@ namespace Spacebox.Game.Generation
             if (!_isLoadedOrGenerated) return;
 
             if (Debug.IsVisible) return;
-
-            if (Input.IsKeyDown(Keys.O))
-            {
-                if (!Debug.IsVisible)
-                {
-                    _meshGenerator.EnableAO = !_meshGenerator.EnableAO;
-                    GenerateMesh();
-                }
-            }
-
-            if (Input.IsKeyDown(Keys.KeyPad9))
-            {
-                ClearChunk();
-                GenerateMesh();
-            }
 
 
             var pos = new Vector3Byte((byte)player.Position.X, (byte)player.Position.Y, (byte)player.Position.Z);

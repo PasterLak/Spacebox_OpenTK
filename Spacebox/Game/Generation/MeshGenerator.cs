@@ -108,6 +108,8 @@ namespace Spacebox.Game.Generation
                         
                         if(z < zMin) zMin = z;
                         if(z > zMax) zMax = z;
+                        
+              
 
                         for (int fIndex = 0; fIndex < faces.Length; fIndex++)
                         {
@@ -117,6 +119,13 @@ namespace Spacebox.Game.Generation
                             sbyte nx = (sbyte)(x + normal.X);
                             sbyte ny = (sbyte)(y + normal.Y);
                             sbyte nz = (sbyte)(z + normal.Z);
+                            
+                            if (block.IsTransparent && IsInRange(nx, ny, nz))
+                            {
+                                var neighborBlock = _blocks[nx, ny, nz];
+                                if (neighborBlock != null && neighborBlock.IsTransparent) continue;
+                            }
+
 
                             if (IsTransparentBlock(nx, ny, nz, normal))
                             {

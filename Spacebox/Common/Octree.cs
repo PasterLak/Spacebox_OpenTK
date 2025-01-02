@@ -36,7 +36,6 @@ namespace Spacebox.Common
 
             boundingBox = new BoundingBox(initialWorldPos, new Vector3(initialWorldSize, initialWorldSize, initialWorldSize));
 
-            Debug.Log("World box: " + boundingBox);
         }
 
         public void Add(T obj, BoundingBox objBounds)

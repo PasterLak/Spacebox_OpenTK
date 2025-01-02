@@ -23,7 +23,8 @@ version 0.1.0
 - place blocks
 - mass of asteroids
 - delete chunks, entities
-- spawn the player near asteroid
+- spawn player around asteroid or random without collision with space entities
+- no render for sides between glass blocks
 
 
 version 0.0.9

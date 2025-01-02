@@ -50,6 +50,29 @@ namespace Spacebox.Game.Generation
             //Initialize();
         }
 
+        public void SpawnPlayerRandomInSector(Astronaut player, Random random)
+        {
+            if (IsPlayerSpawned) return;
+
+            player.Position = GetRandomPositionWithCOllisionCheck(random, 0.2f);
+
+            IsPlayerSpawned = true;
+        }
+
+        public Vector3 GetRandomPositionWithCOllisionCheck(Random random, float margin01)
+        {
+            var pos = GetRandomPosition(PositionWorld, margin01, random);
+            var near = IsPointInEntity(pos, out var nearest3);
+
+            while (near == true)
+            {
+                pos = GetRandomPosition(PositionWorld, margin01, random);
+                near = IsPointInEntity(pos, out var nearest4);
+            }
+
+            return pos;
+        }
+
         public void SpawnPlayerNearAsteroid(Astronaut player, Random random)
         {
             if (IsPlayerSpawned) return;
@@ -60,10 +83,8 @@ namespace Spacebox.Game.Generation
             var radius = (asteroids[asteroidID].GeometryBoundingBox.Max.Length -
                           asteroids[asteroidID].GeometryBoundingBox.Min.Length) / 2 + 10;
 
-            for (int i = 0; i < 100; i++)
+            /*for (int i = 0; i < 100; i++)
             {
-                
-                
                 var pos2 = GetRandomPointOnSphere(asteroids[asteroidID].GeometryBoundingBox.Center, random, radius);
 
                 var near2 = IsPointInEntity(pos2, out var nearest);
@@ -75,9 +96,9 @@ namespace Spacebox.Game.Generation
                     pos2 = GetRandomPointOnSphere(asteroids[asteroidID].GeometryBoundingBox.Center, random, radius);
                     near2 = IsPointInEntity(pos2, out var nearest2);
                 }
-                
+
                 positions.Add(pos2);
-            }
+            }*/
 
             var pos = GetRandomPointOnSphere(asteroids[asteroidID].GeometryBoundingBox.Center, random, radius);
 
@@ -85,8 +106,6 @@ namespace Spacebox.Game.Generation
 
             while (near == true)
             {
-                Debug.Error("Spawn collision!");
-
                 pos = GetRandomPointOnSphere(asteroids[asteroidID].GeometryBoundingBox.Center, random, radius);
                 near = IsPointInEntity(pos, out var nearest4);
             }
@@ -94,7 +113,6 @@ namespace Spacebox.Game.Generation
             player.Position = pos;
 
             //sectorOctree.GetNearby(pos, radius);
-
 
             IsPlayerSpawned = true;
         }
@@ -160,7 +178,7 @@ namespace Spacebox.Game.Generation
 
                 do
                 {
-                    asteroidPosition = GetRandomPosition(PositionWorld, 0.2f, random);
+                    asteroidPosition = GetRandomPosition(PositionWorld, 0.1f, random);
                 } while (!IsPositionValid(asteroidPosition));
 
                 AddEntity(new SpaceEntity(asteroidPosition, this, true), asteroidPosition);

@@ -36,7 +36,7 @@ namespace Spacebox.Game.Generation
                             continue;
                         }
 
-                        const int id = 15;
+                        const int id = 19;
 
                        
 

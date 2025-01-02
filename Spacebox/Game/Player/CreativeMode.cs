@@ -36,6 +36,21 @@ public class CreativeMode : GameModeBase
         SetCameraSway(player.CameraSway);
     }
 
+    public override GameMode GetGameMode()
+    {
+        return GameMode.Creative;
+    }
+    
+    public override void OnEnable()
+    {
+        
+    }
+
+    public override void OnDisable()
+    {
+       InteractionHandler.Interaction.OnDisable();
+    }
+
     public override void Update(Astronaut player)
     {
         player.PowerBar.Update();

@@ -151,7 +151,7 @@ namespace Spacebox.Common
         public static void ClearMessages()
         {
             _messages.Clear();
-            Log("Console messages cleared.");
+            //Log("Console messages cleared.");
         }
 
         public static void Render(Vector2 windowSize)

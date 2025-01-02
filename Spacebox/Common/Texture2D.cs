@@ -14,6 +14,8 @@ namespace Spacebox.Common
         public int Height { get; private set; }
         private Color4[,] pixels;
 
+        public static bool AllowDebug = true;
+
         public Texture2D(int width, int height, bool pixelated = false)
         {
             Width = width;
@@ -84,7 +86,8 @@ namespace Spacebox.Common
 
             LoadTextureFromPixels();
 
-            Debug.Log("[Texture2D] Loaded from: " + path, Color4.Coral);
+            if (AllowDebug)
+                Debug.Log("[Texture2D] Loaded from: " + path, Color4.Coral);
         }
 
 
