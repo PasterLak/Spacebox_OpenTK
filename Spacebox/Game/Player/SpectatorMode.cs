@@ -6,8 +6,8 @@ namespace Spacebox.Game.Player;
 
 public class SpectatorMode : GameModeBase
 {
-    private const float _cameraSpeed = 8f;
-    private const float _shiftSpeed = 16f;
+    private const float _cameraSpeed = 10f;
+    private const float _shiftSpeed = 20f;
 
     public SpectatorMode(Astronaut player) : base(player, new InteractionHandler())
     {

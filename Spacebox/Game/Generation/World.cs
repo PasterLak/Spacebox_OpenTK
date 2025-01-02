@@ -28,11 +28,12 @@ namespace Spacebox.Game.Generation
         public static Sector CurrentSector { get; private set; }
 
         private readonly Octree<Sector> worldOctree;
+
         //private readonly ConcurrentDictionary<Vector3i, Sector> sectorsByIndex;
         private readonly object octreeLock = new object();
 
         //private readonly HashSet<Vector3i> sectorsBeingLoaded = new HashSet<Vector3i>();
-       // private readonly HashSet<Vector3i> sectorsBeingUnloaded = new HashSet<Vector3i>();
+        // private readonly HashSet<Vector3i> sectorsBeingUnloaded = new HashSet<Vector3i>();
 
         private readonly Queue<Sector> sectorsToInitialize = new Queue<Sector>();
 
@@ -50,7 +51,7 @@ namespace Spacebox.Game.Generation
             Vector3i initialSectorIndex = GetSectorIndex(Player.Position);
 
             CurrentSector = LoadSector(initialSectorIndex);
-
+            CurrentSector.SpawnPlayerNearAsteroid(player, Random);
             if (CurrentSector == null) Debug.Error("No current sector");
 
             DropEffectManager = new DropEffectManager(player);
@@ -171,7 +172,6 @@ namespace Spacebox.Game.Generation
             return newSector;
         }
 
-       
 
         private void UnloadSector()
         {
@@ -208,16 +208,16 @@ namespace Spacebox.Game.Generation
 
         private bool SectorExists(Vector3i index)
         {
-           // return sectorsByIndex.ContainsKey(index);
+            // return sectorsByIndex.ContainsKey(index);
 
-           return false;
+            return false;
         }
 
         public bool IsColliding(Vector3 pos, BoundingVolume volume)
         {
             if (CurrentSector == null) return false;
-            
-            return CurrentSector.IsColliding(pos,volume);
+
+            return CurrentSector.IsColliding(pos, volume);
         }
 
         private IEnumerable<Sector> GetSectorsInRange(Vector3 position, float range)

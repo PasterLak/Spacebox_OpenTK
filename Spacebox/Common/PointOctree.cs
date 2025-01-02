@@ -150,6 +150,14 @@ namespace Spacebox.Common
             rootNode.GetAll(objects);
             return objects;
         }
+        
+        public bool ContainsAny(Vector3 point)
+        {
+            return rootNode.ContainsAny(point);
+        }
+
+        
+
 
         // #### PRIVATE METHODS ####
 

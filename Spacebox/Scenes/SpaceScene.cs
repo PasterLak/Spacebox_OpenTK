@@ -137,7 +137,7 @@ namespace Spacebox.Scenes
 
             world = new World(player);
             world.LoadWorldInfo(worldName);
-            PlayerSaveLoadManager.LoadPlayer(player, World.Instance.WorldData.WorldFolderPath);
+            //PlayerSaveLoadManager.LoadPlayer(player, World.Instance.WorldData.WorldFolderPath);
 
 
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
@@ -412,7 +412,7 @@ namespace Spacebox.Scenes
             blocksShader.Dispose();
             //blockTexture.Dispose();
             lightAtlas.Dispose();
-
+            Sector.IsPlayerSpawned = false;
             
             //music.Dispose();
             skybox.Texture.Dispose();

@@ -23,6 +23,7 @@ version 0.1.0
 - place blocks
 - mass of asteroids
 - delete chunks, entities
+- spawn the player near asteroid
 
 
 version 0.0.9

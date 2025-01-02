@@ -55,8 +55,6 @@ namespace Spacebox.Game.Generation
                 AddChunk(new Chunk(positionWorld + new Vector3(0, -Chunk.Size, 0), this));
             }
 
-            //GeometryMin = c.GeometryMin;
-            //GeometryMax = c.GeometryMax;
             InitializeSharedResources();
             simple = new SimpleBlock(sharedShader, sharedTexture, PositionWorld);
             simple.Scale = new Vector3(1, 1, 1);

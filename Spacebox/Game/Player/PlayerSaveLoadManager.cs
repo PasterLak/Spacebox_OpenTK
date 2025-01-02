@@ -79,6 +79,7 @@ namespace Spacebox.Game.Player
 
         public static void LoadPlayer(Astronaut player, string worldFolder)
         {
+            return;
             try
             {
                 string saveFilePath = Path.Combine(worldFolder, "player.json");

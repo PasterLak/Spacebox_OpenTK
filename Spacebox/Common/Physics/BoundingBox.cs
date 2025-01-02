@@ -3,7 +3,6 @@
 
 namespace Spacebox.Common.Physics
 {
-
     public abstract class BoundingVolume
     {
         public Vector3 Center { get; set; }
@@ -14,7 +13,6 @@ namespace Spacebox.Common.Physics
 
     public class BoundingBox : BoundingVolume
     {
-
         public Vector3 Size { get; set; }
 
         public Vector3 Extents => Size * 0.5f;
@@ -25,8 +23,8 @@ namespace Spacebox.Common.Physics
         {
             Center = boundingBox.Center;
             Size = boundingBox.Size;
-          
         }
+
         public BoundingBox(Vector3 center, Vector3 size)
         {
             Center = center;
@@ -46,13 +44,12 @@ namespace Spacebox.Common.Physics
             return new BoundingBox(Center, Size);
         }
 
-        
-        
+
         public void Expand(BoundingBox other)
         {
             Vector3 currentMin = this.Min;
             Vector3 currentMax = this.Max;
-    
+
             Vector3 otherMin = other.Min;
             Vector3 otherMax = other.Max;
 
@@ -96,16 +93,7 @@ namespace Spacebox.Common.Physics
 
         public override float GetLongestSide()
         {
-
-            return Extents.X;
+            return MathHelper.Max(MathHelper.Max(Extents.X, Extents.Y), Extents.Z);
         }
     }
-
-    
-
-    
-
-
-
-
 }

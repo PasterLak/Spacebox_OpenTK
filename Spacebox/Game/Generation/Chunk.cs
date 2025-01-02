@@ -27,7 +27,7 @@ namespace Spacebox.Game.Generation
             { new Vector3SByte(0, 0, -1), null },
         };
 
-        public int Mass { get;  set; } = 0; // 255x32700 = 8,338,500 (max 4,294,967,295 in uint)
+        public int Mass { get; set; } = 0; // 255x32700 = 8,338,500 (max 4,294,967,295 in uint)
         public Vector3 PositionWorld { get; private set; }
         public Vector3SByte PositionIndex { get; set; }
 
@@ -52,11 +52,11 @@ namespace Spacebox.Game.Generation
         public Action<Chunk> OnChunkModified;
 
         public Chunk(Vector3 positionWorld, SpaceEntity spaceEntity)
-            : this(positionWorld,spaceEntity, null, isLoaded: false)
+            : this(positionWorld, spaceEntity, null, isLoaded: false)
         {
         }
 
-        internal Chunk(Vector3 positionWorld,  SpaceEntity spaceEntity, Block[,,] loadedBlocks, bool isLoaded)
+        internal Chunk(Vector3 positionWorld, SpaceEntity spaceEntity, Block[,,] loadedBlocks, bool isLoaded)
         {
             PositionWorld = positionWorld;
             Blocks = new Block[Size, Size, Size];
@@ -108,7 +108,7 @@ namespace Spacebox.Game.Generation
         public void GenerateMesh()
         {
             if (!_isLoadedOrGenerated) return;
-            
+
 
             _lightManager.PropagateLight();
             int oldMass = Mass;
@@ -121,7 +121,7 @@ namespace Spacebox.Game.Generation
                 _mesh?.Dispose();
                 newMesh?.Dispose();
                 DeleteChunk();
-                
+
                 return;
             }
 
@@ -134,7 +134,6 @@ namespace Spacebox.Game.Generation
 
             SpaceEntity.RecalculateMass(Mass - oldMass);
             OnChunkModified?.Invoke(this);
-
         }
 
         private void DeleteChunk()
@@ -148,6 +147,7 @@ namespace Spacebox.Game.Generation
         }
 
         private float time = 0;
+
         public void Render(Shader shader)
         {
             if (!_isLoadedOrGenerated) return;
@@ -156,7 +156,7 @@ namespace Spacebox.Game.Generation
             {
                 GenerateMesh();
                 needsToRegenerateMesh = false;
-            }   
+            }
 
             Vector3 relativePosition = PositionWorld - Camera.Main.Position;
 
@@ -207,7 +207,6 @@ namespace Spacebox.Game.Generation
             {
                 // place in another chunk or create new one
             }
-                
 
 
             Blocks[x, y, z] = block;
@@ -262,12 +261,10 @@ namespace Spacebox.Game.Generation
             //Mass -= Blocks[x, y, z].Mass;
             Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
 
-            
+
             IsModified = true;
             CheckNeigborBlocks(new Vector3Byte(x, y, z));
             needsToRegenerateMesh = true;
-            
-            
         }
 
         public Block? GetBlock(Vector3SByte pos)
@@ -383,7 +380,7 @@ namespace Spacebox.Game.Generation
 /*
         public void Test(Astronaut player)
         {
-            
+
             if (!_isLoadedOrGenerated) return;
 
             if (Debug.IsVisible) return;
@@ -520,7 +517,7 @@ namespace Spacebox.Game.Generation
                             RemoveBlock((byte)hitInfo.blockPosition.X, (byte)hitInfo.blockPosition.Y, (byte)hitInfo.blockPosition.Z,
                                 (sbyte)hitInfo.normal.X, (sbyte)hitInfo.normal.Y, (sbyte)hitInfo.normal.Z);
 
-                           
+
                         }
                     }
                 }
@@ -548,7 +545,7 @@ namespace Spacebox.Game.Generation
 
                                 PlaceBlock(placeBlockPosition.X, placeBlockPosition.Y, placeBlockPosition.Z, newBlock);
 
-                               
+
                             }
                         }
                     }
@@ -604,7 +601,7 @@ namespace Spacebox.Game.Generation
 
                             PlaceBlock(x, y, z, newBlock);
 
-                           
+
                         }
                         else
                         {

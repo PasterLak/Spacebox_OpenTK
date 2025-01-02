@@ -203,6 +203,20 @@ namespace Spacebox.Common
                 }
             }
         }
+        
+        public bool ContainsAny(Vector3 point)
+        {
+            if (!Encapsulates(bounds, point)) return false;
+            for (int i = 0; i < objects.Count; i++)
+            {
+                if (objects[i].Pos == point) return true;
+            }
+            if (children != null)
+            {
+                return children[BestFitChild(point)].ContainsAny(point);
+            }
+            return false;
+        }
 
         /// <summary>
         /// Set the 8 children of this octree.
