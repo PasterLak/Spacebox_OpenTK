@@ -21,7 +21,7 @@ public class InteractionPlaceBlock : InteractionMode
             blockPlace = new AudioSource(SoundManager.GetClip("blockPlace3"));
         if (BlockSelector.Instance != null)
             BlockSelector.Instance.SimpleBlock.Shader.SetVector4("color", new Vector4(1, 1, 1, 0.5f));
-        BlockSelector.IsVisible = true;
+        BlockSelector.IsVisible = false;
     }
 
     public override void OnDisable()
@@ -31,6 +31,7 @@ public class InteractionPlaceBlock : InteractionMode
 
     private Vector3 UpdateBlockPreview(VoxelPhysics.HitInfo hit)
     {
+        BlockSelector.IsVisible = true;
         var selectorPositionWorld = new Vector3(hit.blockPosition.X + hit.normal.X,
             hit.blockPosition.Y + hit.normal.Y,
             hit.blockPosition.Z + hit.normal.Z) + hit.chunk.PositionWorld;
@@ -64,7 +65,7 @@ public class InteractionPlaceBlock : InteractionMode
 
             if (chunk != null)
             {
-                if (PanelUI.TryPlaceItem(out var id))
+                if (PanelUI.TryPlaceItem(out var id, GameMode))
                 {
                     Block newBlock = GameBlocks.CreateBlockFromId(id);
 
@@ -80,6 +81,8 @@ public class InteractionPlaceBlock : InteractionMode
                     chunk.PlaceBlock(x, y, z, newBlock);
                 }
             }
+            blockPlace?.Play();
+
         }
     }
 

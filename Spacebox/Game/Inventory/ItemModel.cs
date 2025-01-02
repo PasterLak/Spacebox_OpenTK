@@ -25,7 +25,7 @@ namespace Spacebox.Game
 
             //shader.SetVector3("lightColor", new Vector3(1, 1, 1));
            // shader.SetVector3("objectColor", new Vector3(1, 1, 1));
-
+           offset = new Vector3(0.06f, -0.12f, 0.07f);
         }
 
         /*
@@ -40,7 +40,7 @@ namespace Spacebox.Game
         Vector3 offset = new Vector3(0.29f, -0.6f, 0.35f); // 0.02 
         float additionalRotationAngle = MathHelper.DegreesToRadians(90.0f);
 
-        public bool debug = false;
+        public bool debug = true;
         Matrix4 model;
 
         private Shader shader;
@@ -56,41 +56,42 @@ namespace Spacebox.Game
             {
                 this.shader = shader;
             }
-            
-            if (!debug)
+
+            if (debug)
             {
+                const float step = 0.01f;
                 if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.V))
                 {
-                    offset.X += 0.05f;
+                    offset.X += step;
                     Debug.Log(offset.ToString());
                 }
                 if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.B))
                 {
-                    offset.X -= 0.05f;
+                    offset.X -= step;
                     Debug.Log(offset.ToString());
                 }
                 if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.N))
                 {
-                    offset.Z += 0.05f;
+                    offset.Z += step;
                     Debug.Log(offset.ToString());
                 }
                 if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.M))
                 {
-                    offset.Z -= 0.05f;
+                    offset.Z -= step;
                     Debug.Log(offset.ToString());
                 }
                 if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.J))
                 {
-                    offset.Y += 0.05f;
+                    offset.Y += step;
                     Debug.Log(offset.ToString());
                 }
                 if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.K))
                 {
-                    offset.Y -= 0.05f;
+                    offset.Y -= step;
                     Debug.Log(offset.ToString());
                 }
 
-                
+            }
 
                 model = itemCamera.GetModelMatrix();
 
@@ -115,11 +116,7 @@ namespace Spacebox.Game
                      additionalRotation *
                     rotation *
                     Matrix4.CreateTranslation(itemCamera.Position);
-            }
-            if(debug)
-            {
-                model = Matrix4.Identity;
-            }
+            
 
             shader.Use();
             shader.SetMatrix4("model", model);

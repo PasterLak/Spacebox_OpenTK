@@ -4,7 +4,7 @@ public abstract class GameModeBase
 {
     protected Astronaut Player;
     public InteractionHandler InteractionHandler  { get; private set; }
-    public abstract GameMode GetGameMode();
+    public abstract  GameMode GetGameMode();
 
     public GameModeBase(Astronaut player,  InteractionHandler interactionHandler)
     {
@@ -17,7 +17,7 @@ public abstract class GameModeBase
       
         if (InteractionHandler != null)
         {
-            InteractionHandler.SetInteraction(iteration);
+            InteractionHandler.SetInteraction(iteration, GetGameMode());
         }
     }
     

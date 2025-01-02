@@ -132,7 +132,7 @@ namespace Spacebox.Game
         private static void GenerateItemModel(byte coordX, byte coordY, float depth)
         {
             ItemModel model = ItemModelGenerator.GenerateModel(
-                ItemsTexture, coordX, coordY, 0.02f, depth / 100f * 2f, true);
+                ItemsTexture, coordX, coordY, 0.004f, depth / 500f * 2f, true);
 
             ItemModels.Add(MaxItemId, model);
         }

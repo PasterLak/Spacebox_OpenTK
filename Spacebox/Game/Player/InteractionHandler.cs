@@ -7,29 +7,32 @@ public class InteractionHandler
     private InteractionMode _interaction;
     public InteractionMode Interaction {
         get => _interaction;
-        set { SetInteraction(value); }
+        set { SetInteraction(value, _gameMode); }
     }
     private readonly HashSet<Type> _allowedInteractions;
 
-    public InteractionHandler()
+    private readonly GameMode _gameMode;
+    public InteractionHandler(GameMode gameMode)
     {
+        _gameMode = gameMode;
         _allowedInteractions = new HashSet<Type>()
         {
             typeof(InteractionDefault)
         };
         
-        SetInteraction(new InteractionDefault());
+        SetInteraction(new InteractionDefault(), gameMode);
     }
 
-    public InteractionHandler(InteractionMode defaultMode, HashSet<Type> allowedInteractions)
+    public InteractionHandler(InteractionMode defaultMode, HashSet<Type> allowedInteractions, GameMode gameMode)
     {
+        _gameMode = gameMode;
         _allowedInteractions = allowedInteractions;
 
         _allowedInteractions.Add(typeof(InteractionDefault));
-        SetInteraction(defaultMode);
+        SetInteraction(defaultMode, gameMode);
     }
 
-    public void SetInteraction(InteractionMode interaction)
+    public void SetInteraction(InteractionMode interaction, GameMode gameMode)
     {
         if(_interaction != null && _interaction.GetType() == interaction.GetType()) return;
         if (!_allowedInteractions.Contains(interaction.GetType()))
@@ -39,7 +42,7 @@ public class InteractionHandler
         }
         
         if(_interaction != null) Interaction.OnDisable();
-
+        interaction.GameMode = gameMode;
         interaction.OnEnable();
         _interaction = interaction;
     }

@@ -98,7 +98,7 @@ namespace Spacebox.Game.GUI
             ItemModel.SetColor(color.ToOpenTKVector3());
         }
 
-        public static bool TryPlaceItem(out short id)
+        public static bool TryPlaceItem(out short id, GameMode gameMode)
         {
             id = 0;
             if (SelectedSlot == null) return false;
@@ -107,7 +107,8 @@ namespace Spacebox.Game.GUI
             if (!(SelectedSlot.Item is BlockItem itemBlock)) return false;
 
             id = itemBlock.BlockId;
-            SelectedSlot.TakeOne();
+            if(gameMode == GameMode.Survival)
+                SelectedSlot.TakeOne();
             return true;
         }
 
@@ -208,7 +209,6 @@ namespace Spacebox.Game.GUI
            
             if (player.GameMode == GameMode.Spectator) return;
 
-            Debug.Log("Selected slot type: " + SelectedSlot.Item.GetType().Name);
             if (IsHoldingBlock())
             {
                 player.SetInteraction(new InteractionPlaceBlock());

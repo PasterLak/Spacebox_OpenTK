@@ -40,7 +40,9 @@ public class InteractionConsumeItem : InteractionMode
        
         
         ApplyConsumable(consumable, player);
-        _itemSlot.DropOne();
+
+        if (GameMode == GameMode.Survival)
+            _itemSlot.DropOne();
 
         if (_itemSlot.Count == 0)
         {

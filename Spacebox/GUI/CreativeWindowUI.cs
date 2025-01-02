@@ -14,6 +14,7 @@ namespace Spacebox.UI
         private static IntPtr SlotTexture = IntPtr.Zero;
       
         public static bool IsVisible { get; set; } = false;
+        public static bool Enabled { get; set; } = false;
 
         public static Astronaut Player;
 
@@ -28,6 +29,7 @@ namespace Spacebox.UI
 
         public static void Render()
         {
+            if (!Enabled) return;
             if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.C) && !Debug.IsVisible)
             {
                 IsVisible = !IsVisible;

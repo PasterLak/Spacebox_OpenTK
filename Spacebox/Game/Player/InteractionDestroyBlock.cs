@@ -52,7 +52,7 @@ public class InteractionDestroyBlock : InteractionMode
 
                 if (blockDestroy != null)
                 {
-                    Debug.Error("blockDestroy play!");
+                  
                     blockDestroy.Play();
                 }
 
