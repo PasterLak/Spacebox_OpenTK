@@ -1,10 +1,10 @@
 ﻿using System.Numerics;
 using ImGuiNET;
+using Microsoft.VisualBasic;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Extensions;
-using Spacebox.Game;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
 using Spacebox.UI;
@@ -15,7 +15,9 @@ namespace Spacebox.Game.GUI
     public static class PanelUI
     {
         private static float SlotSize = 64.0f;
+
         private static nint SlotTexture = nint.Zero;
+
         // private static IntPtr ItemTexture = IntPtr.Zero;
         private static nint SelectedTexture = nint.Zero;
         public static bool IsVisible { get; set; } = true;
@@ -27,14 +29,11 @@ namespace Spacebox.Game.GUI
         private static AudioSource scrollAudio;
 
         private static short _selectedSlotId = 0;
+
         public static short SelectedSlotId
         {
             get { return _selectedSlotId; }
-            set
-            {
-                _selectedSlotId = value;
-
-            }
+            set { _selectedSlotId = value; }
         }
 
         public static Action<short> OnSlotChanged;
@@ -45,6 +44,7 @@ namespace Spacebox.Game.GUI
         private static bool wasPlayerOnes = false;
 
         private static Astronaut Player;
+
         public static void Initialize(Astronaut player, nint slotTexture, nint selectedTexture)
         {
             Player = player;
@@ -62,16 +62,13 @@ namespace Spacebox.Game.GUI
 
         public static OpenTK.Mathematics.Vector2[] GetSelectedBlockUV(Face face, Direction direction)
         {
-
             var blockID = (SelectedSlot.Item as BlockItem).BlockId;
 
             return GameBlocks.GetBlockUVsByIdAndDirection(blockID, face, direction);
-
         }
 
         private static void OnStorageDataWasChanged(Storage storage)
         {
-
             SelectSlot(SelectedSlotId);
         }
 
@@ -144,6 +141,7 @@ namespace Spacebox.Game.GUI
                 {
                     SelectedSlotId = 0;
                 }
+
                 SetSelectedSlot(SelectedSlotId);
             }
 
@@ -158,15 +156,15 @@ namespace Spacebox.Game.GUI
 
                 SetSelectedSlot(SelectedSlotId);
             }
-            if (Input.IsMouseButtonDown(MouseButton.Right))
+
+           /* if (Input.IsMouseButtonDown(MouseButton.Right))
             {
                 if (IsHoldingConsumable())
                 {
                     Player.ApplyConsumable((ConsumableItem)SelectedSlot.Item);
                     SelectedSlot.DropOne();
-
                 }
-            }
+            }*/
 
 
             if (Input.IsKeyDown(Keys.G))
@@ -180,7 +178,6 @@ namespace Spacebox.Game.GUI
             if (Input.IsKeyDown(Keys.D0))
             {
                 SetSelectedSlot(9);
-
             }
 
             for (int i = 0; i <= 9; i++)
@@ -191,7 +188,6 @@ namespace Spacebox.Game.GUI
                     break;
                 }
             }
-
         }
 
         public static void Update()
@@ -200,11 +196,36 @@ namespace Spacebox.Game.GUI
             {
                 _time -= Time.Delta;
             }
+
             if (InventoryUI.IsVisible) return;
 
 
             UpdateInput();
+        }
 
+        private static void UpdatePlayerInteraction(Astronaut player)
+        {
+           
+            if (player.GameMode == GameMode.Spectator) return;
+
+            Debug.Log("Selected slot type: " + SelectedSlot.Item.GetType().Name);
+            if (IsHoldingBlock())
+            {
+                player.SetInteraction(new InteractionPlaceBlock());
+            }
+
+            else if (IsHoldingDrill())
+            {
+                player.SetInteraction(new InteractionDestroyBlock());
+            }
+            else if (IsHoldingConsumable())
+            {
+                player.SetInteraction(new InteractionConsumeItem(SelectedSlot));
+            }
+            else
+            {
+                player.SetInteraction(new InteractionDefault());
+            }
         }
 
         private static void SetSelectedSlot(short id)
@@ -218,6 +239,7 @@ namespace Spacebox.Game.GUI
                 {
                     scrollAudio.Stop();
                 }
+
                 scrollAudio.Play();
             }
             else
@@ -225,14 +247,15 @@ namespace Spacebox.Game.GUI
                 wasPlayerOnes = true;
             }
         }
+
         private static void SelectSlot(short slot)
         {
             if (Storage != null)
             {
-
                 SelectedSlot = Storage.GetSlot(0, slot);
                 ShowItemModel();
                 HideItemModel();
+                UpdatePlayerInteraction(Player);
 
                 if (SelectedSlot.HasItem)
                 {
@@ -240,8 +263,6 @@ namespace Spacebox.Game.GUI
                 }
 
                 OnSlotChanged?.Invoke(slot);
-
-
             }
         }
 
@@ -281,7 +302,6 @@ namespace Spacebox.Game.GUI
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
 
 
-
             ImGui.Begin("Panel", windowFlags);
 
 
@@ -308,6 +328,7 @@ namespace Spacebox.Game.GUI
                         {
                             continue;
                         }
+
                         string id = $"slotPanel_{x}_{y}";
                         nint slotTextureId = SlotTexture;
 
@@ -324,6 +345,7 @@ namespace Spacebox.Game.GUI
                         ImGui.PopStyleColor();
                     }
                 }
+
                 ImGui.EndTable();
             }
 
@@ -337,19 +359,22 @@ namespace Spacebox.Game.GUI
                 {
                     DrawItemName(SelectedSlot.Item.Name);
                 }
-
             }
         }
 
         private static readonly Vector4 colorWhite = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
         private static readonly Vector4 colorBlack = new Vector4(0, 0, 0, 1);
+
         private static void DrawItemName(string name)
         {
             ImGui.SetNextWindowPos(new Vector2(0, 0), ImGuiCond.Always, new Vector2(0, 0));
             ImGui.SetNextWindowSize(new Vector2(ImGui.GetIO().DisplaySize.X, ImGui.GetIO().DisplaySize.Y));
             ImGui.Begin("ItemName", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground
-                | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoScrollbar |
-                ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoInputs);
+                                                                  | ImGuiWindowFlags.NoMove |
+                                                                  ImGuiWindowFlags.NoResize |
+                                                                  ImGuiWindowFlags.NoScrollbar |
+                                                                  ImGuiWindowFlags.NoScrollWithMouse |
+                                                                  ImGuiWindowFlags.NoInputs);
 
 
             Vector2 textSize = ImGui.CalcTextSize(name);
@@ -381,29 +406,24 @@ namespace Spacebox.Game.GUI
             {
                 Debug.Log("left click");
             }
+
             if (slot.HasItem)
             {
                 clickedSlot = slot;
 
                 if (Input.IsKey(Keys.LeftShift))
                 {
-
                     slot.MoveItemToConnectedStorage();
-
                 }
 
                 if (Input.IsKey(Keys.LeftAlt))
                 {
-
                     slot.Split();
-
                 }
 
                 if (Input.IsKey(Keys.X))
                 {
-
                     slot.Clear();
-
                 }
 
                 if (Input.IsMouseButton(MouseButton.Left))

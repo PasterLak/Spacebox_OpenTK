@@ -33,8 +33,8 @@ namespace Spacebox.Scenes
         private Texture2D lightAtlas;
         // to base
 
-        public static AudioSource blockPlace;
-        public static AudioSource blockDestroy;
+        //public static AudioSource blockPlace;
+        //public static AudioSource blockDestroy;
 
         public static AudioSource Death;
         public static bool DeathOn = false;
@@ -152,8 +152,7 @@ namespace Spacebox.Scenes
 
             Death = new AudioSource(SoundManager.GetClip("death2"));
             Uii = new AudioSource(SoundManager.GetClip("uii"));
-            blockPlace = new AudioSource(SoundManager.GetClip("blockPlace3"));
-            blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroy"));
+            
 
             ambient = new AudioSource(SoundManager.GetClip("Music/ambientMain"));
             ambient.IsLooped = true;
@@ -414,8 +413,7 @@ namespace Spacebox.Scenes
             //blockTexture.Dispose();
             lightAtlas.Dispose();
 
-            blockPlace.Dispose();
-            blockDestroy.Dispose();
+            
             //music.Dispose();
             skybox.Texture.Dispose();
             skyboxShader.Dispose();

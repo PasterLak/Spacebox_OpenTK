@@ -20,6 +20,11 @@ namespace Spacebox.Game.GUI
                     string formatted = ast.InertiaController.Velocity.Length.ToString("0.0");
                     ImGui.Text($"Speed: {formatted}");
                 }
+                
+                ImGui.Text($"Gamemode: {ast.GameMode}");
+                
+                if(ast.CurrentInteraction != null)
+                ImGui.Text($"Interaction: {ast.CurrentInteraction.GetType().Name}");
             }
         }
 

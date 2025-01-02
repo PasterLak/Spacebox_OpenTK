@@ -6,7 +6,7 @@ namespace Spacebox.Game.Generation
     public class BlockGeneratorSphere : BlockGenerator
     {
 
-        public BlockGeneratorSphere(Block[,,] blocks, Vector3 position) : base(blocks, position)
+        public BlockGeneratorSphere(Chunk chunk, Vector3 position) : base(chunk, position)
         {
            
         }
@@ -22,6 +22,7 @@ namespace Spacebox.Game.Generation
            
             Random random = World.Random;
             radius = radius * radius;
+
 
             for (byte x = 0; x < Size; x++)
                 for (byte y = 0; y < Size; y++)
@@ -82,7 +83,10 @@ namespace Spacebox.Game.Generation
                         {
                             _blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
                         }
+
+                       
                     }
+
         }
 
         float Noise3D(int x, int y, int z, int seed)

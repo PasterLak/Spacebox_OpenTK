@@ -16,7 +16,7 @@ namespace Spacebox.Game
 
         private Texture2D selectorTexture;
 
-        private SimpleBlock block;
+        public SimpleBlock SimpleBlock { get; private set; }
         private Texture2D currentTexture;
 
         private Direction blockDirection = Direction.Up;
@@ -28,8 +28,8 @@ namespace Spacebox.Game
 
           
 
-            block = new SimpleBlock(shader, selectorTexture, Vector3.Zero);
-            block.Scale = new Vector3(1.05f, 1.05f, 1.05f);
+            SimpleBlock = new SimpleBlock(shader, selectorTexture, Vector3.Zero);
+            SimpleBlock.Scale = new Vector3(1.05f, 1.05f, 1.05f);
             currentTexture = selectorTexture;
             PanelUI.OnSlotChanged += OnSelectedSlotWasChanged;
             //block.ChangeUV(UVAtlas.GetUVs(3,3));
@@ -43,11 +43,11 @@ namespace Spacebox.Game
             if(PanelUI.IsHoldingDrill())
             {
               
-                if (!block.IsUsingDefaultUV)
+                if (!SimpleBlock.IsUsingDefaultUV)
                 {
-                    block.Texture = selectorTexture;
-                    block.Scale = new Vector3(1.05f, 1.05f, 1.05f);
-                    block.ResetUV();
+                    SimpleBlock.Texture = selectorTexture;
+                    SimpleBlock.Scale = new Vector3(1.05f, 1.05f, 1.05f);
+                    SimpleBlock.ResetUV();
                 }
                 
             }
@@ -57,8 +57,8 @@ namespace Spacebox.Game
                
                 //if (block.IsUsingDefaultUV)   // to do block was changed
                 //{
-                    block.Texture = GameBlocks.BlocksTexture;
-                block.Scale = new Vector3(1,1,1);
+                    SimpleBlock.Texture = GameBlocks.BlocksTexture;
+                SimpleBlock.Scale = new Vector3(1,1,1);
                 UpdateUV();
                 // }
 
@@ -70,25 +70,25 @@ namespace Spacebox.Game
 
         private void UpdateUV()
         {
-            block.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Left, blockDirection), Face.Left, false);
-            block.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Right, blockDirection), Face.Right, false);
-            block.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Back, blockDirection), Face.Back, false);
-            block.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Front, blockDirection), Face.Front, false);
-            block.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Top, blockDirection), Face.Top, false);
-            block.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Bottom, blockDirection), Face.Bottom, false);
+            SimpleBlock.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Left, blockDirection), Face.Left, false);
+            SimpleBlock.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Right, blockDirection), Face.Right, false);
+            SimpleBlock.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Back, blockDirection), Face.Back, false);
+            SimpleBlock.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Front, blockDirection), Face.Front, false);
+            SimpleBlock.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Top, blockDirection), Face.Top, false);
+            SimpleBlock.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Bottom, blockDirection), Face.Bottom, false);
 
 
-            block.RegenerateMesh();
+            SimpleBlock.RegenerateMesh();
         }
 
         public void UpdatePosition(Vector3 position, Direction direction)
         {
-            if(block.Position == position) return;
+            if(SimpleBlock.Position == position) return;
 
             position += Vector3.One * 0.5f;
 
 
-            if(!block.IsUsingDefaultUV)
+            if(!SimpleBlock.IsUsingDefaultUV)
             {
                 if (blockDirection != direction)
                 {
@@ -100,7 +100,7 @@ namespace Spacebox.Game
             
 
 
-            block.Position = position;
+            SimpleBlock.Position = position;
         }
 
 
@@ -112,7 +112,7 @@ namespace Spacebox.Game
 
             GL.Enable(EnableCap.DepthTest);
             //blockModel.Draw(camera);
-            block.Render(camera);
+            SimpleBlock.Render(camera);
 
             GL.Disable(EnableCap.DepthTest);
 

@@ -1,12 +1,11 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.Common.Audio;
 using Spacebox.Common.Physics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
-using Spacebox.GUI;
-using Spacebox.Scenes;
 
 namespace Spacebox.Game.Player;
 
@@ -14,88 +13,91 @@ public class InteractionPlaceBlock : InteractionMode
 {
     private const byte MaxBuildDistance = 6;
 
+    private AudioSource blockPlace;
+
+    public override void OnEnable()
+    {
+        if (blockPlace == null)
+            blockPlace = new AudioSource(SoundManager.GetClip("blockPlace3"));
+        if (BlockSelector.Instance != null)
+            BlockSelector.Instance.SimpleBlock.Shader.SetVector4("color", new Vector4(1, 1, 1, 0.5f));
+        BlockSelector.IsVisible = true;
+    }
+
+    public override void OnDisable()
+    {
+        BlockSelector.IsVisible = false;
+    }
+
+    private Vector3 UpdateBlockPreview(VoxelPhysics.HitInfo hit)
+    {
+        var selectorPositionWorld = new Vector3(hit.blockPosition.X + hit.normal.X,
+            hit.blockPosition.Y + hit.normal.Y,
+            hit.blockPosition.Z + hit.normal.Z) + hit.chunk.PositionWorld;
+        BlockSelector.Instance.UpdatePosition(selectorPositionWorld, Block.GetDirectionFromNormal(hit.normal));
+
+        return selectorPositionWorld;
+    }
+
     public override void Update(Astronaut player)
     {
-        //if (!Input.IsMouseButtonDown(MouseButton.Right)) return;
-
-        Vector3 rayOrigin = player.Position;
-        Vector3 rayDirection = player.Front;
-
-        Ray ray = new Ray(rayOrigin, rayDirection, MaxBuildDistance);
+        Ray ray = new Ray(player.Position, player.Front, MaxBuildDistance);
         VoxelPhysics.HitInfo hit;
 
         if (World.CurrentSector.Raycast(ray, out hit))
         {
-            //hit.chunk.RemoveBlock(hit.blockPosition, Vector3SByte.CreateFrom(hit.normal));
+            OnEntityFound(hit);
         }
         else
         {
-            if (BlockSelector.IsVisible)
-                BlockSelector.IsVisible = false;
+            OnNoEntityFound(ray);
+        }
+    }
 
-            AImedBlockElement.AimedBlock = null;
+    private void OnEntityFound(VoxelPhysics.HitInfo hit)
+    {
+        UpdateBlockPreview(hit);
 
-            const float placeDistance = 5f;
-            Vector3 placePosition = rayOrigin + rayDirection * placeDistance;
-            
-            BlockSelector.IsVisible = true;
-            BlockSelector.Instance.UpdatePosition(placePosition, Direction.Up);
-            /*
-            Vector3 localPosition = placePosition - PositionWorld;
+        if (Input.IsMouseButtonDown(MouseButton.Right))
+        {
+            Chunk chunk = hit.chunk;
 
-            int x = (int)MathF.Floor(localPosition.X);
-            int y = (int)MathF.Floor(localPosition.Y);
-            int z = (int)MathF.Floor(localPosition.Z);
-
-            VisualDebug.DrawBoundingBox(
-                new BoundingBox(worldBlockPosition + new Vector3(0.5f), Vector3.One * 1.01f), Color4.Gray);
-
-            float dis = Vector3.DistanceSquared(worldBlockPosition, player.Position);
-
-            if (PanelUI.IsHoldingBlock() && dis > Block.DiagonalSquared)
+            if (chunk != null)
             {
-                //Debug.Log("holding");
-                var norm = (player.Position - worldBlockPosition).Normalized();
-
-                norm = Block.RoundVector3(norm);
-
-                BlockSelector.IsVisible = true;
-
-                var direction = Block.GetDirectionFromNormal(norm);
-                BlockSelector.Instance.UpdatePosition(worldBlockPosition, direction);
-
-
-                if (Input.IsMouseButtonDown(MouseButton.Right) &&
-                    IsInRange(x, y, z) &&
-                    Blocks[x, y, z].IsAir())
+                if (PanelUI.TryPlaceItem(out var id))
                 {
-                    if (PanelUI.TryPlaceItem(out var blockId))
-                    {
-                        Block newBlock = GameBlocks.CreateBlockFromId(blockId);
+                    Block newBlock = GameBlocks.CreateBlockFromId(id);
 
-                        bool hasSameSides = GameBlocks.GetBlockDataById(blockId).AllSidesAreSame;
+                    bool hasSameSides = GameBlocks.GetBlockDataById(id).AllSidesAreSame;
 
-                        if (!hasSameSides)
-                            newBlock.Direction = direction;
+                    if (!hasSameSides)
+                        newBlock.SetDirectionFromNormal(hit.normal);
 
-                        SetBlock(x, y, z, newBlock);
+                    int x = hit.blockPosition.X + hit.normal.X;
+                    int y = hit.blockPosition.Y + hit.normal.Y;
+                    int z = hit.blockPosition.Z + hit.normal.Z;
 
-                        SpaceScene.blockPlace.Play();
-                    }
-                    else
-                    {
-                    }
+                    chunk.PlaceBlock(x, y, z, newBlock);
                 }
             }
-            else
-            {
-                BlockSelector.IsVisible = false;
-            }
-
-            if (CenteredText.IsVisible)
-            {
-                CenteredText.Hide();
-            }*/
         }
+    }
+
+    private void OnNoEntityFound(Ray ray)
+    {
+        AImedBlockElement.AimedBlock = null;
+        BlockSelector.IsVisible = true;
+        const float placeDistance = 5f;
+
+        var selectorPosition = ray.Origin + ray.Direction * placeDistance;
+
+        selectorPosition.X = (int)MathF.Floor(selectorPosition.X);
+        selectorPosition.Y = (int)MathF.Floor(selectorPosition.Y);
+        selectorPosition.Z = (int)MathF.Floor(selectorPosition.Z);
+
+        BlockSelector.Instance.UpdatePosition(selectorPosition, Direction.Up);
+
+        VisualDebug.DrawBoundingBox(
+            new BoundingBox(selectorPosition, Vector3.One * 1.01f), Color4.Gray);
     }
 }

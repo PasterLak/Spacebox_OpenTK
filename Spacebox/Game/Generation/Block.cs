@@ -1,6 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Game.Resources;
 using System.Runtime.CompilerServices;
+using Spacebox.Common;
 
 namespace Spacebox.Game.Generation
 {
@@ -18,7 +19,7 @@ namespace Spacebox.Game.Generation
     public class Block
     {
         public short BlockId { get; set; } = 0;
-        public byte Mass { get; private set; } = 0;
+        public byte Mass { get; private set; } = 1;
         public byte Health { get; private set; } = 0;
 
         public Vector3 Color { get; set; }
@@ -52,6 +53,8 @@ namespace Spacebox.Game.Generation
 
             Color = new Vector3(1.0f, 1.0f, 1.0f);
             LightLevel = 0;
+            Mass = blockData.Mass;
+            Health = blockData.Health;
             LightColor = blockData.LightColor;
 
             if (LightColor != Vector3.Zero)
@@ -96,6 +99,10 @@ namespace Spacebox.Game.Generation
         {
             Direction = GetDirectionFromNormal(normal);
         }
+        public void SetDirectionFromNormal(Vector3SByte normal)
+        {
+            Direction = GetDirectionFromNormal(normal);
+        }
 
         private const float epsilon = 1e-6f;
 
@@ -113,6 +120,12 @@ namespace Spacebox.Game.Generation
 
         const float a1 = 1f - epsilon;
         const float a2 = -1f + epsilon;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Direction GetDirectionFromNormal(Vector3SByte normal)
+        {
+            return GetDirectionFromNormal(new Vector3(normal.X, normal.Y, normal.Z));
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Direction GetDirectionFromNormal(Vector3 normal)

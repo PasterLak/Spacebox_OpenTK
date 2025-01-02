@@ -20,6 +20,11 @@ OSX
 
 version 0.1.0
 
+- place blocks
+- mass of asteroids
+- delete chunks, entities
+
+
 version 0.0.9
 
 - camera relative render

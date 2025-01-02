@@ -66,12 +66,12 @@ namespace Spacebox.Game.Generation
             {
                 stopwatch = Stopwatch.StartNew();
             }
-
-
+            
             vertices = new float[estimatedVertices];
             indices = new uint[estimatedIndices];
             vertexCount = 0;
             indexCount = 0;
+            int mass = 0;
 
             sbyte SizeHalf = (sbyte)(Size * 0.5f);
 
@@ -91,8 +91,14 @@ namespace Spacebox.Game.Generation
                     for (sbyte z = 0; z < Size; z++)
                     {
                         var block = _blocks[x, y, z];
+                        if (block == null)
+                        {
+
+                            continue;
+                        }
                         if (block.IsAir()) continue;
 
+                        mass += block.Mass;
                         
                         if(x < xMin) xMin = x;
                         if(x > xMax) xMax = x;
@@ -285,6 +291,8 @@ namespace Spacebox.Game.Generation
 
             GeometryBoundingBox = BoundingBox.CreateFromMinMax(new Vector3(xMin, yMin, zMin),
                 new Vector3(xMax +1 , yMax+1 , zMax+1 ));
+
+            _chunk.Mass = mass;
 
             return mesh;
         }

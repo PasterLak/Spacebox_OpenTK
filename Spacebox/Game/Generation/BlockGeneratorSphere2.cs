@@ -6,7 +6,7 @@ namespace Spacebox.Game.Generation
     public class BlockGeneratorSphere2 : BlockGenerator
     {
 
-        public BlockGeneratorSphere2(Block[,,] blocks, Vector3 position) : base(blocks, position)
+        public BlockGeneratorSphere2(Chunk chunk, Vector3 position) : base(chunk, position)
         {
 
         }

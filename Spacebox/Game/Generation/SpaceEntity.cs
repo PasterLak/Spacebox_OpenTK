@@ -14,6 +14,8 @@ namespace Spacebox.Game.Generation
         public const short SizeBlocks = SizeChunks * Chunk.Size;
         public const short SizeBlocksHalf = SizeChunks * Chunk.Size / 2;
 
+        public ulong Mass { get; set; } = 0;
+
         private readonly Octree<Chunk> octree;
         public BoundingBox BoundingBox { get; private set; }
         public Vector3 PositionWorld { get; private set; }
@@ -32,12 +34,12 @@ namespace Spacebox.Game.Generation
         private List<Chunk> chunks = new List<Chunk>();
         private Dictionary<Vector3SByte, Chunk> chunkDictionary = new Dictionary<Vector3SByte, Chunk>();
         private Tag tag;
-
+        private string _entityMassString = "0 tn";
         public BoundingBox GeometryBoundingBox { get; private set; }
 
         public SpaceEntity(Vector3 positionWorld, Sector sector, bool oneChunk)
         {
-          
+            Position = positionWorld;
             PositionWorld = positionWorld;
             Sector = sector;
             BoundingBox = new BoundingBox(positionWorld, new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));
@@ -46,11 +48,11 @@ namespace Spacebox.Game.Generation
             Shader = ShaderManager.GetShader("Shaders/block");
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
 
-            AddChunk(new Chunk(positionWorld));
+            AddChunk(new Chunk(positionWorld, this));
 
             if (!oneChunk)
             {
-                AddChunk(new Chunk(positionWorld + new Vector3(0, -Chunk.Size, 0)));
+                AddChunk(new Chunk(positionWorld + new Vector3(0, -Chunk.Size, 0), this));
             }
 
             //GeometryMin = c.GeometryMin;
@@ -65,7 +67,7 @@ namespace Spacebox.Game.Generation
 // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
             tag = CreateTag(GeometryBoundingBox);
 
-            
+            RecalculateMass();
         }
 
         public void AddChunk(Chunk chunk)
@@ -90,8 +92,18 @@ namespace Spacebox.Game.Generation
 
             UpdateNeighbors(chunk, true);
             RecalculateGeometryBoundingBox();
+
+            if (chunks.Count == 0)
+            {
+                DeleteSpaceEntity();
+            }
         }
 
+        private void DeleteSpaceEntity()
+        {
+           
+            Sector.RemoveEntity(this);
+        }
 
         public static void InitializeSharedResources()
         {
@@ -104,6 +116,33 @@ namespace Spacebox.Game.Generation
             {
                 sharedTexture = TextureManager.GetTexture("Resources/Textures/selector.png", true);
             }
+        }
+
+        public void RecalculateMass(int chunkMassDifference)
+        {
+            var x = (long)Mass + chunkMassDifference;
+            if (x >= 0)
+            {
+                Mass = (ulong)(x);
+            }
+            else
+            {
+                Mass = 0;
+                Debug.Error("SpaceEntity mass was negative!");
+            }
+
+            _entityMassString = Mass.ToString("N0").Replace(",", ".");
+        }
+
+        public void RecalculateMass()
+        {
+            Mass = 0;
+            for (int i = 0; i < chunks.Count; i++)
+            {
+                Mass = (ulong)((long)Mass + chunks[i].Mass);
+            }
+
+            _entityMassString = Mass.ToString("N0").Replace(",", ".");
         }
 
         private void UpdateEntityGeometryMinMax(Chunk chunk)
@@ -125,9 +164,9 @@ namespace Spacebox.Game.Generation
 
         private void RecalculateGeometryBoundingBox()
         {
+            GeometryBoundingBox = new BoundingBox(Vector3.Zero, Vector3.Zero);
             if (chunks.Count == 0)
             {
-                GeometryBoundingBox = new BoundingBox(Vector3.Zero, Vector3.Zero);
                 return;
             }
 
@@ -136,8 +175,11 @@ namespace Spacebox.Game.Generation
 
             foreach (var chunk in chunks)
             {
-                min = Vector3.ComponentMin(min, chunk.GeometryBoundingBox.Min);
-                max = Vector3.ComponentMax(max, chunk.GeometryBoundingBox.Max);
+                if (chunk.Mass > 0)
+                {
+                    min = Vector3.ComponentMin(min, chunk.GeometryBoundingBox.Min);
+                    max = Vector3.ComponentMax(max, chunk.GeometryBoundingBox.Max);
+                }
             }
 
             GeometryBoundingBox = BoundingBox.CreateFromMinMax(min, max);
@@ -191,9 +233,10 @@ namespace Spacebox.Game.Generation
             Camera camera = Camera.Main;
 
             if (camera != null)
-                tag.Text = "+ "+ (int)Vector3.Distance(GeometryBoundingBox.Center, camera.Position) +
-                           " m";
-
+            {
+                tag.Text = $"{(int)Vector3.Distance(GeometryBoundingBox.Center, camera.Position)} m\n" +
+                           $"{_entityMassString} tn";
+            }
         }
 
         public bool Raycast(Ray ray, out VoxelPhysics.HitInfo hitInfo)
@@ -219,7 +262,7 @@ namespace Spacebox.Game.Generation
                 VisualDebug.DrawPosition(PositionWorld, Color4.Cyan);
                 VisualDebug.DrawPosition(GeometryBoundingBox.Center, Color4.Orange);
             }
-           
+
             /*if (simple != null)
             {
                 simple.Shader.SetVector4("color", new Vector4(0, 0, 1, 1));
@@ -233,6 +276,7 @@ namespace Spacebox.Game.Generation
             {
                 chunks[i].Render(Shader);
             }
+
             VisualDebug.DrawBoundingBox(GeometryBoundingBox, Color4.Orange);
         }
 

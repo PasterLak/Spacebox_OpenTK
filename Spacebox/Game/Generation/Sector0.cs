@@ -53,7 +53,7 @@ namespace Spacebox.Game.Generation
             else
             {
 
-                Chunk newChunk = new Chunk(chunkPosition);
+                Chunk newChunk = new Chunk(chunkPosition, null);
                 newChunk.GenerateMesh();
                 Chunks.Add(newChunk);
             }
@@ -64,7 +64,7 @@ namespace Spacebox.Game.Generation
 
             foreach (var chunk in Chunks)
             {
-                chunk.Test(World.Player);
+                //chunk.Test(World.Player);
             }
 
             //VisualDebug.DrawBoundingBox(BoundingBox, Color4.Yellow);

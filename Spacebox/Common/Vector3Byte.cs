@@ -3,12 +3,9 @@ using System.Text.Json.Serialization;
 
 public struct Vector3Byte
 {
-    [JsonPropertyName("x")]
-    public byte X { get; set; }
-    [JsonPropertyName("y")]
-    public byte Y { get; set; }
-    [JsonPropertyName("z")]
-    public byte Z { get; set; }
+    [JsonPropertyName("x")] public byte X { get; set; }
+    [JsonPropertyName("y")] public byte Y { get; set; }
+    [JsonPropertyName("z")] public byte Z { get; set; }
 
     public Vector3Byte(byte x, byte y, byte z)
     {
@@ -16,18 +13,21 @@ public struct Vector3Byte
         this.Y = y;
         this.Z = z;
     }
+
     public Vector3Byte(int x, int y, int z)
     {
         this.X = (byte)x;
         this.Y = (byte)y;
         this.Z = (byte)z;
     }
+
     public Vector3Byte(Vector3i v)
     {
         this.X = (byte)v.X;
         this.Y = (byte)v.Y;
         this.Z = (byte)v.Z;
     }
+
     public Vector3Byte(Vector3 v)
     {
         this.X = (byte)v.X;
@@ -39,6 +39,7 @@ public struct Vector3Byte
     {
         get { return new Vector3Byte(1, 1, 1); }
     }
+
     public static Vector3Byte Zero
     {
         get { return new Vector3Byte(0, 0, 0); }
@@ -48,6 +49,7 @@ public struct Vector3Byte
     {
         get { return new Vector3Byte(1, 0, 0); }
     }
+
     public static Vector3Byte Forward
     {
         get { return new Vector3Byte(0, 0, 1); }
@@ -58,7 +60,6 @@ public struct Vector3Byte
     {
         get { return new Vector3Byte(0, 1, 0); }
     }
-
 
 
     public static Vector3Byte operator +(Vector3Byte v1, Vector3Byte v2)
@@ -73,6 +74,17 @@ public struct Vector3Byte
 
         if (v1.Z + v2.Z <= Byte.MaxValue) result.Z = (byte)(v1.Z + v2.Z);
         else result.Z = Byte.MaxValue;
+
+        return result;
+    }
+
+    public static Vector3 operator +(Vector3Byte v1, Vector3 v2)
+    {
+        Vector3 result = new Vector3();
+
+        result.X = (v1.X + v2.X);
+        result.Y = (v1.Y + v2.Y);
+        result.Z = (v1.Z + v2.Z);
 
         return result;
     }
@@ -93,6 +105,7 @@ public struct Vector3Byte
 
         return result;
     }
+
     public static bool operator ==(Vector3Byte left, Vector3Byte right)
     {
         return left.X == right.X && left.Y == right.Y && left.Z == right.Z;
@@ -108,6 +121,7 @@ public struct Vector3Byte
     {
         return new Vector3i(v.X, v.Y, v.Z);
     }
+
     public static explicit operator Vector3Byte(Vector3i v)
     {
         return new Vector3Byte(v);
@@ -117,6 +131,7 @@ public struct Vector3Byte
     {
         return new Vector3(v.X, v.Y, v.Z);
     }
+
     public static explicit operator Vector3Byte(Vector3 v)
     {
         return new Vector3Byte(v);
@@ -133,12 +148,8 @@ public struct Vector3Byte
     }
 
 
-
     public override string ToString()
     {
-
         return string.Format("({0},{1},{2})", X, Y, Z);
     }
-
-
 }

@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Common;
 using Spacebox.Common.Physics;
 using Spacebox.Game.Generation;
 
@@ -68,8 +69,8 @@ namespace Spacebox.Game.Physics
         public struct HitInfo
         {
             public Vector3 position;
-            public Vector3i blockPosition;
-            public Vector3 normal;
+            public Vector3Byte blockPosition;
+            public Vector3SByte normal;
             public Chunk chunk;
         }
 
@@ -81,8 +82,8 @@ namespace Spacebox.Game.Physics
         {
 
             hitInfo.position = Vector3.Zero;
-            hitInfo.blockPosition = new Vector3i(-1, -1, -1);
-            hitInfo.normal = Vector3.Zero;
+            hitInfo.blockPosition = new Vector3Byte(0,0,0); // or -1 ????
+            hitInfo.normal = Vector3SByte.Zero;
             hitInfo.chunk = null;
 
             // if (!_isLoadedOrGenerated) return false;
@@ -116,19 +117,19 @@ namespace Spacebox.Game.Physics
                     Block block = blocks[x, y, z];
                     if (!block.IsAir())
                     {
-                        hitInfo.blockPosition = new Vector3i(x, y, z);
+                        hitInfo.blockPosition = new Vector3Byte(x, y, z);
                         hitInfo.position = ray.Origin + ray.Direction * distanceTraveled;
 
                         switch (side)
                         {
                             case 0:
-                                hitInfo.normal = new Vector3(-stepX, 0, 0);
+                                hitInfo.normal = new Vector3SByte(-stepX, 0, 0);
                                 break;
                             case 1:
-                                hitInfo.normal = new Vector3(0, -stepY, 0);
+                                hitInfo.normal = new Vector3SByte(0, -stepY, 0);
                                 break;
                             case 2:
-                                hitInfo.normal = new Vector3(0, 0, -stepZ);
+                                hitInfo.normal = new Vector3SByte(0, 0, -stepZ);
                                 break;
                         }
 

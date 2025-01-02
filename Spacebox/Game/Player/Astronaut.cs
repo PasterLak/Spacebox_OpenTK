@@ -60,7 +60,7 @@ namespace Spacebox.Game.Player
         public PowerBar PowerBar { get; private set; }
         private GameModeBase _gameModeBase;
         private GameMode _gameMode = GameMode.Spectator;
-
+        public InteractionMode CurrentInteraction => _gameModeBase.InteractionHandler.Interaction;
         public GameMode GameMode
         {
             get { return _gameMode; }

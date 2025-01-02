@@ -65,8 +65,6 @@ namespace Spacebox.Game
 
             RegisterItem(blockData);
             CreateDust(blockData);
-
-            //Debug.Log($"Block was registered {blockData.Id}  {blockData.Name}  {blockData.WallsUVIndex}  {blockData.IsTransparent}");
         }
 
         private static void RegisterItem(BlockData blockData)
@@ -76,7 +74,8 @@ namespace Spacebox.Game
             MaxItemId++;
 
             BlockItem item = new BlockItem(blockData.Id, MaxItemId, 64, blockData.Name);
-
+            item.Mass = blockData.Mass;
+           // item.Durability = blockData.
             blockData.Item = item;
 
             Item.Add(item.Id, item);
@@ -163,6 +162,7 @@ namespace Spacebox.Game
 
             BlockData data = Block[id];
 
+          
 
             if (data.Type.ToLower() == "interactive")
             {

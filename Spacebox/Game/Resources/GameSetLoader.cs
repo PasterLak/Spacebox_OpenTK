@@ -216,7 +216,28 @@ namespace Spacebox.Game.Resources
                         BottomUVIndex = new Vector2Byte(),
 
                     };
+                    
+                    if(block.Durability <= 0) block.Durability = 1;
+                    if(block.Mass <= 0) block.Mass = 1;
 
+                    if (block.Mass <= byte.MaxValue)
+                    {
+                        blockData.Mass = (byte)block.Mass;
+                    }
+                    else
+                    {
+                        blockData.Mass = byte.MaxValue;
+                    }
+                    
+                    if (block.Durability <= byte.MaxValue)
+                    {
+                        blockData.Health = (byte)block.Durability;
+                    }
+                    else
+                    {
+                        blockData.Health = byte.MaxValue;
+                    }
+                   
                     blockData.Sides = block.Sides;
                     blockData.Top = sameSides ? block.Sides : block.Top;
                     blockData.Bottom = sameSides ? block.Sides : block.Bottom;

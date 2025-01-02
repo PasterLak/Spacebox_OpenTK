@@ -8,30 +8,43 @@ namespace Spacebox.Game.Player;
 public class InteractionConsumeItem : InteractionMode
 {
 
-    private ItemSlot _item;
+    private ItemSlot _itemSlot;
     private const byte MaxDestroyDistance = 6;
 
-    public InteractionConsumeItem(ItemSlot item)
+    public InteractionConsumeItem(ItemSlot itemSlot)
     {
-        _item = item;
+        _itemSlot = itemSlot;
     }
+
+    public override void OnEnable()
+    {
         
+    }
+
+    public override void OnDisable()
+    {
+        
+    }
+
     public override void Update(Astronaut player)
     {
         if(!Input.IsMouseButtonDown(MouseButton.Right)) return;
 
-        if (_item == null) return;
-        if (_item.Item == null) return;
+        if (_itemSlot == null) return;
+        if (_itemSlot.Item == null) return;
+        if(!_itemSlot.HasItem) return;
 
-        var consumable = _item.Item as ConsumableItem;
+        var consumable = _itemSlot.Item as ConsumableItem;
         
         if(consumable == null) return;
+       
         
         ApplyConsumable(consumable, player);
+        _itemSlot.DropOne();
 
-        if (_item.Count == 0)
+        if (_itemSlot.Count == 0)
         {
-            _item = null;   
+            _itemSlot = null;   
             player.SetInteraction(new InteractionDefault());
         }
 

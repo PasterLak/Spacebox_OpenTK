@@ -58,7 +58,7 @@ namespace Spacebox.Game.Generation
             {
                 return entity.IsColliding(volume);
             }
-            
+
             return false;
         }
 
@@ -66,8 +66,7 @@ namespace Spacebox.Game.Generation
         {
             if (TryGetNearestEntity(ray.Origin, out var entity))
             {
-                Debug.Log("Nearest entity found ");
-                return entity.Raycast(ray, out hitInfo);    
+                return entity.Raycast(ray, out hitInfo);
             }
 
             hitInfo = new VoxelPhysics.HitInfo();
@@ -99,7 +98,7 @@ namespace Spacebox.Game.Generation
         private void SpawnAsteroids()
         {
             int numAsteroids = 3;
-            Random random = new Random();
+            Random random = World.Random == null ? new Random() : World.Random;
 
             for (int i = 0; i < numAsteroids; i++)
             {
@@ -108,20 +107,29 @@ namespace Spacebox.Game.Generation
                 do
                 {
                     asteroidPosition = GeneratePosition(PositionWorld, 0.2f, random);
-                } 
-                while (!IsPositionValid(asteroidPosition));
-
-                SpaceEntity asteroid = new SpaceEntity(asteroidPosition, this, i != 0);
-                asteroids.Add(asteroid);
-                sectorOctree.Add(asteroid, asteroidPosition);
+                } while (!IsPositionValid(asteroidPosition));
+                
+                AddEntity(new SpaceEntity(asteroidPosition, this, i != 0), asteroidPosition);
             }
         }
 
-        public Vector3 GeneratePosition(Vector3 chunkPosition, float margin01,  Random _random)
+        private void AddEntity(SpaceEntity entity, Vector3 positionWorld)
         {
-            
-            float margin = SizeBlocks * margin01; 
-            
+            asteroids.Add(entity);
+            sectorOctree.Add(entity, positionWorld);
+        }
+
+        public void RemoveEntity(SpaceEntity entity)
+        {
+            entity.Dispose();
+            asteroids.Remove(entity);
+            sectorOctree.Remove(entity, entity.Position);
+        }
+
+        public Vector3 GeneratePosition(Vector3 chunkPosition, float margin01, Random _random)
+        {
+            float margin = SizeBlocks * margin01;
+
             float minX = chunkPosition.X + margin;
             float maxX = chunkPosition.X + SizeBlocks - margin;
 
@@ -130,7 +138,7 @@ namespace Spacebox.Game.Generation
 
             float minZ = chunkPosition.Z + margin;
             float maxZ = chunkPosition.Z + SizeBlocks - margin;
-            
+
             float x = (float)(_random.NextDouble() * (maxX - minX) + minX);
             float y = (float)(_random.NextDouble() * (maxY - minY) + minY);
             float z = (float)(_random.NextDouble() * (maxZ - minZ) + minZ);
@@ -169,23 +177,25 @@ namespace Spacebox.Game.Generation
 
         public void Update()
         {
-           // VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 10, 100));
+            // VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 10, 100));
 
             for (int i = 0; i < asteroids.Count; i++)
             {
-                asteroids[i].Update();  
+                asteroids[i].Update();
             }
         }
+
         int lastCount = 0;
+
         public void Render(Shader shader)
         {
-            sharedShader.SetVector4("color", new Vector4(0, 1, 0, 1));
+            //sharedShader.SetVector4("color", new Vector4(0, 1, 0, 1));
             //simple?.Render(Camera.Main);
             VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 20, 100));
 
             var cam = Camera.Main;
-           
-            
+
+
             var asteroidsCount = 0;
 
             for (int i = 0; i < asteroids.Count; i++)
@@ -197,15 +207,13 @@ namespace Spacebox.Game.Generation
                     asteroids[i].Render(cam);
                     asteroidsCount++;
                 }
-                
             }
-            if( lastCount != asteroidsCount)
+
+            if (lastCount != asteroidsCount)
             {
                 lastCount = asteroidsCount;
                 Debug.Success("Asteroids rendering: " + asteroidsCount);
             }
-            
-           
         }
 
         public void Dispose()

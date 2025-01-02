@@ -4,9 +4,8 @@ namespace Spacebox.Game.Generation;
 
 public class BlockGeneratorCross : BlockGenerator
 {
-      
 
-        public BlockGeneratorCross(Block[,,] blocks, Vector3 position) : base(blocks, position) 
+        public BlockGeneratorCross(Chunk chunk, Vector3 position) : base(chunk, position) 
         {
         
         }

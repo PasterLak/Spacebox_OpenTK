@@ -4,7 +4,7 @@ namespace Spacebox.Game.Generation
 {
     public class BlockGeneratorAsteroids : BlockGenerator
     {
-        public BlockGeneratorAsteroids(Block[,,] blocks, Vector3 position) : base(blocks, position)
+        public BlockGeneratorAsteroids(Chunk chunk, Vector3 position) : base(chunk, position)
         {
         }
 
