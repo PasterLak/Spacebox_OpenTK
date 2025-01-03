@@ -35,6 +35,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="gamesets\default\recipes.json" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Update="Resources\Textures\logo.png">
 			<Pack>true</Pack>
 			<PackagePath>\\</PackagePath>

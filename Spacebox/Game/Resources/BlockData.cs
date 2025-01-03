@@ -8,9 +8,9 @@ namespace Spacebox.Game.Resources
         public short Id;
         public string Name;
         public string Type;
-        public byte Mass;
-        public byte Health = 0;
-        //public Vector2 TextureCoords; // replace with byte
+        public byte Mass = 1;  // 1 is minimum
+        public byte PowerToDrill = 0; // 0 can destroy every drill
+        public byte Health = 0; // instantly destroy
 
         public string Sides { get; set; } = "";
         public string Top { get; set; } = "";
@@ -246,8 +246,6 @@ namespace Spacebox.Game.Resources
                     BackUvsByDirection.Add(dir, TopUV);
                 }
 
-
-
             }
         }
 
@@ -293,8 +291,5 @@ namespace Spacebox.Game.Resources
             };
         }
 
-
-
-        //---
     }
 }

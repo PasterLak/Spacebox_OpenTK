@@ -125,7 +125,7 @@
         "Sprite": "drill2",
         "MaxStack": 1,
         "ModelDepth": 1.5,
-        "Power": 2
+        "Power": 3
     },
      {
         "Name": "Uranium Ingot",

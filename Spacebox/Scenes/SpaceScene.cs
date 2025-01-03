@@ -241,13 +241,13 @@ namespace Spacebox.Scenes
             //SceneGraph.UpdateTransforms();
             CrusherGUI.Init();
 
-            block1 = new SimpleBlock(ShaderManager.GetShader("colored"),
+            block1 = new SimpleBlock(ShaderManager.GetShader("Shaders/colored"),
                 TextureManager.GetTexture("Resources/Textures/slot.png"), new Vector3(0, 0, 0));
             block1.Position = new Vector3(-1, -1, 0);
             //SceneGraph.AddRoot(block1);
             //Renderer.AddDrawable(block1);
 
-            block2 = new SimpleBlock(ShaderManager.GetShader("colored"),
+            block2 = new SimpleBlock(ShaderManager.GetShader("Shaders/colored"),
                 TextureManager.GetTexture("Resources/Textures/slot.png"), new Vector3(0, 0, 0));
 
             //block1.AddChild(block2);
@@ -270,7 +270,7 @@ namespace Spacebox.Scenes
         public override void Update()
         {
             Time.HandleTicks();
-            //TickTaskManager.UpdateTasks();
+            
             player.Update();
             blockDestructionManager.Update();
             dustSpawner.Update();
@@ -359,6 +359,11 @@ namespace Spacebox.Scenes
             //spacer.LookAt3(player);
             //spacer.Draw(player);
             dustSpawner.Render();
+            if (InteractionDestroyBlockSurvival.BlockMiningEffect != null)
+            {
+                InteractionDestroyBlockSurvival.BlockMiningEffect.Render();
+            }
+
             // block1.Rotate(0,12f * Time.Delta,0);
             //block1.Render(player);
             // block2.Render(player);
@@ -395,7 +400,7 @@ namespace Spacebox.Scenes
 
             //healthBar.OnGUI();
             radarWindow.Render();
-            CrusherGUI.OnGUI();
+            //CrusherGUI.OnGUI();
             PanelUI.Render();
             player.OnGUI();
             InventoryUI.Render(player.Inventory);

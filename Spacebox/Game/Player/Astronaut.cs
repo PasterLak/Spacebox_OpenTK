@@ -152,7 +152,7 @@ namespace Spacebox.Game.Player
         {
             Matrix4 viewMatrix = GetViewMatrix();
             Matrix4 projectionMatrix = GetProjectionMatrix();
-            Frustum.UpdateFrustum(viewMatrix, projectionMatrix);
+            Frustum.UpdateFrustum(this);
 
             VisualDebug.ProjectionMatrix = projectionMatrix;
             VisualDebug.ViewMatrix = viewMatrix;
@@ -300,6 +300,8 @@ namespace Spacebox.Game.Player
                 _axes.Position = Position + Front * 0.1f;
                 _axes.Render(camera);
             }
+
+            
         }
 
         public void OnGUI()

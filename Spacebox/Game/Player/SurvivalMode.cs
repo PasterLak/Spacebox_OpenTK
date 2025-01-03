@@ -4,9 +4,9 @@ public class SurvivalMode : MovementMode
 {
     private static InteractionHandler CreateInteractionHandler()
     {
-        return new InteractionHandler(new InteractionDestroyBlock(), new HashSet<Type>()
+        return new InteractionHandler(new InteractionDefault(), new HashSet<Type>()
         {
-           typeof(InteractionDestroyBlock),
+           typeof(InteractionDestroyBlockSurvival),
             typeof(InteractionPlaceBlock),
             typeof(InteractionConsumeItem),
             typeof(InteractionDefault)

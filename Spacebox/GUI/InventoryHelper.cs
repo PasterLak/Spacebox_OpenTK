@@ -238,7 +238,7 @@ namespace Spacebox.UI
                 {
                     var itemType = slot.Item as BlockItem;
                     text += "\nMass: " + itemType.Mass;
-                    text += "\nDurability: " + itemType.Durability;
+                    text += "\nDurability: " + itemType.Health;
 
                 }
                 else if (type == typeof(ConsumableItem))

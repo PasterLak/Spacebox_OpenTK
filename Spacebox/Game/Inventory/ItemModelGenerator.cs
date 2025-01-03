@@ -1,6 +1,4 @@
-﻿
-
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Game.Resources;
 using static Spacebox.Game.ItemModelGeneratorHelper;

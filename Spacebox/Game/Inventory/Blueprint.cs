@@ -38,6 +38,7 @@ namespace Spacebox.Game
 
         public short Id;
 
+        public short RequiredTicks;
         public Ingredient[] Ingredients;
         public Product[] Products;
      

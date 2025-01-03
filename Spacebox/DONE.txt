@@ -28,6 +28,7 @@ version 0.1.0
 - the object in the hand does not pass through walls
 - TickTaskManager and TickTask
 - select gamemode, save/load gamemode
+- camera frustum fix for camera relative render
 
 version 0.0.9
 

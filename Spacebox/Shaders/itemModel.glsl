@@ -66,17 +66,17 @@ void main()
 
     if(useSsao)
     {
-     float ao = clamp(dot(norm, aoDirection), 0.0, 1.0);
-    ao = 1.0 - aoIntensity * (1.0 - ao);
-    vec3 shadedColor = texColor.rgb * ao;
-    result = shadedColor;
+        float ao = clamp(dot(norm, aoDirection), 0.0, 1.0);
+        ao = 1.0 - aoIntensity * (1.0 - ao);
+        vec3 shadedColor = texColor.rgb * ao;
+        result = shadedColor;
     }
     else
     {
-     vec3 lightDirection = normalize(-lightDir);
-    float diff = max(dot(norm, lightDirection), 0.1);
-    vec3 diffuse = diff * lightColor;
-    vec3 ambient = 0.1 * lightColor;
+         vec3 lightDirection = normalize(-lightDir);
+        float diff = max(dot(norm, lightDirection), 0.1);
+        vec3 diffuse = diff * lightColor;
+        vec3 ambient = 0.1 * lightColor;
      result = (ambient + diffuse) * objectColor * vec3(texColor);
     }
     

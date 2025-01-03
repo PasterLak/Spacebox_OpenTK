@@ -6,11 +6,13 @@ namespace Spacebox.Game
 
         public short BlockId;
         public byte Mass = 5;
-        public byte Durability = 2;
+        public byte Health = 2;
 
-        public BlockItem(short blockId, short id, byte stackSize, string name) : base(id, stackSize, name)
+        public BlockItem(short blockId, short id, byte stackSize, string name, byte mass, byte health) : base(id, stackSize, name)
         {
             BlockId = blockId;
+            Mass = mass;
+            Health = health;
         }
     }
 }

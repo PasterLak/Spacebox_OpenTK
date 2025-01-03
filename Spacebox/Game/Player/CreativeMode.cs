@@ -1,11 +1,4 @@
 using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Common;
-using Spacebox.Common.Physics;
-using Spacebox.Game.Generation;
-using Spacebox.Game.GUI;
-using Spacebox.GUI;
-using Spacebox.Scenes;
 using Spacebox.UI;
 
 namespace Spacebox.Game.Player;

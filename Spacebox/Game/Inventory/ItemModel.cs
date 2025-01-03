@@ -10,6 +10,13 @@ namespace Spacebox.Game
         public Mesh Mesh { get; private set; }
         public Texture2D Texture { get; private set; }
 
+        private Vector3 offset = new Vector3(0.06f, -0.12f, 0.07f);
+        private float additionalRotationAngle = MathHelper.DegreesToRadians(90.0f);
+
+        public bool debug = false;
+        private Matrix4 model;
+
+        private Shader shader;
         private Camera itemCamera;
         public ItemModel(Mesh mesh, Texture2D texture)
         {
@@ -23,27 +30,8 @@ namespace Spacebox.Game
 
             itemCamera = new Camera360(Vector3.Zero, false);
 
-            //shader.SetVector3("lightColor", new Vector3(1, 1, 1));
-            // shader.SetVector3("objectColor", new Vector3(1, 1, 1));
-            offset = new Vector3(0.06f, -0.12f, 0.07f);
         }
 
-        /*
-         * 
-         * Matrix4 model = player.GetModelMatrix();
-
-            model =  Matrix4.CreateFromQuaternion(player.GetRotation())* Matrix4.CreateTranslation(player.Front);
-        */
-
-        //Vector3 offset = new Vector3(0.19f, -0.35f, 0.25f);   // model size 0.01
-
-        Vector3 offset = new Vector3(0.29f, -0.6f, 0.35f); // 0.02 
-        float additionalRotationAngle = MathHelper.DegreesToRadians(90.0f);
-
-        public bool debug = false;
-        Matrix4 model;
-
-        private Shader shader;
         public void SetColor(Vector3 color)
         {
             if (shader == null) return;
@@ -55,47 +43,13 @@ namespace Spacebox.Game
             if (this.shader == null)
             {
                 this.shader = shader;
+                shader.SetVector3("lightColor", new Vector3(1, 1, 1));
+                shader.SetVector3("objectColor", new Vector3(1, 1, 1));
             }
 
-            if (debug)
-            {
-                const float step = 0.01f;
-                if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.V))
-                {
-                    offset.X += step;
-                    Debug.Log(offset.ToString());
-                }
-                if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.B))
-                {
-                    offset.X -= step;
-                    Debug.Log(offset.ToString());
-                }
-                if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.N))
-                {
-                    offset.Z += step;
-                    Debug.Log(offset.ToString());
-                }
-                if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.M))
-                {
-                    offset.Z -= step;
-                    Debug.Log(offset.ToString());
-                }
-                if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.J))
-                {
-                    offset.Y += step;
-                    Debug.Log(offset.ToString());
-                }
-                if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.K))
-                {
-                    offset.Y -= step;
-                    Debug.Log(offset.ToString());
-                }
-
-            }
+            if (debug) PlaceModelDebug();
 
             model = itemCamera.GetModelMatrix();
-
-
 
             Matrix4 view = itemCamera.GetViewMatrix();
 
@@ -110,12 +64,11 @@ namespace Spacebox.Game
 
             Matrix4 additionalRotation = Matrix4.CreateRotationY(additionalRotationAngle);
 
-
             model =
                  Matrix4.CreateTranslation(offset) *
-                  additionalRotation *
-                rotation *
-                Matrix4.CreateTranslation(itemCamera.Position);
+                 additionalRotation *
+                 rotation *
+                 Matrix4.CreateTranslation(itemCamera.Position);
 
 
             shader.Use();
@@ -123,21 +76,52 @@ namespace Spacebox.Game
             shader.SetMatrix4("view", itemCamera.GetViewMatrix());
             shader.SetMatrix4("projection", itemCamera.GetProjectionMatrix());
 
-            shader.SetVector3("lightColor", new Vector3(1, 1, 1));  // can be opt
-            shader.SetVector3("objectColor", new Vector3(1, 1, 1));
-
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(false);
 
             Texture.Use(TextureUnit.Texture0);
             shader.SetInt("texture0", 0);
 
-
             Mesh.Draw(shader);
 
             GL.DepthMask(true);
             GL.Disable(EnableCap.DepthTest);
 
+        }
+
+        private void PlaceModelDebug()
+        {
+            const float step = 0.01f;
+            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.V))
+            {
+                offset.X += step;
+                Debug.Log(offset.ToString());
+            }
+            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.B))
+            {
+                offset.X -= step;
+                Debug.Log(offset.ToString());
+            }
+            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.N))
+            {
+                offset.Z += step;
+                Debug.Log(offset.ToString());
+            }
+            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.M))
+            {
+                offset.Z -= step;
+                Debug.Log(offset.ToString());
+            }
+            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.J))
+            {
+                offset.Y += step;
+                Debug.Log(offset.ToString());
+            }
+            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.K))
+            {
+                offset.Y -= step;
+                Debug.Log(offset.ToString());
+            }
         }
 
         public void Dispose()

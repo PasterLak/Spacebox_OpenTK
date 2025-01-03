@@ -219,6 +219,7 @@ namespace Spacebox.Game.Resources
                     
                     if(block.Durability <= 0) block.Durability = 1;
                     if(block.Mass <= 0) block.Mass = 1;
+                    if (block.PowerToDrill <= 0) block.PowerToDrill = 1;
 
                     if (block.Mass <= byte.MaxValue)
                     {
@@ -237,7 +238,16 @@ namespace Spacebox.Game.Resources
                     {
                         blockData.Health = byte.MaxValue;
                     }
-                   
+
+                    if (block.PowerToDrill <= byte.MaxValue)
+                    {
+                        blockData.PowerToDrill = (byte)block.PowerToDrill;
+                    }
+                    else
+                    {
+                        blockData.PowerToDrill = byte.MaxValue;
+                    }
+
                     blockData.Sides = block.Sides;
                     blockData.Top = sameSides ? block.Sides : block.Top;
                     blockData.Bottom = sameSides ? block.Sides : block.Bottom;

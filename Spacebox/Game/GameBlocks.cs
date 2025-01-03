@@ -73,7 +73,7 @@ namespace Spacebox.Game
 
             MaxItemId++;
 
-            BlockItem item = new BlockItem(blockData.Id, MaxItemId, 64, blockData.Name);
+            BlockItem item = new BlockItem(blockData.Id, MaxItemId, 64, blockData.Name, blockData.Mass, blockData.Health);
             item.Mass = blockData.Mass;
            // item.Durability = blockData.
             blockData.Item = item;

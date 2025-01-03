@@ -26,7 +26,6 @@ namespace Spacebox.Game.Generation
 
         private List<SpaceEntity> asteroids;
 
-        private List<Vector3> positions = new List<Vector3>();
 
         public static bool IsPlayerSpawned = false;
 
@@ -291,8 +290,6 @@ namespace Spacebox.Game.Generation
             }
         }
 
-        int lastCount = 0;
-
         public void Render(Shader shader)
         {
             //sharedShader.SetVector4("color", new Vector4(0, 1, 0, 1));
@@ -301,29 +298,17 @@ namespace Spacebox.Game.Generation
 
             var cam = Camera.Main;
 
-            foreach (var p in positions)
-            {
-                VisualDebug.DrawPosition(p, Color4.Blue);
-            }
-
-            var asteroidsCount = 0;
 
             for (int i = 0; i < asteroids.Count; i++)
             {
-                asteroids[i].Render(cam);
-                continue;
-                if (cam.Frustum.IsInFrustum(asteroids[i].GeometryBoundingBox))
+ 
+                if (cam.Frustum.IsInFrustum(asteroids[i].GeometryBoundingBox, cam))
                 {
                     asteroids[i].Render(cam);
-                    asteroidsCount++;
+                   
                 }
             }
 
-            if (lastCount != asteroidsCount)
-            {
-                lastCount = asteroidsCount;
-                Debug.Success("Asteroids rendering: " + asteroidsCount);
-            }
         }
 
         public void Dispose()

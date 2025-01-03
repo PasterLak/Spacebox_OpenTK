@@ -14,15 +14,15 @@ namespace Spacebox.Common
         public CameraFrustum Copy()
         {
             CameraFrustum frustum = new CameraFrustum();
-            frustum.UpdateFrustum(ViewMatrix, ProjectionMatrix);
+            //frustum.UpdateFrustum(ViewMatrix, ProjectionMatrix);
             
             return frustum;
         }
 
-        public void UpdateFrustum(Matrix4 viewMatrix, Matrix4 projectionMatrix)
+        public void UpdateFrustum(Camera camera)
         {
-            ViewMatrix = viewMatrix;
-            ProjectionMatrix = projectionMatrix;
+            ViewMatrix = camera.GetViewMatrix();
+            ProjectionMatrix = camera.GetProjectionMatrix();
 
             Matrix4 clipMatrix = ViewMatrix * ProjectionMatrix;
 
@@ -122,19 +122,25 @@ namespace Spacebox.Common
         }
 
 
-        public bool IsInFrustum(BoundingVolume volume)
+        public bool IsInFrustum(BoundingVolume volume, Camera camera)
         {
+
+            var offset = camera.CameraRelativeRender ? camera.Position : Vector3.Zero;
+
             if (volume is BoundingBox box)
             {
+                var min = box.Min - offset;
+                var max = box.Max - offset;
+
                 Vector3[] corners = new Vector3[8];
-                corners[0] = box.Min;
-                corners[1] = new Vector3(box.Max.X, box.Min.Y, box.Min.Z);
-                corners[2] = new Vector3(box.Min.X, box.Max.Y, box.Min.Z);
-                corners[3] = new Vector3(box.Min.X, box.Min.Y, box.Max.Z);
-                corners[4] = new Vector3(box.Max.X, box.Max.Y, box.Min.Z);
-                corners[5] = new Vector3(box.Min.X, box.Max.Y, box.Max.Z);
-                corners[6] = new Vector3(box.Max.X, box.Min.Y, box.Max.Z);
-                corners[7] = box.Max;
+                corners[0] = min;
+                corners[1] = new Vector3(max.X, min.Y, min.Z);
+                corners[2] = new Vector3(min.X, max.Y, min.Z);
+                corners[3] = new Vector3(min.X, min.Y, max.Z);
+                corners[4] = new Vector3(max.X, max.Y, min.Z);
+                corners[5] = new Vector3(min.X, max.Y, max.Z);
+                corners[6] = new Vector3(max.X, min.Y, max.Z);
+                corners[7] = max;
 
                 foreach (var plane in _planes)
                 {
@@ -151,9 +157,11 @@ namespace Spacebox.Common
             }
             else if (volume is BoundingSphere sphere)
             {
+                var center = sphere.Center - offset;
+
                 foreach (var plane in _planes)
                 {
-                    if (DistanceToPlane(plane, sphere.Center) < -sphere.Radius)
+                    if (DistanceToPlane(plane, center) < -sphere.Radius)
                         return false;
                 }
                 return true;

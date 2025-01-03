@@ -20,7 +20,7 @@ namespace Spacebox.Game.Generation
     {
         public short BlockId { get; set; } = 0;
         public byte Mass { get; private set; } = 1;
-        public byte Health { get; private set; } = 1;
+        public byte Health { get; set; } = 1;
 
         public Vector3 Color { get; set; }
         public bool IsTransparent { get; set; } = false;

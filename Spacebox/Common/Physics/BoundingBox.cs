@@ -8,6 +8,7 @@ namespace Spacebox.Common.Physics
         public Vector3 Center { get; set; }
         public abstract bool Intersects(BoundingVolume other);
         public abstract float GetLongestSide();
+    
         public abstract BoundingVolume Clone();
     }
 
@@ -95,5 +96,6 @@ namespace Spacebox.Common.Physics
         {
             return MathHelper.Max(MathHelper.Max(Extents.X, Extents.Y), Extents.Z);
         }
+
     }
 }

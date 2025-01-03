@@ -149,7 +149,7 @@ public class MovementMode : GameModeBase
 
         player.InertiaController.SetMode(isRunning);
 
-        if (isRunning) player.PowerBar.Use();
+        if (isRunning && GetGameMode() == GameMode.Survival) player.PowerBar.Use();
 
 
         if (player.InertiaController.Enabled)
