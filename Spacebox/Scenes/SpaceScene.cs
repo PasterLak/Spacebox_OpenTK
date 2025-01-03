@@ -400,7 +400,7 @@ namespace Spacebox.Scenes
 
             //healthBar.OnGUI();
             radarWindow.Render();
-            //CrusherGUI.OnGUI();
+            CrusherGUI.OnGUI();
             PanelUI.Render();
             player.OnGUI();
             InventoryUI.Render(player.Inventory);

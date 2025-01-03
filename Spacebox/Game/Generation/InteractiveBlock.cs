@@ -24,7 +24,19 @@ namespace Spacebox.Game.Generation
         public InteractiveBlock(BlockData blockData) : base(blockData)
 
         {
-            OnUse += RadarWindow.Instance.Toggle;
+            if(blockData.Name == "Radar")
+            {
+                OnUse += RadarWindow.Instance.Toggle;
+            }
+            else if(blockData.Name == "Macerator")
+            {
+                OnUse += CrusherGUI.Toggle;
+            }
+            else
+            {
+                OnUse += RadarWindow.Instance.Toggle;
+            }
+            
         }
 
 

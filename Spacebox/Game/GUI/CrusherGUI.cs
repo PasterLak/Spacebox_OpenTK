@@ -2,10 +2,8 @@
 using Spacebox.Common;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
-using Spacebox.GUI;
 using Spacebox.UI;
 using System.Numerics;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace Spacebox.Game.GUI
 {
@@ -19,11 +17,12 @@ namespace Spacebox.Game.GUI
        
         private static float TimeToCrush = 2f;
         private static short _time = 0;
+        public static bool IsVisible { get; set; } = false;
 
-
-        static CrusherGUI()
+        public static void Toggle()
         {
-            
+            IsVisible = !IsVisible;
+          
         }
 
         public static void Init()
@@ -142,8 +141,7 @@ namespace Spacebox.Game.GUI
 
         public static void OnGUI()
         {
-            Update();
-            
+            if (!IsVisible) return;
             Vector2 displaySize = ImGui.GetIO().DisplaySize;
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
             float windowWidth = displaySize.Y * 0.3f;

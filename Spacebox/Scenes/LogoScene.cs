@@ -19,12 +19,10 @@ namespace Spacebox.Scenes
 
         public override void LoadContent()
         {
-        
 
-           // GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            GL.ClearColor(0,0,0,0);
-           
-            sprite = new Sprite("Resources/Textures/cat.png", new Vector2(0,0),
+            GL.ClearColor(0, 0, 0, 0);
+
+            sprite = new Sprite("Resources/Textures/dust.png", new Vector2(0, 0),
                 new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
             //sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
             //GL.Enable(EnableCap.DepthTest);
@@ -33,7 +31,6 @@ namespace Spacebox.Scenes
 
         public override void Start()
         {
-           
 
             SceneManager.LoadScene(typeof(SpaceMenuScene));
 
@@ -43,9 +40,9 @@ namespace Spacebox.Scenes
         public override void Render()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            
 
-            sprite.Render(new Vector2(0,0), new Vector2(1,1));
+
+            sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
 
         }
 
@@ -56,7 +53,7 @@ namespace Spacebox.Scenes
         public override void UnloadContent()
         {
             sprite.Dispose();
-            
+
         }
 
         public override void Update()
@@ -64,7 +61,7 @@ namespace Spacebox.Scenes
 
             sprite.Shader.SetFloat("time", (float)GLFW.GetTime());
             sprite.Shader.SetVector2("screen", new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
-            sprite.Shader.SetVector2("mouse", new Vector2(0,0));
+            sprite.Shader.SetVector2("mouse", new Vector2(0, 0));
 
             //sprite.UpdateWindowSize(Window.Instance.Size);
             sprite.UpdateSize(Window.Instance.Size);
@@ -87,7 +84,7 @@ namespace Spacebox.Scenes
             {
                 sprite.Shader.ReloadShader();
             }
-         
+
         }
     }
 }

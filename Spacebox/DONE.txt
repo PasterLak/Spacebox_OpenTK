@@ -29,6 +29,9 @@ version 0.1.0
 - TickTaskManager and TickTask
 - select gamemode, save/load gamemode
 - camera frustum fix for camera relative render
+- block destroying effect in survival mode
+- power to drill working, slow block destroying
+- interactive blocks working again
 
 version 0.0.9
 
