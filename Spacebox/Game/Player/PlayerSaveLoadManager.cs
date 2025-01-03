@@ -2,6 +2,7 @@
 using System.Text.Json;
 using OpenTK.Mathematics;
 using Spacebox.Common;
+using Spacebox.Game.Generation;
 using Spacebox.Game.Resources;
 
 namespace Spacebox.Game.Player
@@ -77,9 +78,9 @@ namespace Spacebox.Game.Player
             }
         }
 
-        public static void LoadPlayer(Astronaut player, string worldFolder)
+        public static void LoadPlayer(Astronaut player,string worldFolder)
         {
-            return;
+            
             try
             {
                 string saveFilePath = Path.Combine(worldFolder, "player.json");
@@ -88,6 +89,7 @@ namespace Spacebox.Game.Player
                 {
                     Debug.Log("Player save file does not exist.");
 
+                    World.CurrentSector.SpawnPlayerNearAsteroid(player, World.Random );
                     GameSetLoader.GiveStartItems(player, GameBlocks.Item);
 
                     return;

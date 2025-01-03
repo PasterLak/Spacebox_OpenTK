@@ -131,13 +131,14 @@ namespace Spacebox.Scenes
 
         public override void LoadContent()
         {
-            float q = 5;
-            player = new Astronaut(new Vector3(q + 3, 0, q));
+           
+            player = new Astronaut(new Vector3(5,5,5));
             SceneGraph.AddRoot(player);
 
             world = new World(player);
             world.LoadWorldInfo(worldName);
-            //PlayerSaveLoadManager.LoadPlayer(player, World.Instance.WorldData.WorldFolderPath);
+            player.GameMode = world.WorldData.Info.GameMode;
+            PlayerSaveLoadManager.LoadPlayer(player, World.Instance.WorldData.WorldFolderPath);
 
 
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
@@ -259,14 +260,17 @@ namespace Spacebox.Scenes
         {
             Input.HideCursor();
             BlackScreenOverlay.IsEnabled = false;
+
+            Time.OnTick += () =>
+            {
+                TickTaskManager.UpdateTasks();
+            };
         }
-
-
-        float x;
 
         public override void Update()
         {
             Time.HandleTicks();
+            //TickTaskManager.UpdateTasks();
             player.Update();
             blockDestructionManager.Update();
             dustSpawner.Update();
@@ -391,7 +395,7 @@ namespace Spacebox.Scenes
 
             //healthBar.OnGUI();
             radarWindow.Render();
-            //CrusherGUI.OnGUI();
+            CrusherGUI.OnGUI();
             PanelUI.Render();
             player.OnGUI();
             InventoryUI.Render(player.Inventory);
@@ -414,7 +418,7 @@ namespace Spacebox.Scenes
             //blockTexture.Dispose();
             lightAtlas.Dispose();
             Sector.IsPlayerSpawned = false;
-            
+            TickTaskManager.Dispose();
             //music.Dispose();
             skybox.Texture.Dispose();
             skyboxShader.Dispose();

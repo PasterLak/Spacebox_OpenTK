@@ -25,7 +25,9 @@ version 0.1.0
 - delete chunks, entities
 - spawn player around asteroid or random without collision with space entities
 - no render for sides between glass blocks
-
+- the object in the hand does not pass through walls
+- TickTaskManager and TickTask
+- select gamemode, save/load gamemode
 
 version 0.0.9
 

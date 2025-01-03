@@ -29,7 +29,7 @@ namespace Spacebox.Game
     public class Recipe
     {
         public short Id;
-
+        public short RequiredTicks;
         public Ingredient Ingredient;
         public Product Product;
     }

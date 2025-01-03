@@ -14,6 +14,7 @@ public class InteractionConsumeItem : InteractionMode
     public InteractionConsumeItem(ItemSlot itemSlot)
     {
         _itemSlot = itemSlot;
+        AllowReload = true;
     }
 
     public override void OnEnable()

@@ -33,8 +33,9 @@ public class InteractionHandler
     }
 
     public void SetInteraction(InteractionMode interaction, GameMode gameMode)
-    {
-        if(_interaction != null && _interaction.GetType() == interaction.GetType()) return;
+    { 
+        if(_interaction != null && _interaction.GetType() == interaction.GetType() && !_interaction.AllowReload) return;
+      
         if (!_allowedInteractions.Contains(interaction.GetType()))
         {
             Debug.Error("[Interactionhandler] Invalid interaction type or this interaction is not allowed: " + interaction.GetType().Name);

@@ -24,8 +24,8 @@ namespace Spacebox.Game
             itemCamera = new Camera360(Vector3.Zero, false);
 
             //shader.SetVector3("lightColor", new Vector3(1, 1, 1));
-           // shader.SetVector3("objectColor", new Vector3(1, 1, 1));
-           offset = new Vector3(0.06f, -0.12f, 0.07f);
+            // shader.SetVector3("objectColor", new Vector3(1, 1, 1));
+            offset = new Vector3(0.06f, -0.12f, 0.07f);
         }
 
         /*
@@ -40,7 +40,7 @@ namespace Spacebox.Game
         Vector3 offset = new Vector3(0.29f, -0.6f, 0.35f); // 0.02 
         float additionalRotationAngle = MathHelper.DegreesToRadians(90.0f);
 
-        public bool debug = true;
+        public bool debug = false;
         Matrix4 model;
 
         private Shader shader;
@@ -52,7 +52,7 @@ namespace Spacebox.Game
         }
         public void Draw(Shader shader)
         {
-            if(this.shader == null)
+            if (this.shader == null)
             {
                 this.shader = shader;
             }
@@ -93,30 +93,30 @@ namespace Spacebox.Game
 
             }
 
-                model = itemCamera.GetModelMatrix();
+            model = itemCamera.GetModelMatrix();
 
 
 
-                Matrix4 view = itemCamera.GetViewMatrix();
+            Matrix4 view = itemCamera.GetViewMatrix();
 
-                Matrix4 rotation = new Matrix4(
-                    view.M11, view.M12, view.M13, 0,
-                    view.M21, view.M22, view.M23, 0,
-                    view.M31, view.M32, view.M33, 0,
-                    0, 0, 0, 1
-                );
-                rotation.Transpose();
-
-
-                Matrix4 additionalRotation = Matrix4.CreateRotationY(additionalRotationAngle);
+            Matrix4 rotation = new Matrix4(
+                view.M11, view.M12, view.M13, 0,
+                view.M21, view.M22, view.M23, 0,
+                view.M31, view.M32, view.M33, 0,
+                0, 0, 0, 1
+            );
+            rotation.Transpose();
 
 
-                model =
-                     Matrix4.CreateTranslation(offset) *
-                     additionalRotation *
-                    rotation *
-                    Matrix4.CreateTranslation(itemCamera.Position);
-            
+            Matrix4 additionalRotation = Matrix4.CreateRotationY(additionalRotationAngle);
+
+
+            model =
+                 Matrix4.CreateTranslation(offset) *
+                  additionalRotation *
+                rotation *
+                Matrix4.CreateTranslation(itemCamera.Position);
+
 
             shader.Use();
             shader.SetMatrix4("model", model);

@@ -4,6 +4,7 @@ using ImGuiNET;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Common.SceneManagment;
+using Spacebox.Game.Player;
 using Spacebox.Scenes;
 using static Spacebox.Game.Resources.GameSetLoader;
 
@@ -24,7 +25,8 @@ namespace Spacebox.Game.GUI
 
         private List<WorldInfo> worlds = new List<WorldInfo>();
         private List<ModConfig> gameSets = new List<ModConfig>();
-
+        private readonly string[] gamemodes;
+        private int selectedGameModeIndex = 1;
         private string newWorldName = "New World";
         private string newWorldAuthor = "";
         private string newWorldSeed = "";
@@ -46,6 +48,8 @@ namespace Spacebox.Game.GUI
             click1 = new AudioSource(SoundManager.GetClip("UI/click1"));
             trashIcon = TextureManager.GetTexture("Resources/Textures/UI/trash.png", true);
             trashIcon.FlipY();
+
+            gamemodes = Enum.GetNames<GameMode>();
         }
 
         public void Render()
@@ -485,7 +489,7 @@ namespace Spacebox.Game.GUI
             
             float totalInputHeight = (labelHeight + inputHeight + spacing) * 4;
             float topPadding = (windowHeight - totalInputHeight - buttonHeight - ImGui.GetStyle().WindowPadding.Y * 2) / 2;
-            ImGui.Dummy(new Vector2(0, topPadding));
+            ImGui.Dummy(new Vector2(0, topPadding/2f));
 
             CenterInputText("World Name", ref newWorldName, 100, inputWidth, inputHeight);
             ImGui.Dummy(new Vector2(0, spacing));
@@ -495,12 +499,40 @@ namespace Spacebox.Game.GUI
             ImGui.Dummy(new Vector2(0, spacing));
 
           
-            string comboLabel = "GameSet";
+            string comboLabel = "Game Mode";
             Vector2 labelSize = ImGui.CalcTextSize(comboLabel);
             ImGui.SetCursorPosX((windowWidth - labelSize.X) * 0.5f);
             ImGui.Text(comboLabel);
 
          
+            ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(ImGui.GetStyle().FramePadding.X, (inputHeight - labelHeight) / 2));
+            ImGui.SetNextItemWidth(inputWidth);
+            ImGui.SetCursorPosX((windowWidth - inputWidth) / 2);
+            if (ImGui.BeginCombo("##GameMode", gamemodes[selectedGameModeIndex]))
+            {
+                for (int i = 0; i < gamemodes.Length; i++)
+                {
+                    bool isSelected = (i == selectedGameModeIndex);
+                    if (ImGui.Selectable(gamemodes[i], isSelected))
+                    {
+                        click1.Play();
+                        selectedGameModeIndex = i;
+                    }
+                    if (isSelected)
+                    {
+                       
+                        ImGui.SetItemDefaultFocus();
+                    }
+                }
+                ImGui.EndCombo();
+            }
+            ImGui.PopStyleVar();
+
+            string comboLabel2 = "GameSet";
+            Vector2 labelSize2 = ImGui.CalcTextSize(comboLabel2);
+            ImGui.SetCursorPosX((windowWidth - labelSize2.X) * 0.5f);
+            ImGui.Text(comboLabel2);
+
             ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(ImGui.GetStyle().FramePadding.X, (inputHeight - labelHeight) / 2));
             ImGui.SetNextItemWidth(inputWidth);
             ImGui.SetCursorPosX((windowWidth - inputWidth) / 2);
@@ -516,7 +548,7 @@ namespace Spacebox.Game.GUI
                     }
                     if (isSelected)
                     {
-                       
+
                         ImGui.SetItemDefaultFocus();
                     }
                 }
@@ -683,6 +715,7 @@ namespace Spacebox.Game.GUI
             {
                 Name = newWorldName,
                 Author = newWorldAuthor,
+                GameMode = (GameMode)selectedGameModeIndex,
                 Seed = newWorldSeed,
                 ModId = gameSets[selectedGameSetIndex].ModId,
                 GameVersion = Application.Version,
