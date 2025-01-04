@@ -251,7 +251,6 @@ namespace Spacebox.Scenes
             //Renderer.AddDrawable(spacer);
             //SceneGraph.AddRoot(spacer);
             //SceneGraph.UpdateTransforms();
-            CrusherGUI.Init();
 
             block1 = new SimpleBlock(ShaderManager.GetShader("Shaders/colored"),
                 TextureManager.GetTexture("Resources/Textures/slot.png"), new Vector3(0, 0, 0));
@@ -413,6 +412,7 @@ namespace Spacebox.Scenes
             //healthBar.OnGUI();
             radarWindow.Render();
             CrusherGUI.OnGUI();
+            FurnaceGUI.OnGUI();
             PanelUI.Render();
             player.OnGUI();
             InventoryUI.Render(player.Inventory);

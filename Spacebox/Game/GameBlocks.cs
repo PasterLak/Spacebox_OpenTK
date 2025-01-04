@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿using DryIoc;
+using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Game.Effects;
@@ -31,6 +32,26 @@ namespace Spacebox.Game
         public static Dictionary<short, Texture2D> BlockDust = new Dictionary<short, Texture2D>();
         public static Dictionary<short, AudioClip> ItemSound = new Dictionary<short, AudioClip>();
         public static Dictionary<string, AudioClip> Sounds = new Dictionary<string, AudioClip>();
+
+        public static Dictionary<string, Dictionary<short, Recipe>> Recipes = new Dictionary<string, Dictionary<short, Recipe>>();
+
+        public static bool TryGetRecipe(string type, short id, out Recipe recipe)
+        {
+            recipe = null;
+
+            if (Recipes.TryGetValue(type.ToLower(), out var dic))
+            {
+                if (dic.TryGetValue(id, out Recipe rec))
+                {
+                    recipe = rec;
+                    return true;
+                }
+
+                return false;
+            }
+
+            return false;
+        }
 
         public static AtlasTexture AtlasBlocks;
         public static AtlasTexture AtlasItems;
@@ -67,6 +88,28 @@ namespace Spacebox.Game
             CreateDust(blockData);
         }
 
+        public static void RegisterRecipe(RecipeData recipeData, Item item, Item item2)
+        {
+            recipeData.Type = recipeData.Type.ToLower();
+
+            
+            if (!Recipes.ContainsKey(recipeData.Type))
+            {
+                Recipes.Add(recipeData.Type, new Dictionary<short, Recipe>());
+            }
+                if(!Recipes[recipeData.Type].ContainsKey(item.Id))
+                {
+                    Recipe recipe = new Recipe();
+                    recipe.RequiredTicks = (short)recipeData.RequiredTicks;
+                    recipe.PowerPerTickRequared = (short)recipeData.PowerPerTickRequared;
+
+                    recipe.Ingredient = new Ingredient(item, (byte)recipeData.Ingredient.Quantity);
+                    recipe.Product = new Product(item2, (byte)recipeData.Product.Quantity);
+
+                Recipes[recipeData.Type].Add(item.Id, recipe);
+                }
+
+        }
         private static void RegisterItem(BlockData blockData)
         {
             if (blockData.Id == 0) return;
@@ -172,6 +215,11 @@ namespace Spacebox.Game
             if (data.Type.ToLower() == "crusher")
             {
                 return new CrusherBlock(data);
+            }
+
+            if (data.Type.ToLower() == "furnace")
+            {
+                return new FurnaceBlock(data);
             }
 
             //if (id == 0) block.Type = BlockType.Air;
@@ -349,6 +397,7 @@ namespace Spacebox.Game
             {
                 if (c != null) c.Dispose();
             }
+            Recipes.Clear();
             Block.Clear();
             Item.Clear();
             ItemModels.Clear();

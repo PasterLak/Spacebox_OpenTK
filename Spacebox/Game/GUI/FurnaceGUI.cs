@@ -6,10 +6,10 @@ using System.Numerics;
 
 namespace Spacebox.Game.GUI
 {
-    public class CrusherTask : TickTask
+    public class FurnaceTask : TickTask
     {
-        private CrusherBlock _crusher;
-        public CrusherTask(int requiredTicks, CrusherBlock crusher) : base(requiredTicks)
+        private FurnaceBlock _crusher;
+        public FurnaceTask(int requiredTicks, FurnaceBlock crusher) : base(requiredTicks)
         {
             _crusher = crusher;
             base.OnComplete += OnComplete;
@@ -36,34 +36,37 @@ namespace Spacebox.Game.GUI
             _crusher.Craft();
         }
     }
-    public class CrusherGUI
+    public class FurnaceGUI
     {
         private static Recipe Recipe = new Recipe();
-        private static Storage InputStorage = new Storage(1,1);
+        private static Storage InputStorage = new Storage(1, 1);
         private static Storage FuelStorage = new Storage(1, 1);
         private static Storage OutputStorage = new Storage(1, 1);
-        private static CrusherBlock crusherBlock;
+        private static FurnaceBlock crusherBlock;
         private static float TimeToCrush = 2f;
         private static short _time = 0;
 
-        private static bool _isVisible  = false;
-        public static bool IsVisible { get => _isVisible;
-            set {
+        private static bool _isVisible = false;
+        public static bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
                 _isVisible = value;
                 ToggleManager.Instance.SetState("player", !_isVisible);
                 ToggleManager.Instance.SetState("mouse", _isVisible);
             }
         }
 
-        public static void Activate(CrusherBlock block)
+        public static void Activate(FurnaceBlock block)
         {
             crusherBlock = block;
 
             InputStorage = crusherBlock.InputStorage;
             FuelStorage = crusherBlock.FuelStorage;
             OutputStorage = crusherBlock.OutputStorage;
-            
-            if(block.TryStartTask(out var task))
+
+            if (block.TryStartTask(out var task))
             {
                 TickTaskManager.AddTask(task);
             }
@@ -84,7 +87,7 @@ namespace Spacebox.Game.GUI
             float windowHeight = displaySize.Y * 0.3f;
             var windowPos = GameMenu.CenterNextWindow(windowWidth, windowHeight);
 
-            ImGui.Begin("Crusher", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove 
+            ImGui.Begin("Furnace", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove
                 | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
 
             float buttonWidth = windowWidth * 0.9f;
@@ -96,17 +99,17 @@ namespace Spacebox.Game.GUI
             var space = windowHeight * 0.1f;
             var slotSize = InventoryUIHelper.SlotSize;
 
-            var textSize = ImGui.CalcTextSize("Crusher");
+            var textSize = ImGui.CalcTextSize("Furnace");
 
-           
-            ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize.X *0.5f, textSize.Y));
-            ImGui.Text("Crusher");
+
+            ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize.X * 0.5f, textSize.Y));
+            ImGui.Text("Furnace");
             ImGui.SetCursorPos(new Vector2(space, space));
-            InventoryUIHelper.DrawSlot(InputStorage.GetSlot(0,0), "InputStorage", null, false);
-            ImGui.SetCursorPos(new Vector2(space , space * 2f + slotSize));
+            InventoryUIHelper.DrawSlot(InputStorage.GetSlot(0, 0), "InputStorage", null, false);
+            ImGui.SetCursorPos(new Vector2(space, space * 2f + slotSize));
             InventoryUIHelper.DrawSlot(FuelStorage.GetSlot(0, 0), "FuelStorage", null, false);
 
-            ImGui.SetCursorPos(new Vector2(windowWidth - slotSize - space,  slotSize + space));
+            ImGui.SetCursorPos(new Vector2(windowWidth - slotSize - space, slotSize + space));
             InventoryUIHelper.DrawSlot(OutputStorage.GetSlot(0, 0), "OutputStorage", null, false);
 
             ImGui.PopStyleColor(6);

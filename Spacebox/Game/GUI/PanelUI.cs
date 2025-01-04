@@ -62,6 +62,7 @@ namespace Spacebox.Game.GUI
 
         public static OpenTK.Mathematics.Vector2[] GetSelectedBlockUV(Face face, Direction direction)
         {
+            if(SelectedSlot == null) return CubeMeshData.GetBasicUVs();
             var blockID = (SelectedSlot.Item as BlockItem).BlockId;
 
             return GameBlocks.GetBlockUVsByIdAndDirection(blockID, face, direction);

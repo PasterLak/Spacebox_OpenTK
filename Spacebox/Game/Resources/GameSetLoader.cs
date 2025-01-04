@@ -51,6 +51,7 @@ namespace Spacebox.Game.Resources
             LoadSounds(modPath);
             LoadBlocks(modPath, defaultModPath);
             LoadItems(modPath, defaultModPath);
+            LoadRecipes(modPath, defaultModPath);
             LoadSettings(modPath);
             LoadOptionalFiles(modPath);
 
@@ -261,7 +262,7 @@ namespace Spacebox.Game.Resources
             }
         }
 
-        private static string[] BlockTypes = { "block","crusher", "interactive", "door", "light" };
+        private static string[] BlockTypes = { "block","crusher","furnace", "interactive", "door", "light" };
 
         private static bool ValidateBlockType(string type)
         {
@@ -321,6 +322,38 @@ namespace Spacebox.Game.Resources
             catch (Exception ex)
             {
                 Debug.Error($"[GamesetLoader] Error loading items: {ex.Message}");
+            }
+        }
+
+        
+
+        private static void LoadRecipes(string modPath, string defaultModPath)
+        {
+            string itemsFile = GetFilePath(modPath, defaultModPath, "recipes.json");
+            if (itemsFile == null) return;
+
+            try
+            {
+                string json = File.ReadAllText(itemsFile);
+
+                List<RecipeData> recipes = JsonSerializer.Deserialize<List<RecipeData>>(json);
+
+                foreach(var r in recipes)
+                {
+                    if (r == null) continue;
+
+                    var item = GameBlocks.GetItemByName(r.Ingredient.Item);
+                    var item2 = GameBlocks.GetItemByName(r.Product.Item);
+
+                    if (item == null) continue;
+                    if (item2 == null) continue;
+
+                    GameBlocks.RegisterRecipe(r, item,item2);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"[GamesetLoader] Error loading recipes: {ex.Message}");
             }
         }
 

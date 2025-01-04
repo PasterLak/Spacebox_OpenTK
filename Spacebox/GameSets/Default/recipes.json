@@ -1,8 +1,100 @@
 [
-    {
-        "Name": "Water",
-        "TimeTicks": 40,
-        "Energy" : 5
-    }
-
+  {
+    "Type": "crusher",
+    "RequiredTicks": 20,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Ice", "Quantity": 1 },
+    "Product": { "Item": "Ice Shards", "Quantity": 2 }
+  },
+  {
+    "Type": "crusher",
+    "RequiredTicks": 40,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "wIcew", "Quantity": 1 },
+    "Product": { "Item": "wIce Shardsw", "Quantity": 1 }
+  },
+  {
+    "Type": "crusher",
+    "RequiredTicks": 50,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Cobaltite Rock", "Quantity": 1 },
+    "Product": { "Item": "Cobalt Dust", "Quantity": 1 }
+  },
+  {
+    "Type": "crusher",
+    "RequiredTicks": 50,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Cobalt Dust", "Quantity": 1 },
+    "Product": { "Item": "Cobalt Ingot", "Quantity": 1 }
+  },
+  {
+    "Type": "crusher",
+    "RequiredTicks": 50,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Iron Ore", "Quantity": 1 },
+    "Product": { "Item": "Iron Dust", "Quantity": 1 }
+  },
+  {
+    "Type": "crusher",
+    "RequiredTicks": 50,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Aluminium Ore", "Quantity": 1 },
+    "Product": { "Item": "Aluminium Dust", "Quantity": 1 }
+  },
+  {
+    "Type": "Crusher",
+    "RequiredTicks": 50,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Titanium Ingot", "Quantity": 1 },
+    "Product": { "Item": "Titanium Dust", "Quantity": 1 }
+  },
+  {
+    "Type": "Crusher",
+    "RequiredTicks": 50,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Titanium Dust", "Quantity": 1 },
+    "Product": { "Item": "Titanium Ingot", "Quantity": 1 }
+  },
+  {
+    "Type": "Crusher",
+    "RequiredTicks": 50,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Aluminium Ingot", "Quantity": 1 },
+    "Product": { "Item": "Aluminium Dust", "Quantity": 1 }
+  },
+  {
+    "Type": "furnace",
+    "RequiredTicks": 50,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Ice Shards", "Quantity": 1 },
+    "Product": { "Item": "Water", "Quantity": 1 }
+  },
+  {
+    "Type": "furnace",
+    "RequiredTicks": 50,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Cobalt Dust", "Quantity": 1 },
+    "Product": { "Item": "Cobalt Ingot", "Quantity": 1 }
+  },
+  {
+    "Type": "furnace",
+    "RequiredTicks": 50,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Aluminium Dust", "Quantity": 1 },
+    "Product": { "Item": "Aluminium Ingot", "Quantity": 1 }
+  },
+  {
+    "Type": "furnace",
+    "RequiredTicks": 50,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Iron Dust", "Quantity": 1 },
+    "Product": { "Item": "Iron Ingot", "Quantity": 1 }
+  },
+  {
+    "Type": "furnace",
+    "RequiredTicks": 50,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Titanium Dust", "Quantity": 1 },
+    "Product": { "Item": "Titanium Ingot", "Quantity": 1 }
+  }
 ]

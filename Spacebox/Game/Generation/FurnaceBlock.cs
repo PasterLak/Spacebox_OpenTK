@@ -4,7 +4,7 @@ using Spacebox.Game.Resources;
 
 namespace Spacebox.Game.Generation
 {
-    public class CrusherBlock : InteractiveBlock
+    public class FurnaceBlock : InteractiveBlock
     {
         private Recipe Recipe;
 
@@ -13,15 +13,15 @@ namespace Spacebox.Game.Generation
         public Storage OutputStorage { get; private set; } = new Storage(1, 1);
 
         public bool IsRunning { get; private set; } = false;
-        public CrusherBlock(BlockData blockData) : base(blockData)
+        public FurnaceBlock(BlockData blockData) : base(blockData)
         {
-            OnUse += CrusherGUI.Toggle;
+            OnUse += FurnaceGUI.Toggle;
 
         }
 
         public override void Use()
         {
-            CrusherGUI.Activate(this);
+            FurnaceGUI.Activate(this);
             base.Use();
         }
 
@@ -30,14 +30,14 @@ namespace Spacebox.Game.Generation
             return InputStorage.GetSlot(0, 0).Count > 0;
         }
 
-        public bool TryStartTask(out CrusherTask task)
+        public bool TryStartTask(out FurnaceTask task)
         {
             task = null;
 
             if (!HasInput()) return false;
             if (IsRunning) return false;
 
-            if (GameBlocks.TryGetRecipe("crusher", InputStorage.GetSlot(0, 0).Item.Id, out Recipe))
+            if (GameBlocks.TryGetRecipe("furnace", InputStorage.GetSlot(0, 0).Item.Id, out Recipe))
             {
 
             }
@@ -47,7 +47,7 @@ namespace Spacebox.Game.Generation
             if (Recipe == null) return false;
 
             IsRunning = true;
-            task = new CrusherTask(Recipe.RequiredTicks, this);
+            task = new FurnaceTask(Recipe.RequiredTicks, this);
 
             return true;
         }
@@ -61,23 +61,20 @@ namespace Spacebox.Game.Generation
                 return;
             }
 
-            var inSlot = InputStorage.GetSlot(0, 0);
-            var outSlot = OutputStorage.GetSlot(0, 0);
-
-            if (inSlot.HasItem && inSlot.Item.Id == Recipe.Ingredient.Item.Id)
+            if (InputStorage.GetSlot(0, 0).HasItem && InputStorage.GetSlot(0, 0).Item.Id == Recipe.Ingredient.Item.Id)
             {
-                if (outSlot.HasItem)
+                if (OutputStorage.GetSlot(0, 0).HasItem)
                 {
-                    if (outSlot.Item.Id == Recipe.Product.Item.Id)
+                    if (OutputStorage.GetSlot(0, 0).Item.Id == Recipe.Product.Item.Id)
                     {
-                        if (outSlot.HasFreeSpace)
+                        if (OutputStorage.GetSlot(0, 0).HasFreeSpace)
                         {
 
-                            inSlot.Count -= Recipe.Ingredient.Quantity;
+                            InputStorage.GetSlot(0, 0).Count -= Recipe.Ingredient.Quantity;
 
-                            if (outSlot.HasItem)
+                            if (OutputStorage.GetSlot(0, 0).HasItem)
                             {
-                                outSlot.Count += Recipe.Product.Quantity;
+                                OutputStorage.GetSlot(0, 0).Count += Recipe.Product.Quantity;
                             }
 
                         }
@@ -86,15 +83,14 @@ namespace Spacebox.Game.Generation
                 }
                 else
                 {
-
-                    var newInSlotCount = inSlot.Count - Recipe.Ingredient.Quantity;
-
-                    if (newInSlotCount >= 0)
+                    if (InputStorage.GetSlot(0, 0).Item.Id == Recipe.Ingredient.Item.Id)
                     {
-                        inSlot.Count = (byte)newInSlotCount;  
-                        OutputStorage.TryAddItem(Recipe.Product.Item, Recipe.Product.Quantity);
-                    }
 
+                        InputStorage.GetSlot(0, 0).DropOne();
+
+                        OutputStorage.TryAddItem(Recipe.Product.Item, 1);
+
+                    }
                 }
 
 

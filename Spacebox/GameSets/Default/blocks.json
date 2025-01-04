@@ -4,21 +4,28 @@
         "Sides": "lightRock",
         "PowerToDrill": 0,
         "Mass": 1,
-        "Durability": 2
+        "Durability": 5
     },
     {
         "Name": "Medium Rock",
         "Sides": "mediumRock",
-        "PowerToDrill": 2,
+        "PowerToDrill": 3,
         "Mass": 2,
-        "Durability": 5
+        "Durability": 10
     },
     {
         "Name": "Heavy Rock",
         "Sides": "heavyRock",
-        "PowerToDrill": 3,
+        "PowerToDrill": 5,
         "Mass": 3,
-        "Durability": 10
+        "Durability": 15
+    },
+    {
+        "Name": "Cobaltite Rock",
+        "Sides": "cobaltite",
+        "PowerToDrill": 5,
+        "Mass": 3,
+        "Durability": 15
     },
     {
         "Name": "Ice",
@@ -28,13 +35,6 @@
         "Durability": 1
     },
     {
-        "Name": "Iron Ore",
-        "Sides": "ironOre",
-        "PowerToDrill": 2,
-        "Mass": 2,
-        "Durability": 4
-    },
-    {
         "Name": "Aluminium Ore",
         "Sides": "aluOre",
          "PowerToDrill": 1,
@@ -42,9 +42,23 @@
         "Durability": 3
     },
     {
+        "Name": "Iron Ore",
+        "Sides": "ironOre",
+        "PowerToDrill": 2,
+        "Mass": 2,
+        "Durability": 4
+    },
+    {
+        "Name": "Titanium Ore",
+        "Sides": "titaniumOre",
+         "PowerToDrill": 3,
+        "Mass": 1,
+        "Durability": 7
+    },
+    {
         "Name": "Thulium Ore",
         "Sides": "greenOre",
-         "PowerToDrill": 3,
+        "PowerToDrill": 3,
         "Mass": 1,
         "Durability": 7
     },
@@ -152,93 +166,11 @@
         "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
-        "Name": "Wire",
-        "Sides": "wire",
-        "Mass": 1,
-        "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
-    },
-    {
-        "Name": "Radar",
-        "Type": "interactive",
-        "Sides": "bottom",
-        "Top": "radar",
-        "Bottom": "bottom",
-        "Mass": 1,
-        "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
-    },
-    {
-        "Name": "Light White",
-        "Sides": "white",
-        "LightColor": { "x": 255, "y": 255, "z": 255 }
-    },
-    {
-        "Name": "Light Blue",
-        "Sides": "blue",
-        "LightColor": { "x": 0, "y": 0, "z": 255 }
-    },
-    {
-        "Name": "Light Red",
-        "Sides": "red",
-        "LightColor": { "x": 255, "y": 0, "z": 0 }
-    },
-    {
-        "Name": "Light Yellow",
-        "Sides": "yellow",
-        "Mass": 1,
-        "LightColor": { "x": 255, "y": 216, "z": 0 }
-    },
-    {
-        "Name": "Light Cyan",
-        "Sides": "cyan",
-        "Mass": 1,
-        "LightColor": { "x": 0, "y": 255, "z": 255 }
-    },
-    {
-        "Name": "Light Orange",
-        "Sides": "orange",
-        "Mass": 1,
-        "LightColor": { "x": 255, "y": 106, "z": 0 }
-    },
-    {
-        "Name": "Light Green",
-        "Sides": "green",
-        "Mass": 1,
-        "LightColor": { "x": 0, "y": 255, "z": 0 }
-    },
-    {
-        "Name": "Wires Pro",
-        "Sides": "wirePro",
-        "IsTransparent": true,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
-    },
-    {
-        "Name": "AI Core",
-        "Sides": "core",
-        "Mass": 50,
-        "PowerToDrill" : 3,
-        "Durability" : 50,
-        "IsTransparent": true,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
-    },
-    {
-        "Name": "Just Block",
-        "Sides": "block",
-        "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
-    },
-    {
         "Name": "Furnace",
-        "Type": "interactive",
+        "Type": "furnace",
         "Sides": "furnace",
         "Top": "bottom",
         "Bottom": "bottom"
-    },
-    {
-        "Name": "Light Pink",
-        "Sides": "pink",
-        "LightColor": { "x": 178, "y": 0, "z": 255 }
     },
     {
         "Name": "Crusher",
@@ -257,5 +189,82 @@
         "Bottom": "bottom",
         "IsTransparent": false,
         "LightColor": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+        "Name": "Radar",
+        "Type": "interactive",
+        "Sides": "bottom",
+        "Top": "radar",
+        "Bottom": "bottom",
+        "IsTransparent": false,
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+        "Name": "Wire",
+        "Sides": "wire",
+        "IsTransparent": false,
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
+    },
+        {
+        "Name": "Wires Pro",
+        "Sides": "wirePro",
+        "IsTransparent": true,
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+        "Name": "Light White",
+        "Sides": "white",
+        "LightColor": { "x": 255, "y": 255, "z": 255 }
+    },
+    {
+        "Name": "Light Blue",
+        "Sides": "blue",
+        "LightColor": { "x": 25, "y": 25, "z": 255 }
+    },
+    {
+        "Name": "Light Red",
+        "Sides": "red",
+        "LightColor": { "x": 255, "y": 15, "z": 15 }
+    },
+    {
+        "Name": "Light Yellow",
+        "Sides": "yellow",
+        "LightColor": { "x": 255, "y": 216, "z": 0 }
+    },
+    {
+        "Name": "Light Cyan",
+        "Sides": "cyan",
+        "LightColor": { "x": 0, "y": 255, "z": 255 }
+    },
+    {
+        "Name": "Light Orange",
+        "Sides": "orange",
+        "LightColor": { "x": 255, "y": 106, "z": 0 }
+    },
+    {
+        "Name": "Light Green",
+        "Sides": "green",
+        "LightColor": { "x": 5, "y": 255, "z": 5 }
+    },
+    {
+        "Name": "Light Pink",
+        "Sides": "pink",
+        "LightColor": { "x": 178, "y": 0, "z": 255 }
+    },
+    {
+        "Name": "AI Core",
+        "Sides": "core",
+        "Mass": 50,
+        "PowerToDrill" : 3,
+        "Durability" : 50,
+        "IsTransparent": true,
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+        "Name": "Just Block",
+        "Sides": "block",
+        "IsTransparent": false,
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
     }
+    
 ]

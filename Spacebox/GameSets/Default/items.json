@@ -9,6 +9,38 @@
         "Power": 1
     },
     {
+        "Name": "Drill 2",
+        "Type": "drill",
+        "Sprite": "drill2",
+        "MaxStack": 1,
+        "ModelDepth": 1.5,
+        "Power": 2
+    },
+    {
+        "Name": "Drill 3",
+        "Type": "drill",
+        "Sprite": "drill2",
+        "MaxStack": 1,
+        "ModelDepth": 1.5,
+        "Power": 3
+    },
+    {
+        "Name": "Drill 4",
+        "Type": "drill",
+        "Sprite": "drill2",
+        "MaxStack": 1,
+        "ModelDepth": 1.5,
+        "Power": 4
+    },
+    {
+        "Name": "Drill 5",
+        "Type": "drill",
+        "Sprite": "drill2",
+        "MaxStack": 1,
+        "ModelDepth": 1.5,
+        "Power": 5
+    },
+    {
         "Name": "AKF-24",
         "Type": "Weapon",
         "Sprite": "weapon1",
@@ -20,8 +52,62 @@
         "Pushback": 0
     },
     {
-        "Name": "Powder",
-        "Sprite": "powder",
+        "Name": "Cobalt Ingot",
+        "Sprite": "cobaltIngot",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+        {
+        "Name": "Aluminium Ingot",
+        "Sprite": "aluIngot",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+    {
+        "Name": "Iron Ingot",
+        "Sprite": "ironIngot",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+        {
+        "Name": "Titanium Ingot",
+        "Sprite": "titIngot",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+         {
+        "Name": "Uranium Ingot",
+        "Sprite": "uranIngot",
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
+        "Name": "Cobalt Dust",
+        "Sprite": "cobaltDust",
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
+        "Name": "Aluminium Dust",
+        "Sprite": "aluDust",
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
+        "Name": "Iron Dust",
+        "Sprite": "ironDust",
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
+        "Name": "Titanium Dust",
+        "Sprite": "titDust",
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
+        "Name": "Cobalt Lens",
+        "Sprite": "cobaltLens",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
@@ -44,32 +130,8 @@
         "ModelDepth": 1.0
     },
     {
-        "Name": "Titanium Ingot",
-        "Sprite": "titIngot",
-        "MaxStack": 64,
-        "ModelDepth": 2.0
-    },
-    {
-        "Name": "Titanium Dust",
-        "Sprite": "titDust",
-        "MaxStack": 64,
-        "ModelDepth": 1.0
-    },
-    {
-        "Name": "Aluminium Ingot",
-        "Sprite": "aluIngot",
-        "MaxStack": 64,
-        "ModelDepth": 2.0
-    },
-    {
-        "Name": "Aluminium Dust",
-        "Sprite": "aluDust",
-        "MaxStack": 64,
-        "ModelDepth": 1.0
-    },
-    {
-        "Name": "Iron Dust",
-        "Sprite": "ironDust",
+        "Name": "Titanium Panels",
+        "Sprite": "titPanels",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
@@ -89,6 +151,31 @@
         "MaxStack": 64,
         "ModelDepth": 1.5
     },
+    
+    {
+        "Name": "Cat",
+        "Sprite": "cat",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+    {
+        "Name": "Paint",
+        "Sprite": "paint",
+        "MaxStack": 1,
+        "ModelDepth": 1.0
+    },
+    {
+        "Name": "Uranium",
+        "Sprite": "uran",
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
+        "Name": "Water",
+        "Sprite": "water1",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
     {
         "Name": "Power",
         "Sprite": "power",
@@ -106,44 +193,6 @@
         "HealAmount": 10,
         "MaxStack": 20,
         "ModelDepth": 3.0
-    },
-    {
-        "Name": "Cat",
-        "Sprite": "cat",
-        "MaxStack": 64,
-        "ModelDepth": 2.0
-    },
-    {
-        "Name": "Paint",
-        "Sprite": "paint",
-        "MaxStack": 1,
-        "ModelDepth": 1.0
-    },
-    {
-        "Name": "Drill 2",
-        "Type": "drill",
-        "Sprite": "drill2",
-        "MaxStack": 1,
-        "ModelDepth": 1.5,
-        "Power": 3
-    },
-     {
-        "Name": "Uranium Ingot",
-        "Sprite": "uranIngot",
-        "MaxStack": 64,
-        "ModelDepth": 1.0
-    },
-    {
-        "Name": "Uranium",
-        "Sprite": "uran",
-        "MaxStack": 64,
-        "ModelDepth": 1.0
-    },
-    {
-        "Name": "Water",
-        "Sprite": "water1",
-        "MaxStack": 64,
-        "ModelDepth": 2.0
     },
     {
         "Name": "Battery",
