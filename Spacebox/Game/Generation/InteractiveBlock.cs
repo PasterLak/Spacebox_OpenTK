@@ -13,7 +13,7 @@ namespace Spacebox.Game.Generation
 
         public Action OnUse;
 
-        public void Use()
+        public virtual void Use()
         {
             OnUse?.Invoke();
         }
@@ -30,11 +30,11 @@ namespace Spacebox.Game.Generation
             }
             else if(blockData.Name == "Macerator")
             {
-                OnUse += CrusherGUI.Toggle;
+                //OnUse += CrusherGUI.Toggle;
             }
             else
             {
-                OnUse += RadarWindow.Instance.Toggle;
+                //OnUse += RadarWindow.Instance.Toggle;
             }
             
         }

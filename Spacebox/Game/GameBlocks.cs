@@ -169,6 +169,11 @@ namespace Spacebox.Game
                 return new InteractiveBlock(data);
             }
 
+            if (data.Type.ToLower() == "crusher")
+            {
+                return new CrusherBlock(data);
+            }
+
             //if (id == 0) block.Type = BlockType.Air;
 
             return new Block(data);

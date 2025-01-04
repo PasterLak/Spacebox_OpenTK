@@ -42,6 +42,7 @@ namespace Spacebox.Game.Player
             set
             {
                 _canMove = value;
+
                 _lastMousePosition = Input.Mouse.Position;
             }
         }
@@ -76,6 +77,7 @@ namespace Spacebox.Game.Player
             set => _collisionEnabled = value;
         }
 
+        private Toggi toggle;
         public Astronaut(Vector3 position)
             : base(position)
         {
@@ -97,6 +99,17 @@ namespace Spacebox.Game.Player
             flySpeedUpAudio.IsLooped = true;
 
             GameMode = GameMode.Creative;
+
+            toggle = ToggleManager.Instance.Register("player");
+            toggle.OnStateChanged += state =>
+            {
+                //if(!state)
+                //ToggleManager.Instance.SetState("flashlight", false);
+
+                CanMove = state;
+            };
+
+            //ToggleManager.Instance.AddSlave("player", "flashlight");
         }
 
         ~Astronaut()
@@ -162,7 +175,7 @@ namespace Spacebox.Game.Player
                 VisualDebug.ProjectionMatrix = GetProjectionMatrix();
                 VisualDebug.ViewMatrix = GetViewMatrix();
             }
-
+            _gameModeBase.UpdateInteraction(this);
             _gameModeBase.Update(this);
             HitImage.Update();
             if (!CanMove) return;

@@ -241,8 +241,8 @@
         "LightColor": { "x": 178, "y": 0, "z": 255 }
     },
     {
-        "Name": "Macerator",
-        "Type": "interactive",
+        "Name": "Crusher",
+        "Type": "crusher",
         "Sides": "crusherSide",
         "Top": "crusherTop",
         "Bottom": "bottom",

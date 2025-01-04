@@ -42,6 +42,7 @@ public class InteractionPlaceBlock : InteractionMode
 
     public override void Update(Astronaut player)
     {
+        if (!player.CanMove) return;
         Ray ray = new Ray(player.Position, player.Front, MaxBuildDistance);
         VoxelPhysics.HitInfo hit;
 

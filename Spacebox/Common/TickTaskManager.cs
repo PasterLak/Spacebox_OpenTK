@@ -4,11 +4,17 @@ namespace Spacebox.Common
 {
     public static class TickTaskManager
     {
+        public static bool EnableDebug = true;
         private static List<TickTask> _tasks = new List<TickTask>();
 
         public static void AddTask(TickTask task)
         {
             _tasks.Add(task);
+            
+            if(EnableDebug)
+            {
+                Debug.Log($"[TickTaskManager] Task added. Tasks running: " + _tasks.Count);
+            }
         }
 
         public static void UpdateTasks()
@@ -22,7 +28,20 @@ namespace Spacebox.Common
                 if(task == null)
                 {
                     _tasks.RemoveAt(i);
+                    if (EnableDebug)
+                    {
+                        Debug.Log($"[TickTaskManager] Task was null and removed. Tasks running: " + _tasks.Count);
+                    }
                     continue;
+                }
+
+                if (task.IsStopped)
+                {
+                    _tasks.RemoveAt(i);
+                    if (EnableDebug)
+                    {
+                        Debug.Log($"[TickTaskManager] Task removed. Tasks running: " + _tasks.Count);
+                    }
                 }
 
                 task.Update();
@@ -30,6 +49,10 @@ namespace Spacebox.Common
                 if (task.IsComplete)
                 {
                     _tasks.RemoveAt(i);
+                    if (EnableDebug)
+                    {
+                        Debug.Log($"[TickTaskManager] Task removed. Tasks running: " + _tasks.Count);
+                    }
                 }
             }
         }

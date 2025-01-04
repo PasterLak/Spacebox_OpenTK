@@ -64,7 +64,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
         if (isNull) return;
 
-        if (hit.block.Health == 0) DestroyBlock(hit);
+        if (hit.block.Durability == 0) DestroyBlock(hit);
 
         if (lastBlock == null)
             lastBlock = hit.block;
@@ -88,11 +88,11 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
     private void DamageBlock(VoxelPhysics.HitInfo hit, byte damage = 1)
     {
-        int dam = (hit.block.Health - damage);
+        int dam = (hit.block.Durability - damage);
         if (dam < 0) dam = 0;
-        hit.block.Health = (byte)(dam);
+        hit.block.Durability = (byte)(dam);
       
-        if (hit.block.Health <= 0) DestroyBlock(hit);
+        if (hit.block.Durability <= 0) DestroyBlock(hit);
     }
 
     private void DestroyBlock(VoxelPhysics.HitInfo hit)
@@ -113,6 +113,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
     public override void Update(Astronaut player)
     {
+        if (!player.CanMove) return;
         Ray ray = new Ray(player.Position, player.Front, MaxDestroyDistance);
         VoxelPhysics.HitInfo hit;
 
@@ -163,12 +164,14 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
             if (Input.IsMouseButtonDown(MouseButton.Left))
             {
+                
                 BlockMiningEffect.Enabled = true;
             }
                 if (Input.IsMouseButtonUp(MouseButton.Left))
             {
                 _time = timeToDamage;
                 lastBlock = null;
+                BlockMiningEffect.ClearParticles();
                 BlockMiningEffect.Enabled = false;
             }
 

@@ -53,7 +53,7 @@ namespace Spacebox.Tests
             for (int i = 0; i < 1000; i++)
             {
                 sum += _blockOld.Mass;
-                sum += _blockOld.Health;
+                sum += _blockOld.Durability;
             }
 
             int count = 0;

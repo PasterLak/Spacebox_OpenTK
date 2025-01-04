@@ -14,7 +14,6 @@ public class InteractionDestroyBlock : InteractionMode
 
     private static AudioSource blockDestroy;
 
-
     public override void OnEnable()
     {
         if (blockDestroy == null)
@@ -35,6 +34,8 @@ public class InteractionDestroyBlock : InteractionMode
 
     public override void Update(Astronaut player)
     {
+        if (!player.CanMove) return;
+
         Ray ray = new Ray(player.Position, player.Front, MaxDestroyDistance);
         VoxelPhysics.HitInfo hit;
 
@@ -48,6 +49,7 @@ public class InteractionDestroyBlock : InteractionMode
 
             if (Input.IsMouseButtonDown(MouseButton.Left))
             {
+                hit.block.Durability = 0;
                 hit.chunk.RemoveBlock(hit.blockPosition, hit.normal);
 
                 if (blockDestroy != null)

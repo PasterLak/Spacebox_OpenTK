@@ -29,7 +29,8 @@ public class InteractionConsumeItem : InteractionMode
 
     public override void Update(Astronaut player)
     {
-        if(!Input.IsMouseButtonDown(MouseButton.Right)) return;
+        if (!player.CanMove) return;
+        if (!Input.IsMouseButtonDown(MouseButton.Right)) return;
 
         if (_itemSlot == null) return;
         if (_itemSlot.Item == null) return;

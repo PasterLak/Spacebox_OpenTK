@@ -20,7 +20,7 @@ namespace Spacebox.Game.Generation
     {
         public short BlockId { get; set; } = 0;
         public byte Mass { get; private set; } = 1;
-        public byte Health { get; set; } = 1;
+        public byte Durability { get; set; } = 1;
 
         public Vector3 Color { get; set; }
         public bool IsTransparent { get; set; } = false;
@@ -54,7 +54,7 @@ namespace Spacebox.Game.Generation
             Color = new Vector3(1.0f, 1.0f, 1.0f);
             LightLevel = 0;
             Mass = blockData.Mass;
-            Health = blockData.Health;
+            Durability = blockData.Health;
             LightColor = blockData.LightColor;
 
             if (LightColor != Vector3.Zero)

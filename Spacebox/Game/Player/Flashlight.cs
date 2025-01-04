@@ -14,14 +14,13 @@ namespace Spacebox.Game.Player
             set
             {
                 _isActive = value;
-
                 SpotLight.IsActive = value;
             }
         }
 
         private SpotLight SpotLight;
         private AudioSource audio;
-
+        private Toggi toggle;
         public Flashlight(Camera camera)
         {
             SpotLight = new SpotLight(ShaderManager.GetShader("Shaders/block"),
@@ -38,6 +37,16 @@ namespace Spacebox.Game.Player
                 audio.Play();
                 SpotLight.IsActive = !SpotLight.IsActive;
             });
+
+            toggle = ToggleManager.Instance.Register("flashlight");
+            toggle.OnStateChanged += state => { IsActive = state; };
+
+            
+        }
+
+        private void OnToggle(bool state)
+        {
+            IsActive = state;
         }
 
         public void Draw(Camera camera)

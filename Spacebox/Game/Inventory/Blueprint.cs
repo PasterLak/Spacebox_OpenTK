@@ -1,6 +1,4 @@
-﻿
-
-namespace Spacebox.Game
+﻿namespace Spacebox.Game
 {
 
     public class Ingredient
@@ -25,20 +23,20 @@ namespace Spacebox.Game
             Quantity = quantity;
         }
     }
-
-    public class Recipe
+    public class RecipeBase
     {
         public short Id;
         public short RequiredTicks;
+        public short PowerPerTickRequared;
+    }
+    public class Recipe : RecipeBase
+    {
         public Ingredient Ingredient;
         public Product Product;
     }
-    public class Blueprint
+    public class Blueprint : RecipeBase
     {
 
-        public short Id;
-
-        public short RequiredTicks;
         public Ingredient[] Ingredients;
         public Product[] Products;
      

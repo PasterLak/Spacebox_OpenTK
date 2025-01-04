@@ -32,7 +32,11 @@ public class SpectatorMode : GameModeBase
     {
         InteractionHandler.Interaction.OnDisable();
     }
-
+    public override void UpdateInteraction(Astronaut player)
+    {
+        //return;
+        //InteractionHandler.Update(player);
+    }
     public override void Update(Astronaut player)
     {
     }

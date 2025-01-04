@@ -161,6 +161,12 @@ namespace Spacebox.Game.Effects
             ParticleSystem.Draw(camera);
         }
 
+        public void ClearParticles()
+        {
+            ParticleSystem.GetParticles().Clear();
+            ParticleSystem.Renderer.UpdateBuffers();
+        }
+
         public void Dispose()
         {
             ParticleSystem.Dispose();

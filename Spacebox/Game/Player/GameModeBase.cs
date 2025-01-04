@@ -24,5 +24,6 @@ public abstract class GameModeBase
     public abstract void OnEnable();
     public abstract void OnDisable();
     public abstract void Update(Astronaut player);
+    public abstract void UpdateInteraction(Astronaut player);
     public abstract void HandleInput(Astronaut player);
 }

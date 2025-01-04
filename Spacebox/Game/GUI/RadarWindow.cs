@@ -287,12 +287,14 @@ namespace Spacebox.Game.GUI
         {
             IsVisible = true;
             OnOpen?.Invoke();
+            ToggleManager.Instance.SetState("player", !IsVisible);
         }
 
         public void Close()
         {
             IsVisible = false;
             OnClose?.Invoke();
+            ToggleManager.Instance.SetState("player", !IsVisible);
         }
 
         public void Toggle()
@@ -302,6 +304,8 @@ namespace Spacebox.Game.GUI
                 OnOpen?.Invoke();
             else
                 OnClose?.Invoke();
+
+            ToggleManager.Instance.SetState("player", !IsVisible);
         }
 
         public void Render(Vector2 windowSize)

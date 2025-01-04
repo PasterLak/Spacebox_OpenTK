@@ -58,6 +58,8 @@ namespace Spacebox.Scenes
         private SimpleBlock block1;
         private SimpleBlock block2;
 
+        private ToggleManager toggleManager;
+
         public SpaceScene(string[] args) : base(args) // name mod seed modfolder
         {
             if (args.Length == 4)
@@ -100,6 +102,15 @@ namespace Spacebox.Scenes
 
             BlackScreenOverlay.IsEnabled = true;
             BlackScreenOverlay.Render();
+
+            toggleManager = new ToggleManager();
+
+            var mouse = toggleManager.Register("mouse");
+
+            mouse.OnStateChanged += s =>
+            {
+                if (s) Input.ShowCursor(); else Input.HideCursor();
+            };
         }
 
         private void InitializeGamesetData(string blocksPath, string itemsPath, string emissionPath, string modId,
@@ -134,6 +145,7 @@ namespace Spacebox.Scenes
            
             player = new Astronaut(new Vector3(5,5,5));
             SceneGraph.AddRoot(player);
+            
 
             world = new World(player);
             world.LoadWorldInfo(worldName);

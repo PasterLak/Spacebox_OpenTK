@@ -28,15 +28,15 @@ namespace Spacebox.Common
                 return _randomUVRotation;
             }
             set
-            { 
+            {
                 _randomUVRotation = value;
                 particleSystem.Renderer.RandomRotation = _randomUVRotation;
             }
         }
-     
-        public Vector3 EmitterDirection { get; set; } = Vector3.UnitY; 
-     
-        
+
+        public Vector3 EmitterDirection { get; set; } = Vector3.UnitY;
+
+
         public bool EnableRandomDirection { get; set; } = false;
 
         public Emitter(ParticleSystem system)
@@ -48,23 +48,23 @@ namespace Spacebox.Common
         {
             Vector3 randomPosition = RandomPointInSphere(SpawnRadius);
             Vector3 position = particleSystem.UseLocalCoordinates
-     ? randomPosition + particleSystem.EmitterPositionOffset
-     : particleSystem.Position + randomPosition + particleSystem.EmitterPositionOffset;
+            ? randomPosition + particleSystem.EmitterPositionOffset
+            : particleSystem.Position + randomPosition + particleSystem.EmitterPositionOffset;
 
 
             Vector3 velocity;
 
             if (EnableRandomDirection)
             {
-               
+
                 Vector3 randomDirection = RandomUnitVector();
-               
+
                 float speed = MathHelper.Lerp(SpeedMin, SpeedMax, (float)random.NextDouble());
                 velocity = randomDirection * speed;
             }
             else
             {
-               
+
                 velocity = EmitterDirection * MathHelper.Lerp(SpeedMin, SpeedMax, (float)random.NextDouble());
             }
 

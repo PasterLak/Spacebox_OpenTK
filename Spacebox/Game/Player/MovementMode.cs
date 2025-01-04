@@ -42,7 +42,10 @@ public class MovementMode : GameModeBase
         InteractionHandler.Interaction.OnDisable();
 
     }
-
+    public override void UpdateInteraction(Astronaut player)
+    {
+        InteractionHandler.Update(player);
+    }
     public override void Update(Astronaut player)
     {
         player.PowerBar.Update();
@@ -54,7 +57,7 @@ public class MovementMode : GameModeBase
         Vector3 acceleration = Vector3.Zero;
         bool isMoving = false;
 
-        InteractionHandler.Update(player);
+        
 
         if (Input.IsKey(Keys.W))
         {
