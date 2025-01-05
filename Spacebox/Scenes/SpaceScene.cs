@@ -411,8 +411,9 @@ namespace Spacebox.Scenes
 
             //healthBar.OnGUI();
             radarWindow.Render();
-            CrusherGUI.OnGUI();
-            FurnaceGUI.OnGUI();
+           
+            ResourceProcessingGUI.OnGUI();
+           
             PanelUI.Render();
             player.OnGUI();
             InventoryUI.OnGUI(player.Inventory);

@@ -14,8 +14,8 @@ namespace Spacebox.Game.GUI
         protected static Storage InputStorage = new Storage(1, 1);
         protected static Storage FuelStorage = new Storage(1, 1);
         protected static Storage OutputStorage = new Storage(1, 1);
-        protected static ResourceProcessingBlock crusherBlock;
-
+        protected static ResourceProcessingBlock processingBlock;
+        public static string WindowName = "";
         protected static bool _isVisible = false;
         public static bool IsVisible
         {
@@ -36,20 +36,24 @@ namespace Spacebox.Game.GUI
 
         public static void Activate(ResourceProcessingBlock block, Astronaut player)
         {
-            crusherBlock = block;
-
+            processingBlock = block;
+            WindowName = block.WindowName;
             if (InputStorage != null)
             {
                 InputStorage.OnDataWasChanged -= OnInputItemWasChanged;
             }
 
+            InputStorage.DisconnectStorage();
+            FuelStorage.DisconnectStorage();
             OutputStorage.DisconnectStorage();
             
 
-            InputStorage = crusherBlock.InputStorage;
-            FuelStorage = crusherBlock.FuelStorage;
-            OutputStorage = crusherBlock.OutputStorage;
+            InputStorage = processingBlock.InputStorage;
+            FuelStorage = processingBlock.FuelStorage;
+            OutputStorage = processingBlock.OutputStorage;
 
+            InputStorage.ConnectStorage(player.Inventory, false);
+            FuelStorage.ConnectStorage(player.Inventory, false);
             OutputStorage.ConnectStorage(player.Inventory, false);
 
             InputStorage.OnDataWasChanged += OnInputItemWasChanged;
@@ -64,16 +68,16 @@ namespace Spacebox.Game.GUI
 
         private static void OnInputItemWasChanged(Storage storage)
         {
-            if (crusherBlock != null)
+            if (processingBlock != null)
             {
-                if (crusherBlock.TryStartTask(out var task))
+                if (processingBlock.TryStartTask(out var task))
                 {
                     TickTaskManager.AddTask(task);
                 }
             }
         }
 
-        public static void OnGUI(string windowName)
+        public static void OnGUI()
         {
             if (!_isVisible) return;
 
@@ -84,7 +88,7 @@ namespace Spacebox.Game.GUI
             var windowPos = GameMenu.CenterNextWindow3(windowWidth, windowHeight);
 
 
-            ImGui.Begin(windowName, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove
+            ImGui.Begin(WindowName, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove
                 | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
 
             float buttonWidth = windowWidth * 0.9f;
@@ -96,16 +100,18 @@ namespace Spacebox.Game.GUI
             var space = windowHeight * 0.1f;
             var slotSize = InventoryUIHelper.SlotSize;
 
-            var textSize = ImGui.CalcTextSize(windowName);
+            var textSize = ImGui.CalcTextSize(WindowName);
 
-
+            ImGui.SetCursorPos(new Vector2(windowWidth * 0.505f - textSize.X * 0.5f, textSize.Y));
+            ImGui.TextColored(new Vector4(0.1f, 0.1f, 0.1f, 0.1f), WindowName);
             ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize.X * 0.5f, textSize.Y));
-            ImGui.Text(windowName);
-            ImGui.SetCursorPos(new Vector2(space, space ));
-            InventoryUIHelper.DrawSlot(InputStorage.GetSlot(0, 0), "InputStorage", null, false);
+            ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 0.9f),WindowName);
+           
+            ImGui.SetCursorPos(new Vector2(space, space * 2 ));
+            InventoryUIHelper.DrawSlot(InputStorage.GetSlot(0, 0), "InputStorage", MoveItems, false);
             InventoryUIHelper.ShowTooltip(InputStorage.GetSlot(0, 0), true);
-            ImGui.SetCursorPos(new Vector2(space, space * 2f + slotSize));
-            InventoryUIHelper.DrawSlot(FuelStorage.GetSlot(0, 0), "FuelStorage", null, false);
+            ImGui.SetCursorPos(new Vector2(space, windowHeight - slotSize - space));
+            InventoryUIHelper.DrawSlot(FuelStorage.GetSlot(0, 0), "FuelStorage", MoveItems, false);
             InventoryUIHelper.ShowTooltip(FuelStorage.GetSlot(0, 0), true);
             ImGui.SetCursorPos(new Vector2(windowWidth - slotSize - space, slotSize + space));
             InventoryUIHelper.DrawSlot(OutputStorage.GetSlot(0, 0), "OutputStorage", MoveItems, false);

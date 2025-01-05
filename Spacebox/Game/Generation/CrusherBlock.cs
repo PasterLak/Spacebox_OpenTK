@@ -10,12 +10,13 @@ namespace Spacebox.Game.Generation
        
         public CrusherBlock(BlockData blockData) : base(blockData)
         {
-            OnUse += CrusherGUI.Toggle;
+            OnUse += ResourceProcessingGUI.Toggle;
+            WindowName = "Crusher";
         }
 
         public override void Use(Astronaut player)
         {
-            CrusherGUI.Activate(this, player);
+            ResourceProcessingGUI.Activate(this, player);
             base.Use(player);
         }
 

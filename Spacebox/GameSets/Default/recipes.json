@@ -64,6 +64,13 @@
   },
   {
     "Type": "crusher",
+    "RequiredTicks": 60,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Uranium Ore", "Quantity": 1 },
+    "Product": { "Item": "Uranium Ingot", "Quantity": 2 }
+  },
+  {
+    "Type": "crusher",
     "RequiredTicks": 100,
     "PowerPerTickRequared": 5,
     "Ingredient": { "Item": "Aluminium Panels", "Quantity": 1 },
@@ -83,6 +90,10 @@
     "Ingredient": { "Item": "Titanium Panels", "Quantity": 1 },
     "Product": { "Item": "Titanium Dust", "Quantity": 3 }
   },
+
+
+
+
   {
     "Type": "furnace",
     "RequiredTicks": 40,

@@ -13,6 +13,8 @@ namespace Spacebox.Game.Generation
 
         public bool IsRunning { get; private set; } = false;
 
+        public string WindowName;
+        
         private readonly string blockType;
         public ResourceProcessingBlock(BlockData blockData) : base(blockData)
         {
@@ -43,8 +45,12 @@ namespace Spacebox.Game.Generation
             }
             else return false;
 
+            
 
             if (Recipe == null) return false;
+
+            if (!ValidateInput(InputStorage.GetSlot(0, 0), Recipe)) return false;
+            if (!ValidateOutput(OutputStorage.GetSlot(0, 0), Recipe)) return false;
 
             IsRunning = true;
             task = new ProcessResourceTask(Recipe.RequiredTicks, this);
