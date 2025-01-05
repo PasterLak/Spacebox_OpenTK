@@ -9,10 +9,9 @@ namespace Spacebox.Game
         public short SlotId;
         public Item? Item;
         public byte Count;
-
+        public string Name = "";
         public Storage Storage;
         public Vector2i Position;
-        
   
         public ItemSlot(Storage storage, Vector2i position)
         {
@@ -159,7 +158,7 @@ namespace Spacebox.Game
                 {
     
                     Debug.Error("Failed to add item to " + storage.Name + " by moving from " + Storage.Name);
-                    Debug.Error("Item name: " + Item.Name);
+                    Debug.Error("Item name was: " + Item.Name);
 
                     Count = count;
                 }

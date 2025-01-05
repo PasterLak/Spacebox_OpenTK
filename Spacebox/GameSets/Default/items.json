@@ -177,6 +177,12 @@
         "ModelDepth": 2.0
     },
     {
+        "Name": "Liquid Hydrogen",
+        "Sprite": "hydrogen",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+    {
         "Name": "Power",
         "Sprite": "power",
         "Type": "consumable",

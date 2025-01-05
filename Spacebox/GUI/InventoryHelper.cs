@@ -4,6 +4,8 @@ using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Game;
+using Spacebox.Game.Resources;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Spacebox.UI
 {
@@ -85,13 +87,13 @@ namespace Spacebox.UI
             {
                 if (ImGui.ImageButton(id, SlotTexture, new Vector2(SlotSize, SlotSize)))
                 {
-                    
+
                     onSlotClicked?.Invoke(slot);
                 }
             }
             if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
             {
-               
+
                 OnSlotRightClicked(slot);
             }
             if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
@@ -102,14 +104,14 @@ namespace Spacebox.UI
 
             if (!ImGui.IsItemActive() && ImGui.IsItemHovered())
             {
-               // Debug.Log("Right released!");
+                // Debug.Log("Right released!");
             }
-           
 
-            if (slot.HasItem )
+
+            if (slot.HasItem)
             {
-               
-                if ( ImGui.BeginDragDropSource(ImGuiDragDropFlags.None))
+
+                if (ImGui.BeginDragDropSource(ImGuiDragDropFlags.None))
                 {
                     short slotId = slot.SlotId;
                     byte[] bytes = BitConverter.GetBytes(slotId);
@@ -127,28 +129,30 @@ namespace Spacebox.UI
                     ImGui.EndDragDropSource();
                 }
             }
-       
+
             if (ImGui.BeginDragDropTarget())
             {
                 ImGuiPayloadPtr payload = ImGui.AcceptDragDropPayload("ITEM_SLOT", ImGuiDragDropFlags.None);
                 if (payload.NativePtr != null)
                 {
-            
+
                     short sourceSlotId = Marshal.ReadInt16(payload.Data);
 
-                    if(startStorage != null && startSlot != null)
+                    if (startStorage != null && startSlot != null)
                     {
-                    
-                        if(startSlot != slot)
-                        startSlot.SwapWith(slot);
 
-                      
+                        if (startSlot != slot)
+                            startSlot.SwapWith(slot);
+
+
                     }
-                   
+
                 }
                 IsDragging = false;
 
                 ImGui.EndDragDropTarget();
+
+
             }
 
 
@@ -186,8 +190,8 @@ namespace Spacebox.UI
 
         private static void ShowDragPreview(ItemSlot slot)
         {
-          
-         
+
+
             ImDrawListPtr drawList = ImGui.GetWindowDrawList();
             Vector2 pos = ImGui.GetItemRectMin();
 
@@ -199,26 +203,33 @@ namespace Spacebox.UI
             {
                 Vector2 textPos = pos + new Vector2(SlotSize * 0.05f, SlotSize * 0.05f);
 
-               
+
                 drawList.AddText(textPos + new Vector2(2, 2), ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 1)),
                     slot.Count.ToString());
                 drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1)),
                     slot.Count.ToString());
             }
-         
+
         }
 
         public static void ShowTooltip(ItemSlot slot, bool showStackSize = false)
         {
             if (IsDragging) return;
+
+            if (ImGui.IsItemHovered() && !slot.HasItem && slot.Name != "")
+            {
+                ImGui.BeginTooltip();
+                ImGui.Text(slot.Name);
+                ImGui.EndTooltip();
+            }
             if (ImGui.IsItemHovered() && slot.HasItem)
             {
                 var text = "";
                 var type = slot.Item.GetType();
 
-                if(showStackSize)
+                if (showStackSize)
                 {
-                    if(slot.Item.StackSize > 1)
+                    if (slot.Item.StackSize > 1)
                     {
                         text += "Stack: " + slot.Item.StackSize;
                     }
@@ -233,6 +244,7 @@ namespace Spacebox.UI
                 {
                     var itemType = slot.Item as WeaponItem;
                     text += "\nDamage: " + itemType.Damage;
+                    text += "\nReload time: " + itemType.ReloadTime;
                 }
                 else if (type == typeof(BlockItem))
                 {
@@ -240,12 +252,16 @@ namespace Spacebox.UI
                     text += "\nMass: " + itemType.Mass;
                     text += "\nDurability: " + itemType.Health;
 
+                    BlockData d = GameBlocks.GetBlockDataById(itemType.BlockId);
+                    if (d != null)
+                        text += "\nPower to drill: " + d.PowerToDrill;
+
                 }
                 else if (type == typeof(ConsumableItem))
                 {
                     var itemType = slot.Item as ConsumableItem;
                     text = "Healing: +" + itemType.HealAmount;
-                
+
 
                 }
 
@@ -264,7 +280,7 @@ namespace Spacebox.UI
             {
                 slot.Split();
             }
-         
+
         }
 
         private static void OnSlotClicked(ItemSlot slot)
@@ -285,7 +301,7 @@ namespace Spacebox.UI
                     slot.Clear();
 
                 }
-            
+
             }
             else
             {

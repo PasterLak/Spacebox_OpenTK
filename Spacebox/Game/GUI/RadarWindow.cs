@@ -1,11 +1,12 @@
 ﻿using ImGuiNET;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
+using Spacebox.Game.Player;
 using System.Numerics;
 
 namespace Spacebox.Game.GUI
 {
-    public class RadarWindow : IWindowUI
+    public class RadarWindow
     {
         public static RadarWindow Instance;
         public bool IsVisible { get; set; } = false;
@@ -297,7 +298,7 @@ namespace Spacebox.Game.GUI
             ToggleManager.Instance.SetState("player", !IsVisible);
         }
 
-        public void Toggle()
+        public void Toggle(Astronaut player)
         {
             IsVisible = !IsVisible;
             if (IsVisible)

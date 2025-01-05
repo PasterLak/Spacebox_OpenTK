@@ -15,6 +15,7 @@ OSX
 //  find /Users/vladis/Documents/Projects/C#/Spacebox_OpenTK -type f -name "*.cs" -exec cat {} + | wc -l
 
 // (008): 192, 19954 (009 early): 197, 20753. AO: 217,23165
+// (010 early): 358, 27646
 
 // ------------------------------------------------------------------------------------------------------------------------------
 
@@ -32,6 +33,8 @@ version 0.1.0
 - block destroying effect in survival mode
 - power to drill working, slow block destroying
 - interactive blocks working again
+- crusher, furnace UI and logic
+- loading recipes from mode
 
 version 0.0.9
 

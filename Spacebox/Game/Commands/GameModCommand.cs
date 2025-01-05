@@ -53,6 +53,10 @@ namespace Spacebox.Game.Commands
                         Astronaut.GameMode = gm;
                         Debug.AddMessage("Gamemod changed to " + gm.ToString() , Color4.Green);
                     }
+                    else
+                    {
+                        Debug.Error("Wrong game mode id!");
+                    }
                     
                 }
 

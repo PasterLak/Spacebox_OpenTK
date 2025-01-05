@@ -415,7 +415,7 @@ namespace Spacebox.Scenes
             FurnaceGUI.OnGUI();
             PanelUI.Render();
             player.OnGUI();
-            InventoryUI.Render(player.Inventory);
+            InventoryUI.OnGUI(player.Inventory);
             CreativeWindowUI.Render();
 
             if (VisualDebug.ShowDebug)

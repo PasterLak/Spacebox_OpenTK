@@ -24,6 +24,13 @@ namespace Spacebox.Game.GUI
 
             ItemTexture = new Texture2D("Resources/Textures/item.png", true, false).Handle;
             InventoryUIHelper.SetDefaultIcon(textureId, nint.Zero);
+
+            var inventory = ToggleManager.Instance.Register("inventory");
+
+            inventory.OnStateChanged += s =>
+            {
+                IsVisible = s;
+            };
         }
         private static void HandleInput()
         {
@@ -45,7 +52,7 @@ namespace Spacebox.Game.GUI
                 }
             }
         }
-        public static void Render(Storage storage)
+        public static void OnGUI(Storage storage)
         {
             HandleInput();
 

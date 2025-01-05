@@ -38,7 +38,7 @@ public class InteractionDefault : InteractionMode
                 return;
             }
 
-            UpdateInteractive(interactiveBlock);
+            UpdateInteractive(interactiveBlock, player);
         }
         else
         {
@@ -46,14 +46,14 @@ public class InteractionDefault : InteractionMode
         }
     }
 
-    private void UpdateInteractive(InteractiveBlock block)
+    private void UpdateInteractive(InteractiveBlock block, Astronaut player)
     {
 
         CenteredText.Show();
 
         if (Input.IsKeyDown(Keys.F))
         {
-            block.Use();
+            block.Use(player);
         }
 
     }

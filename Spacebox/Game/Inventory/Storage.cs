@@ -16,6 +16,8 @@ namespace Spacebox.Game
         public readonly byte SizeX;
         public readonly byte SizeY;
 
+        public readonly int SlotsCount;
+
         private ItemSlot[,] Slots;
 
         public Action<ItemSlot> OnItemAdded;
@@ -31,7 +33,7 @@ namespace Spacebox.Game
         {
             SizeX = sizeX;
             SizeY = sizeY;
-
+            SlotsCount = SizeX * SizeY;
             Id = MaxId;
             MaxId++;
 
@@ -45,6 +47,10 @@ namespace Spacebox.Game
         {
             ConnectedStorage = storage;
             MoveItemsToConnectedStorage = allowMoveItems;
+        }
+        public void DisconnectStorage()
+        {
+            ConnectedStorage = null;
         }
 
         private void FillSlots()

@@ -816,6 +816,18 @@ namespace Spacebox.Game.GUI
             return pos;
         }
 
+        public static Vector2 CenterNextWindow3(float width, float height)
+        {
+            var pos = new Vector2(
+                (ImGui.GetIO().DisplaySize.X - width) * 0.5f,
+                (ImGui.GetIO().DisplaySize.Y - height) * 0.22f);
+            ImGui.SetNextWindowPos(pos,
+                ImGuiCond.Always);
+            ImGui.SetNextWindowSize(new Vector2(width, height));
+
+            return pos;
+        }
+
         private void CenterButton(string label, float width, float height, Action onClick)
         {
             float windowWidth = ImGui.GetWindowWidth();
