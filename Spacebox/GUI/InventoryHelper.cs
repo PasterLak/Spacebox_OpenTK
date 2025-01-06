@@ -5,7 +5,6 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Game;
 using Spacebox.Game.Resources;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Spacebox.UI
 {
@@ -69,7 +68,12 @@ namespace Spacebox.UI
         private static bool IsDragging = false;
         private static ItemSlot startSlot = null;
         private static Storage startStorage = null;
+
         public static unsafe void DrawSlot(ItemSlot slot, string id, Action<ItemSlot> onSlotClicked, bool isSelected = false)
+        {
+            DrawSlot(slot,id,onSlotClicked, IntPtr.Zero,isSelected);
+        }
+        public static unsafe void DrawSlot(ItemSlot slot, string id, Action<ItemSlot> onSlotClicked, IntPtr backgroundImage, bool isSelected = false)
         {
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.5f, 0.5f, 0.5f, 0.0f));
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
@@ -182,6 +186,13 @@ namespace Spacebox.UI
                         slot.Count.ToString());
                     drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1)),
                         slot.Count.ToString());
+                }
+            }
+            else
+            {
+                if(backgroundImage != IntPtr.Zero)
+                {
+                    drawList.AddImage(backgroundImage, posCenter - sizeItem * 0.5f, posCenter + sizeItem * 0.5f);
                 }
             }
 

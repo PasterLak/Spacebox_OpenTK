@@ -2,7 +2,7 @@
     {
         "Name": "Light Rock",
         "Sides": "lightRock",
-        "PowerToDrill": 0,
+        "PowerToDrill": 1,
         "Mass": 1,
         "Durability": 5
     },
@@ -23,9 +23,9 @@
     {
         "Name": "Cobaltite Rock",
         "Sides": "cobaltite",
-        "PowerToDrill": 5,
-        "Mass": 3,
-        "Durability": 15
+        "PowerToDrill": 1,
+        "Mass": 1,
+        "Durability": 5
     },
     {
         "Name": "Ice Rock",
@@ -51,7 +51,7 @@
     {
         "Name": "Titanium Ore",
         "Sides": "titaniumOre",
-         "PowerToDrill": 3,
+         "PowerToDrill": 4,
         "Mass": 1,
         "Durability": 7
     },
@@ -72,7 +72,7 @@
     {
         "Name": "Uranium Ore",
         "Sides": "uranOre",
-         "PowerToDrill": 2,
+         "PowerToDrill": 3,
         "Mass": 1,
         "Durability": 12
     },

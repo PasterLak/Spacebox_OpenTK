@@ -52,6 +52,7 @@ namespace Spacebox.Game.Generation
             for (int i = 0; i < faces.Length; i++)
                 faceNormals[i] = faces[i].GetNormal();
         }
+
         const int floatsPerVertex = 12;
         const int vertsPerBlock = 24;
         const int шndicesPerBlock = 36;

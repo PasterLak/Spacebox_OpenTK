@@ -13,7 +13,6 @@
             "Path": "Textures/dust.png"
         }
     ],
-
     "ItemsOnStart": [
         {"Name" : "Drill", "Count" : 1},
         {"Name" : "Crusher", "Count" : 1},
