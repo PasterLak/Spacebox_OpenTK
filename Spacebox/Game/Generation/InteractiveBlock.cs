@@ -13,7 +13,8 @@ namespace Spacebox.Game.Generation
         public string HoverText = "Hover Text";
 
         public Action<Astronaut> OnUse;
-
+        public Chunk chunk;
+        private bool lasState;
         public virtual void Use(Astronaut player)
         {
             OnUse?.Invoke(player);
@@ -26,12 +27,24 @@ namespace Spacebox.Game.Generation
         public InteractiveBlock(BlockData blockData) : base(blockData)
 
         {
-            if(blockData.Name == "Radar")
+            enableEmission = false;
+            lasState = enableEmission;
+            if (blockData.Name == "Radar")
             {
                 OnUse += RadarWindow.Instance.Toggle;
             }
            
             
+        }
+        
+        public void SetEmission(bool state)
+        {
+            enableEmission = state;
+            if(chunk != null && enableEmission != lasState)
+            {
+                chunk.GenerateMesh();
+            }
+            lasState = state;
         }
 
 

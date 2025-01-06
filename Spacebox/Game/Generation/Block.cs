@@ -30,7 +30,7 @@ namespace Spacebox.Game.Generation
         // local data
         public float LightLevel { get; set; } = 0; //0 - 15
         public Vector3 LightColor { get; set; } = Vector3.Zero;
-
+        public bool enableEmission = true;
         public const float Diagonal = 1.5f;
         public const float DiagonalSquared = Diagonal * Diagonal;
 

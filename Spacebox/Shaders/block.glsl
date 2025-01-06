@@ -5,7 +5,8 @@ layout (location = 0) in vec3 aPosition;
 layout (location = 1) in vec2 aTexCoord;
 layout (location = 2) in vec3 aColor;
 layout (location = 3) in vec3 aNormal;
-layout (location = 4) in float aAO;
+layout (location = 4) in vec2 aAO;
+
 
 out vec2 TexCoord;
 out vec3 Color;
@@ -14,6 +15,7 @@ out float FogFactor2;
 out vec3 Normal;
 out vec3 FragPos;
 out float AO;
+out float active;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -37,7 +39,8 @@ void main()
     Normal = aNormal * mat3(transpose(inverse(model)));
     FogFactor = calcFog(worldPosition,1);
     FogFactor2 = calcFog(worldPosition,0.5f);
-    AO = aAO;
+    AO = aAO.x;
+    active = aAO.y;
 }
 
 
@@ -72,7 +75,7 @@ in float FogFactor2;
 in vec3 Normal;
 in vec3 FragPos;
 in float AO;
-
+in float active;
 out vec4 FragColor;
 
 vec3 calcSpotLight(SpotLight light,vec3 normal,vec3 fragPos,vec3 viewDir,vec3 diffC)
@@ -116,6 +119,6 @@ void main()
     vec3 lighting=calcSpotLight(spotLight,norm,FragPos,viewDir,baseTexColor.rgb);
     vec3 finalColor=(ambient  *AO+lighting);
     vec4 foggedColor=applyFog(vec4(finalColor,baseTexColor.a));
-    vec3 combinedColor=mix(foggedColor.rgb,applyFog2(vec4(baseTexColor.rgb,1)).rgb,atlasTexColor.a);
+    vec3 combinedColor=mix(foggedColor.rgb,applyFog2(vec4(baseTexColor.rgb,1)).rgb,active == 0 ? 0 : atlasTexColor.a); // atlasTexColor.a
     FragColor=vec4(combinedColor,foggedColor.a);
 }

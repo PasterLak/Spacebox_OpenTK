@@ -11,11 +11,21 @@ namespace Spacebox.Game.Generation
         public Storage FuelStorage { get; private set; } = new Storage(1, 1);
         public Storage OutputStorage { get; private set; } = new Storage(1, 1);
 
-        public bool IsRunning { get; private set; } = false;
+        private bool _isRunning = false;
+        public bool IsRunning
+        {
+            get => _isRunning;
+            private set
+            {
+                _isRunning = value;
+                SetEmission(_isRunning);
+            }
+        }
 
         public string WindowName;
         
         private readonly string blockType;
+
         public ResourceProcessingBlock(BlockData blockData) : base(blockData)
         {
             blockType = blockData.Type;
@@ -53,6 +63,8 @@ namespace Spacebox.Game.Generation
             if (!ValidateOutput(OutputStorage.GetSlot(0, 0), Recipe)) return false;
 
             IsRunning = true;
+
+            
             task = new ProcessResourceTask(Recipe.RequiredTicks, this);
 
             return true;

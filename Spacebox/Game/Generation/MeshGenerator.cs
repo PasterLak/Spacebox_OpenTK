@@ -53,13 +53,13 @@ namespace Spacebox.Game.Generation
                 faceNormals[i] = faces[i].GetNormal();
         }
 
-        const int floatsPerVertex = 12;
+        const int floatsPerVertex = Mesh.FloatsPerVertex;
         const int vertsPerBlock = 24;
-        const int шndicesPerBlock = 36;
+        const int indicesPerBlock = 36;
 
 
         const int estimatedVertices = Size * Size * Size * vertsPerBlock * floatsPerVertex;
-        const int estimatedIndices = Size * Size * Size * шndicesPerBlock;
+        const int estimatedIndices = Size * Size * Size * indicesPerBlock;
 
         public Mesh GenerateMesh()
         {
@@ -156,7 +156,7 @@ namespace Spacebox.Game.Generation
                                     Vector3.Zero, Vector3.One);
 
                                 bool flip = false;
-                                int vStart = vertexCount / 12;
+                                int vStart = vertexCount / Mesh.FloatsPerVertex;
                                 float[] AO = new float[4];
 
 
@@ -211,6 +211,7 @@ namespace Spacebox.Game.Generation
                                     vertices[vertexCount++] = normal.X;
                                     vertices[vertexCount++] = normal.Y;
                                     vertices[vertexCount++] = normal.Z;
+                                 
                                     if (_EnableAO)
                                     {
                                         AO[i] = shading[i];
@@ -237,6 +238,9 @@ namespace Spacebox.Game.Generation
                                     }
                                     else
                                         vertices[vertexCount++] = 1f;
+
+                                    vertices[vertexCount++] = block.enableEmission ?  1f : 0f;
+
                                 }
 
                                 if (_EnableAO)

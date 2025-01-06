@@ -68,7 +68,7 @@ namespace Spacebox.Game.GUI
 
         }
 
-        public static void Toggle(Astronaut player)
+        public static void Toggle(Astronaut _)
         {
             IsVisible = !IsVisible;
         }

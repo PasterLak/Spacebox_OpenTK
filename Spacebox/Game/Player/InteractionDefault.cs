@@ -38,7 +38,7 @@ public class InteractionDefault : InteractionMode
                 return;
             }
 
-            UpdateInteractive(interactiveBlock, player);
+            UpdateInteractive(interactiveBlock, player, hit.chunk);
         }
         else
         {
@@ -46,13 +46,14 @@ public class InteractionDefault : InteractionMode
         }
     }
 
-    private void UpdateInteractive(InteractiveBlock block, Astronaut player)
+    private void UpdateInteractive(InteractiveBlock block, Astronaut player, Chunk chunk)
     {
 
         CenteredText.Show();
 
         if (Input.IsKeyDown(Keys.F))
         {
+            block.chunk = chunk;
             block.Use(player);
         }
 
