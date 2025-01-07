@@ -175,7 +175,7 @@
     {
         "Name": "Crusher",
         "Type": "crusher",
-        "Sides": "crusherSide",
+        "Sides": "crusherSide2",
         "Top": "crusherTop",
         "Bottom": "bottom",
         "IsTransparent": false,
@@ -195,6 +195,15 @@
         "Type": "interactive",
         "Sides": "bottom",
         "Top": "radar",
+        "Bottom": "bottom",
+        "IsTransparent": false,
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+        "Name": "Disassembler",
+        "Type": "disassembler",
+        "Sides": "disassemblerSide",
+        "Top": "disassemblerTop2",
         "Bottom": "bottom",
         "IsTransparent": false,
         "LightColor": { "x": 0, "y": 0, "z": 0 }

@@ -12,6 +12,7 @@ namespace Spacebox.Game.Generation
         {
             OnUse += ResourceProcessingGUI.Toggle;
             WindowName = "Crusher";
+            SetEmissionWithoutRedrawChunk(false);
         }
 
         public override void Use(Astronaut player)

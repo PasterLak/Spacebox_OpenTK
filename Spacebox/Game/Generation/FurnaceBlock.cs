@@ -12,7 +12,7 @@ namespace Spacebox.Game.Generation
         {
             OnUse += ResourceProcessingGUI.Toggle;
             WindowName = "Furnace";
-
+            SetEmissionWithoutRedrawChunk(false);
         }
 
         public override void Use(Astronaut player)

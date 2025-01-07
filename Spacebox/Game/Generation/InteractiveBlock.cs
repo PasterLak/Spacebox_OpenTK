@@ -15,6 +15,8 @@ namespace Spacebox.Game.Generation
         public Action<Astronaut> OnUse;
         public Chunk chunk;
         private bool lasState;
+
+        public Vector3 colorIfActive = new Vector3(0.7f, 0.4f, 0.2f) / 4f;
         public virtual void Use(Astronaut player)
         {
             OnUse?.Invoke(player);
@@ -27,21 +29,48 @@ namespace Spacebox.Game.Generation
         public InteractiveBlock(BlockData blockData) : base(blockData)
 
         {
-            enableEmission = false;
-            lasState = enableEmission;
+            
             if (blockData.Name == "Radar")
             {
                 OnUse += RadarWindow.Instance.Toggle;
             }
-           
-            
+
         }
-        
+
+        public void SetEmissionWithoutRedrawChunk(bool state)
+        {
+            enableEmission = state;
+            lasState = state;
+
+            if (state)
+            {
+                LightLevel = 15;
+                LightColor = colorIfActive;
+
+            }
+            else
+            {
+                LightLevel = 0;
+                LightColor = Vector3.Zero;
+            }
+        }
         public void SetEmission(bool state)
         {
             enableEmission = state;
+            
             if(chunk != null && enableEmission != lasState)
             {
+                if (state)
+                {
+                    LightLevel = 15;
+                        LightColor = colorIfActive;
+                    
+                }
+                else
+                {
+                    LightLevel = 0;
+                    LightColor = Vector3.Zero;
+                }
                 chunk.GenerateMesh();
             }
             lasState = state;

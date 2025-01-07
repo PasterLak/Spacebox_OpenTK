@@ -170,5 +170,79 @@
     "PowerPerTickRequared": 5,
     "Ingredient": { "Item": "Water", "Quantity": 1 },
     "Product": { "Item": "Liquid Hydrogen", "Quantity": 2 }
+  },
+
+
+
+
+  {
+    "Type": "disassembler",
+    "RequiredTicks": 500,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Iron Light Block", "Quantity": 1 },
+    "Product": { "Item": "Iron Panels", "Quantity": 2 }
+  },
+  {
+    "Type": "disassembler",
+    "RequiredTicks": 500,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Iron Medium Block", "Quantity": 1 },
+    "Product": { "Item": "Iron Panels", "Quantity": 3 }
+  },
+  {
+    "Type": "disassembler",
+    "RequiredTicks": 500,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Iron Heavy Block", "Quantity": 1 },
+    "Product": { "Item": "Iron Panels", "Quantity": 4 }
+  },
+  {
+    "Type": "disassembler",
+    "RequiredTicks": 500,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Aluminium Light Block", "Quantity": 1 },
+    "Product": { "Item": "Aluminium Panels", "Quantity": 2 }
+  },
+  {
+    "Type": "disassembler",
+    "RequiredTicks": 500,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Aluminium Medium Block", "Quantity": 1 },
+    "Product": { "Item": "Aluminium Panels", "Quantity": 3 }
+  },
+  {
+    "Type": "disassembler",
+    "RequiredTicks": 500,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Aluminium Heavy Block", "Quantity": 1 },
+    "Product": { "Item": "Aluminium Panels", "Quantity": 4 }
+  },
+  {
+    "Type": "disassembler",
+    "RequiredTicks": 500,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Titanium Light Block", "Quantity": 1 },
+    "Product": { "Item": "Titanium Panels", "Quantity": 2 }
+  },
+  {
+    "Type": "disassembler",
+    "RequiredTicks": 500,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Titanium Medium Block", "Quantity": 1 },
+    "Product": { "Item": "Titanium Panels", "Quantity": 3 }
+  },
+  {
+    "Type": "disassembler",
+    "RequiredTicks": 500,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Titanium Heavy Block", "Quantity": 1 },
+    "Product": { "Item": "Titanium Panels", "Quantity": 4 }
+  },
+  {
+    "Type": "disassembler",
+    "RequiredTicks": 1000,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Drill", "Quantity": 1 },
+    "Product": { "Item": "Iron Ingot", "Quantity": 1 }
   }
 ]

@@ -262,7 +262,7 @@ namespace Spacebox.Game.Resources
             }
         }
 
-        private static string[] BlockTypes = { "block","crusher","furnace", "interactive", "door", "light" };
+        private static string[] BlockTypes = { "block","crusher","furnace","disassembler", "interactive", "door", "light" };
 
         private static bool ValidateBlockType(string type)
         {

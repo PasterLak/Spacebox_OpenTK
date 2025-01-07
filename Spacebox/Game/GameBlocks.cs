@@ -222,6 +222,11 @@ namespace Spacebox.Game
                 return new FurnaceBlock(data);
             }
 
+            if (data.Type.ToLower() == "disassembler")
+            {
+                return new DisassemblerBlock(data);
+            }
+
             //if (id == 0) block.Type = BlockType.Air;
 
             return new Block(data);

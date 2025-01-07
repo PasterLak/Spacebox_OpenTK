@@ -69,6 +69,13 @@ namespace Spacebox.Game.Generation
             }
         }
 
+        private Vector3 MixColors(Vector3 color1, Vector3 color2, float t01)
+        {
+            // t  0.0 - 1.0
+            t01 = MathHelper.Clamp(t01, 0.0f, 1.0f);
+            return color1 * (1.0f - t01) + color2 * t01;
+        }
+
         private void ResetLightLevels()
         {
             for (byte x = 0; x < Size; x++)
