@@ -1,5 +1,4 @@
-﻿
-using ImGuiNET;
+﻿using ImGuiNET;
 using Spacebox.Common;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;

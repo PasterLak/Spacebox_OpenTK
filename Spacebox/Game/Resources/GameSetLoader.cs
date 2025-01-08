@@ -52,6 +52,7 @@ namespace Spacebox.Game.Resources
             LoadBlocks(modPath, defaultModPath);
             LoadItems(modPath, defaultModPath);
             LoadRecipes(modPath, defaultModPath);
+            LoadCrafting(modPath, defaultModPath);
             LoadSettings(modPath);
             LoadOptionalFiles(modPath);
 
@@ -188,6 +189,7 @@ namespace Spacebox.Game.Resources
 
                 var air = new BlockData("Air", "block", new Vector2Byte(0, 0));
                 air.Mass = 0;
+                air.Category = "";
                 air.Sides = "sand";
 
                 GameBlocks.RegisterBlock(air);
@@ -217,9 +219,9 @@ namespace Spacebox.Game.Resources
                         BottomUVIndex = new Vector2Byte(),
 
                     };
-                    
-                    if(block.Durability <= 0) block.Durability = 1;
-                    if(block.Mass <= 0) block.Mass = 1;
+
+                    if (block.Durability <= 0) block.Durability = 1;
+                    if (block.Mass <= 0) block.Mass = 1;
                     if (block.PowerToDrill <= 0) block.PowerToDrill = 1;
 
                     if (block.Mass <= byte.MaxValue)
@@ -230,7 +232,7 @@ namespace Spacebox.Game.Resources
                     {
                         blockData.Mass = byte.MaxValue;
                     }
-                    
+
                     if (block.Durability <= byte.MaxValue)
                     {
                         blockData.Health = (byte)block.Durability;
@@ -248,7 +250,7 @@ namespace Spacebox.Game.Resources
                     {
                         blockData.PowerToDrill = byte.MaxValue;
                     }
-
+                    blockData.Category = block.Category;
                     blockData.Sides = block.Sides;
                     blockData.Top = sameSides ? block.Sides : block.Top;
                     blockData.Bottom = sameSides ? block.Sides : block.Bottom;
@@ -262,7 +264,7 @@ namespace Spacebox.Game.Resources
             }
         }
 
-        private static string[] BlockTypes = { "block","crusher","furnace","disassembler", "interactive", "door", "light" };
+        private static string[] BlockTypes = { "block", "crusher", "furnace", "craftingtable", "disassembler", "interactive", "door", "light" };
 
         private static bool ValidateBlockType(string type)
         {
@@ -312,7 +314,7 @@ namespace Spacebox.Game.Resources
 
                         case "item":
                         default:
-                            var itemData = itemElement.Deserialize<ModItemData>();
+                            var itemData = itemElement.Deserialize<ItemData>();
                             if (itemData == null) continue;
                             RegisterItem(itemData);
                             break;
@@ -325,7 +327,7 @@ namespace Spacebox.Game.Resources
             }
         }
 
-        
+
 
         private static void LoadRecipes(string modPath, string defaultModPath)
         {
@@ -338,7 +340,7 @@ namespace Spacebox.Game.Resources
 
                 List<RecipeData> recipes = JsonSerializer.Deserialize<List<RecipeData>>(json);
 
-                foreach(var r in recipes)
+                foreach (var r in recipes)
                 {
                     if (r == null) continue;
 
@@ -348,13 +350,124 @@ namespace Spacebox.Game.Resources
                     if (item == null) continue;
                     if (item2 == null) continue;
 
-                    GameBlocks.RegisterRecipe(r, item,item2);
+                    GameBlocks.RegisterRecipe(r, item, item2);
                 }
             }
             catch (Exception ex)
             {
                 Debug.Error($"[GamesetLoader] Error loading recipes: {ex.Message}");
             }
+        }
+
+        private static void LoadCrafting(string modPath, string defaultModPath)
+        {
+            string file = GetFilePath(modPath, defaultModPath, "crafting.json");
+            if (file == null) return;
+
+            try
+            {
+                string json = File.ReadAllText(file);
+
+                CraftingData crafting = JsonSerializer.Deserialize<CraftingData>(json);
+
+                if (crafting == null)
+                {
+                    Debug.Error("[GameSetLoader] Crafting was null!");
+                }
+
+                if (crafting.Categories != null && crafting.Categories.Length > 0)
+                {
+                    foreach (var category in crafting.Categories)
+                    {
+                        if (!GameBlocks.CraftingCategories.ContainsKey(category.Id))
+                        {
+                            GameBlocks.CraftingCategories.Add(category.Id, category);
+                        }
+                        else
+                        {
+                            Debug.Error("[GameSetLoader] Such a crafting category already exists: id - " + category.Id);
+                        }
+
+                    }
+
+
+                    LoadBlueprints(crafting);
+                    PutItemsToCategories();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"[GamesetLoader] Error loading blueprints: {ex.Message}");
+            }
+        }
+
+        private static void PutItemsToCategories()
+        {
+            var items = GameBlocks.Item.Values.ToList();
+
+
+            foreach (var item in items)
+            {
+                if (item == null) continue;
+
+                var category = item.Category;
+
+                if (!GameBlocks.CraftingCategories.ContainsKey(category)) continue;
+
+                GUI.CraftingCategory.Data d = new GUI.CraftingCategory.Data();
+                d.item = item;
+
+                if (GameBlocks.Blueprints.ContainsKey(item.Id))
+                {
+                    d.blueprint = GameBlocks.Blueprints[item.Id];
+                }
+
+                GameBlocks.CraftingCategories[category].Items.Add(d);
+
+
+
+            }
+        }
+
+        private static void LoadBlueprints(CraftingData data)
+        {
+            short id = 0;
+            if (data == null) return;
+
+            foreach (var e in data.Blueprints)
+            {
+                List<Ingredient> ingredient = new List<Ingredient>();
+                Product product;
+                Blueprint blueprint = new Blueprint();
+
+                foreach (var ing in e.Ingredients)
+                {
+                    var item2 = GameBlocks.GetItemByName(ing.Item);
+                    if (item2 == null) continue;
+                    ingredient.Add(new Ingredient(item2, (byte)ing.Quantity));
+                }
+
+                var item = GameBlocks.GetItemByName(e.Product.Item);
+
+                if (item == null) continue;
+                product = new Product(item, (byte)e.Product.Quantity);
+
+                blueprint.Ingredients = ingredient.ToArray();
+                blueprint.Product = product;
+                blueprint.Id = id++;
+
+
+                var productID = product.Item.Id;
+                if (!GameBlocks.Blueprints.ContainsKey(productID))
+                {
+                    GameBlocks.Blueprints.Add(productID, blueprint);
+                    //Debug.Log("Blueprint loaded: product id " + productID);
+                }
+
+
+            }
+
         }
 
         private static void RegisterWeaponItem(WeaponItemData data)
@@ -366,7 +479,8 @@ namespace Spacebox.Game.Resources
 
                 data.ModelDepth)
             {
-                Damage = data.Damage
+                Damage = data.Damage,
+                Category = data.Category,
             };
 
             GameBlocks.RegisterItem(weaponItem, data.Sprite);
@@ -381,7 +495,8 @@ namespace Spacebox.Game.Resources
 
                 data.ModelDepth)
             {
-                Power = data.Power
+                Power = data.Power,
+                Category = data.Category,
             };
             GameBlocks.RegisterItem(drillItem, data.Sprite);
         }
@@ -398,12 +513,13 @@ namespace Spacebox.Game.Resources
 
                 HealAmount = data.HealAmount,
                 PowerAmount = data.PowerAmount,
-                UseSound = data.Sound
+                UseSound = data.Sound,
+                Category = data.Category,
             };
             GameBlocks.RegisterItem(consumableItem, data.Sprite);
         }
 
-        private static void RegisterItem(ModItemData data)
+        private static void RegisterItem(ItemData data)
         {
             data.ValidateMaxStack();
             var item = new Item(
@@ -411,6 +527,7 @@ namespace Spacebox.Game.Resources
                 data.Name,
 
                 data.ModelDepth);
+            item.Category = data.Category;
             GameBlocks.RegisterItem(item, data.Sprite);
         }
 

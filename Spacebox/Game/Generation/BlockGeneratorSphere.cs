@@ -34,9 +34,9 @@ namespace Spacebox.Game.Generation
             
                         if (distance <= radius)
                         {
-                            int r = random.Next(0, 11);
+                            int r = random.Next(0, 22);
                          
-                            if (r < 8)
+                            if (r < 17)
                             {
                               
                                     if (distance < radius / 4f)
@@ -48,16 +48,36 @@ namespace Spacebox.Game.Generation
                                
 
                             }
-                            else if (r == 8)
+                            else if (r == 17)
                             {
                                 if (distance < radius / 4f)
-                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(8);
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(11);
                                 else if (distance < radius / 2f)
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(8);
+                                else
                                     _blocks[x, y, z] = GameBlocks.CreateBlockFromId(7);
+                            }
+                            else if (r == 18)
+                            {
+                                if (distance < radius / 4f)
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(11);
+                                else if (distance < radius / 2f)
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(8);
+                                else
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(7);
+                            }
+                            else if (r == 19)
+                            {
+
+                                if (distance < radius / 4f)
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(10);
+                                else if (distance < radius / 2f)
+                                    _blocks[x, y, z] = GameBlocks.CreateBlockFromId(9);
                                 else
                                     _blocks[x, y, z] = GameBlocks.CreateBlockFromId(6);
+
                             }
-                            else if (r == 9)
+                            else if (r == 20)
                             {
 
                                 if (distance < radius / 4f)
@@ -66,9 +86,8 @@ namespace Spacebox.Game.Generation
                                     _blocks[x, y, z] = GameBlocks.CreateBlockFromId(2);
                                 else
                                     _blocks[x, y, z] = GameBlocks.CreateBlockFromId(5);
-
                             }
-                            else if (r == 10)
+                            else if (r == 21)
                             {
 
                                 if (distance < radius / 4f)

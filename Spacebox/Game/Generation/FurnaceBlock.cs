@@ -12,6 +12,7 @@ namespace Spacebox.Game.Generation
         {
             OnUse += ResourceProcessingGUI.Toggle;
             WindowName = "Furnace";
+            //LightLevel
             SetEmissionWithoutRedrawChunk(false);
         }
 

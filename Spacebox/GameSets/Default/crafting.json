@@ -1,0 +1,272 @@
+{
+    "Categories" : 
+    [
+        {
+            "Id" : "blocks",
+            "Name" : "Blocks"
+        },
+        {
+            "Id" : "lights",
+            "Name" : "Lights"
+        },
+        {
+            "Id" : "windows",
+            "Name" : "Windows"
+        },
+        {
+            "Id" : "doors",
+            "Name" : "Doors"
+        },
+
+        {
+            "Id" : "drills",
+            "Name" : "Drills"
+        },
+        {
+            "Id" : "weapons",
+            "Name" : "Weapons"
+        },
+        {
+            "Id" : "resources",
+            "Name" : "Resources"
+        },
+        {
+            "Id" : "items",
+            "Name" : "Items"
+        }
+        
+    ],
+
+    "Blueprints": [
+        {
+            "Product": {"Item": "Aluminium Light Block", "Quantity": 1},
+            "Ingredients": [{"Item": "Aluminium Panels", "Quantity": 2}]
+        },
+        {
+            "Product": {"Item": "Aluminium Medium Block", "Quantity": 1},
+            "Ingredients": [{"Item": "Aluminium Panels", "Quantity": 3}]
+        },
+        {
+            "Product": {"Item": "Aluminium Heavy Block", "Quantity": 1},
+            "Ingredients": [{"Item": "Aluminium Panels", "Quantity": 4}]
+        },
+        {
+            "Product": {"Item": "Iron Light Block", "Quantity": 1},
+            "Ingredients": [{"Item": "Iron Panels", "Quantity": 2}]
+        },
+        {
+            "Product": {"Item": "Iron Medium Block", "Quantity": 1},
+            "Ingredients": [{"Item": "Iron Panels", "Quantity": 3}]
+        },
+        {
+            "Product": {"Item": "Iron Heavy Block", "Quantity": 1},
+            "Ingredients": [{"Item": "Iron Panels", "Quantity": 4}]
+        },
+        {
+            "Product": {"Item": "Titanium Light Block", "Quantity": 1},
+            "Ingredients": [{"Item": "Titanium Panels", "Quantity": 2}]
+        },
+        {
+            "Product": {"Item": "Titanium Medium Block", "Quantity": 1},
+            "Ingredients": [{"Item": "Titanium Panels", "Quantity": 3}]
+        },
+        {
+            "Product": {"Item": "Titanium Heavy Block", "Quantity": 1},
+            "Ingredients": [{"Item": "Titanium Panels", "Quantity": 4}]
+        },
+        {
+            "Product": {"Item": "Wire", "Quantity": 1},
+            "Ingredients": [{"Item": "Aluminium Ingot", "Quantity": 1}]
+        },
+
+
+
+        {
+            "Product": {"Item": "Window", "Quantity": 1},
+            "Ingredients": [{"Item": "Glass Shards", "Quantity": 2}]
+        },
+
+        {
+            "Product": {"Item": "Light White", "Quantity": 1},
+            "Ingredients": [{"Item": "Window", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Light Blue", "Quantity": 1},
+            "Ingredients": [{"Item": "Window", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Light Red", "Quantity": 1},
+            "Ingredients": [{"Item": "Window", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Light Yellow", "Quantity": 1},
+            "Ingredients": [{"Item": "Window", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Light Cyan", "Quantity": 1},
+            "Ingredients": [{"Item": "Window", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Light Orange", "Quantity": 1},
+            "Ingredients": [{"Item": "Window", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Light Green", "Quantity": 1},
+            "Ingredients": [{"Item": "Window", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Light Pink", "Quantity": 1},
+            "Ingredients": [{"Item": "Window", "Quantity": 1}]
+        },
+
+
+        {
+            "Product": {"Item": "Crafting Table", "Quantity": 1},
+            "Ingredients": [{"Item": "Aluminium Light Block", "Quantity": 1}
+            ]
+        },
+        {
+            "Product": {"Item": "Furnace", "Quantity": 1},
+            "Ingredients": [{"Item": "Aluminium Light Block", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Crusher", "Quantity": 1},
+            "Ingredients": [{"Item": "Iron Light Block", "Quantity": 2}]
+        },
+        {
+            "Product": {"Item": "Analyzer", "Quantity": 1},
+            "Ingredients": [{"Item": "Iron Light Block", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Radar", "Quantity": 1},
+            "Ingredients": [{"Item": "Iron Light Block", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Disassembler", "Quantity": 1},
+            "Ingredients": [{"Item": "Iron Light Block", "Quantity": 1}]
+        },
+        
+
+        {
+            "Product": {"Item": "Aluminium Panels", "Quantity": 3},
+            "Ingredients": [{"Item": "Aluminium Ingot", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Iron Panels", "Quantity": 3},
+            "Ingredients": [{"Item": "Iron Ingot", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Titanium Panels", "Quantity": 3},
+            "Ingredients": [{"Item": "Titanium Ingot", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Med Kit", "Quantity": 1},
+            "Ingredients": [{"Item": "Cobalt Dust", "Quantity": 4}]
+        },
+        {
+            "Product": {"Item": "Power", "Quantity": 1},
+            "Ingredients": [{"Item": "Cobalt Ingot", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Battery", "Quantity": 1},
+            "Ingredients": [{"Item": "Aluminium Ingot", "Quantity": 1},
+                            {"Item": "Cobalt Lens", "Quantity": 1}
+            ]
+        },
+        {
+            "Product": {"Item": "Uranium", "Quantity": 1},
+            "Ingredients": [{"Item": "Uranium Ingot", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Liquid Hydrogen", "Quantity": 2},
+            "Ingredients": [{"Item": "Water", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Cobalt Lens", "Quantity": 2},
+            "Ingredients": [{"Item": "Cobalt Ingot", "Quantity": 1}]
+        },
+        {
+            "Product": {"Item": "Iron Lens", "Quantity": 2},
+            "Ingredients": [{"Item": "Iron Ingot", "Quantity": 1}]
+        },
+         {
+            "Product": {"Item": "Microchip", "Quantity": 1},
+            "Ingredients": [{"Item": "Aluminium Ingot", "Quantity": 1},{"Item": "Cobalt Ingot", "Quantity": 1}]
+        },
+
+
+        {
+            "Product": {"Item": "Aluminium Drill", "Quantity": 1},
+            "Ingredients": [
+                {"Item": "Aluminium Ingot", "Quantity": 1}
+
+            ]
+        },
+        {
+            "Product": {"Item": "Iron Drill", "Quantity": 1},
+            "Ingredients": [
+                {"Item": "Aluminium Drill", "Quantity": 1},
+                {"Item": "Aluminium Ingot", "Quantity": 2},
+                            {"Item": "Cobalt Ingot", "Quantity": 2}
+            ]
+        },
+        {
+            "Product": {"Item": "Enhanced Iron Drill", "Quantity": 1},
+            "Ingredients": [
+                {"Item": "Iron Drill", "Quantity": 1},
+                {"Item": "Iron Ingot", "Quantity": 4},
+                            {"Item": "Cobalt Ingot", "Quantity": 2}
+                            
+            ]
+        },
+         {
+            "Product": {"Item": "Triple Iron Drill", "Quantity": 1},
+            "Ingredients": [
+                {"Item": "Enhanced Iron Drill", "Quantity": 3},
+                {"Item": "Iron Ingot", "Quantity": 5},
+                            {"Item": "Battery", "Quantity": 4}
+                            
+            ]
+        },
+         {
+            "Product": {"Item": "Titanium Drill", "Quantity": 1},
+            "Ingredients": [
+                 {"Item": "Triple Iron Drill", "Quantity": 1},
+                 {"Item": "Iron Ingot", "Quantity": 2},
+                            {"Item": "Titanium Ingot", "Quantity": 5},
+                            {"Item": "Liquid Hydrogen", "Quantity": 1}
+                           
+            ]
+        },
+         {
+            "Product": {"Item": "Pistol", "Quantity": 1},
+            "Ingredients": [
+                
+                 {"Item": "Iron Ingot", "Quantity": 2},
+                 {"Item": "Battery", "Quantity": 1}
+                           
+            ]
+        },
+         {
+            "Product": {"Item": "SMG", "Quantity": 1},
+            "Ingredients": [
+                
+                 {"Item": "Iron Ingot", "Quantity": 4},
+                 {"Item": "Cobalt Lens", "Quantity": 2},
+                 {"Item": "Battery", "Quantity": 2}
+                           
+            ]
+        },
+          {
+            "Product": {"Item": "Assault Rifle", "Quantity": 1},
+            "Ingredients": [
+                
+                 {"Item": "Iron Ingot", "Quantity": 2},
+                 {"Item": "Titanium Ingot", "Quantity": 2},
+                 {"Item": "Battery", "Quantity": 4}
+                           
+            ]
+        }
+    ]
+
+}

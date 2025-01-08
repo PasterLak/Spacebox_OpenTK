@@ -78,6 +78,7 @@
     },
     {
         "Name": "Aluminium Light Block",
+        "Category" : "blocks",
         "Sides": "aluLight",
         "Mass": 2,
         "Durability": 10,
@@ -86,6 +87,7 @@
     },
     {
         "Name": "Aluminium Medium Block",
+        "Category" : "blocks",
         "Sides": "aluMedium",
         "Mass": 4,
         "Durability": 20,
@@ -94,6 +96,7 @@
     },
     {
         "Name": "Aluminium Heavy Block",
+        "Category" : "blocks",
         "Sides": "aluHeavy",
         "Mass": 6,
         "Durability": 30,
@@ -102,6 +105,7 @@
     },
     {
         "Name": "Iron Light Block",
+        "Category" : "blocks",
         "Sides": "ironLight",
         "Mass": 4,
         "Durability": 40,
@@ -110,6 +114,7 @@
     },
     {
         "Name": "Iron Medium Block",
+        "Category" : "blocks",
         "Sides": "ironMedium",
         "Mass": 6,
         "Durability": 60,
@@ -118,6 +123,7 @@
     },
     {
         "Name": "Iron Heavy Block",
+        "Category" : "blocks",
         "Sides": "ironHeavy",
         "Mass": 8,
         "Durability": 80,
@@ -126,6 +132,7 @@
     },
     {
         "Name": "Titanium Light Block",
+        "Category" : "blocks",
         "Sides": "titLight",
         "Mass": 5,
         "Durability": 80,
@@ -134,6 +141,7 @@
     },
     {
         "Name": "Titanium Medium Block",
+        "Category" : "blocks",
         "Sides": "titMedium",
         "Mass": 8,
         "Durability": 100,
@@ -142,6 +150,7 @@
     },
     {
         "Name": "Titanium Heavy Block",
+        "Category" : "blocks",
         "Sides": "titHeavy",
         "Mass": 10,
         "Durability": 120,
@@ -150,14 +159,24 @@
     },
     {
         "Name": "Window",
+        "Category" : "windows",
         "Sides": "window",
+        "Mass": 1,
+        "IsTransparent": true,
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
+    },
+     {
+        "Name": "Window2",
+        "Category" : "windows",
+        "Sides": "window2",
         "Mass": 1,
         "IsTransparent": true,
         "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Crafting Table",
-        "Type": "interactive",
+        "Category" : "resources",
+        "Type": "craftingtable",
         "Sides": "craftSide",
         "Top": "craftTop",
         "Bottom": "bottom",
@@ -168,6 +187,7 @@
     {
         "Name": "Furnace",
         "Type": "furnace",
+        "Category" : "resources",
         "Sides": "furnace",
         "Top": "bottom",
         "Bottom": "bottom"
@@ -175,6 +195,7 @@
     {
         "Name": "Crusher",
         "Type": "crusher",
+        "Category" : "resources",
         "Sides": "crusherSide2",
         "Top": "crusherTop",
         "Bottom": "bottom",
@@ -184,6 +205,7 @@
     {
         "Name": "Analyzer",
         "Type": "interactive",
+        "Category" : "resources",
         "Sides": "bottom",
         "Top": "analyzer",
         "Bottom": "bottom",
@@ -193,6 +215,7 @@
     {
         "Name": "Radar",
         "Type": "interactive",
+        "Category" : "resources",
         "Sides": "bottom",
         "Top": "radar",
         "Bottom": "bottom",
@@ -202,6 +225,7 @@
     {
         "Name": "Disassembler",
         "Type": "disassembler",
+        "Category" : "resources",
         "Sides": "disassemblerSide",
         "Top": "disassemblerTop2",
         "Bottom": "bottom",
@@ -211,57 +235,68 @@
     {
         "Name": "Wire",
         "Sides": "wire",
+        "Category" : "blocks",
         "IsTransparent": false,
         "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
         {
         "Name": "Wires Pro",
         "Sides": "wirePro",
+        "Category" : "blocks",
         "IsTransparent": true,
         "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
         "Name": "Light White",
+        "Category" : "lights",
         "Sides": "white",
         "LightColor": { "x": 255, "y": 255, "z": 255 }
     },
     {
         "Name": "Light Blue",
+        "Category" : "lights",
         "Sides": "blue",
-        "LightColor": { "x": 25, "y": 25, "z": 255 }
+        "LightColor": { "x": 45, "y": 45, "z": 255 }
     },
     {
         "Name": "Light Red",
+        "Category" : "lights",
         "Sides": "red",
         "LightColor": { "x": 255, "y": 15, "z": 15 }
     },
     {
         "Name": "Light Yellow",
+        "Category" : "lights",
         "Sides": "yellow",
         "LightColor": { "x": 255, "y": 216, "z": 0 }
     },
     {
         "Name": "Light Cyan",
+        "Category" : "lights",
         "Sides": "cyan",
         "LightColor": { "x": 0, "y": 255, "z": 255 }
     },
     {
         "Name": "Light Orange",
+        "Category" : "lights",
         "Sides": "orange",
         "LightColor": { "x": 255, "y": 106, "z": 0 }
     },
     {
         "Name": "Light Green",
+        "Category" : "lights",
         "Sides": "green",
         "LightColor": { "x": 5, "y": 255, "z": 5 }
     },
     {
         "Name": "Light Pink",
+        "Category" : "lights",
         "Sides": "pink",
         "LightColor": { "x": 178, "y": 0, "z": 255 }
     },
     {
         "Name": "AI Core",
+        "Category" : "resources",
         "Sides": "core",
         "Mass": 50,
         "PowerToDrill" : 3,
@@ -271,6 +306,7 @@
     },
     {
         "Name": "Just Block",
+        "Category" : "blocks",
         "Sides": "block",
         "IsTransparent": false,
         "LightColor": { "x": 0, "y": 0, "z": 0 }

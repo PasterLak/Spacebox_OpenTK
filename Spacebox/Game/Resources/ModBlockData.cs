@@ -4,10 +4,11 @@
     {
         public string Name { get; set; } = "NoName";
         public string Type { get; set; } = "block";
+        public string Category { get; set; } = "";
         public int PowerToDrill { get; set; } = 1;
         public int Mass { get; set; } = 1;
         public int Durability { get; set; } = 1;
-
+    
         public string Sides { get; set; } = "";
         public string Top { get; set; } = "";
         public string Bottom { get; set; } = "";

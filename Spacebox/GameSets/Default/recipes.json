@@ -10,6 +10,13 @@
     "Type": "crusher",
     "RequiredTicks": 50,
     "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Light Rock", "Quantity": 1 },
+    "Product": { "Item": "Sand", "Quantity": 2 }
+  },
+  {
+    "Type": "crusher",
+    "RequiredTicks": 50,
+    "PowerPerTickRequared": 5,
     "Ingredient": { "Item": "Cobaltite Rock", "Quantity": 1 },
     "Product": { "Item": "Cobalt Dust", "Quantity": 2 }
   },
@@ -73,22 +80,22 @@
     "Type": "crusher",
     "RequiredTicks": 100,
     "PowerPerTickRequared": 5,
-    "Ingredient": { "Item": "Aluminium Panels", "Quantity": 1 },
-    "Product": { "Item": "Aluminium Dust", "Quantity": 3 }
+    "Ingredient": { "Item": "Aluminium Panels", "Quantity": 3 },
+    "Product": { "Item": "Aluminium Dust", "Quantity": 1 }
   },
   {
     "Type": "crusher",
     "RequiredTicks": 140,
     "PowerPerTickRequared": 5,
-    "Ingredient": { "Item": "Iron Panels", "Quantity": 1 },
-    "Product": { "Item": "Iron Dust", "Quantity": 3 }
+    "Ingredient": { "Item": "Iron Panels", "Quantity": 3 },
+    "Product": { "Item": "Iron Dust", "Quantity": 1 }
   },
   {
     "Type": "crusher",
     "RequiredTicks": 180,
     "PowerPerTickRequared": 5,
-    "Ingredient": { "Item": "Titanium Panels", "Quantity": 1 },
-    "Product": { "Item": "Titanium Dust", "Quantity": 3 }
+    "Ingredient": { "Item": "Titanium Panels", "Quantity": 3 },
+    "Product": { "Item": "Titanium Dust", "Quantity": 1 }
   },
 
 
@@ -100,6 +107,13 @@
     "PowerPerTickRequared": 5,
     "Ingredient": { "Item": "Ice Shards", "Quantity": 2 },
     "Product": { "Item": "Water", "Quantity": 1 }
+  },
+  {
+    "Type": "furnace",
+    "RequiredTicks": 40,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Sand", "Quantity": 1 },
+    "Product": { "Item": "Glass Shards", "Quantity": 1 }
   },
   {
     "Type": "furnace",
@@ -242,7 +256,7 @@
     "Type": "disassembler",
     "RequiredTicks": 1000,
     "PowerPerTickRequared": 5,
-    "Ingredient": { "Item": "Drill", "Quantity": 1 },
-    "Product": { "Item": "Iron Ingot", "Quantity": 1 }
+    "Ingredient": { "Item": "Aluminium Drill", "Quantity": 1 },
+    "Product": { "Item": "Aluminium Ingot", "Quantity": 1 }
   }
 ]

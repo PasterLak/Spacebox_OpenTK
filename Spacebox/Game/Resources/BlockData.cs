@@ -8,6 +8,7 @@ namespace Spacebox.Game.Resources
         public short Id;
         public string Name;
         public string Type;
+        public string Category;
         public byte Mass = 1;  // 1 is minimum
         public byte PowerToDrill = 0; // 0 can destroy every drill
         public byte Health = 0; // instantly destroy

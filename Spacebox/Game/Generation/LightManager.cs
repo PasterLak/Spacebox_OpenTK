@@ -18,7 +18,7 @@ namespace Spacebox.Game.Generation
         public void PropagateLight()
         {
             if (!EnableLighting) return;
-            
+
             ResetLightLevels();
 
             Queue<Vector3Byte> lightQueue = new Queue<Vector3Byte>();
@@ -28,10 +28,10 @@ namespace Spacebox.Game.Generation
             while (lightQueue.Count > 0)
             {
                 Vector3Byte pos = lightQueue.Dequeue();
-                Block currentBlock = _blocks[pos.X, pos.Y, pos.Z];
-                float lightLevel = currentBlock.LightLevel;
+                Block lightSource = _blocks[pos.X, pos.Y, pos.Z];
+                float lightLvl = lightSource.LightLevel;
 
-                if (lightLevel <= 0.1f)
+                if (lightLvl <= 0.1f)
                     continue;
 
                 foreach (var offset in GetAdjacentOffsets())
@@ -43,38 +43,67 @@ namespace Spacebox.Game.Generation
                     if (!IsInRange(nx, ny, nz))
                         continue;
 
-                    Block neighborBlock = _blocks[nx, ny, nz];
+                    Block neighbor = _blocks[nx, ny, nz];
 
-                    if (neighborBlock.IsAir() || neighborBlock.IsTransparent)
+                    if (!(neighbor.IsAir() || neighbor.IsTransparent)) continue;
+
+                    const float attenuation = 0.8f;
+                    float newLightLevel = lightLvl * attenuation;
+
+                    Vector3 newLightColor = lightSource.LightColor * attenuation;
+
+                    if (newLightLevel > neighbor.LightLevel)
                     {
-                        float attenuation = 0.8f;
-                        float newLightLevel = lightLevel * attenuation;
-
-                        Vector3 newLightColor = currentBlock.LightColor * attenuation;
-
-                        if (newLightLevel > neighborBlock.LightLevel)
-                        {
-                            neighborBlock.LightLevel = newLightLevel;
-                            neighborBlock.LightColor = newLightColor;
-                            _blocks[nx, ny, nz] = neighborBlock;
-                            lightQueue.Enqueue(new Vector3Byte(nx, ny, nz));
-                        }
-                        else if (MathF.Abs(newLightLevel - neighborBlock.LightLevel) < 0.01f)
-                        {
-                            neighborBlock.LightColor = (neighborBlock.LightColor + newLightColor) / 2f;
-                            _blocks[nx, ny, nz] = neighborBlock;
-                        }
+                        neighbor.LightLevel = newLightLevel;
+                        neighbor.LightColor = newLightColor;
+                        lightQueue.Enqueue(new Vector3Byte(nx, ny, nz));
                     }
+                    else if (MathF.Abs(newLightLevel - neighbor.LightLevel) < 0.01f)
+                    {
+                        neighbor.LightColor = (neighbor.LightColor + newLightColor) / 2f;
+
+                        _blocks[nx, ny, nz] = neighbor;
+                    }
+
                 }
             }
         }
 
-        private Vector3 MixColors(Vector3 color1, Vector3 color2, float t01)
+        private Vector3 MixColors(Vector3 own, Vector3 newColor)
         {
-            // t  0.0 - 1.0
-            t01 = MathHelper.Clamp(t01, 0.0f, 1.0f);
-            return color1 * (1.0f - t01) + color2 * t01;
+    
+            float brightness1 = (own.X + own.Y + own.Z) / 3f;
+            float brightness2 = (newColor.X + newColor.Y + newColor.Z) / 3f;
+
+           // if (own != new Vector3(0, 0, 0)) return new Vector3(0,1,0);
+            if (own == new Vector3(0, 0, 0)) return newColor;
+            else
+            {
+                return new Vector3(MathF.Max(own.X, newColor.X), MathF.Max(own.Y, newColor.Y), MathF.Max(own.Z, newColor.Z));
+            }
+            //return new Vector3(1,0,0);
+            // return new Vector3(MathF.Max(own.X, newColor.X), MathF.Max(own.Y, newColor.Y), MathF.Max(own.Z, newColor.Z));
+            // Вычисление параметра t на основе яркости:
+            // Если brightness1 > brightness2, t < 0.5
+            // Если brightness2 > brightness1, t > 0.5
+            // Если brightness1 == brightness2, t = 0.5
+            float t;
+            if (brightness1 + brightness2 > 0f)
+            {
+                t = brightness2 / (brightness1 + brightness2);
+            }
+            else
+            {
+                t = 0.5f;
+            }
+
+            t = MathHelper.Clamp(t, 0.0f, 1.0f);
+
+            return own * (1.0f - t) + newColor * t;
         }
+
+
+
 
         private void ResetLightLevels()
         {

@@ -14,8 +14,8 @@
         }
     ],
     "ItemsOnStart": [
-        {"Name" : "Drill", "Count" : 1},
-        {"Name" : "Crusher", "Count" : 1},
-        {"Name" : "Furnace", "Count" : 1}
+        {"Name" : "Aluminium Drill", "Count" : 1},
+        {"Name" : "Furnace", "Count" : 1},
+        {"Name" : "Crafting Table", "Count" : 1}
     ]
 }

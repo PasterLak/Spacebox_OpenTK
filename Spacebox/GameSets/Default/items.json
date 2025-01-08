@@ -1,52 +1,82 @@
 [
     {
         "Info": "Tags:  Name, Type<Drill,Weapone,Item>, Sprite, MaxStack, ModelDepth",
-        "Name": "Drill",
+        "Name": "Aluminium Drill",
         "Type": "drill",
+        "Category" : "drills",
         "Sprite": "drill1",
         "MaxStack": 1,
         "ModelDepth": 1.5,
         "Power": 1
     },
     {
-        "Name": "Drill 2",
+        "Name": "Iron Drill",
         "Type": "drill",
+        "Category" : "drills",
         "Sprite": "drill2",
         "MaxStack": 1,
         "ModelDepth": 1.5,
         "Power": 2
     },
     {
-        "Name": "Drill 3",
+        "Name": "Enhanced Iron Drill",
         "Type": "drill",
-        "Sprite": "drill2",
+        "Category" : "drills",
+        "Sprite": "drill3",
         "MaxStack": 1,
         "ModelDepth": 1.5,
         "Power": 3
     },
     {
-        "Name": "Drill 4",
+        "Name": "Triple Iron Drill",
         "Type": "drill",
-        "Sprite": "drill2",
+        "Category" : "drills",
+        "Sprite": "drill4",
         "MaxStack": 1,
         "ModelDepth": 1.5,
         "Power": 4
     },
     {
-        "Name": "Drill 5",
+        "Name": "Titanium Drill",
         "Type": "drill",
-        "Sprite": "drill2",
+        "Category" : "drills",
+        "Sprite": "drill5",
         "MaxStack": 1,
         "ModelDepth": 1.5,
         "Power": 5
     },
     {
-        "Name": "AKF-24",
-        "Type": "Weapon",
+        "Name": "Pistol",
+        "Type": "weapon",
+        "Category" : "weapons",
         "Sprite": "weapon1",
         "MaxStack": 1,
         "ModelDepth": 1.5,
         "Damage": 5,
+        "ReloadTime": 400,
+        "Spread": 0,
+        "Pushback": 0
+    },
+    {
+        "Name": "SMG",
+        "Type": "weapon",
+        "Category" : "weapons",
+        "Sprite": "weapon2",
+        "MaxStack": 1,
+        "ModelDepth": 1.5,
+        "Damage": 6,
+        "ReloadTime": 400,
+        "Spread": 0,
+        "Pushback": 0
+    },
+    {
+        "Name": "Assault Rifle",
+        "Type": "weapon",
+        "Category" : "weapons",
+        "Sprite": "weapon3",
+        "MaxStack": 1,
+        "ModelDepth": 1.5,
+        "Damage": 10,
         "ReloadTime": 400,
         "Spread": 0,
         "Pushback": 0
@@ -81,6 +111,12 @@
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
+     {
+        "Name": "Sand",
+        "Sprite": "sand",
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
     {
         "Name": "Cobalt Dust",
         "Sprite": "cobaltDust",
@@ -107,30 +143,35 @@
     },
     {
         "Name": "Cobalt Lens",
+        "Category" : "items",
         "Sprite": "cobaltLens",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
     {
         "Name": "Iron Lens",
+         "Category" : "items",
         "Sprite": "ironLens",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
     {
         "Name": "Aluminium Panels",
+        "Category" : "items",
         "Sprite": "aluPanels",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
     {
         "Name": "Iron Panels",
+        "Category" : "items",
         "Sprite": "ironPanels",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
     {
         "Name": "Titanium Panels",
+        "Category" : "items",
         "Sprite": "titPanels",
         "MaxStack": 64,
         "ModelDepth": 1.0
@@ -139,6 +180,7 @@
         "Name": "Med Kit",
         "Sprite": "health3",
         "Type": "consumable",
+        "Category" : "items",
         "Sound" : "heal",
         "HealAmount": 50,
         "MaxStack": 64,
@@ -151,12 +193,11 @@
         "MaxStack": 64,
         "ModelDepth": 1.5
     },
-    
     {
-        "Name": "Cat",
-        "Sprite": "cat",
+        "Name": "Glass Shards",
+        "Sprite": "glass",
         "MaxStack": 64,
-        "ModelDepth": 2.0
+        "ModelDepth": 1.5
     },
     {
         "Name": "Paint",
@@ -166,6 +207,7 @@
     },
     {
         "Name": "Uranium",
+        "Category" : "items",
         "Sprite": "uran",
         "MaxStack": 64,
         "ModelDepth": 1.0
@@ -178,6 +220,7 @@
     },
     {
         "Name": "Liquid Hydrogen",
+        "Category" : "items",
         "Sprite": "hydrogen",
         "MaxStack": 64,
         "ModelDepth": 2.0
@@ -186,6 +229,7 @@
         "Name": "Power",
         "Sprite": "power",
         "Type": "consumable",
+        "Category" : "items",
         "Sound" : "use",
         "PowerAmount": 100,
         "MaxStack": 64,
@@ -202,7 +246,15 @@
     },
     {
         "Name": "Battery",
+        "Category" : "items",
         "Sprite": "battery2",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+    {
+        "Name": "Microchip",
+        "Category" : "items",
+        "Sprite": "microchip",
         "MaxStack": 64,
         "ModelDepth": 2.0
     }

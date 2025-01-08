@@ -4,6 +4,7 @@ using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
+using Spacebox.Game.GUI;
 using Spacebox.Game.Resources;
 using Spacebox.GUI;
 
@@ -34,6 +35,9 @@ namespace Spacebox.Game
         public static Dictionary<string, AudioClip> Sounds = new Dictionary<string, AudioClip>();
 
         public static Dictionary<string, Dictionary<short, Recipe>> Recipes = new Dictionary<string, Dictionary<short, Recipe>>();
+
+        public static Dictionary<string, CraftingCategory> CraftingCategories = new Dictionary<string, CraftingCategory>();
+        public static Dictionary<short, Blueprint> Blueprints = new Dictionary<short, Blueprint>();
 
         public static bool TryGetRecipe(string type, short id, out Recipe recipe)
         {
@@ -118,6 +122,7 @@ namespace Spacebox.Game
 
             BlockItem item = new BlockItem(blockData.Id, MaxItemId, 64, blockData.Name, blockData.Mass, blockData.Health);
             item.Mass = blockData.Mass;
+            item.Category = blockData.Category;
            // item.Durability = blockData.
             blockData.Item = item;
 
@@ -227,6 +232,12 @@ namespace Spacebox.Game
                 return new DisassemblerBlock(data);
             }
 
+            if (data.Type.ToLower() == "craftingtable")
+            {
+                return new CraftingTableBlock(data);
+            }
+
+
             //if (id == 0) block.Type = BlockType.Air;
 
             return new Block(data);
@@ -308,7 +319,7 @@ namespace Spacebox.Game
                 blockData.TopUVIndex, AtlasBlocks.SizeBlocks)
                 );
             texture.UpdateTexture(true);
-
+            blockData.Item.IconTextureId = texture.Handle;
             ItemIcon.Add(blockData.Item.Id, texture);
         }
 
@@ -411,6 +422,7 @@ namespace Spacebox.Game
             AtlasBlocks.Dispose();
             AtlasBlocks = null;
             AtlasItems.Dispose();
+            CraftingCategories.Clear();
             AtlasItems = null;
             MaxBlockId = -1;
             MaxItemId = -1;

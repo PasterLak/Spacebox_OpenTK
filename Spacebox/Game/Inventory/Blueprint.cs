@@ -11,6 +11,12 @@
             Item = item;
             Quantity = quantity;
         }
+
+        public override string ToString()
+        {
+            if(Item == null) return string.Empty;
+            return "x"+ Quantity + " " + Item.Name;
+        }
     }
     public class Product
     {
@@ -21,6 +27,12 @@
         {
             Item = item;
             Quantity = quantity;
+        }
+
+        public override string ToString()
+        {
+            if (Item == null) return string.Empty;
+            return "x" + Quantity + " " + Item.Name;
         }
     }
     public class RecipeBase
@@ -38,10 +50,27 @@
     {
 
         public Ingredient[] Ingredients;
-        public Product[] Products;
+        public Product Product;
      
         public Blueprint() 
         {
+        }
+
+        public override string ToString()
+        {
+            string s = "";
+
+            if(Product != null && Product.Item != null) 
+            {
+                s = Product.Item.Name + "\n";
+             }
+
+            foreach(var p in Ingredients)
+            {
+                s += "x" + p.Quantity + " " + p.Item.Name + "\n";
+            }
+
+            return s;
         }
     }
 

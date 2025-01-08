@@ -276,6 +276,8 @@ namespace Spacebox.Scenes
             {
                 TickTaskManager.UpdateTasks();
             };
+
+            CraftingGUI.Init();
         }
 
         public override void Update()
@@ -413,7 +415,7 @@ namespace Spacebox.Scenes
             radarWindow.Render();
            
             ResourceProcessingGUI.OnGUI();
-           
+           CraftingGUI.OnGUI();
             PanelUI.Render();
             player.OnGUI();
             InventoryUI.OnGUI(player.Inventory);
