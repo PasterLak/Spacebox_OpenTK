@@ -12,13 +12,13 @@ namespace Spacebox.GUI
         public StatsBarData StatsData { get; private set; }
         private StatsGUI _statsGUI;
 
-        private float timeToDecrement = 1f;
+        private float timeToDecrement = 3f;
         private float time;
         public PowerBar()
         {
             StatsData = new StatsBarData
             {
-                Count = 50,
+                Count = 100,
                 MaxCount = 100,
                 Name = "Power"
             };

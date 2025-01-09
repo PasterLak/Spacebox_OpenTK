@@ -19,12 +19,12 @@ public class InteractionDestroyBlockSurvival : InteractionMode
     private Block? lastBlock = null;
 
     private ItemSlot selectedItemSlot;
-
+    private AnimatedItemModel model;
     public static BlockMiningEffect BlockMiningEffect;
     public InteractionDestroyBlockSurvival(ItemSlot itemslot)
     {
         selectedItemSlot = itemslot;
-
+        AllowReload = true;
         if (BlockMiningEffect == null)
         {
             var texture = TextureManager.GetTexture("Resources/Textures/blockHit.png", true);
@@ -32,7 +32,16 @@ public class InteractionDestroyBlockSurvival : InteractionMode
             BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1),
                 texture, ShaderManager.GetShader("Shaders/particle"));
         }
-            
+
+        UpdateItemSlot(itemslot);
+
+
+    }
+
+    public void UpdateItemSlot(ItemSlot itemslot)
+    {
+        selectedItemSlot = itemslot;
+        model = GameBlocks.ItemModels[itemslot.Item.Id] as AnimatedItemModel;
     }
     public override void OnEnable()
     {
@@ -52,7 +61,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         BlockSelector.IsVisible = false;
         lastBlock = null;
         selectedItemSlot = null;
-        BlockMiningEffect.Enabled = false;
+        //BlockMiningEffect.Enabled = false;
     }
 
     private const float timeToDamage = 0.5f;
@@ -136,11 +145,13 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 var item = selectedItemSlot.Item as DrillItem;
 
                 var blockData = GameBlocks.GetBlockDataById(hit.block.BlockId);
+                BlockMiningEffect.Enabled = true;
+                BlockMiningEffect.ParticleSystem.Position = hit.position + new Vector3(hit.normal.X, hit.normal.Y, hit.normal.Z) * 0.05f;
+                BlockMiningEffect.Update();
 
-                if(item != null)
+                if (item != null)
                 {
-                    BlockMiningEffect.ParticleSystem.Position = hit.position + new Vector3(hit.normal.X, hit.normal.Y, hit.normal.Z) * 0.05f;
-                    BlockMiningEffect.Update();
+                    
 
                    
 
@@ -164,11 +175,12 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
             if (Input.IsMouseButtonDown(MouseButton.Left))
             {
-                
+                model?.SetAnimation(true);
                 BlockMiningEffect.Enabled = true;
             }
                 if (Input.IsMouseButtonUp(MouseButton.Left))
             {
+                model?.SetAnimation(false);
                 _time = timeToDamage;
                 lastBlock = null;
                 BlockMiningEffect.ClearParticles();
@@ -192,6 +204,17 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         {
             BlockMiningEffect.Enabled = false;
             BlockSelector.IsVisible = false;
+
+            if (Input.IsMouseButtonDown(MouseButton.Left))
+            {
+                model?.SetAnimation(true);
+               
+            }
+            if (Input.IsMouseButtonUp(MouseButton.Left))
+            {
+                model?.SetAnimation(false);
+                BlockMiningEffect.Enabled = false;
+            }
         }
     }
 }

@@ -8,7 +8,8 @@
         public int PowerToDrill { get; set; } = 1;
         public int Mass { get; set; } = 1;
         public int Durability { get; set; } = 1;
-    
+        public float Efficiency { get; set; } = 1f;
+
         public string Sides { get; set; } = "";
         public string Top { get; set; } = "";
         public string Bottom { get; set; } = "";

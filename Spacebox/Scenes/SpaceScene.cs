@@ -16,6 +16,8 @@ using Spacebox.Game.Player;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Resources;
 using Spacebox.Common.GUI;
+using Spacebox.common.Animation;
+using Spacebox.Common.Animation;
 
 namespace Spacebox.Scenes
 {
@@ -52,7 +54,7 @@ namespace Spacebox.Scenes
 
 
         private RadarWindow radarWindow;
-        private Model spacer;
+        public static Model spacer;
         private string worldName;
 
         private SimpleBlock block1;
@@ -246,8 +248,8 @@ namespace Spacebox.Scenes
             spacer = new Model("Resources/Models/spacer.obj",
                 new Material(ShaderManager.GetShader("Shaders/textured"), tex));
 
-            spacer.Position = new Vector3(12, 15, 7);
-            spacer.Rotation = new Vector3(0, 0, 90);
+            spacer.Position = player.Position + new Vector3(12, 15, 7);
+            spacer.Rotation = new Vector3(0, 0, 0);
             //Renderer.AddDrawable(spacer);
             //SceneGraph.AddRoot(spacer);
             //SceneGraph.UpdateTransforms();
@@ -266,7 +268,7 @@ namespace Spacebox.Scenes
             //block2.Position = new Vector3(2, 0, 0);
             //SceneGraph.PrintHierarchy();
         }
-
+        Animator animator;
         public override void Start()
         {
             Input.HideCursor();
@@ -276,8 +278,12 @@ namespace Spacebox.Scenes
             {
                 TickTaskManager.UpdateTasks();
             };
-
             CraftingGUI.Init();
+
+            animator = new Animator(spacer);
+            animator.AddAnimation(new MoveAnimation(spacer.Position, spacer.Position + new Vector3(0,0,1000), 5000f, false));
+            animator.AddAnimation(new RotateAnimation(Vector3.UnitX, 5f, 0f));
+            animator.AddAnimation(new RotateAnimation(Vector3.UnitY, 5f, 0f));
         }
 
         public override void Update()
@@ -325,7 +331,7 @@ namespace Spacebox.Scenes
             PanelUI.Update();
 
             //chunk.Test(player);
-
+            animator.Update(Time.Delta);
 
             //world.Update();
 
@@ -370,7 +376,7 @@ namespace Spacebox.Scenes
             blockDestructionManager.Render();
 
             //spacer.LookAt3(player);
-            //spacer.Draw(player);
+            spacer.Draw(player);
             dustSpawner.Render();
             if (InteractionDestroyBlockSurvival.BlockMiningEffect != null)
             {

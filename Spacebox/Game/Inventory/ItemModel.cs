@@ -1,6 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using Spacebox.common.Animation;
 using Spacebox.Common;
+using Spacebox.Common.Animation;
 using Spacebox.Game.Player;
 
 namespace Spacebox.Game
@@ -16,6 +18,7 @@ namespace Spacebox.Game
         public bool debug = false;
         private Matrix4 model;
 
+       
         private Shader shader;
         private Camera itemCamera;
         public ItemModel(Mesh mesh, Texture2D texture)
@@ -29,8 +32,12 @@ namespace Spacebox.Game
             Texture.UpdateTexture(true);
 
             itemCamera = new Camera360(Vector3.Zero, false);
+          
 
+            
         }
+
+        
 
         public void SetColor(Vector3 color)
         {
@@ -38,8 +45,9 @@ namespace Spacebox.Game
 
             shader.SetVector3("color", color);
         }
-        public void Draw(Shader shader)
+        public virtual void Draw(Shader shader)
         {
+            
             if (this.shader == null)
             {
                 this.shader = shader;
@@ -63,11 +71,13 @@ namespace Spacebox.Game
 
 
             Matrix4 additionalRotation = Matrix4.CreateRotationY(additionalRotationAngle);
-
+           // additionalRotation = additionalRotation * rotation;
             model =
                  Matrix4.CreateTranslation(offset) *
+                 Matrix4.CreateTranslation(Position) *
                  additionalRotation *
-                 rotation *
+                 //rotation *
+                 //Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(Rotation)) *
                  Matrix4.CreateTranslation(itemCamera.Position);
 
 

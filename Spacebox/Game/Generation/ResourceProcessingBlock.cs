@@ -10,7 +10,8 @@ namespace Spacebox.Game.Generation
         public Storage InputStorage { get; private set; } = new Storage(1, 1);
         public Storage FuelStorage { get; private set; } = new Storage(1, 1);
         public Storage OutputStorage { get; private set; } = new Storage(1, 1);
-
+        public float Efficiency = 1f;
+        private float TestingCoefficient = 1f;
         private bool _isRunning = false;
         public bool IsRunning
         {
@@ -28,6 +29,7 @@ namespace Spacebox.Game.Generation
 
         public ResourceProcessingBlock(BlockData blockData) : base(blockData)
         {
+            Efficiency = blockData.Efficiency;
             blockType = blockData.Type;
             InputStorage.Name = "InputStorage";
             FuelStorage.Name = "FuelStorage";
@@ -65,7 +67,7 @@ namespace Spacebox.Game.Generation
             IsRunning = true;
 
             
-            task = new ProcessResourceTask(Recipe.RequiredTicks, this);
+            task = new ProcessResourceTask((int)(Recipe.RequiredTicks * TestingCoefficient / Efficiency), this);
 
             return true;
         }

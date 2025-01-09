@@ -1,12 +1,12 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.Common.Audio;
 using Spacebox.Common.Physics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
 using Spacebox.Scenes;
-using Spacebox.UI;
 
 namespace Spacebox.Game.Player;
 
@@ -14,7 +14,11 @@ public class MovementMode : GameModeBase
 {
     private const float _cameraSpeed = 3.5f;
     private const float _shiftSpeed = 7.5f;
+    private float speedUpPower = 0;
+    private AudioSource flySpeedUpAudio;
 
+    private AudioSource wallhitAudio;
+    private AudioSource wallhitAudio2;
 
     public MovementMode(Astronaut player, InteractionHandler interactionHandler) : base(player, interactionHandler)
     {
@@ -25,6 +29,13 @@ public class MovementMode : GameModeBase
         player.SetCameraSpeed(_cameraSpeed, _shiftSpeed);
         SetInertia(player.InertiaController);
         SetCameraSway(player.CameraSway);
+
+        if (flySpeedUpAudio == null)
+            flySpeedUpAudio = new AudioSource(SoundManager.GetClip("flySpeedUp"));
+        flySpeedUpAudio.IsLooped = true;
+
+        wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
+        wallhitAudio2 = new AudioSource(SoundManager.GetClip("wallHit2"));
     }
 
     public override GameMode GetGameMode()
@@ -116,7 +127,8 @@ public class MovementMode : GameModeBase
         if (!isMoving) isRunning = false;
         if (player.PowerBar.StatsData.IsMinReached) isRunning = false;
 
-        /*if (isRunning)
+  
+        if (isRunning)
         {
             if (!flySpeedUpAudio.IsPlaying)
                 flySpeedUpAudio.Play();
@@ -148,7 +160,7 @@ public class MovementMode : GameModeBase
 
                 flySpeedUpAudio.Volume = speedUpPower;
             }
-        }*/
+        }
 
         player.InertiaController.SetMode(isRunning);
 
@@ -242,16 +254,16 @@ public class MovementMode : GameModeBase
     {
         if (speed > 4 && speed <= 9)
         {
-            /* if (wallhitAudio.IsPlaying) wallhitAudio.Stop();
+             if (wallhitAudio.IsPlaying) wallhitAudio.Stop();
 
              wallhitAudio.Volume = 0;
              wallhitAudio.Volume = MathHelper.Min(wallhitAudio.Volume + speed * 0.05f, 1);
-             wallhitAudio.Play();*/
+             wallhitAudio.Play();
         }
         else if (speed > 9)
         {
-            // wallhitAudio2.Volume = MathHelper.Min(0 + speed * 0.05f, 1);
-            // wallhitAudio2.Play();
+             wallhitAudio2.Volume = MathHelper.Min(0 + speed * 0.05f, 1);
+             wallhitAudio2.Play();
         }
 
         if (speed > 10)
@@ -266,7 +278,7 @@ public class MovementMode : GameModeBase
             if (damage > 5)
             {
                 SpaceScene.DeathOn = false;
-                //flySpeedUpAudio.Stop();
+                flySpeedUpAudio.Stop();
                 SpaceScene.Uii.Stop();
                 BlackScreenOverlay.IsEnabled = true;
                 player.CanMove = false;

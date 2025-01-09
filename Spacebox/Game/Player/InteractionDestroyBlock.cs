@@ -4,6 +4,7 @@ using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Common.Physics;
 using Spacebox.Game.Generation;
+using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 
 namespace Spacebox.Game.Player;
@@ -25,6 +26,8 @@ public class InteractionDestroyBlock : InteractionMode
         if (BlockSelector.Instance != null)
             BlockSelector.Instance.SimpleBlock.Shader.SetVector4("color", Vector4.One);
         BlockSelector.IsVisible = false;
+
+       
     }
 
     public override void OnDisable()

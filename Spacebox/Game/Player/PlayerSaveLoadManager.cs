@@ -3,6 +3,7 @@ using System.Text.Json;
 using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Game.Generation;
+using Spacebox.Game.GUI;
 using Spacebox.Game.Resources;
 
 namespace Spacebox.Game.Player
@@ -42,7 +43,7 @@ namespace Spacebox.Game.Player
                     {
                         data.InventorySlots.Add(new SavedItemSlot
                         {
-                            ItemId = slot.Item.Id,
+                            ItemName = slot.Item.Name,
                             Count = slot.Count,
                             SlotX = (byte)slot.Position.X,
                             SlotY = (byte)slot.Position.Y
@@ -56,7 +57,7 @@ namespace Spacebox.Game.Player
                     {
                         data.PanelSlots.Add(new SavedItemSlot
                         {
-                            ItemId = slot.Item.Id,
+                            ItemName = slot.Item.Name,
                             Count = slot.Count,
                             SlotX = (byte)slot.Position.X,
                             SlotY = (byte)slot.Position.Y
@@ -117,7 +118,7 @@ namespace Spacebox.Game.Player
 
                 foreach (var savedSlot in data.InventorySlots)
                 {
-                    if (GameBlocks.Item.TryGetValue(savedSlot.ItemId, out var item))
+                    if (GameBlocks.TryGetItemByName(savedSlot.ItemName, out var item))
                     {
                         var slot = player.Inventory.GetSlot(savedSlot.SlotX, savedSlot.SlotY);
                         if (slot != null)
@@ -132,13 +133,13 @@ namespace Spacebox.Game.Player
                     }
                     else
                     {
-                        Debug.Error($"Item ID {savedSlot.ItemId} not found. Skipping loading into Inventory.");
+                        Debug.Error($"Item ID {savedSlot.ItemName} not found. Skipping loading into Inventory.");
                     }
                 }
 
                 foreach (var savedSlot in data.PanelSlots)
                 {
-                    if (GameBlocks.Item.TryGetValue(savedSlot.ItemId, out var item))
+                    if (GameBlocks.TryGetItemByName(savedSlot.ItemName, out var item))
                     {
                         var slot = player.Panel.GetSlot(savedSlot.SlotX, savedSlot.SlotY);
                         if (slot != null)
@@ -153,11 +154,12 @@ namespace Spacebox.Game.Player
                     }
                     else
                     {
-                        Debug.Error($"Item ID {savedSlot.ItemId} not found. Skipping loading into Panel.");
+                        Debug.Error($"Item ID {savedSlot.ItemName} not found. Skipping loading into Panel.");
                     }
                 }
 
                 Debug.Success("Player data loaded successfully.");
+                PanelUI.SetSelectedSlot(0);
             }
             catch (Exception ex)
             {
@@ -183,7 +185,7 @@ namespace Spacebox.Game.Player
 
         private class SavedItemSlot
         {
-            public short ItemId { get; set; }
+            public string ItemName { get; set; }
             public byte Count { get; set; }
             public byte SlotX { get; set; }
             public byte SlotY { get; set; }

@@ -161,7 +161,7 @@ namespace Spacebox.Game
 
             CacheIcon(item, coordX, coordY);
 
-            GenerateItemModel(coordX, coordY, item.ModelDepth);
+            GenerateItemModel(coordX, coordY, item);
 
             if (item is ConsumableItem)
             {
@@ -177,10 +177,12 @@ namespace Spacebox.Game
             }
         }
 
-        private static void GenerateItemModel(byte coordX, byte coordY, float depth)
+        private static void GenerateItemModel(byte coordX, byte coordY, Item item)
         {
+            bool isAnimated = item is DrillItem;
+
             ItemModel model = ItemModelGenerator.GenerateModel(
-                ItemsTexture, coordX, coordY, 0.004f, depth / 500f * 2f, true);
+                ItemsTexture, coordX, coordY, 0.004f, item.ModelDepth / 500f * 2f, isAnimated, true);
 
             ItemModels.Add(MaxItemId, model);
         }
@@ -194,6 +196,22 @@ namespace Spacebox.Game
 
             Debug.Error("GetItemByName error: Wrong name - " + name);
             return null;
+        }
+
+        public static bool TryGetItemByName(string name, out Item item)
+        {
+            item = null;
+
+            foreach (var it in Item.Values)
+            {
+                if (it.Name.ToLower() == name.ToLower())
+                {
+                    item =  it;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public static BlockData GetBlockDataById(short id)

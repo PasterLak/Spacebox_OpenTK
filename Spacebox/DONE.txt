@@ -35,6 +35,10 @@ version 0.1.0
 - interactive blocks working again
 - crusher, furnace UI and logic
 - loading recipes from mode
+- crafting system
+- blueprints
+- new items and blocks
+- save player items by name
 
 version 0.0.9
 

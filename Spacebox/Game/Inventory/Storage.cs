@@ -203,6 +203,25 @@ namespace Spacebox.Game
             return true;
         }
 
+        public int GetTotalCountOf(Item item)
+        {
+            int sum = 0;
+
+            for (byte x = 0; x < SizeX; x++)
+            {
+                for (byte y = 0; y < SizeY; y++)
+                {
+                    var slot = Slots[x, y];
+
+                    if (slot.HasItem && slot.Item.Id == item.Id)
+                    {
+                        sum += slot.Count;
+                    }
+                }
+            }
+
+            return sum;
+        }
         public bool HasItem(Item item, byte quantity)
         {
 

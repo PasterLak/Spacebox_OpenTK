@@ -45,6 +45,8 @@
     {
         public Ingredient Ingredient;
         public Product Product;
+
+        
     }
     public class Blueprint : RecipeBase
     {

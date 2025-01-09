@@ -166,6 +166,14 @@
         "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
      {
+        "Name": "Basic Machine",
+        "Category" : "resources",
+        "Sides": "basicMachine",
+        "Mass": 1,
+        "IsTransparent": false,
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
+    },
+     {
         "Name": "Window2",
         "Category" : "windows",
         "Sides": "window2",
@@ -190,15 +198,37 @@
         "Category" : "resources",
         "Sides": "furnace",
         "Top": "bottom",
-        "Bottom": "bottom"
+        "Bottom": "bottom",
+        "Efficiency" : 1
+    },
+    {
+        "Name": "Enhanced Furnace",
+        "Type": "furnace",
+        "Category" : "resources",
+        "Sides": "furnace2",
+        "Top": "bottom",
+        "Bottom": "bottom",
+        "Efficiency" : 1.5
     },
     {
         "Name": "Crusher",
         "Type": "crusher",
         "Category" : "resources",
-        "Sides": "crusherSide2",
+        "Sides": "crusherSide",
         "Top": "crusherTop",
         "Bottom": "bottom",
+        "Efficiency" : 1,
+        "IsTransparent": false,
+        "LightColor": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+        "Name": "Enhanced Crusher",
+        "Type": "crusher",
+        "Category" : "resources",
+        "Sides": "crusherSide2",
+        "Top": "crusherTop2",
+        "Bottom": "bottom",
+        "Efficiency" : 1.5,
         "IsTransparent": false,
         "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
@@ -229,11 +259,12 @@
         "Sides": "disassemblerSide",
         "Top": "disassemblerTop2",
         "Bottom": "bottom",
+        "Efficiency" : 1,
         "IsTransparent": false,
         "LightColor": { "x": 0, "y": 0, "z": 0 }
     },
     {
-        "Name": "Wire",
+        "Name": "Cabel Block",
         "Sides": "wire",
         "Category" : "blocks",
         "IsTransparent": false,

@@ -10,7 +10,7 @@ namespace Spacebox.GUI
     {
         public StatsBarData StatsData { get; private set; }
         private StatsGUI _statsGUI;
-        private float timeToDecrement = 4f;
+        private float timeToDecrement = 10f;
         private float time;
         public HealthBar()
         {

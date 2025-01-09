@@ -99,6 +99,13 @@ namespace Spacebox.Game.GUI
             ItemModel.SetColor(color.ToOpenTKVector3());
         }
 
+        public static ItemModel GetSlotModel()
+        {
+
+
+            return GameBlocks.ItemModels[SelectedSlot.Item.Id];
+        }
+
         public static bool TryPlaceItem(out short id, GameMode gameMode)
         {
             id = 0;
@@ -237,7 +244,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        private static void SetSelectedSlot(short id)
+        public static void SetSelectedSlot(short id)
         {
             SelectedSlotId = id;
             SelectSlot(id);

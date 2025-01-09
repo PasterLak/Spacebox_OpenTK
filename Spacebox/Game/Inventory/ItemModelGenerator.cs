@@ -9,8 +9,8 @@ namespace Spacebox.Game
     {
         private static int CellSize = 32;
 
-        public static ItemModel GenerateModel(Texture2D atlasTexture,
-            int cellX, int cellY, float modelSize = 1.0f, float modelDepth = 0.2f, bool drawOnlyVisibleSides = true)
+            public static ItemModel GenerateModel(Texture2D atlasTexture,
+            int cellX, int cellY, float modelSize = 1.0f, float modelDepth = 0.2f, bool isAnimated = false, bool drawOnlyVisibleSides = true)
         {
             Texture2D cellTexture = UVAtlas.GetBlockTexture(atlasTexture, cellX, cellY, GameBlocks.AtlasItems.SizeBlocks);
             cellTexture.FlipX();
@@ -137,7 +137,10 @@ namespace Spacebox.Game
             uint[] indexArray = indices.ToArray();
             Mesh mesh = new Mesh(vertexArray, indexArray);
 
-            return new ItemModel(mesh, cellTexture);
+            if(isAnimated)
+                return new ItemModel(mesh, cellTexture);
+            else
+                return new AnimatedItemModel(mesh, cellTexture);
         }
 
         public static Vector2[] GetUVs(ItemModelGeneratorHelper.Quad quad)

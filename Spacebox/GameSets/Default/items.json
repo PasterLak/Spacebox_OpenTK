@@ -10,7 +10,7 @@
         "Power": 1
     },
     {
-        "Name": "Iron Drill",
+        "Name": "Cobalt Drill",
         "Type": "drill",
         "Category" : "drills",
         "Sprite": "drill2",
@@ -19,7 +19,7 @@
         "Power": 2
     },
     {
-        "Name": "Enhanced Iron Drill",
+        "Name": "Iron Drill",
         "Type": "drill",
         "Category" : "drills",
         "Sprite": "drill3",
@@ -80,6 +80,27 @@
         "ReloadTime": 400,
         "Spread": 0,
         "Pushback": 0
+    },
+    {
+        "Name": "Aluminium Drill Bit",
+        "Sprite": "aluDrillBit",
+        "Category" : "items",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+    {
+        "Name": "Iron Drill Bit",
+        "Sprite": "ironDrillBit",
+        "Category" : "items",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+    {
+        "Name": "Titanium Drill Bit",
+        "Sprite": "titDrillBit",
+        "Category" : "items",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
     },
     {
         "Name": "Cobalt Ingot",
@@ -186,7 +207,13 @@
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
-   
+   {
+        "Name": "Cobalt Diamond",
+        "Sprite": "cobaltDiamond",
+        "Category" : "items",
+        "MaxStack": 64,
+        "ModelDepth": 1.5
+    },
     {
         "Name": "Ice Shards",
         "Sprite": "ice",
@@ -194,7 +221,7 @@
         "ModelDepth": 1.5
     },
     {
-        "Name": "Glass Shards",
+        "Name": "Glass",
         "Sprite": "glass",
         "MaxStack": 64,
         "ModelDepth": 1.5
@@ -202,6 +229,7 @@
     {
         "Name": "Paint",
         "Sprite": "paint",
+        "Category" : "items",
         "MaxStack": 1,
         "ModelDepth": 1.0
     },

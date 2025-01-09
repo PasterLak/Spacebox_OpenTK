@@ -15,6 +15,20 @@
   },
   {
     "Type": "crusher",
+    "RequiredTicks": 100,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Medium Rock", "Quantity": 1 },
+    "Product": { "Item": "Sand", "Quantity": 3 }
+  },
+  {
+    "Type": "crusher",
+    "RequiredTicks": 150,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Heavy Rock", "Quantity": 1 },
+    "Product": { "Item": "Sand", "Quantity": 4 }
+  },
+  {
+    "Type": "crusher",
     "RequiredTicks": 50,
     "PowerPerTickRequared": 5,
     "Ingredient": { "Item": "Cobaltite Rock", "Quantity": 1 },
@@ -113,7 +127,7 @@
     "RequiredTicks": 40,
     "PowerPerTickRequared": 5,
     "Ingredient": { "Item": "Sand", "Quantity": 1 },
-    "Product": { "Item": "Glass Shards", "Quantity": 1 }
+    "Product": { "Item": "Glass", "Quantity": 1 }
   },
   {
     "Type": "furnace",
@@ -258,5 +272,20 @@
     "PowerPerTickRequared": 5,
     "Ingredient": { "Item": "Aluminium Drill", "Quantity": 1 },
     "Product": { "Item": "Aluminium Ingot", "Quantity": 1 }
+  },
+  {
+    "Type": "disassembler",
+    "RequiredTicks": 1000,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Cobalt Drill", "Quantity": 1 },
+    "Product": { "Item": "Cobalt Ingot", "Quantity": 2 }
+  },
+  {
+    "Type": "disassembler",
+    "RequiredTicks": 1000,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Iron Drill", "Quantity": 1 },
+    "Product": { "Item": "Iron Ingot", "Quantity": 2 }
   }
+
 ]

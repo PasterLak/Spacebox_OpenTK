@@ -16,15 +16,11 @@ namespace Spacebox.Game.Player
         public Inventory Inventory { get; private set; }
         public Storage Panel { get; private set; }
 
-        private float _cameraSpeed = 3.5f;
-        private float _shiftSpeed = 7.5f;
-
         private Axes _axes;
 
         public void SetCameraSpeed(float speed, float shiftSpeed)
         {
-            _cameraSpeed = speed;
-            _shiftSpeed = shiftSpeed;
+            
         }
 
         private bool _firstMove = true;
@@ -52,11 +48,9 @@ namespace Spacebox.Game.Player
         public Flashlight Flashlight { get; private set; }
 
         public HitImage HitImage { get; private set; }
-        private AudioSource wallhitAudio;
-        private AudioSource wallhitAudio2;
+        
         private AudioSource useConsumableAudio;
-        private AudioSource flySpeedUpAudio;
-        private float speedUpPower = 0;
+        
         public HealthBar HealthBar { get; private set; }
         public PowerBar PowerBar { get; private set; }
         private GameModeBase _gameModeBase;
@@ -92,11 +86,6 @@ namespace Spacebox.Game.Player
             CameraRelativeRender = true;
             HitImage = new HitImage();
             Flashlight = new Flashlight(this);
-
-            wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
-            wallhitAudio2 = new AudioSource(SoundManager.GetClip("wallHit2"));
-            flySpeedUpAudio = new AudioSource(SoundManager.GetClip("flySpeedUp"));
-            flySpeedUpAudio.IsLooped = true;
 
             GameMode = GameMode.Creative;
 

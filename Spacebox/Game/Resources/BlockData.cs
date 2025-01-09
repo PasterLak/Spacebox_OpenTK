@@ -12,7 +12,7 @@ namespace Spacebox.Game.Resources
         public byte Mass = 1;  // 1 is minimum
         public byte PowerToDrill = 0; // 0 can destroy every drill
         public byte Health = 0; // instantly destroy
-
+        public float Efficiency = 1f;
         public string Sides { get; set; } = "";
         public string Top { get; set; } = "";
         public string Bottom { get; set; } = "";

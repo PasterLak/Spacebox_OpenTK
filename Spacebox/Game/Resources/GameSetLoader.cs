@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using DryIoc;
 using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
@@ -250,6 +251,7 @@ namespace Spacebox.Game.Resources
                     {
                         blockData.PowerToDrill = byte.MaxValue;
                     }
+                    blockData.Efficiency = block.Efficiency;
                     blockData.Category = block.Category;
                     blockData.Sides = block.Sides;
                     blockData.Top = sameSides ? block.Sides : block.Top;
@@ -347,15 +349,25 @@ namespace Spacebox.Game.Resources
                     var item = GameBlocks.GetItemByName(r.Ingredient.Item);
                     var item2 = GameBlocks.GetItemByName(r.Product.Item);
 
-                    if (item == null) continue;
+                    if (item == null)
+                    {
+                        Debug.Error($"[GameSetLoader] Recipes: ingredient was not found - {r.Ingredient.Item} . This recipe was skipped");
+                        continue;
+                    }
                     if (item2 == null) continue;
+
+                    if(item.Id == item2.Id)
+                    {
+                        Debug.Error($"[GameSetLoader] Recipes: product was not found - {r.Ingredient.Item} . This recipe was skipped");
+                        continue;
+                    }
 
                     GameBlocks.RegisterRecipe(r, item, item2);
                 }
             }
             catch (Exception ex)
             {
-                Debug.Error($"[GamesetLoader] Error loading recipes: {ex.Message}");
+                Debug.Error($"[GameSetLoader] Error loading recipes: {ex.Message}");
             }
         }
 
@@ -381,6 +393,19 @@ namespace Spacebox.Game.Resources
                     {
                         if (!GameBlocks.CraftingCategories.ContainsKey(category.Id))
                         {
+
+                            if(category.Name != "")
+                            {
+                                var item = GameBlocks.GetItemByName(category.Icon);
+
+                                if(item != null)
+                                {
+                                    category.IconPtr = item.IconTextureId;
+                                }
+                            }
+                            
+
+
                             GameBlocks.CraftingCategories.Add(category.Id, category);
                         }
                         else
@@ -441,17 +466,29 @@ namespace Spacebox.Game.Resources
                 Product product;
                 Blueprint blueprint = new Blueprint();
 
-                foreach (var ing in e.Ingredients)
-                {
-                    var item2 = GameBlocks.GetItemByName(ing.Item);
-                    if (item2 == null) continue;
-                    ingredient.Add(new Ingredient(item2, (byte)ing.Quantity));
-                }
-
                 var item = GameBlocks.GetItemByName(e.Product.Item);
 
                 if (item == null) continue;
                 product = new Product(item, (byte)e.Product.Quantity);
+
+                bool craftItself = false;
+                foreach (var ing in e.Ingredients)
+                {
+                    var item2 = GameBlocks.GetItemByName(ing.Item);
+                    if (item2 == null) continue;
+
+                    if(item2.Id == product.Item.Id)
+                    {
+                        craftItself = true;
+                    }
+                    ingredient.Add(new Ingredient(item2, (byte)ing.Quantity));
+                }
+
+                if (craftItself)
+                {
+                    Debug.Error($"[GameSetLoader] Blueprints: item <{item.Name}> needs itself for crafting! This blueprint was skipped");
+                    continue;
+                }
 
                 blueprint.Ingredients = ingredient.ToArray();
                 blueprint.Product = product;
