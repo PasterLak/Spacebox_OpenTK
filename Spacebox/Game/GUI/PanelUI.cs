@@ -83,6 +83,7 @@ namespace Spacebox.Game.GUI
 
         public static bool IsHoldingConsumable() => IsHoldingItem<ConsumableItem>();
         public static bool IsHoldingDrill() => IsHoldingItem<DrillItem>();
+        public static bool IsHoldingWeapon() => IsHoldingItem<WeaponItem>();
         public static bool IsHoldingBlock() => IsHoldingItem<BlockItem>();
 
         public static void DrawItemModel()
@@ -221,7 +222,10 @@ namespace Spacebox.Game.GUI
             {
                 player.SetInteraction(new InteractionPlaceBlock());
             }
-
+            else if (IsHoldingWeapon())
+            {
+                player.SetInteraction(new InteractionShoot(SelectedSlot));
+            }
             else if (IsHoldingDrill())
             {
                 if(player.GameMode == GameMode.Creative)

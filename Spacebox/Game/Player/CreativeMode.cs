@@ -15,6 +15,7 @@ public class CreativeMode : MovementMode
             typeof(InteractionDestroyBlock),
             typeof(InteractionPlaceBlock),
             typeof(InteractionConsumeItem),
+            typeof(InteractionShoot),
             typeof(InteractionDefault)
         }, GameMode.Creative);
     }

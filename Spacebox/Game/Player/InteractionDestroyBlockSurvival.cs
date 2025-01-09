@@ -1,5 +1,4 @@
 ﻿using OpenTK.Mathematics;
-using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
@@ -35,13 +34,14 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
         UpdateItemSlot(itemslot);
 
-
     }
 
     public void UpdateItemSlot(ItemSlot itemslot)
     {
         selectedItemSlot = itemslot;
-        model = GameBlocks.ItemModels[itemslot.Item.Id] as AnimatedItemModel;
+        var mod = GameBlocks.ItemModels[itemslot.Item.Id];
+        model = mod as AnimatedItemModel;
+
     }
     public override void OnEnable()
     {
@@ -106,6 +106,15 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
     private void DestroyBlock(VoxelPhysics.HitInfo hit)
     {
+        if(hit.block != null && selectedItemSlot != null)
+        {
+            var b = hit.block as ResourceProcessingBlock;
+
+            if(b != null && selectedItemSlot.Storage != null)
+            {
+                b.GiveAllResourcesBack(selectedItemSlot.Storage);
+            }
+        }
         hit.chunk.RemoveBlock(hit.blockPosition, hit.normal);
 
         if (blockDestroy != null)

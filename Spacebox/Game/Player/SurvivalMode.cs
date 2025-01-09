@@ -9,6 +9,7 @@ public class SurvivalMode : MovementMode
            typeof(InteractionDestroyBlockSurvival),
             typeof(InteractionPlaceBlock),
             typeof(InteractionConsumeItem),
+            typeof(InteractionShoot),
             typeof(InteractionDefault)
         }, GameMode.Survival);
     }

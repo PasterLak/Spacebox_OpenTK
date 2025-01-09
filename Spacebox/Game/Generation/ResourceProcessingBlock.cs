@@ -44,6 +44,27 @@ namespace Spacebox.Game.Generation
             return InputStorage.GetSlot(0, 0).Count > 0;
         }
 
+        public void GiveAllResourcesBack(Storage storage)
+        {
+            var inputItem = InputStorage.GetSlot(0, 0);
+            var fuelItem = FuelStorage.GetSlot(0, 0);
+            var outputItem = OutputStorage.GetSlot(0, 0);
+
+            if (inputItem.Count > 0)
+            {
+                storage.TryAddItem(inputItem.Item, inputItem.Count);
+            }
+            if (outputItem.Count > 0)
+            {
+                storage.TryAddItem(outputItem.Item, outputItem.Count);
+            }
+            if (fuelItem.Count > 0)
+            {
+                storage.TryAddItem(fuelItem.Item, fuelItem.Count);
+            }
+            
+        }
+
         public bool TryStartTask(out ProcessResourceTask task)
         {
             task = null;

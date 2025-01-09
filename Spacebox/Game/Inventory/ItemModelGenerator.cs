@@ -137,7 +137,7 @@ namespace Spacebox.Game
             uint[] indexArray = indices.ToArray();
             Mesh mesh = new Mesh(vertexArray, indexArray);
 
-            if(isAnimated)
+            if(!isAnimated)
                 return new ItemModel(mesh, cellTexture);
             else
                 return new AnimatedItemModel(mesh, cellTexture);

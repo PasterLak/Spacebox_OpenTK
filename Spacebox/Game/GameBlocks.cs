@@ -179,10 +179,11 @@ namespace Spacebox.Game
 
         private static void GenerateItemModel(byte coordX, byte coordY, Item item)
         {
-            bool isAnimated = item is DrillItem;
+            bool isAnimated = item is DrillItem || item is WeaponItem;
 
             ItemModel model = ItemModelGenerator.GenerateModel(
                 ItemsTexture, coordX, coordY, 0.004f, item.ModelDepth / 500f * 2f, isAnimated, true);
+
 
             ItemModels.Add(MaxItemId, model);
         }

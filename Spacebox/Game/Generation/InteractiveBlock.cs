@@ -27,7 +27,6 @@ namespace Spacebox.Game.Generation
         {
         }
         public InteractiveBlock(BlockData blockData) : base(blockData)
-
         {
             
             if (blockData.Name == "Radar")

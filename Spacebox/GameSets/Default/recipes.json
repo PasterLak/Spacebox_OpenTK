@@ -286,6 +286,13 @@
     "PowerPerTickRequared": 5,
     "Ingredient": { "Item": "Iron Drill", "Quantity": 1 },
     "Product": { "Item": "Iron Ingot", "Quantity": 2 }
+  },
+  {
+    "Type": "disassembler",
+    "RequiredTicks": 500,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Window", "Quantity": 1 },
+    "Product": { "Item": "Glass", "Quantity": 6 }
   }
 
 ]
