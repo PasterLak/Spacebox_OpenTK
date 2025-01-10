@@ -20,7 +20,8 @@ namespace Spacebox.Game.Generation
         private readonly Octree<Chunk> octree;
         public BoundingBox BoundingBox { get; private set; }
         public Vector3 PositionWorld { get; private set; }
-
+        public bool IsModified { get; private set; } = false;
+        public void SetModified() { if (!IsModified) IsModified = true; }
         public Sector Sector { get; private set; }
 
         private static Shader Shader;
@@ -61,7 +62,6 @@ namespace Spacebox.Game.Generation
             // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
             tag = CreateTag(GeometryBoundingBox);
 
-            RecalculateMass();
         }
 
         public void AddChunks(Chunk[] chunks, bool generateMesh)
@@ -95,6 +95,7 @@ namespace Spacebox.Game.Generation
 
 
             RecalculateGeometryBoundingBox();
+            RecalculateMass();
         }
 
         public void GenerateMesh()
@@ -115,6 +116,7 @@ namespace Spacebox.Game.Generation
             chunk.GenerateMesh();
             UpdateNeighbors(chunk);
             RecalculateGeometryBoundingBox();
+            RecalculateMass();
         }
 
         public void RemoveChunk(Chunk chunk)

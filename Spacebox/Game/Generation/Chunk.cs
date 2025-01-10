@@ -29,8 +29,16 @@ namespace Spacebox.Game.Generation
         public Block[,,] Blocks { get; private set; }
         public bool ShowChunkBounds { get; set; } = true;
         public bool MeasureGenerationTime { get; set; } = true;
+        private bool _isModified  = false;
+        public bool IsModified { get => _isModified;
+            set 
+                {
+                _isModified = value;
 
-        public bool IsModified { get; private set; } = false;
+                if (_isModified) SpaceEntity.SetModified();
+            }
+        }
+
         public bool IsGenerated { get; private set; } = false;
 
         private Mesh _mesh;
@@ -389,6 +397,8 @@ namespace Spacebox.Game.Generation
             {
                 GenerateMesh();
             }
+
+            IsModified = true;
         }
 
         private void ClearChunk()
@@ -403,6 +413,7 @@ namespace Spacebox.Game.Generation
                     }
                 }
             }
+            IsModified = true;
         }
         public void Dispose()
         {

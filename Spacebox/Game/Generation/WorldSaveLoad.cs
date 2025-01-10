@@ -89,6 +89,15 @@ namespace Spacebox.Game.Generation
 
                     var e = LoadSpaceEntityFromFile(file, sector);
 
+                    var fileName = Path.GetFileNameWithoutExtension(file);
+
+                    if (e.Name != fileName)
+                    {
+                        Debug.Warning("[WorldSaveLoad] Entity name was changed because file name was changed: " + e.Name + " to " + fileName);
+                        e.Name = fileName;
+                        
+                    }
+
                     if (e != null)
                     {
                         spaceEntities.Add(e);
@@ -121,43 +130,6 @@ namespace Spacebox.Game.Generation
             return null;
         }
 
-        public static void SaveEntity(SpaceEntity entity, string entityPath)
-        {
-            if (Path.Exists(entityPath))
-            {
-                //Debug.Log("Path exists: " + Path.Combine(sectorsPath, sectorFolderName));
-            }
-            else
-            {
-                //Debug.Log("Path doesnt exist: " + Path.Combine(sectorsPath, sectorFolderName));
-
-                var root = new CompoundTag(entity.GetType().Name);
-
-                root.Add(new IntTag("id", entity.EntityID));
-                root.Add(new StringTag("name", entity.Name));
-
-                root.Add(new FloatTag("worldX", entity.PositionWorld.X));
-                root.Add(new FloatTag("worldY", entity.PositionWorld.Y));
-                root.Add(new FloatTag("worldZ", entity.PositionWorld.Z));
-
-                var chunks = new ListTag("chunks", TagType.Compound);
-
-
-                for (int i = 0; i < 3; i++)
-                {
-                    var chunk = new CompoundTag("chunk");
-                    chunk.Add(new IntTag("id", i));
-                    chunks.Add(chunk);
-                }
-
-                root.Add("chunks", chunks);
-
-
-                //Debug.Log(root.PrettyPrinted());
-
-            }
-        }
-
 
         private static void SaveSector(Sector sector, string sectorsPath)
         {
@@ -176,12 +148,14 @@ namespace Spacebox.Game.Generation
                 Directory.CreateDirectory(sectorFolderPath);
             }
 
-
             for (int i = 0; i < entities.Count; i++)
             {
+                if (!entities[i].IsModified) continue;
+
                 var entity = entities[i];
                 var entityTag = NBTHelper.SpaceEntityToTag(entity);
 
+                Debug.Success("Entity was saved: " + entities[i].Name  + "  pos: "+ entities[i].PositionWorld);
                 NbtFile.WriteAsync(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
             }
 

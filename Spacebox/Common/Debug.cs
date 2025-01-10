@@ -129,6 +129,12 @@ namespace Spacebox.Common
             Console.WriteLine($"[Success] {message}");
         }
 
+        public static void Warning(string message)
+        {
+            AddMessage($"[Warning] {message}", new Vector4(1, 0.45f, 0, 1));
+            Console.WriteLine($"[Warning] {message}");
+        }
+
         public static void Log(string message, Vector4 color)
         {
             AddMessage($"{message}", color);

@@ -96,6 +96,7 @@ namespace Spacebox.Game.Generation
 
             for (int i = 0; i < chunksList.Count; i++)
             {
+                if (chunksList[i].IsModified)
                 chunks.Add(ChunkToTag(chunksList[i]));
             }
 
@@ -147,9 +148,9 @@ namespace Spacebox.Game.Generation
 
                         if (block.Direction != Direction.Up)
                         {
-                            idList.Add(indexIn1D);
+                            idList.Add(GetArrayIndex(x,y,z, SIZE)); // indexIn1D
                             idList.Add((byte)block.Direction);
-                            Debug.Log($"Direction save index: {indexIn1D} row direction {(byte)block.Direction} end pos {x},{y},{z} block id: {block.BlockId}");
+                            //Debug.Log($"Direction save index: {indexIn1D} row direction {(byte)block.Direction} end pos {x},{y},{z} block id: {block.BlockId}");
                         }
 
                         indexIn1D++;
@@ -220,10 +221,10 @@ namespace Spacebox.Game.Generation
                 {
                     blocks[x, y, z].Direction = (Direction)direction;
                 }
-                blocks[x, y, z].Color = new Vector3(1,0,0);
-                blocks[x, y, z].BlockId = ids[(int)index1D];
-                Debug.Log($"Direction index: {index1D} row direction {direction} end pos {x},{y},{z}");
-                Debug.Log($"Block direction: {blocks[x, y, z].Direction} Id: {blocks[x, y, z].BlockId}");
+                //blocks[x, y, z].Color = new Vector3(1,0,0);
+                //blocks[x, y, z].BlockId = ids[(int)index1D];
+                //Debug.Log($"Direction index: {index1D} row direction {direction} end pos {x},{y},{z}");
+                //Debug.Log($"Block direction: {blocks[x, y, z].Direction} Id: {blocks[x, y, z].BlockId}");
             }
 
 

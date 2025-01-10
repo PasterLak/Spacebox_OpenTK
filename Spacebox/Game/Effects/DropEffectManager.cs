@@ -46,7 +46,7 @@ namespace Spacebox.Game.Effects
 
         public void DestroyBlock(Vector3 position, Vector3 color, Block block)
         {
-            Texture2D texture = GameBlocks.ItemIcon[(short)(block.BlockId - 1)];
+            Texture2D texture = GameBlocks.ItemIcon[(short)(block.BlockId)];
             DropEffect dropEffect = GetDropEffect();
             dropEffect.Initialize(
                 player,
