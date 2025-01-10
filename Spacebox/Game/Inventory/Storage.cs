@@ -298,7 +298,16 @@ namespace Spacebox.Game
             return false;
         }
 
-
+        public IEnumerable<ItemSlot> GetAllSlots()
+        {
+            for (int x = 0; x < SizeX; x++)
+            {
+                for (int y = 0; y < SizeY; y++)
+                {
+                    yield return GetSlot(x, y);
+                }
+            }
+        }
         public ItemSlot GetSlotByID(int id) // opt todo
         {
             for (int x = 0; x < SizeX; x++)

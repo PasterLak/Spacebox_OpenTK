@@ -116,7 +116,10 @@ namespace Spacebox.Game
         }
         private static void RegisterItem(BlockData blockData)
         {
-            if (blockData.Id == 0) return;
+            /*if (blockData.Id == 0)
+            {
+                return;
+            }*/
 
             MaxItemId++;
 
@@ -265,7 +268,7 @@ namespace Spacebox.Game
         public static bool TryGetItemByBlockID(int blockID, out Item item)
         {
             item = null;
-            blockID--;
+            //blockID--;
             if (Item.ContainsKey((short)blockID))
             {
                 item = Item[(short)blockID];

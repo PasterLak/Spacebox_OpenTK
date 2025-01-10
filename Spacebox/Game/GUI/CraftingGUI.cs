@@ -47,6 +47,7 @@ namespace Spacebox.Game.GUI
         private static Storage Inventory;
 
         private static AudioSource scrollAudio;
+        private static AudioSource clickAudio;
         public static void Toggle(Astronaut _)
         {
             IsVisible = !IsVisible;
@@ -59,6 +60,7 @@ namespace Spacebox.Game.GUI
             category = GameBlocks.CraftingCategories.Values.ToArray();
             SlotTexture = TextureManager.GetTexture("Resources/Textures/slot.png", true, false).Handle;
             scrollAudio = new AudioSource(SoundManager.GetClip("scroll"));
+            clickAudio = new AudioSource(SoundManager.GetClip("click1"));
         }
 
         public static void OnGUI()
@@ -115,7 +117,7 @@ namespace Spacebox.Game.GUI
                             //totalSlots = ((usedSlots + (6 - 1)) / 6) * 6;
 
                             totalSlots = 3 * 6;
-
+                            
                             showGrid = true;
                         }, y * countX + x);
                     }
@@ -160,6 +162,7 @@ namespace Spacebox.Game.GUI
 
             if (ImGui.Button("Back", new Vector2(backButtonWidth, backButtonHeight)))
             {
+                clickAudio.Play();
                 showGrid = false;
             }
 
@@ -287,6 +290,7 @@ namespace Spacebox.Game.GUI
             label = itemData.item.Name;
             if (ImGui.Button($"##craft_slot_{slotId}", new Vector2(width, height)))
             {
+                clickAudio.Play();
                 onClick.Invoke(itemData.blueprint);
             };
 
@@ -449,7 +453,12 @@ namespace Spacebox.Game.GUI
             drawList.AddRectFilled(buttonPos - offset, buttonPos + new Vector2(width, height) + offset, lightColor);
 
 
-            if (ImGui.Button("##menuButton" + label, new Vector2(width, height))) onClick?.Invoke(label);
+            if (ImGui.Button("##menuButton" + label, new Vector2(width, height)))
+            {
+                clickAudio.Play();
+                onClick?.Invoke(label);
+
+            }
 
             /* drawList.AddRectFilled(
                  buttonPos + new Vector2(0, height / 2f),

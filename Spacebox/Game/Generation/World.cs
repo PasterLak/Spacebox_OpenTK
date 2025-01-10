@@ -14,14 +14,14 @@ using Spacebox.Game.Player;
 
 namespace Spacebox.Game.Generation
 {
-    public class World
+    public class World : IDisposable
     {
         public static World Instance;
 
         public const int SizeSectors = 4;
         public Astronaut Player { get; private set; }
         public static Random Random;
-        public WorldLoader.LoadedWorld WorldData { get; private set; }
+        public static WorldLoader.LoadedWorld Data { get; private set; }
         public static DropEffectManager DropEffectManager;
         public static BlockDestructionManager DestructionManager;
 
@@ -50,6 +50,7 @@ namespace Spacebox.Game.Generation
 
             Vector3i initialSectorIndex = GetSectorIndex(Player.Position);
 
+          
             CurrentSector = LoadSector(initialSectorIndex);
             CurrentSector.SpawnPlayerNearAsteroid(player, Random);
             if (CurrentSector == null) Debug.Error("No current sector");
@@ -62,21 +63,24 @@ namespace Spacebox.Game.Generation
             //SpaceEntity.InitializeSharedResources();
 
             Overlay.AddElement(new WorldOverlayElement(this));
+
+           
         }
 
-        public void LoadWorldInfo(string worldName)
+        public static void LoadWorldInfo(string worldName)
         {
-            WorldData = WorldLoader.LoadWorldByName(worldName);
+            Data = WorldLoader.LoadWorldByName(worldName);
 
-            if (WorldData == null)
+            if (Data == null)
             {
                 Debug.Log("Data not found!");
                 Random = new Random();
             }
             else
             {
-                Random = new Random(int.Parse(WorldData.Info.Seed));
+                Random = new Random(int.Parse(Data.Info.Seed));
             }
+
         }
 
         private void OnPlayerMoved(Astronaut player)
@@ -128,6 +132,12 @@ namespace Spacebox.Game.Generation
             {
                 sector.Update();
             }*/
+
+
+            if(Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.P))
+            {
+                WorldSaveLoad.SaveWorld(Data.WorldFolderPath);
+            }
         }
 
         public void Render(Shader shader)
@@ -246,6 +256,11 @@ namespace Spacebox.Game.Generation
             }
 
             return sectors;
+        }
+
+        public void Dispose()
+        {
+            Data = null;
         }
     }
 }

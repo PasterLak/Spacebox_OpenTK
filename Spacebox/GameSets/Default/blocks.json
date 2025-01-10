@@ -32,7 +32,7 @@
         "Sides": "ice",
          "PowerToDrill": 1,
         "Mass": 1,
-        "Durability": 1
+        "Durability": 2
     },
     {
         "Name": "Aluminium Ore",
@@ -46,14 +46,14 @@
         "Sides": "ironOre",
         "PowerToDrill": 2,
         "Mass": 2,
-        "Durability": 4
+        "Durability": 6
     },
     {
         "Name": "Titanium Ore",
         "Sides": "titaniumOre",
          "PowerToDrill": 4,
         "Mass": 1,
-        "Durability": 7
+        "Durability": 9
     },
     {
         "Name": "Thulium Ore",
@@ -63,11 +63,11 @@
         "Durability": 7
     },
     {
-        "Name": "Pink Ore",
+        "Name": "Ponium Ore",
         "Sides": "pinkOre",
-         "PowerToDrill": 4,
+         "PowerToDrill": 5,
         "Mass": 1,
-        "Durability": 15
+        "Durability": 50
     },
     {
         "Name": "Uranium Ore",

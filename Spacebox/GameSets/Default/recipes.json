@@ -88,7 +88,14 @@
     "RequiredTicks": 60,
     "PowerPerTickRequared": 5,
     "Ingredient": { "Item": "Uranium Ore", "Quantity": 1 },
-    "Product": { "Item": "Uranium Ingot", "Quantity": 2 }
+    "Product": { "Item": "Uranium Dust", "Quantity": 2 }
+  },
+  {
+    "Type": "crusher",
+    "RequiredTicks": 60,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Uranium Ingot", "Quantity": 1 },
+    "Product": { "Item": "Uranium Dust", "Quantity": 1 }
   },
   {
     "Type": "crusher",
@@ -166,6 +173,13 @@
   },
   {
     "Type": "furnace",
+    "RequiredTicks": 120,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Uranium Dust", "Quantity": 1 },
+    "Product": { "Item": "Uranium Ingot", "Quantity": 1 }
+  },
+  {
+    "Type": "furnace",
     "RequiredTicks": 100,
     "PowerPerTickRequared": 5,
     "Ingredient": { "Item": "Cobaltite Rock", "Quantity": 1 },
@@ -191,6 +205,13 @@
     "PowerPerTickRequared": 5,
     "Ingredient": { "Item": "Titanium Ore", "Quantity": 1 },
     "Product": { "Item": "Titanium Ingot", "Quantity": 1 }
+  },
+  {
+    "Type": "furnace",
+    "RequiredTicks": 200,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Uranium Ore", "Quantity": 1 },
+    "Product": { "Item": "Uranium Ingot", "Quantity": 1 }
   },
   {
     "Type": "furnace",

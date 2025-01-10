@@ -5,7 +5,6 @@ using Spacebox.FPS;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
-using static Spacebox.Game.Physics.VoxelPhysics;
 
 namespace Spacebox.Game.Player;
 

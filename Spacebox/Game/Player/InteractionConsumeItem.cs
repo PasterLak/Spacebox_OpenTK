@@ -9,12 +9,12 @@ public class InteractionConsumeItem : InteractionMode
 {
 
     private ItemSlot _itemSlot;
-    private const byte MaxDestroyDistance = 6;
-
+    private static AudioSource useConsumableAudio;
     public InteractionConsumeItem(ItemSlot itemSlot)
     {
         _itemSlot = itemSlot;
         AllowReload = true;
+
     }
 
     public override void OnEnable()
@@ -39,7 +39,6 @@ public class InteractionConsumeItem : InteractionMode
         var consumable = _itemSlot.Item as ConsumableItem;
         
         if(consumable == null) return;
-       
         
         ApplyConsumable(consumable, player);
 
@@ -60,14 +59,14 @@ public class InteractionConsumeItem : InteractionMode
         {
             if (GameBlocks.TryGetItemSound(consumable.Id, out AudioClip clip))
             {
-                /*if (useConsumableAudio != null)
+                if (useConsumableAudio != null)
                 {
                     useConsumableAudio.Stop();
                 }
-
+                
                 useConsumableAudio = new AudioSource(clip);
                 useConsumableAudio.Volume = 0.3f;
-                useConsumableAudio.Play();*/
+                useConsumableAudio.Play();
 
                 if (consumable.HealAmount > 0)
                     HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 1, 0), 0.2f);
@@ -75,13 +74,17 @@ public class InteractionConsumeItem : InteractionMode
                 if (consumable.PowerAmount > 0)
                     HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 1), 0.15f);
             }
+            else
+            {
+                Debug.Error($"[InteractionConsumeItem] sound effect was not played because was not found!");
+            }
 
             player.HealthBar.StatsData.Increment(consumable.HealAmount);
             player.PowerBar.StatsData.Increment(consumable.PowerAmount);
         }
         else
         {
-            Debug.Error($"[Astrounaut] ApplyConsumable: consumable was null!");
+            Debug.Error($"[InteractionConsumeItem] ApplyConsumable: consumable was null!");
         }
     }
 }

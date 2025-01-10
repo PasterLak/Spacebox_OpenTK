@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SixLabors.ImageSharp.PixelFormats;
@@ -38,48 +38,6 @@ namespace Spacebox.Common
         }
 
         public Dictionary<char, Glyph> Glyphs => _glyphs;
-
-        public BitmapFont(string metadataPath)
-        {
-            if (!File.Exists(metadataPath))
-                throw new FileNotFoundException($"\u0424\u0430\u0439\u043b \u043c\u0435\u0442\u0430\u0434\u0430\u043d\u043d\u044b\u0445 \u0448\u0440\u0438\u0444\u0442\u0430 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d: {metadataPath}");
-
-            _glyphs = new Dictionary<char, Glyph>();
-
-            var json = File.ReadAllText(metadataPath);
-            var fontData = JsonConvert.DeserializeObject<FontMetadata>(json);
-
-            _texturePath = fontData.texturePath;
-
-            LoadTexture(_texturePath, fontData.common.textureWidth, fontData.common.textureHeight);
-
-            foreach (var kvp in fontData.characters)
-            {
-                char c = kvp.Key[0];
-                var charData = kvp.Value;
-
-                charData.x += 1;
-                charData.y += 1;
-
-                charData.width -= 2;
-                charData.height -= 2;
-
-                Glyph glyph = new Glyph
-                {
-                    Size = new Vector2(charData.width, charData.height),
-                    Bearing = new Vector2(charData.xOffset, charData.yOffset),
-                    Advance = charData.xAdvance,
-                    TexOffset = new Vector2(charData.x / (float)fontData.common.textureWidth, charData.y / (float)fontData.common.textureHeight),
-                    TexSize = new Vector2(charData.width / (float)fontData.common.textureWidth, charData.height / (float)fontData.common.textureHeight)
-                };
-
-                _glyphs.Add(c, glyph);
-            }
-
-            LineHeight = fontData.common.lineHeight;
-
-            Console.WriteLine(_glyphs.Count);
-        }
 
         public BitmapFont(string texturePath, int textureWidth = 256, int textureHeight = 256, int glyphWidth = 16, int glyphHeight = 16)
         {

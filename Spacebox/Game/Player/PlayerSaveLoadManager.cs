@@ -192,17 +192,4 @@ namespace Spacebox.Game.Player
         }
     }
 
-    public static class StorageExtensions
-    {
-        public static IEnumerable<ItemSlot> GetAllSlots(this Storage storage)
-        {
-            for (int x = 0; x < storage.SizeX; x++)
-            {
-                for (int y = 0; y < storage.SizeY; y++)
-                {
-                    yield return storage.GetSlot(x, y);
-                }
-            }
-        }
-    }
 }

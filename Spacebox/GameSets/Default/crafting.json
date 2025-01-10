@@ -102,38 +102,38 @@
         },
         {
             "Product": {"Item": "Light Blue", "Quantity": 1},
-            "Ingredients": [{"Item": "Glass", "Quantity": 6},
-            {"Item": "Cobalt Diamond", "Quantity": 1}]
+            "Ingredients": [{"Item": "Light White", "Quantity": 1},
+            {"Item": "Titanium Dust", "Quantity": 1}]
         },
         {
             "Product": {"Item": "Light Red", "Quantity": 1},
-            "Ingredients": [{"Item": "Glass", "Quantity": 6},
-            {"Item": "Cobalt Diamond", "Quantity": 1}]
+            "Ingredients": [{"Item": "Light White", "Quantity": 1},
+            {"Item": "Iron Dust", "Quantity": 1}]
         },
         {
             "Product": {"Item": "Light Yellow", "Quantity": 1},
-            "Ingredients": [{"Item": "Glass", "Quantity": 6},
-            {"Item": "Cobalt Diamond", "Quantity": 1}]
+            "Ingredients": [{"Item": "Light White", "Quantity": 1},
+            {"Item": "Titanium Dust", "Quantity": 1}]
         },
         {
             "Product": {"Item": "Light Cyan", "Quantity": 1},
-            "Ingredients": [{"Item": "Glass", "Quantity": 6},
-            {"Item": "Cobalt Diamond", "Quantity": 1}]
+             "Ingredients": [{"Item": "Light White", "Quantity": 1},
+            {"Item": "Cobalt Dust", "Quantity": 1}]
         },
         {
             "Product": {"Item": "Light Orange", "Quantity": 1},
-            "Ingredients": [{"Item": "Glass", "Quantity": 6},
-            {"Item": "Cobalt Diamond", "Quantity": 1}]
+            "Ingredients": [{"Item": "Light White", "Quantity": 1},
+            {"Item": "Iron Dust", "Quantity": 1}]
         },
         {
             "Product": {"Item": "Light Green", "Quantity": 1},
-            "Ingredients": [{"Item": "Glass", "Quantity": 6},
-            {"Item": "Cobalt Diamond", "Quantity": 1}]
+            "Ingredients": [{"Item": "Light White", "Quantity": 1},
+            {"Item": "Uranium Dust", "Quantity": 1}]
         },
         {
             "Product": {"Item": "Light Pink", "Quantity": 1},
-            "Ingredients": [{"Item": "Glass", "Quantity": 6},
-            {"Item": "Cobalt Diamond", "Quantity": 1}]
+            "Ingredients": [{"Item": "Light White", "Quantity": 1},
+            {"Item": "Cobalt Dust", "Quantity": 1}]
         },
 
         {
@@ -227,10 +227,10 @@
         },
         {
             "Product": {"Item": "Power", "Quantity": 1},
-            "Ingredients": [{"Item": "Cobalt Ingot", "Quantity": 1}]
+            "Ingredients": [{"Item": "Energy Cell", "Quantity": 1}]
         },
-        {
-            "Product": {"Item": "Battery", "Quantity": 1},
+         {
+            "Product": {"Item": "Energy Cell", "Quantity": 2},
             "Ingredients": [{"Item": "Aluminium Ingot", "Quantity": 1},
                             {"Item": "Cobalt Diamond", "Quantity": 1}
             ]
@@ -291,7 +291,7 @@
             "Ingredients": [
                 {"Item": "Iron Drill", "Quantity": 3},
                 {"Item": "Iron Drill Bit", "Quantity": 3},
-                {"Item": "Battery", "Quantity": 4}
+                {"Item": "Energy Cell", "Quantity": 4}
                             
             ]
         },
@@ -310,7 +310,7 @@
             "Ingredients": [
                 
                  {"Item": "Iron Ingot", "Quantity": 2},
-                 {"Item": "Battery", "Quantity": 1}
+                 {"Item": "Energy Cell", "Quantity": 4}
                            
             ]
         },
@@ -320,7 +320,7 @@
                 
                  {"Item": "Iron Ingot", "Quantity": 4},
                  {"Item": "Cobalt Lens", "Quantity": 2},
-                 {"Item": "Battery", "Quantity": 2}
+                 {"Item": "Energy Cell", "Quantity": 6}
                            
             ]
         },
@@ -330,7 +330,8 @@
                 
                  {"Item": "Iron Ingot", "Quantity": 2},
                  {"Item": "Titanium Ingot", "Quantity": 2},
-                 {"Item": "Battery", "Quantity": 4}
+                 {"Item": "Iron Lens", "Quantity": 4},
+                 {"Item": "Energy Cell", "Quantity": 8}
                            
             ]
         }

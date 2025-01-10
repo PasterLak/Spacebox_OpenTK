@@ -192,6 +192,7 @@ namespace Spacebox.Game.Resources
                 air.Mass = 0;
                 air.Category = "";
                 air.Sides = "sand";
+                
 
                 GameBlocks.RegisterBlock(air);
 
@@ -468,14 +469,22 @@ namespace Spacebox.Game.Resources
 
                 var item = GameBlocks.GetItemByName(e.Product.Item);
 
-                if (item == null) continue;
+                if (item == null)
+                {
+                    Debug.Error($"[GameSetLoader] [Blueprints]: Product was not found - {e.Product.Item} . This Blueprint was skipped");
+                    continue;
+                }
                 product = new Product(item, (byte)e.Product.Quantity);
 
                 bool craftItself = false;
                 foreach (var ing in e.Ingredients)
                 {
                     var item2 = GameBlocks.GetItemByName(ing.Item);
-                    if (item2 == null) continue;
+                    if (item2 == null)
+                    {
+                        Debug.Error($"[GameSetLoader] [Blueprints]: Ingredient was not found - {ing.Item} . This Ingredient was skipped");
+                        continue;
+                    }
 
                     if(item2.Id == product.Item.Id)
                     {
@@ -703,6 +712,11 @@ namespace Spacebox.Game.Resources
             if (items.Count == 0) return;
             if (ModInfo.ItemsOnStart == null) return;
             if (ModInfo.ItemsOnStart.Count == 0) return;
+
+            if(player.GameMode == GameMode.Spectator)
+            {
+                return;
+            }
 
             foreach (var itemData in ModInfo.ItemsOnStart)
             {

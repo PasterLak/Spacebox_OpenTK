@@ -15,22 +15,35 @@ namespace Spacebox.Game
         private void CreateAndSaveNBT()
         {
             var root = new CompoundTag("Root");
-            root.Add("Version", new IntTag("Version", 1));
-            root.Add("WorldName", new StringTag("WorldName", "SpaceboxWorld"));
-            root.Add("Seed", new LongTag("Seed", 1234567890L));
+            root.Add( new IntTag("Version", 1));
+            root.Add( new StringTag("WorldName", "SpaceboxWorld"));
+            root.Add(new LongTag("Seed", 1234567890L));
 
             var chunksList = new ListTag("Chunks", TagType.Compound);
 
             var chunk1 = new CompoundTag("Chunk000");
-            chunk1.Add("ChunkX", new IntTag("ChunkX", 0));
-            chunk1.Add("ChunkY", new IntTag("ChunkY", 0));
-            chunk1.Add("ChunkZ", new IntTag("ChunkZ", 0));
-            chunk1.Add("Biome", new StringTag("Biome", "Plains"));
+            chunk1.Add( new IntTag("ChunkX", 0));
+            chunk1.Add( new IntTag("ChunkY", 0));
+            chunk1.Add( new IntTag("ChunkZ", 0));
+            chunk1.Add( new StringTag("Biome", "Plains"));
+
+            var chunk2 = new CompoundTag("Chunk000");
+            chunk2.Add("ChunkX", new IntTag("ChunkX", 1));
+            chunk2.Add("ChunkY", new IntTag("ChunkY", 0));
+            chunk2.Add("ChunkZ", new IntTag("ChunkZ", 0));
+            chunk2.Add("Biome", new StringTag("Biome", "Plains"));
 
             chunksList.Add(chunk1);
+            chunksList.Add(chunk2);
             root.Add(chunksList);
 
-          
+            var lis = new ListTag("Data", TagType.Int);
+            lis.Add(new IntTag("0", 0));
+            lis.Add(new IntTag("0", 1));
+            lis.Add(new IntTag("0", 2));
+
+            root.Add(lis);
+
             var x = NbtFile.OpenWrite(FilePath, FormatOptions.Java, CompressionType.None);
             x.WriteTag(root);
             x.Dispose();
@@ -55,6 +68,8 @@ namespace Spacebox.Game
 
             Console.WriteLine($"Root: {root.Name}");
 
+            
+
             if(root.TryGetValue("Version", out IntTag val))
             {
                 Console.WriteLine($"Version: {val.Name} {val.Value}");
@@ -63,10 +78,10 @@ namespace Spacebox.Game
             {
 
             }
+            Console.WriteLine(root.PrettyPrinted());
 
-            
 
-          
+
             /*
             if (root.TryGet("WorldName", out StringTag worldName))
             {

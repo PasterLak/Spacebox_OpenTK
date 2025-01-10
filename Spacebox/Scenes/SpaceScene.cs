@@ -147,12 +147,12 @@ namespace Spacebox.Scenes
            
             player = new Astronaut(new Vector3(5,5,5));
             SceneGraph.AddRoot(player);
-            
 
+            World.LoadWorldInfo(worldName);
             world = new World(player);
-            world.LoadWorldInfo(worldName);
-            player.GameMode = world.WorldData.Info.GameMode;
-            PlayerSaveLoadManager.LoadPlayer(player, World.Instance.WorldData.WorldFolderPath);
+            
+            player.GameMode = World.Data.Info.GameMode;
+            PlayerSaveLoadManager.LoadPlayer(player, World.Data.WorldFolderPath);
 
 
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
@@ -180,6 +180,8 @@ namespace Spacebox.Scenes
             {
                 e.ElementAfter = new AstronautOverlayElement();
             }
+
+            Overlay.AddElement(new AImedBlockElement());
 
             Input.SetCursorState(CursorState.Grabbed);
 
@@ -453,6 +455,7 @@ namespace Spacebox.Scenes
             blockDestructionManager.Dispose();
             World.DropEffectManager.Dispose();
             TagManager.ClearTags();
+            world.Dispose();
         }
     }
 }

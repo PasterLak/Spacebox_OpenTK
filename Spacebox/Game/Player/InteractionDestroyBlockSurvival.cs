@@ -6,6 +6,7 @@ using Spacebox.Common.Physics;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
+using Spacebox.GUI;
 
 namespace Spacebox.Game.Player;
 
@@ -20,6 +21,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
     private ItemSlot selectedItemSlot;
     private AnimatedItemModel model;
     public static BlockMiningEffect BlockMiningEffect;
+    private InteractiveBlock lastInteractiveBlock;
     public InteractionDestroyBlockSurvival(ItemSlot itemslot)
     {
         selectedItemSlot = itemslot;
@@ -27,7 +29,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         if (BlockMiningEffect == null)
         {
             var texture = TextureManager.GetTexture("Resources/Textures/blockHit.png", true);
-           // texture
+            // texture
             BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1),
                 texture, ShaderManager.GetShader("Shaders/particle"));
         }
@@ -62,6 +64,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         lastBlock = null;
         selectedItemSlot = null;
         //BlockMiningEffect.Enabled = false;
+        CenteredText.Hide();
     }
 
     private const float timeToDamage = 0.5f;
@@ -80,14 +83,14 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
         lastBlock = hit.block;
 
-        if(lastBlock != hit.block)
+        if (lastBlock != hit.block)
         {
             _time = timeToDamage;
         }
 
         _time -= Time.Delta;
 
-        if(_time <= 0f) 
+        if (_time <= 0f)
         {
             DamageBlock(hit, power);
             _time = timeToDamage;
@@ -100,17 +103,17 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         int dam = (hit.block.Durability - damage);
         if (dam < 0) dam = 0;
         hit.block.Durability = (byte)(dam);
-      
+
         if (hit.block.Durability <= 0) DestroyBlock(hit);
     }
 
     private void DestroyBlock(VoxelPhysics.HitInfo hit)
     {
-        if(hit.block != null && selectedItemSlot != null)
+        if (hit.block != null && selectedItemSlot != null)
         {
             var b = hit.block as ResourceProcessingBlock;
 
-            if(b != null && selectedItemSlot.Storage != null)
+            if (b != null && selectedItemSlot.Storage != null)
             {
                 b.GiveAllResourcesBack(selectedItemSlot.Storage);
             }
@@ -131,7 +134,17 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
     public override void Update(Astronaut player)
     {
-        if (!player.CanMove) return;
+        if (!player.CanMove)
+        {
+            if (Input.IsKeyDown(Keys.F))
+            {
+                if (lastInteractiveBlock != null)
+                    lastInteractiveBlock.Use(player);
+            }
+            return;
+        }
+
+
         Ray ray = new Ray(player.Position, player.Front, MaxDestroyDistance);
         VoxelPhysics.HitInfo hit;
 
@@ -149,6 +162,8 @@ public class InteractionDestroyBlockSurvival : InteractionMode
             BlockSelector.Instance.UpdatePosition(selectorPos,
                 Block.GetDirectionFromNormal(hit.normal));
 
+            
+
             if (Input.IsMouseButton(MouseButton.Left))
             {
                 var item = selectedItemSlot.Item as DrillItem;
@@ -160,15 +175,15 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
                 if (item != null)
                 {
-                    
 
-                   
+
+
 
                     if (item.Power >= blockData.PowerToDrill)
                     {
                         BlockMiningEffect.SetEmitter(true);
-                        
-                       
+
+
                         ProcessDestroying(hit, item.Power);
                     }
                     else
@@ -177,9 +192,9 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                         BlockMiningEffect.SetEmitter(false);
                     }
 
-                   
+
                 }
-                
+
             }
 
             if (Input.IsMouseButtonDown(MouseButton.Left))
@@ -187,7 +202,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 model?.SetAnimation(true);
                 BlockMiningEffect.Enabled = true;
             }
-                if (Input.IsMouseButtonUp(MouseButton.Left))
+            if (Input.IsMouseButtonUp(MouseButton.Left))
             {
                 model?.SetAnimation(false);
                 _time = timeToDamage;
@@ -196,18 +211,15 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 BlockMiningEffect.Enabled = false;
             }
 
-            /*if (Input.IsMouseButtonDown(MouseButton.Left))
+            lastInteractiveBlock = hit.block as InteractiveBlock;
+
+            if (lastInteractiveBlock == null)
             {
-                hit.chunk.RemoveBlock(hit.blockPosition, hit.normal);
+                CenteredText.Hide();
+                return;
+            }
 
-                if (blockDestroy != null)
-                {
-
-                    blockDestroy.Play();
-                }
-
-                else Debug.Error("blockDestroy was null!");
-            }*/
+            UpdateInteractive(lastInteractiveBlock, player, hit.chunk);
         }
         else
         {
@@ -217,7 +229,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
             if (Input.IsMouseButtonDown(MouseButton.Left))
             {
                 model?.SetAnimation(true);
-               
+
             }
             if (Input.IsMouseButtonUp(MouseButton.Left))
             {
@@ -225,5 +237,18 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 BlockMiningEffect.Enabled = false;
             }
         }
+    }
+
+    private void UpdateInteractive(InteractiveBlock block, Astronaut player, Chunk chunk)
+    {
+
+        CenteredText.Show();
+
+        if (Input.IsKeyDown(Keys.F))
+        {
+            block.chunk = chunk;
+            block.Use(player);
+        }
+
     }
 }

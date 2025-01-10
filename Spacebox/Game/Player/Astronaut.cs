@@ -186,7 +186,7 @@ namespace Spacebox.Game.Player
             if (Input.IsKeyDown(Keys.P))
             {
                 Console.WriteLine("Saving Player");
-                PlayerSaveLoadManager.SavePlayer(this, World.Instance.WorldData.WorldFolderPath);
+                PlayerSaveLoadManager.SavePlayer(this, World.Data.WorldFolderPath);
             }
 
             if (Input.IsKeyDown(Keys.R))

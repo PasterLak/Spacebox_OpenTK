@@ -345,6 +345,15 @@ namespace Spacebox.Game.GUI
                           selectedGameSetIndex = i;
                       }
                   }
+
+                  for (int i = 0; i < gamemodes.Length; i++)
+                  {
+                      
+                      if (gamemodes[i].ToLower() == "survival")
+                      {
+                          selectedGameModeIndex = i;
+                      }
+                  }
               });
 
             ButtonWithBackground("Back", new Vector2(bottomButtonWidth, bottomButtonHeight),

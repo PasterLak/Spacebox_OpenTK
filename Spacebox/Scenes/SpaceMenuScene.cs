@@ -37,8 +37,7 @@ namespace Spacebox.Scenes
 
             float winX = Window.Instance.Size.X;
             float winY = Window.Instance.Size.Y;
-
-
+    
             //sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
             //GL.Enable(EnableCap.DepthTest);
 

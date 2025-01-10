@@ -15,6 +15,8 @@ namespace Spacebox.Game.GUI
                 ImGui.Text($" ");
                 ImGui.Text($"Block");
                 ImGui.Text(AimedBlock.ToString());
+
+                AimedBlock = null;
             }
         }
     }

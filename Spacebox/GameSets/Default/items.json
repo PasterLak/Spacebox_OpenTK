@@ -163,6 +163,12 @@
         "ModelDepth": 1.0
     },
     {
+        "Name": "Uranium Dust",
+        "Sprite": "uraniumDust",
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+    {
         "Name": "Cobalt Lens",
         "Category" : "items",
         "Sprite": "cobaltLens",
@@ -273,9 +279,9 @@
         "ModelDepth": 3.0
     },
     {
-        "Name": "Battery",
+        "Name": "Energy Cell",
         "Category" : "items",
-        "Sprite": "battery2",
+        "Sprite": "energyCells",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },

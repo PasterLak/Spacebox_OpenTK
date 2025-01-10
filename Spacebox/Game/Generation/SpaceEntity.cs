@@ -14,6 +14,7 @@ namespace Spacebox.Game.Generation
         public const short SizeBlocks = SizeChunks * Chunk.Size;
         public const short SizeBlocksHalf = SizeChunks * Chunk.Size / 2;
 
+        public int EntityID { get; private set; } = 0;
         public ulong Mass { get; set; } = 0;
 
         private readonly Octree<Chunk> octree;
@@ -31,14 +32,16 @@ namespace Spacebox.Game.Generation
 
         private SimpleBlock simple;
 
-        private List<Chunk> chunks = new List<Chunk>();
+        public List<Chunk> Chunks { get; private set; } = new List<Chunk>();
+        private List<Chunk> MeshesTogenerate = new List<Chunk>();
         private Dictionary<Vector3SByte, Chunk> chunkDictionary = new Dictionary<Vector3SByte, Chunk>();
         private Tag tag;
         private string _entityMassString = "0 tn";
         public BoundingBox GeometryBoundingBox { get; private set; }
 
-        public SpaceEntity(Vector3 positionWorld, Sector sector, bool oneChunk)
+        public SpaceEntity(int id, Vector3 positionWorld, Sector sector)
         {
+            EntityID = id;
             Position = positionWorld;
             PositionWorld = positionWorld;
             Sector = sector;
@@ -48,13 +51,6 @@ namespace Spacebox.Game.Generation
             Shader = ShaderManager.GetShader("Shaders/block");
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
 
-            AddChunk(new Chunk(positionWorld, this));
-
-            if (!oneChunk)
-            {
-                AddChunk(new Chunk(positionWorld + new Vector3(0, -Chunk.Size, 0), this));
-            }
-
             InitializeSharedResources();
             simple = new SimpleBlock(sharedShader, sharedTexture, PositionWorld);
             simple.Scale = new Vector3(1, 1, 1);
@@ -62,17 +58,58 @@ namespace Spacebox.Game.Generation
 
             blockTexture = GameBlocks.BlocksTexture;
             atlasTexture = GameBlocks.LightAtlas;
-// BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
+            // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
             tag = CreateTag(GeometryBoundingBox);
 
             RecalculateMass();
         }
 
+        public void AddChunks(Chunk[] chunks, bool generateMesh)
+        {
+            for (int i = 0; i < chunks.Length; i++)
+            {
+                var chunk = chunks[i];
+
+                octree.Add(chunk, new BoundingBox(chunk.PositionWorld, Vector3.One * Chunk.Size));
+                Chunks.Add(chunk);
+                chunkDictionary.Add(chunk.PositionIndex, chunk);
+                chunk.OnChunkModified += UpdateEntityGeometryMinMax;
+
+                UpdateNeighbors(chunk);
+
+            }
+
+            for (int i = 0; i < chunks.Length; i++)
+            {
+                if (generateMesh)
+                {
+                    chunks[i].GenerateMesh();
+                }
+                else
+                {
+                    MeshesTogenerate.Add(chunks[i]);
+                }
+
+
+            }
+
+
+            RecalculateGeometryBoundingBox();
+        }
+
+        public void GenerateMesh()
+        {
+            foreach (var chunk in MeshesTogenerate)
+            {
+                chunk.GenerateMesh();
+            }
+            MeshesTogenerate.Clear();
+        }
+
         public void AddChunk(Chunk chunk)
         {
-            chunk.PositionIndex = GetChunkIndex(chunk.PositionWorld);
             octree.Add(chunk, new BoundingBox(chunk.PositionWorld, Vector3.One * Chunk.Size));
-            chunks.Add(chunk);
+            Chunks.Add(chunk);
             chunkDictionary.Add(chunk.PositionIndex, chunk);
             chunk.OnChunkModified += UpdateEntityGeometryMinMax;
             chunk.GenerateMesh();
@@ -83,7 +120,7 @@ namespace Spacebox.Game.Generation
         public void RemoveChunk(Chunk chunk)
         {
             octree.Remove(chunk);
-            chunks.Remove(chunk);
+            Chunks.Remove(chunk);
             chunkDictionary.Remove(chunk.PositionIndex);
             chunk.OnChunkModified -= UpdateEntityGeometryMinMax;
             chunk.Dispose();
@@ -91,7 +128,7 @@ namespace Spacebox.Game.Generation
             UpdateNeighbors(chunk, true);
             RecalculateGeometryBoundingBox();
 
-            if (chunks.Count == 0)
+            if (Chunks.Count == 0)
             {
                 DeleteSpaceEntity();
             }
@@ -99,7 +136,7 @@ namespace Spacebox.Game.Generation
 
         private void DeleteSpaceEntity()
         {
-           
+
             Sector.RemoveEntity(this);
         }
 
@@ -135,9 +172,9 @@ namespace Spacebox.Game.Generation
         public void RecalculateMass()
         {
             Mass = 0;
-            for (int i = 0; i < chunks.Count; i++)
+            for (int i = 0; i < Chunks.Count; i++)
             {
-                Mass = (ulong)((long)Mass + chunks[i].Mass);
+                Mass = (ulong)((long)Mass + Chunks[i].Mass);
             }
 
             _entityMassString = Mass.ToString("N0").Replace(",", ".");
@@ -163,15 +200,15 @@ namespace Spacebox.Game.Generation
         private void RecalculateGeometryBoundingBox()
         {
             GeometryBoundingBox = new BoundingBox(Vector3.Zero, Vector3.Zero);
-            if (chunks.Count == 0)
+            if (Chunks.Count == 0)
             {
                 return;
             }
 
-            Vector3 min = chunks[0].GeometryBoundingBox.Min;
-            Vector3 max = chunks[0].GeometryBoundingBox.Max;
+            Vector3 min = Chunks[0].GeometryBoundingBox.Min;
+            Vector3 max = Chunks[0].GeometryBoundingBox.Max;
 
-            foreach (var chunk in chunks)
+            foreach (var chunk in Chunks)
             {
                 if (chunk.Mass > 0)
                 {
@@ -243,12 +280,13 @@ namespace Spacebox.Game.Generation
             //List<Chunk> chunks = new List<Chunk>();
             // octree.GetColliding(chunks, ray, SizeBlocks);     working?
 
-            foreach (var c in chunks)
+            VisualDebug.DrawPosition(PositionWorld, Color4.Red);
+            foreach (var c in Chunks)
             {
                 if (c.Raycast(ray, out hitInfo)) return true;
             }
 
-            if (chunks.Count == 0) return false;
+            if (Chunks.Count == 0) return false;
 
             return false;
         }
@@ -270,9 +308,9 @@ namespace Spacebox.Game.Generation
 
             blockTexture.Use(TextureUnit.Texture0);
             atlasTexture.Use(TextureUnit.Texture1);
-            for (int i = 0; i < chunks.Count; i++)
+            for (int i = 0; i < Chunks.Count; i++)
             {
-                chunks[i].Render(Shader);
+                Chunks[i].Render(Shader);
             }
 
             VisualDebug.DrawBoundingBox(GeometryBoundingBox, Color4.Orange);
@@ -282,9 +320,9 @@ namespace Spacebox.Game.Generation
         {
             bool c = false;
 
-            for (int i = 0; i < chunks.Count; i++)
+            for (int i = 0; i < Chunks.Count; i++)
             {
-                c = chunks[i].IsColliding(volume);
+                c = Chunks[i].IsColliding(volume);
 
                 if (c) return true;
             }
