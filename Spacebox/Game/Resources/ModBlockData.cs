@@ -14,6 +14,9 @@
         public string Top { get; set; } = "";
         public string Bottom { get; set; } = "";
 
+        public string SoundPlace { get; set; } = "blockPlaceDefault";
+        public string SoundDestroy { get; set; } = "blockDestroyDefault";
+
         public bool IsTransparent { get; set; } = false;
         public Vector3Byte LightColor { get; set; } = Vector3Byte.Zero;
     }

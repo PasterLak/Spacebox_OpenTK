@@ -4,7 +4,8 @@
         "Sides": "lightRock",
         "PowerToDrill": 1,
         "Mass": 1,
-        "Durability": 5
+        "Durability": 5,
+        "SoundPlace" : "blockPlaceLight"
     },
     {
         "Name": "Medium Rock",
@@ -18,7 +19,8 @@
         "Sides": "heavyRock",
         "PowerToDrill": 5,
         "Mass": 3,
-        "Durability": 15
+        "Durability": 15,
+        "SoundPlace" : "blockPlaceHeavy"
     },
     {
         "Name": "Cobaltite Rock",
@@ -83,7 +85,8 @@
         "Mass": 2,
         "Durability": 10,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": { "x": 0, "y": 0, "z": 0 },
+        "SoundPlace" : "blockPlaceLight"
     },
     {
         "Name": "Aluminium Medium Block",
@@ -101,7 +104,8 @@
         "Mass": 6,
         "Durability": 30,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": { "x": 0, "y": 0, "z": 0 },
+        "SoundPlace" : "blockPlaceHeavy"
     },
     {
         "Name": "Iron Light Block",
@@ -110,7 +114,8 @@
         "Mass": 4,
         "Durability": 40,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": { "x": 0, "y": 0, "z": 0 },
+        "SoundPlace" : "blockPlaceLight"
     },
     {
         "Name": "Iron Medium Block",
@@ -128,7 +133,8 @@
         "Mass": 8,
         "Durability": 80,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": { "x": 0, "y": 0, "z": 0 },
+        "SoundPlace" : "blockPlaceHeavy"
     },
     {
         "Name": "Titanium Light Block",
@@ -137,7 +143,8 @@
         "Mass": 5,
         "Durability": 80,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": { "x": 0, "y": 0, "z": 0 },
+        "SoundPlace" : "blockPlaceLight"
     },
     {
         "Name": "Titanium Medium Block",
@@ -155,7 +162,8 @@
         "Mass": 10,
         "Durability": 120,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": { "x": 0, "y": 0, "z": 0 },
+        "SoundPlace" : "blockPlaceHeavy"
     },
     {
         "Name": "Window",
@@ -163,7 +171,9 @@
         "Sides": "window",
         "Mass": 1,
         "IsTransparent": true,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": { "x": 0, "y": 0, "z": 0 },
+        "SoundDestroy" : "blockDestroyGlass",
+        "SoundPlace" : "blockPlaceLight"
     },
      {
         "Name": "Basic Machine",
@@ -179,8 +189,10 @@
         "Sides": "window2",
         "Mass": 1,
         "IsTransparent": true,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
-    },
+        "LightColor": { "x": 0, "y": 0, "z": 0 },
+        "SoundDestroy" : "blockDestroyGlass",
+        "SoundPlace" : "blockPlaceLight"
+     },
     {
         "Name": "Crafting Table",
         "Category" : "resources",
@@ -281,49 +293,66 @@
         "Name": "Light White",
         "Category" : "lights",
         "Sides": "white",
-        "LightColor": { "x": 255, "y": 255, "z": 255 }
+        "LightColor": { "x": 255, "y": 255, "z": 255 },
+        "SoundDestroy" : "blockDestroyGlass",
+        "SoundPlace" : "blockPlaceLight"
+
     },
     {
         "Name": "Light Blue",
         "Category" : "lights",
         "Sides": "blue",
-        "LightColor": { "x": 45, "y": 45, "z": 255 }
+        "LightColor": { "x": 45, "y": 45, "z": 255 },
+        "SoundDestroy" : "blockDestroyGlass",
+        "SoundPlace" : "blockPlaceLight"
     },
     {
         "Name": "Light Red",
         "Category" : "lights",
         "Sides": "red",
-        "LightColor": { "x": 255, "y": 15, "z": 15 }
+        "LightColor": { "x": 255, "y": 15, "z": 15 },
+        "SoundDestroy" : "blockDestroyGlass",
+        "SoundPlace" : "blockPlaceLight"
     },
     {
         "Name": "Light Yellow",
         "Category" : "lights",
         "Sides": "yellow",
-        "LightColor": { "x": 255, "y": 216, "z": 0 }
+        "LightColor": { "x": 255, "y": 216, "z": 0 },
+        "SoundDestroy" : "blockDestroyGlass",
+        "SoundPlace" : "blockPlaceLight"
     },
     {
         "Name": "Light Cyan",
         "Category" : "lights",
         "Sides": "cyan",
-        "LightColor": { "x": 0, "y": 255, "z": 255 }
+        "LightColor": { "x": 0, "y": 255, "z": 255 },
+        "SoundDestroy" : "blockDestroyGlass",
+        "SoundPlace" : "blockPlaceLight"
     },
     {
         "Name": "Light Orange",
         "Category" : "lights",
         "Sides": "orange",
-        "LightColor": { "x": 255, "y": 106, "z": 0 }
+        "LightColor": { "x": 255, "y": 106, "z": 0 },
+        "SoundDestroy" : "blockDestroyGlass",
+        "SoundPlace" : "blockPlaceLight"
     },
     {
         "Name": "Light Green",
         "Category" : "lights",
         "Sides": "green",
-        "LightColor": { "x": 5, "y": 255, "z": 5 }
+        "LightColor": { "x": 5, "y": 255, "z": 5 },
+        "SoundDestroy" : "blockDestroyGlass",
+        "SoundPlace" : "blockPlaceLight"
     },
     {
         "Name": "Light Pink",
         "Category" : "lights",
         "Sides": "pink",
-        "LightColor": { "x": 178, "y": 0, "z": 255 }
+        "LightColor": { "x": 178, "y": 0, "z": 255 },
+        "SoundDestroy" : "blockDestroyGlass",
+        "SoundPlace" : "blockPlaceLight"
     },
     {
         "Name": "AI Core",
@@ -333,7 +362,8 @@
         "PowerToDrill" : 3,
         "Durability" : 50,
         "IsTransparent": true,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": { "x": 0, "y": 0, "z": 0 },
+        "SoundPlace" : "blockPlaceHeavy"
     },
     {
         "Name": "Just Block",
@@ -341,6 +371,18 @@
         "Sides": "block",
         "IsTransparent": false,
         "LightColor": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+        "Name": "Moritz",
+        "Category" : "blocks",
+        "Sides": "moritz",
+        "PowerToDrill": 5,
+        "Mass": 1,
+        "Durability": 15,
+        "IsTransparent": false,
+        "LightColor": { "x": 255, "y": 245, "z": 68 },
+        "SoundPlace" : "blockPlaceMoritz",
+        "SoundDestroy" : "blockDestroyMoritz"
     }
     
 ]

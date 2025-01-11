@@ -2,7 +2,6 @@
 using Spacebox.Common;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
-using Spacebox.GUI;
 
 namespace Spacebox.GUI
 {
@@ -10,8 +9,8 @@ namespace Spacebox.GUI
     {
         public StatsBarData StatsData { get; private set; }
         private StatsGUI _statsGUI;
-        private float timeToDecrement = 10f;
-        private float time;
+        private float timeToDecrement = 20f;
+        private float _time;
         public HealthBar()
         {
             StatsData = new StatsBarData
@@ -38,18 +37,15 @@ namespace Spacebox.GUI
 
         public void Update()
         {
-          
-
             if (StatsData.IsMaxReached) return;
 
-            if (time < timeToDecrement)
+            if (_time < timeToDecrement)
             {
-                time += Time.Delta;
+                _time += Time.Delta;
             }
-
-            if (time >= timeToDecrement)
+            if (_time >= timeToDecrement)
             {
-                time = timeToDecrement * 0.5f;
+                _time = timeToDecrement * 0.5f;
                 StatsData.Increment(1);
             }
         }

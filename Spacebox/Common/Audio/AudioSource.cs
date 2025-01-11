@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿
 using OpenTK.Audio.OpenAL;
 using OpenTK.Mathematics;
 
@@ -8,7 +7,7 @@ namespace Spacebox.Common.Audio
     public class AudioSource : IDisposable
     {
         private readonly int source;
-        private readonly AudioClip clip;
+        public readonly AudioClip Clip;
         private bool isDisposed = false;
         private bool isPlaying = false;
         private bool isPaused = false;
@@ -45,7 +44,7 @@ namespace Spacebox.Common.Audio
 
         public AudioSource(AudioClip clip)
         {
-            this.clip = clip;
+            this.Clip = clip;
 
             source = AL.GenSource();
 
@@ -77,13 +76,13 @@ namespace Spacebox.Common.Audio
                     Stop();
                 }
 
-                if (!clip.IsStreaming)
+                if (!Clip.IsStreaming)
                 {
                     AL.SourcePlay(source);
                 }
                 else
                 {
-                    clip.Stream(source);
+                    Clip.Stream(source);
                     AL.SourcePlay(source);
                 }
                 CheckALError("Playing");
@@ -157,9 +156,9 @@ namespace Spacebox.Common.Audio
         {
             while (isPlaying && !isDisposed)
             {
-                if (clip.IsStreaming)
+                if (Clip.IsStreaming)
                 {
-                    clip.Stream(source);
+                    Clip.Stream(source);
                 }
 
                 AL.GetSource(source, ALGetSourcei.SourceState, out int state);
@@ -169,7 +168,7 @@ namespace Spacebox.Common.Audio
                 {
                     if (IsLooped && !isDisposed)
                     {
-                        if (clip.IsStreaming)
+                        if (Clip.IsStreaming)
                         {
                             // Additional streaming initialization can be done here if needed
                         }

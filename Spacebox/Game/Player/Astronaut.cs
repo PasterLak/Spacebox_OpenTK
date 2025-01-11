@@ -6,7 +6,6 @@ using Spacebox.Common.Physics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
-using Spacebox.Scenes;
 
 namespace Spacebox.Game.Player
 {

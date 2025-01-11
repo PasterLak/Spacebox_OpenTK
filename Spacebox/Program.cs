@@ -35,14 +35,6 @@ namespace Spacebox
             };
 
 
-            //GameWindowSettings.Default, nativeWindowSettings
-            // To create a new window, create a class that extends GameWindow, then call Run() on it.
-            /*using (var window = new Window2())
-            {
-                
-                window.Run();
-            }*/
-
             using (var window = new Window(GameWindowSettings.Default, nativeWindowSettings))
             {
 

@@ -146,27 +146,15 @@ namespace Spacebox.Game.Resources
 
         private static void LoadSounds(string modPath)
         {
-
             var audioPath = Path.Combine(modPath, "Sounds");
-
             if (!Directory.Exists(audioPath)) return;
-
-            string[] files = Directory.GetFiles(audioPath);
 
             try
             {
+                string[] files = GetWavFilesRecursive(audioPath);
                 foreach (string file in files)
                 {
-                    if (Path.GetExtension(file) != ".wav") continue;
-
-                    var soundName = Path.GetFileNameWithoutExtension(file);
-
-
-                    if (!GameBlocks.Sounds.ContainsKey(soundName))
-                    {
-                        GameBlocks.Sounds.Add(soundName, new AudioClip(file));
-
-                    }
+                    ProcessSoundFile(file);
                 }
             }
             catch (Exception ex)
@@ -174,6 +162,21 @@ namespace Spacebox.Game.Resources
                 Debug.Error($"Error loading sounds: {ex.Message}");
             }
         }
+
+        private static string[] GetWavFilesRecursive(string rootPath)
+        {
+            return Directory.GetFiles(rootPath, "*.wav", SearchOption.AllDirectories);
+        }
+
+        private static void ProcessSoundFile(string file)
+        {
+            var soundName = Path.GetFileNameWithoutExtension(file);
+            if (!GameBlocks.Sounds.ContainsKey(soundName))
+            {
+                GameBlocks.Sounds.Add(soundName, new AudioClip(file));
+            }
+        }
+
 
         private static void LoadBlocks(string modPath, string defaultModPath)
         {
@@ -258,12 +261,36 @@ namespace Spacebox.Game.Resources
                     blockData.Top = sameSides ? block.Sides : block.Top;
                     blockData.Bottom = sameSides ? block.Sides : block.Bottom;
 
+                    GiveBlockSounds(blockData, block);
+
                     GameBlocks.RegisterBlock(blockData);
                 }
             }
             catch (Exception ex)
             {
-                Debug.Error($"Error loading blocks: {ex.Message}");
+                Debug.Error($"[GamesetLoader] Error loading blocks: {ex.Message}");
+            }
+        }
+
+        private static void GiveBlockSounds(BlockData blockData, ModBlockData modBlockData)
+        {
+            if(!GameBlocks.Sounds.ContainsKey(modBlockData.SoundPlace))
+            {
+                blockData.SetDefaultPlaceSound();
+                Debug.Error($"[GamesetLoader] Block <{modBlockData.Name}> has a wrong place sound! - {modBlockData.SoundPlace}. Selected a default one");
+            }
+            else
+            {
+                blockData.SoundPlace = modBlockData.SoundPlace;
+            }
+            if (!GameBlocks.Sounds.ContainsKey(modBlockData.SoundDestroy))
+            {
+                blockData.SetDefaultDestroySound();
+                Debug.Error($"[GamesetLoader] Block <{modBlockData.Name}> has a wrong destroy sound! - {modBlockData.SoundDestroy}. Selected a default one");
+            }
+            else
+            {
+                blockData.SoundDestroy = modBlockData.SoundDestroy;
             }
         }
 

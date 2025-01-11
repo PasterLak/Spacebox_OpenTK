@@ -363,6 +363,26 @@ namespace Spacebox.Game
             ProcessBlockDataTexture(block);
         }
 
+       
+        public static AudioClip GetBlockAudioClipFromItemID(Item item, BlockInteractionType type)
+        {
+            return GetBlockAudioClipFromItemID(item.Id, type);
+        }
+        public static AudioClip GetBlockAudioClipFromItemID(short itemId, BlockInteractionType type)
+        {
+           var blockData = GetBlockDataById(itemId);
+
+            if(type == BlockInteractionType.Place)
+            {
+                return Sounds[blockData.SoundPlace];
+            }
+            else
+            {
+                return Sounds[blockData.SoundDestroy];
+            }
+
+        }
+
         public static Storage CreateCreativeStorage(byte sizeX)   // 32
         {
             byte sizeY = (byte)(Item.Count / sizeX);
@@ -381,7 +401,7 @@ namespace Spacebox.Game
 
             //itemsIds.RemoveAt(0);
 
-            short i = 0;
+            short i = 1;
 
             for (int x = 0; x < sizeX; x++)
             {

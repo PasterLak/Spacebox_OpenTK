@@ -14,18 +14,18 @@ namespace Spacebox.Game.Player
             set
             {
                 _isActive = value;
-                SpotLight.IsActive = value;
+                spotLight.IsActive = value;
             }
         }
 
-        private SpotLight SpotLight;
+        private SpotLight spotLight;
         private AudioSource audio;
         private Toggi toggle;
         public Flashlight(Camera camera)
         {
-            SpotLight = new SpotLight(ShaderManager.GetShader("Shaders/block"),
+            spotLight = new SpotLight(ShaderManager.GetShader("Shaders/block"),
                 camera.Front);
-            SpotLight.UseSpecular = false;
+            spotLight.UseSpecular = false;
 
             audio = new AudioSource(SoundManager.GetClip("flashlight"));
             audio.Volume = 0.5f;
@@ -35,7 +35,8 @@ namespace Spacebox.Game.Player
             InputManager.RegisterCallback("flashlight", () =>
             {
                 audio.Play();
-                SpotLight.IsActive = !SpotLight.IsActive;
+
+                IsActive = !IsActive;
             });
 
             toggle = ToggleManager.Instance.Register("flashlight");
@@ -51,7 +52,7 @@ namespace Spacebox.Game.Player
 
         public void Draw(Camera camera)
         {
-            SpotLight.Draw(camera);
+            spotLight.Draw(camera);
         }
     }
 }

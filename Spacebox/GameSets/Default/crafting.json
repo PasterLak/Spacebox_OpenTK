@@ -86,6 +86,15 @@
             "Product": {"Item": "Cabel Block", "Quantity": 1},
             "Ingredients": [{"Item": "Aluminium Ingot", "Quantity": 1}]
         },
+        {
+            "Product": {"Item": "Moritz", "Quantity": 1},
+            "Ingredients": [
+                {"Item": "Light Yellow", "Quantity": 4},
+                {"Item": "Titanium Ingot", "Quantity": 16},
+                {"Item": "Titanium Drill", "Quantity": 1},
+                {"Item": "Assault Rifle", "Quantity": 1}
+            ]
+        },
 
 
 

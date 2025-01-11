@@ -13,12 +13,14 @@ public class InteractionPlaceBlock : InteractionMode
 {
     private const byte MaxBuildDistance = 6;
 
-    private AudioSource blockPlace;
+    private static AudioSource blockPlace;
+    private string lastBlockPlaceSound = "blockPlaceDefault";
 
     public override void OnEnable()
     {
         if (blockPlace == null)
-            blockPlace = new AudioSource(SoundManager.GetClip("blockPlace3"));
+            blockPlace = new AudioSource(SoundManager.GetClip("blockPlaceDefault"));
+
         if (BlockSelector.Instance != null)
             BlockSelector.Instance.SimpleBlock.Shader.SetVector4("color", new Vector4(1, 1, 1, 0.5f));
         BlockSelector.IsVisible = false;
@@ -80,11 +82,42 @@ public class InteractionPlaceBlock : InteractionMode
                     int z = hit.blockPosition.Z + hit.normal.Z;
 
                     chunk.PlaceBlock(x, y, z, newBlock);
+
+
+                    if (blockPlace != null)
+                    {
+                        PickPlaceSound(newBlock.BlockId);
+                        blockPlace.Play();
+                    }
                 }
             }
-            blockPlace?.Play();
+
+
 
         }
+    }
+
+    private void PickPlaceSound(short blockId)
+    {
+        var clip = GameBlocks.GetBlockAudioClipFromItemID(blockId, BlockInteractionType.Place);
+        if (clip == null)
+        {
+            return;
+        }
+
+        if (blockPlace != null && blockPlace.Clip == clip)
+        {
+            Debug.Log("Clip not changed, using the same reference.");
+            return;
+        }
+
+        if (blockPlace != null)
+        {
+            blockPlace.Stop();
+        }
+
+        blockPlace = new AudioSource(clip);
+        Debug.Log("Clip changed.");
     }
 
     private void OnNoEntityFound(Ray ray)

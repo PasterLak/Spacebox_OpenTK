@@ -22,6 +22,8 @@ namespace Spacebox.Game.GUI
 
         private static StatsGUI statsGUI;
         private static StatsBarData barData;
+
+        private static string status = "";
         public static bool IsVisible
         {
             get => _isVisible;
@@ -122,7 +124,7 @@ namespace Spacebox.Game.GUI
             {
                 InputStorage.OnDataWasChanged -= OnInputItemWasChanged;
             }
-
+            status = "Status: Ready";
             InputStorage.DisconnectStorage();
             FuelStorage.DisconnectStorage();
             OutputStorage.DisconnectStorage();
@@ -142,6 +144,11 @@ namespace Spacebox.Game.GUI
             if (block.TryStartTask(out var task))
             {
                 TickTaskManager.AddTask(task);
+                status = "Status: Working...";
+            }
+            else
+            {
+                status = "Ready";
             }
 
         }
@@ -152,7 +159,12 @@ namespace Spacebox.Game.GUI
             {
                 if (processingBlock.TryStartTask(out var task))
                 {
+                    status = "Status: Working...";
                     TickTaskManager.AddTask(task);
+                }
+                else
+                {
+                    status = "Status: Ready";
                 }
             }
         }
@@ -175,6 +187,20 @@ namespace Spacebox.Game.GUI
             float buttonHeight = windowHeight * 0.12f;
             float spacing = windowHeight * 0.03f;
 
+            if(InputStorage.GetSlot(0,0).Count == 0)
+            {
+                status = "Status: Done";
+            }
+
+            if(processingBlock != null)
+            {
+                if(processingBlock.IsRunning)
+                {
+                    status = "Status: Working...";
+                }
+                
+            }
+
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y, 0.005f);
 
             var space = windowHeight * 0.1f;
@@ -186,7 +212,10 @@ namespace Spacebox.Game.GUI
             ImGui.TextColored(new Vector4(0.1f, 0.1f, 0.1f, 0.1f), WindowName);
             ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize.X * 0.5f, textSize.Y));
             ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 0.9f),WindowName);
-           
+
+            ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize.X * 0.5f, textSize.Y * 2.2f ));
+            ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 0.9f), status);
+
             ImGui.SetCursorPos(new Vector2(space, space * 2 ));
             InventoryUIHelper.DrawSlot(InputStorage.GetSlot(0, 0), "InputStorage", MoveItems, inputIcon, false);
             InventoryUIHelper.ShowTooltip(InputStorage.GetSlot(0, 0), true);

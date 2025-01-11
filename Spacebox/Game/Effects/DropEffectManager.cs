@@ -38,7 +38,7 @@ namespace Spacebox.Game.Effects
 
             for (int i = 0; i < 3; i++)
             {
-                pickupSound[i] = new AudioSource(SoundManager.AddClip("pickup"));
+                pickupSound[i] = new AudioSource(SoundManager.AddClip("pickupDefault"));
                 pickupSound[i].Volume = 0.8f;
             }
 

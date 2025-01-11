@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Spacebox.Common;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resources;
@@ -31,6 +32,7 @@ namespace Spacebox.Game.Generation
             
             if (blockData.Name == "Radar")
             {
+                if(RadarWindow.Instance != null)
                 OnUse += RadarWindow.Instance.Toggle;
             }
 

@@ -49,7 +49,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
     {
         if (blockDestroy == null)
         {
-            blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroy"));
+            blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroyDefault"));
             blockDestroy.Volume = 1f;
         }
 
@@ -122,7 +122,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
         if (blockDestroy != null)
         {
-
+            PickDestroySound(hit.block.BlockId);
             blockDestroy.Play();
         }
 
@@ -219,7 +219,8 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 return;
             }
 
-            UpdateInteractive(lastInteractiveBlock, player, hit.chunk);
+            if (Vector3.DistanceSquared(hit.position, player.Position) <= 3 * 3)
+                UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
         }
         else
         {
@@ -239,10 +240,19 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         }
     }
 
-    private void UpdateInteractive(InteractiveBlock block, Astronaut player, Chunk chunk)
+    private void UpdateInteractive(InteractiveBlock block, Astronaut player, Chunk chunk, Vector3 hitPos)
     {
+        var disSq = Vector3.DistanceSquared(player.Position, hitPos);
 
-        CenteredText.Show();
+        if (disSq > 3 * 3)
+        {
+            CenteredText.Hide();
+        }
+        else
+        {
+            CenteredText.Show();
+        }
+
 
         if (Input.IsKeyDown(Keys.F))
         {
@@ -250,5 +260,28 @@ public class InteractionDestroyBlockSurvival : InteractionMode
             block.Use(player);
         }
 
+    }
+
+    private void PickDestroySound(short blockId)
+    {
+        var clip = GameBlocks.GetBlockAudioClipFromItemID(blockId, BlockInteractionType.Destroy);
+        if (clip == null)
+        {
+            return;
+        }
+
+        if (blockDestroy != null && blockDestroy.Clip == clip)
+        {
+            Debug.Log("Clip not changed, using the same reference.");
+            return;
+        }
+
+        if (blockDestroy != null)
+        {
+            blockDestroy.Stop();
+        }
+
+        blockDestroy = new AudioSource(clip);
+        Debug.Log("Clip changed.");
     }
 }

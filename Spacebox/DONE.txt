@@ -39,6 +39,8 @@ version 0.1.0
 - blueprints
 - new items and blocks
 - save player items by name
+- new save system based on NBT
+- destroy blocks in creative faster with holding button
 
 version 0.0.9
 

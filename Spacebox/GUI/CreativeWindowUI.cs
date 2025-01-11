@@ -2,9 +2,9 @@
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.FPS;
 using Spacebox.Game;
 using Spacebox.Game.Player;
-using Spacebox.GUI;
 
 namespace Spacebox.UI
 {
@@ -16,21 +16,21 @@ namespace Spacebox.UI
         public static bool IsVisible { get; set; } = false;
         public static bool Enabled { get; set; } = false;
 
-        public static Astronaut Player;
+        private static Astronaut player;
 
-        public static Storage storage;
+        private static Storage storage;
 
-        public static void SetDefaultIcon(IntPtr textureId)
+        public static void SetDefaultIcon(IntPtr textureId, Astronaut player)
         {
             SlotTexture = textureId;
-
+            CreativeWindowUI.player = player;
             storage = GameBlocks.CreateCreativeStorage(5);
         }
 
         public static void Render()
         {
             if (!Enabled) return;
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.C) && !Debug.IsVisible)
+            if (Input.IsKeyDown(Keys.C) && !Debug.IsVisible)
             {
                 IsVisible = !IsVisible;
 
@@ -38,8 +38,8 @@ namespace Spacebox.UI
                 {
                     Input.ShowCursor();
 
-                    if (Player != null)
-                        Player.CanMove = false;
+                    if (player != null)
+                        player.CanMove = false;
 
 
                 }
@@ -47,8 +47,8 @@ namespace Spacebox.UI
                 {
                     Input.HideCursor();
 
-                    if (Player != null)
-                        Player.CanMove = true;
+                    if (player != null)
+                        player.CanMove = true;
                 }
             }
             if (!IsVisible) return;
@@ -70,7 +70,7 @@ namespace Spacebox.UI
 
             Vector2 displaySize = io.DisplaySize;
             Vector2 windowPos = new Vector2(
-                (displaySize.X - windowWidth) / 5f,
+                (displaySize.X - windowWidth) / 7f,
                 (displaySize.Y - windowHeight) / 2
             );
             ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
@@ -177,19 +177,19 @@ namespace Spacebox.UI
         {
             if (slot.HasItem)
             {
-                if(Player != null)
+                if(player != null)
                 {
                     if(Input.IsKey(Keys.LeftShift))
                     {
-                        Player.Panel.TryAddItem(slot.Item, slot.Item.StackSize);
+                        player.Panel.TryAddItem(slot.Item, slot.Item.StackSize);
                     }
                     else if (Input.IsKey(Keys.LeftControl))
                     {
-                        Player.Panel.TryAddItem(slot.Item, (byte)(slot.Item.StackSize / 2));
+                        player.Panel.TryAddItem(slot.Item, (byte)(slot.Item.StackSize / 2));
                     }
                     else
                     {
-                        Player.Panel.TryAddItem(slot.Item, 1);
+                        player.Panel.TryAddItem(slot.Item, 1);
                     }
                     
                 }

@@ -1,5 +1,4 @@
-﻿
-using System.Text.Json;
+﻿using System.Text.Json;
 using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Game.Generation;
@@ -20,7 +19,7 @@ namespace Spacebox.Game.Player
                 {
                     Directory.CreateDirectory(worldFolder);
                 }
-
+ 
                 PlayerData data = new PlayerData
                 {
                     PositionX = player.Position.X,
@@ -92,6 +91,7 @@ namespace Spacebox.Game.Player
 
                     World.CurrentSector.SpawnPlayerNearAsteroid(player, World.Random );
                     GameSetLoader.GiveStartItems(player, GameBlocks.Item);
+                    player.Flashlight.IsActive = true;
 
                     return;
                 }

@@ -232,10 +232,8 @@ namespace Spacebox.Scenes
 
             InventoryUI.Player = player;
 
-            CreativeWindowUI.SetDefaultIcon(c.Handle);
-            CreativeWindowUI.Player = player;
-
-
+            CreativeWindowUI.SetDefaultIcon(c.Handle, player);
+          
             itemModel = ItemModelGenerator.GenerateModel(GameBlocks.ItemsTexture, 2, 2, 0.05f, 0.5f, false);
             itemModel.Position = new Vector3(0, 0, 0);
             itemModel.debug = true;
@@ -269,6 +267,9 @@ namespace Spacebox.Scenes
             //Renderer.AddDrawable(block1);
             //block2.Position = new Vector3(2, 0, 0);
             //SceneGraph.PrintHierarchy();
+
+            WelcomeUI.OnPlayerSpawned(true);
+            WelcomeUI.Init();
         }
         Animator animator;
         public override void Start()
@@ -428,7 +429,7 @@ namespace Spacebox.Scenes
             player.OnGUI();
             InventoryUI.OnGUI(player.Inventory);
             CreativeWindowUI.Render();
-
+            WelcomeUI.OnGUI();
             if (VisualDebug.ShowDebug)
             {
                 WorldTextDebug.Draw();

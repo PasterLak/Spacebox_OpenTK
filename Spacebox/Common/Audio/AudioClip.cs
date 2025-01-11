@@ -5,7 +5,8 @@ namespace Spacebox.Common.Audio
 {
     public class AudioClip : IDisposable
     {
-        public string Filename { get; private set; }
+        public string Name { get; private set; }
+        public string FileFullPath { get; private set; }
         public bool IsStreaming { get; private set; }
         public int Buffer { get; private set; }
 
@@ -28,12 +29,13 @@ namespace Spacebox.Common.Audio
             {
                 throw new FileNotFoundException($"Audio file for '{filename}' not found.");
             }
-            Filename = resolvedPath;
+            FileFullPath = resolvedPath;
+            Name = Path.GetFileNameWithoutExtension(resolvedPath);
             IsStreaming = loadMode == AudioLoadMode.Stream;
 
             if (!IsStreaming)
             {
-                Buffer = SoundLoader.LoadSound(Filename, out sampleRate);
+                Buffer = SoundLoader.LoadSound(FileFullPath, out sampleRate);
             }
             else
             {
@@ -46,10 +48,10 @@ namespace Spacebox.Common.Audio
 
         private void InitializeStreaming()
         {
-            var (data, channels, bitsPerSample, sr) = SoundLoader.LoadWave(Filename);
+            var (data, channels, bitsPerSample, sr) = SoundLoader.LoadWave(FileFullPath);
             sampleRate = sr;
 
-            fileStream = File.OpenRead(Filename);
+            fileStream = File.OpenRead(FileFullPath);
             reader = new BinaryReader(fileStream);
 
             reader.ReadBytes(44);
@@ -112,7 +114,7 @@ namespace Spacebox.Common.Audio
 
             if (!IsStreaming)
             {
-                SoundManager.RemoveClip(Filename);
+                SoundManager.RemoveClip(FileFullPath);
             }
             else
             {

@@ -230,7 +230,7 @@ namespace Spacebox.Game.GUI
             {
                 if(player.GameMode == GameMode.Creative)
                 {
-                    player.SetInteraction(new InteractionDestroyBlock());
+                    player.SetInteraction(new InteractionDestroyBlock(SelectedSlot));
                 }
                 else
                 {

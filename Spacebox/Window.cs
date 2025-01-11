@@ -86,8 +86,8 @@ namespace Spacebox
             InputManager.AddAction("visualDebug", Keys.F4, true);
             InputManager.RegisterCallback("visualDebug", () => { VisualDebug.ShowDebug = !VisualDebug.ShowDebug; });
 
-            InputManager.AddAction("quit", Keys.Escape, true);
-            InputManager.RegisterCallback("quit", () => { Quit(); });
+            //InputManager.AddAction("quit", Keys.Escape, true);
+            //InputManager.RegisterCallback("quit", () => { Quit(); });
 
             InputManager.AddAction("frameLimiter", Keys.F7, true);
             InputManager.RegisterCallback("frameLimiter", () => { ToggleFrameLimiter(); });

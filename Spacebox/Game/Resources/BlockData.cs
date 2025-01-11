@@ -29,7 +29,19 @@ namespace Spacebox.Game.Resources
 
         public BlockItem Item;
 
+        public string SoundPlace { get; set; } = "blockPlaceDefault";
+        public string SoundDestroy { get; set; } = "blockDestroyDefault";
+
         public bool AllSidesAreSame = false;
+
+        public void SetDefaultPlaceSound()
+        {
+            SoundPlace = "blockPlaceDefault";
+        }
+        public void SetDefaultDestroySound()
+        {
+            SoundDestroy = "blockDestroyDefault";
+        }
 
         private Dictionary<Direction, Vector2[]> TopUvsByDirection;
         private Dictionary<Direction, Vector2[]> BottomUvsByDirection;
