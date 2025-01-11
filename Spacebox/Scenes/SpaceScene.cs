@@ -18,6 +18,7 @@ using Spacebox.Game.Resources;
 using Spacebox.Common.GUI;
 using Spacebox.common.Animation;
 using Spacebox.Common.Animation;
+using static Spacebox.Game.WorldLoader;
 
 namespace Spacebox.Scenes
 {
@@ -144,17 +145,6 @@ namespace Spacebox.Scenes
 
         public override void LoadContent()
         {
-           
-            player = new Astronaut(new Vector3(5,5,5));
-            SceneGraph.AddRoot(player);
-
-            World.LoadWorldInfo(worldName);
-            world = new World(player);
-            
-            player.GameMode = World.Data.Info.GameMode;
-            PlayerSaveLoadManager.LoadPlayer(player, World.Data.WorldFolderPath);
-
-
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader,
                 new SpaceTexture(512, 512, World.Random));
@@ -162,8 +152,23 @@ namespace Spacebox.Scenes
             skybox.IsAmbientAffected = false;
             SceneGraph.AddRoot(skybox);
 
+            radarWindow = new RadarWindow(skybox.Texture);
+
+            player = new Astronaut(new Vector3(5,5,5));
+            SceneGraph.AddRoot(player);
+            
+            World.LoadWorldInfo(worldName);
+            world = new World(player);
+            
+            player.GameMode = World.Data.Info.GameMode;
+            PlayerSaveLoadManager.LoadPlayer(player, World.Data.WorldFolderPath);
+
+
+           
+
             CollisionManager.Add(player);
 
+            
 
             Death = new AudioSource(SoundManager.GetClip("death2"));
             Uii = new AudioSource(SoundManager.GetClip("uii"));
@@ -207,7 +212,7 @@ namespace Spacebox.Scenes
 
             //chunk.RemoveBlock(0,0,0);
 
-            radarWindow = new RadarWindow(skybox.Texture);
+            
 
             blockDestructionManager = new BlockDestructionManager(player);
 

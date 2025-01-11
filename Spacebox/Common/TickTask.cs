@@ -13,6 +13,7 @@
         public bool IsPaused => _isPaused;
 
         public Action OnComplete { get;  set; }
+        public Action OnTick { get; set; }
         private bool _deleteAfterComplete;
 
         public TickTask(int requiredTicks, bool deleteAfterComplete = false)
@@ -37,6 +38,7 @@
             if (_isPaused) return;
 
             _currentTicks++;
+            OnTick?.Invoke();
 
             if (IsComplete)
             {

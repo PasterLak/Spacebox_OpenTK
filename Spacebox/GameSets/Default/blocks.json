@@ -256,7 +256,7 @@
     },
     {
         "Name": "Radar",
-        "Type": "interactive",
+        "Type": "radar",
         "Category" : "resources",
         "Sides": "bottom",
         "Top": "radar",

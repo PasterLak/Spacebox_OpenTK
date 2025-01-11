@@ -107,7 +107,6 @@ public class InteractionPlaceBlock : InteractionMode
 
         if (blockPlace != null && blockPlace.Clip == clip)
         {
-            Debug.Log("Clip not changed, using the same reference.");
             return;
         }
 
@@ -117,7 +116,6 @@ public class InteractionPlaceBlock : InteractionMode
         }
 
         blockPlace = new AudioSource(clip);
-        Debug.Log("Clip changed.");
     }
 
     private void OnNoEntityFound(Ray ray)

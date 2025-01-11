@@ -320,12 +320,18 @@ namespace Spacebox.Game
             return Slots[0, 0];
         }
         public ItemSlot GetSlot(int x, int y)
-        {
+         {
             if (x >= 0 && x < SizeX && y >= 0 && y < SizeY)
             {
                 return Slots[x, y];
             }
             return null;
+        }
+
+        public void SetSlot(int x, int y, Item item, byte count)
+        {
+            Slots[x, y].SetData(item, count);
+            OnDataWasChanged?.Invoke(this);
         }
 
     }

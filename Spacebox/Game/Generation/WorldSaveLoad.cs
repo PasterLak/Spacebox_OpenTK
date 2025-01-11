@@ -95,6 +95,7 @@ namespace Spacebox.Game.Generation
                     {
                         Debug.Warning("[WorldSaveLoad] Entity name was changed because file name was changed: " + e.Name + " to " + fileName);
                         e.Name = fileName;
+                        e.SetModified();
                         
                     }
 

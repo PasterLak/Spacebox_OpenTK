@@ -29,12 +29,7 @@ namespace Spacebox.Game.Generation
         }
         public InteractiveBlock(BlockData blockData) : base(blockData)
         {
-            
-            if (blockData.Name == "Radar")
-            {
-                if(RadarWindow.Instance != null)
-                OnUse += RadarWindow.Instance.Toggle;
-            }
+
 
         }
 

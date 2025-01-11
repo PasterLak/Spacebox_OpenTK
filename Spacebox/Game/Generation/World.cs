@@ -2,9 +2,11 @@
 using Spacebox.Common;
 using Spacebox.Common.GUI;
 using Spacebox.Common.Physics;
+using Spacebox.FPS;
 using Spacebox.Game.Effects;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
+using static Spacebox.Game.WorldLoader;
 
 /*
   positionWorld
@@ -48,12 +50,7 @@ namespace Spacebox.Game.Generation
 
             //sectorsByIndex = new ConcurrentDictionary<Vector3i, Sector>();
 
-            Vector3i initialSectorIndex = GetSectorIndex(Player.Position);
-
-          
-            CurrentSector = LoadSector(initialSectorIndex);
-            CurrentSector.SpawnPlayerNearAsteroid(player, Random);
-            if (CurrentSector == null) Debug.Error("No current sector");
+            LoadWorld();
 
             DropEffectManager = new DropEffectManager(player);
             DestructionManager = new BlockDestructionManager(player);
@@ -65,6 +62,16 @@ namespace Spacebox.Game.Generation
             Overlay.AddElement(new WorldOverlayElement(this));
 
            
+        }
+
+        public void LoadWorld()
+        {
+            Vector3i initialSectorIndex = GetSectorIndex(Player.Position);
+
+
+            CurrentSector = LoadSector(initialSectorIndex);
+            CurrentSector.SpawnPlayerNearAsteroid(Player, Random);
+            if (CurrentSector == null) Debug.Error("No current sector");
         }
 
         public static void LoadWorldInfo(string worldName)

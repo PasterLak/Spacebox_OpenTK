@@ -272,7 +272,6 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
         if (blockDestroy != null && blockDestroy.Clip == clip)
         {
-            Debug.Log("Clip not changed, using the same reference.");
             return;
         }
 
@@ -282,6 +281,5 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         }
 
         blockDestroy = new AudioSource(clip);
-        Debug.Log("Clip changed.");
     }
 }

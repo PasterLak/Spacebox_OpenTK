@@ -163,6 +163,13 @@ namespace Spacebox.Game.Player
                 VisualDebug.ProjectionMatrix = GetProjectionMatrix();
                 VisualDebug.ViewMatrix = GetViewMatrix();
             }
+
+            if (Input.IsKeyDown(Keys.P))
+            {
+                Console.WriteLine("Saving Player");
+                PlayerSaveLoadManager.SavePlayer(this, World.Data.WorldFolderPath);
+            }
+
             _gameModeBase.UpdateInteraction(this);
             _gameModeBase.Update(this);
             HitImage.Update();
@@ -182,11 +189,7 @@ namespace Spacebox.Game.Player
                 }
             }
 
-            if (Input.IsKeyDown(Keys.P))
-            {
-                Console.WriteLine("Saving Player");
-                PlayerSaveLoadManager.SavePlayer(this, World.Data.WorldFolderPath);
-            }
+           
 
             if (Input.IsKeyDown(Keys.R))
             {

@@ -1,4 +1,7 @@
-﻿using Spacebox.Game.Resources;
+﻿using Spacebox.Common;
+using Spacebox.Game.Resources;
+using System.Threading.Tasks;
+
 
 namespace Spacebox.Game.Generation
 {
@@ -8,10 +11,11 @@ namespace Spacebox.Game.Generation
         protected Recipe Recipe;
 
         public Storage InputStorage { get; private set; } = new Storage(1, 1);
-        public Storage FuelStorage { get; private set; } = new Storage(1, 1);
+        
         public Storage OutputStorage { get; private set; } = new Storage(1, 1);
+        public Storage FuelStorage { get; private set; } = new Storage(1, 1);
         public float Efficiency = 1f;
-        private float TestingCoefficient = 1.5f;
+        private float TestingCoefficient = 1f;
         private bool _isRunning = false;
         public bool IsRunning
         {
@@ -23,9 +27,50 @@ namespace Spacebox.Game.Generation
             }
         }
 
+        public TickTask Task { get; private set; }
+
         public string WindowName;
         
         private readonly string blockType;
+
+        public Storage[] GetAllStorages()
+        {
+            return new Storage[3] { InputStorage, OutputStorage, FuelStorage };
+        }
+        public ItemSlot[] GetAllSlots()
+        {
+            return new ItemSlot[3] { InputStorage.GetSlot(0,0), OutputStorage.GetSlot(0, 0), FuelStorage.GetSlot(0, 0) };
+        }
+
+        public void SetStorageAfterLoadFromNBT(Item item, byte count, Storage storage)
+        {
+            storage.SetSlot(0,0,item,count);
+
+           
+        }
+
+        private short craftTicks = 0;
+        private short currentTick = 0;
+        public int GetTaskProgress()
+        {
+            if(craftTicks == 0 || currentTick == 0) return 0;
+
+            return (int)(currentTick / (float)craftTicks * 100f);
+        }
+
+        public void TryStart()
+        {
+            if (InputStorage != null)
+            {
+                if (InputStorage.GetSlot(0,0).HasItem)
+                {
+                    if (TryStartTask(out var t))
+                    {
+                        TickTaskManager.AddTask(t);
+                    }
+                }
+            }
+        }
 
         public ResourceProcessingBlock(BlockData blockData) : base(blockData)
         {
@@ -37,11 +82,44 @@ namespace Spacebox.Game.Generation
             InputStorage.GetSlot(0, 0).Name = "Input";
             FuelStorage.GetSlot(0, 0).Name = "Fuel";
             OutputStorage.GetSlot(0, 0).Name = "Output";
+
+            InputStorage.OnDataWasChanged += OnAnySlotWasChanged;
+            FuelStorage.OnDataWasChanged += OnAnySlotWasChanged;
+            OutputStorage.OnDataWasChanged += OnAnySlotWasChanged;
         }
+
+        private void OnAnySlotWasChanged(Storage s)
+        {
+            if (chunk != null)
+            {
+                chunk.IsModified = true;
+            }
+        }
+
+        public void StopTask()
+        {
+            if(Task != null)
+            {
+                if(Task.IsRunning)
+                Task.Stop();
+
+                Task = null;
+                IsRunning = false;
+            }
+        }
+
 
         public bool HasInput()
         {
             return InputStorage.GetSlot(0, 0).Count > 0;
+        }
+        public bool HasOutput()
+        {
+            return OutputStorage.GetSlot(0, 0).Count > 0;
+        }
+        public bool HasFuel()
+        {
+            return FuelStorage.GetSlot(0, 0).Count > 0;
         }
 
         public void GiveAllResourcesBack(Storage storage)
@@ -87,10 +165,23 @@ namespace Spacebox.Game.Generation
 
             IsRunning = true;
 
-            
-            task = new ProcessResourceTask((int)(Recipe.RequiredTicks * TestingCoefficient / Efficiency), this);
+            var ticksRequared = (int)(Recipe.RequiredTicks * TestingCoefficient / Efficiency);
+            craftTicks = (short)ticksRequared ;
+            currentTick = 0;
 
+            task = new ProcessResourceTask(ticksRequared, this);
+            Task = task;
+            task.OnTick += OnTick;
             return true;
+        }
+
+        private void OnTick()
+        {
+            if (!IsRunning) return;
+           
+            currentTick ++;
+            //Debug.Log("Tick: " + currentTick + " of " + craftTicks);
+            if (currentTick >= craftTicks) currentTick = 0;
         }
 
         private static bool ValidateInput(ItemSlot inSlot, Recipe recipe)
@@ -113,6 +204,8 @@ namespace Spacebox.Game.Generation
 
             if (Recipe == null)
             {
+                craftTicks = 0;
+                currentTick = 0;
                 IsRunning = false;
                 return;
             }
@@ -123,11 +216,15 @@ namespace Spacebox.Game.Generation
             if (!ValidateInput(inSlot, Recipe))
             {
                 IsRunning = false;
+                craftTicks = 0;
+                currentTick = 0;
                 return;
             }
             if (!ValidateOutput(outSlot, Recipe))
             {
                 IsRunning = false;
+                craftTicks = 0;
+                currentTick = 0;
                 return;
             }
 
@@ -142,7 +239,14 @@ namespace Spacebox.Game.Generation
                 OutputStorage.TryAddItem(Recipe.Product.Item, Recipe.Product.Quantity);
             }
 
-            if (!HasInput()) IsRunning = false;
+            if (!HasInput())
+            {
+                craftTicks = 0;
+                currentTick = 0;
+                IsRunning = false;
+            }
+
+            currentTick++;
         }
 
     }

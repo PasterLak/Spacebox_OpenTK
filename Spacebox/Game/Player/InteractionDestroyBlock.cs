@@ -67,7 +67,6 @@ public class InteractionDestroyBlock : InteractionMode
 
         if (blockDestroy != null && blockDestroy.Clip == clip)
         {
-            Debug.Log("Clip not changed, using the same reference.");
             return;
         }
 
@@ -77,7 +76,6 @@ public class InteractionDestroyBlock : InteractionMode
         }
 
         blockDestroy = new AudioSource(clip);
-        Debug.Log("Clip changed.");
     }
 
 

@@ -259,6 +259,11 @@ namespace Spacebox.Game
                 return new CraftingTableBlock(data);
             }
 
+            if (data.Type.ToLower() == "radar")
+            {
+                return new RadarBlock(data);
+            }
+
 
             //if (id == 0) block.Type = BlockType.Air;
 

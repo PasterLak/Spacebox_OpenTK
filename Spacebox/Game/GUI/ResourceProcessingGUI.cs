@@ -39,33 +39,7 @@ namespace Spacebox.Game.GUI
         private static bool wasInitialized = true; //  !!!
         public static void Init()
         {
-            return;
-            barData = new StatsBarData();
-            statsGUI = new StatsGUI(barData);
 
-
-            barData = new StatsBarData
-            {
-                Count = 50,
-                MaxCount = 100,
-                Name = "Process"
-            };
-
-            statsGUI = new StatsGUI(barData)
-            {
-                FillColor = new Vector4(0.0f, 0.0f, 1.0f, 1.0f),
-                BackgroundColor = new Vector4(0.2f, 0.2f, 0.2f, 1.0f),
-                TextColor = new Vector4(1f, 1f, 1f, 1f),
-                Size = new Vector2(300, 50),
-                Position = new Vector2(1920 /2f, 300),
-                Anchor = Anchor.Left,
-                WindowName = "Process"
-            };
-            statsGUI.ShowText = true;
-
-            statsGUI.OnResized(Window.Instance.Size);
-
-            wasInitialized = true;
 
         }
 
@@ -124,6 +98,14 @@ namespace Spacebox.Game.GUI
             {
                 InputStorage.OnDataWasChanged -= OnInputItemWasChanged;
             }
+            if (OutputStorage != null)
+            {
+                OutputStorage.OnDataWasChanged -= OnInputItemWasChanged;
+            }
+            if (FuelStorage != null)
+            {
+                FuelStorage.OnDataWasChanged -= OnInputItemWasChanged;
+            }
             status = "Status: Ready";
             InputStorage.DisconnectStorage();
             FuelStorage.DisconnectStorage();
@@ -139,18 +121,20 @@ namespace Spacebox.Game.GUI
             OutputStorage.ConnectStorage(player.Inventory, false);
 
             InputStorage.OnDataWasChanged += OnInputItemWasChanged;
+            OutputStorage.OnDataWasChanged += OnInputItemWasChanged;
+            FuelStorage.OnDataWasChanged += OnInputItemWasChanged;
 
 
             if (block.TryStartTask(out var task))
             {
                 TickTaskManager.AddTask(task);
-                status = "Status: Working...";
+                
             }
             else
             {
-                status = "Ready";
+                
             }
-
+            UpdateStatus();
         }
 
         private static void OnInputItemWasChanged(Storage storage)
@@ -159,14 +143,55 @@ namespace Spacebox.Game.GUI
             {
                 if (processingBlock.TryStartTask(out var task))
                 {
-                    status = "Status: Working...";
+                   // status = "Status: Working...";
                     TickTaskManager.AddTask(task);
                 }
                 else
                 {
                     status = "Status: Ready";
                 }
+
+                UpdateStatus();
+
+
+
             }
+
+
+        }
+
+        private static void UpdateStatus()
+        {
+            if (processingBlock != null)
+            {
+
+                if (InputStorage.GetSlot(0, 0).Count == 0)
+                {
+                    status = "Status: Done";
+                    processingBlock.StopTask();
+                }
+
+                if (processingBlock.IsRunning)
+                {
+                    status = "Status: " + processingBlock.GetTaskProgress() + "/100";
+                }
+                else
+                {
+                    if (InputStorage.GetSlot(0, 0).Count > 0)
+                    {
+                        status = "Status: Wrong ingredient!";
+                        processingBlock.StopTask();
+                    }
+
+                    status = "Status: Done";
+                }
+
+
+
+            }
+            else { status = "Status: Done"; }
+
+
         }
 
         public static void OnGUI()
@@ -187,18 +212,12 @@ namespace Spacebox.Game.GUI
             float buttonHeight = windowHeight * 0.12f;
             float spacing = windowHeight * 0.03f;
 
-            if(InputStorage.GetSlot(0,0).Count == 0)
-            {
-                status = "Status: Done";
-            }
-
             if(processingBlock != null)
             {
-                if(processingBlock.IsRunning)
+                if (processingBlock.IsRunning)
                 {
-                    status = "Status: Working...";
+                    status = "Status: " + processingBlock.GetTaskProgress() + "/100";
                 }
-                
             }
 
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y, 0.005f);
@@ -213,7 +232,8 @@ namespace Spacebox.Game.GUI
             ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize.X * 0.5f, textSize.Y));
             ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 0.9f),WindowName);
 
-            ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize.X * 0.5f, textSize.Y * 2.2f ));
+            var textSize2 = ImGui.CalcTextSize(status);
+            ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize2.X * 0.5f, textSize.Y * 2.2f ));
             ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 0.9f), status);
 
             ImGui.SetCursorPos(new Vector2(space, space * 2 ));
