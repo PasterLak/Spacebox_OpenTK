@@ -70,7 +70,7 @@ namespace Spacebox.Game.Player
                 });
 
                 File.WriteAllText(saveFilePath, jsonString);
-                Debug.Log($"Player data saved at {saveFilePath}");
+               
             }
             catch (Exception ex)
             {
@@ -158,7 +158,7 @@ namespace Spacebox.Game.Player
                     }
                 }
 
-                Debug.Success("Player data loaded successfully.");
+                
                 PanelUI.SetSelectedSlot(0);
             }
             catch (Exception ex)

@@ -9,16 +9,7 @@ namespace Spacebox.Common
 {
     public static class Debug
     {
-        private static bool _isVisible = false;
-        private static CursorState _previousCursorState;
-        private static string _inputBuffer = "";
-        private static List<ConsoleMessage> _messages = new List<ConsoleMessage>();
-        private static List<string> _commandHistory = new List<string>();
-        private static int _historyPos = -1;
-        private static bool _focusInput = false;
-
-        public static Action<bool> OnVisibilityWasChanged;
-
+        
         private struct ConsoleMessage
         {
             public string Text;
@@ -30,6 +21,17 @@ namespace Spacebox.Common
                 Color = color;
             }
         }
+        
+        private static bool _isVisible = false;
+        private static CursorState _previousCursorState;
+        private static string _inputBuffer = "";
+        private static List<ConsoleMessage> _messages = new List<ConsoleMessage>();
+        private static List<string> _commandHistory = new List<string>();
+        private static int _historyPos = -1;
+        private static bool _focusInput = false;
+
+        public static Action<bool> OnVisibilityWasChanged;
+
 
         private static readonly string HistoryFilePath = "command_history.txt";
         private static int _autoCompleteIndex = 0;
@@ -48,17 +50,15 @@ namespace Spacebox.Common
 
         }
 
-
         public static void RegisterCommand(ICommand command)
         {
             CommandManager.RegisterCommand(command);
-
         }
 
         public static void ToggleVisibility()
         {
             _isVisible = !_isVisible;
-
+            
             if (_isVisible)
             {
                 _previousCursorState = Input.GetCursorState();
@@ -196,12 +196,10 @@ namespace Spacebox.Common
             float buttonWidth = 120f;
             float inputWidth = ImGui.GetContentRegionAvail().X - buttonWidth - ImGui.GetStyle().ItemSpacing.X;
 
-            // 1. Обработка нажатий клавиш и кнопок
             if (ImGui.IsWindowFocused(ImGuiFocusedFlags.AnyWindow))
             {
                 if (ImGui.IsKeyPressed(ImGuiKey.UpArrow))
                 {
-
                     NavigateHistory(-1);
                     _focusInput = true;
                 }
@@ -416,7 +414,6 @@ namespace Spacebox.Common
         private static void SaveHistory()
         {
             File.WriteAllLines(HistoryFilePath, _commandHistory);
-
         }
       
         public static void SaveMessagesToFile(bool useDefaultFileName = false)

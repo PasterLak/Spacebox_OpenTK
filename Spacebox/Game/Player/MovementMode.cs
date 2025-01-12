@@ -281,7 +281,7 @@ public class MovementMode : GameModeBase
                 flySpeedUpAudio.Stop();
                 SpaceScene.Uii.Stop();
                 BlackScreenOverlay.IsEnabled = true;
-                player.CanMove = false;
+                ToggleManager.SetState("player", false);
                 Settings.ShowInterface = false;
 
                 SpaceScene.Death.Play();

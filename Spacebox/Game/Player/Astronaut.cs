@@ -24,8 +24,8 @@ namespace Spacebox.Game.Player
 
         private bool _firstMove = true;
         private Vector2 _lastMousePosition;
-
-        public bool CameraActive = true;
+        bool needResetNextFrame = false;
+        private bool CameraActive = true;
 
         public Action<Astronaut> OnMoved { get; set; }
 
@@ -34,12 +34,7 @@ namespace Spacebox.Game.Player
         public bool CanMove
         {
             get => _canMove;
-            set
-            {
-                _canMove = value;
-
-                _lastMousePosition = Input.Mouse.Position;
-            }
+           
         }
 
         public InertiaController InertiaController { get; private set; } = new InertiaController();
@@ -88,26 +83,25 @@ namespace Spacebox.Game.Player
 
             GameMode = GameMode.Creative;
 
-            toggle = ToggleManager.Instance.Register("player");
+            toggle = ToggleManager.Register("player");
             toggle.OnStateChanged += state =>
             {
-                //if(!state)
-                //ToggleManager.Instance.SetState("flashlight", false);
-
-                CanMove = state;
+                needResetNextFrame = state;
+                _canMove = state;
             };
-
-            //ToggleManager.Instance.AddSlave("player", "flashlight");
         }
 
-        ~Astronaut()
+        public void ResetMousePosition()
         {
-            Debug.OnVisibilityWasChanged -= OnGameConsole;
+            _firstMove = true;
+            Input.MoveCursorToCenter();
+            _lastMousePosition = Input.Mouse.Position;
+            
         }
+
 
         private void SetData()
         {
-            Debug.OnVisibilityWasChanged += OnGameConsole;
 
             Inventory = new Inventory(8, 4);
             Panel = new Storage(1, 10);
@@ -119,12 +113,6 @@ namespace Spacebox.Game.Player
             Inventory.ConnectStorage(Panel);
 
             _axes = new Axes(Position, 0.01f);
-        }
-
-        private void OnGameConsole(bool state)
-        {
-            CanMove = !state;
-            _lastMousePosition = Input.Mouse.Position;
         }
 
         private void SetGameMode(GameMode mode)
@@ -149,8 +137,23 @@ namespace Spacebox.Game.Player
             _gameModeBase.OnEnable();
         }
 
+        public void Save()
+        {
+
+            PlayerSaveLoadManager.SavePlayer(this, World.Data.WorldFolderPath);
+          
+
+        }
+
         public override void Update()
         {
+            if (needResetNextFrame)
+            {
+                ResetMousePosition();
+           
+                needResetNextFrame = false;
+            }
+
             Matrix4 viewMatrix = GetViewMatrix();
             Matrix4 projectionMatrix = GetProjectionMatrix();
             Frustum.UpdateFrustum(this);
@@ -164,11 +167,7 @@ namespace Spacebox.Game.Player
                 VisualDebug.ViewMatrix = GetViewMatrix();
             }
 
-            if (Input.IsKeyDown(Keys.P))
-            {
-                Console.WriteLine("Saving Player");
-                PlayerSaveLoadManager.SavePlayer(this, World.Data.WorldFolderPath);
-            }
+
 
             _gameModeBase.UpdateInteraction(this);
             _gameModeBase.Update(this);
@@ -247,6 +246,7 @@ namespace Spacebox.Game.Player
             if (_firstMove)
             {
                 _lastMousePosition = new Vector2(mouse.Position.X, mouse.Position.Y);
+               // _lastMousePosition = Input.Mouse.Delta;
                 _firstMove = false;
             }
             else
@@ -256,7 +256,7 @@ namespace Spacebox.Game.Player
                     var deltaX = mouse.Position.X - _lastMousePosition.X;
                     var deltaY = mouse.Position.Y - _lastMousePosition.Y;
                     _lastMousePosition = new Vector2(mouse.Position.X, mouse.Position.Y);
-
+                    
                     Rotate(deltaX, deltaY);
                 }
             }

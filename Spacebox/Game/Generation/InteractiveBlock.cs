@@ -1,7 +1,5 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Common;
-using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resources;
 

@@ -5,14 +5,15 @@ using Spacebox.Common;
 using Spacebox.FPS;
 using Spacebox.Game;
 using Spacebox.Game.Player;
+using Spacebox.UI;
 
-namespace Spacebox.UI
+namespace Spacebox.Game.GUI
 {
     public static class CreativeWindowUI
     {
         private static float SlotSize = 64.0f;
-        private static IntPtr SlotTexture = IntPtr.Zero;
-      
+        private static nint SlotTexture = nint.Zero;
+
         public static bool IsVisible { get; set; } = false;
         public static bool Enabled { get; set; } = false;
 
@@ -20,37 +21,23 @@ namespace Spacebox.UI
 
         private static Storage storage;
 
-        public static void SetDefaultIcon(IntPtr textureId, Astronaut player)
+        public static void SetDefaultIcon(nint textureId, Astronaut player)
         {
             SlotTexture = textureId;
             CreativeWindowUI.player = player;
             storage = GameBlocks.CreateCreativeStorage(5);
+
+            var inventory = ToggleManager.Register("creative");
+            inventory.IsUI = true;
+            inventory.OnStateChanged += s =>
+            {
+                IsVisible = s;
+            };
         }
 
         public static void Render()
         {
             if (!Enabled) return;
-            if (Input.IsKeyDown(Keys.C) && !Debug.IsVisible)
-            {
-                IsVisible = !IsVisible;
-
-                if (IsVisible)
-                {
-                    Input.ShowCursor();
-
-                    if (player != null)
-                        player.CanMove = false;
-
-
-                }
-                else
-                {
-                    Input.HideCursor();
-
-                    if (player != null)
-                        player.CanMove = true;
-                }
-            }
             if (!IsVisible) return;
 
             if (storage == null) return;
@@ -65,8 +52,8 @@ namespace Spacebox.UI
 
             SlotSize = Math.Clamp(io.DisplaySize.X * 0.04f, 32.0f, 128.0f);
 
-            float windowWidth = (5 * SlotSize) + titleBarHeight + titleBarHeight;
-            float windowHeight = (7 * SlotSize) + titleBarHeight + titleBarHeight;
+            float windowWidth = 5 * SlotSize + titleBarHeight + titleBarHeight;
+            float windowHeight = 7 * SlotSize + titleBarHeight + titleBarHeight;
 
             Vector2 displaySize = io.DisplaySize;
             Vector2 windowPos = new Vector2(
@@ -98,7 +85,7 @@ namespace Spacebox.UI
 
             if (ImGui.BeginTable("CreativeTable", storage.SizeX, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit))
             {
-                for (int x = 0; x < storage.SizeX; x++) 
+                for (int x = 0; x < storage.SizeX; x++)
                 {
                     ImGui.TableSetupColumn($"##columnCreative_{x}", ImGuiTableColumnFlags.WidthFixed, SlotSize);
                 }
@@ -109,19 +96,19 @@ namespace Spacebox.UI
                     {
                         ImGui.TableSetColumnIndex(x);
 
-                        ItemSlot slot = storage.GetSlot(x,y);
+                        ItemSlot slot = storage.GetSlot(x, y);
                         if (slot == null)
                         {
                             continue;
                         }
                         string id = $"slotCreative_{x}_{y}";
-                        IntPtr slotTextureId = SlotTexture;
+                        nint slotTextureId = SlotTexture;
 
                         ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.5f, 0.5f, 0.5f, 1.0f));
                         ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
                         ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
 
-                        if (slotTextureId == IntPtr.Zero)
+                        if (slotTextureId == nint.Zero)
                         {
                             if (ImGui.Button("", new Vector2(SlotSize, SlotSize)))
                             {
@@ -156,7 +143,7 @@ namespace Spacebox.UI
                         }
 
                         ImGui.PopStyleColor(3);
-                      
+
                         ImGui.PopStyleVar();
 
                         InventoryUIHelper.ShowTooltip(slot, true);
@@ -177,9 +164,9 @@ namespace Spacebox.UI
         {
             if (slot.HasItem)
             {
-                if(player != null)
+                if (player != null)
                 {
-                    if(Input.IsKey(Keys.LeftShift))
+                    if (Input.IsKey(Keys.LeftShift))
                     {
                         player.Panel.TryAddItem(slot.Item, slot.Item.StackSize);
                     }
@@ -191,7 +178,7 @@ namespace Spacebox.UI
                     {
                         player.Panel.TryAddItem(slot.Item, 1);
                     }
-                    
+
                 }
             }
             else

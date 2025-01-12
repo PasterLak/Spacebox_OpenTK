@@ -32,7 +32,7 @@ namespace Spacebox.Game
             Texture.UpdateTexture(true);
 
             itemCamera = new Camera360(Vector3.Zero, false);
-            itemCamera.FOV = 90;
+            itemCamera.FOV = 80;
         }
 
         public void SetColor(Vector3 color)

@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.GUI;
 using Spacebox.Common.Physics;
@@ -61,7 +62,17 @@ namespace Spacebox.Game.Generation
 
             Overlay.AddElement(new WorldOverlayElement(this));
 
-           
+
+            InputManager.AddAction("save", Keys.P, false);
+            InputManager.RegisterCallback("save", () => { SaveWorld(); });
+        }
+
+        public void SaveWorld()
+        {
+            Player.Save();
+            WorldSaveLoad.SaveWorld(Data.WorldFolderPath);
+            WorldInfoSaver.Save(Data.Info);
+            Debug.Success("The world was successfully saved!");
         }
 
         public void LoadWorld()
@@ -140,13 +151,6 @@ namespace Spacebox.Game.Generation
                 sector.Update();
             }*/
 
-
-            if(Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.P))
-            {
-                
-                WorldSaveLoad.SaveWorld(Data.WorldFolderPath);
-                WorldInfoSaver.Save(Data.Info);
-            }
         }
 
         public void Render(Shader shader)

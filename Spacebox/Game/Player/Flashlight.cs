@@ -39,7 +39,7 @@ namespace Spacebox.Game.Player
                 IsActive = !IsActive;
             });
 
-            toggle = ToggleManager.Instance.Register("flashlight");
+            toggle = ToggleManager.Register("flashlight");
             toggle.OnStateChanged += state => { IsActive = state; };
 
             

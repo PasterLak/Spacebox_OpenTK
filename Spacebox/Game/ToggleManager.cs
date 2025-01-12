@@ -1,25 +1,45 @@
-﻿using Spacebox.Common;
-using System;
+﻿
+using Spacebox.Common;
 
 namespace Spacebox.Game
 {
-    public class ToggleManager
+    public class ToggleManager 
     {
 
-        public static ToggleManager Instance { get; private set; }
+        private static readonly Dictionary<string, Toggi> toggles = new Dictionary<string, Toggi>();
 
-        private Dictionary<string, Toggi> toggles = new Dictionary<string, Toggi>();
+        private static readonly List<Toggi> openedWindows = new List<Toggi>();
 
+        public static int OpenedWindowsCount => openedWindows.Count;
         public ToggleManager()
         {
-            Instance = this;
+            
         }
 
-        public Toggi Register(string name)
+        public static void DisableAll()
+        {
+            foreach(var tg in toggles)
+            {
+                tg.Value.Disable();
+            }
+        }
+
+        public static void DisableAllWindows()
+        {
+            foreach (var tg in openedWindows)
+            {
+                tg.Disable();
+            }
+
+            openedWindows.Clear();
+        }
+
+        public static Toggi Register(string name)
         {
             return Register(new Toggi(name));
         }
-        public Toggi Register(Toggi toggleable)
+
+        public static Toggi Register(Toggi toggleable)
         {
             if (Exists(toggleable.Name))
             {
@@ -32,15 +52,7 @@ namespace Spacebox.Game
             return toggleable;
         }
 
-        public void AddSlave(string toggle, string slave)
-        {
-            if (Exists(toggle) && Exists(slave))
-            {
-                // toggles[toggle].slaves.Add(toggles[slave].toggle);
-            }
-        }
-
-        public void Unregister(Toggi toggleable)
+        public static void Unregister(Toggi toggleable)
         {
             if (Exists(toggleable.Name))
             {
@@ -48,7 +60,7 @@ namespace Spacebox.Game
             }
         }
 
-        public void Unregister(string toggleName)
+        public static void Unregister(string toggleName)
         {
             if (Exists(toggleName))
             {
@@ -56,7 +68,7 @@ namespace Spacebox.Game
             }
         }
 
-        public void SetState(string toggleName, bool state)
+        public static void SetState(string toggleName, bool state)
         {
             Toggi? tg = null;
             if (!toggles.TryGetValue(toggleName, out tg))
@@ -73,23 +85,44 @@ namespace Spacebox.Game
             }
 
             tg.SetState(state);
+
+            if(tg.IsUI)
+            {
+                if(state)
+                {
+                    if(!openedWindows.Contains(tg))
+                    {
+                        openedWindows.Add(tg);
+                    }
+                }
+                else
+                {
+                    if (openedWindows.Contains(tg))
+                    {
+                        openedWindows.Remove(tg);
+                    }
+                }
+            }
         }
 
-        public bool IsActiveAndExists(string toggleName)
+        public static bool IsActiveAndExists(string toggleName)
         {
             if (toggles.TryGetValue(toggleName, out Toggi tg))
             {
                 return tg != null && tg.State;
             }
-
             return false;
         }
 
-        public bool Exists(string toggleName)
+        public static bool Exists(string toggleName)
         {
             return toggles.ContainsKey(toggleName);
         }
 
-
+        public static void Dispose()
+        {
+            toggles.Clear();
+            openedWindows.Clear();
+        }
     }
 }

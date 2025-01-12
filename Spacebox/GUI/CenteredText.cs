@@ -6,25 +6,21 @@ namespace Spacebox.GUI
 {
     public static class CenteredText
     {
-
-        private static string _text = "Press F to use";
+        private static string _text = "Press RMB to use";
 
         public static bool IsVisible { get; private set;}
               
         private static Vector4 _color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-
       
         public static void SetText(string text)
         {
             _text = text;
         }
-
        
         public static void SetColor(Vector4 color)
         {
             _color = color;
         }
-
        
         public static void Show()
         {
@@ -45,7 +41,6 @@ namespace Spacebox.GUI
             IsVisible = !IsVisible;
         }
 
-      
         public static void Draw()
         {
             if(!Settings.ShowInterface) return;

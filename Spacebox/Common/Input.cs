@@ -3,20 +3,19 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
-
 namespace Spacebox.Common
 {
     public class Input
     {
         private static Input _instance;
-        private static GameWindow _gameWindow;
+        private static Window _gameWindow;
         private static KeyboardState _lastState;
         public static MouseState Mouse => _gameWindow.MouseState;
 
 
         public Input() { }
 
-        public static void Initialize(GameWindow gameWindow) 
+        public static void Initialize(Window gameWindow) 
         { 
             if(_instance == null)
             {
@@ -34,7 +33,7 @@ namespace Spacebox.Common
 
         public static void Update()
         {
-           // _lastState = _gameWindow.KeyboardState;
+        
         }
 
         public static bool IsKey(Keys key)
@@ -88,16 +87,25 @@ namespace Spacebox.Common
         public static void SetCursorState(CursorState state)
         {
             _gameWindow.CursorState = state;
+            
+           // MoveCursorToCenter();
+
         }
         public static void HideCursor()
         {
             SetCursorState(CursorState.Grabbed);
+            MoveCursorToCenter();
+        }
+
+        public static void MoveCursorToCenter()
+        {
+            _gameWindow.MousePosition = _gameWindow.GetCenter();
         }
 
         public static void ShowCursor()
         {
             SetCursorState(CursorState.Normal);
-           
+            
         }
 
         public static CursorState GetCursorState()

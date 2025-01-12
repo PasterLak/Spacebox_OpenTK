@@ -24,8 +24,8 @@ namespace Spacebox.Game.GUI
             ItemTexture = new Texture2D("Resources/Textures/item.png", true, false).Handle;
             InventoryUIHelper.SetDefaultIcon(textureId, nint.Zero);
 
-            var inventory = ToggleManager.Instance.Register("inventory");
-
+            var inventory = ToggleManager.Register("inventory");
+            inventory.IsUI = true;
             inventory.OnStateChanged += s =>
             {
                 IsVisible = s;
@@ -35,20 +35,26 @@ namespace Spacebox.Game.GUI
         {
             if (Input.IsKeyDown(Keys.Tab) && !Debug.IsVisible)
             {
-                IsVisible = !IsVisible;
+                var v = IsVisible;
+
+                ToggleManager.DisableAllWindows();
+
+                IsVisible = !v;
 
                 if (IsVisible)
                 {
-                    Input.ShowCursor();
-                    if (Player != null)
-                        Player.CanMove = false;
+                    ToggleManager.SetState("mouse", true);
+                    ToggleManager.SetState("player", false);
+                    if(Player.GameMode != GameMode.Survival)
+                    ToggleManager.SetState("creative", true);
+                    
                 }
                 else
                 {
-                    Input.HideCursor();
-                    if (Player != null)
-                        Player.CanMove = true;
+                    ToggleManager.SetState("mouse", false);
+                    ToggleManager.SetState("player", true);
                 }
+            
             }
         }
         public static void OnGUI(Storage storage)

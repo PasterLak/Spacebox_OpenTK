@@ -253,10 +253,14 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         }
 
 
-        if (Input.IsKeyDown(Keys.F))
+        if (ToggleManager.OpenedWindowsCount == 0)
         {
-            block.chunk = chunk;
-            block.Use(player);
+            if (Input.IsMouseButtonDown(MouseButton.Right))
+            {
+                block.chunk = chunk;
+                block.Use(player);
+
+            }
         }
 
     }

@@ -50,6 +50,14 @@ namespace Spacebox.Game.GUI
             _scanningAudio = new AudioSource(SoundManager.GetClip("radarScanning"));
             _foundAudio = new AudioSource(SoundManager.GetClip("radarFound"));
 
+
+            var inventory = ToggleManager.Register("radar");
+            inventory.IsUI = true;
+            inventory.OnStateChanged += s =>
+            {
+                IsVisible = s;
+            };
+
         }
 
         public void Render()
@@ -288,25 +296,39 @@ namespace Spacebox.Game.GUI
         {
             IsVisible = true;
             OnOpen?.Invoke();
-            ToggleManager.Instance.SetState("player", !IsVisible);
+            ToggleManager.SetState("player", !IsVisible);
         }
 
         public void Close()
         {
             IsVisible = false;
             OnClose?.Invoke();
-            ToggleManager.Instance.SetState("player", !IsVisible);
+            ToggleManager.SetState("player", !IsVisible);
         }
 
         public void Toggle(Astronaut player)
         {
-            IsVisible = !IsVisible;
-            if (IsVisible)
-                OnOpen?.Invoke();
-            else
-                OnClose?.Invoke();
+            var v = !IsVisible;
 
-            ToggleManager.Instance.SetState("player", !IsVisible);
+            ToggleManager.DisableAllWindows();
+
+            
+
+            if (v)
+            {
+                OnOpen?.Invoke();
+                ToggleManager.SetState("mouse", true);
+                ToggleManager.SetState("player", false);
+                ToggleManager.SetState("radar", v);
+            }
+                
+            else
+            {
+                OnClose?.Invoke();
+                ToggleManager.SetState("mouse", false);
+                ToggleManager.SetState("player", true);
+            }
+
         }
 
         public void Render(Vector2 windowSize)

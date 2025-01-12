@@ -31,9 +31,7 @@ namespace Spacebox.Game.GUI
             set
             {
                 _isVisible = value;
-                ToggleManager.Instance.SetState("player", !_isVisible);
-                ToggleManager.Instance.SetState("mouse", _isVisible);
-                ToggleManager.Instance.SetState("inventory", _isVisible);
+               
             }
         }
 
@@ -48,10 +46,27 @@ namespace Spacebox.Game.GUI
 
         private static AudioSource scrollAudio;
         private static AudioSource clickAudio;
-        public static void Toggle(Astronaut _)
+        public static void Toggle(Astronaut player)
         {
-            IsVisible = !IsVisible;
-            Inventory = _.Inventory;
+            var v = !IsVisible;
+            ToggleManager.DisableAllWindows();
+
+            if( v )
+            {
+                ToggleManager.SetState("crafting", true);
+                ToggleManager.SetState("mouse", true);
+                ToggleManager.SetState("player", false);
+                if (player.GameMode != GameMode.Survival)
+                    ToggleManager.SetState("creative", true);
+                ToggleManager.SetState("inventory", true);
+            }
+            else
+            {
+                ToggleManager.SetState("mouse", false);
+                ToggleManager.SetState("player", true);
+            }
+
+            Inventory = player.Inventory;
             showGrid = false;
         }
 
@@ -61,6 +76,13 @@ namespace Spacebox.Game.GUI
             SlotTexture = TextureManager.GetTexture("Resources/Textures/slot.png", true, false).Handle;
             scrollAudio = new AudioSource(SoundManager.GetClip("scroll"));
             clickAudio = new AudioSource(SoundManager.GetClip("click1"));
+
+            var inventory = ToggleManager.Register("crafting");
+            inventory.IsUI = true;
+            inventory.OnStateChanged += s =>
+            {
+                IsVisible = s;
+            };
         }
 
         public static void OnGUI()

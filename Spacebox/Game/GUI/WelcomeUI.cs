@@ -15,13 +15,14 @@ namespace Spacebox.Game.GUI
             set
             {
                 _isVisible = value;
-                ToggleManager.Instance.SetState("player", !_isVisible);
-                ToggleManager.Instance.SetState("mouse", _isVisible);
-                ToggleManager.Instance.SetState("inventory", _isVisible);
+                //Input.MoveCursorToCenter();
+                ToggleManager.DisableAllWindows();
+                ToggleManager.SetState("mouse", _isVisible);
+                ToggleManager.SetState("player", !_isVisible);
+                Input.MoveCursorToCenter();
                 Settings.ShowInterface = !_isVisible;
 
-                if (_isVisible) Input.ShowCursor();
-                else Input.HideCursor();
+              
             }
         }
 

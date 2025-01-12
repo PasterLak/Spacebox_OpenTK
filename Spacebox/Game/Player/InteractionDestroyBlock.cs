@@ -93,8 +93,8 @@ public class InteractionDestroyBlock : InteractionMode
         {
             if (Input.IsKeyDown(Keys.F))
             {
-                if (lastInteractiveBlock != null)
-                    lastInteractiveBlock.Use(player);
+                //if (lastInteractiveBlock != null)
+                 //   lastInteractiveBlock.Use(player);
             }
             model?.SetAnimation(false);
             return;
@@ -184,10 +184,14 @@ public class InteractionDestroyBlock : InteractionMode
         }
 
 
-        if (Input.IsKeyDown(Keys.F))
+        if (ToggleManager.OpenedWindowsCount == 0)
         {
-            block.chunk = chunk;
-            block.Use(player);
+            if (Input.IsMouseButtonDown(MouseButton.Right))
+            {
+                block.chunk = chunk;
+                block.Use(player);
+
+            }
         }
 
     }

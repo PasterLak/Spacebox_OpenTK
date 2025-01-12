@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
 
-namespace Spacebox.Scenes
+namespace Spacebox.FPS
 {
     public class GameData
     {

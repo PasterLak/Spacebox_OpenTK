@@ -12,7 +12,7 @@ public class InteractionDefault : InteractionMode
 {
     public override void OnEnable()
     {
-        
+
     }
 
     public override void OnDisable()
@@ -27,13 +27,13 @@ public class InteractionDefault : InteractionMode
 
         if (World.CurrentSector.Raycast(ray, out hit))
         {
-            if(hit.block == null)  return;
+            if (hit.block == null) return;
 
             var interactiveBlock = hit.block as InteractiveBlock;
 
             if (interactiveBlock == null)
             {
-                CenteredText.Hide(); 
+                CenteredText.Hide();
                 return;
             }
 
@@ -50,11 +50,17 @@ public class InteractionDefault : InteractionMode
 
         CenteredText.Show();
 
-        if (Input.IsKeyDown(Keys.F))
+        if (ToggleManager.OpenedWindowsCount == 0)
         {
-            block.chunk = chunk;
-            block.Use(player);
+            if (Input.IsMouseButtonDown(MouseButton.Right))
+            {
+                block.chunk = chunk;
+                block.Use(player);
+
+            }
         }
+
+
 
     }
 }

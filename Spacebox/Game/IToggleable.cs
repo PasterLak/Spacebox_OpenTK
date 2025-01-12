@@ -1,22 +1,11 @@
 ﻿namespace Spacebox.Game
 {
-    public interface IToggleable : IEnableDisable
-    {
-        void Toggle();
-        bool IsToggled { get; }
-    }
-
-    public interface IEnableDisable
-    {
-        void Enable();
-        void Disable();
-        bool IsEnabled { get; }
-    }
 
     public class Toggi
     {
         public Guid Id { get; private set; }
         public string Name { get; private set; }
+        public bool IsUI { get; set; } = false;
 
         private bool _state = false;
         public bool State => _state;

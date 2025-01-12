@@ -27,8 +27,8 @@ namespace Spacebox
     {
 
         public static Window Instance;
-        
-        
+
+
         public static readonly ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
 
         public static Action<Vector2> OnResized;
@@ -68,11 +68,12 @@ namespace Spacebox
             SceneManager.Initialize(this, typeof(LogoScene));
 
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
-            
+
             Theme.ApplySpaceboxTheme();
 
-            InputManager.AddAction("debug", Keys.GraveAccent, true); // 161 mac
-            InputManager.RegisterCallback("debug", () => { Debug.ToggleVisibility(); });
+
+            // InputManager.AddAction("debug", Keys.GraveAccent, true); // 161 mac
+            //InputManager.RegisterCallback("debug", () => { Debug.ToggleVisibility(); });
 
             InputManager.AddAction("overlay", Keys.F3, true);
             InputManager.RegisterCallback("overlay", () => { Overlay.IsVisible = !Overlay.IsVisible; });
@@ -98,7 +99,7 @@ namespace Spacebox
             InputManager.AddAction("screenshot", Keys.F12, true);
             InputManager.RegisterCallback("screenshot", () => { FramebufferCapture.SaveScreenshot(); });
 
-        
+
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -130,14 +131,14 @@ namespace Spacebox
                 Overlay.OnGUI();
                 InputOverlay.OnGUI();
 
-                if(_debugUI)
+                if (_debugUI)
                 {
                     ImGui.ShowDemoWindow();
                 }
 
 
                 Time.EndOnGUI();
-                
+
 
                 _controller.Render();
 
@@ -152,7 +153,7 @@ namespace Spacebox
 
         }
 
-        
+
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
@@ -162,7 +163,7 @@ namespace Spacebox
 
             Time.Update(e);
             InputManager.Update();
-            
+
             while (_mainThreadActions.TryDequeue(out var action))
             {
                 try
@@ -192,7 +193,6 @@ namespace Spacebox
 
         private void UpdateInputs()
         {
-           
 
             if (Input.IsKeyDown(Keys.KeyPadAdd))
             {
@@ -204,14 +204,17 @@ namespace Spacebox
                 Lighting.RemoveAmbient();
             }
 
-         
+            if (Input.IsKeyDown(Keys.GraveAccent))
+            {
+                Debug.ToggleVisibility();
+            }
 
             if (Input.IsKeyDown(Keys.KeyPad2))
             {
                 FramebufferCapture.IsActive = true;
 
             }
-         
+
         }
 
         public void ToggleFrameLimiter()
@@ -267,21 +270,32 @@ namespace Spacebox
 
         public void CenterWindow()
         {
-        
+
             var (monitorWidth, monitorHeight) = Monitors.GetMonitorFromWindow(this).WorkArea.Size;
 
-          
+
             int windowWidth = Size.X;
             int windowHeight = Size.Y;
 
-            
+
             int posX = (monitorWidth - windowWidth) / 2;
             int posY = (monitorHeight - windowHeight) / 2;
 
-       
+
             Location = new Vector2i(posX, posY);
         }
 
+        public Vector2 GetCenter()
+        {
+        
+            int windowWidth = Size.X;
+            int windowHeight = Size.Y;
+
+            int posX = windowWidth / 2;
+            int posY = windowHeight / 2;
+
+            return new Vector2i(posX, posY);
+        }
         public void Quit()
         {
             if (SceneManager.CurrentScene != null)

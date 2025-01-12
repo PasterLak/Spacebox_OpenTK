@@ -8,7 +8,6 @@ using Spacebox.GUI;
 using Spacebox.Game;
 using Spacebox.Common.Audio;
 using Spacebox.Game.Commands;
-using Spacebox.UI;
 using Spacebox.Game.GUI;
 using Spacebox.Common.Physics;
 using Spacebox.Game.Generation;
@@ -106,13 +105,23 @@ namespace Spacebox.Scenes
             BlackScreenOverlay.IsEnabled = true;
             BlackScreenOverlay.Render();
 
-            toggleManager = new ToggleManager();
 
-            var mouse = toggleManager.Register("mouse");
+            var mouse = ToggleManager.Register("mouse");
 
             mouse.OnStateChanged += s =>
             {
-                if (s) Input.ShowCursor(); else Input.HideCursor();
+                if (s)
+                {
+                    player.ResetMousePosition();
+                    Input.MoveCursorToCenter();
+                    Input.ShowCursor();
+                }
+                else
+                {
+                    player.ResetMousePosition();
+                    Input.MoveCursorToCenter();
+                    Input.HideCursor();
+                }
             };
         }
 
@@ -154,25 +163,25 @@ namespace Spacebox.Scenes
 
             radarWindow = new RadarWindow(skybox.Texture);
 
-            player = new Astronaut(new Vector3(5,5,5));
+            player = new Astronaut(new Vector3(5, 5, 5));
             SceneGraph.AddRoot(player);
-            
+
             World.LoadWorldInfo(worldName);
             world = new World(player);
-            
+
             player.GameMode = World.Data.Info.GameMode;
             PlayerSaveLoadManager.LoadPlayer(player, World.Data.WorldFolderPath);
 
 
-           
+
 
             CollisionManager.Add(player);
 
-            
+
 
             Death = new AudioSource(SoundManager.GetClip("death2"));
             Uii = new AudioSource(SoundManager.GetClip("uii"));
-            
+
 
             ambient = new AudioSource(SoundManager.GetClip("Music/ambientMain"));
             ambient.IsLooped = true;
@@ -210,19 +219,12 @@ namespace Spacebox.Scenes
 
             Texture2D block = UVAtlas.GetBlockTexture(blockTexture, 0, 0, GameBlocks.AtlasBlocks.SizeBlocks);
 
-            //chunk.RemoveBlock(0,0,0);
-
-            
-
             blockDestructionManager = new BlockDestructionManager(player);
 
-            //sector = new Sector0(new Vector3(0, 0, 0), new Vector3i(0, 0, 0), world);
 
             dustSpawner = new DustSpawner(player);
 
             healthBar = new HealthBar();
-
-            //builder.AddCube(Vector3.Zero, CubeType.Wireframe, Color4.Yellow, new Vector2(0,0));
 
             Debug.RegisterCommand(new TeleportCommand(player));
             Debug.RegisterCommand(new TagCommand(player));
@@ -238,7 +240,7 @@ namespace Spacebox.Scenes
             InventoryUI.Player = player;
 
             CreativeWindowUI.SetDefaultIcon(c.Handle, player);
-          
+
             itemModel = ItemModelGenerator.GenerateModel(GameBlocks.ItemsTexture, 2, 2, 0.05f, 0.5f, false);
             itemModel.Position = new Vector3(0, 0, 0);
             itemModel.debug = true;
@@ -255,23 +257,16 @@ namespace Spacebox.Scenes
 
             spacer.Position = player.Position + new Vector3(12, 15, 7);
             spacer.Rotation = new Vector3(0, 0, 0);
-            //Renderer.AddDrawable(spacer);
-            //SceneGraph.AddRoot(spacer);
-            //SceneGraph.UpdateTransforms();
 
             block1 = new SimpleBlock(ShaderManager.GetShader("Shaders/colored"),
                 TextureManager.GetTexture("Resources/Textures/slot.png"), new Vector3(0, 0, 0));
             block1.Position = new Vector3(-1, -1, 0);
-            //SceneGraph.AddRoot(block1);
-            //Renderer.AddDrawable(block1);
+
 
             block2 = new SimpleBlock(ShaderManager.GetShader("Shaders/colored"),
                 TextureManager.GetTexture("Resources/Textures/slot.png"), new Vector3(0, 0, 0));
 
-            //block1.AddChild(block2);
-            //Renderer.AddDrawable(block1);
-            //block2.Position = new Vector3(2, 0, 0);
-            //SceneGraph.PrintHierarchy();
+
 
             WelcomeUI.OnPlayerSpawned(World.Data.Info.ShowWelcomeWindow);
             WelcomeUI.Init();
@@ -289,20 +284,48 @@ namespace Spacebox.Scenes
             CraftingGUI.Init();
 
             animator = new Animator(spacer);
-            animator.AddAnimation(new MoveAnimation(spacer.Position, spacer.Position + new Vector3(0,0,1000), 5000f, false));
+            animator.AddAnimation(new MoveAnimation(spacer.Position, spacer.Position + new Vector3(0, 0, 1000), 5000f, false));
             animator.AddAnimation(new RotateAnimation(Vector3.UnitX, 5f, 0f));
             animator.AddAnimation(new RotateAnimation(Vector3.UnitY, 5f, 0f));
+
+            Debug.OnVisibilityWasChanged += OnDebugStateChanged;
+        }
+
+        private void OnDebugStateChanged(bool state)
+        {
+            
+            ToggleManager.SetState("mouse", state);
+            ToggleManager.SetState("player", !state);
+            
+            InputManager.Enabled = !state;
+            ToggleManager.DisableAllWindows();
+            ToggleManager.SetState("radar", false);
+            ToggleManager.SetState("inventory", false);
+            Input.MoveCursorToCenter();
         }
 
         public override void Update()
         {
             Time.HandleTicks();
-            
+
             player.Update();
             blockDestructionManager.Update();
             dustSpawner.Update();
             //itemModel.Rotation = player.Rotation;
             world.Update();
+
+            if (Input.IsKeyDown(Keys.Escape))
+            {
+                ToggleManager.DisableAllWindows();
+                ToggleManager.SetState("inventory", false);
+                ToggleManager.SetState("mouse", false);
+                ToggleManager.SetState("player", true);
+
+
+            }
+
+
+
             if (!Debug.IsVisible)
             {
                 if (Input.IsKeyDown(Keys.KeyPadEnter))
@@ -330,20 +353,11 @@ namespace Spacebox.Scenes
                 }
             }
 
-            if (Input.IsKeyDown(Keys.B))
-            {
-                // Uii.Play();
-            }
-
             dustSpawner.Update();
             PanelUI.Update();
 
-            //chunk.Test(player);
             animator.Update(Time.Delta);
 
-            //world.Update();
-
-            //sector.Update();
         }
 
         public override void Render()
@@ -427,9 +441,9 @@ namespace Spacebox.Scenes
 
             //healthBar.OnGUI();
             radarWindow.Render();
-           
+
             ResourceProcessingGUI.OnGUI();
-           CraftingGUI.OnGUI();
+            CraftingGUI.OnGUI();
             PanelUI.Render();
             player.OnGUI();
             InventoryUI.OnGUI(player.Inventory);
@@ -462,6 +476,8 @@ namespace Spacebox.Scenes
             World.DropEffectManager.Dispose();
             TagManager.ClearTags();
             world.Dispose();
+            ToggleManager.Dispose();
+            Debug.OnVisibilityWasChanged -= OnDebugStateChanged;
         }
     }
 }

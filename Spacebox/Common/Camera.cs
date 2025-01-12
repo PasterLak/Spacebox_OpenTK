@@ -27,7 +27,7 @@ namespace Spacebox.Common
             get => MathHelper.RadiansToDegrees(_fov);
             set
             {
-                var angle = MathHelper.Clamp(value, 1f, 90f);
+                var angle = MathHelper.Clamp(value, 1f, 180f);
                 _fov = MathHelper.DegreesToRadians(angle);
             }
         }

@@ -4,6 +4,7 @@ namespace Spacebox.Common
 {
     public static class InputManager
     {
+        public static bool Enabled { get;  set; } = true;
         private static Dictionary<string, InputAction> actions = new Dictionary<string, InputAction>();
 
         public static InputAction AddAction(string name, Keys key, bool isGlobal = false)
@@ -118,6 +119,8 @@ namespace Spacebox.Common
 
         public static void Update()
         {
+            if(!Enabled) return;
+
             foreach (var action in actions.Values)
             {
                 bool isPressed = false;

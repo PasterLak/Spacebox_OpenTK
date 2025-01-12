@@ -2,7 +2,7 @@
 using OpenTK.Mathematics;
 using Spacebox.Common;
 
-namespace Spacebox.Scenes
+namespace Spacebox.FPS
 {
     public class TestGraph
     {
