@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
+using Spacebox.Game.Generation;
 using System.Numerics;
 
 namespace Spacebox.Game.GUI
@@ -33,13 +34,13 @@ namespace Spacebox.Game.GUI
             var texture = TextureManager.GetTexture("Resources/Textures/UI/welcome.jpg");
             texture.FlipY();
             texture.UpdateTexture(true);
-            if (texture != null) 
-            bannerTextureId = texture.Handle;
+            if (texture != null)
+                bannerTextureId = texture.Handle;
         }
 
         public static void OnPlayerSpawned(bool savedState)
         {
-     
+
             IsVisible = savedState;
         }
 
@@ -47,7 +48,7 @@ namespace Spacebox.Game.GUI
         {
             if (!_isVisible) return;
 
-            if(Input.GetCursorState() != OpenTK.Windowing.Common.CursorState.Normal)
+            if (Input.GetCursorState() != OpenTK.Windowing.Common.CursorState.Normal)
             {
                 Input.ShowCursor();
             }
@@ -70,8 +71,8 @@ namespace Spacebox.Game.GUI
 
             const string text = "Welcome to Spacebox!";
             var textSize = ImGui.CalcTextSize(text);
-            ImGui.SetCursorPos(new Vector2(windowWidth * 0.502f - textSize.X * 0.5f, textSize.Y));
-            ImGui.TextColored(new Vector4(0.1f, 0.1f, 0.1f, 0.5f), text);
+            //ImGui.SetCursorPos(new Vector2(windowWidth * 0.502f - textSize.X * 0.5f, textSize.Y));
+            //ImGui.TextColored(new Vector4(0.1f, 0.1f, 0.1f, 0.5f), text);
             ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize.X * 0.5f, textSize.Y));
             ImGui.TextColored(new Vector4(1.0f, 0.75f, 0.0f, 1f), text);
 
@@ -98,9 +99,13 @@ namespace Spacebox.Game.GUI
             float textBlockWidth = windowWidth - sidePadding * 2;
             ImGui.SetCursorPosX(sidePadding);
 
-            ImGui.BeginChild("TextBlock", new Vector2(textBlockWidth, textBlockWidth/2f));
-            ImGui.TextWrapped("Welcome to Spacebox! \n" +
-                "Here you can display any information, such as tips or a game description.");
+            ImGui.BeginChild("TextBlock", new Vector2(textBlockWidth, textBlockWidth / 2f));
+            ImGui.TextWrapped("Thank you for playing my game! \n\n" +
+                "You have to survive in the asteroid belt after the crash of a spaceship. Key tasks include resource extraction, " +
+                "building a base and new ships, as well as protection from creatures hiding in the depths of asteroids. " +
+                "The game will provide procedural generation of the game world. The system of random events will add unexpected scenarios, " +
+                "such as emergency breakdowns, attacks. Modding is already available, which allows players to add their own items, blocks, " +
+                "textures, and the multiplayer mode planned for the future will open up more ways for joint survival and space exploration.\r\n\r\nGood luck!");
             ImGui.EndChild();
 
             float buttonWidth = windowWidth * 0.25f;
@@ -110,14 +115,26 @@ namespace Spacebox.Game.GUI
             float buttonX = (windowWidth - buttonWidth) * 0.5f;
             ImGui.SetCursorPos(new Vector2(buttonX, buttonY));
 
-            GameMenu.CenterButtonWithBackground("Close", buttonWidth, buttonHeight, () =>
+            GameMenu.CenterButtonWithBackground("Start", buttonWidth, buttonHeight, () =>
             {
                 clickAudio?.Play();
                 IsVisible = false;
+                SaveWelcomeState();
             });
 
             ImGui.PopStyleColor(1);
             ImGui.End();
+        }
+
+        private static void SaveWelcomeState()
+        {
+            if (World.Instance != null)
+            {
+                var info = World.Data.Info;
+                info.ShowWelcomeWindow = false;
+                WorldInfoSaver.Save(info);
+            }
+
         }
     }
 }

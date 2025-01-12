@@ -1,5 +1,6 @@
 ﻿using ImGuiNET;
 using Spacebox.Common;
+using Spacebox.Common.Audio;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
 using Spacebox.UI;
@@ -37,63 +38,115 @@ namespace Spacebox.Game.GUI
         }
 
         private static bool wasInitialized = true; //  !!!
-        public static void Init()
-        {
 
-
-        }
-
-        public static void Toggle(Astronaut _)
+        private static AudioSource craftedSound;
+        public static void Toggle(Astronaut player)
         {
             IsVisible = !IsVisible;
+
+            if(!IsVisible)
+            {
+
+
+                player.Panel.ConnectStorage(player.Inventory, true);
+                player.Inventory.ConnectStorage(player.Panel);
+            }
+
+            if (processingBlock != null)
+            {
+                processingBlock.OnCrafted -= OnCrafted;
+            }
+
+            if (craftedSound == null)
+            {
+                craftedSound = new AudioSource(SoundManager.GetClip("crafted"));
+                craftedSound.Volume = 1f;
+            
+            }
         }
 
         private static void InitIcons()
         {
-            if(batteryIcon == IntPtr.Zero)
+            Debug.Log("----Icons debug " + WindowName);
+            if (batteryIcon == IntPtr.Zero)
             {
                 var texture  = TextureManager.GetTexture("Resources/Textures/UI/battery.png", true);
                 texture.FlipY();
                 texture.UpdateTexture(true);
                 batteryIcon = texture.Handle;
             }
-            
-            if (outputIcon == IntPtr.Zero)
-            {
-                if(WindowName == "Crusher")
-                {
-                    var texture = TextureManager.GetTexture("Resources/Textures/UI/crusherOutput.png", true);
-                    texture.FlipY();
-                    texture.UpdateTexture(true);
-                    outputIcon = texture.Handle;
-                }
-                   
-                //if (WindowName == "Furnace")
-                 //   outputIcon = TextureManager.GetTexture("Resources/Textures/UI/furnaceOutput.png", true,true).Handle;
-            }
 
             if (inputIcon == IntPtr.Zero)
             {
+                var t1 = TextureManager.GetTexture("Resources/Textures/UI/crusherInput.png", true);
+                var t2 = TextureManager.GetTexture("Resources/Textures/UI/furnaceInput.png", true);
+                var t3 = TextureManager.GetTexture("Resources/Textures/UI/disassemblerInput.png", true);
+
+                t1.FlipY();
+                t1.UpdateTexture(true);
+                t2.FlipY();
+                t2.UpdateTexture(true);
+                t3.FlipY();
+                t3.UpdateTexture(true);
+            }
+
                 if (WindowName == "Crusher")
                 {
                     var texture = TextureManager.GetTexture("Resources/Textures/UI/crusherInput.png", true);
-                    texture.FlipY();
-                    texture.UpdateTexture(true);
                     inputIcon = texture.Handle;
                 }
-
-                //if (WindowName == "Furnace")
-                //   outputIcon = TextureManager.GetTexture("Resources/Textures/UI/furnaceOutput.png", true,true).Handle;
+                if (WindowName == "Furnace")
+                {
+                    var texture = TextureManager.GetTexture("Resources/Textures/UI/furnaceInput.png", true);
+                    inputIcon = texture.Handle;
+                }
+            if (WindowName == "Disassembler")
+            {
+                var texture = TextureManager.GetTexture("Resources/Textures/UI/disassemblerInput.png", true);
+                inputIcon = texture.Handle;
             }
+
+
+            if (outputIcon == IntPtr.Zero)
+            {
+               var t1 =  TextureManager.GetTexture("Resources/Textures/UI/crusherOutput.png", true);
+               var t2 =  TextureManager.GetTexture("Resources/Textures/UI/furnaceOutput.png", true);
+
+                t1.FlipY();
+                t1.UpdateTexture(true);
+                t2.FlipY();
+                t2.UpdateTexture(true);
+            }
+
+                if (WindowName == "Crusher")
+                {
+                    var texture = TextureManager.GetTexture("Resources/Textures/UI/crusherOutput.png", true);
+                    outputIcon = texture.Handle;
+                }
+                if (WindowName == "Furnace")
+                {
+                    var texture = TextureManager.GetTexture("Resources/Textures/UI/furnaceOutput.png", true);
+                    outputIcon = texture.Handle;
+                }
+            if (WindowName == "Disassembler")
+            {
+                var texture = TextureManager.GetTexture("Resources/Textures/UI/furnaceOutput.png", true);
+                outputIcon = texture.Handle;
+            }
+
+
+
 
         }
 
         public static void Activate(ResourceProcessingBlock block, Astronaut player)
         {
-            InitIcons();
-            if (!wasInitialized) Init();
-            processingBlock = block;
+            if(!IsVisible) return;
             WindowName = block.WindowName;
+            InitIcons();
+
+            processingBlock = block;
+            
             if (InputStorage != null)
             {
                 InputStorage.OnDataWasChanged -= OnInputItemWasChanged;
@@ -116,9 +169,14 @@ namespace Spacebox.Game.GUI
             FuelStorage = processingBlock.FuelStorage;
             OutputStorage = processingBlock.OutputStorage;
 
+            block.OnCrafted += OnCrafted;
+
             InputStorage.ConnectStorage(player.Inventory, false);
             FuelStorage.ConnectStorage(player.Inventory, false);
             OutputStorage.ConnectStorage(player.Inventory, false);
+
+            player.Inventory.ConnectStorage(InputStorage, false);
+            player.Panel.ConnectStorage(InputStorage, false);
 
             InputStorage.OnDataWasChanged += OnInputItemWasChanged;
             OutputStorage.OnDataWasChanged += OnInputItemWasChanged;
@@ -135,6 +193,22 @@ namespace Spacebox.Game.GUI
                 
             }
             UpdateStatus();
+        }
+
+        private static void OnCrafted(ResourceProcessingBlock block)
+        {
+            if (!IsVisible) return;
+
+            if(craftedSound.IsPlaying)
+            {
+                craftedSound.Stop();
+                craftedSound.Play();
+            }
+            else
+            {
+                craftedSound.Play();
+            }
+           
         }
 
         private static void OnInputItemWasChanged(Storage storage)

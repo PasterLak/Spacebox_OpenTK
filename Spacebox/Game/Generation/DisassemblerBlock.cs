@@ -17,9 +17,10 @@ namespace Spacebox.Game.Generation
 
             public override void Use(Astronaut player)
             {
-                ResourceProcessingGUI.Activate(this, player);
+             
                 base.Use(player);
-            }
+            ResourceProcessingGUI.Activate(this, player);
+        }
 
 
         }

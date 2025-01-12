@@ -83,6 +83,12 @@ public class InteractionDestroyBlock : InteractionMode
     private float _time = MinBlockDestroyTime;
     public override void Update(Astronaut player)
     {
+        if (Input.IsMouseButtonUp(MouseButton.Left))
+        {
+            _time = MinBlockDestroyTime;
+            model?.SetAnimation(false);
+        }
+
         if (!player.CanMove)
         {
             if (Input.IsKeyDown(Keys.F))
@@ -90,6 +96,7 @@ public class InteractionDestroyBlock : InteractionMode
                 if (lastInteractiveBlock != null)
                     lastInteractiveBlock.Use(player);
             }
+            model?.SetAnimation(false);
             return;
         }
 
@@ -122,11 +129,7 @@ public class InteractionDestroyBlock : InteractionMode
                     DestroyBlock(hit);
                 }
             }
-            if (Input.IsMouseButtonUp(MouseButton.Left))
-            {
-                _time = MinBlockDestroyTime;
-                model?.SetAnimation(false);
-            }
+            
 
             lastInteractiveBlock = hit.block as InteractiveBlock;
 
@@ -149,11 +152,7 @@ public class InteractionDestroyBlock : InteractionMode
                 model?.SetAnimation(true);
 
             }
-            if (Input.IsMouseButtonUp(MouseButton.Left))
-            {
-                model?.SetAnimation(false);
-
-            }
+           
         }
     }
 

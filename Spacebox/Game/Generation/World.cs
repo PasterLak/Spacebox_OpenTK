@@ -143,7 +143,9 @@ namespace Spacebox.Game.Generation
 
             if(Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.P))
             {
+                
                 WorldSaveLoad.SaveWorld(Data.WorldFolderPath);
+                WorldInfoSaver.Save(Data.Info);
             }
         }
 

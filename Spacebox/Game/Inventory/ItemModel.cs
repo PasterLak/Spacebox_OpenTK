@@ -18,7 +18,7 @@ namespace Spacebox.Game
         public bool debug = false;
         private Matrix4 model;
 
-       
+
         private Shader shader;
         private Camera itemCamera;
         public ItemModel(Mesh mesh, Texture2D texture)
@@ -32,12 +32,8 @@ namespace Spacebox.Game
             Texture.UpdateTexture(true);
 
             itemCamera = new Camera360(Vector3.Zero, false);
-          
-
-            
+            itemCamera.FOV = 90;
         }
-
-        
 
         public void SetColor(Vector3 color)
         {
@@ -47,7 +43,7 @@ namespace Spacebox.Game
         }
         public virtual void Draw(Shader shader)
         {
-            
+
             if (this.shader == null)
             {
                 this.shader = shader;
@@ -71,7 +67,7 @@ namespace Spacebox.Game
 
 
             Matrix4 additionalRotation = Matrix4.CreateRotationY(additionalRotationAngle);
-           // additionalRotation = additionalRotation * rotation;
+            // additionalRotation = additionalRotation * rotation;
             model =
                  Matrix4.CreateTranslation(offset) *
                  Matrix4.CreateTranslation(Position) *

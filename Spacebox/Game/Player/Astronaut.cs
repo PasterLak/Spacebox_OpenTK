@@ -19,7 +19,7 @@ namespace Spacebox.Game.Player
 
         public void SetCameraSpeed(float speed, float shiftSpeed)
         {
-            
+
         }
 
         private bool _firstMove = true;
@@ -47,9 +47,9 @@ namespace Spacebox.Game.Player
         public Flashlight Flashlight { get; private set; }
 
         public HitImage HitImage { get; private set; }
-        
+
         private AudioSource useConsumableAudio;
-        
+
         public HealthBar HealthBar { get; private set; }
         public PowerBar PowerBar { get; private set; }
         private GameModeBase _gameModeBase;
@@ -74,7 +74,7 @@ namespace Spacebox.Game.Player
         public Astronaut(Vector3 position)
             : base(position)
         {
-            FOV = MathHelper.DegreesToRadians(90);
+            FOV = 90;
             base.Name = Name;
             Layer = CollisionLayer.Player;
             VisualDebug.RemoveCollisionToDraw(this);
@@ -129,8 +129,8 @@ namespace Spacebox.Game.Player
 
         private void SetGameMode(GameMode mode)
         {
-            if(_gameModeBase != null)
-            _gameModeBase.OnDisable();
+            if (_gameModeBase != null)
+                _gameModeBase.OnDisable();
 
             switch (mode)
             {
@@ -175,6 +175,16 @@ namespace Spacebox.Game.Player
             HitImage.Update();
             if (!CanMove) return;
 
+            if (Input.IsMouseButton(MouseButton.Middle))
+            {
+                if (FOV != 50)
+                    FOV = 50;
+            }
+            if (Input.IsMouseButtonUp(MouseButton.Middle))
+            {
+                FOV = 90;
+            }
+
             if (Input.IsKeyDown(Keys.F5))
             {
                 VisualDebug.ShowPlayerCollision = !VisualDebug.ShowPlayerCollision;
@@ -189,7 +199,7 @@ namespace Spacebox.Game.Player
                 }
             }
 
-           
+
 
             if (Input.IsKeyDown(Keys.R))
             {
@@ -305,7 +315,7 @@ namespace Spacebox.Game.Player
                 _axes.Render(camera);
             }
 
-            
+
         }
 
         public void OnGUI()

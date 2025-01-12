@@ -12,6 +12,7 @@ public class WorldInfo
     public string GameVersion { get; set; }
     public string LastEditDate { get; set; }
     public string FolderName { get; set; } = "";
+    public bool ShowWelcomeWindow { get; set; } = true;
 
     public static string GetCurrentDate()
     {

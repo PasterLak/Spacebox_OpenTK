@@ -273,7 +273,7 @@ namespace Spacebox.Scenes
             //block2.Position = new Vector3(2, 0, 0);
             //SceneGraph.PrintHierarchy();
 
-            WelcomeUI.OnPlayerSpawned(true);
+            WelcomeUI.OnPlayerSpawned(World.Data.Info.ShowWelcomeWindow);
             WelcomeUI.Init();
         }
         Animator animator;

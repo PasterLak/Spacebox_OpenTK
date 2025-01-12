@@ -11,7 +11,7 @@ namespace Spacebox.Common
         protected Vector3 _up = Vector3.UnitY;
         protected Vector3 _right = Vector3.UnitX;
 
-        public float FOV = MathHelper.DegreesToRadians(80f);
+        private float _fov = MathHelper.DegreesToRadians(80f);
         public float AspectRatio { get; set; }
 
         public Vector3 Front => _front;
@@ -22,13 +22,13 @@ namespace Spacebox.Common
 
         public CameraFrustum Frustum { get; private set; } = new CameraFrustum();
 
-        public float Fov
+        public float FOV
         {
-            get => MathHelper.RadiansToDegrees(FOV);
+            get => MathHelper.RadiansToDegrees(_fov);
             set
             {
                 var angle = MathHelper.Clamp(value, 1f, 90f);
-                FOV = MathHelper.DegreesToRadians(angle);
+                _fov = MathHelper.DegreesToRadians(angle);
             }
         }
 
@@ -73,7 +73,7 @@ namespace Spacebox.Common
 
         public Matrix4 GetProjectionMatrix()
         {
-            return Matrix4.CreatePerspectiveFieldOfView(FOV, AspectRatio, 0.01f, Settings.ViewDistance);
+            return Matrix4.CreatePerspectiveFieldOfView(_fov, AspectRatio, 0.01f, Settings.ViewDistance);
         }
 
         protected abstract void UpdateVectors();

@@ -2,7 +2,6 @@
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
-using Spacebox.Game;
 using Spacebox.Game.Player;
 using Spacebox.UI;
 
@@ -34,7 +33,7 @@ namespace Spacebox.Game.GUI
         }
         private static void HandleInput()
         {
-            if (Input.IsKeyDown(Keys.C) && !Debug.IsVisible)
+            if (Input.IsKeyDown(Keys.Tab) && !Debug.IsVisible)
             {
                 IsVisible = !IsVisible;
 

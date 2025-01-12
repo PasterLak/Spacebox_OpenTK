@@ -729,7 +729,8 @@ namespace Spacebox.Game.GUI
                 ModId = gameSets[selectedGameSetIndex].ModId,
                 GameVersion = Application.Version,
                 LastEditDate = WorldInfo.GetCurrentDate(),
-                FolderName = newWorldName
+                FolderName = newWorldName,
+                ShowWelcomeWindow = true
             };
 
             string worldsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Worlds");

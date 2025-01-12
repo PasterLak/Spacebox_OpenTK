@@ -19,10 +19,7 @@ namespace Spacebox.Game.Generation
 
         public BoundingBox BoundingBox { get; private set; }
 
-        private SimpleBlock simple;
 
-        private static Shader sharedShader;
-        private static Texture2D sharedTexture;
 
         public List<SpaceEntity> Entities { get; private set; }
         public Dictionary<string, SpaceEntity> EntitiesNames { get; private set; }
@@ -273,7 +270,7 @@ namespace Spacebox.Game.Generation
 
         public void InitializeSharedResources()
         {
-            if (sharedShader == null)
+            /*if (sharedShader == null)
             {
                 sharedShader = ShaderManager.GetShader("Shaders/textured");
             }
@@ -285,7 +282,7 @@ namespace Spacebox.Game.Generation
 
             simple = new SimpleBlock(sharedShader, sharedTexture, BoundingBox.Center);
             simple.Scale = new Vector3(SizeBlocks, SizeBlocks, SizeBlocks);
-            simple.Position = simple.Position;
+            simple.Position = simple.Position;*/
         }
 
         public void Update()
@@ -300,8 +297,7 @@ namespace Spacebox.Game.Generation
 
         public void Render(Shader shader)
         {
-            //sharedShader.SetVector4("color", new Vector4(0, 1, 0, 1));
-            //simple?.Render(Camera.Main);
+
             VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 20, 100));
 
             var cam = Camera.Main;
@@ -312,6 +308,9 @@ namespace Spacebox.Game.Generation
 
                 if (cam.Frustum.IsInFrustum(Entities[i].GeometryBoundingBox, cam))
                 {
+                    var disSqr = Vector3.DistanceSquared(Entities[i].GeometryBoundingBox.Center, cam.Position);
+
+                    if(disSqr < 500 * 500)
                     Entities[i].Render(cam);
 
                 }
@@ -321,12 +320,9 @@ namespace Spacebox.Game.Generation
 
         public void Dispose()
         {
-            // DisposalManager.EnqueueForDispose(simple);
-            simple?.Dispose();
 
             foreach (var asteroid in Entities)
             {
-                //DisposalManager.EnqueueForDispose(asteroid);
                 asteroid?.Dispose();
             }
 

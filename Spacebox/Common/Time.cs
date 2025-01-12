@@ -6,7 +6,8 @@ namespace Spacebox.Common
     public static class Time
     {
         public static FrameEventArgs Frame;
-        public static float Delta => (float)Frame.Time;
+        public static float Delta => (float)Frame.Time * TimeSize;
+        public static float TimeSize = 1f;
 
         private static int _frameCount = 0;
         private static double _elapsedTime = 0.0;

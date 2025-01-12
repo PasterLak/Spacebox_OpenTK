@@ -53,7 +53,7 @@ public class WorldInfoSaver
             Debug.Error($"World folder not found for {worldInfo.Name}: {worldFolder}");
             return;
         }
-
+        worldInfo.UpdateEditDate();
         string worldJsonPath = Path.Combine(worldFolder, "world.json");
         string jsonContent = JsonSerializer.Serialize(worldInfo, new JsonSerializerOptions { WriteIndented = true });
 

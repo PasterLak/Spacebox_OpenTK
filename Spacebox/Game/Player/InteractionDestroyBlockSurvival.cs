@@ -134,6 +134,15 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
     public override void Update(Astronaut player)
     {
+        if (Input.IsMouseButtonUp(MouseButton.Left))
+        {
+            model?.SetAnimation(false);
+            _time = timeToDamage;
+            lastBlock = null;
+            BlockMiningEffect.ClearParticles();
+            BlockMiningEffect.Enabled = false;
+        }
+
         if (!player.CanMove)
         {
             if (Input.IsKeyDown(Keys.F))
@@ -141,6 +150,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 if (lastInteractiveBlock != null)
                     lastInteractiveBlock.Use(player);
             }
+            model?.SetAnimation(false);
             return;
         }
 
@@ -202,14 +212,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 model?.SetAnimation(true);
                 BlockMiningEffect.Enabled = true;
             }
-            if (Input.IsMouseButtonUp(MouseButton.Left))
-            {
-                model?.SetAnimation(false);
-                _time = timeToDamage;
-                lastBlock = null;
-                BlockMiningEffect.ClearParticles();
-                BlockMiningEffect.Enabled = false;
-            }
+            
 
             lastInteractiveBlock = hit.block as InteractiveBlock;
 
@@ -232,11 +235,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 model?.SetAnimation(true);
 
             }
-            if (Input.IsMouseButtonUp(MouseButton.Left))
-            {
-                model?.SetAnimation(false);
-                BlockMiningEffect.Enabled = false;
-            }
+           
         }
     }
 
