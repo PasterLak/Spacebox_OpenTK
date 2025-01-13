@@ -5,7 +5,6 @@ using Spacebox.Common;
 using Spacebox.FPS;
 using Spacebox.Game;
 using Spacebox.Game.Player;
-using Spacebox.UI;
 
 namespace Spacebox.Game.GUI
 {

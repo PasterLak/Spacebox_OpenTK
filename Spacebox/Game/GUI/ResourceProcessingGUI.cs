@@ -3,7 +3,6 @@ using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
-using Spacebox.UI;
 using System.Numerics;
 
 namespace Spacebox.Game.GUI

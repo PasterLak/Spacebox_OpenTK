@@ -58,7 +58,8 @@ namespace Spacebox.Game.GUI
 
             ImGui.Begin("TagWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground |
                                      ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize |
-                                     ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs);
+                                     ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNavFocus
+                                     | ImGuiWindowFlags.NoBringToFrontOnFocus);
 
             foreach (var tag in _tags)
             {

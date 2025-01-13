@@ -58,29 +58,9 @@ namespace Spacebox.Common.Audio
             CheckALError("Initializing AudioManager");
         }
 
-
-        private float _time = 0;
         public void Update()
         {
-            if (_time < 1) _time += Time.Delta;
-
-            if (_time > 1) 
-            {
-                
-                _time = 0;
-                CheckDevice();
-            }
-
-        }
-
-        public void CheckDevice()
-        {
-            
-            var str = ALC.GetString(Device, AlcGetString.DeviceSpecifier);
-        
-            Debug.Success(str);
-
-      
+          
         }
 
         public void Dispose()

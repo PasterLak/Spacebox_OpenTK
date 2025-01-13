@@ -6,16 +6,16 @@ using Spacebox.Common;
 using Spacebox.Game;
 using Spacebox.Game.Resources;
 
-namespace Spacebox.UI
+namespace Spacebox.Game.GUI
 {
     public static class InventoryUIHelper
     {
         public static float SlotSize = 64.0f;
-        public static IntPtr SlotTexture = IntPtr.Zero;
-        public static IntPtr ItemTexture = IntPtr.Zero;
-        public static IntPtr SelectedTexture = IntPtr.Zero;
+        public static nint SlotTexture = nint.Zero;
+        public static nint ItemTexture = nint.Zero;
+        public static nint SelectedTexture = nint.Zero;
 
-        public static void SetDefaultIcon(IntPtr slotTextureId, IntPtr selectedTextureId)
+        public static void SetDefaultIcon(nint slotTextureId, nint selectedTextureId)
         {
             SlotTexture = slotTextureId;
             SelectedTexture = selectedTextureId;
@@ -29,6 +29,7 @@ namespace Spacebox.UI
         private static void OnResize(OpenTK.Mathematics.Vector2 w)
         {
             SlotSize = Math.Clamp(w.X * 0.04f, 32.0f, 128.0f);
+           // SlotSize
         }
 
         public static void RenderStorage(Storage storage, Action<ItemSlot> onSlotClicked, int columns, bool isPanel = false, short selectedSlotId = -1)
@@ -71,16 +72,16 @@ namespace Spacebox.UI
 
         public static unsafe void DrawSlot(ItemSlot slot, string id, Action<ItemSlot> onSlotClicked, bool isSelected = false)
         {
-            DrawSlot(slot,id,onSlotClicked, IntPtr.Zero,isSelected);
+            DrawSlot(slot, id, onSlotClicked, nint.Zero, isSelected);
         }
-        public static unsafe void DrawSlot(ItemSlot slot, string id, Action<ItemSlot> onSlotClicked, IntPtr backgroundImage, bool isSelected = false)
+        public static unsafe void DrawSlot(ItemSlot slot, string id, Action<ItemSlot> onSlotClicked, nint backgroundImage, bool isSelected = false)
         {
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.5f, 0.5f, 0.5f, 0.0f));
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
             ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(1, 0, 0, 0));
             ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1, 0, 0, 0));
-            if (SlotTexture == IntPtr.Zero)
+            if (SlotTexture == nint.Zero)
             {
                 if (ImGui.Button("", new Vector2(SlotSize, SlotSize)))
                 {
@@ -124,7 +125,7 @@ namespace Spacebox.UI
                     IsDragging = true;
                     fixed (byte* pBytes = bytes)
                     {
-                        ImGui.SetDragDropPayload("ITEM_SLOT", (IntPtr)pBytes, sizeof(short));
+                        ImGui.SetDragDropPayload("ITEM_SLOT", (nint)pBytes, sizeof(short));
                     }
 
                     ShowDragPreview(slot);
@@ -169,7 +170,7 @@ namespace Spacebox.UI
 
             Vector2 posCenter = pos + new Vector2(SlotSize * 0.5f, SlotSize * 0.5f);
 
-            if (isSelected && SelectedTexture != IntPtr.Zero)
+            if (isSelected && SelectedTexture != nint.Zero)
             {
                 drawList.AddImage(SelectedTexture, posCenter - sizeSlot * 0.5f, posCenter + sizeSlot * 0.5f);
             }
@@ -190,7 +191,7 @@ namespace Spacebox.UI
             }
             else
             {
-                if(backgroundImage != IntPtr.Zero)
+                if (backgroundImage != nint.Zero)
                 {
                     drawList.AddImage(backgroundImage, posCenter - sizeItem * 0.5f, posCenter + sizeItem * 0.5f);
                 }

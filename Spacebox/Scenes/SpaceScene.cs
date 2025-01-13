@@ -320,11 +320,7 @@ namespace Spacebox.Scenes
                 ToggleManager.SetState("inventory", false);
                 ToggleManager.SetState("mouse", false);
                 ToggleManager.SetState("player", true);
-
-
             }
-
-
 
             if (!Debug.IsVisible)
             {

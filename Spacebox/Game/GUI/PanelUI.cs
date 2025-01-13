@@ -1,4 +1,4 @@
-﻿ using System.Numerics;
+﻿using System.Numerics;
 using ImGuiNET;
 using Microsoft.VisualBasic;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -7,7 +7,6 @@ using Spacebox.Common.Audio;
 using Spacebox.Extensions;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
-using Spacebox.UI;
 
 
 namespace Spacebox.Game.GUI
