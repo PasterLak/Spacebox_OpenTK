@@ -53,7 +53,7 @@ namespace Spacebox.Game.Generation
                 faceNormals[i] = faces[i].GetNormal();
         }
 
-        const int floatsPerVertex = Mesh.FloatsPerVertex;
+        const int floatsPerVertex = BuffersData.FloatsPerVertexBlock;
         const int vertsPerBlock = 24;
         const int indicesPerBlock = 36;
 
@@ -156,7 +156,7 @@ namespace Spacebox.Game.Generation
                                     Vector3.Zero, Vector3.One);
 
                                 bool flip = false;
-                                int vStart = vertexCount / Mesh.FloatsPerVertex;
+                                int vStart = vertexCount / BuffersData.FloatsPerVertexBlock;
                                 float[] AO = new float[4];
 
 
@@ -295,7 +295,7 @@ namespace Spacebox.Game.Generation
             uint[] finalIndices = new uint[indexCount];
             Array.Copy(indices, 0, finalIndices, 0, indexCount);
 
-            Mesh mesh = new Mesh(finalVertices, finalIndices);
+            Mesh mesh = new Mesh(finalVertices, finalIndices, BuffersData.CreateBlockBuffer());
 
             if (_measureGenerationTime && stopwatch != null)
             {

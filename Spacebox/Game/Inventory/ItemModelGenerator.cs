@@ -135,7 +135,7 @@ namespace Spacebox.Game
 
             float[] vertexArray = vertices.ToArray();
             uint[] indexArray = indices.ToArray();
-            Mesh mesh = new Mesh(vertexArray, indexArray);
+            Mesh mesh = new Mesh(vertexArray, indexArray, BuffersData.CreateItemModelBuffer());
 
             if(!isAnimated)
                 return new ItemModel(mesh, cellTexture);
