@@ -270,6 +270,7 @@ namespace Spacebox.Scenes
 
             WelcomeUI.OnPlayerSpawned(World.Data.Info.ShowWelcomeWindow);
             WelcomeUI.Init();
+            PauseUI.Init();
         }
         Animator animator;
         public override void Start()
@@ -316,10 +317,22 @@ namespace Spacebox.Scenes
 
             if (Input.IsKeyDown(Keys.Escape))
             {
+                var c = ToggleManager.OpenedWindowsCount;
+
                 ToggleManager.DisableAllWindows();
-                ToggleManager.SetState("inventory", false);
-                ToggleManager.SetState("mouse", false);
-                ToggleManager.SetState("player", true);
+                if (c > 0)
+                {
+                    
+                    ToggleManager.SetState("inventory", false);
+                    ToggleManager.SetState("mouse", false);
+                    ToggleManager.SetState("player", true);
+                }
+                else
+                {
+                    ToggleManager.SetState("pause", true);
+                }
+
+
             }
 
             if (!Debug.IsVisible)
@@ -445,6 +458,7 @@ namespace Spacebox.Scenes
             InventoryUI.OnGUI(player.Inventory);
             CreativeWindowUI.Render();
             WelcomeUI.OnGUI();
+            PauseUI.OnGUI();
             if (VisualDebug.ShowDebug)
             {
                 WorldTextDebug.Draw();

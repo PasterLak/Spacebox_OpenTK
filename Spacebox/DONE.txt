@@ -43,7 +43,8 @@ version 0.1.0
 - destroy blocks in creative faster with holding button
 - save resource processing blocks
 - zoom 
-- 
+- pause
+- fix and better item model/shader
 
 version 0.0.9
 

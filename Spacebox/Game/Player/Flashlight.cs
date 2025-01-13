@@ -30,7 +30,7 @@ namespace Spacebox.Game.Player
             audio = new AudioSource(SoundManager.GetClip("flashlight"));
             audio.Volume = 0.5f;
 
-            InputManager.AddAction("flashlight", Keys.L);
+            InputManager.AddAction("flashlight", Keys.F);
 
             InputManager.RegisterCallback("flashlight", () =>
             {

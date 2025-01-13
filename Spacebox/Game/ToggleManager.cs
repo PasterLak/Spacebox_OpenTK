@@ -23,9 +23,29 @@ namespace Spacebox.Game
                 tg.Value.Disable();
             }
         }
+        public static void DisableAllWindowsButThis(string name)
+        {
+            if (OpenedWindowsCount == 0) return;
+
+            Toggi t = null;
+            foreach (var tg in openedWindows)
+            {
+                if(tg.Name != name)
+                tg.Disable();
+                else
+                    t = tg;
+            }
+
+            openedWindows.Clear();
+            if(t != null)
+            openedWindows.Add(t);
+        }
+
 
         public static void DisableAllWindows()
         {
+            if (OpenedWindowsCount == 0) return;
+
             foreach (var tg in openedWindows)
             {
                 tg.Disable();

@@ -54,7 +54,9 @@ namespace Spacebox.Game.GUI
                 ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(Color.X, Color.Y, Color.Z, _overlayAlpha));
                 ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
                 ImGui.SetNextWindowSize(new Vector2(ImGui.GetIO().DisplaySize.X, ImGui.GetIO().DisplaySize.Y), ImGuiCond.Always);
-                ImGui.Begin("Health Overlay", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoBringToFrontOnFocus);
+                ImGui.Begin("Health Overlay", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoInputs 
+                    | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoBringToFrontOnFocus
+                    | ImGuiWindowFlags.NoTitleBar );
                 ImGui.End();
                 ImGui.PopStyleColor();
             }
