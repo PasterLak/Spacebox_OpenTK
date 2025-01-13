@@ -1,9 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
-
 using Spacebox.Game.Effects;
-
 
 namespace Spacebox.Game.Player;
 
@@ -11,7 +9,6 @@ public class InteractionShoot : InteractionMode
 {
 
     private static AudioSource blockDestroy;
-
 
     private ItemSlot selectedItemSlot;
     private AnimatedItemModel model;
@@ -55,9 +52,13 @@ public class InteractionShoot : InteractionMode
 
     public override void Update(Astronaut player)
     {
-        if (!player.CanMove) return;
+        if (!player.CanMove)
+        {
+            model?.SetAnimation(false);
+            return;
+        }
 
-        if(Input.IsMouseButtonDown(0))
+        if (Input.IsMouseButtonDown(0))
         {
             model?.SetAnimation(true);
         }
@@ -67,4 +68,6 @@ public class InteractionShoot : InteractionMode
         }
 
     }
+
+   
 }

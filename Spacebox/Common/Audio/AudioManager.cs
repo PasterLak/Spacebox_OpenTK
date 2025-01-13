@@ -1,5 +1,5 @@
-﻿using System;
-using OpenTK.Audio.OpenAL;
+﻿using OpenTK.Audio.OpenAL;
+
 
 namespace Spacebox.Common.Audio
 {
@@ -14,6 +14,26 @@ namespace Spacebox.Common.Audio
         private bool isDisposed = false;
 
         AudioManager()
+        {
+            Setup();
+        }
+
+        public static AudioManager Instance
+        {
+            get
+            {
+                lock (padlock)
+                {
+                    if (instance == null)
+                    {
+                        instance = new AudioManager();
+                    }
+                    return instance;
+                }
+            }
+        }
+
+        private void Setup()
         {
             Device = ALC.OpenDevice(null);
             if (Device == ALDevice.Null)
@@ -38,19 +58,29 @@ namespace Spacebox.Common.Audio
             CheckALError("Initializing AudioManager");
         }
 
-        public static AudioManager Instance
+
+        private float _time = 0;
+        public void Update()
         {
-            get
+            if (_time < 1) _time += Time.Delta;
+
+            if (_time > 1) 
             {
-                lock (padlock)
-                {
-                    if (instance == null)
-                    {
-                        instance = new AudioManager();
-                    }
-                    return instance;
-                }
+                
+                _time = 0;
+                CheckDevice();
             }
+
+        }
+
+        public void CheckDevice()
+        {
+            
+            var str = ALC.GetString(Device, AlcGetString.DeviceSpecifier);
+        
+            Debug.Success(str);
+
+      
         }
 
         public void Dispose()
@@ -62,7 +92,6 @@ namespace Spacebox.Common.Audio
             ALC.CloseDevice(Device);
 
             isDisposed = true;
-            //Debug.WriteLine("AudioManager disposed.");
         }
 
         private void CheckALError(string operation)

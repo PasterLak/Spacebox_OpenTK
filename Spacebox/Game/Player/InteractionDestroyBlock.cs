@@ -18,7 +18,7 @@ public class InteractionDestroyBlock : InteractionMode
     private InteractiveBlock lastInteractiveBlock;
     private ItemSlot selectedItemSlot;
     private AnimatedItemModel model;
- 
+
     public InteractionDestroyBlock(ItemSlot itemslot)
     {
         AllowReload = true;
@@ -91,11 +91,6 @@ public class InteractionDestroyBlock : InteractionMode
 
         if (!player.CanMove)
         {
-            if (Input.IsKeyDown(Keys.F))
-            {
-                //if (lastInteractiveBlock != null)
-                 //   lastInteractiveBlock.Use(player);
-            }
             model?.SetAnimation(false);
             return;
         }
@@ -129,7 +124,7 @@ public class InteractionDestroyBlock : InteractionMode
                     DestroyBlock(hit);
                 }
             }
-            
+
 
             lastInteractiveBlock = hit.block as InteractiveBlock;
 
@@ -152,7 +147,7 @@ public class InteractionDestroyBlock : InteractionMode
                 model?.SetAnimation(true);
 
             }
-           
+
         }
     }
 
@@ -174,25 +169,24 @@ public class InteractionDestroyBlock : InteractionMode
     {
         var disSq = Vector3.DistanceSquared(player.Position, hitPos);
 
-        if (disSq > 3 * 3)
+        if (disSq > InteractiveBlock.InteractionDistanceSquared)
         {
             CenteredText.Hide();
         }
         else
         {
             CenteredText.Show();
-        }
-
-
-        if (ToggleManager.OpenedWindowsCount == 0)
-        {
-            if (Input.IsMouseButtonDown(MouseButton.Right))
+            if (ToggleManager.OpenedWindowsCount == 0)
             {
-                block.chunk = chunk;
-                block.Use(player);
+                if (Input.IsMouseButtonDown(MouseButton.Right))
+                {
+                    block.chunk = chunk;
+                    block.Use(player);
 
+                }
             }
         }
-
     }
+
+
 }

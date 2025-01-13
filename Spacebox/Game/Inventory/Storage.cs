@@ -147,7 +147,7 @@ namespace Spacebox.Game
                         return ConnectedStorage.TryAddItem(item, count);
                     }
 
-                    Debug.Error($"{Name}: no empty slots and no connected storage. Items was not added: {count}");
+                    Debug.Error($"Storage {Name}: no empty slots and no connected storage. Items was not added: {count}");
                     return false;
                 }
             }

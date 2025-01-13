@@ -9,6 +9,8 @@ namespace Spacebox.Game.Generation
     {
 
         public Keys KeyToUse { get; private set; } = Keys.F;
+        public const byte InteractionDistance = 3;
+        public const byte InteractionDistanceSquared = (InteractionDistance * InteractionDistance);
         public string HoverText = "Hover Text";
 
         public Action<Astronaut> OnUse;

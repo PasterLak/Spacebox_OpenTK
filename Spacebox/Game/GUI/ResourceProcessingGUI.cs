@@ -196,7 +196,7 @@ namespace Spacebox.Game.GUI
 
             block.OnCrafted += OnCrafted;
 
-            InputStorage.ConnectStorage(player.Inventory, false);
+            InputStorage.ConnectStorage(player.Inventory, true);
             FuelStorage.ConnectStorage(player.Inventory, false);
             OutputStorage.ConnectStorage(player.Inventory, false);
 
@@ -252,10 +252,7 @@ namespace Spacebox.Game.GUI
 
                 UpdateStatus();
 
-
-
             }
-
 
         }
 

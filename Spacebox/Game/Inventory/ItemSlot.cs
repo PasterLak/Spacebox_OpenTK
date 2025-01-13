@@ -47,7 +47,6 @@ namespace Spacebox.Game
         public void SetCount(byte count)
         {
             Count = count;
-            
         }
 
         public void TakeOne()
@@ -55,7 +54,6 @@ namespace Spacebox.Game
             if (!HasItem) return;
 
             Count--;
-
         }
         public void AddOne()
         {
@@ -63,9 +61,7 @@ namespace Spacebox.Game
             if (HasFreeSpace)
             {
                 Count++;
-
             }
-
         }
 
         public void SetData(Item item, byte count)
@@ -82,7 +78,6 @@ namespace Spacebox.Game
 
         public void Clear()
         {
-
             Count = 0;
         }
 
@@ -101,7 +96,6 @@ namespace Spacebox.Game
             }
             else
             {
-
                 if (slotToSwapWith.Count == Item.StackSize) return;
 
                 if (Count + slotToSwapWith.Count <= Item.StackSize)
@@ -117,7 +111,6 @@ namespace Spacebox.Game
                     Count = (byte)rest;
                 }
             }
-
 
            // Storage.OnDataWasChanged?.Invoke(Storage);
            // slotToSwapWith.Storage.OnDataWasChanged?.Invoke(slotToSwapWith.Storage);
@@ -157,24 +150,23 @@ namespace Spacebox.Game
         {
             if (!HasItem) return;
 
-            Storage storage = Storage.ConnectedStorage;
+            Storage target = Storage.ConnectedStorage;
 
-            if (storage != null)
+            if (target != null)
             {
 
                 byte count = Count;
 
                 Clear();
 
-                if (storage.TryAddItem(Item, count))
+                if (target.TryAddItem(Item, count))
                 {
-                    //Storage.OnDataWasChanged?.Invoke(Storage);
-                    //storage.OnDataWasChanged?.Invoke(storage);
+                    
                 }
                 else
                 {
 
-                    Debug.Error("Failed to add item to " + storage.Name + " by moving from " + Storage.Name);
+                    Debug.Error("Failed to add item to " + target.Name + " by moving from " + Storage.Name);
                     Debug.Error("Item name was: " + Item.Name);
 
                     Count = count;

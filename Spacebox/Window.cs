@@ -188,6 +188,7 @@ namespace Spacebox
 
             Time.EndUpdate();
 
+            AudioManager.Instance.Update();
 
         }
 

@@ -172,7 +172,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
             BlockSelector.Instance.UpdatePosition(selectorPos,
                 Block.GetDirectionFromNormal(hit.normal));
 
-            
+
 
             if (Input.IsMouseButton(MouseButton.Left))
             {
@@ -212,7 +212,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 model?.SetAnimation(true);
                 BlockMiningEffect.Enabled = true;
             }
-            
+
 
             lastInteractiveBlock = hit.block as InteractiveBlock;
 
@@ -235,7 +235,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 model?.SetAnimation(true);
 
             }
-           
+
         }
     }
 
@@ -243,25 +243,26 @@ public class InteractionDestroyBlockSurvival : InteractionMode
     {
         var disSq = Vector3.DistanceSquared(player.Position, hitPos);
 
-        if (disSq > 3 * 3)
+        if (disSq > InteractiveBlock.InteractionDistanceSquared)
         {
             CenteredText.Hide();
         }
         else
         {
             CenteredText.Show();
-        }
-
-
-        if (ToggleManager.OpenedWindowsCount == 0)
-        {
-            if (Input.IsMouseButtonDown(MouseButton.Right))
+            if (ToggleManager.OpenedWindowsCount == 0)
             {
-                block.chunk = chunk;
-                block.Use(player);
+                if (Input.IsMouseButtonDown(MouseButton.Right))
+                {
+                    block.chunk = chunk;
+                    block.Use(player);
 
+                }
             }
         }
+
+
+
 
     }
 

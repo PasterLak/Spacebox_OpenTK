@@ -6,7 +6,7 @@ namespace Spacebox.Common.Audio
 {
     public class AudioSource : IDisposable
     {
-        private readonly int source;
+        private readonly int handle;
         public readonly AudioClip Clip;
         private bool isDisposed = false;
         private bool isPlaying = false;
@@ -14,18 +14,19 @@ namespace Spacebox.Common.Audio
         private readonly object playLock = new object();
         private Thread playbackThread;
 
+        public Vector3 Position = new Vector3(0,0,0);
         public bool IsPlaying => isPlaying;
 
         public bool IsLooped
         {
             get
             {
-                AL.GetSource(source, ALSourceb.Looping, out bool looped);
+                AL.GetSource(handle, ALSourceb.Looping, out bool looped);
                 return looped;
             }
             set
             {
-                AL.Source(source, ALSourceb.Looping, value);
+                AL.Source(handle, ALSourceb.Looping, value);
                 CheckALError("Setting looping");
             }
         }
@@ -37,7 +38,7 @@ namespace Spacebox.Common.Audio
             set
             {
                 _volume = MathHelper.Clamp(value, 0f, 1f);
-                AL.Source(source, ALSourcef.Gain, _volume);
+                AL.Source(handle, ALSourcef.Gain, _volume);
                 CheckALError("Setting volume");
             }
         }
@@ -46,19 +47,19 @@ namespace Spacebox.Common.Audio
         {
             this.Clip = clip;
 
-            source = AL.GenSource();
+            handle = AL.GenSource();
 
             if (!clip.IsStreaming)
             {
-                AL.Source(source, ALSourcei.Buffer, clip.Buffer);
-                AL.Source(source, ALSourcef.Gain, _volume);
-                AL.Source(source, ALSource3f.Position, 0.0f, 0.0f, 0.0f);
+                AL.Source(handle, ALSourcei.Buffer, clip.Buffer);
+                AL.Source(handle, ALSourcef.Gain, _volume);
+                AL.Source(handle, ALSource3f.Position, Position.X, Position.Y, Position.Z);
                 CheckALError("Initializing AudioSource");
             }
             else
             {
-                AL.Source(source, ALSourcef.Gain, _volume);
-                AL.Source(source, ALSource3f.Position, 0.0f, 0.0f, 0.0f);
+                AL.Source(handle, ALSourcef.Gain, _volume);
+                AL.Source(handle, ALSource3f.Position, Position.X, Position.Y, Position.Z);
                 CheckALError("Initializing streaming AudioSource");
             }
 
@@ -78,12 +79,12 @@ namespace Spacebox.Common.Audio
 
                 if (!Clip.IsStreaming)
                 {
-                    AL.SourcePlay(source);
+                    AL.SourcePlay(handle);
                 }
                 else
                 {
-                    Clip.Stream(source);
-                    AL.SourcePlay(source);
+                    Clip.Stream(handle);
+                    AL.SourcePlay(handle);
                 }
                 CheckALError("Playing");
 
@@ -108,7 +109,7 @@ namespace Spacebox.Common.Audio
             {
                 if (isDisposed) return;
 
-                AL.SourcePause(source);
+                AL.SourcePause(handle);
                 CheckALError("Pausing");
 
                 isPaused = true;
@@ -123,7 +124,7 @@ namespace Spacebox.Common.Audio
             {
                 if (isDisposed) return;
 
-                AL.SourceStop(source);
+                AL.SourceStop(handle);
                 CheckALError("Stopping");
 
                 isPlaying = false;
@@ -146,8 +147,8 @@ namespace Spacebox.Common.Audio
                     playbackThread.Join();
                 }
 
-                AL.SourceStop(source);
-                AL.DeleteSource(source);
+                AL.SourceStop(handle);
+                AL.DeleteSource(handle);
               
             }
         }
@@ -158,10 +159,10 @@ namespace Spacebox.Common.Audio
             {
                 if (Clip.IsStreaming)
                 {
-                    Clip.Stream(source);
+                    Clip.Stream(handle);
                 }
 
-                AL.GetSource(source, ALGetSourcei.SourceState, out int state);
+                AL.GetSource(handle, ALGetSourcei.SourceState, out int state);
                 ALSourceState sourceState = (ALSourceState)state;
 
                 if (sourceState == ALSourceState.Stopped)
@@ -173,8 +174,8 @@ namespace Spacebox.Common.Audio
                             // Additional streaming initialization can be done here if needed
                         }
 
-                        AL.SourceRewind(source);
-                        AL.SourcePlay(source);
+                        AL.SourceRewind(handle);
+                        AL.SourcePlay(handle);
                     }
                     else
                     {

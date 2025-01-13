@@ -42,6 +42,8 @@ version 0.1.0
 - new save system based on NBT
 - destroy blocks in creative faster with holding button
 - save resource processing blocks
+- zoom 
+- 
 
 version 0.0.9
 

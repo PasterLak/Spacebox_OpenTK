@@ -1,7 +1,6 @@
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Physics;
-using Spacebox.FPS;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
@@ -22,7 +21,7 @@ public class InteractionDefault : InteractionMode
 
     public override void Update(Astronaut player)
     {
-        Ray ray = new Ray(player.Position, player.Front, 3);
+        Ray ray = new Ray(player.Position, player.Front, InteractiveBlock.InteractionDistance);
         VoxelPhysics.HitInfo hit;
 
         if (World.CurrentSector.Raycast(ray, out hit))
