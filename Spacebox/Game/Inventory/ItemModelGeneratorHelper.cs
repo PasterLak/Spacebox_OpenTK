@@ -75,15 +75,15 @@ namespace Spacebox.Game
         // position(3) + uv(2) + color(3) + normal
         public static void AddFace(List<float> vertices, List<uint> indices, uint indexOffset,
                             Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4,
-                            Vector3 color, // Используем цвет вместо нормали
+                            Vector3 normal, 
                             Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
         {
             vertices.AddRange(new float[]
             {
-        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
-        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
-        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
-        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
+        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, normal.X, normal.Y, normal.Z,
+        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, normal.X, normal.Y, normal.Z,
+        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, normal.X, normal.Y, normal.Z,
+        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, normal.X, normal.Y, normal.Z
             });
 
 
@@ -96,7 +96,7 @@ namespace Spacebox.Game
 
         public static void AddFaceBack(List<float> vertices, List<uint> indices, uint indexOffset,
                             Quad quad, float depth, float modelSize,
-                            Vector3 color,
+                          
                             Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
         {
 
@@ -121,13 +121,13 @@ namespace Spacebox.Game
             v2 += new Vector3(0, 0, depth);
             v3 += new Vector3(0, 0, depth);
 
-            color = new Vector3(-1, 0, 0);
+            Vector3 normal = new Vector3(-1, 0, 0);
             vertices.AddRange(new float[]
             {
-        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
-        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
-        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
-        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
+        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, normal.X, normal.Y, normal.Z,
+        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, normal.X, normal.Y, normal.Z,
+        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, normal.X, normal.Y, normal.Z,
+        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, normal.X, normal.Y, normal.Z
             });
 
 
@@ -140,7 +140,7 @@ namespace Spacebox.Game
 
         public static void AddFaceForward(List<float> vertices, List<uint> indices, uint indexOffset,
                             Quad quad, float depth, float modelSize,
-                            Vector3 color,
+                          
                             Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
         {
 
@@ -165,14 +165,14 @@ namespace Spacebox.Game
             v3 += new Vector3(0, 0, depth);
             v4 += new Vector3(0, 0, depth);
 
-            color = new Vector3(1, 0, 0);
+            Vector3 normal = new Vector3(1, 0, 0);
 
             vertices.AddRange(new float[]
             {
-        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
-        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
-        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
-        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
+        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, normal.X, normal.Y, normal.Z,
+        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, normal.X, normal.Y, normal.Z,
+        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, normal.X, normal.Y, normal.Z,
+        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, normal.X, normal.Y, normal.Z
             });
 
 
@@ -186,7 +186,7 @@ namespace Spacebox.Game
 
         public static void AddFaceTop(List<float> vertices, List<uint> indices, uint indexOffset,
                             Quad quad, float depth, float modelSize,
-                            Vector3 color,
+                          
                             Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
         {
 
@@ -210,14 +210,14 @@ namespace Spacebox.Game
 
             v2 += new Vector3(0, 0, depth);
             v3 += new Vector3(0, 0, depth);
-            color = new Vector3(0, 1, 0);
+            Vector3 normal = new Vector3(0, 1, 0);
 
             vertices.AddRange(new float[]
             {
-        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
-        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
-        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
-        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
+        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, normal.X, normal.Y, normal.Z,
+        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, normal.X, normal.Y, normal.Z,
+        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, normal.X, normal.Y, normal.Z,
+        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, normal.X, normal.Y, normal.Z
             });
 
 
@@ -230,7 +230,7 @@ namespace Spacebox.Game
 
         public static void AddFaceButton(List<float> vertices, List<uint> indices, uint indexOffset,
                             Quad quad, float depth, float modelSize,
-                            Vector3 color,
+                         
                             Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
         {
 
@@ -254,14 +254,14 @@ namespace Spacebox.Game
 
             v4 += new Vector3(0, 0, depth);
             v3 += new Vector3(0, 0, depth);
-            color = new Vector3(0, -1, 0);
+            Vector3 normal = new Vector3(0, -1, 0);
 
             vertices.AddRange(new float[]
             {
-        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
-        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
-        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
-        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, color.X, color.Y, color.Z,color.X, color.Y, color.Z,1f,1f,
+        v1.X, v1.Y, v1.Z, uv1.X, uv1.Y, normal.X, normal.Y, normal.Z,
+        v2.X, v2.Y, v2.Z, uv2.X, uv2.Y, normal.X, normal.Y, normal.Z,
+        v3.X, v3.Y, v3.Z, uv3.X, uv3.Y, normal.X, normal.Y, normal.Z,
+        v4.X, v4.Y, v4.Z, uv4.X, uv4.Y, normal.X, normal.Y, normal.Z
             });
 
 

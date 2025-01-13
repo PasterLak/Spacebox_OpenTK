@@ -58,7 +58,7 @@ namespace Spacebox.Game
                 {
                     ItemModelGeneratorHelper.AddFaceButton(vertices, indices, indexOffset,
                         quad, modelDepth, modelSize,
-                     new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
+                   uv[0], uv[1], uv[2], uv[3]);
 
                     indexOffset += 4;
                 }
@@ -67,7 +67,7 @@ namespace Spacebox.Game
                 {
                     ItemModelGeneratorHelper.AddFaceTop(vertices, indices, indexOffset,
                         quad, modelDepth, modelSize,
-                     new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
+                    uv[0], uv[1], uv[2], uv[3]);
 
                     indexOffset += 4;
                 }
@@ -76,7 +76,7 @@ namespace Spacebox.Game
                 {
                     ItemModelGeneratorHelper.AddFaceForward(vertices, indices, indexOffset,
                         quad, modelDepth, modelSize,
-                     new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
+                     uv[0], uv[1], uv[2], uv[3]);
 
                     indexOffset += 4;
                 }
@@ -85,7 +85,7 @@ namespace Spacebox.Game
                     ItemModelGeneratorHelper.AddFaceBack
                         (vertices, indices, indexOffset,
                         quad, modelDepth, modelSize,
-                     new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
+                     uv[0], uv[1], uv[2], uv[3]);
 
                     indexOffset += 4;
                 }

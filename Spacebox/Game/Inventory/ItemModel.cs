@@ -1,8 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using Spacebox.common.Animation;
 using Spacebox.Common;
-using Spacebox.Common.Animation;
 using Spacebox.Game.Player;
 
 namespace Spacebox.Game
@@ -39,7 +37,7 @@ namespace Spacebox.Game
         {
             if (shader == null) return;
 
-            shader.SetVector3("color", color);
+            //shader.SetVector3("color", color);
         }
         public virtual void Draw(Shader shader)
         {
@@ -47,8 +45,8 @@ namespace Spacebox.Game
             if (this.shader == null)
             {
                 this.shader = shader;
-                shader.SetVector3("lightColor", new Vector3(1, 1, 1));
-                shader.SetVector3("objectColor", new Vector3(1, 1, 1));
+               // shader.SetVector3("lightColor", new Vector3(1,1, 1));
+                //shader.SetVector3("objectColor", new Vector3(1, 1, 1));
             }
 
             if (debug) PlaceModelDebug();
@@ -83,7 +81,7 @@ namespace Spacebox.Game
             shader.SetMatrix4("projection", itemCamera.GetProjectionMatrix());
 
             GL.Enable(EnableCap.DepthTest);
-            GL.DepthMask(false);
+            //GL.DepthMask(false);
 
             Texture.Use(TextureUnit.Texture0);
             shader.SetInt("texture0", 0);

@@ -92,13 +92,6 @@ namespace Spacebox.Game.GUI
             ItemModel.Draw(itemModelShader);
         }
 
-        public static void SetItemColor(Vector3 color)
-        {
-            if (ItemModel == null) return;
-
-            ItemModel.SetColor(color.ToOpenTKVector3());
-        }
-
         public static ItemModel GetSlotModel()
         {
 
