@@ -45,6 +45,8 @@ version 0.1.0
 - zoom 
 - pause
 - fix and better item model/shader
+- bug fixes
+- buffer class
 
 version 0.0.9
 
@@ -68,7 +70,7 @@ version 0.0.9
 - WorldToLocal, LocalToWorld
 - benchmarks
 - better project structure
-- better project xml file
+- better project xml file- 
 - DisposalManager for multi threading
 - better Overlay with Elements
 - ioc container

@@ -99,7 +99,7 @@ namespace Spacebox
             InputManager.AddAction("screenshot", Keys.F12, true);
             InputManager.RegisterCallback("screenshot", () => { FramebufferCapture.SaveScreenshot(); });
 
-
+           // ToggleFullScreen();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

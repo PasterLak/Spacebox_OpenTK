@@ -11,7 +11,8 @@ public class SurvivalMode : MovementMode
             typeof(InteractionConsumeItem),
             typeof(InteractionShoot),
             typeof(InteractionDefault)
-        }, GameMode.Survival);
+        },
+        GameMode.Survival);
     }
 
     public SurvivalMode(Astronaut player) : base(player, CreateInteractionHandler())

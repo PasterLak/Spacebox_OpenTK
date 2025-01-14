@@ -1,3 +1,4 @@
+
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
@@ -33,24 +34,40 @@ public class InteractionPlaceBlock : InteractionMode
 
     private Vector3 UpdateBlockPreview(VoxelPhysics.HitInfo hit)
     {
+
+        
+
         BlockSelector.IsVisible = true;
-        var selectorPositionWorld = new Vector3(hit.blockPosition.X + hit.normal.X,
-            hit.blockPosition.Y + hit.normal.Y,
-            hit.blockPosition.Z + hit.normal.Z) + hit.chunk.PositionWorld;
+        var selectorPositionWorld = new Vector3(hit.blockPositionIndex.X + hit.normal.X,
+            hit.blockPositionIndex.Y + hit.normal.Y,
+            hit.blockPositionIndex.Z + hit.normal.Z) + hit.chunk.PositionWorld;
         BlockSelector.Instance.UpdatePosition(selectorPositionWorld, Block.GetDirectionFromNormal(hit.normal));
 
         return selectorPositionWorld;
     }
 
+    const float MinDistanceToBlock = 1.37f * 1.37f;
     public override void Update(Astronaut player)
     {
-        if (!player.CanMove) return;
+        if (!player.CanMove)
+        {
+            BlockSelector.IsVisible = false;
+            return;
+
+        }
         Ray ray = new Ray(player.Position, player.Front, MaxBuildDistance);
         VoxelPhysics.HitInfo hit;
 
         if (World.CurrentSector.Raycast(ray, out hit))
         {
-            OnEntityFound(hit);
+            
+
+            var pos = hit.blockPositionIndex + hit.chunk.PositionWorld + hit.normal + new Vector3(0.5f,0.5f,0.5f);
+            var disSqrt = Vector3.DistanceSquared(pos, player.Position);
+
+            if (disSqrt > MinDistanceToBlock)
+                OnEntityFound(hit);
+            else BlockSelector.IsVisible = false;
         }
         else
         {
@@ -77,9 +94,9 @@ public class InteractionPlaceBlock : InteractionMode
                     if (!hasSameSides)
                         newBlock.SetDirectionFromNormal(hit.normal);
 
-                    int x = hit.blockPosition.X + hit.normal.X;
-                    int y = hit.blockPosition.Y + hit.normal.Y;
-                    int z = hit.blockPosition.Z + hit.normal.Z;
+                    int x = hit.blockPositionIndex.X + hit.normal.X;
+                    int y = hit.blockPositionIndex.Y + hit.normal.Y;
+                    int z = hit.blockPositionIndex.Z + hit.normal.Z;
 
                     chunk.PlaceBlock(x, y, z, newBlock);
 

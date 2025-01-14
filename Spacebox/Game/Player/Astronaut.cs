@@ -171,7 +171,11 @@ namespace Spacebox.Game.Player
 
             _gameModeBase.UpdateInteraction(this);
             _gameModeBase.Update(this);
+
             HitImage.Update();
+          
+            _gameModeBase.HandleInput(this);
+
             if (!CanMove) return;
 
             if (Input.IsMouseButton(MouseButton.Middle))
@@ -211,7 +215,7 @@ namespace Spacebox.Game.Player
                 Debug.Log($"Collision Enabled: {CollisionEnabled}");
             }
 
-            HandleInput();
+            HandleMouse();
             UpdateBounding();
 
             base.Update();
@@ -237,9 +241,9 @@ namespace Spacebox.Game.Player
             return Matrix4.LookAt(Position, Position + newFront, newUp);
         }
 
-        private void HandleInput()
+        private void HandleMouse()
         {
-            _gameModeBase.HandleInput(this);
+            
 
             var mouse = Input.Mouse;
 

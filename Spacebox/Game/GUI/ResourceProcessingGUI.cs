@@ -39,6 +39,13 @@ namespace Spacebox.Game.GUI
         private static AudioSource craftedSound;
         public static void Toggle(Astronaut player)
         {
+            if(!ToggleManager.Exists("resourceProcessing"))
+            {
+                batteryIcon = IntPtr.Zero;
+     inputIcon = IntPtr.Zero;
+      outputIcon = IntPtr.Zero;
+        wasInitialized = false;
+            }
             if (!wasInitialized)
             {
                 var inventory = ToggleManager.Register("resourceProcessing");

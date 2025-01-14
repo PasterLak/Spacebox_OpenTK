@@ -17,7 +17,6 @@ using Spacebox.Game.Resources;
 using Spacebox.Common.GUI;
 using Spacebox.common.Animation;
 using Spacebox.Common.Animation;
-using static Spacebox.Game.WorldLoader;
 
 namespace Spacebox.Scenes
 {
@@ -28,30 +27,20 @@ namespace Spacebox.Scenes
         private World world;
         private Shader skyboxShader;
 
-
         //private Sector0 sector;
         private Shader blocksShader;
         private Texture2D blockTexture;
         private Texture2D lightAtlas;
-        // to base
-
-        //public static AudioSource blockPlace;
-        //public static AudioSource blockDestroy;
 
         public static AudioSource Death;
         public static bool DeathOn = false;
-        public static AudioSource Uii;
         private AudioSource ambient;
         private DustSpawner dustSpawner;
 
 
         private BlockDestructionManager blockDestructionManager;
 
-        private ItemModel itemModel;
-        private Shader itemModelShader;
-        private HealthBar healthBar;
         private BlockSelector blockSelector;
-
 
         private RadarWindow radarWindow;
         public static Model spacer;
@@ -60,10 +49,10 @@ namespace Spacebox.Scenes
         private SimpleBlock block1;
         private SimpleBlock block2;
 
-        private ToggleManager toggleManager;
-
         public SpaceScene(string[] args) : base(args) // name mod seed modfolder
         {
+            HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
+
             if (args.Length == 4)
             {
                 worldName = args[0];
@@ -172,16 +161,9 @@ namespace Spacebox.Scenes
             player.GameMode = World.Data.Info.GameMode;
             PlayerSaveLoadManager.LoadPlayer(player, World.Data.WorldFolderPath);
 
-
-
-
             CollisionManager.Add(player);
 
-
-
             Death = new AudioSource(SoundManager.GetClip("death2"));
-            Uii = new AudioSource(SoundManager.GetClip("uii"));
-
 
             ambient = new AudioSource(SoundManager.GetClip("Music/ambientMain"));
             ambient.IsLooped = true;
@@ -221,10 +203,8 @@ namespace Spacebox.Scenes
 
             blockDestructionManager = new BlockDestructionManager(player);
 
-
             dustSpawner = new DustSpawner(player);
 
-            healthBar = new HealthBar();
 
             Debug.RegisterCommand(new TeleportCommand(player));
             Debug.RegisterCommand(new TagCommand(player));
@@ -240,12 +220,6 @@ namespace Spacebox.Scenes
             InventoryUI.Player = player;
 
             CreativeWindowUI.SetDefaultIcon(c.Handle, player);
-
-            itemModel = ItemModelGenerator.GenerateModel(GameBlocks.ItemsTexture, 2, 2, 0.05f, 0.5f, false);
-            itemModel.Position = new Vector3(0, 0, 0);
-            itemModel.debug = true;
-            //player.AddChild(itemModel);
-            itemModelShader = ShaderManager.GetShader("Shaders/itemModel");
 
             blockSelector = new BlockSelector();
 
@@ -471,17 +445,14 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
-            //sector.Dispose();
             blocksShader.Dispose();
             //blockTexture.Dispose();
             lightAtlas.Dispose();
             Sector.IsPlayerSpawned = false;
             TickTaskManager.Dispose();
-            //music.Dispose();
             skybox.Texture.Dispose();
             skyboxShader.Dispose();
             dustSpawner.Dispose();
-            itemModel.Dispose();
             blockDestructionManager.Dispose();
             World.DropEffectManager.Dispose();
             TagManager.ClearTags();

@@ -65,64 +65,70 @@ public class MovementMode : GameModeBase
 
     public override void HandleInput(Astronaut player)
     {
+
+    
+
+
         Vector3 acceleration = Vector3.Zero;
         bool isMoving = false;
-
-        
-
-        if (Input.IsKey(Keys.W))
-        {
-            acceleration += player.Front;
-            isMoving = true;
-        }
-
-        if (Input.IsKey(Keys.S))
-        {
-            acceleration -= player.Front;
-            isMoving = true;
-        }
-
-        if (Input.IsKey(Keys.A))
-        {
-            acceleration -= player.Right;
-            isMoving = true;
-        }
-
-        if (Input.IsKey(Keys.D))
-        {
-            acceleration += player.Right;
-            isMoving = true;
-        }
-
-        if (Input.IsKey(Keys.Space))
-        {
-            acceleration += player.Up;
-            isMoving = true;
-        }
-
-        if (Input.IsKey(Keys.LeftControl))
-        {
-            acceleration -= player.Up;
-            isMoving = true;
-        }
-
-        float roll = 1000f * Time.Delta;
-
-        if (Input.IsKey(Keys.Q))
-        {
-            player.Roll(-roll);
-        }
-
-        if (Input.IsKey(Keys.E))
-        {
-            player.Roll(roll);
-        }
-
-        float deltaTime = (float)Time.Delta;
-
+        bool isRunning = false;
         Vector3 movement = Vector3.Zero;
 
-        bool isRunning = Input.IsKey(Keys.LeftShift);
+        if (player.CanMove)
+        {
+
+            if (Input.IsKey(Keys.W))
+            {
+                acceleration += player.Front;
+                isMoving = true;
+            }
+
+            if (Input.IsKey(Keys.S))
+            {
+                acceleration -= player.Front;
+                isMoving = true;
+            }
+
+            if (Input.IsKey(Keys.A))
+            {
+                acceleration -= player.Right;
+                isMoving = true;
+            }
+
+            if (Input.IsKey(Keys.D))
+            {
+                acceleration += player.Right;
+                isMoving = true;
+            }
+
+            if (Input.IsKey(Keys.Space))
+            {
+                acceleration += player.Up;
+                isMoving = true;
+            }
+
+            if (Input.IsKey(Keys.LeftControl))
+            {
+                acceleration -= player.Up;
+                isMoving = true;
+            }
+
+            float roll = 1000f * Time.Delta;
+
+            if (Input.IsKey(Keys.Q))
+            {
+                player.Roll(-roll);
+            }
+
+            if (Input.IsKey(Keys.E))
+            {
+                player.Roll(roll);
+            }
+
+
+
+            isRunning = Input.IsKey(Keys.LeftShift);
+        }
 
         if (!isMoving) isRunning = false;
         if (player.PowerBar.StatsData.IsMinReached) isRunning = false;
@@ -171,14 +177,14 @@ public class MovementMode : GameModeBase
         {
             if (isMoving)
             {
-                player.InertiaController.ApplyInput(acceleration, deltaTime);
+                player.InertiaController.ApplyInput(acceleration);
             }
 
-            player.InertiaController.Update(isMoving, deltaTime);
+            player.InertiaController.Update(isMoving);
 
-            movement = player.InertiaController.Velocity * deltaTime;
+            movement = player.InertiaController.Velocity * Time.Delta;
 
-            player.CameraSway.Update(player.InertiaController.Velocity.Length, deltaTime);
+            player.CameraSway.Update(player.InertiaController.Velocity.Length);
         }
         else
         {
@@ -186,10 +192,10 @@ public class MovementMode : GameModeBase
 
             if (isMoving)
             {
-                movement = acceleration.Normalized() * currentSpeed * deltaTime;
+                movement = acceleration.Normalized() * currentSpeed * Time.Delta;
             }
 
-            player.CameraSway.Update(movement.Length / deltaTime, deltaTime);
+            player.CameraSway.Update(movement.Length / Time.Delta);
         }
 
         if (movement != Vector3.Zero)
@@ -279,7 +285,6 @@ public class MovementMode : GameModeBase
             {
                 SpaceScene.DeathOn = false;
                 flySpeedUpAudio.Stop();
-                SpaceScene.Uii.Stop();
                 BlackScreenOverlay.IsEnabled = true;
                 ToggleManager.SetState("player", false);
                 Settings.ShowInterface = false;

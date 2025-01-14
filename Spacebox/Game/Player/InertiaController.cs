@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Common;
 
 namespace Spacebox.Game.Player
 {
@@ -54,7 +55,7 @@ namespace Spacebox.Game.Player
             }
         }
 
-        public void ApplyInput(Vector3 direction, float deltaTime)
+        public void ApplyInput(Vector3 direction)
         {
             if (direction.LengthSquared > 0)
             {
@@ -64,16 +65,16 @@ namespace Spacebox.Game.Player
                 {
                     case InertiaType.Linear:
                         float linearAcceleration = MaxSpeed / _currentTimeToMaxSpeed;
-                        Velocity += direction * linearAcceleration * deltaTime;
+                        Velocity += direction * linearAcceleration * Time.Delta;
                         break;
 
                     case InertiaType.Quadratic:
                         float quadraticAcceleration = 2 * MaxSpeed / (_currentTimeToMaxSpeed * _currentTimeToMaxSpeed);
-                        Velocity += direction * quadraticAcceleration * deltaTime * deltaTime;
+                        Velocity += direction * quadraticAcceleration * Time.Delta * Time.Delta;
                         break;
 
                     case InertiaType.Damping:
-                        float dampingFactor = 1 - (float)Math.Exp(-deltaTime / _currentTimeToMaxSpeed);
+                        float dampingFactor = 1 - (float)Math.Exp(-Time.Delta / _currentTimeToMaxSpeed);
                         Vector3 desiredVelocity = direction * MaxSpeed;
                         Velocity += (desiredVelocity - Velocity) * dampingFactor;
                         break;
@@ -87,7 +88,7 @@ namespace Spacebox.Game.Player
             }
         }
 
-        public void Update(bool isMoving, float deltaTime)
+        public void Update(bool isMoving)
         {
             if (!_enabled) return;
 
@@ -97,7 +98,7 @@ namespace Spacebox.Game.Player
                 {
                     case InertiaType.Linear:
                         float linearDeceleration = MaxSpeed / _currentTimeToStop;
-                        float decelerationAmount = linearDeceleration * deltaTime;
+                        float decelerationAmount = linearDeceleration * Time.Delta;
                         if (Velocity.Length <= decelerationAmount)
                         {
                             Velocity = Vector3.Zero;
@@ -111,7 +112,7 @@ namespace Spacebox.Game.Player
 
                     case InertiaType.Quadratic:
                         float quadraticDeceleration = 2 * MaxSpeed / (_currentTimeToStop * _currentTimeToStop);
-                        float decelerationQuadratic = quadraticDeceleration * deltaTime * deltaTime;
+                        float decelerationQuadratic = quadraticDeceleration * Time.Delta * Time.Delta;
                         if (Velocity.LengthSquared <= decelerationQuadratic * decelerationQuadratic)
                         {
                             Velocity = Vector3.Zero;
@@ -124,7 +125,7 @@ namespace Spacebox.Game.Player
                         break;
 
                     case InertiaType.Damping:
-                        float dampingFactor = (float)Math.Exp(-deltaTime / _currentTimeToStop);
+                        float dampingFactor = (float)Math.Exp(-Time.Delta / _currentTimeToStop);
                         Velocity *= dampingFactor;
                         if (Velocity.LengthSquared < 0.0001f)
                         {

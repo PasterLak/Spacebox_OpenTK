@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Common;
 
 namespace Spacebox.Game.Player
 {
@@ -32,12 +33,12 @@ namespace Spacebox.Game.Player
             _currentFrequency = 0f;
         }
 
-        public void Update(float speed, float deltaTime)
+        public void Update(float speed)
         {
             if (!Enabled)
             {
-                _currentIntensity = MathHelper.Lerp(_currentIntensity, 0f, _intensityRampRate * deltaTime);
-                _currentFrequency = MathHelper.Lerp(_currentFrequency, 0f, _frequencyRampRate * deltaTime);
+                _currentIntensity = MathHelper.Lerp(_currentIntensity, 0f, _intensityRampRate * Time.Delta);
+                _currentFrequency = MathHelper.Lerp(_currentFrequency, 0f, _frequencyRampRate * Time.Delta);
                 return;
             }
 
@@ -47,17 +48,17 @@ namespace Spacebox.Game.Player
                 float targetIntensity = InitialIntensity + (MaxIntensity - InitialIntensity) * factor;
                 float targetFrequency = InitialFrequency + (MaxFrequency - InitialFrequency) * factor;
 
-                _currentIntensity = MathHelper.Lerp(_currentIntensity, targetIntensity, _intensityRampRate * deltaTime);
-                _currentFrequency = MathHelper.Lerp(_currentFrequency, targetFrequency, _frequencyRampRate * deltaTime);
+                _currentIntensity = MathHelper.Lerp(_currentIntensity, targetIntensity, _intensityRampRate * Time.Delta);
+                _currentFrequency = MathHelper.Lerp(_currentFrequency, targetFrequency, _frequencyRampRate * Time.Delta);
             }
             else
             {
-                _currentIntensity = MathHelper.Lerp(_currentIntensity, 0f, _intensityRampRate * deltaTime);
-                _currentFrequency = MathHelper.Lerp(_currentFrequency, 0f, _frequencyRampRate * deltaTime);
+                _currentIntensity = MathHelper.Lerp(_currentIntensity, 0f, _intensityRampRate * Time.Delta);
+                _currentFrequency = MathHelper.Lerp(_currentFrequency, 0f, _frequencyRampRate * Time.Delta);
             }
 
-            _phaseX += _currentFrequency * deltaTime;
-            _phaseY += _currentFrequency * deltaTime;
+            _phaseX += _currentFrequency * Time.Delta;
+            _phaseY += _currentFrequency * Time.Delta;
         }
 
         public Quaternion GetSwayRotation()

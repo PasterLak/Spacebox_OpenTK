@@ -27,3 +27,6 @@ public abstract class GameModeBase
     public abstract void UpdateInteraction(Astronaut player);
     public abstract void HandleInput(Astronaut player);
 }
+
+
+

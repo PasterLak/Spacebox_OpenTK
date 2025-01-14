@@ -275,8 +275,6 @@ public class AOVoxels
         return result;
     }
 
-
-
 }
 
 
@@ -378,10 +376,10 @@ public static class AOShading
     {
         return new float[]
         {
-                AOValues[mask, 0], // Lower Left
-                AOValues[mask, 1], // Lower Right
-                AOValues[mask, 2], // Upper Right
-                AOValues[mask, 3]  // Upper Left
+                AOValues[mask, 0], // Lower Left  Vertex
+                AOValues[mask, 1], // Lower Right Vertex
+                AOValues[mask, 2], // Upper Right Vertex
+                AOValues[mask, 3]  // Upper Left  Vertex
         };
     }
 }

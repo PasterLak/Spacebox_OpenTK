@@ -1,8 +1,10 @@
 ﻿using ImGuiNET;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
+using Spacebox.Common.SceneManagment;
 using Spacebox.Game.Generation;
 using Spacebox.GUI;
+using Spacebox.Scenes;
 using System.Numerics;
 
 namespace Spacebox.Game.GUI
@@ -91,6 +93,13 @@ namespace Spacebox.Game.GUI
                 if(World.Instance != null)
                World.Instance.SaveWorld();
                 saveButtonText = "Saved!";
+            });
+            ImGui.Dummy(new Vector2(0, spacing * 2));
+            GameMenu.CenterButtonWithBackground("Go to menu", buttonWidth, buttonHeight, () =>
+            {
+                click1?.Play();
+                ToggleManager.SetState("pause", false);
+                SceneManager.LoadScene(typeof(SpaceMenuScene));
             });
             ImGui.Dummy(new Vector2(0, spacing * 2));
 

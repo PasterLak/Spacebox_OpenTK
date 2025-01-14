@@ -51,6 +51,9 @@ namespace Spacebox.Game.GUI
                     _overlayAlpha = OpenTK.Mathematics.MathHelper.Lerp(_startAlpha, 0f, fadeProgress);
                 }
 
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
+
                 ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(Color.X, Color.Y, Color.Z, _overlayAlpha));
                 ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
                 ImGui.SetNextWindowSize(new Vector2(ImGui.GetIO().DisplaySize.X, ImGui.GetIO().DisplaySize.Y), ImGuiCond.Always);
@@ -58,6 +61,7 @@ namespace Spacebox.Game.GUI
                     | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoBringToFrontOnFocus
                     | ImGuiWindowFlags.NoTitleBar );
                 ImGui.End();
+                ImGui.PopStyleVar(2);
                 ImGui.PopStyleColor();
             }
         }

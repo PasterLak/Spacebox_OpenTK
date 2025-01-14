@@ -98,6 +98,8 @@ namespace Spacebox.Scenes
             // Input.HideCursor(); 
             CenteredImage.ShowText = true;
             GameMenu.IsVisible = false;
+
+            HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
         }
 
 
@@ -114,6 +116,7 @@ namespace Spacebox.Scenes
         {
             Input.ShowCursor();
             CenteredImage.Draw();
+            HealthColorOverlay.Render();
             menu.Render();
         }
 

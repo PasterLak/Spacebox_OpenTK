@@ -69,7 +69,7 @@ namespace Spacebox.Game.Physics
         public struct HitInfo
         {
             public Vector3 position;
-            public Vector3Byte blockPosition;
+            public Vector3Byte blockPositionIndex;
             public Vector3SByte normal;
             public Chunk chunk;
             public Block block;
@@ -83,7 +83,7 @@ namespace Spacebox.Game.Physics
         {
 
             hitInfo.position = Vector3.Zero;
-            hitInfo.blockPosition = new Vector3Byte(0,0,0); // or -1 ????
+            hitInfo.blockPositionIndex = new Vector3Byte(0,0,0); // or -1 ????
             hitInfo.normal = Vector3SByte.Zero;
             hitInfo.chunk = null;
             hitInfo.block = null;
@@ -119,7 +119,7 @@ namespace Spacebox.Game.Physics
                     Block block = blocks[x, y, z];
                     if (!block.IsAir())
                     {
-                        hitInfo.blockPosition = new Vector3Byte(x, y, z);
+                        hitInfo.blockPositionIndex = new Vector3Byte(x, y, z);
                         hitInfo.position = ray.Origin + ray.Direction * distanceTraveled;
 
                         switch (side)

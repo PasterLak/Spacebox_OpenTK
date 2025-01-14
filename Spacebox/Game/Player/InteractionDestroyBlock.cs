@@ -103,7 +103,7 @@ public class InteractionDestroyBlock : InteractionMode
             BlockSelector.IsVisible = true;
             AImedBlockElement.AimedBlock = hit.block;
 
-            Vector3 selectorPos = hit.blockPosition + hit.chunk.PositionWorld;
+            Vector3 selectorPos = hit.blockPositionIndex + hit.chunk.PositionWorld;
             BlockSelector.Instance.UpdatePosition(selectorPos,
                 Block.GetDirectionFromNormal(hit.normal));
 
@@ -155,7 +155,7 @@ public class InteractionDestroyBlock : InteractionMode
     {
 
         hit.block.Durability = 0;
-        hit.chunk.RemoveBlock(hit.blockPosition, hit.normal);
+        hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
         if (blockDestroy != null)
         {
             PickDestroySound(hit.block.BlockId);
