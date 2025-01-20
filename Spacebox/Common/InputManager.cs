@@ -7,6 +7,21 @@ namespace Spacebox.Common
         public static bool Enabled { get;  set; } = true;
         private static Dictionary<string, InputAction> actions = new Dictionary<string, InputAction>();
 
+
+        public static InputAction AddAction(InputAction action)
+        {
+            if (!actions.ContainsKey(action.Name))
+            {
+                actions.Add(action.Name, action);
+
+                return actions[action.Name];
+            }
+
+            Debug.Error($"[InputManager] Action with name <{action.Name}> was already added!");
+            return null;
+        }
+
+
         public static InputAction AddAction(string name, Keys key, bool isGlobal = false)
         {
             if (!actions.ContainsKey(name))

@@ -230,6 +230,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
             BlockMiningEffect.Enabled = false;
             BlockSelector.IsVisible = false;
 
+            CenteredText.Hide();
             if (Input.IsMouseButtonDown(MouseButton.Left))
             {
                 model?.SetAnimation(true);

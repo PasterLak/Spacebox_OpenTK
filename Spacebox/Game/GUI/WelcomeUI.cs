@@ -101,13 +101,12 @@ namespace Spacebox.Game.GUI
             ImGui.SetCursorPosX(sidePadding);
 
             ImGui.BeginChild("TextBlock", new Vector2(textBlockWidth, textBlockWidth / 2f));
-            ImGui.TextWrapped("Thank you for playing my game! \n\n" +
-                "You have to survive in the asteroid belt after the crash of a spaceship. Key tasks include resource extraction, " +
-                "building a base and new ships, as well as protection from creatures hiding in the depths of asteroids. " +
-                "The game will provide procedural generation of the game world. The system of random events will add unexpected scenarios, " +
-                "such as emergency breakdowns, attacks. Modding is already available, which allows players to add their own items, blocks, " +
-                "textures, and the multiplayer mode planned for the future will open up more ways for joint survival and space exploration.\r\n\r\nGood luck!");
+            ImGui.TextWrapped(
+            "The game is still in development and, unfortunately, has many bugs and incomplete features.\r\n\r\n" +
+            "If you find any bugs, please be sure to let me know!" +
+            "\r\n\r\nEnjoy the game!");
             ImGui.EndChild();
+
 
             float buttonWidth = windowWidth * 0.25f;
             float buttonHeight = sidePadding;
