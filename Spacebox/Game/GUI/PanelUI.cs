@@ -20,6 +20,7 @@ namespace Spacebox.Game.GUI
         // private static IntPtr ItemTexture = IntPtr.Zero;
         private static nint SelectedTexture = nint.Zero;
         public static bool IsVisible { get; set; } = true;
+        public static bool AllowScroll { get; set; } = true;
 
         public static Storage Storage;
         private static ItemModel ItemModel;
@@ -57,6 +58,14 @@ namespace Spacebox.Game.GUI
             SetSelectedSlot(0);
 
             Storage.OnDataWasChanged += OnStorageDataWasChanged;
+
+
+            var inventory = ToggleManager.Register("panel");
+            //inventory.IsUI = true;
+            inventory.OnStateChanged += s =>
+            {
+                AllowScroll = s;
+            };
         }
 
         public static OpenTK.Mathematics.Vector2[] GetSelectedBlockUV(Face face, Direction direction)
@@ -134,6 +143,7 @@ namespace Spacebox.Game.GUI
         {
             if (Debug.IsVisible) return;
             if (InventoryUI.IsVisible) return;
+            if (!AllowScroll) return;
 
             if (Input.MouseScrollDelta.Y < 0)
             {
@@ -242,6 +252,8 @@ namespace Spacebox.Game.GUI
 
         public static void SetSelectedSlot(short id)
         {
+            if (!AllowScroll) return;
+
             SelectedSlotId = id;
             SelectSlot(id);
 

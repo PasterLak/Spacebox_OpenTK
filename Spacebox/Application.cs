@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Spacebox
 {
@@ -26,6 +28,22 @@ namespace Spacebox
             else
             {
                 return PlatformName.Unknown;
+            }
+        }
+
+        public static void OpenLink(string url)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Common.Debug.Error($"Failed to open URL: {ex.Message}");
             }
         }
 

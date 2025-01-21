@@ -100,6 +100,8 @@ namespace Spacebox.Scenes
             GameMenu.IsVisible = false;
 
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
+
+            VerticalLinks.Init();
         }
 
 
@@ -117,6 +119,7 @@ namespace Spacebox.Scenes
             Input.ShowCursor();
             CenteredImage.Draw();
             HealthColorOverlay.Render();
+            VerticalLinks.Draw();
             menu.Render();
         }
 
@@ -141,6 +144,7 @@ namespace Spacebox.Scenes
             {
                 CenteredImage.ShowText = false;
                 GameMenu.IsVisible = true;
+                VerticalLinks.IsVisible = true;
             }
 
             if (Input.IsKeyDown(Keys.KeyPadEnter))

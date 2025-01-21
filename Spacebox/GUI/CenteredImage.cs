@@ -128,7 +128,7 @@ namespace Spacebox.Common
 
         private static void DrawGameVersion(Vector2 displaySize)
         {
-            string versionText = $"Version {Application.Version}";
+            string versionText = $"Version {Application.Version} alpha";
             Vector2 textSize = ImGui.CalcTextSize(versionText);
             float padding = 20f;
 

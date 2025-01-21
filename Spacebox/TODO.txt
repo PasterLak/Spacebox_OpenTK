@@ -1,16 +1,6 @@
 
 
-Alpha:
 
-- fix inventory, panel ui
-- place/destroy outside the chunk
-- better furnace texture
-- thulium/ponium crafts
-- fix croll in pause/welcome/radar
-- fix exit radar with tab
-- maybe better generation (different object and resources)
-- menu links to groups
--
 
 For demo:
 

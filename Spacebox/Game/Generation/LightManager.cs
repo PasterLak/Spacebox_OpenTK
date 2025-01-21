@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Common;
 
 namespace Spacebox.Game.Generation
 {
@@ -12,7 +13,6 @@ namespace Spacebox.Game.Generation
         public LightManager(Block[,,] blocks)
         {
             _blocks = blocks;
-
         }
 
         public void PropagateLight()
@@ -34,8 +34,9 @@ namespace Spacebox.Game.Generation
                 if (lightLvl <= 0.1f)
                     continue;
 
-                foreach (var offset in GetAdjacentOffsets())
+                for (byte i = 0; i < AdjacentOffsets.Length; i++)
                 {
+                    Vector3SByte offset = AdjacentOffsets[i];
                     int nx = pos.X + offset.X;
                     int ny = pos.Y + offset.Y;
                     int nz = pos.Z + offset.Z;
@@ -60,49 +61,13 @@ namespace Spacebox.Game.Generation
                     }
                     else if (MathF.Abs(newLightLevel - neighbor.LightLevel) < 0.01f)
                     {
-                        neighbor.LightColor = (neighbor.LightColor + newLightColor) / 2f;
+                        neighbor.LightColor = (neighbor.LightColor + newLightColor) * 0.5f;
 
                         _blocks[nx, ny, nz] = neighbor;
                     }
-
                 }
             }
         }
-
-        private Vector3 MixColors(Vector3 own, Vector3 newColor)
-        {
-    
-            float brightness1 = (own.X + own.Y + own.Z) / 3f;
-            float brightness2 = (newColor.X + newColor.Y + newColor.Z) / 3f;
-
-           // if (own != new Vector3(0, 0, 0)) return new Vector3(0,1,0);
-            if (own == new Vector3(0, 0, 0)) return newColor;
-            else
-            {
-                return new Vector3(MathF.Max(own.X, newColor.X), MathF.Max(own.Y, newColor.Y), MathF.Max(own.Z, newColor.Z));
-            }
-            //return new Vector3(1,0,0);
-            // return new Vector3(MathF.Max(own.X, newColor.X), MathF.Max(own.Y, newColor.Y), MathF.Max(own.Z, newColor.Z));
-            // Вычисление параметра t на основе яркости:
-            // Если brightness1 > brightness2, t < 0.5
-            // Если brightness2 > brightness1, t > 0.5
-            // Если brightness1 == brightness2, t = 0.5
-            float t;
-            if (brightness1 + brightness2 > 0f)
-            {
-                t = brightness2 / (brightness1 + brightness2);
-            }
-            else
-            {
-                t = 0.5f;
-            }
-
-            t = MathHelper.Clamp(t, 0.0f, 1.0f);
-
-            return own * (1.0f - t) + newColor * t;
-        }
-
-
 
 
         private void ResetLightLevels()
@@ -131,18 +96,15 @@ namespace Spacebox.Game.Generation
                     }
         }
 
-        private List<Vector3i> GetAdjacentOffsets()
+        private static readonly Vector3SByte[] AdjacentOffsets = new[]
         {
-            return new List<Vector3i>
-            {
-                new Vector3i(1, 0, 0),
-                new Vector3i(-1, 0, 0),
-                new Vector3i(0, 1, 0),
-                new Vector3i(0, -1, 0),
-                new Vector3i(0, 0, 1),
-                new Vector3i(0, 0, -1),
-            };
-        }
+            new Vector3SByte(1, 0, 0),
+            new Vector3SByte(-1, 0, 0),
+            new Vector3SByte(0, 1, 0),
+            new Vector3SByte(0, -1, 0),
+            new Vector3SByte(0, 0, 1),
+            new Vector3SByte(0, 0, -1),
+        };
 
         private bool IsInRange(int x, int y, int z)
         {

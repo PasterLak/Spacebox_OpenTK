@@ -271,8 +271,10 @@ namespace Spacebox.Scenes
             
             ToggleManager.SetState("mouse", state);
             ToggleManager.SetState("player", !state);
-            
-            InputManager.Enabled = !state;
+            ToggleManager.SetState("panel", !state);
+        
+
+        InputManager.Enabled = !state;
             ToggleManager.DisableAllWindows();
             ToggleManager.SetState("radar", false);
             ToggleManager.SetState("inventory", false);
@@ -300,10 +302,12 @@ namespace Spacebox.Scenes
                     ToggleManager.SetState("inventory", false);
                     ToggleManager.SetState("mouse", false);
                     ToggleManager.SetState("player", true);
+                    ToggleManager.SetState("panel", true);
                 }
                 else
                 {
                     ToggleManager.SetState("pause", true);
+                    ToggleManager.SetState("panel", false);
                 }
 
 

@@ -320,6 +320,7 @@ namespace Spacebox.Game.GUI
                 ToggleManager.SetState("mouse", true);
                 ToggleManager.SetState("player", false);
                 ToggleManager.SetState("radar", v);
+                ToggleManager.SetState("panel", false);
             }
                 
             else
@@ -327,6 +328,7 @@ namespace Spacebox.Game.GUI
                 OnClose?.Invoke();
                 ToggleManager.SetState("mouse", false);
                 ToggleManager.SetState("player", true);
+                ToggleManager.SetState("panel", true);
             }
 
         }

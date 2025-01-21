@@ -85,6 +85,7 @@ namespace Spacebox.Game.GUI
             GameMenu.CenterButtonWithBackground("Continue", buttonWidth, buttonHeight, () => {
                 click1?.Play();
                 ToggleManager.SetState("pause", false);
+                ToggleManager.SetState("panel", true);
             });
             ImGui.Dummy(new Vector2(0, spacing * 2));
             GameMenu.CenterButtonWithBackground(saveButtonText, buttonWidth, buttonHeight, () =>
@@ -99,6 +100,7 @@ namespace Spacebox.Game.GUI
             {
                 click1?.Play();
                 ToggleManager.SetState("pause", false);
+                ToggleManager.SetState("panel", true);
                 SceneManager.LoadScene(typeof(SpaceMenuScene));
             });
             ImGui.Dummy(new Vector2(0, spacing * 2));

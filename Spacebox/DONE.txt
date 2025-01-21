@@ -19,6 +19,20 @@ OSX
 
 // ------------------------------------------------------------------------------------------------------------------------------
 
+Alpha:
+
+- fix inventory, panel ui
+- place/destroy outside the chunk
+- better furnace texture
+- thulium/ponium crafts
+- maybe better generation (different objects and resources)
+
+- fix furnace light if turned on
++ menu links to groups
++ fix croll in pause/welcome/radar
++ fix radar close with tab
+
+
 version 0.1.0
 
 - place blocks
