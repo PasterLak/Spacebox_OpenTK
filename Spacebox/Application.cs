@@ -33,6 +33,8 @@ namespace Spacebox
 
         public static void OpenLink(string url)
         {
+            if (url == string.Empty) return;
+
             try
             {
                 Process.Start(new ProcessStartInfo

@@ -11,7 +11,7 @@ namespace Spacebox.Game.Generation
         public CrusherBlock(BlockData blockData) : base(blockData)
         {
             OnUse += ResourceProcessingGUI.Toggle;
-            WindowName = "Crusher";
+           
             SetEmissionWithoutRedrawChunk(false);
         }
 

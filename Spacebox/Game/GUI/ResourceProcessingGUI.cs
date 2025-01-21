@@ -14,6 +14,7 @@ namespace Spacebox.Game.GUI
         protected static Storage FuelStorage = new Storage(1, 1);
         protected static Storage OutputStorage = new Storage(1, 1);
         protected static ResourceProcessingBlock processingBlock;
+
         public static string WindowName = "";
         private static IntPtr batteryIcon = IntPtr.Zero;
         private static IntPtr inputIcon = IntPtr.Zero;
@@ -124,17 +125,17 @@ namespace Spacebox.Game.GUI
                 t3.UpdateTexture(true);
             }
 
-            if (WindowName == "Crusher")
+            if (WindowName.Contains("Crusher"))
             {
                 var texture = TextureManager.GetTexture("Resources/Textures/UI/crusherInput.png", true);
                 inputIcon = texture.Handle;
             }
-            if (WindowName == "Furnace")
+            if (WindowName.Contains("Furnace"))
             {
                 var texture = TextureManager.GetTexture("Resources/Textures/UI/furnaceInput.png", true);
                 inputIcon = texture.Handle;
             }
-            if (WindowName == "Disassembler")
+            if (WindowName.Contains("Disassembler"))
             {
                 var texture = TextureManager.GetTexture("Resources/Textures/UI/disassemblerInput.png", true);
                 inputIcon = texture.Handle;
@@ -152,17 +153,17 @@ namespace Spacebox.Game.GUI
                 t2.UpdateTexture(true);
             }
 
-            if (WindowName == "Crusher")
+            if (WindowName.Contains("Crusher") )
             {
                 var texture = TextureManager.GetTexture("Resources/Textures/UI/crusherOutput.png", true);
                 outputIcon = texture.Handle;
             }
-            if (WindowName == "Furnace")
+            if (WindowName.Contains("Furnace"))
             {
                 var texture = TextureManager.GetTexture("Resources/Textures/UI/furnaceOutput.png", true);
                 outputIcon = texture.Handle;
             }
-            if (WindowName == "Disassembler")
+            if (WindowName.Contains("Disassembler"))
             {
                 var texture = TextureManager.GetTexture("Resources/Textures/UI/furnaceOutput.png", true);
                 outputIcon = texture.Handle;
@@ -173,7 +174,10 @@ namespace Spacebox.Game.GUI
         public static void Activate(ResourceProcessingBlock block, Astronaut player)
         {
             if (!IsVisible) return;
-            WindowName = block.WindowName;
+
+            var blockData = GameBlocks.GetBlockDataById(block.BlockId);
+            WindowName = blockData.Name;
+
             InitIcons();
 
             processingBlock = block;

@@ -29,7 +29,6 @@ namespace Spacebox.Game.Generation
 
         public TickTask Task { get; private set; }
 
-        public string WindowName;
         
         private readonly string blockType;
 

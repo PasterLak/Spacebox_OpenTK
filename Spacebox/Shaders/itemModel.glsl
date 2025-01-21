@@ -21,11 +21,8 @@ void main()
 {
     gl_Position = vec4(aPosition, 1.0) * model * view * projection;
     FragPos = vec3(vec4(aPosition, 1.0) * model);
-   
-   //mat3 normalMatrix = transpose(inverse(mat3(model)));
-   //Normal = normalMatrix * aNormal;
-   //Normal = aNormal * mat3(transpose(inverse(model)));
-   Normal =  aNormal;
+
+    Normal =  aNormal;
     TexCoords = aTexCoord;
    
 }
@@ -57,7 +54,7 @@ void main()
 
     vec3 norm = normalize(Normal);
 
-        vec3 lightDirection = normalize(lightDir);
+    vec3 lightDirection = normalize(lightDir);
         float diff = max(dot(norm, lightDirection), shadows);
         vec3 diffuse = diff * lightColor;
         vec3 ambient = 0.1 * lightColor;

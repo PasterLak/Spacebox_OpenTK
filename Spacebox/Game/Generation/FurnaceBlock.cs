@@ -11,7 +11,7 @@ namespace Spacebox.Game.Generation
         public FurnaceBlock(BlockData blockData) : base(blockData)
         {
             OnUse += ResourceProcessingGUI.Toggle;
-            WindowName = "Furnace";
+           
             //LightLevel
             SetEmissionWithoutRedrawChunk(false);
         }

@@ -11,7 +11,7 @@ namespace Spacebox.Game.Generation
             public DisassemblerBlock(BlockData blockData) : base(blockData)
             {
                 OnUse += ResourceProcessingGUI.Toggle;
-                WindowName = "Disassembler";
+               
             SetEmissionWithoutRedrawChunk(false);
         }
 
