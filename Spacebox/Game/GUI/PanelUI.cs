@@ -301,16 +301,16 @@ namespace Spacebox.Game.GUI
             var style = ImGui.GetStyle();
 
             // Swap SizeX and SizeY for window dimensions
-            SlotSize = Math.Clamp(io.DisplaySize.X * 0.04f, 32.0f, 128.0f);
+            SlotSize = InventoryUIHelper.SlotSize;
             float windowWidth = Storage.SizeY * SlotSize;
-            float windowHeight = Storage.SizeX * SlotSize + style.WindowTitleAlign.Y;
+            float windowHeight = Storage.SizeX * SlotSize;
             Vector2 displaySize = io.DisplaySize;
             Vector2 windowPos = new Vector2(
                 (displaySize.X - windowWidth) / 2,
                 (displaySize.Y - windowHeight) * 0.95f
             );
 
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(0, 0));
+            //ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.5f,0.5f,0.5f,0.8f));
 
             ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
             ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight));
@@ -321,9 +321,9 @@ namespace Spacebox.Game.GUI
                                            ImGuiWindowFlags.NoScrollbar |
                                            ImGuiWindowFlags.NoScrollWithMouse;
 
-            ImGui.PushStyleColor(ImGuiCol.TitleBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
-            ImGui.PushStyleColor(ImGuiCol.TitleBgActive, new Vector4(0.5f, 0.5f, 0.5f, 1f));
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
+           // ImGui.PushStyleColor(ImGuiCol.TitleBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
+           // ImGui.PushStyleColor(ImGuiCol.TitleBgActive, new Vector4(0.5f, 0.5f, 0.5f, 1f));
+           // ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
 
 
             ImGui.Begin("Panel", windowFlags);
@@ -359,22 +359,22 @@ namespace Spacebox.Game.GUI
                         bool isSelected = true && x == 0 && y == SelectedSlotId;
                         InventoryUIHelper.DrawSlot(slot, id, OnSlotClicked, isSelected);
 
-                        ImGui.PopStyleColor(3);
-                        ImGui.PopStyleVar(3);
+                        //ImGui.PopStyleColor(3);
+                        //ImGui.PopStyleVar(3);
 
                         //ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(0.15f, 0.15f, 0.15f, 1.0f));
 
                         InventoryUIHelper.ShowTooltip(slot);
 
-                        ImGui.PopStyleColor();
+                       // ImGui.PopStyleColor();
                     }
                 }
 
                 ImGui.EndTable();
             }
 
-            ImGui.PopStyleColor(3);
-            ImGui.PopStyleVar();
+            //ImGui.PopStyleColor();
+            //ImGui.PopStyleVar();
             ImGui.End();
 
             if (SelectedSlot != null)

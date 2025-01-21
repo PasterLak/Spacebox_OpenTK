@@ -49,10 +49,10 @@ namespace Spacebox.Game.GUI
                 {
                     ToggleManager.SetState("mouse", true);
                     ToggleManager.SetState("player", false);
-                    if(Player.GameMode != GameMode.Survival)
-                    ToggleManager.SetState("creative", true);
+                    if (Player.GameMode != GameMode.Survival)
+                        ToggleManager.SetState("creative", true);
 
-                    
+
                 }
                 else
                 {
@@ -73,7 +73,7 @@ namespace Spacebox.Game.GUI
             if (storage == null) return;
 
 
-            ImGuiIOPtr io = ImGui.GetIO();
+            var displaySize = ImGui.GetIO().DisplaySize;
 
             var style = ImGui.GetStyle();
 
@@ -82,46 +82,55 @@ namespace Spacebox.Game.GUI
 
 
 
-            SlotSize = Math.Clamp(io.DisplaySize.X * 0.04f, 32.0f, 128.0f);
-            float windowWidth = storage.SizeX * SlotSize + titleBarHeight;
-            float windowHeight = storage.SizeY * SlotSize + titleBarHeight + titleBarHeight;
-            Vector2 displaySize = io.DisplaySize;
+            SlotSize = InventoryUIHelper.SlotSize;
+
+
+            float windowWidth = storage.SizeX * SlotSize;
+            float windowHeight = storage.SizeY * SlotSize;
+
             Vector2 windowPos = new Vector2(
-                (displaySize.X - windowWidth) / 2,
+                (displaySize.X - windowWidth) / 2f,
                 (displaySize.Y - windowHeight) / 1.6f
             );
-            ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight));
+
+            var padding = SlotSize * 0.1f;
+            var paddingV = new Vector2(padding, padding);
+
+            ImGui.SetNextWindowPos(windowPos , ImGuiCond.Always);
+            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV);
             ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoResize |
                                            ImGuiWindowFlags.NoCollapse |
-                                           //ImGuiWindowFlags.NoMove |
-
+                                           ImGuiWindowFlags.NoDecoration |
                                            ImGuiWindowFlags.NoScrollbar |
+                                          ImGuiWindowFlags.NoResize |
                                            ImGuiWindowFlags.NoScrollWithMouse;
 
-            ImGui.PushStyleColor(ImGuiCol.TitleBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
-            ImGui.PushStyleColor(ImGuiCol.TitleBgActive, new Vector4(0.5f, 0.5f, 0.5f, 1f));
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
+            //ImGui.PushStyleColor(ImGuiCol.TitleBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
+            //ImGui.PushStyleColor(ImGuiCol.TitleBgActive, new Vector4(0.5f, 0.5f, 0.5f, 1f));
+            //ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
 
             ImGui.Begin("Inventory", windowFlags);
 
+            GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV, displaySize.Y);
+
+            ImGui.SetCursorPos(paddingV );
+            ImGui.TextColored( new Vector4(0.9f, 0.9f, 0.9f, 1f), "Inventory");
             //ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Vector2.Zero);
             //ImGui.PushStyleVar(ImGuiStyleVar.ItemInnerSpacing, Vector2.Zero);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(15, 15));
+            //ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(15, 15));
 
             //ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(2,2));
 
-
+            ImGui.SetCursorPos(paddingV + new Vector2(0, padding * 4));
             InventoryUIHelper.RenderStorage(storage, OnSlotClicked, storage.SizeX);
 
-            ImGui.PopStyleColor(3);
-            ImGui.PopStyleVar(3);
+            //ImGui.PopStyleColor(3);
+            //ImGui.PopStyleVar(3);
             ImGui.End();
         }
 
         private static void OnSlotClicked(ItemSlot slot)
         {
-
 
             if (slot.HasItem)
             {

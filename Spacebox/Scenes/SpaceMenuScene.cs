@@ -1,14 +1,13 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using ImGuiNET;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Common.SceneManagment;
-using Spacebox.Common.Utils;
 using Spacebox.Game;
 using Spacebox.Game.Effects;
 using Spacebox.Game.GUI;
-using Spacebox.Game.Player;
 using Spacebox.GUI;
 
 
@@ -33,7 +32,7 @@ namespace Spacebox.Scenes
         {
             // GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             GL.ClearColor(0, 0, 0, 0);
-
+            //Theme.ApplySpaceboxTheme();
 
             float winX = Window.Instance.Size.X;
             float winY = Window.Instance.Size.Y;
@@ -95,6 +94,9 @@ namespace Spacebox.Scenes
 
         public override void Start()
         {
+            
+            
+
             // Input.HideCursor(); 
             CenteredImage.ShowText = true;
             GameMenu.IsVisible = false;
@@ -116,6 +118,7 @@ namespace Spacebox.Scenes
 
         public override void OnGUI()
         {
+            Theme.ApplySpaceboxTheme();
             Input.ShowCursor();
             CenteredImage.Draw();
             HealthColorOverlay.Render();

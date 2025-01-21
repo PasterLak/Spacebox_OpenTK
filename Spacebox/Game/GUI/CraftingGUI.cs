@@ -89,7 +89,7 @@ namespace Spacebox.Game.GUI
         {
             if (!_isVisible) return;
             Vector2 displaySize = ImGui.GetIO().DisplaySize;
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
+            //ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
             float windowWidth = displaySize.Y * 0.4f;
             float windowHeight = displaySize.Y * 0.25f;
             var windowPos = GameMenu.CenterNextWindow3(windowWidth, windowHeight);
@@ -99,6 +99,7 @@ namespace Spacebox.Game.GUI
                 | ImGuiWindowFlags.NoCollapse
                 | ImGuiWindowFlags.NoTitleBar
                 | ImGuiWindowFlags.NoScrollbar
+               
                 | ImGuiWindowFlags.NoScrollWithMouse
                 //| ImGuiWindowFlags.scr
                 );
@@ -150,7 +151,7 @@ namespace Spacebox.Game.GUI
                 DrawGridWithSlots(windowWidth, windowHeight, topOffset / 2f);
             }
 
-            ImGui.PopStyleColor(6);
+           // ImGui.PopStyleColor(6);
             ImGui.End();
         }
 
@@ -191,7 +192,7 @@ namespace Spacebox.Game.GUI
             float gridOffsetY = spacing + backButtonHeight + spacing;
             ImGui.SetCursorPos(new Vector2(0, gridOffsetY));
             float gridHeight = childH - gridOffsetY - spacing;
-            ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, Vector2.Zero);
+           // ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, Vector2.Zero);
             ImGui.BeginTable("Grid", 6, ImGuiTableFlags.NoBordersInBody, new Vector2(childW, gridHeight));
             for (int i = 0; i < totalSlots; i++)
             {
@@ -204,7 +205,7 @@ namespace Spacebox.Game.GUI
             }
 
             ImGui.EndTable();
-            ImGui.PopStyleVar();
+          //  ImGui.PopStyleVar();
             ImGui.EndChild();
         }
 
@@ -280,11 +281,11 @@ namespace Spacebox.Game.GUI
             Vector2 buttonPos = ImGui.GetCursorScreenPos();
             float offsetValue = height * 0.1f;
             Vector2 offset = new Vector2(offsetValue, offsetValue);
-            uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
-            uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
+            uint borderColor = Theme.Colors.BorderLightUint;
+            uint lightColor = Theme.Colors.BorderDarkUint;
             var drawList = ImGui.GetWindowDrawList();
 
-            drawList.AddRect(buttonPos, buttonPos + new Vector2(width, height), ImGui.GetColorU32(new Vector4(0.75f, 0.75f, 0.75f, 1f)));
+            drawList.AddRect(buttonPos, buttonPos + new Vector2(width, height), Theme.Colors.BackgroundUint);
             //drawList.AddImage(SlotTexture, buttonPos , buttonPos + new Vector2(width, height) );
 
             drawList.AddImage(SlotTexture, buttonPos, buttonPos + new Vector2(width, height)
@@ -316,7 +317,7 @@ namespace Spacebox.Game.GUI
                 onClick.Invoke(itemData.blueprint);
             };
 
-            drawList.AddRect(buttonPos, buttonPos + new Vector2(width, height), ImGui.GetColorU32(new Vector4(0.75f, 0.75f, 0.75f, 1f)));
+            drawList.AddRect(buttonPos, buttonPos + new Vector2(width, height), Theme.Colors.BackgroundUint);
             //drawList.AddImage(SlotTexture, buttonPos , buttonPos + new Vector2(width, height) );
 
             drawList.AddImage(SlotTexture, buttonPos, buttonPos + new Vector2(width, height));
@@ -465,8 +466,8 @@ namespace Spacebox.Game.GUI
             Vector2 buttonPos = ImGui.GetCursorScreenPos();
             float offsetValue = height * 0.1f;
             Vector2 offset = new Vector2(offsetValue, offsetValue);
-            uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
-            uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
+            uint borderColor = ImGui.GetColorU32(new Vector4(0.0f, 0.9f, 0.9f, 1f));
+            uint lightColor = Theme.Colors.BackgroundUint;
             uint cc = ImGui.GetColorU32(new Vector4(1f, 1f, 0.0f, 1f));
             var drawList = ImGui.GetWindowDrawList();
             //drawList.AddRectFilled(buttonPos - offset, buttonPos + new Vector2(width, height) + offset, borderColor);
@@ -482,10 +483,10 @@ namespace Spacebox.Game.GUI
 
             }
 
-            /* drawList.AddRectFilled(
-                 buttonPos + new Vector2(0, height / 2f),
-                 buttonPos + new Vector2(width/2f, height) + offset, cc);
-            */
+            drawList.AddRectFilled(
+                 buttonPos ,
+               buttonPos + new Vector2(width, height), Theme.Colors.DeepUint);
+            
 
             if (category[categoryId].IconPtr != IntPtr.Zero)
             {

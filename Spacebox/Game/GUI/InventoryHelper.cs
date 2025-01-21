@@ -28,22 +28,18 @@ namespace Spacebox.Game.GUI
 
         private static void OnResize(OpenTK.Mathematics.Vector2 w)
         {
-            SlotSize = Math.Clamp(w.X * 0.04f, 32.0f, 128.0f);
-           // SlotSize
+            SlotSize = w.Y * 0.06f;
+            // SlotSize
         }
 
         public static void RenderStorage(Storage storage, Action<ItemSlot> onSlotClicked, int columns, bool isPanel = false, short selectedSlotId = -1)
         {
 
-            ImGuiIOPtr io = ImGui.GetIO();
-
-            //SlotSize = Math.Clamp(io.DisplaySize.X * 0.04f, 32.0f, 128.0f);
-
-            if (ImGui.BeginTable("StorageTable", columns, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit))
+            if (ImGui.BeginTable("StorageTable", columns, ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.NoBordersInBody | ImGuiTableFlags.BordersV))
             {
                 for (int x = 0; x < columns; x++)
                 {
-                    ImGui.TableSetupColumn($"##column_{x}", ImGuiTableColumnFlags.WidthFixed, SlotSize);
+                    ImGui.TableSetupColumn($"##column_{x}", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, SlotSize);
                 }
                 for (int y = 0; y < storage.SizeY; y++)
                 {
@@ -76,11 +72,12 @@ namespace Spacebox.Game.GUI
         }
         public static unsafe void DrawSlot(ItemSlot slot, string id, Action<ItemSlot> onSlotClicked, nint backgroundImage, bool isSelected = false)
         {
-            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.5f, 0.5f, 0.5f, 0.0f));
+            ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep);
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
             ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(1, 0, 0, 0));
             ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1, 0, 0, 0));
+
             if (SlotTexture == nint.Zero)
             {
                 if (ImGui.Button("", new Vector2(SlotSize, SlotSize)))
@@ -98,12 +95,10 @@ namespace Spacebox.Game.GUI
             }
             if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
             {
-
                 OnSlotRightClicked(slot);
             }
             if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
             {
-
                 onSlotClicked?.Invoke(slot);
             }
 
@@ -169,6 +164,8 @@ namespace Spacebox.Game.GUI
             Vector2 sizeItem = sizeSlot * 0.8f;
 
             Vector2 posCenter = pos + new Vector2(SlotSize * 0.5f, SlotSize * 0.5f);
+
+            // drawList.AddRectFilled(posCenter - sizeSlot * 0.5f, posCenter + sizeSlot * 0.5f, Theme.Colors.RedUint);
 
             if (isSelected && SelectedTexture != nint.Zero)
             {

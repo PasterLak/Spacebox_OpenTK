@@ -131,9 +131,9 @@ namespace Spacebox.Game.GUI
             float offsetValue = displayY * offsetMultiplayer;
             Vector2 offset = new Vector2(offsetValue, offsetValue);
 
-            uint backgroundColor = ImGui.GetColorU32(new Vector4(0.75f, 0.75f, 0.75f, 1f));
-            uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
-            uint borderColor2 = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
+            uint backgroundColor = Theme.Colors.BackgroundUint;
+            uint borderColor = Theme.Colors.BorderLightUint;
+            uint borderColor2 = Theme.Colors.BorderDarkUint;
 
             var drawList = ImGui.GetWindowDrawList();
 
@@ -144,6 +144,8 @@ namespace Spacebox.Game.GUI
             drawList.AddRectFilled(windowPos + offset, windowPos + windowSize - offset,
                 backgroundColor);
         }
+
+      
 
         private void RenderMainMenu()
         {

@@ -69,7 +69,7 @@ namespace Spacebox
 
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
 
-            Theme.ApplySpaceboxTheme();
+            //ThemeUIEngine.ApplyDarkTheme();
 
 
             // InputManager.AddAction("debug", Keys.GraveAccent, true); // 161 mac
