@@ -41,7 +41,6 @@ namespace Spacebox.Game.GUI
                 ToggleManager.DisableAllWindows();
 
 
-
                 if (!count)
                     IsVisible = !v;
 

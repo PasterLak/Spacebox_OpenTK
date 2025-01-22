@@ -168,7 +168,8 @@ namespace Spacebox.Game.GUI
                 new Vector2(childW, childH), // childW + scrollbarSize
                 ImGuiChildFlags.None,
                 ImGuiWindowFlags.NoScrollbar
-                | ImGuiWindowFlags.NoScrollbar
+                | ImGuiWindowFlags.NoScrollbar 
+
                 );
 
             string categoryName = $"{category[selectedButton].Name}";
@@ -181,13 +182,20 @@ namespace Spacebox.Game.GUI
             float backButtonHeight = topOffset;
             float backButtonX = childW - backButtonWidth - spacing;
             float backButtonY = spacing;
+
             ImGui.SetCursorPos(new Vector2(backButtonX, backButtonY));
+
+            //GameMenu.DrawElementColors(new Vector2(backButtonX, backButtonY), new Vector2(backButtonWidth, backButtonHeight), ImGui.GetIO().DisplaySize.Y);
+            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f,1f));
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1f));
 
             if (ImGui.Button("Back", new Vector2(backButtonWidth, backButtonHeight)))
             {
                 clickAudio.Play();
                 showGrid = false;
             }
+            ImGui.PopStyleColor(3);
 
             float gridOffsetY = spacing + backButtonHeight + spacing;
             ImGui.SetCursorPos(new Vector2(0, gridOffsetY));
@@ -301,6 +309,13 @@ namespace Spacebox.Game.GUI
             uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
             uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
             var drawList = ImGui.GetWindowDrawList();
+
+            ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
+            //ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(1, 0, 0, 0));
+            ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1, 0, 0, 0));
+
             //drawList.AddRectFilled(buttonPos - offset, buttonPos + new Vector2(width, height) + offset, borderColor);
             //drawList.AddRectFilled(buttonPos, buttonPos + new Vector2(width, height) + offset, lightColor);
 
@@ -374,6 +389,7 @@ namespace Spacebox.Game.GUI
 
             }
 
+            ImGui.PopStyleColor(4);
             OnHovered(itemData, drawList, buttonPos, offset, width, height, slotId);
         }
 

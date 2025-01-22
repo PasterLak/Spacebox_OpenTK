@@ -29,8 +29,8 @@ namespace Spacebox.GUI
                 BackgroundColor = new Vector4(0.2f, 0.2f, 0.2f, 1.0f),
                 TextColor = new Vector4(1f, 1f, 1f, 1f),
                 Size = new Vector2(300, 50),
-                Position = new Vector2(1140, 220),
-                Anchor = Anchor.BottomRight,
+                Position = new Vector2(425, 225), // new Vector2(1140, 220),
+                Anchor = Anchor.Bottom,
                 WindowName = "PowerBar"
             };
             _statsGUI.ShowText = true;

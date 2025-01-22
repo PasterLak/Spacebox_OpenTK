@@ -13,6 +13,7 @@ namespace Spacebox.Game.GUI
         TopRight,
         BottomLeft,
         BottomRight,
+     
         Center,
         Top,
         Bottom,
@@ -82,6 +83,7 @@ namespace Spacebox.Game.GUI
                 case Anchor.BottomRight:
                     basePosition = new Vector2(io.DisplaySize.X - _size.X, io.DisplaySize.Y - _size.Y) - _position;
                     break;
+               
 
                 case Anchor.Right:
                     basePosition = new Vector2(io.DisplaySize.X - _size.X,
@@ -99,7 +101,7 @@ namespace Spacebox.Game.GUI
                     break;
                 case Anchor.Bottom:
                     basePosition = new Vector2(io.DisplaySize.X * 0.5f - _size.X * 0.5f, io.DisplaySize.Y - _size.Y) 
-                        +new Vector2(_position.X, _position.Y); ;
+                        +new Vector2(_position.X,  - _position.Y); 
                     break;
              
                 default:
@@ -110,7 +112,7 @@ namespace Spacebox.Game.GUI
             ImGui.SetNextWindowSize(_size, ImGuiCond.Always);
 
             ImGui.Begin(WindowName, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
-                                         ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoBackground |
+                                         ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoFocusOnAppearing |
                                          ImGuiWindowFlags.NoInputs);
 
             float fillPercent = (float)StatsData.Count / StatsData.MaxCount;

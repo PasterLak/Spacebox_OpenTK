@@ -300,7 +300,6 @@ namespace Spacebox.Game.GUI
             ImGuiIOPtr io = ImGui.GetIO();
             var style = ImGui.GetStyle();
 
-            // Swap SizeX and SizeY for window dimensions
             SlotSize = InventoryUIHelper.SlotSize;
             float windowWidth = Storage.SizeY * SlotSize;
             float windowHeight = Storage.SizeX * SlotSize;
@@ -310,23 +309,25 @@ namespace Spacebox.Game.GUI
                 (displaySize.Y - windowHeight) * 0.95f
             );
 
-            //ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.5f,0.5f,0.5f,0.8f));
+            var padding = SlotSize * 0.05f;
+            var paddingV = new Vector2(padding, padding);
 
             ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight));
+            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight ) +paddingV + paddingV);
             ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoResize |
                                            ImGuiWindowFlags.NoCollapse |
                                            ImGuiWindowFlags.NoMove |
                                            ImGuiWindowFlags.NoTitleBar |
                                            ImGuiWindowFlags.NoScrollbar |
-                                           ImGuiWindowFlags.NoScrollWithMouse;
-
-           // ImGui.PushStyleColor(ImGuiCol.TitleBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
-           // ImGui.PushStyleColor(ImGuiCol.TitleBgActive, new Vector4(0.5f, 0.5f, 0.5f, 1f));
-           // ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
+                                           ImGuiWindowFlags.NoScrollWithMouse
+                                           | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoFocusOnAppearing;
 
 
             ImGui.Begin("Panel", windowFlags);
+
+            GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight ) + paddingV + paddingV, displaySize.Y, 0.003f);
+
+            ImGui.SetCursorPos(paddingV );
 
 
             if (ImGui.BeginTable("PanelTable", Storage.SizeY, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit))
@@ -359,22 +360,15 @@ namespace Spacebox.Game.GUI
                         bool isSelected = true && x == 0 && y == SelectedSlotId;
                         InventoryUIHelper.DrawSlot(slot, id, OnSlotClicked, isSelected);
 
-                        //ImGui.PopStyleColor(3);
-                        //ImGui.PopStyleVar(3);
-
-                        //ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(0.15f, 0.15f, 0.15f, 1.0f));
 
                         InventoryUIHelper.ShowTooltip(slot);
 
-                       // ImGui.PopStyleColor();
                     }
                 }
 
                 ImGui.EndTable();
             }
 
-            //ImGui.PopStyleColor();
-            //ImGui.PopStyleVar();
             ImGui.End();
 
             if (SelectedSlot != null)
@@ -428,7 +422,7 @@ namespace Spacebox.Game.GUI
         {
             if (Input.IsMouseButton(MouseButton.Left))
             {
-                Debug.Log("left click");
+            
             }
 
             if (slot.HasItem)

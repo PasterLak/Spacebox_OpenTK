@@ -57,8 +57,8 @@ namespace Spacebox.Game.GUI
 
             colors[(int)ImGuiCol.Text] = new Vector4(0.90f, 0.90f, 0.90f, 1.00f);
             colors[(int)ImGuiCol.TextDisabled] = new Vector4(0.60f, 0.60f, 0.60f, 1.00f);
-            colors[(int)ImGuiCol.WindowBg] = new Vector4(0.65f, 0.65f, 0.65f, 1f);
-            colors[(int)ImGuiCol.ChildBg] = new Vector4(0.54f, 0.54f, 0.54f, 1.0f);
+            colors[(int)ImGuiCol.WindowBg] = Colors.Background;
+            colors[(int)ImGuiCol.ChildBg] = Colors.Background;
             colors[(int)ImGuiCol.PopupBg] = new Vector4(0.59f, 0.59f, 0.59f, 0.92f);
             colors[(int)ImGuiCol.Border] = new Vector4(0.50f, 0.50f, 0.50f, 0.50f);
             colors[(int)ImGuiCol.BorderShadow] = new Vector4(0.00f, 0.00f, 0.00f, 0.00f);
