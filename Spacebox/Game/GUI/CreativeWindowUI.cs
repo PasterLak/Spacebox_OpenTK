@@ -2,8 +2,6 @@
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
-using Spacebox.FPS;
-using Spacebox.Game;
 using Spacebox.Game.Player;
 
 namespace Spacebox.Game.GUI
@@ -44,9 +42,7 @@ namespace Spacebox.Game.GUI
 
             ImGuiIOPtr io = ImGui.GetIO();
 
-            var style = ImGui.GetStyle();
-            float titleBarHeight = ImGui.GetFontSize() ;
-
+            float titleBarHeight = ImGui.GetFontSize();
 
 
             SlotSize = InventoryUIHelper.SlotSize;
@@ -59,27 +55,36 @@ namespace Spacebox.Game.GUI
                 (displaySize.X - windowWidth) / 7f,
                 (displaySize.Y - windowHeight) / 2
             );
+
+            var padding = SlotSize * 0.1f;
+            var paddingV = new Vector2(padding, padding);
+
             ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight));
+            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV);
             ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoResize |
-                                           ImGuiWindowFlags.NoCollapse
-                                          //ImGuiWindowFlags.NoMove |
+                                           ImGuiWindowFlags.NoCollapse |
+                                           ImGuiWindowFlags.NoDecoration |
+                                          ImGuiWindowFlags.NoMove 
 
                                           //ImGuiWindowFlags.NoScrollbar |
                                           //ImGuiWindowFlags.NoScrollWithMouse
                                           ;
 
-            //ImGui.PushStyleColor(ImGuiCol.TitleBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
-           // ImGui.PushStyleColor(ImGuiCol.TitleBgActive, new Vector4(0.5f, 0.5f, 0.5f, 1f));
-           // ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
-
+        
             ImGui.Begin("Creative", windowFlags);
 
-            //ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Vector2.Zero);
-            //ImGui.PushStyleVar(ImGuiStyleVar.ItemInnerSpacing, Vector2.Zero);
-            //ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(15, 15));
+            GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV, displaySize.Y);
 
-            //ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(2,2));
+            ImGui.SetCursorPos(paddingV);
+            ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), "Creative");
+
+            ImGui.SetCursorPos(paddingV + new Vector2(0, padding * 4));
+
+            ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
+            //ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(1, 0, 0, 0));
+            ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1, 0, 0, 0));
 
 
             if (ImGui.BeginTable("CreativeTable", storage.SizeX, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit))
@@ -103,10 +108,8 @@ namespace Spacebox.Game.GUI
                         string id = $"slotCreative_{x}_{y}";
                         nint slotTextureId = SlotTexture;
 
-                       // ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.5f, 0.5f, 0.5f, 1.0f));
-                       // ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
-                       // ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
 
+                        
                         if (slotTextureId == nint.Zero)
                         {
                             if (ImGui.Button("", new Vector2(SlotSize, SlotSize)))
@@ -141,21 +144,17 @@ namespace Spacebox.Game.GUI
                             }
                         }
 
-                        //ImGui.PopStyleColor(3);
-
-                        //ImGui.PopStyleVar();
-
+                        
                         InventoryUIHelper.ShowTooltip(slot, true);
 
+                        
 
                     }
                 }
+                ImGui.PopStyleColor(4);
                 ImGui.EndTable();
             }
 
-
-          //  ImGui.PopStyleColor(3);
-           // ImGui.PopStyleVar(3);
             ImGui.End();
         }
 

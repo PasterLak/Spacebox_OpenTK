@@ -105,9 +105,6 @@ namespace Spacebox.Game.GUI
                                           ImGuiWindowFlags.NoResize |
                                            ImGuiWindowFlags.NoScrollWithMouse;
 
-            //ImGui.PushStyleColor(ImGuiCol.TitleBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
-            //ImGui.PushStyleColor(ImGuiCol.TitleBgActive, new Vector4(0.5f, 0.5f, 0.5f, 1f));
-            //ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.5f, 0.5f, 0.5f, 1f));
 
             ImGui.Begin("Inventory", windowFlags);
 
@@ -115,17 +112,11 @@ namespace Spacebox.Game.GUI
 
             ImGui.SetCursorPos(paddingV );
             ImGui.TextColored( new Vector4(0.9f, 0.9f, 0.9f, 1f), "Inventory");
-            //ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Vector2.Zero);
-            //ImGui.PushStyleVar(ImGuiStyleVar.ItemInnerSpacing, Vector2.Zero);
-            //ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(15, 15));
 
-            //ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(2,2));
 
             ImGui.SetCursorPos(paddingV + new Vector2(0, padding * 4));
             InventoryUIHelper.RenderStorage(storage, OnSlotClicked, storage.SizeX);
 
-            //ImGui.PopStyleColor(3);
-            //ImGui.PopStyleVar(3);
             ImGui.End();
         }
 
