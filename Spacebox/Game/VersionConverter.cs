@@ -40,6 +40,13 @@ namespace Spacebox.Game
                 return ConvertToNextVersion(worldInfo,appVersion);
             }
 
+            if (worldInfo.GameVersion == "0.1.0")
+            {
+                worldInfo.GameVersion = "0.1.1";
+
+                return ConvertToNextVersion(worldInfo, appVersion);
+            }
+
             Debug.Error($"[VersionConverter] Failed to convert map version {worldInfo.GameVersion} to newer {appVersion} !");
 
             return false;

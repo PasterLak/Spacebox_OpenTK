@@ -1,12 +1,11 @@
-﻿
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Spacebox
 {
     internal class Application
     {
-        public const string Version = "0.1.0";
+        public const string Version = "0.1.1";
         public const string Author = "PasterLak";
         public const string EngineVersion = "1.4";
 

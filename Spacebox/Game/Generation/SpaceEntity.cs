@@ -106,13 +106,19 @@ namespace Spacebox.Game.Generation
             }
             MeshesTogenerate.Clear();
         }
-
         public void AddChunk(Chunk chunk)
+        {
+            AddChunk(chunk, true);
+        }
+
+
+        public void AddChunk(Chunk chunk, bool generateMesh = true)
         {
             octree.Add(chunk, new BoundingBox(chunk.PositionWorld, Vector3.One * Chunk.Size));
             Chunks.Add(chunk);
             chunkDictionary.Add(chunk.PositionIndex, chunk);
             chunk.OnChunkModified += UpdateEntityGeometryMinMax;
+            if(generateMesh)
             chunk.GenerateMesh();
             UpdateNeighbors(chunk);
             RecalculateGeometryBoundingBox();
@@ -222,6 +228,47 @@ namespace Spacebox.Game.Generation
             GeometryBoundingBox = BoundingBox.CreateFromMinMax(min, max);
         }
 
+        public Vector3Byte WorldPositionToBlockInChunk(Vector3 worldPosition)
+        {
+            Vector3 relativePosition = worldPosition - PositionWorld;
+
+            int localX = (int)MathF.Floor(relativePosition.X) % Chunk.Size;
+            int localY = (int)MathF.Floor(relativePosition.Y) % Chunk.Size;
+            int localZ = (int)MathF.Floor(relativePosition.Z) % Chunk.Size;
+
+            if (localX < 0) localX += Chunk.Size;
+            if (localY < 0) localY += Chunk.Size;
+            if (localZ < 0) localZ += Chunk.Size;
+
+            return new Vector3Byte((byte)localX, (byte)localY, (byte)localZ);
+        }
+
+
+        public bool TryPlaceBlock(Vector3 worldPosition, Block block)
+        {
+
+            var chunkIndex = GetChunkIndex(worldPosition);
+           
+            var blockPos = WorldPositionToBlockInChunk(worldPosition);
+
+            if(chunkDictionary.TryGetValue(chunkIndex, out var chunk))
+            {
+
+                chunk.PlaceBlock(blockPos, block);
+                return true;
+            }
+            else
+            {
+                Chunk newChunk = new Chunk(chunkIndex, this,true);
+                AddChunk(newChunk,false);
+                Debug.Log("new Chunk index: " + chunkIndex);
+                newChunk.PlaceBlock(blockPos, block);
+                return true;
+            }
+
+            return false;
+        }
+
         public Vector3SByte GetChunkIndex(Vector3 worldPosition)
         {
             Vector3 relativePosition = worldPosition - PositionWorld;
@@ -264,7 +311,14 @@ namespace Spacebox.Game.Generation
             }
         }
 
-
+        public Vector3 WorldPositionToLocal(Vector3 world)
+        {
+            return world - PositionWorld;
+        }
+        public Vector3 LocalPositionToWorld(Vector3 local)
+        {
+            return local + PositionWorld;
+        }
         public void Update()
         {
             Camera camera = Camera.Main;

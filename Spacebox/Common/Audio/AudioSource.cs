@@ -63,7 +63,7 @@ namespace Spacebox.Common.Audio
                 CheckALError("Initializing streaming AudioSource");
             }
 
-            DisposablesUnloader.Add(this);
+           // DisposablesUnloader.Add(this);
         }
 
         public void Play()

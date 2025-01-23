@@ -61,6 +61,7 @@ namespace Spacebox.Game.GUI
             float windowHeight = displaySize.Y * 0.7f;
             Vector2 windowPos = GameMenu.CenterNextWindow(windowWidth, windowHeight);
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, Theme.Colors.Deep);
 
             ImGui.Begin("Welcome!",
                 ImGuiWindowFlags.NoResize
@@ -124,7 +125,7 @@ namespace Spacebox.Game.GUI
                 SaveWelcomeState();
             });
 
-            ImGui.PopStyleColor(1);
+            ImGui.PopStyleColor(2);
             ImGui.End();
         }
 

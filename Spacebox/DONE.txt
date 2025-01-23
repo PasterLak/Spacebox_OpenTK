@@ -1,6 +1,8 @@
 // dotnet publish -c Debug - r win - x64--self - contained true
 // dotnet publish -c Release - r win - x64--self - contained true
 // dotnet publish -c Release -r win-x64 --self-contained true --output ./publish
+// dotnet publish -c Release -r win-x64 --self-contained true --output ./publish
+
 
 // dotnet publish -c Release -r osx-x64 --self-contained true --output ./publish
 
@@ -24,17 +26,25 @@ Alpha:
 
 - place/destroy outside the chunk
 
-- thulium/ponium crafts
 - maybe better generation (different objects and resources)
+- thulium/ponium crafts
 
-- fix furnace light if turned on
+version 0.1.1
+
+-
+-
+
+
+
+version 0.1.0
+
++ fix furnace light if turned on
 + menu links to groups
 + fix croll in pause/welcome/radar
 + fix radar close with tab
 + better furnace texture
 + fix inventory, panel ui
 
-version 0.1.0
 
 - place blocks
 - mass of asteroids
@@ -58,10 +68,12 @@ version 0.1.0
 - destroy blocks in creative faster with holding button
 - save resource processing blocks
 - zoom 
+- sound for blocks in mod
 - pause
 - fix and better item model/shader
 - bug fixes
 - buffer class
+- better UI
 
 version 0.0.9
 

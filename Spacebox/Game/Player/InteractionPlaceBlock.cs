@@ -1,9 +1,11 @@
 
 using OpenTK.Mathematics;
+using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Common.Physics;
+using Spacebox.FPS;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
@@ -35,7 +37,7 @@ public class InteractionPlaceBlock : InteractionMode
     private Vector3 UpdateBlockPreview(VoxelPhysics.HitInfo hit)
     {
 
-        
+
 
         BlockSelector.IsVisible = true;
         var selectorPositionWorld = new Vector3(hit.blockPositionIndex.X + hit.normal.X,
@@ -60,9 +62,9 @@ public class InteractionPlaceBlock : InteractionMode
 
         if (World.CurrentSector.Raycast(ray, out hit))
         {
-            
 
-            var pos = hit.blockPositionIndex + hit.chunk.PositionWorld + hit.normal + new Vector3(0.5f,0.5f,0.5f);
+
+            var pos = hit.blockPositionIndex + hit.chunk.PositionWorld + hit.normal + new Vector3(0.5f, 0.5f, 0.5f);
             var disSqrt = Vector3.DistanceSquared(pos, player.Position);
 
             if (disSqrt > MinDistanceToBlock)
@@ -71,7 +73,7 @@ public class InteractionPlaceBlock : InteractionMode
         }
         else
         {
-            OnNoEntityFound(ray);
+            OnNoEntityFound(ray, player);
         }
     }
 
@@ -135,21 +137,74 @@ public class InteractionPlaceBlock : InteractionMode
         blockPlace = new AudioSource(clip);
     }
 
-    private void OnNoEntityFound(Ray ray)
+    private void OnNoEntityFound(Ray ray, Astronaut player )
     {
         AImedBlockElement.AimedBlock = null;
         BlockSelector.IsVisible = true;
         const float placeDistance = 5f;
 
+
+
         var selectorPosition = ray.Origin + ray.Direction * placeDistance;
 
-        selectorPosition.X = (int)MathF.Floor(selectorPosition.X);
-        selectorPosition.Y = (int)MathF.Floor(selectorPosition.Y);
-        selectorPosition.Z = (int)MathF.Floor(selectorPosition.Z);
+        var pos = selectorPosition;
 
-        BlockSelector.Instance.UpdatePosition(selectorPosition, Direction.Up);
+        SpaceEntity entity = null;
+        var localPos = pos;
 
-        VisualDebug.DrawBoundingBox(
-            new BoundingBox(selectorPosition, Vector3.One * 1.01f), Color4.Gray);
+        if (World.CurrentSector.TryGetNearestEntity(selectorPosition, out entity))
+        {
+            pos = entity.WorldPositionToLocal(selectorPosition);
+
+            pos.X = (int)MathF.Floor(pos.X);
+            pos.Y = (int)MathF.Floor(pos.Y);
+            pos.Z = (int)MathF.Floor(pos.Z);
+
+            //pos += Vector3.One * 0.5f;
+            localPos = pos;
+            selectorPosition = entity.LocalPositionToWorld(pos);
+        }
+
+
+        var norm = (player.Position - selectorPosition).Normalized();
+
+        norm = Block.RoundVector3(norm);
+
+        var direction = Block.GetDirectionFromNormal(norm);
+
+        BlockSelector.Instance.UpdatePosition(selectorPosition, direction);
+
+        //VisualDebug.DrawBoundingBox(
+        //    new BoundingBox(selectorPosition, Vector3.One * 1.01f), Color4.Gray);
+
+        if (Input.IsMouseButtonDown(MouseButton.Right))
+        {
+            if (entity != null)
+            {
+
+                if (PanelUI.TryPlaceItem(out var id, GameMode))
+                {
+                    Block newBlock = GameBlocks.CreateBlockFromId(id);
+
+                    bool hasSameSides = GameBlocks.GetBlockDataById(id).AllSidesAreSame;
+
+                    if (!hasSameSides)
+                        newBlock.Direction = direction;
+
+
+                    if (entity.TryPlaceBlock(selectorPosition, newBlock))
+                    {
+
+                    }
+
+
+                    if (blockPlace != null)
+                    {
+                        PickPlaceSound(newBlock.BlockId);
+                        blockPlace.Play();
+                    }
+                }
+            }
+        }
     }
 }

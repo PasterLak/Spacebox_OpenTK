@@ -387,7 +387,7 @@ namespace Spacebox.Game.Generation
 
         public static Chunk? TagToChunk(CompoundTag tag, SpaceEntity spaceEntity)
         {
-            Debug.Log(tag.PrettyPrinted());
+            //Debug.Log(tag.PrettyPrinted());
             const byte SIZE = Chunk.Size;
             sbyte ix = ByteToSByte( tag.Get<ByteTag>("indexX").Value);
             sbyte iy = ByteToSByte(tag.Get<ByteTag>("indexY").Value);
@@ -458,7 +458,7 @@ namespace Spacebox.Game.Generation
             }
 
 
-            Chunk chunk = new Chunk(new Vector3SByte(ix,iy,iz) , spaceEntity, blocks, true);
+            Chunk chunk = new Chunk(new Vector3SByte(ix,iy,iz) , spaceEntity, blocks, true, false);
 
             return chunk;
         }

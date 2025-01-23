@@ -254,7 +254,7 @@ public class MovementMode : GameModeBase
         }
     }
 
-    byte damageMultiplayer = 4;
+    byte damageMultiplayer = 5;
 
     private void ApplyVelocityDamage(float speed, Astronaut player)
     {
@@ -263,20 +263,17 @@ public class MovementMode : GameModeBase
              if (wallhitAudio.IsPlaying) wallhitAudio.Stop();
 
              wallhitAudio.Volume = 0;
-             wallhitAudio.Volume = MathHelper.Min(wallhitAudio.Volume + speed * 0.05f, 1);
+             wallhitAudio.Volume = MathHelper.Min(wallhitAudio.Volume + speed * 0.07f, 1);
              wallhitAudio.Play();
         }
         else if (speed > 9)
         {
-             wallhitAudio2.Volume = MathHelper.Min(0 + speed * 0.05f, 1);
+             wallhitAudio2.Volume = MathHelper.Min(0 + speed * 0.1f, 1);
              wallhitAudio2.Play();
-        }
-
-        if (speed > 10)
-        {
+      
             int damage = (int)(Math.Abs(speed) - 10f);
-
-            if(GetGameMode() == GameMode.Survival)
+            if(damage == 0) { damage = 1; }
+            //if(GetGameMode() != GameMode.Spectator)
             player.HealthBar.StatsData.Decrement(damage * damageMultiplayer);
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(1, 0, 0), 0.1f + 1 / (10 - damage));
             player.HitImage.Show();

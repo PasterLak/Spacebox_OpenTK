@@ -29,10 +29,12 @@ namespace Spacebox.Game.Generation
         public Block[,,] Blocks { get; private set; }
         public bool ShowChunkBounds { get; set; } = true;
         public bool MeasureGenerationTime { get; set; } = true;
-        private bool _isModified  = false;
-        public bool IsModified { get => _isModified;
-            set 
-                {
+        private bool _isModified = false;
+        public bool IsModified
+        {
+            get => _isModified;
+            set
+            {
                 _isModified = value;
 
                 if (_isModified) SpaceEntity.SetModified();
@@ -54,14 +56,15 @@ namespace Spacebox.Game.Generation
 
         public Action<Chunk> OnChunkModified;
 
-        public Chunk(Vector3SByte positionIndex, SpaceEntity spaceEntity)
-            : this(positionIndex, spaceEntity, null, isLoaded: false)
+        public Chunk(Vector3SByte positionIndex, SpaceEntity spaceEntity, bool emptyChunk = false)
+            : this(positionIndex, spaceEntity, null, isLoaded: false, emptyChunk)
         {
         }
 
-        internal Chunk(Vector3SByte positionIndex, SpaceEntity spaceEntity, Block[,,] loadedBlocks, bool isLoaded)
+        internal Chunk(Vector3SByte positionIndex, SpaceEntity spaceEntity, Block[,,] loadedBlocks, bool isLoaded, bool emptyChunk)
         {
             PositionWorld = GetChunkWorldPosition(positionIndex, spaceEntity.PositionWorld);
+            PositionIndex = positionIndex;
             Blocks = new Block[Size, Size, Size];
 
             SpaceEntity = spaceEntity;
@@ -69,16 +72,26 @@ namespace Spacebox.Game.Generation
             CreateBoundingBox();
             GeometryBoundingBox = new BoundingBox(boundingBox);
 
-            if (isLoaded && loadedBlocks != null)
+            if (!emptyChunk)
             {
-                Array.Copy(loadedBlocks, Blocks, loadedBlocks.Length);
-                IsGenerated = true;
+                if (isLoaded && loadedBlocks != null)
+                {
+                    Array.Copy(loadedBlocks, Blocks, loadedBlocks.Length);
+                    IsGenerated = true;
+                }
+                else
+                {
+                    BlockGenerator blockGenerator = new BlockGeneratorSphere(this, PositionWorld);
+                    blockGenerator.Generate();
+                    IsGenerated = true;
+                }
             }
             else
             {
-                BlockGenerator blockGenerator = new BlockGeneratorSphere(this, PositionWorld);
+                BlockGenerator blockGenerator = new BlockGeneratorEmptyChunk(this, PositionWorld);
                 blockGenerator.Generate();
                 IsGenerated = true;
+                IsModified = true;
             }
 
             _lightManager = new LightManager(Blocks);
@@ -86,6 +99,7 @@ namespace Spacebox.Game.Generation
 
             _meshGenerator = new MeshGenerator(this, Neighbors, MeasureGenerationTime);
 
+            
             _isLoadedOrGenerated = true;
         }
 

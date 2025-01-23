@@ -16,6 +16,7 @@ using Spacebox.GUI;
 using ImGuiNET;
 using Spacebox.Common.Utils;
 using Spacebox.Common.GUI;
+using Spacebox.Game.GUI;
 
 namespace Spacebox
 {
@@ -97,11 +98,20 @@ namespace Spacebox
             InputManager.RegisterCallback("debugUI", () => { _debugUI = !_debugUI; });
 
             InputManager.AddAction("screenshot", Keys.F12, true);
-            InputManager.RegisterCallback("screenshot", () => { FramebufferCapture.SaveScreenshot(); });
+            InputManager.RegisterCallback("screenshot", () => { Screenshot(); });
 
+            screenShotAudio = new AudioSource(SoundManager.AddPermanentClip("screenshot") );
            // ToggleFullScreen();
         }
 
+        private static AudioSource screenShotAudio;
+        public void Screenshot()
+        {
+            FramebufferCapture.SaveScreenshot();
+            screenShotAudio.Play();
+          
+            HealthColorOverlay.SetActive(new System.Numerics.Vector3(1,1,1), 0.2f);
+        }
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             base.OnRenderFrame(e);
