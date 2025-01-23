@@ -40,32 +40,33 @@ namespace Spacebox.Game.Generation
 
             if (state)
             {
-                LightLevel = 15;
-                LightColor = colorIfActive;
+              //  LightLevel = 15;
+              //  LightColor = colorIfActive;
 
             }
             else
             {
-                LightLevel = 0;
-                LightColor = Vector3.Zero;
+              //  LightLevel = 0;
+               // LightColor = Vector3.Zero;
             }
         }
         public void SetEmission(bool state)
         {
+            
             enableEmission = state;
             
             if(chunk != null && enableEmission != lasState)
             {
                 if (state)
                 {
-                    LightLevel = 15;
-                        LightColor = colorIfActive;
+                   // LightLevel = 15;
+                    //    LightColor = colorIfActive;
                     
                 }
                 else
                 {
-                    LightLevel = 0;
-                    LightColor = Vector3.Zero;
+                  //  LightLevel = 0;
+                  //  LightColor = Vector3.Zero;
                 }
                 chunk.GenerateMesh();
             }

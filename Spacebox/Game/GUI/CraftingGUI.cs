@@ -482,15 +482,23 @@ namespace Spacebox.Game.GUI
             Vector2 buttonPos = ImGui.GetCursorScreenPos();
             float offsetValue = height * 0.1f;
             Vector2 offset = new Vector2(offsetValue, offsetValue);
-            uint borderColor = ImGui.GetColorU32(new Vector4(0.0f, 0.9f, 0.9f, 1f));
+            Vector2 padding = new Vector2(offsetValue, offsetValue) * 0.4f;
+
+
             uint lightColor = Theme.Colors.BackgroundUint;
             uint cc = ImGui.GetColorU32(new Vector4(1f, 1f, 0.0f, 1f));
             var drawList = ImGui.GetWindowDrawList();
-            //drawList.AddRectFilled(buttonPos - offset, buttonPos + new Vector2(width, height) + offset, borderColor);
-            //drawList.AddRectFilled(buttonPos, buttonPos + new Vector2(width, height) + offset, lightColor);
 
-            drawList.AddRectFilled(buttonPos - offset, buttonPos + new Vector2(width, height) + offset, lightColor);
+            drawList.AddRectFilled(buttonPos, buttonPos + new Vector2(width, height), Theme.Colors.BorderLightUint); 
+            drawList.AddRectFilled(buttonPos + padding, buttonPos + new Vector2(width, height), Theme.Colors.BorderDarkUint);
 
+            drawList.AddRectFilled(buttonPos + padding, buttonPos + new Vector2(width, height) - padding, Theme.Colors.BackgroundUint);
+
+            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.6f, 0.6f, 0.6f, 0f));
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 0.5f));
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 0.5f));
+ 
+            ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1, 0, 0, 0));
 
             if (ImGui.Button("##menuButton" + label, new Vector2(width, height)))
             {
@@ -499,19 +507,15 @@ namespace Spacebox.Game.GUI
 
             }
 
-            drawList.AddRectFilled(
-                 buttonPos ,
-               buttonPos + new Vector2(width, height), Theme.Colors.DeepUint);
-            
 
             if (category[categoryId].IconPtr != IntPtr.Zero)
             {
                 drawList.AddImage(category[categoryId].IconPtr, buttonPos + offset * 4, buttonPos + new Vector2(width, height) - offset);
 
             }
-            drawList.AddText(LoadFont(), height / 6f, buttonPos + new Vector2(5, 5), cc, category[categoryId].Name);
+            drawList.AddText(LoadFont(), height / 6f, buttonPos + new Vector2(10, 10), Theme.Colors.Deep2Uint , "" +category[categoryId].Name);
 
-
+            ImGui.PopStyleColor(4);
         }
     }
 }

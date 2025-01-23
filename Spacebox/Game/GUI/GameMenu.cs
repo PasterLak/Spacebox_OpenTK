@@ -65,6 +65,9 @@ namespace Spacebox.Game.GUI
             ImGui.PushStyleColor(ImGuiCol.HeaderActive, new Vector4(1f, 0.8f, 0f, 1.0f));
             ImGui.PushStyleColor(ImGuiCol.Header, new Vector4(1f, 0.72f, 0f, 1.0f));
 
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, Theme.Colors.Deep);
+
+
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
 
             switch (currentState)
@@ -121,7 +124,7 @@ namespace Spacebox.Game.GUI
 
             }
 
-            ImGui.PopStyleColor(6);
+            ImGui.PopStyleColor(5);
             ImGui.GetStyle().ItemSpacing = oldItemSpacing;
             ImGui.GetStyle().WindowPadding = oldWindowPadding;
         }

@@ -21,7 +21,7 @@ OSX
 
 Alpha:
 
-- fix inventory, panel ui
+
 - place/destroy outside the chunk
 
 - thulium/ponium crafts
@@ -32,6 +32,7 @@ Alpha:
 + fix croll in pause/welcome/radar
 + fix radar close with tab
 + better furnace texture
++ fix inventory, panel ui
 
 version 0.1.0
 

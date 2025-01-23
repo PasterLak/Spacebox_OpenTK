@@ -1,62 +1,59 @@
-﻿using System;
+﻿
 using System.Numerics;
 using ImGuiNET;
 using Spacebox.Common;
 
 namespace Spacebox.Game.GUI
 {
+    public class VerticalLinkItem
+    {
+        public string Text { get; set; }
+        public string Url { get; set; } // Empty or null if not a link
+        public string IconPath { get; set; } // Empty or null if no icon
+        public IntPtr IconHandle { get; set; } 
 
+        public VerticalLinkItem(string text, string url = "", string iconPath = "")
+        {
+            Text = text;
+            Url = url;
+            IconPath = iconPath;
+            IconHandle = IntPtr.Zero;
+        }
+
+        public bool HasLink => !string.IsNullOrEmpty(Url);
+        public bool HasIcon => !string.IsNullOrEmpty(IconPath);
+
+        
+    }
 
     public static class VerticalLinks
     {
-
         public static bool IsVisible = false;
 
-        private static readonly string[] urls = new string[]
-        {
-            "",
-
-        "https://www.youtube.com/@SpaceboxGame",
-        "https://discord.gg/9kY3dweXtY",
-        "https://vk.com/spacebox_official",
-        "https://pasterlak.itch.io/spacebox"
-        };
-
-        private static readonly string[] texts = new string[]
-        {
-            "Join us",
-        "",
-        "",
-        "",
-        ""
-        };
-
-        private static IntPtr[] icons = new IntPtr[]
-        {
-            IntPtr.Zero,
-        new IntPtr(1),
-        new IntPtr(2),
-        new IntPtr(3),
-        new IntPtr(4)
-        };
+        private static List<VerticalLinkItem> linkItems = new List<VerticalLinkItem>();
 
         public static void Init()
         {
-            var tex0 = TextureManager.GetTexture("Resources/Sprites/UI/youtube.png");
-            var tex1 = TextureManager.GetTexture("Resources/Sprites/UI/discord.png");
-            var tex2 = TextureManager.GetTexture("Resources/Sprites/UI/vk.png");
-            var tex3 = TextureManager.GetTexture("Resources/Sprites/UI/itchio.png");
 
-            tex0.FlipY();
-            tex1.FlipY();
-            tex2.FlipY();
-            tex3.FlipY();
+            linkItems = new List<VerticalLinkItem>
+            {
+                new VerticalLinkItem("Join us:"), 
+                new VerticalLinkItem("", "https://www.youtube.com/@SpaceboxGame", "Resources/Sprites/UI/youtube.png"),
+                new VerticalLinkItem("", "https://discord.gg/9kY3dweXtY", "Resources/Sprites/UI/discord.png"),
+                new VerticalLinkItem("", "https://vk.com/spacebox_official", "Resources/Sprites/UI/vk.png"),
+                new VerticalLinkItem("", "https://pasterlak.itch.io/spacebox", "Resources/Sprites/UI/itchio.png"),
 
+            };
 
-            icons[1] = tex0.Handle;
-            icons[2] = tex1.Handle;
-            icons[3] = tex2.Handle;
-            icons[4] = tex3.Handle;
+            foreach (var item in linkItems)
+            {
+                if (item.HasIcon)
+                {
+                    var texture = TextureManager.GetTexture(item.IconPath);
+                    texture.FlipY();
+                    item.IconHandle = texture.Handle;
+                }
+            }
 
             IsVisible = false;
         }
@@ -73,38 +70,53 @@ namespace Spacebox.Game.GUI
             float padding = buttonHeight * 0.1f;
 
             ImGui.SetNextWindowPos(new Vector2(0, 0), ImGuiCond.Always);
-            ImGui.SetNextWindowSize(new Vector2(buttonWidth, buttonHeight * 5), ImGuiCond.Always);
+            ImGui.SetNextWindowSize(new Vector2(buttonWidth, buttonHeight * linkItems.Count), ImGuiCond.Always);
             ImGui.Begin("VerticalMenu", ImGuiWindowFlags.NoTitleBar |
-                                            ImGuiWindowFlags.NoResize |
-                                            ImGuiWindowFlags.NoMove |
-                                            ImGuiWindowFlags.NoScrollbar |
-                                            ImGuiWindowFlags.NoScrollWithMouse |
-                                            ImGuiWindowFlags.NoBackground);
+                                        ImGuiWindowFlags.NoResize |
+                                        ImGuiWindowFlags.NoMove |
+                                        ImGuiWindowFlags.NoScrollbar |
+                                        ImGuiWindowFlags.NoScrollWithMouse |
+                                        ImGuiWindowFlags.NoBackground);
 
-
-            for (byte i = 0; i < 5; i++)
+            for (int i = 0; i < linkItems.Count; i++)
             {
+                var item = linkItems[i];
+
                 ImGui.SetCursorPos(new Vector2(0, i * buttonHeight));
                 Vector2 btnPos = ImGui.GetCursorScreenPos();
-                ImGui.InvisibleButton("btn" + i, new Vector2(buttonWidth, buttonHeight));
 
-                if (ImGui.IsItemClicked())
+                if (item.HasLink)
                 {
-                    if (urls[i] != "")
-                        Application.OpenLink(urls[i]);
+                    ImGui.InvisibleButton($"btn{i}", new Vector2(buttonWidth, buttonHeight));
+
+                    if (ImGui.IsItemClicked())
+                    {
+                        Application.OpenLink(item.Url);
+                    }
+                }
+                else
+                {
+                    ImGui.Dummy(new Vector2(buttonWidth, buttonHeight));
                 }
 
                 ImDrawListPtr drawList = ImGui.GetWindowDrawList();
                 Vector2 iconPos = new Vector2(btnPos.X + padding, btnPos.Y + (buttonHeight - iconSize) / 2);
-                Vector2 textPos = new Vector2(iconPos.X + iconSize + padding, btnPos.Y + (buttonHeight - ImGui.GetTextLineHeight()) / 2);
-                if (icons[i] != IntPtr.Zero)
-                    drawList.AddImage(icons[i], iconPos, new Vector2(iconPos.X + iconSize, iconPos.Y + iconSize));
-                drawList.AddText(textPos, ImGui.GetColorU32(ImGuiCol.Text), texts[i]);
-                //ImGui.Dummy(new Vector2(0, i * buttonHeight));
+                Vector2 textPos = new Vector2(iconPos.X + (item.HasIcon ? iconSize + padding : 0), btnPos.Y + (buttonHeight - ImGui.GetTextLineHeight()) / 2);
+
+                if (item.HasIcon && item.IconHandle != IntPtr.Zero)
+                {
+                    drawList.AddImage(item.IconHandle, iconPos, new Vector2(iconPos.X + iconSize, iconPos.Y + iconSize));
+                }
+
+
+                uint textColor = item.HasLink
+                    ? ImGui.GetColorU32(ImGuiCol.Text)
+                    : ImGui.GetColorU32(ImGuiCol.TextDisabled);
+
+                drawList.AddText(textPos, textColor, item.Text);
             }
 
             ImGui.End();
         }
     }
-
 }

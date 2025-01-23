@@ -12,11 +12,13 @@ namespace Spacebox.Game.GUI
         {
             public static readonly Vector4 Background = new Vector4(0.75f, 0.75f, 0.75f, 1f);
             public static readonly Vector4 Deep = new Vector4(0.65f, 0.65f, 0.65f, 1f);
+            public static readonly Vector4 Deep2 = new Vector4(0.45f, 0.45f, 0.45f, 1f);
             public static readonly Vector4 BorderLight = new Vector4(0.9f, 0.9f, 0.9f, 1f);
             public static readonly Vector4 BorderDark = new Vector4(0.5f, 0.5f, 0.5f, 1f);
 
             public static uint BackgroundUint => ImGui.GetColorU32(Background);
             public static uint DeepUint => ImGui.GetColorU32(Deep);
+            public static uint Deep2Uint => ImGui.GetColorU32(Deep2);
             public static uint BorderLightUint => ImGui.GetColorU32(BorderLight);
             public static uint BorderDarkUint => ImGui.GetColorU32(BorderDark);
 
