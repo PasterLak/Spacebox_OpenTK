@@ -41,7 +41,7 @@ namespace Spacebox
         private ImGuiController _controller;
         private string path = "Resources/WindowPosition.txt";
 
-
+        private static Keys debugKey;
         private static PolygonMode polygonMode = PolygonMode.Fill;
         private Vector2i minimizedWindowSize = new Vector2i(500, 500);
 
@@ -72,7 +72,14 @@ namespace Spacebox
 
             //ThemeUIEngine.ApplyDarkTheme();
 
-
+            if (Application.Platform == Application.PlatformName.OSX)
+            {
+                debugKey = (Keys)(161);
+            }
+            else
+            {
+                debugKey = Keys.GraveAccent;
+            }
             // InputManager.AddAction("debug", Keys.GraveAccent, true); // 161 mac
             //InputManager.RegisterCallback("debug", () => { Debug.ToggleVisibility(); });
 
@@ -215,7 +222,7 @@ namespace Spacebox
                 Lighting.RemoveAmbient();
             }
 
-            if (Input.IsKeyDown(Keys.GraveAccent))
+            if (Input.IsKeyDown(debugKey))
             {
                 Debug.ToggleVisibility();
             }

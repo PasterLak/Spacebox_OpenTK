@@ -9,23 +9,8 @@
   <component name="ChangeListManager">
     <list default="true" id="f9cc1faa-4ac5-4eb2-9068-249d362465ad" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Spacebox/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Spacebox/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Common/Debug.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Common/Debug.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Common/Octree.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Common/Octree.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Common/Texture2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Common/Texture2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/DONE.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/DONE.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/Block.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/Block.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/BlockGeneratorSphere2.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/BlockGeneratorSphere2.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/Chunk.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/Chunk.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/MeshGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/MeshGenerator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/Sector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/Sector.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Generation/World.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Generation/World.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Player/Astronaut.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Player/Astronaut.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Player/CreativeMode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Player/CreativeMode.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Player/GameModeBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Player/GameModeBase.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Player/SpectatorMode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Player/SpectatorMode.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Player/SurvivalMode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Player/SurvivalMode.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Game/Resources/AtlasTexture.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Game/Resources/AtlasTexture.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spacebox/Scenes/SpaceMenuScene.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Scenes/SpaceMenuScene.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Shaders/block.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Shaders/block.glsl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spacebox/Window.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Spacebox/Window.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
