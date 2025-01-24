@@ -201,9 +201,14 @@ namespace Spacebox.Common
 
         public static void DrawPosition(Vector3 pos, Color4 color)
         {
+            DrawPosition(pos,16,color);
+        }
+
+        public static void DrawPosition(Vector3 pos,byte segments, Color4 color)
+        {
             BoundingSphere s = new BoundingSphere(pos, 1f);
 
-            DrawBoundingSphere(s, color);
+            DrawBoundingSphere(s, color, segments);
         }
 
 
@@ -245,19 +250,35 @@ namespace Spacebox.Common
             DrawLine(corners[3], corners[7], color);
         }
 
+        public static void DrawSphere(Vector3 center, float radius, Color4 color)
+        {
+            DrawSphere(center, radius, 16, color);
+        }
+          public static void DrawSphere(Vector3 center, float radius, byte segments, Color4 color)
+        {
+            if (!ShowDebug) return;
+            if (radius <= 0) return;
+            BoundingSphere sphere = new BoundingSphere(center, radius);
+            DrawBoundingSphere(sphere, color, segments);
+        }
 
         public static void DrawBoundingSphere(BoundingSphere sphere, Color4 color)
+        {
+            DrawBoundingSphere(sphere, color, 16);
+        }
+
+        public static void DrawBoundingSphere(BoundingSphere sphere, Color4 color, byte segments)
         {
             if (!ShowDebug) return;
             if (sphere == null) return;
 
-            int slices = 16;
-            int stacks = 16;
+            byte slices = segments;
+            byte stacks = segments;
             float radius = sphere.Radius;
             Vector3 center = sphere.Center;
 
 
-            for (int i = 0; i <= stacks; i++)
+            for (byte i = 0; i <= stacks; i++)
             {
                 float theta = MathHelper.Pi * i / stacks;
                 float sinTheta = MathF.Sin(theta);
@@ -268,7 +289,7 @@ namespace Spacebox.Common
                     radius * cosTheta,
                     radius * sinTheta * MathF.Sin(0)) + center;
 
-                for (int j = 1; j <= slices; j++)
+                for (byte j = 1; j <= slices; j++)
                 {
                     float phi = 2 * MathHelper.Pi * j / slices;
                     Vector3 currentPoint = new Vector3(
@@ -282,7 +303,7 @@ namespace Spacebox.Common
             }
 
 
-            for (int j = 0; j < slices; j++)
+            for (byte j = 0; j < slices; j++)
             {
                 float phi = 2 * MathHelper.Pi * j / slices;
                 Vector3 prevPoint = new Vector3(
@@ -290,7 +311,7 @@ namespace Spacebox.Common
                     radius * MathF.Cos(0),
                     radius * MathF.Sin(0) * MathF.Sin(phi)) + center;
 
-                for (int i = 1; i <= stacks; i++)
+                for (byte i = 1; i <= stacks; i++)
                 {
                     float theta = MathHelper.Pi * i / stacks;
                     Vector3 currentPoint = new Vector3(

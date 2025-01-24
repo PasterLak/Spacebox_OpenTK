@@ -3,24 +3,24 @@
         "Name": "Light Rock",
         "Sides": "lightRock",
         "PowerToDrill": 1,
-        "Mass": 1,
+        "Mass": 2,
         "Durability": 5,
-        "SoundPlace" : "blockPlaceLight"
+        "SoundPlace": "blockPlaceLight"
     },
     {
         "Name": "Medium Rock",
         "Sides": "mediumRock",
         "PowerToDrill": 3,
-        "Mass": 2,
+        "Mass": 4,
         "Durability": 10
     },
     {
         "Name": "Heavy Rock",
         "Sides": "heavyRock",
         "PowerToDrill": 5,
-        "Mass": 3,
+        "Mass": 10,
         "Durability": 15,
-        "SoundPlace" : "blockPlaceHeavy"
+        "SoundPlace": "blockPlaceHeavy"
     },
     {
         "Name": "Cobaltite Rock",
@@ -32,14 +32,14 @@
     {
         "Name": "Ice Rock",
         "Sides": "ice",
-         "PowerToDrill": 1,
+        "PowerToDrill": 1,
         "Mass": 1,
         "Durability": 2
     },
     {
         "Name": "Aluminium Ore",
         "Sides": "aluOre",
-         "PowerToDrill": 1,
+        "PowerToDrill": 1,
         "Mass": 1,
         "Durability": 3
     },
@@ -53,7 +53,7 @@
     {
         "Name": "Titanium Ore",
         "Sides": "titaniumOre",
-         "PowerToDrill": 4,
+        "PowerToDrill": 4,
         "Mass": 1,
         "Durability": 9
     },
@@ -67,322 +67,523 @@
     {
         "Name": "Ponium Ore",
         "Sides": "pinkOre",
-         "PowerToDrill": 5,
+        "PowerToDrill": 5,
         "Mass": 1,
         "Durability": 50
     },
     {
         "Name": "Uranium Ore",
         "Sides": "uranOre",
-         "PowerToDrill": 3,
+        "PowerToDrill": 3,
         "Mass": 1,
         "Durability": 12
     },
     {
         "Name": "Aluminium Light Block",
-        "Category" : "blocks",
+        "Category": "blocks",
         "Sides": "aluLight",
         "Mass": 2,
         "Durability": 10,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 },
-        "SoundPlace" : "blockPlaceLight"
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "SoundPlace": "blockPlaceLight"
     },
     {
         "Name": "Aluminium Medium Block",
-        "Category" : "blocks",
+        "Category": "blocks",
         "Sides": "aluMedium",
         "Mass": 4,
         "Durability": 20,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
     },
     {
         "Name": "Aluminium Heavy Block",
-        "Category" : "blocks",
+        "Category": "blocks",
         "Sides": "aluHeavy",
         "Mass": 6,
         "Durability": 30,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 },
-        "SoundPlace" : "blockPlaceHeavy"
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "SoundPlace": "blockPlaceHeavy"
     },
     {
         "Name": "Iron Light Block",
-        "Category" : "blocks",
+        "Category": "blocks",
         "Sides": "ironLight",
         "Mass": 4,
         "Durability": 40,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 },
-        "SoundPlace" : "blockPlaceLight"
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "SoundPlace": "blockPlaceLight"
     },
     {
         "Name": "Iron Medium Block",
-        "Category" : "blocks",
+        "Category": "blocks",
         "Sides": "ironMedium",
         "Mass": 6,
         "Durability": 60,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
     },
     {
         "Name": "Iron Heavy Block",
-        "Category" : "blocks",
+        "Category": "blocks",
         "Sides": "ironHeavy",
         "Mass": 8,
         "Durability": 80,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 },
-        "SoundPlace" : "blockPlaceHeavy"
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "SoundPlace": "blockPlaceHeavy"
     },
     {
         "Name": "Titanium Light Block",
-        "Category" : "blocks",
+        "Category": "blocks",
         "Sides": "titLight",
         "Mass": 5,
         "Durability": 80,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 },
-        "SoundPlace" : "blockPlaceLight"
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "SoundPlace": "blockPlaceLight"
     },
     {
         "Name": "Titanium Medium Block",
-        "Category" : "blocks",
+        "Category": "blocks",
         "Sides": "titMedium",
         "Mass": 8,
         "Durability": 100,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
     },
     {
         "Name": "Titanium Heavy Block",
-        "Category" : "blocks",
+        "Category": "blocks",
         "Sides": "titHeavy",
         "Mass": 10,
         "Durability": 120,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 },
-        "SoundPlace" : "blockPlaceHeavy"
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "SoundPlace": "blockPlaceHeavy"
     },
     {
         "Name": "Window",
-        "Category" : "windows",
+        "Category": "windows",
         "Sides": "window",
         "Mass": 1,
         "IsTransparent": true,
-        "LightColor": { "x": 0, "y": 0, "z": 0 },
-        "SoundDestroy" : "blockDestroyGlass",
-        "SoundPlace" : "blockPlaceLight"
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "SoundDestroy": "blockDestroyGlass",
+        "SoundPlace": "blockPlaceLight"
     },
-     {
+    {
         "Name": "Basic Machine",
-        "Category" : "resources",
+        "Category": "resources",
         "Sides": "basicMachine",
         "Mass": 1,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
     },
-     {
+    {
         "Name": "Window2",
-        "Category" : "windows",
+        "Category": "windows",
         "Sides": "window2",
         "Mass": 1,
         "IsTransparent": true,
-        "LightColor": { "x": 0, "y": 0, "z": 0 },
-        "SoundDestroy" : "blockDestroyGlass",
-        "SoundPlace" : "blockPlaceLight"
-     },
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "SoundDestroy": "blockDestroyGlass",
+        "SoundPlace": "blockPlaceLight"
+    },
     {
         "Name": "Crafting Table",
-        "Category" : "resources",
+        "Category": "resources",
         "Type": "craftingtable",
         "Sides": "craftSide",
         "Top": "craftTop",
         "Bottom": "bottom",
         "Mass": 1,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
     },
     {
         "Name": "Furnace",
         "Type": "furnace",
-        "Category" : "resources",
+        "Category": "resources",
         "Sides": "furnace",
         "Top": "bottom",
         "Bottom": "bottom",
-        "Efficiency" : 1
+        "Efficiency": 1
     },
     {
         "Name": "Enhanced Furnace",
         "Type": "furnace",
-        "Category" : "resources",
+        "Category": "resources",
         "Sides": "furnace2",
         "Top": "bottom",
         "Bottom": "bottom",
-        "Efficiency" : 1.5
+        "Efficiency": 1.5
     },
     {
         "Name": "Crusher",
         "Type": "crusher",
-        "Category" : "resources",
+        "Category": "resources",
         "Sides": "crusherSide",
         "Top": "crusherTop",
         "Bottom": "bottom",
-        "Efficiency" : 1,
+        "Efficiency": 1,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
     },
     {
         "Name": "Enhanced Crusher",
         "Type": "crusher",
-        "Category" : "resources",
+        "Category": "resources",
         "Sides": "crusherSide2",
         "Top": "crusherTop2",
         "Bottom": "bottom",
-        "Efficiency" : 1.5,
+        "Efficiency": 1.5,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
     },
     {
         "Name": "Analyzer",
         "Type": "interactive",
-        "Category" : "resources",
+        "Category": "resources",
         "Sides": "bottom",
         "Top": "analyzer",
         "Bottom": "bottom",
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
     },
     {
         "Name": "Radar",
         "Type": "radar",
-        "Category" : "resources",
+        "Category": "resources",
         "Sides": "bottom",
         "Top": "radar",
         "Bottom": "bottom",
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
     },
     {
         "Name": "Disassembler",
         "Type": "disassembler",
-        "Category" : "resources",
+        "Category": "resources",
         "Sides": "disassemblerSide",
         "Top": "disassemblerTop2",
         "Bottom": "bottom",
-        "Efficiency" : 1,
+        "Efficiency": 1,
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
     },
     {
         "Name": "Cabel Block",
         "Sides": "wire",
-        "Category" : "blocks",
+        "Category": "blocks",
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
     },
-        {
+    {
         "Name": "Wires Pro",
         "Sides": "wirePro",
-        "Category" : "blocks",
+        "Category": "blocks",
         "IsTransparent": true,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
     },
     {
         "Name": "Light White",
-        "Category" : "lights",
+        "Category": "lights",
         "Sides": "white",
-        "LightColor": { "x": 255, "y": 255, "z": 255 },
-        "SoundDestroy" : "blockDestroyGlass",
-        "SoundPlace" : "blockPlaceLight"
+        "LightColor": {
+            "x": 255,
+            "y": 255,
+            "z": 255
+        },
+        "SoundDestroy": "blockDestroyGlass",
+        "SoundPlace": "blockPlaceLight"
 
     },
     {
         "Name": "Light Blue",
-        "Category" : "lights",
+        "Category": "lights",
         "Sides": "blue",
-        "LightColor": { "x": 45, "y": 45, "z": 255 },
-        "SoundDestroy" : "blockDestroyGlass",
-        "SoundPlace" : "blockPlaceLight"
+        "LightColor": {
+            "x": 45,
+            "y": 45,
+            "z": 255
+        },
+        "SoundDestroy": "blockDestroyGlass",
+        "SoundPlace": "blockPlaceLight"
     },
     {
         "Name": "Light Red",
-        "Category" : "lights",
+        "Category": "lights",
         "Sides": "red",
-        "LightColor": { "x": 255, "y": 15, "z": 15 },
-        "SoundDestroy" : "blockDestroyGlass",
-        "SoundPlace" : "blockPlaceLight"
+        "LightColor": {
+            "x": 255,
+            "y": 15,
+            "z": 15
+        },
+        "SoundDestroy": "blockDestroyGlass",
+        "SoundPlace": "blockPlaceLight"
     },
     {
         "Name": "Light Yellow",
-        "Category" : "lights",
+        "Category": "lights",
         "Sides": "yellow",
-        "LightColor": { "x": 255, "y": 216, "z": 0 },
-        "SoundDestroy" : "blockDestroyGlass",
-        "SoundPlace" : "blockPlaceLight"
+        "LightColor": {
+            "x": 255,
+            "y": 216,
+            "z": 0
+        },
+        "SoundDestroy": "blockDestroyGlass",
+        "SoundPlace": "blockPlaceLight"
     },
     {
         "Name": "Light Cyan",
-        "Category" : "lights",
+        "Category": "lights",
         "Sides": "cyan",
-        "LightColor": { "x": 0, "y": 255, "z": 255 },
-        "SoundDestroy" : "blockDestroyGlass",
-        "SoundPlace" : "blockPlaceLight"
+        "LightColor": {
+            "x": 0,
+            "y": 255,
+            "z": 255
+        },
+        "SoundDestroy": "blockDestroyGlass",
+        "SoundPlace": "blockPlaceLight"
     },
     {
         "Name": "Light Orange",
-        "Category" : "lights",
+        "Category": "lights",
         "Sides": "orange",
-        "LightColor": { "x": 255, "y": 106, "z": 0 },
-        "SoundDestroy" : "blockDestroyGlass",
-        "SoundPlace" : "blockPlaceLight"
+        "LightColor": {
+            "x": 255,
+            "y": 106,
+            "z": 0
+        },
+        "SoundDestroy": "blockDestroyGlass",
+        "SoundPlace": "blockPlaceLight"
     },
     {
         "Name": "Light Green",
-        "Category" : "lights",
+        "Category": "lights",
         "Sides": "green",
-        "LightColor": { "x": 5, "y": 255, "z": 5 },
-        "SoundDestroy" : "blockDestroyGlass",
-        "SoundPlace" : "blockPlaceLight"
+        "LightColor": {
+            "x": 5,
+            "y": 255,
+            "z": 5
+        },
+        "SoundDestroy": "blockDestroyGlass",
+        "SoundPlace": "blockPlaceLight"
     },
     {
         "Name": "Light Pink",
-        "Category" : "lights",
+        "Category": "lights",
         "Sides": "pink",
-        "LightColor": { "x": 178, "y": 0, "z": 255 },
-        "SoundDestroy" : "blockDestroyGlass",
-        "SoundPlace" : "blockPlaceLight"
+        "LightColor": {
+            "x": 178,
+            "y": 0,
+            "z": 255
+        },
+        "SoundDestroy": "blockDestroyGlass",
+        "SoundPlace": "blockPlaceLight"
     },
     {
         "Name": "AI Core",
-        "Category" : "resources",
+        "Category": "resources",
         "Sides": "core",
         "Mass": 50,
-        "PowerToDrill" : 3,
-        "Durability" : 50,
+        "PowerToDrill": 3,
+        "Durability": 50,
         "IsTransparent": true,
-        "LightColor": { "x": 0, "y": 0, "z": 0 },
-        "SoundPlace" : "blockPlaceHeavy"
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "SoundPlace": "blockPlaceHeavy"
     },
     {
         "Name": "Just Block",
-        "Category" : "blocks",
+        "Category": "blocks",
         "Sides": "block",
         "IsTransparent": false,
-        "LightColor": { "x": 0, "y": 0, "z": 0 }
+        "LightColor": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
     },
     {
         "Name": "Moritz",
-        "Category" : "blocks",
+        "Category": "blocks",
         "Sides": "moritz",
         "PowerToDrill": 5,
         "Mass": 1,
         "Durability": 15,
         "IsTransparent": false,
-        "LightColor": { "x": 255, "y": 245, "z": 68 },
-        "SoundPlace" : "blockPlaceMoritz",
-        "SoundDestroy" : "blockDestroyMoritz"
+        "LightColor": {
+            "x": 255,
+            "y": 245,
+            "z": 68
+        },
+        "SoundPlace": "blockPlaceMoritz",
+        "SoundDestroy": "blockDestroyMoritz"
+    },
+    {
+        "Name": "Basic Engine",
+        "Category": "blocks",
+        "Sides": "engine1Side",
+        "Top": "engine1Top",
+        "Bottom": "engine1Bottom",
+        "PowerToDrill": 1,
+        "Mass": 3,
+        "Durability": 35,
+        "IsTransparent": false,
+
+        "SoundPlace": "blockPlaceHeavy",
+        "SoundDestroy": "blockPlaceHeavy"
+    },
+    {
+        "Name": "Basic Cannon",
+        "Category": "blocks",
+        "Sides": "cannon1Side",
+        "Top": "cannon1Top",
+        "Bottom": "cannon1Top",
+        "PowerToDrill": 1,
+        "Mass": 3,
+        "Durability": 35,
+        "IsTransparent": false,
+
+        "SoundPlace": "blockPlaceHeavy",
+        "SoundDestroy": "blockPlaceHeavy"
+    },
+    {
+        "Name": "Aim Block",
+        "Category": "blocks",
+        "Sides": "aim",
+
+        "PowerToDrill": 1,
+        "Mass": 1,
+        "Durability": 5,
+        "IsTransparent": true,
+
+        "SoundPlace": "blockPlaceLight",
+        "SoundDestroy": "blockPlaceLight"
+    },
+    {
+        "Name": "Gravity Generator",
+        "Category": "resources",
+        "Sides": "gravitySide",
+        "Top": "gravityTop",
+        "Bottom": "gravityTop",
+        "PowerToDrill": 1,
+        "Mass": 255,
+        "Durability": 100,
+        "IsTransparent": false,
+
+        "SoundPlace": "blockPlaceHeavy",
+        "SoundDestroy": "blockPlaceHeavy"
+    },
+    {
+        "Name": "Console",
+        "Category": "resources",
+        "Sides": "gravityTop",
+        "Top": "display",
+        "Bottom": "gravityTop",
+        "PowerToDrill": 1,
+        "Mass": 1,
+        "Durability": 5,
+        "IsTransparent": false
+    },
+    {
+        "Name": "Aluminium Chest",
+        "Category": "doors",
+        "Sides": "aluChestSide",
+        "Top": "aluChestTop",
+        "Bottom": "aluChestTop",
+        "PowerToDrill": 1,
+        "Mass": 4,
+        "Durability": 10,
+        "IsTransparent": false
     }
-    
+
 ]

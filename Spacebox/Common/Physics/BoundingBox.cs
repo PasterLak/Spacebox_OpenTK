@@ -20,6 +20,9 @@ namespace Spacebox.Common.Physics
         public Vector3 Min => Center - Extents;
         public Vector3 Max => Center + Extents;
 
+        public float Diagonal => Vector3.Distance(Min,Max);
+        public float DiagonalSquared => Vector3.DistanceSquared(Min, Max);
+
         public BoundingBox(BoundingBox boundingBox)
         {
             Center = boundingBox.Center;

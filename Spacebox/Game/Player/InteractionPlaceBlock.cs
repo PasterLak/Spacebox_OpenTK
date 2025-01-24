@@ -196,6 +196,12 @@ public class InteractionPlaceBlock : InteractionMode
                     {
 
                     }
+                    else
+                    {
+                        var newEntity = World.CurrentSector.CreateEntity(selectorPosition);
+
+                        newEntity.CreateFirstBlock(newBlock);
+                    }
 
 
                     if (blockPlace != null)

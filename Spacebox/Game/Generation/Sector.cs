@@ -26,7 +26,7 @@ namespace Spacebox.Game.Generation
 
         public static bool IsPlayerSpawned = false;
         private bool isEdited = false;
-
+        public int MaxEntityID = 3;
         public Sector(Vector3 positionWorld, Vector3i positionIndex, World world)
         {
             PositionWorld = positionWorld;
@@ -218,6 +218,15 @@ namespace Spacebox.Game.Generation
             }
 
             return false;
+        }
+
+        public SpaceEntity CreateEntity(Vector3 positionWorld)
+        {
+            SpaceEntity entity = new SpaceEntity(0, positionWorld, this);
+            entity.Name = "NewEntity" + MaxEntityID++;
+            AddEntity(entity, positionWorld);
+
+            return entity;
         }
 
         private void AddEntity(SpaceEntity entity, Vector3 positionWorld)

@@ -20,8 +20,9 @@ namespace Spacebox.Game.Generation
         private readonly Octree<Chunk> octree;
         public BoundingBox BoundingBox { get; private set; }
         public Vector3 PositionWorld { get; private set; }
-       
+
         private Vector3 SumPosCenterOfMass;
+        public Vector3 CenterOfMass { get; private set; }
         public bool IsModified { get; private set; } = false;
         public void SetModified() { if (!IsModified) IsModified = true; }
         public Sector Sector { get; private set; }
@@ -32,8 +33,6 @@ namespace Spacebox.Game.Generation
 
         private Texture2D blockTexture;
         private Texture2D atlasTexture;
-
-        private SimpleBlock simple;
 
         public List<Chunk> Chunks { get; private set; } = new List<Chunk>();
         private List<Chunk> MeshesTogenerate = new List<Chunk>();
@@ -55,14 +54,48 @@ namespace Spacebox.Game.Generation
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
 
             InitializeSharedResources();
-            simple = new SimpleBlock(sharedShader, sharedTexture, PositionWorld);
-            simple.Scale = new Vector3(1, 1, 1);
-            simple.Position = BoundingBox.Center;
 
             blockTexture = GameBlocks.BlocksTexture;
             atlasTexture = GameBlocks.LightAtlas;
             // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
             tag = CreateTag(GeometryBoundingBox);
+
+        }
+
+        public SpaceEntity(Vector3 positionWorld, Sector sector)
+        {
+            EntityID = 0;
+            Position = positionWorld;
+            PositionWorld = positionWorld;
+            Sector = sector;
+            BoundingBox = new BoundingBox(positionWorld, new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));
+            SumPosCenterOfMass = positionWorld;
+            octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
+            Shader = ShaderManager.GetShader("Shaders/block");
+            GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
+
+            InitializeSharedResources();
+
+            blockTexture = GameBlocks.BlocksTexture;
+            atlasTexture = GameBlocks.LightAtlas;
+            // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
+            tag = CreateTag(GeometryBoundingBox);
+
+        }
+
+        public void CreateFirstBlock(Block block)
+        {
+            if (Chunks.Count != 0)
+            {
+                Debug.Error("[spaceEntity] CreateFirstBlock was not possible: A chunk already exists");
+                return;
+            }
+
+            Chunk chunk = new Chunk(new Vector3SByte(0, 0, 0), this, true);
+
+            chunk.PlaceBlock(new Vector3Byte(0, 0, 0), block);
+            AddChunk(chunk, false);
+            chunk.GenerateMesh();
 
         }
 
@@ -120,8 +153,8 @@ namespace Spacebox.Game.Generation
             Chunks.Add(chunk);
             chunkDictionary.Add(chunk.PositionIndex, chunk);
             chunk.OnChunkModified += UpdateEntityGeometryMinMax;
-            if(generateMesh)
-            chunk.GenerateMesh();
+            if (generateMesh)
+                chunk.GenerateMesh();
             UpdateNeighbors(chunk);
             RecalculateGeometryBoundingBox();
             RecalculateMass();
@@ -137,7 +170,7 @@ namespace Spacebox.Game.Generation
 
             UpdateNeighbors(chunk, true);
             RecalculateGeometryBoundingBox();
-
+            RecalculateMass();
             if (Chunks.Count == 0)
             {
                 DeleteSpaceEntity();
@@ -181,11 +214,12 @@ namespace Spacebox.Game.Generation
             for (int i = 0; i < Chunks.Count; i++) // opt
             {
                 var chunkMass = Chunks[i].Mass;
-             
+
                 SumPosCenterOfMass += Chunks[i].GetCenterOfMass() * chunkMass;
             }
 
-
+            CalculateCenterOfMass();
+            CalculateGravityRadius();
             _entityMassString = Mass.ToString("N0").Replace(",", ".");
         }
 
@@ -201,16 +235,17 @@ namespace Spacebox.Game.Generation
 
                 SumPosCenterOfMass += Chunks[i].GetCenterOfMass() * chunkMass;
             }
-
+            CalculateCenterOfMass();
+            CalculateGravityRadius();
             _entityMassString = Mass.ToString("N0").Replace(",", ".");
         }
 
         private void UpdateEntityGeometryMinMax(Chunk chunk)
         {
             RecalculateGeometryBoundingBox();
-
-            if (tag != null)
-                tag.WorldPosition = GeometryBoundingBox.Center;
+            CalculateGravityRadius();
+            // if (tag != null)
+            //    tag.WorldPosition = GeometryBoundingBox.Center;
         }
 
         private Tag CreateTag(BoundingBox boundingBox)
@@ -264,11 +299,16 @@ namespace Spacebox.Game.Generation
         public bool TryPlaceBlock(Vector3 worldPosition, Block block)
         {
 
+            if (!IsPositionWithinEntitySize(worldPosition)) return false;
+            if (!IsPositionWithinGravityRadius(worldPosition)) return false;
+
             var chunkIndex = GetChunkIndex(worldPosition);
-           
+
             var blockPos = WorldPositionToBlockInChunk(worldPosition);
 
-            if(chunkDictionary.TryGetValue(chunkIndex, out var chunk))
+
+
+            if (chunkDictionary.TryGetValue(chunkIndex, out var chunk))
             {
 
                 chunk.PlaceBlock(blockPos, block);
@@ -276,9 +316,8 @@ namespace Spacebox.Game.Generation
             }
             else
             {
-                Chunk newChunk = new Chunk(chunkIndex, this,true);
-                AddChunk(newChunk,false);
-                Debug.Log("new Chunk index: " + chunkIndex);
+                Chunk newChunk = new Chunk(chunkIndex, this, true);
+                AddChunk(newChunk, false);
                 newChunk.PlaceBlock(blockPos, block);
                 return true;
             }
@@ -332,7 +371,7 @@ namespace Spacebox.Game.Generation
         {
             var index = GetChunkIndex(world);
 
-            if(chunkDictionary.TryGetValue(index, out  chunk))
+            if (chunkDictionary.TryGetValue(index, out chunk))
             {
                 return true;
             }
@@ -357,20 +396,19 @@ namespace Spacebox.Game.Generation
 
             if (camera != null)
             {
-                if(VisualDebug.ShowDebug)
+                if (VisualDebug.ShowDebug)
                 {
                     tag.Text = $" {EntityID} {Name}\n" +
-                        $"W: {Block.RoundVector3(PositionWorld)}\n" +
-
-                        $"{(int)Vector3.Distance(GeometryBoundingBox.Center, camera.Position)} m\n" +
-                           $"{_entityMassString} tn";
+                        $"Wpos: {Block.RoundVector3(PositionWorld)}\n" +
+                        $"{(int)Vector3.Distance(CenterOfMass, camera.Position)} m\n" +
+                           $"{_entityMassString} tn, gR: {(int)GravityRadius} m";
                 }
                 else
                 {
-                    tag.Text = $"{(int)Vector3.Distance(GeometryBoundingBox.Center, camera.Position)} m\n" +
+                    tag.Text = $"{(int)Vector3.Distance(CenterOfMass, camera.Position)} m\n" +
                            $"{_entityMassString} tn";
                 }
-                
+
             }
         }
 
@@ -393,26 +431,28 @@ namespace Spacebox.Game.Generation
 
         public void Render(Camera camera)
         {
-           
+
 
             blockTexture.Use(TextureUnit.Texture0);
             atlasTexture.Use(TextureUnit.Texture1);
             for (int i = 0; i < Chunks.Count; i++)
             {
-                VisualDebug.DrawPosition(Chunks[i].GetCenterOfMass(), Color4.Green);
+               // VisualDebug.DrawPosition(Chunks[i].GetCenterOfMass(), 4, Color4.Green);
                 Chunks[i].Render(Shader);
-                
+
             }
 
             if (VisualDebug.ShowDebug)
             {
-                VisualDebug.DrawPosition(PositionWorld, Color4.Cyan);
-                VisualDebug.DrawPosition(GeometryBoundingBox.Center, Color4.Orange);
+                //VisualDebug.DrawPosition(PositionWorld,4, Color4.Cyan);
+                VisualDebug.DrawPosition(GeometryBoundingBox.Center, 6, Color4.Orange);
 
                 VisualDebug.DrawBoundingBox(GeometryBoundingBox, Color4.Orange);
-                VisualDebug.DrawPosition(CenterOfMass(), Color4.Lime);
+                VisualDebug.DrawPosition(CenterOfMass, 8, Color4.Lime);
+
+                VisualDebug.DrawSphere(CenterOfMass, GravityRadius, 16, Color4.Blue);
             }
-           
+
         }
 
         public bool IsColliding(BoundingVolume volume)
@@ -429,11 +469,59 @@ namespace Spacebox.Game.Generation
             return false;
         }
 
-        public Vector3 CenterOfMass()
+        public bool IsPositionWithinEntitySize(Vector3 worldPosition)
         {
-            if (Mass == 0) return GeometryBoundingBox.Center;
+            Vector3 local = worldPosition - PositionWorld;
+            return local.X >= -SizeBlocksHalf && local.X < SizeBlocksHalf
+                && local.Y >= -SizeBlocksHalf && local.Y < SizeBlocksHalf
+                && local.Z >= -SizeBlocksHalf && local.Z < SizeBlocksHalf;
+        }
 
-            return  SumPosCenterOfMass / Mass;
+        public bool IsPositionWithinGeometryBounds(Vector3 worldPosition)
+        {
+            return GeometryBoundingBox.Contains(worldPosition);
+        }
+
+        public float GravityRadius { get; private set; }
+
+        private const float GravityScale = 1.0f;
+
+        private void CalculateGravityRadius()
+        {
+            if (Mass == 0)
+            {
+                GravityRadius = 0f;
+                return;
+            }
+
+            GravityRadius = GravityScale * MathF.Pow((float)Mass, 0.32f);
+
+            GravityRadius += GeometryBoundingBox.Diagonal;
+
+            int dis = (int)Vector3.Distance(GeometryBoundingBox.Center, CenterOfMass);
+            GravityRadius += dis;
+
+            if (GravityRadius < 5)
+            {
+                GravityRadius = 5;
+            }
+        }
+        public bool IsPositionWithinGravityRadius(Vector3 worldPosition)
+        {
+            float distanceSquared = Vector3.DistanceSquared(CenterOfMass, worldPosition);
+            return distanceSquared <= GravityRadius * GravityRadius;
+        }
+
+        private void CalculateCenterOfMass()
+        {
+            if (Mass == 0)
+            {
+                CenterOfMass = GeometryBoundingBox.Center;
+                tag.WorldPosition = CenterOfMass;
+                return;
+            }
+            tag.WorldPosition = CenterOfMass;
+            CenterOfMass = SumPosCenterOfMass / Mass;
         }
 
         public void Dispose()
@@ -443,7 +531,6 @@ namespace Spacebox.Game.Generation
                 TagManager.UnregisterTag(tag);
             }
 
-            simple?.Dispose();
         }
     }
 }

@@ -24,16 +24,21 @@ OSX
 Alpha:
 
 
-+ place/destroy outside the chunk
+
 
 - maybe better generation (different objects and resources)
 - thulium/ponium crafts
+- fix light between chunks
+- fix sides between chunks
+- fix destroy from another chunk
+- fix place from another chunk
 
 version 0.1.1
 
 - center of mass of chunks and entities
-- 
-
+- place/destroy outside the chunk
+- gravity radius
+- create new space entities
 
 
 version 0.1.0
