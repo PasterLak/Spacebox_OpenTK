@@ -96,7 +96,7 @@ namespace Spacebox.Game.Generation
 
             for (int i = 0; i < chunksList.Count; i++)
             {
-                if (chunksList[i].IsModified)
+               // if (chunksList[i].IsModified)
                 chunks.Add(ChunkToTag(chunksList[i]));
             }
 

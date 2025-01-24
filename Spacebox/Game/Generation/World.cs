@@ -151,6 +151,20 @@ namespace Spacebox.Game.Generation
                 sector.Update();
             }*/
 
+            if(Input.IsKeyDown(Keys.KeyPad8))
+            {
+           
+                    if(CurrentSector.TryGetNearestEntity(Player.Position, out var ent))
+                {
+                    if(ent.IsPositionInChunk(Player.Position, out var chunk))
+                    {
+                        chunk.ClearChunk();
+                        chunk.GenerateMesh();
+                    }
+                }
+
+            }
+
         }
 
         public void Render(Shader shader)

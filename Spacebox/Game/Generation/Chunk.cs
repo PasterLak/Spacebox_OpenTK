@@ -23,6 +23,9 @@ namespace Spacebox.Game.Generation
         };
 
         public int Mass { get; set; } = 0; // 255x32700 = 8,338,500 (max 4,294,967,295 in uint)
+
+        public Vector3 SumPosMass { get; set; } = Vector3.Zero;
+
         public Vector3 PositionWorld { get; private set; }
         public Vector3SByte PositionIndex { get; private set; }
 
@@ -99,7 +102,7 @@ namespace Spacebox.Game.Generation
 
             _meshGenerator = new MeshGenerator(this, Neighbors, MeasureGenerationTime);
 
-            
+
             _isLoadedOrGenerated = true;
         }
 
@@ -415,7 +418,7 @@ namespace Spacebox.Game.Generation
             IsModified = true;
         }
 
-        private void ClearChunk()
+        public void ClearChunk()
         {
             for (int x = 0; x < Size; x++)
             {
@@ -429,6 +432,18 @@ namespace Spacebox.Game.Generation
             }
             IsModified = true;
         }
+
+        public Vector3 GetCenterOfMass()
+        {
+            if (Mass == 0f)
+                return PositionWorld;
+
+
+            var local = (SumPosMass / Mass) + new Vector3(0.5f, 0.5f, 0.5f);
+
+            return PositionWorld + local;
+        }
+
         public void Dispose()
         {
             _mesh?.Dispose();

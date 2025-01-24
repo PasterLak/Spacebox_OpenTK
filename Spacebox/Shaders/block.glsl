@@ -123,4 +123,6 @@ void main()
     vec4 foggedColor=applyFog(vec4(finalColor,baseTexColor.a));
     vec3 combinedColor=mix(foggedColor.rgb,applyFog2(vec4(baseTexColor.rgb,1)).rgb,isActive == 0 ? 0 : atlasTexColor.a); // atlasTexColor.a
     FragColor=vec4(combinedColor,foggedColor.a);
+
+   
 }

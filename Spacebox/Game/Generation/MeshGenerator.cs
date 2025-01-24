@@ -85,6 +85,9 @@ namespace Spacebox.Game.Generation
             sbyte zMin = sbyte.MaxValue;
             sbyte zMax = sbyte.MinValue;
 
+            Vector3 sumPosMass = Vector3.Zero;
+        
+
             for (sbyte x = 0; x < Size; x++)
             {
                 for (sbyte y = 0; y < Size; y++)
@@ -99,7 +102,8 @@ namespace Spacebox.Game.Generation
                         }
                         if (block.IsAir()) continue;
 
-                        mass += block.Mass;
+                        byte m = block.Mass;
+                        mass += m;
                         
                         if(x < xMin) xMin = x;
                         if(x > xMax) xMax = x;
@@ -109,8 +113,13 @@ namespace Spacebox.Game.Generation
                         
                         if(z < zMin) zMin = z;
                         if(z > zMax) zMax = z;
-                        
-              
+
+                        // mass
+
+               
+                        sumPosMass += new Vector3(x,y,z) * m;
+
+
 
                         for (int fIndex = 0; fIndex < faces.Length; fIndex++)
                         {
@@ -307,6 +316,7 @@ namespace Spacebox.Game.Generation
                 new Vector3(xMax +1 , yMax+1 , zMax+1 ));
 
             _chunk.Mass = mass;
+            _chunk.SumPosMass = sumPosMass;
 
             return mesh;
         }

@@ -20,6 +20,8 @@ namespace Spacebox.Game.Generation
         private readonly Octree<Chunk> octree;
         public BoundingBox BoundingBox { get; private set; }
         public Vector3 PositionWorld { get; private set; }
+       
+        private Vector3 SumPosCenterOfMass;
         public bool IsModified { get; private set; } = false;
         public void SetModified() { if (!IsModified) IsModified = true; }
         public Sector Sector { get; private set; }
@@ -47,7 +49,7 @@ namespace Spacebox.Game.Generation
             PositionWorld = positionWorld;
             Sector = sector;
             BoundingBox = new BoundingBox(positionWorld, new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));
-
+            SumPosCenterOfMass = positionWorld;
             octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
             Shader = ShaderManager.GetShader("Shaders/block");
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
@@ -174,15 +176,30 @@ namespace Spacebox.Game.Generation
                 Debug.Error("SpaceEntity mass was negative!");
             }
 
+            SumPosCenterOfMass = Vector3.Zero;
+
+            for (int i = 0; i < Chunks.Count; i++) // opt
+            {
+                var chunkMass = Chunks[i].Mass;
+             
+                SumPosCenterOfMass += Chunks[i].GetCenterOfMass() * chunkMass;
+            }
+
+
             _entityMassString = Mass.ToString("N0").Replace(",", ".");
         }
 
         public void RecalculateMass()
         {
             Mass = 0;
+            SumPosCenterOfMass = Vector3.Zero;
+
             for (int i = 0; i < Chunks.Count; i++)
             {
-                Mass = (ulong)((long)Mass + Chunks[i].Mass);
+                var chunkMass = Chunks[i].Mass;
+                Mass = (ulong)((long)Mass + chunkMass);
+
+                SumPosCenterOfMass += Chunks[i].GetCenterOfMass() * chunkMass;
             }
 
             _entityMassString = Mass.ToString("N0").Replace(",", ".");
@@ -311,6 +328,21 @@ namespace Spacebox.Game.Generation
             }
         }
 
+        public bool IsPositionInChunk(Vector3 world, out Chunk chunk)
+        {
+            var index = GetChunkIndex(world);
+
+            if(chunkDictionary.TryGetValue(index, out  chunk))
+            {
+                return true;
+            }
+            else
+            {
+                chunk = null;
+                return false;
+            }
+        }
+
         public Vector3 WorldPositionToLocal(Vector3 world)
         {
             return world - PositionWorld;
@@ -325,8 +357,20 @@ namespace Spacebox.Game.Generation
 
             if (camera != null)
             {
-                tag.Text = $"{(int)Vector3.Distance(GeometryBoundingBox.Center, camera.Position)} m\n" +
+                if(VisualDebug.ShowDebug)
+                {
+                    tag.Text = $" {EntityID} {Name}\n" +
+                        $"W: {Block.RoundVector3(PositionWorld)}\n" +
+
+                        $"{(int)Vector3.Distance(GeometryBoundingBox.Center, camera.Position)} m\n" +
                            $"{_entityMassString} tn";
+                }
+                else
+                {
+                    tag.Text = $"{(int)Vector3.Distance(GeometryBoundingBox.Center, camera.Position)} m\n" +
+                           $"{_entityMassString} tn";
+                }
+                
             }
         }
 
@@ -349,27 +393,26 @@ namespace Spacebox.Game.Generation
 
         public void Render(Camera camera)
         {
-            if (VisualDebug.ShowDebug)
-            {
-                VisualDebug.DrawPosition(PositionWorld, Color4.Cyan);
-                VisualDebug.DrawPosition(GeometryBoundingBox.Center, Color4.Orange);
-            }
-
-            /*if (simple != null)
-            {
-                simple.Shader.SetVector4("color", new Vector4(0, 0, 1, 1));
-                simple.Render(Camera.Main);
-                VisualDebug.DrawPosition(Position, Color4.Cyan);
-            }*/
+           
 
             blockTexture.Use(TextureUnit.Texture0);
             atlasTexture.Use(TextureUnit.Texture1);
             for (int i = 0; i < Chunks.Count; i++)
             {
+                VisualDebug.DrawPosition(Chunks[i].GetCenterOfMass(), Color4.Green);
                 Chunks[i].Render(Shader);
+                
             }
 
-            VisualDebug.DrawBoundingBox(GeometryBoundingBox, Color4.Orange);
+            if (VisualDebug.ShowDebug)
+            {
+                VisualDebug.DrawPosition(PositionWorld, Color4.Cyan);
+                VisualDebug.DrawPosition(GeometryBoundingBox.Center, Color4.Orange);
+
+                VisualDebug.DrawBoundingBox(GeometryBoundingBox, Color4.Orange);
+                VisualDebug.DrawPosition(CenterOfMass(), Color4.Lime);
+            }
+           
         }
 
         public bool IsColliding(BoundingVolume volume)
@@ -384,6 +427,13 @@ namespace Spacebox.Game.Generation
             }
 
             return false;
+        }
+
+        public Vector3 CenterOfMass()
+        {
+            if (Mass == 0) return GeometryBoundingBox.Center;
+
+            return  SumPosCenterOfMass / Mass;
         }
 
         public void Dispose()

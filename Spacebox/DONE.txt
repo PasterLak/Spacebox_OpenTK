@@ -17,22 +17,22 @@ OSX
 //  find /Users/vladis/Documents/Projects/C#/Spacebox_OpenTK -type f -name "*.cs" -exec cat {} + | wc -l
 
 // (008): 192, 19954 (009 early): 197, 20753. AO: 217,23165
-// (010 early): 358, 27640, (010 middle): 373, 29431
+// (010 early): 358, 27640, (010 middle): 373, 29431, 010 final: 379, 30093, 
 
 // ------------------------------------------------------------------------------------------------------------------------------
 
 Alpha:
 
 
-- place/destroy outside the chunk
++ place/destroy outside the chunk
 
 - maybe better generation (different objects and resources)
 - thulium/ponium crafts
 
 version 0.1.1
 
--
--
+- center of mass of chunks and entities
+- 
 
 
 
