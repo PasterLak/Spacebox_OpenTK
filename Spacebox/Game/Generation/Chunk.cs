@@ -17,10 +17,10 @@ namespace Spacebox.Game.Generation
 
         public Vector3 PositionWorld { get; private set; }
         public Vector3SByte PositionIndex { get; private set; }
-
+        public bool NeedsToRegenerateMesh = false;
         public Block[,,] Blocks { get; private set; }
         public bool ShowChunkBounds { get; set; } = true;
-        public bool MeasureGenerationTime { get; set; } = false;
+        public bool MeasureGenerationTime { get; set; } = true;
         private bool _isModified = false;
         public bool IsModified
         {
@@ -135,9 +135,13 @@ namespace Spacebox.Game.Generation
 
         public void GenerateMesh()
         {
+            GenerateMesh(true);
+        }
+        public void GenerateMesh(bool doLight)
+        {
             if (!_isLoadedOrGenerated) return;
-
-
+            needsToRegenerateMesh = false;
+            if (doLight)
             _lightManager.PropagateLight();
             int oldMass = Mass;
 
@@ -162,6 +166,7 @@ namespace Spacebox.Game.Generation
 
             SpaceEntity.RecalculateMass(Mass - oldMass);
             OnChunkModified?.Invoke(this);
+           
         }
 
         private void DeleteChunk()
@@ -440,7 +445,7 @@ namespace Spacebox.Game.Generation
         }
 
 
-        private readonly Dictionary<Vector3SByte, Chunk> Neighbors = new Dictionary<Vector3SByte, Chunk>()
+        public readonly Dictionary<Vector3SByte, Chunk> Neighbors = new Dictionary<Vector3SByte, Chunk>()
         {
             { new Vector3SByte(1, 0, 0), null },
             { new Vector3SByte(-1, 0, 0), null },

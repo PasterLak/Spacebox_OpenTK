@@ -6,112 +6,164 @@ namespace Spacebox.Game.Generation
     public class LightManager
     {
         private const byte Size = Chunk.Size;
-        private readonly Block[,,] _blocks;
-
         private const bool EnableLighting = true;
-
         private readonly Chunk _chunk;
 
         public LightManager(Chunk chunk)
         {
             _chunk = chunk;
-            _blocks = chunk.Blocks;
         }
 
         public void PropagateLight()
         {
             if (!EnableLighting) return;
 
-            ResetLightLevels();
+            var visited = new HashSet<Chunk>();
+            var chunksQueue = new Queue<Chunk>();
+            chunksQueue.Enqueue(_chunk);
+            visited.Add(_chunk);
 
-            Queue<Vector3Byte> lightQueue = new Queue<Vector3Byte>();
+            while (chunksQueue.Count > 0)
+            {
+                var c = chunksQueue.Dequeue();
+                foreach (var neighbor in c.Neighbors.Values)
+                {
+                    if (neighbor != null && !visited.Contains(neighbor))
+                    {
+                        visited.Add(neighbor);
+                        chunksQueue.Enqueue(neighbor);
+                    }
+                }
+            }
 
-            EnqueueLightSources(lightQueue);
+            var allChunks = new List<Chunk>(visited);
+
+            foreach (var c in allChunks)
+                ResetLightLevels(c);
+
+            var lightQueue = new Queue<(Chunk, byte, byte, byte)>();
+
+            foreach (var c in allChunks)
+                EnqueueLightSources(c, lightQueue);
+
+            var changedChunks = new HashSet<Chunk>();
 
             while (lightQueue.Count > 0)
             {
-                Vector3Byte pos = lightQueue.Dequeue();
-                Block lightSource = _blocks[pos.X, pos.Y, pos.Z];
-                float lightLvl = lightSource.LightLevel;
+                var (chunk, x, y, z) = lightQueue.Dequeue();
+                var block = chunk.Blocks[x, y, z];
+                var lvl = block.LightLevel;
+                if (lvl <= 0.1f) continue;
 
-                if (lightLvl <= 0.1f)
-                    continue;
-
-                for (byte i = 0; i < AdjacentOffsets.Length; i++)
+                for (int i = 0; i < 6; i++)
                 {
-                    Vector3SByte offset = AdjacentOffsets[i];
-                    int nx = pos.X + offset.X;
-                    int ny = pos.Y + offset.Y;
-                    int nz = pos.Z + offset.Z;
+                    var nx = x + AdjacentOffsets[i].X;
+                    var ny = y + AdjacentOffsets[i].Y;
+                    var nz = z + AdjacentOffsets[i].Z;
+                    var (nChunk, bx, by, bz) = GetBlockInNeighborChunk(chunk, nx, ny, nz);
+                    if (nChunk == null) continue;
 
-                    if (!IsInRange(nx, ny, nz))
-                        continue;
+                    var nb = nChunk.Blocks[bx, by, bz];
+                    if (!(nb.IsAir() || nb.IsTransparent)) continue;
 
-                    Block neighbor = _blocks[nx, ny, nz];
+                    const float att = 0.8f;
+                    var newLvl = lvl * att;
+                    var newClr = block.LightColor * att;
 
-                    if (!(neighbor.IsAir() || neighbor.IsTransparent)) continue;
-
-                    const float attenuation = 0.8f;
-                    float newLightLevel = lightLvl * attenuation;
-
-                    Vector3 newLightColor = lightSource.LightColor * attenuation;
-
-                    if (newLightLevel > neighbor.LightLevel)
+                    if (newLvl > nb.LightLevel + 0.01f)
                     {
-                        neighbor.LightLevel = newLightLevel;
-                        neighbor.LightColor = newLightColor;
-                        lightQueue.Enqueue(new Vector3Byte(nx, ny, nz));
+                        nb.LightLevel = newLvl;
+                        nb.LightColor = newClr;
+                        nChunk.Blocks[bx, by, bz] = nb;
+                        changedChunks.Add(nChunk);
+                        lightQueue.Enqueue((nChunk, bx, by, bz));
                     }
-                    else if (MathF.Abs(newLightLevel - neighbor.LightLevel) < 0.01f)
+                    else if (System.MathF.Abs(newLvl - nb.LightLevel) < 0.01f)
                     {
-                        neighbor.LightColor = (neighbor.LightColor + newLightColor) * 0.5f;
+                        nb.LightColor = (nb.LightColor + newClr) * 0.5f;
+                        nChunk.Blocks[bx, by, bz] = nb;
+                        changedChunks.Add(nChunk);
+                    }
+                }
+            }
 
-                        _blocks[nx, ny, nz] = neighbor;
+            foreach (var c in changedChunks)
+            {
+                //c.GenerateMesh(false);
+                c.NeedsToRegenerateMesh = true;
+            }
+        }
+
+        private void ResetLightLevels(Chunk c)
+        {
+            for (byte x = 0; x < Size; x++)
+            {
+                for (byte y = 0; y < Size; y++)
+                {
+                    for (byte z = 0; z < Size; z++)
+                    {
+                        var b = c.Blocks[x, y, z];
+                        if (b.LightLevel < 15f)
+                        {
+                            b.LightLevel = 0f;
+                            b.LightColor = Vector3.Zero;
+                            c.Blocks[x, y, z] = b;
+                        }
                     }
                 }
             }
         }
 
-
-        private void ResetLightLevels()
+        private void EnqueueLightSources(Chunk c, Queue<(Chunk, byte, byte, byte)> q)
         {
             for (byte x = 0; x < Size; x++)
+            {
                 for (byte y = 0; y < Size; y++)
+                {
                     for (byte z = 0; z < Size; z++)
                     {
-                        Block block = _blocks[x, y, z];
-                        if (block.LightLevel < 15f)
+                        if (c.Blocks[x, y, z].LightLevel > 0f)
                         {
-                            block.LightLevel = 0f;
-                            block.LightColor = Vector3.Zero;
+                            q.Enqueue((c, x, y, z));
                         }
                     }
+                }
+            }
         }
 
-        private void EnqueueLightSources(Queue<Vector3Byte> lightQueue)
+        private (Chunk chunk, byte x, byte y, byte z) GetBlockInNeighborChunk(Chunk c, int nx, int ny, int nz)
         {
-            for (byte x = 0; x < Size; x++)
-                for (byte y = 0; y < Size; y++)
-                    for (byte z = 0; z < Size; z++)
-                    {
-                        if (_blocks[x, y, z].LightLevel > 0f)
-                            lightQueue.Enqueue(new Vector3Byte(x, y, z));
-                    }
+            if (nx >= 0 && nx < Size && ny >= 0 && ny < Size && nz >= 0 && nz < Size)
+            {
+                return (c, (byte)nx, (byte)ny, (byte)nz);
+            }
+
+            sbyte ox = 0, oy = 0, oz = 0;
+            int lx = nx, ly = ny, lz = nz;
+            if (lx < 0) { ox = -1; lx += Size; }
+            else if (lx >= Size) { ox = 1; lx -= Size; }
+            if (ly < 0) { oy = -1; ly += Size; }
+            else if (ly >= Size) { oy = 1; ly -= Size; }
+            if (lz < 0) { oz = -1; lz += Size; }
+            else if (lz >= Size) { oz = 1; lz -= Size; }
+
+            var off = new Vector3SByte(ox, oy, oz);
+            if (c.Neighbors.TryGetValue(off, out var n) && n != null)
+            {
+                return (n, (byte)lx, (byte)ly, (byte)lz);
+            }
+
+            return (null, 0, 0, 0);
         }
 
-        private static readonly Vector3SByte[] AdjacentOffsets = new[]
+        private static readonly Vector3SByte[] AdjacentOffsets =
         {
-            new Vector3SByte(1, 0, 0),
-            new Vector3SByte(-1, 0, 0),
-            new Vector3SByte(0, 1, 0),
-            new Vector3SByte(0, -1, 0),
-            new Vector3SByte(0, 0, 1),
-            new Vector3SByte(0, 0, -1),
+            new Vector3SByte( 1,  0,  0),
+            new Vector3SByte(-1,  0,  0),
+            new Vector3SByte( 0,  1,  0),
+            new Vector3SByte( 0, -1,  0),
+            new Vector3SByte( 0,  0,  1),
+            new Vector3SByte( 0,  0, -1),
         };
-
-        private bool IsInRange(int x, int y, int z)
-        {
-            return x >= 0 && x < Size && y >= 0 && y < Size && z >= 0 && z < Size;
-        }
     }
 }

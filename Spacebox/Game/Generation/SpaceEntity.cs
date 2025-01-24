@@ -443,6 +443,11 @@ namespace Spacebox.Game.Generation
             atlasTexture.Use(TextureUnit.Texture1);
             for (int i = 0; i < Chunks.Count; i++)
             {
+                if(Chunks[i].NeedsToRegenerateMesh)
+                {
+                    Chunks[i].GenerateMesh(false);
+                    Chunks[i].NeedsToRegenerateMesh = false;
+                }
                 // VisualDebug.DrawPosition(Chunks[i].GetCenterOfMass(), 4, Color4.Green);
                 Chunks[i].Render(Shader);
 

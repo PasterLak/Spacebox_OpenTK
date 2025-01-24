@@ -9,28 +9,20 @@ namespace Spacebox.Game.Generation
     public class MeshGenerator
     {
         private bool _EnableAO = true;
-
-        public bool EnableAO
-        {
-            get => _EnableAO;
-            set { _EnableAO = value; }
-        }
+        public bool EnableAO { get => _EnableAO; set { _EnableAO = value; } }
 
         private const byte Size = Chunk.Size;
         private readonly Chunk _chunk;
         private readonly Block[,,] _blocks;
         private readonly bool _measureGenerationTime;
-
         private static readonly Face[] faces = (Face[])Enum.GetValues(typeof(Face));
         private static Vector3SByte[] faceNormals;
-
         private float[] vertices;
         private uint[] indices;
         private int vertexCount;
         private int indexCount;
-        Stopwatch stopwatch = null;
+        private Stopwatch stopwatch;
         private Dictionary<Vector3SByte, Chunk> _neighbors;
-
         public BoundingBox GeometryBoundingBox { get; private set; }
 
         public MeshGenerator(Chunk chunk, Dictionary<Vector3SByte, Chunk> Neighbors, bool measureGenerationTime = true)
@@ -39,10 +31,8 @@ namespace Spacebox.Game.Generation
             _blocks = chunk.Blocks;
             _chunk = chunk;
             _measureGenerationTime = measureGenerationTime;
-
             AOVoxels.Init();
             PrecomputeData();
-
             GeometryBoundingBox = BoundingBox.CreateFromMinMax(Vector3.Zero, Vector3.One * Chunk.Size);
         }
 
@@ -56,8 +46,6 @@ namespace Spacebox.Game.Generation
         const int floatsPerVertex = BuffersData.FloatsPerVertexBlock;
         const int vertsPerBlock = 24;
         const int indicesPerBlock = 36;
-
-
         const int estimatedVertices = Size * Size * Size * vertsPerBlock * floatsPerVertex;
         const int estimatedIndices = Size * Size * Size * indicesPerBlock;
 
@@ -73,20 +61,13 @@ namespace Spacebox.Game.Generation
             vertexCount = 0;
             indexCount = 0;
             int mass = 0;
-
-            sbyte SizeHalf = (sbyte)(Size * 0.5f);
-
             sbyte xMin = sbyte.MaxValue;
             sbyte xMax = sbyte.MinValue;
-
             sbyte yMin = sbyte.MaxValue;
             sbyte yMax = sbyte.MinValue;
-
             sbyte zMin = sbyte.MaxValue;
             sbyte zMax = sbyte.MinValue;
-
             Vector3 sumPosMass = Vector3.Zero;
-
 
             for (sbyte x = 0; x < Size; x++)
             {
@@ -95,88 +76,58 @@ namespace Spacebox.Game.Generation
                     for (sbyte z = 0; z < Size; z++)
                     {
                         var block = _blocks[x, y, z];
-                        if (block == null)
-                        {
-
-                            continue;
-                        }
+                        if (block == null) continue;
                         if (block.IsAir()) continue;
-
                         byte m = block.Mass;
                         mass += m;
-
                         if (x < xMin) xMin = x;
                         if (x > xMax) xMax = x;
-
                         if (y < yMin) yMin = y;
                         if (y > yMax) yMax = y;
-
                         if (z < zMin) zMin = z;
                         if (z > zMax) zMax = z;
-
-                        // mass
-
-
                         sumPosMass += new Vector3(x, y, z) * m;
-
-
 
                         for (int fIndex = 0; fIndex < faces.Length; fIndex++)
                         {
                             Face face = faces[fIndex];
                             Vector3SByte normal = faceNormals[fIndex];
-
                             sbyte nx = (sbyte)(x + normal.X);
                             sbyte ny = (sbyte)(y + normal.Y);
                             sbyte nz = (sbyte)(z + normal.Z);
 
                             if (block.IsTransparent && IsInRange(nx, ny, nz))
                             {
-                                var neighborBlock = _blocks[nx, ny, nz];
-                                if (neighborBlock != null && neighborBlock.IsTransparent) continue;
+                                var nb = _blocks[nx, ny, nz];
+                                if (nb != null && nb.IsTransparent) continue;
                             }
-
 
                             if (IsTransparentBlock(nx, ny, nz, normal))
                             {
                                 var faceVertices = CubeMeshData.GetFaceVertices(face);
-                                var faceUVs =
-                                    GameBlocks.GetBlockUVsByIdAndDirection(block.BlockId, face, block.Direction);
-
-                                float currentLightLevel = block.LightLevel / 15f;
-                                Vector3 currentLightColor = block.LightColor;
+                                var faceUVs = GameBlocks.GetBlockUVsByIdAndDirection(block.BlockId, face, block.Direction);
+                                var currentLightLevel = block.LightLevel / 15f;
+                                var currentLightColor = block.LightColor;
                                 float neighborLightLevel = 0f;
                                 Vector3 neighborLightColor = Vector3.Zero;
-
-                                if (IsInRange(nx, ny, nz))
+                                var neighborBlock = GetBlockFromThisOrNeighborChunk(nx, ny, nz);
+                                if (neighborBlock != null)
                                 {
-                                    var neighborBlock = _blocks[nx, ny, nz];
                                     neighborLightLevel = neighborBlock.LightLevel / 15f;
                                     neighborLightColor = neighborBlock.LightColor;
                                 }
-
                                 float averageLightLevel = (currentLightLevel + neighborLightLevel) * 0.5f;
-                                Vector3 averageLightColor =
-                                    (currentLightColor * currentLightLevel + neighborLightColor * neighborLightLevel) /
-                                    (currentLightLevel + neighborLightLevel + 0.001f);
-
+                                var averageLightColor = (currentLightColor * currentLightLevel + neighborLightColor * neighborLightLevel)
+                                                        / (currentLightLevel + neighborLightLevel + 0.001f);
                                 Vector3 ambient = new Vector3(0.2f, 0.2f, 0.2f);
-                                Vector3 vertexColor = Vector3.Clamp(block.Color * (averageLightColor + ambient),
-                                    Vector3.Zero, Vector3.One);
+                                var vertexColor = Vector3.Clamp(block.Color * (averageLightColor + ambient), Vector3.Zero, Vector3.One);
 
                                 bool flip = false;
                                 int vStart = vertexCount / BuffersData.FloatsPerVertexBlock;
                                 float[] AO = new float[4];
-
-
                                 byte newMask = CreateMask(face, new Vector3SByte(x, y, z), normal);
-
                                 bool isLightOrTransparent = block.IsTransparent || block.IsLight();
-
-                                var shading = isLightOrTransparent
-                                    ? AOVoxels.GetLightedPoints
-                                    : AOShading.GetAO(newMask);
-
+                                var shading = isLightOrTransparent ? AOVoxels.GetLightedPoints : AOShading.GetAO(newMask);
                                 bool same3 = false;
                                 bool diagonal = false;
                                 byte another = 0;
@@ -193,9 +144,7 @@ namespace Spacebox.Game.Generation
                                         }
                                         else another = i;
                                     }
-
                                     if (s == 3) same3 = true;
-
                                     if (same3)
                                     {
                                         if (another == 0 || another == 2)
@@ -204,7 +153,6 @@ namespace Spacebox.Game.Generation
                                         }
                                     }
                                 }
-
 
                                 for (int i = 0; i < 4; i++)
                                 {
@@ -225,19 +173,13 @@ namespace Spacebox.Game.Generation
                                     {
                                         AO[i] = shading[i];
                                         vertices[vertexCount++] = AO[i];
-
                                         if (i == 0 || i == 2)
                                         {
                                             if (AO[i] < 0.5f) AO[i] -= 0.5f;
-
                                             if (same3)
                                             {
-                                                if (!diagonal)
-                                                {
-                                                    AO[i] += 0.5f;
-                                                }
-                                                else
-                                                    AO[i] -= 0.5f;
+                                                if (!diagonal) AO[i] += 0.5f;
+                                                else AO[i] -= 0.5f;
                                             }
                                         }
                                         else
@@ -246,24 +188,16 @@ namespace Spacebox.Game.Generation
                                         }
                                     }
                                     else
+                                    {
                                         vertices[vertexCount++] = 1f;
+                                    }
 
                                     vertices[vertexCount++] = block.enableEmission ? 1f : 0f;
-
                                 }
 
                                 if (_EnableAO)
                                 {
-                                    if (AO[0] + AO[2] < AO[1] + AO[3])
-                                    {
-                                        flip = true;
-                                    }
-                                    else
-                                    {
-                                        flip = false;
-                                    }
-
-
+                                    if (AO[0] + AO[2] < AO[1] + AO[3]) flip = true;
                                     if (flip)
                                     {
                                         indices[indexCount++] = (uint)(vStart + 1);
@@ -299,11 +233,9 @@ namespace Spacebox.Game.Generation
             }
 
             float[] finalVertices = new float[vertexCount];
-            Array.Copy(vertices, 0, finalVertices, 0, vertexCount);
-
+            Array.Copy(vertices, finalVertices, vertexCount);
             uint[] finalIndices = new uint[indexCount];
-            Array.Copy(indices, 0, finalIndices, 0, indexCount);
-
+            Array.Copy(indices, finalIndices, indexCount);
             Mesh mesh = new Mesh(finalVertices, finalIndices, BuffersData.CreateBlockBuffer());
 
             if (_measureGenerationTime && stopwatch != null)
@@ -314,10 +246,8 @@ namespace Spacebox.Game.Generation
 
             GeometryBoundingBox = BoundingBox.CreateFromMinMax(new Vector3(xMin, yMin, zMin),
                 new Vector3(xMax + 1, yMax + 1, zMax + 1));
-
             _chunk.Mass = mass;
             _chunk.SumPosMass = sumPosMass;
-
             return mesh;
         }
 
@@ -325,154 +255,103 @@ namespace Spacebox.Game.Generation
         {
             byte mask = 0;
             byte faceIndex = (byte)face;
-
-            Vector3SByte[] neighbors = AOVoxels.FaceNeighborOffsets[faceIndex];
-
+            Vector3SByte[] nbs = AOVoxels.FaceNeighborOffsets[faceIndex];
             blockPos = blockPos + normal;
 
             for (byte bit = 0; bit < 8; bit++)
             {
-                Vector3SByte offset = neighbors[bit];
-                int neighborX = blockPos.X + offset.X;
-                int neighborY = blockPos.Y + offset.Y;
-                int neighborZ = blockPos.Z + offset.Z;
-
-                var norm = new Vector3SByte((sbyte)neighborX, (sbyte)neighborY, (sbyte)neighborZ) - blockPos;
-                // Debug.Log(norm.ToString());
-                if (NeedsAO((sbyte)neighborX, (sbyte)neighborY, (sbyte)neighborZ, CubeMeshData.GetNormal(face)))
-                {
+                Vector3SByte offset = nbs[bit];
+                int nx = blockPos.X + offset.X;
+                int ny = blockPos.Y + offset.Y;
+                int nz = blockPos.Z + offset.Z;
+                if (NeedsAO((sbyte)nx, (sbyte)ny, (sbyte)nz, CubeMeshData.GetNormal(face)))
                     mask |= (byte)(1 << bit);
-                }
             }
-
             return mask;
         }
-
-
 
         private bool NeedsAO(sbyte x, sbyte y, sbyte z, Vector3SByte norm)
         {
             if (IsInRange(x, y, z))
             {
-                var block = _blocks[x, y, z];
-                if (block.IsAir() == true) return false;
-                if (block.IsTransparent == true) return false;
+                var b = _blocks[x, y, z];
+                if (b.IsAir()) return false;
+                if (b.IsTransparent) return false;
                 if (IsLightBlock(x, y, z)) return false;
-
                 return true;
             }
             else
             {
-                GetNeighborChunkIndexAndLocalCoords(x, y, z, Size, out var neighborChunkOffset, out var localCoord);
-
-                if (_neighbors.ContainsKey(neighborChunkOffset))
+                GetNeighborChunkIndexAndLocalCoords(x, y, z, Size, out var offset, out var local);
+                if (_neighbors.TryGetValue(offset, out var chunk) && chunk != null)
                 {
-                    Chunk neighborChunk = _neighbors[neighborChunkOffset];
-
-                    if (neighborChunk != null)
+                    var b = chunk.GetBlock(local);
+                    if (b != null)
                     {
-                        Block block = neighborChunk.GetBlock(localCoord);
-
-                        if (block != null)
-                        {
-
-                            if (block.IsAir() == true) return false;
-                            if (block.IsTransparent == true) return false;
-                            if (block.LightLevel > 0) return false;
-
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        return false;
+                        if (b.IsAir()) return false;
+                        if (b.IsTransparent) return false;
+                        if (b.LightLevel > 0) return false;
+                        return true;
                     }
                 }
-                else
-                {
-                    return false;
-                }
-
                 return false;
             }
-
         }
 
-        public static void GetNeighborChunkIndexAndLocalCoords(
-       int x, int y, int z,
-       byte size,
-       out Vector3SByte offset,
-       out Vector3Byte local
-   )
+        private Block GetBlockFromThisOrNeighborChunk(sbyte x, sbyte y, sbyte z)
+        {
+            if (IsInRange(x, y, z))
+            {
+                return _blocks[x, y, z];
+            }
+            GetNeighborChunkIndexAndLocalCoords(x, y, z, Size, out var off, out var loc);
+            if (_neighbors.TryGetValue(off, out var c) && c != null)
+            {
+                var b = c.GetBlock(loc);
+                return b;
+            }
+            return null;
+        }
+
+        public static void GetNeighborChunkIndexAndLocalCoords(int x, int y, int z, byte size, out Vector3SByte offset, out Vector3Byte local)
         {
             sbyte ox = 0, oy = 0, oz = 0;
-
             if (x < 0) { ox = -1; x += size; }
             else if (x >= size) { ox = 1; x -= size; }
-
             if (y < 0) { oy = -1; y += size; }
             else if (y >= size) { oy = 1; y -= size; }
-
             if (z < 0) { oz = -1; z += size; }
             else if (z >= size) { oz = 1; z -= size; }
-
             offset = new Vector3SByte(ox, oy, oz);
             local = new Vector3Byte((byte)x, (byte)y, (byte)z);
         }
-
 
         private bool IsLightBlock(sbyte x, sbyte y, sbyte z)
         {
             return _blocks[x, y, z].LightLevel > 0;
         }
 
-        private bool IsSolid(sbyte x, sbyte y, sbyte z)
-        {
-            if (x < 0 || x >= Size || y < 0 || y >= Size || z < 0 || z >= Size)
-                return false;
-            return !_blocks[x, y, z].IsAir();
-        }
-
         private bool IsTransparentBlock(sbyte x, sbyte y, sbyte z, Vector3SByte normal)
         {
-            if (x < 0 || x >= Size || y < 0 || y >= Size || z < 0 || z >= Size)
+            if (!IsInRange(x, y, z))
             {
-                Chunk neighborChunk = _neighbors[normal];
-
-                if (neighborChunk != null)
+                if (_neighbors.TryGetValue(normal, out var nch) && nch != null)
                 {
-                    Block block = neighborChunk.GetBlock(WrapBlockCoordinate(x, y, z, Size));
-
-                    if (block != null)
-                    {
-                        return block.IsAir() || block.IsTransparent;
-                    }
-                }
-                else
-                {
+                    var wrap = WrapBlockCoordinate(x, y, z, Size);
+                    var b = nch.GetBlock(wrap);
+                    if (b != null) return b.IsAir() || b.IsTransparent;
                     return true;
                 }
+                return true;
             }
-
-            var b = _blocks[x, y, z];
-            return b.IsAir() || b.IsTransparent;
+            var bl = _blocks[x, y, z];
+            return bl.IsAir() || bl.IsTransparent;
         }
 
         public static Vector3SByte WrapBlockCoordinate(int x, int y, int z, byte Size)
         {
-            int Wrap(int coord, int size)
-            {
-                int wrapped = coord % size;
-                if (wrapped < 0)
-                    wrapped += size;
-                return wrapped;
-            }
-
-            return new Vector3SByte(
-                (sbyte)Wrap(x, Size),
-                (sbyte)Wrap(y, Size),
-                (sbyte)Wrap(z, Size)
-            );
+            int Wrap(int v, int s) { int w = v % s; return w < 0 ? w + s : w; }
+            return new Vector3SByte((sbyte)Wrap(x, Size), (sbyte)Wrap(y, Size), (sbyte)Wrap(z, Size));
         }
 
         private bool IsInRange(sbyte x, sbyte y, sbyte z)
