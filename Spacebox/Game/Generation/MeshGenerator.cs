@@ -42,7 +42,7 @@ namespace Spacebox.Game.Generation
 
             AOVoxels.Init();
             PrecomputeData();
-    
+
             GeometryBoundingBox = BoundingBox.CreateFromMinMax(Vector3.Zero, Vector3.One * Chunk.Size);
         }
 
@@ -67,7 +67,7 @@ namespace Spacebox.Game.Generation
             {
                 stopwatch = Stopwatch.StartNew();
             }
-            
+
             vertices = new float[estimatedVertices];
             indices = new uint[estimatedIndices];
             vertexCount = 0;
@@ -86,7 +86,7 @@ namespace Spacebox.Game.Generation
             sbyte zMax = sbyte.MinValue;
 
             Vector3 sumPosMass = Vector3.Zero;
-        
+
 
             for (sbyte x = 0; x < Size; x++)
             {
@@ -104,20 +104,20 @@ namespace Spacebox.Game.Generation
 
                         byte m = block.Mass;
                         mass += m;
-                        
-                        if(x < xMin) xMin = x;
-                        if(x > xMax) xMax = x;
-                        
-                        if(y < yMin) yMin = y;
-                        if(y > yMax) yMax = y;
-                        
-                        if(z < zMin) zMin = z;
-                        if(z > zMax) zMax = z;
+
+                        if (x < xMin) xMin = x;
+                        if (x > xMax) xMax = x;
+
+                        if (y < yMin) yMin = y;
+                        if (y > yMax) yMax = y;
+
+                        if (z < zMin) zMin = z;
+                        if (z > zMax) zMax = z;
 
                         // mass
 
-               
-                        sumPosMass += new Vector3(x,y,z) * m;
+
+                        sumPosMass += new Vector3(x, y, z) * m;
 
 
 
@@ -129,7 +129,7 @@ namespace Spacebox.Game.Generation
                             sbyte nx = (sbyte)(x + normal.X);
                             sbyte ny = (sbyte)(y + normal.Y);
                             sbyte nz = (sbyte)(z + normal.Z);
-                            
+
                             if (block.IsTransparent && IsInRange(nx, ny, nz))
                             {
                                 var neighborBlock = _blocks[nx, ny, nz];
@@ -220,7 +220,7 @@ namespace Spacebox.Game.Generation
                                     vertices[vertexCount++] = normal.X;
                                     vertices[vertexCount++] = normal.Y;
                                     vertices[vertexCount++] = normal.Z;
-                                 
+
                                     if (_EnableAO)
                                     {
                                         AO[i] = shading[i];
@@ -248,7 +248,7 @@ namespace Spacebox.Game.Generation
                                     else
                                         vertices[vertexCount++] = 1f;
 
-                                    vertices[vertexCount++] = block.enableEmission ?  1f : 0f;
+                                    vertices[vertexCount++] = block.enableEmission ? 1f : 0f;
 
                                 }
 
@@ -313,7 +313,7 @@ namespace Spacebox.Game.Generation
             }
 
             GeometryBoundingBox = BoundingBox.CreateFromMinMax(new Vector3(xMin, yMin, zMin),
-                new Vector3(xMax +1 , yMax+1 , zMax+1 ));
+                new Vector3(xMax + 1, yMax + 1, zMax + 1));
 
             _chunk.Mass = mass;
             _chunk.SumPosMass = sumPosMass;
@@ -337,9 +337,9 @@ namespace Spacebox.Game.Generation
                 int neighborY = blockPos.Y + offset.Y;
                 int neighborZ = blockPos.Z + offset.Z;
 
-                var norm = new Vector3SByte((sbyte)neighborX, (sbyte)neighborY, (sbyte)neighborZ) - offset;
-
-                if (CheckForAO((sbyte)neighborX, (sbyte)neighborY, (sbyte)neighborZ, norm))
+                var norm = new Vector3SByte((sbyte)neighborX, (sbyte)neighborY, (sbyte)neighborZ) - blockPos;
+                // Debug.Log(norm.ToString());
+                if (NeedsAO((sbyte)neighborX, (sbyte)neighborY, (sbyte)neighborZ, CubeMeshData.GetNormal(face)))
                 {
                     mask |= (byte)(1 << bit);
                 }
@@ -348,19 +348,78 @@ namespace Spacebox.Game.Generation
             return mask;
         }
 
-        private bool CheckForAO(sbyte x, sbyte y, sbyte z, Vector3SByte norm)
-        {
-            if (IsSolid(x, y, z))
-            {
-                if (IsTransparentBlock(x, y, z, norm)) return false;
 
+
+        private bool NeedsAO(sbyte x, sbyte y, sbyte z, Vector3SByte norm)
+        {
+            if (IsInRange(x, y, z))
+            {
+                var block = _blocks[x, y, z];
+                if (block.IsAir() == true) return false;
+                if (block.IsTransparent == true) return false;
                 if (IsLightBlock(x, y, z)) return false;
 
                 return true;
             }
+            else
+            {
+                GetNeighborChunkIndexAndLocalCoords(x, y, z, Size, out var neighborChunkOffset, out var localCoord);
 
-            return false;
+                if (_neighbors.ContainsKey(neighborChunkOffset))
+                {
+                    Chunk neighborChunk = _neighbors[neighborChunkOffset];
+
+                    if (neighborChunk != null)
+                    {
+                        Block block = neighborChunk.GetBlock(localCoord);
+
+                        if (block != null)
+                        {
+
+                            if (block.IsAir() == true) return false;
+                            if (block.IsTransparent == true) return false;
+                            if (block.LightLevel > 0) return false;
+
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+
+                return false;
+            }
+
         }
+
+        public static void GetNeighborChunkIndexAndLocalCoords(
+       int x, int y, int z,
+       byte size,
+       out Vector3SByte offset,
+       out Vector3Byte local
+   )
+        {
+            sbyte ox = 0, oy = 0, oz = 0;
+
+            if (x < 0) { ox = -1; x += size; }
+            else if (x >= size) { ox = 1; x -= size; }
+
+            if (y < 0) { oy = -1; y += size; }
+            else if (y >= size) { oy = 1; y -= size; }
+
+            if (z < 0) { oz = -1; z += size; }
+            else if (z >= size) { oz = 1; z -= size; }
+
+            offset = new Vector3SByte(ox, oy, oz);
+            local = new Vector3Byte((byte)x, (byte)y, (byte)z);
+        }
+
 
         private bool IsLightBlock(sbyte x, sbyte y, sbyte z)
         {
@@ -379,10 +438,10 @@ namespace Spacebox.Game.Generation
             if (x < 0 || x >= Size || y < 0 || y >= Size || z < 0 || z >= Size)
             {
                 Chunk neighborChunk = _neighbors[normal];
-                
+
                 if (neighborChunk != null)
                 {
-                    Block block = neighborChunk.GetBlock(WrapBlockCoordinate(x,y,z, Size));
+                    Block block = neighborChunk.GetBlock(WrapBlockCoordinate(x, y, z, Size));
 
                     if (block != null)
                     {
@@ -398,8 +457,8 @@ namespace Spacebox.Game.Generation
             var b = _blocks[x, y, z];
             return b.IsAir() || b.IsTransparent;
         }
-        
-        public static Vector3SByte WrapBlockCoordinate(int x, int y, int z,  byte Size)
+
+        public static Vector3SByte WrapBlockCoordinate(int x, int y, int z, byte Size)
         {
             int Wrap(int coord, int size)
             {

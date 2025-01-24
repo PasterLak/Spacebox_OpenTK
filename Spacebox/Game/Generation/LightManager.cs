@@ -10,9 +10,12 @@ namespace Spacebox.Game.Generation
 
         private const bool EnableLighting = true;
 
-        public LightManager(Block[,,] blocks)
+        private readonly Chunk _chunk;
+
+        public LightManager(Chunk chunk)
         {
-            _blocks = blocks;
+            _chunk = chunk;
+            _blocks = chunk.Blocks;
         }
 
         public void PropagateLight()

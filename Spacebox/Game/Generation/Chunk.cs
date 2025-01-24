@@ -8,19 +8,8 @@ namespace Spacebox.Game.Generation
 {
     public class Chunk : IDisposable
     {
-        public static Chunk CurrentChunk { get; set; }
 
         public const byte Size = 32; // 32700+ blocks
-
-        private readonly Dictionary<Vector3SByte, Chunk> Neighbors = new Dictionary<Vector3SByte, Chunk>()
-        {
-            { new Vector3SByte(1, 0, 0), null },
-            { new Vector3SByte(0, 1, 0), null },
-            { new Vector3SByte(0, 0, 1), null },
-            { new Vector3SByte(-1, 0, 0), null },
-            { new Vector3SByte(0, -1, 0), null },
-            { new Vector3SByte(0, 0, -1), null },
-        };
 
         public int Mass { get; set; } = 0; // 255x32700 = 8,338,500 (max 4,294,967,295 in uint)
 
@@ -31,7 +20,7 @@ namespace Spacebox.Game.Generation
 
         public Block[,,] Blocks { get; private set; }
         public bool ShowChunkBounds { get; set; } = true;
-        public bool MeasureGenerationTime { get; set; } = true;
+        public bool MeasureGenerationTime { get; set; } = false;
         private bool _isModified = false;
         public bool IsModified
         {
@@ -71,7 +60,7 @@ namespace Spacebox.Game.Generation
             Blocks = new Block[Size, Size, Size];
 
             SpaceEntity = spaceEntity;
-            CurrentChunk = this;
+
             CreateBoundingBox();
             GeometryBoundingBox = new BoundingBox(boundingBox);
 
@@ -97,7 +86,7 @@ namespace Spacebox.Game.Generation
                 IsModified = true;
             }
 
-            _lightManager = new LightManager(Blocks);
+            _lightManager = new LightManager(this);
             _lightManager.PropagateLight();
 
             _meshGenerator = new MeshGenerator(this, Neighbors, MeasureGenerationTime);
@@ -185,8 +174,6 @@ namespace Spacebox.Game.Generation
             return VoxelPhysics.IsColliding(volume, Blocks, PositionWorld);
         }
 
-        private float time = 0;
-
         public void Render(Shader shader)
         {
             if (!_isLoadedOrGenerated) return;
@@ -211,9 +198,6 @@ namespace Spacebox.Game.Generation
             if (ShowChunkBounds && VisualDebug.ShowDebug)
             {
                 VisualDebug.DrawBoundingBox(boundingBox, new Color4(0.5f, 0f, 0.5f, 0.4f));
-
-
-                //VisualDebug.DrawBoundingBox(GeometryBoundingBox, Color4.Orange);
             }
         }
 
@@ -258,6 +242,7 @@ namespace Spacebox.Game.Generation
                 Blocks[x, y, z].LightColor = block.LightColor;
             }
 
+            CheckNeigborBlocks(new Vector3Byte(x, y, z));
             needsToRegenerateMesh = true;
         }
 
@@ -307,6 +292,11 @@ namespace Spacebox.Game.Generation
         }
 
         public Block? GetBlock(Vector3SByte pos)
+        {
+            return GetBlock((int)pos.X, (int)pos.Y, (int)pos.Z);
+        }
+
+        public Block? GetBlock(Vector3Byte pos)
         {
             return GetBlock((int)pos.X, (int)pos.Y, (int)pos.Z);
         }
@@ -420,11 +410,11 @@ namespace Spacebox.Game.Generation
 
         public void ClearChunk()
         {
-            for (int x = 0; x < Size; x++)
+            for (byte x = 0; x < Size; x++)
             {
-                for (int y = 0; y < Size; y++)
+                for (byte y = 0; y < Size; y++)
                 {
-                    for (int z = 0; z < Size; z++)
+                    for (byte z = 0; z < Size; z++)
                     {
                         Blocks[x, y, z] = new Block(new Vector2(0, 0));
                     }
@@ -447,7 +437,22 @@ namespace Spacebox.Game.Generation
         public void Dispose()
         {
             _mesh?.Dispose();
-            CurrentChunk = null;
         }
+
+
+        private readonly Dictionary<Vector3SByte, Chunk> Neighbors = new Dictionary<Vector3SByte, Chunk>()
+        {
+            { new Vector3SByte(1, 0, 0), null },
+            { new Vector3SByte(-1, 0, 0), null },
+
+            { new Vector3SByte(0, 1, 0), null },
+            { new Vector3SByte(0, -1, 0), null },
+
+            { new Vector3SByte(0, 0, 1), null },
+            { new Vector3SByte(0, 0, -1), null },
+        };
+
+       
+
     }
 }

@@ -21,15 +21,20 @@ OSX
 
 // ------------------------------------------------------------------------------------------------------------------------------
 
-Alpha:
+Alpha ToDo:
 
 - maybe better generation (different objects and resources)
 - thulium/ponium crafts
 - fix light between chunks
-- fix sides between chunks
-- fix ao between chunks
+
 - fix destroy from another chunk
 - fix place from another chunk
+
+
+Done:
+- fix sides between chunks
+- fix ao between chunks
+
 
 version 0.1.1
 
