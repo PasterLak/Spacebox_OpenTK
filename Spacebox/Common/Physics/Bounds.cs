@@ -44,7 +44,7 @@ namespace Spacebox.Common.Physics
 
         public bool IntersectRay(Ray ray, out float distance)
         {
-            // AABB (Axis-Aligned Bounding Box)
+            // AABB 
             distance = 0f;
             float tmin = (Min.X - ray.Origin.X) / ray.Direction.X;
             float tmax = (Max.X - ray.Origin.X) / ray.Direction.X;

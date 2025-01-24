@@ -32,7 +32,6 @@ namespace Spacebox.Common.SceneManagment
 
         public abstract void Update();
 
-        public virtual void LateUpdate() { }
 
         public abstract void Render();
 

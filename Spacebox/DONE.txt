@@ -23,13 +23,11 @@ OSX
 
 Alpha:
 
-
-
-
 - maybe better generation (different objects and resources)
 - thulium/ponium crafts
 - fix light between chunks
 - fix sides between chunks
+- fix ao between chunks
 - fix destroy from another chunk
 - fix place from another chunk
 
@@ -39,7 +37,7 @@ version 0.1.1
 - place/destroy outside the chunk
 - gravity radius
 - create new space entities
-
+- tag font size depends on distance
 
 version 0.1.0
 
@@ -49,7 +47,6 @@ version 0.1.0
 + fix radar close with tab
 + better furnace texture
 + fix inventory, panel ui
-
 
 - place blocks
 - mass of asteroids

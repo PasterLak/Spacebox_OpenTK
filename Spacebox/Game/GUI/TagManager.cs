@@ -75,14 +75,30 @@ namespace Spacebox.Game.GUI
                         var textSize = ImGui.CalcTextSize(tag.Text);
 
                         ImGui.SetCursorPos(tag.GetTextPosition(screenPos.ToSystemVector2(), textSize));
-                        ImGui.PushStyleColor(ImGuiCol.Text, tag.Color.ToSystemVector4());
-                        ImGui.TextUnformatted(tag.Text);
-                        ImGui.PopStyleColor();
+                       // ImGui.PushStyleColor(ImGuiCol.Text, tag.Color.ToSystemVector4());
+                        //ImGui.TextUnformatted(tag.Text );
+                       
+                       // ImGui.PopStyleColor();
+                        var drawList = ImGui.GetWindowDrawList();
+
+                        drawList.AddText(LoadFont(), tag.FontSize, ImGui.GetCursorPos(), tag.ColorUint,  tag.Text);
                     }
                 }
             }
 
             ImGui.End();
+        }
+
+        public static void OnResized(Vector2 screenPos)
+        {
+            Tag.SetFontSizes();
+        }
+
+        private static ImFontPtr LoadFont()
+        {
+            var io = ImGui.GetIO();
+
+            return io.FontDefault;
         }
     }
 }

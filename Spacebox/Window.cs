@@ -199,7 +199,7 @@ namespace Spacebox
             if (SceneManager.CurrentScene != null)
             {
                 SceneManager.CurrentScene.Update();
-                SceneManager.CurrentScene.LateUpdate();
+               
             }
 
 

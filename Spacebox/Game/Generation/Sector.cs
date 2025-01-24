@@ -188,7 +188,7 @@ namespace Spacebox.Game.Generation
                 asteroidWorldPosition = GetRandomPosition(PositionWorld, 0.1f, random);
             }
 
-            var asteroid = new SpaceEntity(id, asteroidWorldPosition, this);
+            var asteroid = new AsteroidLight(id, asteroidWorldPosition, this);
             asteroid.AddChunk(new Chunk(new Vector3SByte(0, 0, 0), asteroid));
             asteroid.Name = name;
             AddEntity(asteroid, asteroidWorldPosition);
@@ -224,6 +224,11 @@ namespace Spacebox.Game.Generation
         {
             SpaceEntity entity = new SpaceEntity(0, positionWorld, this);
             entity.Name = "NewEntity" + MaxEntityID++;
+
+            while (EntitiesNames.ContainsKey(entity.Name))
+            {
+                entity.Name = "NewEntity" + MaxEntityID++;
+            }
             AddEntity(entity, positionWorld);
 
             return entity;

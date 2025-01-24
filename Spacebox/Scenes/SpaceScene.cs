@@ -264,6 +264,8 @@ namespace Spacebox.Scenes
             animator.AddAnimation(new RotateAnimation(Vector3.UnitY, 5f, 0f));
 
             Debug.OnVisibilityWasChanged += OnDebugStateChanged;
+
+            Window.OnResized += TagManager.OnResized;
         }
 
         private void OnDebugStateChanged(bool state)
@@ -460,6 +462,7 @@ namespace Spacebox.Scenes
             blockDestructionManager.Dispose();
             World.DropEffectManager.Dispose();
             TagManager.ClearTags();
+            Window.OnResized -= TagManager.OnResized;
             world.Dispose();
             ToggleManager.Dispose();
             Debug.OnVisibilityWasChanged -= OnDebugStateChanged;

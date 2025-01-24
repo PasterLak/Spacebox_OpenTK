@@ -58,7 +58,7 @@ namespace Spacebox.Game.Generation
             blockTexture = GameBlocks.BlocksTexture;
             atlasTexture = GameBlocks.LightAtlas;
             // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
-            tag = CreateTag(GeometryBoundingBox);
+            tag = CreateTag(GeometryBoundingBox.Center);
 
         }
 
@@ -79,7 +79,7 @@ namespace Spacebox.Game.Generation
             blockTexture = GameBlocks.BlocksTexture;
             atlasTexture = GameBlocks.LightAtlas;
             // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
-            tag = CreateTag(GeometryBoundingBox);
+            tag = CreateTag(GeometryBoundingBox.Center);
 
         }
 
@@ -248,9 +248,9 @@ namespace Spacebox.Game.Generation
             //    tag.WorldPosition = GeometryBoundingBox.Center;
         }
 
-        private Tag CreateTag(BoundingBox boundingBox)
+        private Tag CreateTag(Vector3 worldPos)
         {
-            var tag = new Tag("", boundingBox.Center, Color4.DarkGreen);
+            var tag = new Tag("", worldPos, Color4.DarkGreen);
             tag.TextAlignment = Tag.Alignment.Right;
             TagManager.RegisterTag(tag);
 
@@ -396,16 +396,22 @@ namespace Spacebox.Game.Generation
 
             if (camera != null)
             {
+                var dis = (int)Vector3.Distance(CenterOfMass, camera.Position);
+
+                tag.SetFontSizeFromDistance(dis);
+
                 if (VisualDebug.ShowDebug)
                 {
-                    tag.Text = $" {EntityID} {Name}\n" +
+
+                    bool isAsteroid = this as Asteroid != null;
+                    tag.Text = $" {EntityID} {Name} isAsteroid: {isAsteroid}\n" +
                         $"Wpos: {Block.RoundVector3(PositionWorld)}\n" +
-                        $"{(int)Vector3.Distance(CenterOfMass, camera.Position)} m\n" +
+                        $"{dis} m\n" +
                            $"{_entityMassString} tn, gR: {(int)GravityRadius} m";
                 }
                 else
                 {
-                    tag.Text = $"{(int)Vector3.Distance(CenterOfMass, camera.Position)} m\n" +
+                    tag.Text = $"{dis} m\n" +
                            $"{_entityMassString} tn";
                 }
 
@@ -437,7 +443,7 @@ namespace Spacebox.Game.Generation
             atlasTexture.Use(TextureUnit.Texture1);
             for (int i = 0; i < Chunks.Count; i++)
             {
-               // VisualDebug.DrawPosition(Chunks[i].GetCenterOfMass(), 4, Color4.Green);
+                // VisualDebug.DrawPosition(Chunks[i].GetCenterOfMass(), 4, Color4.Green);
                 Chunks[i].Render(Shader);
 
             }
@@ -520,8 +526,9 @@ namespace Spacebox.Game.Generation
                 tag.WorldPosition = CenterOfMass;
                 return;
             }
-            tag.WorldPosition = CenterOfMass;
+
             CenterOfMass = SumPosCenterOfMass / Mass;
+            tag.WorldPosition = CenterOfMass;
         }
 
         public void Dispose()

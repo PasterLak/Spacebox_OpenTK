@@ -145,5 +145,34 @@ namespace Spacebox.Game.Generation
 
             return Direction.Up;
         }
+
+        public Vector3 GetVectorFromDirection()
+        {
+            return GetVectorFromDirection(Direction);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 GetVectorFromDirection(Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.Up:
+                    return Vector3.UnitY;
+                case Direction.Down:
+                    return -Vector3.UnitY;
+                case Direction.Left:
+                    return -Vector3.UnitX;
+                case Direction.Right:
+                    return Vector3.UnitX;
+                case Direction.Forward:
+                    return Vector3.UnitZ;
+                case Direction.Back:
+                    return -Vector3.UnitZ;
+                default:
+                    return Vector3.Zero;
+            }
+        }
+
+
     }
 }
