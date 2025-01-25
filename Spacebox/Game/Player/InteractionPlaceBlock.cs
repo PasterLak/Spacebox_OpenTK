@@ -34,7 +34,7 @@ public class InteractionPlaceBlock : InteractionMode
         BlockSelector.IsVisible = false;
     }
 
-    private Vector3 UpdateBlockPreview(VoxelPhysics.HitInfo hit)
+    private Vector3 UpdateBlockPreview(HitInfo hit)
     {
 
 
@@ -58,7 +58,7 @@ public class InteractionPlaceBlock : InteractionMode
 
         }
         Ray ray = new Ray(player.Position, player.Front, MaxBuildDistance);
-        VoxelPhysics.HitInfo hit;
+        HitInfo hit;
 
         if (World.CurrentSector.Raycast(ray, out hit))
         {
@@ -77,7 +77,7 @@ public class InteractionPlaceBlock : InteractionMode
         }
     }
 
-    private void OnEntityFound(VoxelPhysics.HitInfo hit)
+    private void OnEntityFound(HitInfo hit)
     {
         UpdateBlockPreview(hit);
 

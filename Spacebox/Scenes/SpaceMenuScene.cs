@@ -48,7 +48,7 @@ namespace Spacebox.Scenes
             skybox.IsAmbientAffected = false;
 
 
-            CenteredImage.LoadImage("Resources/Textures/spaceboxLogo.png", true);
+            CenteredImageMenu.LoadImage("Resources/Textures/spaceboxLogo.png", true);
             menu = new GameMenu();
 
             SetDustSpawner();
@@ -98,7 +98,7 @@ namespace Spacebox.Scenes
             
 
             // Input.HideCursor(); 
-            CenteredImage.ShowText = true;
+            CenteredImageMenu.ShowText = true;
             GameMenu.IsVisible = false;
 
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
@@ -120,7 +120,7 @@ namespace Spacebox.Scenes
         {
             Theme.ApplySpaceboxTheme();
             Input.ShowCursor();
-            CenteredImage.Draw();
+            CenteredImageMenu.Draw();
             HealthColorOverlay.Render();
             VerticalLinks.Draw();
             menu.Render();
@@ -137,7 +137,7 @@ namespace Spacebox.Scenes
 
         public override void Update()
         {
-            CenteredImage.Update();
+            CenteredImageMenu.Update();
             spawner.Update();
             //sprite.UpdateWindowSize(Window.Instance.Size);
 
@@ -145,7 +145,7 @@ namespace Spacebox.Scenes
 
             if (Input.IsKeyDown(Keys.Enter) || Input.Mouse.IsButtonDown(MouseButton.Left))
             {
-                CenteredImage.ShowText = false;
+                CenteredImageMenu.ShowText = false;
                 GameMenu.IsVisible = true;
                 VerticalLinks.IsVisible = true;
             }

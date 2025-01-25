@@ -87,6 +87,8 @@ namespace Spacebox.Game.Generation
                 }
             }
 
+            //changedChunks.Remove(_chunk);
+
             foreach (var c in changedChunks)
             {
                 //c.GenerateMesh(false);

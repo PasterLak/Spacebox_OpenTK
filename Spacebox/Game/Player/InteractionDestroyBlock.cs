@@ -96,7 +96,7 @@ public class InteractionDestroyBlock : InteractionMode
         }
 
         Ray ray = new Ray(player.Position, player.Front, MaxDestroyDistance);
-        VoxelPhysics.HitInfo hit;
+        HitInfo hit;
 
         if (World.CurrentSector.Raycast(ray, out hit))
         {
@@ -151,7 +151,7 @@ public class InteractionDestroyBlock : InteractionMode
         }
     }
 
-    private void DestroyBlock(VoxelPhysics.HitInfo hit)
+    private void DestroyBlock(HitInfo hit)
     {
 
         hit.block.Durability = 0;

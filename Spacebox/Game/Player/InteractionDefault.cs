@@ -22,7 +22,7 @@ public class InteractionDefault : InteractionMode
     public override void Update(Astronaut player)
     {
         Ray ray = new Ray(player.Position, player.Front, InteractiveBlock.InteractionDistance);
-        VoxelPhysics.HitInfo hit;
+        HitInfo hit;
 
         if (World.CurrentSector.Raycast(ray, out hit))
         {

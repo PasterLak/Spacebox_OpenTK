@@ -70,7 +70,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
     private const float timeToDamage = 0.5f;
     private float _time = timeToDamage;
 
-    private void ProcessDestroying(VoxelPhysics.HitInfo hit, byte power)
+    private void ProcessDestroying(HitInfo hit, byte power)
     {
         bool isNull = hit.block == null;
 
@@ -98,7 +98,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
     }
 
-    private void DamageBlock(VoxelPhysics.HitInfo hit, byte damage = 1)
+    private void DamageBlock(HitInfo hit, byte damage = 1)
     {
         int dam = (hit.block.Durability - damage);
         if (dam < 0) dam = 0;
@@ -107,7 +107,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         if (hit.block.Durability <= 0) DestroyBlock(hit);
     }
 
-    private void DestroyBlock(VoxelPhysics.HitInfo hit)
+    private void DestroyBlock(HitInfo hit)
     {
         if (hit.block != null && selectedItemSlot != null)
         {
@@ -156,7 +156,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
 
         Ray ray = new Ray(player.Position, player.Front, MaxDestroyDistance);
-        VoxelPhysics.HitInfo hit;
+        HitInfo hit;
 
         if (World.CurrentSector.Raycast(ray, out hit))
         {

@@ -95,7 +95,7 @@ namespace Spacebox.Game.GUI
                 return;
 
             ImGuiIOPtr io = ImGui.GetIO();
-            Vector2 displaySize = new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y);
+            Vector2 displaySize = io.DisplaySize;
 
             DrawImage(displaySize);
         }
@@ -123,7 +123,10 @@ namespace Spacebox.Game.GUI
 
             ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
             ImGui.SetNextWindowSize(displaySize, ImGuiCond.Always);
-            ImGui.Begin("CenteredImageWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoBringToFrontOnFocus);
+            ImGui.Begin("CenteredImageWindow",
+                ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | 
+                ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize |
+                ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoBringToFrontOnFocus);
 
             Vector4 tintColor = new Vector4(1f, 1f, 1f, _opacity);
             ImGui.SetCursorPos(new Vector2(posX, posY));

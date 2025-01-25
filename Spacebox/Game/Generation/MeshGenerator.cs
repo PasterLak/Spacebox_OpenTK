@@ -88,7 +88,7 @@ namespace Spacebox.Game.Generation
                         if (z > zMax) zMax = z;
                         sumPosMass += new Vector3(x, y, z) * m;
 
-                        for (int fIndex = 0; fIndex < faces.Length; fIndex++)
+                        for (byte fIndex = 0; fIndex < faces.Length; fIndex++)
                         {
                             Face face = faces[fIndex];
                             Vector3SByte normal = faceNormals[fIndex];
@@ -116,7 +116,7 @@ namespace Spacebox.Game.Generation
                                     neighborLightLevel = neighborBlock.LightLevel / 15f;
                                     neighborLightColor = neighborBlock.LightColor;
                                 }
-                                float averageLightLevel = (currentLightLevel + neighborLightLevel) * 0.5f;
+                               // float averageLightLevel = (currentLightLevel + neighborLightLevel) * 0.5f;
                                 var averageLightColor = (currentLightColor * currentLightLevel + neighborLightColor * neighborLightLevel)
                                                         / (currentLightLevel + neighborLightLevel + 0.001f);
                                 Vector3 ambient = new Vector3(0.2f, 0.2f, 0.2f);
@@ -154,7 +154,7 @@ namespace Spacebox.Game.Generation
                                     }
                                 }
 
-                                for (int i = 0; i < 4; i++)
+                                for (byte i = 0; i < 4; i++)
                                 {
                                     var vertex = faceVertices[i];
                                     vertices[vertexCount++] = vertex.X + x;

@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace Spacebox.Common
 {
-    public static class CenteredImage
+    public static class CenteredImageMenu
     {
         public static bool ShowText = true;
         private static Texture2D _imageTexture;

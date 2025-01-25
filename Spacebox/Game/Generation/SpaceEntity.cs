@@ -4,12 +4,13 @@ using Spacebox.Common.Physics;
 using OpenTK.Graphics.OpenGL4;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
+using Spacebox.Game.Effects;
 
 namespace Spacebox.Game.Generation
 {
     public class SpaceEntity : Node3D, IDisposable
     {
-        public const byte SizeChunks = 4; // will be 16
+        public const byte SizeChunks = 8; // will be 16
         public const byte SizeChunksHalf = SizeChunks / 2;
         public const short SizeBlocks = SizeChunks * Chunk.Size;
         public const short SizeBlocksHalf = SizeChunks * Chunk.Size / 2;
@@ -41,6 +42,8 @@ namespace Spacebox.Game.Generation
         private string _entityMassString = "0 tn";
         public BoundingBox GeometryBoundingBox { get; private set; }
 
+        public Particle StarParticle;
+        public StarsEffect StarsEffect { get; private set; }
         public SpaceEntity(int id, Vector3 positionWorld, Sector sector)
         {
             EntityID = id;
@@ -59,7 +62,7 @@ namespace Spacebox.Game.Generation
             atlasTexture = GameBlocks.LightAtlas;
             // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
             tag = CreateTag(GeometryBoundingBox.Center);
-
+            CreateStar();
         }
 
         public SpaceEntity(Vector3 positionWorld, Sector sector)
@@ -80,7 +83,14 @@ namespace Spacebox.Game.Generation
             atlasTexture = GameBlocks.LightAtlas;
             // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
             tag = CreateTag(GeometryBoundingBox.Center);
+            CreateStar();
+        }
+        private void CreateStar()
+        {
 
+            StarsEffect = new StarsEffect(World.Instance.Player);
+            StarParticle = new Particle(GeometryBoundingBox.Center, Vector3.Zero, 9999999, new Vector4(1, 1, 1, 1), new Vector4(0, 0, 0, 0), 64);
+            StarsEffect.ParticleSystem.AddParticle(StarParticle);
         }
 
         public void CreateFirstBlock(Block block)
@@ -194,6 +204,8 @@ namespace Spacebox.Game.Generation
             {
                 sharedTexture = TextureManager.GetTexture("Resources/Textures/selector.png", true);
             }
+
+            
         }
 
         public void RecalculateMass(int chunkMassDifference)
@@ -415,12 +427,14 @@ namespace Spacebox.Game.Generation
                            $"{_entityMassString} tn";
                 }
 
+                //StarsEffect.Update();
+
             }
         }
 
-        public bool Raycast(Ray ray, out VoxelPhysics.HitInfo hitInfo)
+        public bool Raycast(Ray ray, out HitInfo hitInfo)
         {
-            hitInfo = new VoxelPhysics.HitInfo();
+            hitInfo = new HitInfo();
             //List<Chunk> chunks = new List<Chunk>();
             // octree.GetColliding(chunks, ray, SizeBlocks);     working?
 
@@ -435,9 +449,52 @@ namespace Spacebox.Game.Generation
             return false;
         }
 
+        public void RenderEffect(float disSqr)
+        {
+            
+            var disMin = 500f * 500f;
+            var disMax = 3000f * 3000f;
+
+            float alpha;
+            if (disSqr <= disMin)
+            {
+                alpha = 0f;
+            }
+            else if (disSqr >= disMax)
+            {
+                alpha = 1f; 
+            }
+            else
+            {
+                alpha = (disSqr - disMin) / (disMax - disMin);
+            }
+
+            float size;
+            if (disSqr <= disMin)
+            {
+                size = 8f;
+            }
+            else if (disSqr >= disMax)
+            {
+                size = 64f;
+            }
+            else
+            {
+                float t = (disSqr - disMin) / (disMax - disMin);
+                size = 8f + (64f - 8f) * t;
+            }
+
+            StarParticle.StartColor = new Vector4(1, 1, 1, alpha);
+            StarParticle.EndColor = new Vector4(1, 1, 1, alpha);
+            StarParticle.Size = size;
+
+            StarsEffect.Update();
+            StarsEffect.Render();
+        }
+
+
         public void Render(Camera camera)
         {
-
 
             blockTexture.Use(TextureUnit.Texture0);
             atlasTexture.Use(TextureUnit.Texture1);
@@ -461,22 +518,24 @@ namespace Spacebox.Game.Generation
                 VisualDebug.DrawBoundingBox(GeometryBoundingBox, Color4.Orange);
                 VisualDebug.DrawPosition(CenterOfMass, 8, Color4.Lime);
 
-                VisualDebug.DrawSphere(CenterOfMass, GravityRadius, 16, Color4.Blue);
+                //VisualDebug.DrawSphere(CenterOfMass, GravityRadius, 16, Color4.Blue);
             }
-
+            
         }
 
-        public bool IsColliding(BoundingVolume volume)
+        public bool IsColliding(BoundingVolume volume, out CollideInfo collideInfo)
         {
             bool c = false;
 
+            var collideInfo2 = new CollideInfo();
+
             for (int i = 0; i < Chunks.Count; i++)
             {
-                c = Chunks[i].IsColliding(volume);
+                c = Chunks[i].IsColliding(volume, out collideInfo);
 
                 if (c) return true;
             }
-
+            collideInfo = collideInfo2;
             return false;
         }
 
@@ -512,9 +571,9 @@ namespace Spacebox.Game.Generation
             int dis = (int)Vector3.Distance(GeometryBoundingBox.Center, CenterOfMass);
             GravityRadius += dis;
 
-            if (GravityRadius < 5)
+            if (GravityRadius < 10)
             {
-                GravityRadius = 5;
+                GravityRadius = 10;
             }
         }
         public bool IsPositionWithinGravityRadius(Vector3 worldPosition)
@@ -534,6 +593,8 @@ namespace Spacebox.Game.Generation
 
             CenterOfMass = SumPosCenterOfMass / Mass;
             tag.WorldPosition = CenterOfMass;
+
+            StarParticle.Position = CenterOfMass;
         }
 
         public void Dispose()
@@ -542,7 +603,7 @@ namespace Spacebox.Game.Generation
             {
                 TagManager.UnregisterTag(tag);
             }
-
+            StarsEffect.Dispose();
         }
     }
 }

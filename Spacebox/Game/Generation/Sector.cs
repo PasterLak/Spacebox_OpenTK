@@ -72,7 +72,7 @@ namespace Spacebox.Game.Generation
 
             //Initialize();
 
-
+             
         }
 
         public void SpawnPlayerRandomInSector(Astronaut player, Random random)
@@ -131,24 +131,24 @@ namespace Spacebox.Game.Generation
             IsPlayerSpawned = true;
         }
 
-        public bool IsColliding(Vector3 positionWorld, BoundingVolume volume)
+        public bool IsColliding(Vector3 positionWorld, BoundingVolume volume, out CollideInfo collideInfo)
         {
             if (TryGetNearestEntity(positionWorld, out var entity))
             {
-                return entity.IsColliding(volume);
+                return entity.IsColliding(volume, out  collideInfo);
             }
-
+            collideInfo = new CollideInfo();
             return false;
         }
 
-        public bool Raycast(Ray ray, out VoxelPhysics.HitInfo hitInfo)
+        public bool Raycast(Ray ray, out HitInfo hitInfo)
         {
             if (TryGetNearestEntity(ray.Origin, out var entity))
             {
                 return entity.Raycast(ray, out hitInfo);
             }
 
-            hitInfo = new VoxelPhysics.HitInfo();
+            hitInfo = new HitInfo();
             return false;
         }
 
@@ -161,7 +161,7 @@ namespace Spacebox.Game.Generation
 
             for (byte i = 0; i < Entities.Count; i++)
             {
-                Vector3 diff = positionWorld - Entities[i].GeometryBoundingBox.Center;
+                Vector3 diff = positionWorld - Entities[i].CenterOfMass;
                 float distSq = diff.LengthSquared;
                 if (distSq < nearestDistSq)
                 {
@@ -306,8 +306,14 @@ namespace Spacebox.Game.Generation
             for (int i = 0; i < Entities.Count; i++)
             {
                 Entities[i].Update();
+
+                if(VisualDebug.ShowDebug)
+                {
+                    VisualDebug.DrawSphere(Entities[i].CenterOfMass, Entities[i].GravityRadius, 16, Color4.Blue);
+                }
             }
         }
+
 
         public void Render(Shader shader)
         {
@@ -320,12 +326,28 @@ namespace Spacebox.Game.Generation
             for (int i = 0; i < Entities.Count; i++)
             {
 
-                if (cam.Frustum.IsInFrustum(Entities[i].GeometryBoundingBox, cam))
+                var entity = Entities[i];
+                if (cam.Frustum.IsInFrustum(entity.GeometryBoundingBox, cam))
                 {
-                    var disSqr = Vector3.DistanceSquared(Entities[i].GeometryBoundingBox.Center, cam.Position);
+                    var disSqr = Vector3.DistanceSquared(entity.GeometryBoundingBox.Center, cam.Position);
 
                     if(disSqr < 500 * 500)
-                    Entities[i].Render(cam);
+                    {
+                        entity.Render(cam);
+
+                        if (entity.StarsEffect.Enabled)
+                            entity.StarsEffect.Enabled = false;
+
+                       
+                    }
+                    else
+                    {
+                        if (!entity.StarsEffect.Enabled)
+                            entity.StarsEffect.Enabled = true;
+
+                        entity.RenderEffect(disSqr);
+                    }
+                    
 
                 }
             }

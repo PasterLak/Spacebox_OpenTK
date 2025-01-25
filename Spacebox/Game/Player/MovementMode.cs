@@ -1,10 +1,12 @@
 ﻿using OpenTK.Mathematics;
+using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Common.Physics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
+using Spacebox.Game.Physics;
 using Spacebox.GUI;
 using Spacebox.Scenes;
 
@@ -19,6 +21,8 @@ public class MovementMode : GameModeBase
 
     private AudioSource wallhitAudio;
     private AudioSource wallhitAudio2;
+
+    private static AudioSource blockDestroy;
 
     public MovementMode(Astronaut player, InteractionHandler interactionHandler) : base(player, interactionHandler)
     {
@@ -36,6 +40,29 @@ public class MovementMode : GameModeBase
 
         wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
         wallhitAudio2 = new AudioSource(SoundManager.GetClip("wallHit2"));
+
+
+    }
+
+    private void PickDestroySound(short blockId)
+    {
+        var clip = GameBlocks.GetBlockAudioClipFromItemID(blockId, BlockInteractionType.Destroy);
+        if (clip == null)
+        {
+            return;
+        }
+
+        if (blockDestroy != null && blockDestroy.Clip == clip)
+        {
+            return;
+        }
+
+        if (blockDestroy != null)
+        {
+            blockDestroy.Stop();
+        }
+
+        blockDestroy = new AudioSource(clip);
     }
 
     public override GameMode GetGameMode()
@@ -45,7 +72,11 @@ public class MovementMode : GameModeBase
 
     public override void OnEnable()
     {
- 
+        if (blockDestroy == null)
+        {
+            blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroyDefault"));
+            blockDestroy.Volume = 1f;
+        }
     }
 
     public override void OnDisable()
@@ -66,7 +97,7 @@ public class MovementMode : GameModeBase
     public override void HandleInput(Astronaut player)
     {
 
-    
+
 
 
         Vector3 acceleration = Vector3.Zero;
@@ -133,7 +164,7 @@ public class MovementMode : GameModeBase
         if (!isMoving) isRunning = false;
         if (player.PowerBar.StatsData.IsMinReached) isRunning = false;
 
-  
+
         if (isRunning)
         {
             if (!flySpeedUpAudio.IsPlaying)
@@ -217,33 +248,39 @@ public class MovementMode : GameModeBase
 
             position.X += movement.X;
             UpdateBoundingAt(position, player);
-            if (world.IsColliding(player.Position, player.BoundingVolume))
+
+            CollideInfo collideInfo;
+
+
+            if (world.IsColliding(player.Position, player.BoundingVolume, out collideInfo))
             {
                 position.X -= movement.X;
-                ApplyVelocityDamage(player.InertiaController.Velocity.Length, player);
+
+
+                var save = ApplyVelocityDamage(player.InertiaController.Velocity.Length, player, collideInfo);
                 player.InertiaController.Velocity =
-                    new Vector3(0, player.InertiaController.Velocity.Y, player.InertiaController.Velocity.Z);
+                    new Vector3(save ? player.InertiaController.Velocity.X * 0.8f : 0, player.InertiaController.Velocity.Y, player.InertiaController.Velocity.Z);
             }
 
 
             position.Y += movement.Y;
             UpdateBoundingAt(position, player);
-            if (world.IsColliding(player.Position, player.BoundingVolume))
+            if (world.IsColliding(player.Position, player.BoundingVolume, out collideInfo))
             {
                 position.Y -= movement.Y;
-                ApplyVelocityDamage(player.InertiaController.Velocity.Length, player);
+                var save = ApplyVelocityDamage(player.InertiaController.Velocity.Length, player, collideInfo);
                 player.InertiaController.Velocity =
-                    new Vector3(player.InertiaController.Velocity.X, 0, player.InertiaController.Velocity.Z);
+                    new Vector3(player.InertiaController.Velocity.X, save ? player.InertiaController.Velocity.Y * 0.8f : 0, player.InertiaController.Velocity.Z);
             }
 
             position.Z += movement.Z;
             UpdateBoundingAt(position, player);
-            if (world.IsColliding(player.Position, player.BoundingVolume))
+            if (world.IsColliding(player.Position, player.BoundingVolume, out collideInfo))
             {
                 position.Z -= movement.Z;
-                ApplyVelocityDamage(player.InertiaController.Velocity.Length, player);
+                var save = ApplyVelocityDamage(player.InertiaController.Velocity.Length, player, collideInfo);
                 player.InertiaController.Velocity =
-                    new Vector3(player.InertiaController.Velocity.X, player.InertiaController.Velocity.Y, 0);
+                    new Vector3(player.InertiaController.Velocity.X, player.InertiaController.Velocity.Y, save ? player.InertiaController.Velocity.Z * 0.8f : 0);
             }
 
             player.Position = position;
@@ -256,24 +293,46 @@ public class MovementMode : GameModeBase
 
     byte damageMultiplayer = 5;
 
-    private void ApplyVelocityDamage(float speed, Astronaut player)
+    private bool ApplyVelocityDamage(float speed, Astronaut player, CollideInfo collideInfo)
     {
+        bool saveSpeed = false;
         if (speed > 4 && speed <= 9)
         {
-             if (wallhitAudio.IsPlaying) wallhitAudio.Stop();
+            if (wallhitAudio.IsPlaying) wallhitAudio.Stop();
 
-             wallhitAudio.Volume = 0;
-             wallhitAudio.Volume = MathHelper.Min(wallhitAudio.Volume + speed * 0.07f, 1);
-             wallhitAudio.Play();
+            wallhitAudio.Volume = 0;
+            wallhitAudio.Volume = MathHelper.Min(wallhitAudio.Volume + speed * 0.07f, 1);
+            wallhitAudio.Play();
         }
         else if (speed > 9)
         {
-             wallhitAudio2.Volume = MathHelper.Min(0 + speed * 0.1f, 1);
-             wallhitAudio2.Play();
-      
+            wallhitAudio2.Volume = MathHelper.Min(0 + speed * 0.1f, 1);
+            wallhitAudio2.Play();
+
             int damage = (int)(Math.Abs(speed) - 10f);
-            if(damage == 0) { damage = 1; }
+            if (damage == 0) { damage = 1; }
             //if(GetGameMode() != GameMode.Spectator)
+
+
+            if (damage >= 3)
+            {
+                Chunk ch = collideInfo.chunk;
+
+                if (ch != null)
+                {
+                    if (collideInfo.block.IsTransparent)
+                        ch.RemoveBlock(collideInfo.blockPositionIndex, new Vector3SByte(0, 0, 0));
+                    if (blockDestroy != null)
+                    {
+                        PickDestroySound(collideInfo.block.BlockId);
+                        if (!blockDestroy.IsPlaying)
+                            blockDestroy.Play();
+                    }
+                    saveSpeed = true;
+                    damage--;
+                }
+            }
+
             player.HealthBar.StatsData.Decrement(damage * damageMultiplayer);
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(1, 0, 0), 0.1f + 1 / (10 - damage));
             player.HitImage.Show();
@@ -289,7 +348,11 @@ public class MovementMode : GameModeBase
                 SpaceScene.Death.Play();
                 SpaceScene.DeathOn = true;
             }
+
+
         }
+
+        return saveSpeed;
     }
 
     private void UpdateBoundingAt(Vector3 position, Astronaut player)

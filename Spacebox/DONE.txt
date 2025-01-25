@@ -25,7 +25,10 @@ Alpha ToDo:
 
 - maybe better generation (different objects and resources)
 - thulium/ponium crafts
-- fix light between chunks
+- flashlight better sound ?
+- open block sound
+
+- random creepy sounds ?
 
 - fix destroy from another chunk
 - fix place from another chunk
@@ -34,7 +37,8 @@ Alpha ToDo:
 Done:
 - fix sides between chunks
 - fix ao between chunks
-
+- fix light between chunks
+- fix centered damage image
 
 version 0.1.1
 
@@ -43,6 +47,9 @@ version 0.1.1
 - gravity radius
 - create new space entities
 - tag font size depends on distance
+- star effect for asteroids
+- breaking through windows when crashing at high speed 
+- 
 
 version 0.1.0
 

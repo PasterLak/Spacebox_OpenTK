@@ -6,6 +6,7 @@ using Spacebox.Common.Physics;
 using Spacebox.FPS;
 using Spacebox.Game.Effects;
 using Spacebox.Game.GUI;
+using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using static Spacebox.Game.WorldLoader;
 
@@ -39,7 +40,7 @@ namespace Spacebox.Game.Generation
         // private readonly HashSet<Vector3i> sectorsBeingUnloaded = new HashSet<Vector3i>();
         private readonly Dictionary<Vector3i, Sector> cachedSectors = new Dictionary<Vector3i, Sector>();
         private readonly Queue<Sector> sectorsToInitialize = new Queue<Sector>();
-
+     
         public World(Astronaut player)
         {
             Instance = this;
@@ -65,6 +66,8 @@ namespace Spacebox.Game.Generation
 
             InputManager.AddAction("save", Keys.P, false);
             InputManager.RegisterCallback("save", () => { SaveWorld(); });
+
+         
         }
 
         public void SaveWorld()
@@ -137,7 +140,7 @@ namespace Spacebox.Game.Generation
         {
             DropEffectManager.Update();
             DestructionManager.Update();
-
+         
             //InitializeSectors();
             worldOctree.DrawDebug();
             //UpdateSectors();
@@ -181,6 +184,7 @@ namespace Spacebox.Game.Generation
 
             DropEffectManager.Render();
             DestructionManager.Render();
+            
         }
 
         private Sector LoadSector(Vector3i sectorIndex)
@@ -260,11 +264,16 @@ namespace Spacebox.Game.Generation
             return false;
         }
 
-        public bool IsColliding(Vector3 pos, BoundingVolume volume)
+        public bool IsColliding(Vector3 pos, BoundingVolume volume, out CollideInfo collideInfo)
         {
-            if (CurrentSector == null) return false;
+            if (CurrentSector == null)
+            {
+                collideInfo = new CollideInfo();
+                return false;
 
-            return CurrentSector.IsColliding(pos, volume);
+            }
+
+            return CurrentSector.IsColliding(pos, volume, out collideInfo);
         }
 
         private IEnumerable<Sector> GetSectorsInRange(Vector3 position, float range)
@@ -288,6 +297,7 @@ namespace Spacebox.Game.Generation
         public void Dispose()
         {
             Data = null;
+          
         }
     }
 }

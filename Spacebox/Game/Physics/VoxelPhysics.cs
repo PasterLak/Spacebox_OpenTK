@@ -8,14 +8,15 @@ namespace Spacebox.Game.Physics
 {
     public class VoxelPhysics
     {
-        public static bool IsColliding(BoundingVolume volume, Chunk chunk, Vector3 Position)
+        public static bool IsColliding(BoundingVolume volume, Chunk chunk, Vector3 Position, out CollideInfo collideInfo)
         {
-            return IsColliding(volume, chunk.Blocks, Position);
+            return IsColliding(volume, chunk.Blocks, Position, out collideInfo);
         }
-        public static bool IsColliding(BoundingVolume volume, Block[,,] Blocks, Vector3 Position)
+        public static bool IsColliding(BoundingVolume volume, Block[,,] Blocks, Vector3 Position, out CollideInfo collideInfo)
         {
 
             BoundingSphere sphere = volume as BoundingSphere;
+            collideInfo = new CollideInfo();
             if (sphere == null)
             {
 
@@ -46,6 +47,8 @@ namespace Spacebox.Game.Physics
                     for (int z = minZ; z <= maxZ; z++)
                     {
                         Block block = Blocks[x, y, z];
+
+                        collideInfo.block = block;
                         if (!block.IsAir())
                         {
 
@@ -55,6 +58,7 @@ namespace Spacebox.Game.Physics
 
                             if (sphere.Intersects(blockBox))
                             {
+                                collideInfo.blockPositionIndex = new Vector3Byte(x, y, z);
                                 return true;
                             }
 
@@ -64,15 +68,6 @@ namespace Spacebox.Game.Physics
             }
 
             return false;
-        }
-
-        public struct HitInfo
-        {
-            public Vector3 position;
-            public Vector3Byte blockPositionIndex;
-            public Vector3SByte normal;
-            public Chunk chunk;
-            public Block block;
         }
 
         public static bool Raycast(Ray ray, Vector3 Position, Chunk chunk, out HitInfo hitInfo)

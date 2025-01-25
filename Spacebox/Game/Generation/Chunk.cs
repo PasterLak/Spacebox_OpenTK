@@ -1,6 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Common.Physics;
+using Spacebox.Common.Utils;
 using Spacebox.Game.Physics;
 
 
@@ -20,7 +21,7 @@ namespace Spacebox.Game.Generation
         public bool NeedsToRegenerateMesh = false;
         public Block[,,] Blocks { get; private set; }
         public bool ShowChunkBounds { get; set; } = true;
-        public bool MeasureGenerationTime { get; set; } = true;
+        public bool MeasureGenerationTime { get; set; } = false;
         private bool _isModified = false;
         public bool IsModified
         {
@@ -137,16 +138,23 @@ namespace Spacebox.Game.Generation
         {
             GenerateMesh(true);
         }
+      
         public void GenerateMesh(bool doLight)
         {
             if (!_isLoadedOrGenerated) return;
             needsToRegenerateMesh = false;
+          
             if (doLight)
-            _lightManager.PropagateLight();
+            {
+             
+                _lightManager.PropagateLight();
+          
+            }
+            
             int oldMass = Mass;
-
+       
             Mesh newMesh = _meshGenerator.GenerateMesh();
-
+       
             if (Mass == 0)
             {
                 SpaceEntity.RecalculateMass(Mass - oldMass);
@@ -174,9 +182,11 @@ namespace Spacebox.Game.Generation
             SpaceEntity.RemoveChunk(this);
         }
 
-        public bool IsColliding(BoundingVolume volume)
+        public bool IsColliding(BoundingVolume volume, out CollideInfo collideInfo)
         {
-            return VoxelPhysics.IsColliding(volume, Blocks, PositionWorld);
+            bool b =  VoxelPhysics.IsColliding(volume, Blocks, PositionWorld, out  collideInfo);
+            collideInfo.chunk = this;
+            return b;
         }
 
         public void Render(Shader shader)
@@ -386,9 +396,9 @@ namespace Spacebox.Game.Generation
             }
         }
 
-        public bool Raycast(Ray ray, out VoxelPhysics.HitInfo info)
+        public bool Raycast(Ray ray, out HitInfo info)
         {
-            info = new VoxelPhysics.HitInfo();
+            info = new HitInfo();
 
             if (!_isLoadedOrGenerated) return false;
 
