@@ -500,6 +500,9 @@ namespace Spacebox.Scenes
             world.Dispose();
             ToggleManager.Dispose();
             Debug.OnVisibilityWasChanged -= OnDebugStateChanged;
+
+            InteractionPlaceBlock.lineRenderer = null;
+            InteractionDestroyBlockSurvival.BlockMiningEffect = null;
         }
     }
 }

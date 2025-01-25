@@ -20,7 +20,7 @@ namespace Spacebox.Game.GUI
         {
             SlotTexture = textureId;
 
-            ItemTexture = new Texture2D("Resources/Textures/item.png", true, false).Handle;
+            ItemTexture = new Texture2D("Resources/Textures/UI/trash.png", true, false).Handle;
             InventoryUIHelper.SetDefaultIcon(textureId, nint.Zero);
 
             var inventory = ToggleManager.Register("inventory");

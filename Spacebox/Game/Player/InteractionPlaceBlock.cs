@@ -47,8 +47,6 @@ public class InteractionPlaceBlock : InteractionMode
     private Vector3 UpdateBlockPreview(HitInfo hit)
     {
 
-
-
         BlockSelector.IsVisible = true;
         var selectorPositionWorld = new Vector3(hit.blockPositionIndex.X + hit.normal.X,
             hit.blockPositionIndex.Y + hit.normal.Y,
@@ -82,6 +80,18 @@ public class InteractionPlaceBlock : InteractionMode
 
             var pos = hit.blockPositionIndex + hit.chunk.PositionWorld + hit.normal + new Vector3(0.5f, 0.5f, 0.5f);
             var disSqrt = Vector3.DistanceSquared(pos, player.Position);
+
+            if (Input.IsKeyDown(Keys.KeyPad1))
+            {
+                BlockPointer p = new BlockPointer(hit);
+
+                CreativeTools.AddBlock(p);
+            }
+
+            if (Input.IsKeyDown(Keys.KeyPad3))
+            {
+                CreativeTools.DeleteBlocks();
+            }
 
             if (disSqrt > MinDistanceToBlock)
                 OnEntityFound(hit);
@@ -208,6 +218,19 @@ public class InteractionPlaceBlock : InteractionMode
             else
             {
                 lineRenderer.Enabled = false;
+            }
+
+            if (Input.IsKeyDown(Keys.KeyPad1))
+            {
+                var id = PanelUI.CurrentSlot().Item.Id;
+                BlockPointer p = new BlockPointer(id, entity, (Vector3)entity.WorldPositionToLocal(selectorPosition));
+
+                CreativeTools.AddBlock(p);
+            }
+
+            if (Input.IsKeyDown(Keys.KeyPad3))
+            {
+                CreativeTools.DeleteBlocks();
             }
         }
         //VisualDebug.DrawBoundingBox(

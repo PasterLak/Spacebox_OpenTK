@@ -418,6 +418,11 @@ namespace Spacebox.Game.GUI
         private static Vector2 mousePos = Vector2.Zero;
         private static ItemSlot clickedSlot;
 
+        public static ItemSlot CurrentSlot()
+        {
+            return SelectedSlot;
+        }
+
         private static void OnSlotClicked(ItemSlot slot)
         {
             if (Input.IsMouseButton(MouseButton.Left))

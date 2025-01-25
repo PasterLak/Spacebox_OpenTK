@@ -601,6 +601,151 @@ namespace Spacebox.Game.Generation
             StarParticle.Position = CenterOfMass;
         }
 
+        public static List<Chunk> RemoveBlocksInLocalBox(SpaceEntity entity, BoundingBox localBox)
+        {
+            var min = localBox.Min;
+            var max = localBox.Max;
+
+            int minX = (int)MathF.Floor(min.X);
+            int minY = (int)MathF.Floor(min.Y);
+            int minZ = (int)MathF.Floor(min.Z);
+            int maxX = (int)MathF.Floor(max.X);
+            int maxY = (int)MathF.Floor(max.Y);
+            int maxZ = (int)MathF.Floor(max.Z);
+
+            int chunkMinX = minX / Chunk.Size;
+            int chunkMaxX = maxX / Chunk.Size;
+            int chunkMinY = minY / Chunk.Size;
+            int chunkMaxY = maxY / Chunk.Size;
+            int chunkMinZ = minZ / Chunk.Size;
+            int chunkMaxZ = maxZ / Chunk.Size;
+
+            HashSet<Chunk> modified = new HashSet<Chunk>();
+
+            for (int cx = chunkMinX; cx <= chunkMaxX; cx++)
+            {
+                for (int cy = chunkMinY; cy <= chunkMaxY; cy++)
+                {
+                    for (int cz = chunkMinZ; cz <= chunkMaxZ; cz++)
+                    {
+                        Vector3SByte idx = new Vector3SByte((sbyte)cx, (sbyte)cy, (sbyte)cz);
+                        if (!entity.chunkDictionary.ContainsKey(idx)) continue;
+                        Chunk c = entity.chunkDictionary[idx];
+                        if (c == null) continue;
+
+                        int startX = Math.Max(0, minX - cx * Chunk.Size);
+                        int endX = Math.Min(Chunk.Size - 1, maxX - cx * Chunk.Size);
+                        int startY = Math.Max(0, minY - cy * Chunk.Size);
+                        int endY = Math.Min(Chunk.Size - 1, maxY - cy * Chunk.Size);
+                        int startZ = Math.Max(0, minZ - cz * Chunk.Size);
+                        int endZ = Math.Min(Chunk.Size - 1, maxZ - cz * Chunk.Size);
+
+                        for (int x = startX; x <= endX; x++)
+                        {
+                            for (int y = startY; y <= endY; y++)
+                            {
+                                for (int z = startZ; z <= endZ; z++)
+                                {
+                                    Block b = c.Blocks[x, y, z];
+                                    if (b != null && !b.IsAir())
+                                    {
+                                        c.Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
+                                        c.IsModified = true;
+                                        modified.Add(c);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return modified.ToList();
+        }
+
+
+        private static Chunk GetOrCreateChunk(SpaceEntity entity, Vector3SByte idx)
+        {
+            if (!entity.chunkDictionary.TryGetValue(idx, out Chunk chunk) || chunk == null)
+            {
+                chunk = new Chunk(idx, entity, true);
+                entity.chunkDictionary[idx] = chunk;
+
+                entity.octree.Add(chunk, new BoundingBox(chunk.PositionWorld, Vector3.One * Chunk.Size));
+                entity.Chunks.Add(chunk);
+                
+                chunk.OnChunkModified += entity.UpdateEntityGeometryMinMax;
+
+                entity.UpdateNeighbors(chunk);
+                entity.RecalculateGeometryBoundingBox();
+                entity.RecalculateMass();
+            }
+            return chunk;
+        }
+
+        public static List<Chunk> FillBlocksInLocalBox(SpaceEntity entity, BoundingBox localBox, short blockId)
+        {
+            var min = localBox.Min;
+            var max = localBox.Max;
+
+            int minX = (int)MathF.Floor(min.X);
+            int minY = (int)MathF.Floor(min.Y);
+            int minZ = (int)MathF.Floor(min.Z);
+            int maxX = (int)MathF.Floor(max.X);
+            int maxY = (int)MathF.Floor(max.Y);
+            int maxZ = (int)MathF.Floor(max.Z);
+
+            int chunkMinX = minX / Chunk.Size;
+            int chunkMaxX = maxX / Chunk.Size;
+            int chunkMinY = minY / Chunk.Size;
+            int chunkMaxY = maxY / Chunk.Size;
+            int chunkMinZ = minZ / Chunk.Size;
+            int chunkMaxZ = maxZ / Chunk.Size;
+
+            HashSet<Chunk> modified = new HashSet<Chunk>();
+
+            for (int cx = chunkMinX; cx <= chunkMaxX; cx++)
+            {
+                for (int cy = chunkMinY; cy <= chunkMaxY; cy++)
+                {
+                    for (int cz = chunkMinZ; cz <= chunkMaxZ; cz++)
+                    {
+                        Vector3SByte idx = new Vector3SByte((sbyte)cx, (sbyte)cy, (sbyte)cz);
+                        Chunk c = GetOrCreateChunk(entity, idx);
+
+                        int startX = Math.Max(0, minX - cx * Chunk.Size);
+                        int endX = Math.Min(Chunk.Size - 1, maxX - cx * Chunk.Size);
+                        int startY = Math.Max(0, minY - cy * Chunk.Size);
+                        int endY = Math.Min(Chunk.Size - 1, maxY - cy * Chunk.Size);
+                        int startZ = Math.Max(0, minZ - cz * Chunk.Size);
+                        int endZ = Math.Min(Chunk.Size - 1, maxZ - cz * Chunk.Size);
+
+                        for (int x = startX; x <= endX; x++)
+                        {
+                            for (int y = startY; y <= endY; y++)
+                            {
+                                for (int z = startZ; z <= endZ; z++)
+                                {
+                                    Block b = c.Blocks[x, y, z];
+                                    if (b == null || b.IsAir())
+                                    {
+                                        c.Blocks[x, y, z] = GameBlocks.CreateBlockFromId(blockId);
+                                        c.IsModified = true;
+                                        modified.Add(c);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return modified.ToList();
+        }
+
+
+
+
         public void Dispose()
         {
             if (tag != null)
