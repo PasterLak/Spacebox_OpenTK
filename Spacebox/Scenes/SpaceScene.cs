@@ -48,7 +48,9 @@ namespace Spacebox.Scenes
 
         private SimpleBlock block1;
         private SimpleBlock block2;
-
+        LineRenderer line;
+        LineRenderer line2;
+        LineRenderer line3;
         public SpaceScene(string[] args) : base(args) // name mod seed modfolder
         {
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
@@ -266,6 +268,29 @@ namespace Spacebox.Scenes
             Debug.OnVisibilityWasChanged += OnDebugStateChanged;
 
             Window.OnResized += TagManager.OnResized;
+
+            var pos = player.Position;
+
+            line = new LineRenderer();
+            line.Color = Color4.Green;
+            line.Thickness = 0.02f;
+            line.AddPoint(pos );
+            line.AddPoint(pos + new Vector3(5,0,0));
+            line.AddPoint(pos + new Vector3(5, 3, 0));
+            line.AddPoint(pos + new Vector3(5, 7, 1));
+
+            pos += new Vector3(0,0,2);
+            line2 = new LineRenderer();
+            line2.Color = Color4.Blue;
+            line2.Thickness = 0.5f;
+            line2.AddPoint(pos);
+            line2.AddPoint(pos + new Vector3(5, 0, 0));
+            pos += new Vector3(0, 0, 2);
+            line3 = new LineRenderer();
+            line3.Color = Color4.Red;
+            line3.Thickness = 1f;
+            line3.AddPoint(pos);
+            line3.AddPoint(pos + new Vector3(5, 0, 0));
         }
 
         private void OnDebugStateChanged(bool state)
@@ -274,9 +299,8 @@ namespace Spacebox.Scenes
             ToggleManager.SetState("mouse", state);
             ToggleManager.SetState("player", !state);
             ToggleManager.SetState("panel", !state);
-        
 
-        InputManager.Enabled = !state;
+            InputManager.Enabled = !state;
             ToggleManager.DisableAllWindows();
             ToggleManager.SetState("radar", false);
             ToggleManager.SetState("inventory", false);
@@ -377,7 +401,16 @@ namespace Spacebox.Scenes
             blockTexture.Use(TextureUnit.Texture0);
             lightAtlas.Use(TextureUnit.Texture1);
 
+            ////line.Render();
+            ///line2.Render();
+            //line3.Render();
 
+            if (InteractionPlaceBlock.lineRenderer != null)
+            {
+                if (Settings.ShowInterface)
+                    InteractionPlaceBlock.lineRenderer.Render();
+            }
+                
             //chunk.Draw(blocksShader);
             player.Draw();
             //sector.Render(blocksShader);
@@ -391,6 +424,7 @@ namespace Spacebox.Scenes
             dustSpawner.Render();
             if (InteractionDestroyBlockSurvival.BlockMiningEffect != null)
             {
+               
                 InteractionDestroyBlockSurvival.BlockMiningEffect.Render();
             }
 

@@ -1,8 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 
-namespace Spacebox.Game
+namespace Spacebox.Common
 {
-    public class Buffer : IDisposable
+    public class BufferShader : IDisposable
     {
         public int VAO { get; private set; }
         public int VBO { get; private set; }
@@ -18,7 +18,7 @@ namespace Spacebox.Game
             public byte Size;
         }
 
-        public Buffer(Attribute[] attributes)
+        public BufferShader(Attribute[] attributes)
         {
             GenBuffer();
             for (byte i = 0; i < attributes.Length; i++)
@@ -26,7 +26,7 @@ namespace Spacebox.Game
                 AddAttribute(attributes[i].Name, attributes[i].Size);
             }
         }
-        public Buffer()
+        public BufferShader()
         {
             GenBuffer();
         }
@@ -51,7 +51,7 @@ namespace Spacebox.Game
 
         public void AddAttribute(string name, byte size)
         {
-            if(attributes == null) attributes = new List<Attribute>();
+            if (attributes == null) attributes = new List<Attribute>();
 
             var atr = new Attribute();
             atr.Name = name;
@@ -62,11 +62,11 @@ namespace Spacebox.Game
         }
         public void SetAttributes()
         {
-            
+
             int stride = sizeof(float) * FloatsPerVertex;
             int offset = 0;
 
-            for(byte i = 0; i < attributes.Count; i++)
+            for (byte i = 0; i < attributes.Count; i++)
             {
                 var atr = attributes[i];
                 AddAttribPointer(i, atr.Size, ref stride, ref offset, i < attributes.Count - 1);

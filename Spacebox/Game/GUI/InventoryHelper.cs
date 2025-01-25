@@ -19,7 +19,7 @@ namespace Spacebox.Game.GUI
         {
             SlotTexture = slotTextureId;
             SelectedTexture = selectedTextureId;
-            ItemTexture = new Texture2D("Resources/Textures/item.png", true, false).Handle;
+            ItemTexture = new Texture2D("Resources/Textures/UI/trash.png", true, false).Handle;
 
             Window.OnResized += OnResize;
 

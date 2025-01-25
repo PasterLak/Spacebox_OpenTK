@@ -4,7 +4,7 @@ using Spacebox.Common;
 namespace Spacebox.Game
 {
 
-    
+
     public class Mesh // DDA Digital Differential Analyzer for collision
     {
 
@@ -16,11 +16,11 @@ namespace Spacebox.Game
         public bool EnableDepthTest = true;
         public bool EnableAlpha = true;
 
-        private Buffer buffer;
+        private BufferShader buffer;
         public readonly int FloatsPerVertex;
 
         
-        public Mesh(float[] vertices, uint[] indices, Buffer buffer)
+        public Mesh(float[] vertices, uint[] indices, BufferShader buffer)
         {
             this.buffer = buffer;
             _vertexCount = indices.Length;

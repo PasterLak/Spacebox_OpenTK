@@ -12,33 +12,22 @@ namespace Spacebox.Game.Physics
         {
             return IsColliding(volume, chunk.Blocks, Position, out collideInfo);
         }
-        public static bool IsColliding(BoundingVolume volume, Block[,,] Blocks, Vector3 Position, out CollideInfo collideInfo)
+        public static bool IsColliding(BoundingVolume volume, Block[,,] Blocks, Vector3 ChunkWorldPosition, out CollideInfo collideInfo)
         {
-
-            BoundingSphere sphere = volume as BoundingSphere;
             collideInfo = new CollideInfo();
-            if (sphere == null)
-            {
-
-                return false;
-            }
+            if (!(volume is BoundingSphere sphere)) return false;
 
             Vector3 sphereMin = sphere.Center - new Vector3(sphere.Radius);
             Vector3 sphereMax = sphere.Center + new Vector3(sphere.Radius);
-
-
-            Vector3 localMin = sphereMin - Position;
-            Vector3 localMax = sphereMax - Position;
-
+            Vector3 localMin = sphereMin - ChunkWorldPosition;
+            Vector3 localMax = sphereMax - ChunkWorldPosition;
 
             int minX = Math.Max((int)Math.Floor(localMin.X), 0);
             int minY = Math.Max((int)Math.Floor(localMin.Y), 0);
             int minZ = Math.Max((int)Math.Floor(localMin.Z), 0);
-
             int maxX = Math.Min((int)Math.Ceiling(localMax.X), Chunk.Size - 1);
             int maxY = Math.Min((int)Math.Ceiling(localMax.Y), Chunk.Size - 1);
             int maxZ = Math.Min((int)Math.Ceiling(localMax.Z), Chunk.Size - 1);
-
 
             for (int x = minX; x <= maxX; x++)
             {
@@ -47,21 +36,25 @@ namespace Spacebox.Game.Physics
                     for (int z = minZ; z <= maxZ; z++)
                     {
                         Block block = Blocks[x, y, z];
-
                         collideInfo.block = block;
                         if (!block.IsAir())
                         {
-
-                            Vector3 blockMin = Position + new Vector3(x, y, z);
+                            Vector3 blockMin = ChunkWorldPosition + new Vector3(x, y, z);
                             BoundingBox blockBox = new BoundingBox(blockMin + new Vector3(0.5f), Vector3.One);
-
-
                             if (sphere.Intersects(blockBox))
                             {
                                 collideInfo.blockPositionIndex = new Vector3Byte(x, y, z);
+                                blockMin = blockBox.Center - blockBox.Size * 0.5f;
+                                Vector3 blockMax = blockBox.Center + blockBox.Size * 0.5f;
+                                Vector3 clamped = new Vector3(
+                                    Math.Clamp(sphere.Center.X, blockMin.X, blockMax.X),
+                                    Math.Clamp(sphere.Center.Y, blockMin.Y, blockMax.Y),
+                                    Math.Clamp(sphere.Center.Z, blockMin.Z, blockMax.Z)
+                                );
+                                Vector3 normal = (sphere.Center - clamped).Normalized();
+                                collideInfo.normal = (Vector3SByte)normal;
                                 return true;
                             }
-
                         }
                     }
                 }
@@ -69,6 +62,7 @@ namespace Spacebox.Game.Physics
 
             return false;
         }
+
 
         public static bool Raycast(Ray ray, Vector3 Position, Chunk chunk, out HitInfo hitInfo)
         {

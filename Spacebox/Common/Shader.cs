@@ -397,6 +397,7 @@ namespace Spacebox.Common
             GL.Uniform4(_uniformLocations[name], data);
         }
 
+
         public void Dispose()
         {
             if (Handle != 0)

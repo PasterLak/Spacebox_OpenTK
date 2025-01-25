@@ -452,7 +452,7 @@ namespace Spacebox.Game.Generation
         public void RenderEffect(float disSqr)
         {
             
-            var disMin = 500f * 500f;
+            var disMin = 300f * 300f;
             var disMax = 3000f * 3000f;
 
             float alpha;
@@ -470,18 +470,22 @@ namespace Spacebox.Game.Generation
             }
 
             float size;
+
+            const float sizeMin = Chunk.Size * 2;
+            const float sizeMax = Chunk.Size * 2;
+
             if (disSqr <= disMin)
             {
-                size = 8f;
+                size = sizeMin;
             }
             else if (disSqr >= disMax)
             {
-                size = 64f;
+                size = sizeMax;
             }
             else
             {
                 float t = (disSqr - disMin) / (disMax - disMin);
-                size = 8f + (64f - 8f) * t;
+                size = sizeMin + (sizeMax - sizeMin) * t;
             }
 
             StarParticle.StartColor = new Vector4(1, 1, 1, alpha);

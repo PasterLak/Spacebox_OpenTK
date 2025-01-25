@@ -159,7 +159,7 @@ namespace Spacebox.Scenes
 
            
 
-            Texture2D skyboxTexture = new Texture2D("Resources/Textures/Skybox/skybox2.png", true);
+            Texture2D skyboxTexture = new Texture2D("Resources/Textures/Game/Skybox/skybox2.png", true);
             Shader skyboxShader = ShaderManager.GetShader("Shaders/skybox");
 
             Material skyboxMaterial = new Material(skyboxShader, skyboxTexture);
@@ -168,7 +168,7 @@ namespace Spacebox.Scenes
 
 
             Texture2D skyboxTexture2 = new Texture2D
-                ("Resources/Textures/Skybox/skybox_01.jpg", false);
+                ("Resources/Textures/Game/Skybox/skybox_01.jpg", false);
             Shader skyboxShader2 = ShaderManager.GetShader("Shaders/skybox");
 
             Material skyboxMaterial2 = new Material(skyboxShader2, skyboxTexture2);

@@ -1,11 +1,11 @@
 
 using OpenTK.Mathematics;
-using OpenTK.Windowing.Common.Input;
+
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Common.Physics;
-using Spacebox.FPS;
+
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
@@ -18,7 +18,7 @@ public class InteractionPlaceBlock : InteractionMode
 
     private static AudioSource blockPlace;
     private string lastBlockPlaceSound = "blockPlaceDefault";
-
+    public static LineRenderer lineRenderer;
     public override void OnEnable()
     {
         if (blockPlace == null)
@@ -27,11 +27,21 @@ public class InteractionPlaceBlock : InteractionMode
         if (BlockSelector.Instance != null)
             BlockSelector.Instance.SimpleBlock.Shader.SetVector4("color", new Vector4(1, 1, 1, 0.5f));
         BlockSelector.IsVisible = false;
+
+        if (lineRenderer == null)
+        {
+            lineRenderer = new LineRenderer();
+            lineRenderer.AddPoint(Vector3.Zero);
+            lineRenderer.AddPoint(Vector3.One);
+            lineRenderer.Thickness = 0.1f;
+            lineRenderer.Color = Color4.Red;
+        }
     }
 
     public override void OnDisable()
     {
         BlockSelector.IsVisible = false;
+        lineRenderer.Enabled = false;
     }
 
     private Vector3 UpdateBlockPreview(HitInfo hit)
@@ -45,6 +55,11 @@ public class InteractionPlaceBlock : InteractionMode
             hit.blockPositionIndex.Z + hit.normal.Z) + hit.chunk.PositionWorld;
         BlockSelector.Instance.UpdatePosition(selectorPositionWorld, Block.GetDirectionFromNormal(hit.normal));
 
+        lineRenderer.Points[0] = selectorPositionWorld + new Vector3(0.5f, 0.5f, 0.5f);
+        lineRenderer.Points[1] = hit.chunk.SpaceEntity.CenterOfMass;
+        lineRenderer.SetNeedsRebuild();
+        lineRenderer.Enabled = true;
+
         return selectorPositionWorld;
     }
 
@@ -54,6 +69,7 @@ public class InteractionPlaceBlock : InteractionMode
         if (!player.CanMove)
         {
             BlockSelector.IsVisible = false;
+            lineRenderer.Enabled = false;
             return;
 
         }
@@ -69,7 +85,11 @@ public class InteractionPlaceBlock : InteractionMode
 
             if (disSqrt > MinDistanceToBlock)
                 OnEntityFound(hit);
-            else BlockSelector.IsVisible = false;
+            else
+            {
+                BlockSelector.IsVisible = false;
+                lineRenderer.Enabled = false;
+            }
         }
         else
         {
@@ -137,12 +157,12 @@ public class InteractionPlaceBlock : InteractionMode
         blockPlace = new AudioSource(clip);
     }
 
-    private void OnNoEntityFound(Ray ray, Astronaut player )
+    private void OnNoEntityFound(Ray ray, Astronaut player)
     {
         AImedBlockElement.AimedBlock = null;
         BlockSelector.IsVisible = true;
         const float placeDistance = 5f;
-
+        lineRenderer.Enabled = false;
 
 
         var selectorPosition = ray.Origin + ray.Direction * placeDistance;
@@ -174,6 +194,22 @@ public class InteractionPlaceBlock : InteractionMode
 
         BlockSelector.Instance.UpdatePosition(selectorPosition, direction);
 
+        if (entity != null)
+        {
+            var dis = Vector3.DistanceSquared(selectorPosition, entity.CenterOfMass);
+
+            if (dis <= entity.GravityRadius * entity.GravityRadius)
+            {
+                lineRenderer.Points[0] = selectorPosition + new Vector3(0.5f, 0.5f, 0.5f);
+                lineRenderer.Points[1] = entity.CenterOfMass;
+                lineRenderer.SetNeedsRebuild();
+                lineRenderer.Enabled = true;
+            }
+            else
+            {
+                lineRenderer.Enabled = false;
+            }
+        }
         //VisualDebug.DrawBoundingBox(
         //    new BoundingBox(selectorPosition, Vector3.One * 1.01f), Color4.Gray);
 

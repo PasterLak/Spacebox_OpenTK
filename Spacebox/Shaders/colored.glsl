@@ -10,21 +10,18 @@ uniform mat4 projection;
 
 out vec3 Normal;
 out vec3 FragPos;
-out vec2 TexCoords;
 
 void main()
 {
     gl_Position = vec4(aPos, 1.0) * model * view * projection;
     FragPos = vec3(vec4(aPos, 1.0) * model);
     Normal = aNormal * mat3(transpose(inverse(model)));
-    TexCoords = aTexCoords;
 }
 
 --Frag
 
 #version 330 core
 
-in vec2 TexCoord;
 out vec4 FragColor;
 
 
@@ -33,6 +30,5 @@ uniform vec4 color = vec4(1,1,1,1);
 
 void main()
 {
-    
     FragColor = color;
 }

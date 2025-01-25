@@ -291,10 +291,28 @@ public class MovementMode : GameModeBase
         }
     }
 
-    byte damageMultiplayer = 5;
+    const byte damageMultiplayer = 5;
 
     private bool ApplyVelocityDamage(float speed, Astronaut player, CollideInfo collideInfo)
     {
+        /*if (collideInfo.normal != Vector3SByte.Zero)
+        {
+            Vector3 normal = (Vector3)collideInfo.normal;
+            Vector3 velocityDir = player.InertiaController.Velocity;
+            float vLen = speed;
+            if (vLen > 0.0001f)
+            {
+                velocityDir.Normalize();
+                float dot = MathF.Abs(Vector3.Dot(velocityDir, normal));
+                const float SLIDE_THRESHOLD = 0.1f;
+                if (dot < SLIDE_THRESHOLD)
+                {
+                    Debug.Log($"N:{collideInfo.normal} V:{velocityDir} T: { SLIDE_THRESHOLD} ");
+                    return true;
+                }
+            }
+        }*/
+
         bool saveSpeed = false;
         if (speed > 4 && speed <= 9)
         {
