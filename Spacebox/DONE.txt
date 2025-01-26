@@ -29,7 +29,7 @@ Alpha ToDo:
 - maybe better generation (different objects and resources)
 - thulium/ponium crafts
 - flashlight better sound ?
-- open block sound
+
 
 - random creepy sounds ?
 
@@ -41,6 +41,9 @@ Done:
 - fix ao between chunks
 - fix light between chunks
 - fix centered damage image
+- open block sound
+
+
 
 version 0.1.1
 
@@ -53,6 +56,7 @@ version 0.1.1
 - breaking through windows when crashing at high speed 
 - Line Renderer
 - CreativeTools: Fill, Delete blocks
+- sound effects open blocks, place blocks glass
 
 version 0.1.0
 

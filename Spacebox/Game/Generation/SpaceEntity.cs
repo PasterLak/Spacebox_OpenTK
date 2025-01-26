@@ -10,7 +10,7 @@ namespace Spacebox.Game.Generation
 {
     public class SpaceEntity : Node3D, IDisposable
     {
-        public const byte SizeChunks = 8; // will be 16
+        public const byte SizeChunks = 4; // will be 16
         public const byte SizeChunksHalf = SizeChunks / 2;
         public const short SizeBlocks = SizeChunks * Chunk.Size;
         public const short SizeBlocksHalf = SizeChunks * Chunk.Size / 2;
@@ -37,7 +37,7 @@ namespace Spacebox.Game.Generation
 
         public List<Chunk> Chunks { get; private set; } = new List<Chunk>();
         private List<Chunk> MeshesTogenerate = new List<Chunk>();
-        private Dictionary<Vector3SByte, Chunk> chunkDictionary = new Dictionary<Vector3SByte, Chunk>();
+        public Dictionary<Vector3SByte, Chunk> ChunkDictionary { get; private set; } = new Dictionary<Vector3SByte, Chunk>();
         private Tag tag;
         private string _entityMassString = "0 tn";
         public BoundingBox GeometryBoundingBox { get; private set; }
@@ -117,7 +117,7 @@ namespace Spacebox.Game.Generation
 
                 octree.Add(chunk, new BoundingBox(chunk.PositionWorld, Vector3.One * Chunk.Size));
                 Chunks.Add(chunk);
-                chunkDictionary.Add(chunk.PositionIndex, chunk);
+                ChunkDictionary.Add(chunk.PositionIndex, chunk);
                 chunk.OnChunkModified += UpdateEntityGeometryMinMax;
 
                 UpdateNeighbors(chunk);
@@ -161,7 +161,7 @@ namespace Spacebox.Game.Generation
         {
             octree.Add(chunk, new BoundingBox(chunk.PositionWorld, Vector3.One * Chunk.Size));
             Chunks.Add(chunk);
-            chunkDictionary.Add(chunk.PositionIndex, chunk);
+            ChunkDictionary.Add(chunk.PositionIndex, chunk);
             chunk.OnChunkModified += UpdateEntityGeometryMinMax;
             if (generateMesh)
                 chunk.GenerateMesh();
@@ -174,7 +174,7 @@ namespace Spacebox.Game.Generation
         {
             octree.Remove(chunk);
             Chunks.Remove(chunk);
-            chunkDictionary.Remove(chunk.PositionIndex);
+            ChunkDictionary.Remove(chunk.PositionIndex);
             chunk.OnChunkModified -= UpdateEntityGeometryMinMax;
             chunk.Dispose();
 
@@ -205,7 +205,7 @@ namespace Spacebox.Game.Generation
                 sharedTexture = TextureManager.GetTexture("Resources/Textures/selector.png", true);
             }
 
-            
+
         }
 
         public void RecalculateMass(int chunkMassDifference)
@@ -308,6 +308,7 @@ namespace Spacebox.Game.Generation
         }
 
 
+
         public bool TryPlaceBlock(Vector3 worldPosition, Block block)
         {
 
@@ -320,7 +321,7 @@ namespace Spacebox.Game.Generation
 
 
 
-            if (chunkDictionary.TryGetValue(chunkIndex, out var chunk))
+            if (ChunkDictionary.TryGetValue(chunkIndex, out var chunk))
             {
 
                 chunk.PlaceBlock(blockPos, block);
@@ -363,7 +364,7 @@ namespace Spacebox.Game.Generation
             foreach (var dir in Directions)
             {
                 Vector3SByte neighborCoord = chunk.PositionIndex + dir;
-                if (chunkDictionary.TryGetValue(neighborCoord, out Chunk neighbor))
+                if (ChunkDictionary.TryGetValue(neighborCoord, out Chunk neighbor))
                 {
                     if (removing)
                     {
@@ -383,7 +384,7 @@ namespace Spacebox.Game.Generation
         {
             var index = GetChunkIndex(world);
 
-            if (chunkDictionary.TryGetValue(index, out chunk))
+            if (ChunkDictionary.TryGetValue(index, out chunk))
             {
                 return true;
             }
@@ -432,26 +433,53 @@ namespace Spacebox.Game.Generation
             }
         }
 
+
+        public Octree<Chunk> Octree => octree;
+
         public bool Raycast(Ray ray, out HitInfo hitInfo)
         {
             hitInfo = new HitInfo();
-            //List<Chunk> chunks = new List<Chunk>();
-            // octree.GetColliding(chunks, ray, SizeBlocks);     working?
-
-            VisualDebug.DrawPosition(PositionWorld, Color4.Red);
-            foreach (var c in Chunks)
-            {
-                if (c.Raycast(ray, out hitInfo)) return true;
-            }
 
             if (Chunks.Count == 0) return false;
+
+            if (VoxelPhysics.RaycastChunks(this, ray, out var crossedChunks))
+            {
+                //Debug.Log("Chunks found: " + crossedChunks.Count );
+
+                foreach (var chunkHit in crossedChunks)
+                {
+
+                    var length = ray.Length - chunkHit.Distance;
+
+                    if(length <= 0) continue;
+
+                    Ray chunkRay = new Ray(chunkHit.HitPosition, ray.Direction, length);
+                    // Debug.Log($"chunk check {chunkHit.Chunk.PositionIndex} origin {chunkRay.Origin}") ;
+
+
+                    if (chunkHit.Chunk.Raycast(chunkRay, out hitInfo))
+                    {
+                        //  Debug.Log($"chunk {chunkHit.Chunk.PositionIndex} hit!");
+                        return true;
+                    }
+                    else
+                    {
+                        // Debug.Log($"chunk {chunkHit.Chunk.PositionIndex} no hit");
+                    }
+                }
+            }
+            else
+            {
+
+            }
 
             return false;
         }
 
+
         public void RenderEffect(float disSqr)
         {
-            
+
             var disMin = 300f * 300f;
             var disMax = 3000f * 3000f;
 
@@ -462,7 +490,7 @@ namespace Spacebox.Game.Generation
             }
             else if (disSqr >= disMax)
             {
-                alpha = 1f; 
+                alpha = 1f;
             }
             else
             {
@@ -504,7 +532,7 @@ namespace Spacebox.Game.Generation
             atlasTexture.Use(TextureUnit.Texture1);
             for (int i = 0; i < Chunks.Count; i++)
             {
-                if(Chunks[i].NeedsToRegenerateMesh)
+                if (Chunks[i].NeedsToRegenerateMesh)
                 {
                     Chunks[i].GenerateMesh(false);
                     Chunks[i].NeedsToRegenerateMesh = false;
@@ -516,7 +544,7 @@ namespace Spacebox.Game.Generation
 
             if (VisualDebug.ShowDebug)
             {
-                //VisualDebug.DrawPosition(PositionWorld,4, Color4.Cyan);
+                VisualDebug.DrawBoundingBox(BoundingBox, Color4.Cyan);
                 VisualDebug.DrawPosition(GeometryBoundingBox.Center, 6, Color4.Orange);
 
                 VisualDebug.DrawBoundingBox(GeometryBoundingBox, Color4.Orange);
@@ -524,7 +552,7 @@ namespace Spacebox.Game.Generation
 
                 //VisualDebug.DrawSphere(CenterOfMass, GravityRadius, 16, Color4.Blue);
             }
-            
+
         }
 
         public bool IsColliding(BoundingVolume volume, out CollideInfo collideInfo)
@@ -629,8 +657,8 @@ namespace Spacebox.Game.Generation
                     for (int cz = chunkMinZ; cz <= chunkMaxZ; cz++)
                     {
                         Vector3SByte idx = new Vector3SByte((sbyte)cx, (sbyte)cy, (sbyte)cz);
-                        if (!entity.chunkDictionary.ContainsKey(idx)) continue;
-                        Chunk c = entity.chunkDictionary[idx];
+                        if (!entity.ChunkDictionary.ContainsKey(idx)) continue;
+                        Chunk c = entity.ChunkDictionary[idx];
                         if (c == null) continue;
 
                         int startX = Math.Max(0, minX - cx * Chunk.Size);
@@ -666,14 +694,14 @@ namespace Spacebox.Game.Generation
 
         private static Chunk GetOrCreateChunk(SpaceEntity entity, Vector3SByte idx)
         {
-            if (!entity.chunkDictionary.TryGetValue(idx, out Chunk chunk) || chunk == null)
+            if (!entity.ChunkDictionary.TryGetValue(idx, out Chunk chunk) || chunk == null)
             {
                 chunk = new Chunk(idx, entity, true);
-                entity.chunkDictionary[idx] = chunk;
+                entity.ChunkDictionary[idx] = chunk;
 
                 entity.octree.Add(chunk, new BoundingBox(chunk.PositionWorld, Vector3.One * Chunk.Size));
                 entity.Chunks.Add(chunk);
-                
+
                 chunk.OnChunkModified += entity.UpdateEntityGeometryMinMax;
 
                 entity.UpdateNeighbors(chunk);

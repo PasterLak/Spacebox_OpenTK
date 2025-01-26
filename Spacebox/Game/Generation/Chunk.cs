@@ -44,7 +44,7 @@ namespace Spacebox.Game.Generation
         private bool needsToRegenerateMesh = false;
 
         public SpaceEntity SpaceEntity { get; private set; }
-        private BoundingBox boundingBox;
+        public BoundingBox BoundingBox { get; private set; }
         public BoundingBox GeometryBoundingBox { get; private set; }
 
         public Action<Chunk> OnChunkModified;
@@ -63,7 +63,7 @@ namespace Spacebox.Game.Generation
             SpaceEntity = spaceEntity;
 
             CreateBoundingBox();
-            GeometryBoundingBox = new BoundingBox(boundingBox);
+            GeometryBoundingBox = new BoundingBox(BoundingBox);
 
             if (!emptyChunk)
             {
@@ -120,7 +120,7 @@ namespace Spacebox.Game.Generation
         {
             Vector3 chunkMin = PositionWorld;
             Vector3 chunkMax = PositionWorld + new Vector3(Size);
-            boundingBox = BoundingBox.CreateFromMinMax(chunkMin, chunkMax);
+            BoundingBox = BoundingBox.CreateFromMinMax(chunkMin, chunkMax);
         }
 
         public int GetNeigborCount()
@@ -169,8 +169,8 @@ namespace Spacebox.Game.Generation
             _mesh = newMesh;
 
             GeometryBoundingBox = BoundingBox.CreateFromMinMax(
-                boundingBox.Min + _meshGenerator.GeometryBoundingBox.Min,
-                boundingBox.Min + _meshGenerator.GeometryBoundingBox.Max);
+                BoundingBox.Min + _meshGenerator.GeometryBoundingBox.Min,
+                BoundingBox.Min + _meshGenerator.GeometryBoundingBox.Max);
 
             SpaceEntity.RecalculateMass(Mass - oldMass);
             OnChunkModified?.Invoke(this);
@@ -212,7 +212,7 @@ namespace Spacebox.Game.Generation
 
             if (ShowChunkBounds && VisualDebug.ShowDebug)
             {
-                VisualDebug.DrawBoundingBox(boundingBox, new Color4(0.5f, 0f, 0.5f, 0.4f));
+                VisualDebug.DrawBoundingBox(BoundingBox, new Color4(0.5f, 0f, 0.5f, 0.4f));
             }
         }
 
@@ -402,7 +402,7 @@ namespace Spacebox.Game.Generation
 
             if (!_isLoadedOrGenerated) return false;
 
-            if (VoxelPhysics.Raycast(ray, PositionWorld, Blocks, out info))
+            if (VoxelPhysics.RaycastChunk(ray, this, out info))
             {
                 info.chunk = this;
                 return true;

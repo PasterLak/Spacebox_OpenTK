@@ -9,8 +9,8 @@ namespace Spacebox.Game.Generation
         public RadarBlock(BlockData blockData) : base(blockData)
         {
 
-            if (RadarWindow.Instance != null)
-                OnUse += RadarWindow.Instance.Toggle;
+            if (RadarUI.Instance != null)
+                OnUse += RadarUI.Instance.Toggle;
         }
 
         public override void Use(Astronaut player)

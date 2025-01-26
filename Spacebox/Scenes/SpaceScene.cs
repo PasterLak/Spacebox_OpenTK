@@ -42,7 +42,7 @@ namespace Spacebox.Scenes
 
         private BlockSelector blockSelector;
 
-        private RadarWindow radarWindow;
+        private RadarUI radarWindow;
         public static Model spacer;
         private string worldName;
 
@@ -152,7 +152,7 @@ namespace Spacebox.Scenes
             skybox.IsAmbientAffected = false;
             SceneGraph.AddRoot(skybox);
 
-            radarWindow = new RadarWindow(skybox.Texture);
+            radarWindow = new RadarUI(skybox.Texture);
 
             player = new Astronaut(new Vector3(5, 5, 5));
             SceneGraph.AddRoot(player);
@@ -444,14 +444,7 @@ namespace Spacebox.Scenes
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             PanelUI.DrawItemModel();
-            //sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
-            const float sm = 0.02f;
-            VisualDebug.DrawLine(Vector3.Zero + new Vector3(sm, sm, sm), new Vector3(100f, 0, 0), Color4.Red);
-            VisualDebug.DrawLine(Vector3.Zero + new Vector3(sm, sm, sm), new Vector3(0, 100, 0), Color4.Green);
-            VisualDebug.DrawLine(Vector3.Zero + new Vector3(sm, sm, sm), new Vector3(0, 0, 100), Color4.Blue);
 
-
-            //testOctree.Draw(player);
         }
 
 

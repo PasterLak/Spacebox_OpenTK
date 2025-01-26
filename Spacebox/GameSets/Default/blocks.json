@@ -213,7 +213,7 @@
             "z": 0
         },
         "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "blockPlaceLight"
+        "SoundPlace": "placeGlass"
     },
     {
         "Name": "Basic Machine",
@@ -239,7 +239,7 @@
             "z": 0
         },
         "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "blockPlaceLight"
+        "SoundPlace": "placeMetal"
     },
     {
         "Name": "Crafting Table",
@@ -379,7 +379,7 @@
             "z": 255
         },
         "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "blockPlaceLight"
+        "SoundPlace": "placeMetal2"
 
     },
     {
@@ -392,7 +392,7 @@
             "z": 255
         },
         "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "blockPlaceLight"
+        "SoundPlace": "placeMetal2"
     },
     {
         "Name": "Light Red",
@@ -404,7 +404,7 @@
             "z": 15
         },
         "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "blockPlaceLight"
+        "SoundPlace": "placeMetal2"
     },
     {
         "Name": "Light Yellow",
@@ -416,7 +416,7 @@
             "z": 0
         },
         "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "blockPlaceLight"
+        "SoundPlace": "placeMetal2"
     },
     {
         "Name": "Light Cyan",
@@ -428,7 +428,7 @@
             "z": 255
         },
         "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "blockPlaceLight"
+        "SoundPlace": "placeMetal2"
     },
     {
         "Name": "Light Orange",
@@ -440,7 +440,7 @@
             "z": 0
         },
         "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "blockPlaceLight"
+        "SoundPlace": "placeMetal2"
     },
     {
         "Name": "Light Green",
@@ -452,7 +452,7 @@
             "z": 5
         },
         "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "blockPlaceLight"
+        "SoundPlace": "placeMetal2"
     },
     {
         "Name": "Light Pink",
@@ -464,7 +464,7 @@
             "z": 255
         },
         "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "blockPlaceLight"
+        "SoundPlace": "placeMetal2"
     },
     {
         "Name": "AI Core",

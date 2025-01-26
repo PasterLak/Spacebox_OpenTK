@@ -46,7 +46,7 @@ public class InteractionPlaceBlock : InteractionMode
 
     private Vector3 UpdateBlockPreview(HitInfo hit)
     {
-
+        //Debug.Log("normal " + hit.normal);
         BlockSelector.IsVisible = true;
         var selectorPositionWorld = new Vector3(hit.blockPositionIndex.X + hit.normal.X,
             hit.blockPositionIndex.Y + hit.normal.Y,
@@ -109,7 +109,7 @@ public class InteractionPlaceBlock : InteractionMode
 
     private void OnEntityFound(HitInfo hit)
     {
-        UpdateBlockPreview(hit);
+        var selectorPos = UpdateBlockPreview(hit);
 
         if (Input.IsMouseButtonDown(MouseButton.Right))
         {
@@ -126,12 +126,16 @@ public class InteractionPlaceBlock : InteractionMode
                     if (!hasSameSides)
                         newBlock.SetDirectionFromNormal(hit.normal);
 
-                    int x = hit.blockPositionIndex.X + hit.normal.X;
-                    int y = hit.blockPositionIndex.Y + hit.normal.Y;
-                    int z = hit.blockPositionIndex.Z + hit.normal.Z;
+                   // int x = hit.blockPositionIndex.X + hit.normal.X;
+                   // int y = hit.blockPositionIndex.Y + hit.normal.Y;
+                   // int z = hit.blockPositionIndex.Z + hit.normal.Z;
 
-                    chunk.PlaceBlock(x, y, z, newBlock);
+                    //chunk.PlaceBlock(x, y, z, newBlock);
 
+                    if (chunk.SpaceEntity.TryPlaceBlock(selectorPos, newBlock))
+                    {
+
+                    }
 
                     if (blockPlace != null)
                     {
@@ -177,22 +181,21 @@ public class InteractionPlaceBlock : InteractionMode
 
         var selectorPosition = ray.Origin + ray.Direction * placeDistance;
 
-        var pos = selectorPosition;
+        var localPos = selectorPosition;
 
         SpaceEntity entity = null;
-        var localPos = pos;
 
         if (World.CurrentSector.TryGetNearestEntity(selectorPosition, out entity))
         {
-            pos = entity.WorldPositionToLocal(selectorPosition);
+            localPos = entity.WorldPositionToLocal(selectorPosition);
 
-            pos.X = (int)MathF.Floor(pos.X);
-            pos.Y = (int)MathF.Floor(pos.Y);
-            pos.Z = (int)MathF.Floor(pos.Z);
+            localPos.X = (int)MathF.Floor(localPos.X);
+            localPos.Y = (int)MathF.Floor(localPos.Y);
+            localPos.Z = (int)MathF.Floor(localPos.Z);
 
             //pos += Vector3.One * 0.5f;
-            localPos = pos;
-            selectorPosition = entity.LocalPositionToWorld(pos);
+
+            selectorPosition = entity.LocalPositionToWorld(localPos);
         }
 
 

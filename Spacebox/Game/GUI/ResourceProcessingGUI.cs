@@ -32,20 +32,33 @@ namespace Spacebox.Game.GUI
             {
                 _isVisible = value;
 
+                if(_isVisible)
+                {
+
+
+                    openSound?.Play();
+                    
+                }
+                else
+                {
+                    closeSound?.Play();
+                }
             }
         }
 
         private static bool wasInitialized = false; //  !!!
 
         private static AudioSource craftedSound;
+        private static AudioSource openSound;
+        private static AudioSource closeSound;
         public static void Toggle(Astronaut player)
         {
-            if(!ToggleManager.Exists("resourceProcessing"))
+            if (!ToggleManager.Exists("resourceProcessing"))
             {
                 batteryIcon = IntPtr.Zero;
-     inputIcon = IntPtr.Zero;
-      outputIcon = IntPtr.Zero;
-        wasInitialized = false;
+                inputIcon = IntPtr.Zero;
+                outputIcon = IntPtr.Zero;
+                wasInitialized = false;
             }
             if (!wasInitialized)
             {
@@ -55,35 +68,40 @@ namespace Spacebox.Game.GUI
                 {
                     IsVisible = s;
 
-                    if(!s)
+                    if (!s)
                     {
                         player.Panel.ConnectStorage(player.Inventory, true);
                         player.Inventory.ConnectStorage(player.Panel);
-               
+
                     }
                 };
 
                 wasInitialized = true;
             }
-           
+
             var v = !IsVisible;
 
             ToggleManager.SetState("player", !v);
             ToggleManager.SetState("mouse", v);
-            
+
             if (!v)
             {
 
                 ToggleManager.DisableAllWindows();
-               
+
+                
+
             }
             else
             {
                 ToggleManager.DisableAllWindows();
                 ToggleManager.SetState("inventory", v);
                 ToggleManager.SetState("creative", v);
-                
+
             }
+
+            
+                   
 
             ToggleManager.SetState("resourceProcessing", v);
 
@@ -98,11 +116,24 @@ namespace Spacebox.Game.GUI
                 craftedSound.Volume = 1f;
 
             }
+
+            if (openSound == null)
+            {
+                openSound = new AudioSource(SoundManager.GetClip("openBlock1"));
+                openSound.Volume = 1f;
+
+            }
+
+            if (closeSound == null)
+            {
+                closeSound = new AudioSource(SoundManager.GetClip("openBlock4"));
+                closeSound.Volume = 1f;
+
+            }
         }
 
         private static void InitIcons()
         {
-            Debug.Log("----Icons debug " + WindowName);
             if (batteryIcon == IntPtr.Zero)
             {
                 var texture = TextureManager.GetTexture("Resources/Textures/UI/battery.png", true);
@@ -153,7 +184,7 @@ namespace Spacebox.Game.GUI
                 t2.UpdateTexture(true);
             }
 
-            if (WindowName.Contains("Crusher") )
+            if (WindowName.Contains("Crusher"))
             {
                 var texture = TextureManager.GetTexture("Resources/Textures/UI/crusherOutput.png", true);
                 outputIcon = texture.Handle;
@@ -178,6 +209,7 @@ namespace Spacebox.Game.GUI
             var blockData = GameBlocks.GetBlockDataById(block.BlockId);
             WindowName = blockData.Name;
 
+            if (!openSound.IsPlaying) openSound.Play();
             InitIcons();
 
             processingBlock = block;

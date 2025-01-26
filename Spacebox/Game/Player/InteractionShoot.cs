@@ -2,6 +2,8 @@
 using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Game.Effects;
+using Spacebox.Game.Generation;
+using Spacebox.Game.Physics;
 
 namespace Spacebox.Game.Player;
 
@@ -61,6 +63,17 @@ public class InteractionShoot : InteractionMode
         if (Input.IsMouseButtonDown(0))
         {
             model?.SetAnimation(true);
+
+            if(World.CurrentSector.Raycast(new Common.Physics.Ray(player.Position, player.Front, 1000), out var hit))
+            {
+                Debug.Log($"Hit: {hit.position}  chunk: {hit.chunk.PositionIndex}"  );
+                DestroyBlock(hit);
+            }
+            else
+            {
+                Debug.Log($"Not gun hit!");
+            }
+
         }
         if (Input.IsMouseButtonUp(0))
         {
@@ -69,5 +82,12 @@ public class InteractionShoot : InteractionMode
 
     }
 
-   
+    private void DestroyBlock(HitInfo hit)
+    {
+
+        hit.block.Durability = 0;
+        hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
+      
+    }
+
 }

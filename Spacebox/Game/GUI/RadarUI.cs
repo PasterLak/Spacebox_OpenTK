@@ -6,10 +6,30 @@ using System.Numerics;
 
 namespace Spacebox.Game.GUI
 {
-    public class RadarWindow
+    public class RadarUI
     {
-        public static RadarWindow Instance;
-        public bool IsVisible { get; set; } = false;
+        public static RadarUI Instance;
+
+        private bool _isVisible = false;
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                _isVisible = value;
+                if (_isVisible)
+                {
+
+
+                    openSound?.Play();
+
+                }
+                else
+                {
+                    closeSound?.Play();
+                }
+            }
+        }
 
         public bool ShowCursor => throw new NotImplementedException();
 
@@ -25,6 +45,9 @@ namespace Spacebox.Game.GUI
         private AudioSource _scanningAudio;
         private AudioSource _foundAudio;
 
+        private AudioSource openSound;
+        private AudioSource closeSound;
+
         private Vector2 uvMin = Vector2.Zero;
         private Vector2 uvMax = Vector2.Zero;
         private Vector2 uvSize = new Vector2(0.15f, 0.15f);
@@ -37,7 +60,7 @@ namespace Spacebox.Game.GUI
 
         bool pointVisible = false;
         float time = 2;
-        public RadarWindow(Texture2D skyboxTexture)
+        public RadarUI(Texture2D skyboxTexture)
         {
             _texture = skyboxTexture;
             Instance = this;
@@ -58,6 +81,19 @@ namespace Spacebox.Game.GUI
                 IsVisible = s;
             };
 
+            if (openSound == null)
+            {
+                openSound = new AudioSource(SoundManager.GetClip("openBlock1"));
+                openSound.Volume = 1f;
+
+            }
+
+            if (closeSound == null)
+            {
+                closeSound = new AudioSource(SoundManager.GetClip("openBlock4"));
+                closeSound.Volume = 1f;
+
+            }
         }
 
         public void Render()

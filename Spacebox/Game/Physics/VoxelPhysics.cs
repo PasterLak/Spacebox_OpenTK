@@ -64,22 +64,100 @@ namespace Spacebox.Game.Physics
         }
 
 
-        public static bool Raycast(Ray ray, Vector3 Position, Chunk chunk, out HitInfo hitInfo)
+        public static bool RaycastChunks(SpaceEntity entity, Ray ray, out List<ChunkHitInfo> chunkHits)
         {
-            return Raycast(ray, Position, chunk, out hitInfo);
+            chunkHits = new List<ChunkHitInfo>();
+
+            float startDistance = 0;
+
+            if (entity.BoundingBox.Contains(ray.Origin))
+            {
+
+            }
+            else
+            {
+                if (!ray.Intersects(entity.BoundingBox, out startDistance))
+                {
+                    //Debug.Log("no intersaction dis:" + distance);
+                    return false;
+                }
+            }
+
+            if (!entity.BoundingBox.Contains(ray.Origin))
+            {
+
+                ray.Origin = ray.GetPoint(startDistance);
+            }
+
+            HashSet<Chunk> potentialChunks = new HashSet<Chunk>();
+
+            potentialChunks = entity.Chunks.ToHashSet();
+
+            bool checkOrig = true;
+
+            foreach (var chunk in potentialChunks)
+            {
+
+                if (checkOrig && chunk.BoundingBox.Contains(ray.Origin))
+                {
+                    var ch = new ChunkHitInfo
+                    {
+                        Chunk = chunk,
+                        Distance = 0,
+                        HitPosition = ray.Origin
+                    };
+                    chunkHits.Add(ch);
+                    checkOrig = false;
+                    continue;
+                }
+
+                if (ray.Intersects(chunk.BoundingBox, out float dis))
+                {
+
+                    if (dis > ray.Length)
+                    {
+
+                        continue;
+                    }
+
+                    Vector3 hitPos = ray.GetPoint(dis + 0.01f);
+
+                    chunkHits.Add(new ChunkHitInfo
+                    {
+                        Chunk = chunk,
+                        Distance = dis,
+                        HitPosition = hitPos
+                    });
+                }
+            }
+
+            if (chunkHits.Count > 1)
+            {
+                chunkHits.Sort((a, b) => a.Distance.CompareTo(b.Distance));
+            }
+
+            return chunkHits.Count > 0;
         }
-        public static bool Raycast(Ray ray, Vector3 Position, Block[,,] blocks, out HitInfo hitInfo)
+
+
+
+        public static bool RaycastChunk(Ray ray, Chunk chunk, out HitInfo hitInfo)
+        {
+            return Raycast(ray, chunk.PositionWorld, chunk.Blocks, out hitInfo);
+        }
+
+        private static bool Raycast(Ray ray, Vector3 chunkPosWorld, Block[,,] blocks, out HitInfo hitInfo)
         {
 
             hitInfo.position = Vector3.Zero;
-            hitInfo.blockPositionIndex = new Vector3Byte(0,0,0); // or -1 ????
+            hitInfo.blockPositionIndex = new Vector3Byte(0, 0, 0); // or -1 ????
             hitInfo.normal = Vector3SByte.Zero;
             hitInfo.chunk = null;
             hitInfo.block = null;
 
             // if (!_isLoadedOrGenerated) return false;
 
-            Vector3 rayOrigin = ray.Origin - Position;
+            Vector3 rayOrigin = ray.Origin - chunkPosWorld;
             Vector3 rayDirection = ray.Direction;
 
             int x = (int)MathF.Floor(rayOrigin.X);
@@ -122,7 +200,27 @@ namespace Spacebox.Game.Physics
                             case 2:
                                 hitInfo.normal = new Vector3SByte(0, 0, -stepZ);
                                 break;
+                            default:
+                                
+                                float absX = MathF.Abs(rayOrigin.X);
+                                float absY = MathF.Abs(rayOrigin.Y);
+                                float absZ = MathF.Abs(rayOrigin.Z);
+
+                                if (absX >= absY && absX >= absZ)
+                                {
+                                    hitInfo.normal = new Vector3SByte(rayDirection.X < 0 ? (sbyte)1 : (sbyte)-1, (sbyte)0, (sbyte)0);
+                                }
+                                else if (absY >= absX && absY >= absZ)
+                                {
+                                    hitInfo.normal = new Vector3SByte((sbyte)0, rayDirection.Y < 0 ? (sbyte)1 : (sbyte)-1, (sbyte)0);
+                                }
+                                else
+                                {
+                                    hitInfo.normal = new Vector3SByte((sbyte)0, (sbyte)0, rayDirection.Z < 0 ? (sbyte)1 : (sbyte)-1);
+                                }
+                                break;
                         }
+
 
                         hitInfo.block = block;
                         return true;
@@ -171,6 +269,24 @@ namespace Spacebox.Game.Physics
 
             return false;
         }
+
+        private static float CalcSideDist(
+            float dirComponent,
+            float originComponent,
+            int index,
+            float deltaDist,
+            int step
+        )
+        {
+            if (dirComponent == 0)
+                return float.MaxValue;
+
+            if (dirComponent < 0)
+                return (originComponent - index) * deltaDist;
+            else
+                return (index + 1.0f - originComponent) * deltaDist;
+        }
+
 
         private static bool IsInRange(int x, int y, int z)
         {

@@ -15,6 +15,12 @@ namespace Spacebox.Common.Physics
             Length = length;
         }
 
+        public Vector3 GetPoint(float distanceFromOrigin)
+        {
+            return Origin + Direction * distanceFromOrigin;
+        }
+
+
         public bool Intersects(BoundingSphere sphere, out float distance)
         {
             Vector3 oc = Origin - sphere.Center;
@@ -118,5 +124,68 @@ namespace Spacebox.Common.Physics
 
             return true;
         }
+
+        public bool Intersects(BoundingBox box, out float tMin, out float tMax) // slab alg
+        {
+            tMin = 0f;
+            tMax = 0f;
+
+            tMin = float.NegativeInfinity;
+            tMax = float.PositiveInfinity;
+
+            for (byte i = 0; i < 3; i++)
+            {
+                float origin = Origin[i];
+                float direction = Direction[i];
+                float min = box.Min[i];
+                float max = box.Max[i];
+
+                if (MathF.Abs(direction) < 1e-8)
+                {
+                    if (origin < min || origin > max)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    float invD = 1.0f / direction;
+                    float t1 = (min - origin) * invD;
+                    float t2 = (max - origin) * invD;
+
+                    if (t1 > t2)
+                    {
+                        float temp = t1;
+                        t1 = t2;
+                        t2 = temp;
+                    }
+
+                    if (t1 > tMin)
+                        tMin = t1;
+
+                    if (t2 < tMax)
+                        tMax = t2;
+
+                    if (tMin > tMax)
+                        return false;
+
+                    if (tMax < 0)
+                        return false;
+                }
+            }
+
+            if (tMin < 0)
+            {
+                tMin = tMax;
+                if (tMin < 0 || tMin > Length)
+                    return false;
+            }
+
+            if (tMin > Length)
+                return false;
+
+            return true;
+        }
+
     }
 }

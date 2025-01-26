@@ -31,7 +31,17 @@ namespace Spacebox.Game.GUI
             set
             {
                 _isVisible = value;
-               
+                if (_isVisible)
+                {
+
+
+                    openSound?.Play();
+
+                }
+                else
+                {
+                    closeSound?.Play();
+                }
             }
         }
 
@@ -46,6 +56,9 @@ namespace Spacebox.Game.GUI
 
         private static AudioSource scrollAudio;
         private static AudioSource clickAudio;
+
+        private static AudioSource openSound;
+        private static AudioSource closeSound;
         public static void Toggle(Astronaut player)
         {
             var v = !IsVisible;
@@ -83,6 +96,20 @@ namespace Spacebox.Game.GUI
             {
                 IsVisible = s;
             };
+
+            if (openSound == null)
+            {
+                openSound = new AudioSource(SoundManager.GetClip("openBlock1"));
+                openSound.Volume = 1f;
+
+            }
+
+            if (closeSound == null)
+            {
+                closeSound = new AudioSource(SoundManager.GetClip("openBlock4"));
+                closeSound.Volume = 1f;
+
+            }
         }
 
         public static void OnGUI()
