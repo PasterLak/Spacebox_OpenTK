@@ -201,23 +201,30 @@ namespace Spacebox.Game.Physics
                                 hitInfo.normal = new Vector3SByte(0, 0, -stepZ);
                                 break;
                             default:
-                                
-                                float absX = MathF.Abs(rayOrigin.X);
-                                float absY = MathF.Abs(rayOrigin.Y);
-                                float absZ = MathF.Abs(rayOrigin.Z);
 
-                                if (absX >= absY && absX >= absZ)
+                                var g = (Vector3)hitInfo.blockPositionIndex -  new Vector3(16,16,16) ;
+                                //Debug.Log("g ::" + g);
+
+                                float xA = Math.Abs(g.X);
+                                float yA = Math.Abs(g.Y);
+                                float zA = Math.Abs(g.Z);
+
+                                if (xA > yA && xA > zA)
                                 {
-                                    hitInfo.normal = new Vector3SByte(rayDirection.X < 0 ? (sbyte)1 : (sbyte)-1, (sbyte)0, (sbyte)0);
-                                }
-                                else if (absY >= absX && absY >= absZ)
-                                {
-                                    hitInfo.normal = new Vector3SByte((sbyte)0, rayDirection.Y < 0 ? (sbyte)1 : (sbyte)-1, (sbyte)0);
+                                    hitInfo.normal = new Vector3SByte(g.X > 0 ? (sbyte)1: (sbyte)-1, (sbyte)0, (sbyte)0);
                                 }
                                 else
                                 {
-                                    hitInfo.normal = new Vector3SByte((sbyte)0, (sbyte)0, rayDirection.Z < 0 ? (sbyte)1 : (sbyte)-1);
+                                    if(yA > zA)
+                                    {
+                                        hitInfo.normal = new Vector3SByte((sbyte)0, g.Y > 0 ? (sbyte)1 : (sbyte)-1, (sbyte)0);
+                                    }
+                                    else
+                                    {
+                                        hitInfo.normal = new Vector3SByte((sbyte)0,  (sbyte)0, g.Z > 0 ? (sbyte)1 : (sbyte)-1);
+                                    }
                                 }
+
                                 break;
                         }
 

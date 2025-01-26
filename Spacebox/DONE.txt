@@ -33,8 +33,7 @@ Alpha ToDo:
 
 - random creepy sounds ?
 
-- fix destroy from another chunk
-- fix place from another chunk
+
 
 Done:
 - fix sides between chunks
@@ -42,7 +41,8 @@ Done:
 - fix light between chunks
 - fix centered damage image
 - open block sound
-
+- fix destroy from another chunk
+- fix place from another chunk
 
 
 version 0.1.1
