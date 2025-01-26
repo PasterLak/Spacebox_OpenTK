@@ -22,7 +22,6 @@ namespace Spacebox.Game.GUI
 
         public bool HasLink => !string.IsNullOrEmpty(Url);
         public bool HasIcon => !string.IsNullOrEmpty(IconPath);
-
         
     }
 

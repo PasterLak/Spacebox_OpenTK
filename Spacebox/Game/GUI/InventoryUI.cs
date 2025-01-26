@@ -2,6 +2,7 @@
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
+using Spacebox.Common.Audio;
 using Spacebox.Game.Player;
 
 namespace Spacebox.Game.GUI
@@ -16,6 +17,8 @@ namespace Spacebox.Game.GUI
 
         public static Astronaut Player;
 
+
+        public static AudioSource splitAudio;
         public static void Initialize(nint textureId)
         {
             SlotTexture = textureId;
@@ -29,6 +32,8 @@ namespace Spacebox.Game.GUI
             {
                 IsVisible = s;
             };
+
+            splitAudio = new AudioSource(SoundManager.GetClip("splitStack"));
         }
         private static void HandleInput()
         {
@@ -136,12 +141,7 @@ namespace Spacebox.Game.GUI
                     slot.Clear();
 
                 }
-                if (Input.IsKey(Keys.LeftAlt))
-                {
-
-                    slot.Split();
-
-                }
+        
             }
             else
             {

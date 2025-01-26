@@ -44,6 +44,8 @@ namespace Spacebox.Game.Generation
 
         public Particle StarParticle;
         public StarsEffect StarsEffect { get; private set; }
+
+        public List<Chunk> ChunksToDelete { get; private set; } = new List<Chunk>();
         public SpaceEntity(int id, Vector3 positionWorld, Sector sector)
         {
             EntityID = id;
@@ -430,6 +432,13 @@ namespace Spacebox.Game.Generation
 
                 //StarsEffect.Update();
 
+            }
+
+            if(ChunksToDelete.Count > 0) { 
+                foreach (var chunk in ChunksToDelete)
+                {
+                    RemoveChunk(chunk);
+                }
             }
         }
 

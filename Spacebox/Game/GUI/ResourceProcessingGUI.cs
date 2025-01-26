@@ -51,6 +51,9 @@ namespace Spacebox.Game.GUI
         private static AudioSource craftedSound;
         private static AudioSource openSound;
         private static AudioSource closeSound;
+
+        private static AudioSource pickupSound;
+
         public static void Toggle(Astronaut player)
         {
             if (!ToggleManager.Exists("resourceProcessing"))
@@ -128,6 +131,13 @@ namespace Spacebox.Game.GUI
             {
                 closeSound = new AudioSource(SoundManager.GetClip("openBlock4"));
                 closeSound.Volume = 1f;
+
+            }
+
+            if (pickupSound == null)
+            {
+                pickupSound = new AudioSource(SoundManager.GetClip("pickupDefault"));
+                pickupSound.Volume = 0.5f;
 
             }
         }
@@ -398,6 +408,16 @@ namespace Spacebox.Game.GUI
                 if (slot.Storage.ConnectedStorage != null)
                 {
                     slot.MoveItemToConnectedStorage();
+
+                    if(pickupSound.IsPlaying)
+                    {
+                        pickupSound.Stop();
+                        pickupSound.Play();
+                    }
+                    else
+                    {
+                        pickupSound.Play();
+                    }
                 }
                 else
                 {

@@ -11,5 +11,7 @@ namespace Spacebox.Game.Physics
         public Vector3SByte normal;
         public Chunk chunk;
         public Block block;
+
+
     }
 }

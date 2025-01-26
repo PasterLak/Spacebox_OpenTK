@@ -288,6 +288,9 @@ namespace Spacebox.Game.GUI
             if (slot.HasItem)
             {
                 slot.Split();
+                var a = InventoryUI.splitAudio;
+
+                a?.Play();
             }
 
         }

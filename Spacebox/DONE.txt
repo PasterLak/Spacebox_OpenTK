@@ -32,7 +32,8 @@ Alpha ToDo:
 
 
 - random creepy sounds ?
-
+- fix error if delete block in near chunk near another chunk
+- 
 
 
 Done:

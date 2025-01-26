@@ -4,7 +4,7 @@ namespace Spacebox.Common
 {
     public static class TickTaskManager
     {
-        public static bool EnableDebug = true;
+        public static bool EnableDebug = false;
         private static List<TickTask> _tasks = new List<TickTask>();
 
         public static void AddTask(TickTask task)

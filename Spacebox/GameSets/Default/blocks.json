@@ -272,7 +272,7 @@
         "Sides": "furnace2",
         "Top": "bottom",
         "Bottom": "bottom",
-        "Efficiency": 1.5
+        "Efficiency": 1.3
     },
     {
         "Name": "Crusher",
@@ -281,7 +281,7 @@
         "Sides": "crusherSide",
         "Top": "crusherTop",
         "Bottom": "bottom",
-        "Efficiency": 1,
+        "Efficiency": 0.8,
         "IsTransparent": false,
         "LightColor": {
             "x": 0,
@@ -296,7 +296,7 @@
         "Sides": "crusherSide2",
         "Top": "crusherTop2",
         "Bottom": "bottom",
-        "Efficiency": 1.5,
+        "Efficiency": 1.2,
         "IsTransparent": false,
         "LightColor": {
             "x": 0,

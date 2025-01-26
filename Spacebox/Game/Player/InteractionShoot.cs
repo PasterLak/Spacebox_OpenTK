@@ -1,6 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
+using Spacebox.Common.Physics;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
@@ -15,6 +16,8 @@ public class InteractionShoot : InteractionMode
     private ItemSlot selectedItemSlot;
     private AnimatedItemModel model;
     public static BlockMiningEffect BlockMiningEffect;
+
+    public static LineRenderer lineRenderer;
     public InteractionShoot(ItemSlot itemslot)
     {
         selectedItemSlot = itemslot;
@@ -29,7 +32,10 @@ public class InteractionShoot : InteractionMode
 
         UpdateItemSlot(itemslot);
 
-
+        lineRenderer = new LineRenderer();
+        lineRenderer.Thickness = 0.02f;
+        lineRenderer.Color = Color4.Blue;
+        lineRenderer.Enabled = true;
     }
 
     public void UpdateItemSlot(ItemSlot itemslot)
@@ -46,10 +52,12 @@ public class InteractionShoot : InteractionMode
 
     public override void OnDisable()
     {
-     
+
         selectedItemSlot = null;
         //BlockMiningEffect.Enabled = false;
         model?.SetAnimation(false);
+
+        lineRenderer.ClearPoints();
     }
 
     public override void Update(Astronaut player)
@@ -63,16 +71,43 @@ public class InteractionShoot : InteractionMode
         if (Input.IsMouseButtonDown(0))
         {
             model?.SetAnimation(true);
+            lineRenderer.ClearPoints();
 
-            if(World.CurrentSector.Raycast(new Common.Physics.Ray(player.Position, player.Front, 1000), out var hit))
+
+            lineRenderer.AddPoint(player.Position + player.Front);
+            int count = 100;
+            int count1 = 0;
+            Ray ray = new Common.Physics.Ray(player.Position, player.Front, 1000);
+            if (World.CurrentSector.Raycast(ray, out var hit))
             {
-                Debug.Log($"Hit: {hit.position}  chunk: {hit.chunk.PositionIndex}"  );
-                DestroyBlock(hit);
+
+                lineRenderer.AddPoint(hit.position);
+            
+                while (count > 0)
+                {
+                    ray = ray.CalculateRicochetRay(hit, 1000);
+
+                    if (World.CurrentSector.Raycast(ray, out  hit))
+                    {
+                        lineRenderer.AddPoint(hit.position);
+                        count--;
+                        count1++;
+                    }
+                    else
+                    {
+                        lineRenderer.AddPoint(ray.GetPoint(1000));
+                        count = 0;
+                        count1++;
+                    }
+                }
             }
             else
             {
-                Debug.Log($"Not gun hit!");
+                lineRenderer.AddPoint(ray.GetPoint(1000));
+                // Debug.Log($"Not gun hit!");
             }
+
+            // Debug.Log($"hits "+ count1);
 
         }
         if (Input.IsMouseButtonUp(0))
@@ -87,7 +122,7 @@ public class InteractionShoot : InteractionMode
 
         hit.block.Durability = 0;
         hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
-      
+
     }
 
 }

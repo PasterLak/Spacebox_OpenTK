@@ -11,7 +11,7 @@ namespace Spacebox.Game.Generation
     {
 
         public const byte Size = 32; // 32700+ blocks
-
+        public const byte SizeHalf = Size/2;
         public int Mass { get; set; } = 0; // 255x32700 = 8,338,500 (max 4,294,967,295 in uint)
 
         public Vector3 SumPosMass { get; set; } = Vector3.Zero;
@@ -48,6 +48,8 @@ namespace Spacebox.Game.Generation
         public BoundingBox GeometryBoundingBox { get; private set; }
 
         public Action<Chunk> OnChunkModified;
+
+        
 
         public Chunk(Vector3SByte positionIndex, SpaceEntity spaceEntity, bool emptyChunk = false)
             : this(positionIndex, spaceEntity, null, isLoaded: false, emptyChunk)
@@ -180,6 +182,7 @@ namespace Spacebox.Game.Generation
         private void DeleteChunk()
         {
             SpaceEntity.RemoveChunk(this);
+           // SpaceEntity.ChunksToDelete.Add(this);
         }
 
         public bool IsColliding(BoundingVolume volume, out CollideInfo collideInfo)

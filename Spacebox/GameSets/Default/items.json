@@ -15,7 +15,7 @@
         "Category" : "drills",
         "Sprite": "drill2",
         "MaxStack": 1,
-        "ModelDepth": 1.5,
+        "ModelDepth": 2,
         "Power": 2
     },
     {
@@ -24,7 +24,7 @@
         "Category" : "drills",
         "Sprite": "drill3",
         "MaxStack": 1,
-        "ModelDepth": 1.5,
+        "ModelDepth": 2,
         "Power": 3
     },
     {
@@ -33,7 +33,7 @@
         "Category" : "drills",
         "Sprite": "drill4",
         "MaxStack": 1,
-        "ModelDepth": 1.5,
+        "ModelDepth": 3,
         "Power": 4
     },
     {
@@ -42,7 +42,7 @@
         "Category" : "drills",
         "Sprite": "drill5",
         "MaxStack": 1,
-        "ModelDepth": 1.5,
+        "ModelDepth": 2,
         "Power": 5
     },
     {
@@ -63,7 +63,7 @@
         "Category" : "weapons",
         "Sprite": "weapon2",
         "MaxStack": 1,
-        "ModelDepth": 1.5,
+        "ModelDepth": 2,
         "Damage": 6,
         "ReloadTime": 400,
         "Spread": 0,
@@ -75,7 +75,7 @@
         "Category" : "weapons",
         "Sprite": "weapon3",
         "MaxStack": 1,
-        "ModelDepth": 1.5,
+        "ModelDepth": 2,
         "Damage": 10,
         "ReloadTime": 400,
         "Spread": 0,
@@ -173,14 +173,14 @@
         "Category" : "items",
         "Sprite": "cobaltLens",
         "MaxStack": 64,
-        "ModelDepth": 1.0
+        "ModelDepth": 2
     },
     {
         "Name": "Iron Lens",
          "Category" : "items",
         "Sprite": "ironLens",
         "MaxStack": 64,
-        "ModelDepth": 1.0
+        "ModelDepth": 2
     },
     {
         "Name": "Aluminium Panels",
@@ -267,7 +267,7 @@
         "Sound" : "use",
         "PowerAmount": 100,
         "MaxStack": 64,
-        "ModelDepth": 2.0
+        "ModelDepth": 3.0
     },
     {
         "Name": "Beer",

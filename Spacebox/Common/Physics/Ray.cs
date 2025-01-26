@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Game.Physics;
 
 namespace Spacebox.Common.Physics
 {
@@ -185,6 +186,36 @@ namespace Spacebox.Common.Physics
                 return false;
 
             return true;
+        }
+
+
+        public Ray CalculateRicochetRay(HitInfo hitInfo, float length)
+        {
+            
+
+            const float epsilon = 0.002f;
+            var reflectionDirection = CalculateRicochet(this, hitInfo);
+            Vector3 newOrigin = hitInfo.position + reflectionDirection * epsilon;
+            return new Ray(newOrigin, reflectionDirection, length);
+        }
+
+
+        public static Vector3 CalculateRicochet(Ray ray, HitInfo hitInfo)
+        {
+            const float epsilon = 1.01f;
+            Vector3 normal = new Vector3(
+                hitInfo.normal.X,
+                hitInfo.normal.Y,
+                hitInfo.normal.Z
+            );
+            normal = (normal * epsilon).Normalized();
+
+
+            Vector3 incoming = ray.Direction.Normalized();
+
+            Vector3 reflection = incoming - 2f * Vector3.Dot(incoming, normal) * normal;
+
+            return reflection.Normalized();
         }
 
     }

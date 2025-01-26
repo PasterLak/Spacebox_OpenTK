@@ -13,7 +13,7 @@ namespace Spacebox.Game.Generation
         public Storage OutputStorage { get; private set; } = new Storage(1, 1);
         public Storage FuelStorage { get; private set; } = new Storage(1, 1);
         public float Efficiency = 1f;
-        private float TestingCoefficient = 2f;
+        private float TestingCoefficient = 1f;
 
         public Action<ResourceProcessingBlock> OnCrafted;
         private bool _isRunning = false;

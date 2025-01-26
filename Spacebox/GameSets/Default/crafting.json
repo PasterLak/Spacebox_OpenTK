@@ -282,7 +282,7 @@
             "Product": {"Item": "Cobalt Drill", "Quantity": 1},
             "Ingredients": [
                 {"Item": "Aluminium Drill", "Quantity": 1},
-                {"Item": "Cobalt Diamond", "Quantity": 2},
+                {"Item": "Cobalt Diamond", "Quantity": 4},
                 {"Item": "Aluminium Drill Bit", "Quantity": 1}
             ]
         },
@@ -300,7 +300,7 @@
             "Ingredients": [
                 {"Item": "Iron Drill", "Quantity": 3},
                 {"Item": "Iron Drill Bit", "Quantity": 3},
-                {"Item": "Energy Cell", "Quantity": 4}
+                {"Item": "Energy Cell", "Quantity": 6}
                             
             ]
         },

@@ -410,6 +410,11 @@ namespace Spacebox.Scenes
                 if (Settings.ShowInterface)
                     InteractionPlaceBlock.lineRenderer.Render();
             }
+
+            if(InteractionShoot.lineRenderer != null)
+            {
+                InteractionShoot.lineRenderer.Render(); 
+            }
                 
             //chunk.Draw(blocksShader);
             player.Draw();

@@ -202,8 +202,7 @@ namespace Spacebox.Game.Physics
                                 break;
                             default:
 
-                                var g = (Vector3)hitInfo.blockPositionIndex -  new Vector3(16,16,16) ;
-                                //Debug.Log("g ::" + g);
+                                var g = new Vector3(x,y,z) -  new Vector3(Chunk.SizeHalf, Chunk.SizeHalf, Chunk.SizeHalf);
 
                                 float xA = Math.Abs(g.X);
                                 float yA = Math.Abs(g.Y);
