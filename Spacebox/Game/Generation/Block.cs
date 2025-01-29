@@ -15,9 +15,12 @@ namespace Spacebox.Game.Generation
         Forward = 5
     }
 
-    // bit packing: id=12 from 16, dir=3, mass=8, health=8, trans=1
+    // bit packing: id= 16, dir=3, mass=8, health=8, trans=1 light=1 emission=1 air=1
     public class Block
     {
+        
+       
+
         public short BlockId { get; set; } = 0;
         public byte Mass { get; private set; } = 1;
         public byte Durability { get; set; } = 1;
@@ -31,18 +34,13 @@ namespace Spacebox.Game.Generation
         public float LightLevel { get; set; } = 0; //0 - 15
         public Vector3 LightColor { get; set; } = Vector3.Zero;
         public bool enableEmission = true;
-        public const float Diagonal = 1.5f;
-        public const float DiagonalSquared = Diagonal * Diagonal;
+        
 
         public Block()
         {
-        }
-
-        public Block(Vector2 textureCoords, Vector3? color = null, float lightLevel = 0f, Vector3? lightColor = null)
-        {
-            Color = color ?? new Vector3(1.0f, 1.0f, 1.0f);
-            LightLevel = lightLevel;
-            LightColor = lightColor ?? Vector3.Zero;
+            Color =  new Vector3(1.0f, 1.0f, 1.0f);
+            LightLevel = 0f;
+            LightColor = Vector3.Zero;
         }
 
         public Block(BlockData blockData)
@@ -100,6 +98,9 @@ namespace Spacebox.Game.Generation
                    $"Direction: {Direction}" +
                    $"\nTransparent: {IsTransparent}";
         }
+
+
+        // -----------------------------------------------------------------------------------
 
         private static float RoundFloat(float x)
         {

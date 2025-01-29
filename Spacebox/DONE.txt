@@ -32,7 +32,7 @@ Alpha ToDo:
 - fix effect drop
 - disassembler more recipes
 - fix ticks count for recipes
-- open blocks with a weapon in the hand
+
 - 
 
 - flashlight better sound ?
@@ -57,7 +57,7 @@ Done:
 - open block sound
 - fix destroy from another chunk
 - fix place from another chunk
-
+- open blocks with a weapon in the hand
 
 version 0.1.1
 

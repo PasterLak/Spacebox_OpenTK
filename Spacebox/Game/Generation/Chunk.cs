@@ -457,7 +457,7 @@ namespace Spacebox.Game.Generation
                 {
                     for (byte z = 0; z < Size; z++)
                     {
-                        Blocks[x, y, z] = new Block(new Vector2(0, 0));
+                        Blocks[x, y, z] = new Block();
                     }
                 }
             }

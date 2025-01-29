@@ -23,14 +23,8 @@ namespace Spacebox.Game.Generation
             OnUse?.Invoke(player);
         }
 
-        public InteractiveBlock(Vector2 textureCoords, Vector3? color = null, float lightLevel = 0, Vector3? lightColor = null) 
-            : base(textureCoords, color, lightLevel, lightColor)
-        {
-        }
         public InteractiveBlock(BlockData blockData) : base(blockData)
         {
-
-
         }
 
         public void SetEmissionWithoutRedrawChunk(bool state)

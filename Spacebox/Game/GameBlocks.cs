@@ -231,7 +231,7 @@ namespace Spacebox.Game
 
         public static Block CreateBlockFromId(short id)
         {
-            if (!Block.ContainsKey(id)) return new Block(new Vector2(0, 0));
+            if (!Block.ContainsKey(id)) return new Block();
 
             BlockData data = Block[id];
 
