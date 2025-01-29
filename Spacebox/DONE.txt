@@ -30,10 +30,23 @@ Alpha ToDo:
 - thulium/ponium crafts
 - fix error if delete block in near chunk near another chunk
 - fix effect drop
-
+- disassembler more recipes
+- fix ticks count for recipes
+- open blocks with a weapon in the hand
+- 
 
 - flashlight better sound ?
 - random creepy sounds ?
+
+Mods ToDo:
+
+- items textures can have subfolders
+- blocks textures can have subfolders
+- emissions textures can have subfolders
+- items textures can have subfolders
+- move lighting up
+- write ""type"" {list of recipes} 
+-
 
 
 Done:
@@ -58,6 +71,10 @@ version 0.1.1
 - Line Renderer
 - CreativeTools: Fill, Delete blocks
 - sound effects open blocks, place blocks glass
+- better collision detection
+- recochets
+- working weapons
+- Color3Byte
 
 version 0.1.0
 

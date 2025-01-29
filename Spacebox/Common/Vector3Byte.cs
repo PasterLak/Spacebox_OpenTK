@@ -129,7 +129,7 @@ public struct Vector3Byte
 
     public static explicit operator Vector3(Vector3Byte v)
     {
-        return new Vector3(v.X, v.Y, v.Z);
+        return new Vector3(v.X, v.Y, v.Z); 
     }
 
     public static explicit operator Vector3Byte(Vector3 v)

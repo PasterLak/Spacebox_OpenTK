@@ -215,8 +215,8 @@ namespace Spacebox.Game.Resources
                     }
 
                     bool sameSides = block.Top == "" || block.Top == "" || block.Sides == block.Top && block.Sides == block.Top;
-                    bool hasLightColor = block.LightColor != Vector3Byte.Zero;
-                    var blockColor = hasLightColor ? new Vector3(block.LightColor.X / 255f, block.LightColor.Y / 255f, block.LightColor.Z / 255f) : Vector3.Zero;
+                    bool hasLightColor = block.LightColor != Color3Byte.Black;
+                    var blockColor = hasLightColor ? block.LightColor.ToVector3() : Color3Byte.Black.ToVector3();
 
                     BlockData blockData = new BlockData(block.Name, block.Type, new Vector2Byte(0, 0), block.IsTransparent, blockColor)
                     {
@@ -714,8 +714,8 @@ namespace Spacebox.Game.Resources
 
                     if (settings != null)
                     {
-                        Lighting.AmbientColor = new Vector3(settings.AmbientColor.X / 255f, settings.AmbientColor.Y / 255f, settings.AmbientColor.Z / 255f);
-                        Lighting.FogColor = new Vector3(settings.FogColor.X / 255f, settings.FogColor.Y / 255f, settings.FogColor.Z / 255f);
+                        Lighting.AmbientColor = settings.AmbientColor.ToVector3();
+                        Lighting.FogColor = settings.FogColor.ToVector3();
                         Lighting.FogDensity = settings.FogDensity;
                     }
                 }
@@ -764,8 +764,8 @@ namespace Spacebox.Game.Resources
 
         public class Modlighting
         {
-            public Vector3Byte AmbientColor { get; set; } = Vector3Byte.One;
-            public Vector3Byte FogColor { get; set; } = Vector3Byte.Zero;
+            public Color3Byte AmbientColor { get; set; } = Color3Byte.White;
+            public Color3Byte FogColor { get; set; } = Color3Byte.Black;
             public float FogDensity { get; set; } = 0.05f;
         }
 

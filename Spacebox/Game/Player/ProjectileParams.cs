@@ -33,7 +33,7 @@ namespace Spacebox.Game.Player
             MaxTravelDistance = p.MaxTravelDistance;
             Length = p.Length;
             Thickness = p.Thickness;
-            Color = new Color4(p.Color.X/255f, p.Color.Y / 255f, p.Color.Z / 255f,1);
+            Color = p.Color.ToColor4();
 
             Damage = (byte)p.Damage;
             RicochetAngle = p.RicochetAngle;

@@ -9,10 +9,10 @@ namespace Spacebox.Game.Player
 {
     public class Projectile : Node3D, IPoolable<Projectile>
     {
-       
+
         private float distanceTraveled = 0;
-     
-   
+
+
         private byte currentRicochets = 0;
         private byte currentDamage = 0;
         private bool canRicochet = false;
@@ -60,15 +60,15 @@ namespace Spacebox.Game.Player
             lineRenderer.ClearPoints();
             lineRenderer.AddPoint(Vector3.Zero);
             lineRenderer.AddPoint(ray.Direction * parameters.Length);
-            
+
             camera = Camera.Main;
 
-            if(ricochetSound == null)
+            if (ricochetSound == null)
             {
 
                 ricochetSound = new AudioSource(SoundManager.GetClip("ricochet"));
                 ricochetSound.Volume = 1f;
-                
+
             }
             if (hitSound == null)
             {
@@ -104,7 +104,7 @@ namespace Spacebox.Game.Player
             {
                 IsActive = false;
 
-                if(currentDamage >= 50)
+                if (currentDamage >= 50)
                 {
                     explosionSound.Play();
                 }
@@ -129,7 +129,7 @@ namespace Spacebox.Game.Player
                         lineRenderer.AddPoint(ray.Direction * parameters.Length);
                         currentRicochets++;
 
-                        if(currentRicochets == 5)
+                        if (currentRicochets == 5)
                         {
                             explosionSound.Play();
                         }
@@ -138,16 +138,16 @@ namespace Spacebox.Game.Player
 
                 }
 
-                
+
                 OnHit?.Invoke(this);
                 hitSound.Play();
 
-                if(currentDamage > hit.block.Durability)
+                if (currentDamage > hit.block.Durability)
                 {
-                    
+
                     hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage);
-                    var d = currentDamage - hit.block.Durability ;
-                  
+                    var d = currentDamage - hit.block.Durability;
+
                 }
                 else
                 {

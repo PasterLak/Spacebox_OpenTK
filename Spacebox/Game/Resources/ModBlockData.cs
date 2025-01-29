@@ -1,4 +1,6 @@
-﻿namespace Spacebox.Game.Resources
+﻿using Spacebox.Common;
+
+namespace Spacebox.Game.Resources
 {
     public class ModBlockData
     {
@@ -18,7 +20,7 @@
         public string SoundDestroy { get; set; } = "blockDestroyDefault";
 
         public bool IsTransparent { get; set; } = false;
-        public Vector3Byte LightColor { get; set; } = Vector3Byte.Zero;
+        public Color3Byte LightColor { get; set; } = Color3Byte.Black;
     }
 
     public class InteractiveBlockData : ModBlockData

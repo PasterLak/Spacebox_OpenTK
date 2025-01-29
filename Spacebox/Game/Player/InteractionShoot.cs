@@ -104,7 +104,7 @@ public class InteractionShoot : InteractionMode
         }
         else
         {
-            if (canShoot == false && Input.IsMouseButton(0))
+            if (canShoot == false && Input.IsMouseButton(0) && ToggleManager.OpenedWindowsCount < 1 && !Debug.IsVisible)
             {
                 canShoot = true;
                 model?.SetAnimation(false);
