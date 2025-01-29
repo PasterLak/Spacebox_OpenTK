@@ -6,6 +6,7 @@ namespace Spacebox.common.Animation
     public class Animator
     {
         public bool IsActive { get; set; } = true;
+        public float speed = 1f;
         public bool IsPlaying => IsActive;
         private List<IAnimation> _animations = new List<IAnimation>();
         private Node3D _target;
@@ -30,7 +31,7 @@ namespace Spacebox.common.Animation
             for (int i = _animations.Count - 1; i >= 0; i--)
             {
                 var anim = _animations[i];
-                bool isActive = anim.Update(deltaTime);
+                bool isActive = anim.Update(deltaTime * speed);
                 if (!isActive)
                 {
                     _animations.RemoveAt(i);

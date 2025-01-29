@@ -28,12 +28,12 @@ Alpha ToDo:
 
 - maybe better generation (different objects and resources)
 - thulium/ponium crafts
-- flashlight better sound ?
-
-
-- random creepy sounds ?
 - fix error if delete block in near chunk near another chunk
-- 
+- fix effect drop
+
+
+- flashlight better sound ?
+- random creepy sounds ?
 
 
 Done:

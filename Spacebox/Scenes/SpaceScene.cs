@@ -36,7 +36,7 @@ namespace Spacebox.Scenes
         public static bool DeathOn = false;
         private AudioSource ambient;
         private DustSpawner dustSpawner;
-        
+
 
         private BlockDestructionManager blockDestructionManager;
 
@@ -53,7 +53,7 @@ namespace Spacebox.Scenes
         LineRenderer line3;
         public SpaceScene(string[] args) : base(args) // name mod seed modfolder
         {
-            HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
+            HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 0), 1);
 
             if (args.Length == 4)
             {
@@ -249,6 +249,8 @@ namespace Spacebox.Scenes
             PauseUI.Init();
         }
         Animator animator;
+
+        Projectile projectile;
         public override void Start()
         {
             Input.HideCursor();
@@ -274,12 +276,12 @@ namespace Spacebox.Scenes
             line = new LineRenderer();
             line.Color = Color4.Green;
             line.Thickness = 0.02f;
-            line.AddPoint(pos );
-            line.AddPoint(pos + new Vector3(5,0,0));
+            line.AddPoint(pos);
+            line.AddPoint(pos + new Vector3(5, 0, 0));
             line.AddPoint(pos + new Vector3(5, 3, 0));
             line.AddPoint(pos + new Vector3(5, 7, 1));
 
-            pos += new Vector3(0,0,2);
+            pos += new Vector3(0, 0, 2);
             line2 = new LineRenderer();
             line2.Color = Color4.Blue;
             line2.Thickness = 0.5f;
@@ -291,11 +293,17 @@ namespace Spacebox.Scenes
             line3.Thickness = 1f;
             line3.AddPoint(pos);
             line3.AddPoint(pos + new Vector3(5, 0, 0));
+
+
+            projectile = new Projectile();
+
+            projectile.Initialize(new Ray(player.Position, player.Front, 0.01f), ProjectileParameters.GetTestProjectile());
+            projectile.IsActive = true;
         }
 
         private void OnDebugStateChanged(bool state)
         {
-            
+
             ToggleManager.SetState("mouse", state);
             ToggleManager.SetState("player", !state);
             ToggleManager.SetState("panel", !state);
@@ -324,7 +332,7 @@ namespace Spacebox.Scenes
                 ToggleManager.DisableAllWindows();
                 if (c > 0)
                 {
-                    
+
                     ToggleManager.SetState("inventory", false);
                     ToggleManager.SetState("mouse", false);
                     ToggleManager.SetState("player", true);
@@ -338,7 +346,10 @@ namespace Spacebox.Scenes
 
 
             }
-
+            ///projectile.Position += new Vector3(0.01f * Time.Delta,0,0);
+            projectile.Update();
+            if (InteractionShoot.ProjectilesPool != null)
+                InteractionShoot.ProjectilesPool.Update();
             if (!Debug.IsVisible)
             {
                 if (Input.IsKeyDown(Keys.KeyPadEnter))
@@ -404,18 +415,20 @@ namespace Spacebox.Scenes
             ////line.Render();
             ///line2.Render();
             //line3.Render();
-
+            projectile.Render();
+            if (InteractionShoot.ProjectilesPool != null)
+                InteractionShoot.ProjectilesPool.Render();
             if (InteractionPlaceBlock.lineRenderer != null)
             {
                 if (Settings.ShowInterface)
                     InteractionPlaceBlock.lineRenderer.Render();
             }
 
-            if(InteractionShoot.lineRenderer != null)
+            if (InteractionShoot.lineRenderer != null)
             {
-                InteractionShoot.lineRenderer.Render(); 
+                InteractionShoot.lineRenderer.Render();
             }
-                
+
             //chunk.Draw(blocksShader);
             player.Draw();
             //sector.Render(blocksShader);
@@ -429,7 +442,7 @@ namespace Spacebox.Scenes
             dustSpawner.Render();
             if (InteractionDestroyBlockSurvival.BlockMiningEffect != null)
             {
-               
+
                 InteractionDestroyBlockSurvival.BlockMiningEffect.Render();
             }
 

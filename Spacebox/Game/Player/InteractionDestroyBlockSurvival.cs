@@ -1,6 +1,8 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Spacebox.common.Animation;
 using Spacebox.Common;
+using Spacebox.Common.Animation;
 using Spacebox.Common.Audio;
 using Spacebox.Common.Physics;
 using Spacebox.Game.Effects;
@@ -15,6 +17,8 @@ public class InteractionDestroyBlockSurvival : InteractionMode
     private const byte MaxDestroyDistance = 6;
 
     private static AudioSource blockDestroy;
+    private static AudioSource drillAudio;
+    private static AudioSource drill0Audio;
 
     private Block? lastBlock = null;
 
@@ -53,9 +57,24 @@ public class InteractionDestroyBlockSurvival : InteractionMode
             blockDestroy.Volume = 1f;
         }
 
+        if (drillAudio == null)
+        {
+            drillAudio = new AudioSource(SoundManager.GetClip("drill1"));
+            drillAudio.Volume = 1f;
+            drillAudio.IsLooped = true;
+        }
+        if (drill0Audio == null)
+        {
+            drill0Audio = new AudioSource(SoundManager.GetClip("drill0"));
+            drill0Audio.Volume = 1f;
+            drill0Audio.IsLooped = true;
+        }
+
         if (BlockSelector.Instance != null)
             BlockSelector.Instance.SimpleBlock.Shader.SetVector4("color", Vector4.One);
         BlockSelector.IsVisible = false;
+
+        model.Animator.AddAnimation(new MoveAnimation(model.Position, model.Position + new Vector3(0.005f, 0, 0), 0.05f, true));
     }
 
     public override void OnDisable()
@@ -65,6 +84,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         selectedItemSlot = null;
         //BlockMiningEffect.Enabled = false;
         CenteredText.Hide();
+        model.Animator.Clear();
     }
 
     private const float timeToDamage = 0.5f;
@@ -141,6 +161,9 @@ public class InteractionDestroyBlockSurvival : InteractionMode
             lastBlock = null;
             BlockMiningEffect.ClearParticles();
             BlockMiningEffect.Enabled = false;
+            drillAudio.Stop();
+            drill0Audio.Stop();
+
         }
 
         if (!player.CanMove)
@@ -211,6 +234,10 @@ public class InteractionDestroyBlockSurvival : InteractionMode
             {
                 model?.SetAnimation(true);
                 BlockMiningEffect.Enabled = true;
+
+                
+                    drillAudio.Play();
+                
             }
 
 
@@ -234,6 +261,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
             if (Input.IsMouseButtonDown(MouseButton.Left))
             {
                 model?.SetAnimation(true);
+                drill0Audio.Play();
 
             }
 

@@ -51,6 +51,7 @@ namespace Spacebox.Game.Resources
             LoadTextures(modPath, defaultModPath, ModInfo.Textures);
             LoadSounds(modPath);
             LoadBlocks(modPath, defaultModPath);
+            LoadProjectiles(modPath, defaultModPath);
             LoadItems(modPath, defaultModPath);
             LoadRecipes(modPath, defaultModPath);
             LoadCrafting(modPath, defaultModPath);
@@ -301,6 +302,48 @@ namespace Spacebox.Game.Resources
             return BlockTypes.Contains(type.ToLower());
         }
 
+        private static void LoadProjectiles(string modPath, string defaultModPath)
+        {
+            string projectilesFile = GetFilePath(modPath, defaultModPath, "projectiles.json");
+            if (projectilesFile == null) return;
+
+            try
+            {
+                string json = File.ReadAllText(projectilesFile);
+
+
+                List<ProjectileJSON> projectiles = JsonSerializer.Deserialize<List<ProjectileJSON>>(json);
+
+                short id = 0;
+
+                foreach(var proj in projectiles)
+                {
+                    proj.Name = proj.Name.ToLower();
+
+                    if(GameBlocks.Projectiles.ContainsKey(id))
+                    {
+                        Debug.Error($"[GamesetLoader] Error loading projectiles: projectile with the name {proj.Name} is already registered and was skpped! Use a different name!");
+                        continue;
+                    }
+
+                    if(proj.Damage > byte.MaxValue) proj.Damage = byte.MaxValue;
+
+                    var newProj = new ProjectileParameters(id++, proj);
+
+                    GameBlocks.Projectiles.Add(newProj.ID, newProj);
+
+                }
+
+                GameBlocks.Projectiles.Add(short.MaxValue, ProjectileParameters.GetErrorProjectile());
+
+
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"[GamesetLoader] Error loading projectiles: {ex.Message}");
+            }
+        }
+
         private static void LoadItems(string modPath, string defaultModPath)
         {
             string itemsFile = GetFilePath(modPath, defaultModPath, "items.json");
@@ -546,6 +589,19 @@ namespace Spacebox.Game.Resources
         private static void RegisterWeaponItem(WeaponItemData data)
         {
             data.MaxStack = 1;
+
+            short projectileID = 0;
+            data.Projectile = data.Projectile.ToLower();
+            if (GameBlocks.TryGetProjectileByName(data.Projectile, out var projectile))
+            {
+                projectileID = projectile.ID;
+            }
+            else
+            {
+                Debug.Error($"[GameSetLoader] RegisterWeaponItem: projectile with name <{data.Projectile}> for weapone <{data.Name}>  was not found!");
+                projectileID = short.MaxValue;
+            }
+
             var weaponItem = new WeaponItem(
                 (byte)data.MaxStack,
                 data.Name,
@@ -555,9 +611,16 @@ namespace Spacebox.Game.Resources
                 Damage = data.Damage,
                 Category = data.Category,
             };
+            weaponItem.ProjectileID = projectileID;
+            weaponItem.ReloadTime = data.ReloadTime;
+            weaponItem.AnimationSpeed = data.AnimationSpeed;
+            weaponItem.Pushback = data.Pushback;
+            weaponItem.ShotSound = data.ShotSound;
 
             GameBlocks.RegisterItem(weaponItem, data.Sprite);
         }
+
+
 
         private static void RegisterDrillItem(DrillItemData data)
         {

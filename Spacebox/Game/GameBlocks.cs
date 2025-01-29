@@ -5,6 +5,7 @@ using Spacebox.Common.Audio;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
+using Spacebox.Game.Player;
 using Spacebox.Game.Resources;
 using Spacebox.GUI;
 
@@ -38,6 +39,8 @@ namespace Spacebox.Game
 
         public static Dictionary<string, CraftingCategory> CraftingCategories = new Dictionary<string, CraftingCategory>();
         public static Dictionary<short, Blueprint> Blueprints = new Dictionary<short, Blueprint>();
+
+        public static Dictionary<short, ProjectileParameters> Projectiles = new Dictionary<short, ProjectileParameters>();
 
         public static bool TryGetRecipe(string type, short id, out Recipe recipe)
         {
@@ -434,6 +437,27 @@ namespace Spacebox.Game
             return storage;
         }
 
+        public static bool TryGetProjectileByName(string name, out ProjectileParameters projectile)
+        {
+            if (Projectiles.Count == 0)
+            {
+                projectile = null;
+                return false;
+            }
+
+            foreach (var item in Projectiles)
+            {
+                if (item.Value.Name == name)
+                {
+                    projectile = item.Value;
+                    return true;
+                }
+            }
+
+            projectile = null;
+            return false;
+        }
+
         public static void DisposeAll()
         {
             BlocksTexture?.Dispose();
@@ -461,6 +485,7 @@ namespace Spacebox.Game
                 if (c != null) c.Dispose();
             }
             Recipes.Clear();
+            Projectiles.Clear();
             Block.Clear();
             Item.Clear();
             ItemModels.Clear();

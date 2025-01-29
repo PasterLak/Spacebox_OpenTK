@@ -218,5 +218,23 @@ namespace Spacebox.Common.Physics
             return reflection.Normalized();
         }
 
+        public static float CalculateIncidentAngle(Ray ray, HitInfo hitInfo)
+        {
+            Vector3 normal = new Vector3(hitInfo.normal.X, hitInfo.normal.Y, hitInfo.normal.Z).Normalized();
+            Vector3 incoming = -ray.Direction.Normalized(); // Направление к поверхности
+
+            float dot = Vector3.Dot(incoming, normal);
+
+            // Ограничение значения для избежания ошибок из-за погрешностей
+            dot = Math.Clamp(dot, -1.0f, 1.0f);
+
+            float angleRadians = MathF.Acos(dot);
+            float angleDegrees = MathHelper.RadiansToDegrees(angleRadians);
+
+            float angleWithPlane = 90f - angleDegrees;
+
+            return angleWithPlane;
+        }
+
     }
 }

@@ -53,9 +53,12 @@
         "MaxStack": 1,
         "ModelDepth": 1.5,
         "Damage": 5,
-        "ReloadTime": 400,
+        "ReloadTime": 15,
         "Spread": 0,
-        "Pushback": 0
+        "Pushback": 18,
+        "AnimationSpeed": 0.5,
+        "Projectile" : "pistoleProjectile",
+        "ShotSound" : "pistole"
     },
     {
         "Name": "SMG",
@@ -65,9 +68,12 @@
         "MaxStack": 1,
         "ModelDepth": 2,
         "Damage": 6,
-        "ReloadTime": 400,
+        "ReloadTime": 7,
         "Spread": 0,
-        "Pushback": 0
+        "Pushback": 20,
+        "AnimationSpeed": 0.5,
+        "Projectile" : "smgProjectile",
+         "ShotSound" : "pistole2"
     },
     {
         "Name": "Assault Rifle",
@@ -77,9 +83,27 @@
         "MaxStack": 1,
         "ModelDepth": 2,
         "Damage": 10,
-        "ReloadTime": 400,
+        "ReloadTime": 5,
         "Spread": 0,
-        "Pushback": 0
+        "Pushback": 15,
+        "AnimationSpeed": 0.6,
+        "Projectile" : "assaultProjectile",
+         "ShotSound" : "pistole2"
+    },
+    {
+        "Name": "Ar Rifle",
+        "Type": "weapon",
+        "Category" : "weapons",
+        "Sprite": "weapon4",
+        "MaxStack": 1,
+        "ModelDepth": 3,
+        "Damage": 30,
+        "ReloadTime": 40,
+        "Spread": 0,
+        "Pushback": 30,
+        "AnimationSpeed": 0.25,
+        "Projectile" : "arProjectile",
+         "ShotSound" : "ar"
     },
     {
         "Name": "Aluminium Drill Bit",

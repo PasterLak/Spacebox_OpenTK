@@ -264,12 +264,32 @@ namespace Spacebox.Game.Generation
             needsToRegenerateMesh = true;
         }
 
+        public void DamageBlock(Vector3Byte blockPos, Vector3SByte normal, byte damage)
+        {
+            if (!IsInRange(blockPos.X, blockPos.Y, blockPos.Z))
+                return;
+
+            var block = Blocks[blockPos.X, blockPos.Y, blockPos.Z];
+
+            if((((short)block.Durability) - damage) > 0)
+            {
+                block.Durability -= damage;
+            }
+            else
+            {
+                block.Durability = 0;
+                RemoveBlock(blockPos.X, blockPos.Y, blockPos.Z, normal.X, normal.Y, normal.Z,false);
+            }
+        }
         public void RemoveBlock(Vector3Byte blockPos, Vector3SByte normal)
         {
-            RemoveBlock(blockPos.X, blockPos.Y, blockPos.Z, normal.X, normal.Y, normal.Z);
+            RemoveBlock(blockPos.X, blockPos.Y, blockPos.Z, normal.X, normal.Y, normal.Z,true);
         }
-
         public void RemoveBlock(byte x, byte y, byte z, sbyte xNormal, sbyte yNormal, sbyte zNormal)
+        {
+            RemoveBlock(x, y, z, xNormal, yNormal, zNormal, true);
+        }
+        public void RemoveBlock(byte x, byte y, byte z, sbyte xNormal, sbyte yNormal, sbyte zNormal, bool spawnDrop)
         {
             if (!IsInRange(x, y, z))
                 return;
@@ -279,7 +299,8 @@ namespace Spacebox.Game.Generation
             if (Blocks[x, y, z].IsTransparent)
             {
                 World.DestructionManager.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
-                World.DropEffectManager.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
+                if (spawnDrop)
+                    World.DropEffectManager.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
             }
             else
             {
@@ -287,6 +308,7 @@ namespace Spacebox.Game.Generation
                 {
                     World.DestructionManager.DestroyBlock(worldBlockPosition,
                         Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
+                    if(spawnDrop)
                     World.DropEffectManager.DestroyBlock(worldBlockPosition,
                         Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
                 }
@@ -294,7 +316,8 @@ namespace Spacebox.Game.Generation
                 {
                     World.DestructionManager.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor,
                         Blocks[x, y, z]);
-                    World.DropEffectManager.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor,
+                    if (spawnDrop)
+                        World.DropEffectManager.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor,
                         Blocks[x, y, z]);
                 }
             }

@@ -1,9 +1,11 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.common.Animation;
 using Spacebox.Common;
+using Spacebox.Common.Animation;
 using Spacebox.Common.Audio;
 using Spacebox.Common.Physics;
+using Spacebox.Game.Animations;
 using Spacebox.Game.Effects;
-using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
 
 namespace Spacebox.Game.Player;
@@ -15,9 +17,16 @@ public class InteractionShoot : InteractionMode
 
     private ItemSlot selectedItemSlot;
     private AnimatedItemModel model;
-    public static BlockMiningEffect BlockMiningEffect;
+    public static BlockMiningEffect BlockMiningEffect;// needs dispose
 
-    public static LineRenderer lineRenderer;
+    public static LineRenderer lineRenderer;// needs dispose
+
+    public static ProjectilesPool ProjectilesPool;  // needs dispose
+    private ProjectileParameters projectileParameters;
+    private WeaponItem weapon;
+  
+    private float _time = 0;
+    private bool canShoot = false;
     public InteractionShoot(ItemSlot itemslot)
     {
         selectedItemSlot = itemslot;
@@ -30,12 +39,34 @@ public class InteractionShoot : InteractionMode
                 texture, ShaderManager.GetShader("Shaders/particle"));
         }
 
+
+
+           
+
         UpdateItemSlot(itemslot);
 
         lineRenderer = new LineRenderer();
         lineRenderer.Thickness = 0.02f;
         lineRenderer.Color = Color4.Blue;
         lineRenderer.Enabled = true;
+
+        if (ProjectilesPool == null)
+        {
+            ProjectilesPool = new ProjectilesPool(20);
+        }
+
+        var weapone = itemslot.Item as WeaponItem;
+        if (weapone != null)
+        {
+            projectileParameters = GameBlocks.Projectiles[weapone.ProjectileID];
+            weapon = weapone;
+            startPos = model.Position;
+
+            blockDestroy = new AudioSource(GameBlocks.Sounds[weapone.ShotSound]);
+            blockDestroy.Volume = 1f;
+
+        }
+
     }
 
     public void UpdateItemSlot(ItemSlot itemslot)
@@ -47,7 +78,10 @@ public class InteractionShoot : InteractionMode
     }
     public override void OnEnable()
     {
+        _time = 0;
+        model?.SetAnimation(true);
 
+        
     }
 
     public override void OnDisable()
@@ -55,30 +89,70 @@ public class InteractionShoot : InteractionMode
 
         selectedItemSlot = null;
         //BlockMiningEffect.Enabled = false;
-        model?.SetAnimation(false);
-
+        model.Animator.Clear();
+        // model?.SetAnimation(false);
+      model.Position = startPos;
         lineRenderer.ClearPoints();
     }
-
+    private Vector3 startPos;
     public override void Update(Astronaut player)
     {
+
+        if (_time < weapon.ReloadTime * 0.05f)
+        {
+            _time += Time.Delta;
+        }
+        else
+        {
+            if (canShoot == false && Input.IsMouseButton(0))
+            {
+                canShoot = true;
+                model?.SetAnimation(false);
+                model?.SetAnimation(true);
+                //model.Position = startPos;
+                model.Animator.Clear();
+                if (model != null)
+                    //model.Animator.speed =  1f ;
+                    model.Animator.AddAnimation(new ShootAnimation(startPos, model.Position - new Vector3(0.001f * weapon.Pushback, 0, 0), 0.05f));
+                model.Animator.speed = weapon.AnimationSpeed;
+                //model?.SetAnimation(true);
+
+                blockDestroy.Play();
+            }
+        }
+
+
         if (!player.CanMove)
         {
-            model?.SetAnimation(false);
+            //model?.SetAnimation(false);
             return;
         }
 
-        if (Input.IsMouseButtonDown(0))
+        if (canShoot && Input.IsMouseButton(0))
         {
-            model?.SetAnimation(true);
+
+            canShoot = false;
+
             lineRenderer.ClearPoints();
 
 
-            lineRenderer.AddPoint(player.Position + player.Front);
-            int count = 100;
+            //lineRenderer.AddPoint(player.Position + player.Front);
+            int count = 10;
             int count1 = 0;
             Ray ray = new Common.Physics.Ray(player.Position, player.Front, 1000);
-            if (World.CurrentSector.Raycast(ray, out var hit))
+
+
+            var projectile = ProjectilesPool.Take();
+
+
+            if (projectileParameters == null) return;
+
+
+            projectile.Initialize(new Ray(Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.1f, player.Front, 1f), projectileParameters);
+
+            _time = 0;
+
+            /*if (World.CurrentSector.Raycast(ray, out var hit))
             {
 
                 lineRenderer.AddPoint(hit.position);
@@ -105,14 +179,15 @@ public class InteractionShoot : InteractionMode
             {
                 lineRenderer.AddPoint(ray.GetPoint(1000));
                 // Debug.Log($"Not gun hit!");
-            }
+            }*/
 
             // Debug.Log($"hits "+ count1);
 
         }
         if (Input.IsMouseButtonUp(0))
         {
-            model?.SetAnimation(false);
+            //model?.SetAnimation(false);
+           // model.Animator.AddAnimation(new MoveAnimation(startPos, model.Position - new Vector3(0.001f * weapon.Pushback, 0, 0), weapon.AnimationSpeed, false));
         }
 
     }

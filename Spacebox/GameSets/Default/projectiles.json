@@ -1,0 +1,47 @@
+[
+    {
+        "Name": "pistoleProjectile",
+        "Speed": 12,
+        "MaxTravelDistance": 50,
+        "Length": 0.4,
+        "Thickness": 0.05,
+        "Color": {"x": 0,"y": 0,"z": 255},
+        "Damage": 2,
+        "RicochetAngle": 30,
+        "PossibleRicochets": 3
+    },
+    {
+        "Name": "smgProjectile",
+        "Speed": 18,
+        "MaxTravelDistance": 100,
+        "Length": 0.75,
+        "Thickness": 0.05,
+        "Color": {"x": 0,"y": 0,"z": 255},
+        "Damage": 3,
+        "RicochetAngle": 25,
+        "PossibleRicochets": 3
+    },
+    {
+        "Name": "assaultProjectile",
+        "Speed": 24,
+        "MaxTravelDistance": 150,
+        "Length": 0.65,
+        "Thickness": 0.05,
+        "Color": {"x": 0,"y": 255,"z": 0},
+        "Damage": 5,
+        "RicochetAngle": 20,
+        "PossibleRicochets": 2
+    },
+    {
+        "Name": "arProjectile",
+        "Speed": 20,
+        "MaxTravelDistance": 80,
+        "Length": 0.5,
+        "Thickness": 0.2,
+        "Color": {"x": 178,"y": 0,"z": 255},
+        "Damage": 50,
+        "RicochetAngle": 70,
+        "PossibleRicochets": 5
+    }
+
+]

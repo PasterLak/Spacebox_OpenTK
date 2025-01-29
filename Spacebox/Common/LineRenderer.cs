@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Spacebox.Common
 {
-    public class LineRenderer : IDisposable
+    public class LineRenderer : Node3D, IDisposable
     {
         public bool Enabled = true;
         private Shader _shader;
@@ -29,8 +29,6 @@ namespace Spacebox.Common
                 _geometryNeedsUpdate = true;
             }
         }
-
-        private Matrix4 Model = Matrix4.Identity;
 
         private float[] _vertices;
         private uint[] _indices;
@@ -157,11 +155,7 @@ namespace Spacebox.Common
 
             _shader.Use();
 
-            var finalModel = Model;
-            if (camera.CameraRelativeRender)
-            {
-                finalModel = Matrix4.CreateTranslation(-camera.Position) * finalModel;
-            }
+            var finalModel = GetModelMatrix();
 
             _shader.SetMatrix4("uModel", finalModel, false);
             _shader.SetMatrix4("uView", camera.GetViewMatrix(), false);
