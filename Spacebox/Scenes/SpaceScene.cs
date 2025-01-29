@@ -434,9 +434,12 @@ namespace Spacebox.Scenes
             blockSelector.Draw(player);
 
             
-            if(InteractionShoot.sphereRenderer!= null)
+            if(InteractionShoot.Instance!= null)
             {
-                InteractionShoot.sphereRenderer.Render();   
+                if (InteractionShoot.Instance.sphereRenderer != null)
+                {
+                }
+                    InteractionShoot.Instance.sphereRenderer.Render();   
             }
 
 

@@ -29,7 +29,7 @@ namespace Spacebox.Game.Generation
 
         public void SetEmissionWithoutRedrawChunk(bool state)
         {
-            enableEmission = state;
+            EnableEmission = state;
             lasState = state;
 
             if (state)
@@ -46,10 +46,10 @@ namespace Spacebox.Game.Generation
         }
         public void SetEmission(bool state)
         {
+
+            EnableEmission = state;
             
-            enableEmission = state;
-            
-            if(chunk != null && enableEmission != lasState)
+            if(chunk != null && EnableEmission != lasState)
             {
                 if (state)
                 {

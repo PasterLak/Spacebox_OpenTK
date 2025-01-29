@@ -32,7 +32,7 @@ namespace Spacebox.Game.Player
         public Action<Projectile> OnDespawn;
 
         public static AudioSource ricochetSound;
-        public static AudioSource hitSound;
+        public  AudioSource hitSound;
         public static AudioSource explosionSound;
 
         public Projectile()

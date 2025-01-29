@@ -64,7 +64,7 @@ namespace Spacebox.Game.Generation
                     if (nChunk == null) continue;
 
                     var nb = nChunk.Blocks[bx, by, bz];
-                    if (!(nb.IsAir() || nb.IsTransparent)) continue;
+                    if (!(nb.IsAir || nb.IsTransparent)) continue;
 
                     const float att = 0.8f;
                     var newLvl = lvl * att;

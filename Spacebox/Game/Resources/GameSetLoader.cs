@@ -152,11 +152,13 @@ namespace Spacebox.Game.Resources
 
             try
             {
-                string[] files = GetWavFilesRecursive(audioPath);
+                string[] files = GetFilesRecursive(audioPath, new List<string> { "*.wav", "*.ogg" });
                 foreach (string file in files)
                 {
                     ProcessSoundFile(file);
                 }
+
+                GameBlocks.Sounds.Add("error", SoundManager.AddClip("error"));
             }
             catch (Exception ex)
             {
@@ -164,10 +166,20 @@ namespace Spacebox.Game.Resources
             }
         }
 
-        private static string[] GetWavFilesRecursive(string rootPath)
+        private static string[] GetFilesRecursive(string rootPath, IEnumerable<string> extensions)
         {
-            return Directory.GetFiles(rootPath, "*.wav", SearchOption.AllDirectories);
+
+            var files = new List<string>();
+
+            foreach (var ext in extensions)
+            {
+                var pattern = ext.StartsWith("*.") ? ext : $"*.{ext.TrimStart('.')}";
+                files.AddRange(Directory.GetFiles(rootPath, pattern, SearchOption.AllDirectories));
+            }
+
+            return files.ToArray();
         }
+
 
         private static void ProcessSoundFile(string file)
         {
@@ -196,7 +208,7 @@ namespace Spacebox.Game.Resources
                 air.Mass = 0;
                 air.Category = "";
                 air.Sides = "sand";
-                
+
 
                 GameBlocks.RegisterBlock(air);
 
@@ -241,11 +253,11 @@ namespace Spacebox.Game.Resources
 
                     if (block.Durability <= byte.MaxValue)
                     {
-                        blockData.Health = (byte)block.Durability;
+                        blockData.Durability = (byte)block.Durability;
                     }
                     else
                     {
-                        blockData.Health = byte.MaxValue;
+                        blockData.Durability = byte.MaxValue;
                     }
 
                     if (block.PowerToDrill <= byte.MaxValue)
@@ -275,7 +287,7 @@ namespace Spacebox.Game.Resources
 
         private static void GiveBlockSounds(BlockData blockData, ModBlockData modBlockData)
         {
-            if(!GameBlocks.Sounds.ContainsKey(modBlockData.SoundPlace))
+            if (!GameBlocks.Sounds.ContainsKey(modBlockData.SoundPlace))
             {
                 blockData.SetDefaultPlaceSound();
                 Debug.Error($"[GamesetLoader] Block <{modBlockData.Name}> has a wrong place sound! - {modBlockData.SoundPlace}. Selected a default one");
@@ -295,7 +307,7 @@ namespace Spacebox.Game.Resources
             }
         }
 
-        private static string[] BlockTypes = { "block", "crusher", "furnace","radar" ,"craftingtable", "disassembler", "interactive", "door", "light" };
+        private static string[] BlockTypes = { "block", "crusher", "furnace", "radar", "craftingtable", "disassembler", "interactive", "door", "light" };
 
         private static bool ValidateBlockType(string type)
         {
@@ -316,17 +328,17 @@ namespace Spacebox.Game.Resources
 
                 short id = 0;
 
-                foreach(var proj in projectiles)
+                foreach (var proj in projectiles)
                 {
                     proj.Name = proj.Name.ToLower();
 
-                    if(GameBlocks.Projectiles.ContainsKey(id))
+                    if (GameBlocks.Projectiles.ContainsKey(id))
                     {
                         Debug.Error($"[GamesetLoader] Error loading projectiles: projectile with the name {proj.Name} is already registered and was skpped! Use a different name!");
                         continue;
                     }
 
-                    if(proj.Damage > byte.MaxValue) proj.Damage = byte.MaxValue;
+                    if (proj.Damage > byte.MaxValue) proj.Damage = byte.MaxValue;
 
                     var newProj = new ProjectileParameters(id++, proj);
 
@@ -427,7 +439,7 @@ namespace Spacebox.Game.Resources
                     }
                     if (item2 == null) continue;
 
-                    if(item.Id == item2.Id)
+                    if (item.Id == item2.Id)
                     {
                         Debug.Error($"[GameSetLoader] Recipes: product was not found - {r.Ingredient.Item} . This recipe was skipped");
                         continue;
@@ -465,16 +477,16 @@ namespace Spacebox.Game.Resources
                         if (!GameBlocks.CraftingCategories.ContainsKey(category.Id))
                         {
 
-                            if(category.Name != "")
+                            if (category.Name != "")
                             {
                                 var item = GameBlocks.GetItemByName(category.Icon);
 
-                                if(item != null)
+                                if (item != null)
                                 {
                                     category.IconPtr = item.IconTextureId;
                                 }
                             }
-                            
+
 
 
                             GameBlocks.CraftingCategories.Add(category.Id, category);
@@ -556,7 +568,7 @@ namespace Spacebox.Game.Resources
                         continue;
                     }
 
-                    if(item2.Id == product.Item.Id)
+                    if (item2.Id == product.Item.Id)
                     {
                         craftItself = true;
                     }
@@ -615,7 +627,16 @@ namespace Spacebox.Game.Resources
             weaponItem.ReloadTime = data.ReloadTime;
             weaponItem.AnimationSpeed = data.AnimationSpeed;
             weaponItem.Pushback = data.Pushback;
-            weaponItem.ShotSound = data.ShotSound;
+            if (GameBlocks.Sounds.ContainsKey(data.ShotSound))
+            {
+                weaponItem.ShotSound = data.ShotSound;
+            }
+            else
+            {
+                Debug.Error($"[GameSetLoader] RegisterWeaponItem: ShotSound with name <{data.ShotSound}> for weapone <{data.Name}>  was not found!");
+                weaponItem.ShotSound = "error";
+            }
+
             weaponItem.PowerUsage = data.PowerUsage;
 
             GameBlocks.RegisterItem(weaponItem, data.Sprite);
@@ -804,7 +825,7 @@ namespace Spacebox.Game.Resources
             if (ModInfo.ItemsOnStart == null) return;
             if (ModInfo.ItemsOnStart.Count == 0) return;
 
-            if(player.GameMode == GameMode.Spectator)
+            if (player.GameMode == GameMode.Spectator)
             {
                 return;
             }

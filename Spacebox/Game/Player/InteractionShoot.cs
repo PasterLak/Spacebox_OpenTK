@@ -17,7 +17,8 @@ namespace Spacebox.Game.Player;
 public class InteractionShoot : InteractionMode
 {
 
-    private static AudioSource blockDestroy;
+    public static InteractionShoot Instance;
+    private static AudioSource shotSound;
     private InteractiveBlock lastInteractiveBlock;
     private ItemSlot selectedItemSlot;
     private AnimatedItemModel model;
@@ -32,9 +33,10 @@ public class InteractionShoot : InteractionMode
     private float _time = 0;
     private bool canShoot = false;
 
-    public static SphereRenderer sphereRenderer;
+    public SphereRenderer sphereRenderer;
     public InteractionShoot(ItemSlot itemslot)
     {
+        Instance = this;
         selectedItemSlot = itemslot;
         AllowReload = true;
         if (BlockMiningEffect == null)
@@ -68,8 +70,8 @@ public class InteractionShoot : InteractionMode
             weapon = weapone;
             startPos = model.Position;
 
-            blockDestroy = new AudioSource(GameBlocks.Sounds[weapone.ShotSound]);
-            blockDestroy.Volume = 1f;
+            shotSound = new AudioSource(GameBlocks.Sounds[weapone.ShotSound]);
+            shotSound.Volume = 1f;
         }
 
         if (sphereRenderer == null)
@@ -78,7 +80,8 @@ public class InteractionShoot : InteractionMode
             //sphereRenderer.Color = ne;
             sphereRenderer.Color = new Color4(1, 1, 1, 0.1f);
             sphereRenderer.TextureId = TextureManager.GetTexture("Resources/Textures/arSphere.png").Handle;
-            
+            sphereRenderer.Scale = new Vector3(1, 1, 1);
+
         }
         else
         {
@@ -116,6 +119,8 @@ public class InteractionShoot : InteractionMode
         model.Position = startPos;
         lineRenderer.ClearPoints();
         sphereRenderer.Enabled = false;
+
+        sphereRenderer.Dispose();
     }
     private Vector3 startPos;
 
@@ -162,6 +167,8 @@ public class InteractionShoot : InteractionMode
             {
                 renderSphere = false;
                 sphereRenderer.Enabled = false;
+                alpha = 1f;
+                sphereRenderer.Scale = new Vector3(1, 1, 1);
                 // sphereRenderer.Position = despawnPos;
             }
         }
@@ -187,7 +194,7 @@ public class InteractionShoot : InteractionMode
                 model.Animator.speed = weapon.AnimationSpeed;
                 //model?.SetAnimation(true);
 
-                blockDestroy.Play();
+                shotSound.Play();
             }
         }
 
@@ -215,10 +222,11 @@ public class InteractionShoot : InteractionMode
             }
         }
 
-            if (canShoot && Input.IsMouseButton(0))
+        if (canShoot && Input.IsMouseButton(0))
         {
             if (player.PowerBar.StatsData.Count < weapon.PowerUsage) return;
             canShoot = false;
+
             player.PowerBar.StatsData.Decrement(weapon.PowerUsage);
             lineRenderer.ClearPoints();
 
@@ -231,14 +239,15 @@ public class InteractionShoot : InteractionMode
 
             var projectile = ProjectilesPool.Take();
 
-            if (weapon.ProjectileID == 3) 
-            projectile.OnDespawn += SetSphere;
+            if (weapon.ProjectileID == 3)
+                projectile.OnDespawn += SetSphere;
 
             if (projectileParameters == null) return;
 
 
             projectile.Initialize(new Ray(Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.05f, player.Front, 1f), projectileParameters);
-
+            alpha = 1f;
+            sphereRenderer.Scale = new Vector3(1, 1, 1);
             _time = 0;
 
             /*if (World.CurrentSector.Raycast(ray, out var hit))

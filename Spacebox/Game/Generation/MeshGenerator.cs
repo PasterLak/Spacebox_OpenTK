@@ -77,7 +77,7 @@ namespace Spacebox.Game.Generation
                     {
                         var block = _blocks[x, y, z];
                         if (block == null) continue;
-                        if (block.IsAir()) continue;
+                        if (block.IsAir) continue;
                         byte m = block.Mass;
                         mass += m;
                         if (x < xMin) xMin = x;
@@ -126,7 +126,7 @@ namespace Spacebox.Game.Generation
                                 int vStart = vertexCount / BuffersData.FloatsPerVertexBlock;
                                 float[] AO = new float[4];
                                 byte newMask = CreateMask(face, new Vector3SByte(x, y, z), normal);
-                                bool isLightOrTransparent = block.IsTransparent || block.IsLight();
+                                bool isLightOrTransparent = block.IsTransparent || block.IsLight;
                                 var shading = isLightOrTransparent ? AOVoxels.GetLightedPoints : AOShading.GetAO(newMask);
                                 bool same3 = false;
                                 bool diagonal = false;
@@ -192,7 +192,7 @@ namespace Spacebox.Game.Generation
                                         vertices[vertexCount++] = 1f;
                                     }
 
-                                    vertices[vertexCount++] = block.enableEmission ? 1f : 0f;
+                                    vertices[vertexCount++] = block.EnableEmission ? 1f : 0f;
                                 }
 
                                 if (_EnableAO)
@@ -275,7 +275,7 @@ namespace Spacebox.Game.Generation
             if (IsInRange(x, y, z))
             {
                 var b = _blocks[x, y, z];
-                if (b.IsAir()) return false;
+                if (b.IsAir) return false;
                 if (b.IsTransparent) return false;
                 if (IsLightBlock(x, y, z)) return false;
                 return true;
@@ -288,7 +288,7 @@ namespace Spacebox.Game.Generation
                     var b = chunk.GetBlock(local);
                     if (b != null)
                     {
-                        if (b.IsAir()) return false;
+                        if (b.IsAir) return false;
                         if (b.IsTransparent) return false;
                         if (b.LightLevel > 0) return false;
                         return true;
@@ -339,13 +339,13 @@ namespace Spacebox.Game.Generation
                 {
                     var wrap = WrapBlockCoordinate(x, y, z, Size);
                     var b = nch.GetBlock(wrap);
-                    if (b != null) return b.IsAir() || b.IsTransparent;
+                    if (b != null) return b.IsAir || b.IsTransparent;
                     return true;
                 }
                 return true;
             }
             var bl = _blocks[x, y, z];
-            return bl.IsAir() || bl.IsTransparent;
+            return bl.IsAir || bl.IsTransparent;
         }
 
         public static Vector3SByte WrapBlockCoordinate(int x, int y, int z, byte Size)

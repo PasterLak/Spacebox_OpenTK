@@ -684,7 +684,7 @@ namespace Spacebox.Game.Generation
                                 for (int z = startZ; z <= endZ; z++)
                                 {
                                     Block b = c.Blocks[x, y, z];
-                                    if (b != null && !b.IsAir())
+                                    if (b != null && !b.IsAir)
                                     {
                                         c.Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
                                         c.IsModified = true;
@@ -764,7 +764,7 @@ namespace Spacebox.Game.Generation
                                 for (int z = startZ; z <= endZ; z++)
                                 {
                                     Block b = c.Blocks[x, y, z];
-                                    if (b == null || b.IsAir())
+                                    if (b == null || b.IsAir)
                                     {
                                         c.Blocks[x, y, z] = GameBlocks.CreateBlockFromId(blockId);
                                         c.IsModified = true;
