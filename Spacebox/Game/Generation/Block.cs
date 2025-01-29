@@ -62,6 +62,22 @@ namespace Spacebox.Game.Generation
                 LightLevel = 15;
             }
         }
+        public bool Is<T>() where T : Block
+        {
+            return this is T;
+        }
+        public bool Is<T>(out T res) where T : Block
+        {
+            res = default;
+
+            if (this is T)
+            {
+                res = this as T;
+                return true;
+            }
+
+            return false;
+        }
 
         public bool IsAir()
         {

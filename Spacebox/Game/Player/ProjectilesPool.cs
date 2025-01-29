@@ -3,11 +3,11 @@
 namespace Spacebox.Game.Player
 {
 
-   /* public interface IPoolController <T> where T : IPoolable<T>
-    {
-        IPoolable<T> Take();
-        void PutBack(T item);
-    }*/
+    /* public interface IPoolController <T> where T : IPoolable<T>
+     {
+         IPoolable<T> Take();
+         void PutBack(T item);
+     }*/
     public class ProjectilesPool
     {
 
@@ -54,6 +54,6 @@ namespace Spacebox.Game.Player
             }
         }
 
-     
+
     }
 }

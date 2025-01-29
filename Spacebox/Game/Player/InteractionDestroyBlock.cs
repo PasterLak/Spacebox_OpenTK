@@ -112,7 +112,7 @@ public class InteractionDestroyBlock : InteractionMode
             if (Input.IsKeyDown(Keys.KeyPad1))
             {
                 BlockPointer p = new BlockPointer(hit);
-               
+
                 CreativeTools.AddBlock(p);
             }
 
@@ -141,16 +141,18 @@ public class InteractionDestroyBlock : InteractionMode
             }
 
 
-            lastInteractiveBlock = hit.block as InteractiveBlock;
-
-            if (lastInteractiveBlock == null)
+            if (hit.block.Is<InteractiveBlock>(out var b))
             {
-
+                lastInteractiveBlock = b;
+                UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
+            }
+            else
+            {
                 CenteredText.Hide();
-                return;
+
             }
 
-            UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
+
         }
         else
         {

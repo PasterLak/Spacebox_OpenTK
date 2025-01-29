@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Game.Generation;
 
 namespace Spacebox.Game
 {
@@ -44,6 +45,24 @@ namespace Spacebox.Game
             Name = name;
           
             ModelDepth = modelDepth;
+        }
+
+        public bool Is<T>() where T : Item
+        {
+            return this is T;
+        }
+
+        public bool Is<T>(out T res) where T : Item
+        {
+            res = default;
+
+            if (this is T)
+            {
+                res = this as T;
+                return true;
+            }
+
+            return false;
         }
 
         public Item Copy()

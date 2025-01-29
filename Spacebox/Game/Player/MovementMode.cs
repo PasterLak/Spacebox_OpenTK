@@ -35,8 +35,13 @@ public class MovementMode : GameModeBase
         SetCameraSway(player.CameraSway);
 
         if (flySpeedUpAudio == null)
+        {
             flySpeedUpAudio = new AudioSource(SoundManager.GetClip("flySpeedUp"));
-        flySpeedUpAudio.IsLooped = true;
+            flySpeedUpAudio.IsLooped = true;
+            flySpeedUpAudio.Volume = 0.1f;
+        }
+           
+       
 
         wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
         wallhitAudio2 = new AudioSource(SoundManager.GetClip("wallHit2"));

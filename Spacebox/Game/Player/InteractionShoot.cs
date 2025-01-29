@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.common.Animation;
 using Spacebox.Common;
 using Spacebox.Common.Animation;
@@ -7,7 +8,9 @@ using Spacebox.Common.Physics;
 using Spacebox.FPS;
 using Spacebox.Game.Animations;
 using Spacebox.Game.Effects;
+using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
+using Spacebox.GUI;
 
 namespace Spacebox.Game.Player;
 
@@ -15,7 +18,7 @@ public class InteractionShoot : InteractionMode
 {
 
     private static AudioSource blockDestroy;
-
+    private InteractiveBlock lastInteractiveBlock;
     private ItemSlot selectedItemSlot;
     private AnimatedItemModel model;
     public static BlockMiningEffect BlockMiningEffect;// needs dispose
@@ -75,6 +78,7 @@ public class InteractionShoot : InteractionMode
             //sphereRenderer.Color = ne;
             sphereRenderer.Color = new Color4(1, 1, 1, 0.1f);
             sphereRenderer.TextureId = TextureManager.GetTexture("Resources/Textures/arSphere.png").Handle;
+            
         }
         else
         {
@@ -98,7 +102,7 @@ public class InteractionShoot : InteractionMode
     {
         _time = 0;
         model?.SetAnimation(true);
-
+        sphereRenderer.Enabled = false;
 
     }
 
@@ -111,6 +115,7 @@ public class InteractionShoot : InteractionMode
         // model?.SetAnimation(false);
         model.Position = startPos;
         lineRenderer.ClearPoints();
+        sphereRenderer.Enabled = false;
     }
     private Vector3 startPos;
 
@@ -125,7 +130,7 @@ public class InteractionShoot : InteractionMode
         sphereRenderer.Position = despawnPos;
         sphereRenderer.Scale = new Vector3(1, 1, 1);
         sphereRenderer.Enabled = true;
-        alpha = 0.2f;
+        alpha = 0.3f;
         renderSphere = true;
     }
 
@@ -193,7 +198,24 @@ public class InteractionShoot : InteractionMode
             return;
         }
 
-        if (canShoot && Input.IsMouseButton(0))
+        Ray ray2 = new Ray(player.Position, player.Front, InteractiveBlock.InteractionDistance);
+        HitInfo hit;
+
+        if (World.CurrentSector.Raycast(ray2, out hit))
+        {
+            if (hit.block.Is<InteractiveBlock>(out var b))
+            {
+                lastInteractiveBlock = b;
+                UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
+            }
+            else
+            {
+                CenteredText.Hide();
+
+            }
+        }
+
+            if (canShoot && Input.IsMouseButton(0))
         {
             if (player.PowerBar.StatsData.Count < weapon.PowerUsage) return;
             canShoot = false;
@@ -208,6 +230,8 @@ public class InteractionShoot : InteractionMode
 
 
             var projectile = ProjectilesPool.Take();
+
+            if (weapon.ProjectileID == 3) 
             projectile.OnDespawn += SetSphere;
 
             if (projectileParameters == null) return;
@@ -255,6 +279,29 @@ public class InteractionShoot : InteractionMode
             // model.Animator.AddAnimation(new MoveAnimation(startPos, model.Position - new Vector3(0.001f * weapon.Pushback, 0, 0), weapon.AnimationSpeed, false));
         }
 
+    }
+
+    private void UpdateInteractive(InteractiveBlock block, Astronaut player, Chunk chunk, Vector3 hitPos)
+    {
+        var disSq = Vector3.DistanceSquared(player.Position, hitPos);
+
+        if (disSq > InteractiveBlock.InteractionDistanceSquared)
+        {
+            CenteredText.Hide();
+        }
+        else
+        {
+            CenteredText.Show();
+            if (ToggleManager.OpenedWindowsCount == 0)
+            {
+                if (Input.IsMouseButtonDown(MouseButton.Right))
+                {
+                    block.chunk = chunk;
+                    block.Use(player);
+
+                }
+            }
+        }
     }
 
     private void DestroyBlock(HitInfo hit)

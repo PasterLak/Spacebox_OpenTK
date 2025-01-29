@@ -91,7 +91,7 @@ namespace Spacebox.Game.GUI
             if (SelectedSlot == null) return false;
             if (!SelectedSlot.HasItem) return false;
             //if (InventoryUI.IsVisible) return false;
-            return SelectedSlot.Item is T;
+            return SelectedSlot.Item.Is<T>();
         }
 
         public static bool IsHoldingConsumable() => IsHoldingItem<ConsumableItem>();
