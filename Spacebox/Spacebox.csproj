@@ -40,6 +40,7 @@
 	  <None Remove="gamesets\default\projectiles.json" />
 	  <None Remove="gamesets\default\recipes.json" />
 	  <None Remove="Shaders\lineRenderer.glsl" />
+	  <None Remove="shaders\sphere.glsl" />
 	</ItemGroup>
 
 	<ItemGroup>

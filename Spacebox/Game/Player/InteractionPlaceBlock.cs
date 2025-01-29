@@ -61,7 +61,7 @@ public class InteractionPlaceBlock : InteractionMode
         return selectorPositionWorld;
     }
 
-    const float MinDistanceToBlock = 1.37f * 1.37f;
+    const float MinDistanceToBlock = 1.25f * 1.25f; // 1.37
     public override void Update(Astronaut player)
     {
         if (!player.CanMove)

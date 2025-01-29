@@ -616,6 +616,7 @@ namespace Spacebox.Game.Resources
             weaponItem.AnimationSpeed = data.AnimationSpeed;
             weaponItem.Pushback = data.Pushback;
             weaponItem.ShotSound = data.ShotSound;
+            weaponItem.PowerUsage = data.PowerUsage;
 
             GameBlocks.RegisterItem(weaponItem, data.Sprite);
         }

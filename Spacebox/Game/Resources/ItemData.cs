@@ -36,6 +36,7 @@ namespace Spacebox.Game.Resources
         public byte Damage { get; set; } = 0;
         public int ReloadTime { get; set; } = 500;
         public byte Spread { get; set; } = 0;
+        public byte PowerUsage { get; set; } = 0;
         public byte Pushback { get; set; } = 0;
         public float AnimationSpeed { get; set; } = 1f;
         public string Projectile { get; set; } = "";

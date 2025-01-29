@@ -4,6 +4,7 @@ using Spacebox.Common;
 using Spacebox.Common.Animation;
 using Spacebox.Common.Audio;
 using Spacebox.Common.Physics;
+using Spacebox.FPS;
 using Spacebox.Game.Animations;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Physics;
@@ -24,9 +25,11 @@ public class InteractionShoot : InteractionMode
     public static ProjectilesPool ProjectilesPool;  // needs dispose
     private ProjectileParameters projectileParameters;
     private WeaponItem weapon;
-  
+
     private float _time = 0;
     private bool canShoot = false;
+
+    public static SphereRenderer sphereRenderer;
     public InteractionShoot(ItemSlot itemslot)
     {
         selectedItemSlot = itemslot;
@@ -41,7 +44,7 @@ public class InteractionShoot : InteractionMode
 
 
 
-           
+
 
         UpdateItemSlot(itemslot);
 
@@ -64,10 +67,25 @@ public class InteractionShoot : InteractionMode
 
             blockDestroy = new AudioSource(GameBlocks.Sounds[weapone.ShotSound]);
             blockDestroy.Volume = 1f;
+        }
+
+        if (sphereRenderer == null)
+        {
+            sphereRenderer = new SphereRenderer(Camera.Main.Position, 0.5f, 8, 8);
+            //sphereRenderer.Color = ne;
+            sphereRenderer.Color = new Color4(1, 1, 1, 0.1f);
+            sphereRenderer.TextureId = TextureManager.GetTexture("Resources/Textures/arSphere.png").Handle;
+        }
+        else
+        {
+            sphereRenderer.Scale = new Vector3(1, 1, 1);
 
         }
 
+
     }
+
+    bool renderSphere = false;
 
     public void UpdateItemSlot(ItemSlot itemslot)
     {
@@ -81,7 +99,7 @@ public class InteractionShoot : InteractionMode
         _time = 0;
         model?.SetAnimation(true);
 
-        
+
     }
 
     public override void OnDisable()
@@ -91,12 +109,57 @@ public class InteractionShoot : InteractionMode
         //BlockMiningEffect.Enabled = false;
         model.Animator.Clear();
         // model?.SetAnimation(false);
-      model.Position = startPos;
+        model.Position = startPos;
         lineRenderer.ClearPoints();
     }
     private Vector3 startPos;
+
+    private void SetSphere(Projectile p)
+    {
+
+        p.OnDespawn -= SetSphere;
+
+
+        despawnPos = p.Position;
+
+        sphereRenderer.Position = despawnPos;
+        sphereRenderer.Scale = new Vector3(1, 1, 1);
+        sphereRenderer.Enabled = true;
+        alpha = 0.2f;
+        renderSphere = true;
+    }
+
+    private Vector3 despawnPos = Vector3.Zero;
+
+    float alpha = 1;
     public override void Update(Astronaut player)
     {
+
+        if (renderSphere)
+
+        {
+
+            const int sp = 800;
+            sphereRenderer.Scale += new Vector3(sp, sp, sp) * Time.Delta;
+
+            if (alpha > 0)
+            {
+                alpha -= Time.Delta;
+
+            }
+            else
+            {
+                alpha = 0;
+            }
+            sphereRenderer.Color = new Color4(1, 1, 1, alpha);
+
+            if (sphereRenderer.Scale.X > 2000 || alpha == 0)
+            {
+                renderSphere = false;
+                sphereRenderer.Enabled = false;
+                // sphereRenderer.Position = despawnPos;
+            }
+        }
 
         if (_time < weapon.ReloadTime * 0.05f)
         {
@@ -104,6 +167,8 @@ public class InteractionShoot : InteractionMode
         }
         else
         {
+            if (player.PowerBar.StatsData.Count < weapon.PowerUsage) return;
+
             if (canShoot == false && Input.IsMouseButton(0) && ToggleManager.OpenedWindowsCount < 1 && !Debug.IsVisible)
             {
                 canShoot = true;
@@ -130,9 +195,9 @@ public class InteractionShoot : InteractionMode
 
         if (canShoot && Input.IsMouseButton(0))
         {
-
+            if (player.PowerBar.StatsData.Count < weapon.PowerUsage) return;
             canShoot = false;
-
+            player.PowerBar.StatsData.Decrement(weapon.PowerUsage);
             lineRenderer.ClearPoints();
 
 
@@ -143,12 +208,12 @@ public class InteractionShoot : InteractionMode
 
 
             var projectile = ProjectilesPool.Take();
-
+            projectile.OnDespawn += SetSphere;
 
             if (projectileParameters == null) return;
 
 
-            projectile.Initialize(new Ray(Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.1f, player.Front, 1f), projectileParameters);
+            projectile.Initialize(new Ray(Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.05f, player.Front, 1f), projectileParameters);
 
             _time = 0;
 
@@ -187,7 +252,7 @@ public class InteractionShoot : InteractionMode
         if (Input.IsMouseButtonUp(0))
         {
             //model?.SetAnimation(false);
-           // model.Animator.AddAnimation(new MoveAnimation(startPos, model.Position - new Vector3(0.001f * weapon.Pushback, 0, 0), weapon.AnimationSpeed, false));
+            // model.Animator.AddAnimation(new MoveAnimation(startPos, model.Position - new Vector3(0.001f * weapon.Pushback, 0, 0), weapon.AnimationSpeed, false));
         }
 
     }

@@ -57,6 +57,7 @@
         "Spread": 0,
         "Pushback": 18,
         "AnimationSpeed": 0.5,
+        "PowerUsage" : 3,
         "Projectile" : "pistoleProjectile",
         "ShotSound" : "pistole"
     },
@@ -72,6 +73,7 @@
         "Spread": 0,
         "Pushback": 20,
         "AnimationSpeed": 0.5,
+        "PowerUsage" : 5,
         "Projectile" : "smgProjectile",
          "ShotSound" : "pistole2"
     },
@@ -87,6 +89,7 @@
         "Spread": 0,
         "Pushback": 15,
         "AnimationSpeed": 0.6,
+        "PowerUsage" : 4,
         "Projectile" : "assaultProjectile",
          "ShotSound" : "pistole2"
     },
@@ -102,6 +105,7 @@
         "Spread": 0,
         "Pushback": 30,
         "AnimationSpeed": 0.25,
+        "PowerUsage" : 35,
         "Projectile" : "arProjectile",
          "ShotSound" : "ar"
     },

@@ -252,8 +252,13 @@ namespace Spacebox.Game.GUI
                 else if (type == typeof(WeaponItem))
                 {
                     var itemType = slot.Item as WeaponItem;
-                    text += "\nDamage: " + itemType.Damage;
+
+                    var pj = GameBlocks.Projectiles[itemType.ProjectileID];
+
+                    text += "\nDamage: " + pj.Damage;
+                    text += "\nProjectile speed: " + pj.Speed;
                     text += "\nReload time: " + itemType.ReloadTime;
+                    text += "\nPower usage: " + itemType.PowerUsage;
                 }
                 else if (type == typeof(BlockItem))
                 {

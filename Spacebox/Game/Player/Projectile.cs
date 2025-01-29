@@ -25,6 +25,8 @@ namespace Spacebox.Game.Player
         private LineRenderer lineRenderer;
         private Camera camera;
 
+        public Vector3 SpawnPosition { get; private set; }
+
         public Action<Projectile> OnSpawn;
         public Action<Projectile> OnHit;
         public Action<Projectile> OnDespawn;
@@ -33,13 +35,13 @@ namespace Spacebox.Game.Player
         public static AudioSource hitSound;
         public static AudioSource explosionSound;
 
-
         public Projectile()
         {
             lineRenderer = new LineRenderer();
             lineRenderer.Color = Color4.Blue;
             lineRenderer.Thickness = 0.2f;
             AddChild(lineRenderer);
+         
         }
 
         public Projectile Initialize(Ray ray, ProjectileParameters parameters)
@@ -50,7 +52,7 @@ namespace Spacebox.Game.Player
             IsActive = true;
             currentDamage = parameters.Damage;
             canRicochet = parameters.RicochetAngle > 0;
-
+            SpawnPosition = ray.Origin;
             Position = ray.Origin;
             Rotation = Vector3.Zero;
             Scale = Vector3.One;
@@ -172,8 +174,9 @@ namespace Spacebox.Game.Player
 
         public void Reset()
         {
+            Debug.Log("Reset");
             IsActive = false;
-            Position = Vector3.Zero;
+            //Position = Vector3.Zero;
             Rotation = Vector3.Zero;
             distanceTraveled = 0;
             currentRicochets = 0;
@@ -182,5 +185,6 @@ namespace Spacebox.Game.Player
             ray = new Ray(Vector3.Zero, Vector3.Zero, 0f);
             lineRenderer.ClearPoints();
         }
+
     }
 }
