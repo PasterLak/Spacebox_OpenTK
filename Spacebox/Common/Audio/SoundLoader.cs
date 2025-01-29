@@ -64,7 +64,8 @@ namespace Spacebox.Common.Audio
 
         public static int LoadSound(string filename, out int sampleRate)
         {
-            var (data, channels, bitsPerSample, sr) = LoadWave(filename);
+           
+            var (data, channels, bitsPerSample, sr) = AudioFormatLoader.LoadAudio(filename);
             sampleRate = sr;
             ALFormat format = GetSoundFormat(channels, bitsPerSample);
 

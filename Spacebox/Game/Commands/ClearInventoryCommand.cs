@@ -29,14 +29,14 @@ namespace Spacebox.Game.Commands
                 return;
             }
 
-                if (args.Length == 0)
-                {
-                    Astronaut.Panel.Clear();
-                    Astronaut.Inventory.Clear();
+            if (args.Length == 0)
+            {
+                Astronaut.Panel.Clear();
+                Astronaut.Inventory.Clear();
 
-                    Debug.AddMessage("Inventory cleared!" , Color4.Green);
-                }
-           
+                Debug.AddMessage("Inventory cleared!", Color4.Green);
+            }
+
 
         }
 

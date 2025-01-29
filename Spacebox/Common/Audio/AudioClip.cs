@@ -39,7 +39,7 @@ namespace Spacebox.Common.Audio
             }
             else
             {
-                InitializeStreaming();
+               // InitializeStreaming();
             }
 
           

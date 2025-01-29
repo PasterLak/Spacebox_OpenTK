@@ -53,7 +53,7 @@ namespace Spacebox.Scenes
 
             SetDustSpawner();
 
-            music = new AudioSource(SoundManager.GetClip("music"));
+            music = new AudioSource(SoundManager.GetClip("music.ogg"));
             music.IsLooped = true;
 
             music.Play();
