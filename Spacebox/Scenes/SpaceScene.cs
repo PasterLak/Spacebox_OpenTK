@@ -446,9 +446,6 @@ namespace Spacebox.Scenes
 
             GL.Disable(EnableCap.DepthTest);
 
-
-
-
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             PanelUI.DrawItemModel();

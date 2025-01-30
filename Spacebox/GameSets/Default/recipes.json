@@ -308,12 +308,47 @@
     "Ingredient": { "Item": "Iron Drill", "Quantity": 1 },
     "Product": { "Item": "Iron Ingot", "Quantity": 2 }
   },
+   {
+    "Type": "disassembler",
+    "RequiredTicks": 1000,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Triple Iron Drill", "Quantity": 1 },
+    "Product": { "Item": "Iron Ingot", "Quantity": 5 }
+  },
+    {
+    "Type": "disassembler",
+    "RequiredTicks": 1000,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Titanium Drill", "Quantity": 1 },
+    "Product": { "Item": "Titanium Ingot", "Quantity": 5 }
+  },
   {
     "Type": "disassembler",
     "RequiredTicks": 500,
     "PowerPerTickRequared": 5,
     "Ingredient": { "Item": "Window", "Quantity": 1 },
     "Product": { "Item": "Glass", "Quantity": 6 }
+  },
+  {
+    "Type": "disassembler",
+    "RequiredTicks": 800,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Pistol", "Quantity": 1 },
+    "Product": { "Item": "Iron Ingot", "Quantity": 2 }
+  },
+   {
+    "Type": "disassembler",
+    "RequiredTicks": 1200,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "SMG", "Quantity": 1 },
+    "Product": { "Item": "Iron Ingot", "Quantity": 4 }
+  },
+     {
+    "Type": "disassembler",
+    "RequiredTicks": 1300,
+    "PowerPerTickRequared": 5,
+    "Ingredient": { "Item": "Assault Rifle", "Quantity": 1 },
+    "Product": { "Item": "Titanium Ingot", "Quantity": 2 }
   }
 
 ]

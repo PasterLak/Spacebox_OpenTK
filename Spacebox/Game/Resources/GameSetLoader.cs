@@ -152,7 +152,7 @@ namespace Spacebox.Game.Resources
 
             try
             {
-                string[] files = GetFilesRecursive(audioPath, new List<string> { "*.wav", "*.ogg" });
+                string[] files = GetFilesRecursive(audioPath, new string[] { ".wav", ".ogg" });
                 foreach (string file in files)
                 {
                     ProcessSoundFile(file);
@@ -166,14 +166,15 @@ namespace Spacebox.Game.Resources
             }
         }
 
-        private static string[] GetFilesRecursive(string rootPath, IEnumerable<string> extensions)
+        public static string[] GetFilesRecursive(string rootPath, string[] extensionsWithDot)
         {
 
             var files = new List<string>();
 
-            foreach (var ext in extensions)
+            foreach (var ext in extensionsWithDot)
             {
-                var pattern = ext.StartsWith("*.") ? ext : $"*.{ext.TrimStart('.')}";
+                var ex = "*" + ext;
+                var pattern = ex.StartsWith("*.") ? ex : $"*.{ex.TrimStart('.')}";
                 files.AddRange(Directory.GetFiles(rootPath, pattern, SearchOption.AllDirectories));
             }
 

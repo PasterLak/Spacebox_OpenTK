@@ -30,7 +30,7 @@ Alpha ToDo:
 - thulium/ponium crafts
 - fix error if delete block in near chunk near another chunk
 - fix effect drop
-- disassembler more recipes
+
 - fix ticks count for recipes
 
 - 
@@ -58,6 +58,8 @@ Done:
 - fix destroy from another chunk
 - fix place from another chunk
 - open blocks with a weapon in the hand
+- disassembler more recipes
+
 
 version 0.1.1
 

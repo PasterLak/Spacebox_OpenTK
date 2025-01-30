@@ -324,7 +324,7 @@ namespace Spacebox.Game.Resources
                 //return (new Texture2D[0], new string[0]);
             }
 
-            string[] files = Directory.GetFiles(path);
+            string[] files = GameSetLoader.GetFilesRecursive(path, new string[] {".png", ".jpeg" }) ;
             Texture2D.AllowDebug = false;
             foreach (string file in files)
             {
