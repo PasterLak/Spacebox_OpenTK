@@ -42,6 +42,8 @@ public class SurvivalMode : MovementMode
         player.HealthBar.Update();
     }
 
+   
+
     public override void HandleInput(Astronaut player)
     {
         base.HandleInput(player);

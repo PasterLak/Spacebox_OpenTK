@@ -24,6 +24,10 @@ public abstract class GameModeBase
     public abstract void OnEnable();
     public abstract void OnDisable();
     public abstract void Update(Astronaut player);
+    public virtual void Render(Astronaut player)
+    {
+        InteractionHandler.Render(player);
+    }
     public abstract void UpdateInteraction(Astronaut player);
     public abstract void HandleInput(Astronaut player);
 }

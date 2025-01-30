@@ -40,12 +40,9 @@ Alpha ToDo:
 
 Mods ToDo:
 
-- items textures can have subfolders
-- blocks textures can have subfolders
-- emissions textures can have subfolders
-- items textures can have subfolders
+
 - move lighting up
-- write ""type"" {list of recipes} 
+
 -
 
 
@@ -60,6 +57,10 @@ Done:
 - open blocks with a weapon in the hand
 - disassembler more recipes
 
+- items textures can have subfolders
+- blocks textures can have subfolders
+- emissions textures can have subfolders
+- write ""type"" {list of recipes} 
 
 version 0.1.1
 
@@ -77,6 +78,10 @@ version 0.1.1
 - recochets
 - working weapons
 - Color3Byte
+- OGG Audio format support
+- subfolders for textures in mods
+- SphereRenderer/Cube
+- Creative Tools: Eraser
 
 version 0.1.0
 

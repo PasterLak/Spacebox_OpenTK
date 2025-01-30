@@ -87,4 +87,9 @@ public class InteractionConsumeItem : InteractionMode
             Debug.Error($"[InteractionConsumeItem] ApplyConsumable: consumable was null!");
         }
     }
+
+    public override void Render(Astronaut player)
+    {
+       
+    }
 }

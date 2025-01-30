@@ -1,6 +1,4 @@
 ﻿using System.Text.Json;
-using DryIoc;
-using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Game.Player;
@@ -406,6 +404,8 @@ namespace Spacebox.Game.Resources
                             break;
                     }
                 }
+
+                RegisterEraserItem();
             }
             catch (Exception ex)
             {
@@ -424,30 +424,39 @@ namespace Spacebox.Game.Resources
             {
                 string json = File.ReadAllText(itemsFile);
 
-                List<RecipeData> recipes = JsonSerializer.Deserialize<List<RecipeData>>(json);
+                RecipesJSON t = JsonSerializer.Deserialize<RecipesJSON>(json);
 
-                foreach (var r in recipes)
+
+                foreach (var typ in t.RecipeCatalog)
                 {
-                    if (r == null) continue;
+                    var type = typ.Type;
 
-                    var item = GameBlocks.GetItemByName(r.Ingredient.Item);
-                    var item2 = GameBlocks.GetItemByName(r.Product.Item);
-
-                    if (item == null)
+                    foreach (var r in typ.Recipes)
                     {
-                        Debug.Error($"[GameSetLoader] Recipes: ingredient was not found - {r.Ingredient.Item} . This recipe was skipped");
-                        continue;
-                    }
-                    if (item2 == null) continue;
+                        if (r == null) continue;
 
-                    if (item.Id == item2.Id)
-                    {
-                        Debug.Error($"[GameSetLoader] Recipes: product was not found - {r.Ingredient.Item} . This recipe was skipped");
-                        continue;
-                    }
+                        var item = GameBlocks.GetItemByName(r.Ingredient.Item);
+                        var item2 = GameBlocks.GetItemByName(r.Product.Item);
 
-                    GameBlocks.RegisterRecipe(r, item, item2);
+                        if (item == null)
+                        {
+                            Debug.Error($"[GameSetLoader] Recipes: ingredient was not found - {r.Ingredient.Item} . This recipe was skipped");
+                            continue;
+                        }
+                        if (item2 == null) continue;
+
+                        if (item.Id == item2.Id)
+                        {
+                            Debug.Error($"[GameSetLoader] Recipes: product was not found - {r.Ingredient.Item} . This recipe was skipped");
+                            continue;
+                        }
+
+                        r.Type = type;
+
+                        GameBlocks.RegisterRecipe(r, item, item2);
+                    }
                 }
+
             }
             catch (Exception ex)
             {
@@ -658,6 +667,19 @@ namespace Spacebox.Game.Resources
                 Category = data.Category,
             };
             GameBlocks.RegisterItem(drillItem, data.Sprite);
+        }
+
+        private static void RegisterEraserItem()
+        {
+
+            var eraser = new EraserToolItem(
+               "Eraser Tool",
+               2f)
+            {
+              
+            };
+          
+            GameBlocks.RegisterItem(eraser, "eraser");
         }
 
         private static void RegisterConsumableItem(ConsumableItemData data)

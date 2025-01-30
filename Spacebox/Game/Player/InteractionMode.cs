@@ -8,6 +8,11 @@ public abstract class InteractionMode
     public abstract void OnEnable();
     public abstract void OnDisable();
     public abstract void Update(Astronaut player);
+    public virtual void Render(Astronaut player)
+    {
+
+    }
+
 
 }
 

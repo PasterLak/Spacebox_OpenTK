@@ -406,6 +406,7 @@ namespace Spacebox.Scenes
             {
                 InteractionShoot.lineRenderer.Render();
             }
+     
 
             //chunk.Draw(blocksShader);
             player.Draw();
@@ -442,6 +443,8 @@ namespace Spacebox.Scenes
                     InteractionShoot.Instance.sphereRenderer.Render();   
             }
 
+
+            
 
 
             GL.Disable(EnableCap.DepthTest);

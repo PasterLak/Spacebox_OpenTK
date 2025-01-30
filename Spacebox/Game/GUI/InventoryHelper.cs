@@ -185,6 +185,21 @@ namespace Spacebox.Game.GUI
                     drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1)),
                         slot.Count.ToString());
                 }
+                else
+                {
+                    if (slot.Item.Is<CreativeToolItem>())
+                    {
+                        const string text = "c";
+
+                        Vector2 textPos = pos + new Vector2(SlotSize * 0.05f, SlotSize * 0.05f);
+
+                        drawList.AddText(textPos + new Vector2(2, 2), ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 1)),
+                            text);
+                        drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new Vector4(1, 0.8f, 0, 1)),
+                            text);
+
+                    }
+                }
             }
             else
             {

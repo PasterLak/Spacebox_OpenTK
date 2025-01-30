@@ -149,7 +149,16 @@ namespace Spacebox.Game.Player
                         }
                         else
                         {
-                            Debug.Error($"Invalid slot coordinates ({savedSlot.SlotX}, {savedSlot.SlotY}) in Panel.");
+                            Debug.Error($"[PlayerSaveLoader] Invalid slot coordinates ({savedSlot.SlotX}, {savedSlot.SlotY}) in Panel. Trying to add the item to the Inventory: ");
+
+                            if(player.Inventory.TryAddItem(item, savedSlot.Count))
+                            {
+                                Debug.Success($"The item was added to Inventory!");
+                            }
+                            else
+                            {
+                                Debug.Error($"Was not enough free space in the Inventory!");
+                            }
                         }
                     }
                     else

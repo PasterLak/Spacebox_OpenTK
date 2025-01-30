@@ -34,6 +34,12 @@ namespace Spacebox.Common.Physics
             return new BoundingBox(center, size);
         }
 
+        public static BoundingBox CreateFromPoints(Vector3 point1, Vector3 point2)
+        {
+            Vector3 min = Vector3.ComponentMin(point1, point2);
+            Vector3 max = Vector3.ComponentMax(point1, point2);
+            return BoundingBox.CreateFromMinMax(min, max);
+        }
 
         public override BoundingVolume Clone()
         {

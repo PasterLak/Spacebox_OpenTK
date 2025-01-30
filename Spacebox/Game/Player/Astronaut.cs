@@ -180,6 +180,8 @@ namespace Spacebox.Game.Player
 
             if (Input.IsMouseButton(MouseButton.Middle))
             {
+                if (PanelUI.IsHolding<CreativeToolItem>()) return;
+
                 if (FOV != 50)
                     FOV = 50;
             }
@@ -307,6 +309,11 @@ namespace Spacebox.Game.Player
         public void Draw()
         {
             Draw(this);
+
+            if(_gameModeBase != null)
+            {
+                _gameModeBase.Render(this);
+            }
         }
 
         public void Draw(Camera camera)

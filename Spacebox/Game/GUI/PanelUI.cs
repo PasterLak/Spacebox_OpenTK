@@ -86,7 +86,7 @@ namespace Spacebox.Game.GUI
             SelectSlot(SelectedSlotId);
         }
 
-        private static bool IsHoldingItem<T>() where T : Item
+        public static bool IsHolding<T>() where T : Item
         {
             if (SelectedSlot == null) return false;
             if (!SelectedSlot.HasItem) return false;
@@ -94,10 +94,10 @@ namespace Spacebox.Game.GUI
             return SelectedSlot.Item.Is<T>();
         }
 
-        public static bool IsHoldingConsumable() => IsHoldingItem<ConsumableItem>();
-        public static bool IsHoldingDrill() => IsHoldingItem<DrillItem>();
-        public static bool IsHoldingWeapon() => IsHoldingItem<WeaponItem>();
-        public static bool IsHoldingBlock() => IsHoldingItem<BlockItem>();
+        public static bool IsHoldingConsumable() => IsHolding<ConsumableItem>();
+        public static bool IsHoldingDrill() => IsHolding<DrillItem>();
+        public static bool IsHoldingWeapon() => IsHolding<WeaponItem>();
+        public static bool IsHoldingBlock() => IsHolding<BlockItem>();
 
         public static void DrawItemModel()
         {
@@ -248,6 +248,11 @@ namespace Spacebox.Game.GUI
             else if (IsHoldingConsumable())
             {
                 player.SetInteraction(new InteractionConsumeItem(SelectedSlot));
+            }
+            else if (IsHolding<EraserToolItem>())
+            {
+
+                player.SetInteraction(new InteractionEraser());
             }
             else
             {

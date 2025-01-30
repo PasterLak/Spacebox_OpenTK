@@ -109,18 +109,6 @@ public class InteractionDestroyBlock : InteractionMode
             BlockSelector.Instance.UpdatePosition(selectorPos,
                 Block.GetDirectionFromNormal(hit.normal));
 
-            if (Input.IsKeyDown(Keys.KeyPad1))
-            {
-                BlockPointer p = new BlockPointer(hit);
-
-                CreativeTools.AddBlock(p);
-            }
-
-            if (Input.IsKeyDown(Keys.KeyPad3))
-            {
-                CreativeTools.DeleteBlocks();
-            }
-
 
             if (Input.IsMouseButtonDown(MouseButton.Left))
             {
@@ -205,5 +193,8 @@ public class InteractionDestroyBlock : InteractionMode
         }
     }
 
-
+    public override void Render(Astronaut player)
+    {
+       
+    }
 }

@@ -99,6 +99,8 @@ public class MovementMode : GameModeBase
         player.HealthBar.Update();
     }
 
+   
+
     public override void HandleInput(Astronaut player)
     {
 
@@ -417,4 +419,6 @@ public class MovementMode : GameModeBase
         cameraSway.SpeedThreshold = 5.0f;
         cameraSway.Enabled = true;
     }
+
+
 }

@@ -4,6 +4,7 @@ using OpenTK.Mathematics;
 using Spacebox.Common;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
+using System.Reflection;
 
 namespace Spacebox.Game
 {
@@ -87,8 +88,8 @@ namespace Spacebox.Game
 
             position += Vector3.One * 0.5f;
 
-
-            if(!SimpleBlock.IsUsingDefaultUV)
+           
+            if (!SimpleBlock.IsUsingDefaultUV)
             {
                 if (blockDirection != direction)
                 {
