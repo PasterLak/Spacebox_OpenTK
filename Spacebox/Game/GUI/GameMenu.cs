@@ -171,6 +171,7 @@ namespace Spacebox.Game.GUI
             ImGui.Dummy(new Vector2(0, (windowHeight - totalButtonsHeight) / 4));
 
             CenterButtonWithBackground("Play", buttonWidth, buttonHeight, () => {
+               
                 click1?.Play();
                 currentState = MenuState.WorldSelect; });
             ImGui.Dummy(new Vector2(0, spacing * 2));
@@ -178,7 +179,6 @@ namespace Spacebox.Game.GUI
             {
                 click1?.Play();
                  currentState = MenuState.Options;
-                //Application.OpenLink("https://vk.com/spacebox_official");
             });
             ImGui.Dummy(new Vector2(0, spacing));
             ImGui.Dummy(new Vector2(0, (windowHeight - totalButtonsHeight) / 2));

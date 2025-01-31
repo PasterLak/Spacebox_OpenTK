@@ -259,8 +259,8 @@ namespace Spacebox.Game.Generation
 
         public override string ToString()
         {
-            return $"ID={BlockId}, Dir={Direction}, Mass={Mass}, Dur={Durability}, Flags=[T={IsTransparent}, A={IsAir}, L={IsLight}, E={EnableEmission}], " +
-                   $"Color={RoundVector3(Color)}, LightColor={RoundVector3(LightColor)}, LightLevel={RoundFloat(LightLevel)}";
+            return $"ID={BlockId}, Dir={Direction}, Mass={Mass}, Dur={Durability}, \nFlags=[T={IsTransparent}, A={IsAir}, L={IsLight}, E={EnableEmission}], " +
+                   $"\nCol={RoundVector3(Color)}, LCol={RoundVector3(LightColor)}, LLvl={RoundFloat(LightLevel)}";
         }
 
         public static float RoundFloat(float x)

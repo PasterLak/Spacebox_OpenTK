@@ -1,11 +1,8 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.common.Animation;
 using Spacebox.Common;
-using Spacebox.Common.Animation;
 using Spacebox.Common.Audio;
 using Spacebox.Common.Physics;
-using Spacebox.FPS;
 using Spacebox.Game.Animations;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
@@ -34,6 +31,8 @@ public class InteractionShoot : InteractionMode
     private bool canShoot = false;
 
     public SphereRenderer sphereRenderer;
+
+    private PointLight light;
     public InteractionShoot(ItemSlot itemslot)
     {
         Instance = this;
@@ -89,11 +88,17 @@ public class InteractionShoot : InteractionMode
 
         }
 
+        light = PointLightsPool.Instance.Take();
 
+        light.Range = 4;
+        light.Ambient = new Color3Byte(100, 116, 255).ToVector3();
+        light.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
+        light.Specular = new Color3Byte(0, 0, 0).ToVector3();
+        light.IsActive = false;
     }
 
     bool renderSphere = false;
-
+    Vector3 dir = Vector3.Zero;
     public void UpdateItemSlot(ItemSlot itemslot)
     {
         selectedItemSlot = itemslot;
@@ -107,11 +112,13 @@ public class InteractionShoot : InteractionMode
         model?.SetAnimation(true);
         sphereRenderer.Enabled = false;
 
+
+        light.IsActive = false;
     }
 
     public override void OnDisable()
     {
-
+        CenteredText.Hide();
         selectedItemSlot = null;
         //BlockMiningEffect.Enabled = false;
         model.Animator.Clear();
@@ -121,6 +128,9 @@ public class InteractionShoot : InteractionMode
         sphereRenderer.Enabled = false;
 
         sphereRenderer.Dispose();
+
+
+       PointLightsPool.Instance.PutBack(light);
     }
     private Vector3 startPos;
 
@@ -142,12 +152,27 @@ public class InteractionShoot : InteractionMode
     private Vector3 despawnPos = Vector3.Zero;
 
     float alpha = 1;
+    float lightTime = 0;
     public override void Update(Astronaut player)
     {
-
-        if (renderSphere)
-
+        if (lightTime > 0)
         {
+            if(light.Range > 1)
+            {
+                //light.Range = light.Range - Time.Delta * 2;
+            }
+            //light.Position += dir * Time.Delta * projectileParameters.Speed;
+            lightTime -= Time.Delta;
+        }
+        else
+        {
+            lightTime = 0;
+            light.IsActive = false;
+        }
+        if (renderSphere)
+        {
+
+            
 
             const int sp = 800;
             sphereRenderer.Scale += new Vector3(sp, sp, sp) * Time.Delta;
@@ -220,6 +245,9 @@ public class InteractionShoot : InteractionMode
                 CenteredText.Hide();
 
             }
+        }else
+        {
+            CenteredText.Hide();
         }
 
         if (canShoot && Input.IsMouseButton(0))
@@ -244,9 +272,16 @@ public class InteractionShoot : InteractionMode
 
             if (projectileParameters == null) return;
 
-
-            projectile.Initialize(new Ray(Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.05f, player.Front, 1f), projectileParameters);
-            alpha = 1f;
+           
+            light.Ambient = projectileParameters.Color3;
+            light.IsActive = false;
+            lightTime = 1f;
+            dir = player.Front;
+            light.Position = player.Position;
+            light.Range = 4;
+            projectile.Initialize(new Ray(Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.05f, player.Front, 1f), 
+                projectileParameters );
+            alpha = 0.3f;
             sphereRenderer.Scale = new Vector3(1, 1, 1);
             _time = 0;
 

@@ -5,6 +5,7 @@ using Spacebox.Common;
 using Spacebox.Common.Animation;
 using Spacebox.Common.Audio;
 using Spacebox.Common.Physics;
+using Spacebox.FPS;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
@@ -26,6 +27,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
     private AnimatedItemModel model;
     public static BlockMiningEffect BlockMiningEffect;
     private InteractiveBlock lastInteractiveBlock;
+    private PointLight light;
     public InteractionDestroyBlockSurvival(ItemSlot itemslot)
     {
         selectedItemSlot = itemslot;
@@ -40,6 +42,13 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
         UpdateItemSlot(itemslot);
 
+        light = PointLightsPool.Instance.Take();
+
+        light.Range = 8;
+        light.Ambient = new Color3Byte(100, 116, 255).ToVector3();
+        light.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
+        light.Specular = new Color3Byte(0, 0, 0).ToVector3();
+        light.IsActive = false;
     }
 
     public void UpdateItemSlot(ItemSlot itemslot)
@@ -85,6 +94,8 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         //BlockMiningEffect.Enabled = false;
         CenteredText.Hide();
         model.Animator.Clear();
+
+        PointLightsPool.Instance.PutBack(light);
     }
 
     private const float timeToDamage = 0.5f;
@@ -163,6 +174,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
             BlockMiningEffect.Enabled = false;
             drillAudio.Stop();
             drill0Audio.Stop();
+            light.IsActive = false;
 
         }
 
@@ -174,6 +186,8 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                     lastInteractiveBlock.Use(player);
             }
             model?.SetAnimation(false);
+
+            light.IsActive = false;
             return;
         }
 
@@ -206,6 +220,8 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 BlockMiningEffect.ParticleSystem.Position = hit.position + new Vector3(hit.normal.X, hit.normal.Y, hit.normal.Z) * 0.05f;
                 BlockMiningEffect.Update();
 
+
+                light.Position = player.Position;
                 if (item != null)
                 {
 
@@ -234,10 +250,13 @@ public class InteractionDestroyBlockSurvival : InteractionMode
             {
                 model?.SetAnimation(true);
                 BlockMiningEffect.Enabled = true;
+                if (!light.IsActive)
+                {
+                    light.IsActive = true;
+                }
 
-                
-                    drillAudio.Play();
-                
+                //   drillAudio.Play();
+
             }
 
 
@@ -261,10 +280,17 @@ public class InteractionDestroyBlockSurvival : InteractionMode
             if (Input.IsMouseButtonDown(MouseButton.Left))
             {
                 model?.SetAnimation(true);
-                drill0Audio.Play();
+
+                light.IsActive = true;
+
+                // drill0Audio.Play();
 
             }
 
+            if (Input.IsMouseButton(MouseButton.Left))
+            {
+                light.Position = player.Position;
+            }
         }
     }
 

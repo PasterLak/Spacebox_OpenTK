@@ -1,6 +1,4 @@
-﻿
-
-namespace Spacebox.Game.Player
+﻿namespace Spacebox.Common
 {
     public interface IPoolable<T>
     {
@@ -15,6 +13,8 @@ namespace Spacebox.Game.Player
 
         private readonly Stack<T> _availableObjects;
         private readonly List<T> _allObjects;
+
+        public List<T> GetAllObjects() => _allObjects;
 
         public Pool(int initialCount, bool autoExpand = true)
         {
@@ -52,6 +52,7 @@ namespace Spacebox.Game.Player
 
             if (AutoExpand)
             {
+                Debug.Log("Expand pool new count: " + (TotalObjects + 1));
                 return CreateObject(true);
             }
 

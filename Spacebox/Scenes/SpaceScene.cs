@@ -48,7 +48,7 @@ namespace Spacebox.Scenes
 
         private SimpleBlock block1;
         private SimpleBlock block2;
-
+        private PointLightsPool pointLightsPool;
         private SphereRenderer sphereRenderer;
 
         public SpaceScene(string[] args) : base(args) // name mod seed modfolder
@@ -151,7 +151,7 @@ namespace Spacebox.Scenes
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
             skybox.IsAmbientAffected = false;
             SceneGraph.AddRoot(skybox);
-
+            
             radarWindow = new RadarUI(skybox.Texture);
 
             player = new Astronaut(new Vector3(5, 5, 5));
@@ -189,6 +189,7 @@ namespace Spacebox.Scenes
 
 
             blocksShader = ShaderManager.GetShader("Shaders/block");
+            pointLightsPool = new PointLightsPool(blocksShader,player,20);
             blockTexture = GameBlocks.BlocksTexture;
 
             lightAtlas = GameBlocks.LightAtlas;
@@ -272,9 +273,22 @@ namespace Spacebox.Scenes
 
             var pos = player.Position;
 
-           
-        }
+            pLight = PointLightsPool.Instance.Take();
+            pLight.Ambient = new Vector3(1,0,0);
+            pLight.Position = player.Position;
 
+
+
+            pLight.Range = 5 * 5;
+            pLight.Ambient = new Color3Byte(100, 116, 255).ToVector3();
+              pLight.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
+             pLight.Specular = new Color3Byte(0, 0, 0).ToVector3();
+
+            pLight.IsActive = false;
+
+
+        }
+        PointLight pLight;
         private void OnDebugStateChanged(bool state)
         {
 
@@ -301,7 +315,24 @@ namespace Spacebox.Scenes
             //itemModel.Rotation = player.Rotation;
             world.Update();
             //sphereRenderer.Position += new Vector3(0, 0, 1) * Time.Delta;
-         
+            if(Input.IsKeyDown(Keys.L))
+            {
+                pLight.IsActive = !pLight.IsActive;
+            }
+
+            if(Input.IsKeyDown(Keys.K))
+            {
+                var l = PointLightsPool.Instance.Take();
+                l.IsActive = true;
+                l.Position = player.Position;
+
+
+
+                l.Range = 20;
+                l.Ambient = new Color3Byte(100, 116, 255).ToVector3();
+                l.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
+                l.Specular = new Color3Byte(0, 0, 0).ToVector3();
+            }
 
             if (Input.IsKeyDown(Keys.Escape))
             {
@@ -325,7 +356,7 @@ namespace Spacebox.Scenes
 
             }
             ///projectile.Position += new Vector3(0.01f * Time.Delta,0,0);
-
+            pLight.Position = player.Position;
             if (InteractionShoot.ProjectilesPool != null)
                 InteractionShoot.ProjectilesPool.Update();
             if (!Debug.IsVisible)
@@ -361,13 +392,14 @@ namespace Spacebox.Scenes
             animator.Update(Time.Delta);
 
         }
-
+      
         public override void Render()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             DisposalManager.ProcessDisposals();
 
+           
             skybox.DrawTransparent(player);
 
 
@@ -377,14 +409,17 @@ namespace Spacebox.Scenes
             Matrix4 view = player.GetViewMatrix();
             Matrix4 projection = player.GetProjectionMatrix();
 
+         
             //blocksShader.SetMatrix4("model", model);
             blocksShader.SetMatrix4("view", view);
             blocksShader.SetMatrix4("projection", projection);
-
+            pointLightsPool.Render();
             var position = player.CameraRelativeRender ? Vector3.Zero : player.Position;
             blocksShader.SetVector3("cameraPosition", position);
 
             blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
+
+
 
 
             blockTexture.Use(TextureUnit.Texture0);
@@ -406,7 +441,7 @@ namespace Spacebox.Scenes
             {
                 InteractionShoot.lineRenderer.Render();
             }
-     
+
 
             //chunk.Draw(blocksShader);
             player.Draw();
@@ -434,17 +469,17 @@ namespace Spacebox.Scenes
             VisualDebug.DrawBoundingSphere(b, Color4.AliceBlue);
             blockSelector.Draw(player);
 
-            
-            if(InteractionShoot.Instance!= null)
+
+            if (InteractionShoot.Instance != null)
             {
                 if (InteractionShoot.Instance.sphereRenderer != null)
                 {
                 }
-                    InteractionShoot.Instance.sphereRenderer.Render();   
+                InteractionShoot.Instance.sphereRenderer.Render();
             }
 
 
-            
+
 
 
             GL.Disable(EnableCap.DepthTest);
@@ -494,6 +529,7 @@ namespace Spacebox.Scenes
             skybox.Texture.Dispose();
             skyboxShader.Dispose();
             dustSpawner.Dispose();
+            pointLightsPool.Dispose();
             blockDestructionManager.Dispose();
             World.DropEffectManager.Dispose();
             TagManager.ClearTags();

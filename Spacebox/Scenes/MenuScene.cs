@@ -5,15 +5,12 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Common;
 using Spacebox.Common.Audio;
 using Spacebox.Common.SceneManagment;
+using Spacebox.Game.GUI;
 
 namespace Spacebox.Scenes
 {
     internal class MenuScene : Scene
     {
-
-       
-        AudioSource audio2;
-     
 
         BitmapFont font;
 
@@ -26,7 +23,7 @@ namespace Spacebox.Scenes
          ~MenuScene()
         {
            
-            audio2.Dispose();
+           
         }
 
 
@@ -35,15 +32,12 @@ namespace Spacebox.Scenes
 
             GL.ClearColor(0.8f, 0.5f, 0.3f, 1.0f);
 
-
+            
             // music music.wave (Music/) 
 
 
             SoundManager.AddClip("music");
             SoundManager.AddClip("shooting");
-
-           
-            audio2 = new AudioSource(new AudioClip("shooting"));
 
             font = new BitmapFont("Resources/Font/arial.png", 256,256,16,16);
             font.Spacing = 10;
@@ -76,6 +70,8 @@ namespace Spacebox.Scenes
                 "ĻļĽľĿŀŁłŃńŅņŇňŉŊŋŌōŎŏŐőŒœŔŕ" +
                 "ŖŗŘřŚśŜŝŞşŠšŢţŤťŦŧŨũŪūŬŭŮůŰűŲų" +
                 "ŴŵŶŷŸŹźŻżŽž";
+
+
         }
 
         public override void Render()
@@ -117,11 +113,6 @@ namespace Spacebox.Scenes
                 SceneManager.LoadScene(typeof(SpaceMenuScene));
             }
 
-
-            if (Input.IsKeyDown(Keys.T))
-            {
-                audio2.Play();
-            }
         }
     }
 }

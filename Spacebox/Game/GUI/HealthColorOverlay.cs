@@ -1,6 +1,7 @@
 ﻿
 using ImGuiNET;
 using Spacebox.Common;
+using Spacebox.Extensions;
 using System.Numerics;
 
 namespace Spacebox.Game.GUI
@@ -24,7 +25,12 @@ namespace Spacebox.Game.GUI
 
         private static Vector3 Color = new Vector3(0, 1, 0);
 
-        public static void SetActive(Vector3 color, float startAlpha = 0.4f)
+        public static void SetActive(OpenTK.Mathematics. Vector3 color, float startAlpha = 0.4f)
+        {
+            SetActive(color.ToSystemVector3(), startAlpha);
+        }
+
+            public static void SetActive(Vector3 color, float startAlpha = 0.4f)
         {
             Color = color;
             _isActive = true;

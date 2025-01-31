@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿
+using Spacebox.Common;
+using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Spacebox
@@ -28,6 +31,30 @@ namespace Spacebox
             {
                 return PlatformName.Unknown;
             }
+        }
+
+        public static string GetSystemLanguage()
+        {
+            return CultureInfo.CurrentCulture.Name;
+        }
+
+        public static string GetSystemLanguageDisplayName()
+        {
+            return CultureInfo.CurrentCulture.DisplayName;
+        }
+
+        public static bool IsSystemLanguage(string languageCode)
+        {
+            return string.Equals(CultureInfo.CurrentCulture.TwoLetterISOLanguageName, languageCode, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool IsSystemLanguageOneOf(string[] languageCodes)
+        {
+            foreach (string languageCode in languageCodes)
+            {
+                if (IsSystemLanguage(languageCode)) return true;
+            }
+            return false;
         }
 
         public static void OpenLink(string url)

@@ -1,5 +1,7 @@
 ﻿
 
+using Spacebox.Common;
+
 namespace Spacebox.Game.Player
 {
 

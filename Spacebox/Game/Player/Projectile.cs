@@ -35,6 +35,8 @@ namespace Spacebox.Game.Player
         public  AudioSource hitSound;
         public static AudioSource explosionSound;
 
+        private PointLight light;
+        private bool useLight = true;
         public Projectile()
         {
             lineRenderer = new LineRenderer();
@@ -44,8 +46,9 @@ namespace Spacebox.Game.Player
          
         }
 
-        public Projectile Initialize(Ray ray, ProjectileParameters parameters)
+        public Projectile Initialize(Ray ray, ProjectileParameters parameters, bool useLight = true)
         {
+            this.useLight = useLight;
             this.ray = ray;
             ray.Length = 1f;
             this.parameters = parameters;
@@ -87,6 +90,19 @@ namespace Spacebox.Game.Player
 
             }
 
+            if(useLight)
+            {
+                light = PointLightsPool.Instance.Take();
+
+                light.Range = 4;
+                light.Ambient = parameters.Color3;
+               // light.Diffuse = parameters.Color3;
+                light.Diffuse = Vector3.Zero;
+                light.Specular = Vector3.Zero;
+                light.IsActive = true;
+            }
+          
+
             OnSpawn?.Invoke(this);
 
             return this;
@@ -101,6 +117,9 @@ namespace Spacebox.Game.Player
 
             ray.Origin += movement;
             distanceTraveled += parameters.Speed * Time.Delta;
+
+            if (useLight)
+                light.Position = Position;
 
             if (distanceTraveled >= parameters.MaxTravelDistance)
             {
@@ -174,7 +193,8 @@ namespace Spacebox.Game.Player
 
         public void Reset()
         {
-            Debug.Log("Reset");
+            if(useLight)
+            PointLightsPool.Instance.PutBack(light);
             IsActive = false;
             //Position = Vector3.Zero;
             Rotation = Vector3.Zero;

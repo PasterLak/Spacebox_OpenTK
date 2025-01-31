@@ -12,7 +12,7 @@ namespace Spacebox.Game.Player
         public float Thickness { get; private set; }
         public Color4 Color { get; private set; }
 
-
+        public Vector3 Color3 => new Vector3(Color.R, Color.G, Color.B);
         public byte Damage { get; private set; }
         public float RicochetAngle { get; private set; }
         public int PossibleRicochets { get; private set; }
