@@ -10,7 +10,7 @@ namespace Spacebox.Game.Player
          IPoolable<T> Take();
          void PutBack(T item);
      }*/
-    public class ProjectilesPool
+    public class ProjectilesPool : IDisposable
     {
 
         private List<Projectile> Projectiles { get; set; }
@@ -56,6 +56,17 @@ namespace Spacebox.Game.Player
             }
         }
 
+        public void Dispose()
+        {
+            var p = Projectiles.ToArray();
+           foreach (var e in p)
+            {
+                e.IsActive = false;
+                PutBack(e);
+            }
+        }
+
+        
 
     }
 }

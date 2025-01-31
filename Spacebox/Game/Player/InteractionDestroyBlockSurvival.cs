@@ -220,7 +220,10 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 BlockMiningEffect.ParticleSystem.Position = hit.position + new Vector3(hit.normal.X, hit.normal.Y, hit.normal.Z) * 0.05f;
                 BlockMiningEffect.Update();
 
-
+                if(!light.IsActive)
+                {
+                    light.IsActive=true;
+                }
                 light.Position = player.Position;
                 if (item != null)
                 {

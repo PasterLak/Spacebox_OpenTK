@@ -103,13 +103,15 @@ namespace Spacebox.Scenes
             {
                 if (s)
                 {
+                    if(player != null)
                     player.ResetMousePosition();
                     Input.MoveCursorToCenter();
                     Input.ShowCursor();
                 }
                 else
                 {
-                    player.ResetMousePosition();
+                    if (player != null)
+                        player.ResetMousePosition();
                     Input.MoveCursorToCenter();
                     Input.HideCursor();
                 }
@@ -155,11 +157,12 @@ namespace Spacebox.Scenes
             radarWindow = new RadarUI(skybox.Texture);
 
             player = new Astronaut(new Vector3(5, 5, 5));
+            PanelUI.Player = player;
             SceneGraph.AddRoot(player);
-
+           
             World.LoadWorldInfo(worldName);
             world = new World(player);
-
+ 
             player.GameMode = World.Data.Info.GameMode;
             PlayerSaveLoadManager.LoadPlayer(player, World.Data.WorldFolderPath);
 
@@ -189,7 +192,7 @@ namespace Spacebox.Scenes
 
 
             blocksShader = ShaderManager.GetShader("Shaders/block");
-            pointLightsPool = new PointLightsPool(blocksShader,player,20);
+            pointLightsPool = new PointLightsPool(blocksShader,player,64);
             blockTexture = GameBlocks.BlocksTexture;
 
             lightAtlas = GameBlocks.LightAtlas;
@@ -521,6 +524,8 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
+            player = null;
+            PanelUI.Player = null;
             blocksShader.Dispose();
             //blockTexture.Dispose();
             lightAtlas.Dispose();
@@ -530,6 +535,9 @@ namespace Spacebox.Scenes
             skyboxShader.Dispose();
             dustSpawner.Dispose();
             pointLightsPool.Dispose();
+            if (InteractionShoot.ProjectilesPool != null)
+            InteractionShoot.ProjectilesPool.Dispose();
+            ToggleManager.DisableAllWindows();
             blockDestructionManager.Dispose();
             World.DropEffectManager.Dispose();
             TagManager.ClearTags();

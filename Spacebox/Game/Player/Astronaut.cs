@@ -334,6 +334,7 @@ namespace Spacebox.Game.Player
             PowerBar.OnGUI();
             HealthBar.OnGUI();
             HitImage.Draw();
+
         }
     }
 }

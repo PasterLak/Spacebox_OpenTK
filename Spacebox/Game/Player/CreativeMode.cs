@@ -47,6 +47,7 @@ public class CreativeMode : MovementMode
        base.OnDisable();
         CreativeWindowUI.IsVisible = false;
         CreativeWindowUI.Enabled = false;
+        
     }
 
     public override void Update(Astronaut player)

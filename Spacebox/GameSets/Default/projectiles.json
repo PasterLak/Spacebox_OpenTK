@@ -13,7 +13,7 @@
     {
         "Name": "smgProjectile",
         "Speed": 18,
-        "MaxTravelDistance": 100,
+        "MaxTravelDistance": 80,
         "Length": 0.75,
         "Thickness": 0.05,
         "Color": {"r": 0,"g": 0,"b": 255},
@@ -24,7 +24,7 @@
     {
         "Name": "assaultProjectile",
         "Speed": 24,
-        "MaxTravelDistance": 150,
+        "MaxTravelDistance": 100,
         "Length": 0.65,
         "Thickness": 0.05,
         "Color": {"r": 0,"g": 255,"b": 0},

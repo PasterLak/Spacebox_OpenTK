@@ -193,8 +193,13 @@ namespace Spacebox.Game.Player
 
         public void Reset()
         {
-            if(useLight)
-            PointLightsPool.Instance.PutBack(light);
+            if (useLight)
+            {
+                if(PointLightsPool.Instance != null)
+                PointLightsPool.Instance.PutBack(light);
+            }
+           
+
             IsActive = false;
             //Position = Vector3.Zero;
             Rotation = Vector3.Zero;

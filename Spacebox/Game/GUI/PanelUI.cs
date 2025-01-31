@@ -43,7 +43,7 @@ namespace Spacebox.Game.GUI
         private static float _time = 0;
         private static bool wasPlayerOnes = false;
 
-        private static Astronaut Player;
+        public static Astronaut Player;
 
         public static void Initialize(Astronaut player, nint slotTexture, nint selectedTexture)
         {

@@ -129,7 +129,7 @@ public class InteractionShoot : InteractionMode
 
         sphereRenderer.Dispose();
 
-
+        if(PointLightsPool.Instance != null)
        PointLightsPool.Instance.PutBack(light);
     }
     private Vector3 startPos;
