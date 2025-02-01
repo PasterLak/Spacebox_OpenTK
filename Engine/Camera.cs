@@ -13,7 +13,7 @@ namespace Engine
         protected Vector3 _right = Vector3.UnitX;
 
         private float _fov = MathHelper.DegreesToRadians(80f);
-        public float AspectRatio { get; set; } = 16 / 9f;
+        public float AspectRatio { get; set; } = 16f / 9f;
         public float DepthNear = 0.1f;
         public float DepthFar = 2000f;
         public Vector3 Front => _front;
@@ -44,14 +44,6 @@ namespace Engine
             AllowCollisionDebug = false;
 
             UpdateVectors();
-
-
-
-        }
-
-
-        ~Camera()
-        {
 
         }
 
@@ -87,8 +79,9 @@ namespace Engine
             Vector4 viewPos = worldPos * viewMatrix;
             Vector4 projPos = viewPos * projectionMatrix;
 
-            if (projPos.W == 0.0f)
+            if (Math.Abs(projPos.W) < 1e-6f)
                 return Vector2.Zero;
+
 
             Vector3 ndc = new Vector3(
                 projPos.X / projPos.W,

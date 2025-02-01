@@ -14,9 +14,11 @@ namespace Engine
 
         protected override void UpdateVectors()
         {
-            _front = Vector3.Transform(-Vector3.UnitZ, _rotation);
+            _front = Vector3.Transform(-Vector3.UnitZ, _rotation);  //  old
             _up = Vector3.Transform(Vector3.UnitY, _rotation);
             _right = Vector3.Transform(Vector3.UnitX, _rotation);
+
+          
 
             //Rotation = _rotation.ToEulerAngles() * 360f;
         }

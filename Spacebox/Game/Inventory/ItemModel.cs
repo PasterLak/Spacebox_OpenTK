@@ -34,6 +34,22 @@ namespace Spacebox.Game
             itemCamera.FOV = 80;
             itemCamera.DepthNear = 0.01f;
             itemCamera.DepthFar = 100f;
+            itemCamera.AspectRatio = Camera.Main.AspectRatio;
+
+            Window.OnResized += Resize;
+
+
+        }
+        ~ItemModel()
+        {
+            Window.OnResized -= Resize;
+        }
+        public void Resize(Vector2 size)
+        {
+            if (itemCamera == null) return;
+            if (Camera.Main == null) return;
+
+            itemCamera.AspectRatio = Camera.Main.AspectRatio;
         }
 
         public void SetColor(Vector3 color)

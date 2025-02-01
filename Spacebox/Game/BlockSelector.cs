@@ -4,7 +4,6 @@ using OpenTK.Mathematics;
 using Engine;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
-using System.Reflection;
 
 namespace Spacebox.Game
 {

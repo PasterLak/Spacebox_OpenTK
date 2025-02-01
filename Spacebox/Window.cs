@@ -46,7 +46,7 @@ namespace Spacebox
         {
             Instance = this;
             minimizedWindowSize = nativeWindowSettings.ClientSize;
-           
+           // UpdateFrequency = 9999;
         }
 
         protected override void OnLoad()
@@ -54,7 +54,7 @@ namespace Spacebox
             base.OnLoad();
             AppIconLoader.LoadAndSetIcon(this, "Resources/Textures/icon.png");
 
-            var container = IoCContainer.Instance;
+         
 
             Debug.Log("[Engine started!]");
             Input.Initialize(this);
@@ -152,7 +152,7 @@ namespace Spacebox
 
                 Time.EndOnGUI();
 
-
+                if(Camera.Main != null)
                 _controller.Render();
 
                 ImGuiController.CheckGLError("End of frame");
@@ -345,11 +345,10 @@ namespace Spacebox
             _controller.PressChar((char)e.Unicode);
         }
 
-        //public static 
         protected override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
-            
+            Debug.Log("REsize");
             //GL.Viewport(0, 0, Size.X, Size.Y);
             GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
 
