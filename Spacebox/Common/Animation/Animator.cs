@@ -1,7 +1,7 @@
 ﻿using Spacebox.Common;
 using Spacebox.Common.Animation;
 
-namespace Spacebox.common.Animation
+namespace Spacebox.Common.Animation
 {
     public class Animator
     {

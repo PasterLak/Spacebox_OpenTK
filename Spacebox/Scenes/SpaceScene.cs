@@ -15,7 +15,6 @@ using Spacebox.Game.Player;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Resources;
 using Spacebox.Common.GUI;
-using Spacebox.common.Animation;
 using Spacebox.Common.Animation;
 
 namespace Spacebox.Scenes

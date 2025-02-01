@@ -1,6 +1,5 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.common.Animation;
 using Spacebox.Common;
 using Spacebox.Common.Animation;
 using Spacebox.Common.Audio;

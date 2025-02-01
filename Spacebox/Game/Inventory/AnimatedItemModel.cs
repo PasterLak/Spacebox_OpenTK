@@ -1,5 +1,5 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.common.Animation;
+
 using Spacebox.Common;
 using Spacebox.Common.Animation;
 
