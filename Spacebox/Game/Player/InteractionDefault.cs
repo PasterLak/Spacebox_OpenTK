@@ -1,10 +1,12 @@
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Engine;
-using Spacebox.Engine.Physics;
-using Spacebox.Engine;
+
+using Engine.Physics;
+
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
+using Engine;
+
 
 namespace Spacebox.Game.Player;
 

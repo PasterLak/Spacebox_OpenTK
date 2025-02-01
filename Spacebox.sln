@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spacebox.Tests", "Spacebox.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spacebox.Benchmarks", "Spacebox.Benchmarks\Spacebox.Benchmarks.csproj", "{340FD748-E18E-4EDA-ADD7-9103F403483D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine", "Engine\Engine.csproj", "{4F2AFF6E-9AF0-49F0-A0F3-97B1302C4AF3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{340FD748-E18E-4EDA-ADD7-9103F403483D}.Release|x64.Build.0 = Release|Any CPU
 		{340FD748-E18E-4EDA-ADD7-9103F403483D}.Release|x86.ActiveCfg = Release|Any CPU
 		{340FD748-E18E-4EDA-ADD7-9103F403483D}.Release|x86.Build.0 = Release|Any CPU
+		{4F2AFF6E-9AF0-49F0-A0F3-97B1302C4AF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F2AFF6E-9AF0-49F0-A0F3-97B1302C4AF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F2AFF6E-9AF0-49F0-A0F3-97B1302C4AF3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4F2AFF6E-9AF0-49F0-A0F3-97B1302C4AF3}.Debug|x64.Build.0 = Debug|Any CPU
+		{4F2AFF6E-9AF0-49F0-A0F3-97B1302C4AF3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4F2AFF6E-9AF0-49F0-A0F3-97B1302C4AF3}.Debug|x86.Build.0 = Debug|Any CPU
+		{4F2AFF6E-9AF0-49F0-A0F3-97B1302C4AF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F2AFF6E-9AF0-49F0-A0F3-97B1302C4AF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F2AFF6E-9AF0-49F0-A0F3-97B1302C4AF3}.Release|x64.ActiveCfg = Release|Any CPU
+		{4F2AFF6E-9AF0-49F0-A0F3-97B1302C4AF3}.Release|x64.Build.0 = Release|Any CPU
+		{4F2AFF6E-9AF0-49F0-A0F3-97B1302C4AF3}.Release|x86.ActiveCfg = Release|Any CPU
+		{4F2AFF6E-9AF0-49F0-A0F3-97B1302C4AF3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

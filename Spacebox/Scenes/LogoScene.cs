@@ -1,10 +1,11 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Engine;
-using Spacebox.Engine.GUI;
-using Spacebox.Engine.SceneManagment;
-using Spacebox.FPS.Scenes;
+
+using Engine.GUI;
+using Engine.SceneManagment;
+
+using Engine;
 
 namespace Spacebox.Scenes
 {
@@ -66,10 +67,7 @@ namespace Spacebox.Scenes
             //sprite.UpdateWindowSize(Window.Instance.Size);
             sprite.UpdateSize(Window.Instance.Size);
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
-            if (Input.IsKeyDown(Keys.Enter))
-            {
-                SceneManager.LoadScene(typeof(MenuScene));
-            }
+        
             if (Input.IsKeyDown(Keys.S))
             {
                 //SceneManager.LoadScene(typeof(SpaceMenuScene));

@@ -1,11 +1,10 @@
 ﻿using ImGuiNET;
-using Spacebox.Engine;
-using Spacebox.Engine.SceneManagment;
-using Spacebox.Engine.Extensions;
+
+using Engine.SceneManagment;
 using Spacebox.Scenes;
 using System.Numerics;
 using Spacebox.FPS.Scenes;
-
+using Engine;
 namespace Spacebox.FPS.GUI
 {
     public class Menu

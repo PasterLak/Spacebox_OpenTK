@@ -1,5 +1,5 @@
 using System.Reflection;
-using Spacebox.Engine;
+using Engine;
 
 
 namespace Spacebox.Tests

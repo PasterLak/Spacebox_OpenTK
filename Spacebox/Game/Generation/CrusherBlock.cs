@@ -1,4 +1,4 @@
-﻿using Spacebox.FPS;
+﻿
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resources;

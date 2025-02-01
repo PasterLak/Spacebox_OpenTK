@@ -1,4 +1,4 @@
-﻿using Spacebox.Engine;
+﻿
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -6,14 +6,14 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
 using Spacebox.Scenes;
 using System.Collections.Concurrent;
-using Spacebox.Engine.Audio;
-using Spacebox.Engine.SceneManagment;
+using Engine.Audio;
+using Engine.SceneManagment;
 
 using ImGuiNET;
-using Spacebox.Engine.Utils;
-using Spacebox.Engine.GUI;
+using Engine.Utils;
+using Engine.GUI;
 using Spacebox.Game.GUI;
-using Spacebox.Engine.Extensions;
+using Engine;
 
 namespace Spacebox
 {
@@ -21,13 +21,12 @@ namespace Spacebox
     {
         void Quit();
     }
-    public class Window : GameWindow, IGameWindow
+    public class Window : EngineWindow, IGameWindow
     {
 
         public static Window Instance;
 
 
-        public static readonly ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
 
         public static Action<Vector2> OnResized;
 
@@ -47,7 +46,7 @@ namespace Spacebox
         {
             Instance = this;
             minimizedWindowSize = nativeWindowSettings.ClientSize;
-
+           
         }
 
         protected override void OnLoad()
@@ -111,7 +110,7 @@ namespace Spacebox
         private static AudioSource screenShotAudio;
         public void Screenshot()
         {
-            FramebufferCapture.SaveScreenshot();
+            FramebufferCapture.SaveScreenshot(this);
             screenShotAudio.Play();
           
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(1,1,1), 0.2f);

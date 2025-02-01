@@ -1,6 +1,7 @@
 ﻿
+using Engine;
 using OpenTK.Mathematics;
-using Spacebox.Engine;
+
 
 namespace Spacebox.Game.Effects
 {

@@ -1,5 +1,5 @@
 namespace Spacebox.Game.Player;
-
+using Engine;
 public abstract class GameModeBase
 {
     protected Astronaut Player;

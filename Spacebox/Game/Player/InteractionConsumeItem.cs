@@ -1,7 +1,8 @@
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Engine;
-using Spacebox.Engine.Audio;
+
+using Engine.Audio;
 using Spacebox.Game.GUI;
+using Engine;
 
 namespace Spacebox.Game.Player;
 

@@ -1,8 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using ImGuiNET;
-using Spacebox.Engine;
+using Engine;
 using Spacebox.Game;
-using Spacebox.Engine.Extensions;
 
 namespace Spacebox.Game.GUI
 {

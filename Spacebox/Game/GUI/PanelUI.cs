@@ -2,12 +2,10 @@
 using ImGuiNET;
 using Microsoft.VisualBasic;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Engine;
-using Spacebox.Engine.Audio;
-using Spacebox.Engine;
-using Spacebox.Engine.Extensions;
+using Engine;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
+using Engine.Audio;
 
 
 namespace Spacebox.Game.GUI

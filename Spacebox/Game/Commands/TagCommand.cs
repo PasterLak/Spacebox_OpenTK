@@ -1,12 +1,9 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Engine;
-using Spacebox.Engine.Commands;
+
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
-using System;
-using System.Globalization;
-using System.Numerics;
-using System.Runtime.CompilerServices;
+using Engine;
+using Engine.Commands;
 
 namespace Spacebox.Game.Commands
 {

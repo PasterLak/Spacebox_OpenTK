@@ -2,14 +2,15 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Engine;
-using Spacebox.Engine.Audio;
-using Spacebox.Engine.Physics;
-using Spacebox.Engine.SceneManagment;
-using Spacebox.Engine.Light;
-using Spacebox.FPS;
+
+using Engine.Audio;
+using Engine.Physics;
+using Engine.SceneManagment;
+using Engine.Light;
+
 using Spacebox.FPS.GUI;
-using Spacebox.GUI;
+using Engine;
+
 
 namespace Spacebox.FPS.Scenes
 {

@@ -1,5 +1,5 @@
 namespace Spacebox.Game.Player;
-
+using Engine;
 public class SurvivalMode : MovementMode
 {
     private static InteractionHandler CreateInteractionHandler()

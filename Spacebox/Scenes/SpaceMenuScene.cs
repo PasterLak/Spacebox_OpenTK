@@ -1,19 +1,18 @@
-﻿using ImGuiNET;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Engine;
-using Spacebox.Engine.Audio;
-using Spacebox.Engine.SceneManagment;
-using Spacebox.FPS.Scenes;
-using Spacebox.Game;
-using Spacebox.Game.Effects;
-using Spacebox.Game.GUI;
 
+using Engine.SceneManagment;
+
+using Engine;
+using Spacebox.Game.Effects;
+using Engine.Audio;
+using Spacebox.Game.GUI;
+using Spacebox.Game;
 
 namespace Spacebox.Scenes
 {
-    internal class SpaceMenuScene : Scene
+    public class SpaceMenuScene : Engine.SceneManagment.Scene
     {
         private Skybox skybox;
 
@@ -150,10 +149,6 @@ namespace Spacebox.Scenes
                 VerticalLinks.IsVisible = true;
             }
 
-            if (Input.IsKeyDown(Keys.KeyPadEnter))
-            {
-                SceneManager.LoadScene(typeof(MenuScene));
-            }
         }
     }
 }

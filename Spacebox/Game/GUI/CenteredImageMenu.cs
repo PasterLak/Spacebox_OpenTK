@@ -1,8 +1,7 @@
 ﻿using ImGuiNET;
-using Spacebox.Engine.Extensions;
 using System.Numerics;
-
-namespace Spacebox.Engine
+using Spacebox;
+namespace Engine
 {
     public static class CenteredImageMenu
     {

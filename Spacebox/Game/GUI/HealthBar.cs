@@ -1,8 +1,8 @@
 ﻿using System.Numerics;
-using Spacebox.Engine;
+
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
-
+using Engine;
 namespace Spacebox.GUI
 {
     public class HealthBar

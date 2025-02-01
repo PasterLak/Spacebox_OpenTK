@@ -1,10 +1,11 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Engine;
-using Spacebox.Engine.Physics;
+
+using Engine.Physics;
 using OpenTK.Graphics.OpenGL4;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Effects;
+using Engine;
 
 namespace Spacebox.Game.Generation
 {

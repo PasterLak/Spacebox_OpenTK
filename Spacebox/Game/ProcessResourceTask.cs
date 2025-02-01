@@ -1,4 +1,4 @@
-﻿using Spacebox.Engine;
+﻿using Engine;
 using Spacebox.Game.Generation;
 
 namespace Spacebox.Game

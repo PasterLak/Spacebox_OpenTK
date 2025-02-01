@@ -2,7 +2,7 @@
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resources;
-
+using Engine;
 namespace Spacebox.Game.Generation
 {
     public class InteractiveBlock : Block

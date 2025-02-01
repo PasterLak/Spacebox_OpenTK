@@ -1,4 +1,5 @@
-﻿namespace Spacebox.Game
+﻿using Engine;
+namespace Spacebox.Game
 {
 
     public class Ingredient

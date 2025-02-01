@@ -1,7 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using Spacebox.Engine;
-using Spacebox.Engine;
+
+using Engine;
 using Spacebox.Game.Player;
 
 namespace Spacebox.Game
@@ -32,6 +32,8 @@ namespace Spacebox.Game
 
             itemCamera = new Camera360(Vector3.Zero, false);
             itemCamera.FOV = 80;
+            itemCamera.DepthNear = 0.01f;
+            itemCamera.DepthFar = 100f;
         }
 
         public void SetColor(Vector3 color)

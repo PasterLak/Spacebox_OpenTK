@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using SharpNBT;
-using Spacebox.Engine;
+using Engine;
 using System;
 
 namespace Spacebox.Game.Generation

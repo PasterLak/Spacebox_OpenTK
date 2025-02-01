@@ -1,12 +1,15 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Engine;
-using Spacebox.Engine.Audio;
-using Spacebox.Engine.Physics;
-using Spacebox.Engine;
+
+using Engine.Audio;
+using Engine.Physics;
+
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
+using Engine;
 using Spacebox.GUI;
+using Spacebox.FPS;
+
 
 namespace Spacebox.Game.Player
 {
@@ -35,7 +38,7 @@ namespace Spacebox.Game.Player
         public bool CanMove
         {
             get => _canMove;
-           
+
         }
 
         public InertiaController InertiaController { get; private set; } = new InertiaController();
@@ -71,6 +74,8 @@ namespace Spacebox.Game.Player
             : base(position)
         {
             FOV = 90;
+            DepthNear = 0.01f;
+            DepthFar = Settings.ViewDistance;
             base.Name = Name;
             Layer = CollisionLayer.Player;
             VisualDebug.RemoveCollisionToDraw(this);
@@ -97,7 +102,7 @@ namespace Spacebox.Game.Player
             _firstMove = true;
             Input.MoveCursorToCenter();
             _lastMousePosition = Input.Mouse.Position;
-            
+
         }
 
 
@@ -142,7 +147,7 @@ namespace Spacebox.Game.Player
         {
 
             PlayerSaveLoadManager.SavePlayer(this, World.Data.WorldFolderPath);
-          
+
 
         }
 
@@ -151,7 +156,7 @@ namespace Spacebox.Game.Player
             if (needResetNextFrame)
             {
                 ResetMousePosition();
-           
+
                 needResetNextFrame = false;
             }
 
@@ -174,7 +179,7 @@ namespace Spacebox.Game.Player
             _gameModeBase.Update(this);
 
             HitImage.Update();
-          
+
             _gameModeBase.HandleInput(this);
 
             if (!CanMove) return;
@@ -246,14 +251,14 @@ namespace Spacebox.Game.Player
 
         private void HandleMouse()
         {
-            
+
 
             var mouse = Input.Mouse;
 
             if (_firstMove)
             {
                 _lastMousePosition = new Vector2(mouse.Position.X, mouse.Position.Y);
-               // _lastMousePosition = Input.Mouse.Delta;
+                // _lastMousePosition = Input.Mouse.Delta;
                 _firstMove = false;
             }
             else
@@ -263,7 +268,7 @@ namespace Spacebox.Game.Player
                     var deltaX = mouse.Position.X - _lastMousePosition.X;
                     var deltaY = mouse.Position.Y - _lastMousePosition.Y;
                     _lastMousePosition = new Vector2(mouse.Position.X, mouse.Position.Y);
-                    
+
                     Rotate(deltaX, deltaY);
                 }
             }
@@ -311,7 +316,7 @@ namespace Spacebox.Game.Player
         {
             Draw(this);
 
-            if(_gameModeBase != null)
+            if (_gameModeBase != null)
             {
                 _gameModeBase.Render(this);
             }

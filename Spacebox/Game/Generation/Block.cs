@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using OpenTK.Mathematics;
-using Spacebox.Engine;
+using Engine;
 using Spacebox.Game.Resources;
 
 namespace Spacebox.Game.Generation

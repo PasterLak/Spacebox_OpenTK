@@ -1,8 +1,6 @@
 ﻿using ImGuiNET;
-using Spacebox.Engine;
-using Spacebox.Engine.Extensions;
 using System.Numerics;
-
+using Engine;
 namespace Spacebox.Game.GUI
 {
     public static class TagText

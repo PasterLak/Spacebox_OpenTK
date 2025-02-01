@@ -45,6 +45,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Engine\Engine.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Update="Resources\Textures\logo.png">
 			<Pack>true</Pack>
 			<PackagePath>\\</PackagePath>

@@ -4,7 +4,7 @@ using System.Reflection;
 using Xunit;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
-using Spacebox.Engine;
+using Engine;
 using Spacebox.Game.Player; // Adjust namespaces as necessary
 using System.Threading.Tasks;
 

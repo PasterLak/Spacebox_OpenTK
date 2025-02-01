@@ -1,8 +1,8 @@
 ﻿using ImGuiNET;
-using Spacebox.Engine;
-using Spacebox.Engine.Physics;
-using Spacebox.Engine.Extensions;
+
+using Engine.Physics;
 using System.Numerics;
+using Engine;
 
 namespace Spacebox.FPS.GUI
 {

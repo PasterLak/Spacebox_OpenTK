@@ -1,9 +1,10 @@
 ﻿using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
+
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Engine;
-using Spacebox.Engine.Physics;
-using Spacebox.Engine.Light;
+
+using Engine.Physics;
+using Engine.Light;
+using Engine;
 
 
 namespace Spacebox.FPS

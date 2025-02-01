@@ -1,10 +1,10 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Engine;
-using Spacebox.Engine.Physics;
+
+using Engine.Physics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
-
+using Engine;
 namespace Spacebox.Game.Player
 {
     public class CreativeTools

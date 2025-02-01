@@ -1,6 +1,6 @@
-﻿using Spacebox.Engine;
+﻿
 using Spacebox.Game.Resources;
-
+using Engine;
 namespace Spacebox.Game.Generation
 {
     public class ResourceProcessingBlock : InteractiveBlock

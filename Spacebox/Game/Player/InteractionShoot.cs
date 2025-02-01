@@ -1,17 +1,19 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Engine;
-using Spacebox.Engine.Audio;
-using Spacebox.Engine.Physics;
-using Spacebox.Engine.Light;
+
+using Engine.Audio;
+using Engine.Physics;
+using Engine.Light;
 using Spacebox.Game.Animations;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
+using Engine;
+
 
 namespace Spacebox.Game.Player;
-
+using Engine;
 public class InteractionShoot : InteractionMode
 {
 

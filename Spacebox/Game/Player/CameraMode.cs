@@ -1,7 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Engine;
 
+using Engine;
 namespace Spacebox.Game.Player;
 
 public class CameraMode : GameModeBase

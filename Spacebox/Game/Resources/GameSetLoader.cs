@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
-using Spacebox.Engine;
-using Spacebox.Engine.Audio;
-using Spacebox.Game.Player;
 
+using Engine.Audio;
+using Spacebox.Game.Player;
+using Engine;
 namespace Spacebox.Game.Resources
 {
     public static class GameSetLoader

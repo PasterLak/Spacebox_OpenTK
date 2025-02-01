@@ -1,10 +1,11 @@
 ﻿
+using Engine;
 using OpenTK.Mathematics;
-using Spacebox.Engine;
+
 
 namespace Spacebox.FPS
 {
-    internal class Water : Model, ITransparent
+    public class Water : Model, ITransparent
     {
         public Water(Shader shader) :
             base("Resources/Models/plane.obj", new Material(shader,

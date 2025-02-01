@@ -1,4 +1,4 @@
-using Spacebox.Engine;
+using Engine;
 using OpenTK.Mathematics;
 
 namespace Spacebox.Tests

@@ -1,6 +1,6 @@
 ﻿
+using Engine;
 
-using Spacebox.Engine;
 
 namespace Spacebox.Game.Player
 {

@@ -1,10 +1,10 @@
 ﻿using ImGuiNET;
-using Spacebox.Engine;
-using Spacebox.Engine.Audio;
-using Spacebox.Engine.SceneManagment;
-using Spacebox.Engine;
+
+using Engine.Audio;
+using Engine.SceneManagment;
+using Engine;
 using Spacebox.Game.Generation;
-using Spacebox.GUI;
+
 using Spacebox.Scenes;
 using System.Numerics;
 

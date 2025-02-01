@@ -1,7 +1,7 @@
 ﻿
 using System.Numerics;
 using ImGuiNET;
-using Spacebox.Engine;
+using Engine;
 
 namespace Spacebox.Game.GUI
 {

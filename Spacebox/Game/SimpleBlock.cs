@@ -1,8 +1,9 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
 
-namespace Spacebox.Engine
+namespace Spacebox
 {
     public class SimpleBlock : Node3D, IDisposable, IDrawable
     {
@@ -193,8 +194,7 @@ namespace Spacebox.Engine
 
             GL.Disable(EnableCap.DepthTest);
 
-            if (FramebufferCapture.IsActive)
-                FramebufferCapture.SaveFrame();
+          
         }
 
         public void Dispose()

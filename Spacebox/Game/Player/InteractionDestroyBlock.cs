@@ -1,14 +1,15 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Engine;
-using Spacebox.Engine.Animation;
-using Spacebox.Engine.Audio;
-using Spacebox.Engine.Physics;
-using Spacebox.Engine;
+
+using Engine.Animation;
+using Engine.Audio;
+using Engine.Physics;
+using Engine;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
+
 
 namespace Spacebox.Game.Player;
 

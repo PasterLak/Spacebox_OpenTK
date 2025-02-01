@@ -1,5 +1,6 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using Spacebox.Engine;
+﻿using Engine;
+using OpenTK.Graphics.OpenGL4;
+
 
 namespace Spacebox.Game
 {
@@ -69,8 +70,8 @@ namespace Spacebox.Game
             GL.Disable(EnableCap.Blend);
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-            if (FramebufferCapture.IsActive)
-                FramebufferCapture.SaveFrame();
+          //  if (FramebufferCapture.IsActive)
+          //      FramebufferCapture.SaveFrame();
 
         }
 

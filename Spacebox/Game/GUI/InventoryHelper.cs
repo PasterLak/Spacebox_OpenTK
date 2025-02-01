@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Engine;
+using Engine;
 using Spacebox.Game;
 using Spacebox.Game.Resources;
 

@@ -1,5 +1,5 @@
 ﻿using ImGuiNET;
-using Spacebox.Engine.GUI;
+using Engine.GUI;
 using Spacebox.Game.Generation;
 
 namespace Spacebox.Game.GUI

@@ -1,7 +1,7 @@
 using Spacebox.Game.Player;
 
 namespace Spacebox.Game.GUI;
-
+using Engine;
 public class WorldInfo
 {
     public string Name { get; set; }

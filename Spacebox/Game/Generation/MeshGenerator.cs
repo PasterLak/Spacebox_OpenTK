@@ -1,8 +1,8 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Engine;
+using Engine;
 using System.Diagnostics;
-using Spacebox.Engine.Physics;
-using Debug = Spacebox.Engine.Debug;
+using Engine.Physics;
+using Debug = Engine.Debug;
 
 namespace Spacebox.Game.Generation
 {

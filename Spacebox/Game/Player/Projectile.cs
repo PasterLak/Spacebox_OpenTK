@@ -1,9 +1,10 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Engine;
-using Spacebox.Engine.Audio;
-using Spacebox.Engine.Physics;
-using Spacebox.Engine.Light;
+
+using Engine.Audio;
+using Engine.Physics;
+using Engine.Light;
 using Spacebox.Game.Generation;
+using Engine;
 
 
 namespace Spacebox.Game.Player
@@ -140,11 +141,11 @@ namespace Spacebox.Game.Player
                 if (canRicochet && currentRicochets < parameters.PossibleRicochets)
                 {
 
-                    var angle = Ray.CalculateIncidentAngle(ray, hit);
+                    var angle = Ray.CalculateIncidentAngle(ray, hit.normal);
 
                     if (angle <= parameters.RicochetAngle)
                     {
-                        ray = ray.CalculateRicochetRay(hit, ray.Length);
+                        ray = ray.CalculateRicochetRay(hit.position, hit.normal, ray.Length);
                         ricochetSound.Play();
                         lineRenderer.ClearPoints();
                         lineRenderer.AddPoint(Vector3.Zero);

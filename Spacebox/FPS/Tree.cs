@@ -1,9 +1,10 @@
-﻿using OpenTK.Mathematics;
-using Spacebox.Engine;
+﻿using Engine;
+using OpenTK.Mathematics;
+
 
 namespace Spacebox.FPS
 {
-    internal class Tree : Node3D, INotTransparent, ITransparent
+    public class Tree : Node3D, INotTransparent, ITransparent
     {
 
         Model trunk;

@@ -1,26 +1,29 @@
-﻿using Spacebox.Engine.SceneManagment;
+﻿using Engine.SceneManagment;
 using OpenTK.Mathematics;
-using Spacebox.Engine;
+
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.GUI;
+
 using Spacebox.Game;
-using Spacebox.Engine.Audio;
+using Engine.Audio;
 using Spacebox.Game.Commands;
 using Spacebox.Game.GUI;
-using Spacebox.Engine.Physics;
+using Engine.Physics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Resources;
-using Spacebox.Engine.GUI;
-using Spacebox.Engine.Animation;
-using Spacebox.Engine.Light;
+using Engine.GUI;
+using Engine.Animation;
+using Engine.Light;
+using Engine;
+using Spacebox.GUI;
+using Spacebox.FPS;
 
 namespace Spacebox.Scenes
 {
-    internal class SpaceScene : Scene
+    public class SpaceScene : Scene
     {
         private Astronaut player;
         private Skybox skybox;
@@ -157,6 +160,7 @@ namespace Spacebox.Scenes
             radarWindow = new RadarUI(skybox.Texture);
 
             player = new Astronaut(new Vector3(5, 5, 5));
+           
             PanelUI.Player = player;
             SceneGraph.AddRoot(player);
            

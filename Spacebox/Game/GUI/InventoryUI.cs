@@ -1,9 +1,9 @@
 ﻿using System.Numerics;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Engine;
-using Spacebox.Engine.Audio;
-using Spacebox.Engine;
+using Engine;
+using Engine.Audio;
+
 using Spacebox.Game.Player;
 
 namespace Spacebox.Game.GUI
