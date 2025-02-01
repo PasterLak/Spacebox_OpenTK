@@ -1,5 +1,5 @@
 ﻿
-using Spacebox.Common;
+using Spacebox.Engine;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -71,7 +71,7 @@ namespace Spacebox
             }
             catch (Exception ex)
             {
-                Common.Debug.Error($"Failed to open URL: {ex.Message}");
+                Engine.Debug.Error($"Failed to open URL: {ex.Message}");
             }
         }
 

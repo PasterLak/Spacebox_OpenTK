@@ -1,6 +1,7 @@
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Common;
-using Spacebox.Common.Physics;
+using Spacebox.Engine;
+using Spacebox.Engine.Physics;
+using Spacebox.Engine;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;

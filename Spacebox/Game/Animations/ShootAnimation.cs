@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Common;
-using Spacebox.Common.Animation;
+using Spacebox.Engine;
+using Spacebox.Engine.Animation;
 
 namespace Spacebox.Game.Animations
 {

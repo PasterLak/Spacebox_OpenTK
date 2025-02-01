@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using OpenTK.Mathematics;
-using Spacebox.Common;
+using Spacebox.Engine;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Resources;

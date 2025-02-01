@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
-using Spacebox.Common;
-using Spacebox.Common.Audio;
+using Spacebox.Engine;
+using Spacebox.Engine.Audio;
+using Spacebox.Engine;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
 using System.Numerics;

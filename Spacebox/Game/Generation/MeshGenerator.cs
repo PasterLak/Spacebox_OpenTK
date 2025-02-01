@@ -1,8 +1,8 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Common;
+using Spacebox.Engine;
 using System.Diagnostics;
-using Spacebox.Common.Physics;
-using Debug = Spacebox.Common.Debug;
+using Spacebox.Engine.Physics;
+using Debug = Spacebox.Engine.Debug;
 
 namespace Spacebox.Game.Generation
 {
@@ -241,7 +241,7 @@ namespace Spacebox.Game.Generation
             if (_measureGenerationTime && stopwatch != null)
             {
                 stopwatch.Stop();
-                Common.Debug.Success($"Chunk mesh generation time: {stopwatch.ElapsedMilliseconds} ms");
+                Engine.Debug.Success($"Chunk mesh generation time: {stopwatch.ElapsedMilliseconds} ms");
             }
 
             GeometryBoundingBox = BoundingBox.CreateFromMinMax(new Vector3(xMin, yMin, zMin),

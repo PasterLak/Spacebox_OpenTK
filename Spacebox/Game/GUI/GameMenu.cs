@@ -1,9 +1,9 @@
 ﻿using System.Numerics;
 using System.Text.Json;
 using ImGuiNET;
-using Spacebox.Common;
-using Spacebox.Common.Audio;
-using Spacebox.Common.SceneManagment;
+using Spacebox.Engine;
+using Spacebox.Engine.Audio;
+using Spacebox.Engine.SceneManagment;
 using Spacebox.Game.Player;
 using Spacebox.Scenes;
 using static Spacebox.Game.Resources.GameSetLoader;

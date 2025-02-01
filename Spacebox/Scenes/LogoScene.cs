@@ -1,9 +1,10 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Common;
-using Spacebox.Common.GUI;
-using Spacebox.Common.SceneManagment;
+using Spacebox.Engine;
+using Spacebox.Engine.GUI;
+using Spacebox.Engine.SceneManagment;
+using Spacebox.FPS.Scenes;
 
 namespace Spacebox.Scenes
 {
@@ -24,8 +25,7 @@ namespace Spacebox.Scenes
 
             sprite = new Sprite("Resources/Textures/dust.png", new Vector2(0, 0),
                 new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
-            //sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
-            //GL.Enable(EnableCap.DepthTest);
+
 
         }
 

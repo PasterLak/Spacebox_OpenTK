@@ -1,4 +1,4 @@
-﻿using Spacebox.Common;
+﻿using Spacebox.Engine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -6,17 +6,14 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
 using Spacebox.Scenes;
 using System.Collections.Concurrent;
-using Spacebox.Common.Audio;
-using Spacebox.Common.SceneManagment;
-using Dear_ImGui_Sample;
-using System;
-using Spacebox.Extensions;
-using Spacebox.FPS;
-using Spacebox.GUI;
+using Spacebox.Engine.Audio;
+using Spacebox.Engine.SceneManagment;
+
 using ImGuiNET;
-using Spacebox.Common.Utils;
-using Spacebox.Common.GUI;
+using Spacebox.Engine.Utils;
+using Spacebox.Engine.GUI;
 using Spacebox.Game.GUI;
+using Spacebox.Engine.Extensions;
 
 namespace Spacebox
 {

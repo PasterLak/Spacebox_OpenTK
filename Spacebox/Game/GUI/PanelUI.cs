@@ -2,9 +2,10 @@
 using ImGuiNET;
 using Microsoft.VisualBasic;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Common;
-using Spacebox.Common.Audio;
-using Spacebox.Extensions;
+using Spacebox.Engine;
+using Spacebox.Engine.Audio;
+using Spacebox.Engine;
+using Spacebox.Engine.Extensions;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
 

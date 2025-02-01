@@ -1,7 +1,8 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Common;
-using Spacebox.Common.Audio;
-using Spacebox.Common.Physics;
+using Spacebox.Engine;
+using Spacebox.Engine.Audio;
+using Spacebox.Engine.Physics;
+using Spacebox.Engine.Light;
 using Spacebox.Game.Generation;
 
 

@@ -7,7 +7,7 @@ namespace Spacebox.Game.Physics
     {
         public Vector3Byte blockPositionIndex;
         public Chunk chunk;
-        public Common.Vector3SByte normal;
+        public Engine.Vector3SByte normal;
         public Block block;
     }
 }

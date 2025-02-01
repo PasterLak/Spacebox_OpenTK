@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
-using Spacebox.Common;
-using Spacebox.Common.Audio;
+using Spacebox.Engine;
+using Spacebox.Engine.Audio;
 using Spacebox.Game.Player;
 
 namespace Spacebox.Game.Resources

@@ -1,6 +1,6 @@
 ﻿using ImGuiNET;
-using Spacebox.Common;
-using Spacebox.Extensions;
+using Spacebox.Engine;
+using Spacebox.Engine.Extensions;
 using System.Numerics;
 
 namespace Spacebox.Game.GUI

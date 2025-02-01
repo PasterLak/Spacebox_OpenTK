@@ -1,5 +1,5 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Common;
+using Spacebox.Engine;
 using Spacebox.Game.Resources;
 using static Spacebox.Game.ItemModelGeneratorHelper;
 

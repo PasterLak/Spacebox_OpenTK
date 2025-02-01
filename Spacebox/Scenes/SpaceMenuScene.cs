@@ -2,13 +2,13 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Common;
-using Spacebox.Common.Audio;
-using Spacebox.Common.SceneManagment;
+using Spacebox.Engine;
+using Spacebox.Engine.Audio;
+using Spacebox.Engine.SceneManagment;
+using Spacebox.FPS.Scenes;
 using Spacebox.Game;
 using Spacebox.Game.Effects;
 using Spacebox.Game.GUI;
-using Spacebox.GUI;
 
 
 namespace Spacebox.Scenes

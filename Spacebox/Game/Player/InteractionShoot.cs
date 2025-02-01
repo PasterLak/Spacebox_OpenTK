@@ -1,8 +1,9 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Common;
-using Spacebox.Common.Audio;
-using Spacebox.Common.Physics;
+using Spacebox.Engine;
+using Spacebox.Engine.Audio;
+using Spacebox.Engine.Physics;
+using Spacebox.Engine.Light;
 using Spacebox.Game.Animations;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
@@ -262,7 +263,7 @@ public class InteractionShoot : InteractionMode
             //lineRenderer.AddPoint(player.Position + player.Front);
             int count = 10;
             int count1 = 0;
-            Ray ray = new Common.Physics.Ray(player.Position, player.Front, 1000);
+            Ray ray = new Engine.Physics.Ray(player.Position, player.Front, 1000);
 
 
             var projectile = ProjectilesPool.Take();

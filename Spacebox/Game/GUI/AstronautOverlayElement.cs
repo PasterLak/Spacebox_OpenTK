@@ -1,6 +1,6 @@
 ﻿using ImGuiNET;
-using Spacebox.Common;
-using Spacebox.Common.GUI;
+using Spacebox.Engine;
+using Spacebox.Engine.GUI;
 using Spacebox.Game.Player;
 
 namespace Spacebox.Game.GUI

@@ -1,8 +1,8 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Common;
-using Spacebox.Common.GUI;
-using Spacebox.Common.Physics;
+using Spacebox.Engine;
+using Spacebox.Engine.GUI;
+using Spacebox.Engine.Physics;
 using Spacebox.FPS;
 using Spacebox.Game.Effects;
 using Spacebox.Game.GUI;

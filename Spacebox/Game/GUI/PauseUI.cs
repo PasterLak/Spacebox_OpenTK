@@ -1,7 +1,8 @@
 ﻿using ImGuiNET;
-using Spacebox.Common;
-using Spacebox.Common.Audio;
-using Spacebox.Common.SceneManagment;
+using Spacebox.Engine;
+using Spacebox.Engine.Audio;
+using Spacebox.Engine.SceneManagment;
+using Spacebox.Engine;
 using Spacebox.Game.Generation;
 using Spacebox.GUI;
 using Spacebox.Scenes;

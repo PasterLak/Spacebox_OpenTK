@@ -1,7 +1,7 @@
 ﻿using ImGuiNET;
-using Spacebox.Common;
-using Spacebox.Common.Physics;
-using Spacebox.Extensions;
+using Spacebox.Engine;
+using Spacebox.Engine.Physics;
+using Spacebox.Engine.Extensions;
 using System.Numerics;
 
 namespace Spacebox.FPS.GUI

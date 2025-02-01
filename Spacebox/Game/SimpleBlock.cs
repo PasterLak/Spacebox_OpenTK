@@ -2,7 +2,7 @@
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
 
-namespace Spacebox.Common
+namespace Spacebox.Engine
 {
     public class SimpleBlock : Node3D, IDisposable, IDrawable
     {

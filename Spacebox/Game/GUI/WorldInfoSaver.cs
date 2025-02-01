@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Spacebox.Common;
+using Spacebox.Engine;
 
 namespace Spacebox.Game.GUI;
 

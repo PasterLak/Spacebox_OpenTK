@@ -2,9 +2,9 @@
 using OpenTK.Mathematics;
 
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Common;
-using Spacebox.Common.Audio;
-using Spacebox.Common.Physics;
+using Spacebox.Engine;
+using Spacebox.Engine.Audio;
+using Spacebox.Engine.Physics;
 
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;

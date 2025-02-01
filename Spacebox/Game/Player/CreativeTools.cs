@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Common;
-using Spacebox.Common.Physics;
+using Spacebox.Engine;
+using Spacebox.Engine.Physics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
@@ -109,10 +109,10 @@ namespace Spacebox.Game.Player
             Vector3 realMin = Vector3.ComponentMin((Vector3)local1, (Vector3)local2);
             Vector3 realMax = Vector3.ComponentMax((Vector3)local1, (Vector3)local2);
 
-            Common.Physics.BoundingBox deleteBounding;
+            Engine.Physics.BoundingBox deleteBounding;
 
             
-             deleteBounding = Common.Physics.BoundingBox.CreateFromMinMax(realMin, realMax);
+             deleteBounding = Engine.Physics.BoundingBox.CreateFromMinMax(realMin, realMax);
 
 
             //Debug.Log($"Delete bounding: {deleteBounding.Min} - {deleteBounding.Max}");

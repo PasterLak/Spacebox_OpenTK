@@ -1,9 +1,10 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Common;
-using Spacebox.Common.Animation;
-using Spacebox.Common.Audio;
-using Spacebox.Common.Physics;
+using Spacebox.Engine;
+using Spacebox.Engine.Animation;
+using Spacebox.Engine.Audio;
+using Spacebox.Engine.Physics;
+using Spacebox.Engine.Light;
 using Spacebox.FPS;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;

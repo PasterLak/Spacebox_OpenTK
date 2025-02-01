@@ -1,21 +1,22 @@
-﻿using Spacebox.Common.SceneManagment;
+﻿using Spacebox.Engine.SceneManagment;
 using OpenTK.Mathematics;
-using Spacebox.Common;
+using Spacebox.Engine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.GUI;
 using Spacebox.Game;
-using Spacebox.Common.Audio;
+using Spacebox.Engine.Audio;
 using Spacebox.Game.Commands;
 using Spacebox.Game.GUI;
-using Spacebox.Common.Physics;
+using Spacebox.Engine.Physics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Resources;
-using Spacebox.Common.GUI;
-using Spacebox.Common.Animation;
+using Spacebox.Engine.GUI;
+using Spacebox.Engine.Animation;
+using Spacebox.Engine.Light;
 
 namespace Spacebox.Scenes
 {
