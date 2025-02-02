@@ -7,7 +7,7 @@ namespace Spacebox.Game.GUI.Menu
 {
     public class WorldSelectWindow : MenuWindow
     {
-        private GameMenu menu;
+        public GameMenu menu;
         public WorldSelectWindow(GameMenu menu)
         {
             this.menu = menu;

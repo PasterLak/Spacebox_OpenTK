@@ -1,4 +1,6 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
 using System.Text.Json;
 using ImGuiNET;
@@ -16,7 +18,6 @@ namespace Spacebox.Game.GUI.Menu
         public static bool IsVisible = false;
         public enum MenuState { Main, WorldSelect, NewWorld, Options, Multiplayer }
         private MenuState currentState = MenuState.Main;
-
         private List<WorldInfo> worlds = new List<WorldInfo>();
         private List<ModConfig> gameSets = new List<ModConfig>();
         private readonly string[] gamemodes;
@@ -32,12 +33,11 @@ namespace Spacebox.Game.GUI.Menu
         public AudioSource click1;
         public bool showDeleteWindow = false;
         public bool showVersionConvertWindow = false;
-
-
         public MainMenuWindow mainMenuWindow;
         public WorldSelectWindow worldSelectWindow;
         public NewWorldWindow newWorldWindow;
         public OptionsWindow optionsWindow;
+        public MultiplayerWindow multiplayerWindow;
         public DeleteWindow deleteWindow;
         public UpdateVersionWindow updateVersionWindow;
 
@@ -53,6 +53,7 @@ namespace Spacebox.Game.GUI.Menu
             worldSelectWindow = new WorldSelectWindow(this);
             newWorldWindow = new NewWorldWindow(this);
             optionsWindow = new OptionsWindow(this);
+            multiplayerWindow = new MultiplayerWindow(this);
             deleteWindow = new DeleteWindow(this);
             updateVersionWindow = new UpdateVersionWindow(this);
         }
@@ -68,7 +69,6 @@ namespace Spacebox.Game.GUI.Menu
             ImGui.PushStyleColor(ImGuiCol.Header, new Vector4(1f, 0.72f, 0f, 1f));
             ImGui.PushStyleColor(ImGuiCol.ChildBg, Theme.Colors.Deep);
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
-
             switch (currentState)
             {
                 case MenuState.Main:
@@ -83,7 +83,9 @@ namespace Spacebox.Game.GUI.Menu
                 case MenuState.Options:
                     optionsWindow.Render();
                     break;
-                    // Multiplayer можно реализовать позже
+                case MenuState.Multiplayer:
+                    multiplayerWindow.Render();
+                    break;
             }
             if (showDeleteWindow) deleteWindow.Render();
             if (showVersionConvertWindow) updateVersionWindow.Render();
@@ -126,8 +128,7 @@ namespace Spacebox.Game.GUI.Menu
 
         public static Vector2 CenterNextWindow(float width, float height)
         {
-            var pos = new Vector2((ImGui.GetIO().DisplaySize.X - width) * 0.5f,
-                                  (ImGui.GetIO().DisplaySize.Y - height) * 0.5f);
+            var pos = new Vector2((ImGui.GetIO().DisplaySize.X - width) * 0.5f, (ImGui.GetIO().DisplaySize.Y - height) * 0.5f);
             ImGui.SetNextWindowPos(pos, ImGuiCond.Always);
             ImGui.SetNextWindowSize(new Vector2(width, height));
             return pos;
@@ -135,8 +136,7 @@ namespace Spacebox.Game.GUI.Menu
 
         public static Vector2 CenterNextWindow2(float width, float height)
         {
-            var pos = new Vector2((ImGui.GetIO().DisplaySize.X - width) * 0.5f,
-                                  (ImGui.GetIO().DisplaySize.Y - height) * 0.7f);
+            var pos = new Vector2((ImGui.GetIO().DisplaySize.X - width) * 0.5f, (ImGui.GetIO().DisplaySize.Y - height) * 0.7f);
             ImGui.SetNextWindowPos(pos, ImGuiCond.Always);
             ImGui.SetNextWindowSize(new Vector2(width, height));
             return pos;
@@ -144,8 +144,7 @@ namespace Spacebox.Game.GUI.Menu
 
         public static Vector2 CenterNextWindow3(float width, float height)
         {
-            var pos = new Vector2((ImGui.GetIO().DisplaySize.X - width) * 0.5f,
-                                  (ImGui.GetIO().DisplaySize.Y - height) * 0.22f);
+            var pos = new Vector2((ImGui.GetIO().DisplaySize.X - width) * 0.5f, (ImGui.GetIO().DisplaySize.Y - height) * 0.22f);
             ImGui.SetNextWindowPos(pos, ImGuiCond.Always);
             ImGui.SetNextWindowSize(new Vector2(width, height));
             return pos;
@@ -167,7 +166,6 @@ namespace Spacebox.Game.GUI.Menu
             if (ImGui.Button(label, new Vector2(width, height))) onClick?.Invoke();
         }
 
-        // Свойства для окон
         public List<WorldInfo> Worlds => worlds;
         public List<ModConfig> GameSets => gameSets;
         public string[] Gamemodes => gamemodes;
@@ -349,7 +347,6 @@ namespace Spacebox.Game.GUI.Menu
             selectedWorld = null;
         }
 
-        // Методы для смены состояния меню
         public void SetStateToMain() { currentState = MenuState.Main; }
         public void SetStateToWorldSelect() { currentState = MenuState.WorldSelect; }
         public void SetStateToNewWorld() { currentState = MenuState.NewWorld; }
