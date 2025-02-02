@@ -46,6 +46,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Engine\Engine.csproj" />
+	  <ProjectReference Include="..\SpaceNetwork\SpaceNetwork.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

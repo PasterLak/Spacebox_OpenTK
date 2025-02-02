@@ -18,7 +18,8 @@ namespace Spacebox.Game.GUI
             Main,
             WorldSelect,
             NewWorld,
-            Options
+            Options,
+            Multiplayer
         }
 
         private MenuState currentState = MenuState.Main;
@@ -148,7 +149,7 @@ namespace Spacebox.Game.GUI
                 backgroundColor);
         }
 
-      
+
 
         private void RenderMainMenu()
         {
@@ -156,40 +157,46 @@ namespace Spacebox.Game.GUI
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
             float windowWidth = windowSize.X * 0.15f;
             float windowHeight = windowSize.Y * 0.3f;
-            var windowPos = CenterNextWindow2(windowWidth, windowHeight);
-
-            ImGui.Begin("Main Menu", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse 
-                | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
-
+            Vector2 windowPos = CenterNextWindow2(windowWidth, windowHeight);
+            ImGui.SetNextWindowPos(windowPos);
+            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight));
+            ImGui.Begin("Main Menu", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
             float buttonWidth = windowWidth * 0.9f;
             float buttonHeight = windowHeight * 0.12f;
-            float spacing = windowHeight * 0.03f;
-
             DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), windowSize.Y, 0.005f);
-
-            float totalButtonsHeight = buttonHeight * 3 + spacing * 2;
-            ImGui.Dummy(new Vector2(0, (windowHeight - totalButtonsHeight) / 4));
-
-            CenterButtonWithBackground("Play", buttonWidth, buttonHeight, () => {
-               
+            int buttonCount = 4;
+            float spacing = (windowHeight - (buttonCount * buttonHeight)) / (buttonCount + 1);
+            float currentY = spacing;
+            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
+            CenterButtonWithBackground("Play", buttonWidth, buttonHeight, () =>
+            {
                 click1?.Play();
-                currentState = MenuState.WorldSelect; });
-            ImGui.Dummy(new Vector2(0, spacing * 2));
+                currentState = MenuState.WorldSelect;
+            });
+            currentY += buttonHeight + spacing;
+            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
+            CenterButtonWithBackground("Multiplayer", buttonWidth, buttonHeight, () =>
+            {
+                click1?.Play();
+            });
+            currentY += buttonHeight + spacing;
+            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
             CenterButtonWithBackground("Options", buttonWidth, buttonHeight, () =>
             {
                 click1?.Play();
-                 currentState = MenuState.Options;
+                currentState = MenuState.Options;
             });
-            ImGui.Dummy(new Vector2(0, spacing));
-            ImGui.Dummy(new Vector2(0, (windowHeight - totalButtonsHeight) / 2));
-            CenterButtonWithBackground("Exit", buttonWidth, buttonHeight , () =>
+            currentY += buttonHeight + spacing;
+            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
+            CenterButtonWithBackground("Exit", buttonWidth, buttonHeight, () =>
             {
                 click1?.Play();
                 Window.Instance.Quit();
             });
-            ImGui.PopStyleColor(6);
+            ImGui.PopStyleColor(1);
             ImGui.End();
         }
+
 
         private string GetModNameById(string id)
         {
