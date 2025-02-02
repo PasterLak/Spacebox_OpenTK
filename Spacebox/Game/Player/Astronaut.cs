@@ -240,6 +240,8 @@ namespace Spacebox.Game.Player
             Vector3 newFront = Vector3.Transform(-Vector3.UnitZ, combinedRotation);
             Vector3 newUp = Vector3.Transform(Vector3.UnitY, combinedRotation);
 
+            Rotation = QuaternionToEulerDegrees(GetRotation());
+
             if (CameraRelativeRender)
             {
                 return Matrix4.LookAt(Vector3.Zero, newFront, newUp);
@@ -247,6 +249,19 @@ namespace Spacebox.Game.Player
 
             return Matrix4.LookAt(Position, Position + newFront, newUp);
         }
+
+        public static Vector3 QuaternionToEulerDegrees(Quaternion q)
+        {
+          
+            Vector3 eulerRad = q.ToEulerAngles();
+
+            float xDegrees = eulerRad.X * (180f / (float)Math.PI);
+            float yDegrees = eulerRad.Y * (180f / (float)Math.PI);
+            float zDegrees = eulerRad.Z * (180f / (float)Math.PI);
+
+            return new Vector3(xDegrees, yDegrees, zDegrees);
+        }
+
 
         private void HandleMouse()
         {

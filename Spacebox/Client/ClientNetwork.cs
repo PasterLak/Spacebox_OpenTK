@@ -1,4 +1,7 @@
-﻿using Engine;
+﻿
+using System.Collections.Concurrent;
+
+using Engine;
 using Lidgren.Network;
 using OpenTK.Mathematics;
 using SpaceNetwork;
@@ -8,17 +11,19 @@ namespace Client
 {
     public class ClientNetwork
     {
-        public static ClientNetwork Instance { get; private set; }
+        public static ClientNetwork Instance { get; set; }
         private NetClient client;
         private NetConnection serverConnection;
         private Dictionary<int, ClientPlayer> clientPlayers = new Dictionary<int, ClientPlayer>();
         private int localPlayerId = -1;
         private Thread chatThread;
         private volatile bool running;
+        private ConcurrentQueue<string> chatQueue = new ConcurrentQueue<string>();
         public bool IsInitialized { get; private set; }
         public bool NameInUse { get; private set; }
         public bool IsConnected { get; private set; } = false;
 
+        public Action<ClientPlayer> OnPlayerJoined;
         public ClientNetwork(string appKey, string host, int port, string playerName)
         {
             Instance = this;
@@ -28,9 +33,19 @@ namespace Client
             var hail = client.CreateMessage();
             hail.Write(playerName);
             client.Connect(host, port, hail);
+            StartChatThread();
         }
 
-        public void StartChatThread()
+        public void SendMessage(string message)
+        {
+            if (!string.IsNullOrEmpty(message))
+            {
+                chatQueue.Enqueue(message);
+            }
+              
+        }
+
+        private void StartChatThread()
         {
             if (chatThread != null)
                 return;
@@ -39,16 +54,22 @@ namespace Client
             {
                 while (running)
                 {
-                    string chat = Console.ReadLine() ?? "";
-                    if (!string.IsNullOrEmpty(chat) && serverConnection != null)
+                    if (chatQueue.TryDequeue(out string chat))
                     {
-                        var m = new ChatMessage();
-                        m.SenderId = localPlayerId;
-                        m.SenderName = "";
-                        m.Text = chat;
-                        var om = client.CreateMessage();
-                        m.Write(om);
-                        client.SendMessage(om, serverConnection, NetDeliveryMethod.ReliableOrdered);
+                        if (serverConnection != null)
+                        {
+                            var m = new ChatMessage();
+                            m.SenderId = localPlayerId;
+                            m.SenderName = "";
+                            m.Text = chat;
+                            var om = client.CreateMessage();
+                            m.Write(om);
+                            client.SendMessage(om, serverConnection, NetDeliveryMethod.ReliableOrdered);
+                        }
+                    }
+                    else
+                    {
+                        Thread.Sleep(50);
                     }
                 }
             });
@@ -86,17 +107,17 @@ namespace Client
             if (newStatus == NetConnectionStatus.Connected)
             {
                 serverConnection = msg.SenderConnection;
-                Console.Clear();
-                Console.WriteLine("Client connected to server.");
+                Debug.Log("Client connected to server.");
                 IsConnected = true;
             }
             else if (newStatus == NetConnectionStatus.Disconnected)
             {
                 serverConnection = null;
-                Console.WriteLine("Client disconnected from server. " + reason);
+                Debug.Log("Client disconnected from server. " + reason);
                 if (reason.Contains("DuplicateName"))
                     NameInUse = true;
                 StopChatThread();
+                IsConnected = false;
             }
         }
 
@@ -121,31 +142,26 @@ namespace Client
                 foreach (var id in removeList)
                 {
                     var cp = clientPlayers[id];
-                    Console.WriteLine($"[Server]: {cp.NetworkPlayer.Name}[{cp.NetworkPlayer.ID}] disconnected");
+                    Debug.Log($"[Server]: {cp.NetworkPlayer.Name}[{cp.NetworkPlayer.ID}] disconnected");
                     clientPlayers.Remove(id);
                 }
             }
             else if (baseMsg is PositionMessage posMsg)
             {
-               /* int id = posMsg.PlayerId;
-                if (id != localPlayerId && clientPlayers.ContainsKey(id))
-                {
-                    var cp = clientPlayers[id];
-                    cp.NetworkPlayer.Position = new Vector3(posMsg.Position.X, posMsg.Position.Y, posMsg.Position.Z).ToSystemVector3();
-                    // При необходимости можно обновлять Rotation и другие поля
-                }*/
+               // posMsg.Read(msg);
+
             }
             else if (baseMsg is KickMessage km)
             {
-                Console.WriteLine(km.Reason);
+                Debug.Log(km.Reason);
                 client.Disconnect("Kicked");
             }
             else if (baseMsg is ChatMessage cm)
             {
                 if (cm.SenderId == -1)
-                    Console.WriteLine($"[Server]: {cm.Text}");
+                    Debug.Log($"[Server]: {cm.Text}");
                 else
-                    Console.WriteLine($"> {cm.SenderName}[{cm.SenderId}]: {cm.Text}");
+                    Debug.Log($"> {cm.SenderName}[{cm.SenderId}]: {cm.Text}");
             }
         }
 
@@ -157,18 +173,21 @@ namespace Client
             }
             else
             {
+                Debug.Log("New player id" + p.ID);
                 var cp = new ClientPlayer(p);
+               
                 clientPlayers[p.ID] = cp;
+                OnPlayerJoined?.Invoke(clientPlayers[p.ID]);
             }
         }
 
-        public void SendPosition(Vector3 pos)
+        public void SendPosition(Vector3 pos, Vector3 rot)
         {
             if (serverConnection == null)
                 return;
             var m = new PositionMessage();
             m.Position = new System.Numerics.Vector3(pos.X, pos.Y, pos.Z);
-           // m.PlayerId = localPlayerId;
+            m.Rotation = new System.Numerics.Vector3(rot.X, rot.Y, rot.Z);
             var om = client.CreateMessage();
             m.Write(om);
             client.SendMessage(om, serverConnection, NetDeliveryMethod.Unreliable);

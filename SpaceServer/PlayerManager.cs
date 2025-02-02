@@ -16,7 +16,8 @@ public class PlayerManager
             ID = nextId++,
             Name = name,
             Color = ColorHelper.GetRandomColor(rand),
-            Position = new Vector3(0f, 0f,0f)
+            Position = new Vector3(0f, 0f,0f),
+            Rotation = new Vector3(0f, 0f, 0f)
         };
         p.LastTimeWasActive = Environment.TickCount; 
         players[p.ID] = p;

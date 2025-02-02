@@ -26,6 +26,7 @@ namespace Spacebox.Client
                         var serverPort = msg.ReadInt32();
                        
                         servers.Add(new ServerInfo { Name = name, IP = ip, Port = serverPort });
+                        client.Shutdown("Server added");
                     }
                     client.Recycle(msg);
                 }

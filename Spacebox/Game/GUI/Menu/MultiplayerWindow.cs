@@ -7,8 +7,10 @@ using System.Text.Json;
 using System.Threading;
 using ImGuiNET;
 using Engine;
-using Engine.Audio;
 using Spacebox.Client;
+using Spacebox.Game.GUI.Menu;
+using Spacebox.Scenes;
+using static Spacebox.Game.Resources.GameSetLoader;
 
 namespace Spacebox.Game.GUI.Menu
 {
@@ -131,28 +133,38 @@ namespace Spacebox.Game.GUI.Menu
             ButtonWithBackground("Refresh", new Vector2(btnWidth, buttonH), new Vector2(10, buttonY), () =>
             {
                 StartLocalDiscovery();
+                Console.WriteLine("Refreshing local servers...");
             });
             ImGui.SameLine();
             ButtonWithBackground("Join", new Vector2(btnWidth, buttonH), new Vector2(10 + btnWidth + midSpacing, buttonY), () =>
             {
                 if (selectedServerIndex >= 0 && selectedServerIndex < combinedServers.Count)
                 {
-                    string worldName = combinedServers[selectedServerIndex].Name;
-                    var existingWorld = menu.Worlds.FirstOrDefault(w => w.Name == worldName);
+                    var server = combinedServers[selectedServerIndex];
+                    WorldInfo world;
+                    ModConfig modConfig;
+                    var existingWorld = menu.Worlds.FirstOrDefault(w => w.Name == server.Name);
                     if (existingWorld == null)
                     {
-                        menu.newWorldName = worldName;
+                        menu.newWorldName = server.Name;
                         menu.newWorldAuthor = "";
                         menu.newWorldSeed = "420";
                         menu.SelectedGameSetIndex = 0;
                         menu.SelectedGameModeIndex = 1;
                         menu.CreateNewWorld();
-                        menu.LoadWorld(menu.selectedWorld,true);
+                        world = menu.selectedWorld;
+                        modConfig = new ModConfig { ModId = world.ModId, FolderName = world.FolderName };
                     }
                     else
                     {
-                        menu.LoadWorld(existingWorld, true);
+                        world = existingWorld;
+                        modConfig = new ModConfig { ModId = world.ModId, FolderName = "Default" };
                     }
+                    ServerInfo serverInfo = new ServerInfo { Name = server.Name, IP = server.IP, Port = server.Port };
+                    string appKey = Application.Version;
+                    string playerName = config.PlayerNickname;
+                   Debug.Log("Joining server: " + serverInfo.IP + ":" + serverInfo.Port);
+                    SceneLauncher.LaunchMultiplayerGame(world, modConfig, serverInfo, playerName, appKey);
                 }
             });
             ImGui.SameLine();

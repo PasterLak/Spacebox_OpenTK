@@ -20,6 +20,9 @@ namespace SpaceNetwork.Messages
                 msg.Write(p.Position.X);
                 msg.Write(p.Position.Y);
                 msg.Write(p.Position.Z);
+                msg.Write(p.Rotation.X);
+                msg.Write(p.Rotation.Y);
+                msg.Write(p.Rotation.Z);
             }
         }
 
@@ -36,7 +39,11 @@ namespace SpaceNetwork.Messages
                 float x = msg.ReadFloat();
                 float y = msg.ReadFloat();
                 float z = msg.ReadFloat();
+                float xr = msg.ReadFloat();
+                float yr = msg.ReadFloat();
+                float zr = msg.ReadFloat();
                 p.Position = new Vector3(x, y,z);
+                p.Rotation = new Vector3(xr, yr, zr);
                 p.DisplayedPosition = p.Position;
                 Players[p.ID] = p;
             }

@@ -172,8 +172,32 @@ namespace Engine
         {
             return Id.GetHashCode();
         }
-
      
+        public static Vector3 QuaternionToEuler(Quaternion q)
+        {
+            // Нормализуем кватернион на всякий случай
+            q = Quaternion.Normalize(q);
+
+            // Расчёт углов в порядке X, Y, Z (pitch, yaw, roll)
+            float sinr_cosp = 2f * (q.W * q.X + q.Y * q.Z);
+            float cosr_cosp = 1f - 2f * (q.X * q.X + q.Y * q.Y);
+            float x = MathF.Atan2(sinr_cosp, cosr_cosp);
+
+            float sinp = 2f * (q.W * q.Y - q.Z * q.X);
+            float y;
+            if (MathF.Abs(sinp) >= 1f)
+                y = MathF.CopySign(MathF.PI / 2f, sinp); // использование 90 градусов, если значение вне [-1,1]
+            else
+                y = MathF.Asin(sinp);
+
+            float siny_cosp = 2f * (q.W * q.Z + q.X * q.Y);
+            float cosy_cosp = 1f - 2f * (q.Y * q.Y + q.Z * q.Z);
+            float z = MathF.Atan2(siny_cosp, cosy_cosp);
+
+            return new Vector3(x, y, z);
+        }
+
+
         public static bool operator ==(Node3D left, Node3D right)
         {
             if (ReferenceEquals(left, null))

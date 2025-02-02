@@ -17,10 +17,21 @@ namespace SpaceServer
         private bool _shouldStop;
         private float time;
         private readonly Action<string> _logCallback;
+        private readonly string appKey;
+        private readonly int maxConnections;
+        private readonly int port;
 
         public ServerNetwork(string appKey, int port, int maxConnections, Action<string> logCallback)
         {
+            this.appKey = appKey;
+            this.port = port;
+            this.maxConnections = maxConnections;
             _logCallback = logCallback;
+            InitializeServer();
+        }
+
+        private void InitializeServer()
+        {
             var config = new NetPeerConfiguration(appKey)
             {
                 Port = port,
@@ -32,8 +43,10 @@ namespace SpaceServer
             config.EnableMessageType(NetIncomingMessageType.DiscoveryRequest);
             server = new NetServer(config);
             server.Start();
+            _shouldStop = false;
             _logCallback?.Invoke($"<--------------------------->");
             _logCallback?.Invoke($"Server started on port {port}");
+            _logCallback?.Invoke($"App key: {appKey}");
         }
 
         public void RunMainLoop()
@@ -46,8 +59,13 @@ namespace SpaceServer
             while (!_shouldStop)
             {
                 Time.Update();
-                if (time > Settings.TimeToCheckAfk) { time = Settings.TimeToCheckAfk; CheckAFKPlayers(); }
-                if (time < Settings.TimeToCheckAfk) time += Time.Delta;
+                if (time > Settings.TimeToCheckAfk)
+                {
+                    time = Settings.TimeToCheckAfk;
+                    CheckAFKPlayers();
+                }
+                if (time < Settings.TimeToCheckAfk)
+                    time += Time.Delta;
                 NetIncomingMessage msg;
                 while ((msg = server.ReadMessage()) != null)
                 {
@@ -56,7 +74,6 @@ namespace SpaceServer
                         var response = server.CreateMessage();
                         response.Write("SpaceServer");
                         response.Write(server.Configuration.Port);
-
                         server.SendDiscoveryResponse(response, msg.SenderEndPoint);
                     }
                     else
@@ -83,9 +100,23 @@ namespace SpaceServer
             server.Shutdown("Server stopped");
         }
 
+        public void Restart()
+        {
+            _logCallback?.Invoke("Restarting server...");
+            Stop();
+            Thread.Sleep(1000);
+            InitializeServer();
+            new Thread(() => RunMainLoop()).Start();
+            _logCallback?.Invoke("Server restarted.");
+        }
+
         private void CheckAFKPlayers()
         {
-            if (playerManager.GetAll().Count == 0) { time = 0; return; }
+            if (playerManager.GetAll().Count == 0)
+            {
+                time = 0;
+                return;
+            }
             var players = playerManager.GetAll().Values.ToArray();
             foreach (var player in players)
             {
@@ -148,6 +179,7 @@ namespace SpaceServer
                 if (connectionPlayers.TryGetValue(msg.SenderConnection, out var p))
                 {
                     p.Position = pm.Position;
+                    p.Rotation = pm.Rotation;
                     p.LastTimeWasActive = Environment.TickCount;
                     BroadcastPlayers();
                 }
@@ -188,7 +220,11 @@ namespace SpaceServer
             NetConnection target = null;
             foreach (var kvp in connectionPlayers)
             {
-                if (kvp.Value.ID == playerId) { target = kvp.Key; break; }
+                if (kvp.Value.ID == playerId)
+                {
+                    target = kvp.Key;
+                    break;
+                }
             }
             if (target != null)
             {

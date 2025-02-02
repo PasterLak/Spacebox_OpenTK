@@ -1,6 +1,7 @@
 ﻿
 using SpaceNetwork;
 using Spacebox.Game.Player;
+using Engine;
 
 namespace Client
 {
@@ -22,6 +23,13 @@ namespace Client
             NetworkPlayer.LastTimeWasActive = updated.LastTimeWasActive;
             NetworkPlayer.Color = updated.Color;
             NetworkPlayer.Name = updated.Name;
+        }
+
+        public void Update()
+        {
+            InGamePlayer.LatestPosition = NetworkPlayer.Position.ToOpenTKVector3();
+            InGamePlayer.LatestRotation = NetworkPlayer.Rotation.ToOpenTKVector3();
+            InGamePlayer.UpdateRemote();
         }
     }
 }

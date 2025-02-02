@@ -192,6 +192,7 @@ namespace Spacebox.Scenes
             dustSpawner = new DustSpawner(localPlayer);
 
             // Регистрация команд отладки
+            Debug.RegisterCommand(new ChatCommand());
             Debug.RegisterCommand(new TeleportCommand(localPlayer));
             Debug.RegisterCommand(new TagCommand(localPlayer));
             Debug.RegisterCommand(new ClearInventoryCommand(localPlayer));
@@ -352,6 +353,7 @@ namespace Spacebox.Scenes
             animator.Update(Time.Delta);
         }
 
+        public Action OnRenderCenter;
         public override void Render()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -388,7 +390,7 @@ namespace Spacebox.Scenes
             blockDestructionManager.Render();
             spacer.Draw(localPlayer);
             dustSpawner.Render();
-
+            OnRenderCenter?.Invoke();
             if (InteractionDestroyBlockSurvival.BlockMiningEffect != null)
                 InteractionDestroyBlockSurvival.BlockMiningEffect.Render();
 

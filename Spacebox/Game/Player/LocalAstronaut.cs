@@ -15,7 +15,7 @@ namespace Spacebox.Game.Player
             base.Update();
             if (ClientNetwork.Instance != null && ClientNetwork.Instance.IsConnected)
             {
-                ClientNetwork.Instance.SendPosition(Position);
+                ClientNetwork.Instance.SendPosition(Position,Rotation);
             }
         }
     }
