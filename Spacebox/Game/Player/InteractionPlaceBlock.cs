@@ -205,6 +205,7 @@ public class InteractionPlaceBlock : InteractionMode
 
         var direction = Block.GetDirectionFromNormal(norm);
 
+        if (BlockSelector.Instance != null)
         BlockSelector.Instance.UpdatePosition(selectorPosition, direction);
 
         if (entity != null)

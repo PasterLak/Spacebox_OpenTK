@@ -147,11 +147,11 @@ namespace Spacebox.Game.GUI.Menu
                         menu.SelectedGameSetIndex = 0;
                         menu.SelectedGameModeIndex = 1;
                         menu.CreateNewWorld();
-                        menu.LoadWorld(menu.selectedWorld);
+                        menu.LoadWorld(menu.selectedWorld,true);
                     }
                     else
                     {
-                        menu.LoadWorld(existingWorld);
+                        menu.LoadWorld(existingWorld, true);
                     }
                 }
             });

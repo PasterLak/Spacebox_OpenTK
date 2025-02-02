@@ -8,7 +8,6 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Engine;
 using Spacebox.GUI;
-using Spacebox.FPS;
 
 
 namespace Spacebox.Game.Player

@@ -317,7 +317,7 @@ namespace Spacebox.Game.GUI.Menu
             drawList.AddImage(trashIcon.Handle, imagePosMin, imagePosMax);
         }
 
-        public void LoadWorld(WorldInfo world)
+        public void LoadWorld(WorldInfo world, bool multiplayer = false)
         {
             List<string> args = new List<string>();
             ModConfig modInfo = null;
@@ -333,7 +333,16 @@ namespace Spacebox.Game.GUI.Menu
             args.Add(world.ModId);
             args.Add(world.Seed);
             args.Add(modInfo.FolderName);
-            SceneManager.LoadScene(typeof(SpaceScene), args.ToArray());
+
+            if(multiplayer)
+            {
+                SceneManager.LoadScene(typeof(MultiplayerSpaceScene), args.ToArray());
+            }
+            else
+            {
+                SceneManager.LoadScene(typeof(LocalSpaceScene), args.ToArray());
+            }
+            
         }
 
         public void DeleteWorld(WorldInfo world)
