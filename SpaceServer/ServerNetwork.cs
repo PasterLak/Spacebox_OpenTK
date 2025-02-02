@@ -1,8 +1,11 @@
-﻿using System.Net;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading;
 using Lidgren.Network;
 using SpaceNetwork;
 using SpaceNetwork.Messages;
-
 
 namespace SpaceServer
 {
@@ -15,11 +18,6 @@ namespace SpaceServer
         private float time;
         private readonly Action<string> _logCallback;
 
-        static ServerNetwork()
-        {
-
-        }
-
         public ServerNetwork(string appKey, int port, int maxConnections, Action<string> logCallback)
         {
             _logCallback = logCallback;
@@ -31,6 +29,7 @@ namespace SpaceServer
                 ConnectionTimeout = Settings.ConnectionTimeout
             };
             config.LocalAddress = IPAddress.Any;
+            config.EnableMessageType(NetIncomingMessageType.DiscoveryRequest);
             server = new NetServer(config);
             server.Start();
             _logCallback?.Invoke($"<--------------------------->");
@@ -52,14 +51,25 @@ namespace SpaceServer
                 NetIncomingMessage msg;
                 while ((msg = server.ReadMessage()) != null)
                 {
-                    switch (msg.MessageType)
+                    if (msg.MessageType == NetIncomingMessageType.DiscoveryRequest)
                     {
-                        case NetIncomingMessageType.StatusChanged:
-                            HandleStatusChanged(msg);
-                            break;
-                        case NetIncomingMessageType.Data:
-                            HandleData(msg);
-                            break;
+                        var response = server.CreateMessage();
+                        response.Write("SpaceServer");
+                        response.Write(server.Configuration.Port);
+
+                        server.SendDiscoveryResponse(response, msg.SenderEndPoint);
+                    }
+                    else
+                    {
+                        switch (msg.MessageType)
+                        {
+                            case NetIncomingMessageType.StatusChanged:
+                                HandleStatusChanged(msg);
+                                break;
+                            case NetIncomingMessageType.Data:
+                                HandleData(msg);
+                                break;
+                        }
                     }
                     server.Recycle(msg);
                 }
@@ -133,11 +143,11 @@ namespace SpaceServer
         private void HandleData(NetIncomingMessage msg)
         {
             var baseMsg = MessageFactory.CreateMessage(msg);
-            if (baseMsg is PositionMessage um)
+            if (baseMsg is PositionMessage pm)
             {
                 if (connectionPlayers.TryGetValue(msg.SenderConnection, out var p))
                 {
-                    p.Position = um.Position;
+                    p.Position = pm.Position;
                     p.LastTimeWasActive = Environment.TickCount;
                     BroadcastPlayers();
                 }
@@ -147,7 +157,6 @@ namespace SpaceServer
                 if (connectionPlayers.TryGetValue(msg.SenderConnection, out var p))
                 {
                     var broadcast = new ChatMessage(p.ID, p.Name, cm.Text);
-
                     var om = server.CreateMessage();
                     broadcast.Write(om);
                     server.SendToAll(om, NetDeliveryMethod.ReliableOrdered);
@@ -169,7 +178,6 @@ namespace SpaceServer
         {
             var name = senderId == -1 ? "Server" : "";
             var cm = new ChatMessage(senderId, name, text);
-
             var outMsg = server.CreateMessage();
             cm.Write(outMsg);
             server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);

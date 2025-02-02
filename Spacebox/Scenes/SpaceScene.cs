@@ -19,7 +19,7 @@ using Engine.Animation;
 using Engine.Light;
 using Engine;
 using Spacebox.GUI;
-using Spacebox.FPS;
+
 
 namespace Spacebox.Scenes
 {

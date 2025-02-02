@@ -11,7 +11,7 @@ public abstract class MenuWindow
 
 public class MainMenuWindow : MenuWindow
 {
-    private GameMenu menu;
+    public GameMenu menu;
     public MainMenuWindow(GameMenu menu)
     {
         this.menu = menu;

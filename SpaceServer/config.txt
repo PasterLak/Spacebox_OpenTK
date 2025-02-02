@@ -1,5 +1,8 @@
+name=Spacebox Server
+description = official server
 port=5544
 key=0.1.1
 maxPlayers=100
+seed = 420
 pingInterval= 1
 connectionTimeout= 10

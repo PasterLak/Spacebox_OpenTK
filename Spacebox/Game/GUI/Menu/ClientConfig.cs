@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Spacebox.Client;
 
 namespace Spacebox.Game.GUI.Menu
 {

@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Numerics;
 using ImGuiNET;
-using Engine;
-using Engine.Audio;
-using static Spacebox.Game.Resources.GameSetLoader;
+
 
 namespace Spacebox.Game.GUI.Menu
 {
     public class NewWorldWindow : MenuWindow
     {
-        private GameMenu menu;
+        public GameMenu menu;
         public NewWorldWindow(GameMenu menu)
         {
             this.menu = menu;
