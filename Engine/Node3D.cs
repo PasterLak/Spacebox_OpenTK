@@ -45,7 +45,17 @@ namespace Engine
             node.Parent = this;
             
         }
+        public static Vector3 QuaternionToEulerDegrees(Quaternion q)
+        {
 
+            Vector3 eulerRad = q.ToEulerAngles();
+
+            float xDegrees = eulerRad.X * (180f / (float)Math.PI);
+            float yDegrees = eulerRad.Y * (180f / (float)Math.PI);
+            float zDegrees = eulerRad.Z * (180f / (float)Math.PI);
+
+            return new Vector3(xDegrees, yDegrees, zDegrees);
+        }
         private void MarkDirty()
         {
             if (!dirty)

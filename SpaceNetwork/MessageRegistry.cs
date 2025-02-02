@@ -13,7 +13,7 @@ namespace SpaceNetwork
         {
             Register<InitMessage>();
             Register<PlayersMessage>();
-            Register<PositionMessage>();
+            Register<Node3DMessage>();
             Register<RotationMessage>();
             Register<KickMessage>();
             Register<ChatMessage>();

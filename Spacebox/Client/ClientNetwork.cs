@@ -146,7 +146,7 @@ namespace Client
                     clientPlayers.Remove(id);
                 }
             }
-            else if (baseMsg is PositionMessage posMsg)
+            else if (baseMsg is Node3DMessage posMsg)
             {
                // posMsg.Read(msg);
 
@@ -181,13 +181,13 @@ namespace Client
             }
         }
 
-        public void SendPosition(Vector3 pos, Vector3 rot)
+        public void SendPosition(Vector3 pos, Quaternion rot)
         {
             if (serverConnection == null)
                 return;
-            var m = new PositionMessage();
+            var m = new Node3DMessage();
             m.Position = new System.Numerics.Vector3(pos.X, pos.Y, pos.Z);
-            m.Rotation = new System.Numerics.Vector3(rot.X, rot.Y, rot.Z);
+            m.Rotation = new System.Numerics.Vector4(rot.X, rot.Y, rot.Z, rot.W);
             var om = client.CreateMessage();
             m.Write(om);
             client.SendMessage(om, serverConnection, NetDeliveryMethod.Unreliable);

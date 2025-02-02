@@ -27,15 +27,15 @@ namespace Spacebox.Game.GUI
 
             ColorUint = ImGui.GetColorU32(new System.Numerics.Vector4(Color.R, Color.G, Color.B, Color.A));
 
-            SetFontSizes();
+            SetFontSizes(new Vector2(1920,1080));
 
              FontSize = MaxFontSize;
         }
 
-        public static void SetFontSizes()
+        public static void SetFontSizes(Vector2 size)
         {
-            MinFontSize = Window.Instance.Size.Y / 100 * 1f;
-            MaxFontSize = Window.Instance.Size.Y / 100 * 2f;
+            MinFontSize = size.Y / 100 * 1f;
+            MaxFontSize = size.Y / 100 * 2f;
         }
 
         public void SetFontSizeFromDistance(float distance)

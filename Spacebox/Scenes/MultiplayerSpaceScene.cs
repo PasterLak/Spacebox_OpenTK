@@ -110,7 +110,7 @@ namespace Spacebox.Scenes
                 var remote = new RemoteAstronaut(player.NetworkPlayer);
 
                 remote.LatestPosition = Camera.Main.Position;
-                remote.LatestRotation = Vector3.Zero;
+                remote.LatestRotation = Quaternion.Identity;
                
                 remote.Position = Camera.Main.Position;
             

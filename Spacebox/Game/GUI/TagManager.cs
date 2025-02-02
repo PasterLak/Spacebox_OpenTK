@@ -90,7 +90,8 @@ namespace Spacebox.Game.GUI
 
         public static void OnResized(Vector2 screenPos)
         {
-            Tag.SetFontSizes();
+          
+            Tag.SetFontSizes(screenPos);
         }
 
         private static ImFontPtr LoadFont()

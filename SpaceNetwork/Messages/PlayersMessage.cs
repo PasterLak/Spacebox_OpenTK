@@ -23,6 +23,7 @@ namespace SpaceNetwork.Messages
                 msg.Write(p.Rotation.X);
                 msg.Write(p.Rotation.Y);
                 msg.Write(p.Rotation.Z);
+                msg.Write(p.Rotation.W);
             }
         }
 
@@ -42,8 +43,9 @@ namespace SpaceNetwork.Messages
                 float xr = msg.ReadFloat();
                 float yr = msg.ReadFloat();
                 float zr = msg.ReadFloat();
+                float w = msg.ReadFloat();
                 p.Position = new Vector3(x, y,z);
-                p.Rotation = new Vector3(xr, yr, zr);
+                p.Rotation = new Vector4(xr, yr, zr,w);
                 p.DisplayedPosition = p.Position;
                 Players[p.ID] = p;
             }

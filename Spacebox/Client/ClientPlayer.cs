@@ -28,7 +28,7 @@ namespace Client
         public void Update()
         {
             InGamePlayer.LatestPosition = NetworkPlayer.Position.ToOpenTKVector3();
-            InGamePlayer.LatestRotation = NetworkPlayer.Rotation.ToOpenTKVector3();
+            InGamePlayer.LatestRotation = new OpenTK.Mathematics.Quaternion(NetworkPlayer.Rotation.X, NetworkPlayer.Rotation.Y, NetworkPlayer.Rotation.Z, NetworkPlayer.Rotation.W);
             InGamePlayer.UpdateRemote();
         }
     }

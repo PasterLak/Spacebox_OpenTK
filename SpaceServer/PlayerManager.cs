@@ -17,7 +17,7 @@ public class PlayerManager
             Name = name,
             Color = ColorHelper.GetRandomColor(rand),
             Position = new Vector3(0f, 0f,0f),
-            Rotation = new Vector3(0f, 0f, 0f)
+            Rotation = new Vector4(0f, 0f, 0f,0f)
         };
         p.LastTimeWasActive = Environment.TickCount; 
         players[p.ID] = p;
@@ -34,6 +34,12 @@ public class PlayerManager
     public bool IsNameUsed(string name)
     {
         return players.Values.Any(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public void Reset()
+    {
+        players.Clear();
+        nextId = 1;
     }
 
  

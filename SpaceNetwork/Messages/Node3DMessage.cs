@@ -3,10 +3,10 @@ using Lidgren.Network;
 
 namespace SpaceNetwork.Messages
 {
-    public class PositionMessage : BaseMessage
+    public class Node3DMessage : BaseMessage
     {
         public Vector3 Position;
-        public Vector3 Rotation;
+        public Vector4 Rotation;
 
         protected override void WriteData(NetOutgoingMessage msg)
         {
@@ -16,6 +16,7 @@ namespace SpaceNetwork.Messages
             msg.Write(Rotation.X);
             msg.Write(Rotation.Y);
             msg.Write(Rotation.Z);
+            msg.Write(Rotation.W);
         }
 
         public override void Read(NetIncomingMessage msg)
@@ -28,7 +29,8 @@ namespace SpaceNetwork.Messages
             float x1 = msg.ReadFloat();
             float y1 = msg.ReadFloat();
             float z1 = msg.ReadFloat();
-            Rotation = new Vector3(x1, y1, z1);
+            float w1 = msg.ReadFloat();
+            Rotation = new Vector4(x1, y1, z1,w1);
         }
     }
 }

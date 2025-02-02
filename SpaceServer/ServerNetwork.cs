@@ -104,6 +104,8 @@ namespace SpaceServer
         {
             _logCallback?.Invoke("Restarting server...");
             Stop();
+            time = 0;
+            playerManager.Reset();
             Thread.Sleep(1000);
             InitializeServer();
             new Thread(() => RunMainLoop()).Start();
@@ -174,7 +176,7 @@ namespace SpaceServer
         private void HandleData(NetIncomingMessage msg)
         {
             var baseMsg = MessageFactory.CreateMessage(msg);
-            if (baseMsg is PositionMessage pm)
+            if (baseMsg is Node3DMessage pm)
             {
                 if (connectionPlayers.TryGetValue(msg.SenderConnection, out var p))
                 {
