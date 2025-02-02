@@ -46,7 +46,7 @@ namespace Spacebox
         {
             Instance = this;
             minimizedWindowSize = nativeWindowSettings.ClientSize;
-           // UpdateFrequency = 9999;
+            // UpdateFrequency = 9999;
         }
 
         protected override void OnLoad()
@@ -54,7 +54,7 @@ namespace Spacebox
             base.OnLoad();
             AppIconLoader.LoadAndSetIcon(this, "Resources/Textures/icon.png");
 
-         
+
 
             Debug.Log("[Engine started!]");
             Input.Initialize(this);
@@ -103,8 +103,8 @@ namespace Spacebox
             InputManager.AddAction("screenshot", Keys.F12, true);
             InputManager.RegisterCallback("screenshot", () => { Screenshot(); });
 
-            screenShotAudio = new AudioSource(SoundManager.AddPermanentClip("screenshot") );
-           // ToggleFullScreen();
+            screenShotAudio = new AudioSource(SoundManager.AddPermanentClip("screenshot"));
+            // ToggleFullScreen();
         }
 
         private static AudioSource screenShotAudio;
@@ -112,8 +112,8 @@ namespace Spacebox
         {
             FramebufferCapture.SaveScreenshot(this);
             screenShotAudio.Play();
-          
-            HealthColorOverlay.SetActive(new System.Numerics.Vector3(1,1,1), 0.2f);
+
+            HealthColorOverlay.SetActive(new System.Numerics.Vector3(1, 1, 1), 0.2f);
         }
         protected override void OnRenderFrame(FrameEventArgs e)
         {
@@ -152,8 +152,8 @@ namespace Spacebox
 
                 Time.EndOnGUI();
 
-                if(Camera.Main != null)
-                _controller.Render();
+                if (Camera.Main != null)
+                    _controller.Render();
 
                 ImGuiController.CheckGLError("End of frame");
 
@@ -195,7 +195,7 @@ namespace Spacebox
             if (SceneManager.CurrentScene != null)
             {
                 SceneManager.CurrentScene.Update();
-               
+
             }
 
 
@@ -301,7 +301,7 @@ namespace Spacebox
 
         public Vector2 GetCenter()
         {
-        
+
             int windowWidth = Size.X;
             int windowHeight = Size.Y;
 
@@ -341,14 +341,14 @@ namespace Spacebox
         {
             base.OnTextInput(e);
 
-            
+
             _controller.PressChar((char)e.Unicode);
         }
 
         protected override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
-            Debug.Log("REsize");
+
             //GL.Viewport(0, 0, Size.X, Size.Y);
             GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
 

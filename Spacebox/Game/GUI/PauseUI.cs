@@ -60,47 +60,43 @@ namespace Spacebox.Game.GUI
         {
             if (!_isVisible) return;
 
-            RenderMainMenu();
+            RenderPause();
         }
 
-        private static void RenderMainMenu()
+
+        private static void RenderPause()
         {
             Vector2 displaySize = ImGui.GetIO().DisplaySize;
-           // ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
             float windowWidth = displaySize.X * 0.15f;
             float windowHeight = displaySize.Y * 0.3f;
-            var windowPos = GameMenu.CenterNextWindow(windowWidth, windowHeight);
-
-            ImGui.Begin("Pause", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse
-                | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
-
+            Vector2 windowPos = GameMenu.CenterNextWindow(windowWidth, windowHeight);
+            ImGui.SetNextWindowPos(windowPos);
+            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight));
+            ImGui.Begin("Pause", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
             float buttonWidth = windowWidth * 0.9f;
             float buttonHeight = windowHeight * 0.12f;
-            float spacing = windowHeight * 0.03f;
-
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y, 0.005f);
-
-            float totalButtonsHeight = buttonHeight * 4;
-
-            float freeSpace = (windowHeight - totalButtonsHeight) / 8f;
-
-            ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(0, freeSpace));
-
-            ImGui.Spacing();
-            GameMenu.CenterButtonWithBackground("Continue", buttonWidth, buttonHeight, () => {
+            int buttonCount = 4;
+            float spacing = (windowHeight - (buttonCount * buttonHeight)) / (buttonCount + 1);
+            float currentY = spacing;
+            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
+            GameMenu.CenterButtonWithBackground("Continue", buttonWidth, buttonHeight, () =>
+            {
                 click1?.Play();
                 ToggleManager.SetState("pause", false);
                 ToggleManager.SetState("panel", true);
             });
-            ImGui.Spacing();
+            currentY += buttonHeight + spacing;
+            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
             GameMenu.CenterButtonWithBackground(saveButtonText, buttonWidth, buttonHeight, () =>
             {
                 click1?.Play();
-                if(World.Instance != null)
-               World.Instance.SaveWorld();
+                if (World.Instance != null)
+                    World.Instance.SaveWorld();
                 saveButtonText = "Saved!";
             });
-            ImGui.Spacing();
+            currentY += buttonHeight + spacing;
+            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
             GameMenu.CenterButtonWithBackground("Go to menu", buttonWidth, buttonHeight, () =>
             {
                 click1?.Play();
@@ -108,17 +104,13 @@ namespace Spacebox.Game.GUI
                 ToggleManager.SetState("panel", true);
                 SceneManager.LoadScene(typeof(SpaceMenuScene));
             });
-
-            ImGui.Spacing();
-
+            currentY += buttonHeight + spacing;
+            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
             GameMenu.CenterButtonWithBackground("Exit", buttonWidth, buttonHeight, () =>
             {
                 click1?.Play();
                 Window.Instance.Quit();
             });
-            ImGui.Spacing();
-
-            ImGui.PopStyleVar(1);
             ImGui.End();
         }
 
