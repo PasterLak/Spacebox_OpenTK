@@ -5,6 +5,7 @@ using Engine.Audio;
 using Spacebox.Game.Player;
 using System.Numerics;
 using Engine;
+using Spacebox.Game.GUI.Menu;
 namespace Spacebox.Game.GUI
 {
     public class RadarUI

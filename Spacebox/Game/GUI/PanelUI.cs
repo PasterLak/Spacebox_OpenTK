@@ -6,6 +6,7 @@ using Engine;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
 using Engine.Audio;
+using Spacebox.Game.GUI.Menu;
 
 
 namespace Spacebox.Game.GUI

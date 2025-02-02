@@ -4,6 +4,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Engine;
 
 using Spacebox.Game.Player;
+using Spacebox.Game.GUI.Menu;
 
 namespace Spacebox.Game.GUI
 {

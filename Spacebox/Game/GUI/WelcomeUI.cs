@@ -4,6 +4,7 @@ using Engine.Audio;
 using Engine;
 using Spacebox.Game.Generation;
 using System.Numerics;
+using Spacebox.Game.GUI.Menu;
 
 namespace Spacebox.Game.GUI
 {

@@ -1,14 +1,12 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-
-using Engine.SceneManagment;
-
 using Engine;
 using Spacebox.Game.Effects;
 using Engine.Audio;
 using Spacebox.Game.GUI;
 using Spacebox.Game;
+using Spacebox.Game.GUI.Menu;
 
 namespace Spacebox.Scenes
 {

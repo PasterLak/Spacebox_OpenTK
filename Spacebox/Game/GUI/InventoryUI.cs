@@ -5,6 +5,7 @@ using Engine;
 using Engine.Audio;
 
 using Spacebox.Game.Player;
+using Spacebox.Game.GUI.Menu;
 
 namespace Spacebox.Game.GUI
 {

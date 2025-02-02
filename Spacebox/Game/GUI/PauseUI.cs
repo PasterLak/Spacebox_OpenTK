@@ -7,6 +7,7 @@ using Spacebox.Game.Generation;
 
 using Spacebox.Scenes;
 using System.Numerics;
+using Spacebox.Game.GUI.Menu;
 
 namespace Spacebox.Game.GUI
 {
