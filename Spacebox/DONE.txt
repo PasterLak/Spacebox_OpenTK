@@ -33,7 +33,8 @@ Alpha ToDo:
 
 - fix ticks count for recipes
 
-- 
+- fix drill model moving if drop taken 
+- fix drill light if drop taken
 
 - flashlight better sound ?
 - random creepy sounds ?
@@ -82,6 +83,8 @@ version 0.1.1
 - subfolders for textures in mods
 - SphereRenderer/Cube
 - Creative Tools: Eraser
+- engine and game separated
+- test multiplayer demo project with lidgren
 
 version 0.1.0
 
