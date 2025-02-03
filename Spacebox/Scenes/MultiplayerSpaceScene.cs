@@ -1,23 +1,20 @@
-﻿
-using Client;
+﻿using Client;
 using Engine;
-
 using OpenTK.Mathematics;
 using Spacebox.Game.Player;
-using System.Xml.Linq;
+using System.Linq;
 
 namespace Spacebox.Scenes
 {
     public class MultiplayerSpaceScene : BaseSpaceScene
     {
         ClientNetwork networkClient;
-        public static Dictionary<int, ClientPlayer> remotePlayers = new Dictionary<int, ClientPlayer>();
         private string mpAppKey;
         private string mpHost;
         private int mpPort;
         private string mpPlayerName;
 
-        public MultiplayerSpaceScene(string[] args) : base(args) // name mod seed modfolder
+        public MultiplayerSpaceScene(string[] args) : base(args)
         {
             if (args.Length >= 8)
             {
@@ -30,7 +27,6 @@ namespace Spacebox.Scenes
 
         public override void LoadContent()
         {
-           // GL.ClearColor(0f, 0f, 0f, 1f);
             localPlayer = new LocalAstronaut(new Vector3(5, 5, 5));
             localPlayer.GameMode = GameMode.Creative;
             SceneGraph.AddRoot(localPlayer);
@@ -42,11 +38,10 @@ namespace Spacebox.Scenes
                 ClientNetwork.Instance = networkClient;
             }
             base.LoadContent();
-
-            if(ClientNetwork.Instance != null)
+            if (ClientNetwork.Instance != null)
             {
-              
                 ClientNetwork.Instance.OnPlayerJoined += SpawnRemotePlayer;
+                ClientNetwork.Instance.OnPlayerLeft += RemoveRemotePlayer;
             }
         }
 
@@ -56,75 +51,63 @@ namespace Spacebox.Scenes
             if (!networkClient.IsConnected)
             {
                 Debug.Error("Lost connection to server. Returning to Multiplayer Menu.");
-               // SceneManager.LoadScene(typeof(SpaceMenuScene));
-              //  return;
             }
             networkClient.PollEvents();
-            foreach (var remote in remotePlayers.Values)
+            foreach (var cp in ClientNetwork.Instance.GetClientPlayers())
             {
-                if(remote != null) 
-                remote.Update();
+                if (cp.NetworkPlayer.ID == networkClient.LocalPlayerId)
+                    continue;
+                cp.Update();
             }
         }
 
         public override void Render()
         {
             base.Render();
-           
+            foreach (var cp in ClientNetwork.Instance.GetClientPlayers())
+            {
+                if (cp.NetworkPlayer.ID == networkClient.LocalPlayerId)
+                    continue;
+                cp.InGamePlayer?.Render();
+            }
         }
 
         public override void UnloadContent()
         {
             base.UnloadContent();
-            ClientNetwork.Instance.OnPlayerJoined -= SpawnRemotePlayer;
-            networkClient.Disconnect("Scene unloaded");
+            if (ClientNetwork.Instance != null)
+            {
+                ClientNetwork.Instance.OnPlayerJoined -= SpawnRemotePlayer;
+                ClientNetwork.Instance.OnPlayerLeft -= RemoveRemotePlayer;
+                networkClient.Disconnect("Scene unloaded");
+            }
         }
 
         public void SpawnRemotePlayer(ClientPlayer player)
-        { 
+        {
             if (ClientNetwork.Instance == null)
-            {
-
-                Debug.Error("[] no ClientNetwork instance found!");
                 return;
-            }
-
-            var id = player.NetworkPlayer.ID;
-
-            if (ClientNetwork.Instance.LocalPlayerId == id)
-            {
-           
+            if (ClientNetwork.Instance.LocalPlayerId == player.NetworkPlayer.ID)
                 return;
-            }
-
-           
-            if (remotePlayers.ContainsKey(id))
-            {
-                var remote = remotePlayers[id].InGamePlayer;
-                remote.LatestPosition = player.NetworkPlayer.Position.ToOpenTKVector3() ;
-                // remote.LatestRotation = rot;
-            
-            }
-            else
+            if (player.InGamePlayer == null)
             {
                 var remote = new RemoteAstronaut(player.NetworkPlayer);
-
                 remote.LatestPosition = Camera.Main.Position;
                 remote.LatestRotation = Quaternion.Identity;
-               
-                remote.Position = Camera.Main.Position;
-            
-                
                 remote.Position = Camera.Main.Position;
                 player.InGamePlayer = remote;
-                remotePlayers.Add(id, player);
-                //SceneGraph.AddRoot(remote);
                 OnRenderCenter += remote.Render;
-
-
             }
         }
 
-
+        public void RemoveRemotePlayer(ClientPlayer player)
+        {
+            if (player.InGamePlayer != null)
+            {
+                player.InGamePlayer.OnDisconnect();
+                OnRenderCenter -= player.InGamePlayer.Render;
+                player.InGamePlayer = null;
+            }
+        }
     }
 }

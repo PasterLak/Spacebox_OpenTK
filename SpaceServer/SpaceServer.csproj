@@ -18,6 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\CommonLibrary\CommonLibrary.csproj" />
 		<ProjectReference Include="..\SpaceNetwork\SpaceNetwork.csproj" />
 	</ItemGroup>
 

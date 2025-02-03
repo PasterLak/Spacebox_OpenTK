@@ -23,6 +23,14 @@ namespace Spacebox.Game.Player
         private Quaternion currentRotation = Quaternion.Identity;
 
         static bool wasFlipped = false;
+
+        public void OnDisconnect()
+        {
+            if(tag != null)
+            {
+                TagManager.UnregisterTag(tag);
+            }
+        }
         public RemoteAstronaut(SpaceNetwork.Player player)
         {
             playerData = player;

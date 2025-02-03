@@ -1,11 +1,12 @@
-﻿
-using System.Collections.Concurrent;
-
+﻿using System.Collections.Concurrent;
 using Engine;
 using Lidgren.Network;
 using OpenTK.Mathematics;
 using SpaceNetwork;
 using SpaceNetwork.Messages;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace Client
 {
@@ -22,8 +23,8 @@ namespace Client
         public bool IsInitialized { get; private set; }
         public bool NameInUse { get; private set; }
         public bool IsConnected { get; private set; } = false;
-
         public Action<ClientPlayer> OnPlayerJoined;
+        public Action<ClientPlayer> OnPlayerLeft;
         public ClientNetwork(string appKey, string host, int port, string playerName)
         {
             Instance = this;
@@ -35,16 +36,11 @@ namespace Client
             client.Connect(host, port, hail);
             StartChatThread();
         }
-
         public void SendMessage(string message)
         {
             if (!string.IsNullOrEmpty(message))
-            {
                 chatQueue.Enqueue(message);
-            }
-              
         }
-
         private void StartChatThread()
         {
             if (chatThread != null)
@@ -68,20 +64,16 @@ namespace Client
                         }
                     }
                     else
-                    {
                         Thread.Sleep(50);
-                    }
                 }
             });
             chatThread.IsBackground = true;
             chatThread.Start();
         }
-
         public void StopChatThread()
         {
             running = false;
         }
-
         public void PollEvents()
         {
             NetIncomingMessage msg;
@@ -99,7 +91,6 @@ namespace Client
                 client.Recycle(msg);
             }
         }
-
         private void HandleStatusChanged(NetIncomingMessage msg)
         {
             var newStatus = (NetConnectionStatus)msg.ReadByte();
@@ -120,7 +111,6 @@ namespace Client
                 IsConnected = false;
             }
         }
-
         private void HandleData(NetIncomingMessage msg)
         {
             var baseMsg = MessageFactory.CreateMessage(msg);
@@ -142,14 +132,12 @@ namespace Client
                 foreach (var id in removeList)
                 {
                     var cp = clientPlayers[id];
-                    Debug.Log($"[Server]: {cp.NetworkPlayer.Name}[{cp.NetworkPlayer.ID}] disconnected");
+                    OnPlayerLeft?.Invoke(cp);
                     clientPlayers.Remove(id);
                 }
             }
-            else if (baseMsg is Node3DMessage posMsg)
+            else if (baseMsg is Node3DMessage)
             {
-               // posMsg.Read(msg);
-
             }
             else if (baseMsg is KickMessage km)
             {
@@ -164,23 +152,17 @@ namespace Client
                     Debug.Log($"> {cm.SenderName}[{cm.SenderId}]: {cm.Text}");
             }
         }
-
         private void AddOrUpdatePlayer(Player p)
         {
             if (clientPlayers.ContainsKey(p.ID))
-            {
                 clientPlayers[p.ID].UpdateFromNetwork(p);
-            }
             else
             {
-                Debug.Log("New player id" + p.ID);
                 var cp = new ClientPlayer(p);
-               
                 clientPlayers[p.ID] = cp;
-                OnPlayerJoined?.Invoke(clientPlayers[p.ID]);
+                OnPlayerJoined?.Invoke(cp);
             }
         }
-
         public void SendPosition(Vector3 pos, Quaternion rot)
         {
             if (serverConnection == null)
@@ -192,15 +174,12 @@ namespace Client
             m.Write(om);
             client.SendMessage(om, serverConnection, NetDeliveryMethod.Unreliable);
         }
-
         public void Disconnect(string reason)
         {
             client.Disconnect(reason);
             StopChatThread();
         }
-
         public List<ClientPlayer> GetClientPlayers() => clientPlayers.Values.ToList();
-
         public int LocalPlayerId => localPlayerId;
     }
 }

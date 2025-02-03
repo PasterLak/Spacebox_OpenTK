@@ -7,12 +7,13 @@ using Lidgren.Network;
 using SpaceNetwork;
 using SpaceNetwork.Messages;
 
-namespace SpaceServer
+namespace CommonLibrary
 {
     public class ServerNetwork
     {
         private NetServer server;
         private PlayerManager playerManager = new PlayerManager();
+        public PlayerManager PlayerManager => playerManager;
         private Dictionary<NetConnection, Player> connectionPlayers = new Dictionary<NetConnection, Player>();
         private bool _shouldStop;
         private float time;
@@ -45,7 +46,7 @@ namespace SpaceServer
             server.Start();
             _shouldStop = false;
             _logCallback?.Invoke($"<--------------------------->");
-            _logCallback?.Invoke($"Server started on port {port}");
+            _logCallback?.Invoke($"Server \"{Settings.Name}\" started on port {port}");
             _logCallback?.Invoke($"App key: {appKey}");
         }
 
@@ -167,6 +168,7 @@ namespace SpaceServer
                 {
                     connectionPlayers.Remove(msg.SenderConnection);
                     playerManager.RemovePlayer(p.ID);
+                    BroadcastChat(-1, $"{p.Name}[{p.ID}] disconnected");
                     _logCallback?.Invoke($"{p.Name}[{p.ID}] disconnected");
                     BroadcastPlayers();
                 }
@@ -237,6 +239,7 @@ namespace SpaceServer
                 server.SendMessage(om, target, NetDeliveryMethod.ReliableOrdered);
                 target.Disconnect("Kicked");
                 _logCallback?.Invoke($"Player {playerId} was kicked.");
+                BroadcastChat(-1, $"Player {playerId} was kicked.");
                 connectionPlayers.Remove(target);
                 playerManager.RemovePlayer(playerId);
                 BroadcastPlayers();

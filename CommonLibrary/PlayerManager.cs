@@ -2,7 +2,7 @@
 using SpaceNetwork.Utilities;
 using System.Numerics;
 
-
+namespace CommonLibrary;
 public class PlayerManager
 {
     private Dictionary<int, Player> players = new Dictionary<int, Player>();
@@ -15,7 +15,7 @@ public class PlayerManager
         {
             ID = nextId++,
             Name = name,
-            Color = ColorHelper.GetRandomColor(rand),
+            Color = ColorHelper.HexToVector(ColorHelper.GetRandomColorFromListHex(rand)),
             Position = new Vector3(0f, 0f,0f),
             Rotation = new Vector4(0f, 0f, 0f,0f)
         };

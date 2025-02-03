@@ -1,11 +1,12 @@
 ﻿
 
-namespace SpaceNetwork
+namespace CommonLibrary
 {
     public static class Settings
     {
         public static int Port = 14242;
         public static int MaxPlayers = 100;
+        public static string Name = "My Spacebox Server";
         public static string Key = "";
         public static string Ip = " 192.168.56.1"; // "192.168.0.102"
         public static float PingInterval = 0.5f;

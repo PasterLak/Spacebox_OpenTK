@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SpaceServer;
+namespace CommonLibrary;
 public static class Time
 {
 
