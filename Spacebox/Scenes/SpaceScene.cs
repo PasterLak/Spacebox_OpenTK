@@ -364,7 +364,7 @@ namespace Spacebox.Scenes
             {
                 if (Input.IsKeyDown(Keys.KeyPadEnter))
                 {
-                    SceneManager.LoadScene(typeof(SpaceMenuScene));
+                    SceneManager.LoadScene(typeof(MenuScene));
                 }
 
                 if (Input.IsKeyDown(Keys.F8))

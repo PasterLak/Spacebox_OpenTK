@@ -163,7 +163,7 @@ namespace Spacebox.Game.GUI.Menu
                     ServerInfo serverInfo = new ServerInfo { Name = server.Name, IP = server.IP, Port = server.Port };
                     string appKey = Application.Version;
                     string playerName = config.PlayerNickname;
-                   Debug.Log("Joining server: " + serverInfo.IP + ":" + serverInfo.Port);
+                   Debug.Success("Joining server: " + serverInfo.Name + " " + serverInfo.IP + ":" + serverInfo.Port);
                     SceneLauncher.LaunchMultiplayerGame(world, modConfig, serverInfo, playerName, appKey);
                 }
             });

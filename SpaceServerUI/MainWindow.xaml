@@ -10,12 +10,12 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <!-- Left column: configuration controls -->
-        <StackPanel Grid.Column="0" Margin="10" VerticalAlignment="Top" >
+        <StackPanel Grid.Column="0" Margin="10" VerticalAlignment="Top">
             <TextBlock x:Name="NameTextBlock" FontWeight="Bold" FontSize="14" Margin="0,5,0,10" />
             <TextBlock x:Name="LocalIpTextBlock" Text="Local IP: 127.0.0.1" FontWeight="Bold" FontSize="14"/>
             <TextBlock x:Name="PortTextBlock" FontWeight="Bold" FontSize="14" Margin="0,5,0,0"/>
             <TextBlock x:Name="KeyTextBlock" FontWeight="Bold" FontSize="14" Margin="0,5,0,0"/>
-            
+
             <TextBlock Text="Change Port:" FontWeight="Bold"/>
             <TextBox x:Name="PortInputTextBox" Height="25" Margin="0,5,0,5" VerticalContentAlignment="Center" />
             <Button x:Name="SavePortButton" Content="Save Port" Height="25" Click="SavePortButton_Click"/>
@@ -46,11 +46,17 @@
             <ListBox x:Name="LogListBox" Grid.Row="0"/>
             <Grid Grid.Row="1" Margin="0,5,0,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="7*"/>
-                    <ColumnDefinition Width="3*"/>
+                    <!-- Задаём три столбца: поле ввода, кнопка отправки, кнопка очистки -->
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="InputTextBox" Grid.Column="0" VerticalContentAlignment="Center" KeyDown="InputTextBox_KeyDown"/>
-                <Button x:Name="SendButton" Grid.Column="1" Content="Send (Enter)" Click="SendButton_Click"/>
+                <TextBox x:Name="InputTextBox" Grid.Column="0" VerticalContentAlignment="Center" 
+                         KeyDown="InputTextBox_KeyDown" Margin="0,0,5,0"/>
+                <Button x:Name="SendButton" Grid.Column="1" Content="Send" Padding="5,2" 
+                        Margin="0,0,5,0" Click="SendButton_Click"/>
+                <Button x:Name="ClearLogButton" Grid.Column="2" Content="Clear" Padding="5,2" 
+                        Click="ClearLogButton_Click"/>
             </Grid>
         </Grid>
     </Grid>

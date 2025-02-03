@@ -1,13 +1,14 @@
 ﻿using Client;
 using OpenTK.Mathematics;
-using Spacebox.Game.Player;
+
 
 namespace Spacebox.Game.Player
 {
-    public class LocalAstronaut : Astronaut
+    public class AstronautMultiplayer : Astronaut
     {
-        public LocalAstronaut(Vector3 position) : base(position)
+        public AstronautMultiplayer(Vector3 position) : base(position)
         {
+
         }
 
         public override void Update()

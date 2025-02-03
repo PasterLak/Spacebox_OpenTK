@@ -103,7 +103,7 @@ namespace Spacebox.Game.GUI
                 click1?.Play();
                 ToggleManager.SetState("pause", false);
                 ToggleManager.SetState("panel", true);
-                SceneManager.LoadScene(typeof(SpaceMenuScene));
+                SceneManager.LoadScene(typeof(MenuScene));
             });
             currentY += buttonHeight + spacing;
             ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));

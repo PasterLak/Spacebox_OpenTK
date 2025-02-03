@@ -336,7 +336,7 @@ namespace Spacebox.Game.GUI.Menu
 
             if(multiplayer)
             {
-                SceneManager.LoadScene(typeof(MultiplayerSpaceScene), args.ToArray());
+                SceneManager.LoadScene(typeof(MultiplayerScene), args.ToArray());
             }
             else
             {

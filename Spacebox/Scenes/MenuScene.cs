@@ -10,7 +10,7 @@ using Spacebox.Game.GUI.Menu;
 
 namespace Spacebox.Scenes
 {
-    public class SpaceMenuScene : Engine.SceneManagment.Scene
+    public class MenuScene : Engine.SceneManagment.Scene
     {
         private Skybox skybox;
 
@@ -20,9 +20,9 @@ namespace Spacebox.Scenes
         private AudioSource music;
         private GameMenu menu;
 
-        public SpaceMenuScene(string[] args) : base(args)
+        public MenuScene(string[] args) : base(args)
         {
-            Debug.Log("Platform: " + Application.Platform);
+          
         }
 
         public override void LoadContent()

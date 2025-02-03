@@ -162,7 +162,7 @@ namespace SpaceServerUI
             {
                 Settings.Name = newName;
                 ConfigManager.SaveConfig();
-                NameTextBlock.Text = "Server Name: " + Settings.Name;
+                NameTextBlock.Text = Settings.Name;
                 Title = "Server: " + Settings.Name;
                 LogMessage($"[Server]: Server name changed to {Settings.Name} and saved to config.");
             }
@@ -202,6 +202,12 @@ namespace SpaceServerUI
                 }
             });
         }
+
+        private void ClearLogButton_Click(object sender, RoutedEventArgs e)
+        {
+            LogListBox.Items.Clear();
+        }
+
 
         private void RefreshPlayers()
         {

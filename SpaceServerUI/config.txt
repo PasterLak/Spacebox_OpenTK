@@ -5,4 +5,6 @@ key=0.1.1
 maxPlayers=32
 seed = 420
 pingInterval= 0.5
-connectionTimeout= 2
+connectionTimeout= 5
+kickAfkPlayers=false
+timeSecToKickAfkPlayer=600

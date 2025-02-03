@@ -7,7 +7,7 @@ using Engine.Light;
 
 namespace Spacebox.Game.Player
 {
-    public class RemoteAstronaut : Node3D
+    public class AstronautRemote : Node3D
     {
         private SpaceNetwork.Player playerData;
         public Vector3 LatestPosition { get; set; }
@@ -26,7 +26,7 @@ namespace Spacebox.Game.Player
         private Model astHelmet;
         private Model astTank;
         private static Dictionary<string, Texture2D> astronautTextures = new Dictionary<string, Texture2D>();
-
+        
         public void OnDisconnect()
         {
             if (tag != null)
@@ -35,7 +35,7 @@ namespace Spacebox.Game.Player
             }
         }
 
-        public RemoteAstronaut(SpaceNetwork.Player player)
+        public AstronautRemote(SpaceNetwork.Player player)
         {
             playerData = player;
             cube = new CubeRenderer(LatestPosition);

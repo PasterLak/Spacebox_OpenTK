@@ -36,6 +36,8 @@ namespace Client
         public event Action<int, int, int> OnBlockDestroyed;
         public event Action<int, short, byte, short, short, short> OnBlockPlaced;
 
+        public bool IsKicked { get; private set; }
+
         public ClientNetwork(string appKey, string host, int port, string playerName)
         {
             Instance = this;
@@ -48,6 +50,7 @@ namespace Client
             StartChatThread();
             StartBlockDeletionThread();
             StartBlockPlaceThread();
+            IsKicked = false;
         }
 
         public void SendMessage(string message)
@@ -170,6 +173,7 @@ namespace Client
 
         public void PollEvents()
         {
+            
             NetIncomingMessage msg;
             while ((msg = client.ReadMessage()) != null)
             {
@@ -236,7 +240,8 @@ namespace Client
             }
             else if (baseMsg is KickMessage km)
             {
-                Debug.Log(km.Reason);
+                Debug.Error(km.Reason);
+                IsKicked = true;
                 client.Disconnect("Kicked");
             }
             else if (baseMsg is ChatMessage cm)
@@ -288,6 +293,7 @@ namespace Client
             StopChatThread();
             StopBlockDeletionThread();
             StopBlockPlaceThread();
+            IsKicked = false;
         }
 
         public List<ClientPlayer> GetClientPlayers() => clientPlayers.Values.ToList();

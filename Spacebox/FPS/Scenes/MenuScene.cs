@@ -113,7 +113,7 @@ namespace Spacebox.FPS.Scenes
 
             if (Input.IsKeyDown(Keys.S))
             {
-                SceneManager.LoadScene(typeof(SpaceMenuScene));
+                SceneManager.LoadScene(typeof(Spacebox.Scenes.MenuScene));
             }
 
         }

@@ -32,7 +32,7 @@ namespace Spacebox.Client
                 serverInfo.Port.ToString(),
                 playerName
             };
-            SceneManager.LoadScene(typeof(MultiplayerSpaceScene), args.ToArray());
+            SceneManager.LoadScene(typeof(MultiplayerLoadScene), args.ToArray());
         }
     }
 }

@@ -1,43 +1,53 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.InteropServices.JavaScript;
 using System.Threading;
 using Client;
+using DryIoc;
 using Engine;
 using Engine.SceneManagment;
 using OpenTK.Mathematics;
 using Spacebox.Client;
 using Spacebox.Game.GUI;
-using Spacebox.Game.GUI.Menu;
-using Spacebox.Scenes;
+using Spacebox.GUI;
+
 using static Spacebox.Game.Resources.GameSetLoader;
 
 namespace Spacebox.Scenes
 {
-    public class MultiplayerMenuScene : Scene
+    public class MultiplayerLoadScene : Scene
     {
-        private string appKey = "MyAppKey";
-        private string host = "127.0.0.1";
-        private int port = 14242;
+        private string appKey = "0.1.1";
+        private string host = "192.168.56.1";
+        private int port = 5544;
         private string playerName = "PlayerName";
         private bool connectionAttempted = false;
         private bool connectionSuccessful = false;
-        private string connectionError = "";
+        private string connectionError = "kicked";
         private float elapsedTime = 0f;
-        private const float timeout = 5f;
+        private const float timeout = 100f;
         private string[] sceneArgs;
         private ClientNetwork networkClient;
-
-        public MultiplayerMenuScene(string[] args) : base(args)
+        private float timeToGoToMenu = 10f;
+        public MultiplayerLoadScene(string[] args) : base(args)
         {
             sceneArgs = args;
+            if (args.Length >= 8)
+            {
+                appKey = args[4];
+                host = args[5];
+                int.TryParse(args[6], out port);
+                playerName = args[7];
+            }
+            WriteInfo($"Server info: host {host} port {port} key {appKey} namePlayer {playerName}");
+            CenteredText.SetText("Loading");
+            CenteredText.Show();
         }
-
         public override void LoadContent()
         {
-            Debug.Log("Trying to connect to server...");
-        }
+            Debug.Warning("Trying to connect to server...");
+            CenteredText.SetText("Trying to connect to server...");
 
-        public override void Start()
-        {
             ThreadPool.QueueUserWorkItem(_ =>
             {
                 try
@@ -62,10 +72,30 @@ namespace Spacebox.Scenes
                     connectionAttempted = true;
                 }
             });
+
         }
 
+        public void WriteInfo(string text)
+        {
+            CenteredText.SetText(text);
+            Debug.Success(text);
+        }
+        public void WriteError(string text)
+        {
+            CenteredText.SetText(text);
+            Debug.Error(text);
+        }
+
+        public override void Start()
+        {
+           
+        }
+        bool error = false;
         public override void Update()
         {
+            if (networkClient != null)
+                networkClient.PollEvents();
+
             float delta = Time.Delta;
             elapsedTime += delta;
             if (elapsedTime >= timeout && !connectionAttempted)
@@ -84,25 +114,49 @@ namespace Spacebox.Scenes
                     serverInfo.Name = sceneArgs[0];
                     serverInfo.Port = port;
                     serverInfo.IP = host;
-                    SceneLauncher.LaunchMultiplayerGame(world, modConfig, serverInfo, playerName, appKey);
+
+
+                    WriteInfo($"Connected to: {serverInfo.Name} host: {host} port: {port}");
+
+                    //SceneLauncher.LaunchMultiplayerGame(world, modConfig, serverInfo, playerName, appKey);
+
+                    SceneManager.LoadScene(typeof(MultiplayerScene), sceneArgs);
                 }
                 else
                 {
-                    Debug.Error("Connection error: " + connectionError);
+                    if (error == false)
+                    {
+                        WriteError("Connection error: " + connectionError);
+                        error = true;
+                    }
+
+                    timeToGoToMenu -= Time.Delta;
+
+                    if(timeToGoToMenu < 0)
+                    {
+                        WriteError("Failed to connect to the server. Returning to Multiplayer Menu.");
+                        SceneManager.LoadScene(typeof(MenuScene));
+
+                    }
+
                 }
             }
         }
 
         public override void Render()
         {
+
+
         }
 
         public override void OnGUI()
         {
+            CenteredText.Draw();
         }
 
         public override void UnloadContent()
         {
+            CenteredText.Hide();
         }
     }
 }
