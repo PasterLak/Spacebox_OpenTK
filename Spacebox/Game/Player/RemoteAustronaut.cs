@@ -19,9 +19,9 @@ namespace Spacebox.Game.Player
         private Model spacerOld;
         private Model spacer;
         private GUI.Tag tag;
-
+        private ItemModel itemModel;
         private Quaternion currentRotation = Quaternion.Identity;
-
+        private Shader itemModelShader;
         static bool wasFlipped = false;
 
         public void OnDisconnect()
@@ -46,6 +46,10 @@ namespace Spacebox.Game.Player
             spacer = new Model("Resources/Models/Astronaut_klein.obj", new Material(ShaderManager.GetShader("Shaders/textured"), tex));
             tag = new GUI.Tag($"[{playerData.ID}]{playerData.Name}", LatestPosition, new Color4(playerData.Color.X, playerData.Color.Y, playerData.Color.Z, 1));
             TagManager.RegisterTag(tag);
+            itemModelShader = ShaderManager.GetShader("Shaders/itemModel");
+            var uvIndex = GameBlocks.AtlasItems.GetUVIndexByName("drill1");
+            itemModel  = ItemModelGenerator.GenerateModel(
+                GameBlocks.ItemsTexture, uvIndex.X, uvIndex.Y, 1f, 3f / 500f * 2f, false, true);
         }
 
         public static Quaternion MirrorQuaternion(Quaternion original)
@@ -61,6 +65,8 @@ namespace Spacebox.Game.Player
             Rotation = Node3D.QuaternionToEulerDegrees(currentRotation);
             cube.Position = Position;
             var up = Vector3.Transform(Vector3.UnitY, currentRotation);
+
+            itemModel.Position = Position + new Vector3(1,0,0);
             if (playerData.Name == "alconaut")
             {
                 spacerOld.Rotation = Rotation;
@@ -87,6 +93,7 @@ namespace Spacebox.Game.Player
                 spacerOld.Draw(Camera.Main);
                 return;
             }
+            itemModel.Draw(itemModelShader);
             spacer.Draw(Camera.Main);
         }
     }
