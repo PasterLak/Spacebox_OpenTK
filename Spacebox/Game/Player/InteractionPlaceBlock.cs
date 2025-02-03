@@ -9,6 +9,7 @@ using Engine.Physics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
+using Client;
 
 namespace Spacebox.Game.Player;
 
@@ -134,7 +135,11 @@ public class InteractionPlaceBlock : InteractionMode
 
                     if (chunk.SpaceEntity.TryPlaceBlock(selectorPos, newBlock))
                     {
-
+                        if (ClientNetwork.Instance != null)
+                        {
+                            var loc = chunk.SpaceEntity.WorldPositionToLocal(selectorPos);
+                            ClientNetwork.Instance.SendBlockPlaced(newBlock.BlockId, (byte)newBlock.Direction, (short)loc.X, (short)loc.Y, (short)loc.Z);
+                        }
                     }
 
                     if (blockPlace != null)
@@ -257,7 +262,11 @@ public class InteractionPlaceBlock : InteractionMode
 
                     if (entity.TryPlaceBlock(selectorPosition, newBlock))
                     {
-
+                        if (ClientNetwork.Instance != null)
+                        {
+                            var loc = entity.WorldPositionToLocal(selectorPosition);
+                            ClientNetwork.Instance.SendBlockPlaced(newBlock.BlockId, (byte)newBlock.Direction, (short)loc.X, (short)loc.Y, (short)loc.Z);
+                        }
                     }
                     else
                     {

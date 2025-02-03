@@ -247,7 +247,7 @@ namespace Spacebox.Game.Generation
             {
                 // place in another chunk or create new one
             }
-
+            if (block.BlockId == Blocks[x, y, z].BlockId) return;
 
             Blocks[x, y, z] = block;
 
@@ -292,6 +292,7 @@ namespace Spacebox.Game.Generation
         {
             if (!IsInRange(x, y, z))
                 return;
+            if (Blocks[x, y, z].BlockId == 0) return;
 
             Vector3 worldBlockPosition = new Vector3(x, y, z) + PositionWorld;
 

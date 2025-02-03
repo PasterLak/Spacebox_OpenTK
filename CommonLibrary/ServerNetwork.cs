@@ -201,6 +201,14 @@ namespace CommonLibrary
                 om.Write(rawData);
                 server.SendToAll(om, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered, 0);
             }
+            else if (baseMsg is BlockPlaceMessage)
+            {
+                byte[] rawData = new byte[msg.LengthBytes];
+                Array.Copy(msg.Data, 0, rawData, 0, msg.LengthBytes);
+                var om = server.CreateMessage();
+                om.Write(rawData);
+                server.SendToAll(om, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered, 0);
+            }
         }
         private void BroadcastPlayers()
         {

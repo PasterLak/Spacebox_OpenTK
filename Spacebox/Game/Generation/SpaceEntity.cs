@@ -6,6 +6,7 @@ using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Effects;
 using Engine;
+using Client;
 
 namespace Spacebox.Game.Generation
 {
@@ -310,36 +311,52 @@ namespace Spacebox.Game.Generation
             return new Vector3Byte((byte)localX, (byte)localY, (byte)localZ);
         }
 
-
-
-        public bool TryPlaceBlock(Vector3 worldPosition, Block block)
+        private bool PlaceBlockInternal(Vector3 localPos, Block block)
         {
-
-            if (!IsPositionWithinEntitySize(worldPosition)) return false;
-            if (!IsPositionWithinGravityRadius(worldPosition)) return false;
-
-            var chunkIndex = GetChunkIndex(worldPosition);
-
-            var blockPos = WorldPositionToBlockInChunk(worldPosition);
-
-
-
-            if (ChunkDictionary.TryGetValue(chunkIndex, out var chunk))
+            int chunkX = (int)MathF.Floor(localPos.X / Chunk.Size);
+            int chunkY = (int)MathF.Floor(localPos.Y / Chunk.Size);
+            int chunkZ = (int)MathF.Floor(localPos.Z / Chunk.Size);
+            Vector3SByte chunkIndex = new Vector3SByte((sbyte)chunkX, (sbyte)chunkY, (sbyte)chunkZ);
+            int blockX = (int)localPos.X - chunkX * Chunk.Size;
+            int blockY = (int)localPos.Y - chunkY * Chunk.Size;
+            int blockZ = (int)localPos.Z - chunkZ * Chunk.Size;
+            Vector3Byte blockPos = new Vector3Byte((byte)blockX, (byte)blockY, (byte)blockZ);
+            if (ChunkDictionary.TryGetValue(chunkIndex, out Chunk chunk))
             {
-
                 chunk.PlaceBlock(blockPos, block);
-                return true;
+
+              
             }
             else
             {
                 Chunk newChunk = new Chunk(chunkIndex, this, true);
                 AddChunk(newChunk, false);
                 newChunk.PlaceBlock(blockPos, block);
-                return true;
+               
             }
-
-            return false;
+            return true;
         }
+
+        public bool TryPlaceBlockLocal(Vector3 localBlockPosition, Block block)
+        {
+            if (block.BlockId == 0)
+                return true;
+            Vector3 worldBlockPos = PositionWorld + localBlockPosition;
+            if (!IsPositionWithinEntitySize(worldBlockPos))
+                return false;
+            return PlaceBlockInternal(localBlockPosition, block);
+        }
+
+        public bool TryPlaceBlock(Vector3 worldPosition, Block block)
+        {
+            if (block.BlockId == 0)
+                return true;
+            if (!IsPositionWithinEntitySize(worldPosition) || !IsPositionWithinGravityRadius(worldPosition))
+                return false;
+            Vector3 localPos = worldPosition - PositionWorld;
+            return PlaceBlockInternal(localPos, block);
+        }
+
 
         public Vector3SByte GetChunkIndex(Vector3 worldPosition)
         {

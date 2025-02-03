@@ -10,6 +10,7 @@ using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
+using Client;
 
 
 namespace Spacebox.Game.Player;
@@ -151,6 +152,15 @@ public class InteractionDestroyBlockSurvival : InteractionMode
             }
         }
         hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
+
+        var x = (hit.chunk.PositionIndex * Chunk.Size);
+        var localPos = new Vector3(x.X + hit.blockPositionIndex.X, x.Y + hit.blockPositionIndex.Y, x.Z + hit.blockPositionIndex.Z);
+       
+
+        if (ClientNetwork.Instance != null)
+        {
+            ClientNetwork.Instance.SendBlockDestroyed((short)localPos.X, (short)localPos.Y, (short)localPos.Z);
+        }
 
         if (blockDestroy != null)
         {

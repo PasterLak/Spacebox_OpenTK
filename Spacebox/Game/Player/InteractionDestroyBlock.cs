@@ -171,7 +171,7 @@ public class InteractionDestroyBlock : InteractionMode
        
         if (ClientNetwork.Instance != null)
         {
-            ClientNetwork.Instance.SendBlockDestroyed((int)localPos.X, (int)localPos.Y, (int)localPos.Z);
+            ClientNetwork.Instance.SendBlockDestroyed((short)localPos.X, (short)localPos.Y, (short)localPos.Z);
         }
         if (blockDestroy != null)
         {

@@ -1,6 +1,8 @@
 ﻿using Client;
 using Engine;
+using Engine.SceneManagment;
 using OpenTK.Mathematics;
+using Spacebox.Game;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
 using System.Linq;
@@ -45,6 +47,9 @@ namespace Spacebox.Scenes
                 ClientNetwork.Instance.OnPlayerLeft += RemoveRemotePlayer;
 
                 ClientNetwork.Instance.OnBlockDestroyed += OnBlockDestroyed;
+                ClientNetwork.Instance.OnBlockPlaced += OnBlockPlaced;
+
+                Debug.Success("[MultiplayerSpaceScene] ClientNetwork: Success");
             }
 
 
@@ -53,10 +58,28 @@ namespace Spacebox.Scenes
 
         public void OnBlockDestroyed(int x, int y, int z)
         {
-            Debug.Log($"got block destroyed {x},{y},{z} "); 
+      
             if (World.CurrentSector.TryGetNearestEntity(Camera.Main.Position, out var entity))
             {
-                if(entity.RemoveBlockAtLocal(new Vector3(x, y, z), new Vector3SByte(0, 0, 0)))
+                if (entity.RemoveBlockAtLocal(new Vector3(x, y, z), new Vector3SByte(0, 0, 0)))
+                {
+
+                }
+            }
+        }
+
+        public void OnBlockPlaced(int playerId, short blockId, byte direction, short x, short y, short z)
+        {
+
+            Block block = GameBlocks.CreateBlockFromId(blockId);
+            if(direction <= 6)
+            {
+                block.Direction = (Direction)direction;
+            }
+        
+            if (World.CurrentSector.TryGetNearestEntity(Camera.Main.Position, out var entity))
+            {
+                if (entity.TryPlaceBlockLocal(new Vector3(x, y, z), block))
                 {
 
                 }
@@ -69,6 +92,8 @@ namespace Spacebox.Scenes
             if (!networkClient.IsConnected)
             {
                 Debug.Error("Lost connection to server. Returning to Multiplayer Menu.");
+                //SceneManager.LoadScene(typeof(SpaceMenuScene));
+                return;
             }
             networkClient.PollEvents();
             foreach (var cp in ClientNetwork.Instance.GetClientPlayers())

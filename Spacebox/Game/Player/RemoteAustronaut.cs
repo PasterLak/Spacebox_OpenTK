@@ -1,10 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using Engine;
 using Spacebox.Game.GUI;
-using SharpNBT;
-using Client;
-using SpaceNetwork;
-using static System.Net.Mime.MediaTypeNames;
+
 using Engine.Physics;
 using Engine.Light;
 
@@ -15,7 +12,6 @@ namespace Spacebox.Game.Player
         private SpaceNetwork.Player playerData;
         public Vector3 LatestPosition { get; set; }
         public Quaternion LatestRotation { get; set; }
-
         private CubeRenderer cube;
         private Model spacerOld;
         private Model spacer;
@@ -26,10 +22,11 @@ namespace Spacebox.Game.Player
         static bool wasFlipped = false;
         private Shader playerShader;
         private SpotLight spotLight;
-
         private Model astBody;
         private Model astHelmet;
         private Model astTank;
+        private static Dictionary<string, Texture2D> astronautTextures = new Dictionary<string, Texture2D>();
+
         public void OnDisconnect()
         {
             if (tag != null)
@@ -37,6 +34,7 @@ namespace Spacebox.Game.Player
                 TagManager.UnregisterTag(tag);
             }
         }
+
         public RemoteAstronaut(SpaceNetwork.Player player)
         {
             playerData = player;
@@ -45,11 +43,8 @@ namespace Spacebox.Game.Player
             cube.Enabled = true;
             var texold = TextureManager.GetTexture("Resources/Textures/spacer.png");
             texold.UpdateTexture(true);
-
             playerShader = ShaderManager.GetShader("Shaders/player");
             spacerOld = new Model("Resources/Models/spacer.obj", new Material(playerShader, texold));
-
-
             var tex = TextureManager.GetTexture("Resources/Textures/astronaut2.jpg", true, true);
             tex.FlipY();
             tex.UpdateTexture(true);
@@ -58,36 +53,39 @@ namespace Spacebox.Game.Player
             TagManager.RegisterTag(tag);
             itemModelShader = ShaderManager.GetShader("Shaders/itemModel");
             var uvIndex = GameBlocks.AtlasItems.GetUVIndexByName("drill1");
-            itemModel = ItemModelGenerator.GenerateModel(
-                GameBlocks.ItemsTexture, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
+            itemModel = ItemModelGenerator.GenerateModel(GameBlocks.ItemsTexture, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
             itemModel.UseMainCamera = true;
             itemModel.offset = Vector3.Zero;
-
-            spotLight = new SpotLight(playerShader,
-                Camera.Main.Front);
+            spotLight = new SpotLight(playerShader, Camera.Main.Front);
             spotLight.UseSpecular = false;
             spotLight.IsActive = true;
-
             Create(player.ID);
+        }
+
+        private static Texture2D GetAstronautTexture(string color)
+        {
+            if (!astronautTextures.TryGetValue(color, out Texture2D tex))
+            {
+                string texturePath = $"Resources/Textures/Astronaut_{color}.jpg";
+                tex = TextureManager.GetTexture(texturePath, true, true);
+                tex.FlipY();
+                tex.UpdateTexture(true);
+                astronautTextures[color] = tex;
+            }
+            return tex;
         }
 
         private void Create(int id)
         {
-            var colors = new[] { "Yellow", "Orange",  "Purple","Blue","Green", "Cyan",  "Red", "White", "Black" };
+            var colors = new[] { "Yellow", "Orange", "Purple", "Blue", "Green", "Cyan", "Red", "White", "Black" };
             int index = Math.Abs(id) % colors.Length;
             var selectedColor = colors[index];
-            var texturePath = $"Resources/Textures/Astronaut_{selectedColor}.jpg";
-            var tex = TextureManager.GetTexture(texturePath, true, true);
-            tex.FlipY();
-            tex.UpdateTexture(true);
+            Texture2D tex = GetAstronautTexture(selectedColor);
             var mat = new Material(playerShader, tex);
             astBody = new Model("Resources/Models/Player/Astronaut_Body_Fly.obj", mat);
             astHelmet = new Model("Resources/Models/Player/Astronaut_Helmet_Closed.obj", mat);
             astTank = new Model("Resources/Models/Player/Astronaut_Tank_Fly.obj", mat);
         }
-
-
-
 
         public static Quaternion MirrorQuaternion(Quaternion original)
         {
@@ -102,37 +100,24 @@ namespace Spacebox.Game.Player
             Rotation = Node3D.QuaternionToEulerDegrees(currentRotation);
             cube.Position = Position;
             var up = Vector3.Transform(Vector3.UnitY, currentRotation);
-
-
             if (playerData.Name == "alconaut")
             {
                 spacerOld.Rotation = Rotation;
                 spacerOld.Position = Position;
-
-
                 tag.WorldPosition = Position + up * 1f;
-
             }
             else
             {
-                spacer.Rotation = Rotation;
-                spacer.Position = Position;
-
+             
                 astBody.Rotation = Rotation;
                 astBody.Position = Position;
-
                 astHelmet.Rotation = Rotation;
                 astHelmet.Position = Position;
-
                 astTank.Rotation = Rotation;
                 astTank.Position = Position;
-
-               
-
                 tag.WorldPosition = Position + up * 1f;
             }
             itemModel.Position = Position;
-
         }
 
         public void Render()
@@ -142,17 +127,12 @@ namespace Spacebox.Game.Player
                 BoundingSphere sphere = new BoundingSphere(spacer.Position, 0.5f);
                 VisualDebug.DrawBoundingSphere(sphere, Color4.Yellow);
             }
-
             playerShader.Use();
-
-            // Передача стандартных uniform-параметров
             playerShader.SetVector3("cameraPosition", Camera.Main.Position);
             playerShader.SetVector3("viewPos", Camera.Main.Position);
             playerShader.SetFloat("material_shininess", 32.0f);
             playerShader.SetVector3("fogColor", new Vector3(0.05f, 0.05f, 0.05f));
             playerShader.SetVector4("color", new Vector4(1, 1, 1, 1));
-
-            // Установка параметров spotlight на основе камеры
             Vector3 camPos = Camera.Main.Position;
             Vector3 camFront = Camera.Main.Front;
             playerShader.SetVector3("spotLight.position", camPos);
@@ -165,10 +145,6 @@ namespace Spacebox.Game.Player
             playerShader.SetFloat("spotLight.quadratic", 0.032f);
             playerShader.SetFloat("spotLight.cutOff", MathF.Cos(MathHelper.DegreesToRadians(12.5f)));
             playerShader.SetFloat("spotLight.outerCutOff", MathF.Cos(MathHelper.DegreesToRadians(17.5f)));
-
-
-
-
             if (playerData.Name == "alconaut")
             {
                 spacerOld.Draw(Camera.Main);
@@ -176,9 +152,6 @@ namespace Spacebox.Game.Player
             }
             spotLight.Draw(Camera.Main);
             itemModel.Draw(itemModelShader);
-           // spacer.Draw(Camera.Main);
-
-
             astBody.Draw(Camera.Main);
             astHelmet.Draw(Camera.Main);
             astTank.Draw(Camera.Main);

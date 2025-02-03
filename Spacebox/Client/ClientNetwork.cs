@@ -1,14 +1,14 @@
 ﻿// File: ClientNetwork.cs
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using Engine;
 using Lidgren.Network;
 using OpenTK.Mathematics;
 using SpaceNetwork;
 using SpaceNetwork.Messages;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System;
 
 namespace Client
 {
@@ -20,17 +20,22 @@ namespace Client
         private Dictionary<int, ClientPlayer> clientPlayers = new Dictionary<int, ClientPlayer>();
         private int localPlayerId = -1;
         private Thread chatThread;
-        private Thread blockThread;
-        private volatile bool running;
-        private volatile bool blockRunning;
+        private Thread blockDeletionThread;
+        private Thread blockPlaceThread;
+        private volatile bool chatRunning;
+        private volatile bool blockDeletionRunning;
+        private volatile bool blockPlaceRunning;
         private ConcurrentQueue<string> chatQueue = new ConcurrentQueue<string>();
-        private ConcurrentQueue<BlockDestroyedMessage> blockQueue = new ConcurrentQueue<BlockDestroyedMessage>();
+        private ConcurrentQueue<BlockDestroyedMessage> blockDeletionQueue = new ConcurrentQueue<BlockDestroyedMessage>();
+        private ConcurrentQueue<BlockPlaceMessage> blockPlaceQueue = new ConcurrentQueue<BlockPlaceMessage>();
         public bool IsInitialized { get; private set; }
         public bool NameInUse { get; private set; }
         public bool IsConnected { get; private set; } = false;
         public Action<ClientPlayer> OnPlayerJoined;
         public Action<ClientPlayer> OnPlayerLeft;
         public event Action<int, int, int> OnBlockDestroyed;
+        public event Action<int, short, byte, short, short, short> OnBlockPlaced;
+
         public ClientNetwork(string appKey, string host, int port, string playerName)
         {
             Instance = this;
@@ -41,32 +46,39 @@ namespace Client
             hail.Write(playerName);
             client.Connect(host, port, hail);
             StartChatThread();
-            StartBlockThread();
+            StartBlockDeletionThread();
+            StartBlockPlaceThread();
         }
+
         public void SendMessage(string message)
         {
             if (!string.IsNullOrEmpty(message))
                 chatQueue.Enqueue(message);
         }
-        public void SendBlockDestroyed(int x, int y, int z)
-        {
-            var msg = new BlockDestroyedMessage();
-            msg.senderID = localPlayerId;
-            msg.X = x;
-            msg.Y = y;
-            msg.Z = z;
 
-            Debug.Log($"block destroyed {x},{y},{z} id{localPlayerId}");
-            blockQueue.Enqueue(msg);
+        public void SendBlockDestroyed(short x, short y, short z)
+        {
+            var msg = new BlockDestroyedMessage(localPlayerId,x,y,z);
+           
+          
+            blockDeletionQueue.Enqueue(msg);
         }
+
+        public void SendBlockPlaced(short blockID, byte direction, short x, short y, short z)
+        {
+            var msg = new BlockPlaceMessage(localPlayerId, blockID, direction, x, y, z);
+           
+            blockPlaceQueue.Enqueue(msg);
+        }
+
         private void StartChatThread()
         {
             if (chatThread != null)
                 return;
-            running = true;
+            chatRunning = true;
             chatThread = new Thread(() =>
             {
-                while (running)
+                while (chatRunning)
                 {
                     if (chatQueue.TryDequeue(out string chat))
                     {
@@ -88,16 +100,17 @@ namespace Client
             chatThread.IsBackground = true;
             chatThread.Start();
         }
-        private void StartBlockThread()
+
+        private void StartBlockDeletionThread()
         {
-            if (blockThread != null)
+            if (blockDeletionThread != null)
                 return;
-            blockRunning = true;
-            blockThread = new Thread(() =>
+            blockDeletionRunning = true;
+            blockDeletionThread = new Thread(() =>
             {
-                while (blockRunning)
+                while (blockDeletionRunning)
                 {
-                    if (blockQueue.TryDequeue(out BlockDestroyedMessage bdm))
+                    if (blockDeletionQueue.TryDequeue(out BlockDestroyedMessage bdm))
                     {
                         if (serverConnection != null)
                         {
@@ -110,17 +123,51 @@ namespace Client
                         Thread.Sleep(50);
                 }
             });
-            blockThread.IsBackground = true;
-            blockThread.Start();
+            blockDeletionThread.IsBackground = true;
+            blockDeletionThread.Start();
         }
+
+        private void StartBlockPlaceThread()
+        {
+            if (blockPlaceThread != null)
+                return;
+            blockPlaceRunning = true;
+            blockPlaceThread = new Thread(() =>
+            {
+                while (blockPlaceRunning)
+                {
+                    if (blockPlaceQueue.TryDequeue(out BlockPlaceMessage bpm))
+                    {
+                        if (serverConnection != null)
+                        {
+                            var om = client.CreateMessage();
+                            bpm.Write(om);
+                            client.SendMessage(om, serverConnection, NetDeliveryMethod.ReliableOrdered);
+                        }
+                    }
+                    else
+                        Thread.Sleep(50);
+                }
+            });
+            blockPlaceThread.IsBackground = true;
+            blockPlaceThread.Start();
+        }
+
         public void StopChatThread()
         {
-            running = false;
+            chatRunning = false;
         }
-        public void StopBlockThread()
+
+        public void StopBlockDeletionThread()
         {
-            blockRunning = false;
+            blockDeletionRunning = false;
         }
+
+        public void StopBlockPlaceThread()
+        {
+            blockPlaceRunning = false;
+        }
+
         public void PollEvents()
         {
             NetIncomingMessage msg;
@@ -138,6 +185,7 @@ namespace Client
                 client.Recycle(msg);
             }
         }
+
         private void HandleStatusChanged(NetIncomingMessage msg)
         {
             var newStatus = (NetConnectionStatus)msg.ReadByte();
@@ -155,10 +203,12 @@ namespace Client
                 if (reason.Contains("DuplicateName"))
                     NameInUse = true;
                 StopChatThread();
-                StopBlockThread();
+                StopBlockDeletionThread();
+                StopBlockPlaceThread();
                 IsConnected = false;
             }
         }
+
         private void HandleData(NetIncomingMessage msg)
         {
             var baseMsg = MessageFactory.CreateMessage(msg);
@@ -198,10 +248,16 @@ namespace Client
             }
             else if (baseMsg is BlockDestroyedMessage bdm)
             {
-                if (bdm.senderID != localPlayerId) 
-                OnBlockDestroyed?.Invoke(bdm.X, bdm.Y, bdm.Z);
+                if (bdm.senderID != localPlayerId)
+                    OnBlockDestroyed?.Invoke(bdm.X, bdm.Y, bdm.Z);
+            }
+            else if (baseMsg is BlockPlaceMessage bpm)
+            {
+                if (bpm.senderID != localPlayerId)
+                    OnBlockPlaced?.Invoke(bpm.senderID, bpm.blockID, bpm.GetDirection(), bpm.GetX(), bpm.GetY(), bpm.GetZ());
             }
         }
+
         private void AddOrUpdatePlayer(Player p)
         {
             if (clientPlayers.ContainsKey(p.ID))
@@ -213,6 +269,7 @@ namespace Client
                 OnPlayerJoined?.Invoke(cp);
             }
         }
+
         public void SendPosition(Vector3 pos, Quaternion rot)
         {
             if (serverConnection == null)
@@ -224,12 +281,15 @@ namespace Client
             m.Write(om);
             client.SendMessage(om, serverConnection, NetDeliveryMethod.Unreliable);
         }
+
         public void Disconnect(string reason)
         {
             client.Disconnect(reason);
             StopChatThread();
-            StopBlockThread();
+            StopBlockDeletionThread();
+            StopBlockPlaceThread();
         }
+
         public List<ClientPlayer> GetClientPlayers() => clientPlayers.Values.ToList();
         public int LocalPlayerId => localPlayerId;
     }
