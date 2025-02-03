@@ -257,7 +257,8 @@ namespace Spacebox.Scenes
             pLight.Range = 25;
             pLight.Ambient = new Color3Byte(100, 116, 255).ToVector3();
             pLight.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
-            pLight.Specular = new Color3Byte(0, 0, 0).ToVector3();
+            pLight.Specular = new Color3Byte(100, 116, 255).ToVector3();
+          
             pLight.IsActive = false;
         }
 
