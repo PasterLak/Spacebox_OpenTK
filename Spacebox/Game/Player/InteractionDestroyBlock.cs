@@ -162,7 +162,11 @@ public class InteractionDestroyBlock : InteractionMode
     {
 
         hit.block.Durability = 0;
-        hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
+      //  hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
+
+        var x = (hit.chunk.PositionIndex * Chunk.Size);
+        var localPos = new Vector3(x.X + hit.blockPositionIndex.X, x.Y + hit.blockPositionIndex.Y, x.Z + hit.blockPositionIndex.Z);
+        hit.chunk.SpaceEntity.RemoveBlockAtLocal(localPos, hit.normal);
         if (blockDestroy != null)
         {
             PickDestroySound(hit.block.BlockId);

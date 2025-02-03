@@ -486,6 +486,35 @@ namespace Spacebox.Game.Generation
             return false;
         }
 
+        public bool RemoveBlockAtLocal(Vector3 localBlockPosition, Vector3SByte removalNormal)
+        {
+            Vector3 worldBlockPos = PositionWorld + localBlockPosition;
+            if (!IsPositionWithinEntitySize(worldBlockPos))
+            {
+                Debug.Error("Local block position is outside the entity boundaries.");
+                return false;
+            }
+            int chunkX = (int)MathF.Floor(localBlockPosition.X / Chunk.Size);
+            int chunkY = (int)MathF.Floor(localBlockPosition.Y / Chunk.Size);
+            int chunkZ = (int)MathF.Floor(localBlockPosition.Z / Chunk.Size);
+            Vector3SByte chunkIndex = new Vector3SByte((sbyte)chunkX, (sbyte)chunkY, (sbyte)chunkZ);
+            int blockX = (int)localBlockPosition.X - chunkX * Chunk.Size;
+            int blockY = (int)localBlockPosition.Y - chunkY * Chunk.Size;
+            int blockZ = (int)localBlockPosition.Z - chunkZ * Chunk.Size;
+            if (ChunkDictionary.TryGetValue(chunkIndex, out Chunk chunk))
+            {
+                chunk.RemoveBlock((byte)blockX, (byte)blockY, (byte)blockZ,
+                                  removalNormal.X, removalNormal.Y, removalNormal.Z, true);
+                return true;
+            }
+            else
+            {
+                Debug.Error($"Chunk with index {chunkIndex} not found.");
+                return false;
+            }
+        }
+
+
 
         public void RenderEffect(float disSqr)
         {

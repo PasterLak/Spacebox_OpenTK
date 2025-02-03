@@ -174,6 +174,8 @@ namespace Spacebox.Game.Generation
         }
 
 
+
+
         private void SpawnAsteroids(Random random, int id)
         {
 
