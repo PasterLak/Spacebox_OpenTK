@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿// File: ClientNetwork.cs
+using System.Collections.Concurrent;
 using Engine;
 using Lidgren.Network;
 using OpenTK.Mathematics;
@@ -7,6 +8,7 @@ using SpaceNetwork.Messages;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System;
 
 namespace Client
 {
@@ -18,13 +20,17 @@ namespace Client
         private Dictionary<int, ClientPlayer> clientPlayers = new Dictionary<int, ClientPlayer>();
         private int localPlayerId = -1;
         private Thread chatThread;
+        private Thread blockThread;
         private volatile bool running;
+        private volatile bool blockRunning;
         private ConcurrentQueue<string> chatQueue = new ConcurrentQueue<string>();
+        private ConcurrentQueue<BlockDestroyedMessage> blockQueue = new ConcurrentQueue<BlockDestroyedMessage>();
         public bool IsInitialized { get; private set; }
         public bool NameInUse { get; private set; }
         public bool IsConnected { get; private set; } = false;
         public Action<ClientPlayer> OnPlayerJoined;
         public Action<ClientPlayer> OnPlayerLeft;
+        public event Action<int, int, int> OnBlockDestroyed;
         public ClientNetwork(string appKey, string host, int port, string playerName)
         {
             Instance = this;
@@ -35,11 +41,23 @@ namespace Client
             hail.Write(playerName);
             client.Connect(host, port, hail);
             StartChatThread();
+            StartBlockThread();
         }
         public void SendMessage(string message)
         {
             if (!string.IsNullOrEmpty(message))
                 chatQueue.Enqueue(message);
+        }
+        public void SendBlockDestroyed(int x, int y, int z)
+        {
+            var msg = new BlockDestroyedMessage();
+            msg.senderID = localPlayerId;
+            msg.X = x;
+            msg.Y = y;
+            msg.Z = z;
+
+            Debug.Log($"block destroyed {x},{y},{z} id{localPlayerId}");
+            blockQueue.Enqueue(msg);
         }
         private void StartChatThread()
         {
@@ -70,9 +88,38 @@ namespace Client
             chatThread.IsBackground = true;
             chatThread.Start();
         }
+        private void StartBlockThread()
+        {
+            if (blockThread != null)
+                return;
+            blockRunning = true;
+            blockThread = new Thread(() =>
+            {
+                while (blockRunning)
+                {
+                    if (blockQueue.TryDequeue(out BlockDestroyedMessage bdm))
+                    {
+                        if (serverConnection != null)
+                        {
+                            var om = client.CreateMessage();
+                            bdm.Write(om);
+                            client.SendMessage(om, serverConnection, NetDeliveryMethod.ReliableOrdered);
+                        }
+                    }
+                    else
+                        Thread.Sleep(50);
+                }
+            });
+            blockThread.IsBackground = true;
+            blockThread.Start();
+        }
         public void StopChatThread()
         {
             running = false;
+        }
+        public void StopBlockThread()
+        {
+            blockRunning = false;
         }
         public void PollEvents()
         {
@@ -108,6 +155,7 @@ namespace Client
                 if (reason.Contains("DuplicateName"))
                     NameInUse = true;
                 StopChatThread();
+                StopBlockThread();
                 IsConnected = false;
             }
         }
@@ -136,9 +184,6 @@ namespace Client
                     clientPlayers.Remove(id);
                 }
             }
-            else if (baseMsg is Node3DMessage)
-            {
-            }
             else if (baseMsg is KickMessage km)
             {
                 Debug.Log(km.Reason);
@@ -150,6 +195,11 @@ namespace Client
                     Debug.Log($"[Server]: {cm.Text}");
                 else
                     Debug.Log($"> {cm.SenderName}[{cm.SenderId}]: {cm.Text}");
+            }
+            else if (baseMsg is BlockDestroyedMessage bdm)
+            {
+                if (bdm.senderID != localPlayerId) 
+                OnBlockDestroyed?.Invoke(bdm.X, bdm.Y, bdm.Z);
             }
         }
         private void AddOrUpdatePlayer(Player p)
@@ -178,6 +228,7 @@ namespace Client
         {
             client.Disconnect(reason);
             StopChatThread();
+            StopBlockThread();
         }
         public List<ClientPlayer> GetClientPlayers() => clientPlayers.Values.ToList();
         public int LocalPlayerId => localPlayerId;

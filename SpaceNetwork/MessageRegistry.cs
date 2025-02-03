@@ -1,4 +1,5 @@
 ﻿
+using System.Reflection;
 using SpaceNetwork.Messages;
 
 namespace SpaceNetwork
@@ -11,18 +12,22 @@ namespace SpaceNetwork
 
         static MessageRegistry()
         {
-            Register<InitMessage>();
-            Register<PlayersMessage>();
-            Register<Node3DMessage>();
-            Register<RotationMessage>();
-            Register<KickMessage>();
-            Register<ChatMessage>();
-            Register<SeedMessage>();
+            var baseType = typeof(BaseMessage);
+            var assembly = Assembly.GetAssembly(baseType);
+            var types = assembly.GetTypes().Where(t => !t.IsAbstract && baseType.IsAssignableFrom(t));
+            foreach (var type in types)
+            {
+                Register(type);
+            }
         }
 
         public static void Register<T>() where T : BaseMessage, new()
         {
-            var t = typeof(T);
+            Register(typeof(T));
+        }
+
+        public static void Register(Type t)
+        {
             if (!typeToId.ContainsKey(t))
             {
                 typeToId[t] = nextId;

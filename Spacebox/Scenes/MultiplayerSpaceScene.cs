@@ -1,6 +1,7 @@
 ﻿using Client;
 using Engine;
 using OpenTK.Mathematics;
+using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
 using System.Linq;
 
@@ -42,6 +43,23 @@ namespace Spacebox.Scenes
             {
                 ClientNetwork.Instance.OnPlayerJoined += SpawnRemotePlayer;
                 ClientNetwork.Instance.OnPlayerLeft += RemoveRemotePlayer;
+
+                ClientNetwork.Instance.OnBlockDestroyed += OnBlockDestroyed;
+            }
+
+
+
+        }
+
+        public void OnBlockDestroyed(int x, int y, int z)
+        {
+            Debug.Log($"got block destroyed {x},{y},{z} "); 
+            if (World.CurrentSector.TryGetNearestEntity(Camera.Main.Position, out var entity))
+            {
+                if(entity.RemoveBlockAtLocal(new Vector3(x, y, z), new Vector3SByte(0, 0, 0)))
+                {
+
+                }
             }
         }
 

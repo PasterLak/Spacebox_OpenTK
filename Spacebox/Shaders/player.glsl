@@ -47,5 +47,5 @@ void main()
     if(pixel.a < 0.1)
         discard;
     vec4 finalColor = pixel * color;
-    FragColor = mix(vec4(fogColor, finalColor.a), finalColor, FogFactor);
+    FragColor = mix(vec4(fogColor, finalColor.a), finalColor, color);
 }

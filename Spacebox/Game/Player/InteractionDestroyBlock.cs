@@ -9,6 +9,7 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
+using Client;
 
 
 namespace Spacebox.Game.Player;
@@ -167,6 +168,11 @@ public class InteractionDestroyBlock : InteractionMode
         var x = (hit.chunk.PositionIndex * Chunk.Size);
         var localPos = new Vector3(x.X + hit.blockPositionIndex.X, x.Y + hit.blockPositionIndex.Y, x.Z + hit.blockPositionIndex.Z);
         hit.chunk.SpaceEntity.RemoveBlockAtLocal(localPos, hit.normal);
+       
+        if (ClientNetwork.Instance != null)
+        {
+            ClientNetwork.Instance.SendBlockDestroyed((int)localPos.X, (int)localPos.Y, (int)localPos.Z);
+        }
         if (blockDestroy != null)
         {
             PickDestroySound(hit.block.BlockId);

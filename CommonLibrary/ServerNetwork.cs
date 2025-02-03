@@ -1,4 +1,5 @@
-﻿using System;
+﻿// File: ServerNetwork.cs
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -21,7 +22,6 @@ namespace CommonLibrary
         private readonly string appKey;
         private readonly int maxConnections;
         private readonly int port;
-
         public ServerNetwork(string appKey, int port, int maxConnections, Action<string> logCallback)
         {
             this.appKey = appKey;
@@ -30,7 +30,6 @@ namespace CommonLibrary
             _logCallback = logCallback;
             InitializeServer();
         }
-
         private void InitializeServer()
         {
             var config = new NetPeerConfiguration(appKey)
@@ -49,7 +48,6 @@ namespace CommonLibrary
             _logCallback?.Invoke($"Server \"{Settings.Name}\" started on port {port}");
             _logCallback?.Invoke($"App key: {appKey}");
         }
-
         public void RunMainLoop()
         {
             var localIP = Dns.GetHostEntry(Dns.GetHostName())
@@ -94,13 +92,11 @@ namespace CommonLibrary
                 Thread.Sleep(1);
             }
         }
-
         public void Stop()
         {
             _shouldStop = true;
             server.Shutdown("Server stopped");
         }
-
         public void Restart()
         {
             _logCallback?.Invoke("Restarting server...");
@@ -112,7 +108,6 @@ namespace CommonLibrary
             new Thread(() => RunMainLoop()).Start();
             _logCallback?.Invoke("Server restarted.");
         }
-
         private void CheckAFKPlayers()
         {
             if (playerManager.GetAll().Count == 0)
@@ -132,7 +127,6 @@ namespace CommonLibrary
             }
             time = 0;
         }
-
         private void HandleStatusChanged(NetIncomingMessage msg)
         {
             var status = (NetConnectionStatus)msg.ReadByte();
@@ -174,7 +168,6 @@ namespace CommonLibrary
                 }
             }
         }
-
         private void HandleData(NetIncomingMessage msg)
         {
             var baseMsg = MessageFactory.CreateMessage(msg);
@@ -199,8 +192,16 @@ namespace CommonLibrary
                     _logCallback?.Invoke($"> {p.Name}[{p.ID}]: {cm.Text}");
                 }
             }
-        }
 
+            else if (baseMsg is BlockDestroyedMessage)
+            {
+                byte[] rawData = new byte[msg.LengthBytes];
+                Array.Copy(msg.Data, 0, rawData, 0, msg.LengthBytes);
+                var om = server.CreateMessage();
+                om.Write(rawData);
+                server.SendToAll(om, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered, 0);
+            }
+        }
         private void BroadcastPlayers()
         {
             var pm = new PlayersMessage();
@@ -209,7 +210,6 @@ namespace CommonLibrary
             pm.Write(outMsg);
             server.SendToAll(outMsg, NetDeliveryMethod.Unreliable);
         }
-
         public void BroadcastChat(int senderId, string text)
         {
             var name = senderId == -1 ? "Server" : "";
@@ -218,7 +218,6 @@ namespace CommonLibrary
             cm.Write(outMsg);
             server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
         }
-
         public bool KickPlayer(int playerId, bool wasAFK = false)
         {
             NetConnection target = null;
@@ -250,7 +249,6 @@ namespace CommonLibrary
                 return false;
             }
         }
-
         public IEnumerable<Player> GetAllPlayers() => playerManager.GetAll().Values;
     }
 }

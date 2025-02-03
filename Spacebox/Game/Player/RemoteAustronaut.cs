@@ -26,9 +26,13 @@ namespace Spacebox.Game.Player
         static bool wasFlipped = false;
         private Shader playerShader;
         private SpotLight spotLight;
+
+        private Model astBody;
+        private Model astHelmet;
+        private Model astTank;
         public void OnDisconnect()
         {
-            if(tag != null)
+            if (tag != null)
             {
                 TagManager.UnregisterTag(tag);
             }
@@ -54,7 +58,7 @@ namespace Spacebox.Game.Player
             TagManager.RegisterTag(tag);
             itemModelShader = ShaderManager.GetShader("Shaders/itemModel");
             var uvIndex = GameBlocks.AtlasItems.GetUVIndexByName("drill1");
-            itemModel  = ItemModelGenerator.GenerateModel(
+            itemModel = ItemModelGenerator.GenerateModel(
                 GameBlocks.ItemsTexture, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
             itemModel.UseMainCamera = true;
             itemModel.offset = Vector3.Zero;
@@ -63,7 +67,27 @@ namespace Spacebox.Game.Player
                 Camera.Main.Front);
             spotLight.UseSpecular = false;
             spotLight.IsActive = true;
+
+            Create(player.ID);
         }
+
+        private void Create(int id)
+        {
+            var colors = new[] { "Yellow", "Orange",  "Purple","Blue","Green", "Cyan",  "Red", "White", "Black" };
+            int index = Math.Abs(id) % colors.Length;
+            var selectedColor = colors[index];
+            var texturePath = $"Resources/Textures/Astronaut_{selectedColor}.jpg";
+            var tex = TextureManager.GetTexture(texturePath, true, true);
+            tex.FlipY();
+            tex.UpdateTexture(true);
+            var mat = new Material(playerShader, tex);
+            astBody = new Model("Resources/Models/Player/Astronaut_Body_Fly.obj", mat);
+            astHelmet = new Model("Resources/Models/Player/Astronaut_Helmet_Closed.obj", mat);
+            astTank = new Model("Resources/Models/Player/Astronaut_Tank_Fly.obj", mat);
+        }
+
+
+
 
         public static Quaternion MirrorQuaternion(Quaternion original)
         {
@@ -79,22 +103,36 @@ namespace Spacebox.Game.Player
             cube.Position = Position;
             var up = Vector3.Transform(Vector3.UnitY, currentRotation);
 
-           
+
             if (playerData.Name == "alconaut")
             {
                 spacerOld.Rotation = Rotation;
                 spacerOld.Position = Position;
+
+
                 tag.WorldPosition = Position + up * 1f;
-               
+
             }
             else
             {
                 spacer.Rotation = Rotation;
                 spacer.Position = Position;
+
+                astBody.Rotation = Rotation;
+                astBody.Position = Position;
+
+                astHelmet.Rotation = Rotation;
+                astHelmet.Position = Position;
+
+                astTank.Rotation = Rotation;
+                astTank.Position = Position;
+
+               
+
                 tag.WorldPosition = Position + up * 1f;
             }
             itemModel.Position = Position;
-            
+
         }
 
         public void Render()
@@ -138,7 +176,12 @@ namespace Spacebox.Game.Player
             }
             spotLight.Draw(Camera.Main);
             itemModel.Draw(itemModelShader);
-            spacer.Draw(Camera.Main);
+           // spacer.Draw(Camera.Main);
+
+
+            astBody.Draw(Camera.Main);
+            astHelmet.Draw(Camera.Main);
+            astTank.Draw(Camera.Main);
         }
     }
 }
