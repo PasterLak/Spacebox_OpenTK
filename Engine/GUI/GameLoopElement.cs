@@ -27,7 +27,7 @@ namespace Engine.GUI
             ImGui.Text($"Render: {Time.RenderTimePercent} %, Update: {Time.UpdateTimePercent}%, OnGUI: {Time.OnGUITimePercent}%");
             ImGui.Text($" ");
             ImGui.Text($"Console On (F1): {Debug.IsVisible}");
-            ImGui.Text($"Debug On (F4): {VisualDebug.ShowDebug}");
+            ImGui.Text($"Debug On (F4): {VisualDebug.Enabled}");
             ImGui.Text($"FrameLimiter On (F7): {(FrameLimiter.TargetFPS == 120 ? true : false)}");
             ImGui.Text($"Wireframe Mode (F10) ");
             ImGui.Text($" ");

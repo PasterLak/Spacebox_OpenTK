@@ -24,7 +24,7 @@ namespace Engine
         public static Matrix4 ProjectionMatrix { get; set; }
         public static Matrix4 ViewMatrix { get; set; }
 
-        public static bool ShowDebug = false;
+        public static bool Enabled = false;
         public static bool ShowPlayerCollision = false;
 
         private static List<Collision> _collisions = new List<Collision>();
@@ -120,7 +120,7 @@ namespace Engine
 
         public static void DrawPoint(Vector3 position, float size, Color4 color)
         {
-            if (!ShowDebug) return;
+            if (!Enabled) return;
 
             _points.Add(position.X);
             _points.Add(position.Y);
@@ -134,7 +134,7 @@ namespace Engine
 
         public static void DrawLine(Vector3 start, Vector3 end, Color4 color)
         {
-            if (!ShowDebug) return;
+            if (!Enabled) return;
 
             // Start point
             _lines.Add(start.X);
@@ -157,7 +157,7 @@ namespace Engine
 
         public static void DrawSquare(Vector3 position, Vector2 size, Color4 color)
         {
-            if (!ShowDebug) return;
+            if (!Enabled) return;
             Vector3[] corners = new Vector3[4];
             corners[0] = position;
             corners[1] = position + new Vector3(size.X, 0, 0);
@@ -170,7 +170,7 @@ namespace Engine
 
         public static void DrawRay(Ray ray, Color4 color)
         {
-            if (!ShowDebug) return;
+            if (!Enabled) return;
             if (ray == null) return;
 
             Vector3 endPoint = ray.Origin + ray.Direction * ray.Length;
@@ -181,7 +181,7 @@ namespace Engine
 
         private static void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, Color4 color)
         {
-            if (!ShowDebug) return;
+            if (!Enabled) return;
             AddVertexToTriangles(v1, color);
             AddVertexToTriangles(v2, color);
             AddVertexToTriangles(v3, color);
@@ -189,7 +189,7 @@ namespace Engine
 
         private static void AddVertexToTriangles(Vector3 position, Color4 color)
         {
-            if (!ShowDebug) return;
+            if (!Enabled) return;
             _triangles.Add(position.X);
             _triangles.Add(position.Y);
             _triangles.Add(position.Z);
@@ -214,7 +214,7 @@ namespace Engine
 
         public static void DrawBoundingBox(BoundingBox box, Color4 color)
         {
-            if (!ShowDebug) return;
+            if (!Enabled) return;
             if (box == null) return;
 
             Vector3 min = box.Min;
@@ -256,7 +256,7 @@ namespace Engine
         }
           public static void DrawSphere(Vector3 center, float radius, byte segments, Color4 color)
         {
-            if (!ShowDebug) return;
+            if (!Enabled) return;
             if (radius <= 0) return;
             BoundingSphere sphere = new BoundingSphere(center, radius);
             DrawBoundingSphere(sphere, color, segments);
@@ -269,7 +269,7 @@ namespace Engine
 
         public static void DrawBoundingSphere(BoundingSphere sphere, Color4 color, byte segments)
         {
-            if (!ShowDebug) return;
+            if (!Enabled) return;
             if (sphere == null) return;
 
             byte slices = segments;
@@ -327,7 +327,7 @@ namespace Engine
 
         public static void DrawFrustum(CameraFrustum frustum, Color4 color)
         {
-            if (!ShowDebug) return;
+            if (!Enabled) return;
             Vector3[] frustumCorners = frustum.GetCorners();
 
 
@@ -358,7 +358,7 @@ namespace Engine
 
         public static void Render() // in Window loop
         {
-            if (!ShowDebug) return;
+            if (!Enabled) return;
 
             if (_points.Count == 0 && _lines.Count == 0 && _triangles.Count == 0)
                 return;

@@ -11,7 +11,7 @@ namespace Spacebox.Scenes
     public class MultiplayerSpaceScene : BaseSpaceScene
     {
         ClientNetwork networkClient;
-        Dictionary<int, ClientPlayer> remotePlayers = new Dictionary<int, ClientPlayer>();
+        public static Dictionary<int, ClientPlayer> remotePlayers = new Dictionary<int, ClientPlayer>();
         private string mpAppKey;
         private string mpHost;
         private int mpPort;
@@ -62,6 +62,7 @@ namespace Spacebox.Scenes
             networkClient.PollEvents();
             foreach (var remote in remotePlayers.Values)
             {
+                if(remote != null) 
                 remote.Update();
             }
         }
@@ -92,7 +93,7 @@ namespace Spacebox.Scenes
 
             if (ClientNetwork.Instance.LocalPlayerId == id)
             {
-                Debug.Log($"same ip {id}, no  remote player");
+           
                 return;
             }
 
@@ -102,8 +103,7 @@ namespace Spacebox.Scenes
                 var remote = remotePlayers[id].InGamePlayer;
                 remote.LatestPosition = player.NetworkPlayer.Position.ToOpenTKVector3() ;
                 // remote.LatestRotation = rot;
-                Debug.Log("Contains remote player");
-
+            
             }
             else
             {
@@ -121,7 +121,6 @@ namespace Spacebox.Scenes
                 //SceneGraph.AddRoot(remote);
                 OnRenderCenter += remote.Render;
 
-                Debug.Log("added remote player + " + player.NetworkPlayer.ID);
 
             }
         }

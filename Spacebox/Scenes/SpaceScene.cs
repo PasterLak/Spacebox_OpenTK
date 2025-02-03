@@ -488,7 +488,7 @@ namespace Spacebox.Scenes
             CreativeWindowUI.Render();
             WelcomeUI.OnGUI();
             PauseUI.OnGUI();
-            if (VisualDebug.ShowDebug)
+            if (VisualDebug.Enabled)
             {
                 WorldTextDebug.Draw();
             }

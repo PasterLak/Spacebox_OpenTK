@@ -416,7 +416,7 @@ namespace Spacebox.Game.Generation
 
                 tag.SetFontSizeFromDistance(dis);
 
-                if (VisualDebug.ShowDebug)
+                if (VisualDebug.Enabled)
                 {
 
                     bool isAsteroid = this as Asteroid != null;
@@ -552,7 +552,7 @@ namespace Spacebox.Game.Generation
 
             }
 
-            if (VisualDebug.ShowDebug)
+            if (VisualDebug.Enabled)
             {
                 VisualDebug.DrawBoundingBox(BoundingBox, Color4.Cyan);
                 VisualDebug.DrawPosition(GeometryBoundingBox.Center, 6, Color4.Orange);

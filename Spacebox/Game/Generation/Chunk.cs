@@ -212,7 +212,7 @@ namespace Spacebox.Game.Generation
             if (_mesh != null)
                 _mesh.Draw(shader);
 
-            if (ShowChunkBounds && VisualDebug.ShowDebug)
+            if (ShowChunkBounds && VisualDebug.Enabled)
             {
                 VisualDebug.DrawBoundingBox(BoundingBox, new Color4(0.5f, 0f, 0.5f, 0.4f));
             }

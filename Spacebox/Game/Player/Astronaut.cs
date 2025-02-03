@@ -166,7 +166,7 @@ namespace Spacebox.Game.Player
             VisualDebug.ProjectionMatrix = projectionMatrix;
             VisualDebug.ViewMatrix = viewMatrix;
 
-            if (VisualDebug.ShowDebug)
+            if (VisualDebug.Enabled)
             {
                 VisualDebug.ProjectionMatrix = GetProjectionMatrix();
                 VisualDebug.ViewMatrix = GetViewMatrix();
@@ -340,7 +340,7 @@ namespace Spacebox.Game.Player
         {
             Flashlight.Draw(camera);
 
-            if (VisualDebug.ShowDebug)
+            if (VisualDebug.Enabled)
             {
                 _axes.Position = Position + Front * 0.1f;
                 _axes.Render(camera);

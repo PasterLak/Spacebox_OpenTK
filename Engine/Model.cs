@@ -83,7 +83,7 @@ namespace Engine
             else
                 GL.Disable(EnableCap.CullFace);
 
-            if (VisualDebug.ShowDebug)
+            if (VisualDebug.Enabled)
             {
               
                 _axes.SetPosition(Position);

@@ -89,7 +89,7 @@ namespace Spacebox
             InputManager.RegisterCallback("fullscreen", () => { ToggleFullScreen(); });
 
             InputManager.AddAction("visualDebug", Keys.F4, true);
-            InputManager.RegisterCallback("visualDebug", () => { VisualDebug.ShowDebug = !VisualDebug.ShowDebug; });
+            InputManager.RegisterCallback("visualDebug", () => { VisualDebug.Enabled = !VisualDebug.Enabled; });
 
             //InputManager.AddAction("quit", Keys.Escape, true);
             //InputManager.RegisterCallback("quit", () => { Quit(); });

@@ -307,7 +307,7 @@ namespace Spacebox.Game.Generation
             {
                 Entities[i].Update();
 
-                if(VisualDebug.ShowDebug)
+                if(VisualDebug.Enabled)
                 {
                     VisualDebug.DrawSphere(Entities[i].CenterOfMass, Entities[i].GravityRadius, 16, Color4.Blue);
                 }
