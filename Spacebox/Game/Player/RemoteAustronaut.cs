@@ -23,7 +23,7 @@ namespace Spacebox.Game.Player
         private Quaternion currentRotation = Quaternion.Identity;
         private Shader itemModelShader;
         static bool wasFlipped = false;
-
+        private Shader playerShader;
         public void OnDisconnect()
         {
             if(tag != null)
@@ -39,17 +39,21 @@ namespace Spacebox.Game.Player
             cube.Enabled = true;
             var texold = TextureManager.GetTexture("Resources/Textures/spacer.png");
             texold.UpdateTexture(true);
-            spacerOld = new Model("Resources/Models/spacer.obj", new Material(ShaderManager.GetShader("Shaders/textured"), texold));
+
+            playerShader = ShaderManager.GetShader("Shaders/player");
+            spacerOld = new Model("Resources/Models/spacer.obj", new Material(playerShader, texold));
             var tex = TextureManager.GetTexture("Resources/Textures/Astronaut.jpg", true, true);
             tex.FlipY();
             tex.UpdateTexture(true);
-            spacer = new Model("Resources/Models/Astronaut_klein.obj", new Material(ShaderManager.GetShader("Shaders/textured"), tex));
+            spacer = new Model("Resources/Models/Astronaut_klein.obj", new Material(playerShader, tex));
             tag = new GUI.Tag($"[{playerData.ID}]{playerData.Name}", LatestPosition, new Color4(playerData.Color.X, playerData.Color.Y, playerData.Color.Z, 1));
             TagManager.RegisterTag(tag);
             itemModelShader = ShaderManager.GetShader("Shaders/itemModel");
             var uvIndex = GameBlocks.AtlasItems.GetUVIndexByName("drill1");
             itemModel  = ItemModelGenerator.GenerateModel(
-                GameBlocks.ItemsTexture, uvIndex.X, uvIndex.Y, 1f, 3f / 500f * 2f, false, true);
+                GameBlocks.ItemsTexture, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
+            itemModel.UseMainCamera = true;
+            itemModel.offset = Vector3.Zero;
         }
 
         public static Quaternion MirrorQuaternion(Quaternion original)
@@ -66,12 +70,13 @@ namespace Spacebox.Game.Player
             cube.Position = Position;
             var up = Vector3.Transform(Vector3.UnitY, currentRotation);
 
-            itemModel.Position = Position + new Vector3(1,0,0);
+           
             if (playerData.Name == "alconaut")
             {
                 spacerOld.Rotation = Rotation;
                 spacerOld.Position = Position;
                 tag.WorldPosition = Position + up * 1f;
+               
             }
             else
             {
@@ -79,6 +84,8 @@ namespace Spacebox.Game.Player
                 spacer.Position = Position;
                 tag.WorldPosition = Position + up * 1f;
             }
+            itemModel.Position = Position;
+
         }
 
         public void Render()
@@ -88,6 +95,8 @@ namespace Spacebox.Game.Player
                 BoundingSphere sphere = new BoundingSphere(spacer.Position, 0.5f);
                 VisualDebug.DrawBoundingSphere(sphere, Color4.Yellow);
             }
+
+            itemModelShader.SetVector4("ambient", new Vector4(Lighting.AmbientColor,1));
             if (playerData.Name == "alconaut")
             {
                 spacerOld.Draw(Camera.Main);

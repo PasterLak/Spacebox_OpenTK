@@ -213,7 +213,7 @@ namespace Spacebox.Scenes
             Texture2D spacerTex = TextureManager.GetTexture("Resources/Textures/spacer.png");
             spacerTex.FlipY();
             spacerTex.UpdateTexture(true);
-            spacer = new Model("Resources/Models/spacer.obj", new Material(ShaderManager.GetShader("Shaders/textured"), spacerTex));
+            spacer = new Model("Resources/Models/spacer.obj", new Material(ShaderManager.GetShader("Shaders/player"), spacerTex));
             spacer.Position = localPlayer.Position + new Vector3(12, 15, 7);
             spacer.Rotation = new Vector3(0, 0, 0);
 

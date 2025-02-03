@@ -41,6 +41,7 @@
 	  <None Remove="gamesets\default\recipes.json" />
 	  <None Remove="GameSets\Default\UI\settings.json" />
 	  <None Remove="Shaders\lineRenderer.glsl" />
+	  <None Remove="Shaders\player.glsl" />
 	  <None Remove="shaders\sphere.glsl" />
 	</ItemGroup>
 
