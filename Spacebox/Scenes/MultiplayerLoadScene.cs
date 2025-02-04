@@ -137,6 +137,8 @@ namespace Spacebox.Scenes
                             Description = networkClient.ReceivedServerInfo.Description,
                             MaxPlayers = networkClient.ReceivedServerInfo.MaxPlayers
                         };
+
+                        sceneArgs[0] = serverInfo.Name;
                         var world = new WorldInfo { Name = serverInfo.Name, ModId = sceneArgs[1], Seed = sceneArgs[2], FolderName = sceneArgs[3] };
                         var modConfig = new ModConfig { ModId = sceneArgs[1], FolderName = sceneArgs[3] };
                         WriteInfo($"Connected to: <{serverInfo.Name}> host: {host} port: {port}");

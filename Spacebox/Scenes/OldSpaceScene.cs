@@ -134,7 +134,7 @@ namespace Spacebox.Scenes
             GameBlocks.ItemsTexture = items;
             GameBlocks.LightAtlas = emissions;
 
-            GameSetLoader.Load(modId);
+            GameSetLoader.Load(modId, false, "");
 
             GameBlocks.BlocksTexture = texture;
             GameBlocks.ItemsTexture = items;

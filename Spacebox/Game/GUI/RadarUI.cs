@@ -21,10 +21,7 @@ namespace Spacebox.Game.GUI
                 _isVisible = value;
                 if (_isVisible)
                 {
-
-
                     openSound?.Play();
-
                 }
                 else
                 {
@@ -39,7 +36,7 @@ namespace Spacebox.Game.GUI
         public event Action OnClose;
 
         private Texture2D _texture;
-        private Texture2D _grid; 
+        private Texture2D _grid;
         private Texture2D _line;
         private Texture2D _scanning;
         private Texture2D _mask;
@@ -119,7 +116,7 @@ namespace Spacebox.Game.GUI
 
             UpdateUV(Time.Delta * 0.005f);
 
-           
+
             drawList.AddImage(_texture.Handle, windowPos + new Vector2(spacing, spacing),
                 windowPos + new Vector2(windowWidth, windowHeight) - new Vector2(spacing, spacing),
                 uvMin, uvMax);
@@ -127,7 +124,7 @@ namespace Spacebox.Game.GUI
             drawList.AddRectFilled(
                windowPos + new Vector2(spacing, spacing),
                windowPos + new Vector2(windowWidth, windowHeight) - new Vector2(spacing, spacing),
-               ImGui.GetColorU32(new Vector4(62/255f, 150/255f, 67/255f, 1)));
+               ImGui.GetColorU32(new Vector4(62 / 255f, 150 / 255f, 67 / 255f, 1)));
 
             drawList.AddImage(_grid.Handle, windowPos + new Vector2(spacing, spacing),
                 windowPos + new Vector2(windowWidth, windowHeight) - new Vector2(spacing, spacing)
@@ -136,13 +133,13 @@ namespace Spacebox.Game.GUI
             _rotationAngleGrid += rotationSpeed * Time.Delta;
             _rotationAngleGrid %= MathF.PI * 2;
 
-            if(_rotationAngleGrid >= 3.1f && _rotationAngleGrid < 3.2f)
+            if (_rotationAngleGrid >= 3.1f && _rotationAngleGrid < 3.2f)
             {
                 if (!_scanningAudio.IsPlaying)
                 {
                     _scanningAudio.Play();
                     scanningCircleSize = 0;
-                     showCircle = true;
+                    showCircle = true;
                 }
             }
 
@@ -158,7 +155,7 @@ namespace Spacebox.Game.GUI
             Vector2 center = new Vector2(windowWidth / 2, windowHeight / 2) + windowPos;
             Vector2 halfSize = new Vector2(windowWidth, windowHeight) * 0.5f;
 
-            if(pointVisible)
+            if (pointVisible)
             {
                 var direction = GetDirectionFromAngle(5f);
 
@@ -167,18 +164,18 @@ namespace Spacebox.Game.GUI
                 if (time <= 0)
                 {
                     time = 0;
-                   
+
                 }
                 float distance = windowHeight * 0.5f * 0.7f; // 0.1 min  0.85 max
                 Vector2 pointPos = center + direction * distance;
 
                 float pointRadius = windowHeight * 0.015f;
 
-                float alpha =  time / 2f;
+                float alpha = time / 2f;
                 alpha = Math.Clamp(alpha, 0f, 1f);
 
                 //drawList.AddCircleFilled(pointPos, pointRadius,
-               //     ImGui.GetColorU32(new Vector4(1, 1, 1, alpha)));
+                //     ImGui.GetColorU32(new Vector4(1, 1, 1, alpha)));
 
                 drawList.AddRectFilled(pointPos - new Vector2(pointRadius, pointRadius),
                     pointPos + new Vector2(pointRadius, pointRadius),
@@ -190,12 +187,12 @@ namespace Spacebox.Game.GUI
                     pointVisible = false;
                 }
             }
-         
+
 
             if (showCircle)
             {
                 scanningCircleSize += 2f * Time.Delta;
-                if(scanningCircleSize > 0.99f)
+                if (scanningCircleSize > 0.99f)
                 {
                     showCircle = false;
                     scanningCircleSize = 0;
@@ -204,7 +201,7 @@ namespace Spacebox.Game.GUI
                 float alpha = 1.0f - scanningCircleSize;
                 alpha = Math.Clamp(alpha, 0f, 1f);
 
-                drawList.AddImage(_scanning.Handle, 
+                drawList.AddImage(_scanning.Handle,
                     center - halfSize * scanningCircleSize,
                     center + halfSize * scanningCircleSize,
                      new Vector2(0, 0), new Vector2(1, 1),
@@ -212,9 +209,9 @@ namespace Spacebox.Game.GUI
             );
             }
 
-           
 
-            
+
+
 
             Vector2[] corners = new Vector2[]
             {
@@ -262,7 +259,7 @@ namespace Spacebox.Game.GUI
 
         private Vector2 GetDirectionFromAngle(float radians)
         {
-            float adjustedRadians = radians - MathF.PI ;
+            float adjustedRadians = radians - MathF.PI;
             float x = MathF.Cos(adjustedRadians);
             float y = MathF.Sin(adjustedRadians);
             return new Vector2(x, y);
@@ -350,7 +347,7 @@ namespace Spacebox.Game.GUI
 
             ToggleManager.DisableAllWindows();
 
-            
+
 
             if (v)
             {
@@ -360,7 +357,7 @@ namespace Spacebox.Game.GUI
                 ToggleManager.SetState("radar", v);
                 ToggleManager.SetState("panel", false);
             }
-                
+
             else
             {
                 OnClose?.Invoke();

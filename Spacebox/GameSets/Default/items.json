@@ -59,7 +59,7 @@
         "AnimationSpeed": 0.5,
         "PowerUsage" : 3,
         "Projectile" : "pistoleProjectile",
-        "ShotSound" : "pistole5"
+        "ShotSound" : "pistole2"
     },
     {
         "Name": "SMG",

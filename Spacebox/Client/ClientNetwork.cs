@@ -246,9 +246,10 @@ namespace Client
             }
             else if (baseMsg is ZipMessage zm)
             {
+                ReceivedServerInfo.ModFolderName = zm.ModName;
                 OnZipDownloadStart?.Invoke();
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                string targetDir = Path.Combine(baseDir, "Server", ReceivedServerInfo?.Name ?? "Unknown", "GameSet");
+                string targetDir = Path.Combine(baseDir, "Server", ReceivedServerInfo?.Name ?? "Unknown", Path.Combine("GameSet", zm.ModName));
                 if (!Directory.Exists(targetDir))
                     Directory.CreateDirectory(targetDir);
                 string tempZip = Path.Combine(targetDir, "download.zip");

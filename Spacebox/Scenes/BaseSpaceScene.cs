@@ -17,12 +17,13 @@ using Spacebox.Game.Player;
 using Spacebox.Game.Resources;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
+using Client;
 
 namespace Spacebox.Scenes
 {
     public abstract class BaseSpaceScene : Scene
     {
-        // Игрок и основные объекты мира
+       
         protected Astronaut localPlayer;
         protected Skybox skybox;
         protected World world;
@@ -35,12 +36,12 @@ namespace Spacebox.Scenes
         protected BlockSelector blockSelector;
         protected RadarUI radarWindow;
 
-        // Аудио
+      
         protected AudioSource Death;
         protected static bool DeathOn = false;
         protected AudioSource ambient;
 
-        // Эффекты и менеджеры
+      
         protected DustSpawner dustSpawner;
         protected BlockDestructionManager blockDestructionManager;
         protected Animator animator;
@@ -50,21 +51,41 @@ namespace Spacebox.Scenes
         protected PointLight pLight;
 
         private bool isMultiplayer = false;
-
+      
         public BaseSpaceScene(string[] args) : base(args)
         {
-            if(this is MultiplayerScene)
+            if((this as MultiplayerScene) != null)
             {
-                isMultiplayer = true;
+                isMultiplayer = true;// (worldName/server, modId, seed, modfolder) + ( modfolderName, key, ip, port, nickname)
+                Debug.Warning("MULTIPLAYER");
+
+                foreach(var arg in args)
+                {
+                    Debug.Warning(arg.ToString());
+                }
             }
 
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 0), 1);
 
-            // Обработка аргументов (worldName, modId, seed, modfolder)
+            //  (worldName, modId, seed, modfolder)
             if (args.Length >= 4)
             {
                 worldName = args[0];
+                var modFolderName = "";
+                var modId = args[1];
+                var seedString = args[2];
 
+                if (isMultiplayer)
+                {
+                    if(ClientNetwork.Instance!= null)
+                    {
+                        modFolderName = ClientNetwork.Instance.ReceivedServerInfo.ModFolderName;
+                    }
+                }
+                else
+                {
+                    modFolderName = args[3];
+                }
 
                 string serverName = "";
 
@@ -74,39 +95,40 @@ namespace Spacebox.Scenes
                 }
 
 
-                string modsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,  ModPath.GetModsPath(isMultiplayer, serverName));
-                string blocksPath = Path.Combine(modsFolder, args[3], Globals.GameSet.Blocks);
-                string itemsPath = Path.Combine(modsFolder, args[3], Globals.GameSet.Items);
-                string emissionPath = Path.Combine(modsFolder, args[3], Globals.GameSet.Emissions);
+                string modsFolder =  ModPath.GetModsPath(isMultiplayer, serverName);
+                Debug.Warning("modsFolder path: " + modsFolder);
+
+                string blocksPath = ModPath.GetBlocksPath(modsFolder, modFolderName);
+                Debug.Warning("blocksPath path: " + modsFolder);
+                string itemsPath = ModPath.GetItemsPath(modsFolder, modFolderName);
+                string emissionPath = ModPath.GetEmissionsPath(modsFolder, modFolderName);
 
                 if (GameBlocks.IsInitialized)
                 {
-                    if (GameBlocks.modId.ToLower() != args[1].ToLower())
+                    if (GameBlocks.modId.ToLower() != modId.ToLower())
                     {
                         GameBlocks.DisposeAll();
-                        InitializeGamesetData(blocksPath, itemsPath, emissionPath, args[1], 32);
+                        InitializeGamesetData(blocksPath, itemsPath, emissionPath, modId, 32, serverName);
                     }
                 }
                 else
                 {
-                    InitializeGamesetData(blocksPath, itemsPath, emissionPath, args[1], 32);
+                    InitializeGamesetData(blocksPath, itemsPath, emissionPath, modId, 32, serverName);
                 }
-                if (int.TryParse(args[2], out var seed))
+                if (int.TryParse(seedString, out var seed))
                 {
                     World.Random = new Random(seed);
                 }
                 else
                 {
                     World.Random = new Random();
-                    Debug.Error("Wrong seed format! Seed: " + args[2]);
+                    Debug.Error("Wrong seed format! Seed: " + seedString);
                 }
             }
 
-            // Включаем черный экран для перехода
             BlackScreenOverlay.IsEnabled = true;
             BlackScreenOverlay.Render();
 
-            // Настройка управления курсором
             var mouse = ToggleManager.Register("mouse");
             mouse.OnStateChanged += s =>
             {
@@ -126,7 +148,6 @@ namespace Spacebox.Scenes
                 }
             };
 
-            // Регистрация клавиши для переключения отображения оверлея
             InputManager.AddAction("inputOverlay", Keys.F6);
             InputManager.RegisterCallback("inputOverlay", () =>
             {
@@ -134,8 +155,9 @@ namespace Spacebox.Scenes
             });
         }
 
-        void InitializeGamesetData(string blocksPath, string itemsPath, string emissionPath, string modId, byte blockSizePixels)
+        void InitializeGamesetData(string blocksPath, string itemsPath, string emissionPath, string modId, byte blockSizePixels, string serverName)
         {
+            Debug.Warning("Blocks path: " + blocksPath);
             GameBlocks.AtlasBlocks = new AtlasTexture();
             GameBlocks.AtlasItems = new AtlasTexture();
             var texture = GameBlocks.AtlasBlocks.CreateTexture(blocksPath, blockSizePixels, false);
@@ -144,13 +166,13 @@ namespace Spacebox.Scenes
             GameBlocks.BlocksTexture = texture;
             GameBlocks.ItemsTexture = items;
             GameBlocks.LightAtlas = emissions;
-            GameSetLoader.Load(modId);
+            GameSetLoader.Load(modId, isMultiplayer, isMultiplayer ? serverName : "");
             GameBlocks.IsInitialized = true;
         }
 
         public override void LoadContent()
         {
-            // Загрузка шейдеров и скайбокса
+
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader, new SpaceTexture(512, 512, World.Random));
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
@@ -159,7 +181,6 @@ namespace Spacebox.Scenes
 
             radarWindow = new RadarUI(skybox.Texture);
 
-            // Если игрок не создан в наследнике, создаём его по умолчанию
             if (localPlayer == null)
             {
                 localPlayer = new Astronaut(new Vector3(5, 5, 5));

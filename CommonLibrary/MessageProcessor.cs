@@ -140,6 +140,7 @@ namespace ServerCommon
                 byte[] zipData = ZipManager.CreateZipFromFolder(folderToZip);
                 var zipMsg = new ZipMessage
                 {
+                    ModName = Settings.GameSetFolder,
                     ZipData = zipData
                 };
                 var omZip = server.CreateMessage();

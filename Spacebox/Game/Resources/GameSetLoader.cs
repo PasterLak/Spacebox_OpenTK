@@ -3,15 +3,16 @@
 using Engine.Audio;
 using Spacebox.Game.Player;
 using Engine;
+using Spacebox.Scenes;
 namespace Spacebox.Game.Resources
 {
     public static class GameSetLoader
     {
         public static ModConfig ModInfo;
         private static string modPath;
-        public static void Load(string modId)
+        public static void Load(string modId, bool isMultiplayer, string serverName)
         {
-            string modsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.LocalFolder);
+            string modsDirectory = ModPath.GetModsPath(isMultiplayer, serverName);
             string defaultModId = Globals.GameSet.Default.ToLower();
             string defaultModPath = Path.Combine(modsDirectory, Globals.GameSet.Default);
 

@@ -10,14 +10,29 @@ namespace Spacebox.Scenes
         public ModPath() { }
 
 
-        public static string GetModsPath(bool localGame, string serverName)
+        public static string GetModsPath(bool isMultiplayer, string serverName)
         {
-            if(localGame) {
+            if(!isMultiplayer) {
 
-                return Globals.GameSet.LocalFolder;
+                return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.LocalFolder);
             }
 
-            return Path.Combine(Globals.GameSet.MultiplayerFolder, serverName) ;
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory,Globals.GameSet.MultiplayerFolder, serverName, "GameSet") ;
         }
+
+        public static string GetBlocksPath( string modsFolder, string modFolderName)
+        {
+            return Path.Combine(modsFolder, modFolderName, Globals.GameSet.Blocks);
+        }
+        public static string GetItemsPath(string modsFolder, string modFolderName)
+        {
+            return Path.Combine(modsFolder, modFolderName, Globals.GameSet.Items);
+
+        }
+        public static string GetEmissionsPath(string modsFolder, string modFolderName)
+        {
+            return Path.Combine(modsFolder, modFolderName, Globals.GameSet.Emissions);
+        }
+
     }
 }

@@ -39,8 +39,12 @@ namespace Spacebox.Game.Generation
 
         public static bool CanLoadSectorHere(Vector3i sectorIndex, out string sectorFolderPath)
         {
+            if(World.Data == null)
+            {
+                Debug.Error("NULLL World.Data inCanLoadSectorHere");
+            }
             sectorFolderPath = GetSectorFolderPath(World.Data.WorldFolderPath, sectorIndex);
-            Debug.Success("Sector folder path:" + sectorFolderPath);
+           //Debug.Success("Sector folder path:" + sectorFolderPath);
             return Directory.Exists(sectorFolderPath);
 
         }
