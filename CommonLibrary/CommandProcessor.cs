@@ -1,10 +1,12 @@
-﻿namespace ServerCommon
+﻿using System;
+using ServerCommon;
+
+namespace ServerCommon
 {
     public class CommandProcessor
     {
         private readonly ServerNetwork _server;
         private readonly Action<string> _logCallback;
-
         public Action OnClear;
         public CommandProcessor(ServerNetwork server, Action<string> logCallback)
         {
@@ -16,14 +18,9 @@
         {
             if (string.IsNullOrWhiteSpace(input))
                 return;
-
             if (input.Equals("clear", StringComparison.OrdinalIgnoreCase))
             {
-
                 OnClear?.Invoke();
-                // Здесь можно инициировать очистку логов в UI. 
-                // Для консоли можно, например, вызвать Console.Clear();
-                // Для WPF – поднять событие или напрямую вызвать метод обновления UI.
             }
             else if (input.StartsWith("kick ", StringComparison.OrdinalIgnoreCase))
             {
@@ -39,6 +36,23 @@
                 else
                 {
                     _logCallback?.Invoke("[Server]: Invalid kick command format.");
+                }
+            }
+            else if (input.StartsWith("ban ", StringComparison.OrdinalIgnoreCase))
+            {
+                var parts = input.Split(' ', 3, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length >= 2 && int.TryParse(parts[1], out int id))
+                {
+                    string reason = parts.Length == 3 ? parts[2] : "No reason provided";
+                    bool banned = _server.BanPlayer(id, reason);
+                    if (banned)
+                        _logCallback?.Invoke($"[Server]: Player {id} banned. Reason: {reason}");
+                    else
+                        _logCallback?.Invoke($"[Server]: Player {id} not found.");
+                }
+                else
+                {
+                    _logCallback?.Invoke("[Server]: Invalid ban command format.");
                 }
             }
             else if (input.Equals("restart", StringComparison.OrdinalIgnoreCase))

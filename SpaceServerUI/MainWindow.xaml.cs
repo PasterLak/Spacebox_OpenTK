@@ -246,7 +246,8 @@ namespace SpaceServerUI
                 banButton.Click += (s, e) =>
                 {
                     int playerId = (int)((Button)s).Tag;
-                    LogMessage($"[Server]: Player with ID {playerId} banned.");
+                    //LogMessage($"[Server]: Player with ID {playerId} banned.");
+                    _commandProcessor.ProcessCommand("ban " + playerId);
                 };
                 buttonPanel.Children.Add(kickButton);
                 buttonPanel.Children.Add(banButton);

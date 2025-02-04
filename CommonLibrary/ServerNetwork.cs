@@ -1,12 +1,11 @@
-﻿// File: ServerNetwork.cs
+﻿using SpaceNetwork;
+using SpaceNetwork.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using Lidgren.Network;
-using SpaceNetwork;
-using SpaceNetwork.Messages;
 
 namespace ServerCommon
 {
@@ -22,14 +21,17 @@ namespace ServerCommon
         private readonly string appKey;
         private readonly int maxConnections;
         private readonly int port;
+
         public ServerNetwork(string appKey, int port, int maxConnections, Action<string> logCallback)
         {
             this.appKey = appKey;
             this.port = port;
             this.maxConnections = maxConnections;
             _logCallback = logCallback;
+            BanManager.LoadBannedPlayers();
             InitializeServer();
         }
+
         private void InitializeServer()
         {
             var config = new NetPeerConfiguration(appKey)
@@ -48,6 +50,7 @@ namespace ServerCommon
             _logCallback?.Invoke($"Server \"{Settings.Name}\" started on port {port}");
             _logCallback?.Invoke($"App key: {appKey}");
         }
+
         public void RunMainLoop()
         {
             var localIP = Dns.GetHostEntry(Dns.GetHostName())
@@ -92,11 +95,13 @@ namespace ServerCommon
                 Thread.Sleep(1);
             }
         }
+
         public void Stop()
         {
             _shouldStop = true;
             server.Shutdown("Server stopped");
         }
+
         public void Restart()
         {
             _logCallback?.Invoke("Restarting server...");
@@ -108,6 +113,7 @@ namespace ServerCommon
             new Thread(() => RunMainLoop()).Start();
             _logCallback?.Invoke("Server restarted.");
         }
+
         private void CheckAFKPlayers()
         {
             if (playerManager.GetAll().Count == 0)
@@ -127,6 +133,7 @@ namespace ServerCommon
             }
             time = 0;
         }
+
         private void HandleStatusChanged(NetIncomingMessage msg)
         {
             var status = (NetConnectionStatus)msg.ReadByte();
@@ -168,6 +175,7 @@ namespace ServerCommon
                 }
             }
         }
+
         private void HandleData(NetIncomingMessage msg)
         {
             var baseMsg = MessageFactory.CreateMessage(msg);
@@ -192,7 +200,6 @@ namespace ServerCommon
                     _logCallback?.Invoke($"> {p.Name}[{p.ID}]: {cm.Text}");
                 }
             }
-
             else if (baseMsg is BlockDestroyedMessage)
             {
                 byte[] rawData = new byte[msg.LengthBytes];
@@ -210,6 +217,7 @@ namespace ServerCommon
                 server.SendToAll(om, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered, 0);
             }
         }
+
         private void BroadcastPlayers()
         {
             var pm = new PlayersMessage();
@@ -218,6 +226,7 @@ namespace ServerCommon
             pm.Write(outMsg);
             server.SendToAll(outMsg, NetDeliveryMethod.Unreliable);
         }
+
         public void BroadcastChat(int senderId, string text)
         {
             var name = senderId == -1 ? "Server" : "";
@@ -226,6 +235,7 @@ namespace ServerCommon
             cm.Write(outMsg);
             server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
         }
+
         public bool KickPlayer(int playerId, bool wasAFK = false)
         {
             NetConnection target = null;
@@ -257,6 +267,47 @@ namespace ServerCommon
                 return false;
             }
         }
+
+        public bool BanPlayer(int playerId, string reason)
+        {
+            NetConnection target = null;
+            foreach (var kvp in connectionPlayers)
+            {
+                if (kvp.Value.ID == playerId)
+                {
+                    target = kvp.Key;
+                    break;
+                }
+            }
+            if (target != null)
+            {
+                var banned = new PlayerBanned
+                {
+                    IDWhenWasBanned = playerId,
+                    Name = connectionPlayers[target].Name,
+                    Reason = reason,
+                    IPAddress = target.RemoteEndPoint.Address.ToString(),
+                   
+                    DeviceId = "",
+                    BannedAt = DateTime.UtcNow
+                };
+                BanManager.AddBannedPlayer(banned);
+                var km = new KickMessage();
+                km.Reason = $"Banned: {reason}";
+                var om = server.CreateMessage();
+                km.Write(om);
+                server.SendMessage(om, target, NetDeliveryMethod.ReliableOrdered);
+                target.Disconnect("Banned");
+                _logCallback?.Invoke($"Player {playerId} ({banned.Name}) ({banned.IPAddress}) was banned. Reason: {reason}");
+                BroadcastChat(-1, $"Player {playerId} ({connectionPlayers[target].Name}) was banned. Reason: {reason}");
+                connectionPlayers.Remove(target);
+                playerManager.RemovePlayer(playerId);
+                BroadcastPlayers();
+                return true;
+            }
+            return false;
+        }
+
         public IEnumerable<Player> GetAllPlayers() => playerManager.GetAll().Values;
     }
 }
