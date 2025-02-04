@@ -61,7 +61,7 @@ namespace SpaceServerUI
             Title = "Server: " + Settings.Name;
             PortTextBlock.Text = $"Port: {Settings.Port}";
             KeyTextBlock.Text = $"Key: {Settings.Key}";
-            NameTextBlock.Text =  Settings.Name;
+            NameTextBlock.Text = Settings.Name;
             PortInputTextBox.Text = Settings.Port.ToString();
             KeyInputTextBox.Text = Settings.Key;
             NameInputTextBox.Text = Settings.Name;
@@ -208,7 +208,6 @@ namespace SpaceServerUI
             LogListBox.Items.Clear();
         }
 
-
         private void RefreshPlayers()
         {
             PlayersPanel.Children.Clear();
@@ -244,7 +243,6 @@ namespace SpaceServerUI
                 banButton.Click += (s, e) =>
                 {
                     int playerId = (int)((Button)s).Tag;
-                    //LogMessage($"[Server]: Player with ID {playerId} banned.");
                     _commandProcessor.ProcessCommand("ban " + playerId);
                 };
                 buttonPanel.Children.Add(kickButton);
@@ -256,6 +254,28 @@ namespace SpaceServerUI
                 PlayersPanel.Children.Add(border);
             }
             PlayersHeaderTextBlock.Text = $"Players online: {count}/{Settings.MaxPlayers}";
+        }
+
+        private void CopyMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem mi)
+            {
+                if (mi.Parent is ContextMenu cm && cm.PlacementTarget is ListBoxItem lbi)
+                {
+                    Clipboard.SetText(lbi.Content.ToString());
+                }
+            }
+        }
+
+        private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem mi)
+            {
+                if (mi.Parent is ContextMenu cm && cm.PlacementTarget is ListBoxItem lbi)
+                {
+                    LogListBox.Items.Remove(lbi.Content);
+                }
+            }
         }
     }
 }

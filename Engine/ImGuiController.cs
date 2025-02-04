@@ -61,9 +61,9 @@ namespace Engine
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
             // Enable Docking
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
-
+           
             CreateDeviceResources();
-
+         
             SetPerFrameImGuiData(1f / 60f);
 
             ImGui.NewFrame();

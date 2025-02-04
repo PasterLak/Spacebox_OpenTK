@@ -28,7 +28,8 @@ namespace ServerCommon
                 if (parts.Length == 2 && int.TryParse(parts[1], out int id))
                 {
                     bool kicked = server.KickPlayer(id);
-                    logCallback?.Invoke(kicked ? $"[Server]: Player {id} kicked." : $"[Server]: Player {id} not found.");
+                    if(!kicked)
+                    logCallback?.Invoke($"Player {id} not found.");
                 }
                 else
                 {
@@ -42,7 +43,8 @@ namespace ServerCommon
                 {
                     string reason = parts.Length == 3 ? parts[2] : "No reason provided";
                     bool banned = server.BanPlayer(id, reason);
-                    logCallback?.Invoke(banned ? $"[Server]: Player {id} banned. Reason: {reason}" : $"[Server]: Player {id} not found.");
+                    if(!banned)
+                    logCallback?.Invoke( $"Player {id} not found.");
                 }
                 else
                 {

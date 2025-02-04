@@ -57,8 +57,7 @@ namespace Spacebox.Scenes
             if((this as MultiplayerScene) != null)
             {
                 isMultiplayer = true;// (worldName/server, modId, seed, modfolder) + ( modfolderName, key, ip, port, nickname)
-                Debug.Warning("MULTIPLAYER");
-
+               
                 foreach(var arg in args)
                 {
                     Debug.Warning(arg.ToString());
@@ -96,10 +95,9 @@ namespace Spacebox.Scenes
 
 
                 string modsFolder =  ModPath.GetModsPath(isMultiplayer, serverName);
-                Debug.Warning("modsFolder path: " + modsFolder);
-
+  
                 string blocksPath = ModPath.GetBlocksPath(modsFolder, modFolderName);
-                Debug.Warning("blocksPath path: " + modsFolder);
+            
                 string itemsPath = ModPath.GetItemsPath(modsFolder, modFolderName);
                 string emissionPath = ModPath.GetEmissionsPath(modsFolder, modFolderName);
 
@@ -155,9 +153,9 @@ namespace Spacebox.Scenes
             });
         }
 
-        void InitializeGamesetData(string blocksPath, string itemsPath, string emissionPath, string modId, byte blockSizePixels, string serverName)
+        private void InitializeGamesetData(string blocksPath, string itemsPath, string emissionPath, string modId, byte blockSizePixels, string serverName)
         {
-            Debug.Warning("Blocks path: " + blocksPath);
+
             GameBlocks.AtlasBlocks = new AtlasTexture();
             GameBlocks.AtlasItems = new AtlasTexture();
             var texture = GameBlocks.AtlasBlocks.CreateTexture(blocksPath, blockSizePixels, false);
@@ -185,6 +183,7 @@ namespace Spacebox.Scenes
             {
                 localPlayer = new Astronaut(new Vector3(5, 5, 5));
             }
+
             PanelUI.Player = localPlayer;
             SceneGraph.AddRoot(localPlayer);
 
@@ -194,14 +193,12 @@ namespace Spacebox.Scenes
             PlayerSaveLoadManager.LoadPlayer(localPlayer, World.Data.WorldFolderPath);
             CollisionManager.Add(localPlayer);
 
-            // Аудио
             Death = new AudioSource(SoundManager.GetClip("death2"));
             ambient = new AudioSource(SoundManager.GetClip("Music/spaceBackground"));
             ambient.IsLooped = true;
             ambient.Volume = 0.05f;
             ambient.Play();
 
-            // Настройка оверлеев камеры
             var cameraElement = Overlay.GetElementByType(typeof(CameraElement));
             if (cameraElement != null)
             {
@@ -211,7 +208,6 @@ namespace Spacebox.Scenes
 
             Input.SetCursorState(CursorState.Grabbed);
 
-            // Загрузка шейдера блоков, текстур и установка uniform-параметров
             blocksShader = ShaderManager.GetShader("Shaders/block");
             pointLightsPool = new PointLightsPool(blocksShader, localPlayer, 64);
             localPlayer.GameMode = World.Data.Info.GameMode;
@@ -224,11 +220,11 @@ namespace Spacebox.Scenes
             blocksShader.SetVector3("fogColor", Lighting.FogColor);
             blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
 
-            // Инициализация менеджеров эффектов
+        
             blockDestructionManager = new BlockDestructionManager(localPlayer);
             dustSpawner = new DustSpawner(localPlayer);
 
-            // Регистрация команд отладки
+      
             Debug.RegisterCommand(new ChatCommand());
             Debug.RegisterCommand(new TeleportCommand(localPlayer));
             Debug.RegisterCommand(new TagCommand(localPlayer));
@@ -236,7 +232,7 @@ namespace Spacebox.Scenes
             Debug.RegisterCommand(new GameModCommand(localPlayer));
             Debug.RegisterCommand(new SpawnAroundAsteroidCommand(localPlayer));
 
-            // Инициализация UI инвентаря и панели
+         
             Texture2D slotTex = TextureManager.GetTexture("Resources/Textures/slot.png", true, false);
             Texture2D selectedSlotTex = TextureManager.GetTexture("Resources/Textures/selectedSlot.png", true, false);
             InventoryUI.Initialize(slotTex.Handle);
@@ -246,7 +242,7 @@ namespace Spacebox.Scenes
 
             blockSelector = new BlockSelector();
 
-            // Загрузка дополнительной модели и блоков
+        
             Texture2D spacerTex = TextureManager.GetTexture("Resources/Textures/spacer.png");
             spacerTex.FlipY();
             spacerTex.UpdateTexture(true);
@@ -261,7 +257,7 @@ namespace Spacebox.Scenes
             block2 = new SimpleBlock(ShaderManager.GetShader("Shaders/colored"),
                 TextureManager.GetTexture("Resources/Textures/slot.png", true, false), new Vector3(0, 0, 0));
 
-            // Инициализация UI приветствия и паузы
+          
             WelcomeUI.OnPlayerSpawned(World.Data.Info.ShowWelcomeWindow);
             WelcomeUI.Init();
             PauseUI.Init();
@@ -278,7 +274,7 @@ namespace Spacebox.Scenes
             };
             CraftingGUI.Init();
 
-            // Инициализация аниматора для модели spacer
+         
             animator = new Animator(spacer);
             animator.AddAnimation(new MoveAnimation(spacer.Position, spacer.Position + new Vector3(0, 0, 1000), 5000f, false));
             animator.AddAnimation(new RotateAnimation(Vector3.UnitX, 5f, 0f));
@@ -488,7 +484,7 @@ namespace Spacebox.Scenes
             skyboxShader.Dispose();
             dustSpawner.Dispose();
             pointLightsPool.Dispose();
-
+            ambient.Dispose();
             if (InteractionShoot.ProjectilesPool != null)
                 InteractionShoot.ProjectilesPool.Dispose();
 

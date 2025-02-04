@@ -40,7 +40,7 @@ namespace ServerCommon
         private void ProcessStatusChanged(NetIncomingMessage msg)
         {
             var status = (NetConnectionStatus)msg.ReadByte();
-            msg.ReadString(); // Чтение дополнительного текста
+            msg.ReadString(); 
             if (status == NetConnectionStatus.Connected)
             {
                 var hail = msg.SenderConnection.RemoteHailMessage;
@@ -73,7 +73,7 @@ namespace ServerCommon
                 initMsg.Write(omInit);
                 server.SendMessage(omInit, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
 
-                // Отправка ServerInfoMessage
+           
                 var serverInfoMsg = new ServerInfoMessage
                 {
                     Info = new SpaceNetwork.ServerInfo
@@ -90,9 +90,9 @@ namespace ServerCommon
                 serverNetwork.BroadcastPlayers();
                 serverNetwork.BroadcastChat(-1, $"{newPlayer.Name}[{newPlayer.ID}] connected");
 
-                // Захватим соединение в локальную переменную
+          
                 var connection = msg.SenderConnection;
-                // Ждем 1 секунду, затем отправляем zip, если соединение всё ещё активно
+            
                 ThreadPool.QueueUserWorkItem(_ =>
                 {
                     Thread.Sleep(1000);

@@ -157,6 +157,7 @@ namespace Spacebox.Game.Resources
                     ProcessSoundFile(file);
                 }
 
+                if (!GameBlocks.Sounds.ContainsKey("error"))
                 GameBlocks.Sounds.Add("error", SoundManager.AddClip("error"));
             }
             catch (Exception ex)
@@ -874,7 +875,11 @@ namespace Spacebox.Game.Resources
                 {
                     if (player.Panel.TryAddItem(item, itemData.Count))
                     {
-                        Debug.Error($"Unknow error by adding a default item on start: {itemData.Name} [{itemData.Count}]");
+                       
+                    }
+                    else
+                    {
+                        Debug.Error($"[GameSetLoader][GiveStartItems] Unknow error by adding a default item on start: {itemData.Name} [{itemData.Count}]");
                     }
                 }
             }

@@ -356,6 +356,7 @@ namespace Spacebox
 
             minimizedWindowSize = ClientSize;
 
+
             OnResized?.Invoke(Size);
 
             if (Camera.Main != null)
