@@ -1,8 +1,5 @@
 ﻿using SpaceNetwork;
 using SpaceNetwork.Messages;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using Lidgren.Network;
@@ -110,6 +107,7 @@ namespace ServerCommon
             playerManager.Reset();
             Thread.Sleep(1000);
             InitializeServer();
+            BanManager.LoadBannedPlayers();
             new Thread(() => RunMainLoop()).Start();
             _logCallback?.Invoke("Server restarted.");
         }
@@ -142,6 +140,17 @@ namespace ServerCommon
             {
                 var hail = msg.SenderConnection.RemoteHailMessage;
                 var chosenName = hail.ReadString();
+                string senderIp = msg.SenderConnection.RemoteEndPoint.Address.ToString();
+                if (BanManager.IsBannedByName(chosenName) || BanManager.IsBannedByIp(senderIp))
+                {
+                    var km = new KickMessage();
+                    km.Reason = "You are banned.";
+                    var om = server.CreateMessage();
+                    km.Write(om);
+                    server.SendMessage(om, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
+                    msg.SenderConnection.Disconnect("Banned");
+                    return;
+                }
                 if (playerManager.IsNameUsed(chosenName))
                 {
                     var km = new KickMessage();
@@ -287,7 +296,6 @@ namespace ServerCommon
                     Name = connectionPlayers[target].Name,
                     Reason = reason,
                     IPAddress = target.RemoteEndPoint.Address.ToString(),
-                   
                     DeviceId = "",
                     BannedAt = DateTime.UtcNow
                 };

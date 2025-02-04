@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿
 using System.Text.Json;
 
 namespace ServerCommon
@@ -8,15 +6,15 @@ namespace ServerCommon
     public static class BanManager
     {
         private static readonly string BanFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "banned.json");
-        private static Dictionary<int, PlayerBanned> bannedPlayers = new Dictionary<int, PlayerBanned>();
+        private static List<PlayerBanned> bannedPlayers = new List<PlayerBanned>();
 
         public static void LoadBannedPlayers()
         {
             if (File.Exists(BanFilePath))
             {
+                if(bannedPlayers != null) bannedPlayers.Clear();
                 string json = File.ReadAllText(BanFilePath);
-                bannedPlayers = JsonSerializer.Deserialize<Dictionary<int, PlayerBanned>>(json);
-                if (bannedPlayers == null) bannedPlayers = new Dictionary<int, PlayerBanned>();
+                bannedPlayers = JsonSerializer.Deserialize<List<PlayerBanned>>(json) ?? new List<PlayerBanned>();
             }
         }
 
@@ -28,18 +26,35 @@ namespace ServerCommon
 
         public static void AddBannedPlayer(PlayerBanned banned)
         {
-            bannedPlayers[banned.IDWhenWasBanned] = banned;
+            var existing = bannedPlayers.FirstOrDefault(b => b.Name.Equals(banned.Name, StringComparison.OrdinalIgnoreCase));
+            if (existing != null)
+            {
+                existing.IDWhenWasBanned = banned.IDWhenWasBanned;
+                existing.Reason = banned.Reason;
+                existing.IPAddress = banned.IPAddress;
+                existing.DeviceId = banned.DeviceId;
+                existing.BannedAt = banned.BannedAt;
+            }
+            else
+            {
+                bannedPlayers.Add(banned);
+            }
             SaveBannedPlayers();
         }
 
-        public static bool IsBanned(int playerId)
+        public static bool IsBannedByName(string name)
         {
-            return bannedPlayers.ContainsKey(playerId);
+            return bannedPlayers.Any(b => b.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public static bool IsBannedByIp(string ip)
+        {
+            return bannedPlayers.Any(b => b.IPAddress.Equals(ip, StringComparison.OrdinalIgnoreCase));
         }
 
         public static IEnumerable<PlayerBanned> GetAllBannedPlayers()
         {
-            return bannedPlayers.Values;
+            return bannedPlayers;
         }
     }
 }

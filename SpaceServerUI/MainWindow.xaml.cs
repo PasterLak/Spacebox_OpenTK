@@ -196,7 +196,7 @@ namespace SpaceServerUI
             {
                 LogListBox.Items.Add($"{System.DateTime.Now:HH:mm:ss} - {message}");
                 LogListBox.ScrollIntoView(LogListBox.Items[LogListBox.Items.Count - 1]);
-                if (message.Contains("connected") || message.Contains("disconnected") || message.Contains("kicked"))
+                if (message.Contains("connected") || message.Contains("disconnected") || message.Contains("kicked") || message.Contains("banned"))
                 {
                     RefreshPlayers();
                 }
@@ -238,9 +238,7 @@ namespace SpaceServerUI
                 kickButton.Click += (s, e) =>
                 {
                     int playerId = (int)((Button)s).Tag;
-                    bool kicked = _server.KickPlayer(playerId);
-                    if (kicked)
-                        LogMessage($"[Server]: Player with ID {playerId} kicked.");
+                    _commandProcessor.ProcessCommand("kick " + playerId);
                 };
                 var banButton = new Button { Content = "Ban", Tag = p.ID, Margin = new Thickness(2, 0, 2, 0), Width = 40, Height = 25 };
                 banButton.Click += (s, e) =>

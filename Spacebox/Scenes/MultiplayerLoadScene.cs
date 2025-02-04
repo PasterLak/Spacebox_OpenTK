@@ -39,7 +39,7 @@ namespace Spacebox.Scenes
         public MultiplayerLoadScene(string[] args) : base(args)
         {
             sceneArgs = args;
-            if (args.Length >= 8)
+            if (args.Length >= 8) 
             {
                 appKey = args[4];
                 host = args[5];
@@ -133,7 +133,7 @@ namespace Spacebox.Scenes
                     WriteInfo($"Connected to: {serverInfo.Name} host: {host} port: {port}");
 
                     //SceneLauncher.LaunchMultiplayerGame(world, modConfig, serverInfo, playerName, appKey);
-
+                   
                     SceneManager.LoadScene(typeof(MultiplayerScene), sceneArgs);
                 }
                 else
@@ -141,6 +141,7 @@ namespace Spacebox.Scenes
                     if (error == false)
                     {
                         WriteError("Connection error: " + connectionError);
+                        timeToGoToMenu = 3;
                         error = true;
                     }
 
@@ -148,7 +149,8 @@ namespace Spacebox.Scenes
 
                     if(timeToGoToMenu < 0)
                     {
-                        WriteError("Failed to connect to the server. Returning to Multiplayer Menu.");
+                        WriteError("Returning to Multiplayer Menu.");
+                        ClientNetwork.Instance = null;
                         SceneManager.LoadScene(typeof(MenuScene));
 
                     }

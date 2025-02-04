@@ -1,4 +1,4 @@
-﻿using System;
+﻿
 using System.Runtime.CompilerServices;
 using OpenTK.Mathematics;
 using Engine;

@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿
 using System.Numerics;
 using System.Text.Json;
-using System.Threading;
+
 using ImGuiNET;
 using Engine;
 using Spacebox.Client;
-using Spacebox.Game.GUI.Menu;
-using Spacebox.Scenes;
 using static Spacebox.Game.Resources.GameSetLoader;
 
 namespace Spacebox.Game.GUI.Menu
@@ -42,6 +37,10 @@ namespace Spacebox.Game.GUI.Menu
             {
                 string json = File.ReadAllText(path);
                 config = JsonSerializer.Deserialize<ClientConfig>(json);
+                if(config.GenerateNameIfEmpty())
+                {
+                    SaveConfig();
+                }
             }
             else
             {
