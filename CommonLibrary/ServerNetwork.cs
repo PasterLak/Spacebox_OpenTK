@@ -17,21 +17,22 @@ namespace ServerCommon
         private readonly Dictionary<NetConnection, Player> connectionPlayers = new Dictionary<NetConnection, Player>();
         private bool _shouldStop;
         private float time;
-        private readonly Action<string> _logCallback;
+        private readonly ILogger logger;
         private readonly string appKey;
         private readonly int maxConnections;
         private readonly int port;
         private MessageProcessor messageProcessor;
 
-        public ServerNetwork(string appKey, int port, int maxConnections, Action<string> logCallback)
+        public ServerNetwork(string appKey, int port, int maxConnections, ILogger logger)
         {
             this.appKey = appKey;
             this.port = port;
             this.maxConnections = maxConnections;
-            _logCallback = logCallback;
+            this.logger = logger;
             BanManager.LoadBannedPlayers();
             InitializeServer();
-            messageProcessor = new MessageProcessor(server, connectionPlayers, playerManager, _logCallback, this);
+            messageProcessor = new MessageProcessor(server, connectionPlayers, playerManager,
+                                          (msg, type) => logger.Log(msg, type), this);
         }
 
         private void InitializeServer()
@@ -48,9 +49,9 @@ namespace ServerCommon
             server = new NetServer(config);
             server.Start();
             _shouldStop = false;
-            _logCallback?.Invoke($"<--------------------------->");
-            _logCallback?.Invoke($"Server \"{Settings.Name}\" started on port {port}");
-            _logCallback?.Invoke($"App key: {appKey}");
+            logger.Log("<--------------------------->", LogType.Normal);
+            logger.Log($"Server \"{Settings.Name}\" started on port {port}", LogType.Normal);
+            logger.Log($"App key: {appKey}", LogType.Normal);
         }
 
         public void RunMainLoop()
@@ -58,8 +59,8 @@ namespace ServerCommon
             var localIP = Dns.GetHostEntry(Dns.GetHostName())
                 .AddressList
                 .FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork && !IPAddress.IsLoopback(ip));
-            _logCallback?.Invoke("Server IP (Local): " + (localIP?.ToString() ?? "Not found"));
-            _logCallback?.Invoke($"<--------------------------->");
+            logger.Log("Server IP (Local): " + (localIP?.ToString() ?? "Not found"), LogType.Normal);
+            logger.Log("<--------------------------->", LogType.Normal);
             while (!_shouldStop)
             {
                 Time.Update();
@@ -103,16 +104,16 @@ namespace ServerCommon
 
         public void Restart()
         {
-            _logCallback?.Invoke("Restarting server...");
+            logger.Log("Restarting server...", LogType.Info);
             Stop();
             time = 0;
             playerManager.Reset();
             Thread.Sleep(1000);
             InitializeServer();
             BanManager.LoadBannedPlayers();
-            messageProcessor = new MessageProcessor(server, connectionPlayers, playerManager, _logCallback, this);
+            messageProcessor = new MessageProcessor(server, connectionPlayers, playerManager, logger.Log, this);
             new Thread(() => RunMainLoop()).Start();
-            _logCallback?.Invoke("Server restarted.");
+            logger.Log("Server restarted.", LogType.Success);
         }
 
         private void CheckAFKPlayers()
@@ -145,7 +146,7 @@ namespace ServerCommon
                 km.Write(om);
                 server.SendMessage(om, target, NetDeliveryMethod.ReliableOrdered);
                 target.Disconnect("Kicked");
-                _logCallback?.Invoke($"Player {playerId} was kicked.");
+                logger.Log($"Player {playerId} was kicked.", LogType.Warning);
                 BroadcastChat(-1, $"Player {playerId} was kicked.");
                 connectionPlayers.Remove(target);
                 playerManager.RemovePlayer(playerId);
@@ -175,7 +176,7 @@ namespace ServerCommon
                 km.Write(om);
                 server.SendMessage(om, target, NetDeliveryMethod.ReliableOrdered);
                 target.Disconnect("Banned");
-                _logCallback?.Invoke($"Player {playerId} ({banned.Name}) ({banned.IPAddress}) was banned. Reason: {reason}");
+                logger.Log($"Player {playerId} ({banned.Name}) ({banned.IPAddress}) was banned. Reason: {reason}", LogType.Warning);
                 BroadcastChat(-1, $"Player {playerId} ({connectionPlayers[target].Name}) was banned. Reason: {reason}");
                 connectionPlayers.Remove(target);
                 playerManager.RemovePlayer(playerId);

@@ -24,6 +24,7 @@ namespace SpaceServerUI
             InitializeComponent();
             SetLocalIp();
             LoadConfig();
+
         }
 
         private void SetLocalIp()
@@ -53,7 +54,7 @@ namespace SpaceServerUI
             catch (Exception ex)
             {
                 LocalIpTextBlock.Text = "Local IP: Not found";
-                LogMessage($"[Server]: Error getting local IP: {ex.Message}");
+                LogMessage($"[Server]: Error getting local IP: {ex.Message}", LogType.Error);
             }
         }
 
@@ -72,8 +73,9 @@ namespace SpaceServerUI
         private void StartServer()
         {
             LoadConfig();
-            _server = new ServerNetwork(Settings.Key, Settings.Port, Settings.MaxPlayers, LogMessage);
-            _commandProcessor = new CommandProcessor(_server, LogMessage);
+            var uiLogger = new UILogger(this);
+            _server = new ServerNetwork(Settings.Key, Settings.Port, Settings.MaxPlayers, uiLogger);
+            _commandProcessor = new CommandProcessor(_server, uiLogger);
             Task.Run(() => _server.RunMainLoop());
             PlayersHeaderTextBlock.Text = $"Players online: 0/{Settings.MaxPlayers}";
             Title = "Server: " + Settings.Name;
@@ -84,6 +86,7 @@ namespace SpaceServerUI
             _commandProcessor.OnClear += () => { InputTextBox.Clear(); LogListBox.Items.Clear(); };
         }
 
+
         private void StopServer()
         {
             PlayersHeaderTextBlock.Text = $"Players online: 0/0";
@@ -92,14 +95,14 @@ namespace SpaceServerUI
             StopButton.Visibility = Visibility.Collapsed;
             StartRestartButton.Content = "Start Server";
             StartRestartButton.Background = Brushes.Green;
-            LogMessage("[Server]: Server stopped.");
+            LogMessage("[Server]: Server stopped.", LogType.Warning);
         }
 
         private void RestartServer()
         {
             StopServer();
             StartServer();
-            LogMessage("[Server]: Server restarted.");
+            LogMessage("[Server]: Server restarted.", LogType.Success);
         }
 
         private void ProcessInput()
@@ -107,6 +110,7 @@ namespace SpaceServerUI
             var input = InputTextBox.Text.Trim();
             if (!string.IsNullOrEmpty(input))
             {
+                if (_commandProcessor == null) return;
                 _commandProcessor.ProcessCommand(input);
                 InputTextBox.Clear();
             }
@@ -133,11 +137,11 @@ namespace SpaceServerUI
                 Settings.Port = newPort;
                 ConfigManager.SaveConfig();
                 PortTextBlock.Text = $"Port: {Settings.Port}";
-                LogMessage($"[Server]: Port changed to {Settings.Port} and saved to config.");
+                LogMessage($"[Server]: Port changed to {Settings.Port} and saved to config.", LogType.Info);
             }
             else
             {
-                LogMessage("[Server]: Invalid port value.");
+                LogMessage("[Server]: Invalid port value.", LogType.Error);
             }
         }
 
@@ -149,11 +153,11 @@ namespace SpaceServerUI
                 Settings.Key = newKey;
                 ConfigManager.SaveConfig();
                 KeyTextBlock.Text = $"Game Key: {Settings.Key}";
-                LogMessage($"[Server]: Game key changed to {Settings.Key} and saved to config.");
+                LogMessage($"[Server]: Game key changed to {Settings.Key} and saved to config.", LogType.Info);
             }
             else
             {
-                LogMessage("[Server]: Invalid key value.");
+                LogMessage("[Server]: Invalid key value.", LogType.Error);
             }
         }
 
@@ -166,11 +170,11 @@ namespace SpaceServerUI
                 ConfigManager.SaveConfig();
                 NameTextBlock.Text = Settings.Name;
                 Title = "Server: " + Settings.Name;
-                LogMessage($"[Server]: Server name changed to {Settings.Name} and saved to config.");
+                LogMessage($"[Server]: Server name changed to {Settings.Name} and saved to config.", LogType.Success);
             }
             else
             {
-                LogMessage("[Server]: Invalid name value.");
+                LogMessage("[Server]: Invalid name value.", LogType.Error);
             }
         }
 
@@ -179,7 +183,7 @@ namespace SpaceServerUI
             if (!_serverStarted)
             {
                 StartServer();
-                LogMessage("[Server]: Server started.");
+                LogMessage("[Server]: Server started.", LogType.Success);
             }
             else
             {
@@ -192,17 +196,26 @@ namespace SpaceServerUI
             StopServer();
         }
 
-        public void LogMessage(string message)
+
+        public void LogMessage(string message, LogType type)
         {
             Dispatcher.Invoke(() =>
             {
-                LogListBox.Items.Add($"{DateTime.Now:HH:mm:ss} - {message}");
-                LogListBox.ScrollIntoView(LogListBox.Items[LogListBox.Items.Count - 1]);
-                if (message.Contains("connected") || message.Contains("disconnected") || message.Contains("kicked") || message.Contains("banned"))
+                var item = MessageLogger.CreateLogItem(message, type);
+                LogListBox.Items.Add(item);
+                LogListBox.ScrollIntoView(item);
+                if (message.Contains("connected") || message.Contains("disconnected") ||
+                    message.Contains("kicked") || message.Contains("banned"))
                 {
                     RefreshPlayers();
                 }
             });
+        }
+
+        // Перегрузка для обычного (Normal) сообщения.
+        public void LogMessage(string message)
+        {
+            LogMessage(message, ServerCommon.LogType.Normal);
         }
 
         private void ClearLogButton_Click(object sender, RoutedEventArgs e)
@@ -262,7 +275,11 @@ namespace SpaceServerUI
         {
             if (sender is MenuItem mi && mi.Parent is ContextMenu cm && cm.PlacementTarget is ListBoxItem lbi)
             {
-                string fullText = lbi.Content.ToString();
+                string fullText = "";
+                if (lbi.Content is TextBlock tb)
+                {
+                    fullText = tb.Text;
+                }
                 int index = fullText.IndexOf("]: ");
                 string textToCopy = index >= 0 ? fullText.Substring(index + 3) : (fullText.IndexOf(" - ") >= 0 ? fullText.Substring(fullText.IndexOf(" - ") + 3) : fullText);
                 Clipboard.SetText(textToCopy);
@@ -273,7 +290,11 @@ namespace SpaceServerUI
         {
             if (sender is MenuItem mi && mi.Parent is ContextMenu cm && cm.PlacementTarget is ListBoxItem lbi)
             {
-                string fullText = lbi.Content.ToString();
+                string fullText = "";
+                if (lbi.Content is TextBlock tb)
+                {
+                    fullText = tb.Text;
+                }
                 Clipboard.SetText(fullText);
             }
         }
@@ -282,7 +303,7 @@ namespace SpaceServerUI
         {
             if (sender is MenuItem mi && mi.Parent is ContextMenu cm && cm.PlacementTarget is ListBoxItem lbi)
             {
-                LogListBox.Items.Remove(lbi.Content);
+                LogListBox.Items.Remove(lbi);
             }
         }
     }

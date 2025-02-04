@@ -1,10 +1,10 @@
-﻿using SpaceNetwork;
-using SpaceNetwork.Messages;
-using Lidgren.Network;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using System.Threading;
+using Lidgren.Network;
+using SpaceNetwork;
+using SpaceNetwork.Messages;
 
 namespace ServerCommon
 {
@@ -13,10 +13,10 @@ namespace ServerCommon
         private readonly NetServer server;
         private readonly Dictionary<NetConnection, Player> connectionPlayers;
         private readonly PlayerManager playerManager;
-        private readonly Action<string> logCallback;
+        private readonly Action<string, LogType> logCallback;
         private readonly ServerNetwork serverNetwork;
 
-        public MessageProcessor(NetServer server, Dictionary<NetConnection, Player> connectionPlayers, PlayerManager playerManager, Action<string> logCallback, ServerNetwork serverNetwork)
+        public MessageProcessor(NetServer server, Dictionary<NetConnection, Player> connectionPlayers, PlayerManager playerManager, Action<string, LogType> logCallback, ServerNetwork serverNetwork)
         {
             this.server = server;
             this.connectionPlayers = connectionPlayers;
@@ -37,10 +37,12 @@ namespace ServerCommon
                     break;
             }
         }
+
         private void ProcessStatusChanged(NetIncomingMessage msg)
         {
             var status = (NetConnectionStatus)msg.ReadByte();
-            msg.ReadString(); 
+            // Читаем строку (например, причину отключения)
+            msg.ReadString();
             if (status == NetConnectionStatus.Connected)
             {
                 var hail = msg.SenderConnection.RemoteHailMessage;
@@ -66,17 +68,16 @@ namespace ServerCommon
                 }
                 var newPlayer = playerManager.AddNewPlayer(chosenName);
                 connectionPlayers[msg.SenderConnection] = newPlayer;
-                logCallback?.Invoke($"{newPlayer.Name}[{newPlayer.ID}] connected");
+                logCallback?.Invoke($"{newPlayer.Name}[{newPlayer.ID}] connected", LogType.Success);
 
                 var initMsg = new InitMessage { Player = newPlayer };
                 var omInit = server.CreateMessage();
                 initMsg.Write(omInit);
                 server.SendMessage(omInit, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
 
-           
                 var serverInfoMsg = new ServerInfoMessage
                 {
-                    Info = new SpaceNetwork.ServerInfo
+                    Info = new ServerInfo
                     {
                         Name = Settings.Name,
                         Description = Settings.Description,
@@ -90,9 +91,7 @@ namespace ServerCommon
                 serverNetwork.BroadcastPlayers();
                 serverNetwork.BroadcastChat(-1, $"{newPlayer.Name}[{newPlayer.ID}] connected");
 
-          
                 var connection = msg.SenderConnection;
-            
                 ThreadPool.QueueUserWorkItem(_ =>
                 {
                     Thread.Sleep(1000);
@@ -102,7 +101,7 @@ namespace ServerCommon
                     }
                     else
                     {
-                        logCallback?.Invoke("Recipient connection is null or not connected. Zip will not be sent.");
+                        logCallback?.Invoke("Recipient connection is null or not connected. Zip will not be sent.", LogType.Warning);
                     }
                 });
             }
@@ -113,19 +112,17 @@ namespace ServerCommon
                     connectionPlayers.Remove(msg.SenderConnection);
                     playerManager.RemovePlayer(p.ID);
                     serverNetwork.BroadcastChat(-1, $"{p.Name}[{p.ID}] disconnected");
-                    logCallback?.Invoke($"{p.Name}[{p.ID}] disconnected");
+                    logCallback?.Invoke($"{p.Name}[{p.ID}] disconnected", LogType.Info);
                     serverNetwork.BroadcastPlayers();
                 }
             }
         }
 
-
-
         private void SendZipToClient(NetConnection connection)
         {
             if (connection == null || connection.Status != NetConnectionStatus.Connected)
             {
-                logCallback?.Invoke("Recipient connection is null or not connected. Zip will not be sent.");
+                logCallback?.Invoke("Recipient connection is null or not connected. Zip will not be sent.", LogType.Warning);
                 return;
             }
             try
@@ -134,7 +131,7 @@ namespace ServerCommon
                 string folderToZip = System.IO.Path.Combine(baseDir, "GameSet", Settings.GameSetFolder);
                 if (!System.IO.Directory.Exists(folderToZip))
                 {
-                    logCallback?.Invoke("GameSet folder not found: " + folderToZip);
+                    logCallback?.Invoke("GameSet folder not found: " + folderToZip, LogType.Error);
                     return;
                 }
                 byte[] zipData = ZipManager.CreateZipFromFolder(folderToZip);
@@ -146,14 +143,13 @@ namespace ServerCommon
                 var omZip = server.CreateMessage();
                 zipMsg.Write(omZip);
                 server.SendMessage(omZip, connection, NetDeliveryMethod.ReliableOrdered);
-                logCallback?.Invoke("Zip sent to client: " + connection.RemoteEndPoint);
+                logCallback?.Invoke("Zip sent to client: " + connection.RemoteEndPoint, LogType.Info);
             }
             catch (Exception ex)
             {
-                logCallback?.Invoke("Error sending zip: " + ex.Message);
+                logCallback?.Invoke("Error sending zip: " + ex.Message, LogType.Error);
             }
         }
-
 
         private void ProcessData(NetIncomingMessage msg)
         {
@@ -176,7 +172,7 @@ namespace ServerCommon
                     var om = server.CreateMessage();
                     broadcast.Write(om);
                     server.SendToAll(om, NetDeliveryMethod.ReliableOrdered);
-                    logCallback?.Invoke($"> {p.Name}[{p.ID}]: {cm.Text}");
+                    logCallback?.Invoke($"> {p.Name}[{p.ID}]: {cm.Text}", LogType.Normal);
                 }
             }
             else if (baseMsg is BlockDestroyedMessage || baseMsg is BlockPlaceMessage)

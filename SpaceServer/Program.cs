@@ -1,6 +1,6 @@
-﻿
+﻿using System;
+using System.Threading;
 using ServerCommon;
-using SpaceNetwork;
 
 namespace SpaceServer
 {
@@ -12,8 +12,9 @@ namespace SpaceServer
 
             ConfigManager.LoadConfig();
 
-            var server = new ServerNetwork(Settings.Key, Settings.Port, Settings.MaxPlayers, Console.WriteLine);
-            var commandProcessor = new CommandProcessor(server, Console.WriteLine);
+            ILogger logger = new ConsoleLogger();
+            var server = new ServerNetwork(Settings.Key, Settings.Port, Settings.MaxPlayers, logger);
+            var commandProcessor = new CommandProcessor(server, logger);
 
             commandProcessor.OnClear += () => { Console.Clear(); };
 
@@ -24,7 +25,6 @@ namespace SpaceServer
                 var line = Console.ReadLine();
                 if (string.IsNullOrEmpty(line))
                     continue;
-
                 if (line.Equals("clear", StringComparison.OrdinalIgnoreCase))
                 {
                     Console.Clear();

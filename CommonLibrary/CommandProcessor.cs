@@ -1,23 +1,26 @@
 ﻿using System;
 using ServerCommon;
+using SpaceNetwork;
 
 namespace ServerCommon
 {
     public class CommandProcessor
     {
         private readonly ServerNetwork server;
-        private readonly Action<string> logCallback;
+        private readonly ILogger logger;
         public Action OnClear;
-        public CommandProcessor(ServerNetwork server, Action<string> logCallback)
+
+        public CommandProcessor(ServerNetwork server, ILogger logger)
         {
             this.server = server;
-            this.logCallback = logCallback;
+            this.logger = logger;
         }
 
         public void ProcessCommand(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
                 return;
+
             if (input.Equals("clear", StringComparison.OrdinalIgnoreCase))
             {
                 OnClear?.Invoke();
@@ -28,12 +31,14 @@ namespace ServerCommon
                 if (parts.Length == 2 && int.TryParse(parts[1], out int id))
                 {
                     bool kicked = server.KickPlayer(id);
-                    if(!kicked)
-                    logCallback?.Invoke($"Player {id} not found.");
+                    if (!kicked)
+                        logger.Log($"Player {id} not found.", LogType.Warning);
+                    else
+                        logger.Log($"Player {id} kicked.", LogType.Info);
                 }
                 else
                 {
-                    logCallback?.Invoke("[Server]: Invalid kick command format.");
+                    logger.Log("[Server]: Invalid kick command format.", LogType.Error);
                 }
             }
             else if (input.StartsWith("ban ", StringComparison.OrdinalIgnoreCase))
@@ -43,23 +48,25 @@ namespace ServerCommon
                 {
                     string reason = parts.Length == 3 ? parts[2] : "No reason provided";
                     bool banned = server.BanPlayer(id, reason);
-                    if(!banned)
-                    logCallback?.Invoke( $"Player {id} not found.");
+                    if (!banned)
+                        logger.Log($"Player {id} not found.", LogType.Warning);
+                    else
+                        logger.Log($"Player {id} banned. Reason: {reason}", LogType.Info);
                 }
                 else
                 {
-                    logCallback?.Invoke("[Server]: Invalid ban command format.");
+                    logger.Log("[Server]: Invalid ban command format.", LogType.Error);
                 }
             }
             else if (input.Equals("restart", StringComparison.OrdinalIgnoreCase))
             {
                 server.Restart();
-                logCallback?.Invoke("[Server]: Server restarted.");
+                logger.Log("[Server]: Server restarted.", LogType.Success);
             }
             else
             {
                 server.BroadcastChat(-1, input);
-                logCallback?.Invoke($"[Server]: {input}");
+                logger.Log($"[Server]: {input}", LogType.Normal);
             }
         }
     }
