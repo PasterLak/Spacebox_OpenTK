@@ -5,13 +5,13 @@ namespace ServerCommon
 {
     public class CommandProcessor
     {
-        private readonly ServerNetwork _server;
-        private readonly Action<string> _logCallback;
+        private readonly ServerNetwork server;
+        private readonly Action<string> logCallback;
         public Action OnClear;
         public CommandProcessor(ServerNetwork server, Action<string> logCallback)
         {
-            _server = server;
-            _logCallback = logCallback;
+            this.server = server;
+            this.logCallback = logCallback;
         }
 
         public void ProcessCommand(string input)
@@ -27,15 +27,12 @@ namespace ServerCommon
                 var parts = input.Split(' ');
                 if (parts.Length == 2 && int.TryParse(parts[1], out int id))
                 {
-                    bool kicked = _server.KickPlayer(id);
-                    if (kicked)
-                        _logCallback?.Invoke($"[Server]: Player {id} kicked.");
-                    else
-                        _logCallback?.Invoke($"[Server]: Player {id} not found.");
+                    bool kicked = server.KickPlayer(id);
+                    logCallback?.Invoke(kicked ? $"[Server]: Player {id} kicked." : $"[Server]: Player {id} not found.");
                 }
                 else
                 {
-                    _logCallback?.Invoke("[Server]: Invalid kick command format.");
+                    logCallback?.Invoke("[Server]: Invalid kick command format.");
                 }
             }
             else if (input.StartsWith("ban ", StringComparison.OrdinalIgnoreCase))
@@ -44,26 +41,23 @@ namespace ServerCommon
                 if (parts.Length >= 2 && int.TryParse(parts[1], out int id))
                 {
                     string reason = parts.Length == 3 ? parts[2] : "No reason provided";
-                    bool banned = _server.BanPlayer(id, reason);
-                    if (banned)
-                        _logCallback?.Invoke($"[Server]: Player {id} banned. Reason: {reason}");
-                    else
-                        _logCallback?.Invoke($"[Server]: Player {id} not found.");
+                    bool banned = server.BanPlayer(id, reason);
+                    logCallback?.Invoke(banned ? $"[Server]: Player {id} banned. Reason: {reason}" : $"[Server]: Player {id} not found.");
                 }
                 else
                 {
-                    _logCallback?.Invoke("[Server]: Invalid ban command format.");
+                    logCallback?.Invoke("[Server]: Invalid ban command format.");
                 }
             }
             else if (input.Equals("restart", StringComparison.OrdinalIgnoreCase))
             {
-                _server.Restart();
-                _logCallback?.Invoke("[Server]: Server restarted.");
+                server.Restart();
+                logCallback?.Invoke("[Server]: Server restarted.");
             }
             else
             {
-                _server.BroadcastChat(-1, input);
-                _logCallback?.Invoke($"[Server]: {input}");
+                server.BroadcastChat(-1, input);
+                logCallback?.Invoke($"[Server]: {input}");
             }
         }
     }

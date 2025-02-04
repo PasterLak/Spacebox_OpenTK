@@ -12,7 +12,7 @@ namespace ServerCommon
         {
             if (File.Exists(BanFilePath))
             {
-                if(bannedPlayers != null) bannedPlayers.Clear();
+                bannedPlayers.Clear();
                 string json = File.ReadAllText(BanFilePath);
                 bannedPlayers = JsonSerializer.Deserialize<List<PlayerBanned>>(json) ?? new List<PlayerBanned>();
             }
