@@ -1,6 +1,8 @@
 ﻿using ServerCommon;
 using SpaceNetwork;
+using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
@@ -48,7 +50,7 @@ namespace SpaceServerUI
                 }
                 LocalIpTextBlock.Text = $"Local IP: {localIP}";
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 LocalIpTextBlock.Text = "Local IP: Not found";
                 LogMessage($"[Server]: Error getting local IP: {ex.Message}");
@@ -194,7 +196,7 @@ namespace SpaceServerUI
         {
             Dispatcher.Invoke(() =>
             {
-                LogListBox.Items.Add($"{System.DateTime.Now:HH:mm:ss} - {message}");
+                LogListBox.Items.Add($"{DateTime.Now:HH:mm:ss} - {message}");
                 LogListBox.ScrollIntoView(LogListBox.Items[LogListBox.Items.Count - 1]);
                 if (message.Contains("connected") || message.Contains("disconnected") || message.Contains("kicked") || message.Contains("banned"))
                 {
@@ -224,7 +226,7 @@ namespace SpaceServerUI
                 {
                     Width = 15,
                     Height = 15,
-                    Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb((byte)(p.Color.X * 255), (byte)(p.Color.Y * 255), (byte)(p.Color.Z * 255))),
+                    Fill = new SolidColorBrush(Color.FromRgb((byte)(p.Color.X * 255), (byte)(p.Color.Y * 255), (byte)(p.Color.Z * 255))),
                     VerticalAlignment = VerticalAlignment.Center,
                     Margin = new Thickness(5, 0, 5, 0)
                 };
@@ -258,23 +260,29 @@ namespace SpaceServerUI
 
         private void CopyMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is MenuItem mi)
+            if (sender is MenuItem mi && mi.Parent is ContextMenu cm && cm.PlacementTarget is ListBoxItem lbi)
             {
-                if (mi.Parent is ContextMenu cm && cm.PlacementTarget is ListBoxItem lbi)
-                {
-                    Clipboard.SetText(lbi.Content.ToString());
-                }
+                string fullText = lbi.Content.ToString();
+                int index = fullText.IndexOf("]: ");
+                string textToCopy = index >= 0 ? fullText.Substring(index + 3) : (fullText.IndexOf(" - ") >= 0 ? fullText.Substring(fullText.IndexOf(" - ") + 3) : fullText);
+                Clipboard.SetText(textToCopy);
+            }
+        }
+
+        private void CopyFullMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem mi && mi.Parent is ContextMenu cm && cm.PlacementTarget is ListBoxItem lbi)
+            {
+                string fullText = lbi.Content.ToString();
+                Clipboard.SetText(fullText);
             }
         }
 
         private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is MenuItem mi)
+            if (sender is MenuItem mi && mi.Parent is ContextMenu cm && cm.PlacementTarget is ListBoxItem lbi)
             {
-                if (mi.Parent is ContextMenu cm && cm.PlacementTarget is ListBoxItem lbi)
-                {
-                    LogListBox.Items.Remove(lbi.Content);
-                }
+                LogListBox.Items.Remove(lbi.Content);
             }
         }
     }
