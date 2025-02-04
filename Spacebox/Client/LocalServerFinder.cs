@@ -1,5 +1,6 @@
 ﻿
 using Lidgren.Network;
+using SpaceNetwork;
 
 namespace Spacebox.Client
 {

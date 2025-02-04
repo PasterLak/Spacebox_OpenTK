@@ -1,6 +1,7 @@
 ﻿using Engine.SceneManagment;
 using Spacebox.Game.GUI;
 using Spacebox.Scenes;
+using SpaceNetwork;
 using static Spacebox.Game.Resources.GameSetLoader;
 
 namespace Spacebox.Client

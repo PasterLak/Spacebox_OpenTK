@@ -4,6 +4,7 @@ using ImGuiNET;
 using Engine;
 using Engine.Audio;
 using Spacebox.Client;
+using SpaceNetwork;
 
 namespace Spacebox.Game.GUI.Menu
 {

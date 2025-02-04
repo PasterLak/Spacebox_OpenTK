@@ -1,5 +1,6 @@
 ﻿
 using Spacebox.Client;
+using SpaceNetwork;
 
 namespace Spacebox.Game.GUI.Menu
 {

@@ -6,6 +6,7 @@ using ImGuiNET;
 using Engine;
 using Spacebox.Client;
 using static Spacebox.Game.Resources.GameSetLoader;
+using SpaceNetwork;
 
 namespace Spacebox.Game.GUI.Menu
 {
