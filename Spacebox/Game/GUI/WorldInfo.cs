@@ -14,6 +14,10 @@ public class WorldInfo
     public string FolderName { get; set; } = "";
     public bool ShowWelcomeWindow { get; set; } = true;
 
+    public bool IsLocalWorld = true;
+
+
+
     public static string GetCurrentDate()
     {
         return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

@@ -1,5 +1,4 @@
-﻿// File: ClientNetwork.cs
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +8,8 @@ using Lidgren.Network;
 using OpenTK.Mathematics;
 using SpaceNetwork;
 using SpaceNetwork.Messages;
+using SpaceNetwork.Utilities;
+using System.IO;
 
 namespace Client
 {
@@ -31,13 +32,17 @@ namespace Client
         public bool IsInitialized { get; private set; }
         public bool NameInUse { get; private set; }
         public bool IsConnected { get; private set; } = false;
+        public bool IsKicked { get; private set; }
+        public bool ZipDownloaded { get; private set; }
+        public bool ServerInfoReceived { get; private set; }
+        public ServerInfo ReceivedServerInfo { get; private set; }
+        public event Action OnServerInfoReceived;
+        public event Action OnZipDownloadStart;
+        public event Action OnZipDownloadComplete;
         public Action<ClientPlayer> OnPlayerJoined;
         public Action<ClientPlayer> OnPlayerLeft;
         public event Action<int, int, int> OnBlockDestroyed;
         public event Action<int, short, byte, short, short, short> OnBlockPlaced;
-
-        public bool IsKicked { get; private set; }
-
         public ClientNetwork(string appKey, string host, int port, string playerName)
         {
             Instance = this;
@@ -52,28 +57,21 @@ namespace Client
             StartBlockPlaceThread();
             IsKicked = false;
         }
-
         public void SendMessage(string message)
         {
             if (!string.IsNullOrEmpty(message))
                 chatQueue.Enqueue(message);
         }
-
         public void SendBlockDestroyed(short x, short y, short z)
         {
-            var msg = new BlockDestroyedMessage(localPlayerId,x,y,z);
-           
-          
+            var msg = new BlockDestroyedMessage(localPlayerId, x, y, z);
             blockDeletionQueue.Enqueue(msg);
         }
-
         public void SendBlockPlaced(short blockID, byte direction, short x, short y, short z)
         {
             var msg = new BlockPlaceMessage(localPlayerId, blockID, direction, x, y, z);
-           
             blockPlaceQueue.Enqueue(msg);
         }
-
         private void StartChatThread()
         {
             if (chatThread != null)
@@ -87,10 +85,7 @@ namespace Client
                     {
                         if (serverConnection != null)
                         {
-                            var m = new ChatMessage();
-                            m.SenderId = localPlayerId;
-                            m.SenderName = "";
-                            m.Text = chat;
+                            var m = new ChatMessage { SenderId = localPlayerId, SenderName = "", Text = chat };
                             var om = client.CreateMessage();
                             m.Write(om);
                             client.SendMessage(om, serverConnection, NetDeliveryMethod.ReliableOrdered);
@@ -103,7 +98,6 @@ namespace Client
             chatThread.IsBackground = true;
             chatThread.Start();
         }
-
         private void StartBlockDeletionThread()
         {
             if (blockDeletionThread != null)
@@ -129,7 +123,6 @@ namespace Client
             blockDeletionThread.IsBackground = true;
             blockDeletionThread.Start();
         }
-
         private void StartBlockPlaceThread()
         {
             if (blockPlaceThread != null)
@@ -155,25 +148,11 @@ namespace Client
             blockPlaceThread.IsBackground = true;
             blockPlaceThread.Start();
         }
-
-        public void StopChatThread()
-        {
-            chatRunning = false;
-        }
-
-        public void StopBlockDeletionThread()
-        {
-            blockDeletionRunning = false;
-        }
-
-        public void StopBlockPlaceThread()
-        {
-            blockPlaceRunning = false;
-        }
-
+        public void StopChatThread() => chatRunning = false;
+        public void StopBlockDeletionThread() => blockDeletionRunning = false;
+        public void StopBlockPlaceThread() => blockPlaceRunning = false;
         public void PollEvents()
         {
-            
             NetIncomingMessage msg;
             while ((msg = client.ReadMessage()) != null)
             {
@@ -189,7 +168,6 @@ namespace Client
                 client.Recycle(msg);
             }
         }
-
         private void HandleStatusChanged(NetIncomingMessage msg)
         {
             var newStatus = (NetConnectionStatus)msg.ReadByte();
@@ -212,7 +190,6 @@ namespace Client
                 IsConnected = false;
             }
         }
-
         private void HandleData(NetIncomingMessage msg)
         {
             var baseMsg = MessageFactory.CreateMessage(msg);
@@ -221,6 +198,12 @@ namespace Client
                 localPlayerId = im.Player.ID;
                 AddOrUpdatePlayer(im.Player);
                 IsInitialized = true;
+            }
+            else if (baseMsg is ServerInfoMessage sim)
+            {
+                ReceivedServerInfo = sim.Info;
+                ServerInfoReceived = true;
+                OnServerInfoReceived?.Invoke();
             }
             else if (baseMsg is PlayersMessage pm)
             {
@@ -261,8 +244,22 @@ namespace Client
                 if (bpm.senderID != localPlayerId)
                     OnBlockPlaced?.Invoke(bpm.senderID, bpm.blockID, bpm.GetDirection(), bpm.GetX(), bpm.GetY(), bpm.GetZ());
             }
+            else if (baseMsg is ZipMessage zm)
+            {
+                OnZipDownloadStart?.Invoke();
+                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                string targetDir = Path.Combine(baseDir, "Server", ReceivedServerInfo?.Name ?? "Unknown", "GameSet");
+                if (!Directory.Exists(targetDir))
+                    Directory.CreateDirectory(targetDir);
+                string tempZip = Path.Combine(targetDir, "download.zip");
+                File.WriteAllBytes(tempZip, zm.ZipData);
+                ZipHelper.UnzipData(zm.ZipData, targetDir);
+                File.Delete(tempZip);
+                ZipDownloaded = true;
+                OnZipDownloadComplete?.Invoke();
+                Debug.Log("Zip received and unpacked.");
+            }
         }
-
         private void AddOrUpdatePlayer(Player p)
         {
             if (clientPlayers.ContainsKey(p.ID))
@@ -274,19 +271,19 @@ namespace Client
                 OnPlayerJoined?.Invoke(cp);
             }
         }
-
         public void SendPosition(Vector3 pos, Quaternion rot)
         {
             if (serverConnection == null)
                 return;
-            var m = new Node3DMessage();
-            m.Position = new System.Numerics.Vector3(pos.X, pos.Y, pos.Z);
-            m.Rotation = new System.Numerics.Vector4(rot.X, rot.Y, rot.Z, rot.W);
+            var m = new Node3DMessage
+            {
+                Position = new System.Numerics.Vector3(pos.X, pos.Y, pos.Z),
+                Rotation = new System.Numerics.Vector4(rot.X, rot.Y, rot.Z, rot.W)
+            };
             var om = client.CreateMessage();
             m.Write(om);
             client.SendMessage(om, serverConnection, NetDeliveryMethod.Unreliable);
         }
-
         public void Disconnect(string reason)
         {
             client.Disconnect(reason);
@@ -295,7 +292,6 @@ namespace Client
             StopBlockPlaceThread();
             IsKicked = false;
         }
-
         public List<ClientPlayer> GetClientPlayers() => clientPlayers.Values.ToList();
         public int LocalPlayerId => localPlayerId;
     }

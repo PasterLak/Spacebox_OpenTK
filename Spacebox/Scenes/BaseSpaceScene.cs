@@ -49,16 +49,32 @@ namespace Spacebox.Scenes
         protected SimpleBlock block2;
         protected PointLight pLight;
 
+        private bool isMultiplayer = false;
+
         public BaseSpaceScene(string[] args) : base(args)
         {
-            // Устанавливаем цвет оверлея здоровья
+            if(this is MultiplayerScene)
+            {
+                isMultiplayer = true;
+            }
+
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 0), 1);
 
             // Обработка аргументов (worldName, modId, seed, modfolder)
             if (args.Length >= 4)
             {
                 worldName = args[0];
-                string modsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.Folder);
+
+
+                string serverName = "";
+
+                if(isMultiplayer)
+                {
+                    serverName = worldName;
+                }
+
+
+                string modsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,  ModPath.GetModsPath(isMultiplayer, serverName));
                 string blocksPath = Path.Combine(modsFolder, args[3], Globals.GameSet.Blocks);
                 string itemsPath = Path.Combine(modsFolder, args[3], Globals.GameSet.Items);
                 string emissionPath = Path.Combine(modsFolder, args[3], Globals.GameSet.Emissions);

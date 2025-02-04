@@ -61,7 +61,7 @@ namespace Spacebox.Scenes
             {
                 worldName = args[0];
 
-                string modsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.Folder);
+                string modsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.LocalFolder);
                 string blocksPath = Path.Combine(modsFolder, args[3], Globals.GameSet.Blocks);
                 string itemsPath = Path.Combine(modsFolder, args[3], Globals.GameSet.Items);
                 string emissionPath = Path.Combine(modsFolder, args[3], Globals.GameSet.Emissions);

@@ -4,7 +4,8 @@
     {
         public static class GameSet
         {
-            public const string Folder = "GameSets";
+            public const string LocalFolder = "GameSets";
+            public const string MultiplayerFolder = "Server";
             public const string Default = "Default";
             public const string Blocks = "Blocks";
             public const string Items = "Items";

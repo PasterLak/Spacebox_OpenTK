@@ -1,18 +1,14 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices.JavaScript;
 using System.Threading;
 using Client;
-using DryIoc;
 using Engine;
 using Engine.SceneManagment;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using Spacebox.Client;
 using Spacebox.Game;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
-using SpaceNetwork;
 using static Spacebox.Game.Resources.GameSetLoader;
 
 namespace Spacebox.Scenes
@@ -31,15 +27,14 @@ namespace Spacebox.Scenes
         private string[] sceneArgs;
         private ClientNetwork networkClient;
         private float timeToGoToMenu = 10f;
-
         private Camera player;
         private Skybox skybox;
-
         private Shader skyboxShader;
+        private bool readyToLaunch = false;
         public MultiplayerLoadScene(string[] args) : base(args)
         {
             sceneArgs = args;
-            if (args.Length >= 8) 
+            if (args.Length >= 8)
             {
                 appKey = args[4];
                 host = args[5];
@@ -53,24 +48,31 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
             player = new CameraBasic(new Vector3(0, 0, 0));
-
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader,
                 new SpaceTexture(512, 512, new Random()));
             skybox.IsAmbientAffected = false;
-
             Debug.Warning("Trying to connect to server...");
             CenteredText.SetText("Trying to connect to server...");
-
             ThreadPool.QueueUserWorkItem(_ =>
             {
                 try
                 {
                     networkClient = new ClientNetwork(appKey, host, port, playerName);
                     if (ClientNetwork.Instance == null)
-                    {
                         ClientNetwork.Instance = networkClient;
-                    }
+                    networkClient.OnServerInfoReceived += () =>
+                    {
+                        WriteInfo("Server information received...\n" + networkClient.ReceivedServerInfo.ToString());
+                    };
+                    networkClient.OnZipDownloadStart += () =>
+                    {
+                        WriteInfo("Starting loading mods...");
+                    };
+                    networkClient.OnZipDownloadComplete += () =>
+                    {
+                        WriteInfo("Mods loaded.");
+                    };
                     int attempts = 0;
                     while (!networkClient.IsConnected && attempts < 50)
                     {
@@ -86,9 +88,7 @@ namespace Spacebox.Scenes
                     connectionAttempted = true;
                 }
             });
-
         }
-
         public void WriteInfo(string text)
         {
             CenteredText.SetText(text);
@@ -99,17 +99,12 @@ namespace Spacebox.Scenes
             CenteredText.SetText(text);
             Debug.Error(text);
         }
-
-        public override void Start()
-        {
-           
-        }
+        public override void Start() { }
         bool error = false;
         public override void Update()
         {
             if (networkClient != null)
                 networkClient.PollEvents();
-
             float delta = Time.Delta;
             elapsedTime += delta;
             if (elapsedTime >= timeout && !connectionAttempted)
@@ -122,63 +117,64 @@ namespace Spacebox.Scenes
             {
                 if (connectionSuccessful)
                 {
-                    var world = new WorldInfo { Name = sceneArgs[0], ModId = sceneArgs[1], Seed = sceneArgs[2], FolderName = sceneArgs[3] };
-                    var modConfig = new ModConfig { ModId = sceneArgs[1], FolderName = sceneArgs[3] };
-                    var serverInfo = new ServerInfo();
-                    serverInfo.Name = sceneArgs[0];
-                    serverInfo.Port = port;
-                    serverInfo.IP = host;
-
-
-                    WriteInfo($"Connected to: {serverInfo.Name} host: {host} port: {port}");
-
-                    //SceneLauncher.LaunchMultiplayerGame(world, modConfig, serverInfo, playerName, appKey);
-                   
-                    SceneManager.LoadScene(typeof(MultiplayerScene), sceneArgs);
+                    if (!networkClient.ServerInfoReceived)
+                    {
+                        CenteredText.SetText("Waiting for server information...");
+                        return;
+                    }
+                    if (!networkClient.ZipDownloaded)
+                    {
+                        CenteredText.SetText("Loading mods...");
+                        return;
+                    }
+                    if (!readyToLaunch)
+                    {
+                        readyToLaunch = true;
+                       
+                        var serverInfo = new SpaceNetwork.ServerInfo
+                        {
+                            Name = networkClient.ReceivedServerInfo.Name,
+                            Description = networkClient.ReceivedServerInfo.Description,
+                            MaxPlayers = networkClient.ReceivedServerInfo.MaxPlayers
+                        };
+                        var world = new WorldInfo { Name = serverInfo.Name, ModId = sceneArgs[1], Seed = sceneArgs[2], FolderName = sceneArgs[3] };
+                        var modConfig = new ModConfig { ModId = sceneArgs[1], FolderName = sceneArgs[3] };
+                        WriteInfo($"Connected to: <{serverInfo.Name}> host: {host} port: {port}");
+                        SceneManager.LoadScene(typeof(MultiplayerScene), sceneArgs);
+                    }
                 }
                 else
                 {
-                    if (error == false)
+                    if (!error)
                     {
                         WriteError("Connection error: " + connectionError);
                         timeToGoToMenu = 3;
                         error = true;
                     }
-
                     timeToGoToMenu -= Time.Delta;
-
-                    if(timeToGoToMenu < 0)
+                    if (timeToGoToMenu < 0)
                     {
                         WriteError("Returning to Multiplayer Menu.");
                         ClientNetwork.Instance = null;
                         SceneManager.LoadScene(typeof(MenuScene));
-
                     }
-
                 }
             }
         }
-
         public override void Render()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
             skybox.DrawTransparent(player);
-           // spawner.Render();
         }
-
         public override void OnGUI()
         {
             CenteredText.Draw();
         }
-
         public override void UnloadContent()
         {
             CenteredText.Hide();
-
             skybox.Texture.Dispose();
-
             skyboxShader.Dispose();
-           
         }
     }
 }

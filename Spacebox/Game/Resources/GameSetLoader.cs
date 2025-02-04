@@ -11,7 +11,7 @@ namespace Spacebox.Game.Resources
         private static string modPath;
         public static void Load(string modId)
         {
-            string modsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.Folder);
+            string modsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.LocalFolder);
             string defaultModId = Globals.GameSet.Default.ToLower();
             string defaultModPath = Path.Combine(modsDirectory, Globals.GameSet.Default);
 

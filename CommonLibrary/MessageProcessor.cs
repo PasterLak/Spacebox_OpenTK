@@ -3,6 +3,8 @@ using SpaceNetwork.Messages;
 using Lidgren.Network;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 
 namespace ServerCommon
 {
@@ -35,11 +37,10 @@ namespace ServerCommon
                     break;
             }
         }
-
         private void ProcessStatusChanged(NetIncomingMessage msg)
         {
             var status = (NetConnectionStatus)msg.ReadByte();
-            msg.ReadString();
+            msg.ReadString(); // Чтение дополнительного текста
             if (status == NetConnectionStatus.Connected)
             {
                 var hail = msg.SenderConnection.RemoteHailMessage;
@@ -66,12 +67,44 @@ namespace ServerCommon
                 var newPlayer = playerManager.AddNewPlayer(chosenName);
                 connectionPlayers[msg.SenderConnection] = newPlayer;
                 logCallback?.Invoke($"{newPlayer.Name}[{newPlayer.ID}] connected");
+
                 var initMsg = new InitMessage { Player = newPlayer };
-                var outMsg = server.CreateMessage();
-                initMsg.Write(outMsg);
-                server.SendMessage(outMsg, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
+                var omInit = server.CreateMessage();
+                initMsg.Write(omInit);
+                server.SendMessage(omInit, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
+
+                // Отправка ServerInfoMessage
+                var serverInfoMsg = new ServerInfoMessage
+                {
+                    Info = new SpaceNetwork.ServerInfo
+                    {
+                        Name = Settings.Name,
+                        Description = Settings.Description,
+                        MaxPlayers = server.Configuration.MaximumConnections
+                    }
+                };
+                var omServerInfo = server.CreateMessage();
+                serverInfoMsg.Write(omServerInfo);
+                server.SendMessage(omServerInfo, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
+
                 serverNetwork.BroadcastPlayers();
                 serverNetwork.BroadcastChat(-1, $"{newPlayer.Name}[{newPlayer.ID}] connected");
+
+                // Захватим соединение в локальную переменную
+                var connection = msg.SenderConnection;
+                // Ждем 1 секунду, затем отправляем zip, если соединение всё ещё активно
+                ThreadPool.QueueUserWorkItem(_ =>
+                {
+                    Thread.Sleep(1000);
+                    if (connection != null && connection.Status == NetConnectionStatus.Connected)
+                    {
+                        SendZipToClient(connection);
+                    }
+                    else
+                    {
+                        logCallback?.Invoke("Recipient connection is null or not connected. Zip will not be sent.");
+                    }
+                });
             }
             else if (status == NetConnectionStatus.Disconnected)
             {
@@ -85,6 +118,41 @@ namespace ServerCommon
                 }
             }
         }
+
+
+
+        private void SendZipToClient(NetConnection connection)
+        {
+            if (connection == null || connection.Status != NetConnectionStatus.Connected)
+            {
+                logCallback?.Invoke("Recipient connection is null or not connected. Zip will not be sent.");
+                return;
+            }
+            try
+            {
+                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                string folderToZip = System.IO.Path.Combine(baseDir, "GameSet", Settings.GameSetFolder);
+                if (!System.IO.Directory.Exists(folderToZip))
+                {
+                    logCallback?.Invoke("GameSet folder not found: " + folderToZip);
+                    return;
+                }
+                byte[] zipData = ZipManager.CreateZipFromFolder(folderToZip);
+                var zipMsg = new ZipMessage
+                {
+                    ZipData = zipData
+                };
+                var omZip = server.CreateMessage();
+                zipMsg.Write(omZip);
+                server.SendMessage(omZip, connection, NetDeliveryMethod.ReliableOrdered);
+                logCallback?.Invoke("Zip sent to client: " + connection.RemoteEndPoint);
+            }
+            catch (Exception ex)
+            {
+                logCallback?.Invoke("Error sending zip: " + ex.Message);
+            }
+        }
+
 
         private void ProcessData(NetIncomingMessage msg)
         {
