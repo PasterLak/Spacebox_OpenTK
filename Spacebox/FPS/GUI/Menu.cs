@@ -65,7 +65,7 @@ namespace Spacebox.FPS.GUI
             ImGui.SetCursorPosX(xOffset);
             if (ImGui.Button("Load Space Scene", new Vector2(buttonWidth, buttonHeight)))
             {
-                SceneManager.LoadScene(typeof(SpaceScene));
+                SceneManager.LoadScene(typeof(OldSpaceScene));
             }
 
             ImGui.Spacing();

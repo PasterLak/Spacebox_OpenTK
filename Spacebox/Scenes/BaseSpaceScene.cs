@@ -151,10 +151,9 @@ namespace Spacebox.Scenes
             PanelUI.Player = localPlayer;
             SceneGraph.AddRoot(localPlayer);
 
-            // Загрузка мира
             World.LoadWorldInfo(worldName);
             world = new World(localPlayer);
-            localPlayer.GameMode = World.Data.Info.GameMode;
+          
             PlayerSaveLoadManager.LoadPlayer(localPlayer, World.Data.WorldFolderPath);
             CollisionManager.Add(localPlayer);
 
@@ -178,6 +177,7 @@ namespace Spacebox.Scenes
             // Загрузка шейдера блоков, текстур и установка uniform-параметров
             blocksShader = ShaderManager.GetShader("Shaders/block");
             pointLightsPool = new PointLightsPool(blocksShader, localPlayer, 64);
+            localPlayer.GameMode = World.Data.Info.GameMode;
             blockTexture = GameBlocks.BlocksTexture;
             lightAtlas = GameBlocks.LightAtlas;
             blocksShader.Use();

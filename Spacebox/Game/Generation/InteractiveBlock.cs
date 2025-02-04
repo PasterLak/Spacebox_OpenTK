@@ -3,6 +3,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resources;
 using Engine;
+using Spacebox.GUI;
 namespace Spacebox.Game.Generation
 {
     public class InteractiveBlock : Block
@@ -11,7 +12,7 @@ namespace Spacebox.Game.Generation
         public Keys KeyToUse { get; private set; } = Keys.F;
         public const byte InteractionDistance = 3;
         public const byte InteractionDistanceSquared = (InteractionDistance * InteractionDistance);
-        public string HoverText = "Hover Text";
+        public string HoverText = "Press RMB to use";
 
         public Action<Astronaut> OnUse;
         public Chunk chunk;
@@ -20,8 +21,45 @@ namespace Spacebox.Game.Generation
         public Vector3 colorIfActive = new Vector3(0.7f, 0.4f, 0.2f) / 4f;
         public virtual void Use(Astronaut player)
         {
+            CenteredText.SetText(HoverText);
             OnUse?.Invoke(player);
         }
+
+        private void OnHovered()
+        {
+            CenteredText.SetText(HoverText);
+            CenteredText.Show();
+        }
+
+        private void OnNotHovered()
+        {
+
+            CenteredText.Hide();
+        }
+
+        public static void UpdateInteractive(InteractiveBlock block, Astronaut player, Chunk chunk, Vector3 hitPos)
+        {
+            var disSq = Vector3.DistanceSquared(player.Position, hitPos);
+
+            if (disSq > InteractionDistanceSquared)
+            {
+                block.OnNotHovered();
+            }
+            else
+            {
+                block.OnHovered();
+                if (ToggleManager.OpenedWindowsCount == 0)
+                {
+                    if (Input.IsMouseButtonDown(MouseButton.Right))
+                    {
+                        block.chunk = chunk;
+                        block.Use(player);
+
+                    }
+                }
+            }
+        }
+
 
         public InteractiveBlock(BlockData blockData) : base(blockData)
         {
@@ -34,33 +72,33 @@ namespace Spacebox.Game.Generation
 
             if (state)
             {
-              //  LightLevel = 15;
-              //  LightColor = colorIfActive;
+                //  LightLevel = 15;
+                //  LightColor = colorIfActive;
 
             }
             else
             {
-              //  LightLevel = 0;
-               // LightColor = Vector3.Zero;
+                //  LightLevel = 0;
+                // LightColor = Vector3.Zero;
             }
         }
         public void SetEmission(bool state)
         {
 
             EnableEmission = state;
-            
-            if(chunk != null && EnableEmission != lasState)
+
+            if (chunk != null && EnableEmission != lasState)
             {
                 if (state)
                 {
-                   // LightLevel = 15;
+                    // LightLevel = 15;
                     //    LightColor = colorIfActive;
-                    
+
                 }
                 else
                 {
-                  //  LightLevel = 0;
-                  //  LightColor = Vector3.Zero;
+                    //  LightLevel = 0;
+                    //  LightColor = Vector3.Zero;
                 }
                 chunk.GenerateMesh();
             }

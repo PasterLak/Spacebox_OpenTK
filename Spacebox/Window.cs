@@ -5,7 +5,6 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
 using Spacebox.Scenes;
-using System.Collections.Concurrent;
 using Engine.Audio;
 using Engine.SceneManagment;
 
@@ -105,6 +104,9 @@ namespace Spacebox
 
             screenShotAudio = new AudioSource(SoundManager.AddPermanentClip("screenshot"));
             // ToggleFullScreen();
+
+            CenterWindow();
+            MinimumSize = new Vector2i(640, 360);
         }
 
         private static AudioSource screenShotAudio;

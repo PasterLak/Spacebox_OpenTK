@@ -366,14 +366,14 @@ public class MovementMode : GameModeBase
 
             if (damage > 5)
             {
-                SpaceScene.DeathOn = false;
+                OldSpaceScene.DeathOn = false;
                 flySpeedUpAudio.Stop();
                 BlackScreenOverlay.IsEnabled = true;
                 ToggleManager.SetState("player", false);
                 Settings.ShowInterface = false;
 
-                SpaceScene.Death.Play();
-                SpaceScene.DeathOn = true;
+                OldSpaceScene.Death.Play();
+                OldSpaceScene.DeathOn = true;
             }
 
 

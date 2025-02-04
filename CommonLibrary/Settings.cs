@@ -1,6 +1,6 @@
 ﻿
 
-namespace CommonLibrary
+namespace ServerCommon
 {
     public static class Settings
     {

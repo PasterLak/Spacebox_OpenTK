@@ -1,4 +1,4 @@
-﻿namespace CommonLibrary
+﻿namespace ServerCommon
 {
     public class CommandProcessor
     {

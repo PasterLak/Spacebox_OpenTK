@@ -8,7 +8,7 @@ using Lidgren.Network;
 using SpaceNetwork;
 using SpaceNetwork.Messages;
 
-namespace CommonLibrary
+namespace ServerCommon
 {
     public class ServerNetwork
     {

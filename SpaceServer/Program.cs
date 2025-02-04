@@ -1,5 +1,5 @@
 ﻿
-using CommonLibrary;
+using ServerCommon;
 using SpaceNetwork;
 
 namespace SpaceServer

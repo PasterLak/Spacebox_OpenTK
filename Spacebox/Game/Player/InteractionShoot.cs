@@ -241,7 +241,7 @@ public class InteractionShoot : InteractionMode
             if (hit.block.Is<InteractiveBlock>(out var b))
             {
                 lastInteractiveBlock = b;
-                UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
+                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
             }
             else
             {
@@ -328,28 +328,7 @@ public class InteractionShoot : InteractionMode
 
     }
 
-    private void UpdateInteractive(InteractiveBlock block, Astronaut player, Chunk chunk, Vector3 hitPos)
-    {
-        var disSq = Vector3.DistanceSquared(player.Position, hitPos);
-
-        if (disSq > InteractiveBlock.InteractionDistanceSquared)
-        {
-            CenteredText.Hide();
-        }
-        else
-        {
-            CenteredText.Show();
-            if (ToggleManager.OpenedWindowsCount == 0)
-            {
-                if (Input.IsMouseButtonDown(MouseButton.Right))
-                {
-                    block.chunk = chunk;
-                    block.Use(player);
-
-                }
-            }
-        }
-    }
+    
 
     private void DestroyBlock(HitInfo hit)
     {

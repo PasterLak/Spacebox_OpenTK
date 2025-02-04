@@ -57,8 +57,8 @@ namespace Spacebox.Game.GUI
 
             ImGui.Begin("TagWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground |
                                      ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize |
-                                     ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNavFocus
-                                     | ImGuiWindowFlags.NoBringToFrontOnFocus);
+                                     ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNavFocus |
+                                     ImGuiWindowFlags.NoBringToFrontOnFocus);
 
             foreach (var tag in _tags)
             {
@@ -66,21 +66,15 @@ namespace Spacebox.Game.GUI
                 if (screenPosNullable.HasValue)
                 {
                     Vector2 screenPos = screenPosNullable.Value;
-
-
                     if (screenPos.X > 0 && screenPos.X <= screenWidth &&
                         screenPos.Y > 0 && screenPos.Y <= screenHeight)
                     {
                         var textSize = ImGui.CalcTextSize(tag.Text);
-
                         ImGui.SetCursorPos(tag.GetTextPosition(screenPos.ToSystemVector2(), textSize));
-                       // ImGui.PushStyleColor(ImGuiCol.Text, tag.Color.ToSystemVector4());
-                        //ImGui.TextUnformatted(tag.Text );
-                       
-                       // ImGui.PopStyleColor();
                         var drawList = ImGui.GetWindowDrawList();
-
-                        drawList.AddText(LoadFont(), tag.FontSize, ImGui.GetCursorPos(), tag.ColorUint,  tag.Text);
+                        float distance = (camera.Position - tag.WorldPosition).Length;
+                        float newFontSize = Tag.CalculateFontSize(distance);
+                        drawList.AddText(LoadFont(), newFontSize, ImGui.GetCursorPos(), tag.ColorUint, tag.Text);
                     }
                 }
             }
@@ -88,16 +82,14 @@ namespace Spacebox.Game.GUI
             ImGui.End();
         }
 
-        public static void OnResized(Vector2 screenPos)
+        public static void OnResized(Vector2 screenSize)
         {
-          
-            Tag.SetFontSizes(screenPos);
+            Tag.SetFontSizes(screenSize);
         }
 
         private static ImFontPtr LoadFont()
         {
             var io = ImGui.GetIO();
-
             return io.FontDefault;
         }
     }

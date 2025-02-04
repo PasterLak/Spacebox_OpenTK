@@ -431,7 +431,7 @@ namespace Spacebox.Game.Generation
             {
                 var dis = (int)Vector3.Distance(CenterOfMass, camera.Position);
 
-                tag.SetFontSizeFromDistance(dis);
+                Tag.CalculateFontSize(dis);
 
                 if (VisualDebug.Enabled)
                 {

@@ -283,7 +283,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
             }
 
             if (Vector3.DistanceSquared(hit.position, player.Position) <= 3 * 3)
-                UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
+                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
         }
         else
         {
@@ -308,32 +308,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         }
     }
 
-    private void UpdateInteractive(InteractiveBlock block, Astronaut player, Chunk chunk, Vector3 hitPos)
-    {
-        var disSq = Vector3.DistanceSquared(player.Position, hitPos);
 
-        if (disSq > InteractiveBlock.InteractionDistanceSquared)
-        {
-            CenteredText.Hide();
-        }
-        else
-        {
-            CenteredText.Show();
-            if (ToggleManager.OpenedWindowsCount == 0)
-            {
-                if (Input.IsMouseButtonDown(MouseButton.Right))
-                {
-                    block.chunk = chunk;
-                    block.Use(player);
-
-                }
-            }
-        }
-
-
-
-
-    }
 
     private void PickDestroySound(short blockId)
     {

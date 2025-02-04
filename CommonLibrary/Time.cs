@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CommonLibrary;
+namespace ServerCommon;
 public static class Time
 {
 

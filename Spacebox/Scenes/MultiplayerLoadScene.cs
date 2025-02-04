@@ -6,8 +6,10 @@ using Client;
 using DryIoc;
 using Engine;
 using Engine.SceneManagment;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Spacebox.Client;
+using Spacebox.Game;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
 
@@ -29,6 +31,11 @@ namespace Spacebox.Scenes
         private string[] sceneArgs;
         private ClientNetwork networkClient;
         private float timeToGoToMenu = 10f;
+
+        private Camera player;
+        private Skybox skybox;
+
+        private Shader skyboxShader;
         public MultiplayerLoadScene(string[] args) : base(args)
         {
             sceneArgs = args;
@@ -45,6 +52,13 @@ namespace Spacebox.Scenes
         }
         public override void LoadContent()
         {
+            player = new CameraBasic(new Vector3(0, 0, 0));
+
+            skyboxShader = ShaderManager.GetShader("Shaders/skybox");
+            skybox = new Skybox("Resources/Models/cube.obj", skyboxShader,
+                new SpaceTexture(512, 512, new Random()));
+            skybox.IsAmbientAffected = false;
+
             Debug.Warning("Trying to connect to server...");
             CenteredText.SetText("Trying to connect to server...");
 
@@ -145,8 +159,9 @@ namespace Spacebox.Scenes
 
         public override void Render()
         {
-
-
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            skybox.DrawTransparent(player);
+           // spawner.Render();
         }
 
         public override void OnGUI()
@@ -157,6 +172,11 @@ namespace Spacebox.Scenes
         public override void UnloadContent()
         {
             CenteredText.Hide();
+
+            skybox.Texture.Dispose();
+
+            skyboxShader.Dispose();
+           
         }
     }
 }

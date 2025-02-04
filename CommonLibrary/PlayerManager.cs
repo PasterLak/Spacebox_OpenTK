@@ -2,7 +2,7 @@
 using SpaceNetwork.Utilities;
 using System.Numerics;
 
-namespace CommonLibrary;
+namespace ServerCommon;
 public class PlayerManager
 {
     private Dictionary<int, Player> players = new Dictionary<int, Player>();

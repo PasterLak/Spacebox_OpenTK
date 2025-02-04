@@ -75,7 +75,7 @@ namespace Spacebox.Scenes
 
             if (Input.IsKeyDown(Keys.G))
             {
-                SceneManager.LoadScene(typeof(SpaceScene));
+                SceneManager.LoadScene(typeof(OldSpaceScene));
             }
 
             if (Input.IsKeyDown(Keys.R))

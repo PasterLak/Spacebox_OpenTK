@@ -39,7 +39,7 @@ public class InteractionDefault : InteractionMode
                 return;
             }
 
-            UpdateInteractive(interactiveBlock, player, hit.chunk);
+            InteractiveBlock.UpdateInteractive(interactiveBlock, player, hit.chunk, hit.position);
         }
         else
         {
@@ -47,22 +47,4 @@ public class InteractionDefault : InteractionMode
         }
     }
 
-    private void UpdateInteractive(InteractiveBlock block, Astronaut player, Chunk chunk)
-    {
-
-        CenteredText.Show();
-
-        if (ToggleManager.OpenedWindowsCount == 0)
-        {
-            if (Input.IsMouseButtonDown(MouseButton.Right))
-            {
-                block.chunk = chunk;
-                block.Use(player);
-
-            }
-        }
-
-
-
-    }
 }

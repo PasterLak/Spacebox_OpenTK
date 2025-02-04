@@ -50,6 +50,8 @@ namespace Spacebox.Game.Player
             tex.UpdateTexture(true);
             spacer = new Model("Resources/Models/astronaut2.obj", new Material(playerShader, tex));
             tag = new GUI.Tag($"[{playerData.ID}]{playerData.Name}", LatestPosition, new Color4(playerData.Color.X, playerData.Color.Y, playerData.Color.Z, 1));
+            tag.TextAlignment = Tag.Alignment.Center;
+            Tag.CalculateFontSize(100);
             TagManager.RegisterTag(tag);
             itemModelShader = ShaderManager.GetShader("Shaders/itemModel");
             var uvIndex = GameBlocks.AtlasItems.GetUVIndexByName("drill1");

@@ -35,6 +35,7 @@ Alpha ToDo:
 
 - fix drill model moving if drop taken 
 - fix drill light if drop taken
+- fix weapon sphere dissepeare if switch item
 
 - flashlight better sound ?
 - random creepy sounds ?

@@ -23,7 +23,7 @@ using Spacebox.GUI;
 
 namespace Spacebox.Scenes
 {
-    public class SpaceScene : Scene
+    public class OldSpaceScene : Scene
     {
         private Astronaut player;
         private Skybox skybox;
@@ -53,7 +53,7 @@ namespace Spacebox.Scenes
         private PointLightsPool pointLightsPool;
         private SphereRenderer sphereRenderer;
 
-        public SpaceScene(string[] args) : base(args) // name mod seed modfolder
+        public OldSpaceScene(string[] args) : base(args) // name mod seed modfolder
         {
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 0), 1);
 

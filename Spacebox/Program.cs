@@ -26,7 +26,8 @@ namespace Spacebox
 
                 // ClientSize = new Vector2i(monitor.HorizontalResolution, monitor.VerticalResolution),
                 ClientSize = new Vector2i(1280, 720),
-                Location = new Vector2i((int)(monitor.HorizontalResolution / 2f), (int)(monitor.VerticalResolution / 2f)),
+                Size =  new Vector2i(1280, 720),
+                Location = new Vector2i((int)(monitor.HorizontalResolution / 2f - (1280/2f)), (int)(monitor.VerticalResolution / 2f -(720 / 2f))),
                 Title = "Spacebox",
                 APIVersion = new Version(3, 3),
                 // This is needed to run on macos

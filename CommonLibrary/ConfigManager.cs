@@ -1,7 +1,7 @@
 ﻿using SpaceNetwork;
 
 
-namespace CommonLibrary
+namespace ServerCommon
 {
     public static class ConfigManager
     {

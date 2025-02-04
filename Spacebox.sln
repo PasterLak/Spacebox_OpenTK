@@ -15,9 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpaceNetwork", "SpaceNetwor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpaceServer", "SpaceServer\SpaceServer.csproj", "{F3B2AE0F-BBE1-4E2F-82E7-C0041CC6294E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceServerUI", "SpaceServerUI\SpaceServerUI.csproj", "{5EF01B76-0A3A-4AF1-938F-A6D2684C126F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpaceServerUI", "SpaceServerUI\SpaceServerUI.csproj", "{5EF01B76-0A3A-4AF1-938F-A6D2684C126F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonLibrary", "CommonLibrary\CommonLibrary.csproj", "{73E77480-3BA4-4BCD-AD4C-D61000D724A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerCommon", "CommonLibrary\ServerCommon.csproj", "{73E77480-3BA4-4BCD-AD4C-D61000D724A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

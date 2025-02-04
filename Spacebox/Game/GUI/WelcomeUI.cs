@@ -108,7 +108,7 @@ namespace Spacebox.Game.GUI
             ImGui.BeginChild("TextBlock", new Vector2(textBlockWidth, textBlockWidth / 2f));
             ImGui.TextWrapped(
             "The game is still in development and, unfortunately, has many bugs and incomplete features.\r\n\r\n" +
-            "If you find any bugs, please be sure to let me know!" +
+            "If you find any bugs, please be sure to let me know!\n\nPress F6  to see the controls." +
             "\r\n\r\nEnjoy the game!");
             ImGui.EndChild();
 
