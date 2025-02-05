@@ -7,6 +7,7 @@ using Engine.Audio;
 using Spacebox.Game.GUI;
 using Spacebox.Game;
 using Spacebox.Game.GUI.Menu;
+using ImGuiNET;
 
 namespace Spacebox.Scenes
 {
@@ -116,11 +117,17 @@ namespace Spacebox.Scenes
         public override void OnGUI()
         {
             Theme.ApplySpaceboxTheme();
+           // ImFontPtr myFont = ImGui.GetIO().Fonts.Fonts[1];
+
+            // Перед выводом UI-элементов переключаемся на нужный шрифт
+           // ImGui.PushFont(myFont);
             Input.ShowCursor();
             CenteredImageMenu.Draw();
             HealthColorOverlay.Render();
             VerticalLinks.Draw();
             menu.Render();
+
+           // ImGui.PopFont();
         }
 
         public override void UnloadContent()

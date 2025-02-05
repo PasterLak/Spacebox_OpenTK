@@ -25,6 +25,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
     private Block? lastBlock = null;
 
+   
     private ItemSlot selectedItemSlot;
     private AnimatedItemModel model;
     public static BlockMiningEffect BlockMiningEffect;
@@ -84,7 +85,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         if (BlockSelector.Instance != null)
             BlockSelector.Instance.SimpleBlock.Shader.SetVector4("color", Vector4.One);
         BlockSelector.IsVisible = false;
-
+        model.Animator.Clear();
         model.Animator.AddAnimation(new MoveAnimation(model.Position, model.Position + new Vector3(0.005f, 0, 0), 0.05f, true));
     }
 
@@ -95,6 +96,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         selectedItemSlot = null;
         //BlockMiningEffect.Enabled = false;
         CenteredText.Hide();
+        model?.SetAnimation(false);
         model.Animator.Clear();
 
         PointLightsPool.Instance.PutBack(light);
@@ -230,6 +232,11 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 BlockMiningEffect.Enabled = true;
                 BlockMiningEffect.ParticleSystem.Position = hit.position + new Vector3(hit.normal.X, hit.normal.Y, hit.normal.Z) * 0.05f;
                 BlockMiningEffect.Update();
+
+                if(model!= null && !model.Animator.IsActive)
+                {
+                    model.SetAnimation(true);
+                }
 
                 if(!light.IsActive)
                 {

@@ -175,9 +175,10 @@ namespace ServerCommon
                 var om = server.CreateMessage();
                 km.Write(om);
                 server.SendMessage(om, target, NetDeliveryMethod.ReliableOrdered);
-                target.Disconnect("Banned");
                 logger.Log($"Player {playerId} ({banned.Name}) ({banned.IPAddress}) was banned. Reason: {reason}", LogType.Warning);
                 BroadcastChat(-1, $"Player {playerId} ({connectionPlayers[target].Name}) was banned. Reason: {reason}");
+                target.Disconnect("Banned");
+                
                 connectionPlayers.Remove(target);
                 playerManager.RemovePlayer(playerId);
                 BroadcastPlayers();

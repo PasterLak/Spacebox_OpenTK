@@ -23,6 +23,9 @@ namespace SpaceServerUI
         {
             InitializeComponent();
             SetLocalIp();
+            var bgBrush = (Brush)this.TryFindResource("PrimaryBackgroundBrush");
+            System.Diagnostics.Debug.WriteLine(bgBrush);
+
             LoadConfig();
 
         }
@@ -61,7 +64,7 @@ namespace SpaceServerUI
         private void LoadConfig()
         {
             ConfigManager.LoadConfig();
-            Title = "Server: " + Settings.Name;
+            Title = "Server control panel";
             PortTextBlock.Text = $"Port: {Settings.Port}";
             KeyTextBlock.Text = $"Key: {Settings.Key}";
             NameTextBlock.Text = Settings.Name;
@@ -92,7 +95,7 @@ namespace SpaceServerUI
             PlayersHeaderTextBlock.Text = $"Players online: 0/0";
             _server?.Stop();
             _serverStarted = false;
-            StopButton.Visibility = Visibility.Collapsed;
+            StopButton.Visibility = Visibility.Hidden;
             StartRestartButton.Content = "Start Server";
             StartRestartButton.Background = Brushes.Green;
             LogMessage("[Server]: Server stopped.", LogType.Warning);

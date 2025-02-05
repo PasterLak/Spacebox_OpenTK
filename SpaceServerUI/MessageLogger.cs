@@ -34,7 +34,7 @@ namespace SpaceServerUI
                 case LogType.Info:
                     return new SolidColorBrush(Color.FromRgb(255, 170, 0));
                 default:
-                    return Brushes.Black;
+                    return Brushes.White;
             }
         }
     }

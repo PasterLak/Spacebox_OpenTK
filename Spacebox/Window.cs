@@ -48,6 +48,45 @@ namespace Spacebox
             // UpdateFrequency = 9999;
         }
 
+        public static unsafe void LoadStarPixelFont(float fontSize = 16.0f)
+        {
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            string fontPath = Path.Combine(basePath, "Resources", "StarPixel.ttf");
+
+            if (!File.Exists(fontPath))
+            {
+                Console.WriteLine($"Font file not found: {fontPath}");
+                return;
+            }
+
+            ImGuiIOPtr io = ImGui.GetIO();
+
+            // Создаем конфигурацию шрифта без блока using, так как ImFontConfigPtr не реализует IDisposable
+            ImFontConfigPtr config = new ImFontConfigPtr(ImGuiNative.ImFontConfig_ImFontConfig());
+            config.OversampleH = 1;   // Отключаем горизонтальный оверсемплинг
+            config.OversampleV = 1;   // Отключаем вертикальный оверсемплинг
+            config.PixelSnapH = true; // Привязываем к пиксельной сетке
+
+            io.Fonts.AddFontFromFileTTF(fontPath, fontSize, config);
+
+
+            io.Fonts.GetTexDataAsRGBA32(out byte* pixels, out int width, out int height, out int bytesPerPixel);
+
+            int fontTexture;
+            GL.GenTextures(1, out fontTexture);
+            GL.BindTexture(TextureTarget.Texture2D, fontTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0,
+                          PixelFormat.Rgba, PixelType.UnsignedByte, new IntPtr(pixels));
+
+            // Устанавливаем Nearest фильтрацию для пиксельного вида
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+
+            io.Fonts.SetTexID((IntPtr)fontTexture);
+        }
+
+
+
         protected override void OnLoad()
         {
             base.OnLoad();
@@ -62,9 +101,9 @@ namespace Spacebox
             FrameLimiter.IsRunning = true;
 
             SceneManager.Initialize(this, typeof(LogoScene));
-
+          
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
-
+            LoadStarPixelFont();
             //ThemeUIEngine.ApplyDarkTheme();
 
             if (Application.Platform == Application.PlatformName.OSX)
@@ -77,7 +116,7 @@ namespace Spacebox
             }
             // InputManager.AddAction("debug", Keys.GraveAccent, true); // 161 mac
             //InputManager.RegisterCallback("debug", () => { Debug.ToggleVisibility(); });
-
+          
             InputManager.AddAction("overlay", Keys.F3, true);
             InputManager.RegisterCallback("overlay", () => { Overlay.IsVisible = !Overlay.IsVisible; });
 
@@ -104,8 +143,11 @@ namespace Spacebox
 
             screenShotAudio = new AudioSource(SoundManager.AddPermanentClip("screenshot"));
             // ToggleFullScreen();
-
+            
             CenterWindow();
+
+          
+
             MinimumSize = new Vector2i(640, 360);
         }
 

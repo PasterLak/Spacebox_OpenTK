@@ -1,13 +1,18 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-	<Color x:Key="PrimaryBackgroundColor">#FF1E1E1E</Color>
-	<Color x:Key="SecondaryBackgroundColor">#FF252526</Color>
+    <Color x:Key="PrimaryBackgroundColor">#ff39393c</Color>
+    <Color x:Key="SecondaryBackgroundColor">#FF474749</Color>
 	<Color x:Key="PrimaryForegroundColor">#FFDADADA</Color>
-	<Color x:Key="InputBackgroundColor">#FFd9d9d9</Color>
+    <Color x:Key="InputBackgroundColor">#FFdbe1f0</Color>
 	<Color x:Key="InputForegroundColor">#FF000000</Color>
-	<Color x:Key="AccentColor">#FF007ACC</Color>
-	<Color x:Key="AccentButton">#FF99d005</Color>
-	<Color x:Key="BorderColor">#FFebd005</Color>
+    <Color x:Key="AccentColor">#fff9d476</Color>
+    <Color x:Key="AccentButton">#FFe0c323</Color>
+    <Color x:Key="BorderColor">#FF545454</Color>
+
+    <SolidColorBrush x:Key="Button" Color="#fff4ba1a"/>
+    <SolidColorBrush x:Key="ButtonHovered" Color="#FFC1BC4C"/>
+
+    
 	<SolidColorBrush x:Key="PrimaryBackgroundBrush" Color="{StaticResource PrimaryBackgroundColor}" />
 	<SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="{StaticResource SecondaryBackgroundColor}" />
 	<SolidColorBrush x:Key="PrimaryForegroundBrush" Color="{StaticResource PrimaryForegroundColor}" />
@@ -55,7 +60,7 @@
 
 
     <Style TargetType="Button">
-        <Setter Property="Background" Value="#FFeba900" />
+        <Setter Property="Background" Value="{StaticResource Button}" />
         <Setter Property="Foreground" Value="{StaticResource PrimaryForegroundBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
@@ -69,7 +74,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{StaticResource AccentBrushButton}" />
+                            <Setter Property="Background" Value="{StaticResource ButtonHovered}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter Property="Background" Value="{StaticResource PrimaryBackgroundBrush}" />
