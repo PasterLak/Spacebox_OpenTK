@@ -33,19 +33,9 @@ Alpha ToDo:
 
 - fix ticks count for recipes
 
-- fix drill model moving if drop taken 
-- fix drill light if drop taken
+
 - fix weapon sphere dissepeare if switch item
 
-- flashlight better sound ?
-- random creepy sounds ?
-
-Mods ToDo:
-
-
-- move lighting up
-
--
 
 
 Done:
@@ -58,6 +48,8 @@ Done:
 - fix place from another chunk
 - open blocks with a weapon in the hand
 - disassembler more recipes
+- fix drill model moving if drop taken 
+- fix drill light if drop taken
 
 - items textures can have subfolders
 - blocks textures can have subfolders

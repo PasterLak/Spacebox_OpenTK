@@ -245,7 +245,11 @@
             ]
         },
         {
-            "Product": {"Item": "Uranium", "Quantity": 1},
+            "Product": {"Item": "Uranium Rods", "Quantity": 2},
+            "Ingredients": [{"Item": "Uranium Ingot", "Quantity": 1}]
+        },
+         {
+            "Product": {"Item": "Uranium Rods", "Quantity": 2},
             "Ingredients": [{"Item": "Uranium Ingot", "Quantity": 1}]
         },
         {
@@ -300,17 +304,29 @@
             "Ingredients": [
                 {"Item": "Iron Drill", "Quantity": 3},
                 {"Item": "Iron Drill Bit", "Quantity": 3},
-                {"Item": "Energy Cell", "Quantity": 6}
+                {"Item": "Energy Cell", "Quantity": 4}
                             
             ]
         },
          {
             "Product": {"Item": "Titanium Drill", "Quantity": 1},
             "Ingredients": [
-                 {"Item": "Triple Iron Drill", "Quantity": 1},
+               
                   {"Item": "Titanium Drill Bit", "Quantity": 4},
-                            {"Item": "Titanium Ingot", "Quantity": 5},
-                            {"Item": "Liquid Hydrogen", "Quantity": 1}
+                            {"Item": "Titanium Ingot", "Quantity": 6},
+                            {"Item": "Liquid Hydrogen", "Quantity": 4},
+                             {"Item": "Uranium Rods", "Quantity": 2}
+                           
+            ]
+        },
+          {
+            "Product": {"Item": "Ponium Drill", "Quantity": 1},
+            "Ingredients": [
+                 {"Item": "Titanium Drill", "Quantity": 1},
+               {"Item": "Uranium Rods", "Quantity": 4},
+                {"Item": "Ponium Ingot", "Quantity": 4},
+                 {"Item": "Liquid Hydrogen", "Quantity": 8}
+                           
                            
             ]
         },
@@ -338,9 +354,42 @@
             "Ingredients": [
                 
                  {"Item": "Iron Ingot", "Quantity": 2},
-                 {"Item": "Titanium Ingot", "Quantity": 2},
+                 {"Item": "Uranium Ingot", "Quantity": 2},
                  {"Item": "Iron Lens", "Quantity": 4},
                  {"Item": "Energy Cell", "Quantity": 8}
+                           
+            ]
+        },
+           {
+            "Product": {"Item": "Assault Rifle", "Quantity": 1},
+            "Ingredients": [
+                
+                 {"Item": "Iron Ingot", "Quantity": 2},
+                 {"Item": "Uranium Ingot", "Quantity": 2},
+                 {"Item": "Iron Lens", "Quantity": 4},
+                 {"Item": "Energy Cell", "Quantity": 8}
+                           
+            ]
+        },
+            {
+            "Product": {"Item": "Assault Rifle", "Quantity": 1},
+            "Ingredients": [
+                
+                 {"Item": "Iron Ingot", "Quantity": 2},
+                 {"Item": "Uranium Ingot", "Quantity": 2},
+                 {"Item": "Iron Lens", "Quantity": 4},
+                 {"Item": "Energy Cell", "Quantity": 8}
+                           
+            ]
+        },
+                {
+            "Product": {"Item": "Impulse Rifle", "Quantity": 1},
+            "Ingredients": [
+                
+                 {"Item": "Ponium Ingot", "Quantity": 4},
+                 {"Item": "Uranium Rods", "Quantity": 12},
+             
+                  {"Item": "Microchip", "Quantity": 4}
                            
             ]
         }

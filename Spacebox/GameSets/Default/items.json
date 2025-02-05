@@ -45,6 +45,15 @@
         "ModelDepth": 2,
         "Power": 5
     },
+     {
+        "Name": "Ponium Drill",
+        "Type": "drill",
+        "Category" : "drills",
+        "Sprite": "drill6",
+        "MaxStack": 1,
+        "ModelDepth": 3,
+        "Power": 6
+    },
     {
         "Name": "Pistol",
         "Type": "weapon",
@@ -94,7 +103,7 @@
          "ShotSound" : "pistole2"
     },
     {
-        "Name": "Ar Rifle",
+        "Name": "Impulse Rifle",
         "Type": "weapon",
         "Category" : "weapons",
         "Sprite": "weapon4",
@@ -157,6 +166,12 @@
          {
         "Name": "Uranium Ingot",
         "Sprite": "uranIngot",
+        "MaxStack": 64,
+        "ModelDepth": 1.0
+    },
+     {
+        "Name": "Ponium Ingot",
+        "Sprite": "poniumIngot",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
@@ -263,14 +278,15 @@
     {
         "Name": "Paint",
         "Sprite": "paint",
-        "Category" : "items",
+       
         "MaxStack": 1,
         "ModelDepth": 1.0
     },
-    {
-        "Name": "Uranium",
+
+     {
+        "Name": "Uranium Rods",
         "Category" : "items",
-        "Sprite": "uran",
+        "Sprite": "uranRods",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
