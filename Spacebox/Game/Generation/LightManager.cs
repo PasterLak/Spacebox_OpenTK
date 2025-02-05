@@ -6,7 +6,7 @@ namespace Spacebox.Game.Generation
     public class LightManager
     {
         private const byte Size = Chunk.Size;
-        private const bool EnableLighting = false;
+        private const bool EnableLighting = true;
         private readonly Chunk _chunk;
 
         public LightManager(Chunk chunk)
