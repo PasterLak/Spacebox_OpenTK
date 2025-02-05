@@ -18,6 +18,8 @@ namespace Spacebox.Game.GUI
         private static float MinFontSize;
         private static float MaxFontSize;
 
+        public bool Enabled { get; set; }
+
         public Tag(string text, Vector3 worldPosition, Color4 color, bool isStatic = false)
         {
             Id = Guid.NewGuid();
@@ -26,7 +28,7 @@ namespace Spacebox.Game.GUI
             Color = color;
             IsStatic = isStatic;
             ColorUint = ImGui.GetColorU32(new System.Numerics.Vector4(Color.R, Color.G, Color.B, Color.A));
-          
+
             FontSize = CalculateFontSize(100);
         }
 

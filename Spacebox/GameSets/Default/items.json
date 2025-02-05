@@ -33,7 +33,7 @@
         "Category" : "drills",
         "Sprite": "drill4",
         "MaxStack": 1,
-        "ModelDepth": 3,
+        "ModelDepth": 4,
         "Power": 4
     },
     {
@@ -42,7 +42,7 @@
         "Category" : "drills",
         "Sprite": "drill5",
         "MaxStack": 1,
-        "ModelDepth": 2,
+        "ModelDepth": 3,
         "Power": 5
     },
      {
@@ -179,37 +179,37 @@
         "Name": "Sand",
         "Sprite": "sand",
         "MaxStack": 64,
-        "ModelDepth": 1.0
+        "ModelDepth": 2
     },
     {
         "Name": "Cobalt Dust",
         "Sprite": "cobaltDust",
         "MaxStack": 64,
-        "ModelDepth": 1.0
+        "ModelDepth": 2
     },
     {
         "Name": "Aluminium Dust",
         "Sprite": "aluDust",
         "MaxStack": 64,
-        "ModelDepth": 1.0
+        "ModelDepth": 2
     },
     {
         "Name": "Iron Dust",
         "Sprite": "ironDust",
         "MaxStack": 64,
-        "ModelDepth": 1.0
+        "ModelDepth": 2
     },
     {
         "Name": "Titanium Dust",
         "Sprite": "titDust",
         "MaxStack": 64,
-        "ModelDepth": 1.0
+        "ModelDepth": 2
     },
     {
         "Name": "Uranium Dust",
         "Sprite": "uraniumDust",
         "MaxStack": 64,
-        "ModelDepth": 1.0
+        "ModelDepth": 2
     },
     {
         "Name": "Cobalt Lens",
@@ -264,7 +264,7 @@
         "ModelDepth": 1.5
     },
     {
-        "Name": "Ice Shards",
+        "Name": "Ice Shard",
         "Sprite": "ice",
         "MaxStack": 64,
         "ModelDepth": 1.5
@@ -280,7 +280,7 @@
         "Sprite": "paint",
        
         "MaxStack": 1,
-        "ModelDepth": 1.0
+        "ModelDepth": 3.0
     },
 
      {
@@ -288,7 +288,7 @@
         "Category" : "items",
         "Sprite": "uranRods",
         "MaxStack": 64,
-        "ModelDepth": 1.0
+        "ModelDepth": 2.0
     },
     {
         "Name": "Water",
@@ -301,7 +301,7 @@
         "Category" : "items",
         "Sprite": "hydrogen",
         "MaxStack": 64,
-        "ModelDepth": 2.0
+        "ModelDepth": 3.0
     },
     {
         "Name": "Power",
@@ -334,6 +334,6 @@
         "Category" : "items",
         "Sprite": "microchip",
         "MaxStack": 64,
-        "ModelDepth": 2.0
+        "ModelDepth": 1.0
     }
 ]

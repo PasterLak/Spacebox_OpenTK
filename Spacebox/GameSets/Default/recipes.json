@@ -4,13 +4,13 @@
       "Type": "crusher",
       "Recipes": [
         {
-          "RequiredTicks": 40,
+          "RequiredTicks": 100,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Ice Rock", "Quantity": 1 },
-          "Product": { "Item": "Ice Shards", "Quantity": 3 }
+          "Product": { "Item": "Ice Shard", "Quantity": 3 }
         },
         {
-          "RequiredTicks": 100,
+          "RequiredTicks": 150,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Light Rock", "Quantity": 1 },
           "Product": { "Item": "Sand", "Quantity": 2 }
@@ -28,79 +28,79 @@
           "Product": { "Item": "Sand", "Quantity": 6 }
         },
         {
-          "RequiredTicks": 100,
+          "RequiredTicks": 200,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Cobaltite Rock", "Quantity": 1 },
           "Product": { "Item": "Cobalt Dust", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 100,
+          "RequiredTicks": 200,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Cobalt Ingot", "Quantity": 1 },
           "Product": { "Item": "Cobalt Dust", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 120,
+          "RequiredTicks": 300,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Iron Ore", "Quantity": 1 },
           "Product": { "Item": "Iron Dust", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 100,
+          "RequiredTicks": 300,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Iron Ingot", "Quantity": 1 },
           "Product": { "Item": "Iron Dust", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 100,
+          "RequiredTicks": 200,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Aluminium Ore", "Quantity": 1 },
           "Product": { "Item": "Aluminium Dust", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 120,
+          "RequiredTicks": 220,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Aluminium Ingot", "Quantity": 1 },
           "Product": { "Item": "Aluminium Dust", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 120,
+          "RequiredTicks": 320,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Titanium Ingot", "Quantity": 1 },
           "Product": { "Item": "Titanium Dust", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 120,
+          "RequiredTicks": 320,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Titanium Ore", "Quantity": 1 },
           "Product": { "Item": "Titanium Dust", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 150,
+          "RequiredTicks": 350,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Uranium Ore", "Quantity": 1 },
           "Product": { "Item": "Uranium Dust", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 150,
+          "RequiredTicks": 350,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Uranium Ingot", "Quantity": 1 },
           "Product": { "Item": "Uranium Dust", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 100,
+          "RequiredTicks": 200,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Aluminium Panels", "Quantity": 3 },
           "Product": { "Item": "Aluminium Dust", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 140,
+          "RequiredTicks": 240,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Iron Panels", "Quantity": 3 },
           "Product": { "Item": "Iron Dust", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 180,
+          "RequiredTicks": 380,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Titanium Panels", "Quantity": 3 },
           "Product": { "Item": "Titanium Dust", "Quantity": 1 }
@@ -111,49 +111,49 @@
       "Type": "furnace",
       "Recipes": [
         {
-          "RequiredTicks": 60,
+          "RequiredTicks": 160,
           "PowerPerTickRequared": 5,
-          "Ingredient": { "Item": "Ice Shards", "Quantity": 2 },
+          "Ingredient": { "Item": "Ice Shard", "Quantity": 2 },
           "Product": { "Item": "Water", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 80,
+          "RequiredTicks": 180,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Sand", "Quantity": 1 },
           "Product": { "Item": "Glass", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 150,
+          "RequiredTicks": 250,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Ice Rock", "Quantity": 1 },
           "Product": { "Item": "Water", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 100,
+          "RequiredTicks": 200,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Cobalt Dust", "Quantity": 1 },
           "Product": { "Item": "Cobalt Ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 100,
+          "RequiredTicks": 200,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Aluminium Dust", "Quantity": 1 },
           "Product": { "Item": "Aluminium Ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 100,
+          "RequiredTicks": 200,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Iron Dust", "Quantity": 1 },
           "Product": { "Item": "Iron Ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 120,
+          "RequiredTicks": 250,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Titanium Dust", "Quantity": 1 },
           "Product": { "Item": "Titanium Ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 200,
+          "RequiredTicks": 250,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Uranium Dust", "Quantity": 1 },
           "Product": { "Item": "Uranium Ingot", "Quantity": 1 }
@@ -165,37 +165,37 @@
           "Product": { "Item": "Cobalt Ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 200,
+          "RequiredTicks": 400,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Aluminium Ore", "Quantity": 1 },
           "Product": { "Item": "Aluminium Ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 230,
+          "RequiredTicks": 430,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Iron Ore", "Quantity": 1 },
           "Product": { "Item": "Iron Ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 500,
+          "RequiredTicks": 600,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Titanium Ore", "Quantity": 1 },
           "Product": { "Item": "Titanium Ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 600,
+          "RequiredTicks": 800,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Uranium Ore", "Quantity": 1 },
           "Product": { "Item": "Uranium Ingot", "Quantity": 1 }
         },
          {
-          "RequiredTicks": 1000,
+          "RequiredTicks": 1200,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Ponium Ore", "Quantity": 1 },
           "Product": { "Item": "Ponium Ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 100,
+          "RequiredTicks": 200,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Water", "Quantity": 1 },
           "Product": { "Item": "Liquid Hydrogen", "Quantity": 2 }

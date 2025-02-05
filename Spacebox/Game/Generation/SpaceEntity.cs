@@ -41,6 +41,8 @@ namespace Spacebox.Game.Generation
         private List<Chunk> MeshesTogenerate = new List<Chunk>();
         public Dictionary<Vector3SByte, Chunk> ChunkDictionary { get; private set; } = new Dictionary<Vector3SByte, Chunk>();
         private Tag tag;
+
+        public Tag Tag => tag;
         private string _entityMassString = "0 tn";
         public BoundingBox GeometryBoundingBox { get; private set; }
 

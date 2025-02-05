@@ -295,7 +295,8 @@
             "Ingredients": [
                 {"Item": "Cobalt Drill", "Quantity": 1},
                 {"Item": "Iron Ingot", "Quantity": 4},
-                           {"Item": "Iron Drill Bit", "Quantity": 1}
+                {"Item": "Iron Drill Bit", "Quantity": 1},
+                {"Item": "Energy Cell", "Quantity": 2}
                             
             ]
         },

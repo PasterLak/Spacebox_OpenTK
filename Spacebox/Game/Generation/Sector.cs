@@ -19,8 +19,6 @@ namespace Spacebox.Game.Generation
 
         public BoundingBox BoundingBox { get; private set; }
 
-
-
         public List<SpaceEntity> Entities { get; private set; }
         public Dictionary<string, SpaceEntity> EntitiesNames { get; private set; }
 
@@ -45,8 +43,8 @@ namespace Spacebox.Game.Generation
             InitializeSharedResources();
 
 
-            int numAsteroids = 3;
-            Random random =  World.Random;
+            int numAsteroids = 9;
+            Random random = World.Random;
 
 
             if (WorldSaveLoad.CanLoadSectorHere(PositionIndex, out var sectorFolderPath))
@@ -72,19 +70,25 @@ namespace Spacebox.Game.Generation
 
             //Initialize();
 
-             
+
         }
 
         public void SpawnPlayerRandomInSector(Astronaut player, Random random)
         {
             if (IsPlayerSpawned) return;
 
-            player.Position = GetRandomPositionWithCOllisionCheck(random, 0.2f);
+           
+            if (TryGetNearestEntity(GetCenter(), out var entity))
+            {
+                player.Position = GetRandomPositionNearAsteroid(random, entity);
+            }
+            else
+            player.Position = GetRandomPositionWithCollisionCheck(random, 0.2f);
 
             IsPlayerSpawned = true;
         }
 
-        public Vector3 GetRandomPositionWithCOllisionCheck(Random random, float margin01)
+        public Vector3 GetRandomPositionWithCollisionCheck(Random random, float margin01)
         {
             var pos = GetRandomPosition(PositionWorld, margin01, random);
             var near = IsPointInEntity(pos, out var nearest3);
@@ -103,7 +107,7 @@ namespace Spacebox.Game.Generation
             var geometryBox = entity.GeometryBoundingBox;
 
             var radius = (geometryBox.Max.Length -
-                          geometryBox.Min.Length) / 2 + 10;
+                          geometryBox.Min.Length) / 2 + 100;
 
             var pos = GetRandomPointOnSphere(geometryBox.Center, random, radius);
 
@@ -119,10 +123,19 @@ namespace Spacebox.Game.Generation
             return pos;
         }
 
+        public Vector3 GetCenter()
+        {
+            return PositionWorld + new Vector3(SizeBlocksHalf, SizeBlocksHalf, SizeBlocksHalf);
+        }
+
+
         public void SpawnPlayerNearAsteroid(Astronaut player, Random random)
         {
             if (IsPlayerSpawned) return;
             if (Entities.Count == 0) return;
+
+            SpawnPlayerRandomInSector(player,random);
+            return;
 
             var asteroidID = random.Next(0, Entities.Count);
 
@@ -135,7 +148,7 @@ namespace Spacebox.Game.Generation
         {
             if (TryGetNearestEntity(positionWorld, out var entity))
             {
-                return entity.IsColliding(volume, out  collideInfo);
+                return entity.IsColliding(volume, out collideInfo);
             }
             collideInfo = new CollideInfo();
             return false;
@@ -309,7 +322,7 @@ namespace Spacebox.Game.Generation
             {
                 Entities[i].Update();
 
-                if(VisualDebug.Enabled)
+                if (VisualDebug.Enabled)
                 {
                     VisualDebug.DrawSphere(Entities[i].CenterOfMass, Entities[i].GravityRadius, 16, Color4.Blue);
                 }
@@ -333,23 +346,32 @@ namespace Spacebox.Game.Generation
                 {
                     var disSqr = Vector3.DistanceSquared(entity.GeometryBoundingBox.Center, cam.Position);
 
-                    if(disSqr < 500 * 500)
+                    if (disSqr < 500 * 500)
                     {
+                        if (!entity.Tag.Enabled)
+                        {
+                            // entity.Tag.Enabled = true;
+                        }
                         entity.Render(cam);
 
                         if (entity.StarsEffect.Enabled)
                             entity.StarsEffect.Enabled = false;
 
-                       
+
                     }
                     else
                     {
                         if (!entity.StarsEffect.Enabled)
                             entity.StarsEffect.Enabled = true;
 
+                        if (entity.Tag.Enabled)
+                        {
+                            // entity.Tag.Enabled = false;
+                        }
+
                         entity.RenderEffect(disSqr);
                     }
-                    
+
 
                 }
             }

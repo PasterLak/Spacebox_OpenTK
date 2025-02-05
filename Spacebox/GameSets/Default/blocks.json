@@ -226,7 +226,7 @@
         "Sides": "crusherSide",
         "Top": "crusherTop",
         "Bottom": "bottom",
-        "Efficiency": 0.8,
+        "Efficiency": 0.7,
         "IsTransparent": false
         
     },
