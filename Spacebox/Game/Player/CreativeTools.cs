@@ -124,7 +124,7 @@ namespace Spacebox.Game.Player
             {
                 chunks = SpaceEntity.RemoveBlocksInLocalBox(Block1.spaceEntity, deleteBounding);
             }
-            else if(PanelUI.IsHoldingBlock())
+            else if(PanelUI.IsHolding< BlockItem>())
             {
                 var slot = PanelUI.CurrentSlot();
 

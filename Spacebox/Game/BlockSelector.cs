@@ -40,7 +40,7 @@ namespace Spacebox.Game
         public void OnSelectedSlotWasChanged(short slot)
         {
 
-            if(PanelUI.IsHoldingDrill())
+            if(PanelUI.IsHolding< DrillItem>())
             {
               
                 if (!SimpleBlock.IsUsingDefaultUV)
@@ -52,7 +52,7 @@ namespace Spacebox.Game
                 
             }
 
-            else if (PanelUI.IsHoldingBlock())
+            else if (PanelUI.IsHolding< BlockItem>())
             {
                
                 //if (block.IsUsingDefaultUV)   // to do block was changed
