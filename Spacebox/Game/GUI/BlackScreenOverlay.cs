@@ -20,7 +20,7 @@ namespace Spacebox.GUI
 
         }
 
-        public static void Render()
+        public static void OnGUI()
         {
             if (_isEnabled)
             {

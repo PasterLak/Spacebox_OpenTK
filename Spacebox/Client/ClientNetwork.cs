@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+﻿using System.Collections.Concurrent;
 using Engine;
 using Lidgren.Network;
 using OpenTK.Mathematics;
 using SpaceNetwork;
 using SpaceNetwork.Messages;
 using SpaceNetwork.Utilities;
-using System.IO;
+using Spacebox.Game.GUI;
 
 namespace Client
 {
@@ -85,7 +81,7 @@ namespace Client
                     {
                         if (serverConnection != null)
                         {
-                            var m = new ChatMessage { SenderId = localPlayerId, SenderName = "", Text = chat };
+                            var m = new SpaceNetwork.Messages.ChatMessage { SenderId = localPlayerId, SenderName = "", Text = chat };
                             var om = client.CreateMessage();
                             m.Write(om);
                             client.SendMessage(om, serverConnection, NetDeliveryMethod.ReliableOrdered);
@@ -176,6 +172,7 @@ namespace Client
             {
                 serverConnection = msg.SenderConnection;
                 Debug.Log("Client connected to server.");
+                
                 IsConnected = true;
             }
             else if (newStatus == NetConnectionStatus.Disconnected)
@@ -227,12 +224,20 @@ namespace Client
                 IsKicked = true;
                 client.Disconnect("Kicked");
             }
-            else if (baseMsg is ChatMessage cm)
+            else if (baseMsg is SpaceNetwork.Messages.ChatMessage cm)
             {
                 if (cm.SenderId == -1)
+                {
                     Debug.Log($"[Server]: {cm.Text}");
+                    Chat.Write($"[Server]: {cm.Text}");
+                }
+
                 else
+                {
+                    Chat.Write($"> {cm.SenderName}[{cm.SenderId}]: {cm.Text}");
                     Debug.Log($"> {cm.SenderName}[{cm.SenderId}]: {cm.Text}");
+                }
+                  
             }
             else if (baseMsg is BlockDestroyedMessage bdm)
             {

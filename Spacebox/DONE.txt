@@ -75,9 +75,10 @@ version 0.1.1
 - OGG Audio format support
 - subfolders for textures in mods
 - SphereRenderer/Cube
-- Creative Tools: Eraser
+- Creative Tools: Eraser, camera point
 - engine and game separated
 - test multiplayer demo project with lidgren
+- new items
 
 version 0.1.0
 

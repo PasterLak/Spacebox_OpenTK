@@ -47,7 +47,7 @@ namespace Engine
           
             foreach (var drawable in _opaqueDrawables)
             {
-                drawable.Draw(camera);
+                drawable.Render(camera);
             }
          
             GL.Enable(EnableCap.Blend);

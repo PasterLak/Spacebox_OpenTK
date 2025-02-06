@@ -170,7 +170,7 @@ namespace Spacebox.Scenes
         }
         public override void OnGUI()
         {
-            CenteredText.Draw();
+            CenteredText.OnGUI();
         }
         public override void UnloadContent()
         {

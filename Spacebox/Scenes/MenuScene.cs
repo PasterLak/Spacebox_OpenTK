@@ -123,7 +123,7 @@ namespace Spacebox.Scenes
            // ImGui.PushFont(myFont);
             Input.ShowCursor();
             CenteredImageMenu.Draw();
-            HealthColorOverlay.Render();
+            HealthColorOverlay.OnGUI();
             VerticalLinks.Draw();
             menu.Render();
 

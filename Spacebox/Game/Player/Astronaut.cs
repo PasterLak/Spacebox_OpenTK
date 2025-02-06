@@ -91,6 +91,7 @@ namespace Spacebox.Game.Player
             toggle = ToggleManager.Register("player");
             toggle.OnStateChanged += state =>
             {
+              
                 needResetNextFrame = state;
                 _canMove = state;
             };
@@ -326,9 +327,9 @@ namespace Spacebox.Game.Player
             _gameModeBase.SetInteraction(mode);
         }
 
-        public void Draw()
+        public void Render()
         {
-            Draw(this);
+            Render(this);
 
             if (_gameModeBase != null)
             {
@@ -336,7 +337,7 @@ namespace Spacebox.Game.Player
             }
         }
 
-        public void Draw(Camera camera)
+        public void Render(Camera camera)
         {
             Flashlight.Draw(camera);
 

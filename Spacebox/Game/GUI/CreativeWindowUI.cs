@@ -34,7 +34,7 @@ namespace Spacebox.Game.GUI
             };
         }
 
-        public static void Render()
+        public static void OnGUI()
         {
             if (!Enabled) return;
             if (!IsVisible) return;
@@ -136,6 +136,20 @@ namespace Spacebox.Game.GUI
                             ImDrawListPtr drawList = ImGui.GetWindowDrawList();
                             drawList.AddImage(GameBlocks.ItemIcon[slot.Item.Id].Handle, posCenter - size * 0.5f, posCenter + size * 0.5f);
 
+                         
+
+                            if (slot.Item.Is<CreativeToolItem>())
+                            {
+                                const string text = "c";
+
+                                Vector2 textPos = pos + new Vector2(SlotSize * 0.05f, SlotSize * 0.05f);
+
+                                drawList.AddText(textPos + new Vector2(2, 2), ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 1)),
+                                    text);
+                                drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new Vector4(1, 0.8f, 0, 1)),
+                                    text);
+
+                            }
                             if (slot.Count > 1)
                             {
                                 Vector2 textPos = pos + new Vector2(SlotSize * 0.05f, SlotSize * 0.05f);

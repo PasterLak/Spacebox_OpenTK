@@ -125,7 +125,7 @@ namespace Spacebox.Scenes
             }
 
             BlackScreenOverlay.IsEnabled = true;
-            BlackScreenOverlay.Render();
+            BlackScreenOverlay.OnGUI();
 
             var mouse = ToggleManager.Register("mouse");
             mouse.OnStateChanged += s =>
@@ -283,7 +283,7 @@ namespace Spacebox.Scenes
             Debug.OnVisibilityWasChanged += OnDebugStateChanged;
             Window.OnResized += TagManager.OnResized;
 
-            // Настройка точечного источника света
+       
             pLight = PointLightsPool.Instance.Take();
             pLight.Ambient = new Vector3(1, 0, 0);
             pLight.Position = localPlayer.Position;
@@ -293,6 +293,8 @@ namespace Spacebox.Scenes
             pLight.Specular = new Color3Byte(100, 116, 255).ToVector3();
           
             pLight.IsActive = false;
+
+            Chat.Write("Welcome to Spacebox!",Color4.Yellow);
         }
 
         private void OnDebugStateChanged(bool state)
@@ -305,6 +307,11 @@ namespace Spacebox.Scenes
             ToggleManager.SetState("radar", false);
             ToggleManager.SetState("inventory", false);
             Input.MoveCursorToCenter();
+
+            if(Chat.IsVisible)
+            {
+                Chat.IsVisible = false;
+            }
         }
 
         public override void Update()
@@ -315,10 +322,11 @@ namespace Spacebox.Scenes
             blockDestructionManager.Update();
             dustSpawner.Update();
             world.Update();
-
+           
             if (Input.IsKeyDown(Keys.L))
             {
                 pLight.IsActive = !pLight.IsActive;
+            
             }
 
             if (Input.IsKeyDown(Keys.K))
@@ -330,10 +338,19 @@ namespace Spacebox.Scenes
                 l.Ambient = new Color3Byte(100, 116, 255).ToVector3();
                 l.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
                 l.Specular = new Color3Byte(0, 0, 0).ToVector3();
+              
             }
 
             if (Input.IsKeyDown(Keys.Escape))
             {
+                if (Chat.IsVisible && Chat.FocusInput)
+                {
+                 
+                    
+                    return;
+                }
+               
+
                 int opened = ToggleManager.OpenedWindowsCount;
                 ToggleManager.DisableAllWindows();
                 if (opened > 0)
@@ -345,6 +362,7 @@ namespace Spacebox.Scenes
                 }
                 else
                 {
+                  
                     ToggleManager.SetState("pause", true);
                     ToggleManager.SetState("panel", false);
                 }
@@ -378,7 +396,7 @@ namespace Spacebox.Scenes
                     Window.Instance.Quit();
                 }
             }
-
+            Chat.Update();
             dustSpawner.Update();
             PanelUI.Update();
             animator.Update(Time.Delta);
@@ -416,10 +434,10 @@ namespace Spacebox.Scenes
             if (InteractionShoot.lineRenderer != null)
                 InteractionShoot.lineRenderer.Render();
 
-            localPlayer.Draw();
+            localPlayer.Render();
             world.Render(blocksShader);
             blockDestructionManager.Render();
-            spacer.Draw(localPlayer);
+            spacer.Render(localPlayer);
             dustSpawner.Render();
             OnRenderCenter?.Invoke();
             if (InteractionDestroyBlockSurvival.BlockMiningEffect != null)
@@ -427,13 +445,13 @@ namespace Spacebox.Scenes
 
             BoundingSphere b = new BoundingSphere(block2.GetWorldPosition(), 0.7f);
             VisualDebug.DrawBoundingSphere(b, Color4.AliceBlue);
-            blockSelector.Draw(localPlayer);
+            blockSelector.Render(localPlayer);
 
             if (InteractionShoot.Instance != null)
             {
                 if (InteractionShoot.Instance.sphereRenderer != null)
                 {
-                    // Дополнительный рендер, если нужен
+                   
                 }
                 InteractionShoot.Instance.sphereRenderer.Render();
             }
@@ -447,26 +465,27 @@ namespace Spacebox.Scenes
 
         public override void OnGUI()
         {
-            HealthColorOverlay.Render();
-            CenteredText.Draw();
-            TagText.Draw();
-            radarWindow.Render();
+            HealthColorOverlay.OnGUI();
+            CenteredText.OnGUI();
+            TagText.OnGUI();
+            radarWindow.OnGUI();
             ResourceProcessingGUI.OnGUI();
             CraftingGUI.OnGUI();
             PanelUI.Render();
             localPlayer.OnGUI();
             InventoryUI.OnGUI(localPlayer.Inventory);
-            CreativeWindowUI.Render();
+            CreativeWindowUI.OnGUI();
+            Chat.OnGUI();
             WelcomeUI.OnGUI();
             PauseUI.OnGUI();
 
             if (VisualDebug.Enabled)
             {
-                WorldTextDebug.Draw();
+                WorldTextDebug.OnGUI();
             }
 
             TagManager.DrawTags(localPlayer, Window.Instance.Size.X, Window.Instance.Size.Y);
-            BlackScreenOverlay.Render();
+            BlackScreenOverlay.OnGUI();
         }
 
         public override void UnloadContent()
@@ -482,6 +501,7 @@ namespace Spacebox.Scenes
             dustSpawner.Dispose();
             pointLightsPool.Dispose();
             ambient.Dispose();
+            Chat.Clear();
             if (InteractionShoot.ProjectilesPool != null)
                 InteractionShoot.ProjectilesPool.Dispose();
 

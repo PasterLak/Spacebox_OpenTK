@@ -218,10 +218,10 @@ namespace Spacebox.FPS
 
 
 
-        public void Draw(Camera camera)
+        public void Render(Camera camera)
         {
             
-            spotLight.Draw(this);
+            spotLight.Render(this);
         }
     }
 }

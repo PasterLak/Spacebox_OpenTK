@@ -60,7 +60,7 @@ namespace Spacebox.Game.Player
 
         public void Draw(Camera camera)
         {
-            spotLight.Draw(camera);
+            spotLight.Render(camera);
         }
     }
 }

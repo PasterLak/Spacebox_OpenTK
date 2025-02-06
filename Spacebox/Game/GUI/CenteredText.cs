@@ -41,7 +41,7 @@ namespace Spacebox.GUI
             IsVisible = !IsVisible;
         }
 
-        public static void Draw()
+        public static void OnGUI()
         {
             if(!Settings.ShowInterface) return;
             if (!IsVisible)

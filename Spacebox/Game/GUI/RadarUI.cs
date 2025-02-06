@@ -95,7 +95,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public void Render()
+        public void OnGUI()
         {
             if (!IsVisible) return;
 

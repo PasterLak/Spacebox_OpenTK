@@ -45,7 +45,7 @@ namespace Spacebox.Game.GUI
         }
 
 
-        public static void Draw()
+        public static void OnGUI()
         {
 
             if (!IsVisible)

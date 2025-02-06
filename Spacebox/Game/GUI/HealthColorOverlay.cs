@@ -38,7 +38,7 @@ namespace Spacebox.Game.GUI
             _isEnabled = true;
         }
 
-        public static void Render()
+        public static void OnGUI()
         {
             if (_isEnabled && _isActive)
             {

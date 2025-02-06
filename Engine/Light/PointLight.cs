@@ -88,9 +88,9 @@ namespace Engine.Light
             UpdateRangeAndBrightness();
         }
 
-        public override void Draw(Camera camera)
+        public override void Render(Camera camera)
         {
-            base.Draw(camera);
+            base.Render(camera);
 
         }
 

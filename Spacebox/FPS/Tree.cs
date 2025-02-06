@@ -31,15 +31,15 @@ namespace Spacebox.FPS
         }
 
 
-        public void Draw(Camera camera)
+        public void Render(Camera camera)
         {
-            trunk.Draw(camera);
+            trunk.Render(camera);
 
         }
 
         public void DrawTransparent(Camera camera)
         {
-            leaves.Draw(camera);
+            leaves.Render(camera);
         }
     }
 }

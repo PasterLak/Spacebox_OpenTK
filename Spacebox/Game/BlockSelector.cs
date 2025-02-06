@@ -104,7 +104,7 @@ namespace Spacebox.Game
         }
 
 
-        public void Draw(Camera camera)
+        public void Render(Camera camera)
         {
             if(!IsVisible) return;
             if(!Settings.ShowInterface) return;

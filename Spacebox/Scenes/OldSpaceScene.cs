@@ -96,7 +96,7 @@ namespace Spacebox.Scenes
             }
 
             BlackScreenOverlay.IsEnabled = true;
-            BlackScreenOverlay.Render();
+            BlackScreenOverlay.OnGUI();
 
 
             var mouse = ToggleManager.Register("mouse");
@@ -435,12 +435,12 @@ namespace Spacebox.Scenes
                 InteractionShoot.lineRenderer.Render();
             }
 
-            player.Draw();
+            player.Render();
             world.Render(blocksShader);
 
             blockDestructionManager.Render();
 
-            spacer.Draw(player);
+            spacer.Render(player);
             dustSpawner.Render();
             if (InteractionDestroyBlockSurvival.BlockMiningEffect != null)
             {
@@ -451,7 +451,7 @@ namespace Spacebox.Scenes
 
             var b = new BoundingSphere(block2.GetWorldPosition(), 0.7f);
             VisualDebug.DrawBoundingSphere(b, Color4.AliceBlue);
-            blockSelector.Draw(player);
+            blockSelector.Render(player);
 
 
             if (InteractionShoot.Instance != null)
@@ -473,29 +473,29 @@ namespace Spacebox.Scenes
 
         public override void OnGUI()
         {
-            HealthColorOverlay.Render();
-            CenteredText.Draw();
+            HealthColorOverlay.OnGUI();
+            CenteredText.OnGUI();
 
-            TagText.Draw();
+            TagText.OnGUI();
 
-            radarWindow.Render();
+            radarWindow.OnGUI();
 
             ResourceProcessingGUI.OnGUI();
             CraftingGUI.OnGUI();
             PanelUI.Render();
             player.OnGUI();
             InventoryUI.OnGUI(player.Inventory);
-            CreativeWindowUI.Render();
+            CreativeWindowUI.OnGUI();
             WelcomeUI.OnGUI();
             PauseUI.OnGUI();
             if (VisualDebug.Enabled)
             {
-                WorldTextDebug.Draw();
+                WorldTextDebug.OnGUI();
             }
 
             TagManager.DrawTags(player, Window.Instance.Size.X, Window.Instance.Size.Y);
 
-            BlackScreenOverlay.Render();
+            BlackScreenOverlay.OnGUI();
         }
 
         public override void UnloadContent()

@@ -21,7 +21,7 @@ namespace Spacebox.FPS
         {
             Update();
 
-            Draw(camera);
+            Render(camera);
         }
 
         public void Update()

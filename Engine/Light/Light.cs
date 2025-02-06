@@ -16,7 +16,7 @@ namespace Engine.Light
             Shader = shader;
         }
 
-        public virtual void Draw(Camera camera)
+        public virtual void Render(Camera camera)
         {
             if (Shader == null) return;
             Shader.Use();

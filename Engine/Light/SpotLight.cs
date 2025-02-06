@@ -40,9 +40,9 @@ namespace Engine.Light
             Direction = direction;
         }
 
-        public override void Draw(Camera camera)
+        public override void Render(Camera camera)
         {
-            base.Draw(camera);
+            base.Render(camera);
             var position = camera.CameraRelativeRender ? Vector3.Zero : camera.Position;
             Shader.SetVector3("spotLight.position", position);
             Shader.SetVector3("spotLight.direction", camera.Front);

@@ -149,14 +149,14 @@ namespace Spacebox.Game.Player
             playerShader.SetFloat("spotLight.outerCutOff", MathF.Cos(MathHelper.DegreesToRadians(17.5f)));
             if (playerData.Name == "alconaut")
             {
-                spacerOld.Draw(Camera.Main);
+                spacerOld.Render(Camera.Main);
                 return;
             }
-            spotLight.Draw(Camera.Main);
+            spotLight.Render(Camera.Main);
             itemModel.Render(itemModelShader);
-            astBody.Draw(Camera.Main);
-            astHelmet.Draw(Camera.Main);
-            astTank.Draw(Camera.Main);
+            astBody.Render(Camera.Main);
+            astHelmet.Render(Camera.Main);
+            astTank.Render(Camera.Main);
         }
     }
 }

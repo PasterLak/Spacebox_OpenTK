@@ -18,6 +18,7 @@ namespace Spacebox.Game.Commands
         }
         public void Execute(string[] args)
         {
+            return;
             if (args.Length > 0)
             {
 

@@ -76,7 +76,7 @@ namespace Engine
 
        
 
-        public void Draw(Camera camera)
+        public void Render(Camera camera)
         {
             if (BackfaceCulling)
                 GL.Enable(EnableCap.CullFace);

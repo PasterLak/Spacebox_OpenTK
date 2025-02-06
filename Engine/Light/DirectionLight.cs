@@ -31,9 +31,9 @@ public class DirectionalLight : Light
         Direction = direction;
     }
 
-    public override void Draw(Camera camera)
+    public override void Render(Camera camera)
     {
-        base.Draw(camera);
+        base.Render(camera);
         Shader.SetVector3("dirLight.direction", Direction);
         Shader.SetVector3("dirLight.ambient", Ambient);
         Shader.SetVector3("dirLight.diffuse", Diffuse);
