@@ -2,7 +2,7 @@
 using OpenTK.Mathematics;
 using Engine;
 using Spacebox.Game.Player;
-using Engine.Animation;
+
 
 namespace Spacebox.Game
 {
@@ -10,7 +10,7 @@ namespace Spacebox.Game
     {
         public Mesh Mesh { get; private set; }
         public Texture2D Texture { get; private set; }
-
+        public bool EnableRender = true;
         public Vector3 offset = new Vector3(0.06f, -0.12f, 0.07f);
         private float additionalRotationAngle = MathHelper.DegreesToRadians(90.0f);
 
@@ -53,8 +53,12 @@ namespace Spacebox.Game
         {
             if (shader == null) return;
         }
-        public virtual void Draw(Shader shader)
+        public virtual void Render(Shader shader)
         {
+            if (!EnableRender)
+            {
+                return;
+            }
             if (this.shader == null)
             {
                 this.shader = shader;

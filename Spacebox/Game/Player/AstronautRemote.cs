@@ -153,7 +153,7 @@ namespace Spacebox.Game.Player
                 return;
             }
             spotLight.Draw(Camera.Main);
-            itemModel.Draw(itemModelShader);
+            itemModel.Render(itemModelShader);
             astBody.Draw(Camera.Main);
             astHelmet.Draw(Camera.Main);
             astTank.Draw(Camera.Main);

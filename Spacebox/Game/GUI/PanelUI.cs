@@ -14,6 +14,7 @@ namespace Spacebox.Game.GUI
         private static nint SlotTexture = nint.Zero;
         private static nint SelectedTexture = nint.Zero;
         public static bool IsVisible { get; set; } = true;
+        public static bool EnableRenderForCurrentItem { get; set; } = true;
         public static bool AllowScroll { get; set; } = true;
         public static Storage Storage;
         private static ItemModel ItemModel;
@@ -76,7 +77,7 @@ namespace Spacebox.Game.GUI
         public static void DrawItemModel()
         {
             if (ItemModel == null) return;
-            ItemModel.Draw(itemModelShader);
+            ItemModel.Render(itemModelShader);
         }
 
         public static ItemModel GetSlotModel()
@@ -174,6 +175,8 @@ namespace Spacebox.Game.GUI
                 player.SetInteraction(new InteractionConsumeItem(SelectedSlot));
             else if (IsHolding<EraserToolItem>())
                 player.SetInteraction(new InteractionEraser());
+            else if (IsHolding<CameraPointItem>())
+                player.SetInteraction(new InteractionCameraPoint(ItemModel));
             else
                 player.SetInteraction(new InteractionDefault());
         }

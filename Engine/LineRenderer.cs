@@ -34,6 +34,16 @@ namespace Engine
         private uint[] _indices;
         private bool _geometryNeedsUpdate = true;
 
+        
+
+        public void Pop()
+        {
+            if(Points.Count > 0)
+            {
+                Points.RemoveAt(Points.Count-1);
+                _geometryNeedsUpdate = true;
+            }
+        }
         public LineRenderer()
         {
             _shader = ShaderManager.GetShader("Shaders/lineRenderer");

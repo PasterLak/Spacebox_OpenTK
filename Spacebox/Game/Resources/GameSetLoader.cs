@@ -408,6 +408,7 @@ namespace Spacebox.Game.Resources
                 }
 
                 RegisterEraserItem();
+                RegisterEraserItem2();
             }
             catch (Exception ex)
             {
@@ -683,6 +684,19 @@ namespace Spacebox.Game.Resources
           
             GameBlocks.RegisterItem(eraser, "eraser");
         }
+        private static void RegisterEraserItem2()
+        {
+
+            var eraser = new CameraPointItem(
+               "Camera Point",
+               2f)
+            {
+
+            };
+
+            GameBlocks.RegisterItem(eraser, "cameraPoint");
+        }
+
 
         private static void RegisterConsumableItem(ConsumableItemData data)
         {

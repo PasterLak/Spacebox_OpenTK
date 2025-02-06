@@ -28,7 +28,7 @@ namespace Spacebox.Game.Player
         private bool _firstMove = true;
         private Vector2 _lastMousePosition;
         bool needResetNextFrame = false;
-        private bool CameraActive = true;
+        public bool CameraActive = true;
 
         public Action<Astronaut> OnMoved { get; set; }
 
