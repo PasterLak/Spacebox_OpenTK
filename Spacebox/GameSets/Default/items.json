@@ -46,7 +46,7 @@
         "Power": 5
     },
      {
-        "Name": "Ponium Drill",
+        "Name": "Obscurium Drill",
         "Type": "drill",
         "Category" : "drills",
         "Sprite": "drill6",
@@ -170,7 +170,7 @@
         "ModelDepth": 1.0
     },
      {
-        "Name": "Ponium Ingot",
+        "Name": "Obscurium Ingot",
         "Sprite": "poniumIngot",
         "MaxStack": 64,
         "ModelDepth": 1.0
@@ -257,7 +257,7 @@
         "ModelDepth": 2.0
     },
    {
-        "Name": "Cobalt Diamond",
+        "Name": "Cobalt Crystal",
         "Sprite": "cobaltDiamond",
         "Category" : "items",
         "MaxStack": 64,
@@ -300,6 +300,13 @@
         "Name": "Liquid Hydrogen",
         "Category" : "items",
         "Sprite": "hydrogen",
+        "MaxStack": 64,
+        "ModelDepth": 3.0
+    },
+     {
+        "Name": "Compressed Oxygen",
+        "Category" : "items",
+        "Sprite": "oxygen",
         "MaxStack": 64,
         "ModelDepth": 3.0
     },

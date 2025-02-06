@@ -40,13 +40,13 @@
           "Product": { "Item": "Cobalt Dust", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 300,
+          "RequiredTicks": 250,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Iron Ore", "Quantity": 1 },
           "Product": { "Item": "Iron Dust", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 300,
+          "RequiredTicks": 250,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Iron Ingot", "Quantity": 1 },
           "Product": { "Item": "Iron Dust", "Quantity": 1 }
@@ -159,31 +159,31 @@
           "Product": { "Item": "Uranium Ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 150,
+          "RequiredTicks": 250,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Cobaltite Rock", "Quantity": 1 },
           "Product": { "Item": "Cobalt Ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 400,
+          "RequiredTicks": 300,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Aluminium Ore", "Quantity": 1 },
           "Product": { "Item": "Aluminium Ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 430,
+          "RequiredTicks": 330,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Iron Ore", "Quantity": 1 },
           "Product": { "Item": "Iron Ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 600,
+          "RequiredTicks": 400,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Titanium Ore", "Quantity": 1 },
           "Product": { "Item": "Titanium Ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 800,
+          "RequiredTicks": 600,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Uranium Ore", "Quantity": 1 },
           "Product": { "Item": "Uranium Ingot", "Quantity": 1 }
@@ -191,8 +191,8 @@
          {
           "RequiredTicks": 1200,
           "PowerPerTickRequared": 5,
-          "Ingredient": { "Item": "Ponium Ore", "Quantity": 1 },
-          "Product": { "Item": "Ponium Ingot", "Quantity": 1 }
+          "Ingredient": { "Item": "Obscurium Ore", "Quantity": 1 },
+          "Product": { "Item": "Obscurium Ingot", "Quantity": 1 }
         },
         {
           "RequiredTicks": 200,
@@ -292,8 +292,8 @@
          {
           "RequiredTicks": 2000,
           "PowerPerTickRequared": 5,
-          "Ingredient": { "Item": "Ponium Drill", "Quantity": 1 },
-          "Product": { "Item": "Ponium Ingot", "Quantity": 3 }
+          "Ingredient": { "Item": "Obscurium Drill", "Quantity": 1 },
+          "Product": { "Item": "Obscurium Ingot", "Quantity": 3 }
         },
         {
           "RequiredTicks": 500,
@@ -323,7 +323,7 @@
           "RequiredTicks": 1500,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "Impulse Rifle", "Quantity": 1 },
-          "Product": { "Item": "Ponium Ingot", "Quantity": 3 }
+          "Product": { "Item": "Obscurium Ingot", "Quantity": 3 }
         }
       ]
     }

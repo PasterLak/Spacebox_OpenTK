@@ -97,17 +97,20 @@ namespace Spacebox.Game.Generation
         private void GenerateOreVeins()
         {
             FastRandom fastRandom = new FastRandom();
-            double veinChanceId1 = 0.1;
-            double veinChanceId2 = 0.07;
-            double isolatedChanceId3 = 0.02;
+            double baseChanceId1 = 0.1;
+            double baseChanceId2 = 0.07;
+            double baseChanceId3 = 0.02;
+            int noiseSeed = 12345;
             for (int x = 0; x < Size; x++)
                 for (int y = 0; y < Size; y++)
                     for (int z = 0; z < Size; z++)
                     {
                         short id = _blocks[x, y, z].BlockId;
+                        float noise = (Noise3D(x, y, z, noiseSeed) + 1f) / 2f;
                         if (id == 1)
                         {
-                            if (fastRandom.NextDouble() < veinChanceId1)
+                            double chance = baseChanceId1 * (1 - noise);
+                            if (fastRandom.NextDouble() < chance)
                             {
                                 int[] arr = { 4, 5, 6, 7 };
                                 short resId = (short)arr[fastRandom.Next(arr.Length)];
@@ -117,7 +120,8 @@ namespace Spacebox.Game.Generation
                         }
                         else if (id == 2)
                         {
-                            if (fastRandom.NextDouble() < veinChanceId2)
+                            double chance = baseChanceId2 * (1 - noise);
+                            if (fastRandom.NextDouble() < chance)
                             {
                                 int[] arr = { 8, 9, 11 };
                                 short resId = (short)arr[fastRandom.Next(arr.Length)];
@@ -127,7 +131,8 @@ namespace Spacebox.Game.Generation
                         }
                         else if (id == 3)
                         {
-                            if (fastRandom.NextDouble() < isolatedChanceId3)
+                            double chance = baseChanceId3 * (1 - noise);
+                            if (fastRandom.NextDouble() < chance)
                             {
                                 double choice = fastRandom.NextDouble();
                                 short resId = (short)(choice < 0.8 ? 10 : (choice < 0.9 ? 8 : 11));
@@ -136,7 +141,6 @@ namespace Spacebox.Game.Generation
                         }
                     }
         }
-
         private void GenerateOreVein(int startX, int startY, int startZ, FastRandom fastRandom, short resourceId, int veinSize)
         {
             int currentX = startX, currentY = startY, currentZ = startZ;
@@ -159,7 +163,7 @@ namespace Spacebox.Game.Generation
         {
             int n = x + y * 57 + z * 131 + seed * 999983;
             n = (n << 13) ^ n;
-            return 1f - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824f;
+            return 1f - (((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824f);
         }
     }
 }

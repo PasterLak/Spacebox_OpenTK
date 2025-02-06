@@ -316,13 +316,11 @@ namespace Spacebox.Scenes
             dustSpawner.Update();
             world.Update();
 
-            // Переключение точечного источника по клавише L
             if (Input.IsKeyDown(Keys.L))
             {
                 pLight.IsActive = !pLight.IsActive;
             }
 
-            // Создание дополнительного источника по клавише K
             if (Input.IsKeyDown(Keys.K))
             {
                 var l = PointLightsPool.Instance.Take();
@@ -334,7 +332,6 @@ namespace Spacebox.Scenes
                 l.Specular = new Color3Byte(0, 0, 0).ToVector3();
             }
 
-            // Обработка клавиши Escape для закрытия оверлеев или открытия меню паузы
             if (Input.IsKeyDown(Keys.Escape))
             {
                 int opened = ToggleManager.OpenedWindowsCount;
