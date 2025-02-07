@@ -72,7 +72,7 @@ namespace Spacebox.Game.GUI
                 Input.MoveCursorToCenter();
             ToggleManager.SetState("player", false);
             PanelUI.AllowScroll = false;
-
+            InputManager.Enabled = false;
             if (!IsVisible)
             {
               
@@ -100,7 +100,7 @@ namespace Spacebox.Game.GUI
 
             ToggleManager.SetState("player", true);
             PanelUI.AllowScroll = true;
-
+            InputManager.Enabled = true;
             _prevFocusInput = false;
             FocusInput = false;
             _hideTimer = _hideDelay;
@@ -269,6 +269,7 @@ namespace Spacebox.Game.GUI
             ToggleManager.SetState("player", true);
             PanelUI.AllowScroll = true;
             _hideTimer = _hideDelay;
+            InputManager.Enabled = true;
         }
 
 

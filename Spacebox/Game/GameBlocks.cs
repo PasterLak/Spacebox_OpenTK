@@ -100,22 +100,22 @@ namespace Spacebox.Game
         {
             recipeData.Type = recipeData.Type.ToLower();
 
-            
+
             if (!Recipes.ContainsKey(recipeData.Type))
             {
                 Recipes.Add(recipeData.Type, new Dictionary<short, Recipe>());
             }
-                if(!Recipes[recipeData.Type].ContainsKey(item.Id))
-                {
-                    Recipe recipe = new Recipe();
-                    recipe.RequiredTicks = (short)recipeData.RequiredTicks;
-                    recipe.PowerPerTickRequared = (short)recipeData.PowerPerTickRequared;
+            if (!Recipes[recipeData.Type].ContainsKey(item.Id))
+            {
+                Recipe recipe = new Recipe();
+                recipe.RequiredTicks = (short)recipeData.RequiredTicks;
+                recipe.PowerPerTickRequared = (short)recipeData.PowerPerTickRequared;
 
-                    recipe.Ingredient = new Ingredient(item, (byte)recipeData.Ingredient.Quantity);
-                    recipe.Product = new Product(item2, (byte)recipeData.Product.Quantity);
+                recipe.Ingredient = new Ingredient(item, (byte)recipeData.Ingredient.Quantity);
+                recipe.Product = new Product(item2, (byte)recipeData.Product.Quantity);
 
                 Recipes[recipeData.Type].Add(item.Id, recipe);
-                }
+            }
 
         }
         private static void RegisterItem(BlockData blockData)
@@ -130,7 +130,7 @@ namespace Spacebox.Game
             BlockItem item = new BlockItem(blockData.Id, MaxItemId, 64, blockData.Name, blockData.Mass, blockData.Durability);
             item.Mass = blockData.Mass;
             item.Category = blockData.Category;
-           // item.Durability = blockData.
+            // item.Durability = blockData.
             blockData.Item = item;
 
             Item.Add(item.Id, item);
@@ -214,7 +214,7 @@ namespace Spacebox.Game
             {
                 if (it.Name.ToLower() == name.ToLower())
                 {
-                    item =  it;
+                    item = it;
                     return true;
                 }
             }
@@ -235,43 +235,10 @@ namespace Spacebox.Game
             if (!Block.ContainsKey(id)) return new Block();
 
             BlockData data = Block[id];
+         
 
-          
+            return BlockFactory.CreateBlock(data);
 
-            if (data.Type.ToLower() == "interactive")
-            {
-                return new InteractiveBlock(data);
-            }
-
-            if (data.Type.ToLower() == "crusher")
-            {
-                return new CrusherBlock(data);
-            }
-
-            if (data.Type.ToLower() == "furnace")
-            {
-                return new FurnaceBlock(data);
-            }
-
-            if (data.Type.ToLower() == "disassembler")
-            {
-                return new DisassemblerBlock(data);
-            }
-
-            if (data.Type.ToLower() == "craftingtable")
-            {
-                return new CraftingTableBlock(data);
-            }
-
-            if (data.Type.ToLower() == "radar")
-            {
-                return new RadarBlock(data);
-            }
-
-
-            //if (id == 0) block.Type = BlockType.Air;
-
-            return new Block(data);
         }
 
         public static bool TryGetItemByBlockID(int blockID, out Item item)
@@ -372,16 +339,16 @@ namespace Spacebox.Game
             ProcessBlockDataTexture(block);
         }
 
-       
+
         public static AudioClip GetBlockAudioClipFromItemID(Item item, BlockInteractionType type)
         {
             return GetBlockAudioClipFromItemID(item.Id, type);
         }
         public static AudioClip GetBlockAudioClipFromItemID(short itemId, BlockInteractionType type)
         {
-           var blockData = GetBlockDataById(itemId);
+            var blockData = GetBlockDataById(itemId);
 
-            if(type == BlockInteractionType.Place)
+            if (type == BlockInteractionType.Place)
             {
                 return Sounds[blockData.SoundPlace];
             }

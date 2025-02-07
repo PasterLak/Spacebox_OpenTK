@@ -5,8 +5,6 @@ using Engine.Physics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
-using Engine;
-
 
 namespace Spacebox.Game.Player;
 
@@ -31,15 +29,20 @@ public class InteractionDefault : InteractionMode
         {
             if (hit.block == null) return;
 
-            var interactiveBlock = hit.block as InteractiveBlock;
+         
 
-            if (interactiveBlock == null)
+            if(hit.block.Is<InteractiveBlock>(out var interactiveBlock))
+            {
+                InteractiveBlock.UpdateInteractive(interactiveBlock, player, hit.chunk, hit.position);
+            }
+            else
             {
                 CenteredText.Hide();
                 return;
             }
+            
+         
 
-            InteractiveBlock.UpdateInteractive(interactiveBlock, player, hit.chunk, hit.position);
         }
         else
         {

@@ -41,7 +41,7 @@ namespace Spacebox.Game.Generation
         private List<Chunk> MeshesTogenerate = new List<Chunk>();
         public Dictionary<Vector3SByte, Chunk> ChunkDictionary { get; private set; } = new Dictionary<Vector3SByte, Chunk>();
         private Tag tag;
-
+        public ElectricNetworkManager ElectricManager { get; private set; }
         public Tag Tag => tag;
         private string _entityMassString = "0 tn";
         public BoundingBox GeometryBoundingBox { get; private set; }
@@ -63,7 +63,7 @@ namespace Spacebox.Game.Generation
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
 
             InitializeSharedResources();
-
+            ElectricManager = new ElectricNetworkManager();
             blockTexture = GameBlocks.BlocksTexture;
             atlasTexture = GameBlocks.LightAtlas;
             // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
@@ -327,6 +327,10 @@ namespace Spacebox.Game.Generation
             {
                 chunk.PlaceBlock(blockPos, block);
 
+                if(block.Is<ElectricalBlock>(out var el))
+                {
+                    ElectricManager.AddBlock(((int)localPos.X, (int)localPos.Y, (int)localPos.Z), el);
+                }
               
             }
             else
@@ -334,7 +338,12 @@ namespace Spacebox.Game.Generation
                 Chunk newChunk = new Chunk(chunkIndex, this, true);
                 AddChunk(newChunk, false);
                 newChunk.PlaceBlock(blockPos, block);
-               
+
+                if (block.Is<ElectricalBlock>(out var el))
+                {
+                    ElectricManager.AddBlock(((int)localPos.X, (int)localPos.Y, (int)localPos.Z), el);
+                }
+
             }
             return true;
         }
@@ -454,6 +463,16 @@ namespace Spacebox.Game.Generation
 
             }
 
+
+            time -= Time.Delta;
+
+            if(time < 0)
+            {
+
+                ElectricManager.UpdateAllNetworks();
+                time = 0.2f;
+            }
+
             if(ChunksToDelete.Count > 0) { 
                 foreach (var chunk in ChunksToDelete)
                 {
@@ -461,7 +480,7 @@ namespace Spacebox.Game.Generation
                 }
             }
         }
-
+        float time = 0.1f;
 
         public Octree<Chunk> Octree => octree;
 
@@ -522,8 +541,16 @@ namespace Spacebox.Game.Generation
             int blockZ = (int)localBlockPosition.Z - chunkZ * Chunk.Size;
             if (ChunkDictionary.TryGetValue(chunkIndex, out Chunk chunk))
             {
+
+                var block = chunk.GetBlock((byte)blockX, (byte)blockY, (byte)blockZ);
+
+                if (block is ElectricalBlock )
+                {
+                    ElectricManager.RemoveBlock(((int)localBlockPosition.X, (int)localBlockPosition.Y, (int)localBlockPosition.Z));
+                }
+
                 chunk.RemoveBlock((byte)blockX, (byte)blockY, (byte)blockZ,
-                                  removalNormal.X, removalNormal.Y, removalNormal.Z, true);
+                                 removalNormal.X, removalNormal.Y, removalNormal.Z, true);
                 return true;
             }
             else

@@ -6,6 +6,23 @@ using Engine;
 using Spacebox.GUI;
 namespace Spacebox.Game.Generation
 {
+
+    public interface IInteractiveBlock
+    {
+        public Keys KeyToUse { get; set; }
+        public string HoverText{ get; set; }
+        public Action<Astronaut> OnUse { get; set; }
+        public const byte InteractionDistance = 3;
+        public const byte InteractionDistanceSquared = (InteractionDistance * InteractionDistance);
+
+
+        public void Use(Astronaut a);
+        void OnHovered();
+        void OnNotHovered();
+        void UpdateInteractive(InteractiveBlock block, Astronaut player, Chunk chunk, Vector3 hitPos);
+
+
+    }
     public class InteractiveBlock : Block
     {
 
@@ -69,18 +86,6 @@ namespace Spacebox.Game.Generation
         {
             EnableEmission = state;
             lasState = state;
-
-            if (state)
-            {
-                //  LightLevel = 15;
-                //  LightColor = colorIfActive;
-
-            }
-            else
-            {
-                //  LightLevel = 0;
-                // LightColor = Vector3.Zero;
-            }
         }
         public void SetEmission(bool state)
         {
@@ -89,18 +94,9 @@ namespace Spacebox.Game.Generation
 
             if (chunk != null && EnableEmission != lasState)
             {
-                if (state)
-                {
-                    // LightLevel = 15;
-                    //    LightColor = colorIfActive;
+                //chunk.GenerateMesh(); MarkNeedsRegenerate
 
-                }
-                else
-                {
-                    //  LightLevel = 0;
-                    //  LightColor = Vector3.Zero;
-                }
-                chunk.GenerateMesh();
+                chunk.MarkNeedsRegenerate();
             }
             lasState = state;
         }

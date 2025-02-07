@@ -83,7 +83,7 @@
             "Ingredients": [{"Item": "Titanium Panels", "Quantity": 4}]
         },
         {
-            "Product": {"Item": "Cabel Block", "Quantity": 1},
+            "Product": {"Item": "Cable Block", "Quantity": 1},
             "Ingredients": [{"Item": "Aluminium Ingot", "Quantity": 1}]
         },
         {

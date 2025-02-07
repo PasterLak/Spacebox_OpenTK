@@ -42,6 +42,10 @@ namespace Spacebox.Game.Generation
 
         private bool needsToRegenerateMesh = false;
 
+        public void MarkNeedsRegenerate()
+        {
+            needsToRegenerateMesh = true;
+        }
         public SpaceEntity SpaceEntity { get; private set; }
         public BoundingBox BoundingBox { get; private set; }
         public BoundingBox GeometryBoundingBox { get; private set; }

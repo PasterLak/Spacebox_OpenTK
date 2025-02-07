@@ -64,8 +64,8 @@ namespace Spacebox.Game.Generation
             Overlay.AddElement(new WorldOverlayElement(this));
 
 
-            InputManager.AddAction("save", Keys.P, false);
-            InputManager.RegisterCallback("save", () => { SaveWorld(); });
+           // InputManager.AddAction("save", Keys.P, false);
+          //  InputManager.RegisterCallback("save", () => { SaveWorld(); });
 
          
         }

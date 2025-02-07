@@ -220,10 +220,10 @@ namespace Spacebox.Game.Resources
                     block.Top = block.Top.ToLower();
                     block.Bottom = block.Bottom.ToLower();
 
-                    if (!ValidateBlockType(block.Type))
+                    if (!BlockFactory.ValidateBlockType(block.Type))
                     {
                         Debug.Error($"Block '{block.Name}' has an invalid type and was skipped");
-                        Debug.Error($"Valid types are: {string.Join(", ", BlockTypes)}");
+                        Debug.Error($"Valid types are: {string.Join(", ", BlockFactory.GetBlockTypes())}");
                         continue;
                     }
 
@@ -308,12 +308,7 @@ namespace Spacebox.Game.Resources
             }
         }
 
-        private static string[] BlockTypes = { "block", "crusher", "furnace", "radar", "craftingtable", "disassembler", "interactive", "door", "light" };
-
-        private static bool ValidateBlockType(string type)
-        {
-            return BlockTypes.Contains(type.ToLower());
-        }
+  
 
         private static void LoadProjectiles(string modPath, string defaultModPath)
         {

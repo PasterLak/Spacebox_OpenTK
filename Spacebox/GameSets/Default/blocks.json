@@ -270,13 +270,14 @@
         "IsTransparent": false
     },
     {
-        "Name": "Cabel Block",
+        "Name": "Cable Block",
+         "Type": "cable",
         "Sides": "wire",
         "Category": "blocks",
         "IsTransparent": false
     },
     {
-        "Name": "Wires Pro",
+        "Name": "Cable Pro",
         "Sides": "wirePro",
         "Category": "blocks",
         "IsTransparent": true
@@ -482,6 +483,28 @@
         "Sides": "aluChestSide",
         "Top": "aluChestTop",
         "Bottom": "aluChestTop",
+        "PowerToDrill": 1,
+        "Mass": 4,
+        "Durability": 10,
+        "IsTransparent": false
+    },
+     {
+        "Name": "Standard Cobalt Power Block",
+        "Type" : "generator",
+        "Category": "resources",
+        "Sides": "generator",
+     
+        "PowerToDrill": 1,
+        "Mass": 4,
+        "Durability": 10,
+        "IsTransparent": false
+    },
+      {
+        "Name": "Consumer",
+        "Type" : "consumer",
+        "Category": "resources",
+        "Sides": "consumer",
+     
         "PowerToDrill": 1,
         "Mass": 4,
         "Durability": 10,
