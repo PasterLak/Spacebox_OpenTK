@@ -223,8 +223,13 @@ namespace Spacebox.Game.GUI
         public static void Render()
         {
             PanelRenderer.Render(Storage, SlotSize, SlotTexture, SelectedTexture, SelectedSlotId, _time);
-            if (SelectedSlot != null && SelectedSlot.HasItem && _time > 0)
-                PanelRenderer.DrawItemName(SelectedSlot.Item.Name);
+
+            if(Settings.ShowInterface)
+            {
+                if (SelectedSlot != null && SelectedSlot.HasItem && _time > 0)
+                    PanelRenderer.DrawItemName(SelectedSlot.Item.Name);
+            }
+          
         }
 
         public static ItemSlot CurrentSlot() => SelectedSlot;

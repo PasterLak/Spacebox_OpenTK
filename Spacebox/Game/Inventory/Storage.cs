@@ -81,7 +81,7 @@ namespace Spacebox.Game
 
             if (GameBlocks.TryGetItemByBlockID(block.BlockId, out var item))
             {
-                return TryAddItem(item, count);
+                return TryAddItem(item, count, out var rest);
             }
 
             return false;
@@ -89,6 +89,11 @@ namespace Spacebox.Game
         }
         public bool TryAddItem(Item item, byte count)
         {
+            return TryAddItem(item,count, out var rest);
+        }
+            public bool TryAddItem(Item item, byte count, out byte rest)
+        {
+            rest = 0;
             if (item == null) return false;
 
             if (TryFindUnfilledSlotWithItem(item, out ItemSlot slot))
@@ -108,7 +113,7 @@ namespace Spacebox.Game
                     slot.Count = item.StackSize;
                     count -= canPut;
 
-                    return TryAddItem(item, count);
+                    return TryAddItem(item, count, out rest);
                 }
             }
             else
@@ -123,7 +128,7 @@ namespace Spacebox.Game
 
                         count -= item.StackSize;
 
-                        return TryAddItem(item, count);
+                        return TryAddItem(item, count,out rest);
                     }
                     else if (count <= item.StackSize)
                     {
@@ -144,15 +149,16 @@ namespace Spacebox.Game
                 {
                     if (ConnectedStorage != null && MoveItemsToConnectedStorage)
                     {
-                        return ConnectedStorage.TryAddItem(item, count);
+                        return ConnectedStorage.TryAddItem(item, count, out rest);
                     }
 
-                    Debug.Error($"Storage {Name}: no empty slots and no connected storage. Items was not added: {count}");
+                    rest = count;
+                    //Debug.Error($"Storage {Name}: no empty slots and no connected storage. Items was not added: {count}");
                     return false;
                 }
             }
-
-            Debug.Error($"{Name}: failed to add items. Items was not added: {count}");
+            rest = count;
+            //Debug.Error($"{Name}: failed to add items. Items was not added: {count}");
             return false;
         }
 
@@ -332,6 +338,34 @@ namespace Spacebox.Game
         {
             Slots[x, y].SetData(item, count);
             OnDataWasChanged?.Invoke(this);
+        }
+
+
+        public static Storage operator+ (Storage s1, Storage s2)
+        {
+
+            Storage newStorage = new Storage((byte)(s1.SizeX + s2.SizeX), Math.Max(s1.SizeY,s2.SizeY));
+
+
+            for(int x = 0;x<s1.SizeX;x++)
+            {
+                for (int y = 0; y < s1.SizeY; y++)
+                {
+                    var slot = s1.GetSlot(x, y);
+                    newStorage.TryAddItem(slot.Item, slot.Count);
+                }
+            }
+
+            for (int x = 0; x < s2.SizeX; x++)
+            {
+                for (int y = 0; y < s2.SizeY; y++)
+                {
+                    var slot = s2.GetSlot(x, y);
+                    newStorage.TryAddItem(slot.Item, slot.Count);
+                }
+            }
+
+            return newStorage;
         }
 
     }

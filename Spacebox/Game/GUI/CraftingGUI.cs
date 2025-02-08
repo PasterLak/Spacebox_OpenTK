@@ -55,6 +55,7 @@ namespace Spacebox.Game.GUI
 
         private static CraftingCategory[] category;
         private static Storage Inventory;
+        private static Storage Panel;
 
         private static AudioSource scrollAudio;
         private static AudioSource clickAudio;
@@ -66,7 +67,7 @@ namespace Spacebox.Game.GUI
             var v = !IsVisible;
             ToggleManager.DisableAllWindows();
 
-            if( v )
+            if (v)
             {
                 ToggleManager.SetState("crafting", true);
                 ToggleManager.SetState("mouse", true);
@@ -82,6 +83,7 @@ namespace Spacebox.Game.GUI
             }
 
             Inventory = player.Inventory;
+            Panel = player.Panel;
             showGrid = false;
         }
 
@@ -128,7 +130,7 @@ namespace Spacebox.Game.GUI
                 | ImGuiWindowFlags.NoCollapse
                 | ImGuiWindowFlags.NoTitleBar
                 | ImGuiWindowFlags.NoScrollbar
-               
+
                 | ImGuiWindowFlags.NoScrollWithMouse
                 //| ImGuiWindowFlags.scr
                 );
@@ -169,7 +171,7 @@ namespace Spacebox.Game.GUI
                             //totalSlots = ((usedSlots + (6 - 1)) / 6) * 6;
 
                             totalSlots = 3 * 6;
-                            
+
                             showGrid = true;
                         }, y * countX + x);
                     }
@@ -180,7 +182,7 @@ namespace Spacebox.Game.GUI
                 DrawGridWithSlots(windowWidth, windowHeight, topOffset / 2f);
             }
 
-           // ImGui.PopStyleColor(6);
+            // ImGui.PopStyleColor(6);
             ImGui.End();
         }
 
@@ -197,7 +199,7 @@ namespace Spacebox.Game.GUI
                 new Vector2(childW, childH), // childW + scrollbarSize
                 ImGuiChildFlags.None,
                 ImGuiWindowFlags.NoScrollbar
-                | ImGuiWindowFlags.NoScrollbar 
+                | ImGuiWindowFlags.NoScrollbar
 
                 );
 
@@ -216,7 +218,7 @@ namespace Spacebox.Game.GUI
 
             //GameMenu.DrawElementColors(new Vector2(backButtonX, backButtonY), new Vector2(backButtonWidth, backButtonHeight), ImGui.GetIO().DisplaySize.Y);
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
-            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f,1f));
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1f));
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1f));
 
             if (ImGui.Button("Back", new Vector2(backButtonWidth, backButtonHeight)))
@@ -229,7 +231,7 @@ namespace Spacebox.Game.GUI
             float gridOffsetY = spacing + backButtonHeight + spacing;
             ImGui.SetCursorPos(new Vector2(0, gridOffsetY));
             float gridHeight = childH - gridOffsetY - spacing;
-           // ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, Vector2.Zero);
+            // ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, Vector2.Zero);
             ImGui.BeginTable("Grid", 6, ImGuiTableFlags.NoBordersInBody, new Vector2(childW, gridHeight));
             for (int i = 0; i < totalSlots; i++)
             {
@@ -242,7 +244,7 @@ namespace Spacebox.Game.GUI
             }
 
             ImGui.EndTable();
-          //  ImGui.PopStyleVar();
+            //  ImGui.PopStyleVar();
             ImGui.EndChild();
         }
 
@@ -260,6 +262,11 @@ namespace Spacebox.Game.GUI
                 Debug.Error("[Craft] Inventory is equal null!");
                 return;
             }
+            if (Panel == null)
+            {
+                Debug.Error("[Craft] Panel is equal null!");
+                return;
+            }
             if (blueprint.Product == null)
             {
                 Debug.Error("[Craft] Blueprint.Product is equal null!");
@@ -271,47 +278,56 @@ namespace Spacebox.Game.GUI
                 return;
             }
 
-            if (TryGetResources(Inventory, blueprint))
+            if (TryGetResources(Inventory, Panel, blueprint))
             {
-
-                if (Inventory.TryAddItem(blueprint.Product.Item, blueprint.Product.Quantity))
+                if (Inventory.TryAddItem(blueprint.Product.Item, blueprint.Product.Quantity, out var rest))
                 {
 
                 }
                 else
                 {
-                    Debug.Log("Error try add item");
+                    Panel.TryAddItem(blueprint.Product.Item, rest);
+                    // Debug.Log("Error try add item");
                 }
-
             }
             else
             {
 
             }
-
-
         }
 
-        private static bool TryGetResources(Storage storage, Blueprint blueprint)
+        private static bool TryGetResources(Storage s1, Storage s2, Blueprint blueprint)
         {
-            //var item = blueprint.Ingredients[i].Item;
-            //var quantity = blueprint.Products[0].Quantity;
-
-
-            for (int i = 0; i < blueprint.Ingredients.Length; i++)
+            foreach (var ing in blueprint.Ingredients)
             {
-                if (!storage.HasItem(blueprint.Ingredients[i].Item, blueprint.Ingredients[i].Quantity))
+                int totalAvailable = s1.GetTotalCountOf(ing.Item) + s2.GetTotalCountOf(ing.Item);
+                if (totalAvailable < ing.Quantity)
                     return false;
             }
-
-            for (int i = 0; i < blueprint.Ingredients.Length; i++)
+            foreach (var ing in blueprint.Ingredients)
             {
-                storage.DeleteItem(blueprint.Ingredients[i].Item, blueprint.Ingredients[i].Quantity);
+                int required = ing.Quantity;
+                int availableS1 = s1.GetTotalCountOf(ing.Item);
+                if (availableS1 >= required)
+                {
+                    s1.DeleteItem(ing.Item, (byte)required);
+                    continue;
+                }
+                else
+                {
+                    if (availableS1 > 0)
+                        s1.DeleteItem(ing.Item, (byte)availableS1);
+                    required -= availableS1;
+                    int availableS2 = s2.GetTotalCountOf(ing.Item);
+                    if (availableS2 >= required)
+                        s2.DeleteItem(ing.Item, (byte)required);
+                    else
+                        s2.DeleteItem(ing.Item, (byte)availableS2);
+                }
             }
-
             return true;
-
         }
+
 
         public static void EmptySlot(string label, Vector2 pos, float width, float height, Action<Blueprint> onClick, int slotId)
         {
@@ -375,8 +391,15 @@ namespace Spacebox.Game.GUI
             {
                 foreach (var ing in itemData.blueprint.Ingredients)
                 {
-
                     if (Inventory.HasItem(ing.Item, ing.Quantity))
+                    {
+
+                    }
+                    else if (Panel.HasItem(ing.Item, ing.Quantity))
+                    {
+
+                    }
+                    else if (Inventory.GetTotalCountOf(ing.Item) + Panel.GetTotalCountOf(ing.Item) >= ing.Quantity)
                     {
 
                     }
@@ -393,12 +416,12 @@ namespace Spacebox.Game.GUI
             {
                 if (canCraft)
                 {
-                    var count = CalculateItemCount(itemData.blueprint);
+                    var count = CalculatePossibleItemCraftCount(itemData.blueprint);
                     var t = count > 1 ? count.ToString() : "";
                     var text = ImGui.CalcTextSize(t);
                     drawList.AddImage(itemData.item.IconTextureId, buttonPos + offset, buttonPos + new Vector2(width, height) - offset);
 
-                    drawList.AddText(buttonPos + new Vector2(offset.X + offset.X/4f, height - text.Y ), ImGui.GetColorU32(new Vector4(0,0,0, 1)), t);
+                    drawList.AddText(buttonPos + new Vector2(offset.X + offset.X / 4f, height - text.Y), ImGui.GetColorU32(new Vector4(0, 0, 0, 1)), t);
                     drawList.AddText(buttonPos + new Vector2(offset.X, height - text.Y - text.Y / 12f), ImGui.GetColorU32(new Vector4(1f, 1f, 1f, 1)), t);
                 }
                 else
@@ -422,9 +445,10 @@ namespace Spacebox.Game.GUI
             OnHovered(itemData, drawList, buttonPos, offset, width, height, slotId);
         }
 
-        private static int CalculateItemCount(Blueprint blueprint)
+        private static int CalculatePossibleItemCraftCount(Blueprint blueprint)
         {
             if (Inventory == null) return 0;
+            if (Panel == null) return 0;
             if (blueprint == null) return 0;
             if (blueprint.Ingredients.Length == 0) return 0;
 
@@ -434,7 +458,7 @@ namespace Spacebox.Game.GUI
 
             for (int i = 0; i < r.Length; i++)
             {
-                r[i] = Inventory.GetTotalCountOf(blueprint.Ingredients[i].Item);
+                r[i] = Inventory.GetTotalCountOf(blueprint.Ingredients[i].Item) + Panel.GetTotalCountOf(blueprint.Ingredients[i].Item);
                 r[i] = r[i] / blueprint.Ingredients[i].Quantity;
 
                 if (r[i] < min) min = r[i];
@@ -450,14 +474,14 @@ namespace Spacebox.Game.GUI
 
             if (ImGui.IsItemHovered())
             {
-                if(hovered != slotId)
+                if (hovered != slotId)
                 {
                     hovered = slotId;
-                    if(scrollAudio.IsPlaying) scrollAudio.Stop();
+                    if (scrollAudio.IsPlaying) scrollAudio.Stop();
                     scrollAudio.Play();
                 }
- 
-               
+
+
                 list.AddImage(itemData.item.IconTextureId, buttonPos + offset, buttonPos + new Vector2(width, height) - offset);
                 ImGui.BeginTooltip();
 
@@ -476,7 +500,9 @@ namespace Spacebox.Game.GUI
                         foreach (var ing in itemData.blueprint.Ingredients)
                         {
 
-                            if (Inventory.HasItem(ing.Item, ing.Quantity))
+                            var c = Inventory.GetTotalCountOf(ing.Item) + Panel.GetTotalCountOf(ing.Item);
+
+                            if (c >= ing.Quantity)
                             {
                                 ImGui.TextColored(new Vector4(0, 1, 0, 1), ing.ToString());
                             }
@@ -494,7 +520,7 @@ namespace Spacebox.Game.GUI
                 //ImGui.TextColored(new Vector4(1, 0, 0, 1), "x3 Components");
                 ImGui.EndTooltip();
             }
-          
+
         }
 
 
@@ -518,7 +544,7 @@ namespace Spacebox.Game.GUI
             uint cc = ImGui.GetColorU32(new Vector4(1f, 1f, 0.0f, 1f));
             var drawList = ImGui.GetWindowDrawList();
 
-            drawList.AddRectFilled(buttonPos, buttonPos + new Vector2(width, height), Theme.Colors.BorderLightUint); 
+            drawList.AddRectFilled(buttonPos, buttonPos + new Vector2(width, height), Theme.Colors.BorderLightUint);
             drawList.AddRectFilled(buttonPos + padding, buttonPos + new Vector2(width, height), Theme.Colors.BorderDarkUint);
 
             drawList.AddRectFilled(buttonPos + padding, buttonPos + new Vector2(width, height) - padding, Theme.Colors.BackgroundUint);
@@ -526,7 +552,7 @@ namespace Spacebox.Game.GUI
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.6f, 0.6f, 0.6f, 0f));
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 0.5f));
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 0.5f));
- 
+
             ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1, 0, 0, 0));
 
             if (ImGui.Button("##menuButton" + label, new Vector2(width, height)))
@@ -542,7 +568,7 @@ namespace Spacebox.Game.GUI
                 drawList.AddImage(category[categoryId].IconPtr, buttonPos + offset * 4, buttonPos + new Vector2(width, height) - offset);
 
             }
-            drawList.AddText(LoadFont(), height / 6f, buttonPos + new Vector2(10, 10), Theme.Colors.Deep2Uint , "" +category[categoryId].Name);
+            drawList.AddText(LoadFont(), height / 6f, buttonPos + new Vector2(10, 10), Theme.Colors.Deep2Uint, "" + category[categoryId].Name);
 
             ImGui.PopStyleColor(4);
         }

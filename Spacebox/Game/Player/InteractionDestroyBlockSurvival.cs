@@ -290,7 +290,6 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 return;
             }
 
-            if (Vector3.DistanceSquared(hit.position, player.Position) <= 3 * 3)
                 InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
         }
         else

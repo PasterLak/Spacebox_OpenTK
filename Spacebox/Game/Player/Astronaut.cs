@@ -214,7 +214,7 @@ namespace Spacebox.Game.Player
 
             if (Input.IsKeyDown(Keys.R))
             {
-                CameraRelativeRender = !CameraRelativeRender;
+                //CameraRelativeRender = !CameraRelativeRender;
             }
 
             if (Input.IsKeyDown(Keys.U))

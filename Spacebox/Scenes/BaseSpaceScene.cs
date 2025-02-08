@@ -325,12 +325,13 @@ namespace Spacebox.Scenes
            
             if (Input.IsKeyDown(Keys.L))
             {
-                pLight.IsActive = !pLight.IsActive;
+               // pLight.IsActive = !pLight.IsActive;
             
             }
 
             if (Input.IsKeyDown(Keys.K))
             {
+                /*
                 var l = PointLightsPool.Instance.Take();
                 l.IsActive = true;
                 l.Position = localPlayer.Position;
@@ -338,7 +339,7 @@ namespace Spacebox.Scenes
                 l.Ambient = new Color3Byte(100, 116, 255).ToVector3();
                 l.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
                 l.Specular = new Color3Byte(0, 0, 0).ToVector3();
-              
+              */
             }
 
             if (Input.IsKeyDown(Keys.Escape))

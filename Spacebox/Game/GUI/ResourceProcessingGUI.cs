@@ -6,6 +6,7 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
 using System.Numerics;
 using Spacebox.Game.GUI.Menu;
+using System.Runtime.CompilerServices;
 
 namespace Spacebox.Game.GUI
 {
@@ -34,12 +35,12 @@ namespace Spacebox.Game.GUI
             {
                 _isVisible = value;
 
-                if(_isVisible)
+                if (_isVisible)
                 {
 
 
                     openSound?.Play();
-                    
+
                 }
                 else
                 {
@@ -55,9 +56,10 @@ namespace Spacebox.Game.GUI
         private static AudioSource closeSound;
 
         private static AudioSource pickupSound;
-
+        private static Astronaut Player;
         public static void Toggle(Astronaut player)
         {
+            Player = player;
             if (!ToggleManager.Exists("resourceProcessing"))
             {
                 batteryIcon = IntPtr.Zero;
@@ -94,7 +96,7 @@ namespace Spacebox.Game.GUI
 
                 ToggleManager.DisableAllWindows();
 
-                
+
 
             }
             else
@@ -105,8 +107,8 @@ namespace Spacebox.Game.GUI
 
             }
 
-            
-                   
+
+
 
             ToggleManager.SetState("resourceProcessing", v);
 
@@ -314,13 +316,11 @@ namespace Spacebox.Game.GUI
         {
             if (processingBlock != null)
             {
-
                 if (InputStorage.GetSlot(0, 0).Count == 0)
                 {
                     status = "Status: Done";
                     processingBlock.StopTask();
                 }
-
                 if (processingBlock.IsRunning)
                 {
                     status = "Status: " + processingBlock.GetTaskProgress() + "/100";
@@ -332,16 +332,10 @@ namespace Spacebox.Game.GUI
                         status = "Status: Wrong ingredient!";
                         processingBlock.StopTask();
                     }
-
                     status = "Status: Done";
                 }
-
-
-
             }
             else { status = "Status: Done"; }
-
-
         }
 
         public static void OnGUI()
@@ -409,17 +403,30 @@ namespace Spacebox.Game.GUI
             {
                 if (slot.Storage.ConnectedStorage != null)
                 {
-                    slot.MoveItemToConnectedStorage();
-
-                    if(pickupSound.IsPlaying)
+                    if (slot.TryMoveItemToConnectedStorage(out var rest))
                     {
-                        pickupSound.Stop();
-                        pickupSound.Play();
+                        if (pickupSound.IsPlaying)
+                        {
+                            pickupSound.Stop();
+                            pickupSound.Play();
+                        }
+                        else
+                        {
+                            pickupSound.Play();
+                        }
                     }
                     else
                     {
-                        pickupSound.Play();
+                        if(Player != null && Player.Panel != null)
+                        {
+                            if (Player.Panel.TryAddItem(slot.Item, rest))
+                            {
+                                slot.Count = (byte)(slot.Count - rest);
+                            }
+                        }
                     }
+
+                   
                 }
                 else
                 {

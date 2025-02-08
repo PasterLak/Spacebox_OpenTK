@@ -15,7 +15,7 @@ namespace Spacebox.Game
             set
             {
                 _count = value;
-                if(Storage != null)
+                if (Storage != null)
                 {
                     Storage.OnDataWasChanged?.Invoke(Storage);
                 }
@@ -112,8 +112,8 @@ namespace Spacebox.Game
                 }
             }
 
-           // Storage.OnDataWasChanged?.Invoke(Storage);
-           // slotToSwapWith.Storage.OnDataWasChanged?.Invoke(slotToSwapWith.Storage);
+            // Storage.OnDataWasChanged?.Invoke(Storage);
+            // slotToSwapWith.Storage.OnDataWasChanged?.Invoke(slotToSwapWith.Storage);
         }
 
         public bool HasItem => Item != null && Count > 0;
@@ -129,10 +129,10 @@ namespace Spacebox.Game
             byte split1 = (byte)(count / 2);
             byte split2 = (byte)(split1 + (count % 2));
 
-            if (Storage.TryAddItem(Item, split2))
+            if (Storage.TryAddItem(Item, split2, out var rest))
             {
                 //Item = item;
-               // Storage.OnDataWasChanged?.Invoke(Storage);
+                // Storage.OnDataWasChanged?.Invoke(Storage);
 
                 Count = split1;
             }
@@ -144,6 +144,18 @@ namespace Spacebox.Game
                 Debug.Error("Item name: " + Item.Name);
 
                 Count = count;
+
+                if (Storage.ConnectedStorage != null)
+                {
+                    if (Storage.ConnectedStorage.TryAddItem(Item, split2, out var rest2))
+                    {
+                        Count = (byte)(split1 + rest2);
+                    }
+                    else
+                    {
+                        Count = count;
+                    }
+                }
             }
         }
         public void MoveItemToConnectedStorage()
@@ -159,19 +171,50 @@ namespace Spacebox.Game
 
                 Clear();
 
-                if (target.TryAddItem(Item, count))
+                if (target.TryAddItem(Item, count, out var rest))
                 {
-                    
+
                 }
                 else
                 {
 
-                    Debug.Error("Failed to add item to " + target.Name + " by moving from " + Storage.Name);
-                    Debug.Error("Item name was: " + Item.Name);
+                    //  Debug.Error("Failed to add item to " + target.Name + " by moving from " + Storage.Name);
+                    //  Debug.Error("Item name was: " + Item.Name);
 
                     Count = count;
                 }
             }
+        }
+
+        public bool TryMoveItemToConnectedStorage(out byte rest)
+        {
+            rest = 0;
+            if (!HasItem) return false;
+
+            Storage target = Storage.ConnectedStorage;
+
+            if (target != null)
+            {
+
+                byte count = Count;
+
+                Clear();
+
+                if (target.TryAddItem(Item, count, out rest))
+                {
+                    return true;
+                }
+                else
+                {
+
+
+
+                    Count = rest;
+                    return false;
+                }
+            }
+
+            return false;
         }
     }
 }
