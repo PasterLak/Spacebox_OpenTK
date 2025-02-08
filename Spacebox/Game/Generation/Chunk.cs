@@ -75,6 +75,7 @@ namespace Spacebox.Game.Generation
                 if (isLoaded && loadedBlocks != null)
                 {
                     Array.Copy(loadedBlocks, Blocks, loadedBlocks.Length);
+                    RegisterElectricalBlocks();
                     IsGenerated = true;
                 }
                 else
@@ -99,6 +100,37 @@ namespace Spacebox.Game.Generation
 
 
             _isLoadedOrGenerated = true;
+
+           
+        }
+
+        public void RegisterElectricalBlocks()
+        {
+            for (int x = 0; x < Chunk.Size; x++)
+            {
+                for (int y = 0; y < Chunk.Size; y++)
+                {
+                    for (int z = 0; z < Chunk.Size; z++)
+                    {
+                        Block block = Blocks[x, y, z];
+
+                        if (block.BlockId != 0 && block is ElectricalBlock eBlock)
+                        {
+     
+                            if (eBlock.EFlags == ElectricalFlags.None)
+                                continue;
+
+                            int worldX = PositionIndex.X * Size + x;
+                            int worldY = PositionIndex.Y * Size + y;
+                            int worldZ = PositionIndex.Z * Size + z;
+                            var globalPos = (worldX, worldY, worldZ);
+                            //eBlock.IsActive = false;
+                            SpaceEntity. ElectricManager.AddBlockFast(globalPos, eBlock, this);
+                        }
+                    }
+                }
+            }
+            SpaceEntity.ElectricManager.Rebuild();
         }
 
         public static Vector3SByte GetChunkIndex(Vector3 worldPosition, Vector3 entityWorldPosition)

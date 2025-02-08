@@ -153,9 +153,10 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 b.GiveAllResourcesBack(selectedItemSlot.Storage);
             }
         }
-        hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
+       // hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
 
-        var x = (hit.chunk.PositionIndex * Chunk.Size);
+        hit.chunk.SpaceEntity.RemoveBlockAtLocal(hit.blockPositionEntity, hit.normal);
+       var x = (hit.chunk.PositionIndex * Chunk.Size);
         var localPos = new Vector3(x.X + hit.blockPositionIndex.X, x.Y + hit.blockPositionIndex.Y, x.Z + hit.blockPositionIndex.Z);
        
 

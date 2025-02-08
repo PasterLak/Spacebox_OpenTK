@@ -329,7 +329,8 @@ namespace Spacebox.Game.Generation
 
                 if(block.Is<ElectricalBlock>(out var el))
                 {
-                    ElectricManager.AddBlock(((int)localPos.X, (int)localPos.Y, (int)localPos.Z), el);
+                   // Debug.Log("local " + localPos);
+                    ElectricManager.AddBlock(((int)localPos.X, (int)localPos.Y, (int)localPos.Z), el,chunk);
                 }
               
             }
@@ -341,7 +342,8 @@ namespace Spacebox.Game.Generation
 
                 if (block.Is<ElectricalBlock>(out var el))
                 {
-                    ElectricManager.AddBlock(((int)localPos.X, (int)localPos.Y, (int)localPos.Z), el);
+                   // Debug.Log("local " + localPos);
+                    ElectricManager.AddBlock(((int)localPos.X, (int)localPos.Y, (int)localPos.Z), el, newChunk);
                 }
 
             }
@@ -464,14 +466,7 @@ namespace Spacebox.Game.Generation
             }
 
 
-            time -= Time.Delta;
-
-            if(time < 0)
-            {
-
-                ElectricManager.UpdateAllNetworks();
-                time = 0.2f;
-            }
+           
 
             if(ChunksToDelete.Count > 0) { 
                 foreach (var chunk in ChunksToDelete)
@@ -480,7 +475,7 @@ namespace Spacebox.Game.Generation
                 }
             }
         }
-        float time = 0.1f;
+  
 
         public Octree<Chunk> Octree => octree;
 

@@ -200,6 +200,14 @@
             "Product": {"Item": "Disassembler", "Quantity": 1},
             "Ingredients": [{"Item": "Basic Machine", "Quantity": 1}]
         },
+         {
+            "Product": {"Item": "Standard Cobalt Power Block", "Quantity": 1},
+            "Ingredients": [
+                {"Item": "Aluminium Light Block", "Quantity": 1},
+                {"Item": "Energy Cell", "Quantity": 6}
+
+            ]
+        },
         
 
         {

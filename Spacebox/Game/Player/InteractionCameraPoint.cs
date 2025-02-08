@@ -13,7 +13,7 @@ namespace Spacebox.Game.Player
         private CubeRenderer cubeRenderer;
         private bool IsEditing = true;
         private bool isFlying = false;
-        public float FlightSpeed = 2f;
+        public float FlightSpeed = 0.02f;
         private float flightDistance = 0f;
         private float totalPathLength = 0f;
         public bool LookAlongPath = false;
@@ -158,7 +158,7 @@ namespace Spacebox.Game.Player
                         isFlying = true;
                         flightDistance = 0f;
                         CenteredText.Hide();
-                    }
+                    }   
                 }
             }
         }
@@ -171,7 +171,7 @@ namespace Spacebox.Game.Player
                 float scrollDelta = Input.MouseScrollDelta.Y;
                 if (MathF.Abs(scrollDelta) > 0.0001f)
                 {
-                    FlightSpeed = MathF.Max(0.1f, FlightSpeed + scrollDelta * 0.2f);
+                    FlightSpeed = MathF.Max(0.01f, FlightSpeed + scrollDelta * 0.2f);
                 }
 
                 if(!isFlying)

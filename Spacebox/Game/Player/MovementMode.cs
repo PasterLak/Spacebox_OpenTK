@@ -1,5 +1,4 @@
 ﻿using OpenTK.Mathematics;
-using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using Engine.Audio;
@@ -9,8 +8,6 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 
-using Spacebox.Scenes;
-using Spacebox.GUI;
 
 namespace Spacebox.Game.Player;
 
@@ -366,14 +363,14 @@ public class MovementMode : GameModeBase
 
             if (damage > 5)
             {
-                OldSpaceScene.DeathOn = false;
+              /*  BaseSpaceScene.DeathOn = false;
                 flySpeedUpAudio.Stop();
                 BlackScreenOverlay.IsEnabled = true;
                 ToggleManager.SetState("player", false);
                 Settings.ShowInterface = false;
 
                 OldSpaceScene.Death.Play();
-                OldSpaceScene.DeathOn = true;
+                OldSpaceScene.DeathOn = true;*/
             }
 
 

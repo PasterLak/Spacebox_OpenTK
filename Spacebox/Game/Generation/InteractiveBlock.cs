@@ -7,30 +7,14 @@ using Spacebox.GUI;
 namespace Spacebox.Game.Generation
 {
 
-    public interface IInteractiveBlock
-    {
-        public Keys KeyToUse { get; set; }
-        public string HoverText{ get; set; }
-        public Action<Astronaut> OnUse { get; set; }
-        public const byte InteractionDistance = 3;
-        public const byte InteractionDistanceSquared = (InteractionDistance * InteractionDistance);
-
-
-        public void Use(Astronaut a);
-        void OnHovered();
-        void OnNotHovered();
-        void UpdateInteractive(InteractiveBlock block, Astronaut player, Chunk chunk, Vector3 hitPos);
-
-
-    }
-    public class InteractiveBlock : Block
+    public class InteractiveBlock : ElectricalBlock
     {
 
         public Keys KeyToUse { get; private set; } = Keys.F;
         public const byte InteractionDistance = 3;
         public const byte InteractionDistanceSquared = (InteractionDistance * InteractionDistance);
         public string HoverText = "Press RMB to use";
-
+        public string HoverTextDeactivated = "No power";
         public Action<Astronaut> OnUse;
         public Chunk chunk;
         private bool lasState;
@@ -38,13 +22,23 @@ namespace Spacebox.Game.Generation
         public Vector3 colorIfActive = new Vector3(0.7f, 0.4f, 0.2f) / 4f;
         public virtual void Use(Astronaut player)
         {
-            CenteredText.SetText(HoverText);
+            SetText();
             OnUse?.Invoke(player);
         }
 
+        private void SetText()
+        {
+            if(EFlags == ElectricalFlags.None)
+            {
+                CenteredText.SetText( HoverText );
+                return;
+            }
+            CenteredText.SetText(IsActive ? HoverText : HoverTextDeactivated);
+
+        }
         private void OnHovered()
         {
-            CenteredText.SetText(HoverText);
+            SetText();
             CenteredText.Show();
         }
 
@@ -80,6 +74,11 @@ namespace Spacebox.Game.Generation
 
         public InteractiveBlock(BlockData blockData) : base(blockData)
         {
+            EFlags = ElectricalFlags.None;
+            MaxPower = 300;
+            ConsumptionRate = 0;
+            CurrentPower = 0;
+            EnableEmission = true;
         }
 
         public void SetEmissionWithoutRedrawChunk(bool state)

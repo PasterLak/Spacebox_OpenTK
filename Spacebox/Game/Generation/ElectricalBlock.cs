@@ -1,4 +1,5 @@
-﻿using Spacebox.Game.Resources;
+﻿using Engine;
+using Spacebox.Game.Resources;
 
 using System.Runtime.CompilerServices;
 
@@ -24,6 +25,16 @@ namespace Spacebox.Game.Generation
             CurrentPower = 0;
             EnableEmission = false;
            // MaxPower = 100;
+        }
+
+        private bool _isActive;
+
+        public bool IsActive
+        {
+            get { return _isActive; }
+            set { _isActive = value;
+                SetEnableEmission(value);
+            }
         }
         public short CurrentPower
         {
@@ -94,6 +105,8 @@ namespace Spacebox.Game.Generation
                 short remain = (short)(CurrentPower - ConsumptionRate);
                 CurrentPower = (remain < 0) ? (short)0 : remain;
             }
+
+            //Debug.Log("electric block energy "  + CurrentPower);
             
         }
 

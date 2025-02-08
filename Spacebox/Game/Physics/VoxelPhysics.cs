@@ -143,16 +143,18 @@ namespace Spacebox.Game.Physics
 
         public static bool RaycastChunk(Ray ray, Chunk chunk, out HitInfo hitInfo)
         {
-            return Raycast(ray, chunk.PositionWorld, chunk.Blocks, out hitInfo);
+            return Raycast(ray, chunk.PositionWorld, ref chunk, out hitInfo);
         }
 
-        private static bool Raycast(Ray ray, Vector3 chunkPosWorld, Block[,,] blocks, out HitInfo hitInfo)
+        private static bool Raycast(Ray ray, Vector3 chunkPosWorld, ref Chunk chunk, out HitInfo hitInfo)
         {
+            Block[,,] blocks = chunk.Blocks;
 
             hitInfo.position = Vector3.Zero;
             hitInfo.blockPositionIndex = new Vector3Byte(0, 0, 0); // or -1 ????
+            hitInfo.blockPositionEntity = new Vector3i(0) ;    
             hitInfo.normal = Vector3SByte.Zero;
-            hitInfo.chunk = null;
+            hitInfo.chunk = chunk;
             hitInfo.block = null;
 
             // if (!_isLoadedOrGenerated) return false;
@@ -227,6 +229,10 @@ namespace Spacebox.Game.Physics
                                 break;
                         }
 
+                        hitInfo.blockPositionEntity = new Vector3i(
+                            chunk.PositionIndex.X * Chunk.Size + hitInfo.blockPositionIndex.X,
+                             chunk.PositionIndex.Y * Chunk.Size + hitInfo.blockPositionIndex.Y,
+                              chunk.PositionIndex.Z * Chunk.Size + hitInfo.blockPositionIndex.Z);
 
                         hitInfo.block = block;
                         return true;

@@ -11,12 +11,26 @@ namespace Spacebox.Game.Generation
 
             if (RadarUI.Instance != null)
                 OnUse += RadarUI.Instance.Toggle;
+
+            EFlags = ElectricalFlags.CanConsume;
+            MaxPower = 200;
+            ConsumptionRate = 5;
+            CurrentPower = 0;
         }
 
         public override void Use(Astronaut player)
         {
           
+            if (!IsActive) return;
+
             base.Use(player);
+        }
+
+        public override void TickElectric()
+        {
+            base.TickElectric();
+
+           // SetEnableEmission(CurrentPower > 0);
         }
     }
 }
