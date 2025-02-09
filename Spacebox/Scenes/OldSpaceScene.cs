@@ -453,15 +453,6 @@ namespace Spacebox.Scenes
             VisualDebug.DrawBoundingSphere(b, Color4.AliceBlue);
             blockSelector.Render(player);
 
-
-            if (InteractionShoot.Instance != null)
-            {
-                if (InteractionShoot.Instance.sphereRenderer != null)
-                {
-                }
-                InteractionShoot.Instance.sphereRenderer.Render();
-            }
-
             GL.Disable(EnableCap.DepthTest);
 
             GL.Enable(EnableCap.Blend);

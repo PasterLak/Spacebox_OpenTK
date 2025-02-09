@@ -1,7 +1,7 @@
 [
     {
         "Name": "pistoleProjectile",
-        "Speed": 12,
+        "Speed": 15,
         "MaxTravelDistance": 50,
         "Length": 0.4,
         "Thickness": 0.05,
@@ -12,7 +12,7 @@
     },
     {
         "Name": "smgProjectile",
-        "Speed": 18,
+        "Speed": 19,
         "MaxTravelDistance": 80,
         "Length": 0.75,
         "Thickness": 0.05,
@@ -23,7 +23,7 @@
     },
     {
         "Name": "assaultProjectile",
-        "Speed": 24,
+        "Speed": 25,
         "MaxTravelDistance": 100,
         "Length": 0.65,
         "Thickness": 0.05,
@@ -34,8 +34,8 @@
     },
     {
         "Name": "arProjectile",
-        "Speed": 20,
-        "MaxTravelDistance": 80,
+        "Speed": 22,
+        "MaxTravelDistance": 70,
         "Length": 0.5,
         "Thickness": 0.2,
         "Color": {"r": 178,"g": 0,"b": 255},

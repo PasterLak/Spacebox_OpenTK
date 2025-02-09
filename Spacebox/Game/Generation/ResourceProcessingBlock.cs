@@ -143,13 +143,13 @@ namespace Spacebox.Game.Generation
         public bool TryStartTask(out ProcessResourceTask task)
         {
             task = null;
-            Debug.Log("Try start");
+
             if (!HasInput()) return false;
             if (IsRunning) return false;
 
             if (GameBlocks.TryGetRecipe(blockType, InputStorage.GetSlot(0, 0).Item.Id, out Recipe))
             {
-                Debug.Log($"Recipe  {Recipe.Id}ticks:  {Recipe.RequiredTicks}");
+
             }
             else return false;
 
@@ -175,7 +175,7 @@ namespace Spacebox.Game.Generation
             currentTick = 0;
 
             task = new ProcessResourceTask(ticksRequared, this);
-            Task = task; Debug.Log(" start " + ticksRequared);
+            Task = task;
             task.OnTick += OnTick;
             return true;
         }
@@ -185,10 +185,10 @@ namespace Spacebox.Game.Generation
             if (!IsRunning) return;
 
             currentTick++;
-            Debug.Log("Tick: " + currentTick + " of " + craftTicks);
+
             if (currentTick >= craftTicks)
             {
-               
+
                 currentTick = 0;
             }
         }
@@ -202,7 +202,7 @@ namespace Spacebox.Game.Generation
         {
             if (!outSlot.HasItem) return true;
 
-         
+
             if (outSlot.Item.Id != recipe.Product.Item.Id)
                 return false;
 
@@ -221,7 +221,7 @@ namespace Spacebox.Game.Generation
         }
         public void Craft()
         {
-            Debug.Log("Craft");
+
             if (Recipe == null)
             {
                 craftTicks = 0;
@@ -258,16 +258,16 @@ namespace Spacebox.Game.Generation
             {
                 OutputStorage.TryAddItem(Recipe.Product.Item, Recipe.Product.Quantity);
             }
- OnCrafted?.Invoke(this);
+            OnCrafted?.Invoke(this);
             if (!HasInput())
             {
                 craftTicks = 0;
                 currentTick = 0;
                 IsRunning = false;
-                Debug.Log("stop");
+
             }
 
-           
+
         }
 
     }

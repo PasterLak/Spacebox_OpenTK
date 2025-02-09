@@ -33,8 +33,6 @@ public class InteractionShoot : InteractionMode
     private float _time = 0;
     private bool canShoot = false;
 
-    public SphereRenderer sphereRenderer;
-
     private PointLight light;
     public InteractionShoot(ItemSlot itemslot)
     {
@@ -48,10 +46,6 @@ public class InteractionShoot : InteractionMode
             BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1),
                 texture, ShaderManager.GetShader("Shaders/particle"));
         }
-
-
-
-
 
         UpdateItemSlot(itemslot);
 
@@ -76,21 +70,6 @@ public class InteractionShoot : InteractionMode
             shotSound.Volume = 1f;
         }
 
-        if (sphereRenderer == null)
-        {
-            sphereRenderer = new SphereRenderer(Camera.Main.Position, 0.5f, 8, 8);
-            //sphereRenderer.Color = ne;
-            sphereRenderer.Color = new Color4(1, 1, 1, 0.1f);
-            sphereRenderer.TextureId = TextureManager.GetTexture("Resources/Textures/arSphere.png").Handle;
-            sphereRenderer.Scale = new Vector3(1, 1, 1);
-
-        }
-        else
-        {
-            sphereRenderer.Scale = new Vector3(1, 1, 1);
-
-        }
-
         light = PointLightsPool.Instance.Take();
 
         light.Range = 4;
@@ -113,9 +92,7 @@ public class InteractionShoot : InteractionMode
     {
         _time = 0;
         model?.SetAnimation(true);
-        sphereRenderer.Enabled = false;
-
-
+       
         light.IsActive = false;
     }
 
@@ -128,12 +105,12 @@ public class InteractionShoot : InteractionMode
         // model?.SetAnimation(false);
         model.Position = startPos;
         lineRenderer.ClearPoints();
-        sphereRenderer.Enabled = false;
+        //  sphereRenderer.Enabled = false;
 
-        sphereRenderer.Dispose();
-
-        if(PointLightsPool.Instance != null)
-       PointLightsPool.Instance.PutBack(light);
+        // sphereRenderer.Dispose();
+        //  sphereRenderer = null;
+        if (PointLightsPool.Instance != null)
+            PointLightsPool.Instance.PutBack(light);
     }
     private Vector3 startPos;
 
@@ -145,11 +122,9 @@ public class InteractionShoot : InteractionMode
 
         despawnPos = p.Position;
 
-        sphereRenderer.Position = despawnPos;
-        sphereRenderer.Scale = new Vector3(1, 1, 1);
-        sphereRenderer.Enabled = true;
-        alpha = 0.3f;
-        renderSphere = true;
+        var sphereRenderer = SpheresPool.Instance.Take();
+        sphereRenderer.Activate(despawnPos);
+     
     }
 
     private Vector3 despawnPos = Vector3.Zero;
@@ -160,7 +135,7 @@ public class InteractionShoot : InteractionMode
     {
         if (lightTime > 0)
         {
-            if(light.Range > 1)
+            if (light.Range > 1)
             {
                 //light.Range = light.Range - Time.Delta * 2;
             }
@@ -172,34 +147,7 @@ public class InteractionShoot : InteractionMode
             lightTime = 0;
             light.IsActive = false;
         }
-        if (renderSphere)
-        {
 
-            
-
-            const int sp = 800;
-            sphereRenderer.Scale += new Vector3(sp, sp, sp) * Time.Delta;
-
-            if (alpha > 0)
-            {
-                alpha -= Time.Delta;
-
-            }
-            else
-            {
-                alpha = 0;
-            }
-            sphereRenderer.Color = new Color4(1, 1, 1, alpha);
-
-            if (sphereRenderer.Scale.X > 2000 || alpha == 0)
-            {
-                renderSphere = false;
-                sphereRenderer.Enabled = false;
-                alpha = 1f;
-                sphereRenderer.Scale = new Vector3(1, 1, 1);
-                // sphereRenderer.Position = despawnPos;
-            }
-        }
 
         if (_time < weapon.ReloadTime * 0.05f)
         {
@@ -248,7 +196,8 @@ public class InteractionShoot : InteractionMode
                 CenteredText.Hide();
 
             }
-        }else
+        }
+        else
         {
             CenteredText.Hide();
         }
@@ -275,17 +224,17 @@ public class InteractionShoot : InteractionMode
 
             if (projectileParameters == null) return;
 
-           
+
             light.Ambient = projectileParameters.Color3;
             light.IsActive = false;
             lightTime = 1f;
             dir = player.Front;
             light.Position = player.Position;
             light.Range = 4;
-            projectile.Initialize(new Ray(Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.05f, player.Front, 1f), 
-                projectileParameters );
+            projectile.Initialize(new Ray(Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.05f, player.Front, 1f),
+                projectileParameters);
             alpha = 0.3f;
-            sphereRenderer.Scale = new Vector3(1, 1, 1);
+         
             _time = 0;
 
             /*if (World.CurrentSector.Raycast(ray, out var hit))
@@ -328,7 +277,7 @@ public class InteractionShoot : InteractionMode
 
     }
 
-    
+
 
     private void DestroyBlock(HitInfo hit)
     {

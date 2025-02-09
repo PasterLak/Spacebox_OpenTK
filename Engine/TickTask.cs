@@ -16,7 +16,7 @@
         public Action OnTick { get; set; }
         private bool _deleteAfterComplete;
 
-        public TickTask(int requiredTicks, bool deleteAfterComplete = false)
+        public TickTask(int requiredTicks, bool deleteAfterComplete)
         {
             RequiredTicks = requiredTicks;
             _currentTicks = 0;
@@ -24,7 +24,7 @@
             _deleteAfterComplete = deleteAfterComplete;
         }
 
-        public TickTask(int requiredTicks, Action onComplete, bool deleteAfterComplete = false)
+        public TickTask(int requiredTicks, Action onComplete, bool deleteAfterComplete )
         {
             RequiredTicks = requiredTicks;
             _currentTicks = 0;

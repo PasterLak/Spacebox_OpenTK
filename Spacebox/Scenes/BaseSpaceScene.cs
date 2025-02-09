@@ -49,7 +49,7 @@ namespace Spacebox.Scenes
         protected SimpleBlock block1;
         protected SimpleBlock block2;
         protected PointLight pLight;
-
+        private SpheresPool SpheresPool;
         private bool isMultiplayer = false;
       
         public BaseSpaceScene(string[] args) : base(args)
@@ -261,6 +261,7 @@ namespace Spacebox.Scenes
             WelcomeUI.OnPlayerSpawned(World.Data.Info.ShowWelcomeWindow);
             WelcomeUI.Init();
             PauseUI.Init();
+            SpheresPool = new SpheresPool();
         }
 
         public override void Start()
@@ -373,7 +374,7 @@ namespace Spacebox.Scenes
 
             if (InteractionShoot.ProjectilesPool != null)
                 InteractionShoot.ProjectilesPool.Update();
-
+            SpheresPool.Update();
             if (!Debug.IsVisible)
             {
                 if (Input.IsKeyDown(Keys.KeyPadEnter))
@@ -448,14 +449,8 @@ namespace Spacebox.Scenes
             VisualDebug.DrawBoundingSphere(b, Color4.AliceBlue);
             blockSelector.Render(localPlayer);
 
-            if (InteractionShoot.Instance != null)
-            {
-                if (InteractionShoot.Instance.sphereRenderer != null)
-                {
-                   
-                }
-                InteractionShoot.Instance.sphereRenderer.Render();
-            }
+            SpheresPool.Render();
+     
 
             GL.Disable(EnableCap.DepthTest);
 
@@ -515,7 +510,7 @@ namespace Spacebox.Scenes
             world.Dispose();
             ToggleManager.Dispose();
             Debug.OnVisibilityWasChanged -= OnDebugStateChanged;
-
+            SpheresPool.Dispose();
             InteractionPlaceBlock.lineRenderer = null;
             InteractionDestroyBlockSurvival.BlockMiningEffect = null;
         }

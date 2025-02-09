@@ -169,7 +169,9 @@ namespace Spacebox.Game.Player
                 {
 
                     hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage);
-                    var d = currentDamage - hit.block.Durability;
+                  //  var d = currentDamage - hit.block.Durability;
+                    IsActive = false;
+                    OnDespawn?.Invoke(this);
 
                 }
                 else

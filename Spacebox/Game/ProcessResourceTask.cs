@@ -6,7 +6,7 @@ namespace Spacebox.Game
     public class ProcessResourceTask : TickTask
     {
         private ResourceProcessingBlock _block;
-        public ProcessResourceTask(int requiredTicks, ResourceProcessingBlock block) : base(requiredTicks)
+        public ProcessResourceTask(int requiredTicks, ResourceProcessingBlock block) : base(requiredTicks, true)
         {
             _block = block;
             base.OnComplete += OnComplete;

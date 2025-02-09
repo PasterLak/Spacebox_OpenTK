@@ -1,6 +1,4 @@
-﻿
-
-namespace Engine
+﻿namespace Engine
 {
     public static class TickTaskManager
     {
@@ -10,8 +8,8 @@ namespace Engine
         public static void AddTask(TickTask task)
         {
             _tasks.Add(task);
-            
-            if(EnableDebug)
+
+            if (EnableDebug)
             {
                 Debug.Log($"[TickTaskManager] Task added. Tasks running: " + _tasks.Count);
             }
@@ -19,13 +17,13 @@ namespace Engine
 
         public static void UpdateTasks()
         {
-            if(_tasks.Count == 0) return;
+            if (_tasks.Count == 0) return;
 
             for (int i = _tasks.Count - 1; i >= 0; i--)
             {
                 var task = _tasks[i];
 
-                if(task == null)
+                if (task == null)
                 {
                     _tasks.RemoveAt(i);
                     if (EnableDebug)
@@ -63,7 +61,7 @@ namespace Engine
             _tasks.Clear();
         }
 
-      
+
     }
 
 }
