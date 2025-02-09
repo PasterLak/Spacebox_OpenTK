@@ -170,6 +170,7 @@
         "Category": "windows",
         "Sides": "window",
         "Mass": 1,
+        "Durability": 1,
         "IsTransparent": true,
         "SoundDestroy": "blockDestroyGlass",
         "SoundPlace": "placeGlass"
@@ -178,14 +179,16 @@
         "Name": "Basic Machine",
         "Category": "resources",
         "Sides": "basicMachine",
-        "Mass": 1,
+        "Mass": 2,
+        "Durability": 2,
         "IsTransparent": false
     },
     {
-        "Name": "Window2",
+        "Name": "Reinforced Window",
         "Category": "windows",
         "Sides": "window2",
-        "Mass": 1,
+        "Mass": 2,
+         "Durability": 10,
         "IsTransparent": true,
         "SoundDestroy": "blockDestroyGlass",
         "SoundPlace": "placeMetal"

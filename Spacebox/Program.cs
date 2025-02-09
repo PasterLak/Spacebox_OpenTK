@@ -2,7 +2,6 @@
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Engine.Audio;
-using System.Reflection;
 
 
 namespace Spacebox
@@ -11,10 +10,9 @@ namespace Spacebox
     {
 
 
-
+       // [STAThread]
         private static void Main()
         {
-
 
             var monitor = Monitors.GetPrimaryMonitor();
             var _audioManager = AudioManager.Instance;

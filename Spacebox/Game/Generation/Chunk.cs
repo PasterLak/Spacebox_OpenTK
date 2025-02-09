@@ -20,7 +20,7 @@ namespace Spacebox.Game.Generation
         public bool NeedsToRegenerateMesh = false;
         public Block[,,] Blocks { get; private set; }
         public bool ShowChunkBounds { get; set; } = true;
-        public bool MeasureGenerationTime { get; set; } = false;
+        public bool MeasureGenerationTime { get; set; } = true;
         private bool _isModified = false;
         public bool IsModified
         {
@@ -180,7 +180,7 @@ namespace Spacebox.Game.Generation
         {
             if (!_isLoadedOrGenerated) return;
             needsToRegenerateMesh = false;
-          
+            Debug.Log("Regen " + PositionIndex);
             if (doLight)
             {
              
@@ -296,7 +296,7 @@ namespace Spacebox.Game.Generation
             }
 
             CheckNeigborBlocks(new Vector3Byte(x, y, z));
-            needsToRegenerateMesh = true;
+            MarkNeedsRegenerate();
         }
 
         public void DamageBlock(Vector3Byte blockPos, Vector3SByte normal, byte damage)

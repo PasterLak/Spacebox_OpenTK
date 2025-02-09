@@ -2,6 +2,7 @@
 using Engine;
 using Engine.Physics;
 using Spacebox.Game.Generation;
+using System.Runtime.CompilerServices;
 
 
 namespace Spacebox.Game.Physics
@@ -146,6 +147,22 @@ namespace Spacebox.Game.Physics
             return Raycast(ray, chunk.PositionWorld, ref chunk, out hitInfo);
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3SByte GetNearestFaceNormal(Vector3 point, Vector3 cubeMin, Vector3 cubeMax)
+        {
+            float dx1 = point.X - cubeMin.X, dx2 = cubeMax.X - point.X;
+            float dy1 = point.Y - cubeMin.Y, dy2 = cubeMax.Y - point.Y;
+            float dz1 = point.Z - cubeMin.Z, dz2 = cubeMax.Z - point.Z;
+            float min = dx1;
+            Vector3SByte normal = new Vector3SByte(-1, 0, 0);
+            if (dx2 < min) { min = dx2; normal = new Vector3SByte(1, 0, 0); }
+            if (dy1 < min) { min = dy1; normal = new Vector3SByte(0, -1, 0); }
+            if (dy2 < min) { min = dy2; normal = new Vector3SByte(0, 1, 0); }
+            if (dz1 < min) { min = dz1; normal = new Vector3SByte(0, 0, -1); }
+            if (dz2 < min) { normal = new Vector3SByte(0, 0, 1); }
+            return normal;
+        }
         private static bool Raycast(Ray ray, Vector3 chunkPosWorld, ref Chunk chunk, out HitInfo hitInfo)
         {
             Block[,,] blocks = chunk.Blocks;
@@ -204,27 +221,7 @@ namespace Spacebox.Game.Physics
                                 break;
                             default:
 
-                                var g = new Vector3(x,y,z) -  new Vector3(Chunk.SizeHalf, Chunk.SizeHalf, Chunk.SizeHalf);
-
-                                float xA = Math.Abs(g.X);
-                                float yA = Math.Abs(g.Y);
-                                float zA = Math.Abs(g.Z);
-
-                                if (xA > yA && xA > zA)
-                                {
-                                    hitInfo.normal = new Vector3SByte(g.X > 0 ? (sbyte)1: (sbyte)-1, (sbyte)0, (sbyte)0);
-                                }
-                                else
-                                {
-                                    if(yA > zA)
-                                    {
-                                        hitInfo.normal = new Vector3SByte((sbyte)0, g.Y > 0 ? (sbyte)1 : (sbyte)-1, (sbyte)0);
-                                    }
-                                    else
-                                    {
-                                        hitInfo.normal = new Vector3SByte((sbyte)0,  (sbyte)0, g.Z > 0 ? (sbyte)1 : (sbyte)-1);
-                                    }
-                                }
+                                hitInfo.normal = GetNearestFaceNormal(rayOrigin, Vector3.Zero, new Vector3(Chunk.Size, Chunk.Size, Chunk.Size));
 
                                 break;
                         }

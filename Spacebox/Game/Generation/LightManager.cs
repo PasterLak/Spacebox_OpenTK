@@ -87,7 +87,9 @@ namespace Spacebox.Game.Generation
                 }
             }
 
-            //changedChunks.Remove(_chunk);
+
+
+            changedChunks.Remove(_chunk);
 
             foreach (var c in changedChunks)
             {

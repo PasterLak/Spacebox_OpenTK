@@ -68,7 +68,7 @@ namespace Spacebox.Game.Player
         {
             if (!astronautTextures.TryGetValue(color, out Texture2D tex))
             {
-                string texturePath = $"Resources/Textures/Astronaut_{color}.jpg";
+                string texturePath = $"Resources/Textures/Player/Astronaut_{color}.jpg";
                 tex = TextureManager.GetTexture(texturePath, true, true);
                 tex.FlipY();
                 tex.UpdateTexture(true);

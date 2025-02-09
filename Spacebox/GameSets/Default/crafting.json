@@ -102,8 +102,15 @@
             "Product": {"Item": "Window", "Quantity": 1},
             "Ingredients": [{"Item": "Glass", "Quantity": 6}
            ]
-        },
 
+        },
+         {
+            "Product": {"Item": "Reinforced Window", "Quantity": 1},
+            "Ingredients": [{"Item": "Glass", "Quantity": 6},
+                            {"Item": "Iron Ingot", "Quantity": 1}
+            ]
+
+        },
         {
             "Product": {"Item": "Light White", "Quantity": 1},
             "Ingredients": [{"Item": "Glass", "Quantity": 6},
@@ -371,34 +378,14 @@
             "Ingredients": [
                 
                  {"Item": "Iron Ingot", "Quantity": 2},
-                 {"Item": "Uranium Ingot", "Quantity": 2},
+                 {"Item": "Uranium Ingot", "Quantity": 3},
                  {"Item": "Iron Lens", "Quantity": 4},
                  {"Item": "Energy Cell", "Quantity": 8}
+
                            
             ]
         },
-           {
-            "Product": {"Item": "Assault Rifle", "Quantity": 1},
-            "Ingredients": [
-                
-                 {"Item": "Iron Ingot", "Quantity": 2},
-                 {"Item": "Uranium Ingot", "Quantity": 2},
-                 {"Item": "Iron Lens", "Quantity": 4},
-                 {"Item": "Energy Cell", "Quantity": 8}
-                           
-            ]
-        },
-            {
-            "Product": {"Item": "Assault Rifle", "Quantity": 1},
-            "Ingredients": [
-                
-                 {"Item": "Iron Ingot", "Quantity": 2},
-                 {"Item": "Uranium Ingot", "Quantity": 2},
-                 {"Item": "Iron Lens", "Quantity": 4},
-                 {"Item": "Energy Cell", "Quantity": 8}
-                           
-            ]
-        },
+
                 {
             "Product": {"Item": "Impulse Rifle", "Quantity": 1},
             "Ingredients": [

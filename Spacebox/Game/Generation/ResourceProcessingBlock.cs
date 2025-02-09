@@ -97,7 +97,7 @@ namespace Spacebox.Game.Generation
         {
             if (Task != null)
             {
-                if (Task.IsRunning)
+              
                     Task.Stop();
 
                 Task = null;
@@ -175,6 +175,7 @@ namespace Spacebox.Game.Generation
             currentTick = 0;
 
             task = new ProcessResourceTask(ticksRequared, this);
+            StopTask();
             Task = task;
             task.OnTick += OnTick;
             return true;
@@ -264,6 +265,7 @@ namespace Spacebox.Game.Generation
                 craftTicks = 0;
                 currentTick = 0;
                 IsRunning = false;
+               // Task.Stop();
 
             }
 

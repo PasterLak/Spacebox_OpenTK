@@ -14,22 +14,22 @@
 
         public Action OnComplete { get;  set; }
         public Action OnTick { get; set; }
-        private bool _deleteAfterComplete;
+        private bool loop;
 
-        public TickTask(int requiredTicks, bool deleteAfterComplete)
+        public TickTask(int requiredTicks, bool loop)
         {
             RequiredTicks = requiredTicks;
             _currentTicks = 0;
             
-            _deleteAfterComplete = deleteAfterComplete;
+            this.loop = loop;
         }
 
-        public TickTask(int requiredTicks, Action onComplete, bool deleteAfterComplete )
+        public TickTask(int requiredTicks, Action onComplete, bool loop)
         {
             RequiredTicks = requiredTicks;
             _currentTicks = 0;
             OnComplete = onComplete;
-            _deleteAfterComplete = deleteAfterComplete;
+            this.loop = loop;
         }
 
         public void Update()
@@ -44,7 +44,7 @@
             {
                 OnComplete?.Invoke();
 
-                if(!_deleteAfterComplete)
+                if(loop) 
                 Reset();
             }
         }
