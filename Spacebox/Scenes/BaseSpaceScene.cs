@@ -477,6 +477,7 @@ namespace Spacebox.Scenes
             InventoryUI.OnGUI(localPlayer.Inventory);
             CreativeWindowUI.OnGUI();
             Chat.OnGUI();
+            ItemControlsUI.OnGUI();
             WelcomeUI.OnGUI();
             PauseUI.OnGUI();
 

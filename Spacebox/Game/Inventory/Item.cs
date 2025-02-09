@@ -9,7 +9,7 @@ namespace Spacebox.Game
         public byte StackSize;
         public string Name;
         public string Category { get; set; } = "";
-        public string Discription;
+        public string Description;
         public float ModelDepth = 1f;
         public Vector2i TextureCoord = new Vector2i(0,0);
         public IntPtr IconTextureId { get; set; }

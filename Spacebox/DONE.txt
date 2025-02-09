@@ -79,6 +79,7 @@ version 0.1.1
 - engine and game separated
 - test multiplayer demo project with lidgren
 - new items
+- controls text for items
 
 version 0.1.0
 

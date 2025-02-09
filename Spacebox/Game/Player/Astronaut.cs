@@ -139,8 +139,10 @@ namespace Spacebox.Game.Player
                     _gameModeBase = new SpectatorMode(this);
                     break;
             }
-
+          
             _gameModeBase.OnEnable();
+            PanelUI.ResetLastSelected();
+            PanelUI.SetSelectedSlot(0);
         }
 
         public void Save()

@@ -69,7 +69,7 @@
             IsStopped = true;
         }
 
-        public void Contnue()
+        public void Continue()
         {
             _isPaused = false;
         }

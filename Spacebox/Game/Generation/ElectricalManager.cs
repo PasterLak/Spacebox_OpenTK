@@ -131,7 +131,7 @@ namespace Spacebox.Game.Generation
 
         public void UpdateAllNetworks(bool lastState, bool forseUpdate)
         {
-            Debug.Log("COunt nets: " + networks.Count);
+           // Debug.Log("COunt nets: " + networks.Count);
 
             foreach (var pair in networks)
             {

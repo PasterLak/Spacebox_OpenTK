@@ -159,6 +159,7 @@ namespace Spacebox.Game.GUI
 
         private static void UpdatePlayerInteraction(Astronaut player)
         {
+            if(player == null) return;
             if (player.GameMode == GameMode.Spectator) return;
             if (IsHolding< BlockItem>())
                 player.SetInteraction(new InteractionPlaceBlock());
@@ -181,16 +182,26 @@ namespace Spacebox.Game.GUI
                 player.SetInteraction(new InteractionDefault());
         }
 
+        public static void ResetLastSelected()
+        {
+            _lastSelectedSlotId = -1;
+            _lastSelectedCount = 0;
+            _lastSelectedItem = null;
+        }
         public static void SetSelectedSlot(short id)
         {
-            if (!AllowScroll) return;
+           // if (!AllowScroll) return;
             SelectedSlotId = id;
             SelectSlot(SelectedSlotId);
             if (wasPlayerOnes)
             {
-                if (scrollAudio.IsPlaying)
-                    scrollAudio.Stop();
-                scrollAudio.Play();
+                if(scrollAudio != null)
+                {
+                    if (scrollAudio.IsPlaying)
+                        scrollAudio.Stop();
+                    scrollAudio.Play();
+                }
+               
             }
             else
             {
@@ -203,6 +214,8 @@ namespace Spacebox.Game.GUI
             if (Storage != null)
             {
                 SelectedSlot = Storage.GetSlot(0, slot);
+
+
                 ShowItemModel();
                 HideItemModel();
                 if (_lastSelectedSlotId != slot ||
@@ -214,8 +227,27 @@ namespace Spacebox.Game.GUI
                     _lastSelectedItem = SelectedSlot.Item;
                     _lastSelectedCount = SelectedSlot.Count;
                 }
+
                 if (SelectedSlot.HasItem)
+                {
                     _time = TimeToHideItemName;
+
+                    if (SelectedSlot.Item.Description != "")
+                    {
+                        ItemControlsUI.IsVisible = true;
+                        ItemControlsUI.Text = SelectedSlot.Item.Description;
+                    }
+                    else
+                    {
+                        ItemControlsUI.IsVisible = false;
+                    }
+
+                }
+                else
+                {
+                    ItemControlsUI.IsVisible = false;
+                }
+
                 OnSlotChanged?.Invoke(slot);
             }
         }

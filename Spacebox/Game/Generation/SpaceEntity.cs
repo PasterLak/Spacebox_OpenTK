@@ -147,10 +147,12 @@ namespace Spacebox.Game.Generation
 
             RecalculateGeometryBoundingBox();
             RecalculateMass();
+           
         }
 
         public void GenerateMesh()
         {
+           // ElectricManager.UpdateAllNetworks(false, true);
             foreach (var chunk in MeshesTogenerate)
             {
                 chunk.GenerateMesh();
@@ -619,7 +621,7 @@ namespace Spacebox.Game.Generation
 
                     if (chunk == null) continue ;
                     chunk.NeedsToRegenerateMesh = false;
-                }
+                } 
                 // VisualDebug.DrawPosition(Chunks[i].GetCenterOfMass(), 4, Color4.Green);
                 chunk.Render(Shader);
 

@@ -133,7 +133,7 @@ namespace Spacebox.Game.Player
         {
             if (IsEditing)
             {
-                if (Input.IsKey(Keys.X) && Input.IsMouseButtonDown(MouseButton.Left))
+                if (Input.IsMouseButtonDown(MouseButton.Middle))
                 {
                     lineRenderer.ClearPoints();
                 }
@@ -147,7 +147,7 @@ namespace Spacebox.Game.Player
                 }
             }
 
-            if (Input.IsMouseButtonDown(MouseButton.Middle))
+            if (Input.IsKeyDown(Keys.Enter))
             {
                 if (lineRenderer.Points.Count > 1)
                 {

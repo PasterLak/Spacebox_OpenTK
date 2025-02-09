@@ -12,6 +12,7 @@ namespace Spacebox.Game.Generation
             if (RadarUI.Instance != null)
                 OnUse += RadarUI.Instance.Toggle;
 
+            IsActive = false;
             EFlags = ElectricalFlags.CanConsume;
             MaxPower = 200;
             ConsumptionRate = 5;
