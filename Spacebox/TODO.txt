@@ -5,29 +5,29 @@
 For demo:
 
 
-- fix inventory, panel ui
++ fix inventory, panel ui
 - categories in creative?
 + use sound effect
 - fix mod 2
 - modding guide
-- fist craft test
-- shooting?
-- items animation
-- space entity
++ fist craft test
++ shooting?
++ items animation
++ space entity
 - local position and rotation
-- more chunks
++ more chunks
 - 
 + camera relative render for visual debug
 - destroy block texture atlas  
 - item icons atlas
-- basic items to give player on start -> in mod
++ basic items to give player on start -> in mod
 - 
 
 Pool
 
 
 + flashlight class
-- sounds for blocks
++ sounds for blocks
 + use sound for items
 - generation
 - doors
@@ -35,19 +35,18 @@ Pool
 + health/power
 - blocks IU
 + new icon
-- dependensies between windows manager
-- shooting
++ dependensies between windows manager
++shooting
 + drag and drop in inventory
 - inventory refactoring, less static
 - trash item slot
 + drop particle
-- mass calculation
++ mass calculation
 + mass and protection in mods
 + collision
 + auto generation of texture atlas
 + save icons, textures to png
-
-- electricity
++ electricity
 - 
 
 

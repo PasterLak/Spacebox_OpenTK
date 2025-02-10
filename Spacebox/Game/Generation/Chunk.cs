@@ -180,12 +180,10 @@ namespace Spacebox.Game.Generation
         {
             if (!_isLoadedOrGenerated) return;
             needsToRegenerateMesh = false;
-            Debug.Log("Regen " + PositionIndex);
+           // Debug.Log("Regen " + PositionIndex);
             if (doLight)
             {
-             
                 _lightManager.PropagateLight();
-          
             }
             
             int oldMass = Mass;

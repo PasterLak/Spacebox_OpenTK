@@ -221,6 +221,7 @@ void main()
             }
 
             SetPerFrameImGuiData(deltaSeconds);
+        
             UpdateImGuiInput(wnd);
 
             _frameBegun = true;
@@ -258,9 +259,18 @@ void main()
 
             var screenPoint = new Vector2i((int)MouseState.X, (int)MouseState.Y);
             var point = screenPoint;//wnd.PointToClient(screenPoint);
-            io.MousePos = new System.Numerics.Vector2(point.X, point.Y);
 
-            foreach (Keys key in Enum.GetValues(typeof(Keys)))
+
+            if (wnd.CursorState == OpenTK.Windowing.Common.CursorState.Grabbed) // new
+            {
+                io.MousePos = new System.Numerics.Vector2(io.DisplaySize.X/2f, io.DisplaySize.Y/2f);
+            }
+            else
+            {
+                io.MousePos = new System.Numerics.Vector2(point.X, point.Y);
+            }
+
+                foreach (Keys key in Enum.GetValues(typeof(Keys)))
             {
                 if (key == Keys.Unknown)
                 {

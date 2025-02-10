@@ -167,7 +167,11 @@ namespace Spacebox
 
             FrameLimiter.Update();
             Time.Update(e);
-            _controller.Update(this, (float)e.Time);
+
+          
+               _controller.Update(this, (float)e.Time);
+            
+        
 
 
             if (SceneManager.CurrentScene != null)
@@ -246,7 +250,8 @@ namespace Spacebox
             Time.EndUpdate();
 
             AudioManager.Instance.Update();
-
+            
+           
         }
 
         private void UpdateInputs()

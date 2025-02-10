@@ -351,12 +351,15 @@ namespace Spacebox.Scenes
                     
                     return;
                 }
-               
 
+               
                 int opened = ToggleManager.OpenedWindowsCount;
+
                 ToggleManager.DisableAllWindows();
+                Debug.Log("esc! count " + opened);
                 if (opened > 0)
                 {
+                   // Debug.Log("Opened!");
                     ToggleManager.SetState("inventory", false);
                     ToggleManager.SetState("mouse", false);
                     ToggleManager.SetState("player", true);
@@ -364,7 +367,7 @@ namespace Spacebox.Scenes
                 }
                 else
                 {
-                  
+                    ToggleManager.SetState("inventory", false);
                     ToggleManager.SetState("pause", true);
                     ToggleManager.SetState("panel", false);
                 }

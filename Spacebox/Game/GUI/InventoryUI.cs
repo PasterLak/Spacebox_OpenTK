@@ -41,6 +41,7 @@ namespace Spacebox.Game.GUI
         {
             if (Input.IsKeyDown(Keys.Tab) && !Debug.IsVisible)
             {
+                if (ToggleManager.IsActiveAndExists("pause")) return;
                 var v = IsVisible;
 
                 bool count = ToggleManager.IsActiveAndExists("radar");
@@ -48,7 +49,7 @@ namespace Spacebox.Game.GUI
                 ToggleManager.DisableAllWindows();
 
 
-                if (!count)
+                if (!count) 
                     IsVisible = !v;
 
                 if (IsVisible)
@@ -58,12 +59,13 @@ namespace Spacebox.Game.GUI
                     if (Player.GameMode != GameMode.Survival)
                         ToggleManager.SetState("creative", true);
 
-
+                    ToggleManager.SetState("inventory", true);
                 }
                 else
                 {
                     ToggleManager.SetState("mouse", false);
                     ToggleManager.SetState("player", true);
+                    ToggleManager.SetState("inventory", false);
                 }
 
                 ToggleManager.SetState("panel", !IsVisible);

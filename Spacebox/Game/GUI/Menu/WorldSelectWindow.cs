@@ -49,7 +49,7 @@ namespace Spacebox.Game.GUI.Menu
             if (menu.selectedWorld != null)
             {
                 ImGui.Text(" Name: " + menu.selectedWorld.Name);
-                ImGui.Text(" Author: " + menu.selectedWorld.Author);
+                ImGui.Text(" Author: " + menu.selectedWorld.Author + " Game mode: " + menu.selectedWorld.GameMode);
                 ImGui.Text(" Mod: " + menu.GetModNameById(menu.selectedWorld.ModId));
                 if (menu.selectedWorld.GameVersion != Application.Version)
                 {
