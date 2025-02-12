@@ -339,13 +339,8 @@ namespace Spacebox.Game.Generation
                 {
                     var wrap = WrapBlockCoordinate(x, y, z, Size);
                     var b = nChunk.GetBlock(wrap);
-                    if (b != null)
-                    {
-                        if (b.IsAir) return true;
+                    if (b != null) return b.IsAir || b.IsTransparent;
 
-                        if(b.IsTransparent) return false;
-                    }
-                   
                     return true;
                 }
                 return true;
