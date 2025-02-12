@@ -19,17 +19,18 @@ namespace Spacebox.Game.Resources
 
         public Vector2[] GetUVByName(string name)
         {
-
+            name = name.ToLower();
             if (ReadyTextures.ContainsKey(name))
             {
                 return ReadyTextures[name].UV;
             }
 
+            Debug.Error("[AtlasTexture] GetUVByName wrong name: " + name);
             return ReadyTextures[firsttextureName].UV;
         }
         public Vector2Byte GetUVIndexByName(string name)
         {
-
+            name = name.ToLower();
             if (ReadyTextures.ContainsKey(name))
             {
                 return ReadyTextures[name].Position;

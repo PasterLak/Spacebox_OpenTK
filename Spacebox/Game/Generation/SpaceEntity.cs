@@ -630,7 +630,7 @@ namespace Spacebox.Game.Generation
             atlasTexture.Use(TextureUnit.Texture1);
 
             HashSet<Chunk> chunks = new HashSet<Chunk>();
-           Octree.FindDataInRadius(WorldPositionToLocal(camera.Position), Settings.ChunkLOD0Distance, chunks);
+           Octree.FindDataInRadius(WorldPositionToLocal(camera.Position), 512, chunks);
 
             foreach(var chunk  in chunks)
             {
@@ -638,10 +638,12 @@ namespace Spacebox.Game.Generation
                 {
                     chunk.GenerateMesh(false);
 
-                    if (chunk == null) continue;
                     chunk.NeedsToRegenerateMesh = false;
                 }
+                
+                chunk.SetLOD((int)Vector3.DistanceSquared(camera.Position, chunk.GeometryBoundingBox.Center));
                 chunk.Render(Shader);
+                
             }
 
          

@@ -7,7 +7,7 @@ namespace Spacebox.Game
         public static float FOV = 90;
         public static int ViewDistance = 10000;
 
-        public static float ChunkLOD0Distance = 256;
+        public static float ChunkLOD0Distance = 32;
 
         public static bool ShowInterface = true;
 

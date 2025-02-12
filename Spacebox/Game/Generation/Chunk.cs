@@ -2,6 +2,7 @@
 using Engine.Physics;
 using OpenTK.Mathematics;
 using Spacebox.Game.Physics;
+using System.Collections.Concurrent;
 
 
 namespace Spacebox.Game.Generation
@@ -49,7 +50,7 @@ namespace Spacebox.Game.Generation
         private LOD Lod = LOD.L0;
         public enum LOD : short
         {
-            L0 = 64, L1 = 128, L2 = 256
+            L0 = 128, L1 = 170, L2 = 256, L3 = 512
         }
 
         public Chunk(Vector3SByte positionIndex, SpaceEntity spaceEntity, bool emptyChunk = false)
@@ -364,28 +365,70 @@ namespace Spacebox.Game.Generation
             NeedsToRegenerateMesh = true;
         }
 
-        private void CreateLOD(LOD lod)
+        private async Task CreateLOD(LOD lod)
         {
-
-        }
-        public void SetLOD(int distance)
-        {
-            if(distance >= (short)LOD.L0)
+            switch (lod)
             {
-                if(Lod != LOD.L0)
+                case LOD.L1:
+                    await GenerateLODMeshAsync(1, GameBlocks.AtlasBlocks.GetUVByName("LOD"));
+                    break;
+                case LOD.L2:
+                    await GenerateLODMeshAsync(2, GameBlocks.AtlasBlocks.GetUVByName("LOD"));
+                    break;
+                case LOD.L3:
+                    await GenerateLODMeshAsync(4, GameBlocks.AtlasBlocks.GetUVByName("LOD"));
+                    break;
+            }
+        }
+
+
+
+        public async Task GenerateLODMeshAsync(int downscale, Vector2[] uv = null)
+        {
+        
+            LOD requestedLOD = Lod;
+            var generator = new ChunkLODMeshGenerator();
+            MeshData data = await generator.GenerateFromBlocksAsync(this.Blocks, downscale, uv).ConfigureAwait(false);
+
+            MainThreadDispatcher.Instance.Enqueue(() =>
+            {
+          
+                if (Lod == requestedLOD)
+                {
+                    _mesh?.Dispose();
+                    _mesh = new Mesh(data.Vertices, data.Indices, BuffersData.CreateBlockBuffer());
+                }
+            });
+        }
+
+
+
+
+
+        public void SetLOD(int distanceSquared)
+        {
+            int lod0Threshold = ((int)LOD.L0) * ((int)LOD.L0);
+            int lod1Threshold = ((int)LOD.L1) * ((int)LOD.L1);
+            int lod2Threshold = ((int)LOD.L2) * ((int)LOD.L2);
+
+
+            if (distanceSquared <= lod0Threshold)
+            {
+                if (Lod != LOD.L0)
                 {
                     Lod = LOD.L0;
-                    GenerateMesh();
+                    GenerateMesh(false);
                 }
-            }else if(distance >= (short)LOD.L1)
+            }
+            else if (distanceSquared <= lod1Threshold)
             {
                 if (Lod != LOD.L1)
                 {
                     Lod = LOD.L1;
-                    CreateLOD(Lod);
+                     CreateLOD(Lod);
                 }
             }
-            else
+            else if (distanceSquared <= lod2Threshold)
             {
                 if (Lod != LOD.L2)
                 {
@@ -393,7 +436,16 @@ namespace Spacebox.Game.Generation
                     CreateLOD(Lod);
                 }
             }
+            else
+            {
+                if (Lod != LOD.L3)
+                {
+                    Lod = LOD.L3;
+                    CreateLOD(Lod);
+                }
+            }
         }
+
 
         public Block? GetBlock(Vector3SByte pos)
         {
@@ -558,4 +610,20 @@ namespace Spacebox.Game.Generation
 
 
     }
+
+
+
+public class MainThreadDispatcher
+    {
+        private static MainThreadDispatcher _instance;
+        public static MainThreadDispatcher Instance => _instance ?? (_instance = new MainThreadDispatcher());
+        private ConcurrentQueue<Action> _queue = new ConcurrentQueue<Action>();
+        public void Enqueue(Action action) => _queue.Enqueue(action);
+        public void ExecutePending()
+        {
+            while (_queue.TryDequeue(out var action))
+                action();
+        }
+    }
+
 }

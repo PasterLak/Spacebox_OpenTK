@@ -322,6 +322,7 @@ namespace Spacebox.Scenes
             localPlayer.Update();
             blockDestructionManager.Update();
             dustSpawner.Update();
+            MainThreadDispatcher.Instance.ExecutePending();
             world.Update();
            
             if (Input.IsKeyDown(Keys.L))
