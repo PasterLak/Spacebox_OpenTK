@@ -95,7 +95,7 @@ namespace Spacebox.Game.Generation
             {
                 //chunk.GenerateMesh(); MarkNeedsRegenerate
 
-                chunk.MarkNeedsRegenerate();
+                chunk.NeedsToRegenerateMesh = true;
             }
             lasState = state;
         }

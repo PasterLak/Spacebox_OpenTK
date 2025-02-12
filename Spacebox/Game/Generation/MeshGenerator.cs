@@ -335,11 +335,17 @@ namespace Spacebox.Game.Generation
         {
             if (!IsInRange(x, y, z))
             {
-                if (_neighbors.TryGetValue(normal, out var nch) && nch != null)
+                if (_neighbors.TryGetValue(normal, out var nChunk) && nChunk != null)
                 {
                     var wrap = WrapBlockCoordinate(x, y, z, Size);
-                    var b = nch.GetBlock(wrap);
-                    if (b != null) return b.IsAir || b.IsTransparent;
+                    var b = nChunk.GetBlock(wrap);
+                    if (b != null)
+                    {
+                        if (b.IsAir) return true;
+
+                        if(b.IsTransparent) return false;
+                    }
+                   
                     return true;
                 }
                 return true;

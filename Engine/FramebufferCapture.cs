@@ -81,8 +81,8 @@ namespace Engine
                 Directory.CreateDirectory("Screenshots");
             }
 
-            int width = Window.Size.X;
-            int height = Window.Size.Y;
+            int width = Window.ClientSize.X;
+            int height = Window.ClientSize.Y;
             string filePath = $"Screenshots/screenshot_{DateTime.Now.Year}_{DateTime.Now.Month}_{DateTime.Now.Day}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}.png";
 
             byte[] pixels = new byte[width * height * 4];

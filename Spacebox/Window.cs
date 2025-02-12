@@ -40,6 +40,7 @@ namespace Spacebox
         private static PolygonMode polygonMode = PolygonMode.Fill;
         private Vector2i minimizedWindowSize = new Vector2i(500, 500);
 
+        private bool DoScreenshot = false;
         public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
         {
@@ -61,11 +62,10 @@ namespace Spacebox
 
             ImGuiIOPtr io = ImGui.GetIO();
 
-            // Создаем конфигурацию шрифта без блока using, так как ImFontConfigPtr не реализует IDisposable
             ImFontConfigPtr config = new ImFontConfigPtr(ImGuiNative.ImFontConfig_ImFontConfig());
-            config.OversampleH = 1;   // Отключаем горизонтальный оверсемплинг
-            config.OversampleV = 1;   // Отключаем вертикальный оверсемплинг
-            config.PixelSnapH = true; // Привязываем к пиксельной сетке
+            config.OversampleH = 1;   
+            config.OversampleV = 1;   
+            config.PixelSnapH = true; 
 
             io.Fonts.AddFontFromFileTTF(fontPath, fontSize, config);
 
@@ -78,7 +78,6 @@ namespace Spacebox
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0,
                           PixelFormat.Rgba, PixelType.UnsignedByte, new IntPtr(pixels));
 
-            // Устанавливаем Nearest фильтрацию для пиксельного вида
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 
@@ -139,7 +138,7 @@ namespace Spacebox
             InputManager.RegisterCallback("debugUI", () => { _debugUI = !_debugUI; });
 
             InputManager.AddAction("screenshot", Keys.F12, true);
-            InputManager.RegisterCallback("screenshot", () => { Screenshot(); });
+            InputManager.RegisterCallback("screenshot", () => { DoScreenshot = true; });
 
             screenShotAudio = new AudioSource(SoundManager.AddPermanentClip("screenshot"));
             // ToggleFullScreen();
@@ -211,6 +210,12 @@ namespace Spacebox
 
             if (FramebufferCapture.IsActive) FramebufferCapture.IsActive = false;
             SwapBuffers();
+
+            if(DoScreenshot)
+            {
+                Screenshot();
+                DoScreenshot = false;
+            }
 
         }
 

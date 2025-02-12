@@ -9,8 +9,6 @@ using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
-using Engine;
-
 
 namespace Spacebox.Game.Player;
 using Engine;
@@ -66,8 +64,11 @@ public class InteractionShoot : InteractionMode
             weapon = weapone;
             startPos = model.Position;
 
-            shotSound = new AudioSource(GameBlocks.Sounds[weapone.ShotSound]);
-            shotSound.Volume = 1f;
+           
+                shotSound = new AudioSource(GameBlocks.Sounds[weapone.ShotSound]); // 
+                shotSound.Volume = 1f;
+            
+
         }
 
         light = PointLightsPool.Instance.Take();
@@ -92,7 +93,7 @@ public class InteractionShoot : InteractionMode
     {
         _time = 0;
         model?.SetAnimation(true);
-       
+
         light.IsActive = false;
     }
 
@@ -124,7 +125,7 @@ public class InteractionShoot : InteractionMode
 
         var sphereRenderer = SpheresPool.Instance.Take();
         sphereRenderer.Activate(despawnPos);
-     
+
     }
 
     private Vector3 despawnPos = Vector3.Zero;
@@ -234,7 +235,7 @@ public class InteractionShoot : InteractionMode
             projectile.Initialize(new Ray(Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.05f, player.Front, 1f),
                 projectileParameters);
             alpha = 0.3f;
-         
+
             _time = 0;
 
             /*if (World.CurrentSector.Raycast(ray, out var hit))

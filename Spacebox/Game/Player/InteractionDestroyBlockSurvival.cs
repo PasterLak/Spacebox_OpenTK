@@ -98,7 +98,8 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         CenteredText.Hide();
         model?.SetAnimation(false);
         model.Animator.Clear();
-
+        BlockMiningEffect.Enabled = false;
+       
         PointLightsPool.Instance.PutBack(light);
     }
 

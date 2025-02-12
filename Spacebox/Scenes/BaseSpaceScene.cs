@@ -356,7 +356,7 @@ namespace Spacebox.Scenes
                 int opened = ToggleManager.OpenedWindowsCount;
 
                 ToggleManager.DisableAllWindows();
-                Debug.Log("esc! count " + opened);
+
                 if (opened > 0)
                 {
                    // Debug.Log("Opened!");

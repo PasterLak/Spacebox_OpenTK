@@ -46,18 +46,22 @@ What this game needs:
 - fix effect drop
 
 
-
-
-
-
 version 0.1.2
 
 New
-- 
+- PerlinNoise+
+- Worms/Ores generator
+
+
+Small
+- double click to open a world
 
 Fixes
 - lock cursor if hidden
 - esc in inventory
+- screenshot white borders
+- OpenAL32.dll missing
+- transparent blocks between chunks -> culling
 
 version 0.1.1
 Done:

@@ -239,8 +239,8 @@ namespace Spacebox.Game.Generation
 
         private void Regenerate(HashSet<Chunk> chunks)
         {
-            foreach (var c in chunks) c.MarkNeedsRegenerate();
-            Debug.Log("regen: " + chunks.Count);
+            foreach (var c in chunks) c.NeedsToRegenerateMesh = true;
+           // Debug.Log("regen: " + chunks.Count);
         }
     }
 }

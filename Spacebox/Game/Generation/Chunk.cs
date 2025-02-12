@@ -17,10 +17,10 @@ namespace Spacebox.Game.Generation
 
         public Vector3 PositionWorld { get; private set; }
         public Vector3SByte PositionIndex { get; private set; }
-        public bool NeedsToRegenerateMesh = false;
+        public bool NeedsToRegenerateMesh { get; set; }
         public Block[,,] Blocks { get; private set; }
         public bool ShowChunkBounds { get; set; } = true;
-        public bool MeasureGenerationTime { get; set; } = true;
+        public bool MeasureGenerationTime { get; set; } = false;
         private bool _isModified = false;
         public bool IsModified
         {
@@ -40,12 +40,6 @@ namespace Spacebox.Game.Generation
         private readonly LightManager _lightManager;
         private bool _isLoadedOrGenerated = false;
 
-        private bool needsToRegenerateMesh = false;
-
-        public void MarkNeedsRegenerate()
-        {
-            needsToRegenerateMesh = true;
-        }
         public SpaceEntity SpaceEntity { get; private set; }
         public BoundingBox BoundingBox { get; private set; }
         public BoundingBox GeometryBoundingBox { get; private set; }
@@ -179,7 +173,7 @@ namespace Spacebox.Game.Generation
         public void GenerateMesh(bool doLight)
         {
             if (!_isLoadedOrGenerated) return;
-            needsToRegenerateMesh = false;
+            NeedsToRegenerateMesh = false;
            // Debug.Log("Regen " + PositionIndex);
             if (doLight)
             {
@@ -229,10 +223,10 @@ namespace Spacebox.Game.Generation
         {
             if (!_isLoadedOrGenerated) return;
 
-            if (needsToRegenerateMesh)
+            if (NeedsToRegenerateMesh)
             {
                 GenerateMesh();
-                needsToRegenerateMesh = false;
+                NeedsToRegenerateMesh = false;
             }
 
             Vector3 relativePosition = PositionWorld - Camera.Main.Position;
@@ -294,7 +288,7 @@ namespace Spacebox.Game.Generation
             }
 
             CheckNeigborBlocks(new Vector3Byte(x, y, z));
-            MarkNeedsRegenerate();
+            NeedsToRegenerateMesh = true;
         }
 
         public void DamageBlock(Vector3Byte blockPos, Vector3SByte normal, byte damage)
@@ -363,7 +357,7 @@ namespace Spacebox.Game.Generation
 
             IsModified = true;
             CheckNeigborBlocks(new Vector3Byte(x, y, z));
-            needsToRegenerateMesh = true;
+            NeedsToRegenerateMesh = true;
         }
 
         public Block? GetBlock(Vector3SByte pos)
@@ -526,9 +520,6 @@ namespace Spacebox.Game.Generation
             { new Vector3SByte(0, 0, 1), null },
             { new Vector3SByte(0, 0, -1), null },
         };
-
-
-       
 
 
     }
