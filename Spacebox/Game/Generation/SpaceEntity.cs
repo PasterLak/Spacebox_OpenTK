@@ -617,7 +617,7 @@ namespace Spacebox.Game.Generation
                 var chunk = Chunks[i];
                 if (chunk.NeedsToRegenerateMesh)
                 {
-                    chunk.GenerateMesh(false);
+                    chunk.GenerateMesh(true);
 
                     if (chunk == null) continue ;
                     chunk.NeedsToRegenerateMesh = false;

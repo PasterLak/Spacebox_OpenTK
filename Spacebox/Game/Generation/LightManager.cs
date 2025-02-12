@@ -107,7 +107,7 @@ namespace Spacebox.Game.Generation
                     for (byte z = 0; z < Size; z++)
                     {
                         var b = c.Blocks[x, y, z];
-                        if (b.LightLevel < 15f)
+                        if (!b.IsLight)
                         {
                             b.LightLevel = 0f;
                             b.LightColor = Vector3.Zero;
