@@ -180,7 +180,7 @@ namespace Engine
             {
                 int rootPos = rootNode.BestFitChild(oldRoot.Center);
                 PointOctreeNode<T>[] children = new PointOctreeNode<T>[8];
-                for (int i = 0; i < 8; i++)
+                for (byte i = 0; i < 8; i++)
                 {
                     if (i == rootPos)
                     {

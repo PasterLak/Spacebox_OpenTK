@@ -201,7 +201,7 @@ namespace Engine
 
         public void FindDataInRadius(Vector3 center, float radius, HashSet<T> result)
         {
-            BoundingBox searchBounds = new BoundingBox(center, new Vector3(radius * 2f));
+            BoundingSphere searchBounds = new BoundingSphere(center, radius );
 
             if (!bounds.Intersects(searchBounds))
             {

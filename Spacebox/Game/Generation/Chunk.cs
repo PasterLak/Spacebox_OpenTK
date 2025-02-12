@@ -46,7 +46,11 @@ namespace Spacebox.Game.Generation
 
         public Action<Chunk> OnChunkModified;
 
-        
+        private LOD Lod = LOD.L0;
+        public enum LOD : short
+        {
+            L0 = 64, L1 = 128, L2 = 256
+        }
 
         public Chunk(Vector3SByte positionIndex, SpaceEntity spaceEntity, bool emptyChunk = false)
             : this(positionIndex, spaceEntity, null, isLoaded: false, emptyChunk)
@@ -358,6 +362,37 @@ namespace Spacebox.Game.Generation
             IsModified = true;
             CheckNeigborBlocks(new Vector3Byte(x, y, z));
             NeedsToRegenerateMesh = true;
+        }
+
+        private void CreateLOD(LOD lod)
+        {
+
+        }
+        public void SetLOD(int distance)
+        {
+            if(distance >= (short)LOD.L0)
+            {
+                if(Lod != LOD.L0)
+                {
+                    Lod = LOD.L0;
+                    GenerateMesh();
+                }
+            }else if(distance >= (short)LOD.L1)
+            {
+                if (Lod != LOD.L1)
+                {
+                    Lod = LOD.L1;
+                    CreateLOD(Lod);
+                }
+            }
+            else
+            {
+                if (Lod != LOD.L2)
+                {
+                    Lod = LOD.L2;
+                    CreateLOD(Lod);
+                }
+            }
         }
 
         public Block? GetBlock(Vector3SByte pos)

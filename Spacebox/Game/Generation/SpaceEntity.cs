@@ -20,7 +20,7 @@ namespace Spacebox.Game.Generation
         public int EntityID { get; private set; } = 0;
         public ulong Mass { get; set; } = 0;
 
-        private readonly Octree<Chunk> octree;
+        public Octree<Chunk> Octree { get; private set; } // local coords
         public BoundingBox BoundingBox { get; private set; }
         public Vector3 PositionWorld { get; private set; }
 
@@ -39,7 +39,7 @@ namespace Spacebox.Game.Generation
 
         public List<Chunk> Chunks { get; private set; } = new List<Chunk>();
         private List<Chunk> MeshesTogenerate = new List<Chunk>();
-        public Dictionary<Vector3SByte, Chunk> ChunkDictionary { get; private set; } = new Dictionary<Vector3SByte, Chunk>();
+   
         private Tag tag;
         public ElectricNetworkManager ElectricManager { get; private set; }
         public Tag Tag => tag;
@@ -58,7 +58,7 @@ namespace Spacebox.Game.Generation
             Sector = sector;
             BoundingBox = new BoundingBox(positionWorld, new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));
             SumPosCenterOfMass = positionWorld;
-            octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
+            Octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
             Shader = ShaderManager.GetShader("Shaders/block");
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
 
@@ -79,7 +79,7 @@ namespace Spacebox.Game.Generation
             Sector = sector;
             BoundingBox = new BoundingBox(positionWorld, new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));
             SumPosCenterOfMass = positionWorld;
-            octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
+            Octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
             Shader = ShaderManager.GetShader("Shaders/block");
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
 
@@ -121,9 +121,11 @@ namespace Spacebox.Game.Generation
             {
                 var chunk = chunks[i];
 
-                octree.Add(chunk, new BoundingBox(chunk.PositionWorld, Vector3.One * Chunk.Size));
+                var local = ChunkIndexToLocal(chunk.PositionIndex);
+
+                Octree.Add(chunk,BoundingBox.CreateFromMinMax(local, local + Vector3.One * Chunk.Size));
                 Chunks.Add(chunk);
-                ChunkDictionary.Add(chunk.PositionIndex, chunk);
+               
                 chunk.OnChunkModified += UpdateEntityGeometryMinMax;
 
                 UpdateNeighbors(chunk);
@@ -167,9 +169,11 @@ namespace Spacebox.Game.Generation
 
         public void AddChunk(Chunk chunk, bool generateMesh = true)
         {
-            octree.Add(chunk, new BoundingBox(chunk.PositionWorld, Vector3.One * Chunk.Size));
+            var local = ChunkIndexToLocal(chunk.PositionIndex);
+
+            Octree.Add(chunk, BoundingBox.CreateFromMinMax(local, local + Vector3.One * Chunk.Size));
             Chunks.Add(chunk);
-            ChunkDictionary.Add(chunk.PositionIndex, chunk);
+           
             chunk.OnChunkModified += UpdateEntityGeometryMinMax;
             if (generateMesh)
                 chunk.GenerateMesh();
@@ -180,9 +184,9 @@ namespace Spacebox.Game.Generation
 
         public void RemoveChunk(Chunk chunk)
         {
-            octree.Remove(chunk);
+            Octree.Remove(chunk);
             Chunks.Remove(chunk);
-            ChunkDictionary.Remove(chunk.PositionIndex);
+         
             chunk.OnChunkModified -= UpdateEntityGeometryMinMax;
             chunk.Dispose();
 
@@ -315,6 +319,14 @@ namespace Spacebox.Game.Generation
             return new Vector3Byte((byte)localX, (byte)localY, (byte)localZ);
         }
 
+        public static Vector3 ChunkIndexToLocal(Vector3SByte chunkIndex)
+        {
+            var localPos = new Vector3(chunkIndex.X * Chunk.Size, chunkIndex.Y * Chunk.Size, chunkIndex.Z *Chunk.Size);
+
+            return localPos;
+        }
+
+
         private bool PlaceBlockInternal(Vector3 localPos, Block block)
         {
             int chunkX = (int)MathF.Floor(localPos.X / Chunk.Size);
@@ -325,8 +337,10 @@ namespace Spacebox.Game.Generation
             int blockY = (int)localPos.Y - chunkY * Chunk.Size;
             int blockZ = (int)localPos.Z - chunkZ * Chunk.Size;
             Vector3Byte blockPos = new Vector3Byte((byte)blockX, (byte)blockY, (byte)blockZ);
-            if (ChunkDictionary.TryGetValue(chunkIndex, out Chunk chunk))
+
+            if ( Octree.TryFindDataAtPosition(localPos + new Vector3(0.5f,0.5f,0.5f), out var chunk))
             {
+              
                 chunk.PlaceBlock(blockPos, block);
 
                 if(block.Is<ElectricalBlock>(out var el))
@@ -398,9 +412,13 @@ namespace Spacebox.Game.Generation
         {
             foreach (var dir in Directions)
             {
-                Vector3SByte neighborCoord = chunk.PositionIndex + dir;
-                if (ChunkDictionary.TryGetValue(neighborCoord, out Chunk neighbor))
+
+                var index = (chunk.PositionIndex + dir);
+                Vector3 neighborCoord = ChunkIndexToLocal(index);
+
+                if (Octree.TryFindDataAtPosition(neighborCoord, out Chunk neighbor))
                 {
+
                     if (removing)
                     {
                         neighbor.RemoveNeighbor(chunk);
@@ -417,9 +435,9 @@ namespace Spacebox.Game.Generation
 
         public bool IsPositionInChunk(Vector3 world, out Chunk chunk)
         {
-            var index = GetChunkIndex(world);
+           var local = WorldPositionToLocal(world);
 
-            if (ChunkDictionary.TryGetValue(index, out chunk))
+            if (Octree.TryFindDataAtPosition(local, out  chunk))
             {
                 return true;
             }
@@ -477,9 +495,6 @@ namespace Spacebox.Game.Generation
                 }
             }
         }
-  
-
-        public Octree<Chunk> Octree => octree;
 
         public bool Raycast(Ray ray, out HitInfo hitInfo)
         {
@@ -536,9 +551,10 @@ namespace Spacebox.Game.Generation
             int blockX = (int)localBlockPosition.X - chunkX * Chunk.Size;
             int blockY = (int)localBlockPosition.Y - chunkY * Chunk.Size;
             int blockZ = (int)localBlockPosition.Z - chunkZ * Chunk.Size;
-            if (ChunkDictionary.TryGetValue(chunkIndex, out Chunk chunk))
-            {
 
+            if (Octree.TryFindDataAtPosition(localBlockPosition + new Vector3(0.5f,0.5f,0.5f), out Chunk chunk))
+            {
+            
                 var block = chunk.GetBlock((byte)blockX, (byte)blockY, (byte)blockZ);
 
                 if (block is ElectricalBlock )
@@ -552,7 +568,7 @@ namespace Spacebox.Game.Generation
             }
             else
             {
-                Debug.Error($"Chunk with index {chunkIndex} not found.");
+                Debug.Error($"Chunk with index {chunkIndex} not found. Block local was: {localBlockPosition}");
                 return false;
             }
         }
@@ -612,20 +628,23 @@ namespace Spacebox.Game.Generation
 
             blockTexture.Use(TextureUnit.Texture0);
             atlasTexture.Use(TextureUnit.Texture1);
-            for (int i = 0; i < Chunks.Count; i++)
+
+            HashSet<Chunk> chunks = new HashSet<Chunk>();
+           Octree.FindDataInRadius(WorldPositionToLocal(camera.Position), Settings.ChunkLOD0Distance, chunks);
+
+            foreach(var chunk  in chunks)
             {
-                var chunk = Chunks[i];
                 if (chunk.NeedsToRegenerateMesh)
                 {
                     chunk.GenerateMesh(false);
 
-                    if (chunk == null) continue ;
+                    if (chunk == null) continue;
                     chunk.NeedsToRegenerateMesh = false;
-                } 
-                // VisualDebug.DrawPosition(Chunks[i].GetCenterOfMass(), 4, Color4.Green);
+                }
                 chunk.Render(Shader);
-
             }
+
+         
 
             if (VisualDebug.Enabled)
             {
@@ -742,9 +761,13 @@ namespace Spacebox.Game.Generation
                     for (int cz = chunkMinZ; cz <= chunkMaxZ; cz++)
                     {
                         Vector3SByte idx = new Vector3SByte((sbyte)cx, (sbyte)cy, (sbyte)cz);
-                        if (!entity.ChunkDictionary.ContainsKey(idx)) continue;
-                        Chunk c = entity.ChunkDictionary[idx];
-                        if (c == null) continue;
+
+                        var localPos = ChunkIndexToLocal(idx);
+
+                        if (!entity.Octree.TryFindDataAtPosition(localPos, out Chunk chunk)) continue;
+
+                     
+                        if (chunk == null) continue;
 
                         int startX = Math.Max(0, minX - cx * Chunk.Size);
                         int endX = Math.Min(Chunk.Size - 1, maxX - cx * Chunk.Size);
@@ -759,12 +782,12 @@ namespace Spacebox.Game.Generation
                             {
                                 for (int z = startZ; z <= endZ; z++)
                                 {
-                                    Block b = c.Blocks[x, y, z];
+                                    Block b = chunk.Blocks[x, y, z];
                                     if (b != null && !b.IsAir)
                                     {
-                                        c.Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
-                                        c.IsModified = true;
-                                        modified.Add(c);
+                                        chunk.Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
+                                        chunk.IsModified = true;
+                                        modified.Add(chunk);
                                     }
                                 }
                             }
@@ -779,12 +802,15 @@ namespace Spacebox.Game.Generation
 
         private static Chunk GetOrCreateChunk(SpaceEntity entity, Vector3SByte idx)
         {
-            if (!entity.ChunkDictionary.TryGetValue(idx, out Chunk chunk) || chunk == null)
+
+            var localPos = ChunkIndexToLocal(idx);
+            if (!entity.Octree.TryFindDataAtPosition(localPos, out Chunk chunk) || chunk == null)
             {
                 chunk = new Chunk(idx, entity, true);
-                entity.ChunkDictionary[idx] = chunk;
 
-                entity.octree.Add(chunk, new BoundingBox(chunk.PositionWorld, Vector3.One * Chunk.Size));
+                var local = ChunkIndexToLocal(chunk.PositionIndex);
+
+                entity.Octree.Add(chunk, BoundingBox.CreateFromMinMax(local, local + Vector3.One * Chunk.Size));
                 entity.Chunks.Add(chunk);
 
                 chunk.OnChunkModified += entity.UpdateEntityGeometryMinMax;
@@ -855,8 +881,6 @@ namespace Spacebox.Game.Generation
 
             return modified.ToList();
         }
-
-
 
 
         public void Dispose()

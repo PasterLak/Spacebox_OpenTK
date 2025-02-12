@@ -4,13 +4,13 @@ namespace Engine
 {
     public struct Vector3SByte : IEquatable<Vector3SByte>
     {
-       
+
         public sbyte X { get; set; }
 
-       
+
         public sbyte Y { get; set; }
 
-      
+
         public sbyte Z { get; set; }
 
         public Vector3SByte(sbyte x, sbyte y, sbyte z)
@@ -88,14 +88,14 @@ namespace Engine
 
             return result;
         }
-        
+
         public static Vector3 operator +(Vector3 v1, Vector3SByte v2)
         {
             Vector3 result = new Vector3();
 
             result.X = v1.X + v2.X;
-            result.Y = v1.Y+v2.Y;
-            result.Z = v1.Z+ v2.Z;
+            result.Y = v1.Y + v2.Y;
+            result.Z = v1.Z + v2.Z;
 
             return result;
         }
@@ -109,6 +109,11 @@ namespace Engine
             result.Z = v1.Z * v2.Z;
 
             return result;
+        }
+
+        public Vector3 ToVector3()
+        {
+            return new Vector3(X, Y, Z);
         }
 
         public static Vector3SByte operator -(Vector3SByte v1, Vector3SByte v2)
@@ -167,7 +172,7 @@ namespace Engine
         {
             return new Vector3SByte(v);
         }
-        
+
         public static Vector3SByte operator *(Vector3SByte v, byte scalar)
         {
             Vector3SByte result = new Vector3SByte();

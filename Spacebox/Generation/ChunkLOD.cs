@@ -5,15 +5,10 @@ namespace Spacebox.Generation
     internal class ChunkLOD
     {
         public const byte SIZE = Chunk.Size; // 32
-        public enum LOD : byte
+  
+        public bool[,,] CreateLOD(Block[,,] blocks, byte lodDownscale)
         {
-            Near = 16,
-            Far = 8
-        }
-
-        public bool[,,] CreateLOD(Block[,,] blocks, LOD step)
-        {
-            byte lodResolution = (byte)step;
+            byte lodResolution = (byte)lodDownscale;
             bool[,,] lodData = new bool[lodResolution, lodResolution, lodResolution];
             int cellSize = SIZE / lodResolution;
             int totalBlocks = cellSize * cellSize * cellSize;
