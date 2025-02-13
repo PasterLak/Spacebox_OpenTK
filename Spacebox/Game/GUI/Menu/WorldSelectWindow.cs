@@ -31,6 +31,7 @@ namespace Spacebox.Game.GUI.Menu
             ImGui.Dummy(new Vector2(0, verticalSpacing));
             ImGui.SetCursorPosX(horizontalMargin);
             ImGui.BeginChild("WorldList", new Vector2(contentWidth, listHeight));
+
             for (int i = 0; i < menu.Worlds.Count; i++)
             {
                 var world = menu.Worlds[i];
@@ -40,7 +41,21 @@ namespace Spacebox.Game.GUI.Menu
                     menu.click1.Play();
                     menu.selectedWorld = world;
                 }
+                if (ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
+                {
+                    menu.click1.Play();
+                    if (VersionConverter.IsVersionOld(world.GameVersion, Application.Version))
+                    {
+                        menu.showVersionConvertWindow = true;
+                    }
+                    else
+                    {
+                        menu.LoadWorld(world);
+                    }
+                }
             }
+
+
             ImGui.EndChild();
             ImGui.Dummy(new Vector2(0, verticalSpacing));
             ImGui.SetCursorPosX(horizontalMargin);

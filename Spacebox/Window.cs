@@ -40,6 +40,7 @@ namespace Spacebox
         private static PolygonMode polygonMode = PolygonMode.Fill;
         private Vector2i minimizedWindowSize = new Vector2i(500, 500);
 
+        private bool DoScreenshot = false;
         public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
         {
@@ -61,11 +62,10 @@ namespace Spacebox
 
             ImGuiIOPtr io = ImGui.GetIO();
 
-            // Создаем конфигурацию шрифта без блока using, так как ImFontConfigPtr не реализует IDisposable
             ImFontConfigPtr config = new ImFontConfigPtr(ImGuiNative.ImFontConfig_ImFontConfig());
-            config.OversampleH = 1;   // Отключаем горизонтальный оверсемплинг
-            config.OversampleV = 1;   // Отключаем вертикальный оверсемплинг
-            config.PixelSnapH = true; // Привязываем к пиксельной сетке
+            config.OversampleH = 1;
+            config.OversampleV = 1;
+            config.PixelSnapH = true;
 
             io.Fonts.AddFontFromFileTTF(fontPath, fontSize, config);
 
@@ -78,7 +78,6 @@ namespace Spacebox
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0,
                           PixelFormat.Rgba, PixelType.UnsignedByte, new IntPtr(pixels));
 
-            // Устанавливаем Nearest фильтрацию для пиксельного вида
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 
@@ -101,7 +100,7 @@ namespace Spacebox
             FrameLimiter.IsRunning = true;
 
             SceneManager.Initialize(this, typeof(LogoScene));
-          
+
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
             LoadStarPixelFont();
             //ThemeUIEngine.ApplyDarkTheme();
@@ -116,7 +115,7 @@ namespace Spacebox
             }
             // InputManager.AddAction("debug", Keys.GraveAccent, true); // 161 mac
             //InputManager.RegisterCallback("debug", () => { Debug.ToggleVisibility(); });
-          
+
             InputManager.AddAction("overlay", Keys.F3, true);
             InputManager.RegisterCallback("overlay", () => { Overlay.IsVisible = !Overlay.IsVisible; });
 
@@ -139,14 +138,14 @@ namespace Spacebox
             InputManager.RegisterCallback("debugUI", () => { _debugUI = !_debugUI; });
 
             InputManager.AddAction("screenshot", Keys.F12, true);
-            InputManager.RegisterCallback("screenshot", () => { Screenshot(); });
+            InputManager.RegisterCallback("screenshot", () => { DoScreenshot = true; });
 
             screenShotAudio = new AudioSource(SoundManager.AddPermanentClip("screenshot"));
             // ToggleFullScreen();
-            
+
             CenterWindow();
 
-          
+
 
             MinimumSize = new Vector2i(640, 360);
         }
@@ -168,10 +167,10 @@ namespace Spacebox
             FrameLimiter.Update();
             Time.Update(e);
 
-          
-               _controller.Update(this, (float)e.Time);
-            
-        
+
+            _controller.Update(this, (float)e.Time);
+
+
 
 
             if (SceneManager.CurrentScene != null)
@@ -212,6 +211,12 @@ namespace Spacebox
             if (FramebufferCapture.IsActive) FramebufferCapture.IsActive = false;
             SwapBuffers();
 
+            if (DoScreenshot)
+            {
+                Screenshot();
+                DoScreenshot = false;
+            }
+
         }
 
 
@@ -250,8 +255,8 @@ namespace Spacebox
             Time.EndUpdate();
 
             AudioManager.Instance.Update();
-            
-           
+
+
         }
 
         private void UpdateInputs()

@@ -25,7 +25,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
 
     private Block? lastBlock = null;
 
-   
+
     private ItemSlot selectedItemSlot;
     private AnimatedItemModel model;
     public static BlockMiningEffect BlockMiningEffect;
@@ -98,6 +98,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
         CenteredText.Hide();
         model?.SetAnimation(false);
         model.Animator.Clear();
+        BlockMiningEffect.Enabled = false;
 
         PointLightsPool.Instance.PutBack(light);
     }
@@ -153,12 +154,12 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 b.GiveAllResourcesBack(selectedItemSlot.Storage);
             }
         }
-       // hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
+        // hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
 
         hit.chunk.SpaceEntity.RemoveBlockAtLocal(hit.blockPositionEntity, hit.normal);
-       var x = (hit.chunk.PositionIndex * Chunk.Size);
+        var x = (hit.chunk.PositionIndex * Chunk.Size);
         var localPos = new Vector3(x.X + hit.blockPositionIndex.X, x.Y + hit.blockPositionIndex.Y, x.Z + hit.blockPositionIndex.Z);
-       
+
 
         if (ClientNetwork.Instance != null)
         {
@@ -234,14 +235,14 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 BlockMiningEffect.ParticleSystem.Position = hit.position + new Vector3(hit.normal.X, hit.normal.Y, hit.normal.Z) * 0.05f;
                 BlockMiningEffect.Update();
 
-                if(model!= null && !model.Animator.IsActive)
+                if (model != null && !model.Animator.IsActive)
                 {
                     model.SetAnimation(true);
                 }
 
-                if(!light.IsActive)
+                if (!light.IsActive)
                 {
-                    light.IsActive=true;
+                    light.IsActive = true;
                 }
                 light.Position = player.Position;
                 if (item != null)
@@ -290,7 +291,7 @@ public class InteractionDestroyBlockSurvival : InteractionMode
                 return;
             }
 
-                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
+            InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
         }
         else
         {

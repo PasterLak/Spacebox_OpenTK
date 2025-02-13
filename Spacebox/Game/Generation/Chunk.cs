@@ -20,7 +20,7 @@ namespace Spacebox.Game.Generation
         public bool NeedsToRegenerateMesh = false;
         public Block[,,] Blocks { get; private set; }
         public bool ShowChunkBounds { get; set; } = true;
-        public bool MeasureGenerationTime { get; set; } = true;
+        public bool MeasureGenerationTime { get; set; } = false;
         private bool _isModified = false;
         public bool IsModified
         {

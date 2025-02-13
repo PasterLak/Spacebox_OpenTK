@@ -102,7 +102,7 @@ namespace Spacebox.Game.Generation
                                 if (nb != null && nb.IsTransparent) continue;
                             }
 
-                            if (IsTransparentBlock(nx, ny, nz, normal))
+                            if (IsTransparentBlock(nx, ny, nz, normal, block.IsTransparent))
                             {
                                 var faceVertices = CubeMeshData.GetFaceVertices(face);
                                 var faceUVs = GameBlocks.GetBlockUVsByIdAndDirection(block.BlockId, face, block.Direction);
@@ -331,21 +331,25 @@ namespace Spacebox.Game.Generation
             return _blocks[x, y, z].LightLevel > 0;
         }
 
-        private bool IsTransparentBlock(sbyte x, sbyte y, sbyte z, Vector3SByte normal)
+        private bool IsTransparentBlock(sbyte x, sbyte y, sbyte z, Vector3SByte normal, bool currentTransparent)
         {
             if (!IsInRange(x, y, z))
             {
-                if (_neighbors.TryGetValue(normal, out var nch) && nch != null)
+                if (_neighbors.TryGetValue(normal, out var nChunk) && nChunk != null)
                 {
                     var wrap = WrapBlockCoordinate(x, y, z, Size);
-                    var b = nch.GetBlock(wrap);
-                    if (b != null) return b.IsAir || b.IsTransparent;
+                    var b = nChunk.GetBlock(wrap);
+                    if (b != null)
+                    {
+               
+                        return currentTransparent ? b.IsAir : (b.IsAir || b.IsTransparent);
+                    }
                     return true;
                 }
                 return true;
             }
             var bl = _blocks[x, y, z];
-            return bl.IsAir || bl.IsTransparent;
+            return currentTransparent ? bl.IsAir : (bl.IsAir || bl.IsTransparent);
         }
 
         public static Vector3SByte WrapBlockCoordinate(int x, int y, int z, byte Size)
