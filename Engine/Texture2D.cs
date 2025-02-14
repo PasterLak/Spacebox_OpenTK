@@ -223,7 +223,7 @@ namespace Engine
             GL.DeleteTexture(Handle);
         }
 
-        public void SaveToPng(string path)
+        public void SaveToPng(string path, bool flipY = false)
         {
             if (pixels == null)
             {
@@ -242,7 +242,8 @@ namespace Engine
                             for (int x = 0; x < Width; x++)
                             {
                                 var color = pixels[x, y];
-                                image[x, y] = new Rgba32(
+                                var inx = flipY ? Height - 1 - y : y;
+                                image[x, inx] = new Rgba32(
                                     (byte)(color.R * 255),
                                     (byte)(color.G * 255),
                                     (byte)(color.B * 255),
@@ -252,7 +253,7 @@ namespace Engine
                         }
 
                         image.Save(path, new PngEncoder());
-                        Debug.Success($"Texture saved to: {Path.GetFullPath(path)}");
+                      //  Debug.Success($"Texture saved to: {Path.GetFullPath(path)}");
                     }
                 }
                 catch (Exception ex)

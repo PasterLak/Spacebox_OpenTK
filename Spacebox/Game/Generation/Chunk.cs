@@ -47,10 +47,10 @@ namespace Spacebox.Game.Generation
 
         public Action<Chunk> OnChunkModified;
 
-        private LOD Lod = LOD.L0;
+        private LOD Lod = LOD.None;
         public enum LOD : short
         {
-            L0 = 128, L1 = 200, L2 = 256, L3 = 512
+            None = 0, L0 = 128, L1 = 200, L2 = 256, L3 = 512
         }
 
         public Chunk(Vector3SByte positionIndex, SpaceEntity spaceEntity, bool emptyChunk = false)

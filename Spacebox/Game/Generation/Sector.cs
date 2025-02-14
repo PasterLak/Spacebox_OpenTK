@@ -43,7 +43,7 @@ namespace Spacebox.Game.Generation
             InitializeSharedResources();
 
 
-            int numAsteroids = 9;
+            int numAsteroids = 16;
             Random random = World.Random;
 
 

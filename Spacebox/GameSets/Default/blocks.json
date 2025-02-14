@@ -54,21 +54,21 @@
         "Name": "Titanium Ore",
         "Sides": "titaniumOre",
         "PowerToDrill": 4,
-        "Mass": 1,
+        "Mass": 4,
         "Durability": 9
     },
     {
         "Name": "Thulium Ore",
         "Sides": "yellowOre",
         "PowerToDrill": 3,
-        "Mass": 1,
+        "Mass": 4,
         "Durability": 7
     },
     {
         "Name": "Obscurium Ore",
         "Sides": "pinkOre",
         "PowerToDrill": 5,
-        "Mass": 1,
+        "Mass": 10,
         "Durability": 50
     },
     {

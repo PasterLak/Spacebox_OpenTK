@@ -62,7 +62,7 @@
         "MaxStack": 1,
         "ModelDepth": 1.5,
         "Damage": 5,
-        "ReloadTime": 14,
+        "ReloadTime": 10,
         "Spread": 0,
         "Pushback": 18,
         "AnimationSpeed": 0.5,

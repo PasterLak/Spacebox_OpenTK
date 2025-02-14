@@ -1,7 +1,7 @@
 [
     {
         "Name": "pistoleProjectile",
-        "Speed": 15,
+        "Speed": 16,
         "MaxTravelDistance": 50,
         "Length": 0.4,
         "Thickness": 0.05,
@@ -17,7 +17,7 @@
         "Length": 0.75,
         "Thickness": 0.05,
         "Color": {"r": 0,"g": 0,"b": 255},
-        "Damage": 3,
+        "Damage": 4,
         "RicochetAngle": 25,
         "PossibleRicochets": 3
     },
@@ -28,7 +28,7 @@
         "Length": 0.65,
         "Thickness": 0.05,
         "Color": {"r": 0,"g": 255,"b": 0},
-        "Damage": 5,
+        "Damage": 3,
         "RicochetAngle": 20,
         "PossibleRicochets": 2
     },

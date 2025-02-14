@@ -274,6 +274,7 @@ namespace Spacebox.Game.GUI
                     text += "\nProjectile speed: " + pj.Speed;
                     text += "\nReload time: " + itemType.ReloadTime;
                     text += "\nPower usage: " + itemType.PowerUsage;
+                    text += "\nDPM: " + pj.Damage * (1200/itemType.ReloadTime);
                 }
                 else if (type == typeof(BlockItem))
                 {

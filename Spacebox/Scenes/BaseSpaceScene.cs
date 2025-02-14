@@ -226,6 +226,7 @@ namespace Spacebox.Scenes
 
       
             Debug.RegisterCommand(new ChatCommand());
+            Debug.RegisterCommand(new DebugTexturesCommand());
             Debug.RegisterCommand(new TeleportCommand(localPlayer));
             Debug.RegisterCommand(new TagCommand(localPlayer));
             Debug.RegisterCommand(new ClearInventoryCommand(localPlayer));

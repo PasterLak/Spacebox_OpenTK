@@ -175,8 +175,8 @@ namespace Spacebox.Game.Generation
             Chunks.Add(chunk);
            
             chunk.OnChunkModified += UpdateEntityGeometryMinMax;
-            if (generateMesh)
-                chunk.GenerateMesh();
+           // if (generateMesh)
+           //     chunk.GenerateMesh();
             UpdateNeighbors(chunk);
             RecalculateGeometryBoundingBox();
             RecalculateMass();
@@ -622,18 +622,32 @@ namespace Spacebox.Game.Generation
             StarsEffect.Render();
         }
 
-
+        HashSet<Chunk> chunks = new HashSet<Chunk>();
         public void Render(Camera camera)
         {
 
             blockTexture.Use(TextureUnit.Texture0);
             atlasTexture.Use(TextureUnit.Texture1);
 
-            HashSet<Chunk> chunks = new HashSet<Chunk>();
+            chunks.Clear();
            Octree.FindDataInRadius(WorldPositionToLocal(camera.Position), 512, chunks);
 
             foreach(var chunk  in chunks)
             {
+                
+
+                bool visible = false;
+
+                visible = chunk.GeometryBoundingBox.Contains(camera.Position);
+                  
+                if(!visible)
+                {
+                    visible = camera.Frustum.IsInFrustum(chunk.GeometryBoundingBox, camera);
+
+                }
+
+                if (!visible) continue;
+
                 if (chunk.NeedsToRegenerateMesh)
                 {
                     chunk.GenerateMesh(false);
