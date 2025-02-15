@@ -14,7 +14,7 @@ namespace ServerCommon
         public static float PingInterval = 0.5f;
         public static float ConnectionTimeout = 2f;
         public static int TimeToCheckAfk = 10;
-        public static int TimeCanBeAfkSec = 60 * 5;
+        public static int TimeCanBeAfkSec = 6000 * 5;
 
         public static Dictionary<string, string> ServerDataToDictionary()
         {

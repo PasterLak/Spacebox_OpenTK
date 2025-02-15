@@ -5,4 +5,4 @@ key=0.1.1
 maxPlayers=100
 seed = 420
 pingInterval= 0.5
-connectionTimeout= 2
+connectionTimeout= 20

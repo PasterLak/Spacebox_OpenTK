@@ -400,3 +400,6 @@ FodyWeavers.xsd
 .DS_Store
 .idea/.idea.Spacebox/.idea/workspace.xml
 .idea/.idea.Spacebox/.idea/
+/.idea
+.idea/.idea.Spacebox/.idea/workspace.xml
+.idea/.idea.Spacebox/.idea/workspace.xml
