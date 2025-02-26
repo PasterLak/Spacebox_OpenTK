@@ -28,7 +28,7 @@ namespace Spacebox.Game.Generation
         public static WorldLoader.LoadedWorld Data { get; private set; }
         public static DropEffectManager DropEffectManager;
         public static BlockDestructionManager DestructionManager;
-
+        public static int Seed;
         public static Sector CurrentSector { get; private set; }
 
         private readonly Octree<Sector> worldOctree;
@@ -91,7 +91,7 @@ namespace Spacebox.Game.Generation
         public static void LoadWorldInfo(string worldName)
         {
             Data = WorldLoader.LoadWorldByName(worldName);
-
+            Seed = int.Parse(Data.Info.Seed);
             if (Data == null)
             {
                 Debug.Log("Data not found!");
@@ -99,9 +99,10 @@ namespace Spacebox.Game.Generation
             }
             else
             {
-                Random = new Random(int.Parse(Data.Info.Seed));
+                Random = new Random(Seed);
             }
 
+           
         }
 
         private void OnPlayerMoved(Astronaut player)

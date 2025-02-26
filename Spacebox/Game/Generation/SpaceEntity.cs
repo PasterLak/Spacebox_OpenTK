@@ -27,6 +27,7 @@ namespace Spacebox.Game.Generation
         private Vector3 SumPosCenterOfMass;
         public Vector3 CenterOfMass { get; private set; }
         public bool IsModified { get; private set; } = false;
+        public bool IsGenerated { get; set; } = false;
         public void SetModified() { if (!IsModified) IsModified = true; }
         public Sector Sector { get; private set; }
 
@@ -99,6 +100,7 @@ namespace Spacebox.Game.Generation
             StarsEffect.ParticleSystem.AddParticle(StarParticle);
         }
 
+
         public void CreateFirstBlock(Block block)
         {
             if (Chunks.Count != 0)
@@ -143,7 +145,6 @@ namespace Spacebox.Game.Generation
                     MeshesTogenerate.Add(chunks[i]);
                 }
 
-
             }
 
 
@@ -160,6 +161,7 @@ namespace Spacebox.Game.Generation
                 chunk.GenerateMesh();
             }
             MeshesTogenerate.Clear();
+            IsGenerated = true;
         }
         public void AddChunk(Chunk chunk)
         {

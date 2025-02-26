@@ -1,5 +1,6 @@
 ﻿using Engine;
 using Engine.Physics;
+using Engine.Utils;
 using OpenTK.Mathematics;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
@@ -42,10 +43,9 @@ namespace Spacebox.Game.Generation
             EntitiesNames = new Dictionary<string, SpaceEntity>();
             InitializeSharedResources();
 
-
-            int numAsteroids = 16;
-            Random random = World.Random;
-
+            
+            Random random = RandomHelper.CreateRandomFromSeed(World.Seed, positionIndex);
+            int numAsteroids = random.Next(8,16);
 
             if (WorldSaveLoad.CanLoadSectorHere(PositionIndex, out var sectorFolderPath))
             {
@@ -64,12 +64,8 @@ namespace Spacebox.Game.Generation
 
             for (int i = 0; i < numAsteroids; i++)
             {
-                SpawnAsteroids(random, i);
+                SpawnPoints(random, i);
             }
-
-
-            //Initialize();
-
 
         }
 
@@ -187,9 +183,7 @@ namespace Spacebox.Game.Generation
         }
 
 
-
-
-        private void SpawnAsteroids(Random random, int id)
+        private void SpawnPoints(Random random, int id)
         {
 
             var name = "Asteroid" + id;
@@ -204,7 +198,7 @@ namespace Spacebox.Game.Generation
             }
 
             var asteroid = new AsteroidLight(id, asteroidWorldPosition, this);
-            asteroid.AddChunk(new Chunk(new Vector3SByte(0, 0, 0), asteroid));
+          
             asteroid.Name = name;
             AddEntity(asteroid, asteroidWorldPosition);
 
@@ -345,6 +339,18 @@ namespace Spacebox.Game.Generation
                 if (cam.Frustum.IsInFrustum(entity.GeometryBoundingBox, cam))
                 {
                     var disSqr = Vector3.DistanceSquared(entity.GeometryBoundingBox.Center, cam.Position);
+
+                    if(!entity.IsGenerated)
+                    {
+                        var e = entity as Asteroid;
+
+                        if(e != null)
+                        {
+                            e.OnGenerate();
+                        }
+
+                        continue;
+                    }
 
                     if (disSqr < 500 * 500)
                     {
