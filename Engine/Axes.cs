@@ -1,136 +1,113 @@
 ﻿using System;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
+using Engine;
 
-
-namespace Engine;
-
-public class Axes : Node3D
+namespace Engine
 {
-    private int vertexArray;
-    private int vertexBuffer;
-
-    private Shader _shader;
-
-    private float[] vertices;
-
-    public float Length { get; set; }
-
-    public Axes(Vector3 position, float length)
+    public class Axes : Node3D
     {
-        Position = position;
-        Length = length;
-        Rotation = Vector3.Zero;
+        private BufferShader _buffer;
+        private Shader _shader;
+        private float[] vertices;
+        private uint[] indices = new uint[] { 0, 1, 2, 3, 4, 5 };
+        public float Length { get; set; }
 
-        _shader = ShaderManager.GetShader("Shaders/axes");
-
-        UpdateVertices();
-        SetupBuffers();
-    }
-
-    public Axes(Vector3 position, float length, Vector3 rotation)
-    {
-        Position = position;
-        Length = length;
-        Rotation = rotation;
-
-        _shader = ShaderManager.GetShader("Shaders/axes");
-
-        UpdateVertices();
-        SetupBuffers();
-    }
-
-    private void SetupBuffers()
-    {
-       
-        vertexArray = GL.GenVertexArray();
-        GL.BindVertexArray(vertexArray);
-
-        
-        vertexBuffer = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
-        GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.DynamicDraw);
-
-       
-        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
-        GL.EnableVertexAttribArray(0);
-        GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
-        GL.EnableVertexAttribArray(1);
-
-       
-        GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-        GL.BindVertexArray(0);
-    }
-
-    private void UpdateVertices()
-    {
-      
-        vertices = new float[]
+        public Axes(Vector3 position, float length)
         {
-            // X 
-            0.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
-            Length, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
-
-            // Y 
-            0.0f, 0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-            0.0f, Length, 0.0f,  0.0f, 1.0f, 0.0f,
-
-            // Z 
-            0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, Length,  0.0f, 0.0f, 1.0f,
-        };
-
-       
-        if (vertexBuffer != 0)
-        {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.DynamicDraw);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            Position = position;
+            Length = length;
+            Rotation = Vector3.Zero;
+            _shader = ShaderManager.GetShader("Shaders/axes");
+            UpdateVertices();
+            SetupBuffer();
         }
-    }
 
-    public void Render(Camera camera)
-    {
-        Render(camera.GetViewMatrix(), camera.GetProjectionMatrix());
-    }
-    public void Render(Matrix4 view, Matrix4 projection)
-    {
-       
-        _shader.Use();
+        public Axes(Vector3 position, float length, Vector3 rotation)
+        {
+            Position = position;
+            Length = length;
+            Rotation = rotation;
+            _shader = ShaderManager.GetShader("Shaders/axes");
+            UpdateVertices();
+            SetupBuffer();
+        }
 
-        Matrix4 model = GetModelMatrix();
+        private void SetupBuffer()
+        {
+            _buffer = new BufferShader(new BufferAttribute[]
+            {
+                new BufferAttribute { Name = "position", Size = 3 },
+                new BufferAttribute { Name = "color", Size = 3 }
+            });
+            _buffer.BindBuffer(ref vertices, ref indices);
+            _buffer.SetAttributes();
+        }
 
-      
-        int modelLocation = GL.GetUniformLocation(_shader.Handle, "model");
-        int viewLocation = GL.GetUniformLocation(_shader.Handle, "view");
-        int projectionLocation = GL.GetUniformLocation(_shader.Handle, "projection");
+        private void UpdateVertices()
+        {
+            vertices = new float[]
+            {
+                // X axis
+                0.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+                Length, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
 
-       
-        GL.UniformMatrix4(modelLocation, false, ref model);
-        GL.UniformMatrix4(viewLocation, false, ref view);
-        GL.UniformMatrix4(projectionLocation, false, ref projection);
+                // Y axis
+                0.0f, 0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+                0.0f, Length, 0.0f,  0.0f, 1.0f, 0.0f,
 
-        GL.BindVertexArray(vertexArray);
-        GL.DrawArrays(PrimitiveType.Lines, 0, 6);
-        GL.BindVertexArray(0);
-    }
+                // Z axis
+                0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, Length,  0.0f, 0.0f, 1.0f,
+            };
 
+            if (_buffer != null)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, _buffer.VBO);
+                GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.DynamicDraw);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            }
+        }
 
-    public void SetPosition(Vector3 newPosition)
-    {
-        Position = newPosition;
-        UpdateVertices();
-    }
+        public void Render(Camera camera)
+        {
+            Render(camera.GetViewMatrix(), camera.GetProjectionMatrix());
+        }
 
-    public void SetLength(float newLength)
-    {
-        Length = newLength;
-        UpdateVertices();
-    }
+        public void Render(Matrix4 view, Matrix4 projection)
+        {
+            _shader.Use();
+            Matrix4 model = GetModelMatrix();
 
-    public void SetRotation(Vector3 newRotation)
-    {
-        Rotation = newRotation;
-        UpdateVertices();
+            int modelLocation = GL.GetUniformLocation(_shader.Handle, "model");
+            int viewLocation = GL.GetUniformLocation(_shader.Handle, "view");
+            int projectionLocation = GL.GetUniformLocation(_shader.Handle, "projection");
+
+            GL.UniformMatrix4(modelLocation, false, ref model);
+            GL.UniformMatrix4(viewLocation, false, ref view);
+            GL.UniformMatrix4(projectionLocation, false, ref projection);
+
+            GL.BindVertexArray(_buffer.VAO);
+            GL.DrawElements(PrimitiveType.Lines, indices.Length, DrawElementsType.UnsignedInt, 0);
+            GL.BindVertexArray(0);
+        }
+
+        public void SetPosition(Vector3 newPosition)
+        {
+            Position = newPosition;
+            UpdateVertices();
+        }
+
+        public void SetLength(float newLength)
+        {
+            Length = newLength;
+            UpdateVertices();
+        }
+
+        public void SetRotation(Vector3 newRotation)
+        {
+            Rotation = newRotation;
+            UpdateVertices();
+        }
     }
 }

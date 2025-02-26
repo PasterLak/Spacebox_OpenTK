@@ -10,14 +10,6 @@ namespace Engine
         public Matrix4 ViewMatrix { get; private set; }
         public Matrix4 ProjectionMatrix { get; private set; }
 
-        public CameraFrustum Copy()
-        {
-            CameraFrustum frustum = new CameraFrustum();
-            //frustum.UpdateFrustum(ViewMatrix, ProjectionMatrix);
-            
-            return frustum;
-        }
-
         public void UpdateFrustum(Camera camera)
         {
             ViewMatrix = camera.GetViewMatrix();
@@ -119,7 +111,6 @@ namespace Engine
 
             return corners;
         }
-
 
         public bool IsInFrustum(BoundingVolume volume, Camera camera)
         {
