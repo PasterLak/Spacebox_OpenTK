@@ -91,10 +91,10 @@ namespace Engine
             _position = position;
             Position = position;
             _shader = ShaderManager.GetShader("Shaders/colored");
-            var attrs = new BufferShader.Attribute[]
+            var attrs = new BufferAttribute[]
             {
-                new BufferShader.Attribute { Name = "aPos",    Size = 3 },
-                new BufferShader.Attribute { Name = "aNormal", Size = 3 }
+                new BufferAttribute { Name = "aPos",    Size = 3 },
+                new BufferAttribute { Name = "aNormal", Size = 3 }
             };
             _buffer = new BufferShader(attrs);
             _buffer.BindBuffer(ref _vertices, ref _indices);

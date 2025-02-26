@@ -2,23 +2,24 @@
 
 namespace Engine
 {
+    public struct BufferAttribute
+    {
+        public string Name;
+        public byte Size;
+    }
     public class BufferShader : IDisposable
     {
         public int VAO { get; private set; }
         public int VBO { get; private set; }
         public int EBO { get; private set; }
 
-        private List<Attribute> attributes = new List<Attribute>();
+        private List<BufferAttribute> attributes = new List<BufferAttribute>();
         public byte FloatsPerVertex { get; private set; } = 0;
 
         private bool _isGenerated = false;
-        public struct Attribute
-        {
-            public string Name;
-            public byte Size;
-        }
+       
 
-        public BufferShader(Attribute[] attributes)
+        public BufferShader(BufferAttribute[] attributes)
         {
             GenBuffer();
             for (byte i = 0; i < attributes.Length; i++)
@@ -51,9 +52,9 @@ namespace Engine
 
         public void AddAttribute(string name, byte size)
         {
-            if (attributes == null) attributes = new List<Attribute>();
+            if (attributes == null) attributes = new List<BufferAttribute>();
 
-            var atr = new Attribute();
+            var atr = new BufferAttribute();
             atr.Name = name;
             atr.Size = size;
             attributes.Add(atr);
@@ -62,6 +63,8 @@ namespace Engine
         }
         public void SetAttributes()
         {
+            GL.BindVertexArray(VAO);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
 
             int stride = sizeof(float) * FloatsPerVertex;
             int offset = 0;

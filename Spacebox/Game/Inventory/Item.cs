@@ -1,6 +1,5 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Game.Generation;
-using Engine;
+
 namespace Spacebox.Game
 {
     public class Item
@@ -27,8 +26,6 @@ namespace Spacebox.Game
             StackSize = stackSize;
             Name = name;
         }
-
-  
 
         public Item(byte stackSize, string name, byte x, byte y)
         {

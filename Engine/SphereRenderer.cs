@@ -37,11 +37,11 @@ namespace Engine
             _rings = rings;
             Position = center;
             _shader = ShaderManager.GetShader("Shaders/textured");
-            var attrs = new BufferShader.Attribute[]
+            var attrs = new BufferAttribute[]
             {
-                new BufferShader.Attribute { Name = "aPos",       Size = 3 },
-                new BufferShader.Attribute { Name = "aNormal",    Size = 3 },
-                new BufferShader.Attribute { Name = "aTexCoords", Size = 2 }
+                new BufferAttribute { Name = "aPos",       Size = 3 },
+                new BufferAttribute { Name = "aNormal",    Size = 3 },
+                new BufferAttribute { Name = "aTexCoords", Size = 2 }
             };
             _buffer = new BufferShader(attrs);
         }

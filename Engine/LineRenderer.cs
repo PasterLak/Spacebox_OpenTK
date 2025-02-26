@@ -48,10 +48,10 @@ namespace Engine
         {
             _shader = ShaderManager.GetShader("Shaders/lineRenderer");
 
-            var attrs = new BufferShader.Attribute[]
+            var attrs = new BufferAttribute[]
             {
-                new BufferShader.Attribute { Name = "aPosition", Size = 3 },
-                new BufferShader.Attribute { Name = "aNormal",   Size = 3 }
+                new BufferAttribute { Name = "aPosition", Size = 3 },
+                new BufferAttribute { Name = "aNormal",   Size = 3 }
             };
 
             _buffer = new BufferShader(attrs);
