@@ -10,7 +10,7 @@ using Client;
 
 namespace Spacebox.Game.Generation
 {
-    public class SpaceEntity : Node3D, IDisposable
+    public class SpaceEntity : SpatialCell, IDisposable
     {
         public const byte SizeChunks = 4; // will be 16
         public const byte SizeChunksHalf = SizeChunks / 2;
@@ -21,8 +21,6 @@ namespace Spacebox.Game.Generation
         public ulong Mass { get; set; } = 0;
 
         public Octree<Chunk> Octree { get; private set; } // local coords
-        public BoundingBox BoundingBox { get; private set; }
-        public Vector3 PositionWorld { get; private set; }
 
         private Vector3 SumPosCenterOfMass;
         public Vector3 CenterOfMass { get; private set; }

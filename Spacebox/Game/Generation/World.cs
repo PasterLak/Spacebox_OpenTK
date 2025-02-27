@@ -8,7 +8,6 @@ using Spacebox.Game.Effects;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
-using static Spacebox.Game.WorldLoader;
 
 /*
   positionWorld
@@ -33,14 +32,7 @@ namespace Spacebox.Game.Generation
 
         private readonly Octree<Sector> worldOctree;
 
-        //private readonly ConcurrentDictionary<Vector3i, Sector> sectorsByIndex;
-        private readonly object octreeLock = new object();
 
-        //private readonly HashSet<Vector3i> sectorsBeingLoaded = new HashSet<Vector3i>();
-        // private readonly HashSet<Vector3i> sectorsBeingUnloaded = new HashSet<Vector3i>();
-        private readonly Dictionary<Vector3i, Sector> cachedSectors = new Dictionary<Vector3i, Sector>();
-        private readonly Queue<Sector> sectorsToInitialize = new Queue<Sector>();
-     
         public World(Astronaut player)
         {
             Instance = this;
@@ -50,8 +42,6 @@ namespace Spacebox.Game.Generation
 
             worldOctree = new Octree<Sector>(initialWorldSize, Vector3.Zero, Sector.SizeBlocks, 1.0f);
 
-            //sectorsByIndex = new ConcurrentDictionary<Vector3i, Sector>();
-
             LoadWorld();
 
             DropEffectManager = new DropEffectManager(player);
@@ -59,15 +49,8 @@ namespace Spacebox.Game.Generation
 
             player.OnMoved += OnPlayerMoved;
 
-            //SpaceEntity.InitializeSharedResources();
-
             Overlay.AddElement(new WorldOverlayElement(this));
 
-
-           // InputManager.AddAction("save", Keys.P, false);
-          //  InputManager.RegisterCallback("save", () => { SaveWorld(); });
-
-         
         }
 
         public void SaveWorld()
@@ -81,7 +64,6 @@ namespace Spacebox.Game.Generation
         public void LoadWorld()
         {
             Vector3i initialSectorIndex = GetSectorIndex(Player.Position);
-
 
             CurrentSector = LoadSector(initialSectorIndex);
             CurrentSector.SpawnPlayerNearAsteroid(Player, Random);
@@ -102,7 +84,6 @@ namespace Spacebox.Game.Generation
                 Random = new Random(Seed);
             }
 
-           
         }
 
         private void OnPlayerMoved(Astronaut player)
@@ -117,50 +98,23 @@ namespace Spacebox.Game.Generation
             CurrentSector = LoadSector(sectorToCheck);
         }
 
-        public void EnqueueSectorInitialization(Sector sector)
-        {
-            lock (sectorsToInitialize)
-            {
-                sectorsToInitialize.Enqueue(sector);
-            }
-        }
-
-        private void InitializeSectors()
-        {
-            lock (sectorsToInitialize)
-            {
-                while (sectorsToInitialize.Count > 0)
-                {
-                    Sector sector = sectorsToInitialize.Dequeue();
-                    sector.InitializeSharedResources();
-                }
-            }
-        }
-
         public void Update()
         {
             DropEffectManager.Update();
             DestructionManager.Update();
-         
-            //InitializeSectors();
             worldOctree.DrawDebug();
-            //UpdateSectors();
 
             if (CurrentSector != null)
             {
                 CurrentSector.Update();
             }
-            /*foreach (var sector in GetSectorsInRange(Player.Position, 3))
-            {
-                sector.Update();
-            }*/
 
-            if(Input.IsKeyDown(Keys.KeyPad8))
+            if (Input.IsKeyDown(Keys.KeyPad8))
             {
-           
-                    if(CurrentSector.TryGetNearestEntity(Player.Position, out var ent))
+
+                if (CurrentSector.TryGetNearestEntity(Player.Position, out var ent))
                 {
-                    if(ent.IsPositionInChunk(Player.Position, out var chunk))
+                    if (ent.IsPositionInChunk(Player.Position, out var chunk))
                     {
                         chunk.ClearChunk();
                         chunk.GenerateMesh();
@@ -173,10 +127,6 @@ namespace Spacebox.Game.Generation
 
         public void Render(Shader shader)
         {
-            /*foreach (var sector in GetSectorsInRange(Player.Position, 3))
-            {
-                sector.Render(shader);
-            }*/
 
             if (CurrentSector != null)
             {
@@ -185,54 +135,34 @@ namespace Spacebox.Game.Generation
 
             DropEffectManager.Render();
             DestructionManager.Render();
-            
+
         }
 
         private Sector LoadSector(Vector3i sectorIndex)
         {
             Sector newSector = null;
 
-            if (cachedSectors.TryGetValue(sectorIndex, out newSector))
-            {
-                worldOctree.Add(newSector, newSector.BoundingBox);
-                return newSector;
-            }
-            else
-            {
-                Vector3 sectorPosition = GetSectorPosition(sectorIndex);
-                newSector = new Sector(sectorPosition, sectorIndex, this);
-                CurrentSector = newSector;
+            Vector3 sectorPosition = GetSectorPosition(sectorIndex);
+            newSector = new Sector(sectorPosition, sectorIndex, this);
+            CurrentSector = newSector;
 
-                Vector3 sectorCenter = sectorPosition + new Vector3(Sector.SizeBlocksHalf);
-                Vector3 sectorSize = new Vector3(Sector.SizeBlocks, Sector.SizeBlocks, Sector.SizeBlocks);
+            Vector3 sectorCenter = sectorPosition + new Vector3(Sector.SizeBlocksHalf);
+            Vector3 sectorSize = new Vector3(Sector.SizeBlocks, Sector.SizeBlocks, Sector.SizeBlocks);
 
-                BoundingBox sectorBounds = new BoundingBox(sectorCenter, sectorSize);
+            BoundingBox sectorBounds = new BoundingBox(sectorCenter, sectorSize);
 
-                worldOctree.Add(newSector, sectorBounds);
-            }
+            worldOctree.Add(newSector, sectorBounds);
 
-            //sectorsByIndex[sectorIndex] = newSector;
-            //sectorsBeingLoaded.Remove(sectorIndex);
 
             return newSector;
         }
-
 
         private void UnloadSector()
         {
             if (CurrentSector == null) return;
 
-            if (cachedSectors.ContainsKey(CurrentSector.PositionIndex))
-            {
-                return;
-            }
-
-            cachedSectors.Add(CurrentSector.PositionIndex, CurrentSector);
             worldOctree.Remove(CurrentSector, CurrentSector.BoundingBox);
-            //CurrentSector.Dispose();
             CurrentSector = null;
-
-            //sectorsByIndex.TryRemove(CurrentSector.Index, out Sector sector);
         }
 
         private Vector3i GetSectorIndex(Vector3 position)
@@ -252,19 +182,6 @@ namespace Spacebox.Game.Generation
             );
         }
 
-        private float GetDistanceToSector(Vector3 sectorPosition, Vector3 playerPosition)
-        {
-            Vector3 sectorCenter = sectorPosition + new Vector3(Sector.SizeBlocksHalf);
-            return Vector3.Distance(sectorCenter, playerPosition);
-        }
-
-        private bool SectorExists(Vector3i index)
-        {
-            // return sectorsByIndex.ContainsKey(index);
-
-            return false;
-        }
-
         public bool IsColliding(Vector3 pos, BoundingVolume volume, out CollideInfo collideInfo)
         {
             if (CurrentSector == null)
@@ -277,28 +194,15 @@ namespace Spacebox.Game.Generation
             return CurrentSector.IsColliding(pos, volume, out collideInfo);
         }
 
-        private IEnumerable<Sector> GetSectorsInRange(Vector3 position, float range)
-        {
-            Vector3 searchCenter = position;
-            Vector3 searchSize = new Vector3(range * 2f);
-
-            BoundingBox searchBounds = new BoundingBox(searchCenter, searchSize);
-
-            VisualDebug.DrawBoundingBox(searchBounds, new Color4(0, 255, 0, 255));
-
-            var sectors = new List<Sector>();
-            lock (octreeLock)
-            {
-                worldOctree.GetColliding(sectors, searchBounds);
-            }
-
-            return sectors;
-        }
-
         public void Dispose()
         {
             Data = null;
-          
+            DropEffectManager.Dispose();
+            DropEffectManager = null;
+            DestructionManager.Dispose();
+            DestructionManager = null;
+            CurrentSector.Dispose();
+            CurrentSector = null;
         }
     }
 }

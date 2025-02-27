@@ -67,6 +67,7 @@ namespace Engine
         {
             Points.Add(point);
             _geometryNeedsUpdate = true;
+
         }
 
         public void ClearPoints()

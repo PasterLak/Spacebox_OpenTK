@@ -7,25 +7,26 @@ using Spacebox.Game.Player;
 
 namespace Spacebox.Game.Generation
 {
-    public class Sector : IDisposable
+    public class Sector : SpatialCell, IDisposable
     {
+        // ------------------ CONST --------------------------------------------
         public const short SizeBlocks = 8192; // 256 512 2048 4096 8192
         public const short SizeBlocksHalf = SizeBlocks / 2;
 
-        public Vector3 PositionWorld { get; private set; }
-        public Vector3i PositionIndex { get; private set; }
+        // ------------------ Properties --------------------------------------------
 
-        private readonly PointOctree<SpaceEntity> sectorOctree;
+        public static bool IsPlayerSpawned = false;
         public World World { get; private set; }
-
-        public BoundingBox BoundingBox { get; private set; }
-
+      
         public List<SpaceEntity> Entities { get; private set; }
         public Dictionary<string, SpaceEntity> EntitiesNames { get; private set; }
 
-        public static bool IsPlayerSpawned = false;
+        // ------------------ Private --------------------------------------------
+        private readonly PointOctree<SpaceEntity> sectorOctree;
+
         private bool isEdited = false;
-        public int MaxEntityID = 3;
+        private int MaxEntityID = 3;
+
         public Sector(Vector3 positionWorld, Vector3i positionIndex, World world)
         {
             PositionWorld = positionWorld;
@@ -41,11 +42,10 @@ namespace Spacebox.Game.Generation
 
             Entities = new List<SpaceEntity>();
             EntitiesNames = new Dictionary<string, SpaceEntity>();
-            InitializeSharedResources();
 
-            
+
             Random random = RandomHelper.CreateRandomFromSeed(World.Seed, positionIndex);
-            int numAsteroids = random.Next(8,16);
+            int numAsteroids = random.Next(2, 5);
 
             if (WorldSaveLoad.CanLoadSectorHere(PositionIndex, out var sectorFolderPath))
             {
@@ -59,7 +59,6 @@ namespace Spacebox.Game.Generation
                     e.GenerateMesh();
                 }
 
-                Debug.Success("Sector was loaded: " + PositionIndex);
             }
 
             for (int i = 0; i < numAsteroids; i++)
@@ -73,13 +72,13 @@ namespace Spacebox.Game.Generation
         {
             if (IsPlayerSpawned) return;
 
-           
+
             if (TryGetNearestEntity(GetCenter(), out var entity))
             {
                 player.Position = GetRandomPositionNearAsteroid(random, entity);
             }
             else
-            player.Position = GetRandomPositionWithCollisionCheck(random, 0.2f);
+                player.Position = GetRandomPositionWithCollisionCheck(random, 0.2f);
 
             IsPlayerSpawned = true;
         }
@@ -130,7 +129,7 @@ namespace Spacebox.Game.Generation
             if (IsPlayerSpawned) return;
             if (Entities.Count == 0) return;
 
-            SpawnPlayerRandomInSector(player,random);
+            SpawnPlayerRandomInSector(player, random);
             return;
 
             var asteroidID = random.Next(0, Entities.Count);
@@ -197,8 +196,22 @@ namespace Spacebox.Game.Generation
                 asteroidWorldPosition = GetRandomPosition(PositionWorld, 0.1f, random);
             }
 
-            var asteroid = new AsteroidLight(id, asteroidWorldPosition, this);
-          
+            var size = random.Next(0,3); size = 0;
+            Asteroid asteroid;
+
+            if(size == 0)
+            {
+                asteroid = new AsteroidLight(id, asteroidWorldPosition, this);
+            }
+            else if (size == 1)
+            {
+                asteroid = new AsteroidMedium(id, asteroidWorldPosition, this);
+            }
+            else
+            {
+                asteroid = new AsteroidHeavy(id, asteroidWorldPosition, this);
+            }
+
             asteroid.Name = name;
             AddEntity(asteroid, asteroidWorldPosition);
 
@@ -290,27 +303,8 @@ namespace Spacebox.Game.Generation
             return innerBounds.Contains(position);
         }
 
-
-        public void InitializeSharedResources()
-        {
-            /*if (sharedShader == null)
-            {
-                sharedShader = ShaderManager.GetShader("Shaders/textured");
-            }
-
-            if (sharedTexture == null)
-            {
-                sharedTexture = TextureManager.GetTexture("Resources/Textures/selector.png", true);
-            }
-
-            simple = new SimpleBlock(sharedShader, sharedTexture, BoundingBox.Center);
-            simple.Scale = new Vector3(SizeBlocks, SizeBlocks, SizeBlocks);
-            simple.Position = simple.Position;*/
-        }
-
         public void Update()
         {
-            // VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 10, 100));
 
             for (int i = 0; i < Entities.Count; i++)
             {
@@ -322,7 +316,6 @@ namespace Spacebox.Game.Generation
                 }
             }
         }
-
 
         public void Render(Shader shader)
         {
@@ -340,11 +333,11 @@ namespace Spacebox.Game.Generation
                 {
                     var disSqr = Vector3.DistanceSquared(entity.GeometryBoundingBox.Center, cam.Position);
 
-                    if(!entity.IsGenerated)
+                    if (!entity.IsGenerated)
                     {
                         var e = entity as Asteroid;
 
-                        if(e != null)
+                        if (e != null)
                         {
                             e.OnGenerate();
                         }
@@ -396,10 +389,6 @@ namespace Spacebox.Game.Generation
             EntitiesNames = null;
         }
 
-        public override string ToString()
-        {
-            return $"[Sector] Pos: {PositionWorld.ToString()} Index: {PositionIndex.ToString()}";
-        }
         public string ToFolderName()
         {
             return IndexToFolderName(PositionIndex);
