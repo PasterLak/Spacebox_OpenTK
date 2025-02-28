@@ -12,7 +12,7 @@ public class CreativeMode : MovementMode
     {
         return new InteractionHandler(new InteractionPlaceBlock(), new HashSet<Type>()
         {
-            typeof(InteractionDestroyBlock),
+            typeof(InteractionDestroyBlockCreative),
             typeof(InteractionPlaceBlock),
             typeof(InteractionConsumeItem),
             typeof(InteractionShoot),

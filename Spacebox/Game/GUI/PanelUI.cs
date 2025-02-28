@@ -168,7 +168,7 @@ namespace Spacebox.Game.GUI
             else if (IsHolding< DrillItem>())
             {
                 if (player.GameMode == GameMode.Creative)
-                    player.SetInteraction(new InteractionDestroyBlock(SelectedSlot));
+                    player.SetInteraction(new InteractionDestroyBlockCreative(SelectedSlot));
                 else
                     player.SetInteraction(new InteractionDestroyBlockSurvival(SelectedSlot));
             }
