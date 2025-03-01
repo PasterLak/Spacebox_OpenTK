@@ -79,7 +79,7 @@ namespace Spacebox.Game
         public bool TryAddBlock(Block block, byte count)
         {
 
-            if (GameBlocks.TryGetItemByBlockID(block.BlockId, out var item))
+            if (GameAssets.TryGetItemByBlockID(block.BlockId, out var item))
             {
                 return TryAddItem(item, count, out var rest);
             }

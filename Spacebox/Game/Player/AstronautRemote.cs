@@ -54,8 +54,8 @@ namespace Spacebox.Game.Player
             Tag.CalculateFontSize(100);
             TagManager.RegisterTag(tag);
             itemModelShader = ShaderManager.GetShader("Shaders/itemModel");
-            var uvIndex = GameBlocks.AtlasItems.GetUVIndexByName("drill1");
-            itemModel = ItemModelGenerator.GenerateModel(GameBlocks.ItemsTexture, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
+            var uvIndex = GameAssets.AtlasItems.GetUVIndexByName("drill1");
+            itemModel = ItemModelGenerator.GenerateModel(GameAssets.ItemsTexture, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
             itemModel.UseMainCamera = true;
             itemModel.offset = Vector3.Zero;
             spotLight = new SpotLight(playerShader, Camera.Main.Front);

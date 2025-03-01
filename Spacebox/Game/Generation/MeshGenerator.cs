@@ -105,7 +105,7 @@ namespace Spacebox.Game.Generation
                             if (IsTransparentBlock(nx, ny, nz, normal,block.IsTransparent))
                             {
                                 var faceVertices = CubeMeshData.GetFaceVertices(face);
-                                var faceUVs = GameBlocks.GetBlockUVsByIdAndDirection(block.BlockId, face, block.Direction);
+                                var faceUVs = GameAssets.GetBlockUVsByIdAndDirection(block.BlockId, face, block.Direction);
                                 var currentLightLevel = block.LightLevel / 15f;
                                 var currentLightColor = block.LightColor;
                                 float neighborLightLevel = 0f;

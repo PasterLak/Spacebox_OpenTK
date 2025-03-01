@@ -27,15 +27,15 @@ namespace Spacebox.Game.Generation
                         if (distSq <= radiusSq)
                         {
                             if (distSq < radiusSq / 4f)
-                                _blocks[x, y, z] = GameBlocks.CreateBlockFromId(3);
+                                _blocks[x, y, z] = GameAssets.CreateBlockFromId(3);
                             else if (distSq < radiusSq / 2f)
-                                _blocks[x, y, z] = GameBlocks.CreateBlockFromId(2);
+                                _blocks[x, y, z] = GameAssets.CreateBlockFromId(2);
                             else
-                                _blocks[x, y, z] = GameBlocks.CreateBlockFromId(1);
+                                _blocks[x, y, z] = GameAssets.CreateBlockFromId(1);
                         }
                         else
                         {
-                            _blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
+                            _blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
                         }
                     }
         }
@@ -77,7 +77,7 @@ namespace Spacebox.Game.Generation
                         Vector3 blockCenter = new Vector3(x + 0.5f, y + 0.5f, z + 0.5f);
                         float distSq = DistancePointToSegmentSquared(blockCenter, start, end);
                         if (distSq <= tunnelRadiusSq)
-                            _blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
+                            _blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
                     }
         }
         private static float DistancePointToSegmentSquared(Vector3 point, Vector3 segA, Vector3 segB)
@@ -136,7 +136,7 @@ namespace Spacebox.Game.Generation
                             {
                                 double choice = fastRandom.NextDouble();
                                 short resId = (short)(choice < 0.8 ? 10 : (choice < 0.9 ? 8 : 11));
-                                _blocks[x, y, z] = GameBlocks.CreateBlockFromId(resId);
+                                _blocks[x, y, z] = GameAssets.CreateBlockFromId(resId);
                             }
                         }
                     }
@@ -150,7 +150,7 @@ namespace Spacebox.Game.Generation
                     break;
                 short currentId = _blocks[currentX, currentY, currentZ].BlockId;
                 if (currentId == 1 || currentId == 2 || currentId == 3 || currentId == resourceId)
-                    _blocks[currentX, currentY, currentZ] = GameBlocks.CreateBlockFromId(resourceId);
+                    _blocks[currentX, currentY, currentZ] = GameAssets.CreateBlockFromId(resourceId);
                 int dx = fastRandom.Next(0, 3) - 1;
                 int dy = fastRandom.Next(0, 3) - 1;
                 int dz = fastRandom.Next(0, 3) - 1;

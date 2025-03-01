@@ -59,7 +59,7 @@ namespace Spacebox.Game.GUI
             if (SelectedSlot == null) return CubeMeshData.GetBasicUVs();
             var blockItem = SelectedSlot.Item as BlockItem;
             if (blockItem == null) return CubeMeshData.GetBasicUVs();
-            return GameBlocks.GetBlockUVsByIdAndDirection(blockItem.BlockId, face, direction);
+            return GameAssets.GetBlockUVsByIdAndDirection(blockItem.BlockId, face, direction);
         }
 
         private static void OnStorageDataWasChanged(Storage storage)
@@ -82,7 +82,7 @@ namespace Spacebox.Game.GUI
 
         public static ItemModel GetSlotModel()
         {
-            return GameBlocks.ItemModels[SelectedSlot.Item.Id];
+            return GameAssets.ItemModels[SelectedSlot.Item.Id];
         }
 
         public static bool TryPlaceItem(out short id, GameMode gameMode)
@@ -101,7 +101,7 @@ namespace Spacebox.Game.GUI
         private static void ShowItemModel()
         {
             if (SelectedSlot?.HasItem == true && !(SelectedSlot.Item is BlockItem))
-                ItemModel = GameBlocks.ItemModels[SelectedSlot.Item.Id];
+                ItemModel = GameAssets.ItemModels[SelectedSlot.Item.Id];
         }
 
         private static void HideItemModel()

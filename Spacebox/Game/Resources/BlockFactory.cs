@@ -24,10 +24,10 @@ namespace Spacebox.Game.Resources
 
         public static Block CreateBlockFromId(short id)
         {
-            if (!GameBlocks.Block.ContainsKey(id))
+            if (!GameAssets.Blocks.ContainsKey(id))
                 return new Block();
 
-            BlockData data = GameBlocks.Block[id];
+            BlockData data = GameAssets.Blocks[id];
             return CreateBlock(data);
         }
 

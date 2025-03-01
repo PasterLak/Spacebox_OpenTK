@@ -147,7 +147,7 @@ namespace Spacebox.Game.Generation
             if (!HasInput()) return false;
             if (IsRunning) return false;
 
-            if (GameBlocks.TryGetRecipe(blockType, InputStorage.GetSlot(0, 0).Item.Id, out Recipe))
+            if (GameAssets.TryGetRecipe(blockType, InputStorage.GetSlot(0, 0).Item.Id, out Recipe))
             {
 
             }

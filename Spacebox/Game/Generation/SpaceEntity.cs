@@ -63,8 +63,8 @@ namespace Spacebox.Game.Generation
 
             InitializeSharedResources();
             ElectricManager = new ElectricNetworkManager();
-            blockTexture = GameBlocks.BlocksTexture;
-            atlasTexture = GameBlocks.LightAtlas;
+            blockTexture = GameAssets.BlocksTexture;
+            atlasTexture = GameAssets.LightAtlas;
             // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
             tag = CreateTag(GeometryBoundingBox.Center);
             CreateStar();
@@ -84,8 +84,8 @@ namespace Spacebox.Game.Generation
 
             InitializeSharedResources();
 
-            blockTexture = GameBlocks.BlocksTexture;
-            atlasTexture = GameBlocks.LightAtlas;
+            blockTexture = GameAssets.BlocksTexture;
+            atlasTexture = GameAssets.LightAtlas;
             // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
             tag = CreateTag(GeometryBoundingBox.Center);
             CreateStar();
@@ -801,7 +801,7 @@ namespace Spacebox.Game.Generation
                                     Block b = chunk.Blocks[x, y, z];
                                     if (b != null && !b.IsAir)
                                     {
-                                        chunk.Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
+                                        chunk.Blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
                                         chunk.IsModified = true;
                                         modified.Add(chunk);
                                     }
@@ -884,7 +884,7 @@ namespace Spacebox.Game.Generation
                                     Block b = c.Blocks[x, y, z];
                                     if (b == null || b.IsAir)
                                     {
-                                        c.Blocks[x, y, z] = GameBlocks.CreateBlockFromId(blockId);
+                                        c.Blocks[x, y, z] = GameAssets.CreateBlockFromId(blockId);
                                         c.IsModified = true;
                                         modified.Add(c);
                                     }

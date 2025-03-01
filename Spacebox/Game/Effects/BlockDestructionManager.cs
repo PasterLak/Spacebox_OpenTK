@@ -24,7 +24,7 @@ namespace Spacebox.Game.Effects
         public void DestroyBlock(Vector3 position, Vector3 color, Block block)
         {
 
-            texture = GameBlocks.BlockDust[block.BlockId];
+            texture = GameAssets.BlockDusts[block.BlockId];
 
             var destructionEffect = new BlockDestructionEffect(camera, position +
                 new Vector3(0.5f, 0.5f, 0.5f), color, texture, shader);

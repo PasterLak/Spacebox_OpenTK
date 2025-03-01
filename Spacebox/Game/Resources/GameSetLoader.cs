@@ -135,7 +135,7 @@ namespace Spacebox.Game.Resources
                         //GameBlocks.LightAtlas = loadedTexture;
                         break;
                     case "dust":
-                        GameBlocks.DustTexture = loadedTexture;
+                        GameAssets.DustTexture = loadedTexture;
                         break;
                     default:
                         Debug.Error($"Unknown texture type '{texture.Type}' for texture '{texture.Name}'.");
@@ -157,8 +157,8 @@ namespace Spacebox.Game.Resources
                     ProcessSoundFile(file);
                 }
 
-                if (!GameBlocks.Sounds.ContainsKey("error"))
-                GameBlocks.Sounds.Add("error", SoundManager.AddClip("error"));
+                if (!GameAssets.Sounds.ContainsKey("error"))
+                GameAssets.Sounds.Add("error", SoundManager.AddClip("error"));
             }
             catch (Exception ex)
             {
@@ -185,9 +185,9 @@ namespace Spacebox.Game.Resources
         private static void ProcessSoundFile(string file)
         {
             var soundName = Path.GetFileNameWithoutExtension(file);
-            if (!GameBlocks.Sounds.ContainsKey(soundName))
+            if (!GameAssets.Sounds.ContainsKey(soundName))
             {
-                GameBlocks.Sounds.Add(soundName, new AudioClip(file));
+                GameAssets.Sounds.Add(soundName, new AudioClip(file));
             }
         }
 
@@ -211,7 +211,7 @@ namespace Spacebox.Game.Resources
                 air.Sides = "sand";
 
 
-                GameBlocks.RegisterBlock(air);
+                GameAssetsRegister.RegisterBlock(air);
 
                 foreach (var block in blocks)
                 {
@@ -277,7 +277,7 @@ namespace Spacebox.Game.Resources
 
                     GiveBlockSounds(blockData, block);
 
-                    GameBlocks.RegisterBlock(blockData);
+                    GameAssetsRegister.RegisterBlock(blockData);
                 }
             }
             catch (Exception ex)
@@ -288,7 +288,7 @@ namespace Spacebox.Game.Resources
 
         private static void GiveBlockSounds(BlockData blockData, ModBlockData modBlockData)
         {
-            if (!GameBlocks.Sounds.ContainsKey(modBlockData.SoundPlace))
+            if (!GameAssets.Sounds.ContainsKey(modBlockData.SoundPlace))
             {
                 blockData.SetDefaultPlaceSound();
                 Debug.Error($"[GamesetLoader] Block <{modBlockData.Name}> has a wrong place sound! - {modBlockData.SoundPlace}. Selected a default one");
@@ -297,7 +297,7 @@ namespace Spacebox.Game.Resources
             {
                 blockData.SoundPlace = modBlockData.SoundPlace;
             }
-            if (!GameBlocks.Sounds.ContainsKey(modBlockData.SoundDestroy))
+            if (!GameAssets.Sounds.ContainsKey(modBlockData.SoundDestroy))
             {
                 blockData.SetDefaultDestroySound();
                 Debug.Error($"[GamesetLoader] Block <{modBlockData.Name}> has a wrong destroy sound! - {modBlockData.SoundDestroy}. Selected a default one");
@@ -328,7 +328,7 @@ namespace Spacebox.Game.Resources
                 {
                     proj.Name = proj.Name.ToLower();
 
-                    if (GameBlocks.Projectiles.ContainsKey(id))
+                    if (GameAssets.Projectiles.ContainsKey(id))
                     {
                         Debug.Error($"[GamesetLoader] Error loading projectiles: projectile with the name {proj.Name} is already registered and was skpped! Use a different name!");
                         continue;
@@ -338,11 +338,11 @@ namespace Spacebox.Game.Resources
 
                     var newProj = new ProjectileParameters(id++, proj);
 
-                    GameBlocks.Projectiles.Add(newProj.ID, newProj);
+                    GameAssets.Projectiles.Add(newProj.ID, newProj);
 
                 }
 
-                GameBlocks.Projectiles.Add(short.MaxValue, ProjectileParameters.GetErrorProjectile());
+                GameAssets.Projectiles.Add(short.MaxValue, ProjectileParameters.GetErrorProjectile());
 
 
             }
@@ -433,8 +433,8 @@ namespace Spacebox.Game.Resources
                     {
                         if (r == null) continue;
 
-                        var item = GameBlocks.GetItemByName(r.Ingredient.Item);
-                        var item2 = GameBlocks.GetItemByName(r.Product.Item);
+                        var item = GameAssets.GetItemByName(r.Ingredient.Item);
+                        var item2 = GameAssets.GetItemByName(r.Product.Item);
 
                         if (item == null)
                         {
@@ -451,7 +451,7 @@ namespace Spacebox.Game.Resources
 
                         r.Type = type;
 
-                        GameBlocks.RegisterRecipe(r, item, item2);
+                        GameAssetsRegister.RegisterRecipe(r, item, item2);
                     }
                 }
 
@@ -482,12 +482,12 @@ namespace Spacebox.Game.Resources
                 {
                     foreach (var category in crafting.Categories)
                     {
-                        if (!GameBlocks.CraftingCategories.ContainsKey(category.Id))
+                        if (!GameAssets.CraftingCategories.ContainsKey(category.Id))
                         {
 
                             if (category.Name != "")
                             {
-                                var item = GameBlocks.GetItemByName(category.Icon);
+                                var item = GameAssets.GetItemByName(category.Icon);
 
                                 if (item != null)
                                 {
@@ -497,7 +497,7 @@ namespace Spacebox.Game.Resources
 
 
 
-                            GameBlocks.CraftingCategories.Add(category.Id, category);
+                            GameAssets.CraftingCategories.Add(category.Id, category);
                         }
                         else
                         {
@@ -520,7 +520,7 @@ namespace Spacebox.Game.Resources
 
         private static void PutItemsToCategories()
         {
-            var items = GameBlocks.Item.Values.ToList();
+            var items = GameAssets.Items.Values.ToList();
 
 
             foreach (var item in items)
@@ -529,17 +529,17 @@ namespace Spacebox.Game.Resources
 
                 var category = item.Category;
 
-                if (!GameBlocks.CraftingCategories.ContainsKey(category)) continue;
+                if (!GameAssets.CraftingCategories.ContainsKey(category)) continue;
 
                 GUI.CraftingCategory.Data d = new GUI.CraftingCategory.Data();
                 d.item = item;
 
-                if (GameBlocks.Blueprints.ContainsKey(item.Id))
+                if (GameAssets.Blueprints.ContainsKey(item.Id))
                 {
-                    d.blueprint = GameBlocks.Blueprints[item.Id];
+                    d.blueprint = GameAssets.Blueprints[item.Id];
                 }
 
-                GameBlocks.CraftingCategories[category].Items.Add(d);
+                GameAssets.CraftingCategories[category].Items.Add(d);
 
 
 
@@ -557,7 +557,7 @@ namespace Spacebox.Game.Resources
                 Product product;
                 Blueprint blueprint = new Blueprint();
 
-                var item = GameBlocks.GetItemByName(e.Product.Item);
+                var item = GameAssets.GetItemByName(e.Product.Item);
 
                 if (item == null)
                 {
@@ -569,7 +569,7 @@ namespace Spacebox.Game.Resources
                 bool craftItself = false;
                 foreach (var ing in e.Ingredients)
                 {
-                    var item2 = GameBlocks.GetItemByName(ing.Item);
+                    var item2 = GameAssets.GetItemByName(ing.Item);
                     if (item2 == null)
                     {
                         Debug.Error($"[GameSetLoader] [Blueprints]: Ingredient was not found - {ing.Item} . This Ingredient was skipped");
@@ -595,9 +595,9 @@ namespace Spacebox.Game.Resources
 
 
                 var productID = product.Item.Id;
-                if (!GameBlocks.Blueprints.ContainsKey(productID))
+                if (!GameAssets.Blueprints.ContainsKey(productID))
                 {
-                    GameBlocks.Blueprints.Add(productID, blueprint);
+                    GameAssets.Blueprints.Add(productID, blueprint);
                     //Debug.Log("Blueprint loaded: product id " + productID);
                 }
 
@@ -612,7 +612,7 @@ namespace Spacebox.Game.Resources
 
             short projectileID = 0;
             data.Projectile = data.Projectile.ToLower();
-            if (GameBlocks.TryGetProjectileByName(data.Projectile, out var projectile))
+            if (GameAssets.TryGetProjectileByName(data.Projectile, out var projectile))
             {
                 projectileID = projectile.ID;
             }
@@ -635,7 +635,7 @@ namespace Spacebox.Game.Resources
             weaponItem.ReloadTime = data.ReloadTime;
             weaponItem.AnimationSpeed = data.AnimationSpeed;
             weaponItem.Pushback = data.Pushback;
-            if (GameBlocks.Sounds.ContainsKey(data.ShotSound))
+            if (GameAssets.Sounds.ContainsKey(data.ShotSound))
             {
                 weaponItem.ShotSound = data.ShotSound;
             }
@@ -647,7 +647,7 @@ namespace Spacebox.Game.Resources
 
             weaponItem.PowerUsage = data.PowerUsage;
 
-            GameBlocks.RegisterItem(weaponItem, data.Sprite);
+            GameAssetsRegister.RegisterItem(weaponItem, data.Sprite);
         }
 
 
@@ -664,7 +664,7 @@ namespace Spacebox.Game.Resources
                 Power = data.Power,
                 Category = data.Category,
             };
-            GameBlocks.RegisterItem(drillItem, data.Sprite);
+            GameAssetsRegister.RegisterItem(drillItem, data.Sprite);
         }
 
         private static void RegisterEraserItem()
@@ -677,7 +677,7 @@ namespace Spacebox.Game.Resources
               
             };
             eraser.Description = "LMB - block 1\nRMB - block2\nMMB - Reset\nEnter - confirm";
-            GameBlocks.RegisterItem(eraser, "eraser");
+            GameAssetsRegister.RegisterItem(eraser, "eraser");
         }
         private static void RegisterEraserItem2()
         {
@@ -689,7 +689,7 @@ namespace Spacebox.Game.Resources
 
             };
             eraser.Description = "LMB - remove last point\nMMB - remove all points\nRMB - add point\nEnter - Start\nAlt+SCroll - Speed";
-            GameBlocks.RegisterItem(eraser, "cameraPoint");
+            GameAssetsRegister.RegisterItem(eraser, "cameraPoint");
         }
 
 
@@ -708,7 +708,7 @@ namespace Spacebox.Game.Resources
                 UseSound = data.Sound,
                 Category = data.Category,
             };
-            GameBlocks.RegisterItem(consumableItem, data.Sprite);
+            GameAssetsRegister.RegisterItem(consumableItem, data.Sprite);
         }
 
         private static void RegisterItem(ItemData data)
@@ -720,7 +720,7 @@ namespace Spacebox.Game.Resources
 
                 data.ModelDepth);
             item.Category = data.Category;
-            GameBlocks.RegisterItem(item, data.Sprite);
+            GameAssetsRegister.RegisterItem(item, data.Sprite);
         }
 
         private static void LoadSettings(string modPath)

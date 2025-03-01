@@ -46,6 +46,7 @@ public struct Vector2Byte
         get { return new Vector2Byte(1, 0); }
     }
 
+    
     public static Vector2Byte Up
     {
         get { return new Vector2Byte(0, 1); }
@@ -110,6 +111,12 @@ public struct Vector2Byte
         return new Vector2Byte(v);
     }
 
+    /// <summary>
+    /// Distance between 2 vectors
+    /// </summary>
+    /// <param name="a">Vector a</param>
+    /// <param name="b">Vector b</param>
+    /// <returns>Distance between</returns>
     public static ushort Distance(Vector2Byte a, Vector2Byte b)
     {
         return (ushort)Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));

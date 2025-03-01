@@ -26,7 +26,7 @@ namespace Spacebox.Game.Generation
                 for (byte y = 0; y < Size; y++)
                     for (byte z = 0; z < Size; z++)
                     {
-                        _blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
+                        _blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
                     }
         }
 

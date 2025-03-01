@@ -55,6 +55,19 @@ namespace Spacebox.Scenes
         {
             sprite.Dispose();
 
+            BufferAttribute[] attributes = new BufferAttribute[]
+{
+    new BufferAttribute { Name = "aPos",    Size = 3 },
+    new BufferAttribute { Name = "aNormal", Size = 3 }
+};
+
+            BufferShader buffer = new BufferShader(attributes);
+
+           // buffer.BindBuffer(ref vertices, ref indices);
+          //  buffer.SetAttributes();
+
+
+
         }
 
         public override void Update()
@@ -75,7 +88,7 @@ namespace Spacebox.Scenes
 
             if (Input.IsKeyDown(Keys.G))
             {
-                SceneManager.LoadScene(typeof(OldSpaceScene));
+               // SceneManager.LoadScene(typeof(OldSpaceScene));
             }
 
             if (Input.IsKeyDown(Keys.R))

@@ -90,7 +90,7 @@ namespace Spacebox.Game.Player
                     Debug.Log("Player save file does not exist.");
 
                     World.CurrentSector.SpawnPlayerNearAsteroid(player, World.Random );
-                    GameSetLoader.GiveStartItems(player, GameBlocks.Item);
+                    GameSetLoader.GiveStartItems(player, GameAssets.Items);
                     player.Flashlight.IsActive = true;
 
                     return;
@@ -118,7 +118,7 @@ namespace Spacebox.Game.Player
 
                 foreach (var savedSlot in data.InventorySlots)
                 {
-                    if (GameBlocks.TryGetItemByName(savedSlot.ItemName, out var item))
+                    if (GameAssets.TryGetItemByName(savedSlot.ItemName, out var item))
                     {
                         var slot = player.Inventory.GetSlot(savedSlot.SlotX, savedSlot.SlotY);
                         if (slot != null)
@@ -139,7 +139,7 @@ namespace Spacebox.Game.Player
 
                 foreach (var savedSlot in data.PanelSlots)
                 {
-                    if (GameBlocks.TryGetItemByName(savedSlot.ItemName, out var item))
+                    if (GameAssets.TryGetItemByName(savedSlot.ItemName, out var item))
                     {
                         var slot = player.Panel.GetSlot(savedSlot.SlotX, savedSlot.SlotY);
                         if (slot != null)

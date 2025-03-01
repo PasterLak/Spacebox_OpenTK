@@ -23,12 +23,12 @@ public abstract class InteractionDestroyBlock : InteractionMode
     {
         AllowReload = true;
         selectedItemSlot = itemSlot;
-        model = GameBlocks.ItemModels[itemSlot.Item.Id] as AnimatedItemModel;
+        model = GameAssets.ItemModels[itemSlot.Item.Id] as AnimatedItemModel;
     }
 
     protected void PickDestroySound(short blockId)
     {
-        var clip = GameBlocks.GetBlockAudioClipFromItemID(blockId, BlockInteractionType.Destroy);
+        var clip = GameAssets.GetBlockAudioClipFromItemID(blockId, BlockInteractionType.Destroy);
         if (clip == null) return;
         if (blockDestroy != null && blockDestroy.Clip == clip) return;
         blockDestroy?.Stop();

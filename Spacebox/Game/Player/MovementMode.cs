@@ -50,7 +50,7 @@ public class MovementMode : GameModeBase
 
     private void PickDestroySound(short blockId)
     {
-        var clip = GameBlocks.GetBlockAudioClipFromItemID(blockId, BlockInteractionType.Destroy);
+        var clip = GameAssets.GetBlockAudioClipFromItemID(blockId, BlockInteractionType.Destroy);
         if (clip == null)
         {
             return;

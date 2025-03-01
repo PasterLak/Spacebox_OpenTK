@@ -8,6 +8,7 @@ using Spacebox.Game.GUI;
 using Spacebox.Game;
 using Spacebox.Game.GUI.Menu;
 using ImGuiNET;
+using Spacebox.Game.Generation;
 
 namespace Spacebox.Scenes
 {
@@ -41,8 +42,11 @@ namespace Spacebox.Scenes
             player = new CameraBasic(new Vector3(0, 0, 0));
 
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
-            skybox = new Skybox("Resources/Models/cube.obj", skyboxShader,
-                new SpaceTexture(512, 512, new Random()));
+
+            var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
+
+            skybox = new Skybox("Resources/Models/cube.obj", skyboxShader, skyboxTexture);
+
             skybox.IsAmbientAffected = false;
 
 
@@ -50,7 +54,7 @@ namespace Spacebox.Scenes
             menu = new GameMenu();
 
             SetDustSpawner();
-
+            
             music = new AudioSource(SoundManager.GetClip("music.ogg"));
             music.IsLooped = true;
 
@@ -102,6 +106,7 @@ namespace Spacebox.Scenes
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
 
             VerticalLinks.Init();
+
         }
 
 

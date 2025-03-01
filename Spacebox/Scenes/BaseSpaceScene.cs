@@ -101,11 +101,11 @@ namespace Spacebox.Scenes
                 string itemsPath = ModPath.GetItemsPath(modsFolder, modFolderName);
                 string emissionPath = ModPath.GetEmissionsPath(modsFolder, modFolderName);
 
-                if (GameBlocks.IsInitialized)
+                if (GameAssets.IsInitialized)
                 {
-                    if (GameBlocks.modId.ToLower() != modId.ToLower())
+                    if (GameAssets.ModId.ToLower() != modId.ToLower())
                     {
-                        GameBlocks.DisposeAll();
+                        GameAssets.DisposeAll();
                         InitializeGamesetData(blocksPath, itemsPath, emissionPath, modId, 32, serverName);
                     }
                 }
@@ -156,23 +156,23 @@ namespace Spacebox.Scenes
         private void InitializeGamesetData(string blocksPath, string itemsPath, string emissionPath, string modId, byte blockSizePixels, string serverName)
         {
 
-            GameBlocks.AtlasBlocks = new AtlasTexture();
-            GameBlocks.AtlasItems = new AtlasTexture();
-            var texture = GameBlocks.AtlasBlocks.CreateTexture(blocksPath, blockSizePixels, false);
-            var items = GameBlocks.AtlasItems.CreateTexture(itemsPath, blockSizePixels, false);
-            var emissions = GameBlocks.AtlasBlocks.CreateEmission(emissionPath);
-            GameBlocks.BlocksTexture = texture;
-            GameBlocks.ItemsTexture = items;
-            GameBlocks.LightAtlas = emissions;
+            GameAssets.AtlasBlocks = new AtlasTexture();
+            GameAssets.AtlasItems = new AtlasTexture();
+            var texture = GameAssets.AtlasBlocks.CreateTexture(blocksPath, blockSizePixels, false);
+            var items = GameAssets.AtlasItems.CreateTexture(itemsPath, blockSizePixels, false);
+            var emissions = GameAssets.AtlasBlocks.CreateEmission(emissionPath);
+            GameAssets.BlocksTexture = texture;
+            GameAssets.ItemsTexture = items;
+            GameAssets.LightAtlas = emissions;
             GameSetLoader.Load(modId, isMultiplayer, isMultiplayer ? serverName : "");
-            GameBlocks.IsInitialized = true;
+            GameAssets.IsInitialized = true;
         }
 
         public override void LoadContent()
         {
 
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
-            skybox = new Skybox("Resources/Models/cube.obj", skyboxShader, new SpaceTexture(512, 512, World.Random));
+            skybox = new Skybox("Resources/Models/cube.obj", skyboxShader, new SpaceTexture(512, 512, World.Seed));
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
             skybox.IsAmbientAffected = false;
             SceneGraph.AddRoot(skybox);
@@ -211,8 +211,8 @@ namespace Spacebox.Scenes
             blocksShader = ShaderManager.GetShader("Shaders/block");
             pointLightsPool = new PointLightsPool(blocksShader, localPlayer, 64);
             localPlayer.GameMode = World.Data.Info.GameMode;
-            blockTexture = GameBlocks.BlocksTexture;
-            lightAtlas = GameBlocks.LightAtlas;
+            blockTexture = GameAssets.BlocksTexture;
+            lightAtlas = GameAssets.LightAtlas;
             blocksShader.Use();
             blocksShader.SetInt("texture0", 0);
             blocksShader.SetInt("textureAtlas", 1);

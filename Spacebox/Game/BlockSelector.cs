@@ -57,7 +57,7 @@ namespace Spacebox.Game
                
                 //if (block.IsUsingDefaultUV)   // to do block was changed
                 //{
-                    SimpleBlock.Texture = GameBlocks.BlocksTexture;
+                    SimpleBlock.Texture = GameAssets.BlocksTexture;
                 SimpleBlock.Scale = new Vector3(1,1,1);
                 UpdateUV();
                 // }

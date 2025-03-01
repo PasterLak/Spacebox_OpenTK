@@ -1,8 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Engine.Physics;
-using System;
-using System.Collections.Generic;
 
 namespace Engine
 {
@@ -45,7 +43,7 @@ namespace Engine
                 new BufferAttribute { Name = "position", Size = 3 },
                 new BufferAttribute { Name = "color", Size = 4 }
             });
-           
+
             _bufferLines.SetAttributes();
 
             _bufferTriangles = new BufferShader(new BufferAttribute[]

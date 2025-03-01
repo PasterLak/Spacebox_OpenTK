@@ -62,12 +62,12 @@ namespace Spacebox.Game.Generation
                         int dataZ = z + offsetZ;
                         if (dataX < 0 || dataY < 0 || dataZ < 0 || dataX >= size || dataY >= size || dataZ >= size)
                         {
-                            chunk.Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
+                            chunk.Blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
                         }
                         else
                         {
                             int blockId = data[dataX, dataY, dataZ];
-                            chunk.Blocks[x, y, z] = GameBlocks.CreateBlockFromId((short)blockId);
+                            chunk.Blocks[x, y, z] = GameAssets.CreateBlockFromId((short)blockId);
                         }
                     }
         }
@@ -124,12 +124,12 @@ namespace Spacebox.Game.Generation
                         int dataZ = z + offsetZ;
                         if (dataX < 0 || dataY < 0 || dataZ < 0 || dataX >= size || dataY >= size || dataZ >= size)
                         {
-                            chunk.Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
+                            chunk.Blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
                         }
                         else
                         {
                             int blockId = data[dataX, dataY, dataZ];
-                            chunk.Blocks[x, y, z] = GameBlocks.CreateBlockFromId((short)blockId);
+                            chunk.Blocks[x, y, z] = GameAssets.CreateBlockFromId((short)blockId);
                         }
                     }
         }
@@ -186,12 +186,12 @@ namespace Spacebox.Game.Generation
                         int dataZ = z + offsetZ;
                         if (dataX < 0 || dataY < 0 || dataZ < 0 || dataX >= size || dataY >= size || dataZ >= size)
                         {
-                            chunk.Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
+                            chunk.Blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
                         }
                         else
                         {
                             int blockId = data[dataX, dataY, dataZ];
-                            chunk.Blocks[x, y, z] = GameBlocks.CreateBlockFromId((short)blockId);
+                            chunk.Blocks[x, y, z] = GameAssets.CreateBlockFromId((short)blockId);
                         }
                     }
         }

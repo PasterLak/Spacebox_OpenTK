@@ -33,21 +33,21 @@ namespace Spacebox.Game.Generation
                     {
                         Vector3 pos = new Vector3(x + 0.5f, y + 0.5f, z + 0.5f);
                         float dist = Vector3.Distance(pos, center);
-                        _blocks[x, y, z] = GameBlocks.CreateBlockFromId(12);
+                        _blocks[x, y, z] = GameAssets.CreateBlockFromId(12);
                         float noiseVal = Noise3D(x, y, z, random.Next());
                         float threshold = radius * (0.8f + 0.4f * noiseVal);
 
                         if (dist <= threshold)
                         {
                             int r = random.Next(0, 11);
-                            if (r < 6) _blocks[x, y, z] = GameBlocks.CreateBlockFromId(3);
-                            else if (r < 8) _blocks[x, y, z] = GameBlocks.CreateBlockFromId(2);
-                            else if (r < 10) _blocks[x, y, z] = GameBlocks.CreateBlockFromId(1);
-                            else _blocks[x, y, z] = GameBlocks.CreateBlockFromId(4);
+                            if (r < 6) _blocks[x, y, z] = GameAssets.CreateBlockFromId(3);
+                            else if (r < 8) _blocks[x, y, z] = GameAssets.CreateBlockFromId(2);
+                            else if (r < 10) _blocks[x, y, z] = GameAssets.CreateBlockFromId(1);
+                            else _blocks[x, y, z] = GameAssets.CreateBlockFromId(4);
                         }
                         else
                         {
-                            _blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
+                            _blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
                         }
                     }
         }

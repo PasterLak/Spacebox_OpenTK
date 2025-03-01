@@ -220,7 +220,7 @@ namespace Spacebox.Game.GUI
         {
             if (!IsVisible) return;
 
-            var blockData = GameBlocks.GetBlockDataById(block.BlockId);
+            var blockData = GameAssets.GetBlockDataById(block.BlockId);
             WindowName = blockData.Name;
 
             if (!openSound.IsPlaying) openSound.Play();

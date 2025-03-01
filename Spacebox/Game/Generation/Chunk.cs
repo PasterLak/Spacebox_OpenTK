@@ -357,7 +357,7 @@ namespace Spacebox.Game.Generation
 
 
             //Mass -= Blocks[x, y, z].Mass;
-            Blocks[x, y, z] = GameBlocks.CreateBlockFromId(0);
+            Blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
 
 
             IsModified = true;
@@ -370,13 +370,13 @@ namespace Spacebox.Game.Generation
             switch (lod)
             {
                 case LOD.L1:
-                    await GenerateLODMeshAsync(1, GameBlocks.AtlasBlocks.GetUVByName("LOD"));
+                    await GenerateLODMeshAsync(1, GameAssets.AtlasBlocks.GetUVByName("LOD"));
                     break;
                 case LOD.L2:
-                    await GenerateLODMeshAsync(2, GameBlocks.AtlasBlocks.GetUVByName("LOD"));
+                    await GenerateLODMeshAsync(2, GameAssets.AtlasBlocks.GetUVByName("LOD"));
                     break;
                 case LOD.L3:
-                    await GenerateLODMeshAsync(4, GameBlocks.AtlasBlocks.GetUVByName("LOD"));
+                    await GenerateLODMeshAsync(4, GameAssets.AtlasBlocks.GetUVByName("LOD"));
                     break;
             }
         }

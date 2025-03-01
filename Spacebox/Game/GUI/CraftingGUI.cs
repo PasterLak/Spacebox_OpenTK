@@ -89,7 +89,7 @@ namespace Spacebox.Game.GUI
 
         public static void Init()
         {
-            category = GameBlocks.CraftingCategories.Values.ToArray();
+            category = GameAssets.CraftingCategories.Values.ToArray();
             SlotTexture = TextureManager.GetTexture("Resources/Textures/slot.png", true, false).Handle;
             scrollAudio = new AudioSource(SoundManager.GetClip("scroll"));
             clickAudio = new AudioSource(SoundManager.GetClip("click1"));

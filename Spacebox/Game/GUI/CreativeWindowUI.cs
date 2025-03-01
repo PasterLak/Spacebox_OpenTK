@@ -24,7 +24,7 @@ namespace Spacebox.Game.GUI
         {
             SlotTexture = textureId;
             CreativeWindowUI.player = player;
-            storage = GameBlocks.CreateCreativeStorage(5);
+            storage = GameAssets.CreateCreativeStorage(5);
 
             var inventory = ToggleManager.Register("creative");
             inventory.IsUI = true;
@@ -134,7 +134,7 @@ namespace Spacebox.Game.GUI
                             Vector2 posCenter = pos + new Vector2(SlotSize * 0.5f, SlotSize * 0.5f);
 
                             ImDrawListPtr drawList = ImGui.GetWindowDrawList();
-                            drawList.AddImage(GameBlocks.ItemIcon[slot.Item.Id].Handle, posCenter - size * 0.5f, posCenter + size * 0.5f);
+                            drawList.AddImage(GameAssets.ItemIcons[slot.Item.Id].Handle, posCenter - size * 0.5f, posCenter + size * 0.5f);
 
                          
 

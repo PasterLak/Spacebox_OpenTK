@@ -120,9 +120,9 @@ public class InteractionPlaceBlock : InteractionMode
             {
                 if (PanelUI.TryPlaceItem(out var id, GameMode))
                 {
-                    Block newBlock = GameBlocks.CreateBlockFromId(id);
+                    Block newBlock = GameAssets.CreateBlockFromId(id);
 
-                    bool hasSameSides = GameBlocks.GetBlockDataById(id).AllSidesAreSame;
+                    bool hasSameSides = GameAssets.GetBlockDataById(id).AllSidesAreSame;
 
                     if (!hasSameSides)
                         newBlock.SetDirectionFromNormal(hit.normal);
@@ -157,7 +157,7 @@ public class InteractionPlaceBlock : InteractionMode
 
     private void PickPlaceSound(short blockId)
     {
-        var clip = GameBlocks.GetBlockAudioClipFromItemID(blockId, BlockInteractionType.Place);
+        var clip = GameAssets.GetBlockAudioClipFromItemID(blockId, BlockInteractionType.Place);
         if (clip == null)
         {
             return;
@@ -252,9 +252,9 @@ public class InteractionPlaceBlock : InteractionMode
 
                 if (PanelUI.TryPlaceItem(out var id, GameMode))
                 {
-                    Block newBlock = GameBlocks.CreateBlockFromId(id);
+                    Block newBlock = GameAssets.CreateBlockFromId(id);
 
-                    bool hasSameSides = GameBlocks.GetBlockDataById(id).AllSidesAreSame;
+                    bool hasSameSides = GameAssets.GetBlockDataById(id).AllSidesAreSame;
 
                     if (!hasSameSides)
                         newBlock.Direction = direction;

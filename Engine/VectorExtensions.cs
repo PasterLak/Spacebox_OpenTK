@@ -1,6 +1,5 @@
-﻿// VectorExtensions.cs
-using OpenTK.Mathematics;
-using System.Numerics;
+﻿using OpenTK.Mathematics;
+
 
 namespace Engine
 {

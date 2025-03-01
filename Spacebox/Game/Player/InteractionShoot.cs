@@ -60,12 +60,12 @@ public class InteractionShoot : InteractionMode
         var weapone = itemslot.Item as WeaponItem;
         if (weapone != null)
         {
-            projectileParameters = GameBlocks.Projectiles[weapone.ProjectileID];
+            projectileParameters = GameAssets.Projectiles[weapone.ProjectileID];
             weapon = weapone;
             startPos = model.Position;
 
            
-                shotSound = new AudioSource(GameBlocks.Sounds[weapone.ShotSound]); // 
+                shotSound = new AudioSource(GameAssets.Sounds[weapone.ShotSound]); // 
                 shotSound.Volume = 1f;
             
 
@@ -85,7 +85,7 @@ public class InteractionShoot : InteractionMode
     public void UpdateItemSlot(ItemSlot itemslot)
     {
         selectedItemSlot = itemslot;
-        var mod = GameBlocks.ItemModels[itemslot.Item.Id];
+        var mod = GameAssets.ItemModels[itemslot.Item.Id];
         model = mod as AnimatedItemModel;
 
     }

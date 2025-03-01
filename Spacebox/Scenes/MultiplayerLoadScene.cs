@@ -7,6 +7,7 @@ using Engine.SceneManagment;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Spacebox.Game;
+using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
 using static Spacebox.Game.Resources.GameSetLoader;
@@ -50,7 +51,7 @@ namespace Spacebox.Scenes
             player = new CameraBasic(new Vector3(0, 0, 0));
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
             skybox = new Skybox("Resources/Models/cube.obj", skyboxShader,
-                new SpaceTexture(512, 512, new Random()));
+                new SpaceTexture(512, 512, World.Seed));
             skybox.IsAmbientAffected = false;
             Debug.Warning("Trying to connect to server...");
             CenteredText.SetText("Trying to connect to server...");

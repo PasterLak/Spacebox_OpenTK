@@ -9,16 +9,16 @@ namespace Spacebox.Game.Effects
 
         public static Texture2D Generate(byte xCoord, byte yCoord)
         {
-            return Generate(UVAtlas.GetBlockTexture(GameBlocks.BlocksTexture, xCoord, yCoord, GameBlocks.AtlasBlocks.SizeBlocks));
+            return Generate(UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, xCoord, yCoord, GameAssets.AtlasBlocks.SizeBlocks));
         }
         public static Texture2D Generate(Vector2 coords)
         {
-            return Generate(UVAtlas.GetBlockTexture(GameBlocks.BlocksTexture, (byte)coords.X, (byte)coords.Y, GameBlocks.AtlasBlocks.SizeBlocks));
+            return Generate(UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, (byte)coords.X, (byte)coords.Y, GameAssets.AtlasBlocks.SizeBlocks));
         }
 
         public static Texture2D Generate(Vector2Byte coords)
         {
-            return Generate(UVAtlas.GetBlockTexture(GameBlocks.BlocksTexture, coords.X, coords.Y, GameBlocks.AtlasBlocks.SizeBlocks));
+            return Generate(UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, coords.X, coords.Y, GameAssets.AtlasBlocks.SizeBlocks));
         }
 
         public static Texture2D Generate(Texture2D blockTexture)

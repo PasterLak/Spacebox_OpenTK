@@ -174,7 +174,7 @@ namespace Spacebox.Game.GUI
 
             if (slot.HasItem)
             {
-                drawList.AddImage(GameBlocks.ItemIcon[slot.Item.Id].Handle, posCenter - sizeItem * 0.5f, posCenter + sizeItem * 0.5f);
+                drawList.AddImage(GameAssets.ItemIcons[slot.Item.Id].Handle, posCenter - sizeItem * 0.5f, posCenter + sizeItem * 0.5f);
 
                 if (slot.Count > 1)
                 {
@@ -219,9 +219,9 @@ namespace Spacebox.Game.GUI
             ImDrawListPtr drawList = ImGui.GetWindowDrawList();
             Vector2 pos = ImGui.GetItemRectMin();
 
-            if (GameBlocks.ItemIcon.ContainsKey(slot.Item.Id))
+            if (GameAssets.ItemIcons.ContainsKey(slot.Item.Id))
             {
-                ImGui.Image(GameBlocks.ItemIcon[slot.Item.Id].Handle, new Vector2(SlotSize * 0.8f, SlotSize * 0.8f));
+                ImGui.Image(GameAssets.ItemIcons[slot.Item.Id].Handle, new Vector2(SlotSize * 0.8f, SlotSize * 0.8f));
             }
             if (slot.Count > 1)
             {
@@ -268,7 +268,7 @@ namespace Spacebox.Game.GUI
                 {
                     var itemType = slot.Item as WeaponItem;
 
-                    var pj = GameBlocks.Projectiles[itemType.ProjectileID];
+                    var pj = GameAssets.Projectiles[itemType.ProjectileID];
 
                     text += "\nDamage: " + pj.Damage;
                     text += "\nProjectile speed: " + pj.Speed;
@@ -282,7 +282,7 @@ namespace Spacebox.Game.GUI
                     text += "\nMass: " + itemType.Mass;
                     text += "\nDurability: " + itemType.Health;
 
-                    BlockData d = GameBlocks.GetBlockDataById(itemType.BlockId);
+                    BlockData d = GameAssets.GetBlockDataById(itemType.BlockId);
                     if (d != null)
                         text += "\nPower to drill: " + d.PowerToDrill;
 

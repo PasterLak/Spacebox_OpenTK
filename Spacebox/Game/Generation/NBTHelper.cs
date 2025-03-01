@@ -341,7 +341,7 @@ namespace Spacebox.Game.Generation
 
             if(inCount > 0)
             {
-                var inItm = GameBlocks.GetItemByName(paletteitems[inItem]);
+                var inItm = GameAssets.GetItemByName(paletteitems[inItem]);
 
                 if(inItm != null)
                 {
@@ -351,7 +351,7 @@ namespace Spacebox.Game.Generation
 
             if (outCount > 0)
             {
-                var outItm = GameBlocks.GetItemByName(paletteitems[outItem]);
+                var outItm = GameAssets.GetItemByName(paletteitems[outItem]);
 
                 if (outItm != null)
                 {
@@ -360,7 +360,7 @@ namespace Spacebox.Game.Generation
             }
             if (fuelCount > 0)
             {
-                var fuelItm = GameBlocks.GetItemByName(paletteitems[fuelItem]);
+                var fuelItm = GameAssets.GetItemByName(paletteitems[fuelItem]);
 
                 if (fuelItm != null)
                 {
@@ -491,7 +491,7 @@ namespace Spacebox.Game.Generation
                 for (int y = 0; y < Chunk.Size; y++)
                     for (int z = 0; z < Chunk.Size; z++)
                     {
-                        blocks[x, y, z] = GameBlocks.CreateBlockFromId(ids[index]);
+                        blocks[x, y, z] = GameAssets.CreateBlockFromId(ids[index]);
                         index++;
                     }
             return blocks;

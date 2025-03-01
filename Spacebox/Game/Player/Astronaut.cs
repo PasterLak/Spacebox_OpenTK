@@ -295,7 +295,7 @@ namespace Spacebox.Game.Player
         {
             if (consumable != null)
             {
-                if (GameBlocks.TryGetItemSound(consumable.Id, out AudioClip clip))
+                if (GameAssets.TryGetItemSound(consumable.Id, out AudioClip clip))
                 {
                     if (useConsumableAudio != null)
                     {

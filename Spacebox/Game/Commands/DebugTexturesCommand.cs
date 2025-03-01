@@ -20,17 +20,17 @@ namespace Spacebox.Game.Commands
             {
                 Directory.CreateDirectory("Debug");
             }
-            if(GameBlocks.BlocksTexture != null)
+            if(GameAssets.BlocksTexture != null)
             {
-                GameBlocks.BlocksTexture.SaveToPng("Debug/blocks.png",true);
+                GameAssets.BlocksTexture.SaveToPng("Debug/blocks.png",true);
             }
-            if (GameBlocks.ItemsTexture != null)
+            if (GameAssets.ItemsTexture != null)
             {
-                GameBlocks.ItemsTexture.SaveToPng("Debug/items.png", true);
+                GameAssets.ItemsTexture.SaveToPng("Debug/items.png", true);
             }
-            if (GameBlocks.LightAtlas != null)
+            if (GameAssets.LightAtlas != null)
             {
-                GameBlocks.LightAtlas.SaveToPng("Debug/emissions.png", true);
+                GameAssets.LightAtlas.SaveToPng("Debug/emissions.png", true);
             }
 
         }

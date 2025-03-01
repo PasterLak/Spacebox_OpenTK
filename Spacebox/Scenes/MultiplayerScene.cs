@@ -63,7 +63,7 @@ namespace Spacebox.Scenes
         public void OnBlockPlaced(int playerId, short blockId, byte direction, short x, short y, short z)
         {
 
-            Block block = GameBlocks.CreateBlockFromId(blockId);
+            Block block = GameAssets.CreateBlockFromId(blockId);
             if (direction <= 6)
             {
                 block.Direction = (Direction)direction;
