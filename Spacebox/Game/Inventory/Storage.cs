@@ -89,9 +89,9 @@ namespace Spacebox.Game
         }
         public bool TryAddItem(Item item, byte count)
         {
-            return TryAddItem(item,count, out var rest);
+            return TryAddItem(item, count, out var rest);
         }
-            public bool TryAddItem(Item item, byte count, out byte rest)
+        public bool TryAddItem(Item item, byte count, out byte rest)
         {
             rest = 0;
             if (item == null) return false;
@@ -128,7 +128,7 @@ namespace Spacebox.Game
 
                         count -= item.StackSize;
 
-                        return TryAddItem(item, count,out rest);
+                        return TryAddItem(item, count, out rest);
                     }
                     else if (count <= item.StackSize)
                     {
@@ -153,19 +153,15 @@ namespace Spacebox.Game
                     }
 
                     rest = count;
-                    //Debug.Error($"Storage {Name}: no empty slots and no connected storage. Items was not added: {count}");
+                 
                     return false;
                 }
             }
             rest = count;
-            //Debug.Error($"{Name}: failed to add items. Items was not added: {count}");
+          
             return false;
         }
 
-        public bool HasItemUnfilledSlot(Item item)
-        {
-            return TryFindUnfilledSlotWithItem(item, out ItemSlot slot);
-        }
         public void DeleteItem(Item item, byte quantity)
         {
             for (byte x = 0; x < SizeX; x++)
@@ -197,7 +193,7 @@ namespace Spacebox.Game
                 }
             }
 
-           
+
         }
 
 
@@ -205,7 +201,7 @@ namespace Spacebox.Game
         {
             if (!HasItem(item, quantity)) return false;
 
-           DeleteItem(item, quantity);
+            DeleteItem(item, quantity);
             return true;
         }
 
@@ -245,19 +241,6 @@ namespace Spacebox.Game
             }
 
             return q >= quantity;
-        }
-
-        private bool HasFreeSlots()
-        {
-            for (int x = 0; x < SizeX; x++)
-            {
-                for (int y = 0; y < SizeY; y++)
-                {
-                    if (Slots[x, y].Count == 0) return true;
-                }
-            }
-
-            return false;
         }
 
         private bool TryGetFirstFreeSlot(out ItemSlot slot)
@@ -314,19 +297,9 @@ namespace Spacebox.Game
                 }
             }
         }
-        public ItemSlot GetSlotByID(int id) // opt todo
-        {
-            for (int x = 0; x < SizeX; x++)
-            {
-                for (int y = 0; y < SizeY; y++)
-                {
-                    if (Slots[x, y].SlotId == id) return Slots[x, y];
-                }
-            }
-            return Slots[0, 0];
-        }
+
         public ItemSlot GetSlot(int x, int y)
-         {
+        {
             if (x >= 0 && x < SizeX && y >= 0 && y < SizeY)
             {
                 return Slots[x, y];
@@ -340,33 +313,6 @@ namespace Spacebox.Game
             OnDataWasChanged?.Invoke(this);
         }
 
-
-        public static Storage operator+ (Storage s1, Storage s2)
-        {
-
-            Storage newStorage = new Storage((byte)(s1.SizeX + s2.SizeX), Math.Max(s1.SizeY,s2.SizeY));
-
-
-            for(int x = 0;x<s1.SizeX;x++)
-            {
-                for (int y = 0; y < s1.SizeY; y++)
-                {
-                    var slot = s1.GetSlot(x, y);
-                    newStorage.TryAddItem(slot.Item, slot.Count);
-                }
-            }
-
-            for (int x = 0; x < s2.SizeX; x++)
-            {
-                for (int y = 0; y < s2.SizeY; y++)
-                {
-                    var slot = s2.GetSlot(x, y);
-                    newStorage.TryAddItem(slot.Item, slot.Count);
-                }
-            }
-
-            return newStorage;
-        }
 
     }
 }

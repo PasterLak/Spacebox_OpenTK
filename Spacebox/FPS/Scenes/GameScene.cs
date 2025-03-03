@@ -181,7 +181,7 @@ namespace Spacebox.FPS.Scenes
 
             arrow = new Model("Resources/Models/arrow.obj");
 
-            arrow.Material.Color = new Vector4(0, 0, 0.5f, 1);
+            arrow.Material.Color = new Color4(0, 0, 0.5f, 1);
             arrow.Position = new Vector3(1, 1, 1);
 
             Model terrain = new Model("Resources/Models/terrain.obj",

@@ -397,6 +397,15 @@ namespace Engine
             GL.Uniform4(_uniformLocations[name], data);
         }
 
+        public void SetVector4(string name, Color4 data)
+        {
+            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+                return;
+
+            GL.UseProgram(Handle);
+            GL.Uniform4(_uniformLocations[name], data);
+        }
+
 
         public void Dispose()
         {

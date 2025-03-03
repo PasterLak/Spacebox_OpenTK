@@ -5,8 +5,7 @@ using OpenTK.Graphics.OpenGL4;
 namespace Spacebox.Game
 {
 
-
-    public class Mesh // DDA Digital Differential Analyzer for collision
+    public class Mesh
     {
 
         private int _vertexCount;
@@ -20,7 +19,7 @@ namespace Spacebox.Game
         private BufferShader buffer;
         public readonly int FloatsPerVertex;
 
-        
+
         public Mesh(float[] vertices, uint[] indices, BufferShader buffer)
         {
             this.buffer = buffer;
@@ -70,8 +69,8 @@ namespace Spacebox.Game
             GL.Disable(EnableCap.Blend);
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-          //  if (FramebufferCapture.IsActive)
-          //      FramebufferCapture.SaveFrame();
+            //  if (FramebufferCapture.IsActive)
+            //      FramebufferCapture.SaveFrame();
 
         }
 

@@ -79,7 +79,6 @@ namespace Spacebox.Game.Physics
             {
                 if (!ray.Intersects(entity.BoundingBox, out startDistance))
                 {
-                    //Debug.Log("no intersaction dis:" + distance);
                     return false;
                 }
             }

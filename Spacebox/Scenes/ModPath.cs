@@ -1,6 +1,4 @@
-﻿
-
-using Spacebox.Game;
+﻿using Spacebox.Game;
 
 namespace Spacebox.Scenes
 {
@@ -12,15 +10,16 @@ namespace Spacebox.Scenes
 
         public static string GetModsPath(bool isMultiplayer, string serverName)
         {
-            if(!isMultiplayer) {
+            if (!isMultiplayer)
+            {
 
                 return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.LocalFolder);
             }
 
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory,Globals.GameSet.MultiplayerFolder, serverName, "GameSet") ;
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.MultiplayerFolder, serverName, "GameSet");
         }
 
-        public static string GetBlocksPath( string modsFolder, string modFolderName)
+        public static string GetBlocksPath(string modsFolder, string modFolderName)
         {
             return Path.Combine(modsFolder, modFolderName, Globals.GameSet.Blocks);
         }

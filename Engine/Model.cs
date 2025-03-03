@@ -43,7 +43,7 @@ namespace Engine
         }
 
 
-        private Vector4 oldColor;
+        private Color4 oldColor;
         public override void OnCollisionEnter(Collision other)
         {
 
@@ -51,7 +51,7 @@ namespace Engine
             if (other is DynamicBody)
             {
                 oldColor = Material.Color;
-                Material.Color = new Vector4(0, 1, 0, 1f);
+                Material.Color = new Color4(0, 1, 0, 1f);
                 base.OnCollisionEnter(other);
             }
         }

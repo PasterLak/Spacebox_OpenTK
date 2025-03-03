@@ -172,7 +172,8 @@ namespace Spacebox.Scenes
         {
 
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
-            skybox = new Skybox("Resources/Models/cube.obj", skyboxShader, new SpaceTexture(512, 512, World.Seed));
+            var texture = new SpaceTexture(512, 512, World.Seed);
+            skybox = new Skybox("Resources/Models/sphere.obj", skyboxShader, texture);
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
             skybox.IsAmbientAffected = false;
             SceneGraph.AddRoot(skybox);

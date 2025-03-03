@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
-
 using Engine;
+
 namespace Spacebox.Game.Resources
 {
     public class AtlasTexture : IDisposable
@@ -325,7 +325,7 @@ namespace Spacebox.Game.Resources
                 //return (new Texture2D[0], new string[0]);
             }
 
-            string[] files = GameSetLoader.GetFilesRecursive(path, new string[] {".png", ".jpeg", ".jpg" }) ;
+            string[] files = GameSetLoader.GetFilesRecursive(path, new string[] { ".png", ".jpeg", ".jpg" });
             Texture2D.AllowDebug = false;
             foreach (string file in files)
             {
@@ -354,7 +354,7 @@ namespace Spacebox.Game.Resources
             }
         }
 
-        private class TextureData
+        private struct TextureData
         {
             public string Name { get; set; }
             public Texture2D Texture { get; set; }
@@ -366,7 +366,6 @@ namespace Spacebox.Game.Resources
             public Vector2Byte Position { get; set; }
             public Vector2[] UV { get; set; }
             public Texture2D Texture { get; set; }
-
 
             public override string ToString()
             {

@@ -34,7 +34,7 @@ namespace Spacebox.Game.Player
         public Action<Projectile> OnDespawn;
 
         public static AudioSource ricochetSound;
-        public  AudioSource hitSound;
+        public AudioSource hitSound;
         public static AudioSource explosionSound;
 
         private PointLight light;
@@ -45,7 +45,7 @@ namespace Spacebox.Game.Player
             lineRenderer.Color = Color4.Blue;
             lineRenderer.Thickness = 0.2f;
             AddChild(lineRenderer);
-         
+
         }
 
         public Projectile Initialize(Ray ray, ProjectileParameters parameters, bool useLight = true)
@@ -92,18 +92,18 @@ namespace Spacebox.Game.Player
 
             }
 
-            if(useLight)
+            if (useLight)
             {
                 light = PointLightsPool.Instance.Take();
 
                 light.Range = 4;
                 light.Ambient = parameters.Color3;
-               // light.Diffuse = parameters.Color3;
+                // light.Diffuse = parameters.Color3;
                 light.Diffuse = Vector3.Zero;
                 light.Specular = Vector3.Zero;
                 light.IsActive = true;
             }
-          
+
 
             OnSpawn?.Invoke(this);
 
@@ -169,7 +169,7 @@ namespace Spacebox.Game.Player
                 {
 
                     hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage);
-                  //  var d = currentDamage - hit.block.Durability;
+                    //  var d = currentDamage - hit.block.Durability;
                     IsActive = false;
                     if (currentDamage >= 50)
                     {
@@ -203,10 +203,10 @@ namespace Spacebox.Game.Player
         {
             if (useLight)
             {
-                if(PointLightsPool.Instance != null)
-                PointLightsPool.Instance.PutBack(light);
+                if (PointLightsPool.Instance != null)
+                    PointLightsPool.Instance.PutBack(light);
             }
-           
+
 
             IsActive = false;
             //Position = Vector3.Zero;

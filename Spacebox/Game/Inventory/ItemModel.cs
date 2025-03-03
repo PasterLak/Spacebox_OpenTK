@@ -31,7 +31,7 @@ namespace Spacebox.Game
 
             Texture.UpdateTexture(true);
 
-            itemCamera = new Camera360(Vector3.Zero, false);
+            itemCamera = new Camera360Base(Vector3.Zero, false);
             itemCamera.FOV = 80;
             itemCamera.DepthNear = 0.01f;
             itemCamera.DepthFar = 100f;

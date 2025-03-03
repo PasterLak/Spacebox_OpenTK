@@ -1,6 +1,4 @@
-﻿using OpenTK.Windowing.Common;
-using System.Diagnostics;
-using System.Threading;
+﻿using System.Diagnostics;
 
 namespace Engine
 {

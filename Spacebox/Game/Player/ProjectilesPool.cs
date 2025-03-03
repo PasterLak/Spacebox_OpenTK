@@ -59,14 +59,14 @@ namespace Spacebox.Game.Player
         public void Dispose()
         {
             var p = Projectiles.ToArray();
-           foreach (var e in p)
+            foreach (var e in p)
             {
                 e.IsActive = false;
                 PutBack(e);
             }
         }
 
-        
+
 
     }
 }

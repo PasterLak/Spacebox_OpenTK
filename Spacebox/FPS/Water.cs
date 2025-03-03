@@ -13,7 +13,7 @@ namespace Spacebox.FPS
         {
 
             Material.Tiling = new Vector2(40, 40);
-            Material.Color = new Vector4(1, 1, 1, 0.5f);
+            Material.Color = new Color4(1, 1, 1, 0.5f);
 
         }
 

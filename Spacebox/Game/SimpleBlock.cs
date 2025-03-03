@@ -9,31 +9,28 @@ namespace Spacebox
     {
         private float[] _vertices;
         private uint[] _indices;
-        private int _vao;
-        private int _vbo;
-        private int _ebo;
+        private BufferShader _buffer;
         public Shader Shader { get; private set; }
         public Texture2D Texture;
-       
         public bool IsUsingDefaultUV { get; private set; } = true;
-
         private Dictionary<Face, Vector2[]> _uvs = new Dictionary<Face, Vector2[]>();
 
         public SimpleBlock(Shader shader, Texture2D texture, Vector3 position)
         {
-
             Position = position;
             Scale = Vector3.One;
-            
             Shader = shader;
             Texture = texture;
-            //Texture.Use(TextureUnit.Texture0);
-
             foreach (var face in Enum.GetValues(typeof(Face)))
             {
                 _uvs.Add((Face)face, CubeMeshData.GetBasicUVs());
             }
-
+            _buffer = new BufferShader(new BufferAttribute[]
+            {
+                new BufferAttribute { Name = "position", Size = 3 },
+                new BufferAttribute { Name = "normal", Size = 3 },
+                new BufferAttribute { Name = "uv", Size = 2 }
+            });
             RegenerateMesh();
         }
 
@@ -42,12 +39,10 @@ namespace Spacebox
             _vertices = null;
             _indices = null;
             IsUsingDefaultUV = true;
-
             foreach (var uv in _uvs.Keys)
             {
                 _uvs[uv] = CubeMeshData.GetBasicUVs();
             }
-
             RegenerateMesh();
         }
 
@@ -56,12 +51,10 @@ namespace Spacebox
             _vertices = null;
             _indices = null;
             IsUsingDefaultUV = false;
-
-            foreach (var uvk in _uvs.Keys)
+            foreach (var key in _uvs.Keys)
             {
-                _uvs[uvk] = uv;
+                _uvs[key] = uv;
             }
-
             RegenerateMesh();
         }
 
@@ -70,10 +63,7 @@ namespace Spacebox
             _vertices = null;
             _indices = null;
             IsUsingDefaultUV = false;
-
-           
             _uvs[face] = uv;
-
             if (regenerateMesh)
                 RegenerateMesh();
         }
@@ -81,26 +71,22 @@ namespace Spacebox
         public void RegenerateMesh()
         {
             (_vertices, _indices) = GenerateMeshData();
-            InitializeBuffers();
+            _buffer.BindBuffer(ref _vertices, ref _indices);
+            _buffer.SetAttributes();
         }
-
-    
 
         private (float[] vertices, uint[] indices) GenerateMeshData()
         {
             List<float> vertices = new List<float>();
             List<uint> indices = new List<uint>();
             uint indexOffset = 0;
-
             foreach (Face face in Enum.GetValues(typeof(Face)))
             {
                 Vector3[] faceVertices = CubeMeshData.GetFaceVertices(face);
                 Vector3 normal = GetNormal(face);
                 Vector2[] texCoords = _uvs[face];
-
                 for (int i = 0; i < 4; i++)
                 {
-                   
                     vertices.Add(faceVertices[i].X - 0.5f);
                     vertices.Add(faceVertices[i].Y - 0.5f);
                     vertices.Add(faceVertices[i].Z - 0.5f);
@@ -110,8 +96,6 @@ namespace Spacebox
                     vertices.Add(texCoords[i].X);
                     vertices.Add(texCoords[i].Y);
                 }
-
-               
                 indices.Add(indexOffset);
                 indices.Add(indexOffset + 1);
                 indices.Add(indexOffset + 2);
@@ -120,7 +104,6 @@ namespace Spacebox
                 indices.Add(indexOffset);
                 indexOffset += 4;
             }
-
             return (vertices.ToArray(), indices.ToArray());
         }
 
@@ -145,63 +128,24 @@ namespace Spacebox
             }
         }
 
-        private void InitializeBuffers()
-        {
-            _vao = GL.GenVertexArray();
-            GL.BindVertexArray(_vao);
-
-            _vbo = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
-
-            _ebo = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
-
-            int stride = 8 * sizeof(float);
-
-            // pos
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, stride, 0);
-
-            // norm
-            GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, stride, 3 * sizeof(float));
-
-            // uv
-            GL.EnableVertexAttribArray(2);
-            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, stride, 6 * sizeof(float));
-
-            GL.BindVertexArray(0);
-        }
-
         public void Render(Camera camera)
         {
-            
             Shader.Use();
-
-
             Shader.SetMatrix4("model", GetModelMatrix());
             Shader.SetMatrix4("view", camera.GetViewMatrix());
             Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
             Shader.SetInt("texture0", 0);
             Texture.Use(TextureUnit.Texture0);
-
             GL.Enable(EnableCap.DepthTest);
-            GL.BindVertexArray(_vao);
+            GL.BindVertexArray(_buffer.VAO);
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
-
             GL.Disable(EnableCap.DepthTest);
-
-          
         }
 
         public void Dispose()
         {
-            GL.DeleteBuffer(_vbo);
-            GL.DeleteBuffer(_ebo);
-            GL.DeleteVertexArray(_vao);
+            _buffer.Dispose();
             Shader.Dispose();
             Texture.Dispose();
         }

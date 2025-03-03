@@ -38,5 +38,11 @@ void main()
     if (pixel.a < 0.1)
         discard;
 
-    FragColor = pixel * color;
+       // FragColor = mix(pixel, vec4(color.rgb, pixel.a), 0.5);
+
+      //  vec4 linearColor = pow(color, vec4(2.2)); 
+    //FragColor = texture(texture0, TexCoord) * linearColor;
+
+
+   FragColor = pixel * color;
 }

@@ -232,7 +232,7 @@ namespace Spacebox.FPS.GUI
                         ImGui.PushItemWidth(inputWidth * 1.5f);
                         if (ImGui.ColorPicker4($"##color{transform.Id}", ref color))
                         {
-                            model.Material.Color = color.ToOpenTKVector4();
+                            model.Material.Color = color.ToOpenTKColor4();
                         }
                     }
 

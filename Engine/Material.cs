@@ -2,47 +2,41 @@
 
 namespace Engine
 {
-    public class Material
+    public class Material : MaterialBase
     {
-        public Shader Shader { get; private set; }
+       
         public Texture2D Texture { get; private set; }
 
-
-        public Vector4 Color { get; set; } = Vector4.One;
         public Vector2 Offset { get;  set; } = Vector2.Zero;
         public Vector2 Tiling { get;  set; } = Vector2.One;
 
-        public Material()
+        public Material() : base(null)
         {
             Shader = ShaderManager.GetShader("Shaders/colored");
 
         }
 
-        public Material(Shader shader)
+        public Material(Shader shader) : base(shader)
         {
-            Shader = shader;
-           
+     
         }
 
-        public Material(Shader shader, Texture2D texture)
+        public Material(Shader shader, Texture2D texture) : base(shader)
         {
-            Shader = shader;
             Texture = texture;
         }
 
-        public void Use()
+        public override void Use()
         {
-            
-
             //GL.PolygonMode(MaterialFace.FrontAndBack, polygonMode);
 
             Shader.SetVector2("offset", Offset);
             Shader.SetVector2("tiling", Tiling);
             Shader.SetVector4("color", Color);
             Shader.Use();
-            
+
             Texture?.Use();
-           
+
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
         }

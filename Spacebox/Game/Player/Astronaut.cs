@@ -12,7 +12,7 @@ using Spacebox.GUI;
 
 namespace Spacebox.Game.Player
 {
-    public class Astronaut : Camera360, INotTransparent
+    public class Astronaut : Camera360Base, INotTransparent
     {
         public string Name { get; private set; } = "Player";
         public Inventory Inventory { get; private set; }

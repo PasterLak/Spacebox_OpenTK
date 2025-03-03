@@ -9,6 +9,7 @@ using Spacebox.Game;
 using Spacebox.Game.GUI.Menu;
 using ImGuiNET;
 using Spacebox.Game.Generation;
+using Engine.SceneManagment;
 
 namespace Spacebox.Scenes
 {
@@ -157,6 +158,11 @@ namespace Spacebox.Scenes
                 CenteredImageMenu.ShowText = false;
                 GameMenu.IsVisible = true;
                 VerticalLinks.IsVisible = true;
+            }
+
+            if (Input.IsKeyDown(Keys.T))
+            {
+               SceneManager.LoadScene(typeof(TestScene));
             }
 
         }

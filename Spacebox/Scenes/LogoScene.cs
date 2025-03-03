@@ -33,7 +33,7 @@ namespace Spacebox.Scenes
         public override void Start()
         {
 
-            SceneManager.LoadScene(typeof(MenuScene));
+            SceneManager.LoadScene(typeof(TestScene));
 
             Input.HideCursor();
         }

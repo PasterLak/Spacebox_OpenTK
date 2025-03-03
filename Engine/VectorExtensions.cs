@@ -34,6 +34,10 @@ namespace Engine
         {
             return new OpenTK.Mathematics.Vector4(vec.X, vec.Y, vec.Z, vec.W);
         }
+        public static OpenTK.Mathematics.Color4 ToOpenTKColor4(this System.Numerics.Vector4 vec)
+        {
+            return new OpenTK.Mathematics.Color4(vec.X, vec.Y, vec.Z, vec.W);
+        }
 
         public static System.Numerics.Vector4 ToSystemVector4(this Color4 vec)
         {

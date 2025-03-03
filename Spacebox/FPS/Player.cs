@@ -155,19 +155,19 @@ namespace Spacebox.FPS
             {
                 Vector3 newPosition = Position + movement;
                 BoundingVolume newBounding = GetBoundingVolumeAt(newPosition);
-
-                if (!CollisionManager.IsColliding(newBounding, this))
+                Position = newPosition;
+                /*if (!CollisionManager.IsColliding(newBounding, this))
                 {
                    
                     Position = newPosition;
                     UpdateBounding();
-                    CollisionManager.Update(this, CollisionManager.GetBoundingVolume(this)); // Предполагается, что есть метод для получения текущего BoundingVolume
+                    CollisionManager.Update(this, CollisionManager.GetBoundingVolume(this));
                 }
                 else
                 {
                    
                     //Console.WriteLine("Movement blocked by collision.");
-                }
+                }*/
             }
 
             
@@ -202,6 +202,7 @@ namespace Spacebox.FPS
                     CollisionLayer.Player | CollisionLayer.Projectile;
             CollisionLayer layerMask = CollisionLayer.All & ~ignoreLayers;
 
+            if (CollisionManager == null) return;
             if (CollisionManager.Raycast(ray, out Vector3 hitPosition,
                 out Collision hitObject, layerMask))
             {
