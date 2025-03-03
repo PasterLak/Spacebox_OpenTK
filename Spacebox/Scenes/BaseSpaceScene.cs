@@ -31,6 +31,7 @@ namespace Spacebox.Scenes
         protected Shader blocksShader;
         protected Texture2D blockTexture;
         protected Texture2D lightAtlas;
+        BlockMaterial blockMaterial;
         protected string worldName;
         protected PointLightsPool pointLightsPool;
         protected BlockSelector blockSelector;
@@ -214,14 +215,9 @@ namespace Spacebox.Scenes
             localPlayer.GameMode = World.Data.Info.GameMode;
             blockTexture = GameAssets.BlocksTexture;
             lightAtlas = GameAssets.LightAtlas;
-            blocksShader.Use();
-            blocksShader.SetInt("texture0", 0);
-            blocksShader.SetInt("textureAtlas", 1);
-            blocksShader.SetFloat("fogDensity", Lighting.FogDensity);
-            blocksShader.SetVector3("fogColor", Lighting.FogColor);
-            blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
+           
+            blockMaterial = new BlockMaterial(blockTexture, lightAtlas, localPlayer);
 
-        
             blockDestructionManager = new BlockDestructionManager(localPlayer);
             dustSpawner = new DustSpawner(localPlayer);
 
@@ -419,20 +415,16 @@ namespace Spacebox.Scenes
             skybox.DrawTransparent(localPlayer);
 
             GL.Enable(EnableCap.DepthTest);
-            Matrix4 view = localPlayer.GetViewMatrix();
-            Matrix4 projection = localPlayer.GetProjectionMatrix();
-
-            blocksShader.SetMatrix4("view", view);
-            blocksShader.SetMatrix4("projection", projection);
+           
             pointLightsPool.Render();
 
             Vector3 camPos = localPlayer.CameraRelativeRender ? Vector3.Zero : localPlayer.Position;
-            blocksShader.SetVector3("cameraPosition", camPos);
-            blocksShader.SetVector3("ambientColor", Lighting.AmbientColor);
+           
+            
 
-            blockTexture.Use(TextureUnit.Texture0);
-            lightAtlas.Use(TextureUnit.Texture1);
-
+            //blockTexture.Use(TextureUnit.Texture0);
+            //lightAtlas.Use(TextureUnit.Texture1);
+            blockMaterial.SetUniforms(localPlayer.GetViewMatrix()); // !!!
             if (InteractionShoot.ProjectilesPool != null)
                 InteractionShoot.ProjectilesPool.Render();
 
@@ -443,7 +435,9 @@ namespace Spacebox.Scenes
                 InteractionShoot.lineRenderer.Render();
 
             localPlayer.Render();
+            blockMaterial.Use();
             world.Render(blocksShader);
+            
             blockDestructionManager.Render();
             spacer.Render(localPlayer);
             dustSpawner.Render();

@@ -27,13 +27,13 @@ namespace Spacebox.Scenes
             sprite = new Sprite("Resources/Textures/dust.png", new Vector2(0, 0),
                 new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
 
-
         }
 
         public override void Start()
         {
 
-            SceneManager.LoadScene(typeof(TestScene));
+            SceneManager.LoadScene(typeof(MenuScene));
+            //SceneManager.LoadScene(typeof(TestScene));
 
             Input.HideCursor();
         }

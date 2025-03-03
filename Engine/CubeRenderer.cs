@@ -7,7 +7,7 @@ namespace Engine
     public class CubeRenderer : Node3D, IDisposable
     {
         public bool Enabled = true;
-        private Shader _shader;
+        public MaterialBase Material;
         private BufferShader _buffer;
 
         private Vector3 _position;
@@ -90,7 +90,7 @@ namespace Engine
         {
             _position = position;
             Position = position;
-            _shader = ShaderManager.GetShader("Shaders/colored");
+            Material = new ColorMaterial();
             var attrs = new BufferAttribute[]
             {
                 new BufferAttribute { Name = "aPos",    Size = 3 },
@@ -114,12 +114,13 @@ namespace Engine
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
 
-            _shader.Use();
+           
             var matModel = GetModelMatrix();
-            _shader.SetMatrix4("model", matModel);
-            _shader.SetMatrix4("view", cam.GetViewMatrix());
-            _shader.SetMatrix4("projection", cam.GetProjectionMatrix());
-            _shader.SetVector4("color", (Vector4)_color);
+
+
+            Material.Color = _color;
+            Material.SetUniforms(matModel);
+            Material.Use();
 
             GL.BindVertexArray(_buffer.VAO);
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
@@ -131,7 +132,7 @@ namespace Engine
         public void Dispose()
         {
             _buffer?.Dispose();
-            _shader?.Dispose();
+            //_shader?.Dispose();
         }
     }
 }

@@ -46,7 +46,7 @@ public class LineRenderer2 : SceneNode, IDisposable
     }
     public LineRenderer2()
     {
-        _shader = ShaderManager.GetShader("Shaders/lineRenderer");
+        _shader = ShaderManager.GetShader("Shaders/colored");
 
         var attrs = new BufferAttribute[]
         {

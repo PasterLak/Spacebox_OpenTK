@@ -6,7 +6,7 @@ namespace Engine
     public class LineRenderer : Node3D, IDisposable
     {
         public bool Enabled = true;
-        private Shader _shader;
+        public MaterialBase Material;
         private BufferShader _buffer;
         public List<Vector3> Points = new List<Vector3>();
         private float _thickness = 0.1f;
@@ -46,7 +46,8 @@ namespace Engine
         }
         public LineRenderer()
         {
-            _shader = ShaderManager.GetShader("Shaders/lineRenderer");
+           
+            Material = new ColorMaterial();
 
             var attrs = new BufferAttribute[]
             {
@@ -164,14 +165,11 @@ namespace Engine
 
             var camera = Camera.Main;
 
-            _shader.Use();
-
             var finalModel = GetModelMatrix();
 
-            _shader.SetMatrix4("uModel", finalModel, false);
-            _shader.SetMatrix4("uView", camera.GetViewMatrix(), false);
-            _shader.SetMatrix4("uProjection", camera.GetProjectionMatrix(), false);
-            _shader.SetVector4("uColor", (Vector4)_color);
+            Material.Color = _color;
+            Material.SetUniforms(finalModel);
+            Material.Use();
 
             GL.BindVertexArray(_buffer.VAO);
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);

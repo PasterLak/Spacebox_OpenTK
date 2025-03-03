@@ -240,6 +240,7 @@ namespace Spacebox.Game.Generation
 
 
             Matrix4 model = Matrix4.CreateTranslation(position);
+            shader.Use();
             shader.SetMatrix4("model", model);
 
             if (_mesh != null)

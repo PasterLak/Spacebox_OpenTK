@@ -7,7 +7,7 @@ namespace Engine
     public class SphereRenderer : Node3D, IDisposable
     {
         public bool Enabled = true;
-        private Shader _shader;
+        public MaterialBase Material;
         private BufferShader _buffer;
 
         private float _radius;
@@ -19,12 +19,7 @@ namespace Engine
             get => _color;
             set { _color = value; }
         }
-        private int _textureId;
-        public int TextureId
-        {
-            get => _textureId;
-            set { _textureId = value; }
-        }
+
         private float[] _vertices = System.Array.Empty<float>();
         private uint[] _indices = System.Array.Empty<uint>();
         private bool _geometryNeedsUpdate = true;
@@ -36,7 +31,7 @@ namespace Engine
             _segments = segments;
             _rings = rings;
             Position = center;
-            _shader = ShaderManager.GetShader("Shaders/textured");
+            Material = new ColorMaterial();
             var attrs = new BufferAttribute[]
             {
                 new BufferAttribute { Name = "aPos",       Size = 3 },
@@ -108,15 +103,13 @@ namespace Engine
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
 
-            _shader.Use();
+           
             var matModel = GetModelMatrix();
-            _shader.SetMatrix4("model", matModel);
-            _shader.SetMatrix4("view", cam.GetViewMatrix());
-            _shader.SetMatrix4("projection", cam.GetProjectionMatrix());
-            _shader.SetVector4("color", (Vector4)_color);
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, _textureId);
-            _shader.SetInt("texture0", 0);
+
+            Material.Color = _color;
+            Material.SetUniforms(matModel);
+            Material.Use();
+
             GL.BindVertexArray(_buffer.VAO);
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);

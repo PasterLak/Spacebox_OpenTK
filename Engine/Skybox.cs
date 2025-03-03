@@ -7,7 +7,7 @@ namespace Engine
     public class Skybox : Node3D, ITransparent
     {
         public Mesh Mesh { get; private set; }
-        public Material Material { get; private set; }
+        public MaterialBase Material { get; private set; }
       
         public Texture2D Texture { get; private set; }
 
@@ -17,7 +17,8 @@ namespace Engine
         {
             var (vertices, indices) = ObjLoader.Load(objPath);
             Mesh = new Mesh(vertices, indices);
-            Material = new Material(shader, texture);
+            Material = new TextureMaterial( texture);
+            Material.RenderFace = RenderFace.Back;
             Texture = texture;
         
 
@@ -35,20 +36,21 @@ namespace Engine
             bool cullFaceEnabled = GL.IsEnabled(EnableCap.CullFace);
 
         
-            GL.Enable(EnableCap.Blend);
+            //GL.Enable(EnableCap.Blend);
 
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+           // GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
 
             GL.GetInteger(GetPName.CullFaceMode, out int prevCullFaceMode);
             GL.GetInteger(GetPName.DepthFunc, out int prevDepthFunc);
 
-            GL.DepthFunc(DepthFunction.Lequal);
-            GL.Disable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.FrontAndBack); 
+           // GL.DepthFunc(DepthFunction.Lequal);
+           // GL.Disable(EnableCap.CullFace);
+          //  GL.CullFace(CullFaceMode.FrontAndBack);
 
-            Material.Use();
-            Texture.Use();
+            Material.SetUniforms(GetModelMatrix());
+           
+           // Texture.Use();
             Material.Shader.SetInt("skybox", 0);
 
             
@@ -58,17 +60,18 @@ namespace Engine
             Material.Shader.SetVector3("ambient", Lighting.AmbientColor);
             else
                 Material.Shader.SetVector3("ambient", new Vector3(1, 1, 1));  // can be optimized
-            Material.Shader.SetMatrix4("view", camera.GetViewMatrix());
-            Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
-            Material.Shader.SetMatrix4("model", GetModelMatrix());
 
+            //Material.Shader.SetMatrix4("view", camera.GetViewMatrix());
+            //Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
+            //Material.Shader.SetMatrix4("model", GetModelMatrix());
+            Material.Use();
             Mesh.Draw();
 
           
-            if (!cullFaceEnabled)
-                GL.Disable(EnableCap.CullFace);
-            GL.CullFace((CullFaceMode)prevCullFaceMode);
-            GL.DepthFunc((DepthFunction)prevDepthFunc);
+           // if (!cullFaceEnabled)
+           //     GL.Disable(EnableCap.CullFace);
+           // GL.CullFace((CullFaceMode)prevCullFaceMode);
+           // GL.DepthFunc((DepthFunction)prevDepthFunc);
         }
     }
 }

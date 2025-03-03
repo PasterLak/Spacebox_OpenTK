@@ -1,5 +1,4 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
 
 namespace Engine
 {
@@ -11,7 +10,15 @@ namespace Engine
         {
             MainTexture = texture;
             RenderFace = RenderFace.Front;
-            RenderMode = RenderMode.Opaque;
+            RenderMode = RenderMode.Cutout;
+        }
+
+        public TextureMaterial(Texture2D texture, Shader shader) : 
+            base(shader)
+        {
+            MainTexture = texture;
+            RenderFace = RenderFace.Front;
+            RenderMode = RenderMode.Cutout;
         }
 
         protected override void SetMaterialProperties()

@@ -38,9 +38,12 @@
 	  <None Remove="gamesets\default\projectiles.json" />
 	  <None Remove="gamesets\default\recipes.json" />
 	  <None Remove="GameSets\Default\UI\settings.json" />
-	  <None Remove="Shaders\lineRenderer.glsl" />
+	  <None Remove="Shaders\outline.glsl" />
+	  <None Remove="shaders\planet.glsl" />
 	  <None Remove="Shaders\player.glsl" />
 	  <None Remove="shaders\sphere.glsl" />
+	  <None Remove="shaders\sun.glsl" />
+	  <None Remove="shaders\transparent.glsl" />
 	</ItemGroup>
 
 	<ItemGroup>

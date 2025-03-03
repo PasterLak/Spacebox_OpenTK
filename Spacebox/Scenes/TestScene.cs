@@ -47,6 +47,7 @@ namespace Spacebox.Scenes
             //GL.Enable(EnableCap.DepthTest);
 
             player = new FreeCamera(new Vector3(0, 0, 5));
+            player.DepthNear = 0.01f;
             player.CameraRelativeRender = false;
 
               skyboxShader = ShaderManager.GetShader("Shaders/skybox");

@@ -36,7 +36,7 @@ namespace Spacebox.Game.Resources
             data.Type = data.Type.ToLower();
             if (BlockCreators.TryGetValue(data.Type, out Func<BlockData, Block> creator))
                 return creator(data);
-          
+
             return new Block(data);
         }
 
@@ -54,12 +54,12 @@ namespace Spacebox.Game.Resources
         public static void RegisterBlockType(string type, Func<BlockData, Block> creator)
         {
             //if (string.IsNullOrWhiteSpace(type))
-              
 
-          //  if (creator == null)
-          //      throw new ArgumentNullException(nameof(creator));
 
-         //   BlockCreators[type] = creator;
+            //  if (creator == null)
+            //      throw new ArgumentNullException(nameof(creator));
+
+            //   BlockCreators[type] = creator;
         }
     }
 }

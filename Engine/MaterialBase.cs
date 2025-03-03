@@ -19,7 +19,7 @@ namespace Engine
     }
     public abstract class MaterialBase
     {
-        public Shader Shader { get; protected set; }
+        public Shader Shader { get;  set; }
 
         public int RenderQueue { get; protected set; } = 1000;
         public RenderMode RenderMode { get; protected set; } = RenderMode.Opaque;
@@ -60,6 +60,12 @@ namespace Engine
 
             if (enableDepthTest) GL.Enable(EnableCap.DepthTest);
             else GL.Disable(EnableCap.DepthTest);
+
+            //if (mode == RenderMode.Transparent)
+            //    GL.DepthMask(false);
+           // else
+            //    GL.DepthMask(true);
+
 
             if (enableBlending)
             {
