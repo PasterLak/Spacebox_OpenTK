@@ -3,6 +3,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Formats.Png;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Desktop;
+using OpenTK.Mathematics;
 
 namespace Engine
 {
@@ -16,7 +17,7 @@ namespace Engine
             {
                 _isActive = value;
                 FrameNumber = 0;
-                
+
                 if (value)
                 {
                     if (Directory.Exists("Frames"))
@@ -32,7 +33,7 @@ namespace Engine
         }
 
         public static int FrameNumber = 0;
-       
+
 
         public static void SaveFrame(GameWindow Window)
         {
@@ -66,7 +67,7 @@ namespace Engine
                     }
                     image.Save(filePath, new PngEncoder());
                 }
-               
+
             });
 
             FrameNumber++;
@@ -74,15 +75,20 @@ namespace Engine
 
         public static void SaveScreenshot(GameWindow Window)
         {
-          
+            SaveScreenshot(Window.ClientSize);
+        }
+
+        public static void SaveScreenshot(Vector2i clientSize)
+        {
+
 
             if (!Directory.Exists("Screenshots"))
             {
                 Directory.CreateDirectory("Screenshots");
             }
 
-            int width = Window.ClientSize.X;
-            int height = Window.ClientSize.Y;
+            int width = clientSize.X;
+            int height = clientSize.Y;
             string filePath = $"Screenshots/screenshot_{DateTime.Now.Year}_{DateTime.Now.Month}_{DateTime.Now.Day}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}.png";
 
             byte[] pixels = new byte[width * height * 4];
@@ -106,7 +112,7 @@ namespace Engine
                 Debug.Success($"Screenshot saved: {Path.GetFullPath(filePath)}");
             });
 
-            
+
         }
 
         public static async Task<byte[]> CaptureFrameAsPngAsync(int width, int height)

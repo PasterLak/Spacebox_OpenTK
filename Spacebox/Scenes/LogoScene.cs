@@ -22,9 +22,9 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
 
-            GL.ClearColor(0, 0, 0, 0);
+            //GL.ClearColor(0, 0, 0, 0);
 
-            sprite = new Sprite("Resources/Textures/dust.png", new Vector2(0, 0),
+            sprite = new Sprite("Resources/Textures/planet2.png", new Vector2(0, 0),
                 new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
 
         }
@@ -40,7 +40,7 @@ namespace Spacebox.Scenes
 
         public override void Render()
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            //GL.Clear(ClearBufferMask.ColorBufferBit);
 
 
             sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
@@ -55,29 +55,13 @@ namespace Spacebox.Scenes
         {
             sprite.Dispose();
 
-            BufferAttribute[] attributes = new BufferAttribute[]
-{
-    new BufferAttribute { Name = "aPos",    Size = 3 },
-    new BufferAttribute { Name = "aNormal", Size = 3 }
-};
-
-            BufferShader buffer = new BufferShader(attributes);
-
-           // buffer.BindBuffer(ref vertices, ref indices);
-          //  buffer.SetAttributes();
-
-
 
         }
 
         public override void Update()
         {
 
-            sprite.Shader.SetFloat("time", (float)GLFW.GetTime());
-            sprite.Shader.SetVector2("screen", new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
-            sprite.Shader.SetVector2("mouse", new Vector2(0, 0));
-
-            //sprite.UpdateWindowSize(Window.Instance.Size);
+            sprite.UpdateWindowSize(Window.Instance.ClientSize);
             sprite.UpdateSize(Window.Instance.Size);
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
         

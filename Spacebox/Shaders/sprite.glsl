@@ -36,6 +36,6 @@ uniform vec2 mouse;
 
 void main()
 {
-    vec2 adjustedTexCoord = TexCoord * tiling + offset;
-    FragColor = texture(spriteTexture, adjustedTexCoord);
+   // vec2 adjustedTexCoord = TexCoord * tiling + offset;
+    FragColor = texture(spriteTexture, TexCoord);
 }

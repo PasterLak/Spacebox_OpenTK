@@ -12,6 +12,7 @@ using Spacebox.Game.Generation;
 using Spacebox.Scenes.Test;
 using Spacebox.Game.Player;
 using Spacebox.FPS.GUI;
+using Engine.GUI;
 
 
 namespace Spacebox.Scenes
@@ -20,14 +21,13 @@ namespace Spacebox.Scenes
     {
         private Skybox skybox;
 
-        private Shader skyboxShader;
         private FreeCamera player;
         private DustSpawner spawner;
         private AudioSource music;
 
         private Axes axes;
         CubeParent cube;
-
+        Sprite sprite;
         public TestScene(string[] args) : base(args)
         {
 
@@ -36,7 +36,7 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
             // GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            GL.ClearColor(0.1f, 0.1f, 0.1f, 1f);
+            //GL.ClearColor(0.1f, 0.1f, 0.1f, 1f);
             //Theme.ApplySpaceboxTheme();
 
             float winX = Window.Instance.Size.X;
@@ -49,7 +49,8 @@ namespace Spacebox.Scenes
             player.DepthNear = 0.01f;
             player.CameraRelativeRender = false;
 
-          
+            sprite = new Sprite("Resources/Textures/planet2.png", new Vector2(0, 0),
+                 new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
 
             Texture2D skyboxTexture = new SpaceTexture(512, 512, World.Seed);
             skyboxTexture = TextureManager.GetTexture("Resources/Textures/space.png");
@@ -107,18 +108,17 @@ namespace Spacebox.Scenes
 
             Input.HideCursor();
 
-
         }
 
 
         public override void Render()
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-           
+            // GL.Clear(ClearBufferMask.ColorBufferBit);
 
-           //player
-            skybox.DrawTransparent(player);
-            spawner.Render();
+            sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
+            //player
+             skybox.DrawTransparent(player);
+              spawner.Render();
             //axes.Render(player);
             cube.Render();
         }
@@ -129,14 +129,13 @@ namespace Spacebox.Scenes
 
             // ImGui.PopFont();
 
-            NodeUI.Render(cube.Children);
+           // NodeUI.Render(cube.Children);
         }
 
         public override void UnloadContent()
         {
-            //skybox.Texture.Dispose();
+           // skybox.Dispose();
 
-            skyboxShader.Dispose();
             spawner.Dispose();
             music.Dispose();
         }
@@ -144,13 +143,14 @@ namespace Spacebox.Scenes
         public override void Update()
         {
             cube.Update();
-            spawner.Update();
+             spawner.Update();
             //sprite.UpdateWindowSize(Window.Instance.Size);
-            player.Update();
+             player.Update();
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
+           // sprite.UpdateWindowSize(Window.Instance.ClientSize);
+           // sprite.UpdateSize(Window.Instance.Size);
 
-
-            if(Input.Mouse.ScrollDelta.Y > 0 )
+            if (Input.Mouse.ScrollDelta.Y > 0 )
             {
                 player.FOV += 1;
             }

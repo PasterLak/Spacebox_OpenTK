@@ -84,7 +84,7 @@ namespace Engine.GUI
             GL.BindVertexArray(0);
 
 
-           // Window.OnResized += UpdateWindowSize;
+           // Spacebox.Window.Instance.OnResized += UpdateWindowSize;
         }
 
         private void SetVertices()
@@ -131,7 +131,7 @@ namespace Engine.GUI
             GL.BufferSubData(BufferTarget.ArrayBuffer, nint.Zero, _vertices.Length * sizeof(float), _vertices);
         }
 
-        private void UpdateWindowSize(Vector2 newWindowSize)
+        public void UpdateWindowSize(Vector2 newWindowSize)
         {
             _windowWidth = (int)newWindowSize.X;
             _windowHeight = (int)newWindowSize.Y;
@@ -160,6 +160,7 @@ namespace Engine.GUI
 
             _texture.Use(TextureUnit.Texture0);
             _shader.SetInt("spriteTexture", 0);
+           // GL.BindTexture(TextureTarget.Texture2D, _texture.Handle);
 
             GL.BindVertexArray(_vao);
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);

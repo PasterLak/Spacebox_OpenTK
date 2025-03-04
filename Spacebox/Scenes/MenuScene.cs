@@ -112,7 +112,7 @@ namespace Spacebox.Scenes
 
         public override void Render()
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+           // GL.Clear(ClearBufferMask.ColorBufferBit);
 
 
             skybox.DrawTransparent(player);
