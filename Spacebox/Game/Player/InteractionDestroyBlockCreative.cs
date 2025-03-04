@@ -30,7 +30,7 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
             blockDestroy.Volume = 1f;
         }
         if (BlockSelector.Instance != null)
-            BlockSelector.Instance.SimpleBlock.Shader.SetVector4("color", Vector4.One);
+            BlockSelector.Instance.SimpleBlock.Material.Shader.SetVector4("color", Vector4.One);
         BlockSelector.IsVisible = false;
         model.Animator.AddAnimation(new MoveAnimation(model.Position, model.Position + new Vector3(0.005f, 0, 0), 0.05f, true));
     }

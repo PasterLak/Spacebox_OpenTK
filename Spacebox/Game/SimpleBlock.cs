@@ -10,17 +10,16 @@ namespace Spacebox
         private float[] _vertices;
         private uint[] _indices;
         private BufferShader _buffer;
-        public Shader Shader { get; private set; }
-        public Texture2D Texture;
+        public TextureMaterial Material { get;  set; }
+       
         public bool IsUsingDefaultUV { get; private set; } = true;
         private Dictionary<Face, Vector2[]> _uvs = new Dictionary<Face, Vector2[]>();
 
-        public SimpleBlock(Shader shader, Texture2D texture, Vector3 position)
+        public SimpleBlock(TextureMaterial material, Vector3 position)
         {
             Position = position;
             Scale = Vector3.One;
-            Shader = shader;
-            Texture = texture;
+            Material = material;
             foreach (var face in Enum.GetValues(typeof(Face)))
             {
                 _uvs.Add((Face)face, CubeMeshData.GetBasicUVs());
@@ -130,12 +129,10 @@ namespace Spacebox
 
         public void Render(Camera camera)
         {
-            Shader.Use();
-            Shader.SetMatrix4("model", GetModelMatrix());
-            Shader.SetMatrix4("view", camera.GetViewMatrix());
-            Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
-            Shader.SetInt("texture0", 0);
-            Texture.Use(TextureUnit.Texture0);
+            Material.SetUniforms(GetModelMatrix());
+            Material.Use();
+
+            
             GL.Enable(EnableCap.DepthTest);
             GL.BindVertexArray(_buffer.VAO);
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
@@ -146,8 +143,7 @@ namespace Spacebox
         public void Dispose()
         {
             _buffer.Dispose();
-            Shader.Dispose();
-            Texture.Dispose();
+
         }
     }
 }

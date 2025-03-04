@@ -47,8 +47,7 @@ namespace Spacebox.Scenes
         protected BlockDestructionManager blockDestructionManager;
         protected Animator animator;
         public static Model spacer;
-        protected SimpleBlock block1;
-        protected SimpleBlock block2;
+
         protected PointLight pLight;
         private SpheresPool SpheresPool;
         private bool isMultiplayer = false;
@@ -174,12 +173,12 @@ namespace Spacebox.Scenes
 
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
             var texture = new SpaceTexture(512, 512, World.Seed);
-            skybox = new Skybox("Resources/Models/sphere.obj", skyboxShader, texture);
+            skybox = new Skybox("Resources/Models/sphere.obj",  texture);
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
             skybox.IsAmbientAffected = false;
             SceneGraph.AddRoot(skybox);
 
-            radarWindow = new RadarUI(skybox.Texture);
+            radarWindow = new RadarUI(texture);
 
             if (localPlayer == null)
             {
@@ -248,13 +247,7 @@ namespace Spacebox.Scenes
             spacer.Position = localPlayer.Position + new Vector3(12, 15, 7);
             spacer.Rotation = new Vector3(0, 0, 0);
 
-            block1 = new SimpleBlock(ShaderManager.GetShader("Shaders/colored"),
-                TextureManager.GetTexture("Resources/Textures/slot.png", true, false), new Vector3(0, 0, 0));
-            block1.Position = new Vector3(-1, -1, 0);
-
-            block2 = new SimpleBlock(ShaderManager.GetShader("Shaders/colored"),
-                TextureManager.GetTexture("Resources/Textures/slot.png", true, false), new Vector3(0, 0, 0));
-
+            
           
             WelcomeUI.OnPlayerSpawned(World.Data.Info.ShowWelcomeWindow);
             WelcomeUI.Init();
@@ -445,8 +438,7 @@ namespace Spacebox.Scenes
             if (InteractionDestroyBlockSurvival.BlockMiningEffect != null)
                 InteractionDestroyBlockSurvival.BlockMiningEffect.Render();
 
-            BoundingSphere b = new BoundingSphere(block2.GetWorldPosition(), 0.7f);
-            VisualDebug.DrawBoundingSphere(b, Color4.AliceBlue);
+         
             blockSelector.Render(localPlayer);
 
             SpheresPool.Render();
@@ -493,7 +485,7 @@ namespace Spacebox.Scenes
             lightAtlas.Dispose();
             Sector.IsPlayerSpawned = false;
             TickTaskManager.Dispose();
-            skybox.Texture.Dispose();
+            //skybox.Texture.Dispose();
             skyboxShader.Dispose();
             dustSpawner.Dispose();
             pointLightsPool.Dispose();

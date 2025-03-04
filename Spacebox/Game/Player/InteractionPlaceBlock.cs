@@ -26,7 +26,7 @@ public class InteractionPlaceBlock : InteractionMode
             blockPlace = new AudioSource(SoundManager.GetClip("blockPlaceDefault"));
 
         if (BlockSelector.Instance != null)
-            BlockSelector.Instance.SimpleBlock.Shader.SetVector4("color", new Vector4(1, 1, 1, 0.5f));
+            BlockSelector.Instance.SimpleBlock.Material.Shader.SetVector4("color", new Vector4(1, 1, 1, 0.5f));
         BlockSelector.IsVisible = false;
 
         if (lineRenderer == null)

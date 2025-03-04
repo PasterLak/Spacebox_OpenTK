@@ -17,7 +17,6 @@ namespace Spacebox.Scenes
     {
         private Skybox skybox;
 
-        private Shader skyboxShader;
         private Camera player;
         private DustSpawner spawner;
         private AudioSource music;
@@ -42,11 +41,11 @@ namespace Spacebox.Scenes
 
             player = new CameraBasic(new Vector3(0, 0, 0));
 
-            skyboxShader = ShaderManager.GetShader("Shaders/skybox");
+        
 
             var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
 
-            skybox = new Skybox("Resources/Models/cube.obj", skyboxShader, skyboxTexture);
+            skybox = new Skybox("Resources/Models/cube.obj", skyboxTexture);
 
             skybox.IsAmbientAffected = false;
 
@@ -138,9 +137,9 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
-            skybox.Texture.Dispose();
+            //skybox.Texture.Dispose();
 
-            skyboxShader.Dispose();
+           // skyboxShader.Dispose();
             spawner.Dispose();
             music.Dispose();
         }

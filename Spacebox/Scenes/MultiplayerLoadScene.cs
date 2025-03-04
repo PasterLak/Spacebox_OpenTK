@@ -49,8 +49,8 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
             player = new CameraBasic(new Vector3(0, 0, 0));
-            skyboxShader = ShaderManager.GetShader("Shaders/skybox");
-            skybox = new Skybox("Resources/Models/cube.obj", skyboxShader,
+        
+            skybox = new Skybox("Resources/Models/cube.obj",
                 new SpaceTexture(512, 512, World.Seed));
             skybox.IsAmbientAffected = false;
             Debug.Warning("Trying to connect to server...");
@@ -176,7 +176,7 @@ namespace Spacebox.Scenes
         public override void UnloadContent()
         {
             CenteredText.Hide();
-            skybox.Texture.Dispose();
+           // skybox.Texture.Dispose();
             skyboxShader.Dispose();
         }
     }

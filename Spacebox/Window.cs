@@ -35,7 +35,7 @@ namespace Spacebox
 
         private ImGuiController _controller;
         private string path = "Resources/WindowPosition.txt";
-
+        private PostProcessManager _processManager;
         private static Keys debugKey;
         private static PolygonMode polygonMode = PolygonMode.Fill;
         private Vector2i minimizedWindowSize = new Vector2i(500, 500);
@@ -144,8 +144,9 @@ namespace Spacebox
             // ToggleFullScreen();
             
             CenterWindow();
+            _processManager = new PostProcessManager();
+            _processManager.AddEffect(new TestColorReplaceEffect(ShaderManager.GetShader("Shaders/colorReplace")));
 
-          
 
             MinimumSize = new Vector2i(640, 360);
         }
@@ -209,6 +210,10 @@ namespace Spacebox
             Time.EndRender();
 
             if (FramebufferCapture.IsActive) FramebufferCapture.IsActive = false;
+
+
+           // _processManager.Process(sceneTexture, 0);
+
             SwapBuffers();
 
             if(DoScreenshot)
@@ -374,7 +379,7 @@ namespace Spacebox
 
             SoundManager.DisposeAll();
             AudioManager.Instance.Dispose();
-
+            _processManager.Dispose();
             NumberStorage.SaveNumbers(path, Location.X, Location.Y);
 
             ShaderManager.DisposeAll();

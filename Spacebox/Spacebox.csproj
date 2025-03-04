@@ -38,6 +38,8 @@
 	  <None Remove="gamesets\default\projectiles.json" />
 	  <None Remove="gamesets\default\recipes.json" />
 	  <None Remove="GameSets\Default\UI\settings.json" />
+	  <None Remove="shaders\atmosphere.glsl" />
+	  <None Remove="shaders\colorReplace.glsl" />
 	  <None Remove="Shaders\outline.glsl" />
 	  <None Remove="shaders\planet.glsl" />
 	  <None Remove="Shaders\player.glsl" />

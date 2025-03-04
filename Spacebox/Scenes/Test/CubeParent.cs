@@ -4,6 +4,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 
+
 namespace Spacebox.Scenes.Test
 {
 
@@ -23,6 +24,7 @@ namespace Spacebox.Scenes.Test
         private Model2 earth;
         private Model2 sun;
         private Model2 atmosphere;
+        private Model2 mars;
 
         private Model2 moon;
         BoundingBox box;
@@ -51,24 +53,30 @@ namespace Spacebox.Scenes.Test
 
             var matEarth = new PlanetMaterial(new Texture2D("Resources/Textures/planet2.png"));
             matEarth.GlowColor = new Vector3(0.9f,1,1);
-           
-            var atmosphereMat = new TransparentMaterial( new Texture2D("Resources/Textures/skybox2.png"));
-            
-            var mat3 = new Material(new Shader("Shaders/textured"), new Texture2D("Resources/Textures/moon.png"));
-            
+
+            var matMars = new PlanetMaterial(new Texture2D("Resources/Textures/planet3.png"));
+            matMars.GlowColor = new Vector3(0.9f, 0.5f, 0.5f);
+
+            var atmosphereMat = new AtmosphereMaterial( new Texture2D("Resources/Textures/skybox2.png"));
+            atmosphereMat.GlowColor = new Vector3(0.9f, 1, 1);
+
+            var matMoon = new PlanetMaterial(new Texture2D("Resources/Textures/moon.png"));
+            matMoon.GlowColor = new Vector3(0.7f, 0.7f, 0.7f);
             //var sunMat = new ColorMaterial();
 
             var sunMat = new SunMaterial(new Texture2D("Resources/Textures/sun.png"));
             sunMat.GlowColor = new Vector3(1f,1,1);
             sunMat.Color = new Color4(1f,1f,1f,1f);
-            sun = new Model2("Resources/Models/sphere.obj", sunMat);
-            earth = new Model2("Resources/Models/sphere.obj",matEarth );
-            atmosphere = new Model2("Resources/Models/sphere.obj", atmosphereMat);
-            
+            sun = new Model2("Resources/Models/sphere2.obj", sunMat);
+            earth = new Model2("Resources/Models/sphere2.obj",matEarth );
+            atmosphere = new Model2("Resources/Models/sphere2.obj", atmosphereMat);
+            mars = new Model2("Resources/Models/sphere2.obj", matMars);
+          
             sunMat.Shader.Use();
             sunMat.SetUniforms(sun.WorldMatrix);
-            moon = new Model2("Resources/Models/sphere.obj", mat3);
+            moon = new Model2("Resources/Models/sphere2.obj", matMoon);
 
+            mars.SetScale(0.15f);
             earth.SetScale(0.2f);
             moon.SetScale(0.2f);
             atmosphere.Scale = Vector3.One * 1.01f;
@@ -77,11 +85,13 @@ namespace Spacebox.Scenes.Test
             moon.Position = new Vector3(2.5f, 0, 0);
 
             earth.AddChild(atmosphere);
-           
 
+            
             sun.SetScale(1);
+            sun.AddChild(mars);
             sun.AddChild(earth);
             earth.Position = new Vector3(4, 0, 0);
+            mars.Position = new Vector3(-7, 0, 0);
             AddChild(sun);
 
 
@@ -93,15 +103,17 @@ namespace Spacebox.Scenes.Test
 
             //Rotate(new Vector3(0,speed/2f, 0));
             earth.Rotate(new Vector3(0, speed / 4, 0));
-            atmosphere.Rotate(new Vector3(0, speed / 8, 0));
+            mars.Rotate(new Vector3(0, speed / 3, 0));
+            atmosphere.Rotate(new Vector3(0, speed / 2, 0));
             sun.Rotate(new Vector3(0, speed / 3 * speed2, 0));
             // moon.Rotate(new Vector3(0, speed , 0));
             moon.RotateAround(Vector3.Zero, Vector3.UnitY, 2.3f * speed2);
             earth.RotateAround(Vector3.Zero, Vector3.UnitY, 1.3f * speed2);
+            mars.RotateAround(Vector3.Zero, Vector3.UnitY, 1.2f * speed2);
             // cube.Translate(new Vector3(0, 0, speed));
             //cube.Update();
 
-            if(Input.IsKeyDown(Keys.KeyPadAdd))
+            if (Input.IsKeyDown(Keys.KeyPadAdd))
             {
                 speed2 += 0.1f;
             }

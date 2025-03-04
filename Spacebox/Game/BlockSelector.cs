@@ -23,12 +23,12 @@ namespace Spacebox.Game
         public BlockSelector() 
         {
             Instance = this;
-            Shader shader = ShaderManager.GetShader("Shaders/textured");
+           
             selectorTexture = TextureManager.GetTexture("Resources/Textures/selector.png", true);
 
           
 
-            SimpleBlock = new SimpleBlock(shader, selectorTexture, Vector3.Zero);
+            SimpleBlock = new SimpleBlock(new TextureMaterial(selectorTexture), Vector3.Zero);
             SimpleBlock.Scale = new Vector3(1.05f, 1.05f, 1.05f);
             currentTexture = selectorTexture;
             PanelUI.OnSlotChanged += OnSelectedSlotWasChanged;
@@ -45,7 +45,7 @@ namespace Spacebox.Game
               
                 if (!SimpleBlock.IsUsingDefaultUV)
                 {
-                    SimpleBlock.Texture = selectorTexture;
+                    SimpleBlock.Material.MainTexture = selectorTexture;
                     SimpleBlock.Scale = new Vector3(1.05f, 1.05f, 1.05f);
                     SimpleBlock.ResetUV();
                 }
@@ -57,7 +57,7 @@ namespace Spacebox.Game
                
                 //if (block.IsUsingDefaultUV)   // to do block was changed
                 //{
-                    SimpleBlock.Texture = GameAssets.BlocksTexture;
+                    SimpleBlock.Material.MainTexture = GameAssets.BlocksTexture;
                 SimpleBlock.Scale = new Vector3(1,1,1);
                 UpdateUV();
                 // }

@@ -32,7 +32,7 @@ namespace Spacebox.Scenes
         public override void Start()
         {
 
-            SceneManager.LoadScene(typeof(MenuScene));
+            //SceneManager.LoadScene(typeof(MenuScene));
             //SceneManager.LoadScene(typeof(TestScene));
 
             Input.HideCursor();
@@ -83,12 +83,12 @@ namespace Spacebox.Scenes
         
             if (Input.IsKeyDown(Keys.S))
             {
-                //SceneManager.LoadScene(typeof(SpaceMenuScene));
+                SceneManager.LoadScene(typeof(MenuScene));
             }
 
-            if (Input.IsKeyDown(Keys.G))
+            if (Input.IsKeyDown(Keys.T))
             {
-               // SceneManager.LoadScene(typeof(OldSpaceScene));
+                SceneManager.LoadScene(typeof(TestScene));
             }
 
             if (Input.IsKeyDown(Keys.R))

@@ -14,7 +14,6 @@ using Spacebox.Game.Player;
 using Spacebox.FPS.GUI;
 
 
-
 namespace Spacebox.Scenes
 {
     public class TestScene : Engine.SceneManagment.Scene
@@ -50,12 +49,12 @@ namespace Spacebox.Scenes
             player.DepthNear = 0.01f;
             player.CameraRelativeRender = false;
 
-              skyboxShader = ShaderManager.GetShader("Shaders/skybox");
+          
 
             Texture2D skyboxTexture = new SpaceTexture(512, 512, World.Seed);
             skyboxTexture = TextureManager.GetTexture("Resources/Textures/space.png");
 
-            skybox = new Skybox("Resources/Models/sphere.obj", skyboxShader, skyboxTexture);
+            skybox = new Skybox("Resources/Models/sphere.obj", skyboxTexture);
 
             skybox.IsAmbientAffected = false;
 
@@ -106,7 +105,7 @@ namespace Spacebox.Scenes
         public override void Start()
         {
 
-            Input.ShowCursor();
+            Input.HideCursor();
 
 
         }
@@ -135,7 +134,7 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
-            skybox.Texture.Dispose();
+            //skybox.Texture.Dispose();
 
             skyboxShader.Dispose();
             spawner.Dispose();

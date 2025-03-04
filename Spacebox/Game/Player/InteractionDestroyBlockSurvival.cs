@@ -57,7 +57,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             drill0Audio.IsLooped = true;
         }
         if (BlockSelector.Instance != null)
-            BlockSelector.Instance.SimpleBlock.Shader.SetVector4("color", Vector4.One);
+            BlockSelector.Instance.SimpleBlock.Material.Shader.SetVector4("color", Vector4.One);
         BlockSelector.IsVisible = false;
         model.Animator.Clear();
         model.Animator.AddAnimation(new MoveAnimation(model.Position, model.Position + new Vector3(0.005f, 0, 0), 0.05f, true));

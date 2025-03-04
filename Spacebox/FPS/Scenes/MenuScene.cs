@@ -15,9 +15,6 @@ namespace Spacebox.FPS.Scenes
     internal class MenuScene : Scene
     {
 
-        BitmapFont font;
-
-        TextRenderer textRenderer;
         Menu menu = new Menu();
         public MenuScene(string[] args) : base(args)
         {
@@ -41,12 +38,6 @@ namespace Spacebox.FPS.Scenes
 
             SoundManager.AddClip("music");
             SoundManager.AddClip("shooting");
-
-            font = new BitmapFont("Resources/Font/arial.png", 256, 256, 16, 16);
-            font.Spacing = 10;
-
-
-            textRenderer = new TextRenderer(font, Window.Instance.Size.X, Window.Instance.Size.Y);
 
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -88,10 +79,7 @@ namespace Spacebox.FPS.Scenes
         public override void OnGUI()
         {
             //textRenderer.RenderText("FPS      " + Time.FPS.ToString(), 50f, 50f, 1f, new Vector3(0,0,0));
-            textRenderer.RenderText("FPS: " + Time.FPS, 50f, 50f, 3f, new Vector3(0, 0, 0));
-
-            textRenderer.RenderText("Spacebox\nGame\nversion 0.2", 300, 300, 3f, new Vector3(0, 0.4f, 0));
-
+ 
             menu.OnGUI();
 
         }
@@ -99,8 +87,6 @@ namespace Spacebox.FPS.Scenes
         public override void UnloadContent()
         {
 
-            textRenderer.Dispose();
-            font.Dispose();
 
         }
 

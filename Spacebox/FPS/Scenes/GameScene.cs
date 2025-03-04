@@ -38,9 +38,6 @@ namespace Spacebox.FPS.Scenes
 
         AudioSource audio;
 
-        BitmapFont font;
-
-        TextRenderer textRenderer;
 
         Model[] planes = new Model[4];
 
@@ -113,12 +110,7 @@ namespace Spacebox.FPS.Scenes
             audio = new AudioSource(new AudioClip("Resources/Audio/flashlight.wav"));
 
 
-            font = new BitmapFont("Resources/Font/arial.png", 256, 256, 16, 16);
-
-
-
-            textRenderer = new TextRenderer(font, Window.Instance.Size.X, Window.Instance.Size.Y);
-
+     
             // var texture2 = new Texture2D("Resources/Textures/tile.png");
 
             LoadModels();
@@ -161,20 +153,16 @@ namespace Spacebox.FPS.Scenes
 
 
             Texture2D skyboxTexture = new Texture2D("Resources/Textures/Game/Skybox/skybox2.png", true);
-            Shader skyboxShader = ShaderManager.GetShader("Shaders/skybox");
-
-            Material skyboxMaterial = new Material(skyboxShader, skyboxTexture);
-
-            skybox = new Skybox("Resources/Models/domBig.obj", skyboxShader, skyboxTexture);
+          
+           
+            skybox = new Skybox("Resources/Models/domBig.obj", skyboxTexture);
 
 
             Texture2D skyboxTexture2 = new Texture2D
                 ("Resources/Textures/Game/Skybox/skybox_01.jpg", false);
-            Shader skyboxShader2 = ShaderManager.GetShader("Shaders/skybox");
+           
 
-            Material skyboxMaterial2 = new Material(skyboxShader2, skyboxTexture2);
-
-            skyboxExtern = new Skybox("Resources/Models/domBig.obj", skyboxShader2,
+            skyboxExtern = new Skybox("Resources/Models/domBig.obj",
                 skyboxTexture2);
 
             skyboxExtern.Scale = new Vector3(120, 120, 120);

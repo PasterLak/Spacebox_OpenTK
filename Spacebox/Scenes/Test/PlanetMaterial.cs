@@ -9,7 +9,7 @@ public class PlanetMaterial : TextureMaterial
     public PlanetMaterial(Texture2D texture) : base(texture,
         ShaderManager.GetShader("Shaders/planet"))
     {
-        RenderMode = RenderMode.Opaque;
+        RenderMode = RenderMode.Fade;
             
         RenderFace = RenderFace.Front;
     }
