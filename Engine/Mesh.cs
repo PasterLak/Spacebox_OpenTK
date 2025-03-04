@@ -1,17 +1,22 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Engine.Physics;
+using Engine.Utils;
 
 
 namespace Engine
 {
-    public class Mesh : IDisposable
+    public class Mesh : IResource
     {
         private BufferShader buffer;
         private int _indexCount;
         private BoundingBox _bounds;
         public List<Vector3> VerticesPositions { get; private set; }
 
+        public Mesh()
+        {
+
+        }
         public Mesh(float[] vertices, int[] indices)
         {
             _indexCount = indices.Length;
@@ -25,6 +30,24 @@ namespace Engine
                 new BufferAttribute { Name = "uv", Size = 2 }
             };
 
+            buffer = new BufferShader(attributes);
+            uint[] indicesUInt = indices.Select(x => (uint)x).ToArray();
+            buffer.BindBuffer(ref vertices, ref indicesUInt);
+            buffer.SetAttributes();
+        }
+
+        public Mesh(string path)
+        {
+            var (vertices, indices) = ObjLoader.Load(path);
+            _indexCount = indices.Length;
+            VerticesPositions = new List<Vector3>();
+            ComputeBoundingBox(vertices);
+            BufferAttribute[] attributes = new BufferAttribute[]
+            {
+                new BufferAttribute { Name = "position", Size = 3 },
+                new BufferAttribute { Name = "normal", Size = 3 },
+                new BufferAttribute { Name = "uv", Size = 2 }
+            };
             buffer = new BufferShader(attributes);
             uint[] indicesUInt = indices.Select(x => (uint)x).ToArray();
             buffer.BindBuffer(ref vertices, ref indicesUInt);
@@ -72,6 +95,12 @@ namespace Engine
                 randomPoints.Add(VerticesPositions[index]);
             return randomPoints;
         }
+
+        public IResource Load(string path)
+        {
+            return new Mesh(path);
+        }
+
 
         public void Dispose()
         {

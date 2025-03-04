@@ -41,7 +41,7 @@ namespace Spacebox.Game.Player
             cube = new CubeRenderer(LatestPosition);
             cube.Color = Color4.Green;
             cube.Enabled = true;
-            var texold = TextureManager.GetTexture("Resources/Textures/spacer.png");
+            var texold = Engine.Resources.Get<Texture2D>("Resources/Textures/spacer.png");
             texold.UpdateTexture(true);
             playerShader = ShaderManager.GetShader("Shaders/player");
             spacerOld = new Model("Resources/Models/spacer.obj", new Material(playerShader, texold));

@@ -132,16 +132,20 @@ namespace Engine.SceneManagment
                     SoundManager.Dispose();
                     ShaderManager.Dispose();
                     TextureManager.Dispose();
+                    Resources.Clear();
                     InputManager.RemoveAllActions(true);
                     CurrentScene.Dispose();
                     CurrentScene.UnloadContent();
                     VisualDebug.Clear();
 
+                    Camera.Main = null;
 
                     Debug.Log("[SceneManager] Content was unloaded ",
                     Color4.White);
                 }
 
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
                 Debug.Log("[SceneManager] Loading scene ", Color4.White);
                 _currentSceneType = _nextSceneType;
@@ -158,7 +162,7 @@ namespace Engine.SceneManagment
                     Color4.Yellow);
 
                 CurrentScene.LoadContent();
-                
+                Resources.PrintLoadedResources();
                 CurrentScene.Start();
 
                 

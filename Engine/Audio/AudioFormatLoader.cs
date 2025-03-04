@@ -10,7 +10,7 @@ namespace Engine.Audio
             {
                 ".wav" => new WaveLoader(),
                 ".ogg" => new OggLoader(),
-                _ => throw new NotSupportedException("Unsupported audio format.")
+                _ => throw new NotSupportedException("Unsupported audio format! FileName: " + filename)
             };
             return loader.Load(filename);
         }

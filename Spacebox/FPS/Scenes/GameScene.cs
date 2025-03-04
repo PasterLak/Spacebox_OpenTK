@@ -96,8 +96,8 @@ namespace Spacebox.FPS.Scenes
                 GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
             }
 
-            _diffuseMap = TextureManager.GetTexture("Resources/Textures/Game/container2.png");
-            _specularMap = TextureManager.GetTexture("Resources/Textures/Game/container2_specular.png");
+            _diffuseMap = Resources.Get<Texture2D>("Resources/Textures/Game/container2.png");
+            _specularMap = Resources.Get<Texture2D>("Resources/Textures/Game/container2_specular.png");
 
             //_camera = new Camera(Vector3.UnitZ * 3, Window.Instance.Size.X / (float)Window.Instance.Size.Y);
             player = new Player(new Vector3(5, 2, 5),

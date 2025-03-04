@@ -5,7 +5,7 @@ using Engine;
 
 namespace Engine
 {
-    public class Axes : Node3D
+    public class Axes : Node3D, IDisposable
     {
         private BufferShader _buffer;
         private Shader _shader;
@@ -18,7 +18,7 @@ namespace Engine
             Position = position;
             Length = length;
             Rotation = Vector3.Zero;
-            _shader = ShaderManager.GetShader("Shaders/axes");
+            _shader = Resources.Get<Shader>("Shaders/axes.glsl");
             UpdateVertices();
             SetupBuffer();
         }
@@ -28,7 +28,7 @@ namespace Engine
             Position = position;
             Length = length;
             Rotation = rotation;
-            _shader = ShaderManager.GetShader("Shaders/axes");
+            _shader = Resources.Get<Shader>("Shaders/axes.glsl");
             UpdateVertices();
             SetupBuffer();
         }
@@ -108,6 +108,11 @@ namespace Engine
         {
             Rotation = newRotation;
             UpdateVertices();
+        }
+
+        public void Dispose()
+        {
+            _buffer.Dispose();
         }
     }
 }

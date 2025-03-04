@@ -240,7 +240,7 @@ namespace Spacebox.Scenes
             blockSelector = new BlockSelector();
 
         
-            Texture2D spacerTex = TextureManager.GetTexture("Resources/Textures/spacer.png");
+            Texture2D spacerTex = Resources.Get<Texture2D>("Resources/Textures/spacer.png");
             spacerTex.FlipY();
             spacerTex.UpdateTexture(true);
             spacer = new Model("Resources/Models/spacer.obj", new Material(ShaderManager.GetShader("Shaders/player"), spacerTex));

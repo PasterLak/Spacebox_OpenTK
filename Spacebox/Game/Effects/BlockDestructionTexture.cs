@@ -30,7 +30,7 @@ namespace Spacebox.Game.Effects
                 return CreateEmptyTexture();
             }
 
-            Texture2D pattern = TextureManager.GetTexture("Resources/Textures/dust.png");
+            Texture2D pattern = Engine.Resources.Get<Texture2D>("Resources/Textures/dust.png");
 
             if (pattern == null)
             {
@@ -84,7 +84,7 @@ namespace Spacebox.Game.Effects
             Texture2D finalTexture = new Texture2D(patternSize, patternSize);
 
             finalTexture.SetPixelsData(newPixels);
-            finalTexture.UpdateTexture(true);
+            finalTexture.FilterMode = FilterMode.Point;
 
 
 

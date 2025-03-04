@@ -37,6 +37,7 @@ What this game needs:
 - automation
 - oxygen ?
 - gravity block
+- 
 
 
  ToDo:
@@ -55,7 +56,8 @@ New
 - Materials
 - refactoring
 - post processing
-
+- common resources manager
+- parallel loading of resources
 
 Small
 - double click to open a world

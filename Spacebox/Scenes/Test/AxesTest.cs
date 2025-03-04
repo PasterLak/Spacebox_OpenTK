@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 using Engine;
 
-    public class AxesTest : SceneNode
+    public class AxesTest : SceneNode, IDisposable
     {
         private BufferShader _buffer;
         private Shader _shader;
@@ -107,5 +107,10 @@ using Engine;
             SetRotation(newRotation);
             UpdateVertices();
         }
+
+    public void Dispose()
+    {
+        _buffer.Dispose();
     }
+}
 

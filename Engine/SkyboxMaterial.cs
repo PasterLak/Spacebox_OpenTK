@@ -7,7 +7,7 @@ namespace Engine
         public SkyboxMaterial(Texture2D texture) : base(texture, ShaderManager.GetShader("Shaders/skybox"))
         {
             RenderMode = RenderMode.Fade;
-                 RenderFace = RenderFace.Back;
+            RenderFace = RenderFace.Back;
         }
 
         protected override void SetMaterialProperties()

@@ -3,15 +3,15 @@ using OpenTK.Audio.OpenAL;
 
 namespace Engine.Audio
 {
-    public class AudioClip : IDisposable
+    public class AudioClip : IResource
     {
         public string Name { get; private set; }
         public string FileFullPath { get; private set; }
         public bool IsStreaming { get; private set; }
         public int Buffer { get; private set; }
-
+        public AudioSource AudioSource { get; set; }
         private bool isDisposed = false;
-      
+
 
         private FileStream fileStream;
         private BinaryReader reader;
@@ -21,9 +21,13 @@ namespace Engine.Audio
         private bool isStreamFinished = false;
         private int sampleRate;
 
+        public AudioClip()
+        {
+
+        }
         public AudioClip(string filename, AudioLoadMode loadMode = AudioLoadMode.LoadIntoMemory)
         {
-        
+
             string resolvedPath = AudioPathResolver.ResolvePath(filename, AppDomain.CurrentDomain.BaseDirectory, SoundManager.AllowedExtensions);
             if (resolvedPath == null)
             {
@@ -39,10 +43,10 @@ namespace Engine.Audio
             }
             else
             {
-               // InitializeStreaming();
+                // InitializeStreaming();
             }
 
-          
+
         }
 
 
@@ -112,20 +116,17 @@ namespace Engine.Audio
         {
             if (isDisposed) return;
 
-            if (!IsStreaming)
+            AudioSource?.Stop();
+            AudioSource = null;
+
+            reader?.Dispose();
+            fileStream?.Dispose();
+            if (buffers != null)
             {
-                SoundManager.RemoveClip(FileFullPath);
+                AL.DeleteBuffers(buffers);
+                CheckALError("Deleting streaming buffers");
             }
-            else
-            {
-                reader?.Dispose();
-                fileStream?.Dispose();
-                if (buffers != null)
-                {
-                    AL.DeleteBuffers(buffers);
-                    CheckALError("Deleting streaming buffers");
-                }
-            }
+            AL.DeleteBuffer(Buffer);
 
             isDisposed = true;
         }
@@ -137,6 +138,11 @@ namespace Engine.Audio
             {
                 throw new InvalidOperationException($"OpenAL error during {operation}: {AL.GetErrorString(error)}");
             }
+        }
+
+        public IResource Load(string path)
+        {
+            return new AudioClip(path);
         }
     }
 }

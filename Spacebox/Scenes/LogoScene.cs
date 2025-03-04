@@ -6,6 +6,7 @@ using Engine.GUI;
 using Engine.SceneManagment;
 
 using Engine;
+using Engine.Audio;
 
 namespace Spacebox.Scenes
 {
@@ -13,7 +14,7 @@ namespace Spacebox.Scenes
     {
 
         Sprite sprite;
-
+        AudioSource audio;
         public LogoScene(string[] args) : base(args)
         {
         }
@@ -22,10 +23,34 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
 
-            //GL.ClearColor(0, 0, 0, 0);
+            Resources.LoadAll<AudioClip>(
+                new[]
+                {
+                    "Resources/Audio/death2.ogg",
+                 "Resources/Audio/scroll.ogg",
+                  "Resources/Audio/Music/music.ogg",
+                   "Resources/Audio/Music/ambientMain.ogg",
+                });
 
-            sprite = new Sprite("Resources/Textures/planet2.png", new Vector2(0, 0),
-                new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
+            Resources.LoadAll<Texture2D>(
+               new[]
+               {
+                    "Resources/Textures/planet2.png",
+
+               });
+
+            Resources.Load<Shader>("Shaders/sprite");
+            // Resources.Load<AudioClip>("Resources/Audio/scroll.ogg");
+
+            var texture = Resources.Get<Texture2D>("Resources/Textures/planet2.png");
+
+            var sp = Resources.Get<Shader>("sprite");
+
+            sprite = new Sprite(texture, new Vector2(0, 0),
+                new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y), sp);
+
+            var clip = Resources.Get<AudioClip>("ambientMain");
+            audio = new AudioSource(clip);
 
         }
 
@@ -35,7 +60,7 @@ namespace Spacebox.Scenes
             //SceneManager.LoadScene(typeof(MenuScene));
             //SceneManager.LoadScene(typeof(TestScene));
 
-            Input.HideCursor();
+            Input.HideCursor(); audio.Play();
         }
 
         public override void Render()
@@ -54,7 +79,7 @@ namespace Spacebox.Scenes
         public override void UnloadContent()
         {
             sprite.Dispose();
-
+            audio.Dispose();
 
         }
 
@@ -64,7 +89,7 @@ namespace Spacebox.Scenes
             sprite.UpdateWindowSize(Window.Instance.ClientSize);
             sprite.UpdateSize(Window.Instance.Size);
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
-        
+
             if (Input.IsKeyDown(Keys.S))
             {
                 SceneManager.LoadScene(typeof(MenuScene));
@@ -73,6 +98,11 @@ namespace Spacebox.Scenes
             if (Input.IsKeyDown(Keys.T))
             {
                 SceneManager.LoadScene(typeof(TestScene));
+            }
+
+            if (Input.IsKeyDown(Keys.E))
+            {
+                SceneManager.LoadScene(typeof(BScene));
             }
 
             if (Input.IsKeyDown(Keys.R))

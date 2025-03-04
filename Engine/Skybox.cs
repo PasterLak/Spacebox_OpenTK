@@ -16,11 +16,9 @@ namespace Engine
             var (vertices, indices) = ObjLoader.Load(objPath);
             Mesh = new Mesh(vertices, indices);
             Material = new SkyboxMaterial(texture);
-           
 
             Scale = new Vector3(100, 100, 100);
             Name = "Skybox";
-
 
         }
 
@@ -31,9 +29,7 @@ namespace Engine
 
             bool cullFaceEnabled = GL.IsEnabled(EnableCap.CullFace);
 
-
             Material.SetUniforms(GetModelMatrix());
-
 
             if (IsAmbientAffected)
                 Material.Shader.SetVector3("ambient", Lighting.AmbientColor);
@@ -44,5 +40,7 @@ namespace Engine
             Mesh.Draw();
 
         }
+
+      
     }
 }

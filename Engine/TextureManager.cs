@@ -38,7 +38,7 @@ namespace Engine
 
       
 
-        public static Texture2D GetTexture(string texturePath)
+        public static Texture2D GetTexture(string texturePath, int i)
         {
             return GetTexture(texturePath, pixelated: false, true);
         }

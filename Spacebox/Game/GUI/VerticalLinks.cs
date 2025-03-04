@@ -54,7 +54,7 @@ namespace Spacebox.Game.GUI
             {
                 if (item.HasIcon)
                 {
-                    var texture = TextureManager.GetTexture(item.IconPath);
+                    var texture = Engine.Resources.Get<Texture2D>(item.IconPath);
                     texture.FlipY();
                     item.IconHandle = texture.Handle;
                 }

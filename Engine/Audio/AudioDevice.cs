@@ -3,9 +3,9 @@
 
 namespace Engine.Audio
 {
-    public class AudioManager : IDisposable
+    public class AudioDevice : IDisposable
     {
-        private static AudioManager instance = null;
+        private static AudioDevice instance = null;
         private static readonly object padlock = new object();
 
         public ALDevice Device { get; private set; }
@@ -13,13 +13,13 @@ namespace Engine.Audio
 
         private bool isDisposed = false;
 
-        AudioManager()
+        AudioDevice()
         {
            
             Setup();
         }
 
-        public static AudioManager Instance
+        public static AudioDevice Instance
         {
             get
             {
@@ -27,7 +27,7 @@ namespace Engine.Audio
                 {
                     if (instance == null)
                     {
-                        instance = new AudioManager();
+                        instance = new AudioDevice();
                     }
                     return instance;
                 }

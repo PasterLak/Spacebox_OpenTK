@@ -13,7 +13,7 @@ namespace Spacebox.Scenes.Test
         void Update();
         void Render();
     }
-    public class CubeParent : SceneNode
+    public class CubeParent : SceneNode, IDisposable
     {
 
         private CubeRenderer2 cube;
@@ -51,20 +51,20 @@ namespace Spacebox.Scenes.Test
             // cube2.Position = cube.GetLocalAxisPoint(Vector3.UnitZ, 2f);
             //  AddChild(axes);
 
-            var matEarth = new PlanetMaterial(new Texture2D("Resources/Textures/planet2.png"));
+            var matEarth = new PlanetMaterial(Resources.Load<Texture2D>("Resources/Textures/planet2"));
             matEarth.GlowColor = new Vector3(0.9f,1,1);
 
-            var matMars = new PlanetMaterial(new Texture2D("Resources/Textures/planet3.png"));
+            var matMars = new PlanetMaterial(Resources.Load<Texture2D>("Resources/Textures/planet3"));
             matMars.GlowColor = new Vector3(0.9f, 0.5f, 0.5f);
 
-            var atmosphereMat = new AtmosphereMaterial( new Texture2D("Resources/Textures/skybox2.png"));
+            var atmosphereMat = new AtmosphereMaterial(Resources.Load<Texture2D>("Resources/Textures/skybox2"));
             atmosphereMat.GlowColor = new Vector3(0.9f, 1, 1);
 
-            var matMoon = new PlanetMaterial(new Texture2D("Resources/Textures/moon.png"));
+            var matMoon = new PlanetMaterial(Resources.Load<Texture2D>("Resources/Textures/moon"));
             matMoon.GlowColor = new Vector3(0.7f, 0.7f, 0.7f);
             //var sunMat = new ColorMaterial();
 
-            var sunMat = new SunMaterial(new Texture2D("Resources/Textures/sun.png"));
+            var sunMat = new SunMaterial(Resources.Load<Texture2D>("Resources/Textures/sun"));
             sunMat.GlowColor = new Vector3(1f,1,1);
             sunMat.Color = new Color4(1f,1f,1f,1f);
             sun = new Model2("Resources/Models/sphere2.obj", sunMat);
@@ -143,6 +143,14 @@ namespace Spacebox.Scenes.Test
             // model2.Render(Camera.Main);
             RenderAll(Camera.Main);
 
+        }
+
+        public void Dispose()
+        {
+            cube.Dispose();
+            cube2.Dispose();
+            cube3.Dispose();
+            axes.Dispose();
         }
     }
 }

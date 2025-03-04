@@ -21,7 +21,7 @@ public class Model2 : SceneNode,  IGameComponent
        
         {
             var (vertices, indices) = ObjLoader.Load(objPath);
-            Mesh = new Mesh(vertices, indices);
+        Mesh = Resources.Get<Mesh>(objPath);
             Material = material;
 
 
@@ -29,8 +29,6 @@ public class Model2 : SceneNode,  IGameComponent
 
             Vector3 worldMin = Vector3.TransformPosition(Mesh.GetBounds().Min, modelMatrix);
             Vector3 worldMax = Vector3.TransformPosition(Mesh.GetBounds().Max, modelMatrix);
-
-         
 
             _axes = new Axes2(Position, Scale.X*2f);
         _axes.Thickness = 0.1f;

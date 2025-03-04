@@ -8,9 +8,9 @@ namespace Spacebox.Game
         public SpaceTexture(int width, int height, int seed = 12345)
             : base(width, height)
         {
-            SetPixelated(true);
+          
             GenerateSpaceTexture(seed);
-            UpdateTexture(true);
+            FilterMode = FilterMode.Point;
             SaveToPng("space.png", true);
         }
 

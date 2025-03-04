@@ -46,7 +46,7 @@ namespace Engine.Audio
         public AudioSource(AudioClip clip)
         {
             this.Clip = clip;
-
+            clip.AudioSource = this;
             handle = AL.GenSource();
 
             if (!clip.IsStreaming)

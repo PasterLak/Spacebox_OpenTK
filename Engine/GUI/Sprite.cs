@@ -35,7 +35,7 @@ namespace Engine.GUI
            // _windowWidth = Window.Instance.Size.X;
            // _windowHeight = Window.Instance.Size.Y;
 
-            _shader = shader ?? ShaderManager.GetShader("Shaders/sprite");
+            _shader = shader ??  ShaderManager.GetShader("Shaders/sprite");
 
             Initialize();
         }
@@ -45,8 +45,8 @@ namespace Engine.GUI
             _texture = TextureManager.GetTexture(imagePath, pixelated);
             _position = position;
             _size = size;
-           // _windowWidth = Window.Instance.Size.X;
-           // _windowHeight = Window.Instance.Size.Y;
+            // _windowWidth = Window.Instance.Size.X;
+            // _windowHeight = Window.Instance.Size.Y;
 
             _shader = shader ?? ShaderManager.GetShader("Shaders/sprite");
 

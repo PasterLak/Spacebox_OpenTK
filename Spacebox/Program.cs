@@ -15,7 +15,7 @@ namespace Spacebox
         {
 
             var monitor = Monitors.GetPrimaryMonitor();
-            var _audioManager = AudioManager.Instance;
+            var _audioManager = AudioDevice.Instance;
             // string path = "Resources/WindowPosition.txt";
             // var (x, y) = NumberStorage.LoadNumbers(path);
 

@@ -65,10 +65,6 @@ namespace Engine
 
             renderScene.Invoke();
 
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.B))
-            {
-                FramebufferCapture.SaveScreenshot(new Vector2i(width, height));
-            }
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }

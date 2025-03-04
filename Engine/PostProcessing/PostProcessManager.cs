@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-namespace Engine
+namespace Engine.PostProcessing
 {
     public abstract class PostProcessEffect
     {
@@ -47,7 +47,7 @@ namespace Engine
                 pingpongFBO[i] = GL.GenFramebuffer();
                 pingpongTexture[i] = GL.GenTexture();
                 GL.BindTexture(TextureTarget.Texture2D, pingpongTexture[i]);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, nint.Zero);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingpongFBO[i]);
@@ -110,7 +110,7 @@ namespace Engine
         public static void RenderQuad()
         {
             GL.BindVertexArray(fullscreenBuffer.VAO);
-            GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero);
+            GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, nint.Zero);
             GL.BindVertexArray(0);
         }
         public void Dispose()

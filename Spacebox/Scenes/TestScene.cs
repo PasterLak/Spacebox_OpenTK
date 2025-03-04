@@ -13,6 +13,7 @@ using Spacebox.Scenes.Test;
 using Spacebox.Game.Player;
 using Spacebox.FPS.GUI;
 using Engine.GUI;
+using Engine.SceneManagment;
 
 
 namespace Spacebox.Scenes
@@ -45,15 +46,38 @@ namespace Spacebox.Scenes
             //sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
             //GL.Enable(EnableCap.DepthTest);
 
+            Resources.LoadAll<Texture2D>(
+               new[]
+               {
+                    "Resources/Textures/planet2.png",
+                    "Resources/Textures/planet3.png",
+                    "Resources/Textures/sun.png",
+                     "Resources/Textures/skybox2.png",
+                      "Resources/Textures/moon.png",
+                    "Resources/Textures/space.png"
+               });
+            Resources.LoadAll<Engine.Mesh>(
+              new[]
+              {
+                    "Resources/Models/sphere2.obj",
+
+              });
+            Resources.LoadAll<AudioClip>(
+               new[]
+               {
+                    "Resources/Audio/music.ogg"
+
+               });
+
             player = new FreeCamera(new Vector3(0, 0, 5));
             player.DepthNear = 0.01f;
             player.CameraRelativeRender = false;
 
-            sprite = new Sprite("Resources/Textures/planet2.png", new Vector2(0, 0),
+            sprite = new Sprite(Resources.Load<Texture2D>("Resources/Textures/planet2"), new Vector2(0, 0),
                  new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
 
             Texture2D skyboxTexture = new SpaceTexture(512, 512, World.Seed);
-            skyboxTexture = TextureManager.GetTexture("Resources/Textures/space.png");
+            skyboxTexture = Resources.Load<Texture2D>("Resources/Textures/space");
 
             skybox = new Skybox("Resources/Models/sphere.obj", skyboxTexture);
 
@@ -62,10 +86,10 @@ namespace Spacebox.Scenes
             axes = new Axes(new Vector3(0, 0, 0), 100);
             SetDustSpawner();
 
-            music = new AudioSource(SoundManager.GetClip("music.ogg"));
+            music = new AudioSource(Resources.Load<AudioClip>("music"));
             music.IsLooped = true;
 
-           //music.Play();
+            //music.Play();
 
             InputManager.AddAction("inputOverlay", Keys.F6);
             InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
@@ -117,8 +141,8 @@ namespace Spacebox.Scenes
 
             sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
             //player
-             skybox.DrawTransparent(player);
-              spawner.Render();
+            skybox.DrawTransparent(player);
+            spawner.Render();
             //axes.Render(player);
             cube.Render();
         }
@@ -129,28 +153,30 @@ namespace Spacebox.Scenes
 
             // ImGui.PopFont();
 
-           // NodeUI.Render(cube.Children);
+            // NodeUI.Render(cube.Children);
         }
 
         public override void UnloadContent()
         {
-           // skybox.Dispose();
 
+            axes.Dispose();
             spawner.Dispose();
             music.Dispose();
+            sprite.Dispose();
+            cube.Dispose();
         }
 
         public override void Update()
         {
             cube.Update();
-             spawner.Update();
+            spawner.Update();
             //sprite.UpdateWindowSize(Window.Instance.Size);
-             player.Update();
+            player.Update();
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
-           // sprite.UpdateWindowSize(Window.Instance.ClientSize);
-           // sprite.UpdateSize(Window.Instance.Size);
+            // sprite.UpdateWindowSize(Window.Instance.ClientSize);
+            // sprite.UpdateSize(Window.Instance.Size);
 
-            if (Input.Mouse.ScrollDelta.Y > 0 )
+            if (Input.Mouse.ScrollDelta.Y > 0)
             {
                 player.FOV += 1;
             }
@@ -158,18 +184,15 @@ namespace Spacebox.Scenes
             {
                 player.FOV -= 1;
             }
-
-            if (Input.IsKeyDown(Keys.N) )
+            if (Input.IsKeyDown(Keys.T))
+            {
+                SceneManager.LoadScene(typeof(LogoScene));
+            }
+            if (Input.IsKeyDown(Keys.N))
             {
                 NodeUI.IsVisible = !NodeUI.IsVisible;
             }
 
-                if (Input.IsKeyDown(Keys.Enter) || Input.Mouse.IsButtonDown(MouseButton.Left))
-            {
-                CenteredImageMenu.ShowText = false;
-                GameMenu.IsVisible = true;
-                VerticalLinks.IsVisible = true;
-            }
 
         }
     }

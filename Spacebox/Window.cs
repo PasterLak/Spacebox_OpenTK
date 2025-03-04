@@ -11,7 +11,6 @@ using Engine.Utils;
 using Engine.GUI;
 using Spacebox.Game.GUI;
 using Engine;
-using Engine.Light;
 using Engine.PostProcessing;
 
 namespace Spacebox
@@ -210,10 +209,6 @@ namespace Spacebox
 
             //GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
 
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.N))
-            {
-                FramebufferCapture.SaveScreenshot(ClientSize);
-            }
 
             RenderUI();
 
@@ -247,7 +242,7 @@ namespace Spacebox
                 SceneManager.CurrentScene.Update();
 
             Time.EndUpdate();
-            AudioManager.Instance.Update();
+            AudioDevice.Instance.Update();
         }
 
         private void UpdateInputs()
@@ -325,11 +320,12 @@ namespace Spacebox
                 SceneManager.CurrentScene.UnloadContent();
 
             SoundManager.DisposeAll();
-            AudioManager.Instance.Dispose();
+            AudioDevice.Instance.Dispose();
             _processManager.Dispose();
             NumberStorage.SaveNumbers(path, Location.X, Location.Y);
             ShaderManager.DisposeAll();
             TextureManager.DisposeAll();
+            Resources.Clear(true);
             SceneRenderer.Dispose();
             Debug.SaveMessagesToFile(true);
             Close();
