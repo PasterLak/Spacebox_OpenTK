@@ -452,13 +452,8 @@ namespace Spacebox.Scenes
             blockSelector.Render(localPlayer);
 
             SpheresPool.Render();
-     
 
-            GL.Disable(EnableCap.DepthTest);
-
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-           // PanelUI.DrawItemModel();
+            PanelUI.DrawItemModel();
         }
 
         public override void OnGUI()

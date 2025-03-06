@@ -1,44 +1,25 @@
 ﻿using Engine;
-using OpenTK.Graphics.OpenGL4;
-using Spacebox.Game.Player;
 
 namespace Spacebox.Game.Resource
 {
     public class ItemMaterial : TextureMaterial
     {
-        private Astronaut player;
-        public Texture2D? EmissionTexture { get; set; }
-
-        public ItemMaterial(Texture2D texture, Texture2D emissionAtlas, Astronaut player) :
-            base(texture, Resources.Load<Shader>("Shaders/block"))
+ 
+        public ItemMaterial(Texture2D texture) :
+            base(texture, Resources.Load<Shader>("Shaders/itemModel"))
         {
-            RenderMode = RenderMode.Cutout;
-            EmissionTexture = emissionAtlas;
-            this.player = player;
-            Shader.Use();
-            Shader.SetInt("texture0", 0);
-            Shader.SetInt("textureAtlas", 1);
+            RenderMode = RenderMode.Opaque;
 
-            Shader.SetFloat("fogDensity", Lighting.FogDensity);
-            Shader.SetVector3("fogColor", Lighting.FogColor);
-            Shader.SetVector3("ambientColor", Lighting.AmbientColor);
+            //RenderFace = RenderFace.Both;
         }
 
+        public Action Action; 
+         
         protected override void SetMaterialProperties()
         {
             base.SetMaterialProperties();
 
-            if (EmissionTexture != null)
-            {
-                GL.ActiveTexture(TextureUnit.Texture1);
-                EmissionTexture.Use();
-                Shader.SetInt("textureAtlas", 1);
-            }
-
-
-
-            Shader.SetVector3("cameraPosition", player.Position);
-            Shader.SetVector3("ambientColor", Lighting.AmbientColor);
+            Action?.Invoke();
         }
     }
 }

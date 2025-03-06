@@ -1,23 +1,20 @@
-﻿using Engine;
+﻿/*using Engine;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 
 namespace Spacebox.Game
 {
-
     public class Mesh
     {
+
+        private MeshBuffer buffer;
 
         private int _vertexCount;
 
         private static PolygonMode polygonMode = PolygonMode.Fill;
-
-        public bool EnableBlend = true;
-        public bool EnableDepthTest = true;
-        public bool EnableAlpha = true;
-
-        private MeshBuffer buffer;
-        public readonly int FloatsPerVertex;
+        
+        //public readonly int FloatsPerVertex;
 
 
         public Mesh(float[] vertices, uint[] indices, MeshBuffer buffer)
@@ -25,15 +22,15 @@ namespace Spacebox.Game
             this.buffer = buffer;
             _vertexCount = indices.Length;
 
-            FloatsPerVertex = buffer.FloatsPerVertex;
+          //  FloatsPerVertex = buffer.FloatsPerVertex;
             buffer.BindBuffer(ref vertices, ref indices);
 
             buffer.SetAttributes();
         }
 
-        public void Draw(Shader shader)
+        public void Render(MaterialBase material, Matrix4 model)
         {
-            shader.Use();
+            material.Use();
             if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F10))
             {
                 if (polygonMode == PolygonMode.Line)
@@ -46,31 +43,12 @@ namespace Spacebox.Game
                     polygonMode = PolygonMode.Line;
                 }
             }
-            //GL.PolygonMode(MaterialFace.FrontAndBack, polygonMode);
 
-            GL.Enable(EnableCap.CullFace);
-
-            if (EnableDepthTest)
-                GL.Enable(EnableCap.DepthTest);
-            if (EnableBlend)
-                GL.Enable(EnableCap.Blend);
-
-            if (EnableAlpha)
-                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
+            material.SetUniforms(model);
 
             GL.BindVertexArray(buffer.VAO);
             GL.DrawElements(PrimitiveType.Triangles, _vertexCount, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
-
-            GL.Disable(EnableCap.CullFace);
-
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.Blend);
-
-            //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-            //  if (FramebufferCapture.IsActive)
-            //      FramebufferCapture.SaveFrame();
 
         }
 
@@ -79,4 +57,4 @@ namespace Spacebox.Game
             buffer.Dispose();
         }
     }
-}
+}*/

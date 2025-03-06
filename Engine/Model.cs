@@ -98,7 +98,7 @@ namespace Engine
             Material.Shader.SetMatrix4("model", GetModelMatrix());
             Material.Shader.SetMatrix4("view", camera.GetViewMatrix());
             Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
-            Mesh.Draw();
+            Mesh.Render();
 
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);

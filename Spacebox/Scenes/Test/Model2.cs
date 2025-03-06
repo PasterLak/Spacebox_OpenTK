@@ -80,7 +80,7 @@ public class Model2 : SceneNode,  IGameComponent
             /*Material.Shader.SetMatrix4("model", WorldMatrix);
             Material.Shader.SetMatrix4("view", camera.GetViewMatrix());
             Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());*/
-            Mesh.Draw();
+            Mesh.Render();
 
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);

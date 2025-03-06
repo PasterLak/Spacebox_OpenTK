@@ -242,12 +242,15 @@ namespace Spacebox.Game.Generation
 
             Matrix4 model = Matrix4.CreateTranslation(position);
 
-            material.Use();
+
+
             material.SetUniforms(model);
-           
 
             if (_mesh != null)
-                _mesh.Draw(material.Shader);
+            {
+                _mesh.Render();
+            }
+               
 
             if (ShowChunkBounds && VisualDebug.Enabled)
             {

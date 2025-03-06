@@ -25,10 +25,10 @@ namespace Spacebox.Game
             Position = Vector3.Zero;
         }
 
-        public override void Render(Shader shader)
+        public override void Render()
         {
             Animator.Update(Time.Delta);
-            base.Render(shader);
+            base.Render();
         }
 
         

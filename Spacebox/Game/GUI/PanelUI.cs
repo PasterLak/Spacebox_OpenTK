@@ -27,7 +27,7 @@ namespace Spacebox.Game.GUI
             set { _selectedSlotId = value; }
         }
         public static Action<short> OnSlotChanged;
-        private static Shader itemModelShader;
+   
         private static float TimeToHideItemName = 2f;
         private static float _time = 0;
         private static bool wasPlayerOnes = false;
@@ -43,7 +43,7 @@ namespace Spacebox.Game.GUI
             SlotTexture = slotTexture;
             SelectedTexture = selectedTexture;
             scrollAudio = new AudioSource(SoundManager.GetClip("scroll"));
-            itemModelShader = Resources.Load<Shader>("Shaders/itemModel");
+         
             InventoryUIHelper.SetDefaultIcon(slotTexture, selectedTexture);
             SetSelectedSlot(0);
             Storage.OnDataWasChanged += OnStorageDataWasChanged;
@@ -77,7 +77,7 @@ namespace Spacebox.Game.GUI
         public static void DrawItemModel()
         {
             if (ItemModel == null) return;
-            ItemModel.Render(itemModelShader);
+            ItemModel.Render();
         }
 
         public static ItemModel GetSlotModel()

@@ -18,7 +18,7 @@ namespace Spacebox.Game.Player
         private GUI.Tag tag;
         private ItemModel itemModel;
         private Quaternion currentRotation = Quaternion.Identity;
-        private Shader itemModelShader;
+        
         static bool wasFlipped = false;
         private Shader playerShader;
         private SpotLight spotLight;
@@ -53,7 +53,7 @@ namespace Spacebox.Game.Player
             tag.TextAlignment = Tag.Alignment.Center;
             Tag.CalculateFontSize(100);
             TagManager.RegisterTag(tag);
-            itemModelShader = Resources.Load<Shader>("Shaders/itemModel");
+          
             var uvIndex = GameAssets.AtlasItems.GetUVIndexByName("drill1");
             itemModel = ItemModelGenerator.GenerateModel(GameAssets.ItemsTexture, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
             itemModel.UseMainCamera = true;
@@ -159,7 +159,7 @@ namespace Spacebox.Game.Player
                 return;
             }
             spotLight.Render(Camera.Main);
-            itemModel.Render(itemModelShader);
+            itemModel.Render();
             astBody.Render(Camera.Main);
             astHelmet.Render(Camera.Main);
             astTank.Render(Camera.Main);

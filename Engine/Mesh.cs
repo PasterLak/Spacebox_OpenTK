@@ -9,19 +9,34 @@ namespace Engine
     public class Mesh : IResource
     {
         private MeshBuffer buffer;
+
         private int _indexCount;
+
         private BoundingBox _bounds;
+
         public List<Vector3> VerticesPositions { get; private set; }
+        private static PolygonMode polygonMode = PolygonMode.Fill;
 
         public Mesh()
         {
 
         }
+        public Mesh(float[] vertices, uint[] indices, MeshBuffer buffer)
+        {
+            this.buffer = buffer;
+            _indexCount = indices.Length;
+
+            //  FloatsPerVertex = buffer.FloatsPerVertex;
+            buffer.BindBuffer(ref vertices, ref indices);
+
+            buffer.SetAttributes();
+        }
+
         public Mesh(float[] vertices, int[] indices)
         {
             _indexCount = indices.Length;
             VerticesPositions = new List<Vector3>();
-            ComputeBoundingBox(vertices);
+           // ComputeBoundingBox(vertices);
 
             BufferAttribute[] attributes = new BufferAttribute[]
             {
@@ -41,7 +56,7 @@ namespace Engine
             var (vertices, indices) = ObjLoader.Load(path);
             _indexCount = indices.Length;
             VerticesPositions = new List<Vector3>();
-            ComputeBoundingBox(vertices);
+           // ComputeBoundingBox(vertices);
             BufferAttribute[] attributes = new BufferAttribute[]
             {
                 new BufferAttribute { Name = "position", Size = 3 },
@@ -75,8 +90,21 @@ namespace Engine
             _bounds = new BoundingBox(min, max);
         }
 
-        public void Draw()
+        public void Render()
         {
+            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F10))
+            {
+                if (polygonMode == PolygonMode.Line)
+                {
+                    polygonMode = PolygonMode.Fill;
+                }
+
+                else
+                {
+                    polygonMode = PolygonMode.Line;
+                }
+            }
+
             GL.BindVertexArray(buffer.VAO);
             GL.DrawElements(PrimitiveType.Triangles, _indexCount, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);

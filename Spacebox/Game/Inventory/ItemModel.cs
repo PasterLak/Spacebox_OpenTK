@@ -2,6 +2,7 @@
 using OpenTK.Mathematics;
 using Engine;
 using Spacebox.Game.Player;
+using Spacebox.Game.Resource;
 
 
 namespace Spacebox.Game
@@ -9,7 +10,7 @@ namespace Spacebox.Game
     public class ItemModel : Node3D, IDisposable
     {
         public Mesh Mesh { get; private set; }
-        public Texture2D Texture { get; private set; }
+     
         public bool EnableRender = true;
         public Vector3 offset = new Vector3(0.06f, -0.12f, 0.07f);
         private float additionalRotationAngle = MathHelper.DegreesToRadians(90.0f);
@@ -17,18 +18,17 @@ namespace Spacebox.Game
         public bool debug = false;
         private Matrix4 model;
 
-        private Shader shader;
+        private ItemMaterial material;
         private Camera itemCamera;
         public bool UseMainCamera { get; set; } = false;
 
         public ItemModel(Mesh mesh, Texture2D texture)
         {
             Mesh = mesh;
-            Mesh.EnableDepthTest = true;
-            Mesh.EnableBlend = false;
-            Mesh.EnableAlpha = false;
-            Texture = texture;
-            Texture.FilterMode = FilterMode.Nearest;
+         
+            texture.FilterMode = FilterMode.Nearest;
+
+            material = new ItemMaterial(texture);
 
             itemCamera = new Camera360Base(Vector3.Zero, false);
             itemCamera.AspectRatio = Window.Instance.GetAspectRatio();
@@ -51,18 +51,15 @@ namespace Spacebox.Game
         }
         public void SetColor(Vector3 color)
         {
-            if (shader == null) return;
+           
         }
-        public virtual void Render(Shader shader)
+        public virtual void Render()
         {
             if (!EnableRender)
             {
                 return;
             }
-            if (this.shader == null)
-            {
-                this.shader = shader;
-            }
+           
 
             if (debug)
                 PlaceModelDebug();
@@ -91,10 +88,17 @@ namespace Spacebox.Game
                      Matrix4.CreateRotationY(additionalRotationAngle) *
                       Matrix4.CreateTranslation(Camera.Main.Position);
                 var cam = Camera.Main as Astronaut;
-                shader.Use();
-                shader.SetMatrix4("model", model);
-                shader.SetMatrix4("view", cam.GetViewMatrix());
-                shader.SetMatrix4("projection", cam.GetProjectionMatrix());
+
+
+                material.Action = () =>
+                {
+                    material.Shader.Use();
+                    material.Shader.SetMatrix4("model", model);
+                    material.Shader.SetMatrix4("view", cam.GetViewMatrix());
+                    material.Shader.SetMatrix4("projection", cam.GetProjectionMatrix());
+                };
+
+               
             }
 
             else
@@ -117,20 +121,20 @@ namespace Spacebox.Game
                      Matrix4.CreateTranslation(Position) *
                      additionalRotation *
                      Matrix4.CreateTranslation(itemCamera.Position);
-                shader.Use();
-                shader.SetMatrix4("model", model);
-                shader.SetMatrix4("view", itemCamera.GetViewMatrix());
-                shader.SetMatrix4("projection", itemCamera.GetProjectionMatrix());
+
+                material.Action = () =>
+                {
+                    material.Shader.Use();
+                    material.Shader.SetMatrix4("model", model);
+                    material.Shader.SetMatrix4("view", itemCamera.GetViewMatrix());
+                    material.Shader.SetMatrix4("projection", itemCamera.GetProjectionMatrix());
+                };
             }
 
-            GL.Enable(EnableCap.DepthTest);
-            Texture.Use(TextureUnit.Texture0);
-            shader.SetInt("texture0", 0);
+            material.SetUniforms(model);
 
-            Mesh.Draw(shader);
+            Mesh.Render();
 
-            GL.DepthMask(true);
-            GL.Disable(EnableCap.DepthTest);
         }
         private void PlaceModelDebug()
         {
@@ -169,7 +173,7 @@ namespace Spacebox.Game
         public void Dispose()
         {
             Mesh?.Dispose();
-            Texture?.Dispose();
+            //Texture?.Dispose();
         }
     }
 }

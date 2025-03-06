@@ -36,7 +36,7 @@ namespace Engine
                 Material.Shader.SetVector3("ambient", new Vector3(1, 1, 1));  // can be optimized
 
             Material.Use();
-            Mesh.Draw();
+            Mesh.Render();
 
         }
 

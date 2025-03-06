@@ -40,7 +40,7 @@ out vec4 FragColor;
 
 uniform sampler2D texture0;
 
-const  vec3 lightDir = vec3(1,1,1);
+const vec3 lightDir = vec3(1,1,1);
 const vec3 lightColor = vec3(1,1,1); 
 const vec3 objectColor = vec3(1,1,1);
 
