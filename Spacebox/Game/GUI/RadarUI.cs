@@ -70,10 +70,10 @@ namespace Spacebox.Game.GUI
             _mask = Resources.Load<Texture2D>("Resources/Textures/UI/Radar/radarMask.png");
 
 
-            _grid.FilterMode = FilterMode.Point;
-            _line.FilterMode = FilterMode.Point;
-            _scanning.FilterMode = FilterMode.Point;
-            _mask.FilterMode = FilterMode.Point;
+            _grid.FilterMode = FilterMode.Nearest;
+            _line.FilterMode = FilterMode.Nearest;
+            _scanning.FilterMode = FilterMode.Nearest;
+            _mask.FilterMode = FilterMode.Nearest;
 
             _scanningAudio = new AudioSource(SoundManager.GetClip("radarScanning"));
             _foundAudio = new AudioSource(SoundManager.GetClip("radarFound"));

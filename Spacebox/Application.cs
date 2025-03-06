@@ -7,9 +7,9 @@ namespace Spacebox
 {
     internal class Application
     {
-        public const string Version = "0.1.1";
+        public const string Version = "0.1.2";
         public const string Author = "PasterLak";
-        public const string EngineVersion = "1.4";
+        public const string EngineVersion = "1.5";
 
         public static PlatformName Platform => CheckPlatform();
         private static PlatformName CheckPlatform()

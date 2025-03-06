@@ -41,7 +41,7 @@ public class InteractionShoot : InteractionMode
         {
     
             var texture = Resources.Load<Texture2D>("Resources/Textures/blockHit.png");
-            texture.FilterMode = FilterMode.Point;
+            texture.FilterMode = FilterMode.Nearest;
             // texture
             BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1),
                 texture, Resources.Load<Shader>("Shaders/particle"));

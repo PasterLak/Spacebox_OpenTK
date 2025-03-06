@@ -32,7 +32,7 @@ namespace Engine
 
         private static void LoadError()
         {
-            _error.Add(typeof(Texture2D), Texture2D.CreateTexture(1, 1, Color4.Pink, FilterMode.Point));
+            _error.Add(typeof(Texture2D), Texture2D.CreateTexture(1, 1, Color4.Pink, FilterMode.Nearest));
             _error.Add(typeof(Shader), new Shader("Shaders/colored"));
             _error.Add(typeof(AudioClip), new AudioClip("Resources/Audio/error.ogg"));
             _error.Add(typeof(Mesh), new Mesh("Resources/Models/cube.obj"));

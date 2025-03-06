@@ -10,7 +10,7 @@ namespace Spacebox.Game
         {
           
             GenerateSpaceTexture(seed);
-            FilterMode = FilterMode.Point;
+            FilterMode = FilterMode.Nearest;
 
             Engine.Resources.AddResourceToDispose(this);
            // SaveToPng("space.png", true);

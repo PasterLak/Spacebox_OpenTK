@@ -47,7 +47,7 @@ namespace Spacebox.Game.Player
             spacerOld = new Model(Resources.Load<Engine.Mesh>("Resources/Models/spacer.obj"), new Material(playerShader, texold));
             var tex = Resources.Load<Texture2D>("Resources/Textures/astronaut2.jpg");
             tex.FlipY();
-            tex.FilterMode = FilterMode.Point;
+            tex.FilterMode = FilterMode.Nearest;
             spacer = new Model(Resources.Load<Engine.Mesh>("Resources/Models/astronaut2.obj"), new Material(playerShader, tex));
             tag = new GUI.Tag($"[{playerData.ID}]{playerData.Name}", LatestPosition, new Color4(playerData.Color.X, playerData.Color.Y, playerData.Color.Z, 1));
             tag.TextAlignment = Tag.Alignment.Center;
@@ -71,7 +71,7 @@ namespace Spacebox.Game.Player
                 string texturePath = $"Resources/Textures/Player/Astronaut_{color}.jpg";
                 tex = Resources.Load<Texture2D>(texturePath);
                 tex.FlipY();
-                tex.FilterMode = FilterMode.Point;
+                tex.FilterMode = FilterMode.Nearest;
              
                 astronautTextures[color] = tex;
             }

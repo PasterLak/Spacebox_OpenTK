@@ -10,7 +10,6 @@
             public const string Blocks = "Blocks";
             public const string Items = "Items";
             public const string Emissions = "Emissions";
-
         }
         
         public static class Menu

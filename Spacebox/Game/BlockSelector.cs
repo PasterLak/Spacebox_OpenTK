@@ -26,7 +26,7 @@ namespace Spacebox.Game
            
             selectorTexture = Resources.Load<Texture2D>("Resources/Textures/selector.png");
 
-            selectorTexture.FilterMode = FilterMode.Point;
+            selectorTexture.FilterMode = FilterMode.Nearest;
 
 
 

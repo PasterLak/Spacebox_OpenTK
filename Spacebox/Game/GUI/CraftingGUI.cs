@@ -92,7 +92,7 @@ namespace Spacebox.Game.GUI
             category = GameAssets.CraftingCategories.Values.ToArray();
 
             var tex = Resources.Load<Texture2D>("Resources/Textures/slot.png");
-            tex.FilterMode = FilterMode.Point;
+            tex.FilterMode = FilterMode.Nearest;
             SlotTexture = tex.Handle;
 
    

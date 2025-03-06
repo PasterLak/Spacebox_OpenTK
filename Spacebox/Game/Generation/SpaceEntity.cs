@@ -217,7 +217,7 @@ namespace Spacebox.Game.Generation
              
                 sharedTexture = Resources.Load<Texture2D>("Resources/Textures/selector.png");
 
-                sharedTexture.FilterMode = FilterMode.Point;
+                sharedTexture.FilterMode = FilterMode.Nearest;
             }
 
 

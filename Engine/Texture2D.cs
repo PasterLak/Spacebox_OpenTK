@@ -19,7 +19,7 @@ namespace Engine
 
     public enum FilterMode
     {
-        Point,
+        Nearest,
         Linear
     }
 
@@ -70,7 +70,7 @@ namespace Engine
                     pixels[x, y] = new Color4(1f, 1f, 1f, 1f);
             Use();
             LoadTextureFromPixels();
-            _filterMode = pixelated ? FilterMode.Point : FilterMode.Linear;
+            _filterMode = pixelated ? FilterMode.Nearest : FilterMode.Linear;
             SetTextureParameters();
         }
         public Texture2D(string path, bool pixelated = false, bool flipY = true)
@@ -83,7 +83,7 @@ namespace Engine
                 Debug.Error($"Failed to load texture from {path}: {ex.Message}");
                 CreatePinkTexture();
             }
-            _filterMode = pixelated ? FilterMode.Point : FilterMode.Linear;
+            _filterMode = pixelated ? FilterMode.Nearest : FilterMode.Linear;
             SetTextureParameters();
         }
         public static Texture2D CreateTexture(int width, int height, Color4 fillColor, FilterMode filterMode = FilterMode.Linear)
@@ -144,8 +144,8 @@ namespace Engine
         }
         private void SetTextureParameters()
         {
-            TextureMinFilter minFilter = _filterMode == FilterMode.Point ? TextureMinFilter.Nearest : TextureMinFilter.LinearMipmapLinear;
-            TextureMagFilter magFilter = _filterMode == FilterMode.Point ? TextureMagFilter.Nearest : TextureMagFilter.Linear;
+            TextureMinFilter minFilter = _filterMode == FilterMode.Nearest ? TextureMinFilter.Nearest : TextureMinFilter.LinearMipmapLinear;
+            TextureMagFilter magFilter = _filterMode == FilterMode.Nearest ? TextureMagFilter.Nearest : TextureMagFilter.Linear;
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
@@ -195,7 +195,7 @@ namespace Engine
         }
         public void UpdateTexture(bool pixelated)
         {
-            FilterMode = pixelated ? FilterMode.Point : FilterMode.Linear;
+            FilterMode = pixelated ? FilterMode.Nearest : FilterMode.Linear;
         }
         public void Use(TextureUnit unit = TextureUnit.Texture0)
         {

@@ -18,7 +18,6 @@ using Spacebox.Game.Resource;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
 using Client;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Spacebox.Scenes
 {
@@ -236,8 +235,8 @@ namespace Spacebox.Scenes
             Texture2D slotTex = Resources.Load<Texture2D>("Resources/Textures/slot.png");
             Texture2D selectedSlotTex = Resources.Load<Texture2D>("Resources/Textures/selectedSlot.png");
 
-            slotTex.FilterMode = FilterMode.Point;
-            selectedSlotTex.FilterMode = FilterMode.Point;
+            slotTex.FilterMode = FilterMode.Nearest;
+            selectedSlotTex.FilterMode = FilterMode.Nearest;
 
             InventoryUI.Initialize(slotTex.Handle);
             PanelUI.Initialize(localPlayer, slotTex.Handle, selectedSlotTex.Handle);

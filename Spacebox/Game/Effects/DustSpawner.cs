@@ -25,7 +25,7 @@ namespace Spacebox.Game.Effects
 
             dustTexture = Resources.Load<Texture2D>("Resources/Textures/dust.png");
       
-            dustTexture.FilterMode = FilterMode.Point;
+            dustTexture.FilterMode = FilterMode.Nearest;
 
             particleShader = Resources.Load<Shader>("Shaders/particle");
 

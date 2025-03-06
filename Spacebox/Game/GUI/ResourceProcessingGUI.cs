@@ -153,7 +153,7 @@ namespace Spacebox.Game.GUI
 
                 var texture = Resources.Load<Texture2D>("Resources/Textures/UI/battery.png");
 
-                texture.FilterMode = FilterMode.Point;
+                texture.FilterMode = FilterMode.Nearest;
                 texture.FlipY();
 
                 batteryIcon = texture.Handle;
@@ -166,29 +166,29 @@ namespace Spacebox.Game.GUI
                 var t3 = Resources.Load<Texture2D>("Resources/Textures/UI/disassemblerInput.png");
 
                 t1.FlipY();
-                t1.FilterMode = FilterMode.Point;
+                t1.FilterMode = FilterMode.Nearest;
                 t2.FlipY();
-                t2.FilterMode = FilterMode.Point;
+                t2.FilterMode = FilterMode.Nearest;
                 t3.FlipY();
-                t3.FilterMode = FilterMode.Point;
+                t3.FilterMode = FilterMode.Nearest;
             }
 
             if (WindowName.Contains("Crusher"))
             {
                 var texture = Resources.Load<Texture2D>("Resources/Textures/UI/crusherInput.png");
-                texture.FilterMode = FilterMode.Point;
+                texture.FilterMode = FilterMode.Nearest;
                 inputIcon = texture.Handle;
             }
             if (WindowName.Contains("Furnace"))
             {
                 var texture = Resources.Load<Texture2D>("Resources/Textures/UI/furnaceInput.png");
-                texture.FilterMode = FilterMode.Point;
+                texture.FilterMode = FilterMode.Nearest;
                 inputIcon = texture.Handle;
             }
             if (WindowName.Contains("Disassembler"))
             {
                 var texture = Resources.Load<Texture2D>("Resources/Textures/UI/disassemblerInput.png");
-                texture.FilterMode = FilterMode.Point;
+                texture.FilterMode = FilterMode.Nearest;
                 inputIcon = texture.Handle;
             }
 
@@ -199,30 +199,30 @@ namespace Spacebox.Game.GUI
                 var t2 = Resources.Load<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
 
                 t1.FlipY();
-                t1.FilterMode = FilterMode.Point;
+                t1.FilterMode = FilterMode.Nearest;
                 t2.FlipY();
-                t2.FilterMode = FilterMode.Point;
+                t2.FilterMode = FilterMode.Nearest;
             }
 
             if (WindowName.Contains("Crusher"))
             {
               
                 var texture = Resources.Load<Texture2D>("Resources/Textures/UI/crusherOutput.png");
-                texture.FilterMode = FilterMode.Point;
+                texture.FilterMode = FilterMode.Nearest;
                 outputIcon = texture.Handle;
             }
             if (WindowName.Contains("Furnace"))
             {
                
                 var texture = Resources.Load<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
-                texture.FilterMode = FilterMode.Point;
+                texture.FilterMode = FilterMode.Nearest;
                 outputIcon = texture.Handle;
             }
             if (WindowName.Contains("Disassembler"))
             {
               
                 var texture = Resources.Load<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
-                texture.FilterMode = FilterMode.Point;
+                texture.FilterMode = FilterMode.Nearest;
                 outputIcon = texture.Handle;
             }
 

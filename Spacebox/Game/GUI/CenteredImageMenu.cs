@@ -19,7 +19,7 @@ namespace Engine
 
             var texture2 = Resources.Load<Texture2D>(path);
 
-            texture2.FilterMode = FilterMode.Point;
+            texture2.FilterMode = FilterMode.Nearest;
             texture2.FlipY();
 
              _imageTexture = texture2;

@@ -84,7 +84,7 @@ namespace Spacebox.Game.Effects
             Texture2D finalTexture = new Texture2D(patternSize, patternSize);
 
             finalTexture.SetPixelsData(newPixels);
-            finalTexture.FilterMode = FilterMode.Point;
+            finalTexture.FilterMode = FilterMode.Nearest;
 
 
 

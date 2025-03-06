@@ -28,14 +28,14 @@ namespace Spacebox.Game
             Mesh.EnableBlend = false;
             Mesh.EnableAlpha = false;
             Texture = texture;
-
-            Texture.UpdateTexture(true);
+            Texture.FilterMode = FilterMode.Nearest;
 
             itemCamera = new Camera360Base(Vector3.Zero, false);
+            itemCamera.AspectRatio = Window.Instance.GetAspectRatio();
             itemCamera.FOV = 80;
             itemCamera.DepthNear = 0.01f;
             itemCamera.DepthFar = 100f;
-            itemCamera.AspectRatio = Window.Instance.GetAspectRatio();
+            
 
             Window.OnResized += Resize;
         }
@@ -47,7 +47,7 @@ namespace Spacebox.Game
         {
             if (itemCamera == null) return;
             if (Camera.Main == null) return;
-            itemCamera.AspectRatio = size.X/ size.Y;
+            itemCamera.AspectRatio = size.X / size.Y;
         }
         public void SetColor(Vector3 color)
         {
