@@ -1,5 +1,4 @@
 ﻿using Engine;
-using OpenTK.Graphics.OpenGL4;
 using Spacebox.Game.Player;
 
 namespace Spacebox.Game.Resource

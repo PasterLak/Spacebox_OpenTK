@@ -79,7 +79,7 @@ namespace Spacebox
 
             Debug.Log("[Engine started!]");
             Input.Initialize(this);
-            
+
             SceneRenderer = new SceneRenderer(ClientSize.X, ClientSize.Y);
             FrameLimiter.Initialize(120);
             FrameLimiter.IsRunning = true;
@@ -317,7 +317,7 @@ namespace Spacebox
         public float GetAspectRatio()
         {
 
-            return ClientSize.X / ClientSize.Y;
+            return ClientSize.X / (float)ClientSize.Y;
         }
 
         public void Quit()
@@ -329,7 +329,7 @@ namespace Spacebox
             AudioDevice.Instance.Dispose();
             _processManager.Dispose();
             NumberStorage.SaveNumbers(path, Location.X, Location.Y);
-       
+
             Resources.Clear(true);
             SceneRenderer.Dispose();
             Debug.SaveMessagesToFile(true);
