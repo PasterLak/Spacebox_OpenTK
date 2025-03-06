@@ -16,7 +16,7 @@ using Engine;
             Position = position;
             Length = length;
           
-            _shader = ShaderManager.GetShader("Shaders/axes");
+            _shader = Resources.Load<Shader>("Shaders/axes");
             UpdateVertices();
             SetupBuffer();
         }
@@ -26,7 +26,7 @@ using Engine;
             Position = position;
             Length = length;
            
-            _shader = ShaderManager.GetShader("Shaders/axes");
+            _shader = Resources.Load<Shader>("Shaders/axes");
             UpdateVertices();
             SetupBuffer();
         }

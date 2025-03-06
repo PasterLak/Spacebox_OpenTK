@@ -26,8 +26,10 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
     {
         if (BlockMiningEffect == null)
         {
-            var texture = TextureManager.GetTexture("Resources/Textures/blockHit.png", true);
-            BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1), texture, ShaderManager.GetShader("Shaders/particle"));
+         
+            var texture = Resources.Load<Texture2D>("Resources/Textures/blockHit.png");
+            texture.FilterMode = FilterMode.Point;
+            BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1), texture, Resources.Load<Shader>("Shaders/particle"));
         }
         light = PointLightsPool.Instance.Take();
         light.Range = 8;

@@ -64,10 +64,16 @@ namespace Spacebox.Game.GUI
             _texture = skyboxTexture;
             Instance = this;
             uvMax = uvSize;
-            _grid = TextureManager.GetTexture("Resources/Textures/UI/Radar/radarGrid.png", true);
-            _line = TextureManager.GetTexture("Resources/Textures/UI/Radar/radarLine.png", true);
-            _scanning = TextureManager.GetTexture("Resources/Textures/UI/Radar/scanning.png", true);
-            _mask = TextureManager.GetTexture("Resources/Textures/UI/Radar/radarMask.png", true);
+            _grid = Resources.Load<Texture2D>("Resources/Textures/UI/Radar/radarGrid.png");
+            _line = Resources.Load<Texture2D>("Resources/Textures/UI/Radar/radarLine.png");
+            _scanning = Resources.Load<Texture2D>("Resources/Textures/UI/Radar/scanning.png");
+            _mask = Resources.Load<Texture2D>("Resources/Textures/UI/Radar/radarMask.png");
+
+
+            _grid.FilterMode = FilterMode.Point;
+            _line.FilterMode = FilterMode.Point;
+            _scanning.FilterMode = FilterMode.Point;
+            _mask.FilterMode = FilterMode.Point;
 
             _scanningAudio = new AudioSource(SoundManager.GetClip("radarScanning"));
             _foundAudio = new AudioSource(SoundManager.GetClip("radarFound"));

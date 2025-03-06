@@ -24,9 +24,11 @@ namespace Spacebox.Game
         {
             Instance = this;
            
-            selectorTexture = TextureManager.GetTexture("Resources/Textures/selector.png", true);
+            selectorTexture = Resources.Load<Texture2D>("Resources/Textures/selector.png");
 
-          
+            selectorTexture.FilterMode = FilterMode.Point;
+
+
 
             SimpleBlock = new SimpleBlock(new TextureMaterial(selectorTexture), Vector3.Zero);
             SimpleBlock.Scale = new Vector3(1.05f, 1.05f, 1.05f);

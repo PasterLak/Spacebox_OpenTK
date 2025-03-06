@@ -138,7 +138,7 @@ namespace Spacebox.Scenes.Test
         public void Render()
         {
            // VisualDebug.DrawBoundingBox(box, Color4.Red);
-            // axes.Render(Camera.Main);
+            // axes.Render(Camera.Main);.\stats.ps1 
             // model.Render(Camera.Main);
             // model2.Render(Camera.Main);
             RenderAll(Camera.Main);

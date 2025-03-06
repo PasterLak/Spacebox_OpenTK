@@ -17,7 +17,7 @@ namespace Spacebox.Game.Effects
             this.camera = camera;
 
 
-            shader = ShaderManager.GetShader("Shaders/particle");
+            shader = Resources.Load<Shader>("Shaders/particle");
         }
 
 

@@ -43,7 +43,7 @@ namespace Spacebox.Game.GUI
             SlotTexture = slotTexture;
             SelectedTexture = selectedTexture;
             scrollAudio = new AudioSource(SoundManager.GetClip("scroll"));
-            itemModelShader = ShaderManager.GetShader("Shaders/itemModel");
+            itemModelShader = Resources.Load<Shader>("Shaders/itemModel");
             InventoryUIHelper.SetDefaultIcon(slotTexture, selectedTexture);
             SetSelectedSlot(0);
             Storage.OnDataWasChanged += OnStorageDataWasChanged;

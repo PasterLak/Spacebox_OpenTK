@@ -150,67 +150,79 @@ namespace Spacebox.Game.GUI
         {
             if (batteryIcon == IntPtr.Zero)
             {
-                var texture = TextureManager.GetTexture("Resources/Textures/UI/battery.png", true);
+
+                var texture = Resources.Load<Texture2D>("Resources/Textures/UI/battery.png");
+
+                texture.FilterMode = FilterMode.Point;
                 texture.FlipY();
-                texture.UpdateTexture(true);
+
                 batteryIcon = texture.Handle;
             }
 
             if (inputIcon == IntPtr.Zero)
             {
-                var t1 = TextureManager.GetTexture("Resources/Textures/UI/crusherInput.png", true);
-                var t2 = TextureManager.GetTexture("Resources/Textures/UI/furnaceInput.png", true);
-                var t3 = TextureManager.GetTexture("Resources/Textures/UI/disassemblerInput.png", true);
+                var t1 = Resources.Load<Texture2D>("Resources/Textures/UI/crusherInput.png");
+                var t2 = Resources.Load<Texture2D>("Resources/Textures/UI/furnaceInput.png");
+                var t3 = Resources.Load<Texture2D>("Resources/Textures/UI/disassemblerInput.png");
 
                 t1.FlipY();
-                t1.UpdateTexture(true);
+                t1.FilterMode = FilterMode.Point;
                 t2.FlipY();
-                t2.UpdateTexture(true);
+                t2.FilterMode = FilterMode.Point;
                 t3.FlipY();
-                t3.UpdateTexture(true);
+                t3.FilterMode = FilterMode.Point;
             }
 
             if (WindowName.Contains("Crusher"))
             {
-                var texture = TextureManager.GetTexture("Resources/Textures/UI/crusherInput.png", true);
+                var texture = Resources.Load<Texture2D>("Resources/Textures/UI/crusherInput.png");
+                texture.FilterMode = FilterMode.Point;
                 inputIcon = texture.Handle;
             }
             if (WindowName.Contains("Furnace"))
             {
-                var texture = TextureManager.GetTexture("Resources/Textures/UI/furnaceInput.png", true);
+                var texture = Resources.Load<Texture2D>("Resources/Textures/UI/furnaceInput.png");
+                texture.FilterMode = FilterMode.Point;
                 inputIcon = texture.Handle;
             }
             if (WindowName.Contains("Disassembler"))
             {
-                var texture = TextureManager.GetTexture("Resources/Textures/UI/disassemblerInput.png", true);
+                var texture = Resources.Load<Texture2D>("Resources/Textures/UI/disassemblerInput.png");
+                texture.FilterMode = FilterMode.Point;
                 inputIcon = texture.Handle;
             }
 
 
             if (outputIcon == IntPtr.Zero)
             {
-                var t1 = TextureManager.GetTexture("Resources/Textures/UI/crusherOutput.png", true);
-                var t2 = TextureManager.GetTexture("Resources/Textures/UI/furnaceOutput.png", true);
+                var t1 = Resources.Load<Texture2D>("Resources/Textures/UI/crusherOutput.png");
+                var t2 = Resources.Load<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
 
                 t1.FlipY();
-                t1.UpdateTexture(true);
+                t1.FilterMode = FilterMode.Point;
                 t2.FlipY();
-                t2.UpdateTexture(true);
+                t2.FilterMode = FilterMode.Point;
             }
 
             if (WindowName.Contains("Crusher"))
             {
-                var texture = TextureManager.GetTexture("Resources/Textures/UI/crusherOutput.png", true);
+              
+                var texture = Resources.Load<Texture2D>("Resources/Textures/UI/crusherOutput.png");
+                texture.FilterMode = FilterMode.Point;
                 outputIcon = texture.Handle;
             }
             if (WindowName.Contains("Furnace"))
             {
-                var texture = TextureManager.GetTexture("Resources/Textures/UI/furnaceOutput.png", true);
+               
+                var texture = Resources.Load<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
+                texture.FilterMode = FilterMode.Point;
                 outputIcon = texture.Handle;
             }
             if (WindowName.Contains("Disassembler"))
             {
-                var texture = TextureManager.GetTexture("Resources/Textures/UI/furnaceOutput.png", true);
+              
+                var texture = Resources.Load<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
+                texture.FilterMode = FilterMode.Point;
                 outputIcon = texture.Handle;
             }
 
@@ -417,7 +429,7 @@ namespace Spacebox.Game.GUI
                     }
                     else
                     {
-                        if(Player != null && Player.Panel != null)
+                        if (Player != null && Player.Panel != null)
                         {
                             if (Player.Panel.TryAddItem(slot.Item, rest))
                             {
@@ -426,7 +438,7 @@ namespace Spacebox.Game.GUI
                         }
                     }
 
-                   
+
                 }
                 else
                 {

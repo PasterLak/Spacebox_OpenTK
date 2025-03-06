@@ -18,6 +18,7 @@ using Spacebox.Game.Resource;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
 using Client;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Spacebox.Scenes
 {
@@ -171,7 +172,7 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
 
-            skyboxShader = ShaderManager.GetShader("Shaders/skybox");
+            skyboxShader = Resources.Load<Shader>("Shaders/skybox");
             var texture = new SpaceTexture(512, 512, World.Seed);
 
             var mesh = Resources.Load<Engine.Mesh>("Resources/Models/sphere.obj");
@@ -211,7 +212,7 @@ namespace Spacebox.Scenes
 
             Input.SetCursorState(CursorState.Grabbed);
 
-            blocksShader = ShaderManager.GetShader("Shaders/block");
+            blocksShader = Resources.Load<Shader>("Shaders/block");
             pointLightsPool = new PointLightsPool(blocksShader, localPlayer, 64);
             localPlayer.GameMode = World.Data.Info.GameMode;
             blockTexture = GameAssets.BlocksTexture;
@@ -232,8 +233,12 @@ namespace Spacebox.Scenes
             Debug.RegisterCommand(new SpawnAroundAsteroidCommand(localPlayer));
 
          
-            Texture2D slotTex = TextureManager.GetTexture("Resources/Textures/slot.png", true, false);
-            Texture2D selectedSlotTex = TextureManager.GetTexture("Resources/Textures/selectedSlot.png", true, false);
+            Texture2D slotTex = Resources.Load<Texture2D>("Resources/Textures/slot.png");
+            Texture2D selectedSlotTex = Resources.Load<Texture2D>("Resources/Textures/selectedSlot.png");
+
+            slotTex.FilterMode = FilterMode.Point;
+            selectedSlotTex.FilterMode = FilterMode.Point;
+
             InventoryUI.Initialize(slotTex.Handle);
             PanelUI.Initialize(localPlayer, slotTex.Handle, selectedSlotTex.Handle);
             InventoryUI.Player = localPlayer;
@@ -245,7 +250,7 @@ namespace Spacebox.Scenes
             Texture2D spacerTex = Resources.Get<Texture2D>("Resources/Textures/spacer.png");
             spacerTex.FlipY();
             spacerTex.UpdateTexture(true);
-            spacer = new Model(Resources.Load<Engine.Mesh>("Resources/Models/spacerw.obj"), new Material(ShaderManager.GetShader("Shaders/player"), spacerTex));
+            spacer = new Model(Resources.Load<Engine.Mesh>("Resources/Models/spacer.obj"), new Material(Resources.Load<Shader>("Shaders/player"), spacerTex));
             spacer.Position = localPlayer.Position + new Vector3(12, 15, 7);
             spacer.Rotation = new Vector3(0, 0, 0);
 

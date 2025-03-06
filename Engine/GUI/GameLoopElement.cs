@@ -31,10 +31,7 @@ namespace Engine.GUI
             ImGui.Text($"FrameLimiter On (F7): {(FrameLimiter.TargetFPS == 120 ? true : false)}");
             ImGui.Text($"Wireframe Mode (F10) ");
             ImGui.Text($" ");
-            ImGui.Text($"Shaders Cached: {ShaderManager.Count}");
-            ImGui.Text($"Textures Cached: {TextureManager.Count}");
-            ImGui.Text($"Sounds Cached: {SoundManager.Count}");
-
+          
            /* if (GameBlocks.IsInitialized)
             {
                 var size = GameBlocks.AtlasBlocks.SizeBlocks * GameBlocks.AtlasBlocks.BlockSizePixels;

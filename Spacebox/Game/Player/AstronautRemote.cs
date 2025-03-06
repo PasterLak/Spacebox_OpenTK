@@ -43,17 +43,17 @@ namespace Spacebox.Game.Player
             cube.Enabled = true;
             var texold = Engine.Resources.Get<Texture2D>("Resources/Textures/spacer.png");
             texold.UpdateTexture(true);
-            playerShader = ShaderManager.GetShader("Shaders/player");
+            playerShader = Resources.Load<Shader>("Shaders/player");
             spacerOld = new Model(Resources.Load<Engine.Mesh>("Resources/Models/spacer.obj"), new Material(playerShader, texold));
-            var tex = TextureManager.GetTexture("Resources/Textures/astronaut2.jpg", true, true);
+            var tex = Resources.Load<Texture2D>("Resources/Textures/astronaut2.jpg");
             tex.FlipY();
-            tex.UpdateTexture(true);
+            tex.FilterMode = FilterMode.Point;
             spacer = new Model(Resources.Load<Engine.Mesh>("Resources/Models/astronaut2.obj"), new Material(playerShader, tex));
             tag = new GUI.Tag($"[{playerData.ID}]{playerData.Name}", LatestPosition, new Color4(playerData.Color.X, playerData.Color.Y, playerData.Color.Z, 1));
             tag.TextAlignment = Tag.Alignment.Center;
             Tag.CalculateFontSize(100);
             TagManager.RegisterTag(tag);
-            itemModelShader = ShaderManager.GetShader("Shaders/itemModel");
+            itemModelShader = Resources.Load<Shader>("Shaders/itemModel");
             var uvIndex = GameAssets.AtlasItems.GetUVIndexByName("drill1");
             itemModel = ItemModelGenerator.GenerateModel(GameAssets.ItemsTexture, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
             itemModel.UseMainCamera = true;
@@ -69,9 +69,10 @@ namespace Spacebox.Game.Player
             if (!astronautTextures.TryGetValue(color, out Texture2D tex))
             {
                 string texturePath = $"Resources/Textures/Player/Astronaut_{color}.jpg";
-                tex = TextureManager.GetTexture(texturePath, true, true);
+                tex = Resources.Load<Texture2D>(texturePath);
                 tex.FlipY();
-                tex.UpdateTexture(true);
+                tex.FilterMode = FilterMode.Point;
+             
                 astronautTextures[color] = tex;
             }
             return tex;

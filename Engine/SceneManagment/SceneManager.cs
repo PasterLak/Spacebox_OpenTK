@@ -137,8 +137,7 @@ namespace Engine.SceneManagment
                     CurrentScene.UnloadContent();
 
                     SoundManager.Dispose();
-                    ShaderManager.Dispose();
-                    TextureManager.Dispose();
+             
                     Resources.Clear();
                     VisualDebug.Clear();
 

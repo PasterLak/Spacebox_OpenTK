@@ -39,10 +39,12 @@ public class InteractionShoot : InteractionMode
         AllowReload = true;
         if (BlockMiningEffect == null)
         {
-            var texture = TextureManager.GetTexture("Resources/Textures/blockHit.png", true);
+    
+            var texture = Resources.Load<Texture2D>("Resources/Textures/blockHit.png");
+            texture.FilterMode = FilterMode.Point;
             // texture
             BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1),
-                texture, ShaderManager.GetShader("Shaders/particle"));
+                texture, Resources.Load<Shader>("Shaders/particle"));
         }
 
         UpdateItemSlot(itemslot);

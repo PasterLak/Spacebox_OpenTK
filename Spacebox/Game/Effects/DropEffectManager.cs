@@ -34,7 +34,7 @@ namespace Spacebox.Game.Effects
             this.maxSpeed = maxSpeed;
             moveDistanceSquared = moveDistance * moveDistance;
             pickupDistanceSquared = pickupDistance * pickupDistance;
-            shader = ShaderManager.GetShader("Shaders/particle");
+            shader = Resources.Load<Shader>("Shaders/particle");
 
             for (int i = 0; i < 3; i++)
             {

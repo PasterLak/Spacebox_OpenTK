@@ -113,19 +113,19 @@ namespace Spacebox
 
             _processManager = new PostProcessManager();
 
-            var sha = ShaderManager.AddPermanentShader("Shaders/PostProcessing/passthrough");
+            var sha = Resources.Load<Shader>("Shaders/PostProcessing/passthrough", true);
 
             _processManager.AddEffect(new DefaultEffect(sha));
 
-            var sha2 = ShaderManager.AddPermanentShader("Shaders/PostProcessing/blackWhite");
+            var sha2 = Resources.Load<Shader>("Shaders/PostProcessing/blackWhite", true);
 
             //_processManager.AddEffect(new BlackWhiteEffect(sha2));
 
-            var sha3 = ShaderManager.AddPermanentShader("Shaders/PostProcessing/vignette");
+            var sha3 = Resources.Load<Shader>("Shaders/PostProcessing/vignette", true);
 
             _processManager.AddEffect(new VignetteEffect(sha3));
 
-            var sha4 = ShaderManager.AddPermanentShader("Shaders/PostProcessing/edgeDetection");
+            var sha4 = Resources.Load<Shader>("Shaders/PostProcessing/edgeDetection", true);
 
             // _processManager.AddEffect(new EdgeDetectionEffect(sha4));
 
@@ -329,8 +329,7 @@ namespace Spacebox
             AudioDevice.Instance.Dispose();
             _processManager.Dispose();
             NumberStorage.SaveNumbers(path, Location.X, Location.Y);
-            ShaderManager.DisposeAll();
-            TextureManager.DisposeAll();
+       
             Resources.Clear(true);
             SceneRenderer.Dispose();
             Debug.SaveMessagesToFile(true);

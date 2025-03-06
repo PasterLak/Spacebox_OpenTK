@@ -35,20 +35,21 @@ namespace Engine.GUI
            // _windowWidth = Window.Instance.Size.X;
            // _windowHeight = Window.Instance.Size.Y;
 
-            _shader = shader ??  ShaderManager.GetShader("Shaders/sprite");
+            _shader = shader ?? Resources.Load<Shader>("Shaders/sprite");
 
             Initialize();
         }
 
         public Sprite(string imagePath, Vector2 position, Vector2 size, bool pixelated = false, Shader shader = null)
         {
-            _texture = TextureManager.GetTexture(imagePath, pixelated);
+            _texture = Resources.Load<Texture2D>(imagePath);
+            _texture.FilterMode = FilterMode.Point;
             _position = position;
             _size = size;
             // _windowWidth = Window.Instance.Size.X;
             // _windowHeight = Window.Instance.Size.Y;
 
-            _shader = shader ?? ShaderManager.GetShader("Shaders/sprite");
+            _shader = shader ?? Resources.Load<Shader>("Shaders/sprite");
 
             Initialize();
         }

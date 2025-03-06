@@ -6,7 +6,7 @@ namespace Engine
     {
         public Texture2D? MainTexture { get; set; }
 
-        public TextureMaterial(Texture2D texture) : base(ShaderManager.GetShader("Shaders/textured"))
+        public TextureMaterial(Texture2D texture) : base(Resources.Load<Shader>("Shaders/textured"))
         {
             MainTexture = texture;
             RenderFace = RenderFace.Front;

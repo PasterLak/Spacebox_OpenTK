@@ -10,7 +10,7 @@ namespace Spacebox.Game.Resource
         public Texture2D? EmissionTexture { get; set; }
 
         public ItemMaterial(Texture2D texture, Texture2D emissionAtlas, Astronaut player) :
-            base(texture, ShaderManager.GetShader("Shaders/block"))
+            base(texture, Resources.Load<Shader>("Shaders/block"))
         {
             RenderMode = RenderMode.Cutout;
             EmissionTexture = emissionAtlas;

@@ -12,11 +12,11 @@
 
 // dotnet publish -c Release -r linux-x64 --self-contained true --output ./publish
 
-WIN11
-// dir P:\C#\Spacebox_OpenTK\*.cs /S /B | find /C ":"
-// Get-ChildItem -Path "P:\C#\Spacebox_OpenTK" -Recurse -Filter *.cs | Get-Content | Measure-Object -Line
+./stats.ps1
+wsl ./stats.sh
+chmod +x stats.sh
+./stats.sh
 
-// dir P:\C#\Spacebox_OpenTK\Spacebox\Shaders\*.glsl /S /B | find /C ":"
 
 OSX
 //  find /Users/vladis/Documents/Projects/C#/Spacebox_OpenTK -type f -name "*.cs" | wc -l

@@ -28,7 +28,7 @@ namespace Engine
 
         private static void Initialize()
         {
-            _shader = ShaderManager.AddPermanentShader("Shaders/debug");
+            _shader = Resources.Load<Shader>("Shaders/debug", true);
 
             _bufferPoints = new MeshBuffer(new BufferAttribute[]
             {

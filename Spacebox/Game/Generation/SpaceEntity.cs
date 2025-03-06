@@ -58,7 +58,7 @@ namespace Spacebox.Game.Generation
             BoundingBox = new BoundingBox(positionWorld, new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));
             SumPosCenterOfMass = positionWorld;
             Octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
-            Shader = ShaderManager.GetShader("Shaders/block");
+            Shader = Resources.Load<Shader>("Shaders/block");
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
 
             InitializeSharedResources();
@@ -79,7 +79,7 @@ namespace Spacebox.Game.Generation
             BoundingBox = new BoundingBox(positionWorld, new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));
             SumPosCenterOfMass = positionWorld;
             Octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
-            Shader = ShaderManager.GetShader("Shaders/block");
+            Shader = Resources.Load<Shader>("Shaders/block");
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
 
             InitializeSharedResources();
@@ -209,12 +209,15 @@ namespace Spacebox.Game.Generation
         {
             if (sharedShader == null)
             {
-                sharedShader = ShaderManager.GetShader("Shaders/colored");
+                sharedShader = Resources.Load<Shader>("Shaders/colored");
             }
 
             if (sharedTexture == null)
             {
-                sharedTexture = TextureManager.GetTexture("Resources/Textures/selector.png", true);
+             
+                sharedTexture = Resources.Load<Texture2D>("Resources/Textures/selector.png");
+
+                sharedTexture.FilterMode = FilterMode.Point;
             }
 
 

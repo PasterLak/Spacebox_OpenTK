@@ -12,7 +12,7 @@ namespace Engine
 
         public Material() : base(null)
         {
-            Shader = ShaderManager.GetShader("Shaders/colored");
+            Shader = Resources.Load<Shader>("Shaders/colored");
 
         }
 

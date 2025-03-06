@@ -67,8 +67,8 @@ namespace Spacebox.FPS.Scenes
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, GameData._vertices.Length * sizeof(float), GameData._vertices, BufferUsageHint.StaticDraw);
 
-            _lightingShader = ShaderManager.GetShader("Shaders/lighting"); // shader vert lighting frag
-            _lampShader = ShaderManager.GetShader("Shaders/shader");
+            _lightingShader = Resources.Load<Shader>("Shaders/lighting"); // shader vert lighting frag
+            _lampShader = Resources.Load<Shader>("Shaders/shader");
 
             {
                 _vaoModel = GL.GenVertexArray();

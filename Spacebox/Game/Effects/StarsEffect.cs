@@ -25,11 +25,11 @@ namespace Spacebox.Game.Effects
 
         private void Initialize()
         {
+            dustTexture = Resources.Load<Texture2D>("Resources/Textures/star.png");
 
-            dustTexture = TextureManager.GetTexture("Resources/Textures/star.png", true);
-            dustTexture.UpdateTexture(true);
-
-            particleShader = ShaderManager.GetShader("Shaders/particle");
+            dustTexture.FilterMode = FilterMode.Point;
+         
+            particleShader = Resources.Load<Shader>("Shaders/particle");
 
             ParticleSystem = new ParticleSystem(dustTexture, particleShader)
             {
