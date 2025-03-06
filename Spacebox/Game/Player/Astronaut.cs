@@ -291,37 +291,7 @@ namespace Spacebox.Game.Player
             }
         }
 
-        public void ApplyConsumable(ConsumableItem consumable)
-        {
-            if (consumable != null)
-            {
-                if (GameAssets.TryGetItemSound(consumable.Id, out AudioClip clip))
-                {
-                    if (useConsumableAudio != null)
-                    {
-                        useConsumableAudio.Stop();
-                    }
-
-                    useConsumableAudio = new AudioSource(clip);
-                    useConsumableAudio.Volume = 0.3f;
-                    useConsumableAudio.Play();
-
-                    if (consumable.HealAmount > 0)
-                        HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 1, 0), 0.2f);
-
-                    if (consumable.PowerAmount > 0)
-                        HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 1), 0.15f);
-                }
-
-                HealthBar.StatsData.Increment(consumable.HealAmount);
-                PowerBar.StatsData.Increment(consumable.PowerAmount);
-            }
-            else
-            {
-                Debug.Error($"[Astrounaut] ApplyConsumable: consumable was null!");
-            }
-        }
-
+   
         public void SetInteraction(InteractionMode mode)
         {
             if (_gameModeBase == null) return;

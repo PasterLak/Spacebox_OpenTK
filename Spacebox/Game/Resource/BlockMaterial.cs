@@ -2,7 +2,7 @@
 using OpenTK.Graphics.OpenGL4;
 using Spacebox.Game.Player;
 
-namespace Spacebox.Game.Resources
+namespace Spacebox.Game.Resource
 {
     public class BlockMaterial : TextureMaterial
     {

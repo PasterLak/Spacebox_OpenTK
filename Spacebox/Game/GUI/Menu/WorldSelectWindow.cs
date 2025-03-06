@@ -38,12 +38,12 @@ namespace Spacebox.Game.GUI.Menu
                 bool isSelected = menu.selectedWorld == world;
                 if (ImGui.Selectable(" " + world.Name + " ", isSelected))
                 {
-                    menu.click1.Play();
+                    menu.Click1.Play();
                     menu.selectedWorld = world;
                 }
                 if (ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
                 {
-                    menu.click1.Play();
+                    menu.Click1.Play();
                     if (VersionConverter.IsVersionOld(world.GameVersion, Application.Version))
                     {
                         menu.showVersionConvertWindow = true;
@@ -88,7 +88,7 @@ namespace Spacebox.Game.GUI.Menu
                     new Vector2(buttonStartX, buttonY + windowHeight * 0.02f),
                     () =>
                     {
-                        menu.click1.Play();
+                        menu.Click1.Play();
                         if (VersionConverter.IsVersionOld(menu.selectedWorld.GameVersion, Application.Version))
                         {
                             menu.showVersionConvertWindow = true;
@@ -102,14 +102,14 @@ namespace Spacebox.Game.GUI.Menu
                     new Vector2(buttonStartX + buttonWidth + buttonSpacing, buttonY + windowHeight * 0.02f),
                     () =>
                     {
-                        menu.click1.Play();
+                        menu.Click1.Play();
                         // Функционал редактирования
                     });
                 menu.ButtonWithBackgroundAndIcon("", new Vector2(buttonHeight, buttonHeight),
                     new Vector2(buttonStartX + buttonWidth + buttonSpacing + buttonWidth - buttonHeight, buttonY + windowHeight * 0.02f),
                     () =>
                     {
-                        menu.click1.Play();
+                        menu.Click1.Play();
                         menu.showDeleteWindow = true;
                     });
             }
@@ -124,7 +124,7 @@ namespace Spacebox.Game.GUI.Menu
                 new Vector2(bottomButtonStartX, bottomButtonY),
                 () =>
                 {
-                    menu.click1.Play();
+                    menu.Click1.Play();
                     menu.GenerateRandomSeedAndName();
                     menu.SetStateToNewWorld();
                 });
@@ -132,7 +132,7 @@ namespace Spacebox.Game.GUI.Menu
                 new Vector2(bottomButtonStartX + bottomButtonWidth + bottomButtonSpacing, bottomButtonY),
                 () =>
                 {
-                    menu.click1.Play();
+                    menu.Click1.Play();
                     menu.SetStateToMain();
                 });
             ImGui.End();

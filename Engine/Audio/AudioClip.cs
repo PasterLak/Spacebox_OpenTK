@@ -36,10 +36,12 @@ namespace Engine.Audio
             FileFullPath = resolvedPath;
             Name = Path.GetFileNameWithoutExtension(resolvedPath);
             IsStreaming = loadMode == AudioLoadMode.Stream;
-
+           
             if (!IsStreaming)
             {
+              
                 Buffer = SoundLoader.LoadSound(FileFullPath, out sampleRate);
+               
             }
             else
             {
@@ -114,10 +116,16 @@ namespace Engine.Audio
 
         public void Dispose()
         {
+         
             if (isDisposed) return;
 
-            AudioSource?.Stop();
-            AudioSource = null;
+            if(AudioSource is not null)
+            {
+                AudioSource.Stop();
+                AudioSource?.Dispose();
+                AudioSource = null;
+            }
+           
 
             reader?.Dispose();
             fileStream?.Dispose();

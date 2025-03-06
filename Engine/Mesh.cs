@@ -8,7 +8,7 @@ namespace Engine
 {
     public class Mesh : IResource
     {
-        private BufferShader buffer;
+        private MeshBuffer buffer;
         private int _indexCount;
         private BoundingBox _bounds;
         public List<Vector3> VerticesPositions { get; private set; }
@@ -30,7 +30,7 @@ namespace Engine
                 new BufferAttribute { Name = "uv", Size = 2 }
             };
 
-            buffer = new BufferShader(attributes);
+            buffer = new MeshBuffer(attributes);
             uint[] indicesUInt = indices.Select(x => (uint)x).ToArray();
             buffer.BindBuffer(ref vertices, ref indicesUInt);
             buffer.SetAttributes();
@@ -48,7 +48,7 @@ namespace Engine
                 new BufferAttribute { Name = "normal", Size = 3 },
                 new BufferAttribute { Name = "uv", Size = 2 }
             };
-            buffer = new BufferShader(attributes);
+            buffer = new MeshBuffer(attributes);
             uint[] indicesUInt = indices.Select(x => (uint)x).ToArray();
             buffer.BindBuffer(ref vertices, ref indicesUInt);
             buffer.SetAttributes();

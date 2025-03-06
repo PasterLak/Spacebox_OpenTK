@@ -1,4 +1,4 @@
-﻿namespace Spacebox.Game.Resources
+﻿namespace Spacebox.Game.Resource
 {
 
     public class BlueprintData

@@ -1,6 +1,6 @@
 ﻿using Spacebox.Game.GUI;
 
-namespace Spacebox.Game.Resources
+namespace Spacebox.Game.Resource
 {
     public class CraftingData
     {

@@ -134,7 +134,7 @@ namespace Spacebox.FPS.Scenes
 
             for (int i = 0; i < 4; i++)
             {
-                planes[i] = new Model("Resources/Models/plane.obj", mat);
+                planes[i] = new Model(Resources.Load<Mesh>("Resources/Models/plane.obj"), mat);
                 Renderer.AddDrawable(planes[i]);
 
                 CollisionManager.Add(planes[i]);
@@ -153,43 +153,43 @@ namespace Spacebox.FPS.Scenes
 
 
             Texture2D skyboxTexture = new Texture2D("Resources/Textures/Game/Skybox/skybox2.png", true);
-          
-           
-            skybox = new Skybox("Resources/Models/domBig.obj", skyboxTexture);
+
+            var mesh = Resources.Load<Engine.Mesh>("Resources/Models/domBig.obj");
+            skybox = new Skybox(mesh, skyboxTexture);
 
 
             Texture2D skyboxTexture2 = new Texture2D
                 ("Resources/Textures/Game/Skybox/skybox_01.jpg", false);
-           
 
-            skyboxExtern = new Skybox("Resources/Models/domBig.obj",
+          
+            skyboxExtern = new Skybox(mesh,
                 skyboxTexture2);
 
             skyboxExtern.Scale = new Vector3(120, 120, 120);
 
-            arrow = new Model("Resources/Models/arrow.obj");
+            arrow = new Model(Resources.Load<Mesh>("Resources/Models/arrow.obj"));
 
             arrow.Material.Color = new Color4(0, 0, 0.5f, 1);
             arrow.Position = new Vector3(1, 1, 1);
 
-            Model terrain = new Model("Resources/Models/terrain.obj",
+            Model terrain = new Model(Resources.Load<Mesh>("Resources/Models/terrain.obj"),
                 new Material(_lightingShader,
                 new Texture2D("Resources/Textures/Game/grass2.jpg", false)));
             terrain.Material.Tiling = new Vector2(25, 25);
 
 
-            Model tv = new Model("Resources/Models/tv.obj", new Material(_lightingShader, new Texture2D("Resources/Textures/Game/tv.png", true)));
+            Model tv = new Model(Resources.Load<Mesh>("Resources/Models/tv.obj"), new Material(_lightingShader, new Texture2D("Resources/Textures/Game/tv.png", true)));
             tv.Position = new Vector3(2, 0.5f, 3);
             tv.Rotation = new Vector3(0, 0, 0);
 
             var tex = new Texture2D("Resources/Textures/spacer.png", true);
             tex.FlipY();
             tex.UpdateTexture(true);
-            Model stone1 = new Model("Resources/Models/spacer.obj", new Material(_lightingShader, tex));
+            Model stone1 = new Model(Resources.Load<Mesh>("Resources/Models/spacer.obj"), new Material(_lightingShader, tex));
             stone1.Position = new Vector3(8, 1, 3);
             stone1.Rotation = new Vector3(0, 0, 0);
 
-            Model cube = new Model("Resources/Models/cube.obj", new Material(_lightingShader, new Texture2D("Resources/Textures/Game/container2.png", false)));
+            Model cube = new Model(Resources.Load<Mesh>("Resources/Models/cube.obj"), new Material(_lightingShader, new Texture2D("Resources/Textures/Game/container2.png", false)));
             cube.Position = new Vector3(8, 0, 8);
             //cube.Rotation = new Vector3(0,45,0);
 

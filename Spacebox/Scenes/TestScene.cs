@@ -79,7 +79,8 @@ namespace Spacebox.Scenes
             Texture2D skyboxTexture = new SpaceTexture(512, 512, World.Seed);
             skyboxTexture = Resources.Load<Texture2D>("Resources/Textures/space");
 
-            skybox = new Skybox("Resources/Models/sphere.obj", skyboxTexture);
+            var mesh = Resources.Load<Engine.Mesh>("Resources/Models/sphere.obj");
+            skybox = new Skybox(mesh, skyboxTexture);
 
             skybox.IsAmbientAffected = false;
 
@@ -175,7 +176,7 @@ namespace Spacebox.Scenes
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
             // sprite.UpdateWindowSize(Window.Instance.ClientSize);
             // sprite.UpdateSize(Window.Instance.Size);
-
+         
             if (Input.Mouse.ScrollDelta.Y > 0)
             {
                 player.FOV += 1;

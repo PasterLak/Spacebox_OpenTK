@@ -7,9 +7,9 @@ namespace Engine
     public static class VisualDebug
     {
         private static Shader _shader;
-        private static BufferShader _bufferPoints;
-        private static BufferShader _bufferLines;
-        private static BufferShader _bufferTriangles;
+        private static MeshBuffer _bufferPoints;
+        private static MeshBuffer _bufferLines;
+        private static MeshBuffer _bufferTriangles;
         private static List<float> _points = new List<float>();
         private static List<float> _lines = new List<float>();
         private static List<float> _triangles = new List<float>();
@@ -30,7 +30,7 @@ namespace Engine
         {
             _shader = ShaderManager.AddPermanentShader("Shaders/debug");
 
-            _bufferPoints = new BufferShader(new BufferAttribute[]
+            _bufferPoints = new MeshBuffer(new BufferAttribute[]
             {
                 new BufferAttribute { Name = "position", Size = 3 },
                 new BufferAttribute { Name = "color", Size = 4 },
@@ -38,7 +38,7 @@ namespace Engine
             });
             _bufferPoints.SetAttributes();
 
-            _bufferLines = new BufferShader(new BufferAttribute[]
+            _bufferLines = new MeshBuffer(new BufferAttribute[]
             {
                 new BufferAttribute { Name = "position", Size = 3 },
                 new BufferAttribute { Name = "color", Size = 4 }
@@ -46,7 +46,7 @@ namespace Engine
 
             _bufferLines.SetAttributes();
 
-            _bufferTriangles = new BufferShader(new BufferAttribute[]
+            _bufferTriangles = new MeshBuffer(new BufferAttribute[]
             {
                 new BufferAttribute { Name = "position", Size = 3 },
                 new BufferAttribute { Name = "color", Size = 4 }

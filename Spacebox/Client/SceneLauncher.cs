@@ -2,7 +2,7 @@
 using Spacebox.Game.GUI;
 using Spacebox.Scenes;
 using SpaceNetwork;
-using static Spacebox.Game.Resources.GameSetLoader;
+using static Spacebox.Game.Resource.GameSetLoader;
 
 namespace Spacebox.Client
 {

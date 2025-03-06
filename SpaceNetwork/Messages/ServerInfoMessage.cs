@@ -1,5 +1,4 @@
 ﻿using Lidgren.Network;
-using SpaceNetwork;
 
 namespace SpaceNetwork.Messages
 {

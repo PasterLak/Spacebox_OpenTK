@@ -2,6 +2,7 @@
 using OpenTK.Windowing.Desktop;
 using Engine.Audio;
 using System.Reflection;
+using OpenTK.Graphics.OpenGL4;
 
 
 namespace Engine.SceneManagment
@@ -129,16 +130,22 @@ namespace Engine.SceneManagment
                     Scene sceneBase = CurrentScene as Scene;
                     sceneBase.Dispose();
 
+                    
+                   
+                    InputManager.RemoveAllActions(true);
+                    CurrentScene.Dispose();
+                    CurrentScene.UnloadContent();
+
                     SoundManager.Dispose();
                     ShaderManager.Dispose();
                     TextureManager.Dispose();
                     Resources.Clear();
-                    InputManager.RemoveAllActions(true);
-                    CurrentScene.Dispose();
-                    CurrentScene.UnloadContent();
                     VisualDebug.Clear();
 
                     Camera.Main = null;
+                   // Debug.Log("Active Textures: " + GL.GetInteger(GetPName.TextureBinding2D));
+                   // Debug.Log("Active Buffers: " + GL.GetInteger(GetPName.ArrayBufferBinding));
+                    
 
                     Debug.Log("[SceneManager] Content was unloaded ",
                     Color4.White);
@@ -146,6 +153,7 @@ namespace Engine.SceneManagment
 
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
+                GC.Collect();
 
                 Debug.Log("[SceneManager] Loading scene ", Color4.White);
                 _currentSceneType = _nextSceneType;
@@ -157,15 +165,16 @@ namespace Engine.SceneManagment
 
                 CurrentScene = sceneInstance;
 
+                CurrentScene.Name = _currentSceneType.typ.Name;
 
-                Debug.Log("[SceneManager] Scene Loaded: [" + _currentSceneType.typ.Name + "] ",
+                Debug.Log("[SceneManager] Scene Loaded: [" + CurrentScene.Name + "] ",
                     Color4.Yellow);
 
                 CurrentScene.LoadContent();
-                Resources.PrintLoadedResources();
-                CurrentScene.Start();
-
                 
+                CurrentScene.Start();
+                Resources.PrintLoadedResources();
+
 
             }
         }

@@ -13,16 +13,16 @@ namespace Engine
         public bool BackfaceCulling { get; set; } = true;
         private Axes _axes;
 
-        public Model(string objPath)
-            : this(objPath, new Material())
+        public Model(Mesh mesh)
+            : this( mesh, new Material())
         {
         }
 
-        public Model(string objPath, Material material)
+        public Model(Mesh mesh, Material material)
         : base(new BoundingBox(Vector3.Zero, Vector3.One))
         {
-            var (vertices, indices) = ObjLoader.Load(objPath);
-            Mesh = new Mesh(vertices, indices);
+           
+            Mesh = mesh;
             Material = material;
 
          
@@ -39,7 +39,7 @@ namespace Engine
             //UpdateBounding();
 
             oldColor = Material.Color;
-            Name = GetModelName(objPath);
+            //Name = GetModelName(objPath);
         }
 
 

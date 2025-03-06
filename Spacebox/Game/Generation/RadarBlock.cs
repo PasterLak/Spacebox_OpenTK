@@ -1,6 +1,6 @@
 ﻿using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
-using Spacebox.Game.Resources;
+using Spacebox.Game.Resource;
 using Engine;
 namespace Spacebox.Game.Generation
 {

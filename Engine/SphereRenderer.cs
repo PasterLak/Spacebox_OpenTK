@@ -8,7 +8,7 @@ namespace Engine
     {
         public bool Enabled = true;
         public MaterialBase Material;
-        private BufferShader _buffer;
+        private MeshBuffer _buffer;
 
         private float _radius;
         private int _segments;
@@ -38,7 +38,7 @@ namespace Engine
                 new BufferAttribute { Name = "aNormal",    Size = 3 },
                 new BufferAttribute { Name = "aTexCoords", Size = 2 }
             };
-            _buffer = new BufferShader(attrs);
+            _buffer = new MeshBuffer(attrs);
         }
 
         private void RebuildSphere()

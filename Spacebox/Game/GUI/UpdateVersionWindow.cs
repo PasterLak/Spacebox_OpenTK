@@ -41,7 +41,7 @@ namespace Spacebox.Game.GUI
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.8f, 0.25f, 0.25f, 1.0f));
             GameMenu.CenterButtonWithBackground("Yes, convert", buttonWidth, buttonHeight, () =>
             {
-                menu.click1.Play();
+                menu.Click1.Play();
                 if (VersionConverter.Convert(menu.selectedWorld, Application.Version))
                 {
                     menu.selectedWorld.LastEditDate = DateTime.Now.ToString();
@@ -54,7 +54,7 @@ namespace Spacebox.Game.GUI
             GameMenu.CenterButtonWithBackground("No", buttonWidth, buttonHeight, () =>
             {
                 menu.showVersionConvertWindow = false;
-                menu.click1.Play();
+                menu.Click1.Play();
             });
             ImGui.Dummy(new Vector2(0, spacing));
             ImGui.End();

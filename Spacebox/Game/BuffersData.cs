@@ -8,9 +8,9 @@ namespace Spacebox.Game
     {
 
         public const byte FloatsPerVertexBlock = 13;
-        public static BufferShader CreateBlockBuffer()
+        public static MeshBuffer CreateBlockBuffer()
         {
-            BufferShader buffer = new BufferShader();
+            MeshBuffer buffer = new MeshBuffer();
             buffer.AddAttribute("aPosition", 3);
             buffer.AddAttribute("aTexCoord", 2);
             buffer.AddAttribute("aColor", 3);
@@ -21,9 +21,9 @@ namespace Spacebox.Game
         }
 
         public const byte FloatsPerVertexItemModel = 8;
-        public static BufferShader CreateItemModelBuffer()
+        public static MeshBuffer CreateItemModelBuffer()
         {
-            BufferShader buffer = new BufferShader();
+            MeshBuffer buffer = new MeshBuffer();
             buffer.AddAttribute("aPosition", 3);
             buffer.AddAttribute("aTexCoord", 2);
             buffer.AddAttribute("aNormal", 3);

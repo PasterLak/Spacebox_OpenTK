@@ -26,11 +26,13 @@ namespace Spacebox.Game.Player
         private Toggi toggle;
         public Flashlight(Camera camera)
         {
-            spotLight = new SpotLight(ShaderManager.GetShader("Shaders/block"),
+            var shader = Engine.Resources.Load<Shader>("Shaders/block");
+            spotLight = new SpotLight(shader,
                 camera.Front);
             spotLight.UseSpecular = false;
 
-            audio = new AudioSource(SoundManager.GetClip("flashlight"));
+            var clip = Engine.Resources.Load<AudioClip>("Resources/Audio/flashlight.ogg");
+            audio = new AudioSource(clip);
             audio.Volume = 0.5f;
 
             InputManager.AddAction("flashlight", Keys.F);

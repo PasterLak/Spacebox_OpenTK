@@ -3,16 +3,17 @@ namespace Engine.Audio
 {
     public static class AudioFormatLoader
     {
-        public static (byte[] data, int channels, int bitsPerSample, int sampleRate) LoadAudio(string filename)
+        public static (byte[] data, int channels, int bitsPerSample, int sampleRate) LoadAudio(string path)
         {
-            string ext = Path.GetExtension(filename).ToLower();
+            string ext = Path.GetExtension(path).ToLower();
+           
             IAudioLoader loader = ext switch
             {
                 ".wav" => new WaveLoader(),
                 ".ogg" => new OggLoader(),
-                _ => throw new NotSupportedException("Unsupported audio format! FileName: " + filename)
+                _ => throw new NotSupportedException("Unsupported audio format! FileName: " + path)
             };
-            return loader.Load(filename);
+            return loader.Load(path);
         }
     }
 }

@@ -11,7 +11,9 @@ namespace Spacebox.Game
           
             GenerateSpaceTexture(seed);
             FilterMode = FilterMode.Point;
-            SaveToPng("space.png", true);
+
+            Engine.Resources.AddResourceToDispose(this);
+           // SaveToPng("space.png", true);
         }
 
         private void GenerateSpaceTexture(int seed = 12345)

@@ -9,7 +9,7 @@ namespace Spacebox
     {
         private float[] _vertices;
         private uint[] _indices;
-        private BufferShader _buffer;
+        private MeshBuffer _buffer;
         public TextureMaterial Material { get;  set; }
        
         public bool IsUsingDefaultUV { get; private set; } = true;
@@ -24,7 +24,7 @@ namespace Spacebox
             {
                 _uvs.Add((Face)face, CubeMeshData.GetBasicUVs());
             }
-            _buffer = new BufferShader(new BufferAttribute[]
+            _buffer = new MeshBuffer(new BufferAttribute[]
             {
                 new BufferAttribute { Name = "position", Size = 3 },
                 new BufferAttribute { Name = "normal", Size = 3 },

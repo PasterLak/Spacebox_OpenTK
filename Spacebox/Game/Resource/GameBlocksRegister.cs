@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Game.Effects;
-using Spacebox.Game.Resources;
+using Spacebox.Game.Resource;
 using Engine;
 using Spacebox.GUI;
 

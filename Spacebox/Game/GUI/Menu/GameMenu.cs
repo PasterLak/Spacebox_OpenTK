@@ -7,11 +7,11 @@ using Engine.Audio;
 using Engine.SceneManagment;
 using Spacebox.Game.Player;
 using Spacebox.Scenes;
-using static Spacebox.Game.Resources.GameSetLoader;
+using static Spacebox.Game.Resource.GameSetLoader;
 
 namespace Spacebox.Game.GUI.Menu
 {
-    public class GameMenu
+    public class GameMenu : IDisposable
     {
         public static bool IsVisible = false;
         public enum MenuState { Main, WorldSelect, NewWorld, Options, Multiplayer }
@@ -28,7 +28,7 @@ namespace Spacebox.Game.GUI.Menu
         public Texture2D trashIcon;
         private Vector2 oldItemSpacing;
         private Vector2 oldWindowPadding;
-        public AudioSource click1;
+        public AudioSource Click1;
         public bool showDeleteWindow = false;
         public bool showVersionConvertWindow = false;
         public MainMenuWindow mainMenuWindow;
@@ -41,10 +41,12 @@ namespace Spacebox.Game.GUI.Menu
 
         public GameMenu()
         {
+            Click1 = new AudioSource(Resources.Get<AudioClip>("Resources/Audio/UI/click1.ogg"));
             WorldInfoSaver.LoadWorlds(worlds);
             LoadGameSets();
-            click1 = new AudioSource(SoundManager.GetClip("UI/click1"));
-            trashIcon = TextureManager.GetTexture("Resources/Textures/UI/trash.png", true);
+
+           
+            trashIcon = Resources.Load<Texture2D>("Resources/Textures/UI/trash.png");
             trashIcon.FlipY();
             gamemodes = Enum.GetNames<GameMode>();
             mainMenuWindow = new MainMenuWindow(this);
@@ -94,7 +96,7 @@ namespace Spacebox.Game.GUI.Menu
                     if (w.Name == "Developer")
                     {
                         selectedWorld = w;
-                        click1.Play();
+                        Click1.Play();
                         if (VersionConverter.IsVersionOld(selectedWorld.GameVersion, Application.Version))
                         {
                             showVersionConvertWindow = true;
@@ -291,7 +293,7 @@ namespace Spacebox.Game.GUI.Menu
             drawList.AddRectFilled(buttonPos, buttonPos + size + offset, lightColor);
             if (ImGui.Button(label, size))
             {
-                click1.Play();
+                Click1.Play();
                 onClick?.Invoke();
             }
         }
@@ -309,7 +311,7 @@ namespace Spacebox.Game.GUI.Menu
             drawList.AddRectFilled(buttonPos, buttonPos + size + offset, lightColor);
             if (ImGui.Button(label, size))
             {
-                click1.Play();
+                Click1.Play();
                 onClick?.Invoke();
             }
             Vector2 imagePosMin = buttonPos + offset;
@@ -359,5 +361,14 @@ namespace Spacebox.Game.GUI.Menu
         public void SetStateToNewWorld() { currentState = MenuState.NewWorld; }
         public void SetStateToOptions() { currentState = MenuState.Options; }
         public void SetStateToMultiplayer() { currentState = MenuState.Multiplayer; }
+
+        public void Dispose()
+        {
+            Click1.Stop();
+
+            Click1.Clip.AudioSource = null;
+           
+            Click1.Dispose();
+        }
     }
 }

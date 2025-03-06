@@ -5,7 +5,7 @@ using Engine;
 
     public class AxesTest : SceneNode, IDisposable
     {
-        private BufferShader _buffer;
+        private MeshBuffer _buffer;
         private Shader _shader;
         private float[] vertices;
         private uint[] indices = new uint[] { 0, 1, 2, 3, 4, 5 };
@@ -33,7 +33,7 @@ using Engine;
 
         private void SetupBuffer()
         {
-            _buffer = new BufferShader(new BufferAttribute[]
+            _buffer = new MeshBuffer(new BufferAttribute[]
             {
                 new BufferAttribute { Name = "position", Size = 3 },
                 new BufferAttribute { Name = "color", Size = 3 }

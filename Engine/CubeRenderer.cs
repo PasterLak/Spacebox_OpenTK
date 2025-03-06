@@ -8,7 +8,7 @@ namespace Engine
     {
         public bool Enabled = true;
         public MaterialBase Material;
-        private BufferShader _buffer;
+        private MeshBuffer _buffer;
 
         private Vector3 _position;
         private Color4 _color = Color4.White;
@@ -96,7 +96,7 @@ namespace Engine
                 new BufferAttribute { Name = "aPos",    Size = 3 },
                 new BufferAttribute { Name = "aNormal", Size = 3 }
             };
-            _buffer = new BufferShader(attrs);
+            _buffer = new MeshBuffer(attrs);
             _buffer.BindBuffer(ref _vertices, ref _indices);
             _buffer.SetAttributes();
         }

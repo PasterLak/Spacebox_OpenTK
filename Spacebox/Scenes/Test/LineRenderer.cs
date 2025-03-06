@@ -7,7 +7,7 @@ public class LineRenderer2 : SceneNode, IDisposable
 {
     public bool Enabled = true;
     private Shader _shader;
-    private BufferShader _buffer;
+    private MeshBuffer _buffer;
     public List<Vector3> Points = new List<Vector3>();
     private float _thickness = 0.1f;
     public float Thickness
@@ -54,7 +54,7 @@ public class LineRenderer2 : SceneNode, IDisposable
                 new BufferAttribute { Name = "aNormal",   Size = 3 }
         };
 
-        _buffer = new BufferShader(attrs);
+        _buffer = new MeshBuffer(attrs);
     }
 
     public void SetPoints(List<Vector3> points)

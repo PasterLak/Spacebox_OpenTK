@@ -52,7 +52,7 @@ namespace Spacebox.Game.GUI.Menu
                     bool isSelected = i == menu.SelectedGameModeIndex;
                     if (ImGui.Selectable(menu.Gamemodes[i], isSelected))
                     {
-                        menu.click1.Play();
+                        menu.Click1.Play();
                         menu.SelectedGameModeIndex = i;
                     }
                     if (isSelected)
@@ -77,7 +77,7 @@ namespace Spacebox.Game.GUI.Menu
                     bool isSelected = i == menu.SelectedGameSetIndex;
                     if (ImGui.Selectable(menu.GameSets[i].ModName, isSelected))
                     {
-                        menu.click1.Play();
+                        menu.Click1.Play();
                         menu.SelectedGameSetIndex = i;
                     }
                     if (isSelected)
@@ -96,7 +96,7 @@ namespace Spacebox.Game.GUI.Menu
                 new Vector2(buttonStartX, buttonY),
                 () =>
                 {
-                    menu.click1.Play();
+                    menu.Click1.Play();
                     if (menu.IsNameUnique(menu.NewWorldName))
                     {
                         menu.CreateNewWorld();
@@ -107,7 +107,7 @@ namespace Spacebox.Game.GUI.Menu
                 new Vector2(buttonStartX + buttonWidth + spacing, buttonY),
                 () =>
                 {
-                    menu.click1.Play();
+                    menu.Click1.Play();
                     menu.SetStateToWorldSelect();
                 });
             ImGui.End();

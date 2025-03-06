@@ -1,5 +1,4 @@
-﻿
-using OpenTK.Audio.OpenAL;
+﻿using OpenTK.Audio.OpenAL;
 using OpenTK.Mathematics;
 
 namespace Engine.Audio
@@ -13,8 +12,9 @@ namespace Engine.Audio
         private bool isPaused = false;
         private readonly object playLock = new object();
         private Thread playbackThread;
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-        public Vector3 Position = new Vector3(0,0,0);
+        public Vector3 Position = new Vector3(0, 0, 0);
         public bool IsPlaying => isPlaying;
 
         public bool IsLooped
@@ -46,7 +46,7 @@ namespace Engine.Audio
         public AudioSource(AudioClip clip)
         {
             this.Clip = clip;
-            clip.AudioSource = this;
+            clip.AudioSource = this; 
             handle = AL.GenSource();
 
             if (!clip.IsStreaming)
@@ -62,8 +62,6 @@ namespace Engine.Audio
                 AL.Source(handle, ALSource3f.Position, Position.X, Position.Y, Position.Z);
                 CheckALError("Initializing streaming AudioSource");
             }
-
-           // DisposablesUnloader.Add(this);
         }
 
         public void Play()
@@ -90,11 +88,12 @@ namespace Engine.Audio
 
                 isPlaying = true;
                 isPaused = false;
-                //Console.WriteLine("Playback started.");
 
+             
                 if (playbackThread == null || !playbackThread.IsAlive)
                 {
-                    playbackThread = new Thread(MonitorPlayback)
+                    cancellationTokenSource = new CancellationTokenSource();
+                    playbackThread = new Thread(() => MonitorPlayback(cancellationTokenSource.Token))
                     {
                         IsBackground = true
                     };
@@ -108,54 +107,63 @@ namespace Engine.Audio
             lock (playLock)
             {
                 if (isDisposed) return;
-
                 AL.SourcePause(handle);
                 CheckALError("Pausing");
-
                 isPaused = true;
                 isPlaying = false;
-               
             }
         }
 
         public void Stop()
         {
+            if (isDisposed) return;
+            if (!isPlaying) return;
+
             lock (playLock)
             {
-                if (isDisposed) return;
-
-                AL.SourceStop(handle);
-                CheckALError("Stopping");
-
+                try
+                {
+                    AL.SourceStop(handle);
+                    CheckALError("Stopping");
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Debug.Error("Error stopping AudioSource (ignored): " + ex.Message);
+                }
                 isPlaying = false;
                 isPaused = false;
-               // Console.WriteLine("Playback stopped.");
             }
         }
 
         public void Dispose()
         {
+        
             lock (playLock)
             {
                 if (isDisposed) return;
-
                 isPlaying = false;
                 isDisposed = true;
 
-                if (playbackThread != null && playbackThread.IsAlive)
-                {
-                    playbackThread.Join();
-                }
+             
+                cancellationTokenSource.Cancel();
+                playbackThread?.Join();
 
                 AL.SourceStop(handle);
                 AL.DeleteSource(handle);
-              
+
+          
+                if (Clip != null)
+                {
+                    Clip.AudioSource = null;
+                }
+
+                GC.SuppressFinalize(this);
             }
         }
 
-        private void MonitorPlayback()
+        private void MonitorPlayback(CancellationToken token)
         {
-            while (isPlaying && !isDisposed)
+            while (!token.IsCancellationRequested && !isDisposed)
             {
                 if (Clip.IsStreaming)
                 {
@@ -171,9 +179,8 @@ namespace Engine.Audio
                     {
                         if (Clip.IsStreaming)
                         {
-                            // Additional streaming initialization can be done here if needed
+                           
                         }
-
                         AL.SourceRewind(handle);
                         AL.SourcePlay(handle);
                     }
@@ -183,11 +190,9 @@ namespace Engine.Audio
                         {
                             isPlaying = false;
                         }
-                       // Console.WriteLine("Playback finished.");
                         break;
                     }
                 }
-
                 Thread.Sleep(100);
             }
         }

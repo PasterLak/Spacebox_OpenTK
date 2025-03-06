@@ -11,16 +11,15 @@ namespace Engine
 
         public bool IsAmbientAffected = false;
 
-        public Skybox(string objPath, Texture2D texture)
+        public Skybox(Mesh mesh, Texture2D texture)
         {
-            var (vertices, indices) = ObjLoader.Load(objPath);
-            Mesh = new Mesh(vertices, indices);
+            Mesh = mesh;
             Material = new SkyboxMaterial(texture);
 
             Scale = new Vector3(100, 100, 100);
             Name = "Skybox";
-
         }
+
 
         public void DrawTransparent(Camera camera)
         {

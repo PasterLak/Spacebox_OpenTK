@@ -3,7 +3,7 @@ using Engine;
 using Spacebox.Game.Generation;
 
 
-namespace Spacebox.Game.Resources
+namespace Spacebox.Game.Resource
 {
     internal static class BlockFactory
     {

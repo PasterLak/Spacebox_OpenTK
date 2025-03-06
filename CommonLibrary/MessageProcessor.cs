@@ -41,7 +41,7 @@ namespace ServerCommon
         private void ProcessStatusChanged(NetIncomingMessage msg)
         {
             var status = (NetConnectionStatus)msg.ReadByte();
-            // Читаем строку (например, причину отключения)
+         
             msg.ReadString();
             if (status == NetConnectionStatus.Connected)
             {

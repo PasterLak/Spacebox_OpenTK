@@ -79,7 +79,7 @@ namespace Spacebox
 
             Debug.Log("[Engine started!]");
             Input.Initialize(this);
-
+            
             SceneRenderer = new SceneRenderer(ClientSize.X, ClientSize.Y);
             FrameLimiter.Initialize(120);
             FrameLimiter.IsRunning = true;
@@ -127,7 +127,7 @@ namespace Spacebox
 
             var sha4 = ShaderManager.AddPermanentShader("Shaders/PostProcessing/edgeDetection");
 
-           // _processManager.AddEffect(new EdgeDetectionEffect(sha4));
+            // _processManager.AddEffect(new EdgeDetectionEffect(sha4));
 
             MinimumSize = new Vector2i(640, 360);
             FullscreenRenderer = new FullscreenRenderer();
@@ -203,9 +203,9 @@ namespace Spacebox
 
 
             //FullscreenRenderer.RenderToScreen(SceneRenderer.SceneTexture, shaderpass, ClientSize);
-             _processManager.Process(SceneRenderer.SceneTexture,  ClientSize);
+            _processManager.Process(SceneRenderer.SceneTexture, ClientSize);
 
-      
+
 
             //GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
 
@@ -312,6 +312,12 @@ namespace Spacebox
             int posX = windowWidth / 2;
             int posY = windowHeight / 2;
             return new Vector2i(posX, posY);
+        }
+
+        public float GetAspectRatio()
+        {
+
+            return ClientSize.X / ClientSize.Y;
         }
 
         public void Quit()

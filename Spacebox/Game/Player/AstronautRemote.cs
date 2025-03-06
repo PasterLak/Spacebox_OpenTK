@@ -44,11 +44,11 @@ namespace Spacebox.Game.Player
             var texold = Engine.Resources.Get<Texture2D>("Resources/Textures/spacer.png");
             texold.UpdateTexture(true);
             playerShader = ShaderManager.GetShader("Shaders/player");
-            spacerOld = new Model("Resources/Models/spacer.obj", new Material(playerShader, texold));
+            spacerOld = new Model(Resources.Load<Engine.Mesh>("Resources/Models/spacer.obj"), new Material(playerShader, texold));
             var tex = TextureManager.GetTexture("Resources/Textures/astronaut2.jpg", true, true);
             tex.FlipY();
             tex.UpdateTexture(true);
-            spacer = new Model("Resources/Models/astronaut2.obj", new Material(playerShader, tex));
+            spacer = new Model(Resources.Load<Engine.Mesh>("Resources/Models/astronaut2.obj"), new Material(playerShader, tex));
             tag = new GUI.Tag($"[{playerData.ID}]{playerData.Name}", LatestPosition, new Color4(playerData.Color.X, playerData.Color.Y, playerData.Color.Z, 1));
             tag.TextAlignment = Tag.Alignment.Center;
             Tag.CalculateFontSize(100);
@@ -84,9 +84,14 @@ namespace Spacebox.Game.Player
             var selectedColor = colors[index];
             Texture2D tex = GetAstronautTexture(selectedColor);
             var mat = new Material(playerShader, tex);
-            astBody = new Model("Resources/Models/Player/Astronaut_Body_Fly.obj", mat);
-            astHelmet = new Model("Resources/Models/Player/Astronaut_Helmet_Closed.obj", mat);
-            astTank = new Model("Resources/Models/Player/Astronaut_Tank_Fly.obj", mat);
+
+            var mesh1 = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Body_Fly.obj");
+            var mesh2 = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Helmet_Closed.obj");
+            var mesh3 = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Tank_Fly.obj");
+
+            astBody = new Model(mesh1, mat);
+            astHelmet = new Model(mesh2, mat);
+            astTank = new Model(mesh3, mat);
         }
 
         public static Quaternion MirrorQuaternion(Quaternion original)

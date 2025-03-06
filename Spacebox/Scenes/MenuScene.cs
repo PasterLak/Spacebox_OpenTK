@@ -11,6 +11,7 @@ using ImGuiNET;
 using Spacebox.Game.Generation;
 using Engine.SceneManagment;
 
+
 namespace Spacebox.Scenes
 {
     public class MenuScene : Engine.SceneManagment.Scene
@@ -45,17 +46,22 @@ namespace Spacebox.Scenes
 
             var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
 
-            skybox = new Skybox("Resources/Models/cube.obj", skyboxTexture);
+            var mesh = Resources.Load<Engine.Mesh>("Resources/Models/cube.obj");
+            skybox = new Skybox(mesh, skyboxTexture);
 
             skybox.IsAmbientAffected = false;
 
 
             CenteredImageMenu.LoadImage("Resources/Textures/spaceboxLogo.png", true);
-            menu = new GameMenu();
 
-            SetDustSpawner();
+            Resources.Load<AudioClip>("Resources/Audio/UI/click1.ogg");
+            menu = new GameMenu();
             
-            music = new AudioSource(SoundManager.GetClip("music.ogg"));
+            SetDustSpawner();
+
+            var clip = Resources.Load<AudioClip>("Resources/Audio/Music/music.ogg");
+
+            music = new AudioSource(clip);
             music.IsLooped = true;
 
             music.Play();
@@ -142,6 +148,7 @@ namespace Spacebox.Scenes
            // skyboxShader.Dispose();
             spawner.Dispose();
             music.Dispose();
+            menu.Dispose();
         }
 
         public override void Update()
@@ -149,7 +156,7 @@ namespace Spacebox.Scenes
             CenteredImageMenu.Update();
             spawner.Update();
             //sprite.UpdateWindowSize(Window.Instance.Size);
-
+           
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
 
             if (Input.IsKeyDown(Keys.Enter) || Input.Mouse.IsButtonDown(MouseButton.Left))
@@ -161,7 +168,7 @@ namespace Spacebox.Scenes
 
             if (Input.IsKeyDown(Keys.T))
             {
-               SceneManager.LoadScene(typeof(TestScene));
+               SceneManager.LoadScene(typeof(LogoScene));
             }
 
         }

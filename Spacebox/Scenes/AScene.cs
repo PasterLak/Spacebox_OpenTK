@@ -51,7 +51,7 @@ namespace Spacebox.Scenes
         public override void Update()
         {
 
-            SceneSwitcher.Update(typeof(BScene));
+            SceneSwitcher.Update(typeof(MenuScene));
 
             if (Input.IsKeyDown(Keys.S))
             {

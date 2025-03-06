@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using System.Numerics;
 using Spacebox;
+
 namespace Engine
 {
     public static class CenteredImageMenu
@@ -15,7 +16,13 @@ namespace Engine
         public static void LoadImage(string path, bool pixelated = false)
         {
             _imageTexture?.Dispose();
-            _imageTexture = TextureManager.GetTexture(path, pixelated, false);
+
+            var texture2 = Resources.Load<Texture2D>(path);
+
+            texture2.FilterMode = FilterMode.Point;
+            texture2.FlipY();
+
+             _imageTexture = texture2;
         }
 
         public static void Show(float duration = 0f)

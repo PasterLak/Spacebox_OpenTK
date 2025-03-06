@@ -3,7 +3,7 @@ using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
-using Spacebox.Game.Resources;
+using Spacebox.Game.Resource;
 using Engine;
 using Engine.Audio;
 

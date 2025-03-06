@@ -64,7 +64,7 @@ namespace Spacebox.FPS
             new Vector3(-1.3f, 1.0f, -1.5f)
         };
 
-        // We need the point lights' positions to draw the lamps and to get light the materials properly
+      
         public static readonly Vector3[] _pointLightPositions =
         {
             new Vector3(0.7f, 0.2f, 2.0f),

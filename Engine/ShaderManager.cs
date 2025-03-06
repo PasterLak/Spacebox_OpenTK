@@ -26,6 +26,8 @@ namespace Engine
             if (string.IsNullOrWhiteSpace(shaderPath))
                 throw new ArgumentException("Shader path cannot be null or empty.", nameof(shaderPath));
 
+            return Resources.Load<Shader>(shaderPath);
+
             lock (_lock)
             {
                 if (Shaders.TryGetValue(shaderPath, out var existingEntry))

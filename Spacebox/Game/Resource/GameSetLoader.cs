@@ -4,7 +4,7 @@ using Engine.Audio;
 using Spacebox.Game.Player;
 using Engine;
 using Spacebox.Scenes;
-namespace Spacebox.Game.Resources
+namespace Spacebox.Game.Resource
 {
     public static class GameSetLoader
     {
@@ -147,6 +147,7 @@ namespace Spacebox.Game.Resources
         private static void LoadSounds(string modPath)
         {
             var audioPath = Path.Combine(modPath, "Sounds");
+          
             if (!Directory.Exists(audioPath)) return;
 
             try
@@ -154,6 +155,7 @@ namespace Spacebox.Game.Resources
                 string[] files = GetFilesRecursive(audioPath, new string[] { ".wav", ".ogg" });
                 foreach (string file in files)
                 {
+                   
                     ProcessSoundFile(file);
                 }
 
@@ -164,6 +166,8 @@ namespace Spacebox.Game.Resources
             {
                 Debug.Error($"Error loading sounds: {ex.Message}");
             }
+
+         
         }
 
         public static string[] GetFilesRecursive(string rootPath, string[] extensionsWithDot)
@@ -185,9 +189,11 @@ namespace Spacebox.Game.Resources
         private static void ProcessSoundFile(string file)
         {
             var soundName = Path.GetFileNameWithoutExtension(file);
+
             if (!GameAssets.Sounds.ContainsKey(soundName))
             {
-                GameAssets.Sounds.Add(soundName, new AudioClip(file));
+                var clip = Resources.Load<AudioClip>(file);
+                GameAssets.Sounds.Add(soundName, clip);
             }
         }
 

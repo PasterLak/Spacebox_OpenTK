@@ -45,6 +45,13 @@ namespace Engine
 
         public static Texture2D GetTexture(string texturePath, bool pixelated)
         {
+
+            var texture =   Resources.Get<Texture2D>(texturePath);
+
+            texture.FilterMode = pixelated ? FilterMode.Point : FilterMode.Linear;
+
+            return texture;
+
             return GetTexture(texturePath, pixelated, true);
         }
 
@@ -52,6 +59,18 @@ namespace Engine
         {
             if (string.IsNullOrWhiteSpace(texturePath))
                 throw new ArgumentException("Texture path cannot be null or empty.", nameof(texturePath));
+
+
+            var texture2 = Resources.Get<Texture2D>(texturePath);
+
+            texture2.FilterMode = pixelated ? FilterMode.Point : FilterMode.Linear;
+
+            if(mirrowY)
+            {
+                texture2.FlipY();
+            }
+
+            return texture2;
 
             lock (_lock)
             {

@@ -10,7 +10,7 @@ using Spacebox.Game;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
-using static Spacebox.Game.Resources.GameSetLoader;
+using static Spacebox.Game.Resource.GameSetLoader;
 
 namespace Spacebox.Scenes
 {
@@ -49,8 +49,9 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
             player = new CameraBasic(new Vector3(0, 0, 0));
-        
-            skybox = new Skybox("Resources/Models/cube.obj",
+
+            var mesh = Resources.Load<Engine.Mesh>("Resources/Models/cube.obj");
+            skybox = new Skybox(mesh,
                 new SpaceTexture(512, 512, World.Seed));
             skybox.IsAmbientAffected = false;
             Debug.Warning("Trying to connect to server...");

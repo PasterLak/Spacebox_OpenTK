@@ -35,28 +35,28 @@ public class MainMenuWindow : MenuWindow
         ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
         GameMenu.CenterButtonWithBackground("Play", buttonWidth, buttonHeight, () =>
         {
-            menu.click1.Play();
+            menu.Click1.Play();
             menu.SetStateToWorldSelect();
         });
         currentY += buttonHeight + spacing;
         ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
         GameMenu.CenterButtonWithBackground("Multiplayer", buttonWidth, buttonHeight, () =>
         {
-            menu.click1.Play();
+            menu.Click1.Play();
             menu.SetStateToMultiplayer();
         });
         currentY += buttonHeight + spacing;
         ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
         GameMenu.CenterButtonWithBackground("Options", buttonWidth, buttonHeight, () =>
         {
-            menu.click1.Play();
+            menu.Click1.Play();
             menu.SetStateToOptions();
         });
         currentY += buttonHeight + spacing;
         ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
         GameMenu.CenterButtonWithBackground("Exit", buttonWidth, buttonHeight, () =>
         {
-            menu.click1.Play();
+            menu.Click1.Play();
             Window.Instance.Quit();
         });
         ImGui.End();

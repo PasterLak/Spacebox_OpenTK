@@ -7,7 +7,7 @@ namespace Engine
         public string Name;
         public byte Size;
     }
-    public class BufferShader : IDisposable
+    public class MeshBuffer : IDisposable
     {
         public int VAO { get; private set; }
         public int VBO { get; private set; }
@@ -19,7 +19,7 @@ namespace Engine
         private bool _isGenerated = false;
        
 
-        public BufferShader(BufferAttribute[] attributes)
+        public MeshBuffer(BufferAttribute[] attributes)
         {
             GenBuffer();
             for (byte i = 0; i < attributes.Length; i++)
@@ -27,7 +27,7 @@ namespace Engine
                 AddAttribute(attributes[i].Name, attributes[i].Size);
             }
         }
-        public BufferShader()
+        public MeshBuffer()
         {
             GenBuffer();
         }

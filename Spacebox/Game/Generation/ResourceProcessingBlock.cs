@@ -1,5 +1,5 @@
 ﻿
-using Spacebox.Game.Resources;
+using Spacebox.Game.Resource;
 using Engine;
 namespace Spacebox.Game.Generation
 {

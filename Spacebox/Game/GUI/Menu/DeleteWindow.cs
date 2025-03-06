@@ -35,7 +35,7 @@ namespace Spacebox.Game.GUI.Menu
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.8f, 0.25f, 0.25f, 1.0f));
             GameMenu.CenterButtonWithBackground("Yes, delete", buttonWidth, buttonHeight, () =>
             {
-                menu.click1.Play();
+                menu.Click1.Play();
                 menu.showDeleteWindow = false;
                 menu.DeleteWorld(menu.selectedWorld);
                 menu.selectedWorld = null;
@@ -49,7 +49,7 @@ namespace Spacebox.Game.GUI.Menu
             GameMenu.CenterButtonWithBackground("No", buttonWidth, buttonHeight, () =>
             {
                 menu.showDeleteWindow = false;
-                menu.click1.Play();
+                menu.Click1.Play();
             });
             ImGui.Dummy(new Vector2(0, spacing));
             ImGui.End();

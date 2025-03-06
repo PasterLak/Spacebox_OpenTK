@@ -4,7 +4,6 @@ using OpenTK.Windowing.Common;
 using Engine.Commands;
 using System.Drawing;
 
-
 namespace Engine
 {
     public static class Debug

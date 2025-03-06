@@ -16,11 +16,11 @@ namespace Spacebox.Game
         public bool EnableDepthTest = true;
         public bool EnableAlpha = true;
 
-        private BufferShader buffer;
+        private MeshBuffer buffer;
         public readonly int FloatsPerVertex;
 
 
-        public Mesh(float[] vertices, uint[] indices, BufferShader buffer)
+        public Mesh(float[] vertices, uint[] indices, MeshBuffer buffer)
         {
             this.buffer = buffer;
             _vertexCount = indices.Length;

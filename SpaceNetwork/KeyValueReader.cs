@@ -1,8 +1,5 @@
-﻿
-
-namespace SpaceNetwork
+﻿namespace SpaceNetwork
 {
-
     public class KeyValueFileReader
     {
         public static Dictionary<string, string> ReadFile(string fileName)
@@ -27,5 +24,4 @@ namespace SpaceNetwork
             return dict;
         }
     }
-
 }

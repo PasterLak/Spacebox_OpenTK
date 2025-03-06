@@ -30,7 +30,7 @@ namespace Spacebox.Game.GUI.Menu
             ImGui.SetCursorPosX((windowWidth - buttonWidth) / 2);
             if (ImGui.Button("Back", new Vector2(buttonWidth, buttonHeight)))
             {
-                menu.click1.Play();
+                menu.Click1.Play();
                 menu.SetStateToMain();
             }
             ImGui.End();

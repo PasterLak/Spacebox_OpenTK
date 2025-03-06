@@ -14,7 +14,7 @@ using Spacebox.Game.Commands;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
-using Spacebox.Game.Resources;
+using Spacebox.Game.Resource;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
 using Client;
@@ -173,7 +173,9 @@ namespace Spacebox.Scenes
 
             skyboxShader = ShaderManager.GetShader("Shaders/skybox");
             var texture = new SpaceTexture(512, 512, World.Seed);
-            skybox = new Skybox("Resources/Models/sphere.obj",  texture);
+
+            var mesh = Resources.Load<Engine.Mesh>("Resources/Models/sphere.obj");
+            skybox = new Skybox(mesh,  texture);
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
             skybox.IsAmbientAffected = false;
             SceneGraph.AddRoot(skybox);
@@ -243,7 +245,7 @@ namespace Spacebox.Scenes
             Texture2D spacerTex = Resources.Get<Texture2D>("Resources/Textures/spacer.png");
             spacerTex.FlipY();
             spacerTex.UpdateTexture(true);
-            spacer = new Model("Resources/Models/spacer.obj", new Material(ShaderManager.GetShader("Shaders/player"), spacerTex));
+            spacer = new Model(Resources.Load<Engine.Mesh>("Resources/Models/spacerw.obj"), new Material(ShaderManager.GetShader("Shaders/player"), spacerTex));
             spacer.Position = localPlayer.Position + new Vector3(12, 15, 7);
             spacer.Rotation = new Vector3(0, 0, 0);
 

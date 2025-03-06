@@ -1,5 +1,6 @@
 ﻿
 using Engine.Audio;
+using Engine.SceneManagment;
 using Engine.Utils;
 using OpenTK.Mathematics;
 
@@ -22,6 +23,8 @@ namespace Engine
         private static readonly Dictionary<Type, Dictionary<string, string>> _aliasMap = new Dictionary<Type, Dictionary<string, string>>();
 
         private static readonly Dictionary<Type, IResource> _error = new Dictionary<Type, IResource>();
+
+        private static List<IResource> _loadedResources = new List<IResource>();
         static Resources()
         {
             LoadError();
@@ -57,15 +60,16 @@ namespace Engine
 
                 if (resource == null)
                 {
-                    Debug.Log($"Resource was null {typeof(T)} {pathOrName}");
+                    Debug.Error($"[Resources][Load] Resource was null {typeof(T).Name} {pathOrName}");
                     return (T)_error[typeof(T)];
                 }
             }
-            catch
+            catch(Exception ex)
             {
                 // resource = (T)resource.Default();
                 // return resource;
                 // Debug.Log($"Resource error {typeof(T)} {pathOrName}");
+                Debug.Error($"[Resources][Load] Error loading {typeof(T).Name} from {pathOrName}. Default one will be used. Error: {ex}");
                 return (T)_error[typeof(T)];
                 // resource = (T)Get<T>(pathOrName);
             }
@@ -225,6 +229,24 @@ namespace Engine
                 }
             }
         }
+        public static void AddResourceToDispose(IResource resource)
+        {
+            if (resource != null && !_loadedResources.Contains(resource))
+            {
+                _loadedResources.Add(resource);
+            }
+        }
+
+    
+        private static void DisposeAllResources()
+        {
+            foreach (var resource in _loadedResources)
+            {
+                resource?.Dispose();
+            }
+            _loadedResources.Clear();
+        }
+
 
         public static void Clear(bool clearGlobal = false)
         {
@@ -250,6 +272,8 @@ namespace Engine
                     }
                 }
             }
+
+            DisposeAllResources();
         }
 
         public static void PrintLoadedResources()
@@ -261,8 +285,11 @@ namespace Engine
             {
                 sum += t.Value.Count;
             }
-            Debug.Log("[Resources] Loaded resources: " + sum, Color4.Yellow);
+            Debug.Log($"[Resources][Scene: {SceneManager.CurrentScene.Name}] Loaded resources: {sum}", Color4.Yellow);
 
+            if (sum == 0) return;
+
+            Debug.Log(">------------------------------------<" , Color4.Yellow);
             foreach (var kvp in _resourcesByType)
             {
                 var type = kvp.Key;
@@ -270,10 +297,12 @@ namespace Engine
 
                 if (dict.Count == 0) continue;
 
-                Debug.Log($"[{type.Name}] count: {dict.Count}");
+                Debug.Log($"- [{type.Name}] count: {dict.Count}");
                 foreach (var key in dict.Keys)
-                    Debug.Log($"  -> {key}");
+                    Debug.Log($"  > {key}");
             }
+            Debug.Log(">------------------------------------<", Color4.Yellow);
+
         }
 
         public static void AddResource<T>(string pathOrName, T resource, bool global) where T : IResource

@@ -5,7 +5,7 @@ using System.Text.Json;
 using ImGuiNET;
 using Engine;
 using Spacebox.Client;
-using static Spacebox.Game.Resources.GameSetLoader;
+using static Spacebox.Game.Resource.GameSetLoader;
 using SpaceNetwork;
 
 namespace Spacebox.Game.GUI.Menu

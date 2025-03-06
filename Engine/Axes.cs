@@ -7,7 +7,7 @@ namespace Engine
 {
     public class Axes : Node3D, IDisposable
     {
-        private BufferShader _buffer;
+        private MeshBuffer _buffer;
         private Shader _shader;
         private float[] vertices;
         private uint[] indices = new uint[] { 0, 1, 2, 3, 4, 5 };
@@ -18,7 +18,7 @@ namespace Engine
             Position = position;
             Length = length;
             Rotation = Vector3.Zero;
-            _shader = Resources.Get<Shader>("Shaders/axes.glsl");
+            _shader = Resources.Get<Shader>("Shaders/axes");
             UpdateVertices();
             SetupBuffer();
         }
@@ -28,14 +28,14 @@ namespace Engine
             Position = position;
             Length = length;
             Rotation = rotation;
-            _shader = Resources.Get<Shader>("Shaders/axes.glsl");
+            _shader = Resources.Get<Shader>("Shaders/axes");
             UpdateVertices();
             SetupBuffer();
         }
 
         private void SetupBuffer()
         {
-            _buffer = new BufferShader(new BufferAttribute[]
+            _buffer = new MeshBuffer(new BufferAttribute[]
             {
                 new BufferAttribute { Name = "position", Size = 3 },
                 new BufferAttribute { Name = "color", Size = 3 }

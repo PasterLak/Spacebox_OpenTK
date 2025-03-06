@@ -4,7 +4,7 @@ using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Engine;
 using Spacebox.Game;
-using Spacebox.Game.Resources;
+using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.GUI
 {

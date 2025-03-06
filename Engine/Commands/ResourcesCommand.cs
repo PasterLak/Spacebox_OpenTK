@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace Engine.Commands
+﻿namespace Engine.Commands
 {
     public class ResourcesCommand : ICommand
     {
@@ -10,8 +8,10 @@ namespace Engine.Commands
         public void Execute(string[] args)
         {
           
-            Debug.AddMessage($"[Shaders cached: {ShaderManager.Count}]", new Vector4(1f, 1f, 0f, 1f));
-            Debug.AddMessage($"[Textures cached: {TextureManager.Count}]", new Vector4(1f, 1f, 0f, 1f));
+            //Debug.AddMessage($"[Shaders cached: {ShaderManager.Count}]", new Vector4(1f, 1f, 0f, 1f));
+            //Debug.AddMessage($"[Textures cached: {TextureManager.Count}]", new Vector4(1f, 1f, 0f, 1f));
+
+            Resources.PrintLoadedResources();
         }
     }
 }

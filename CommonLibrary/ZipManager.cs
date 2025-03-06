@@ -7,7 +7,7 @@ namespace ServerCommon
     {
         public static byte[] CreateZipFromFolder(string folderPath)
         {
-           // Console.WriteLine("sending _> " + folderPath);
+          
             string tempZip = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".zip");
             ZipFile.CreateFromDirectory(folderPath, tempZip, CompressionLevel.Optimal, false);
             byte[] data = File.ReadAllBytes(tempZip);

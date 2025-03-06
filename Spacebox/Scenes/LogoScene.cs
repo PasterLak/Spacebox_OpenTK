@@ -89,7 +89,7 @@ namespace Spacebox.Scenes
             sprite.UpdateWindowSize(Window.Instance.ClientSize);
             sprite.UpdateSize(Window.Instance.Size);
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
-
+           // SceneSwitcher.Update(typeof(AScene));
             if (Input.IsKeyDown(Keys.S))
             {
                 SceneManager.LoadScene(typeof(MenuScene));

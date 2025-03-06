@@ -12,7 +12,7 @@ namespace Engine.PostProcessing
     {
         private List<PostProcessEffect> effects = new List<PostProcessEffect>();
         private bool disposed = false;
-        private static BufferShader fullscreenBuffer;
+        private static MeshBuffer fullscreenBuffer;
         private int[] pingpongFBO = new int[2];
         private int[] pingpongTexture = new int[2];
         private int currentPingPong = 0;
@@ -24,7 +24,7 @@ namespace Engine.PostProcessing
                 new BufferAttribute { Name = "aPos", Size = 2 },
                 new BufferAttribute { Name = "aTexCoords", Size = 2 }
             };
-            fullscreenBuffer = new BufferShader(attrs);
+            fullscreenBuffer = new MeshBuffer(attrs);
             float[] vertices = {
                 -1f, -1f, 0f, 0f,
                  1f, -1f, 1f, 0f,

@@ -16,13 +16,13 @@ namespace Spacebox.FPS
         {
             Position = pos;
 
-            trunk = new Model("Resources/Models/tree0.obj",
+            trunk = new Model(Resources.Load<Mesh>("Resources/Models/tree.obj"),
                new Material(shader, Resources.Get<Texture2D>("Resources/Textures/Game/wood.png")));
 
             trunk.Position = pos;
 
 
-            leaves = new Model("Resources/Models/leaves.obj",
+            leaves = new Model(Resources.Load<Mesh>("Resources/Models/leaves.obj"),
                 new Material(shader, Resources.Get<Texture2D>("Resources/Textures/Game/leaves.png")));
 
             leaves.Position = pos;
