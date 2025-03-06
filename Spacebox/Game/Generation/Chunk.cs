@@ -2,6 +2,7 @@
 using Engine.Physics;
 using OpenTK.Mathematics;
 using Spacebox.Game.Physics;
+using Spacebox.Game.Resource;
 using System.Collections.Concurrent;
 
 
@@ -224,7 +225,7 @@ namespace Spacebox.Game.Generation
             return b;
         }
 
-        public void Render(Shader shader)
+        public void Render(BlockMaterial material)
         {
             if (!_isLoadedOrGenerated) return;
 
@@ -240,11 +241,13 @@ namespace Spacebox.Game.Generation
 
 
             Matrix4 model = Matrix4.CreateTranslation(position);
-            shader.Use();
-            shader.SetMatrix4("model", model);
+
+            material.Use();
+            material.SetUniforms(model);
+           
 
             if (_mesh != null)
-                _mesh.Draw(shader);
+                _mesh.Draw(material.Shader);
 
             if (ShowChunkBounds && VisualDebug.Enabled)
             {

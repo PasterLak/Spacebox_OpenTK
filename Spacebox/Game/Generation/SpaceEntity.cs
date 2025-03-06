@@ -7,6 +7,7 @@ using Spacebox.Game.Physics;
 using Spacebox.Game.Effects;
 using Engine;
 using Client;
+using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation
 {
@@ -29,7 +30,7 @@ namespace Spacebox.Game.Generation
         public void SetModified() { if (!IsModified) IsModified = true; }
         public Sector Sector { get; private set; }
 
-        private static Shader Shader;
+
         private static Shader sharedShader;
         private static Texture2D sharedTexture;
 
@@ -58,7 +59,7 @@ namespace Spacebox.Game.Generation
             BoundingBox = new BoundingBox(positionWorld, new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));
             SumPosCenterOfMass = positionWorld;
             Octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
-            Shader = Resources.Load<Shader>("Shaders/block");
+          
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
 
             InitializeSharedResources();
@@ -79,7 +80,7 @@ namespace Spacebox.Game.Generation
             BoundingBox = new BoundingBox(positionWorld, new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));
             SumPosCenterOfMass = positionWorld;
             Octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
-            Shader = Resources.Load<Shader>("Shaders/block");
+         
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
 
             InitializeSharedResources();
@@ -626,11 +627,10 @@ namespace Spacebox.Game.Generation
         }
 
         HashSet<Chunk> chunks = new HashSet<Chunk>();
-        public void Render(Camera camera)
+        public void Render(Camera camera, BlockMaterial material)
         {
+           
 
-            blockTexture.Use(TextureUnit.Texture0);
-            atlasTexture.Use(TextureUnit.Texture1);
 
             chunks.Clear();
            Octree.FindDataInRadius(WorldPositionToLocal(camera.Position), 512, chunks);
@@ -659,7 +659,7 @@ namespace Spacebox.Game.Generation
                 }
                 
                 chunk.SetLOD((int)Vector3.DistanceSquared(camera.Position, chunk.GeometryBoundingBox.Center));
-                chunk.Render(Shader);
+                chunk.Render(material);
                 
             }
 

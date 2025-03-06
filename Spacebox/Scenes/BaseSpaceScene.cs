@@ -27,8 +27,7 @@ namespace Spacebox.Scenes
         protected Astronaut localPlayer;
         protected Skybox skybox;
         protected World world;
-        protected Shader skyboxShader;
-        protected Shader blocksShader;
+      
         protected Texture2D blockTexture;
         protected Texture2D lightAtlas;
         BlockMaterial blockMaterial;
@@ -171,10 +170,10 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
 
-            skyboxShader = Resources.Load<Shader>("Shaders/skybox");
+       
             var texture = new SpaceTexture(512, 512, World.Seed);
 
-            var mesh = Resources.Load<Engine.Mesh>("Resources/Models/sphere.obj");
+            var mesh = Resources.Load<Engine.Mesh>("Resources/Models/cube.obj");
             skybox = new Skybox(mesh,  texture);
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
             skybox.IsAmbientAffected = false;
@@ -211,13 +210,15 @@ namespace Spacebox.Scenes
 
             Input.SetCursorState(CursorState.Grabbed);
 
-            blocksShader = Resources.Load<Shader>("Shaders/block");
-            pointLightsPool = new PointLightsPool(blocksShader, localPlayer, 64);
+           
+
             localPlayer.GameMode = World.Data.Info.GameMode;
             blockTexture = GameAssets.BlocksTexture;
             lightAtlas = GameAssets.LightAtlas;
            
             blockMaterial = new BlockMaterial(blockTexture, lightAtlas, localPlayer);
+
+            pointLightsPool = new PointLightsPool(blockMaterial.Shader, localPlayer, 64);
 
             blockDestructionManager = new BlockDestructionManager(localPlayer);
             dustSpawner = new DustSpawner(localPlayer);
@@ -418,12 +419,14 @@ namespace Spacebox.Scenes
             pointLightsPool.Render();
 
             Vector3 camPos = localPlayer.CameraRelativeRender ? Vector3.Zero : localPlayer.Position;
-           
-            
 
-            //blockTexture.Use(TextureUnit.Texture0);
-            //lightAtlas.Use(TextureUnit.Texture1);
-            blockMaterial.SetUniforms(localPlayer.GetViewMatrix()); // !!!
+
+           // blockMaterial.Shader.Use();
+          //  blockTexture.Use(TextureUnit.Texture0);
+          //  lightAtlas.Use(TextureUnit.Texture1);
+            //blockMaterial.SetUniforms(localPlayer.GetViewMatrix()); // !!!
+
+
             if (InteractionShoot.ProjectilesPool != null)
                 InteractionShoot.ProjectilesPool.Render();
 
@@ -434,8 +437,9 @@ namespace Spacebox.Scenes
                 InteractionShoot.lineRenderer.Render();
 
             localPlayer.Render();
-            blockMaterial.Use();
-            world.Render(blocksShader);
+
+           
+            world.Render(blockMaterial);
             
             blockDestructionManager.Render();
             spacer.Render(localPlayer);
@@ -487,12 +491,11 @@ namespace Spacebox.Scenes
         {
             localPlayer = null;
             PanelUI.Player = null;
-            blocksShader.Dispose();
+        
             lightAtlas.Dispose();
             Sector.IsPlayerSpawned = false;
             TickTaskManager.Dispose();
-            //skybox.Texture.Dispose();
-            skyboxShader.Dispose();
+     
             dustSpawner.Dispose();
             pointLightsPool.Dispose();
             ambient.Dispose();

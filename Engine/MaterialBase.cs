@@ -26,6 +26,9 @@ namespace Engine
         public RenderFace RenderFace { get;  set; } = RenderFace.Both;
 
         public Color4 Color { get; set; } = Color4.White;
+
+        private byte textureUniformID = 0;
+
         public MaterialBase(Shader shader)
         {
             Shader = shader;
@@ -78,9 +81,22 @@ namespace Engine
             }
         }
 
+        protected void UseTexture(Texture2D? texture, string uniformName)
+        {
+            if (texture != null)
+            {
+
+                texture.Use(TextureUnit.Texture0 + textureUniformID);
+                Shader.SetInt("textureAtlas", textureUniformID);
+
+                textureUniformID++;
+            }
+        }
 
         public virtual void SetUniforms(Matrix4 modelMatrix)
         {
+            textureUniformID = 0;
+            Shader.Use();
             ApplyRenderSettings();
             SetMVP(modelMatrix);
             SetMaterialProperties();
@@ -94,6 +110,8 @@ namespace Engine
 
         protected virtual void SetMaterialProperties()
         {
+            //Shader.Use();
+
             Shader.SetVector4("color", Color);
         }
 

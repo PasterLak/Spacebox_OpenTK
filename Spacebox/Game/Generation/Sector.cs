@@ -4,6 +4,7 @@ using Engine.Utils;
 using OpenTK.Mathematics;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
+using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation
 {
@@ -317,7 +318,7 @@ namespace Spacebox.Game.Generation
             }
         }
 
-        public void Render(Shader shader)
+        public void Render(BlockMaterial shader)
         {
 
             VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 20, 100));
@@ -351,7 +352,7 @@ namespace Spacebox.Game.Generation
                         {
                             // entity.Tag.Enabled = true;
                         }
-                        entity.Render(cam);
+                        entity.Render(cam, shader);
 
                         if (entity.StarsEffect.Enabled)
                             entity.StarsEffect.Enabled = false;

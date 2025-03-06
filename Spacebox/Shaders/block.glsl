@@ -31,8 +31,8 @@ float calcFog(vec4 worldPosition, float distanceMultiplicator)
 
 void main()
 {
-    vec4 worldPosition =  vec4(aPosition,1.0)*model; // vec4(aPosition,1.0)*model;  model * vec4(aPosition,1.0)
-    gl_Position =worldPosition*view*projection; // worldPosition*view projection * view * worldPosition; 
+    vec4 worldPosition =    vec4(aPosition,1.0) * model; // vec4(aPosition,1.0)*model;  model * vec4(aPosition,1.0)
+    gl_Position = worldPosition*view*projection; // worldPosition*view projection * view * worldPosition; 
     TexCoord = aTexCoord;
     Color = aColor;
     FragPos = vec3(worldPosition);

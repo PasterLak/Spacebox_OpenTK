@@ -8,6 +8,7 @@ using Spacebox.Game.Effects;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
+using Spacebox.Game.Resource;
 
 /*
   positionWorld
@@ -125,12 +126,12 @@ namespace Spacebox.Game.Generation
 
         }
 
-        public void Render(Shader shader)
+        public void Render(BlockMaterial material)
         {
 
             if (CurrentSector != null)
             {
-                CurrentSector.Render(shader);
+                CurrentSector.Render(material);
             }
 
             DropEffectManager.Render();

@@ -25,12 +25,7 @@ namespace Engine
         {
             base.SetMaterialProperties();
 
-            if (MainTexture != null)
-            {
-                GL.ActiveTexture(TextureUnit.Texture0);
-                MainTexture.Use();
-                Shader.SetInt("texture0", 0);
-            }
+            UseTexture(MainTexture, "texture0");
         }
 
     }
