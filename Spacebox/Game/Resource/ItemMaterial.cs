@@ -35,6 +35,8 @@ namespace Spacebox.Game.Resource
                 Shader.SetInt("textureAtlas", 1);
             }
 
+
+
             Shader.SetVector3("cameraPosition", player.Position);
             Shader.SetVector3("ambientColor", Lighting.AmbientColor);
         }

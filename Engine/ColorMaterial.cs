@@ -1,6 +1,4 @@
-﻿using OpenTK.Mathematics;
-
-namespace Engine
+﻿namespace Engine
 {
     public class ColorMaterial : MaterialBase
     {

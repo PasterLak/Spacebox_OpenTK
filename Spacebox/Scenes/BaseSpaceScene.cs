@@ -458,7 +458,7 @@ namespace Spacebox.Scenes
 
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            PanelUI.DrawItemModel();
+           // PanelUI.DrawItemModel();
         }
 
         public override void OnGUI()

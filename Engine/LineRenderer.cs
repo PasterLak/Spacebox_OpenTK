@@ -130,8 +130,9 @@ namespace Engine
                     verts.Add(n0.Z);
                 }
 
-                inds.Add(vertexOffset + 0); inds.Add(vertexOffset + 1); inds.Add(vertexOffset + 2);
-                inds.Add(vertexOffset + 2); inds.Add(vertexOffset + 3); inds.Add(vertexOffset + 0);
+                inds.Add(vertexOffset + 2); inds.Add(vertexOffset + 1); inds.Add(vertexOffset + 0);
+                inds.Add(vertexOffset + 0); inds.Add(vertexOffset + 3); inds.Add(vertexOffset + 2);
+
                 inds.Add(vertexOffset + 4); inds.Add(vertexOffset + 5); inds.Add(vertexOffset + 6);
                 inds.Add(vertexOffset + 6); inds.Add(vertexOffset + 7); inds.Add(vertexOffset + 4);
 
