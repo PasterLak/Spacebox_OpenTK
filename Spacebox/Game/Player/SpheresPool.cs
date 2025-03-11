@@ -21,7 +21,7 @@ namespace Spacebox.Game.Player
 
         public ImpulseSphere Take()
         {
-            var sphere = pool.GetFreeElement();
+            var sphere = pool.Take();
             spheres.Add(sphere);
             return sphere;
         }
@@ -31,7 +31,7 @@ namespace Spacebox.Game.Player
             if (sphere != null)
             {
                 spheres.Remove(sphere);
-                pool.ReturnElement(sphere);
+                pool.Release(sphere);
             }
         }
 

@@ -155,6 +155,27 @@ namespace Engine
             DrawBoundingSphere(s, color, segments);
         }
 
+        public static void DrawOBB(BoundingBoxOBB obb, Color4 color)
+        {
+            if (!Enabled) return;
+            Vector3[] corners = obb.GetCorners();
+
+            DrawLine(corners[0], corners[1], color);
+            DrawLine(corners[1], corners[3], color);
+            DrawLine(corners[3], corners[2], color);
+            DrawLine(corners[2], corners[0], color);
+
+            DrawLine(corners[4], corners[5], color);
+            DrawLine(corners[5], corners[7], color);
+            DrawLine(corners[7], corners[6], color);
+            DrawLine(corners[6], corners[4], color);
+
+            DrawLine(corners[0], corners[4], color);
+            DrawLine(corners[1], corners[5], color);
+            DrawLine(corners[2], corners[6], color);
+            DrawLine(corners[3], corners[7], color);
+        }
+
         public static void DrawBoundingBox(BoundingBox box, Color4 color)
         {
             if (!Enabled) return;
@@ -280,6 +301,14 @@ namespace Engine
             if (!Enabled) return;
             if (_points.Count == 0 && _lines.Count == 0 && _triangles.Count == 0)
                 return;
+
+            Camera cam = Camera.Main;
+
+            if(cam != null)
+            {
+                ProjectionMatrix = cam.GetProjectionMatrix();
+                ViewMatrix = cam.GetViewMatrix();
+            }
             foreach (var col in _collisions)
             {
                 col.DrawDebug();

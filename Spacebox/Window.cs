@@ -330,7 +330,7 @@ namespace Spacebox
             _processManager.Dispose();
             NumberStorage.SaveNumbers(path, Location.X, Location.Y);
 
-            Resources.Clear(true);
+            Resources.UnloadAll(true);
             SceneRenderer.Dispose();
             Debug.SaveMessagesToFile(true);
             Close();

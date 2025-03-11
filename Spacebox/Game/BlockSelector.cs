@@ -4,6 +4,7 @@ using OpenTK.Mathematics;
 using Engine;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
+using Spacebox.Game.Player;
 
 namespace Spacebox.Game
 {
@@ -17,6 +18,8 @@ namespace Spacebox.Game
         private Texture2D selectorTexture;
 
         public SimpleBlock SimpleBlock { get; private set; }
+        private CubeRenderer CubeRenderer { get; }
+
         private Texture2D currentTexture;
 
         private Direction blockDirection = Direction.Up;
@@ -32,6 +35,13 @@ namespace Spacebox.Game
 
             SimpleBlock = new SimpleBlock(new TextureMaterial(selectorTexture), Vector3.Zero);
             SimpleBlock.Scale = new Vector3(1.05f, 1.05f, 1.05f);
+
+            CubeRenderer = new CubeRenderer(Vector3.Zero, TextureMaterial.GetMeshBuffer());
+            CubeRenderer.Material = new TextureMaterial(selectorTexture);
+          
+            CubeRenderer.Scale = new Vector3(1.05f, 1.05f, 1.05f);
+            CubeRenderer.Color = Color4.White;
+
             currentTexture = selectorTexture;
             PanelUI.OnSlotChanged += OnSelectedSlotWasChanged;
             //block.ChangeUV(UVAtlas.GetUVs(3,3));
@@ -103,20 +113,23 @@ namespace Spacebox.Game
 
 
             SimpleBlock.Position = position;
+            CubeRenderer.Position = position;
         }
 
 
-        public void Render(Camera camera)
+        public void Render(Astronaut camera)
         {
             if(!IsVisible) return;
             if(!Settings.ShowInterface) return;
 
 
-            GL.Enable(EnableCap.DepthTest);
+           // CubeRenderer.Render();
+
+            //GL.Enable(EnableCap.DepthTest);
             //blockModel.Draw(camera);
             SimpleBlock.Render(camera);
 
-            GL.Disable(EnableCap.DepthTest);
+            //GL.Disable(EnableCap.DepthTest);
 
 
         }

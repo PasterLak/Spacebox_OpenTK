@@ -162,7 +162,7 @@ namespace Spacebox.Game
             return false;
         }
 
-        public void DeleteItem(Item item, byte quantity)
+        public void RemoveItem(Item item, byte quantity)
         {
             for (byte x = 0; x < SizeX; x++)
             {
@@ -197,11 +197,11 @@ namespace Spacebox.Game
         }
 
 
-        public bool TryDeleteItem(Item item, byte quantity)
+        public bool TryRemoveItem(Item item, byte quantity)
         {
             if (!HasItem(item, quantity)) return false;
 
-            DeleteItem(item, quantity);
+            RemoveItem( item, quantity);
             return true;
         }
 

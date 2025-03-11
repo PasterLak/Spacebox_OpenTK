@@ -34,7 +34,7 @@
         public PointLight Take()
         {
 
-            var light = pool.GetFreeElement();
+            var light = pool.Take();
             activeLights.Add(light);
             light.IsActive = true;
 
@@ -50,7 +50,7 @@
             }
             light.IsActive = false;
             activeLights.Remove(light);
-            pool.ReturnElement(light);
+            pool.Release(light);
         }
 
 

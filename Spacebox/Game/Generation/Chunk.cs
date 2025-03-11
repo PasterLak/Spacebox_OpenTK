@@ -242,8 +242,6 @@ namespace Spacebox.Game.Generation
 
             Matrix4 model = Matrix4.CreateTranslation(position);
 
-
-
             material.SetUniforms(model);
 
             if (_mesh != null)

@@ -19,44 +19,44 @@ namespace Engine
         }
 
         private readonly float[] _vertices = new float[]
-        {
-            // Position         // Normal
-            // Front face
-            -0.5f, -0.5f,  0.5f,  0f,  0f,  1f,
-             0.5f, -0.5f,  0.5f,  0f,  0f,  1f,
-             0.5f,  0.5f,  0.5f,  0f,  0f,  1f,
-            -0.5f,  0.5f,  0.5f,  0f,  0f,  1f,
+    {
+    // Front face
+    -0.5f, -0.5f,  0.5f,   0f, 0f, 1f,   0f, 0f,
+     0.5f, -0.5f,  0.5f,   0f, 0f, 1f,   1f, 0f,
+     0.5f,  0.5f,  0.5f,   0f, 0f, 1f,   1f, 1f,
+    -0.5f,  0.5f,  0.5f,   0f, 0f, 1f,   0f, 1f,
 
-            // Back face
-            -0.5f, -0.5f, -0.5f,  0f,  0f, -1f,
-             0.5f, -0.5f, -0.5f,  0f,  0f, -1f,
-             0.5f,  0.5f, -0.5f,  0f,  0f, -1f,
-            -0.5f,  0.5f, -0.5f,  0f,  0f, -1f,
+    // Back face
+    -0.5f, -0.5f, -0.5f,   0f, 0f, -1f,  0f, 0f,
+     0.5f, -0.5f, -0.5f,   0f, 0f, -1f,  1f, 0f,
+     0.5f,  0.5f, -0.5f,   0f, 0f, -1f,  1f, 1f,
+    -0.5f,  0.5f, -0.5f,   0f, 0f, -1f,  0f, 1f,
 
-            // Left face
-            -0.5f, -0.5f, -0.5f, -1f,  0f,  0f,
-            -0.5f, -0.5f,  0.5f, -1f,  0f,  0f,
-            -0.5f,  0.5f,  0.5f, -1f,  0f,  0f,
-            -0.5f,  0.5f, -0.5f, -1f,  0f,  0f,
+    // Left face
+    -0.5f, -0.5f, -0.5f,  -1f, 0f, 0f,   0f, 0f,
+    -0.5f, -0.5f,  0.5f,  -1f, 0f, 0f,   1f, 0f,
+    -0.5f,  0.5f,  0.5f,  -1f, 0f, 0f,   1f, 1f,
+    -0.5f,  0.5f, -0.5f,  -1f, 0f, 0f,   0f, 1f,
 
-            // Right face
-             0.5f, -0.5f, -0.5f,  1f,  0f,  0f,
-             0.5f, -0.5f,  0.5f,  1f,  0f,  0f,
-             0.5f,  0.5f,  0.5f,  1f,  0f,  0f,
-             0.5f,  0.5f, -0.5f,  1f,  0f,  0f,
+    // Right face
+     0.5f, -0.5f, -0.5f,   1f, 0f, 0f,   0f, 0f,
+     0.5f, -0.5f,  0.5f,   1f, 0f, 0f,   1f, 0f,
+     0.5f,  0.5f,  0.5f,   1f, 0f, 0f,   1f, 1f,
+     0.5f,  0.5f, -0.5f,   1f, 0f, 0f,   0f, 1f,
 
-            // Top face
-            -0.5f,  0.5f, -0.5f,  0f,  1f,  0f,
-            -0.5f,  0.5f,  0.5f,  0f,  1f,  0f,
-             0.5f,  0.5f,  0.5f,  0f,  1f,  0f,
-             0.5f,  0.5f, -0.5f,  0f,  1f,  0f,
+    // Top face
+    -0.5f,  0.5f, -0.5f,   0f, 1f, 0f,   0f, 0f,
+    -0.5f,  0.5f,  0.5f,   0f, 1f, 0f,   1f, 0f,
+     0.5f,  0.5f,  0.5f,   0f, 1f, 0f,   1f, 1f,
+     0.5f,  0.5f, -0.5f,   0f, 1f, 0f,   0f, 1f,
 
-            // Bottom face
-            -0.5f, -0.5f, -0.5f,  0f, -1f,  0f,
-            -0.5f, -0.5f,  0.5f,  0f, -1f,  0f,
-             0.5f, -0.5f,  0.5f,  0f, -1f,  0f,
-             0.5f, -0.5f, -0.5f,  0f, -1f,  0f,
-        };
+    // Bottom face
+    -0.5f, -0.5f, -0.5f,   0f, -1f, 0f,  0f, 0f,
+    -0.5f, -0.5f,  0.5f,   0f, -1f, 0f,  1f, 0f,
+     0.5f, -0.5f,  0.5f,   0f, -1f, 0f,  1f, 1f,
+     0.5f, -0.5f, -0.5f,   0f, -1f, 0f,  0f, 1f,
+};
+
 
         private readonly uint[] _indices = new uint[]
 {
@@ -86,6 +86,17 @@ namespace Engine
 };
 
 
+        public CubeRenderer(Vector3 position, MeshBuffer buffer)
+        {
+            _position = position;
+            Position = position;
+            Material = new ColorMaterial();
+
+            _buffer = buffer;
+            _buffer.BindBuffer(ref _vertices, ref _indices);
+            _buffer.SetAttributes();
+        }
+
         public CubeRenderer(Vector3 position)
         {
             _position = position;
@@ -94,7 +105,9 @@ namespace Engine
             var attrs = new BufferAttribute[]
             {
                 new BufferAttribute { Name = "aPos",    Size = 3 },
-                new BufferAttribute { Name = "aNormal", Size = 3 }
+                new BufferAttribute { Name = "aNormal", Size = 3 },
+                new BufferAttribute { Name = "aTexCoords", Size = 2 }
+
             };
             _buffer = new MeshBuffer(attrs);
             _buffer.BindBuffer(ref _vertices, ref _indices);
@@ -114,7 +127,7 @@ namespace Engine
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
 
-           
+
             var matModel = GetModelMatrix();
 
 

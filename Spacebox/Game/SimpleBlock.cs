@@ -2,6 +2,7 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
+using Spacebox.Game.Player;
 
 namespace Spacebox
 {
@@ -24,12 +25,13 @@ namespace Spacebox
             {
                 _uvs.Add((Face)face, CubeMeshData.GetBasicUVs());
             }
-            _buffer = new MeshBuffer(new BufferAttribute[]
-            {
-                new BufferAttribute { Name = "position", Size = 3 },
-                new BufferAttribute { Name = "normal", Size = 3 },
-                new BufferAttribute { Name = "uv", Size = 2 }
-            });
+            /* _buffer = new MeshBuffer(new BufferAttribute[]
+             {
+                 new BufferAttribute { Name = "position", Size = 3 },
+                 new BufferAttribute { Name = "normal", Size = 3 },
+                 new BufferAttribute { Name = "uv", Size = 2 }
+             });*/
+            _buffer = TextureMaterial.GetMeshBuffer();
             RegenerateMesh();
         }
 
@@ -127,17 +129,17 @@ namespace Spacebox
             }
         }
 
-        public void Render(Camera camera)
+        public void Render(Astronaut camera)
         {
             Material.SetUniforms(GetModelMatrix());
             Material.Use();
 
             
-            GL.Enable(EnableCap.DepthTest);
+          
             GL.BindVertexArray(_buffer.VAO);
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
-            GL.Disable(EnableCap.DepthTest);
+      
         }
 
         public void Dispose()

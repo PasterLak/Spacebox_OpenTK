@@ -46,7 +46,7 @@ namespace Spacebox.Scenes
             //sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
             //GL.Enable(EnableCap.DepthTest);
 
-            Resources.LoadAll<Texture2D>(
+            Resources.LoadAllAsync<Texture2D>(
                new[]
                {
                     "Resources/Textures/planet2.png",
@@ -56,13 +56,13 @@ namespace Spacebox.Scenes
                       "Resources/Textures/moon.png",
                     "Resources/Textures/space.png"
                });
-            Resources.LoadAll<Engine.Mesh>(
+            Resources.LoadAllAsync<Engine.Mesh>(
               new[]
               {
                     "Resources/Models/sphere2.obj",
 
               });
-            Resources.LoadAll<AudioClip>(
+            Resources.LoadAllAsync<AudioClip>(
                new[]
                {
                     "Resources/Audio/music.ogg"
@@ -144,7 +144,8 @@ namespace Spacebox.Scenes
             //player
             skybox.DrawTransparent(player);
             spawner.Render();
-            //axes.Render(player);
+            axes.Render(player);
+           
             cube.Render();
         }
 
@@ -160,7 +161,9 @@ namespace Spacebox.Scenes
         public override void UnloadContent()
         {
 
+            if(VisualDebug.Enabled)
             axes.Dispose();
+
             spawner.Dispose();
             music.Dispose();
             sprite.Dispose();

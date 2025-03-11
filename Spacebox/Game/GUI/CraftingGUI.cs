@@ -317,19 +317,19 @@ namespace Spacebox.Game.GUI
                 int availableS1 = s1.GetTotalCountOf(ing.Item);
                 if (availableS1 >= required)
                 {
-                    s1.DeleteItem(ing.Item, (byte)required);
+                    s1.RemoveItem(ing.Item, (byte)required);
                     continue;
                 }
                 else
                 {
                     if (availableS1 > 0)
-                        s1.DeleteItem(ing.Item, (byte)availableS1);
+                        s1.RemoveItem(ing.Item, (byte)availableS1);
                     required -= availableS1;
                     int availableS2 = s2.GetTotalCountOf(ing.Item);
                     if (availableS2 >= required)
-                        s2.DeleteItem(ing.Item, (byte)required);
+                        s2.RemoveItem(ing.Item, (byte)required);
                     else
-                        s2.DeleteItem(ing.Item, (byte)availableS2);
+                        s2.RemoveItem(ing.Item, (byte)availableS2);
                 }
             }
             return true;

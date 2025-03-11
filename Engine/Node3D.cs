@@ -185,10 +185,10 @@ namespace Engine
      
         public static Vector3 QuaternionToEuler(Quaternion q)
         {
-            // Нормализуем кватернион на всякий случай
+         
             q = Quaternion.Normalize(q);
 
-            // Расчёт углов в порядке X, Y, Z (pitch, yaw, roll)
+        
             float sinr_cosp = 2f * (q.W * q.X + q.Y * q.Z);
             float cosr_cosp = 1f - 2f * (q.X * q.X + q.Y * q.Y);
             float x = MathF.Atan2(sinr_cosp, cosr_cosp);
@@ -196,7 +196,7 @@ namespace Engine
             float sinp = 2f * (q.W * q.Y - q.Z * q.X);
             float y;
             if (MathF.Abs(sinp) >= 1f)
-                y = MathF.CopySign(MathF.PI / 2f, sinp); // использование 90 градусов, если значение вне [-1,1]
+                y = MathF.CopySign(MathF.PI / 2f, sinp); 
             else
                 y = MathF.Asin(sinp);
 

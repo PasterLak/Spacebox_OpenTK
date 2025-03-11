@@ -79,10 +79,11 @@ namespace Spacebox.Game
 
         private static void CacheIcon(BlockData blockData)
         {
-            Texture2D texture = IsometricIcon.CreateIsometricIcon(
+            Texture2D texture = IsometricIcon.Create(
                 UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.WallsUVIndex, GameAssets.AtlasBlocks.SizeBlocks),
                 UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.TopUVIndex, GameAssets.AtlasBlocks.SizeBlocks));
-            texture.UpdateTexture(true);
+
+            texture.FilterMode = FilterMode.Nearest;
             blockData.Item.IconTextureId = texture.Handle;
             GameAssets.ItemIcons.Add(blockData.Item.Id, texture);
         }

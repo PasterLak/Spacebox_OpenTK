@@ -91,6 +91,7 @@ namespace Spacebox.Scenes.Test
         /// <param name="camera">The current camera to obtain view and projection matrices.</param>
         public void RenderAxes(Camera camera)
         {
+            UpdateAxes();
             // Make sure the camera is available.
             if (camera == null)
                 return;
@@ -104,7 +105,7 @@ namespace Spacebox.Scenes.Test
         /// <summary>
         /// Updates the axes. Call this method in the scene's update cycle if needed.
         /// </summary>
-        public void UpdateAxes()
+        private void UpdateAxes()
         {
             _xAxis.Update();
             _yAxis.Update();

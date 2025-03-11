@@ -138,7 +138,7 @@ namespace Engine.SceneManagment
 
                     SoundManager.Dispose();
              
-                    Resources.Clear();
+                    Resources.UnloadAll();
                     VisualDebug.Clear();
 
                     Camera.Main = null;

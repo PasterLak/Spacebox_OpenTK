@@ -94,7 +94,7 @@ namespace Engine
         /// <exception cref="InvalidOperationException">
         /// Thrown when no objects are available and AutoExpand is disabled.
         /// </exception>
-        public T GetFreeElement()
+        public T Take()
         {
             if (_availableObjects.Count > 0)
             {
@@ -117,7 +117,7 @@ namespace Engine
         /// </summary>
         /// <param name="element">The object to return.</param>
         /// <exception cref="ArgumentNullException">Thrown when the provided object is null.</exception>
-        public void ReturnElement(T element)
+        public void Release(T element)
         {
             if (element == null)
                 throw new ArgumentNullException(nameof(element));

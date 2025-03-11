@@ -23,7 +23,7 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
 
-            Resources.LoadAll<AudioClip>(
+            Resources.LoadAllAsync<AudioClip>(
                 new[]
                 {
                     "Resources/Audio/death2.ogg",
@@ -32,7 +32,7 @@ namespace Spacebox.Scenes
                    "Resources/Audio/Music/ambientMain.ogg",
                 });
 
-            Resources.LoadAll<Texture2D>(
+            Resources.LoadAllAsync<Texture2D>(
                new[]
                {
                     "Resources/Textures/planet2.png",

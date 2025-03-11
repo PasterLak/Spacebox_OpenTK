@@ -39,6 +39,7 @@
 	  <None Remove="gamesets\default\recipes.json" />
 	  <None Remove="GameSets\Default\UI\settings.json" />
 	  <None Remove="shaders\atmosphere.glsl" />
+	  <None Remove="Shaders\basic.vs" />
 	  <None Remove="shaders\colorReplace.glsl" />
 	  <None Remove="Shaders\outline.glsl" />
 	  <None Remove="shaders\passthrough.glsl" />

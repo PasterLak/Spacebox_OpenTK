@@ -21,6 +21,18 @@ namespace Engine
             RenderMode = RenderMode.Cutout;
         }
 
+        public static MeshBuffer GetMeshBuffer()
+        {
+            var attrs = new BufferAttribute[]
+          {
+                new BufferAttribute { Name = "aPos",    Size = 3 },
+                new BufferAttribute { Name = "aNormal", Size = 3 },
+                 new BufferAttribute { Name = "aTexCoords", Size = 2 }
+          };
+
+          return new MeshBuffer(attrs);
+        }
+
         protected override void SetMaterialProperties()
         {
             base.SetMaterialProperties();

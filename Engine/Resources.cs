@@ -79,6 +79,14 @@ namespace Engine
 
         public static void LoadAll<T>(string[] paths) where T : IResource, new()
         {
+            foreach(var path in paths)
+            {
+                Load<T>(path);
+            }
+        }
+
+        public static void LoadAllAsync<T>(string[] paths) where T : IResource, new()
+        {
             var type = typeof(T);
             if (type == typeof(Texture2D))
             {
@@ -248,7 +256,7 @@ namespace Engine
         }
 
 
-        public static void Clear(bool clearGlobal = false)
+        public static void UnloadAll(bool clearGlobal = false)
         {
             foreach (var kvp in _resourcesByType)
             {

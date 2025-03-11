@@ -24,7 +24,7 @@ namespace Spacebox.Game.Player
 
         public Projectile Take()
         {
-            var e = pool.GetFreeElement();
+            var e = pool.Take();
             e.OnDespawn += PutBack;
             Projectiles.Add(e);
             return e;
@@ -36,7 +36,7 @@ namespace Spacebox.Game.Player
             {
                 Projectiles.Remove(projectile);
                 projectile.OnDespawn -= PutBack;
-                pool.ReturnElement(projectile);
+                pool.Release(projectile);
             }
         }
 

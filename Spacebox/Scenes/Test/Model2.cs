@@ -66,8 +66,8 @@ public class Model2 : SceneNode,  IGameComponent
             if (VisualDebug.Enabled)
             {
 
-              //  _axes.SetPosition(Position);
-              // _axes.SetRotation(Rotation);
+                _axes.SetPosition(Position);
+               _axes.SetRotation(Rotation);
                 _axes.RenderAxes(camera);
             }
 

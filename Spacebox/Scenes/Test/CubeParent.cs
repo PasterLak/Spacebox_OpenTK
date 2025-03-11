@@ -77,7 +77,7 @@ namespace Spacebox.Scenes.Test
             moon = new Model2("Resources/Models/sphere2.obj", matMoon);
 
             mars.SetScale(0.15f);
-            earth.SetScale(0.2f);
+           // earth.SetScale(0.2f);
             moon.SetScale(0.2f);
             atmosphere.Scale = Vector3.One * 1.01f;
 
@@ -89,13 +89,14 @@ namespace Spacebox.Scenes.Test
             
             sun.SetScale(1);
             sun.AddChild(mars);
-            sun.AddChild(earth);
+            //sun.AddChild(earth);
             earth.Position = new Vector3(4, 0, 0);
             mars.Position = new Vector3(-7, 0, 0);
             AddChild(sun);
 
-
+            boxOBB = new BoundingBoxOBB(earth.Position, earth.Scale , earth.Rotation);
         }
+        BoundingBoxOBB boxOBB;
         float speed2 = 0.01f;
         public void Update()
         {
@@ -105,13 +106,16 @@ namespace Spacebox.Scenes.Test
             earth.Rotate(new Vector3(0, speed / 4, 0));
             mars.Rotate(new Vector3(0, speed / 3, 0));
             atmosphere.Rotate(new Vector3(0, speed / 2, 0));
-            sun.Rotate(new Vector3(0, speed / 3 * speed2, 0));
+            sun.Rotate(new Vector3(0, speed  * speed2, 0));
             // moon.Rotate(new Vector3(0, speed , 0));
             moon.RotateAround(Vector3.Zero, Vector3.UnitY, 2.3f * speed2);
             earth.RotateAround(Vector3.Zero, Vector3.UnitY, 1.3f * speed2);
             mars.RotateAround(Vector3.Zero, Vector3.UnitY, 1.2f * speed2);
             // cube.Translate(new Vector3(0, 0, speed));
             //cube.Update();
+
+            boxOBB.Center = earth.GetWorldPosition();
+            boxOBB.Rotation = earth.Rotation;
 
             if (Input.IsKeyDown(Keys.KeyPadAdd))
             {
@@ -137,12 +141,14 @@ namespace Spacebox.Scenes.Test
 
         public void Render()
         {
-           // VisualDebug.DrawBoundingBox(box, Color4.Red);
+            if(VisualDebug.Enabled)
+            VisualDebug.DrawOBB(boxOBB, Color4.Red);
             // axes.Render(Camera.Main);.\stats.ps1 
             // model.Render(Camera.Main);
             // model2.Render(Camera.Main);
             RenderAll(Camera.Main);
-
+            earth.Render();
+            cube.Render();
         }
 
         public void Dispose()

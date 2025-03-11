@@ -10,7 +10,7 @@ namespace Spacebox.GUI
         private const float LightIntensity = 0.1f; // 0.03, left side
 
        
-        public static Texture2D CreateIsometricIcon(Texture2D walls,  Texture2D topSide)
+        public static Texture2D Create(Texture2D walls,  Texture2D topSide)
         {
             if (!ValidateTextures(walls,topSide))
             {

@@ -52,6 +52,11 @@ namespace Engine.Physics
             {
                 sphere.Center = base.Position + Offset;
             }
+            else  if(BoundingVolume is BoundingBoxOBB obb)
+            {
+                obb.Center = base.Position + Offset;
+               // obb.Rotation = Quaternion.FromMatrix(GetModelMatrixPoor().ExtractRotation().);
+            }
         }
 
         public override Vector3 Position

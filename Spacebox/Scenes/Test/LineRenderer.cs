@@ -2,7 +2,6 @@
 using OpenTK.Graphics.OpenGL4;
 using Engine;
 
-
 public class LineRenderer2 : SceneNode, IDisposable
 {
     public bool Enabled = true;
