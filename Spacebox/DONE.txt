@@ -12,6 +12,8 @@
 
 // dotnet publish -c Release -r linux-x64 --self-contained true --output ./publish
 
+// dotnet publish Spacebox/Spacebox.csproj -c Release -r linux-x64 --self-contained true --output ./publish
+
 WIN11
 // dir P:\C#\Spacebox_OpenTK\*.cs /S /B | find /C ":"
 // Get-ChildItem -Path "P:\C#\Spacebox_OpenTK" -Recurse -Filter *.cs | Get-Content | Measure-Object -Line
