@@ -4,6 +4,7 @@ using Engine.Audio;
 using Spacebox.Game.Player;
 using Engine;
 using Spacebox.Scenes;
+
 namespace Spacebox.Game.Resource
 {
     public static class GameSetLoader
@@ -147,7 +148,7 @@ namespace Spacebox.Game.Resource
         private static void LoadSounds(string modPath)
         {
             var audioPath = Path.Combine(modPath, "Sounds");
-          
+
             if (!Directory.Exists(audioPath)) return;
 
             try
@@ -155,19 +156,19 @@ namespace Spacebox.Game.Resource
                 string[] files = GetFilesRecursive(audioPath, new string[] { ".wav", ".ogg" });
                 foreach (string file in files)
                 {
-                   
+
                     ProcessSoundFile(file);
                 }
 
                 if (!GameAssets.Sounds.ContainsKey("error"))
-                GameAssets.Sounds.Add("error", SoundManager.AddClip("error"));
+                    GameAssets.Sounds.Add("error", SoundManager.AddClip("error"));
             }
             catch (Exception ex)
             {
                 Debug.Error($"Error loading sounds: {ex.Message}");
             }
 
-         
+
         }
 
         public static string[] GetFilesRecursive(string rootPath, string[] extensionsWithDot)
@@ -314,7 +315,7 @@ namespace Spacebox.Game.Resource
             }
         }
 
-  
+
 
         private static void LoadProjectiles(string modPath, string defaultModPath)
         {
@@ -680,7 +681,7 @@ namespace Spacebox.Game.Resource
                "Eraser Tool",
                2f)
             {
-              
+
             };
             eraser.Description = "LMB - block 1\nRMB - block2\nMMB - Reset\nEnter - confirm";
             GameAssetsRegister.RegisterItem(eraser, "eraser");
@@ -890,7 +891,7 @@ namespace Spacebox.Game.Resource
                 {
                     if (player.Panel.TryAddItem(item, itemData.Count))
                     {
-                       
+
                     }
                     else
                     {

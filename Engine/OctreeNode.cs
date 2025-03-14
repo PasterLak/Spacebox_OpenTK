@@ -21,7 +21,7 @@ namespace Engine
 
         private BoundingBox[] childBounds;
 
-        private const byte NUM_OBJECTS_ALLOWED = 8;
+        private const byte NumObjectsAllowed = 8;
 
         private struct OctreeObject
         {
@@ -438,7 +438,7 @@ namespace Engine
         {
             if (!HasChildren)
             {
-                if (objects.Count < NUM_OBJECTS_ALLOWED || (BaseLength / 2f) < minSize)
+                if (objects.Count < NumObjectsAllowed || (BaseLength / 2f) < minSize)
                 {
                     OctreeObject newObj = new OctreeObject { Obj = obj, Bounds = objBounds };
                     objects.Add(newObj);
@@ -558,7 +558,7 @@ namespace Engine
                     totalObjects += child.objects.Count;
                 }
             }
-            return totalObjects <= NUM_OBJECTS_ALLOWED;
+            return totalObjects <= NumObjectsAllowed;
         }
 
         public void DrawDebug()

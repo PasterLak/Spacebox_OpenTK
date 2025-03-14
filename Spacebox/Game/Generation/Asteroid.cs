@@ -33,7 +33,7 @@ namespace Spacebox.Game.Generation
             IsGenerated = true;
         }
 
-        void FillChunkNoise(Chunk chunk)
+        private void FillChunkNoise(Chunk chunk)
         {
             float diameter = ChunkCount * ChunkSize;
             var generator = new AsteroidVoxelDataGenerator(

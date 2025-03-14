@@ -1,6 +1,4 @@
-﻿
-
-namespace Engine
+﻿namespace Engine
 {
     public class SkyboxMaterial : TextureMaterial
     {

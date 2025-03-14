@@ -36,11 +36,11 @@ namespace Spacebox.Generation
             int x0 = FastFloor(x);
             int y0 = FastFloor(y);
             int z0 = FastFloor(z);
-            
+
             float dx = x - x0;
             float dy = y - y0;
             float dz = z - z0;
-            
+
             byte n000 = (byte)PRNG(x0, y0, z0);
             byte n100 = (byte)PRNG(x0 + 1, y0, z0);
             byte n010 = (byte)PRNG(x0, y0 + 1, z0);

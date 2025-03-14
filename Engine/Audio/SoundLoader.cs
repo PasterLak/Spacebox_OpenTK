@@ -64,28 +64,28 @@ namespace Engine.Audio
 
         public static int LoadSound(string path, out int sampleRate)
         {
-           
+
             var (data, channels, bitsPerSample, sr) = AudioFormatLoader.LoadAudio(path);
-         
-            sampleRate = sr; 
+
+            sampleRate = sr;
             ALFormat format = GetSoundFormat(channels, bitsPerSample);
 
             int buffer = AL.GenBuffer();
 
             GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
-         
+
             try
             {
                 IntPtr dataPtr = handle.AddrOfPinnedObject();
                 AL.BufferData(buffer, format, dataPtr, data.Length, sampleRate);
-            
+
             }
             finally
             {
                 handle.Free();
-              
+
             }
-          
+
             CheckALError($"Loading sound {path}");
 
             return buffer;

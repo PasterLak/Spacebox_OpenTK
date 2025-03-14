@@ -12,7 +12,7 @@ namespace Spacebox.Game.Generation
     {
 
         public const byte Size = 32; // 32700+ blocks
-        public const byte SizeHalf = Size/2;
+        public const byte SizeHalf = Size / 2;
         public int Mass { get; set; } = 0; // 255x32700 = 8,338,500 (max 4,294,967,295 in uint)
 
         public Vector3 SumPosMass { get; set; } = Vector3.Zero;
@@ -101,7 +101,7 @@ namespace Spacebox.Game.Generation
 
             _isLoadedOrGenerated = true;
 
-           
+
         }
 
         public void RegisterElectricalBlocks()
@@ -116,7 +116,7 @@ namespace Spacebox.Game.Generation
 
                         if (block.BlockId != 0 && block is ElectricalBlock eBlock)
                         {
-     
+
                             if (eBlock.EFlags == ElectricalFlags.None)
                                 continue;
 
@@ -125,7 +125,7 @@ namespace Spacebox.Game.Generation
                             int worldZ = PositionIndex.Z * Size + z;
                             var globalPos = (worldX, worldY, worldZ);
                             //eBlock.IsActive = false;
-                            SpaceEntity. ElectricManager.AddBlockFast(globalPos, eBlock, this);
+                            SpaceEntity.ElectricManager.AddBlockFast(globalPos, eBlock, this);
                         }
                     }
                 }
@@ -175,21 +175,21 @@ namespace Spacebox.Game.Generation
         {
             GenerateMesh(true);
         }
-      
+
         public void GenerateMesh(bool doLight)
         {
             if (!_isLoadedOrGenerated) return;
             NeedsToRegenerateMesh = false;
-           // Debug.Log("Regen " + PositionIndex);
+            // Debug.Log("Regen " + PositionIndex);
             if (doLight)
             {
                 _lightManager.PropagateLight();
             }
-            
+
             int oldMass = Mass;
-       
+
             Mesh newMesh = _meshGenerator.GenerateMesh();
-       
+
             if (Mass == 0)
             {
                 SpaceEntity.RecalculateMass(Mass - oldMass);
@@ -209,18 +209,18 @@ namespace Spacebox.Game.Generation
 
             SpaceEntity.RecalculateMass(Mass - oldMass);
             OnChunkModified?.Invoke(this);
-           
+
         }
 
         private void DeleteChunk()
         {
             SpaceEntity.RemoveChunk(this);
-           // SpaceEntity.ChunksToDelete.Add(this);
+            // SpaceEntity.ChunksToDelete.Add(this);
         }
 
         public bool IsColliding(BoundingVolume volume, out CollideInfo collideInfo)
         {
-            bool b =  VoxelPhysics.IsColliding(volume, Blocks, PositionWorld, out  collideInfo);
+            bool b = VoxelPhysics.IsColliding(volume, Blocks, PositionWorld, out collideInfo);
             collideInfo.chunk = this;
             return b;
         }
@@ -248,7 +248,7 @@ namespace Spacebox.Game.Generation
             {
                 _mesh.Render();
             }
-               
+
 
             if (ShowChunkBounds && VisualDebug.Enabled)
             {
@@ -308,19 +308,19 @@ namespace Spacebox.Game.Generation
 
             var block = Blocks[blockPos.X, blockPos.Y, blockPos.Z];
 
-            if((((short)block.Durability) - damage) > 0)
+            if ((((short)block.Durability) - damage) > 0)
             {
                 block.Durability -= damage;
             }
             else
             {
                 block.Durability = 0;
-                RemoveBlock(blockPos.X, blockPos.Y, blockPos.Z, normal.X, normal.Y, normal.Z,false);
+                RemoveBlock(blockPos.X, blockPos.Y, blockPos.Z, normal.X, normal.Y, normal.Z, false);
             }
         }
         public void RemoveBlock(Vector3Byte blockPos, Vector3SByte normal)
         {
-            RemoveBlock(blockPos.X, blockPos.Y, blockPos.Z, normal.X, normal.Y, normal.Z,true);
+            RemoveBlock(blockPos.X, blockPos.Y, blockPos.Z, normal.X, normal.Y, normal.Z, true);
         }
         public void RemoveBlock(byte x, byte y, byte z, sbyte xNormal, sbyte yNormal, sbyte zNormal)
         {
@@ -346,9 +346,9 @@ namespace Spacebox.Game.Generation
                 {
                     World.DestructionManager.DestroyBlock(worldBlockPosition,
                         Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
-                    if(spawnDrop)
-                    World.DropEffectManager.DestroyBlock(worldBlockPosition,
-                        Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
+                    if (spawnDrop)
+                        World.DropEffectManager.DestroyBlock(worldBlockPosition,
+                            Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
                 }
                 else
                 {
@@ -390,14 +390,14 @@ namespace Spacebox.Game.Generation
 
         public async Task GenerateLODMeshAsync(int downscale, Vector2[] uv = null)
         {
-        
+
             LOD requestedLOD = Lod;
             var generator = new ChunkLODMeshGenerator();
             MeshData data = await generator.GenerateFromBlocksAsync(this.Blocks, downscale, uv).ConfigureAwait(false);
 
             MainThreadDispatcher.Instance.Enqueue(() =>
             {
-          
+
                 if (Lod == requestedLOD)
                 {
                     _mesh?.Dispose();
@@ -430,7 +430,7 @@ namespace Spacebox.Game.Generation
                 if (Lod != LOD.L1)
                 {
                     Lod = LOD.L1;
-                     CreateLOD(Lod);
+                    CreateLOD(Lod);
                 }
             }
             else if (distanceSquared <= lod2Threshold)
@@ -618,7 +618,7 @@ namespace Spacebox.Game.Generation
 
 
 
-public class MainThreadDispatcher
+    public class MainThreadDispatcher
     {
         private static MainThreadDispatcher _instance;
         public static MainThreadDispatcher Instance => _instance ?? (_instance = new MainThreadDispatcher());

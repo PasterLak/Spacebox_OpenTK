@@ -1,7 +1,7 @@
 ﻿
 namespace Engine
 {
-    public class SceneGraph
+    public class SceneGraphOld
     {
         public List<Node3D> Roots { get; } = new List<Node3D>();
         Dictionary<Guid, Node3D> nodeLookup = new Dictionary<Guid, Node3D>();

@@ -1,6 +1,4 @@
-﻿using Engine;
-using Engine.Animation;
-
+﻿
 namespace Engine.Animation
 {
     public class Animator
@@ -24,9 +22,9 @@ namespace Engine.Animation
 
         public void Update(float deltaTime)
         {
-            if(!IsActive) return;   
+            if (!IsActive) return;
             if (_animations.Count == 0) return;
-           
+
 
             for (int i = _animations.Count - 1; i >= 0; i--)
             {

@@ -1,8 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Desktop;
 using Engine.Audio;
-using System.Reflection;
-using OpenTK.Graphics.OpenGL4;
 
 
 namespace Engine.SceneManagment

@@ -13,10 +13,9 @@ namespace Engine
        
         PointOctreeNode<T> rootNode;
 
-        // Size that the octree was on creation
         readonly float initialSize;
 
-        // Minimum side length that a node can be - essentially an alternative to having a max depth
+
         readonly float minSize;
 
         /// <summary>
@@ -156,10 +155,7 @@ namespace Engine
             return rootNode.ContainsAny(point);
         }
 
-        
-
-
-        // #### PRIVATE METHODS ####
+     
 
         /// <summary>
         /// Grow the octree to fit in all objects.

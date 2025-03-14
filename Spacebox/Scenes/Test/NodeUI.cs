@@ -1,6 +1,5 @@
 ﻿using ImGuiNET;
-using System;
-using System.Collections.Generic;
+
 using OpenTK.Mathematics;
 using Engine;
 
@@ -38,7 +37,7 @@ namespace Spacebox.FPS.GUI
 
             
 
-            // Start timing for ImGui performance if needed
+       
             Time.StartOnGUI();
 
             var io = ImGui.GetIO();
@@ -64,7 +63,7 @@ namespace Spacebox.FPS.GUI
             ImGui.Begin("Scene Objects", ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
             ImGui.Separator();
 
-            // Render each root node recursively.
+        
             foreach (var node in sceneNodes)
             {
                 RenderSceneNode(node);
@@ -82,7 +81,7 @@ namespace Spacebox.FPS.GUI
         /// <param name="node">The SceneNode to render.</param>
         private static void RenderSceneNode(SceneNode node)
         {
-            // Use the node's unique Id to generate a unique tree node label.
+        
             if (ImGui.TreeNode($"##TreeNode_{node.Id}", node.Name))
             {
                 // Editable Name.
@@ -113,9 +112,7 @@ namespace Spacebox.FPS.GUI
                 ImGui.PopItemWidth();
                 ImGui.Separator();
 
-                // Rotation.
-                // Здесь упрощённо выводим компоненты Quaternion (X, Y, Z).
-                // Для корректного редактирования можно конвертировать в Euler-углы.
+    
                 ImGui.Text("Rotation:");
                 ImGui.SameLine();
                 float rotX = node.Rotation.X, rotY = node.Rotation.Y, rotZ = node.Rotation.Z;
@@ -147,7 +144,6 @@ namespace Spacebox.FPS.GUI
                 ImGui.PopItemWidth();
                 ImGui.Separator();
 
-                // Recursively render children.
                 foreach (var child in node.Children)
                 {
                     RenderSceneNode(child);

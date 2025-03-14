@@ -1,6 +1,4 @@
-﻿
-
-using Spacebox.Game.Resource;
+﻿using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation
 {

@@ -1,5 +1,4 @@
 ﻿
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Engine;
 using Spacebox.Game.Generation;

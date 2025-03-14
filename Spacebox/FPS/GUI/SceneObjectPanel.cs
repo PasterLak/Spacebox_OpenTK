@@ -50,10 +50,10 @@ namespace Spacebox.FPS.GUI
                 {
                     string newName = transform.Name;
 
-                    // Calculate available width for X, Y, Z fields
+                   
                     float availableWidth = ImGui.GetContentRegionAvail().X;
-                    float labelWidth = 10.0f; // Width for the colored dot and label
-                    float inputWidth = (availableWidth - (labelWidth + 10) * 4) / 4; // 10 pixels spacing between fields
+                    float labelWidth = 10.0f; 
+                    float inputWidth = (availableWidth - (labelWidth + 10) * 4) / 4; 
 
 
                     ImGui.Text("Name     ");

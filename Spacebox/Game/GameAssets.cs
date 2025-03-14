@@ -237,7 +237,7 @@ namespace Spacebox.Game
             ModId = "";
             IsInitialized = false;
         }
-             
+
         public static void IncrementBlockId(BlockData blockData)
         {
             MaxBlockId++;

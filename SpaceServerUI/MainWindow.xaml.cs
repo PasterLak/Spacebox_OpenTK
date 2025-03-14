@@ -215,8 +215,7 @@ namespace SpaceServerUI
             });
         }
 
-        // Перегрузка для обычного (Normal) сообщения.
-        public void LogMessage(string message)
+            public void LogMessage(string message)
         {
             LogMessage(message, ServerCommon.LogType.Normal);
         }

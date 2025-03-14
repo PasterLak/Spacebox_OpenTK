@@ -103,7 +103,7 @@ namespace Spacebox.Game.GUI.Menu
                     () =>
                     {
                         menu.Click1.Play();
-                        // Функционал редактирования
+                      
                     });
                 menu.ButtonWithBackgroundAndIcon("", new Vector2(buttonHeight, buttonHeight),
                     new Vector2(buttonStartX + buttonWidth + buttonSpacing + buttonWidth - buttonHeight, buttonY + windowHeight * 0.02f),

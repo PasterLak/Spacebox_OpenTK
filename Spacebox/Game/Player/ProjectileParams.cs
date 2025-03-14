@@ -6,7 +6,7 @@ namespace Spacebox.Game.Player
     {
         public short ID { get; private set; } = -1;
         public string Name { get; private set; } = "projectiledefault";
-        public float Speed {  get; private set; }
+        public float Speed { get; private set; }
         public int MaxTravelDistance { get; private set; }
         public float Length { get; private set; }
         public float Thickness { get; private set; }
@@ -45,7 +45,7 @@ namespace Spacebox.Game.Player
         {
             var p = new ProjectileParameters();
 
-            p.ID = short.MaxValue-1;
+            p.ID = short.MaxValue - 1;
             p.Name = "projectiletest";
             p.Speed = 15;
             p.MaxTravelDistance = 100;

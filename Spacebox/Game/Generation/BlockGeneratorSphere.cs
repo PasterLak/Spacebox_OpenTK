@@ -39,6 +39,7 @@ namespace Spacebox.Game.Generation
                         }
                     }
         }
+
         private void CarveWormTunnels(int wormCount)
         {
             FastRandom fastRandom = new FastRandom();

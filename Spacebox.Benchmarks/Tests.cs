@@ -40,7 +40,7 @@ namespace Spacebox.Benchmarks
         public void OldImplementation()
         {
             
-                var direction = Spacebox.Game.Generation.Block.GetDirectionFromNormalOld(testNormal);
+                var direction = Spacebox.Game.Generation.Block.GetDirectionFromNormal(testNormal);
             
         }
 

@@ -1,7 +1,5 @@
 ﻿using OpenTK.Mathematics;
 using Engine.Physics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-
 
 namespace Engine
 {

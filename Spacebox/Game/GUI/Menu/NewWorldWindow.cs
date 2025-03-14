@@ -45,6 +45,7 @@ namespace Spacebox.Game.GUI.Menu
             ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(ImGui.GetStyle().FramePadding.X, (inputHeight - labelHeight) / 2));
             ImGui.SetNextItemWidth(inputWidth);
             ImGui.SetCursorPosX((windowWidth - inputWidth) / 2);
+
             if (ImGui.BeginCombo("##GameMode", menu.Gamemodes[menu.SelectedGameModeIndex]))
             {
                 for (int i = 0; i < menu.Gamemodes.Length; i++)
@@ -62,6 +63,7 @@ namespace Spacebox.Game.GUI.Menu
                 }
                 ImGui.EndCombo();
             }
+
             ImGui.PopStyleVar();
             string comboLabel2 = "GameSet";
             Vector2 labelSize2 = ImGui.CalcTextSize(comboLabel2);

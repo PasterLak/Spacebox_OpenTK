@@ -1,6 +1,4 @@
-﻿
-
-using Engine;
+﻿using Engine;
 using Engine.Physics;
 using OpenTK.Mathematics;
 

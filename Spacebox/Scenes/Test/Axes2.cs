@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using OpenTK.Mathematics;
 using Engine;
 
 namespace Spacebox.Scenes.Test
 {
-    // Axes class that displays an object's coordinate axes using LineRenderer.
-    // Inherits from SceneNode to use its transformation (Position, Rotation, Scale).
+
     public class Axes2 : SceneNode, IDisposable
     {
         private LineRenderer2 _xAxis;

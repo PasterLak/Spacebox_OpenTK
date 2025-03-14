@@ -8,7 +8,7 @@ namespace Engine.Animation
         private float _currentAngle;
         private Vector3 _axis; // normalized, for example, (0,1,0)
 
-        private float _duration; 
+        private float _duration;
         private float _elapsedTime;
 
         public RotateAnimation(Vector3 axis, float anglePerSecond, float duration = 0f) // 0 no stop
@@ -36,7 +36,7 @@ namespace Engine.Animation
 
             _currentAngle += _anglePerSecond * deltaTime;
 
-            return true; 
+            return true;
         }
 
         public void Apply(Node3D node)

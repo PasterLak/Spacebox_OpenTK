@@ -40,6 +40,7 @@ namespace Spacebox
         {
             Instance = this;
             minimizedWindowSize = nativeWindowSettings.ClientSize;
+
         }
 
         public static unsafe void LoadStarPixelFont(float fontSize = 16.0f)
@@ -334,6 +335,11 @@ namespace Spacebox
             SceneRenderer.Dispose();
             Debug.SaveMessagesToFile(true);
             Close();
+        }
+
+        public static void Shutdown(object sender, EventArgs e)
+        {
+           // Quit();
         }
 
         protected override void OnMouseWheel(MouseWheelEventArgs e)

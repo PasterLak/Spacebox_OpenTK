@@ -55,7 +55,7 @@ namespace Engine
             colors[(int)ImGuiCol.Header] = new Vector4(0.28f, 0.63f, 0.28f, 1.0f);
             colors[(int)ImGuiCol.HeaderHovered] = new Vector4(0.38f, 0.73f, 0.38f, 1.0f);
             colors[(int)ImGuiCol.HeaderActive] = new Vector4(0.48f, 0.83f, 0.48f, 1.0f);
-            // Add more color customizations as needed
+           
         }
 
 

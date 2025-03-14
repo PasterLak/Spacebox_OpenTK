@@ -9,9 +9,9 @@ namespace Engine.Animation
         private float _duration;
 
         private float _elapsedTime;
-        private float _progress01; 
+        private float _progress01;
 
-        private bool _loop; 
+        private bool _loop;
 
         public MoveAnimation(Vector3 startPos, Vector3 endPos, float duration, bool loop = false)
         {

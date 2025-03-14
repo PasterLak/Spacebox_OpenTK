@@ -19,7 +19,7 @@ namespace Spacebox.Game.Player
                 {
                     Directory.CreateDirectory(worldFolder);
                 }
- 
+
                 PlayerData data = new PlayerData
                 {
                     PositionX = player.Position.X,
@@ -70,7 +70,7 @@ namespace Spacebox.Game.Player
                 });
 
                 File.WriteAllText(saveFilePath, jsonString);
-               
+
             }
             catch (Exception ex)
             {
@@ -78,9 +78,9 @@ namespace Spacebox.Game.Player
             }
         }
 
-        public static void LoadPlayer(Astronaut player,string worldFolder)
+        public static void LoadPlayer(Astronaut player, string worldFolder)
         {
-            
+
             try
             {
                 string saveFilePath = Path.Combine(worldFolder, "player.json");
@@ -89,7 +89,7 @@ namespace Spacebox.Game.Player
                 {
                     Debug.Log("Player save file does not exist.");
 
-                    World.CurrentSector.SpawnPlayerNearAsteroid(player, World.Random );
+                    World.CurrentSector.SpawnPlayerNearAsteroid(player, World.Random);
                     GameSetLoader.GiveStartItems(player, GameAssets.Items);
                     player.Flashlight.IsActive = true;
 
@@ -151,7 +151,7 @@ namespace Spacebox.Game.Player
                         {
                             Debug.Error($"[PlayerSaveLoader] Invalid slot coordinates ({savedSlot.SlotX}, {savedSlot.SlotY}) in Panel. Trying to add the item to the Inventory: ");
 
-                            if(player.Inventory.TryAddItem(item, savedSlot.Count))
+                            if (player.Inventory.TryAddItem(item, savedSlot.Count))
                             {
                                 Debug.Success($"The item was added to Inventory!");
                             }
@@ -167,7 +167,7 @@ namespace Spacebox.Game.Player
                     }
                 }
 
-                
+
                 PanelUI.SetSelectedSlot(0);
             }
             catch (Exception ex)

@@ -36,12 +36,12 @@ namespace Engine.Audio
             FileFullPath = resolvedPath;
             Name = Path.GetFileNameWithoutExtension(resolvedPath);
             IsStreaming = loadMode == AudioLoadMode.Stream;
-           
+
             if (!IsStreaming)
             {
-              
+
                 Buffer = SoundLoader.LoadSound(FileFullPath, out sampleRate);
-               
+
             }
             else
             {
@@ -116,16 +116,16 @@ namespace Engine.Audio
 
         public void Dispose()
         {
-         
+
             if (isDisposed) return;
 
-            if(AudioSource is not null)
+            if (AudioSource is not null)
             {
                 AudioSource.Stop();
                 AudioSource?.Dispose();
                 AudioSource = null;
             }
-           
+
 
             reader?.Dispose();
             fileStream?.Dispose();
@@ -142,6 +142,7 @@ namespace Engine.Audio
         private void CheckALError(string operation)
         {
             ALError error = AL.GetError();
+
             if (error != ALError.NoError)
             {
                 throw new InvalidOperationException($"OpenAL error during {operation}: {AL.GetErrorString(error)}");

@@ -60,7 +60,7 @@ namespace Spacebox.Scenes
 
             if (Input.IsKeyDown(Keys.T))
             {
-                SceneManager.LoadScene(typeof(TestScene));
+                SceneManager.LoadScene(typeof(PlanetsScene));
             }
 
             if (Input.IsKeyDown(Keys.B))

@@ -39,6 +39,7 @@ namespace Client
         public Action<ClientPlayer> OnPlayerLeft;
         public event Action<int, int, int> OnBlockDestroyed;
         public event Action<int, short, byte, short, short, short> OnBlockPlaced;
+
         public ClientNetwork(string appKey, string host, int port, string playerName)
         {
             Instance = this;

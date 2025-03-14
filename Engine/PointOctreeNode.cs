@@ -8,31 +8,30 @@ namespace Engine
 {
     public class PointOctreeNode<T>
     {
-        // Centre of this node
+    
         public Vector3 Center { get; private set; }
 
-        // Length of the sides of this node
+    
         public float SideLength { get; private set; }
 
-        // Minimum size for a node in this octree
         private float minSize;
 
-        // Bounding box that represents this node
+    
         private BoundingBox bounds;
 
-        // Objects in this node
+
         private readonly List<OctreeObject> objects = new List<OctreeObject>();
 
-        // Child nodes, if any
+    
         private PointOctreeNode<T>[] children = null;
 
         public bool HasChildren => children != null;
 
-        // Bounds of potential children to this node
+      
         private BoundingBox[] childBounds;
 
         // If there are already NUM_OBJECTS_ALLOWED in a node, we split it into children
-        private const int NUM_OBJECTS_ALLOWED = 8;
+        private const int NumAllowedObjects = 8;
 
         // For reverting the bounds size after temporary changes
         private Vector3 actualBoundsSize;
@@ -361,7 +360,7 @@ namespace Engine
         {
             if (!HasChildren)
             {
-                if (objects.Count < NUM_OBJECTS_ALLOWED || (SideLength / 2f) < minSize)
+                if (objects.Count < NumAllowedObjects || (SideLength / 2f) < minSize)
                 {
                     OctreeObject newObj = new OctreeObject { Obj = obj, Pos = objPos };
                     objects.Add(newObj);
@@ -486,7 +485,7 @@ namespace Engine
                     totalObjects += child.objects.Count;
                 }
             }
-            return totalObjects <= NUM_OBJECTS_ALLOWED;
+            return totalObjects <= NumAllowedObjects;
         }
 
         /// <summary>

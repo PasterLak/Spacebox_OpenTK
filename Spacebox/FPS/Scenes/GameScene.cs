@@ -274,13 +274,7 @@ namespace Spacebox.FPS.Scenes
             _lightingShader.SetVector3("material.specular", new Vector3(0.5f, 0.5f, 0.5f));
             _lightingShader.SetFloat("material.shininess", 16.0f);
 
-            /*
-               Here we set all the uniforms for the 5/6 types of lights we have. We have to set them manually and index
-               the proper PointLight struct in the array to set each uniform variable. This can be done more code-friendly
-               by defining light types as classes and set their values in there, or by using a more efficient uniform approach
-               by using 'Uniform buffer objects', but that is something we'll discuss in the 'Advanced GLSL' tutorial.
-            */
-            // Directional light
+
 
 
             // Point lights
@@ -348,15 +342,14 @@ namespace Spacebox.FPS.Scenes
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            GL.DepthMask(false); // Отключаем запись в буфер глубины
-
+            GL.DepthMask(false);
 
             skyboxExtern.DrawTransparent(player);
 
             skybox.DrawTransparent(player);
 
 
-            GL.DepthMask(true); // Включаем запись в буфер глубины
+            GL.DepthMask(true); 
             GL.Disable(EnableCap.Blend);
             water.DrawTransparent(player);
 
@@ -434,18 +427,15 @@ namespace Spacebox.FPS.Scenes
 
             player.Update();
 
-            // Обновление всех объектов и их коллизий
+        
             foreach (var obj in CollisionManager.Collidables)
             {
-                // Сохраняем старый BoundingVolume для обновления
+              
                 BoundingVolume oldVolume = obj.BoundingVolume.Clone();
-
-                // Обновляем объект (перемещение, вращение и т.д.)
 
                 if (!obj.IsStatic)
                     obj.UpdateBounding();
 
-                // Обновляем CollisionManager с новым BoundingVolume
                 CollisionManager.Update(obj, oldVolume);
             }
 

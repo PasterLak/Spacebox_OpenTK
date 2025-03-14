@@ -5,9 +5,7 @@ namespace Engine.Physics
 {
     public class BoundingBoxOBB : BoundingVolume
     {
-        // The size of the OBB (width, height, depth)
         public Vector3 Size { get; set; }
-        // The rotation of the OBB in world space
         public Quaternion Rotation { get; set; }
         // Half of the size along each axis
         public Vector3 Extents => Size * 0.5f;
@@ -33,7 +31,7 @@ namespace Engine.Physics
         {
             Vector3[] corners = new Vector3[8];
             Vector3 extents = Extents;
-            // Local coordinates of the corners relative to the center
+          
             Vector3[] localCorners = new Vector3[8];
             localCorners[0] = new Vector3(-extents.X, -extents.Y, -extents.Z);
             localCorners[1] = new Vector3(extents.X, -extents.Y, -extents.Z);
@@ -44,7 +42,7 @@ namespace Engine.Physics
             localCorners[6] = new Vector3(-extents.X, extents.Y, extents.Z);
             localCorners[7] = new Vector3(extents.X, extents.Y, extents.Z);
 
-            // Transform each local corner by the rotation and add the center offset
+      
             for (int i = 0; i < 8; i++)
             {
                 corners[i] = Center + Vector3.Transform(localCorners[i], Rotation);
@@ -65,7 +63,7 @@ namespace Engine.Physics
             }
             else if (other is BoundingBox aabb)
             {
-                // Convert AABB to OBB with no rotation (Quaternion.Identity)
+           
                 BoundingBoxOBB aabbAsOBB = new BoundingBoxOBB(aabb.Center, aabb.Size, Quaternion.Identity);
                 return IntersectsOBB(aabbAsOBB);
             }
@@ -81,19 +79,18 @@ namespace Engine.Physics
         /// </summary>
         private bool IntersectsOBB(BoundingBoxOBB obb)
         {
-            // Compute the local axes for the current OBB (A0, A1, A2)
+        
             Vector3[] A = new Vector3[3];
             A[0] = Vector3.Transform(Vector3.UnitX, Rotation);
             A[1] = Vector3.Transform(Vector3.UnitY, Rotation);
             A[2] = Vector3.Transform(Vector3.UnitZ, Rotation);
 
-            // Compute the local axes for the other OBB (B0, B1, B2)
             Vector3[] B = new Vector3[3];
             B[0] = Vector3.Transform(Vector3.UnitX, obb.Rotation);
             B[1] = Vector3.Transform(Vector3.UnitY, obb.Rotation);
             B[2] = Vector3.Transform(Vector3.UnitZ, obb.Rotation);
 
-            // Compute rotation matrix R and its absolute value with a small epsilon
+        
             float[,] R = new float[3, 3];
             float[,] AbsR = new float[3, 3];
             for (int i = 0; i < 3; i++)
@@ -105,14 +102,13 @@ namespace Engine.Physics
                 }
             }
 
-            // Compute the translation vector t in the coordinate system of the current OBB
+         
             Vector3 t = obb.Center - Center;
             Vector3 tA = new Vector3(Vector3.Dot(t, A[0]), Vector3.Dot(t, A[1]), Vector3.Dot(t, A[2]));
 
             Vector3 aExtents = Extents;
             Vector3 bExtents = obb.Extents;
 
-            // Test axes A0, A1, A2
             for (int i = 0; i < 3; i++)
             {
                 float ra = aExtents[i];
@@ -121,7 +117,7 @@ namespace Engine.Physics
                     return false;
             }
 
-            // Test axes B0, B1, B2
+    
             for (int j = 0; j < 3; j++)
             {
                 float ra = aExtents.X * AbsR[0, j] + aExtents.Y * AbsR[1, j] + aExtents.Z * AbsR[2, j];
@@ -131,7 +127,7 @@ namespace Engine.Physics
                     return false;
             }
 
-            // Test cross axes (9 axes: A[i] x B[j])
+
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
@@ -153,12 +149,11 @@ namespace Engine.Physics
         /// </summary>
         private bool IntersectsSphere(BoundingSphere sphere)
         {
-            // Transform sphere center into the OBB's local space
+        
             Quaternion invRotation = Quaternion.Invert(Rotation);
             Vector3 localCenter = Vector3.Transform(sphere.Center - Center, invRotation);
             Vector3 halfSize = Extents;
 
-            // Clamp the local center to the extents of the OBB
             Vector3 clamped = new Vector3(
                 MathF.Max(-halfSize.X, MathF.Min(localCenter.X, halfSize.X)),
                 MathF.Max(-halfSize.Y, MathF.Min(localCenter.Y, halfSize.Y)),

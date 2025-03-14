@@ -57,10 +57,20 @@ namespace Spacebox.Scenes
         public override void Start()
         {
 
-            //SceneManager.LoadScene(typeof(MenuScene));
+            SceneManager.LoadScene(typeof(MenuScene));
             //SceneManager.LoadScene(typeof(TestScene));
 
             Input.HideCursor(); audio.Play();
+
+            Debug.Log(GL.GetString(StringName.Renderer));
+            Debug.Log(GL.GetString(StringName.Vendor));
+            Debug.Log(GL.GetString(StringName.Version));
+
+           // Environment.SetEnvironmentVariable("CUDA_VISIBLE_DEVICES", "-1");
+           // Environment.SetEnvironmentVariable("GPU_DEVICE_ORDINAL", "-1");
+          //  Environment.SetEnvironmentVariable("LIBGL_ALWAYS_SOFTWARE", "1"); 
+
+
         }
 
         public override void Render()
@@ -97,7 +107,7 @@ namespace Spacebox.Scenes
 
             if (Input.IsKeyDown(Keys.T))
             {
-                SceneManager.LoadScene(typeof(TestScene));
+                SceneManager.LoadScene(typeof(PlanetsScene));
             }
 
             if (Input.IsKeyDown(Keys.E))

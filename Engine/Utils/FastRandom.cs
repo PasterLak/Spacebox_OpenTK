@@ -55,7 +55,7 @@ public class FastRandom
     // /// </summary>
     public double NextDouble()
     {
-        // Используем верхние 53 бита для создания double
+       
         return (NextULong() >> 11) * (1.0 / (1UL << 53));
     }
     

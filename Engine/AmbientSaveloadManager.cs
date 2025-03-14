@@ -38,7 +38,7 @@ namespace Engine
             }
         }
 
-    
+
         public static void LoadAmbient()
         {
             try
@@ -58,7 +58,7 @@ namespace Engine
                     return;
                 }
 
-               
+
                 Lighting.AmbientColor = new Vector3(data.AmbientColorX, data.AmbientColorY, data.AmbientColorZ);
                 //Lighting.BackgroundColor = Color.FromArgb(data.BackgroundColorA, data.BackgroundColorR, data.BackgroundColorG, data.BackgroundColorB);
 
@@ -72,12 +72,12 @@ namespace Engine
 
         private class AmbientData
         {
-          
+
             public float AmbientColorX { get; set; }
             public float AmbientColorY { get; set; }
             public float AmbientColorZ { get; set; }
 
-           
+
             public byte BackgroundColorA { get; set; }
             public byte BackgroundColorR { get; set; }
             public byte BackgroundColorG { get; set; }

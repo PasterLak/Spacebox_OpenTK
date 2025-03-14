@@ -17,10 +17,10 @@ namespace Spacebox.Game.Generation
         }
         private void GenerateSphereBlocks()
         {
-         
+
 
             Random random = World.Random;
-       
+
 
             for (byte x = 0; x < Size; x++)
                 for (byte y = 0; y < Size; y++)

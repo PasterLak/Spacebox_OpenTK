@@ -46,7 +46,7 @@ namespace Engine.Audio
         public AudioSource(AudioClip clip)
         {
             this.Clip = clip;
-            clip.AudioSource = this; 
+            clip.AudioSource = this;
             handle = AL.GenSource();
 
             if (!clip.IsStreaming)
@@ -89,7 +89,7 @@ namespace Engine.Audio
                 isPlaying = true;
                 isPaused = false;
 
-             
+
                 if (playbackThread == null || !playbackThread.IsAlive)
                 {
                     cancellationTokenSource = new CancellationTokenSource();
@@ -137,21 +137,21 @@ namespace Engine.Audio
 
         public void Dispose()
         {
-        
+
             lock (playLock)
             {
                 if (isDisposed) return;
                 isPlaying = false;
                 isDisposed = true;
 
-             
+
                 cancellationTokenSource.Cancel();
                 playbackThread?.Join();
 
                 AL.SourceStop(handle);
                 AL.DeleteSource(handle);
 
-          
+
                 if (Clip != null)
                 {
                     Clip.AudioSource = null;
@@ -179,7 +179,7 @@ namespace Engine.Audio
                     {
                         if (Clip.IsStreaming)
                         {
-                           
+
                         }
                         AL.SourceRewind(handle);
                         AL.SourcePlay(handle);

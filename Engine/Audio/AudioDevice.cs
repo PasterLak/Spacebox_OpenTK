@@ -15,7 +15,7 @@ namespace Engine.Audio
 
         AudioDevice()
         {
-           
+
             Setup();
         }
 
@@ -61,7 +61,7 @@ namespace Engine.Audio
 
         public void Update()
         {
-          
+
         }
 
         public void Dispose()

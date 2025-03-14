@@ -1,18 +1,12 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-
-using Engine.GUI;
+﻿using OpenTK.Windowing.GraphicsLibraryFramework;
 using Engine.SceneManagment;
 
 using Engine;
 
 using Spacebox.Game;
 using Spacebox.Game.Player;
-using Spacebox.Game.Generation;
 using Engine.Audio;
-using Spacebox.Game.GUI;
-using Spacebox.Scenes.Test;
+
 
 namespace Spacebox.Scenes
 {
@@ -180,7 +174,7 @@ namespace Spacebox.Scenes
 
             if (Input.IsKeyDown(Keys.T))
             {
-                SceneManager.LoadScene(typeof(TestScene));
+                SceneManager.LoadScene(typeof(PlanetsScene));
             }
 
             if (Input.IsKeyDown(Keys.A))

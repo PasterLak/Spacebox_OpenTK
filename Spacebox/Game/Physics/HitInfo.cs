@@ -2,6 +2,7 @@
 
 using Spacebox.Game.Generation;
 using Engine;
+
 namespace Spacebox.Game.Physics
 {
     public struct HitInfo

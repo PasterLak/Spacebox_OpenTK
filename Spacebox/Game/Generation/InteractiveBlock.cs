@@ -28,9 +28,9 @@ namespace Spacebox.Game.Generation
 
         private void SetText()
         {
-            if(EFlags == ElectricalFlags.None)
+            if (EFlags == ElectricalFlags.None)
             {
-                CenteredText.SetText( HoverText );
+                CenteredText.SetText(HoverText);
                 return;
             }
             CenteredText.SetText(IsActive ? HoverText : HoverTextDeactivated);

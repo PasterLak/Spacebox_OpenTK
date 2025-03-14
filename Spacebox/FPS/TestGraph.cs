@@ -8,7 +8,7 @@ namespace Spacebox.FPS
     {
         public static void Test()
         {
-            SceneGraph scene = new SceneGraph();
+            SceneGraphOld scene = new SceneGraphOld();
 
             Node3D root1 = new Node3D { Name = "Root1", Position = new Vector3(0, 0, 0) };
             Node3D root2 = new Node3D { Name = "Root2", Position = new Vector3(5, 0, 0) };

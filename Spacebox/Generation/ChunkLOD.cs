@@ -117,8 +117,8 @@ namespace Spacebox.Game.Generation
                                     _ => new Vector3(0, 0, c)
                                 };
                                 AddQuad(vertices, indices, ref vertCount, quadOrigin, duVec, dvVec, normal, c, customUV);
-                                if(DebugQuadsCount)
-                                quad++;
+                                if (DebugQuadsCount)
+                                    quad++;
                             }
                         }
                     }

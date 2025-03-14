@@ -18,7 +18,7 @@ using Engine.SceneManagment;
 
 namespace Spacebox.Scenes
 {
-    public class TestScene : Engine.SceneManagment.Scene
+    public class PlanetsScene : Engine.SceneManagment.Scene
     {
         private Skybox skybox;
 
@@ -29,7 +29,7 @@ namespace Spacebox.Scenes
         private Axes axes;
         CubeParent cube;
         Sprite sprite;
-        public TestScene(string[] args) : base(args)
+        public PlanetsScene(string[] args) : base(args)
         {
 
         }

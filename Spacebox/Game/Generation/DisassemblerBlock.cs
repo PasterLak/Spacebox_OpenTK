@@ -5,25 +5,25 @@ using Spacebox.Game.Resource;
 namespace Spacebox.Game.Generation
 {
 
-        public class DisassemblerBlock : ResourceProcessingBlock
-        {
+    public class DisassemblerBlock : ResourceProcessingBlock
+    {
 
-            public DisassemblerBlock(BlockData blockData) : base(blockData)
-            {
-                OnUse += ResourceProcessingGUI.Toggle;
-               
+        public DisassemblerBlock(BlockData blockData) : base(blockData)
+        {
+            OnUse += ResourceProcessingGUI.Toggle;
+
             SetEmissionWithoutRedrawChunk(false);
         }
 
-            public override void Use(Astronaut player)
-            {
-             
-                base.Use(player);
+        public override void Use(Astronaut player)
+        {
+
+            base.Use(player);
             ResourceProcessingGUI.Activate(this, player);
         }
 
 
-        }
-    
+    }
+
 
 }

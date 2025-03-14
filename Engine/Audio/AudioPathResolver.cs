@@ -1,5 +1,4 @@
 ﻿
-
 namespace Engine.Audio
 {
     public static class AudioPathResolver
@@ -9,11 +8,11 @@ namespace Engine.Audio
             if (string.IsNullOrWhiteSpace(inputPath))
                 return null;
 
-            
+
             if (Path.IsPathRooted(inputPath) && File.Exists(inputPath))
                 return Path.GetFullPath(inputPath);
 
-         
+
             string combinedPath = Path.Combine(baseDirectory, inputPath);
             if (File.Exists(combinedPath))
                 return Path.GetFullPath(combinedPath);
@@ -21,7 +20,7 @@ namespace Engine.Audio
             string filename = Path.GetFileName(inputPath);
             string relativePath = Path.GetDirectoryName(inputPath) ?? string.Empty;
 
-          
+
             foreach (var ext in allowedExtensions)
             {
                 string searchPath = string.IsNullOrEmpty(relativePath) ? filename + ext : Path.Combine(relativePath, filename + ext);
@@ -30,7 +29,7 @@ namespace Engine.Audio
                     return Path.GetFullPath(fullPath);
             }
 
-          
+
             if (Path.GetExtension(inputPath).Length == 0)
             {
                 foreach (var ext in allowedExtensions)
@@ -42,7 +41,7 @@ namespace Engine.Audio
                 }
             }
 
-          
+
             foreach (var ext in allowedExtensions)
             {
                 string searchPattern = Path.GetFileNameWithoutExtension(filename) + ext;

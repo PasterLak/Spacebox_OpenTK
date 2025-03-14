@@ -60,8 +60,8 @@ namespace Spacebox.Tests
             for (int i = 0; i < 1000; i++)
             {
                 if (_blockOld.IsTransparent) count++;
-                if (_blockOld.IsAir()) count--;
-                if (_blockOld.IsLight()) count++;
+                if (_blockOld.IsAir) count--;
+                if (_blockOld.IsLight) count++;
             }
 
             for (int i = 0; i < 1000; i++)
