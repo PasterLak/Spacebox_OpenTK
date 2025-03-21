@@ -1,9 +1,6 @@
-﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Formats.Png;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using SkiaSharp;
 
 namespace Engine
 {
@@ -97,24 +94,38 @@ namespace Engine
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Texture file not found: {path}");
-            using (Image<Rgba32> image = Image.Load<Rgba32>(path))
+
+            using var input = File.OpenRead(path);
+            using var codec = SKCodec.Create(input);
+            var info = codec.Info;
+
+            var bitmap = new SKBitmap(info.Width, info.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            codec.GetPixels(bitmap.Info, bitmap.GetPixels());
+
+            Width = bitmap.Width;
+            Height = bitmap.Height;
+            pixels = new Color4[Width, Height];
+
+            for (int y = 0; y < Height; y++)
             {
-                if (flipY)
-                    image.Mutate(x => x.Flip(FlipMode.Vertical));
-                Width = image.Width;
-                Height = image.Height;
-                pixels = new Color4[Width, Height];
-                for (int y = 0; y < Height; y++)
-                    for (int x = 0; x < Width; x++)
-                    {
-                        Rgba32 pixel = image[x, y];
-                        pixels[x, y] = new Color4(pixel.R / 255f, pixel.G / 255f, pixel.B / 255f, pixel.A / 255f);
-                    }
+                int srcY = flipY ? Height - 1 - y : y;
+                for (int x = 0; x < Width; x++)
+                {
+                    var color = bitmap.GetPixel(x, srcY);
+                    pixels[x, y] = new Color4(
+                        color.Red / 255f,
+                        color.Green / 255f,
+                        color.Blue / 255f,
+                        color.Alpha / 255f);
+                }
             }
+
             LoadTextureFromPixels();
+
             if (AllowDebug)
                 Debug.Log("[Texture2D] Loaded from: " + path, Color4.Coral);
         }
+
         private void LoadTextureFromPixels()
         {
             byte[] pixelData = new byte[Width * Height * 4];
@@ -213,59 +224,77 @@ namespace Engine
                 Debug.Error("[Texture2D] No pixel data available to save.");
                 return;
             }
+
             Task.Run(() =>
             {
-                using (var image = new Image<Rgba32>(Width, Height))
+                using var surface = SKSurface.Create(new SKImageInfo(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul));
+                var canvas = surface.Canvas;
+
+                for (int y = 0; y < Height; y++)
                 {
-                    for (int y = 0; y < Height; y++)
-                        for (int x = 0; x < Width; x++)
-                        {
-                            var color = pixels[x, y];
-                            int inx = flipY ? Height - 1 - y : y;
-                            image[x, inx] = new Rgba32((byte)(color.R * 255),
-                                (byte)(color.G * 255),
-                                (byte)(color.B * 255),
-                                (byte)(color.A * 255));
-                        }
-                    image.Save(path, new PngEncoder());
+                    int targetY = flipY ? Height - 1 - y : y;
+                    for (int x = 0; x < Width; x++)
+                    {
+                        var color = pixels[x, y];
+                        var skColor = new SKColor(
+                            (byte)(color.R * 255),
+                            (byte)(color.G * 255),
+                            (byte)(color.B * 255),
+                            (byte)(color.A * 255));
+                        canvas.DrawPoint(x, targetY, skColor);
+                    }
                 }
+
+                using var image = surface.Snapshot();
+                using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+                using var stream = File.OpenWrite(path);
+                data.SaveTo(stream);
+
+                Debug.Success($"Image saved to: {Path.GetFullPath(path)}");
             });
         }
-        public static void SavePixelsToPng(string path, Color4[,] pixels)
+
+
+        public static void SavePixelsToPng(string path, Color4[,] pixels, bool flipY = false)
         {
-            if (pixels == null)
-            {
-                Debug.Error("[Texture2D] No pixel data available to save.");
-                return;
-            }
             int width = pixels.GetLength(0);
             int height = pixels.GetLength(1);
-            Task.Run(() =>
+
+            using var surface = SKSurface.Create(new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul));
+            var canvas = surface.Canvas;
+
+            for (int y = 0; y < height; y++)
             {
-                using (var image = new Image<Rgba32>(width, height))
+                int targetY = flipY ? height - 1 - y : y;
+                for (int x = 0; x < width; x++)
                 {
-                    for (int y = 0; y < height; y++)
-                        for (int x = 0; x < width; x++)
-                        {
-                            var color = pixels[x, y];
-                            image[x, y] = new Rgba32((byte)(color.R * 255),
-                                (byte)(color.G * 255),
-                                (byte)(color.B * 255),
-                                (byte)(color.A * 255));
-                        }
-                    image.Save(path, new PngEncoder());
-                    Debug.Success($"Image saved to: {Path.GetFullPath(path)}");
+                    var c = pixels[x, y];
+                    var skColor = new SKColor(
+                        (byte)(c.R * 255),
+                        (byte)(c.G * 255),
+                        (byte)(c.B * 255),
+                        (byte)(c.A * 255));
+                    canvas.DrawPoint(x, targetY, skColor);
                 }
-            });
+            }
+
+            using var image = surface.Snapshot();
+            using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+            using var stream = File.OpenWrite(path);
+            data.SaveTo(stream);
+
+            Debug.Success($"Image saved to: {Path.GetFullPath(path)}");
         }
+
+
         public void Dispose() => GL.DeleteTexture(Handle);
 
         public IResource Load(string path)
         {
             Handle = GL.GenTexture();
             Use();
-           LoadTextureFromFile(path, true); 
-           
+            LoadTextureFromFile(path, true);
+
             _filterMode = FilterMode.Linear;
             SetTextureParameters();
 
@@ -275,41 +304,46 @@ namespace Engine
     }
 
 
+
+
     public static class PixelDataLoader
     {
         public static async Task<PixelData> LoadAsync(string path, bool flipY = true)
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Texture file not found: {path}");
+
             return await Task.Run(() =>
             {
-                using (Image<Rgba32> image = Image.Load<Rgba32>(path))
+                using var input = File.OpenRead(path);
+                using var codec = SKCodec.Create(input);
+                var info = codec.Info;
+
+                var bitmap = new SKBitmap(info.Width, info.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+                codec.GetPixels(bitmap.Info, bitmap.GetPixels());
+
+                int width = bitmap.Width;
+                int height = bitmap.Height;
+                byte[] data = new byte[width * height * 4];
+
+                for (int y = 0; y < height; y++)
                 {
-                    if (flipY)
-                        image.Mutate(x => x.Flip(FlipMode.Vertical));
-                    int width = image.Width;
-                    int height = image.Height;
-                    byte[] data = new byte[width * height * 4];
-                    image.ProcessPixelRows(accessor =>
+                    int row = flipY ? height - 1 - y : y;
+                    for (int x = 0; x < width; x++)
                     {
-                        for (int y = 0; y < height; y++)
-                        {
-                            Span<Rgba32> pixelRow = accessor.GetRowSpan(y);
-                            for (int x = 0; x < width; x++)
-                            {
-                                int index = (y * width + x) * 4;
-                                Rgba32 pixel = pixelRow[x];
-                                data[index + 0] = pixel.R;
-                                data[index + 1] = pixel.G;
-                                data[index + 2] = pixel.B;
-                                data[index + 3] = pixel.A;
-                            }
-                        }
-                    });
-                    return new PixelData { Width = width, Height = height, Data = data };
+                        var color = bitmap.GetPixel(x, row);
+                        int index = (y * width + x) * 4;
+                        data[index + 0] = color.Red;
+                        data[index + 1] = color.Green;
+                        data[index + 2] = color.Blue;
+                        data[index + 3] = color.Alpha;
+                    }
                 }
+
+                return new PixelData { Width = width, Height = height, Data = data };
             });
         }
     }
+
 
 }

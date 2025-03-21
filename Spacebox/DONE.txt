@@ -60,6 +60,10 @@ New
 - common resources manager
 - parallel loading of resources
 - detected memory leaks (audio clip/source, skybox, spacetexture, mesh, shader thread)
+- build with powershell 
+
+engine:
+- 
 
 Small
 - double click to open a world

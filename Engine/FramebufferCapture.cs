@@ -1,7 +1,4 @@
-﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Formats.Png;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Mathematics;
 
@@ -17,13 +14,10 @@ namespace Engine
             {
                 _isActive = value;
                 FrameNumber = 0;
-
                 if (value)
                 {
                     if (Directory.Exists("Frames"))
-                    {
                         Directory.Delete("Frames", true);
-                    }
                 }
                 else
                 {
@@ -34,115 +28,90 @@ namespace Engine
 
         public static int FrameNumber = 0;
 
-
-        public static void SaveFrame(GameWindow Window)
+        public static void SaveFrame(GameWindow window)
         {
             if (!_isActive)
                 return;
 
             if (!Directory.Exists("Frames"))
-            {
                 Directory.CreateDirectory("Frames");
-            }
 
-            int width = Window.Size.X;
-            int height = Window.Size.Y;
             string filePath = $"Frames/frame{FrameNumber}.png";
-
-            byte[] pixels = new byte[width * height * 4];
-            GL.ReadPixels(0, 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
-
-            Task.Run(() =>
-            {
-                using (Image<Rgba32> image = new Image<Rgba32>(width, height))
-                {
-                    for (int y = 0; y < height; y++)
-                    {
-                        for (int x = 0; x < width; x++)
-                        {
-                            int glIndex = ((y * width) + x) * 4;
-                            int imgY = height - y - 1;
-                            image[x, imgY] = new Rgba32(pixels[glIndex], pixels[glIndex + 1], pixels[glIndex + 2], pixels[glIndex + 3]);
-                        }
-                    }
-                    image.Save(filePath, new PngEncoder());
-                }
-
-            });
-
+            SaveFrameUsingTexture(window, filePath);
             FrameNumber++;
         }
 
-        public static void SaveScreenshot(GameWindow Window)
+        public static void SaveScreenshot(GameWindow window)
         {
-            SaveScreenshot(Window.ClientSize);
+            SaveScreenshot(window.ClientSize);
         }
 
         public static void SaveScreenshot(Vector2i clientSize)
         {
-
-
             if (!Directory.Exists("Screenshots"))
-            {
                 Directory.CreateDirectory("Screenshots");
-            }
 
-            int width = clientSize.X;
-            int height = clientSize.Y;
-            string filePath = $"Screenshots/screenshot_{DateTime.Now.Year}_{DateTime.Now.Month}_{DateTime.Now.Day}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}.png";
+            string filePath = $"Screenshots/screenshot_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.png";
+            SaveScreenshotUsingTexture(clientSize, filePath);
+            Debug.Success($"Screenshot saved: {Path.GetFullPath(filePath)}");
+        }
 
+        public static void SaveFrameUsingTexture(GameWindow window, string filePath)
+        {
+            int width = window.Size.X;
+            int height = window.Size.Y;
             byte[] pixels = new byte[width * height * 4];
             GL.ReadPixels(0, 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+            Color4[,] colorData = ConvertToColorArray(pixels, width, height);
+            Texture2D texture = new Texture2D(width, height);
+            texture.SetPixelsData(colorData);
+            texture.SaveToPng(filePath);
+            texture.Dispose();
+        }
 
-            Task.Run(() =>
-            {
-                using (Image<Rgba32> image = new Image<Rgba32>(width, height))
-                {
-                    for (int y = 0; y < height; y++)
-                    {
-                        for (int x = 0; x < width; x++)
-                        {
-                            int glIndex = ((y * width) + x) * 4;
-                            int imgY = height - y - 1;
-                            image[x, imgY] = new Rgba32(pixels[glIndex], pixels[glIndex + 1], pixels[glIndex + 2], pixels[glIndex + 3]);
-                        }
-                    }
-                    image.Save(filePath, new PngEncoder());
-                }
-                Debug.Success($"Screenshot saved: {Path.GetFullPath(filePath)}");
-            });
-
-
+        public static void SaveScreenshotUsingTexture(Vector2i clientSize, string filePath)
+        {
+            int width = clientSize.X;
+            int height = clientSize.Y;
+            byte[] pixels = new byte[width * height * 4];
+            GL.ReadPixels(0, 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+            Color4[,] colorData = ConvertToColorArray(pixels, width, height);
+            Texture2D texture = new Texture2D(width, height);
+            texture.SetPixelsData(colorData);
+            texture.SaveToPng(filePath);
+            texture.Dispose();
         }
 
         public static async Task<byte[]> CaptureFrameAsPngAsync(int width, int height)
         {
-            if (width <= 0 || height <= 0)
-                throw new ArgumentException("Width and Height must be positive integers.");
-
             byte[] pixels = new byte[width * height * 4];
             GL.ReadPixels(0, 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+            Color4[,] colorData = ConvertToColorArray(pixels, width, height);
+            Texture2D texture = new Texture2D(width, height);
+            texture.SetPixelsData(colorData);
+            string tempPath = Path.Combine(Path.GetTempPath(), "temp_capture.png");
+            texture.SaveToPng(tempPath);
+            texture.Dispose();
+            return await Task.Run(() => File.ReadAllBytes(tempPath));
+        }
 
-            return await Task.Run(() =>
+        private static Color4[,] ConvertToColorArray(byte[] pixels, int width, int height)
+        {
+            Color4[,] result = new Color4[width, height];
+            for (int y = 0; y < height; y++)
             {
-                using (Image<Rgba32> image = new Image<Rgba32>(width, height))
+                int flippedY = height - 1 - y;
+                for (int x = 0; x < width; x++)
                 {
-                    for (int y = 0; y < height; y++)
-                    {
-                        for (int x = 0; x < width; x++)
-                        {
-                            int glIndex = ((y * width) + x) * 4;
-                            int imgY = height - y - 1;
-                            image[x, imgY] = new Rgba32(pixels[glIndex], pixels[glIndex + 1], pixels[glIndex + 2], pixels[glIndex + 3]);
-                        }
-                    }
-                    using (var ms = new MemoryStream())
-                    {
-                        image.Save(ms, new PngEncoder());
-                        return ms.ToArray();
-                    }
+                    int index = (y * width + x) * 4;
+                    float r = pixels[index + 0] / 255f;
+                    float g = pixels[index + 1] / 255f;
+                    float b = pixels[index + 2] / 255f;
+                    float a = pixels[index + 3] / 255f;
+                    result[x, flippedY] = new Color4(r, g, b, a);
                 }
-            });
+            }
+            return result;
         }
     }
 }

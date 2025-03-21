@@ -1,7 +1,6 @@
 ﻿using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
+using SkiaSharp;
 
 namespace Engine.Utils
 {
@@ -17,32 +16,39 @@ namespace Engine.Utils
 
             try
             {
-                using (Image<Rgba32> image = SixLabors.ImageSharp.Image.Load<Rgba32>(iconPath))
+                using var input = File.OpenRead(iconPath);
+                using var codec = SKCodec.Create(input);
+                var info = codec.Info;
+
+                using var bitmap = new SKBitmap(info.Width, info.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+                codec.GetPixels(bitmap.Info, bitmap.GetPixels());
+
+                int width = bitmap.Width;
+                int height = bitmap.Height;
+                byte[] pixelBytes = new byte[width * height * 4];
+                int index = 0;
+
+                for (int y = 0; y < height; y++)
                 {
-                    int width = image.Width;
-                    int height = image.Height;
-                    byte[] pixels = new byte[width * height * 4];
-                    int index = 0;
-
-                    image.ProcessPixelRows(accessor =>
+                    for (int x = 0; x < width; x++)
                     {
-                        for (int y = 0; y < height; y++)
-                        {
-                            Span<Rgba32> pixelRow = accessor.GetRowSpan(y);
-                            for (int x = 0; x < width; x++)
-                            {
-                                Rgba32 pixel = pixelRow[x];
-                                pixels[index++] = pixel.R;
-                                pixels[index++] = pixel.G;
-                                pixels[index++] = pixel.B;
-                                pixels[index++] = pixel.A;
-                            }
-                        }
-                    });
+                        // GetPixel(...) often returns a 32-bit color packed as RGBA
+                        // (uint c = (uint)bitmap.GetPixel(x, y) in older Skia versions)
+                        uint c = (uint)bitmap.GetPixel(x, y);
+                        byte r = (byte)((c >> 0) & 0xFF);
+                        byte g = (byte)((c >> 8) & 0xFF);
+                        byte b = (byte)((c >> 16) & 0xFF);
+                        byte a = (byte)((c >> 24) & 0xFF);
 
-                    var iconImage = new OpenTK.Windowing.Common.Input.Image(width, height, pixels);
-                    window.Icon = new WindowIcon(iconImage);
+                        pixelBytes[index++] = b;
+                        pixelBytes[index++] = g;
+                        pixelBytes[index++] = r;
+                        pixelBytes[index++] = a;
+                    }
                 }
+
+                var iconImage = new Image(width, height, pixelBytes);
+                window.Icon = new WindowIcon(iconImage);
             }
             catch (Exception ex)
             {
