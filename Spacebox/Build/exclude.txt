@@ -1,0 +1,4 @@
+Resources/Textures/Space
+Resources/Textures/Old Textures
+temp.txt
+Debug/Logs
