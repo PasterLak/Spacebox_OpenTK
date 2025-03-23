@@ -1,5 +1,4 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;

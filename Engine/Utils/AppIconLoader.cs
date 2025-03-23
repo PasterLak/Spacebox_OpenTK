@@ -32,8 +32,7 @@ namespace Engine.Utils
                 {
                     for (int x = 0; x < width; x++)
                     {
-                        // GetPixel(...) often returns a 32-bit color packed as RGBA
-                        // (uint c = (uint)bitmap.GetPixel(x, y) in older Skia versions)
+
                         uint c = (uint)bitmap.GetPixel(x, y);
                         byte r = (byte)((c >> 0) & 0xFF);
                         byte g = (byte)((c >> 8) & 0xFF);

@@ -1,5 +1,4 @@
 # PowerShell script to build and package Spacebox project
-# Works regardless of script location
 
 # ==== CONFIGURATION ====
 $version = "0.1.2 alpha"
