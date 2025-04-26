@@ -36,5 +36,6 @@ public class WorldInfo
         info.WorldPreview = new Texture2D(path);
         Resources.AddResourceToDispose(info.WorldPreview);
         info.WorldPreview.FlipY();
+        info.WorldPreview.FilterMode = FilterMode.Nearest;
     }
 }

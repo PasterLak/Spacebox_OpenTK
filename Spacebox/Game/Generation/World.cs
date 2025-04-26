@@ -62,7 +62,7 @@ namespace Spacebox.Game.Generation
 
             var screenSize = Window.Instance.ClientSize;
             string path = Path.Combine(Data.WorldFolderPath, "preview.png");
-            FramebufferCapture.SaveScreenshotUsingTexture(screenSize, path);
+            FramebufferCapture.SaveWorldPreview(screenSize, path);
         }
 
         public void LoadWorld()

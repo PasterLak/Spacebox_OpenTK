@@ -129,6 +129,7 @@ namespace Spacebox.Game.Player
 
                 if (currentDamage >= 50)
                 {
+                    explosionSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 200);
                     explosionSound.Play();
                 }
                 OnDespawn?.Invoke(this);
@@ -146,6 +147,7 @@ namespace Spacebox.Game.Player
                     if (angle <= parameters.RicochetAngle)
                     {
                         ray = ray.CalculateRicochetRay(hit.position, hit.normal, ray.Length);
+                        ricochetSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 100);
                         ricochetSound.Play();
                         lineRenderer.ClearPoints();
                         lineRenderer.AddPoint(Vector3.Zero);
@@ -154,6 +156,7 @@ namespace Spacebox.Game.Player
 
                         if (currentRicochets == 5)
                         {
+                            explosionSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 200);
                             explosionSound.Play();
                         }
                         return;
@@ -163,6 +166,8 @@ namespace Spacebox.Game.Player
 
 
                 OnHit?.Invoke(this);
+               
+                hitSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 100);
                 hitSound.Play();
 
                 if (currentDamage > hit.block.Durability)
@@ -173,6 +178,7 @@ namespace Spacebox.Game.Player
                     IsActive = false;
                     if (currentDamage >= 50)
                     {
+                        explosionSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 200);
                         explosionSound.Play();
                     }
                     OnDespawn?.Invoke(this);

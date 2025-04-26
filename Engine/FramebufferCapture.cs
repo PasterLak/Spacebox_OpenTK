@@ -82,6 +82,21 @@ namespace Engine
             texture.Dispose();
         }
 
+        public static void SaveWorldPreview(Vector2i clientSize, string filePath)
+        {
+            int width = clientSize.Y;
+            int height = clientSize.Y;
+            int dropXSize = (clientSize.X - height)/2;
+
+            byte[] pixels = new byte[width * height * 4];
+            GL.ReadPixels(dropXSize , 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+            Color4[,] colorData = ConvertToColorArray(pixels, width, height);
+            Texture2D texture = new Texture2D(width, height);
+            texture.SetPixelsData(colorData);
+            texture.SaveToPng(filePath);
+            texture.Dispose();
+        }
+
         public static async Task<byte[]> CaptureFrameAsPngAsync(int width, int height)
         {
             byte[] pixels = new byte[width * height * 4];
