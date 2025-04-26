@@ -59,7 +59,10 @@ namespace Spacebox.Game.Generation
             Player.Save();
             WorldSaveLoad.SaveWorld(Data.WorldFolderPath);
             WorldInfoSaver.Save(Data.Info);
-            Debug.Success("The world was successfully saved!");
+
+            var screenSize = Window.Instance.ClientSize;
+            string path = Path.Combine(Data.WorldFolderPath, "preview.png");
+            FramebufferCapture.SaveScreenshotUsingTexture(screenSize, path);
         }
 
         public void LoadWorld()

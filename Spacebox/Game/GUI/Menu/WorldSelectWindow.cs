@@ -30,7 +30,7 @@ namespace Spacebox.Game.GUI.Menu
             float contentWidth = windowWidth - horizontalMargin * 2;
             ImGui.Dummy(new Vector2(0, verticalSpacing));
             ImGui.SetCursorPosX(horizontalMargin);
-            ImGui.BeginChild("WorldList", new Vector2(contentWidth, listHeight));
+            ImGui.BeginChild("WorldList", new Vector2(contentWidth * 0.6f, listHeight));
 
             for (int i = 0; i < menu.Worlds.Count; i++)
             {
@@ -53,10 +53,36 @@ namespace Spacebox.Game.GUI.Menu
                         menu.LoadWorld(world);
                     }
                 }
+
+               
             }
 
 
             ImGui.EndChild();
+            var drawList = ImGui.GetWindowDrawList();
+            var a = new Vector2(windowPos.X + horizontalMargin + contentWidth * 0.6f, windowPos.Y + verticalSpacing*2.5f);
+            var previewMax = a + new Vector2(contentWidth * 0.4f, listHeight);
+            drawList.AddRectFilled(a, previewMax, Theme.Colors.BorderDarkUint);
+
+            
+
+            WorldInfo selectedWorld = menu.selectedWorld;
+            if (selectedWorld != null)
+            {
+                var preview = selectedWorld.WorldPreview;
+
+                if (preview != null)
+                {
+                    var mirgin = new Vector2(horizontalMargin*0.1f, horizontalMargin * 0.1f);
+                    drawList.AddImage(preview.Handle,a + mirgin, a + new Vector2(contentWidth * 0.4f, listHeight) - mirgin);
+                }
+                else
+                {
+                    drawList.AddText(a, Theme.Colors.BorderLightUint, " This world has \n no preview image");
+                }
+            }
+
+
             ImGui.Dummy(new Vector2(0, verticalSpacing));
             ImGui.SetCursorPosX(horizontalMargin);
             ImGui.BeginChild("WorldInfo", new Vector2(contentWidth, infoHeight));

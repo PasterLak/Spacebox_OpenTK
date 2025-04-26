@@ -168,6 +168,7 @@ namespace Engine
         
         public void Render(Camera camera)
         {
+          
             shader.Use();
 
             Matrix4 view = camera.GetViewMatrix();

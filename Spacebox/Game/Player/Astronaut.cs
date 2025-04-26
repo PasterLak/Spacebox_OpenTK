@@ -8,13 +8,14 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Engine;
 using Spacebox.GUI;
+using System.Xml.Linq;
 
 
 namespace Spacebox.Game.Player
 {
     public class Astronaut : Camera360Base, INotTransparent
     {
-        public string Name { get; private set; } = "Player";
+        
         public Inventory Inventory { get; private set; }
         public Storage Panel { get; private set; }
 
@@ -73,6 +74,7 @@ namespace Spacebox.Game.Player
             : base(position)
         {
             FOV = 90;
+            Name = "Player";
             DepthNear = 0.01f;
             DepthFar = Settings.ViewDistance;
             base.Name = Name;

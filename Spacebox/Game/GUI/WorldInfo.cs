@@ -15,7 +15,7 @@ public class WorldInfo
     public bool ShowWelcomeWindow { get; set; } = true;
 
     public bool IsLocalWorld = true;
-
+    public Texture2D? WorldPreview;
 
 
     public static string GetCurrentDate()
@@ -26,5 +26,15 @@ public class WorldInfo
     public void UpdateEditDate()
     {
         LastEditDate = GetCurrentDate();
+    }
+
+    public static void LoadWorldPreview(string path, WorldInfo info)
+    {
+        if (info == null) return;
+        if (!File.Exists(path)) return;
+
+        info.WorldPreview = new Texture2D(path);
+        Resources.AddResourceToDispose(info.WorldPreview);
+        info.WorldPreview.FlipY();
     }
 }

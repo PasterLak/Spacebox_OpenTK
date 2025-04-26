@@ -33,6 +33,7 @@ public class WorldInfoSaver
             }
 
             worlds.Add(worldInfo);
+            WorldInfo.LoadWorldPreview(Path.Combine(worldFolder, "preview.png"), worldInfo);
         }
     }
     
