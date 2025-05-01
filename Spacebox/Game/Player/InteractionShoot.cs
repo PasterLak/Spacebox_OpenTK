@@ -192,6 +192,12 @@ public class InteractionShoot : InteractionMode
             {
                 lastInteractiveBlock = b;
                 InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
+
+                if (hit.block.Is<StorageBlock>(out var storageBlock))
+                {
+                    //Debug.Log("Placed: " + ((Vector3i)(hit.blockPositionEntity )));
+                    storageBlock.SetPositionInEntity((Vector3i)(hit.blockPositionEntity));
+                }
             }
             else
             {

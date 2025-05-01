@@ -26,7 +26,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
     {
         if (BlockMiningEffect == null)
         {
-         
+
             var texture = Resources.Load<Texture2D>("Resources/Textures/blockHit.png");
             texture.FilterMode = FilterMode.Nearest;
             BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1), texture, Resources.Load<Shader>("Shaders/particle"));
@@ -126,7 +126,9 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             light.IsActive = false;
             return;
         }
+
         Ray ray = new Ray(player.Position, player.Front, MaxDestroyDistance);
+
         if (World.CurrentSector.Raycast(ray, out HitInfo hit))
         {
             UpdateBlockSelector(hit);
@@ -163,7 +165,15 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             if (lastInteractiveBlock == null)
                 CenteredText.Hide();
             else
+            {
                 InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
+                if (hit.block.Is<StorageBlock>(out var storageBlock))
+                {
+                    //Debug.Log("Placed: " + ((Vector3i)(hit.blockPositionEntity )));
+                    storageBlock.SetPositionInEntity((Vector3i)(hit.blockPositionEntity));
+                }
+            }
+               
         }
         else
         {

@@ -76,6 +76,20 @@ namespace Spacebox.Game.Generation
             return LoadSpaceEntities(sectorFolderPath, sector);
         }
 
+        public static Storage? LoadStorage(int storageIndexInEntity, SpaceEntity entity)
+        {
+            string sectorFolderPath = GetSectorFolderPath(World.Data.WorldFolderPath, World.CurrentSector.PositionIndex);
+
+            return LoadStorageFromFile(Path.Combine(sectorFolderPath, entity.Name + ".entity") , storageIndexInEntity);
+        }
+
+        public static void LoadStorages(int storageIndexInEntity, SpaceEntity entity, Chunk chunk)
+        {
+            string sectorFolderPath = GetSectorFolderPath(World.Data.WorldFolderPath, World.CurrentSector.PositionIndex);
+
+            return LoadStoragesFromFile(Path.Combine(sectorFolderPath, entity.Name + ".entity"), storageIndexInEntity, chunk);
+        }
+
         public static SpaceEntity[] LoadSpaceEntities(string sectorFolderPath, Sector sector)
         {
 
@@ -121,6 +135,7 @@ namespace Spacebox.Game.Generation
             return spaceEntities.ToArray();
         }
 
+
         public static SpaceEntity? LoadSpaceEntityFromFile(string entityFilePath, Sector sector)
         {
             if (File.Exists(entityFilePath))
@@ -128,6 +143,38 @@ namespace Spacebox.Game.Generation
                 CompoundTag tag = NbtFile.Read(entityFilePath, FormatOptions.Java, CompressionType.GZip);
 
                 return NBTHelper.TagToSpaceEntity(tag, sector);
+            }
+
+            return null;
+        }
+
+        private static Storage? LoadStorageFromFile(string entityFilePath, int positionIndexInEntity)
+        {
+            if (File.Exists(entityFilePath))
+            {
+                CompoundTag tag = NbtFile.Read(entityFilePath, FormatOptions.Java, CompressionType.GZip);
+
+                return NBTHelper.TagSpaceEntityToStorage(tag, positionIndexInEntity);
+            }
+            else
+            {
+                Debug.Error($"File with storage data doesnt exist! Path: {entityFilePath} , Index: " + positionIndexInEntity);
+            }
+
+            return null;
+        }
+
+        private static Storage? LoadStoragesFromFile(string entityFilePath, int positionIndexInEntity, Chunk chunk)
+        {
+            if (File.Exists(entityFilePath))
+            {
+                CompoundTag tag = NbtFile.Read(entityFilePath, FormatOptions.Java, CompressionType.GZip);
+
+                return NBTHelper.TagSpaceEntityToStorages(tag, positionIndexInEntity);
+            }
+            else
+            {
+                Debug.Error($"File with storage data doesnt exist! Path: {entityFilePath} , Index: " + positionIndexInEntity);
             }
 
             return null;

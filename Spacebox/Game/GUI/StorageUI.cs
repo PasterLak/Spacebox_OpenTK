@@ -6,6 +6,7 @@ using Engine.Audio;
 
 using Spacebox.Game.Player;
 using Spacebox.Game.GUI.Menu;
+using Spacebox.Game.Generation;
 
 namespace Spacebox.Game.GUI
 {
@@ -15,6 +16,7 @@ namespace Spacebox.Game.GUI
         private static nint SlotTexture = nint.Zero;
         private static nint ItemTexture = nint.Zero;
         private static Storage? Storage;
+        private static StorageBlock? StorageBlock;
         private static Astronaut? Astronaut;
         public static bool IsVisible { get; set; } = false;
 
@@ -40,12 +42,13 @@ namespace Spacebox.Game.GUI
 
          }
 
-        public static void OpenStorage(Storage storage, Astronaut astronaut)
+        public static void OpenStorage(StorageBlock storageBlock, Astronaut astronaut)
         {
-            Storage = storage;
+            StorageBlock = storageBlock;
+            Storage = storageBlock.Storage;
             Astronaut = astronaut;
-            storage.ConnectStorage( astronaut.Inventory);
-            astronaut.Inventory.ConnectStorage(storage);
+            Storage.ConnectStorage( astronaut.Inventory);
+            astronaut.Inventory.ConnectStorage(Storage);
 
             if (ToggleManager.IsActiveAndExists("pause")) return;
             var v = IsVisible;
@@ -82,6 +85,7 @@ namespace Spacebox.Game.GUI
         {
             Storage?.DisconnectStorage();
             Storage = null;
+            StorageBlock = null;
             IsVisible = false;
 
             if(Astronaut is not null)
@@ -148,7 +152,7 @@ namespace Spacebox.Game.GUI
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV, displaySize.Y);
 
             ImGui.SetCursorPos(paddingV);
-            ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), "Storage");
+            ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), "Storage " + StorageBlock.PositionIndex);
 
 
             ImGui.SetCursorPos(paddingV + new Vector2(0, padding * 4));

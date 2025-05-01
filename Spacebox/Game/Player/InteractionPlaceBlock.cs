@@ -10,6 +10,7 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Client;
+using OpenTK.Windowing.Common.Input;
 
 namespace Spacebox.Game.Player;
 
@@ -115,12 +116,18 @@ public class InteractionPlaceBlock : InteractionMode
         if (Input.IsMouseButtonDown(MouseButton.Right))
         {
             Chunk chunk = hit.chunk;
-
+           
             if (chunk != null)
             {
                 if (PanelUI.TryPlaceItem(out var id, GameMode))
                 {
                     Block newBlock = GameAssets.CreateBlockFromId(id);
+
+                    if(newBlock.Is<StorageBlock>(out var storageBlock))
+                    {
+                     
+                        storageBlock.SetPositionInEntity((Vector3i)(hit.blockPositionEntity + hit.normal));
+                    }
 
                     bool hasSameSides = GameAssets.GetBlockDataById(id).AllSidesAreSame;
 
@@ -253,6 +260,11 @@ public class InteractionPlaceBlock : InteractionMode
                 if (PanelUI.TryPlaceItem(out var id, GameMode))
                 {
                     Block newBlock = GameAssets.CreateBlockFromId(id);
+
+                    if (newBlock.Is<StorageBlock>(out var storageBlock))
+                    {
+                        storageBlock.SetPositionInEntity((Vector3i)localPos);
+                    }
 
                     bool hasSameSides = GameAssets.GetBlockDataById(id).AllSidesAreSame;
 

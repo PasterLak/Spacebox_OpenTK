@@ -24,9 +24,9 @@ namespace Spacebox.Game
 
         public string Name = "";
         public Storage Storage;
-        public Vector2i Position;
+        public Vector2Byte Position { get; private set; }
 
-        public ItemSlot(Storage storage, Vector2i position)
+        public ItemSlot(Storage storage, Vector2Byte position)
         {
             Storage = storage;
             Position = position;
@@ -38,7 +38,7 @@ namespace Spacebox.Game
         public ItemSlot(Storage storage, byte x, byte y)
         {
             Storage = storage;
-            Position = new Vector2i(x, y);
+            Position = new Vector2Byte(x, y);
             SlotId = MaxSlotID; MaxSlotID++;
             Item = new Item(1, "");
             _count = 0;

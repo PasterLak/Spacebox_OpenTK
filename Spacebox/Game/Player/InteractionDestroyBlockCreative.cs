@@ -70,6 +70,12 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
             {
                 lastInteractiveBlock = b;
                 InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
+
+                if (hit.block.Is<StorageBlock>(out var storageBlock))
+                {
+
+                    storageBlock.SetPositionInEntity((Vector3i)(hit.blockPositionEntity));
+                }
             }
             else CenteredText.Hide();
         }

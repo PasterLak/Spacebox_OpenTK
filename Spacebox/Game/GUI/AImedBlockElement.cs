@@ -6,7 +6,7 @@ namespace Spacebox.Game.GUI
 {
     public class AImedBlockElement : OverlayElement
     {
-        public static Block? AimedBlock = null;
+       public static Block? AimedBlock = null;
 
         public override void OnGUIText()
         {
@@ -15,6 +15,8 @@ namespace Spacebox.Game.GUI
                 ImGui.Text($" ");
                 ImGui.Text($"Block");
                 ImGui.Text(AimedBlock.ToString());
+
+                //if(AimedBlock.Is<St>)
 
                 AimedBlock = null;
             }

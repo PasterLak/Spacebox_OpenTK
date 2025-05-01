@@ -5,6 +5,8 @@ using Engine.Physics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
+using OpenTK.Mathematics;
+using Engine;
 
 namespace Spacebox.Game.Player;
 
@@ -29,11 +31,17 @@ public class InteractionDefault : InteractionMode
         {
             if (hit.block == null) return;
 
-         
 
-            if(hit.block.Is<InteractiveBlock>(out var interactiveBlock))
+
+            if (hit.block.Is<InteractiveBlock>(out var interactiveBlock))
             {
                 InteractiveBlock.UpdateInteractive(interactiveBlock, player, hit.chunk, hit.position);
+
+                if (hit.block.Is<StorageBlock>(out var storageBlock))
+                {
+                    //Debug.Log("Placed: " + ((Vector3i)(hit.blockPositionEntity )));
+                    storageBlock.SetPositionInEntity((Vector3i)(hit.blockPositionEntity));
+                }
             }
             else
             {

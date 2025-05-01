@@ -13,7 +13,7 @@ namespace Spacebox.Game.Generation
 {
     public class SpaceEntity : SpatialCell, IDisposable
     {
-        public const byte SizeChunks = 4; // will be 16
+        public const byte SizeChunks = 4; // will be 16, check in StraogeBlock pos if want change
         public const byte SizeChunksHalf = SizeChunks / 2;
         public const short SizeBlocks = SizeChunks * Chunk.Size;
         public const short SizeBlocksHalf = SizeChunks * Chunk.Size / 2;
