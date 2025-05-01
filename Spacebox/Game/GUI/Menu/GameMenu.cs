@@ -8,6 +8,7 @@ using Engine.SceneManagment;
 using Spacebox.Game.Player;
 using Spacebox.Scenes;
 using static Spacebox.Game.Resource.GameSetLoader;
+using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.GUI.Menu
 {
@@ -43,9 +44,12 @@ namespace Spacebox.Game.GUI.Menu
         {
             Click1 = new AudioSource(Resources.Get<AudioClip>("Resources/Audio/UI/click1.ogg"));
             WorldInfoSaver.LoadWorlds(worlds);
+
+            GameSetsUnpacker.UnpackMods(true);
+
             LoadGameSets();
 
-           
+
             trashIcon = Resources.Load<Texture2D>("Resources/Textures/UI/trash.png");
             trashIcon.FlipY();
             gamemodes = Enum.GetNames<GameMode>();
@@ -336,7 +340,7 @@ namespace Spacebox.Game.GUI.Menu
             args.Add(world.Seed);
             args.Add(modInfo.FolderName);
 
-            if(multiplayer)
+            if (multiplayer)
             {
                 SceneManager.LoadScene(typeof(MultiplayerScene), args.ToArray());
             }
@@ -344,7 +348,7 @@ namespace Spacebox.Game.GUI.Menu
             {
                 SceneManager.LoadScene(typeof(LocalSpaceScene), args.ToArray());
             }
-            
+
         }
 
         public void DeleteWorld(WorldInfo world)
@@ -367,7 +371,7 @@ namespace Spacebox.Game.GUI.Menu
             Click1.Stop();
 
             Click1.Clip.AudioSource = null;
-           
+
             Click1.Dispose();
         }
     }

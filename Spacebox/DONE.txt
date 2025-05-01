@@ -64,6 +64,7 @@ New
 - detected memory leaks (audio clip/source, skybox, spacetexture, mesh, shader thread)
 - build with powershell 
 - world preview image (simple)
+- the volume of hits, ricochets and explosions depends on the distance from the player
 
 engine:
 - 

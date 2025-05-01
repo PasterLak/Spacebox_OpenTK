@@ -163,6 +163,7 @@ namespace Spacebox.Scenes
             GameAssets.BlocksTexture = texture;
             GameAssets.ItemsTexture = items;
             GameAssets.LightAtlas = emissions;
+           
             GameSetLoader.Load(modId, isMultiplayer, isMultiplayer ? serverName : "");
             GameAssets.IsInitialized = true;
         }
@@ -237,6 +238,7 @@ namespace Spacebox.Scenes
             Texture2D selectedSlotTex = Resources.Load<Texture2D>("Resources/Textures/selectedSlot.png");
 
             slotTex.FilterMode = FilterMode.Nearest;
+            slotTex.FlipY();
             selectedSlotTex.FilterMode = FilterMode.Nearest;
 
             InventoryUI.Initialize(slotTex.Handle);

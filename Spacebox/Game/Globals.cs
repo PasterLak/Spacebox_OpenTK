@@ -2,8 +2,10 @@
 {
     public static class Globals
     {
+        public static string GameFolder = AppDomain.CurrentDomain.BaseDirectory;
         public static class GameSet
         {
+            
             public const string LocalFolder = "GameSets";
             public const string MultiplayerFolder = "Server";
             public const string Default = "Default";

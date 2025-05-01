@@ -91,6 +91,24 @@ namespace Spacebox.Game.Generation
             {
                 chunk.IsModified = true;
             }
+
+            if(Recipe != null)
+            {
+                if (!ValidateInput(InputStorage.GetSlot(0, 0), Recipe))
+                {
+                  
+                    StopTask();
+                    return;
+                }
+                if (!ValidateOutput(OutputStorage.GetSlot(0, 0), Recipe))
+                {
+                  
+                    StopTask();
+
+                }
+            }
+            
+
         }
 
         public void StopTask()
@@ -101,6 +119,8 @@ namespace Spacebox.Game.Generation
                     Task.Stop();
 
                 Task = null;
+                currentTick = 0;
+                craftTicks = 0;
                 IsRunning = false;
             }
         }
@@ -215,7 +235,7 @@ namespace Spacebox.Game.Generation
 
         private void Reset()
         {
-            Recipe = null;
+            //Recipe = null;
             currentTick = 0;
             craftTicks = 0;
             IsRunning = false;
