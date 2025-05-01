@@ -482,10 +482,13 @@
     },
     {
         "Name": "Aluminium Chest",
+        "Type" : "storage",
         "Category": "doors",
         "Sides": "aluChestSide",
         "Top": "aluChestTop",
         "Bottom": "aluChestTop",
+        "SizeX" : 4,
+        "SizeY" : 3,
         "PowerToDrill": 1,
         "Mass": 4,
         "Durability": 10,

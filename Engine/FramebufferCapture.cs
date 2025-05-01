@@ -84,6 +84,8 @@ namespace Engine
 
         public static void SaveWorldPreview(Vector2i clientSize, string filePath)
         {
+            const int maxPreviewSize = 512;
+
             int width = clientSize.Y;
             int height = clientSize.Y;
             int dropXSize = (clientSize.X - height)/2;
@@ -91,11 +93,51 @@ namespace Engine
             byte[] pixels = new byte[width * height * 4];
             GL.ReadPixels(dropXSize , 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
             Color4[,] colorData = ConvertToColorArray(pixels, width, height);
+            Color4[,] finalData;
+            DownscaleColor4(colorData, width, height);
+
+            if (width > maxPreviewSize)
+            {
+                finalData = DownscaleColor4(colorData, maxPreviewSize, maxPreviewSize);
+
+                width = maxPreviewSize;
+                height = maxPreviewSize;
+            }
+            else
+            {
+                 finalData = colorData;
+            }
+
             Texture2D texture = new Texture2D(width, height);
-            texture.SetPixelsData(colorData);
-            texture.SaveToPng(filePath);
+            texture.SetPixelsData(finalData);
+            texture.SaveToPng(filePath, false,false);
             texture.Dispose();
         }
+
+        public static Color4[,] DownscaleColor4(Color4[,] input, int newWidth, int newHeight)
+        {
+            int width = input.GetLength(0);
+            int height = input.GetLength(1);
+
+            Color4[,] result = new Color4[newWidth, newHeight];
+
+            float scaleX = width / (float)newWidth;
+            float scaleY = height / (float)newHeight;
+
+            for (int y = 0; y < newHeight; y++)
+            {
+                for (int x = 0; x < newWidth; x++)
+                {
+                    int srcX = (int)(x * scaleX);
+                    int srcY = (int)(y * scaleY);
+
+                    result[x, y] = input[srcX, srcY];
+                }
+            }
+
+            return result;
+        }
+
 
         public static async Task<byte[]> CaptureFrameAsPngAsync(int width, int height)
         {

@@ -242,6 +242,7 @@ namespace Spacebox.Scenes
             selectedSlotTex.FilterMode = FilterMode.Nearest;
 
             InventoryUI.Initialize(slotTex.Handle);
+            StorageUI.Initialize(slotTex.Handle);
             PanelUI.Initialize(localPlayer, slotTex.Handle, selectedSlotTex.Handle);
             InventoryUI.Player = localPlayer;
             CreativeWindowUI.SetDefaultIcon(slotTex.Handle, localPlayer);
@@ -469,6 +470,7 @@ namespace Spacebox.Scenes
             PanelUI.Render();
             localPlayer.OnGUI();
             InventoryUI.OnGUI(localPlayer.Inventory);
+            StorageUI.OnGUI();
             CreativeWindowUI.OnGUI();
             Chat.OnGUI();
             ItemControlsUI.OnGUI();

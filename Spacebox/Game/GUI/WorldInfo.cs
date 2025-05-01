@@ -2,6 +2,8 @@ using Spacebox.Game.Player;
 
 namespace Spacebox.Game.GUI;
 using Engine;
+using System.IO;
+
 public class WorldInfo
 {
     public string Name { get; set; }
@@ -17,7 +19,7 @@ public class WorldInfo
     public bool IsLocalWorld = true;
     public Texture2D? WorldPreview;
 
-
+    private PixelData? pixeldata;
     public static string GetCurrentDate()
     {
         return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -33,9 +35,26 @@ public class WorldInfo
         if (info == null) return;
         if (!File.Exists(path)) return;
 
-        info.WorldPreview = new Texture2D(path);
-        Resources.AddResourceToDispose(info.WorldPreview);
-        info.WorldPreview.FlipY();
-        info.WorldPreview.FilterMode = FilterMode.Nearest;
+
+        var loadTask = PixelDataLoader.LoadAsync(path, false);
+        try
+        {
+            Task.WaitAll(loadTask);
+        }
+        catch { }
+
+        info.pixeldata = loadTask.Result;
+
+    }
+
+    public static void CreatePreviewFromPixels(WorldInfo info)
+    {
+        if(info.pixeldata != null)
+        {
+            info.WorldPreview = new Texture2D(info.pixeldata, FilterMode.Nearest);
+            Resources.AddResourceToDispose(info.WorldPreview);
+
+            info.pixeldata = null;
+        }
     }
 }

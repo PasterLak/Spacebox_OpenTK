@@ -19,7 +19,8 @@ namespace Spacebox.Game.Resource
              { "cable", data => new CableBlock(data) },
              { "block", data => new Block(data) },
               { "generator", data => new GeneratorBlock(data) },
-               { "consumer", data => new ConsumerBlock(data) }
+               { "consumer", data => new ConsumerBlock(data) },
+                { "storage", data => new StorageBlock(data) }
         };
 
         public static Block CreateBlockFromId(short id)

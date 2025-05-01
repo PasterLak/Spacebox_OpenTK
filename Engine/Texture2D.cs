@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SkiaSharp;
+using System.IO;
 
 namespace Engine
 {
@@ -217,7 +218,29 @@ namespace Engine
                 throw new ArgumentException("Pixel data does not match texture size.");
             pixels = newPixels;
         }
-        public void SaveToPng(string path, bool flipY = false)
+        public void SetPixelsData(Vector3[,] newPixels)
+        {
+            int width = newPixels.GetLength(0);
+            int height = newPixels.GetLength(1);
+
+            if (width != Width || height != Height)
+                throw new ArgumentException("Pixel data does not match texture size.");
+
+            var newColorPixels = new Color4[width, height];
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    Vector3 rgb = newPixels[x, y];
+                    newColorPixels[x, y] = new Color4(rgb.X, rgb.Y, rgb.Z, 1.0f);
+                }
+            }
+
+            pixels = newColorPixels;
+        }
+
+        public void SaveToPng(string path, bool flipY = false, bool doAsync = true)
         {
             if (pixels == null)
             {
@@ -225,36 +248,75 @@ namespace Engine
                 return;
             }
 
-            Task.Run(() =>
+            if(doAsync)
             {
-                using var surface = SKSurface.Create(new SKImageInfo(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul));
-                var canvas = surface.Canvas;
-
-                for (int y = 0; y < Height; y++)
+                Task.Run(() =>
                 {
-                    int targetY = flipY ? Height - 1 - y : y;
-                    for (int x = 0; x < Width; x++)
-                    {
-                        var color = pixels[x, y];
-                        var skColor = new SKColor(
-                            (byte)(color.R * 255),
-                            (byte)(color.G * 255),
-                            (byte)(color.B * 255),
-                            (byte)(color.A * 255));
-                        canvas.DrawPoint(x, targetY, skColor);
-                    }
-                }
-
-                using var image = surface.Snapshot();
-                using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-                using var stream = File.OpenWrite(path);
-                data.SaveTo(stream);
-
-                Debug.Success($"Image saved to: {Path.GetFullPath(path)}");
-            });
+                    SaveImageJpg(path,90, flipY);
+                });
+            }
+            else
+            {
+                SaveImageJpg(path, 90, flipY);
+            }
+           
         }
 
+        private void SaveImageJpg(string path, int quality = 90, bool flipY = false)
+        {
+            using var surface = SKSurface.Create(new SKImageInfo(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul));
+            var canvas = surface.Canvas;
 
+            for (int y = 0; y < Height; y++)
+            {
+                int targetY = flipY ? Height - 1 - y : y;
+                for (int x = 0; x < Width; x++)
+                {
+                    var color = pixels[x, y];
+                    var skColor = new SKColor(
+                        (byte)(color.R * 255),
+                        (byte)(color.G * 255),
+                        (byte)(color.B * 255),
+                        (byte)(color.A * 255));
+                    canvas.DrawPoint(x, targetY, skColor);
+                }
+            }
+
+            using var image = surface.Snapshot();
+            using var data = image.Encode(SKEncodedImageFormat.Jpeg, quality);
+            using var stream = File.OpenWrite(path);
+            data.SaveTo(stream);
+
+            Debug.Success($"JPEG image saved to: {Path.GetFullPath(path)} , Size X:{Width} Y:{Height}");
+        }
+
+        private void SaveImage(string path, bool flipY = false)
+        {
+            using var surface = SKSurface.Create(new SKImageInfo(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul));
+            var canvas = surface.Canvas;
+
+            for (int y = 0; y < Height; y++)
+            {
+                int targetY = flipY ? Height - 1 - y : y;
+                for (int x = 0; x < Width; x++)
+                {
+                    var color = pixels[x, y];
+                    var skColor = new SKColor(
+                        (byte)(color.R * 255),
+                        (byte)(color.G * 255),
+                        (byte)(color.B * 255),
+                        (byte)(color.A * 255));
+                    canvas.DrawPoint(x, targetY, skColor);
+                }
+            }
+
+            using var image = surface.Snapshot();
+            using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+            using var stream = File.OpenWrite(path);
+            data.SaveTo(stream);
+
+            Debug.Success($"PNG image saved to: {Path.GetFullPath(path)} , Size X:{Width} Y:{Height}");
+        }
         public static void SavePixelsToPng(string path, Color4[,] pixels, bool flipY = false)
         {
             int width = pixels.GetLength(0);

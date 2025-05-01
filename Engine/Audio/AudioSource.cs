@@ -135,17 +135,17 @@ namespace Engine.Audio
             }
         }
 
-        public void SetVolumeByDistance(float distance, float maxDistance)
+        public void SetVolumeByDistance(float currentDistance, float maxDistance)
         {
-            if (distance <= 0)
+            if (currentDistance <= 0)
             {
                 Volume = 1f;
             }
             else
             {
                 float minDistance = maxDistance * 0.1f;
-                Volume = MathHelper.Clamp(minDistance / (minDistance + distance), 0f, 1f);
-                Debug.Log("Volume " + Volume);
+                Volume = MathHelper.Clamp(minDistance / (minDistance + currentDistance), 0f, 1f);
+
             }
         }
 

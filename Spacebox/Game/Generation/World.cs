@@ -61,8 +61,11 @@ namespace Spacebox.Game.Generation
             WorldInfoSaver.Save(Data.Info);
 
             var screenSize = Window.Instance.ClientSize;
-            string path = Path.Combine(Data.WorldFolderPath, "preview.png");
+            string path = Path.Combine(Data.WorldFolderPath, "preview.jpg");
+
+            //PanelUI.HideItemModel();
             FramebufferCapture.SaveWorldPreview(screenSize, path);
+           // PanelUI.ShowItemModel();
         }
 
         public void LoadWorld()

@@ -16,6 +16,7 @@ namespace Spacebox.Game.GUI
         public static bool IsVisible { get; set; } = true;
         public static bool EnableRenderForCurrentItem { get; set; } = true;
         public static bool AllowScroll { get; set; } = true;
+        public static bool IsItemModelVisible { get; set; } = true;
         public static Storage Storage;
         private static ItemModel ItemModel;
         private static ItemSlot SelectedSlot;
@@ -76,6 +77,7 @@ namespace Spacebox.Game.GUI
 
         public static void DrawItemModel()
         {
+            if(!IsItemModelVisible) return;
             if (ItemModel == null) return;
             ItemModel.Render();
         }
@@ -98,13 +100,13 @@ namespace Spacebox.Game.GUI
             return true;
         }
 
-        private static void ShowItemModel()
+        public static void ShowItemModel()
         {
             if (SelectedSlot?.HasItem == true && !(SelectedSlot.Item is BlockItem))
                 ItemModel = GameAssets.ItemModels[SelectedSlot.Item.Id];
         }
 
-        private static void HideItemModel()
+        public static void HideItemModel()
         {
             if (SelectedSlot == null) return;
             if (!SelectedSlot.HasItem || SelectedSlot.Item is BlockItem)

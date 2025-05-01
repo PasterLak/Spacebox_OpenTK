@@ -13,6 +13,8 @@ public class WorldInfoSaver
 
         EnsureDirectoryExists(worldsDirectory);
 
+        Dictionary<string, WorldInfo> worldPreviews = new Dictionary<string, WorldInfo>();
+
         foreach (string worldFolder in Directory.GetDirectories(worldsDirectory))
         {
             string worldJsonPath = Path.Combine(worldFolder, "world.json");
@@ -33,10 +35,39 @@ public class WorldInfoSaver
             }
 
             worlds.Add(worldInfo);
-            WorldInfo.LoadWorldPreview(Path.Combine(worldFolder, "preview.png"), worldInfo);
+
+            var pathPreview = Path.Combine(worldFolder, "preview.jpg");
+
+            if (File.Exists(pathPreview))
+            {
+                worldPreviews.Add(pathPreview, worldInfo);
+            }
+
+        }
+
+        if (worldPreviews.Count > 0)
+        {
+
+            var tasks = new List<Task>();
+
+            foreach (var worldPreview in worldPreviews)
+            {
+
+                tasks.Add(Task.Run(() =>
+                {
+                    WorldInfo.LoadWorldPreview(worldPreview.Key, worldPreview.Value);
+                }));
+            }
+
+            Task.WaitAll(tasks.ToArray());
+
+            foreach (var worldPreview2 in worldPreviews)
+            {
+                WorldInfo.CreatePreviewFromPixels(worldPreview2.Value);
+            }
         }
     }
-    
+
     public static void Save(WorldInfo worldInfo)
     {
         string worldsDirectory = GetWorldsDirectory();
@@ -60,7 +91,7 @@ public class WorldInfoSaver
 
         File.WriteAllText(worldJsonPath, jsonContent);
     }
-    
+
     private static string GetWorldsDirectory()
     {
         return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.Menu.WorldsFolder);
