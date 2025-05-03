@@ -66,8 +66,12 @@ public class InteractionShoot : InteractionMode
             startPos = model.Position;
 
            
+            if(shotSound == null)
+            {
                 shotSound = new AudioSource(GameAssets.Sounds[weapone.ShotSound]); // 
                 shotSound.Volume = 1f;
+            }
+               
             
 
         }

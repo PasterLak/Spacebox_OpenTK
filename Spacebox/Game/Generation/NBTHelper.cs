@@ -162,7 +162,7 @@ namespace Spacebox.Game.Generation
         public static CompoundTag SpaceEntityToTag(SpaceEntity entity)
         {
             var root = new CompoundTag(entity.GetType().Name);
-           
+
 
             root.Add(new IntTag("id", entity.EntityID));
             root.Add(new StringTag("name", entity.Name));
@@ -283,7 +283,7 @@ namespace Spacebox.Game.Generation
                                 if (StorageBlockToTag(blockRP, paletteItems, out var result))
                                 {
                                     storagesList.Add(result);
-                                 
+
                                     //resourceProcessingBlockData.AddRange(result);
                                 }
                             }
@@ -381,11 +381,13 @@ namespace Spacebox.Game.Generation
                 {
                     var slot = storage.GetSlot(x, y);
 
-                    if (!slot.HasItem) return;
-
-                    if (itemsPalette.TryAdd(slot.Item.Name, indexInPalette))
+                    if (slot.HasItem)
                     {
-                        indexInPalette++;
+                        if (itemsPalette.TryAdd(slot.Item.Name, indexInPalette))
+                        {
+                            indexInPalette++;
+                        }
+
                     }
 
                 }
@@ -729,9 +731,16 @@ namespace Spacebox.Game.Generation
 
                                 var itemName = paletteitemsString[paletteId];
 
-                                var slot = newStorage.GetSlot(posX, posY);
 
-                                slot.SetData(GameAssets.GetItemByName(itemName), (byte)count);
+                                var item = GameAssets.GetItemByName(itemName);
+
+                                if(item != null)
+                                {
+                                    var slot = newStorage.GetSlot(posX, posY);
+
+                                    slot.SetData(item, (byte)count);
+                                }
+                                
                             }
 
 

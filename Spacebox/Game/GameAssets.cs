@@ -65,7 +65,7 @@ namespace Spacebox.Game
             return false;
         }
 
-        public static Item GetItemByName(string name)
+        public static Item? GetItemByName(string name)
         {
             foreach (var item in Items.Values)
             {

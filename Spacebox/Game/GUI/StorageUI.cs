@@ -20,9 +20,10 @@ namespace Spacebox.Game.GUI
         private static Astronaut? Astronaut;
         public static bool IsVisible { get; set; } = false;
 
-        
 
 
+        private static AudioSource openSound;
+        private static AudioSource closeSound;
         private static AudioSource splitAudio;
         public static void Initialize(nint textureId)
         {
@@ -39,8 +40,10 @@ namespace Spacebox.Game.GUI
             };
 
             splitAudio = new AudioSource(SoundManager.GetClip("splitStack"));
+            openSound = new AudioSource(Resources.Get<AudioClip>("openStorage"));
+            closeSound = new AudioSource(Resources.Get<AudioClip>("closeStorage"));
 
-         }
+        }
 
         public static void OpenStorage(StorageBlock storageBlock, Astronaut astronaut)
         {
@@ -50,6 +53,7 @@ namespace Spacebox.Game.GUI
             Storage.ConnectStorage( astronaut.Inventory);
             astronaut.Inventory.ConnectStorage(Storage);
 
+            openSound?.Play();
             if (ToggleManager.IsActiveAndExists("pause")) return;
             var v = IsVisible;
 
@@ -87,8 +91,8 @@ namespace Spacebox.Game.GUI
             Storage = null;
             StorageBlock = null;
             IsVisible = false;
-
-            if(Astronaut is not null)
+            closeSound?.Play();
+            if (Astronaut is not null)
             {
                 Astronaut.Inventory.ConnectStorage(Astronaut.Panel);
                 Astronaut = null;
