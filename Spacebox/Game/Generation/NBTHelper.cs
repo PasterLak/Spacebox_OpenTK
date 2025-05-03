@@ -1,9 +1,8 @@
 ﻿using OpenTK.Mathematics;
 using SharpNBT;
 using Engine;
-using System;
-using Spacebox.Game.GUI;
-using SharpCompress.Common;
+using System.Collections.Generic;
+
 
 namespace Spacebox.Game.Generation
 {
@@ -90,8 +89,6 @@ namespace Spacebox.Game.Generation
             foreach (CompoundTag chunk in chunksList)
             {
 
-
-
                 if (chunk.TryGetValue<ListTag>("paletteItems", out var paletteItems))
                 {
 
@@ -118,7 +115,7 @@ namespace Spacebox.Game.Generation
             return list;
         }
 
-        public static Storage? TagSpaceEntityToStorage(CompoundTag tag, int positionInEntitySpace)
+        public static Storage? TagSpaceEntityToStorage(CompoundTag tag, ushort positionInEntitySpace)
         {
 
             if (tag == null) return null;
@@ -129,7 +126,7 @@ namespace Spacebox.Game.Generation
             {
 
 
-                var position = storage.Get<IntTag>("positionEntitySpace");
+                ushort position = storage.Get<ShortTag>("positionChunk");
 
                 if (position == positionInEntitySpace)
                 {
@@ -160,10 +157,12 @@ namespace Spacebox.Game.Generation
             return null;
         }
 
+
+
         public static CompoundTag SpaceEntityToTag(SpaceEntity entity)
         {
             var root = new CompoundTag(entity.GetType().Name);
-
+           
 
             root.Add(new IntTag("id", entity.EntityID));
             root.Add(new StringTag("name", entity.Name));
@@ -272,7 +271,7 @@ namespace Spacebox.Game.Generation
 
                             var storage = blockRP.Storage;
 
-                            if (storage != null)
+                            if (storage != null && storage.HasAnyItems())
                             {
 
                                 AddItemsToPalette(storage, paletteItems, ref indexInPalette);
@@ -284,6 +283,7 @@ namespace Spacebox.Game.Generation
                                 if (StorageBlockToTag(blockRP, paletteItems, out var result))
                                 {
                                     storagesList.Add(result);
+                                 
                                     //resourceProcessingBlockData.AddRange(result);
                                 }
                             }
@@ -349,7 +349,7 @@ namespace Spacebox.Game.Generation
 
             root.Add(storagesListTag);
 
-            Debug.Log(root.PrettyPrinted());
+            //Debug.Log(root.PrettyPrinted());
 
             return root;
         }
@@ -406,7 +406,7 @@ namespace Spacebox.Game.Generation
         {
             result = null;
             if (block == null) return false;
-            if (block.PositionIndex == -1) return false;
+            //if (block.PositionIndex == -1) return false;
 
             var storage = block.Storage;
             if (storage == null) return false;
@@ -436,7 +436,7 @@ namespace Spacebox.Game.Generation
             var root = new CompoundTag("storage");
 
 
-            root.Add(new IntTag("positionEntitySpace", block.PositionIndex));
+            root.Add(new ShortTag("positionChunk", block.PositionIndex));
             root.Add(new ShortTag("sizeXY", storageSizeXYPacked));
             root.Add(new LongArrayTag("slotsData", slotsData));
 
@@ -708,6 +708,49 @@ namespace Spacebox.Game.Generation
 
                 if (tag.TryGetValue<ListTag>("storages", out var storages))
                 {
+
+                    foreach (CompoundTag storage in storages)
+                    {
+
+
+                        if (storage.TryGetValue<ShortTag>("positionChunk", out var posTag))
+                        {
+                            Vector3Byte pos = StorageBlock.PositionIndexToPositionInChunk((ushort)posTag.Value);
+
+                            var sizeXY = storage.Get<ShortTag>("sizeXY");
+
+                            UnpackShortToBytes(sizeXY, out byte sizeX, out byte sizeY);
+
+                            Storage newStorage = new Storage(sizeX, sizeY);
+
+                            foreach (var slotData in storage.Get<LongArrayTag>("slotsData"))
+                            {
+                                UnpackShorts(slotData, out var paletteId, out var count, out var posX, out var posY);
+
+                                var itemName = paletteitemsString[paletteId];
+
+                                var slot = newStorage.GetSlot(posX, posY);
+
+                                slot.SetData(GameAssets.GetItemByName(itemName), (byte)count);
+                            }
+
+
+                            Block block = blocks[pos.X, pos.Y, pos.Z];
+
+                            if (block != null)
+                            {
+                                StorageBlock? sBlock = block as StorageBlock;
+
+                                if (sBlock != null)
+                                {
+                                    sBlock.Storage = newStorage;
+                                    sBlock.SetPositionInChunk(pos);
+                                }
+                            }
+                        }
+
+
+                    }
                 }
 
             }

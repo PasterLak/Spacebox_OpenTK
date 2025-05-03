@@ -298,6 +298,17 @@ namespace Spacebox.Game
             }
         }
 
+        public bool HasAnyItems()
+        {
+            for (int x = 0; x < SizeX; x++)
+            {
+                for (int y = 0; y < SizeY; y++)
+                {
+                   if(Slots[x, y].HasItem) return true; 
+                }
+            }
+            return false;
+        }
         public ItemSlot GetSlot(int x, int y)
         {
             if (x >= 0 && x < SizeX && y >= 0 && y < SizeY)

@@ -196,7 +196,7 @@ public class InteractionShoot : InteractionMode
                 if (hit.block.Is<StorageBlock>(out var storageBlock))
                 {
                     //Debug.Log("Placed: " + ((Vector3i)(hit.blockPositionEntity )));
-                    storageBlock.SetPositionInEntity((Vector3i)(hit.blockPositionEntity));
+                    storageBlock.SetPositionInChunk((hit.blockPositionIndex));
                 }
             }
             else

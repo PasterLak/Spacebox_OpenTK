@@ -8,62 +8,60 @@ namespace Spacebox.Game.Generation
 {
     public class StorageBlock : InteractiveBlock
     {
-        public Storage? Storage { get; set; }
-        public int PositionIndex { get; private set; } = -1;
+        private Storage? _storage;
+        public Storage? Storage
+        {
+            get => _storage;
+            set
+            {
+                _storage = value;
+                _storage.OnDataWasChanged += OnStorageDataWasChanged;
+            }
+        }
+        public ushort PositionIndex { get; private set; } = 0;
+
         public StorageBlock(BlockData blockData) : base(blockData)
         {
-            Storage = new Storage(8, 3);
+
         }
 
-        public void SetPositionInEntity(Vector3i positionEntitySpace)
+        public void SetPositionInChunk(Vector3Byte positionChunk)
         {
 
-            PositionIndex = positionEntitySpace.X * positionEntitySpace.Y * positionEntitySpace.Z;
+            PositionIndex = (ushort)(positionChunk.Z * Chunk.Size * Chunk.Size + positionChunk.Y * Chunk.Size + positionChunk.X);
+        }
+
+        public static Vector3Byte PositionIndexToPositionInChunk(ushort positionIndex)
+        {
+            Vector3Byte pos = new Vector3Byte(0, 0, 0);
+
+            pos.X = (byte)(positionIndex % Chunk.Size);
+            pos.Y = (byte)((positionIndex / Chunk.Size) % Chunk.Size);
+            pos.Z = (byte)(positionIndex / (Chunk.Size * Chunk.Size));
+
+            return pos;
 
         }
+
+
 
         private void OnStorageDataWasChanged(Storage storage)
         {
-            if(chunk != null)
+            if (chunk != null)
             {
+                chunk.SpaceEntity.SetModified();
                 chunk.IsModified = true;
             }
         }
 
         public override void Use(Astronaut player)
         {
-            
-            if (PositionIndex == -1) return;
 
-
-
-            if (World.CurrentSector.TryGetNearestEntity(player.Position, out var entity))
+            if (Storage == null)
             {
-
-            }
-            else return;
-
-            try
-            {
-                var storage = WorldSaveLoad.LoadStorage(PositionIndex, entity);
-
-                if(storage != null)
-                {
-                    Storage = storage;
-                    Storage.OnDataWasChanged += OnStorageDataWasChanged;
-                }
-                else
-                {
-                    Debug.Error("Loaded storage was null! PosInEntity: " + PositionIndex);
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.Error("Error loading storage: " + e);
-                return;
+                Storage = new Storage(8, 3);
             }
 
-            if (Storage == null) return;
             base.Use(player);
 
             StorageUI.OpenStorage(this, player);

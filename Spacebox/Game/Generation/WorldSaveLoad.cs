@@ -76,19 +76,12 @@ namespace Spacebox.Game.Generation
             return LoadSpaceEntities(sectorFolderPath, sector);
         }
 
-        public static Storage? LoadStorage(int storageIndexInEntity, SpaceEntity entity)
+       /* public static Storage? LoadStorage(int storageIndexInEntity, SpaceEntity entity)
         {
             string sectorFolderPath = GetSectorFolderPath(World.Data.WorldFolderPath, World.CurrentSector.PositionIndex);
 
             return LoadStorageFromFile(Path.Combine(sectorFolderPath, entity.Name + ".entity") , storageIndexInEntity);
-        }
-
-        public static void LoadStorages(int storageIndexInEntity, SpaceEntity entity, Chunk chunk)
-        {
-            string sectorFolderPath = GetSectorFolderPath(World.Data.WorldFolderPath, World.CurrentSector.PositionIndex);
-
-            return LoadStoragesFromFile(Path.Combine(sectorFolderPath, entity.Name + ".entity"), storageIndexInEntity, chunk);
-        }
+        }*/
 
         public static SpaceEntity[] LoadSpaceEntities(string sectorFolderPath, Sector sector)
         {
@@ -148,7 +141,7 @@ namespace Spacebox.Game.Generation
             return null;
         }
 
-        private static Storage? LoadStorageFromFile(string entityFilePath, int positionIndexInEntity)
+        /*private static Storage? LoadStorageFromFile(string entityFilePath, int positionIndexInEntity)
         {
             if (File.Exists(entityFilePath))
             {
@@ -162,9 +155,9 @@ namespace Spacebox.Game.Generation
             }
 
             return null;
-        }
+        }*/
 
-        private static Storage? LoadStoragesFromFile(string entityFilePath, int positionIndexInEntity, Chunk chunk)
+        /*private static Storage? LoadStoragesFromFile(string entityFilePath, int positionIndexInEntity, Chunk chunk)
         {
             if (File.Exists(entityFilePath))
             {
@@ -179,7 +172,7 @@ namespace Spacebox.Game.Generation
 
             return null;
         }
-
+        */
 
         private static void SaveSector(Sector sector, string sectorsPath)
         {

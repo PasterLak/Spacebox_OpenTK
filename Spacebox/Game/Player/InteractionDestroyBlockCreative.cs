@@ -74,7 +74,7 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
                 if (hit.block.Is<StorageBlock>(out var storageBlock))
                 {
 
-                    storageBlock.SetPositionInEntity((Vector3i)(hit.blockPositionEntity));
+                    storageBlock.SetPositionInChunk((hit.blockPositionIndex));
                 }
             }
             else CenteredText.Hide();
