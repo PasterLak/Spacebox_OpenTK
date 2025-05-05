@@ -19,8 +19,9 @@ namespace Spacebox.Game.Generation
 
         public Vector3 PositionWorld { get; private set; }
         public Vector3SByte PositionIndex { get; private set; }
-        public bool NeedsToRegenerateMesh { get; set; }
+        
         public Block[,,] Blocks { get; private set; }
+        public bool NeedsToRegenerateMesh { get; set; }
         public bool ShowChunkBounds { get; set; } = true;
         public bool MeasureGenerationTime { get; set; } = false;
         private bool _isModified = false;
@@ -555,33 +556,6 @@ namespace Spacebox.Game.Generation
             }
 
             return false;
-        }
-
-        private void ChangeBlockColor(Block block, Vector3 color, bool regenerateMesh)
-        {
-            block.Color = color;
-
-            if (regenerateMesh)
-            {
-                GenerateMesh();
-            }
-
-            IsModified = true;
-        }
-
-        public void ClearChunk()
-        {
-            for (byte x = 0; x < Size; x++)
-            {
-                for (byte y = 0; y < Size; y++)
-                {
-                    for (byte z = 0; z < Size; z++)
-                    {
-                        Blocks[x, y, z] = new Block();
-                    }
-                }
-            }
-            IsModified = true;
         }
 
         public Vector3 GetCenterOfMass()

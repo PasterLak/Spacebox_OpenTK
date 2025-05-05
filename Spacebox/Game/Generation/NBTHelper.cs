@@ -1,8 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using SharpNBT;
 using Engine;
-using System.Collections.Generic;
-
 
 namespace Spacebox.Game.Generation
 {
@@ -61,9 +59,22 @@ namespace Spacebox.Game.Generation
             var y = tag.Get<FloatTag>("worldY");
             var z = tag.Get<FloatTag>("worldZ");
 
+
+
+
             SpaceEntity spaceEntity = new SpaceEntity(id, new Vector3(x, y, z), sector);
             spaceEntity.Name = name;
 
+
+            if (tag.ContainsKey("rotationX"))
+            {
+                var rx = tag.Get<FloatTag>("rotationX");
+                var ry = tag.Get<FloatTag>("rotationY");
+                var rz = tag.Get<FloatTag>("rotationZ");
+                var rw = tag.Get<FloatTag>("rotationW");
+
+                spaceEntity.Rotation = new Quaternion(rx, ry, rz, rw).ToEulerAngles();
+            }
             var chunksList = tag.Get<ListTag>("chunks");
 
             var chunks = new List<Chunk>();
@@ -115,49 +126,6 @@ namespace Spacebox.Game.Generation
             return list;
         }
 
-        public static Storage? TagSpaceEntityToStorage(CompoundTag tag, ushort positionInEntitySpace)
-        {
-
-            if (tag == null) return null;
-
-            var storages = TagSpaceEntityToStorages(tag, out var paletteitemsString);
-
-            foreach (var storage in storages)
-            {
-
-
-                ushort position = storage.Get<ShortTag>("positionChunk");
-
-                if (position == positionInEntitySpace)
-                {
-                    var sizeXY = storage.Get<ShortTag>("sizeXY");
-
-                    UnpackShortToBytes(sizeXY, out byte sizeX, out byte sizeY);
-
-                    Storage newStorage = new Storage(sizeX, sizeY);
-
-                    foreach (var slotData in storage.Get<LongArrayTag>("slotsData"))
-                    {
-                        UnpackShorts(slotData, out var paletteId, out var count, out var posX, out var posY);
-
-                        var itemName = paletteitemsString[paletteId];
-
-                        var slot = newStorage.GetSlot(posX, posY);
-
-                        slot.SetData(GameAssets.GetItemByName(itemName), (byte)count);
-                    }
-
-                    return newStorage;
-                }
-
-            }
-
-
-
-            return null;
-        }
-
-
 
         public static CompoundTag SpaceEntityToTag(SpaceEntity entity)
         {
@@ -170,6 +138,13 @@ namespace Spacebox.Game.Generation
             root.Add(new FloatTag("worldX", entity.PositionWorld.X));
             root.Add(new FloatTag("worldY", entity.PositionWorld.Y));
             root.Add(new FloatTag("worldZ", entity.PositionWorld.Z));
+
+            Quaternion rot = Quaternion.FromEulerAngles(entity.Rotation);
+
+            root.Add(new FloatTag("rotationX", rot.X));
+            root.Add(new FloatTag("rotationY", rot.Y));
+            root.Add(new FloatTag("rotationZ", rot.Z));
+            root.Add(new FloatTag("rotationW", rot.W));
 
             var chunks = new ListTag("chunks", TagType.Compound);
 
@@ -195,9 +170,9 @@ namespace Spacebox.Game.Generation
 
             var root = new CompoundTag(chunk.GetType().Name);
 
-            root.Add(new ByteTag("indexX", SByteToByte(index.X)));
-            root.Add(new ByteTag("indexY", SByteToByte(index.Y)));
-            root.Add(new ByteTag("indexZ", SByteToByte(index.Z)));
+            root.Add(new ByteTag("indexX", PackingTools.SByteToByte(index.X)));
+            root.Add(new ByteTag("indexY", PackingTools.SByteToByte(index.Y)));
+            root.Add(new ByteTag("indexZ", PackingTools.SByteToByte(index.Z)));
 
             var listBlocks = new IntArrayTag("blocks", SIZE * SIZE * SIZE);
 
@@ -400,7 +375,7 @@ namespace Spacebox.Game.Generation
             if (itemSlot == null) return false;
             if (!itemSlot.HasItem) return false;
 
-            data = PackShorts(itemsPalette[itemSlot.Item.Name], itemSlot.Count, itemSlot.Position.X, itemSlot.Position.Y);
+            data = PackingTools.PackShorts(itemsPalette[itemSlot.Item.Name], itemSlot.Count, itemSlot.Position.X, itemSlot.Position.Y);
 
             return true;
         }
@@ -419,7 +394,7 @@ namespace Spacebox.Game.Generation
             var slotsData = new List<long>();
 
 
-            short storageSizeXYPacked = PackBytesToShort(storage.SizeX, storage.SizeY);
+            short storageSizeXYPacked = PackingTools.PackBytes(storage.SizeX, storage.SizeY);
 
 
             foreach (var slot in storage.GetAllSlots())
@@ -471,17 +446,17 @@ namespace Spacebox.Game.Generation
             if (!inSlot.HasItem) inputData = 0;
             else
             {
-                inputData = PackShorts(itemsPalette[inSlot.Item.Name], inSlot.Count);
+                inputData = PackingTools.PackShorts(itemsPalette[inSlot.Item.Name], inSlot.Count);
             }
             if (!outSlot.HasItem) outputData = 0;
             else
             {
-                outputData = PackShorts(itemsPalette[outSlot.Item.Name], outSlot.Count);
+                outputData = PackingTools.PackShorts(itemsPalette[outSlot.Item.Name], outSlot.Count);
             }
             if (!fuelSlot.HasItem) fuelData = 0;
             else
             {
-                fuelData = PackShorts(itemsPalette[fuelSlot.Item.Name], fuelSlot.Count);
+                fuelData = PackingTools.PackShorts(itemsPalette[fuelSlot.Item.Name], fuelSlot.Count);
             }
 
 
@@ -493,61 +468,16 @@ namespace Spacebox.Game.Generation
             return true;
         }
 
-        public static int PackShorts(short a, short b)
-        {
-            return (((int)(ushort)a) << 16) | ((ushort)b);
-        }
 
-        public static void UnpackShorts(int packed, out short a, out short b)
-        {
-            a = (short)((packed >> 16) & 0xFFFF);
-            b = (short)(packed & 0xFFFF);
-        }
-
-        public static short PackBytesToShort(byte high, byte low)
-        {
-            return (short)((high << 8) | low);
-        }
-
-        public static void UnpackShortToBytes(short packed, out byte high, out byte low)
-        {
-            high = (byte)((packed >> 8) & 0xFF);
-            low = (byte)(packed & 0xFF);
-        }
-        public static long PackInts(int high, int low)
-        {
-            return ((long)(uint)high << 32) | (uint)low;
-        }
-
-        public static void UnpackInts(long packed, out int high, out int low)
-        {
-            high = (int)(packed >> 32);
-            low = (int)(packed & 0xFFFFFFFF);
-        }
-        public static long PackShorts(short a, short b, short c, short d)
-        {
-            return ((long)(ushort)a << 48) |
-                   ((long)(ushort)b << 32) |
-                   ((long)(ushort)c << 16) |
-                   (ushort)d;
-        }
-
-        public static void UnpackShorts(long packed, out short a, out short b, out short c, out short d)
-        {
-            a = (short)((packed >> 48) & 0xFFFF);
-            b = (short)((packed >> 32) & 0xFFFF);
-            c = (short)((packed >> 16) & 0xFFFF);
-            d = (short)(packed & 0xFFFF);
-        }
 
 
         public static void TagToStorageBlock(int dataIn, int dataOut, int dataFuel, ResourceProcessingBlock block, string[] paletteitems)
         {
             if (dataIn + dataOut + dataFuel == 0) return;
 
-            UnpackShorts(dataIn, out short inItem, out short inCount);
-            UnpackShorts(dataOut, out short outItem, out short outCount);
-            UnpackShorts(dataFuel, out short fuelItem, out short fuelCount);
+            PackingTools.UnpackShorts(dataIn, out short inItem, out short inCount);
+            PackingTools.UnpackShorts(dataOut, out short outItem, out short outCount);
+            PackingTools.UnpackShorts(dataFuel, out short fuelItem, out short fuelCount);
 
             if (inCount > 0)
             {
@@ -587,9 +517,9 @@ namespace Spacebox.Game.Generation
         {
             if (dataIn + dataOut + dataFuel == 0) return;
 
-            UnpackShorts(dataIn, out short inItem, out short inCount);
-            UnpackShorts(dataOut, out short outItem, out short outCount);
-            UnpackShorts(dataFuel, out short fuelItem, out short fuelCount);
+            PackingTools.UnpackShorts(dataIn, out short inItem, out short inCount);
+            PackingTools.UnpackShorts(dataOut, out short outItem, out short outCount);
+            PackingTools.UnpackShorts(dataFuel, out short fuelItem, out short fuelCount);
 
             if (inCount > 0)
             {
@@ -641,9 +571,9 @@ namespace Spacebox.Game.Generation
         {
             //Debug.Log(tag.PrettyPrinted());
             const byte SIZE = Chunk.Size;
-            sbyte ix = ByteToSByte(tag.Get<ByteTag>("indexX").Value);
-            sbyte iy = ByteToSByte(tag.Get<ByteTag>("indexY").Value);
-            sbyte iz = ByteToSByte(tag.Get<ByteTag>("indexZ").Value);
+            sbyte ix = PackingTools.ByteToSByte(tag.Get<ByteTag>("indexX").Value);
+            sbyte iy = PackingTools.ByteToSByte(tag.Get<ByteTag>("indexY").Value);
+            sbyte iz = PackingTools.ByteToSByte(tag.Get<ByteTag>("indexZ").Value);
 
             var listBlocks = tag.Get<IntArrayTag>("blocks").ToArray();
             var listPalette = tag.Get<IntArrayTag>("palette").ToArray();
@@ -721,26 +651,26 @@ namespace Spacebox.Game.Generation
 
                             var sizeXY = storage.Get<ShortTag>("sizeXY");
 
-                            UnpackShortToBytes(sizeXY, out byte sizeX, out byte sizeY);
+                            PackingTools.UnpackBytes(sizeXY, out byte sizeX, out byte sizeY);
 
                             Storage newStorage = new Storage(sizeX, sizeY);
 
                             foreach (var slotData in storage.Get<LongArrayTag>("slotsData"))
                             {
-                                UnpackShorts(slotData, out var paletteId, out var count, out var posX, out var posY);
+                                PackingTools.UnpackShorts(slotData, out var paletteId, out var count, out var posX, out var posY);
 
                                 var itemName = paletteitemsString[paletteId];
 
 
                                 var item = GameAssets.GetItemByName(itemName);
 
-                                if(item != null)
+                                if (item != null)
                                 {
                                     var slot = newStorage.GetSlot(posX, posY);
 
                                     slot.SetData(item, (byte)count);
                                 }
-                                
+
                             }
 
 
@@ -772,14 +702,7 @@ namespace Spacebox.Game.Generation
             return chunk;
         }
 
-        public static byte SByteToByte(sbyte value)
-        {
-            return unchecked((byte)value);
-        }
-        public static sbyte ByteToSByte(byte value)
-        {
-            return unchecked((sbyte)value);
-        }
+
 
         private static void GetCoordinatesFrom1DIndex(int index, int size, out byte x, out byte y, out byte z)
         {

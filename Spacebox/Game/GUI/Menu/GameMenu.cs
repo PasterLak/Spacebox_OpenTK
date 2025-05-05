@@ -15,7 +15,7 @@ namespace Spacebox.Game.GUI.Menu
     public class GameMenu : IDisposable
     {
         public static bool IsVisible = false;
-        public enum MenuState { Main, WorldSelect, NewWorld, Options, Multiplayer }
+        public enum MenuState { Main, WorldSelect, NewWorld, Options, Multiplayer, SettingsControls }
         private MenuState currentState = MenuState.Main;
         private List<WorldInfo> worlds = new List<WorldInfo>();
         private List<ModConfig> gameSets = new List<ModConfig>();
@@ -39,6 +39,7 @@ namespace Spacebox.Game.GUI.Menu
         public MultiplayerWindow multiplayerWindow;
         public DeleteWindow deleteWindow;
         public UpdateVersionWindow updateVersionWindow;
+        public SettingsControlsWindow settingsControlsWindow;
 
         public GameMenu()
         {
@@ -60,10 +61,32 @@ namespace Spacebox.Game.GUI.Menu
             multiplayerWindow = new MultiplayerWindow(this);
             deleteWindow = new DeleteWindow(this);
             updateVersionWindow = new UpdateVersionWindow(this);
+            settingsControlsWindow = new SettingsControlsWindow(this);
         }
 
         public void Render()
         {
+
+            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.RightAlt))
+            {
+                foreach (var w in worlds)
+                {
+                    if (w.Name == "Developer")
+                    {
+                        selectedWorld = w;
+                        Click1.Play();
+                        if (VersionConverter.IsVersionOld(selectedWorld.GameVersion, Application.Version))
+                        {
+                            showVersionConvertWindow = true;
+                        }
+                        else
+                        {
+                            LoadWorld(selectedWorld);
+                        }
+                    }
+                }
+            }
+
             if (!IsVisible) return;
             oldItemSpacing = ImGui.GetStyle().ItemSpacing;
             oldWindowPadding = ImGui.GetStyle().WindowPadding;
@@ -90,28 +113,13 @@ namespace Spacebox.Game.GUI.Menu
                 case MenuState.Multiplayer:
                     multiplayerWindow.Render();
                     break;
+                case MenuState.SettingsControls:
+                    settingsControlsWindow.Render();
+                    break;
             }
             if (showDeleteWindow) deleteWindow.Render();
             if (showVersionConvertWindow) updateVersionWindow.Render();
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.RightAlt))
-            {
-                foreach (var w in worlds)
-                {
-                    if (w.Name == "Developer")
-                    {
-                        selectedWorld = w;
-                        Click1.Play();
-                        if (VersionConverter.IsVersionOld(selectedWorld.GameVersion, Application.Version))
-                        {
-                            showVersionConvertWindow = true;
-                        }
-                        else
-                        {
-                            LoadWorld(selectedWorld);
-                        }
-                    }
-                }
-            }
+            
             ImGui.PopStyleColor(5);
             ImGui.GetStyle().ItemSpacing = oldItemSpacing;
             ImGui.GetStyle().WindowPadding = oldWindowPadding;
@@ -365,6 +373,7 @@ namespace Spacebox.Game.GUI.Menu
         public void SetStateToNewWorld() { currentState = MenuState.NewWorld; }
         public void SetStateToOptions() { currentState = MenuState.Options; }
         public void SetStateToMultiplayer() { currentState = MenuState.Multiplayer; }
+        public void SetStateToSettingsControls() { currentState = MenuState.SettingsControls; }
 
         public void Dispose()
         {

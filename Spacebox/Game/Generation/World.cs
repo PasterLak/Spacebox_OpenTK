@@ -123,8 +123,9 @@ namespace Spacebox.Game.Generation
                 {
                     if (ent.IsPositionInChunk(Player.Position, out var chunk))
                     {
-                        chunk.ClearChunk();
-                        chunk.GenerateMesh();
+                        //chunk.ClearChunk();
+                        ent.RemoveChunk(chunk);
+                       // chunk.GenerateMesh();
                     }
                 }
 
