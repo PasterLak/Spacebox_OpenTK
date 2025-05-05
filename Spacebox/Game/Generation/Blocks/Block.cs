@@ -4,7 +4,7 @@ using OpenTK.Mathematics;
 using Engine;
 using Spacebox.Game.Resource;
 
-namespace Spacebox.Game.Generation
+namespace Spacebox.Game.Generation.Blocks
 {
     public enum Direction : byte
     {
@@ -41,7 +41,7 @@ namespace Spacebox.Game.Generation
         public Vector3 LightColor { get; set; } = Vector3.Zero;
         public float LightLevel { get; set; }
 
-        public Block(){}
+        public Block() { }
 
         public Block(short blockId, Direction dir, byte mass, byte durability,
                      bool isTransparent, bool isAir, bool isLight, bool enableEmission)
@@ -87,8 +87,8 @@ namespace Spacebox.Game.Generation
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
-                long v = (value & 0xFFF);
-                data = (data & ~0xFFFL) | v;
+                long v = value & 0xFFF;
+                data = data & ~0xFFFL | v;
             }
         }
         public void SetBlockId(short id) => BlockId = id;
@@ -96,12 +96,12 @@ namespace Spacebox.Game.Generation
         public Direction Direction
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (Direction)((data >> 12) & 0b111);
+            get => (Direction)(data >> 12 & 0b111);
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
                 long v = ((long)value & 0b111) << 12;
-                data = (data & ~(0b111L << 12)) | v;
+                data = data & ~(0b111L << 12) | v;
             }
         }
         public void SetDirection(Direction dir) => Direction = dir;
@@ -109,12 +109,12 @@ namespace Spacebox.Game.Generation
         public byte Mass
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (byte)((data >> 15) & 0xFF);
+            get => (byte)(data >> 15 & 0xFF);
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
                 long v = ((long)value & 0xFF) << 15;
-                data = (data & ~(0xFFL << 15)) | v;
+                data = data & ~(0xFFL << 15) | v;
             }
         }
         public void SetMass(byte mass) => Mass = mass;
@@ -122,12 +122,12 @@ namespace Spacebox.Game.Generation
         public byte Durability
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (byte)((data >> 23) & 0xFF);
+            get => (byte)(data >> 23 & 0xFF);
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
                 long v = ((long)value & 0xFF) << 23;
-                data = (data & ~(0xFFL << 23)) | v;
+                data = data & ~(0xFFL << 23) | v;
             }
         }
         public void SetDurability(byte dur) => Durability = dur;
@@ -135,12 +135,12 @@ namespace Spacebox.Game.Generation
         private BlockFlags Flags
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (BlockFlags)((data >> 31) & 0xF);
+            get => (BlockFlags)(data >> 31 & 0xF);
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
                 long v = ((long)value & 0xF) << 31;
-                data = (data & ~(0xFL << 31)) | v;
+                data = data & ~(0xFL << 31) | v;
             }
         }
 

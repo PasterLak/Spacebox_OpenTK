@@ -7,6 +7,7 @@ using Spacebox.Game.Physics;
 using Spacebox.GUI;
 using OpenTK.Mathematics;
 using Engine;
+using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.Player;
 

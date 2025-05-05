@@ -5,16 +5,20 @@ namespace Spacebox.Game.Generation
 {
     public abstract class Asteroid : SpaceEntity
     {
+        public const int ChunkSize = Chunk.Size;
+
         public Asteroid(int id, Vector3 positionWorld, Sector sector)
             : base(id, positionWorld, sector) { }
 
         public virtual void OnGenerate() { }
+
+        public virtual void FillChunkNoise(Chunk chunk) { }
     }
 
     public class AsteroidLight : Asteroid
     {
         public const int ChunkCount = 1;
-        public const int ChunkSize = 32;
+
 
         public AsteroidLight(int id, Vector3 positionWorld, Sector sector)
             : base(id, positionWorld, sector) { }
@@ -33,7 +37,7 @@ namespace Spacebox.Game.Generation
             IsGenerated = true;
         }
 
-        private void FillChunkNoise(Chunk chunk)
+        public override void FillChunkNoise(Chunk chunk)
         {
             float diameter = ChunkCount * ChunkSize;
             var generator = new AsteroidVoxelDataGenerator(
@@ -76,7 +80,6 @@ namespace Spacebox.Game.Generation
     public class AsteroidMedium : Asteroid
     {
         public const int ChunkCount = 2;
-        public const int ChunkSize = 32;
 
         public AsteroidMedium(int id, Vector3 positionWorld, Sector sector)
             : base(id, positionWorld, sector) { }
@@ -95,7 +98,7 @@ namespace Spacebox.Game.Generation
             IsGenerated = true;
         }
 
-        void FillChunkNoise(Chunk chunk)
+        public override void FillChunkNoise(Chunk chunk)
         {
             float diameter = ChunkCount * ChunkSize;
             var generator = new AsteroidVoxelDataGenerator(
@@ -138,7 +141,6 @@ namespace Spacebox.Game.Generation
     public class AsteroidHeavy : Asteroid
     {
         public const int ChunkCount = 4;
-        public const int ChunkSize = 32;
 
         public AsteroidHeavy(int id, Vector3 positionWorld, Sector sector)
             : base(id, positionWorld, sector) { }
@@ -157,7 +159,7 @@ namespace Spacebox.Game.Generation
             IsGenerated = true;
         }
 
-        void FillChunkNoise(Chunk chunk)
+        public override void FillChunkNoise(Chunk chunk)
         {
             float diameter = ChunkCount * ChunkSize;
             var generator = new AsteroidVoxelDataGenerator(

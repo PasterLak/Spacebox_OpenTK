@@ -1,6 +1,6 @@
 ﻿using Spacebox.Game.Resource;
 
-namespace Spacebox.Game.Generation
+namespace Spacebox.Game.Generation.Blocks
 {
     public class CableBlock : ElectricalBlock
     {
@@ -18,6 +18,6 @@ namespace Spacebox.Game.Generation
             SetEnableEmission(CurrentPower > 0);
         }
 
-           
+
     }
 }

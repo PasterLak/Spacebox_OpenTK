@@ -10,6 +10,7 @@ using Spacebox.Game.Physics;
 using Spacebox.GUI;
 using Engine.Light;
 using Spacebox.Game.Effects;
+using Spacebox.Game.Generation.Blocks;
 
 public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
 {

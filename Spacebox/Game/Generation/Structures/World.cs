@@ -5,31 +5,45 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using Spacebox.Game.Effects;
+using Spacebox.Game.Generation.Structures;
+using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 
+
 /*
   positionWorld
-  positionLocal
-  positionIndex
+  positionEntity
+  positionChunk
  */
 
 namespace Spacebox.Game.Generation
 {
-    public class World : IDisposable
+    public interface ISaveLoad
+    {
+        void Save();
+        void Load();
+    }
+    public class WorldSaveLoader
+    {
+        private World world;
+        public WorldSaveLoader(World world) { this.world = world; }
+
+    }
+    public class World : IDisposable, ISpaceStructure
     {
         public static World Instance;
 
         public const int SizeSectors = 4;
         public Astronaut Player { get; private set; }
-        public static Random Random;
+
         public static WorldLoader.LoadedWorld Data { get; private set; }
         public static DropEffectManager DropEffectManager;
         public static BlockDestructionManager DestructionManager;
-        public static int Seed;
-        public static Sector CurrentSector { get; private set; }
+        public static int Seed { get; private set; }
+        public static Sector? CurrentSector { get; private set; }
 
         private readonly Octree<Sector> worldOctree;
 
@@ -39,11 +53,11 @@ namespace Spacebox.Game.Generation
             Instance = this;
             Player = player;
 
-            float initialWorldSize = Sector.SizeBlocks * SizeSectors;
+            worldOctree = new Octree<Sector>(
+                Sector.SizeBlocks * SizeSectors,
+                Vector3.Zero, Sector.SizeBlocks, 1.0f);
 
-            worldOctree = new Octree<Sector>(initialWorldSize, Vector3.Zero, Sector.SizeBlocks, 1.0f);
-
-            LoadWorld();
+            Load();
 
             DropEffectManager = new DropEffectManager(player);
             DestructionManager = new BlockDestructionManager(player);
@@ -54,7 +68,7 @@ namespace Spacebox.Game.Generation
 
         }
 
-        public void SaveWorld()
+        public void Save()
         {
             Player.Save();
             WorldSaveLoad.SaveWorld(Data.WorldFolderPath);
@@ -63,17 +77,16 @@ namespace Spacebox.Game.Generation
             var screenSize = Window.Instance.ClientSize;
             string path = Path.Combine(Data.WorldFolderPath, "preview.jpg");
 
-            //PanelUI.HideItemModel();
             FramebufferCapture.SaveWorldPreview(screenSize, path);
-           // PanelUI.ShowItemModel();
+
         }
 
-        public void LoadWorld()
+        public void Load()
         {
             Vector3i initialSectorIndex = GetSectorIndex(Player.Position);
 
             CurrentSector = LoadSector(initialSectorIndex);
-            CurrentSector.SpawnPlayerNearAsteroid(Player, Random);
+            CurrentSector.SpawnPlayerNearAsteroid(Player, new Random(Seed));
             if (CurrentSector == null) Debug.Error("No current sector");
         }
 
@@ -84,11 +97,11 @@ namespace Spacebox.Game.Generation
             if (Data == null)
             {
                 Debug.Log("Data not found!");
-                Random = new Random();
+                //Random = new Random();
             }
             else
             {
-                Random = new Random(Seed);
+                //Random = new Random(Seed);
             }
 
         }
@@ -111,10 +124,8 @@ namespace Spacebox.Game.Generation
             DestructionManager.Update();
             worldOctree.DrawDebug();
 
-            if (CurrentSector != null)
-            {
-                CurrentSector.Update();
-            }
+            CurrentSector?.Update();
+
 
             if (Input.IsKeyDown(Keys.KeyPad8))
             {
@@ -125,7 +136,7 @@ namespace Spacebox.Game.Generation
                     {
                         //chunk.ClearChunk();
                         ent.RemoveChunk(chunk);
-                       // chunk.GenerateMesh();
+                        // chunk.GenerateMesh();
                     }
                 }
 
@@ -136,10 +147,8 @@ namespace Spacebox.Game.Generation
         public void Render(BlockMaterial material)
         {
 
-            if (CurrentSector != null)
-            {
-                CurrentSector.Render(material);
-            }
+            CurrentSector?.Render(material);
+
 
             DropEffectManager.Render();
             DestructionManager.Render();
@@ -173,7 +182,7 @@ namespace Spacebox.Game.Generation
             CurrentSector = null;
         }
 
-        private Vector3i GetSectorIndex(Vector3 position)
+        public Vector3i GetSectorIndex(Vector3 position)
         {
             int x = (int)Math.Floor(position.X / Sector.SizeBlocks);
             int y = (int)Math.Floor(position.Y / Sector.SizeBlocks);
@@ -209,7 +218,7 @@ namespace Spacebox.Game.Generation
             DropEffectManager = null;
             DestructionManager.Dispose();
             DestructionManager = null;
-            CurrentSector.Dispose();
+            CurrentSector?.Dispose();
             CurrentSector = null;
         }
     }

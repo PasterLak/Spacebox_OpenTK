@@ -4,7 +4,7 @@ using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using OpenTK.Mathematics;
-using Spacebox.Game.Generation;
+using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Benchmarks
 {
@@ -40,7 +40,7 @@ namespace Spacebox.Benchmarks
         public void OldImplementation()
         {
             
-                var direction = Spacebox.Game.Generation.Block.GetDirectionFromNormal(testNormal);
+                var direction = Block.GetDirectionFromNormal(testNormal);
             
         }
 
@@ -48,7 +48,7 @@ namespace Spacebox.Benchmarks
         public void NewImplementation()
         {
         
-                var direction = Spacebox.Game.Generation.Block.GetDirectionFromNormal(testNormal);
+                var direction = Block.GetDirectionFromNormal(testNormal);
             
         }
 

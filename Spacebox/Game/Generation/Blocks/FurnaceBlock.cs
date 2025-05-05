@@ -1,9 +1,8 @@
-﻿
-using Spacebox.Game.GUI;
+﻿using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 
-namespace Spacebox.Game.Generation
+namespace Spacebox.Game.Generation.Blocks
 {
     public class FurnaceBlock : ResourceProcessingBlock
     {
@@ -11,7 +10,7 @@ namespace Spacebox.Game.Generation
         public FurnaceBlock(BlockData blockData) : base(blockData)
         {
             OnUse += ResourceProcessingGUI.Toggle;
-           
+
             //LightLevel
             SetEmissionWithoutRedrawChunk(false);
         }

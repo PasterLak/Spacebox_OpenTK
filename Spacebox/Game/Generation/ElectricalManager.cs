@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.Generation
 {

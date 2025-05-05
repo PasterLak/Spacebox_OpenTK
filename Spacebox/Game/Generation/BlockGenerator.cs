@@ -1,5 +1,5 @@
 using OpenTK.Mathematics;
-using Engine;
+using Spacebox.Game.Generation.Blocks;
 namespace Spacebox.Game.Generation;
 
 public abstract class BlockGenerator

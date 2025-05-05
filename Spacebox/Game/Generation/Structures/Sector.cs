@@ -2,13 +2,15 @@
 using Engine.Physics;
 using Engine.Utils;
 using OpenTK.Mathematics;
+using Spacebox.Game.Generation.Structures;
+using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation
 {
-    public class Sector : SpatialCell, IDisposable
+    public class Sector : SpatialCell, IDisposable, ISpaceStructure
     {
         // ------------------ CONST --------------------------------------------
         public const short SizeBlocks = 8192; // 256 512 2048 4096 8192
@@ -16,9 +18,9 @@ namespace Spacebox.Game.Generation
 
         // ------------------ Properties --------------------------------------------
 
-        public static bool IsPlayerSpawned = false;
+        //public static bool IsPlayerSpawned = false;
         public World World { get; private set; }
-      
+
         public List<SpaceEntity> Entities { get; private set; }
         public Dictionary<string, SpaceEntity> EntitiesNames { get; private set; }
 
@@ -71,8 +73,6 @@ namespace Spacebox.Game.Generation
 
         public void SpawnPlayerRandomInSector(Astronaut player, Random random)
         {
-            if (IsPlayerSpawned) return;
-
 
             if (TryGetNearestEntity(GetCenter(), out var entity))
             {
@@ -81,7 +81,7 @@ namespace Spacebox.Game.Generation
             else
                 player.Position = GetRandomPositionWithCollisionCheck(random, 0.2f);
 
-            IsPlayerSpawned = true;
+
         }
 
         public Vector3 GetRandomPositionWithCollisionCheck(Random random, float margin01)
@@ -127,7 +127,7 @@ namespace Spacebox.Game.Generation
 
         public void SpawnPlayerNearAsteroid(Astronaut player, Random random)
         {
-            if (IsPlayerSpawned) return;
+
             if (Entities.Count == 0) return;
 
             SpawnPlayerRandomInSector(player, random);
@@ -137,7 +137,7 @@ namespace Spacebox.Game.Generation
 
             player.Position = GetRandomPositionNearAsteroid(random, Entities[asteroidID]);
 
-            IsPlayerSpawned = true;
+
         }
 
         public bool IsColliding(Vector3 positionWorld, BoundingVolume volume, out CollideInfo collideInfo)
@@ -197,10 +197,10 @@ namespace Spacebox.Game.Generation
                 asteroidWorldPosition = GetRandomPosition(PositionWorld, 0.1f, random);
             }
 
-            var size = random.Next(0,3); size = 0;
+            var size = random.Next(0, 3); size = 0;
             Asteroid asteroid;
 
-            if(size == 0)
+            if (size == 0)
             {
                 asteroid = new AsteroidLight(id, asteroidWorldPosition, this);
             }
@@ -218,7 +218,7 @@ namespace Spacebox.Game.Generation
 
         }
 
-        public static Vector3 GetRandomPointOnSphere(Vector3 center, Random _random, float radius)
+        private static Vector3 GetRandomPointOnSphere(Vector3 center, Random _random, float radius)
         {
             double theta = _random.NextDouble() * Math.PI * 2;
             double phi = Math.Acos(2 * _random.NextDouble() - 1);
@@ -228,7 +228,7 @@ namespace Spacebox.Game.Generation
             return new Vector3(x, y, z);
         }
 
-        private bool IsPointInEntity(Vector3 point, out SpaceEntity entity)
+        public bool IsPointInEntity(Vector3 point, out SpaceEntity entity)
         {
             entity = null;
             foreach (var a in Entities)

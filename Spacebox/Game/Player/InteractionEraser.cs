@@ -9,6 +9,7 @@ using Engine;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
+using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.Player;
 

@@ -1,8 +1,9 @@
 ﻿using OpenTK.Mathematics;
 using SharpNBT;
 using Engine;
+using Spacebox.Game.Generation.Blocks;
 
-namespace Spacebox.Game.Generation
+namespace Spacebox.Game.Generation.Tools
 {
     public static class NBTHelper
     {
@@ -707,7 +708,7 @@ namespace Spacebox.Game.Generation
         private static void GetCoordinatesFrom1DIndex(int index, int size, out byte x, out byte y, out byte z)
         {
             x = (byte)(index % size);
-            y = (byte)((index / size) % size);
+            y = (byte)(index / size % size);
             z = (byte)(index / (size * size));
         }
 
@@ -732,7 +733,7 @@ namespace Spacebox.Game.Generation
 
         public static int GetArrayIndex(byte x, byte y, byte z, byte chunkSize)
         {
-            return (x + y * chunkSize + z * chunkSize * chunkSize);
+            return x + y * chunkSize + z * chunkSize * chunkSize;
         }
     }
 }

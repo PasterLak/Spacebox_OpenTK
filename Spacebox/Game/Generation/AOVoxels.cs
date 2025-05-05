@@ -1,6 +1,7 @@
 using OpenTK.Mathematics;
 
 using Engine;
+using Spacebox.Game.Generation.Tools;
 namespace Spacebox.Game.Generation;
 
 public struct FaceData

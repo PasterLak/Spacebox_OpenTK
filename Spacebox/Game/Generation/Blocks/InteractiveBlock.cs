@@ -4,7 +4,7 @@ using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 using Engine;
 using Spacebox.GUI;
-namespace Spacebox.Game.Generation
+namespace Spacebox.Game.Generation.Blocks
 {
 
     public class InteractiveBlock : ElectricalBlock
@@ -12,7 +12,7 @@ namespace Spacebox.Game.Generation
 
         public Keys KeyToUse { get; private set; } = Keys.F;
         public const byte InteractionDistance = 3;
-        public const byte InteractionDistanceSquared = (InteractionDistance * InteractionDistance);
+        public const byte InteractionDistanceSquared = InteractionDistance * InteractionDistance;
         public string HoverText = "Press RMB to use";
         public string HoverTextDeactivated = "No power";
         public Action<Astronaut> OnUse;

@@ -114,11 +114,11 @@ namespace Spacebox.Scenes
                 }
                 if (int.TryParse(seedString, out var seed))
                 {
-                    World.Random = new Random(seed);
+                    //World.Random = new Random(seed);
                 }
                 else
                 {
-                    World.Random = new Random();
+                   // World.Random = new Random();
                     Debug.Error("Wrong seed format! Seed: " + seedString);
                 }
             }
@@ -492,7 +492,7 @@ namespace Spacebox.Scenes
             PanelUI.Player = null;
         
             lightAtlas.Dispose();
-            Sector.IsPlayerSpawned = false;
+           
             TickTaskManager.Dispose();
      
             dustSpawner.Dispose();

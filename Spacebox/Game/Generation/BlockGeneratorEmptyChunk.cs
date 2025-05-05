@@ -19,7 +19,7 @@ namespace Spacebox.Game.Generation
         {
 
 
-            Random random = World.Random;
+            //Random random = World.Random;
 
 
             for (byte x = 0; x < Size; x++)

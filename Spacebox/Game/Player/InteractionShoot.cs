@@ -11,6 +11,8 @@ using Spacebox.GUI;
 
 namespace Spacebox.Game.Player;
 using Engine;
+using Spacebox.Game.Generation.Blocks;
+
 public class InteractionShoot : InteractionMode
 {
 

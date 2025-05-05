@@ -1,6 +1,7 @@
 using Engine;
 using System.Reflection;
 using Spacebox.Game.Generation;
+using Spacebox.Game.Generation.Tools;
 
 namespace Spacebox.Tests
 {

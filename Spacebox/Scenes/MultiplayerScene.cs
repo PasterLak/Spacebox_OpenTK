@@ -5,6 +5,7 @@ using OpenTK.Mathematics;
 using Spacebox.Game;
 using Spacebox.Game.Commands;
 using Spacebox.Game.Generation;
+using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Player;
 using System.Linq;
 

@@ -4,7 +4,7 @@ using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 
-namespace Spacebox.Game.Generation
+namespace Spacebox.Game.Generation.Blocks
 {
     public class StorageBlock : InteractiveBlock
     {
@@ -36,7 +36,7 @@ namespace Spacebox.Game.Generation
             Vector3Byte pos = new Vector3Byte(0, 0, 0);
 
             pos.X = (byte)(positionIndex % Chunk.Size);
-            pos.Y = (byte)((positionIndex / Chunk.Size) % Chunk.Size);
+            pos.Y = (byte)(positionIndex / Chunk.Size % Chunk.Size);
             pos.Z = (byte)(positionIndex / (Chunk.Size * Chunk.Size));
 
             return pos;

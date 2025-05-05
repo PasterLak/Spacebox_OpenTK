@@ -89,7 +89,7 @@ namespace Spacebox.Game.Player
                 {
                     Debug.Log("Player save file does not exist.");
 
-                    World.CurrentSector.SpawnPlayerNearAsteroid(player, World.Random);
+                    World.CurrentSector.SpawnPlayerNearAsteroid(player, new Random(World.Seed));
                     GameSetLoader.GiveStartItems(player, GameAssets.Items);
                     player.Flashlight.IsActive = true;
 

@@ -1,6 +1,7 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Game.Generation;
 using Engine;
+using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Tools;
 namespace Spacebox.Game.Resource
 {
     public class BlockData

@@ -2,11 +2,11 @@
 
 using Engine.Audio;
 using Engine;
-using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
 using System.Numerics;
 using Spacebox.Game.GUI.Menu;
 using System.Runtime.CompilerServices;
+using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.GUI
 {

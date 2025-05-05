@@ -1,7 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using Engine;
-using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
+using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.Effects
 {

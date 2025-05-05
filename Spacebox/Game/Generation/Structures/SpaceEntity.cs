@@ -6,14 +6,15 @@ using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Effects;
 using Engine;
-using Client;
 using Spacebox.Game.Resource;
+using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Structures;
 
 namespace Spacebox.Game.Generation
 {
-    public class SpaceEntity : SpatialCell, IDisposable
+    public class SpaceEntity : SpatialCell, IDisposable, ISpaceStructure
     {
-        public const byte SizeChunks = 4; // will be 16, check in StraogeBlock pos if want change
+        public const byte SizeChunks = 4; // will be 16
         public const byte SizeChunksHalf = SizeChunks / 2;
         public const short SizeBlocks = SizeChunks * Chunk.Size;
         public const short SizeBlocksHalf = SizeChunks * Chunk.Size / 2;
@@ -30,26 +31,19 @@ namespace Spacebox.Game.Generation
         public void SetModified() { if (!IsModified) IsModified = true; }
         public Sector Sector { get; private set; }
 
-
-        private static Shader sharedShader;
-        private static Texture2D sharedTexture;
-
-        private Texture2D blockTexture;
-        private Texture2D atlasTexture;
-
         public List<Chunk> Chunks { get; private set; } = new List<Chunk>();
         private List<Chunk> MeshesTogenerate = new List<Chunk>();
 
         private Tag tag;
-        public ElectricNetworkManager ElectricManager { get; private set; }
+
         public Tag Tag => tag;
         private string _entityMassString = "0 tn";
         public BoundingBox GeometryBoundingBox { get; private set; }
-
+        public ElectricNetworkManager ElectricManager { get; private set; }
         public Particle StarParticle;
         public StarsEffect StarsEffect { get; private set; }
 
-        public List<Chunk> ChunksToDelete { get; private set; } = new List<Chunk>();
+
         public SpaceEntity(int id, Vector3 positionWorld, Sector sector)
         {
             EntityID = id;
@@ -62,10 +56,8 @@ namespace Spacebox.Game.Generation
 
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
 
-            InitializeSharedResources();
             ElectricManager = new ElectricNetworkManager();
-            blockTexture = GameAssets.BlocksTexture;
-            atlasTexture = GameAssets.LightAtlas;
+
             // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
             tag = CreateTag(GeometryBoundingBox.Center);
             CreateStar();
@@ -83,10 +75,7 @@ namespace Spacebox.Game.Generation
 
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
 
-            InitializeSharedResources();
 
-            blockTexture = GameAssets.BlocksTexture;
-            atlasTexture = GameAssets.LightAtlas;
             // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
             tag = CreateTag(GeometryBoundingBox.Center);
             CreateStar();
@@ -204,24 +193,6 @@ namespace Spacebox.Game.Generation
         {
 
             Sector.RemoveEntity(this);
-        }
-
-        public static void InitializeSharedResources()
-        {
-            if (sharedShader == null)
-            {
-                sharedShader = Resources.Load<Shader>("Shaders/colored");
-            }
-
-            if (sharedTexture == null)
-            {
-
-                sharedTexture = Resources.Load<Texture2D>("Resources/Textures/selector.png");
-
-                sharedTexture.FilterMode = FilterMode.Nearest;
-            }
-
-
         }
 
         public void RecalculateMass(int chunkMassDifference)
@@ -489,16 +460,6 @@ namespace Spacebox.Game.Generation
 
             }
 
-
-
-
-            if (ChunksToDelete.Count > 0)
-            {
-                foreach (var chunk in ChunksToDelete)
-                {
-                    RemoveChunk(chunk);
-                }
-            }
         }
 
         public bool Raycast(Ray ray, out HitInfo hitInfo)
@@ -701,11 +662,6 @@ namespace Spacebox.Game.Generation
             return local.X >= -SizeBlocksHalf && local.X < SizeBlocksHalf
                 && local.Y >= -SizeBlocksHalf && local.Y < SizeBlocksHalf
                 && local.Z >= -SizeBlocksHalf && local.Z < SizeBlocksHalf;
-        }
-
-        public bool IsPositionWithinGeometryBounds(Vector3 worldPosition)
-        {
-            return GeometryBoundingBox.Contains(worldPosition);
         }
 
         public float GravityRadius { get; private set; }

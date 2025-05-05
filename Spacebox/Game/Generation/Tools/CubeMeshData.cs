@@ -1,7 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using Engine;
 
-namespace Spacebox.Game.Generation
+namespace Spacebox.Game.Generation.Tools
 {
     public enum Face : byte
     {

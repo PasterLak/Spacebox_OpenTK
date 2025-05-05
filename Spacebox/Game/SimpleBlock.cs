@@ -1,7 +1,7 @@
 ﻿using Engine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using Spacebox.Game.Generation;
+using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Player;
 
 namespace Spacebox

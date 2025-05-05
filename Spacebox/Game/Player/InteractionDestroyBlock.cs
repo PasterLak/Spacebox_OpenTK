@@ -11,6 +11,7 @@ using Spacebox.Game.Physics;
 using Spacebox.GUI;
 using Client;
 using global::Client;
+using Spacebox.Game.Generation.Blocks;
 
 public abstract class InteractionDestroyBlock : InteractionMode
 {

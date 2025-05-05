@@ -11,6 +11,7 @@ using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Client;
 using OpenTK.Windowing.Common.Input;
+using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.Player;
 

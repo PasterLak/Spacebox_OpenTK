@@ -2,7 +2,7 @@
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 using Engine;
-namespace Spacebox.Game.Generation
+namespace Spacebox.Game.Generation.Blocks
 {
     public class RadarBlock : InteractiveBlock
     {
@@ -21,7 +21,7 @@ namespace Spacebox.Game.Generation
 
         public override void Use(Astronaut player)
         {
-          
+
             if (!IsActive) return;
 
             base.Use(player);
@@ -31,7 +31,7 @@ namespace Spacebox.Game.Generation
         {
             base.TickElectric();
 
-           // SetEnableEmission(CurrentPower > 0);
+            // SetEnableEmission(CurrentPower > 0);
         }
     }
 }

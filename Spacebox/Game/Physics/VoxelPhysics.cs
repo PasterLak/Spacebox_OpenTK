@@ -3,6 +3,7 @@ using Engine;
 using Engine.Physics;
 using Spacebox.Game.Generation;
 using System.Runtime.CompilerServices;
+using Spacebox.Game.Generation.Blocks;
 
 
 namespace Spacebox.Game.Physics

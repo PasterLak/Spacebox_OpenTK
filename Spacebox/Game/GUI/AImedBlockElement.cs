@@ -1,6 +1,6 @@
 ﻿using ImGuiNET;
 using Engine.GUI;
-using Spacebox.Game.Generation;
+using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.GUI
 {

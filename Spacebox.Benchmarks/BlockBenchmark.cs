@@ -2,6 +2,7 @@
 using BenchmarkDotNet.Running;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
+using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Tests
 {

@@ -4,18 +4,10 @@ using OpenTK.Mathematics;
 using SharpNBT;
 
 
-namespace Spacebox.Game.Generation
+namespace Spacebox.Game.Generation.Tools
 {
 
-    public interface ISaveable
-    {
-        void Save(string data, string filePath);
-    }
 
-    public interface ILoadable
-    {
-        string Load(string filePath);
-    }
     public class WorldSaveLoad
     {
         // Worlds ->  Sectors   ->  Sector+3-7+2    ->    e42.entity -> chunks data
@@ -39,12 +31,12 @@ namespace Spacebox.Game.Generation
 
         public static bool CanLoadSectorHere(Vector3i sectorIndex, out string sectorFolderPath)
         {
-            if(World.Data == null)
+            if (World.Data == null)
             {
                 Debug.Error("NULLL World.Data inCanLoadSectorHere");
             }
             sectorFolderPath = GetSectorFolderPath(World.Data.WorldFolderPath, sectorIndex);
-           //Debug.Success("Sector folder path:" + sectorFolderPath);
+            //Debug.Success("Sector folder path:" + sectorFolderPath);
             return Directory.Exists(sectorFolderPath);
 
         }
@@ -76,13 +68,6 @@ namespace Spacebox.Game.Generation
             return LoadSpaceEntities(sectorFolderPath, sector);
         }
 
-       /* public static Storage? LoadStorage(int storageIndexInEntity, SpaceEntity entity)
-        {
-            string sectorFolderPath = GetSectorFolderPath(World.Data.WorldFolderPath, World.CurrentSector.PositionIndex);
-
-            return LoadStorageFromFile(Path.Combine(sectorFolderPath, entity.Name + ".entity") , storageIndexInEntity);
-        }*/
-
         public static SpaceEntity[] LoadSpaceEntities(string sectorFolderPath, Sector sector)
         {
 
@@ -105,7 +90,7 @@ namespace Spacebox.Game.Generation
                         Debug.Warning("[WorldSaveLoad] Entity name was changed because file name was changed: " + e.Name + " to " + fileName);
                         e.Name = fileName;
                         e.SetModified();
-                        
+
                     }
 
                     if (e != null)
@@ -141,38 +126,6 @@ namespace Spacebox.Game.Generation
             return null;
         }
 
-        /*private static Storage? LoadStorageFromFile(string entityFilePath, int positionIndexInEntity)
-        {
-            if (File.Exists(entityFilePath))
-            {
-                CompoundTag tag = NbtFile.Read(entityFilePath, FormatOptions.Java, CompressionType.GZip);
-
-                return NBTHelper.TagSpaceEntityToStorage(tag, positionIndexInEntity);
-            }
-            else
-            {
-                Debug.Error($"File with storage data doesnt exist! Path: {entityFilePath} , Index: " + positionIndexInEntity);
-            }
-
-            return null;
-        }*/
-
-        /*private static Storage? LoadStoragesFromFile(string entityFilePath, int positionIndexInEntity, Chunk chunk)
-        {
-            if (File.Exists(entityFilePath))
-            {
-                CompoundTag tag = NbtFile.Read(entityFilePath, FormatOptions.Java, CompressionType.GZip);
-
-                return NBTHelper.TagSpaceEntityToStorages(tag, positionIndexInEntity);
-            }
-            else
-            {
-                Debug.Error($"File with storage data doesnt exist! Path: {entityFilePath} , Index: " + positionIndexInEntity);
-            }
-
-            return null;
-        }
-        */
 
         private static void SaveSector(Sector sector, string sectorsPath)
         {
@@ -198,7 +151,7 @@ namespace Spacebox.Game.Generation
                 var entity = entities[i];
                 var entityTag = NBTHelper.SpaceEntityToTag(entity);
 
-                Debug.Success("Entity was saved: " + entities[i].Name  + "  pos: "+ entities[i].PositionWorld);
+                Debug.Success("Entity was saved: " + entities[i].Name + "  pos: " + entities[i].PositionWorld);
                 NbtFile.WriteAsync(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
             }
 

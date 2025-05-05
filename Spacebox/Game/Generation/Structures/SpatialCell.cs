@@ -2,6 +2,7 @@
 using Engine.Physics;
 using OpenTK.Mathematics;
 
+
 namespace Spacebox.Game.Generation
 {
     public class SpatialCell : Node3D

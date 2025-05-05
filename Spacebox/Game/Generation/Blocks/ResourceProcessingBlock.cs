@@ -1,7 +1,7 @@
 ﻿
 using Spacebox.Game.Resource;
 using Engine;
-namespace Spacebox.Game.Generation
+namespace Spacebox.Game.Generation.Blocks
 {
     public class ResourceProcessingBlock : InteractiveBlock
     {
@@ -92,22 +92,22 @@ namespace Spacebox.Game.Generation
                 chunk.IsModified = true;
             }
 
-            if(Recipe != null)
+            if (Recipe != null)
             {
                 if (!ValidateInput(InputStorage.GetSlot(0, 0), Recipe))
                 {
-                  
+
                     StopTask();
                     return;
                 }
                 if (!ValidateOutput(OutputStorage.GetSlot(0, 0), Recipe))
                 {
-                  
+
                     StopTask();
 
                 }
             }
-            
+
 
         }
 
@@ -115,8 +115,8 @@ namespace Spacebox.Game.Generation
         {
             if (Task != null)
             {
-              
-                    Task.Stop();
+
+                Task.Stop();
 
                 Task = null;
                 currentTick = 0;
@@ -285,7 +285,7 @@ namespace Spacebox.Game.Generation
                 craftTicks = 0;
                 currentTick = 0;
                 IsRunning = false;
-               // Task.Stop();
+                // Task.Stop();
 
             }
 

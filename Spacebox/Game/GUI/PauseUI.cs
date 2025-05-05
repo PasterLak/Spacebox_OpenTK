@@ -93,7 +93,7 @@ namespace Spacebox.Game.GUI
             {
                 click1?.Play();
                 if (World.Instance != null)
-                    World.Instance.SaveWorld();
+                    World.Instance.Save();
                 saveButtonText = "Saved!";
             });
             currentY += buttonHeight + spacing;

@@ -1,6 +1,8 @@
 ﻿using Engine;
 using Engine.Physics;
 using OpenTK.Mathematics;
+using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Resource;
 using System.Collections.Concurrent;
@@ -8,7 +10,7 @@ using System.Collections.Concurrent;
 
 namespace Spacebox.Game.Generation
 {
-    public class Chunk : IDisposable
+    public class Chunk : IDisposable, ISpaceStructure
     {
 
         public const byte Size = 32; // 32700+ blocks

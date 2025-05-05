@@ -1,7 +1,6 @@
-﻿
-using Spacebox.Game.Resource;
+﻿using Spacebox.Game.Resource;
 
-namespace Spacebox.Game.Generation
+namespace Spacebox.Game.Generation.Blocks
 {
     public class GeneratorBlock : ElectricalBlock
     {

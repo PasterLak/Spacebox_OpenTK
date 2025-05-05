@@ -2,13 +2,12 @@
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 
-namespace Spacebox.Game.Generation
+namespace Spacebox.Game.Generation.Blocks
 {
-
-    public class DisassemblerBlock : ResourceProcessingBlock
+    public class CrusherBlock : ResourceProcessingBlock
     {
 
-        public DisassemblerBlock(BlockData blockData) : base(blockData)
+        public CrusherBlock(BlockData blockData) : base(blockData)
         {
             OnUse += ResourceProcessingGUI.Toggle;
 
@@ -22,8 +21,5 @@ namespace Spacebox.Game.Generation
             ResourceProcessingGUI.Activate(this, player);
         }
 
-
     }
-
-
 }

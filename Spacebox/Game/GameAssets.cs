@@ -1,10 +1,11 @@
 ﻿using OpenTK.Mathematics;
-using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 using Engine;
 using Engine.Audio;
+using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Tools;
 
 namespace Spacebox.Game
 {

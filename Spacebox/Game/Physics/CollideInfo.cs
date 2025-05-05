@@ -1,6 +1,7 @@
 ﻿
 using Spacebox.Game.Generation;
 using Engine;
+using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.Physics
 {

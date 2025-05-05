@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
-using Engine;
 using Engine.Utils;
+
 namespace Spacebox.Game.Generation
 {
     public class BlockGeneratorSphere : BlockGenerator
@@ -17,7 +17,7 @@ namespace Spacebox.Game.Generation
             Vector3 center = new Vector3(Size / 2f);
             float radius = Size / 2f;
             float radiusSq = radius * radius;
-            Random random = World.Random;
+            Random random = new Random(World.Seed);
             for (int x = 0; x < Size; x++)
                 for (int y = 0; y < Size; y++)
                     for (int z = 0; z < Size; z++)
