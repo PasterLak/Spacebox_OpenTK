@@ -73,7 +73,7 @@ namespace Spacebox.Game.Effects
         public void Render()
         {
             if (!Enabled) return;
-            ParticleSystem.Renderer.shader.SetVector3("color", new Vector3(1, 1, 1));
+            ParticleSystem.Renderer.Material.Shader.SetVector3("color", new Vector3(1, 1, 1));
             ParticleSystem.Draw(camera);
         }
 

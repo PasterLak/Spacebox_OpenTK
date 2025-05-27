@@ -156,14 +156,14 @@ namespace Spacebox.Game.Effects
         public void Render()
         {
             if(!Enabled) return;
-            ParticleSystem.Renderer.shader.SetVector3("color", color);
+            ParticleSystem.Renderer.Material.Shader.SetVector3("color", color);
             ParticleSystem.Draw(camera);
         }
 
         public void ClearParticles()
         {
             ParticleSystem.GetParticles().Clear();
-            ParticleSystem.Renderer.UpdateBuffers();
+            ParticleSystem.Renderer.Update();
         }
 
         public void Dispose()

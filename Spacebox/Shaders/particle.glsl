@@ -5,7 +5,7 @@
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoords;
 layout (location = 2) in mat4 instanceModel;
-layout (location = 3) in vec4 instanceColor;
+layout (location = 6) in vec4 instanceColor;
 
 out vec2 TexCoords;
 out vec4 ParticleColor;
@@ -84,7 +84,7 @@ void main()
     {
         finalColor = vec4(1,0,1,1);
     }
-
+    //finalColor = vec4(1,0,1,1);
     FragColor = finalColor;
 
 }

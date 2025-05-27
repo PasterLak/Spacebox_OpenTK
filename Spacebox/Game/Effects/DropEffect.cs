@@ -47,6 +47,7 @@ namespace Spacebox.Game.Effects
             particleShader = shader;
 
             InitializeParticleSystem(position, texture, shader);
+            
         }
 
         private void InitializeParticleSystem(Vector3 position, Texture2D texture, Shader shader)
@@ -84,7 +85,7 @@ namespace Spacebox.Game.Effects
             };
 
             ParticleSystem.Emitter = emitter;
-            ParticleSystem.Renderer.RotateUV180();
+            ParticleSystem.Renderer.SetFixedRotation180();
         }
 
         public void Update()

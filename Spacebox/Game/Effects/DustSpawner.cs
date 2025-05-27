@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using Engine;
+using Spacebox.Game.Player;
 
 namespace Spacebox.Game.Effects
 {
@@ -55,7 +56,7 @@ namespace Spacebox.Game.Effects
             };
 
             ParticleSystem.Emitter = emitter;
-            ParticleSystem.Renderer.RandomRotation = true;
+            ParticleSystem.Renderer.RandomRotation = false;
 
             particleShader.Use();
             particleShader.SetInt("particleTexture", 0);
@@ -69,8 +70,14 @@ namespace Spacebox.Game.Effects
 
         public void Render()
         {
-            ParticleSystem.Renderer.shader.SetVector3("color", new Vector3(1, 1, 1));
+            ParticleSystem.Renderer.Material.Shader.SetVector3("color", new Vector3(1, 1, 1));
+
+            Astronaut ast = camera as Astronaut;
+
+            if(ast == null)
             ParticleSystem.Draw(camera);
+            else
+                ParticleSystem.Draw(ast);
         }
 
         public void Dispose()

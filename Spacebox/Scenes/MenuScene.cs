@@ -118,8 +118,6 @@ namespace Spacebox.Scenes
 
         public override void Render()
         {
-           // GL.Clear(ClearBufferMask.ColorBufferBit);
-
 
             skybox.DrawTransparent(player);
             spawner.Render();
@@ -130,7 +128,7 @@ namespace Spacebox.Scenes
             Theme.ApplySpaceboxTheme();
            // ImFontPtr myFont = ImGui.GetIO().Fonts.Fonts[1];
 
-            // Перед выводом UI-элементов переключаемся на нужный шрифт
+          
            // ImGui.PushFont(myFont);
             Input.ShowCursor();
             CenteredImageMenu.Draw();

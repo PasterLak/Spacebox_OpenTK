@@ -37,7 +37,8 @@ namespace Engine
                 SpeedMax = 0f
                 //UseLocalCoordinates = true
             };
-            Renderer = new ParticleRenderer(texture, this, shader);
+            ParticleMaterial mat = new ParticleMaterial(texture, shader);
+            Renderer = new ParticleRenderer(this,mat);
 
             SetShaderDebug(false);
         }
@@ -62,7 +63,7 @@ namespace Engine
                 }
             }
 
-            Renderer.UpdateBuffers();
+            Renderer.Update();
         }
 
         public void AddParticle(Particle particle)
@@ -88,7 +89,7 @@ namespace Engine
 
         public void SetShaderDebug(bool state)
         {
-            Renderer.shader.SetBool("debug", state);
+           // Renderer.Sh.SetBool("debug", state);
         }
 
         public void Dispose()

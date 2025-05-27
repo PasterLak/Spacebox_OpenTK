@@ -40,6 +40,7 @@ namespace Engine
         {
             LoadHistory();
             RegisterCommand(new ClearCommand());
+            RegisterCommand(new CameraRelativeRenderingCommand());
             RegisterCommand(new VersionCommand());
             RegisterCommand(new ColorCommand());
             RegisterCommand(new HelpCommand());

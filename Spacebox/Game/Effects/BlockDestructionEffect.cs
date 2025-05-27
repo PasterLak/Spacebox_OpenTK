@@ -95,7 +95,7 @@ namespace Spacebox.Game.Effects
         public void Render()
         {
 
-            particleSystem.Renderer.shader.SetVector3("color", color);
+            particleSystem.Renderer.Material.Shader.SetVector3("color", color);
             particleSystem.Draw(camera);
         }
 

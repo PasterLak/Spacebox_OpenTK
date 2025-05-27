@@ -446,7 +446,7 @@ namespace Spacebox.Scenes
             
             blockDestructionManager.Render();
             spacer.Render(localPlayer);
-            dustSpawner.Render();
+           
             OnRenderCenter?.Invoke();
             if (InteractionDestroyBlockSurvival.BlockMiningEffect != null)
                 InteractionDestroyBlockSurvival.BlockMiningEffect.Render();
@@ -457,6 +457,7 @@ namespace Spacebox.Scenes
             SpheresPool.Render();
 
             PanelUI.DrawItemModel();
+            dustSpawner.Render();
         }
 
         public override void OnGUI()

@@ -1,213 +1,136 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-
 
 namespace Engine
 {
-    public class ParticleRenderer : IDisposable
+    public sealed class ParticleRenderer : IDisposable // new rendererer
     {
-        public readonly Shader shader;
-        private Texture2D texture;
-        private ParticleSystem particleSystem;
+        private readonly ParticleSystem _ps;
+        public ParticleMaterial Material { get; set; }
+        private readonly MeshBuffer _quad;
+        private readonly int _instanceVbo;
+        private readonly float[] _instanceData;
+        private int _aliveCount;
+        public bool RandomRotation { get; set; }
+        private byte _rotationCase;
+        private static readonly Random _rng = new Random();
 
-        private int vao;
-        private int vbo;
-        private int ebo;
-        private int instanceVBO;
+        public ParticleRenderer(ParticleSystem ps, ParticleMaterial mat)
+        {
+            _ps = ps;
+            Material = mat;
+            RandomRotation = ps.Emitter.RandomUVRotation;
 
-        private List<Matrix4> instanceTransforms = new List<Matrix4>();
-        private List<Vector4> instanceColors = new List<Vector4>();
-
-        private bool _randomRotation;
-        public bool RandomRotation { get => _randomRotation; set
+            _quad = new MeshBuffer(new[]
             {
-                _randomRotation = value;
+                new BufferAttribute { Name = "aPos", Size = 3 },
+                new BufferAttribute { Name = "aUV",  Size = 2 }
+            });
 
-                if(value ) { RandomUVRotation(); }
-            } }
-        private byte rotationCase = 0;
-
-        public void RotateUV180()
-        {
-            rotationCase = 3;
-        }
-
-        public ParticleRenderer(Texture2D texture, ParticleSystem system, Shader shader)
-        {
-            this.shader = shader;
-            this.texture = texture;
-            this.particleSystem = system;
-
-            _randomRotation = system.Emitter.RandomUVRotation;
-            Initialize();
-        }
-
-   
-        private void RandomUVRotation()
-        {
-            if (_randomRotation)
+            float[] verts =
             {
-                Random random = new Random();
-                rotationCase = (byte)random.Next(0, 4);
-            }
-        }
-        private void Initialize()
-        {
-            float[] vertices = {
                 -0.5f, -0.5f, 0f, 0f, 0f,
                  0.5f, -0.5f, 0f, 1f, 0f,
                  0.5f,  0.5f, 0f, 1f, 1f,
                 -0.5f,  0.5f, 0f, 0f, 1f
             };
+            uint[] idx = { 0, 1, 2, 2, 3, 0 };
+            _quad.BindBuffer(ref verts, ref idx);
+            _quad.SetAttributes();
 
-            RandomUVRotation();
+            _instanceVbo = GL.GenBuffer();
+            GL.BindVertexArray(_quad.VAO);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _instanceVbo);
+            GL.BufferData(BufferTarget.ArrayBuffer, ps.MaxParticles * 20 * sizeof(float), IntPtr.Zero, BufferUsageHint.DynamicDraw);
 
-
-            uint[] indices = {
-                0, 1, 2,
-                2, 3, 0
-            };
-
-            vao = GL.GenVertexArray();
-            vbo = GL.GenBuffer();
-            ebo = GL.GenBuffer();
-
-            GL.BindVertexArray(vao);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
-
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
-
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
-
-            GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
-
-            instanceVBO = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, instanceVBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, particleSystem.MaxParticles * (16 + 4) * sizeof(float), IntPtr.Zero, BufferUsageHint.DynamicDraw);
-
-            for (int i = 0; i < 4; i++)
+            int stride = 20 * sizeof(float);
+            int offset = 0;
+            for (int col = 0; col < 4; col++)
             {
-                GL.EnableVertexAttribArray(2 + i);
-                GL.VertexAttribPointer(2 + i, 4, VertexAttribPointerType.Float, false, (16 + 4) * sizeof(float), i * 4 * sizeof(float));
-                GL.VertexAttribDivisor(2 + i, 1);
+                GL.EnableVertexAttribArray(2 + col);
+                GL.VertexAttribPointer(2 + col, 4, VertexAttribPointerType.Float, false, stride, offset);
+                GL.VertexAttribDivisor(2 + col, 1);
+                offset += 4 * sizeof(float);
             }
 
             GL.EnableVertexAttribArray(6);
-            GL.VertexAttribPointer(6, 4, VertexAttribPointerType.Float, false, (16 + 4) * sizeof(float), 16 * sizeof(float));
+            GL.VertexAttribPointer(6, 4, VertexAttribPointerType.Float, false, stride, 16 * sizeof(float));
             GL.VertexAttribDivisor(6, 1);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+         
             GL.BindVertexArray(0);
+
+            _instanceData = new float[ps.MaxParticles * 20];
+            RandomizeRotation();
         }
 
-        public void UpdateBuffers()
+        public void SetFixedRotation180() => _rotationCase = 3;
+
+        public void SetRandomRotation(bool enable)
         {
-            instanceTransforms.Clear();
-            instanceColors.Clear();
+            _rotationCase = 0;
+            if (enable) RandomizeRotation();
+        }
 
-            foreach (var particle in particleSystem.GetParticles())
+        private void RandomizeRotation()
+        {
+            if (RandomRotation) _rotationCase = (byte)_rng.Next(0, 4);
+        }
+
+        public void Update()
+        {
+            RandomizeRotation();
+            _aliveCount = 0;
+
+            foreach (var p in _ps.GetParticles())
             {
-                Vector3 finalPosition = particleSystem.UseLocalCoordinates
-                    ? particle.Position + particleSystem.Position
-                    : particle.Position;
+                Vector3 pos = _ps.UseLocalCoordinates ? p.Position + _ps.Position : p.Position;
 
-                if(Camera.Main != null && Camera.Main.CameraRelativeRender)
-                {
-                    finalPosition = finalPosition - Camera.Main.Position;
-                }
+                if (Camera.Main != null && Camera.Main.CameraRelativeRender) pos -= Camera.Main.Position; // ?????
 
-                Matrix4 model = Matrix4.CreateScale(particle.Size) * 
-                    Matrix4.CreateTranslation(finalPosition);
-                instanceTransforms.Add(model);
-                instanceColors.Add(particle.GetCurrentColor());
+                Matrix4 m = Matrix4.CreateScale(p.Size) * Matrix4.CreateTranslation(pos);
+                Vector4 c = p.GetCurrentColor();
+
+                int baseI = _aliveCount * 20;
+                _instanceData[baseI + 0] = m.M11; _instanceData[baseI + 1] = m.M12; _instanceData[baseI + 2] = m.M13; _instanceData[baseI + 3] = m.M14;
+                _instanceData[baseI + 4] = m.M21; _instanceData[baseI + 5] = m.M22; _instanceData[baseI + 6] = m.M23; _instanceData[baseI + 7] = m.M24;
+                _instanceData[baseI + 8] = m.M31; _instanceData[baseI + 9] = m.M32; _instanceData[baseI + 10] = m.M33; _instanceData[baseI + 11] = m.M34;
+                _instanceData[baseI + 12] = m.M41; _instanceData[baseI + 13] = m.M42; _instanceData[baseI + 14] = m.M43; _instanceData[baseI + 15] = m.M44;
+                _instanceData[baseI + 16] = c.X; _instanceData[baseI + 17] = c.Y; _instanceData[baseI + 18] = c.Z; _instanceData[baseI + 19] = c.W;
+
+                _aliveCount++;
+                if (_aliveCount >= _ps.MaxParticles) break;
             }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, instanceVBO);
-
-            float[] data = new float[instanceTransforms.Count * (16 + 4)];
-            for (int i = 0; i < instanceTransforms.Count; i++)
-            {
-                Matrix4 mat = instanceTransforms[i];
-                Vector4 color = instanceColors[i];
-
-                data[i * 20 + 0] = mat.M11;
-                data[i * 20 + 1] = mat.M12;
-                data[i * 20 + 2] = mat.M13;
-                data[i * 20 + 3] = mat.M14;
-
-                data[i * 20 + 4] = mat.M21;
-                data[i * 20 + 5] = mat.M22;
-                data[i * 20 + 6] = mat.M23;
-                data[i * 20 + 7] = mat.M24;
-
-                data[i * 20 + 8] = mat.M31;
-                data[i * 20 + 9] = mat.M32;
-                data[i * 20 + 10] = mat.M33;
-                data[i * 20 + 11] = mat.M34;
-
-                data[i * 20 + 12] = mat.M41;
-                data[i * 20 + 13] = mat.M42;
-                data[i * 20 + 14] = mat.M43;
-                data[i * 20 + 15] = mat.M44;
-
-                data[i * 20 + 16] = color.X;
-                data[i * 20 + 17] = color.Y;
-                data[i * 20 + 18] = color.Z;
-                data[i * 20 + 19] = color.W;
-            }
-
-            GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, data.Length * sizeof(float), data);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _instanceVbo);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, _aliveCount * 20 * sizeof(float), _instanceData);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
-        
-        
-        public void Render(Camera camera)
+       
+        public void Render(Camera cam)
         {
-          
-            shader.Use();
+            if (_aliveCount == 0) return;
 
-            Matrix4 view = camera.GetViewMatrix();
-            Matrix4 projection = camera.GetProjectionMatrix();
+            Material.SetUniforms(Matrix4.Identity);
+            Material.Shader.SetMatrix4("view", cam.GetViewMatrix(), false);
+            Material.Shader.SetMatrix4("projection", cam.GetProjectionMatrix(), false);
+            Material.Shader.SetInt("rotationCase", _rotationCase);
+            Material.Shader.SetInt("particleTexture", 0);
 
-            shader.SetMatrix4("view", view, false);
-            shader.SetMatrix4("projection", projection, false);
-
-            if(_randomRotation || rotationCase != 0)
-            shader.SetInt("rotationCase", rotationCase );
-
-            texture.Use(TextureUnit.Texture0);
-            shader.SetInt("particleTexture", 0);
-            
-
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
-            GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(false);
-
-            GL.BindVertexArray(vao);
-            GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, instanceTransforms.Count);
+            GL.BindVertexArray(_quad.VAO);
+            GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, _aliveCount);
             GL.BindVertexArray(0);
 
             GL.DepthMask(true);
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.Blend);
 
-           // if (FramebufferCapture.IsActive)
-             //   FramebufferCapture.SaveFrame();
         }
 
         public void Dispose()
         {
-            GL.DeleteVertexArray(vao);
-            GL.DeleteBuffer(vbo);
-            GL.DeleteBuffer(ebo);
-            GL.DeleteBuffer(instanceVBO);
+            _quad.Dispose();
+            GL.DeleteBuffer(_instanceVbo);
         }
     }
 }

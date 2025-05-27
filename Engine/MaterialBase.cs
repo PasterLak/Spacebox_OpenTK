@@ -60,14 +60,16 @@ namespace Engine
         {
             bool enableDepthTest = mode != RenderMode.Transparent;
             bool enableBlending = mode == RenderMode.Fade || mode == RenderMode.Transparent;
-
+            bool depthWrite = mode == RenderMode.Opaque || mode == RenderMode.Cutout;
             if (enableDepthTest) GL.Enable(EnableCap.DepthTest);
             else GL.Disable(EnableCap.DepthTest);
-
+            GL.Enable(EnableCap.DepthTest);
             //if (mode == RenderMode.Transparent)
             //    GL.DepthMask(false);
-           // else
+            // else
             //    GL.DepthMask(true);
+
+            //GL.DepthMask(depthWrite);
 
 
             if (enableBlending)
