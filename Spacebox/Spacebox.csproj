@@ -46,7 +46,9 @@
 	  <None Remove="shaders\planet.glsl" />
 	  <None Remove="Shaders\player.glsl" />
 	  <None Remove="Shaders\PostProcessing\blackWhite.glsl" />
+	  <None Remove="shaders\postprocessing\depthView.glsl" />
 	  <None Remove="Shaders\PostProcessing\edgeDetection.glsl" />
+	  <None Remove="shaders\postprocessing\normalView.glsl" />
 	  <None Remove="Shaders\PostProcessing\vignette.glsl" />
 	  <None Remove="shaders\sphere.glsl" />
 	  <None Remove="shaders\sun.glsl" />

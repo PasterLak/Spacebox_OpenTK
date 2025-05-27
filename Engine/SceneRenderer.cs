@@ -1,17 +1,15 @@
-﻿
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Engine
 {
-
-
     public class SceneRenderer : IDisposable
     {
         public int Fbo { get; private set; }
-        public int SceneTexture { get; private set; }
-        public int Rbo { get; private set; }
+        public int ColorTexture { get; private set; }
+        public int NormalTexture { get; private set; }
+        public int DepthTexture { get; private set; }
+
         private int width, height;
         private bool disposed = false;
 
@@ -27,21 +25,33 @@ namespace Engine
             Fbo = GL.GenFramebuffer();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, Fbo);
 
-            SceneTexture = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, SceneTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0,
-                PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+            ColorTexture = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, ColorTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, SceneTexture, 0);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, ColorTexture, 0);
 
-            Rbo = GL.GenRenderbuffer();
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, Rbo);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Depth24Stencil8, width, height);
-            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, Rbo);
+            NormalTexture = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, NormalTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, width, height, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, NormalTexture, 0);
 
-            //if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
-             //   throw new Exception("Framebuffer is not complete");
+            DepthTexture = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, DepthTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent24, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, DepthTexture, 0);
+
+            DrawBuffersEnum[] drawBuffers = new[]
+            {
+                DrawBuffersEnum.ColorAttachment0,
+                DrawBuffersEnum.ColorAttachment1
+            };
+            GL.DrawBuffers(drawBuffers.Length, drawBuffers);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
@@ -50,9 +60,12 @@ namespace Engine
         {
             width = newWidth;
             height = newHeight;
+
             GL.DeleteFramebuffer(Fbo);
-            GL.DeleteTexture(SceneTexture);
-            GL.DeleteRenderbuffer(Rbo);
+            GL.DeleteTexture(ColorTexture);
+            GL.DeleteTexture(NormalTexture);
+            GL.DeleteTexture(DepthTexture);
+
             Initialize();
         }
 
@@ -60,12 +73,8 @@ namespace Engine
         {
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, Fbo);
             GL.Viewport(0, 0, width, height);
-
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
             renderScene.Invoke();
-
-
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
@@ -74,11 +83,11 @@ namespace Engine
             if (!disposed)
             {
                 GL.DeleteFramebuffer(Fbo);
-                GL.DeleteTexture(SceneTexture);
-                GL.DeleteRenderbuffer(Rbo);
+                GL.DeleteTexture(ColorTexture);
+                GL.DeleteTexture(NormalTexture);
+                GL.DeleteTexture(DepthTexture);
                 disposed = true;
             }
         }
     }
-
 }

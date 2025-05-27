@@ -8,7 +8,7 @@ using Spacebox.Game.Generation.Tools;
 
 namespace Spacebox.Game
 {
-    public class BlockSelector
+    public class BlockSelector : IDisposable
     {
 
         public static BlockSelector Instance;
@@ -119,6 +119,7 @@ namespace Spacebox.Game
 
         public void Render(Astronaut camera)
         {
+          
             if(!IsVisible) return;
             if(!Settings.ShowInterface) return;
 
@@ -132,6 +133,13 @@ namespace Spacebox.Game
             //GL.Disable(EnableCap.DepthTest);
 
 
+        }
+
+        public void Dispose()
+        {
+            SimpleBlock.Dispose();
+            CubeRenderer.Dispose();
+            Instance = null;
         }
     }
 }

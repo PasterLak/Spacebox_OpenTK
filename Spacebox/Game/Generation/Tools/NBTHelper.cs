@@ -392,6 +392,7 @@ namespace Spacebox.Game.Generation.Tools
             var pos = 1;
             var storageSize = 4;
 
+
             var slotsData = new List<long>();
 
 
@@ -415,6 +416,13 @@ namespace Spacebox.Game.Generation.Tools
 
 
             root.Add(new ShortTag("positionChunk", block.PositionIndex));
+
+            if (block.NeedsToSaveName(out var name))
+            {
+                root.Add(new StringTag("name", name));
+            }
+
+
             root.Add(new ShortTag("sizeXY", storageSizeXYPacked));
             root.Add(new LongArrayTag("slotsData", slotsData));
 
@@ -650,11 +658,22 @@ namespace Spacebox.Game.Generation.Tools
                         {
                             Vector3Byte pos = StorageBlock.PositionIndexToPositionInChunk((ushort)posTag.Value);
 
+                            
+
                             var sizeXY = storage.Get<ShortTag>("sizeXY");
 
                             PackingTools.UnpackBytes(sizeXY, out byte sizeX, out byte sizeY);
 
                             Storage newStorage = new Storage(sizeX, sizeY);
+
+                            if (storage.TryGetValue<StringTag>("name", out var nameTag))
+                            {
+                                var val = nameTag.Value;
+                                Debug.Log("Loaded name: " + val);
+                                newStorage.Name = val;
+                                Debug.Log("set name: " + newStorage.Name);
+                            }
+                            else Debug.Log("not found name");
 
                             foreach (var slotData in storage.Get<LongArrayTag>("slotsData"))
                             {

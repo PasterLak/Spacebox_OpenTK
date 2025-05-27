@@ -93,7 +93,8 @@ in vec3 FragPos;
 in float AO;
 in float isActive;
 
-out vec4 FragColor;
+layout(location = 0) out vec4 gColor;   
+layout(location = 1) out vec4 gNormal; 
 
 vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffC)
 {
@@ -165,5 +166,9 @@ void main()
     vec3 finalColor = ambient * AO + lighting;
     vec4 foggedColor = applyFog(vec4(finalColor, baseTexColor.a));
     vec3 combinedColor = mix(foggedColor.rgb, applyFog2(vec4(baseTexColor.rgb, 1)).rgb, isActive == 0 ? 0 : atlasTexColor.a);
-    FragColor = vec4(combinedColor, foggedColor.a);
+
+    gColor  = vec4(combinedColor, foggedColor.a);
+
+    vec3 N = normalize(Normal);                      
+    gNormal = vec4(N * 0.5 + 0.5, 1.0);  
 }

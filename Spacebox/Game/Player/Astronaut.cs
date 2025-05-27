@@ -74,6 +74,7 @@ namespace Spacebox.Game.Player
             : base(position)
         {
             FOV = 90;
+            
             Name = "Player";
             DepthNear = 0.01f;
             DepthFar = Settings.ViewDistance;

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Text;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Engine;
@@ -7,6 +8,7 @@ using Engine.Audio;
 using Spacebox.Game.Player;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.GUI;
 
 namespace Spacebox.Game.GUI
 {
@@ -15,34 +17,41 @@ namespace Spacebox.Game.GUI
         private static float SlotSize = 64.0f;
         private static nint SlotTexture = nint.Zero;
         private static nint ItemTexture = nint.Zero;
+        private static nint PencilTexture = nint.Zero;
         private static Storage? Storage;
         private static StorageBlock? StorageBlock;
         private static Astronaut? Astronaut;
         public static bool IsVisible { get; set; } = false;
 
-
-
         private static AudioSource openSound;
         private static AudioSource closeSound;
         private static AudioSource splitAudio;
+
+        private static bool editingName = false;
+        private static byte[] buffer = new byte[32];
+
         public static void Initialize(nint textureId)
         {
             SlotTexture = textureId;
+            var itemTexture = Resources.Load<Texture2D>("Resources/Textures/UI/trash.png");
+            itemTexture.FilterMode = FilterMode.Nearest;
+            itemTexture.FlipY();
+            ItemTexture = itemTexture.Handle;
 
-            ItemTexture = new Texture2D("Resources/Textures/UI/trash.png", true, false).Handle;
+            var pencil = Resources.Load<Texture2D>("Resources/Textures/UI/pencil.png");
+            pencil.FilterMode = FilterMode.Nearest;
+            pencil.FlipY();
+            PencilTexture = pencil.Handle;
+
             InventoryUIHelper.SetDefaultIcon(textureId, nint.Zero);
 
             var inventory = ToggleManager.Register("storage");
             inventory.IsUI = true;
-            inventory.OnStateChanged += s =>
-            {
-                IsVisible = s;
-            };
+            inventory.OnStateChanged += s => IsVisible = s;
 
             splitAudio = new AudioSource(SoundManager.GetClip("splitStack"));
             openSound = new AudioSource(Resources.Get<AudioClip>("openStorage"));
             closeSound = new AudioSource(Resources.Get<AudioClip>("closeStorage"));
-
         }
 
         public static void OpenStorage(StorageBlock storageBlock, Astronaut astronaut)
@@ -50,7 +59,7 @@ namespace Spacebox.Game.GUI
             StorageBlock = storageBlock;
             Storage = storageBlock.Storage;
             Astronaut = astronaut;
-            Storage.ConnectStorage( astronaut.Inventory);
+            Storage.ConnectStorage(astronaut.Inventory);
             astronaut.Inventory.ConnectStorage(Storage);
 
             openSound?.Play();
@@ -61,7 +70,6 @@ namespace Spacebox.Game.GUI
 
             ToggleManager.DisableAllWindows();
 
-
             if (!count)
                 IsVisible = !v;
 
@@ -70,7 +78,7 @@ namespace Spacebox.Game.GUI
                 ToggleManager.SetState("mouse", true);
                 ToggleManager.SetState("player", false);
 
-                 if (astronaut.GameMode != GameMode.Survival)
+                if (astronaut.GameMode != GameMode.Survival)
                     ToggleManager.SetState("creative", true);
 
                 ToggleManager.SetState("inventory", true);
@@ -97,46 +105,32 @@ namespace Spacebox.Game.GUI
                 Astronaut.Inventory.ConnectStorage(Astronaut.Panel);
                 Astronaut = null;
             }
-            
+            editingName = false;
+            buffer = new byte[32];
         }
 
         public static void OnGUI()
         {
-          
+            if (!IsVisible || Storage == null) return;
 
-            if (!IsVisible) return;
-
-            if (Storage == null) return;
-
-
-            if(Input.IsKeyDown(Keys.Tab) || Input.IsKeyDown(Keys.Escape))
+            if (Input.IsKeyDown(Keys.Tab) || Input.IsKeyDown(Keys.Escape))
             {
                 CloseStorage();
-
                 return;
             }
-           
 
-
-            var displaySize = ImGui.GetIO().DisplaySize;
-
+            var io = ImGui.GetIO();
+            var displaySize = io.DisplaySize;
             var style = ImGui.GetStyle();
 
-
-            float titleBarHeight = ImGui.GetFontSize() + style.FramePadding.Y * 2;
-
-
-
             SlotSize = InventoryUIHelper.SlotSize;
-
 
             float windowWidth = Storage.SizeX * SlotSize;
             float windowHeight = Storage.SizeY * SlotSize;
 
             Vector2 windowPos = new Vector2(
                 (displaySize.X - windowWidth) / 2f,
-                (displaySize.Y - windowHeight) / 4f
-            );
+                (displaySize.Y - windowHeight) / 4f);
 
             var padding = SlotSize * 0.1f;
             var paddingV = new Vector2(padding, padding);
@@ -147,17 +141,33 @@ namespace Spacebox.Game.GUI
                                            ImGuiWindowFlags.NoCollapse |
                                            ImGuiWindowFlags.NoDecoration |
                                            ImGuiWindowFlags.NoScrollbar |
-                                          ImGuiWindowFlags.NoResize |
                                            ImGuiWindowFlags.NoScrollWithMouse;
-
 
             ImGui.Begin("Storage", windowFlags);
 
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV, displaySize.Y);
 
             ImGui.SetCursorPos(paddingV);
-            ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), "Storage " + StorageBlock.PositionIndex);
-
+            if (!editingName)
+            {
+                ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), StorageBlock?.Name ?? "Storage");
+                ImGui.SameLine();
+                if (ImGui.ImageButton("##edit", PencilTexture, paddingV * 4))
+                {
+                    StartNameEdit();
+                }
+            }
+            else
+            {
+                float buttonWidth = ImGui.CalcTextSize("Save").X + style.FramePadding.X * 2;
+                ImGui.SetNextItemWidth(windowWidth - buttonWidth - padding * 3);
+                bool enterPressed = ImGui.InputText("##storageName", buffer, (uint)buffer.Length, ImGuiInputTextFlags.EnterReturnsTrue);
+                ImGui.SameLine();
+                if (ImGui.SmallButton("Save") || enterPressed)
+                {
+                    SaveName();
+                }
+            }
 
             ImGui.SetCursorPos(paddingV + new Vector2(0, padding * 4));
             InventoryUIHelper.RenderStorage(Storage, OnSlotClicked, Storage.SizeX);
@@ -165,27 +175,43 @@ namespace Spacebox.Game.GUI
             ImGui.End();
         }
 
+        private static void StartNameEdit()
+        {
+            if (StorageBlock == null) return;
+            editingName = true;
+            Array.Clear(buffer, 0, buffer.Length);
+            var bytes = Encoding.UTF8.GetBytes(StorageBlock.Name);
+            Array.Copy(bytes, buffer, Math.Min(bytes.Length, buffer.Length - 1));
+            ImGui.SetKeyboardFocusHere();
+        }
+
+        private static void SaveName()
+        {
+            if (StorageBlock == null) return;
+
+            int len = Array.IndexOf(buffer, (byte)0);
+            if (len < 0) len = buffer.Length;
+
+            string newName = Encoding.UTF8.GetString(buffer, 0, len).Trim();
+            if (!string.IsNullOrWhiteSpace(newName))
+            {
+                StorageBlock.Name = newName;
+            }
+
+            editingName = false;
+        }
+
         private static void OnSlotClicked(ItemSlot slot)
         {
+            if (!slot.HasItem) return;
 
-            if (slot.HasItem)
+            if (Input.IsKey(Keys.LeftShift))
             {
-                if (Input.IsKey(Keys.LeftShift))
-                {
-
-                    slot.MoveItemToConnectedStorage();
-
-                }
-                if (Input.IsKey(Keys.X))
-                {
-
-                    slot.Clear();
-
-                }
-
+                slot.MoveItemToConnectedStorage();
             }
-            else
+            else if (Input.IsKey(Keys.X))
             {
+                slot.Clear();
             }
         }
     }

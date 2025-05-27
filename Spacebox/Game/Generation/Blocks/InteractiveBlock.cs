@@ -13,6 +13,7 @@ namespace Spacebox.Game.Generation.Blocks
         public Keys KeyToUse { get; private set; } = Keys.F;
         public const byte InteractionDistance = 3;
         public const byte InteractionDistanceSquared = InteractionDistance * InteractionDistance;
+        public string HoverTextBlockName = "";
         public string HoverText = "Press RMB to use";
         public string HoverTextDeactivated = "No power";
         public Action<Astronaut> OnUse;
@@ -30,10 +31,11 @@ namespace Spacebox.Game.Generation.Blocks
         {
             if (EFlags == ElectricalFlags.None)
             {
-                CenteredText.SetText(HoverText);
+                CenteredText.SetText( 
+                     HoverText + HoverTextBlockName);
                 return;
             }
-            CenteredText.SetText(IsActive ? HoverText : HoverTextDeactivated);
+            CenteredText.SetText(IsActive ?   HoverText + HoverTextBlockName : HoverTextDeactivated);
 
         }
         private void OnHovered()

@@ -9,7 +9,7 @@ namespace Spacebox.Game
 
         public readonly uint Id;
 
-        public string Name { get; set; } = "Default";
+        public string Name { get; set; } = "Storage";
         public string Tag { get; set; } = "Default";
 
         public readonly byte SizeX;

@@ -4,6 +4,7 @@ namespace Engine.PostProcessing
 {
     public abstract class PostProcessEffect
     {
+        public bool Enabled { get; set; } = true;
         public abstract void Apply(int inputTexture, int outputFbo, Vector2i clientSize);
     }
     public class PostProcessManager : IDisposable
@@ -82,13 +83,15 @@ namespace Engine.PostProcessing
             }
             effects.Clear();
         }
-        public void Process(int sceneTexture, Vector2i clientSize)
+        public void Process(SceneRenderer sceneRenderer, Vector2i clientSize)
         {
             if (currentBufferSize != clientSize)
                 InitPingPongBuffers(clientSize);
-            int readTexture = sceneTexture;
+            int readTexture = sceneRenderer.ColorTexture;
             for (int i = 0; i < effects.Count; i++)
             {
+                if (!effects[i].Enabled) continue;
+
                 int writeFBO = pingpongFBO[currentPingPong];
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, writeFBO);
                 GL.Viewport(0, 0, clientSize.X, clientSize.Y);

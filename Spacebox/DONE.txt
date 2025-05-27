@@ -66,6 +66,7 @@ New
 - world preview image (simple)
 - the volume of hits, ricochets and explosions depends on the distance from the player
 - storage block with save/load 
+- rename storage, preview storage name if hovered
 
 engine:
 - 

@@ -138,6 +138,71 @@ namespace Engine
             return result;
         }
 
+        public static void SaveGBufferTextures(SceneRenderer renderer, Vector2i clientSize)
+        {
+            if (!Directory.Exists("GBufferDumps"))
+                Directory.CreateDirectory("GBufferDumps");
+
+            var camera = Camera.Main;
+
+            SaveTextureAsPng(renderer.ColorTexture, clientSize, "GBufferDumps/color.png");
+            SaveTextureAsPng(renderer.NormalTexture, clientSize, "GBufferDumps/normal.png" );
+            SaveTextureAsPng(renderer.DepthTexture, clientSize, "GBufferDumps/depth.png", true);
+
+            Debug.Success("G-Buffer textures saved to GBufferDumps/");
+        }
+
+        private static void SaveTextureAsPng(int textureId,
+                                     Vector2i size,
+                                     string path,
+                                     bool isDepth = false,
+                                     float nearPlane = 0.1f,
+                                     float farPlane = 10f,
+                                     bool invert = false)         
+        {
+            int w = size.X;
+            int h = size.Y;
+            byte[] rgba = new byte[w * h * 4];
+
+            GL.BindTexture(TextureTarget.Texture2D, textureId);
+
+            if (isDepth)
+            {
+                float[] z = new float[w * h];
+                GL.GetTexImage(TextureTarget.Texture2D, 0,
+                               PixelFormat.DepthComponent, PixelType.Float, z);
+
+                for (int i = 0; i < z.Length; i++)
+                {
+                    // linear depth in world units
+                    float ndc = z[i] * 2f - 1f;
+                    float linZ = (2f * nearPlane * farPlane) /
+                                 (farPlane + nearPlane - ndc * (farPlane - nearPlane));
+
+                    float v = linZ / farPlane;   // 0..1     
+                    if (invert) v = 1f - v;    
+
+                    byte g = (byte)MathF.Round(Math.Clamp(v, 0f, 1f) * 255f);
+                    int p = i * 4;
+                    rgba[p + 0] = g;
+                    rgba[p + 1] = g;
+                    rgba[p + 2] = g;
+                    rgba[p + 3] = 255;
+                }
+            }
+            else
+            {
+                GL.GetTexImage(TextureTarget.Texture2D, 0,
+                               PixelFormat.Rgba, PixelType.UnsignedByte, rgba);
+            }
+
+            Color4[,] colors = ConvertToColorArray(rgba, w, h);
+            using var tex = new Texture2D(w, h);
+            tex.SetPixelsData(colors);
+            tex.SaveToPng(path);
+        }
+
+
 
         public static async Task<byte[]> CaptureFrameAsPngAsync(int width, int height)
         {

@@ -25,12 +25,7 @@ namespace Spacebox
             {
                 _uvs.Add((Face)face, CubeMeshData.GetBasicUVs());
             }
-            /* _buffer = new MeshBuffer(new BufferAttribute[]
-             {
-                 new BufferAttribute { Name = "position", Size = 3 },
-                 new BufferAttribute { Name = "normal", Size = 3 },
-                 new BufferAttribute { Name = "uv", Size = 2 }
-             });*/
+
             _buffer = TextureMaterial.GetMeshBuffer();
             RegenerateMesh();
         }
@@ -131,11 +126,11 @@ namespace Spacebox
 
         public void Render(Astronaut camera)
         {
-            Material.SetUniforms(GetModelMatrix());
-            Material.Use();
-
             
-          
+            Material.Use();
+            Material.SetUniforms(GetModelMatrix());
+
+
             GL.BindVertexArray(_buffer.VAO);
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
@@ -145,7 +140,6 @@ namespace Spacebox
         public void Dispose()
         {
             _buffer.Dispose();
-
         }
     }
 }

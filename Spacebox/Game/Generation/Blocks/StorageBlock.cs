@@ -1,8 +1,9 @@
 ﻿using Engine;
-using OpenTK.Mathematics;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
+
+
 
 namespace Spacebox.Game.Generation.Blocks
 {
@@ -16,13 +17,48 @@ namespace Spacebox.Game.Generation.Blocks
             {
                 _storage = value;
                 _storage.OnDataWasChanged += OnStorageDataWasChanged;
+                Name = _storage.Name;
             }
         }
         public ushort PositionIndex { get; private set; } = 0;
+       
+        public string Name
+        {
+            get => _storage?.Name ?? ""; 
+            set
+            {
+                if (_storage == null) return;
 
+                _storage.Name = string.Empty;
+                _storage.Name = value;
+
+                if(_storage.Name == "" || _storage.Name == " " || _storage.Name == _blockData.Name || _storage.Name == "Storage")
+                {
+                    HoverTextBlockName = "";
+                }
+                else
+                HoverTextBlockName = ("\n\n"+ _storage.Name);
+                
+                if(chunk != null)
+                chunk.IsModified = true;
+            }
+        }
+        private BlockData _blockData;
         public StorageBlock(BlockData blockData) : base(blockData)
         {
+            _blockData = blockData;
+           
+        }
 
+        public bool NeedsToSaveName(out string name)
+        {
+            name = _storage.Name;
+            if (_storage.Name == "" || _storage.Name == " " || _blockData.Name == _storage.Name || _storage.Name == "Storage")
+            {
+                return false;
+            }
+           
+            return true;
         }
 
         public void SetPositionInChunk(Vector3Byte positionChunk)
@@ -42,8 +78,6 @@ namespace Spacebox.Game.Generation.Blocks
             return pos;
 
         }
-
-
 
         private void OnStorageDataWasChanged(Storage storage)
         {

@@ -36,7 +36,8 @@ in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
 
-out vec4 FragColor;
+layout(location = 0) out vec4 gColor;   
+layout(location = 1) out vec4 gNormal; 
 
 uniform sampler2D texture0;
 
@@ -60,5 +61,8 @@ void main()
         vec3 ambient = 0.1 * lightColor;
         vec3  result = (ambient + diffuse) * objectColor * vec3(texColor);
 
-    FragColor = vec4(result, texColor.a);
+    gColor = vec4(result, texColor.a);
+
+             
+    gNormal = vec4(norm * 0.5 + 0.5, 1.0); 
 }

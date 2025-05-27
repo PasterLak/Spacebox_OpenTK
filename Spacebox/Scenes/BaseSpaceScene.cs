@@ -492,7 +492,7 @@ namespace Spacebox.Scenes
             PanelUI.Player = null;
         
             lightAtlas.Dispose();
-           
+            blockSelector.Dispose();
             TickTaskManager.Dispose();
      
             dustSpawner.Dispose();

@@ -123,10 +123,18 @@ namespace Spacebox
             //_processManager.AddEffect(new BlackWhiteEffect(sha2));
 
             var sha3 = Resources.Load<Shader>("Shaders/PostProcessing/vignette", true);
-
-            _processManager.AddEffect(new VignetteEffect(sha3));
+            var vignetteEffect = new VignetteEffect(sha3);
+            vignetteEffect.Enabled = false;
+            _processManager.AddEffect(vignetteEffect);
 
             var sha4 = Resources.Load<Shader>("Shaders/PostProcessing/edgeDetection", true);
+
+
+            var normalShader = Resources.Load<Shader>("Shaders/PostProcessing/normalView", true);
+           // _processManager.AddEffect(new NormalViewEffect(normalShader, SceneRenderer));
+
+            var depthShader = Resources.Load<Shader>("Shaders/PostProcessing/depthView", true);
+            //_processManager.AddEffect(new DepthViewEffect(depthShader, SceneRenderer, 0.1f, 10f));
 
             // _processManager.AddEffect(new EdgeDetectionEffect(sha4));
 
@@ -204,9 +212,12 @@ namespace Spacebox
 
 
             //FullscreenRenderer.RenderToScreen(SceneRenderer.SceneTexture, shaderpass, ClientSize);
-            _processManager.Process(SceneRenderer.SceneTexture, ClientSize);
+            _processManager.Process(SceneRenderer, ClientSize);
 
-
+            if(Input.IsKeyDown(Keys.P))
+            {
+                FramebufferCapture.SaveGBufferTextures(SceneRenderer, ClientSize);
+            }
 
             //GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
 

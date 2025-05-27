@@ -5,7 +5,7 @@ namespace Spacebox.Game
     public class Settings
     {
         public static float FOV = 90;
-        public static int ViewDistance = 10000;
+        public static int ViewDistance = 5000;
 
         public static float ChunkLOD0Distance = 32;
 
