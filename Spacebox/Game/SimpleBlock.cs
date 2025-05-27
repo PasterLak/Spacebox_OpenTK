@@ -11,11 +11,11 @@ namespace Spacebox
         private float[] _vertices;
         private uint[] _indices;
         private MeshBuffer _buffer;
-        public TextureMaterial Material { get;  set; }
-       
+        public TextureMaterial Material { get; set; }
+
         public bool IsUsingDefaultUV { get; private set; } = true;
         private Dictionary<Face, Vector2[]> _uvs = new Dictionary<Face, Vector2[]>();
-
+        private bool _isDisposed;
         public SimpleBlock(TextureMaterial material, Vector3 position)
         {
             Position = position;
@@ -100,6 +100,8 @@ namespace Spacebox
                 indices.Add(indexOffset);
                 indexOffset += 4;
             }
+            Debug.Error(" faces vertices " + vertices.Count);
+            Debug.Error(" faces indices " + indices.Count);
             return (vertices.ToArray(), indices.ToArray());
         }
 
@@ -120,26 +122,33 @@ namespace Spacebox
                 case Face.Bottom:
                     return new Vector3(0f, -1f, 0f);
                 default:
+                    Debug.Error("False face!");
                     return Vector3.Zero;
             }
         }
 
         public void Render(Astronaut camera)
         {
-            
-            Material.Use();
-            Material.SetUniforms(GetModelMatrix());
+            if (_isDisposed)
+                return;
 
+
+            Material.SetUniforms(GetModelMatrix());
+            Material.Use();
 
             GL.BindVertexArray(_buffer.VAO);
+
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
-      
+
         }
 
         public void Dispose()
         {
+            if (_isDisposed) return;
+
             _buffer.Dispose();
+            _isDisposed = true;
         }
     }
 }
