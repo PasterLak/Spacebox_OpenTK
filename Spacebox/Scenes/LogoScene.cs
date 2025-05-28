@@ -35,14 +35,14 @@ namespace Spacebox.Scenes
             Resources.LoadAllAsync<Texture2D>(
                new[]
                {
-                    "Resources/Textures/planet2.png",
+                    "Resources/Textures/Space/planet2.png",
 
                });
 
             Resources.Load<Shader>("Shaders/sprite");
             // Resources.Load<AudioClip>("Resources/Audio/scroll.ogg");
 
-            var texture = Resources.Get<Texture2D>("Resources/Textures/planet2.png");
+            var texture = Resources.Get<Texture2D>("Resources/Textures/Space/planet2.png");
 
             var sp = Resources.Get<Shader>("sprite");
 

@@ -683,7 +683,7 @@ namespace Spacebox.Game.Resource
             {
 
             };
-            eraser.Description = "LMB - block 1\nRMB - block2\nMMB - Reset\nEnter - confirm";
+            eraser.Description = "LMB - select block 1\nRMB - select block 2\nMMB - reset\nEnter - confirm";
             GameAssetsRegister.RegisterItem(eraser, "eraser");
         }
         private static void RegisterEraserItem2()
@@ -695,7 +695,7 @@ namespace Spacebox.Game.Resource
             {
 
             };
-            eraser.Description = "LMB - remove last point\nMMB - remove all points\nRMB - add point\nEnter - Start\nAlt+SCroll - Speed";
+            eraser.Description = "LMB - remove last point\nMMB - remove all points\nRMB - add point\nEnter - start\nAlt+Scroll - set speed";
             GameAssetsRegister.RegisterItem(eraser, "cameraPoint");
         }
 

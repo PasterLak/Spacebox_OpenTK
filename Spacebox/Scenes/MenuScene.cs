@@ -157,7 +157,7 @@ namespace Spacebox.Scenes
            
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
 
-            if (Input.IsKeyDown(Keys.Enter) || Input.Mouse.IsButtonDown(MouseButton.Left))
+            if (Input.IsAnyKeyDown())
             {
                 CenteredImageMenu.ShowText = false;
                 GameMenu.IsVisible = true;

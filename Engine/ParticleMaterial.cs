@@ -25,7 +25,7 @@ namespace Engine
         {
             base.SetMaterialProperties();
 
-            UseTexture(MainTexture, "texture0");
+            UseTexture(MainTexture, "particleTexture");
         }
 
     }

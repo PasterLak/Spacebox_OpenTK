@@ -118,7 +118,7 @@ namespace Engine
             float alpha = 0.5f * (float)(Math.Sin(_elapsedTime * 2.0f) + 1);
             Vector4 textColor = new Vector4(1, 1, 1, alpha);
 
-            string centerText = "Press Enter to start";
+            string centerText = "Press any key to start";
             Vector2 textSize = ImGui.CalcTextSize(centerText);
             float padding = 20f;
 

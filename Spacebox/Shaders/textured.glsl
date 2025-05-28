@@ -38,5 +38,7 @@ void main()
     if (pixel.a < 0.1)
         discard;
 
+
    FragColor = pixel * color;
+  // FragColor = vec4(1,1,0,1);
 }

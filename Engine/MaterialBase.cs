@@ -89,7 +89,7 @@ namespace Engine
             {
 
                 texture.Use(TextureUnit.Texture0 + textureUniformID);
-                Shader.SetInt("textureAtlas", textureUniformID);
+                Shader.SetInt(uniformName, textureUniformID);
 
                 textureUniformID++;
             }

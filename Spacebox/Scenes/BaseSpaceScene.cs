@@ -424,12 +424,6 @@ namespace Spacebox.Scenes
             Vector3 camPos = localPlayer.CameraRelativeRender ? Vector3.Zero : localPlayer.Position;
 
 
-           // blockMaterial.Shader.Use();
-          //  blockTexture.Use(TextureUnit.Texture0);
-          //  lightAtlas.Use(TextureUnit.Texture1);
-            //blockMaterial.SetUniforms(localPlayer.GetViewMatrix()); // !!!
-
-
             if (InteractionShoot.ProjectilesPool != null)
                 InteractionShoot.ProjectilesPool.Render();
 
@@ -452,7 +446,7 @@ namespace Spacebox.Scenes
                 InteractionDestroyBlockSurvival.BlockMiningEffect.Render();
 
          
-            blockSelector.Render(localPlayer);
+            //blockSelector.Render(localPlayer);
 
             SpheresPool.Render();
 

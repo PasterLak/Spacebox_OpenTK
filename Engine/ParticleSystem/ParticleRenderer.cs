@@ -111,12 +111,16 @@ namespace Engine
         public void Render(Camera cam)
         {
             if (_aliveCount == 0) return;
+           
+
 
             Material.SetUniforms(Matrix4.Identity);
             Material.Shader.SetMatrix4("view", cam.GetViewMatrix(), false);
             Material.Shader.SetMatrix4("projection", cam.GetProjectionMatrix(), false);
             Material.Shader.SetInt("rotationCase", _rotationCase);
-            Material.Shader.SetInt("particleTexture", 0);
+            
+
+
 
             GL.DepthMask(false);
             GL.BindVertexArray(_quad.VAO);
@@ -124,6 +128,7 @@ namespace Engine
             GL.BindVertexArray(0);
 
             GL.DepthMask(true);
+          
 
         }
 

@@ -100,8 +100,7 @@ namespace Spacebox
                 indices.Add(indexOffset);
                 indexOffset += 4;
             }
-            Debug.Error(" faces vertices " + vertices.Count);
-            Debug.Error(" faces indices " + indices.Count);
+        
             return (vertices.ToArray(), indices.ToArray());
         }
 
