@@ -412,12 +412,10 @@ namespace Spacebox.Scenes
         public Action OnRenderCenter;
         public override void Render()
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+           
             DisposalManager.ProcessDisposals();
 
             skybox.DrawTransparent(localPlayer);
-
-            GL.Enable(EnableCap.DepthTest);
            
             pointLightsPool.Render();
 
