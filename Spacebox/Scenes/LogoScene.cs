@@ -77,7 +77,6 @@ namespace Spacebox.Scenes
         {
             //GL.Clear(ClearBufferMask.ColorBufferBit);
 
-
             sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
 
         }

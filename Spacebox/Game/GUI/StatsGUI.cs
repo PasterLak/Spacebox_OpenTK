@@ -70,6 +70,9 @@ namespace Spacebox.Game.GUI
             var io = ImGui.GetIO();
             switch (Anchor)
             {
+                case Anchor.Center:
+                    basePosition = new Vector2(io.DisplaySize.X / 2f, io.DisplaySize.Y / 2f) - _size / 2f;
+                    break;
                 case Anchor.TopLeft:
                     basePosition = new Vector2(0, 0) + _position;
                     break;

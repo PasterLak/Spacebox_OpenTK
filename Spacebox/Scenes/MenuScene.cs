@@ -10,6 +10,7 @@ using Spacebox.Game.GUI.Menu;
 using ImGuiNET;
 using Spacebox.Game.Generation;
 using Engine.SceneManagment;
+using Engine.UI;
 
 
 namespace Spacebox.Scenes
@@ -23,6 +24,7 @@ namespace Spacebox.Scenes
         private AudioSource music;
         private GameMenu menu;
 
+        private Canvas canvas;
         public MenuScene(string[] args) : base(args)
         {
           
@@ -30,8 +32,7 @@ namespace Spacebox.Scenes
 
         public override void LoadContent()
         {
-            // GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            GL.ClearColor(0, 0, 0, 0);
+         
             //Theme.ApplySpaceboxTheme();
 
             float winX = Window.Instance.Size.X;
@@ -42,9 +43,15 @@ namespace Spacebox.Scenes
 
             player = new CameraBasic(new Vector3(0, 0, 0));
 
-        
+            canvas = new Canvas(new Vector2i(1280,720), Window.Instance);
 
-            var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
+            var rect = new Rect(new Vector2(0, 0), new Vector2(1280/2f,720/2f));
+            rect.Anchor = Engine.UI.Anchor.Center;
+            rect.Color4 = Color4.Yellow;
+            canvas.AddChild(rect);
+            
+
+                var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
 
             var mesh = Resources.Load<Engine.Mesh>("Resources/Models/cube.obj");
             skybox = new Skybox(mesh, skyboxTexture);
@@ -135,7 +142,7 @@ namespace Spacebox.Scenes
             HealthColorOverlay.OnGUI();
             VerticalLinks.Draw();
             menu.Render();
-
+            canvas.Draw();
            // ImGui.PopFont();
         }
 
