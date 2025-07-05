@@ -85,7 +85,7 @@ namespace Spacebox
             FrameLimiter.Initialize(120);
             FrameLimiter.IsRunning = true;
 
-            SceneManager.Initialize(this, typeof(PlanetsScene));
+            SceneManager.Initialize(this, typeof(MenuScene));
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
             LoadStarPixelFont();
 
@@ -250,8 +250,7 @@ namespace Spacebox
 
             UpdateInputs();
 
-            if (SceneManager.CurrentScene != null)
-                SceneManager.CurrentScene.Update();
+            SceneManager.Update();
 
             Time.EndUpdate();
             AudioDevice.Instance.Update();

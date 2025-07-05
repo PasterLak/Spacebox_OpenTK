@@ -15,7 +15,7 @@ namespace Spacebox.Game.Player
         private CubeRenderer cube;
         private Model spacerOld;
         private Model spacer;
-        private GUI.Tag tag;
+        private GUI.Tag tagg;
         private ItemModel itemModel;
         private Quaternion currentRotation = Quaternion.Identity;
         
@@ -29,9 +29,9 @@ namespace Spacebox.Game.Player
         
         public void OnDisconnect()
         {
-            if (tag != null)
+            if (tagg != null)
             {
-                TagManager.UnregisterTag(tag);
+                TagManager.UnregisterTag(tagg);
             }
         }
 
@@ -49,10 +49,10 @@ namespace Spacebox.Game.Player
             tex.FlipY();
             tex.FilterMode = FilterMode.Nearest;
             spacer = new Model(Resources.Load<Engine.Mesh>("Resources/Models/astronaut2.obj"), new Material(playerShader, tex));
-            tag = new GUI.Tag($"[{playerData.ID}]{playerData.Name}", LatestPosition, new Color4(playerData.Color.X, playerData.Color.Y, playerData.Color.Z, 1));
-            tag.TextAlignment = Tag.Alignment.Center;
-            Tag.CalculateFontSize(100);
-            TagManager.RegisterTag(tag);
+            tagg = new GUI.Tag($"[{playerData.ID}]{playerData.Name}", LatestPosition, new Color4(playerData.Color.X, playerData.Color.Y, playerData.Color.Z, 1));
+            tagg.TextAlignment = GUI.Tag.Alignment.Center;
+            GUI.Tag.CalculateFontSize(100);
+            TagManager.RegisterTag(tagg);
           
             var uvIndex = GameAssets.AtlasItems.GetUVIndexByName("drill1");
             itemModel = ItemModelGenerator.GenerateModel(GameAssets.ItemsTexture, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
@@ -112,7 +112,7 @@ namespace Spacebox.Game.Player
             {
                 spacerOld.Rotation = Rotation;
                 spacerOld.Position = Position;
-                tag.WorldPosition = Position + up * 1f;
+                tagg.WorldPosition = Position + up * 1f;
             }
             else
             {
@@ -123,7 +123,7 @@ namespace Spacebox.Game.Player
                 astHelmet.Position = Position;
                 astTank.Rotation = Rotation;
                 astTank.Position = Position;
-                tag.WorldPosition = Position + up * 1f;
+                tagg.WorldPosition = Position + up * 1f;
             }
             itemModel.Position = Position;
         }

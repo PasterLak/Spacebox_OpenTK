@@ -1,223 +1,220 @@
-﻿using OpenTK.Mathematics;
+﻿using System;
+using System.Collections.Generic;
+using OpenTK.Mathematics;
 
 namespace Engine
 {
-    public class Node3D :  IEquatable<Node3D>
+    public class Node3D : Transform3D, IEquatable<Node3D>
     {
-        public Guid Id { get; } = Guid.NewGuid();
+        private readonly Guid _id = Guid.NewGuid();
+        private Node3D? _parent;
+
+        public Guid Id => _id;
         public string Name { get; set; } = "Transform";
-
-        public virtual Vector3 Position
-        {
-            get => position;
-            set { position = value; MarkDirty(); }
-        }
-        Vector3 position = Vector3.Zero;
-        public Vector3 Rotation
-        {
-            get => rotation;
-            set { rotation = value; MarkDirty(); }
-        }
-        Vector3 rotation = Vector3.Zero; // Euler
-        public virtual Vector3 Scale
-        {
-            get => scale;
-            set { scale = value; MarkDirty(); }
-        }
-        Vector3 scale = Vector3.One;
-
+        public string Tag { get; set; } = "Default";
         public bool Resizable { get; protected set; } = true;
 
-        public Node3D Parent { get;  set; } = null;
-        public bool HasParent => Parent != null;
+        public Node3D? Parent
+        {
+            get => _parent;
+            set
+            {
+                if (_parent == value) return;
+                _parent?.Children.Remove(this);
+                _parent = value;
+                _parent?.Children.Add(this);
+                MarkDirty();
+            }
+        }
 
-        public List<Node3D> Children { get; protected set; } = new List<Node3D>();
+        public bool HasParent => _parent != null;
+        public List<Node3D> Children { get; } = new();
         public bool HasChildren => Children.Count > 0;
+        public List<Component> Components { get; } = new();
 
-        private bool dirty = true;
-        private Matrix4 cachedModelMatrix;
-
-        public virtual void AddChild(Node3D node)
+        public Node3D()
         {
-            if (Children.Contains(node)) return;
-           
-            Children.Add(node);
-            node.Parent = this; 
+            Owner = this;
         }
-        public static Vector3 QuaternionToEulerDegrees(Quaternion q)
+
+        public void AddChild(Node3D child)
         {
-
-            Vector3 eulerRad = q.ToEulerAngles();
-
-            float xDegrees = eulerRad.X * (180f / (float)Math.PI);
-            float yDegrees = eulerRad.Y * (180f / (float)Math.PI);
-            float zDegrees = eulerRad.Z * (180f / (float)Math.PI);
-
-            return new Vector3(xDegrees, yDegrees, zDegrees);
+            if (child == null || child == this) return;
+            child.Parent = this;
         }
-        private void MarkDirty()
+
+        public void RemoveChild(Node3D child)
         {
-            if (!dirty)
+            if (child == null) return;
+            if (Children.Remove(child))
             {
-                dirty = true;
-                for (int i = 0; i < Children.Count; i++)
-                    Children[i].MarkDirty();
+                child._parent = null;
+                child.MarkDirty();
             }
         }
 
-        public void Rotate(Vector3 rot)
+        public void AttachComponent(Component component)
         {
-            Rotate(rot.X, rot.Y, rot.Z);
+            if (component == null || Components.Contains(component)) return;
+            component.SetOwner(this);
+            component.OnAttached();
+            Components.Add(component);
         }
 
-        public void Rotate(float x,float y,float z)
+        public void DetachComponent(Component component)
         {
-            Rotation += new Vector3(x,y,z);
+            if (component == null) return;
+            if (Components.Remove(component)) component.OnDettached();
         }
 
-        private bool relative = false;
-        public Matrix4 GetModelMatrix()
+        public virtual void Update()
         {
-
-            bool relativeToCamera = (Camera.Main != null && Camera.Main.CameraRelativeRender);
-
-            if(relative != relativeToCamera)
-            {
-                relative = relativeToCamera;
-                dirty = true;
-            }
-
-            var pos = Position;
-
-            if(relativeToCamera )
-            {
-                if(Parent == null)
-                pos = Position - Camera.Main.Position;
-
-                dirty = true;
-            }
-
-            if (Parent != null)
-            {
-                return GetModelMatrixPoor(pos) * Parent.GetModelMatrix(); 
-            }
-            else
-            {
-                return GetModelMatrixPoor(pos);
-            }
+            _ = GetModelMatrix();
+            for (int i = 0; i < Components.Count; i++)
+                if (Components[i].Enabled) Components[i].Update();
+            for (int i = 0; i < Children.Count; i++)
+                Children[i].Update();
         }
 
-
-        public Matrix4 GetModelMatrixPoor()
+        public virtual void Render()
         {
-            return GetModelMatrixPoor(Position);
+            for (int i = 0; i < Components.Count; i++)
+                if (Components[i].Enabled) Components[i].Render();
+            for (int i = 0; i < Children.Count; i++)
+                Children[i].Render();
         }
-        private Matrix4 GetModelMatrixPoor(Vector3 pos)
+
+        public void Traverse(Action<Node3D> action)
         {
-            if(!dirty)
+            if (action == null) return;
+            action(this);
+            for (int i = 0; i < Children.Count; i++)
+                Children[i].Traverse(action);
+        }
+
+        public Node3D? FindChild(Predicate<Node3D> predicate)
+        {
+            if (predicate == null) return null;
+            for (int i = 0; i < Children.Count; i++)
             {
-                return cachedModelMatrix;
+                var child = Children[i];
+                if (predicate(child)) return child;
+                var found = child.FindChild(predicate);
+                if (found != null) return found;
             }
-
-            var translation = Matrix4.CreateTranslation(pos);
-            var rotationX = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(Rotation.X));
-            var rotationY = Matrix4.CreateRotationY(MathHelper.DegreesToRadians(Rotation.Y));
-            var rotationZ = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(Rotation.Z));
-            var rotation = rotationZ * rotationY * rotationX;
-            var scale = Resizable ? Matrix4.CreateScale(Scale) : Matrix4.Identity;
-
-            dirty = false;
-            cachedModelMatrix = scale * rotation * translation;
-            return cachedModelMatrix;
+            return null;
         }
 
-        public Vector3 GetWorldPosition()
+        public Node3D? FindChildByName(string name) => FindChild(n => n.Name == name);
+
+        public List<Node3D> FindAllChildrenByName(string name)
         {
-            if (Parent != null)
-            {
-                if(Rotation == Vector3.Zero && Parent.Rotation == Vector3.Zero)
-                {
-                    return Parent.GetWorldPosition() + Position;
-                }
-
-                return LocalToWorld(Position, Parent);
-            }
-            else
-            {
-                return Position;
-            }
+            var list = new List<Node3D>();
+            Traverse(n => { if (n.Name == name) list.Add(n); });
+            return list;
         }
 
-        public static Vector3 WorldToLocal(Vector3 worldPosition, Node3D node)
+        public List<Node3D> FindAllChildrenByTag(string tag)
         {
-            Matrix4 invModel = node.GetModelMatrixPoor().Inverted();
-            return Vector3.TransformPosition(worldPosition, invModel);
+            var list = new List<Node3D>();
+            Traverse(n => { if (n.Tag == tag) list.Add(n); });
+            return list;
         }
+
+        public void Rotate(Vector3 rot) => Rotate(rot.X, rot.Y, rot.Z);
+
+        public void Rotate(float x, float y, float z)
+        {
+            Rotation += new Vector3(x, y, z);
+        }
+
+        public void SetScale(float scale) => Scale = new Vector3(scale);
+
+        public void ScaleBy(Vector3 factor)
+        {
+            Scale *= factor;
+            MarkDirty();
+        }
+
+        public void ScaleBy(float factor) => ScaleBy(new Vector3(factor));
+
+        public Vector3 WorldToLocal(Vector3 worldPoint)
+        {
+            var inv = Matrix4.Invert(GetModelMatrix());
+            return Vector3.TransformPosition(worldPoint, inv);
+        }
+
+        public Vector3 LocalToWorld(Vector3 localPoint) => Vector3.TransformPosition(localPoint, GetModelMatrix());
 
         public static Vector3 LocalToWorld(Vector3 localPosition, Node3D node)
         {
             return Vector3.TransformPosition(localPosition, node.GetModelMatrixPoor());
         }
-
-        public override bool Equals(object obj)
+        public void Translate(Vector3 localTranslation)
         {
-            return Equals(obj as Node3D);
+            var q = Quaternion.FromEulerAngles(
+                MathHelper.DegreesToRadians(Rotation.X),
+                MathHelper.DegreesToRadians(Rotation.Y),
+                MathHelper.DegreesToRadians(Rotation.Z));
+            Position += Vector3.Transform(localTranslation, q);
         }
 
-        public bool Equals(Node3D other)
+        public void RotateAround(Vector3 point, Vector3 axis, float angleDegrees)
         {
-            if (ReferenceEquals(other, null))
-                return false;
-
-            if (ReferenceEquals(this, other))
-                return true;
-
-            return Id.Equals(other.Id);
+            var radians = MathHelper.DegreesToRadians(angleDegrees);
+            var rotationMatrix = Matrix4.CreateFromAxisAngle(axis.Normalized(), radians);
+            var direction = Position - point;
+            direction = Vector3.TransformNormal(direction, rotationMatrix);
+            Position = point + direction;
+            var rot = Quaternion.FromAxisAngle(axis.Normalized(), radians);
+            Rotation = QuaternionToEulerDegrees(rot * ToQuaternion(Rotation));
         }
 
-        public override int GetHashCode()
+        public Vector3 GetWorldPosition() => Parent == null ? Position : Parent.LocalToWorld(Position);
+
+        public bool Equals(Node3D? other) => !(other is null) && _id.Equals(other._id);
+
+        public override bool Equals(object? obj) => Equals(obj as Node3D);
+
+        public override int GetHashCode() => _id.GetHashCode();
+
+        public static bool operator ==(Node3D? left, Node3D? right) => Equals(left, right);
+
+        public static bool operator !=(Node3D? left, Node3D? right) => !Equals(left, right);
+
+        public static Vector3 QuaternionToEulerDegrees(Quaternion q)
         {
-            return Id.GetHashCode();
+            var rad = QuaternionToEuler(q);
+            return new Vector3(
+                MathHelper.RadiansToDegrees(rad.X),
+                MathHelper.RadiansToDegrees(rad.Y),
+                MathHelper.RadiansToDegrees(rad.Z));
         }
-     
+
         public static Vector3 QuaternionToEuler(Quaternion q)
         {
-         
             q = Quaternion.Normalize(q);
+            var sinr_cosp = 2f * (q.W * q.X + q.Y * q.Z);
+            var cosr_cosp = 1f - 2f * (q.X * q.X + q.Y * q.Y);
+            var x = MathF.Atan2(sinr_cosp, cosr_cosp);
 
-        
-            float sinr_cosp = 2f * (q.W * q.X + q.Y * q.Z);
-            float cosr_cosp = 1f - 2f * (q.X * q.X + q.Y * q.Y);
-            float x = MathF.Atan2(sinr_cosp, cosr_cosp);
+            var sinp = 2f * (q.W * q.Y - q.Z * q.X);
+            var y = MathF.Abs(sinp) >= 1f ? MathF.CopySign(MathF.PI / 2f, sinp) : MathF.Asin(sinp);
 
-            float sinp = 2f * (q.W * q.Y - q.Z * q.X);
-            float y;
-            if (MathF.Abs(sinp) >= 1f)
-                y = MathF.CopySign(MathF.PI / 2f, sinp); 
-            else
-                y = MathF.Asin(sinp);
-
-            float siny_cosp = 2f * (q.W * q.Z + q.X * q.Y);
-            float cosy_cosp = 1f - 2f * (q.Y * q.Y + q.Z * q.Z);
-            float z = MathF.Atan2(siny_cosp, cosy_cosp);
+            var siny_cosp = 2f * (q.W * q.Z + q.X * q.Y);
+            var cosy_cosp = 1f - 2f * (q.Y * q.Y + q.Z * q.Z);
+            var z = MathF.Atan2(siny_cosp, cosy_cosp);
 
             return new Vector3(x, y, z);
         }
 
-
-        public static bool operator ==(Node3D left, Node3D right)
+        private static Quaternion ToQuaternion(Vector3 eulerDegrees)
         {
-            if (ReferenceEquals(left, null))
-                return ReferenceEquals(right, null);
-
-            return left.Equals(right);
+            var rad = new Vector3(
+                MathHelper.DegreesToRadians(eulerDegrees.X),
+                MathHelper.DegreesToRadians(eulerDegrees.Y),
+                MathHelper.DegreesToRadians(eulerDegrees.Z));
+            return Quaternion.FromEulerAngles(rad);
         }
-
-       
-        public static bool operator !=(Node3D left, Node3D right)
-        {
-            return !(left == right);
-        }
-
     }
 }

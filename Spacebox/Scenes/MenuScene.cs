@@ -125,6 +125,7 @@ namespace Spacebox.Scenes
 
         public override void Render()
         {
+            
 
             skybox.DrawTransparent(player);
             spawner.Render();

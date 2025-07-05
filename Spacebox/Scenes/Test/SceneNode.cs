@@ -2,7 +2,7 @@
 using OpenTK.Mathematics;
 using Spacebox.Scenes.Test;
 
-public class SceneNode : Transform3D, INode
+public class SceneNode : Spacebox.Scenes.Test.Transform3D, INode
 {
     public Guid Id { get; } = Guid.NewGuid();
     public string Name { get; set; } = "Transform";
@@ -26,7 +26,7 @@ public class SceneNode : Transform3D, INode
     public bool HasParent => Parent is not null;
     public List<SceneNode> Children { get; } = new();
     public bool HasChildren => Children.Count > 0;
-    public List<Component> Components { get; } = new();
+    public List<Spacebox.Scenes.Test.Component> Components { get; } = new();
     //public Transform3D Transform { get; } = new();
 
     public SceneNode()
@@ -163,7 +163,7 @@ public class SceneNode : Transform3D, INode
         }
     }
 
-    public void AttachComponent(Component component)
+    public void AttachComponent(Spacebox.Scenes.Test.Component component)
     {
         if (component == null) return;
         component.SetOwner(this);
@@ -171,7 +171,7 @@ public class SceneNode : Transform3D, INode
         Components.Add(component);
     }
 
-    public void DetachComponent(Component component)
+    public void DetachComponent(Spacebox.Scenes.Test.Component component)
     {
         if (component == null) return;
         if (Components.Remove(component))

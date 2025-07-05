@@ -53,6 +53,12 @@ namespace Engine.SceneManagment
             LoadScene(startScene);
         }
 
+        public static void Update()
+        {
+            if (CurrentScene != null)
+                CurrentScene.Update();
+        }
+
 
         private static void AddStartScene(Type startSceneType)
         {
