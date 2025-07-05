@@ -42,8 +42,7 @@ namespace Engine
             if (Children.Contains(node)) return;
            
             Children.Add(node);
-            node.Parent = this;
-            
+            node.Parent = this; 
         }
         public static Vector3 QuaternionToEulerDegrees(Quaternion q)
         {
@@ -80,9 +79,7 @@ namespace Engine
         public Matrix4 GetModelMatrix()
         {
 
-            bool relativeToCamera = false;
-
-            if (Camera.Main != null && Camera.Main.CameraRelativeRender) relativeToCamera = true;
+            bool relativeToCamera = (Camera.Main != null && Camera.Main.CameraRelativeRender);
 
             if(relative != relativeToCamera)
             {

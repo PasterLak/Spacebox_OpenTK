@@ -31,25 +31,25 @@ namespace Spacebox.Scenes.Test
         public CubeParent() 
         {
             cube = new CubeRenderer2(new Vector3(0,0,0));
-
+            cube.Color = Color4.Red;
             cube2 = new CubeRenderer2(new Vector3(0, 0, 2));
+            cube2.Color = Color4.Green;
             cube3 = new CubeRenderer2(new Vector3(0, 0, 0));
             //cube2.Color = Color4.LightSteelBlue;
             cube3.Color = Color4.Red;
             axes = new AxesTest(new Vector3(0,0,0), 2);
-           // AddChild(cube);
-           
-            cube.SetScale(0.5f);
-            cube.Rotate(new Vector3(0,45,0));
-            cube.Position = new Vector3(0, 0, 2);
+         
             box = new BoundingBox(cube.Position, Vector3.One);
-           // AddChild(cube2);
-            cube2.Position =  new Vector3(0,2,0);
-            cube2.AddChild(cube3);
-            cube3.Position = new Vector3(0, 0, 1);
-            cube3.ScaleBy(0.5f);
+            // AddChild(cube2);
+
             // cube2.Position = cube.GetLocalAxisPoint(Vector3.UnitZ, 2f);
             //  AddChild(axes);
+            //cube.AttachComponent(new MoverComponent(new Vector3(0,0,1), 1));
+            cube.AttachComponent(new RotatorComponent(new Vector3(0, 300, 0)));
+            cube2.Position = new Vector3(-1,-1,0);
+            cube.AddChild(cube2);
+            AddChild(cube);
+
 
             var matEarth = new PlanetMaterial(Resources.Load<Texture2D>("Resources/Textures/planet2"));
             matEarth.GlowColor = new Vector3(0.9f,1,1);
@@ -71,7 +71,7 @@ namespace Spacebox.Scenes.Test
             earth = new Model2("Resources/Models/sphere2.obj",matEarth );
             atmosphere = new Model2("Resources/Models/sphere2.obj", atmosphereMat);
             mars = new Model2("Resources/Models/sphere2.obj", matMars);
-          
+            sun.AttachComponent(new HelloComponent());
             sunMat.Shader.Use();
             sunMat.SetUniforms(sun.WorldMatrix);
             moon = new Model2("Resources/Models/sphere2.obj", matMoon);
@@ -89,7 +89,7 @@ namespace Spacebox.Scenes.Test
             
             sun.SetScale(1);
             sun.AddChild(mars);
-            //sun.AddChild(earth);
+            sun.AddChild(earth);
             earth.Position = new Vector3(4, 0, 0);
             mars.Position = new Vector3(-7, 0, 0);
             AddChild(sun);
@@ -148,7 +148,7 @@ namespace Spacebox.Scenes.Test
             // model2.Render(Camera.Main);
             RenderAll(Camera.Main);
             earth.Render();
-            cube.Render();
+            //cube.Render();
         }
 
         public void Dispose()

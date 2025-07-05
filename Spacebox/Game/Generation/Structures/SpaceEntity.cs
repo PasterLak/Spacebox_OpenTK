@@ -24,7 +24,7 @@ namespace Spacebox.Game.Generation
 
         public Octree<Chunk> Octree { get; private set; } // local coords
 
-        private Vector3 SumPosCenterOfMass;
+        private Vector3 sumPosCenterOfMass;
         public Vector3 CenterOfMass { get; private set; }
         public bool IsModified { get; private set; } = false;
         public bool IsGenerated { get; set; } = false;
@@ -51,7 +51,7 @@ namespace Spacebox.Game.Generation
             PositionWorld = positionWorld;
             Sector = sector;
             BoundingBox = new BoundingBox(positionWorld, new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));
-            SumPosCenterOfMass = positionWorld;
+            sumPosCenterOfMass = positionWorld;
             Octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
 
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
@@ -70,7 +70,7 @@ namespace Spacebox.Game.Generation
             PositionWorld = positionWorld;
             Sector = sector;
             BoundingBox = new BoundingBox(positionWorld, new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));
-            SumPosCenterOfMass = positionWorld;
+            sumPosCenterOfMass = positionWorld;
             Octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
 
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
@@ -208,13 +208,13 @@ namespace Spacebox.Game.Generation
                 Debug.Error("SpaceEntity mass was negative!");
             }
 
-            SumPosCenterOfMass = Vector3.Zero;
+            sumPosCenterOfMass = Vector3.Zero;
 
             for (int i = 0; i < Chunks.Count; i++) // opt
             {
                 var chunkMass = Chunks[i].Mass;
 
-                SumPosCenterOfMass += Chunks[i].GetCenterOfMass() * chunkMass;
+                sumPosCenterOfMass += Chunks[i].GetCenterOfMass() * chunkMass;
             }
 
             CalculateCenterOfMass();
@@ -225,14 +225,14 @@ namespace Spacebox.Game.Generation
         public void RecalculateMass()
         {
             Mass = 0;
-            SumPosCenterOfMass = Vector3.Zero;
+            sumPosCenterOfMass = Vector3.Zero;
 
             for (int i = 0; i < Chunks.Count; i++)
             {
                 var chunkMass = Chunks[i].Mass;
                 Mass = (ulong)((long)Mass + chunkMass);
 
-                SumPosCenterOfMass += Chunks[i].GetCenterOfMass() * chunkMass;
+                sumPosCenterOfMass += Chunks[i].GetCenterOfMass() * chunkMass;
             }
             CalculateCenterOfMass();
             CalculateGravityRadius();
@@ -703,7 +703,7 @@ namespace Spacebox.Game.Generation
                 return;
             }
 
-            CenterOfMass = SumPosCenterOfMass / Mass;
+            CenterOfMass = sumPosCenterOfMass / Mass;
             tag.WorldPosition = CenterOfMass;
 
             StarParticle.Position = CenterOfMass;

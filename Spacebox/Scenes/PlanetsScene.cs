@@ -20,7 +20,7 @@ namespace Spacebox.Scenes
 {
     public class PlanetsScene : Engine.SceneManagment.Scene
     {
-        private Skybox skybox;
+        private Skybox2 skybox;
 
         private FreeCamera player;
         private DustSpawner spawner;
@@ -49,12 +49,12 @@ namespace Spacebox.Scenes
             Resources.LoadAllAsync<Texture2D>(
                new[]
                {
-                    "Resources/Textures/planet2.png",
-                    "Resources/Textures/planet3.png",
-                    "Resources/Textures/sun.png",
-                     "Resources/Textures/skybox2.png",
-                      "Resources/Textures/moon.png",
-                    "Resources/Textures/space.png"
+                    "Resources/Textures/Space/planet2.png",
+                    "Resources/Textures/Space/planet3.png",
+                    "Resources/Textures/Space/sun.png",
+                     "Resources/Textures/Space/skybox2.png",
+                      "Resources/Textures/Space/moon.png",
+                    "Resources/Textures/Space/space.png"
                });
             Resources.LoadAllAsync<Engine.Mesh>(
               new[]
@@ -71,6 +71,7 @@ namespace Spacebox.Scenes
 
             player = new FreeCamera(new Vector3(0, 0, 5));
             player.DepthNear = 0.01f;
+            
             player.CameraRelativeRender = false;
 
             sprite = new Sprite(Resources.Load<Texture2D>("Resources/Textures/planet2"), new Vector2(0, 0),
@@ -80,7 +81,7 @@ namespace Spacebox.Scenes
             skyboxTexture = Resources.Load<Texture2D>("Resources/Textures/space");
 
             var mesh = Resources.Load<Engine.Mesh>("Resources/Models/sphere.obj");
-            skybox = new Skybox(mesh, skyboxTexture);
+            skybox = new Skybox2(mesh, skyboxTexture);
 
             skybox.IsAmbientAffected = false;
 
@@ -96,6 +97,8 @@ namespace Spacebox.Scenes
             InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
 
             cube = new CubeParent();
+            //cube.Position = new Vector3(0, 0, 50000);
+            //player.Position = cube.Position;
         }
 
         private void SetDustSpawner()
@@ -144,7 +147,7 @@ namespace Spacebox.Scenes
             //player
             skybox.DrawTransparent(player);
             spawner.Render();
-            axes.Render(player);
+            //axes.Render(player);
            
             cube.Render();
         }
