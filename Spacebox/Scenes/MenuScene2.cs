@@ -142,23 +142,22 @@ namespace Spacebox.Scenes
            base.Update();
 
             //sprite.UpdateWindowSize(Window.Instance.Size);
-
+            VisualDebug.DrawSphere(new Vector3(5,5,5), 3, Color4.Green);
             if (Camera.Main.Frustum.IsInFrustum(spacer.OBB.Volume))
             {
                
-                    Debug.Log("yes visible " + vol.ToString());
+                //  Debug.Log("yes visible " + vol.ToString());
             }
             else
             {
             
-                Debug.Log("no visible" + vol.ToString());
+               // Debug.Log("no visible" + vol.ToString());
             }
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
             //spacer.Update();
             if (Input.IsKeyDown(Keys.R))
             {
-                Camera.Main.CameraRelativeRender = !Camera.Main.CameraRelativeRender;
-                //RenderSpace.
+                RenderSpace.SwitchSpace();
             }
 
             if (Input.IsKeyDown(Keys.T))

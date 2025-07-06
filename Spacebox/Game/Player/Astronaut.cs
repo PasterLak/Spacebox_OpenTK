@@ -86,7 +86,7 @@ namespace Spacebox.Game.Player
             PowerBar = new PowerBar();
 
             SetData();
-            CameraRelativeRender = true;
+            SetRenderSpace(true);
             HitImage = new HitImage();
             Flashlight = new Flashlight(this);
 

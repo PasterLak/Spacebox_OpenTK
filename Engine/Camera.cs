@@ -19,7 +19,13 @@ namespace Engine
         public Vector3 Right => _right;
 
         public bool IsMain => Main == this;
-        public bool CameraRelativeRender = false;
+        private bool _cameraRelativeRender = false;
+
+        public bool CameraRelativeRender => _cameraRelativeRender;
+        public void SetRenderSpace(bool renderSpace) 
+        {
+            _cameraRelativeRender = renderSpace;
+        }
 
         public CameraFrustum Frustum { get; private set; } = new CameraFrustum();
 
@@ -46,12 +52,15 @@ namespace Engine
 
         }
 
-        public override void Update() { Frustum.UpdateFrustum(this); base.Update(); }
+        public override void Update() {
+            RenderSpace.UpdateOrigin();
+            Frustum.UpdateFrustum(this);
+            base.Update(); }
 
 
         public virtual Matrix4 GetViewMatrix()
         {
-            if (CameraRelativeRender)
+            if (_cameraRelativeRender)
             {
                 return Matrix4.LookAt(Vector3.Zero, _front, _up);
 
@@ -68,7 +77,7 @@ namespace Engine
 
         public Vector2 WorldToScreenPoint(Vector3 worldPosition, int screenWidth, int screenHeight)
         {
-            if (CameraRelativeRender) worldPosition = worldPosition - Position;
+            if (_cameraRelativeRender) worldPosition = worldPosition - Position;
 
             Matrix4 viewMatrix = GetViewMatrix();
             Matrix4 projectionMatrix = GetProjectionMatrix();

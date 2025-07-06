@@ -81,7 +81,7 @@ namespace Spacebox.Scenes
             player = new FreeCamera0(new Vector3(0, 0, 5));
             player.DepthNear = 0.01f;
             
-            player.CameraRelativeRender = false;
+          
 
             sprite = new Sprite(Resources.Load<Texture2D>("Resources/Textures/planet2"), new Vector2(0, 0),
                  new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));

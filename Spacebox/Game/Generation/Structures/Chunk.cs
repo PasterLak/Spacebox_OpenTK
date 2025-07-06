@@ -238,9 +238,7 @@ namespace Spacebox.Game.Generation
                 NeedsToRegenerateMesh = false;
             }
 
-            Vector3 relativePosition = PositionWorld - Camera.Main.Position;
-
-            Vector3 position = Camera.Main.CameraRelativeRender ? relativePosition : PositionWorld;
+            Vector3 position = RenderSpace.ToRender(PositionWorld);
 
 
             Matrix4 model = Matrix4.CreateTranslation(position);

@@ -14,7 +14,7 @@ namespace Engine.Commands
 
             if(cam != null)
             {
-                cam.CameraRelativeRender = !cam.CameraRelativeRender;
+                RenderSpace.SwitchSpace();
                 Debug.Success("Camera Relative rendering: " + cam.CameraRelativeRender);
             }
         }

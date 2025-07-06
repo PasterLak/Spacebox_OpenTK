@@ -102,7 +102,7 @@ namespace Spacebox.FPS.Scenes
             //_camera = new Camera(Vector3.UnitZ * 3, Window.Instance.Size.X / (float)Window.Instance.Size.Y);
             player = new Player(new Vector3(5, 2, 5),
                 _lightingShader);
-            player.CameraRelativeRender = false;
+            //player._cameraRelativeRender = false;
 
             Input.SetCursorState(CursorState.Grabbed);
 

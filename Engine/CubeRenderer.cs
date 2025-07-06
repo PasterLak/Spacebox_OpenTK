@@ -1,6 +1,7 @@
 ﻿
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
+using Engine.Components.Debug;
 
 namespace Engine
 {
@@ -96,6 +97,8 @@ namespace Engine
             _buffer = buffer;
             _buffer.BindBuffer(ref _vertices, ref _indices);
             _buffer.SetAttributes();
+
+            AttachComponent(new AxesDebugComponent());
         }
 
         public CubeRenderer(Vector3 position)
@@ -114,6 +117,8 @@ namespace Engine
             _buffer = new MeshBuffer(attrs);
             _buffer.BindBuffer(ref _vertices, ref _indices);
             _buffer.SetAttributes();
+
+            AttachComponent(new AxesDebugComponent());
         }
 
         public override void Render()

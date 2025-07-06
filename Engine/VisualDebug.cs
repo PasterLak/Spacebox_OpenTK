@@ -304,11 +304,12 @@ namespace Engine
                 ProjectionMatrix = cam.GetProjectionMatrix();
                 ViewMatrix = cam.GetViewMatrix();
             }
+            else return;
 
             foreach (var col in _collisions) col.DrawDebug();
 
             _shader.Use();
-            _shader.SetMatrix4("model", Matrix4.Identity);
+            _shader.SetMatrix4("model", Matrix4.Identity * Matrix4.CreateTranslation(-RenderSpace.Origin));
             _shader.SetMatrix4("view", ViewMatrix);
             _shader.SetMatrix4("projection", ProjectionMatrix);
 

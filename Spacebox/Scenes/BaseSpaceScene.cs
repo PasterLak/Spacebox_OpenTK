@@ -323,8 +323,7 @@ namespace Spacebox.Scenes
            
             if (Input.IsKeyDown(Keys.R))
             {
-                Camera.Main.CameraRelativeRender = !Camera.Main.CameraRelativeRender;
-
+                RenderSpace.SwitchSpace();
 
             }
 

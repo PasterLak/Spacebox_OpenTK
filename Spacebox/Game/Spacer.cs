@@ -25,12 +25,12 @@ namespace Spacebox.Game
 
             storage = new Storage(4,4);
 
-            obb = AttachComponent(new AABBCollider());
+            obb = AttachComponent(new OBBCollider());
             AttachComponent(new MeshRendererComponent(
                 Resources.Load<Mesh>("Resources/Models/spacer.obj"), 
                 new Material(Resources.Load<Shader>("Shaders/player"), spacerTex)));
+            AttachComponent(new AxesDebugComponent());
 
-           
             animator = new Animator(this);
             animator.AddAnimation(new MoveAnimation(Position, Position + new Vector3(0, 0, 1000), 5000f, false));
             animator.AddAnimation(new RotateAnimation(Vector3.UnitX, 5f, 0f));

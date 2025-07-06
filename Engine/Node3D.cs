@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Engine.Components;
 using Engine.Components.Debug;
+using Engine.SceneManagment;
 using OpenTK.Mathematics;
 
 namespace Engine
@@ -37,7 +38,6 @@ namespace Engine
         public Node3D()
         {
             Owner = this;
-            AttachComponent(new AxesDebugComponent());
         }
 
         public T AddChild<T>(T child) where T : Node3D
