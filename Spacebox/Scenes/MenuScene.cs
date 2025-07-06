@@ -42,7 +42,7 @@ namespace Spacebox.Scenes
             //GL.Enable(EnableCap.DepthTest);
 
             player = new CameraBasic(new Vector3(0, 0, 0));
-
+            AddChild(player);   
             canvas = new Canvas(new Vector2i(1280,720), Window.Instance);
 
             var rect = new Rect(new Vector2(0, 0), new Vector2(1280/2f,720/2f));
@@ -72,9 +72,10 @@ namespace Spacebox.Scenes
             music.IsLooped = true;
 
             music.Play();
-
+            AddChild(skybox);
             InputManager.AddAction("inputOverlay", Keys.F6);
             InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
+        
         }
 
         private void SetDustSpawner()
@@ -126,8 +127,8 @@ namespace Spacebox.Scenes
         public override void Render()
         {
             
-
-            skybox.DrawTransparent(player);
+            base.Render();
+            //skybox.DrawTransparent(player);
             spawner.Render();
         }
 
@@ -159,6 +160,7 @@ namespace Spacebox.Scenes
 
         public override void Update()
         {
+            base.Update();
             CenteredImageMenu.Update();
             spawner.Update();
             //sprite.UpdateWindowSize(Window.Instance.Size);

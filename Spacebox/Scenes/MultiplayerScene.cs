@@ -24,7 +24,7 @@ namespace Spacebox.Scenes
         {
             localPlayer = new AstronautMultiplayer(new Vector3(5, 5, 5));
             localPlayer.GameMode = GameMode.Creative;
-            SceneGraph.AddRoot(localPlayer);
+            
 
             if (ClientNetwork.Instance == null)
             {

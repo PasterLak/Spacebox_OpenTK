@@ -175,7 +175,7 @@ namespace Spacebox.FPS.Scenes
             Model terrain = new Model(Resources.Load<Mesh>("Resources/Models/terrain.obj"),
                 new Material(_lightingShader,
                 new Texture2D("Resources/Textures/Game/grass2.jpg", false)));
-            terrain.Material.Tiling = new Vector2(25, 25);
+            //terrain.Material.Tiling = new Vector2(25, 25);
 
 
             Model tv = new Model(Resources.Load<Mesh>("Resources/Models/tv.obj"), new Material(_lightingShader, new Texture2D("Resources/Textures/Game/tv.png", true)));

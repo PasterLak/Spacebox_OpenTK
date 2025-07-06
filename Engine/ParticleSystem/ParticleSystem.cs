@@ -43,8 +43,9 @@ namespace Engine
             SetShaderDebug(false);
         }
 
-        public void Update()
+        public override void Update()
         {
+            base.Update();
             float deltaTime = Time.Delta;
 
             spawnAccumulator += SpawnRate * deltaTime;
@@ -77,6 +78,13 @@ namespace Engine
         public List<Particle> GetParticles()
         {
             return particles;
+        }
+
+        public override void Render()
+        {
+            base.Render();
+
+            Draw(Camera.Main);
         }
 
         public void Draw(Camera camera)

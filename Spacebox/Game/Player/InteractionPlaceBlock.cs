@@ -77,7 +77,7 @@ public class InteractionPlaceBlock : InteractionMode
         Ray ray = new Ray(player.Position, player.Front, MaxBuildDistance);
         HitInfo hit;
 
-        if (World.CurrentSector.Raycast(ray, out hit))
+        if (World.CurrentSector != null && World.CurrentSector.Raycast(ray, out hit))
         {
 
 
@@ -199,7 +199,7 @@ public class InteractionPlaceBlock : InteractionMode
 
         SpaceEntity entity = null;
 
-        if (World.CurrentSector.TryGetNearestEntity(selectorPosition, out entity))
+        if (World.CurrentSector != null && World.CurrentSector.TryGetNearestEntity(selectorPosition, out entity))
         {
             localPos = entity.WorldPositionToLocal(selectorPosition);
 

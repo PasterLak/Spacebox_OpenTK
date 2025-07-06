@@ -20,7 +20,7 @@ namespace Engine.Animation
             _animations.Add(animation);
         }
 
-        public void Update(float deltaTime)
+        public void Update()
         {
             if (!IsActive) return;
             if (_animations.Count == 0) return;
@@ -29,7 +29,7 @@ namespace Engine.Animation
             for (int i = _animations.Count - 1; i >= 0; i--)
             {
                 var anim = _animations[i];
-                bool isActive = anim.Update(deltaTime * speed);
+                bool isActive = anim.Update(Time.Delta * speed);
                 if (!isActive)
                 {
                     _animations.RemoveAt(i);

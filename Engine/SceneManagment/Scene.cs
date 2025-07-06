@@ -4,7 +4,7 @@ namespace Engine.SceneManagment
 {
     public abstract class Scene : Node3D, IDisposable
     {
-        public SceneGraphOld SceneGraph { get; private set; }
+      
         public CollisionManager CollisionManager { get; private set; }
         public Renderer Renderer { get; private set; }
         public List<IDisposable> Disposables { get; private set; } = new List<IDisposable>();
@@ -19,7 +19,6 @@ namespace Engine.SceneManagment
         {
             CollisionManager = new CollisionManager();
             Renderer = new Renderer();
-            SceneGraph = new SceneGraphOld();
 
             Name = "DefaultName";
             Resizable = false;
@@ -30,10 +29,16 @@ namespace Engine.SceneManagment
 
         public virtual void Start() { }
 
-        public abstract void Update();
+        public virtual void Update()
+        {
+            base.Update();
+        }
 
 
-        public abstract void Render();
+        public virtual void Render()
+        {
+            base.Render();
+        }
 
         public abstract void OnGUI();
 

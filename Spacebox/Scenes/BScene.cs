@@ -32,7 +32,7 @@ namespace Spacebox.Scenes
     public class BScene : Scene
     {
 
-        private FreeCamera player;
+        private FreeCamera0 player;
         public BScene(string[] args) : base(args)
         {
         }

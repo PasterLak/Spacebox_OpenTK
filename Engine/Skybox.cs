@@ -20,6 +20,13 @@ namespace Engine
             Name = "Skybox";
         }
 
+        public override void Render()
+        {
+            DrawTransparent(Camera.Main);
+            base.Render();
+            
+        }
+
 
         public void DrawTransparent(Camera camera)
         {

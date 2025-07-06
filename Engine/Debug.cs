@@ -141,6 +141,12 @@ namespace Engine
             Console.WriteLine($"{message}");
         }
 
+        public static void Log(object message)
+        {
+            //AddMessage($"[DEBUG] {message}", new Vector4(0.2f, 0.7f, 1f, 1f));
+            AddMessage($"{message.ToString()}", new Vector4(1, 1, 1f, 1f));
+            Console.WriteLine($"{message.ToString()}");
+        }
         public static void Log(string message)
         {
             //AddMessage($"[DEBUG] {message}", new Vector4(0.2f, 0.7f, 1f, 1f));

@@ -6,7 +6,7 @@ using Spacebox.GUI;
 
 namespace Spacebox.Game.Player
 {
-    public class FreeCamera : Camera360Base
+    public class FreeCamera0 : Camera360Base
     {
         private float _cameraSpeed = 2.5f;
         private float _shiftSpeed = 5.5f;
@@ -16,7 +16,7 @@ namespace Spacebox.Game.Player
         private Quaternion _orientation = Quaternion.Identity;
         public bool CameraActive = true;
 
-        public FreeCamera(Vector3 position, bool isMainCamera = true)
+        public FreeCamera0(Vector3 position, bool isMainCamera = true)
             : base(position, isMainCamera)
         {
             _orientation = Quaternion.Identity;

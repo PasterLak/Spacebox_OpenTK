@@ -44,21 +44,20 @@ namespace Engine
 
         public Matrix4 GetModelMatrix()
         {
-            var relativeToCamera = Camera.Main != null && Camera.Main.CameraRelativeRender;
-            if (_relative != relativeToCamera)
-            {
-                _relative = relativeToCamera;
-                _dirty = true;
-            }
+            // 1) локальная матрица узла
+            Matrix4 local = BuildLocalMatrix(_position);
 
-            var pos = _position;
-            if (relativeToCamera && Owner?.Parent == null)
-                pos -= Camera.Main!.Position;
+            // 2) если есть родитель ― берём его мировую матрицу
+            if (Owner?.Parent != null)
+                return local * Owner.Parent.GetModelMatrix();
 
-            var local = BuildLocalMatrix(pos);
-            return Owner?.Parent != null ? local * Owner.Parent.GetModelMatrix() : local;
+            // 3) узел - корневой: при relative-render сдвигаем СЦЕНУ ровно один раз
+            if (Camera.Main != null && Camera.Main.CameraRelativeRender)
+                local *= Matrix4.CreateTranslation(-Camera.Main.Position);
+
+            return local;
         }
-
+      
         public Matrix4 GetModelMatrixPoor() => BuildLocalMatrix(_position);
 
         public void ResetTransform()

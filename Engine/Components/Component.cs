@@ -1,6 +1,4 @@
-﻿using Engine;
-
-namespace Engine
+﻿namespace Engine.Components
 {
     public abstract class Component
     {
@@ -15,11 +13,9 @@ namespace Engine
 
         public virtual void OnAttached() { }
         public virtual void OnDettached() { }
-        public virtual void LoadResources() { }
         public virtual void Start() { }
         public virtual void Update() { }
         public virtual void Render() { }
-        public virtual void UnloadResources() { }
 
         public void SetOwner(Node3D owner)
         {

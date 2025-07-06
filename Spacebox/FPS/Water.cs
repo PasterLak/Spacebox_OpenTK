@@ -12,7 +12,7 @@ namespace Spacebox.FPS
                 Resources.Get<Texture2D>("Resources/Textures/Game/water.png")))
         {
 
-            Material.Tiling = new Vector2(40, 40);
+           // Material.Tiling = new Vector2(40, 40);
             Material.Color = new Color4(1, 1, 1, 0.5f);
 
         }
@@ -26,7 +26,7 @@ namespace Spacebox.FPS
 
         public void Update()
         {
-            Material.Offset -= new Vector2(0.15f * Time.Delta, 0);
+            //Material.Offset -= new Vector2(0.15f * Time.Delta, 0);
             Material.Shader.SetVector3("ambientColor", Lighting.AmbientColor);
 
 

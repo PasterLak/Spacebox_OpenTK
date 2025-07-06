@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Engine.Components;
+using Engine.Components.Debug;
 using OpenTK.Mathematics;
 
 namespace Engine
@@ -10,7 +12,7 @@ namespace Engine
         private Node3D? _parent;
 
         public Guid Id => _id;
-        public string Name { get; set; } = "Transform";
+        public string Name { get; set; } = "Node3D";
         public string Tag { get; set; } = "Default";
         public bool Resizable { get; protected set; } = true;
 
@@ -35,13 +37,16 @@ namespace Engine
         public Node3D()
         {
             Owner = this;
+            AttachComponent(new AxesDebugComponent());
         }
 
-        public void AddChild(Node3D child)
+        public T AddChild<T>(T child) where T : Node3D
         {
-            if (child == null || child == this) return;
+            if (child == null || ReferenceEquals(child, this)) return child;
             child.Parent = this;
+            return child;
         }
+
 
         public void RemoveChild(Node3D child)
         {
@@ -53,13 +58,15 @@ namespace Engine
             }
         }
 
-        public void AttachComponent(Component component)
+        public T AttachComponent<T>(T component) where T : Component
         {
-            if (component == null || Components.Contains(component)) return;
+            if (component == null || Components.Contains(component)) return component;
             component.SetOwner(this);
             component.OnAttached();
             Components.Add(component);
+            return component;
         }
+
 
         public void DetachComponent(Component component)
         {
@@ -216,5 +223,36 @@ namespace Engine
                 MathHelper.DegreesToRadians(eulerDegrees.Z));
             return Quaternion.FromEulerAngles(rad);
         }
+
+        public Vector3 Forward
+        {
+            get
+            {
+                var q = Quaternion.FromEulerAngles(
+                    MathHelper.DegreesToRadians(Rotation.X),
+                    MathHelper.DegreesToRadians(Rotation.Y),
+                    MathHelper.DegreesToRadians(Rotation.Z));
+                return Vector3.Normalize(Vector3.Transform(-Vector3.UnitZ, q));
+            }
+        }
+
+        public Vector3 Right => Vector3.Normalize(Vector3.Cross(Forward, Vector3.UnitY));
+        public Vector3 Up => Vector3.Normalize(Vector3.Cross(Right, Forward));
+
+
+        public void PrintHierarchy()
+        {
+            Debug.Log("------------------- SceneGraph -------------------");
+            PrintHierarchy(0);
+            Debug.Log("------------------- SceneGraph -------------------");
+        }
+
+        private void PrintHierarchy(int depth = 0)
+        {
+            Debug.Log($"{new string(' ', depth * 2)}{Name} [{Components.Count}]");
+            foreach (var child in Children)
+                child.PrintHierarchy(depth + 1);
+        }
+
     }
 }

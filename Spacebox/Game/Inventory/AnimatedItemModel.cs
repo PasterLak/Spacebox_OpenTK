@@ -27,7 +27,7 @@ namespace Spacebox.Game
 
         public override void Render()
         {
-            Animator.Update(Time.Delta);
+            Animator.Update();
             base.Render();
         }
 

@@ -158,6 +158,7 @@ namespace Spacebox.Game.Player
 
         public override void Update()
         {
+            base.Update();
             if (needResetNextFrame)
             {
                 ResetMousePosition();
@@ -314,7 +315,8 @@ namespace Spacebox.Game.Player
 
         public void Render(Camera camera)
         {
-            Flashlight.Draw(camera);
+            base.Render();
+            Flashlight.Draw();
 
             if (VisualDebug.Enabled)
             {

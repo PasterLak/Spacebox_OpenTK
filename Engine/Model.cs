@@ -9,22 +9,23 @@ namespace Engine
     public class Model : StaticBody, INotTransparent
     {
         public Mesh Mesh { get; private set; }
-        public Material Material { get; private set; }
+        public MaterialBase Material { get; private set; }
         public bool BackfaceCulling { get; set; } = true;
         private Axes _axes;
 
         public Model(Mesh mesh)
             : this( mesh, new Material())
         {
+            Name = "Model";
         }
 
-        public Model(Mesh mesh, Material material)
+        public Model(Mesh mesh, MaterialBase material)
         : base(new BoundingBox(Vector3.Zero, Vector3.One))
         {
            
             Mesh = mesh;
             Material = material;
-
+            Name = "Model";
          
             Matrix4 modelMatrix = GetModelMatrix();
 
@@ -66,22 +67,9 @@ namespace Engine
             }
         }
 
-        public static string GetModelName(string modelPath)
-        {
-            if (string.IsNullOrEmpty(modelPath))
-                return "Error";
-
-            return Path.GetFileNameWithoutExtension(modelPath);
-        }
-
-       
 
         public void Render(Camera camera)
         {
-            if (BackfaceCulling)
-                GL.Enable(EnableCap.CullFace);
-            else
-                GL.Disable(EnableCap.CullFace);
 
             if (VisualDebug.Enabled)
             {
@@ -91,17 +79,12 @@ namespace Engine
                 _axes.Render(camera.GetViewMatrix(), camera.GetProjectionMatrix());
             }
 
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.Blend);
-
             Material.Use();
-            Material.Shader.SetMatrix4("model", GetModelMatrix());
+            Material.SetUniforms(GetModelMatrix());
+            //Material.Shader.SetMatrix4("model", GetModelMatrix());
             Material.Shader.SetMatrix4("view", camera.GetViewMatrix());
             Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
             Mesh.Render();
-
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.Blend);
 
         }
     }

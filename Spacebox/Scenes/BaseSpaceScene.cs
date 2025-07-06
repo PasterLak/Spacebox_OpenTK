@@ -18,6 +18,7 @@ using Spacebox.Game.Resource;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
 using Client;
+using Engine.Components;
 
 namespace Spacebox.Scenes
 {
@@ -27,9 +28,7 @@ namespace Spacebox.Scenes
         protected Astronaut localPlayer;
         protected Skybox skybox;
         protected World world;
-      
-        protected Texture2D blockTexture;
-        protected Texture2D lightAtlas;
+ 
         BlockMaterial blockMaterial;
         protected string worldName;
         protected PointLightsPool pointLightsPool;
@@ -45,8 +44,8 @@ namespace Spacebox.Scenes
         protected DustSpawner dustSpawner;
         protected BlockDestructionManager blockDestructionManager;
         protected Animator animator;
-        public static Model spacer;
-
+        public static Spacer spacer;
+      
         protected PointLight pLight;
         private SpheresPool SpheresPool;
         private bool isMultiplayer = false;
@@ -178,7 +177,7 @@ namespace Spacebox.Scenes
             skybox = new Skybox(mesh,  texture);
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
             skybox.IsAmbientAffected = false;
-            SceneGraph.AddRoot(skybox);
+            
 
             radarWindow = new RadarUI(texture);
 
@@ -188,7 +187,7 @@ namespace Spacebox.Scenes
             }
 
             PanelUI.Player = localPlayer;
-            SceneGraph.AddRoot(localPlayer);
+          
 
             World.LoadWorldInfo(worldName);
             world = new World(localPlayer);
@@ -214,10 +213,8 @@ namespace Spacebox.Scenes
            
 
             localPlayer.GameMode = World.Data.Info.GameMode;
-            blockTexture = GameAssets.BlocksTexture;
-            lightAtlas = GameAssets.LightAtlas;
            
-            blockMaterial = new BlockMaterial(blockTexture, lightAtlas, localPlayer);
+            blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.LightAtlas, localPlayer);
 
             pointLightsPool = new PointLightsPool(blockMaterial.Shader, localPlayer, 64);
 
@@ -249,16 +246,10 @@ namespace Spacebox.Scenes
 
             blockSelector = new BlockSelector();
 
-        
-            Texture2D spacerTex = Resources.Get<Texture2D>("Resources/Textures/spacer.png");
-            spacerTex.FlipY();
-            spacerTex.UpdateTexture(true);
-            spacer = new Model(Resources.Load<Engine.Mesh>("Resources/Models/spacer.obj"), new Material(Resources.Load<Shader>("Shaders/player"), spacerTex));
-            spacer.Position = localPlayer.Position + new Vector3(12, 15, 7);
-            spacer.Rotation = new Vector3(0, 0, 0);
-
-            
-          
+ 
+            spacer = new Spacer(localPlayer.Position + new Vector3(5, 5, 7));
+            AddChild(spacer);
+            //AddChild(localPlayer);
             WelcomeUI.OnPlayerSpawned(World.Data.Info.ShowWelcomeWindow);
             WelcomeUI.Init();
             PauseUI.Init();
@@ -320,16 +311,20 @@ namespace Spacebox.Scenes
         {
             Time.HandleTicks();
 
+            var node = this as Node3D;
+            node.Update();
+
             localPlayer.Update();
             blockDestructionManager.Update();
             dustSpawner.Update();
             MainThreadDispatcher.Instance.ExecutePending();
             world.Update();
            
-            if (Input.IsKeyDown(Keys.L))
+            if (Input.IsKeyDown(Keys.R))
             {
-               // pLight.IsActive = !pLight.IsActive;
-            
+                Camera.Main.CameraRelativeRender = !Camera.Main.CameraRelativeRender;
+
+
             }
 
             if (Input.IsKeyDown(Keys.K))
@@ -390,10 +385,7 @@ namespace Spacebox.Scenes
                 {
                     Settings.ShowInterface = !Settings.ShowInterface;
                 }
-                if (Input.IsKeyDown(Keys.KeyPad7))
-                {
-                    SceneGraph.PrintHierarchy();
-                }
+              
             }
 
             if (DeathOn)
@@ -403,10 +395,14 @@ namespace Spacebox.Scenes
                     Window.Instance.Quit();
                 }
             }
+
+
+          
+            //spacer.Update();
             Chat.Update();
             dustSpawner.Update();
             PanelUI.Update();
-            animator.Update(Time.Delta);
+            animator.Update();
         }
 
         public Action OnRenderCenter;
@@ -432,13 +428,13 @@ namespace Spacebox.Scenes
                 InteractionShoot.lineRenderer.Render();
 
             localPlayer.Render();
+            var node = this as Node3D;
+            node.Render();
 
-           
             world.Render(blockMaterial);
             
             blockDestructionManager.Render();
-            spacer.Render(localPlayer);
-           
+         
             OnRenderCenter?.Invoke();
             if (InteractionDestroyBlockSurvival.BlockMiningEffect != null)
                 InteractionDestroyBlockSurvival.BlockMiningEffect.Render();
@@ -483,8 +479,8 @@ namespace Spacebox.Scenes
         {
             localPlayer = null;
             PanelUI.Player = null;
-        
-            lightAtlas.Dispose();
+            spacer = null;
+            
             blockSelector.Dispose();
             TickTaskManager.Dispose();
      

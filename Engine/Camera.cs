@@ -18,6 +18,7 @@ namespace Engine
         public Vector3 Up => _up;
         public Vector3 Right => _right;
 
+        public bool IsMain => Main == this;
         public bool CameraRelativeRender = false;
 
         public CameraFrustum Frustum { get; private set; } = new CameraFrustum();
@@ -45,7 +46,7 @@ namespace Engine
 
         }
 
-        public virtual void Update() { }
+        public override void Update() { base.Update(); }
 
 
         public virtual Matrix4 GetViewMatrix()

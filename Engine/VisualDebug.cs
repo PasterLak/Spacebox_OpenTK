@@ -1,4 +1,6 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using System;
+using System.Collections.Generic;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Engine.Physics;
 
@@ -10,27 +12,28 @@ namespace Engine
         private static MeshBuffer _bufferPoints;
         private static MeshBuffer _bufferLines;
         private static MeshBuffer _bufferTriangles;
-        private static List<float> _points = new List<float>();
-        private static List<float> _lines = new List<float>();
-        private static List<float> _triangles = new List<float>();
+        private static readonly List<float> _points = new();
+        private static readonly List<float> _lines = new();
+        private static readonly List<float> _triangles = new();
         public static Matrix4 ProjectionMatrix { get; set; }
         public static Matrix4 ViewMatrix { get; set; }
         public static bool Enabled = false;
         public static bool ShowPlayerCollision = false;
-        private static List<Collision> _collisions = new List<Collision>();
+        private static readonly List<Collision> _collisions = new();
         public static CameraFrustum CameraFrustum;
         private static float LineWidth = 1.0f;
 
         static VisualDebug()
         {
             Initialize();
+            
         }
 
         private static void Initialize()
         {
             _shader = Resources.Load<Shader>("Shaders/debug", true);
 
-            _bufferPoints = new MeshBuffer(new BufferAttribute[]
+            _bufferPoints = new MeshBuffer(new[]
             {
                 new BufferAttribute { Name = "position", Size = 3 },
                 new BufferAttribute { Name = "color", Size = 4 },
@@ -38,15 +41,14 @@ namespace Engine
             });
             _bufferPoints.SetAttributes();
 
-            _bufferLines = new MeshBuffer(new BufferAttribute[]
+            _bufferLines = new MeshBuffer(new[]
             {
                 new BufferAttribute { Name = "position", Size = 3 },
                 new BufferAttribute { Name = "color", Size = 4 }
             });
-
             _bufferLines.SetAttributes();
 
-            _bufferTriangles = new MeshBuffer(new BufferAttribute[]
+            _bufferTriangles = new MeshBuffer(new[]
             {
                 new BufferAttribute { Name = "position", Size = 3 },
                 new BufferAttribute { Name = "color", Size = 4 }
@@ -57,8 +59,9 @@ namespace Engine
         public static void DrawTransform(Node3D transform)
         {
             if (transform == null) return;
-            DrawLine(transform.Position, transform.Position + new Vector3(0, 0, 1), new Color4(0, 0, 1, 1));
-            DrawBoundingSphere(new BoundingSphere(transform.Position, 0.1f), Color4.Blue);
+            var pos = transform.GetWorldPosition();
+            DrawLine(pos, pos + Vector3.UnitZ, new Color4(0, 0, 1, 1));
+            DrawBoundingSphere(new BoundingSphere(pos, 0.1f), Color4.Blue);
         }
 
         public static void AddCollisionToDraw(Collision collision)
@@ -107,19 +110,20 @@ namespace Engine
         public static void DrawSquare(Vector3 position, Vector2 size, Color4 color)
         {
             if (!Enabled) return;
-            Vector3[] corners = new Vector3[4];
-            corners[0] = position;
-            corners[1] = position + new Vector3(size.X, 0, 0);
-            corners[2] = position + new Vector3(size.X, size.Y, 0);
-            corners[3] = position + new Vector3(0, size.Y, 0);
+            Vector3[] corners =
+            {
+                position,
+                position + new Vector3(size.X, 0, 0),
+                position + new Vector3(size.X, size.Y, 0),
+                position + new Vector3(0, size.Y, 0)
+            };
             AddTriangle(corners[0], corners[1], corners[2], color);
             AddTriangle(corners[2], corners[3], corners[0], color);
         }
 
         public static void DrawRay(Ray ray, Color4 color)
         {
-            if (!Enabled) return;
-            if (ray == null) return;
+            if (!Enabled || ray == null) return;
             Vector3 endPoint = ray.Origin + ray.Direction * ray.Length;
             DrawLine(ray.Origin, endPoint, color);
         }
@@ -159,17 +163,14 @@ namespace Engine
         {
             if (!Enabled) return;
             Vector3[] corners = obb.GetCorners();
-
             DrawLine(corners[0], corners[1], color);
             DrawLine(corners[1], corners[3], color);
             DrawLine(corners[3], corners[2], color);
             DrawLine(corners[2], corners[0], color);
-
             DrawLine(corners[4], corners[5], color);
             DrawLine(corners[5], corners[7], color);
             DrawLine(corners[7], corners[6], color);
             DrawLine(corners[6], corners[4], color);
-
             DrawLine(corners[0], corners[4], color);
             DrawLine(corners[1], corners[5], color);
             DrawLine(corners[2], corners[6], color);
@@ -178,19 +179,20 @@ namespace Engine
 
         public static void DrawBoundingBox(BoundingBox box, Color4 color)
         {
-            if (!Enabled) return;
-            if (box == null) return;
+            if (!Enabled || box == null) return;
             Vector3 min = box.Min;
             Vector3 max = box.Max;
-            Vector3[] corners = new Vector3[8];
-            corners[0] = new Vector3(min.X, min.Y, min.Z);
-            corners[1] = new Vector3(max.X, min.Y, min.Z);
-            corners[2] = new Vector3(max.X, max.Y, min.Z);
-            corners[3] = new Vector3(min.X, max.Y, min.Z);
-            corners[4] = new Vector3(min.X, min.Y, max.Z);
-            corners[5] = new Vector3(max.X, min.Y, max.Z);
-            corners[6] = new Vector3(max.X, max.Y, max.Z);
-            corners[7] = new Vector3(min.X, max.Y, max.Z);
+            Vector3[] corners =
+            {
+                new Vector3(min.X, min.Y, min.Z),
+                new Vector3(max.X, min.Y, min.Z),
+                new Vector3(max.X, max.Y, min.Z),
+                new Vector3(min.X, max.Y, min.Z),
+                new Vector3(min.X, min.Y, max.Z),
+                new Vector3(max.X, min.Y, max.Z),
+                new Vector3(max.X, max.Y, max.Z),
+                new Vector3(min.X, max.Y, max.Z)
+            };
             DrawLine(corners[0], corners[1], color);
             DrawLine(corners[1], corners[2], color);
             DrawLine(corners[2], corners[3], color);
@@ -212,8 +214,7 @@ namespace Engine
 
         public static void DrawSphere(Vector3 center, float radius, byte segments, Color4 color)
         {
-            if (!Enabled) return;
-            if (radius <= 0) return;
+            if (!Enabled || radius <= 0) return;
             BoundingSphere sphere = new BoundingSphere(center, radius);
             DrawBoundingSphere(sphere, color, segments);
         }
@@ -225,8 +226,7 @@ namespace Engine
 
         public static void DrawBoundingSphere(BoundingSphere sphere, Color4 color, byte segments)
         {
-            if (!Enabled) return;
-            if (sphere == null) return;
+            if (!Enabled || sphere == null) return;
             byte slices = segments;
             byte stacks = segments;
             float radius = sphere.Radius;
@@ -271,59 +271,50 @@ namespace Engine
             }
         }
 
-        public static void DrawFrustum(CameraFrustum frustum, Color4 color)
-        {
-            if (!Enabled) return;
-            Vector3[] frustumCorners = frustum.GetCorners();
-            DrawLine(frustumCorners[0], frustumCorners[1], color);
-            DrawLine(frustumCorners[1], frustumCorners[2], color);
-            DrawLine(frustumCorners[2], frustumCorners[3], color);
-            DrawLine(frustumCorners[3], frustumCorners[0], color);
-            DrawLine(frustumCorners[4], frustumCorners[5], color);
-            DrawLine(frustumCorners[5], frustumCorners[6], color);
-            DrawLine(frustumCorners[6], frustumCorners[7], color);
-            DrawLine(frustumCorners[7], frustumCorners[4], color);
-            DrawLine(frustumCorners[0], frustumCorners[4], color);
-            DrawLine(frustumCorners[1], frustumCorners[5], color);
-            DrawLine(frustumCorners[2], frustumCorners[6], color);
-            DrawLine(frustumCorners[3], frustumCorners[7], color);
-        }
-
         public static void DrawAxes(Vector3 pos)
         {
             DrawLine(pos, pos + Vector3.UnitX * 2, Color4.Red);
             DrawLine(pos, pos + Vector3.UnitY * 2, Color4.Green);
             DrawLine(pos, pos + Vector3.UnitZ * 2, Color4.Blue);
         }
+        public static void DrawAxes(Node3D node, float length = 1f)
+        {
+            if (!Enabled || node == null) return;
+
+            Matrix4 model = node.GetModelMatrix();
+            Vector3 origin = node.GetWorldPosition();
+
+            Vector3 xDir = Vector3.Normalize(Vector3.TransformNormal(Vector3.UnitX, model)) * length;
+            Vector3 yDir = Vector3.Normalize(Vector3.TransformNormal(Vector3.UnitY, model)) * length;
+            Vector3 zDir = Vector3.Normalize(Vector3.TransformNormal(Vector3.UnitZ, model)) * length;
+
+            DrawLine(origin, origin + xDir, Color4.Red);
+            DrawLine(origin, origin + yDir, Color4.Green);
+            DrawLine(origin, origin + zDir, Color4.Blue);
+        }
 
         public static void Render()
         {
             if (!Enabled) return;
-            if (_points.Count == 0 && _lines.Count == 0 && _triangles.Count == 0)
-                return;
+            if (_points.Count == 0 && _lines.Count == 0 && _triangles.Count == 0 && _collisions.Count == 0) return;
 
             Camera cam = Camera.Main;
-
-            if(cam != null)
+            if (cam != null)
             {
                 ProjectionMatrix = cam.GetProjectionMatrix();
                 ViewMatrix = cam.GetViewMatrix();
             }
-            foreach (var col in _collisions)
-            {
-                col.DrawDebug();
-            }
+
+            foreach (var col in _collisions) col.DrawDebug();
+
             _shader.Use();
-            Matrix4 matrix = Matrix4.Identity;
-            if (Camera.Main != null && Camera.Main.CameraRelativeRender)
-            {
-                matrix *= Matrix4.CreateTranslation(Vector3.Zero - Camera.Main.Position);
-            }
-            _shader.SetMatrix4("model", matrix);
+            _shader.SetMatrix4("model", Matrix4.Identity);
             _shader.SetMatrix4("view", ViewMatrix);
             _shader.SetMatrix4("projection", ProjectionMatrix);
+
             GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
+
             if (_points.Count > 0)
             {
                 GL.BindVertexArray(_bufferPoints.VAO);
@@ -333,6 +324,7 @@ namespace Engine
                 GL.DrawArrays(PrimitiveType.Points, 0, pointsArray.Length / 8);
                 _points.Clear();
             }
+
             if (_lines.Count > 0)
             {
                 GL.BindVertexArray(_bufferLines.VAO);
@@ -343,6 +335,7 @@ namespace Engine
                 GL.DrawArrays(PrimitiveType.Lines, 0, linesArray.Length / 7);
                 _lines.Clear();
             }
+
             if (_triangles.Count > 0)
             {
                 GL.BindVertexArray(_bufferTriangles.VAO);
@@ -352,6 +345,7 @@ namespace Engine
                 GL.DrawArrays(PrimitiveType.Triangles, 0, trianglesArray.Length / 7);
                 _triangles.Clear();
             }
+
             GL.BindVertexArray(0);
             GL.Disable(EnableCap.CullFace);
         }
@@ -359,26 +353,6 @@ namespace Engine
         public static void SetLineWidth(float width)
         {
             LineWidth = width;
-        }
-
-        public static void Log(string data)
-        {
-            Console.WriteLine(data);
-        }
-
-        public static void Log(int data)
-        {
-            Console.WriteLine(data);
-        }
-
-        public static void Log(float data)
-        {
-            Console.WriteLine(data);
-        }
-
-        public static void Log(byte data)
-        {
-            Console.WriteLine(data);
         }
 
         public static void Clear()

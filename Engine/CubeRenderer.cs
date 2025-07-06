@@ -90,6 +90,7 @@ namespace Engine
         {
             _position = position;
             Position = position;
+            Name = "CubeRenderer";
             Material = new ColorMaterial();
 
             _buffer = buffer;
@@ -101,6 +102,7 @@ namespace Engine
         {
             _position = position;
             Position = position;
+            Name = "CubeRenderer";
             Material = new ColorMaterial();
             var attrs = new BufferAttribute[]
             {
@@ -114,8 +116,10 @@ namespace Engine
             _buffer.SetAttributes();
         }
 
-        public void Render()
+        public override void Render()
         {
+            base.Render();
+
             if (!Enabled) return;
             if (Camera.Main == null) return;
             var cam = Camera.Main;

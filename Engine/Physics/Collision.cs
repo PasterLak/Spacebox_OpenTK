@@ -36,7 +36,7 @@ namespace Engine.Physics
             IsStatic = isStatic;
             Position = boundingVolume.Center;
 
-            VisualDebug.AddCollisionToDraw(this);
+            //VisualDebug.AddCollisionToDraw(this);
             //UpdateBounding();
         }
 

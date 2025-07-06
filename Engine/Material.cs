@@ -12,6 +12,8 @@ namespace Engine
 
         public Material() : base(null)
         {
+            RenderFace = RenderFace.Front;
+            RenderMode = RenderMode.Opaque;
             Shader = Resources.Load<Shader>("Shaders/colored");
 
         }

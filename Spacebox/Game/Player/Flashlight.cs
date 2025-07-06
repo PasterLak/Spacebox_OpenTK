@@ -60,9 +60,10 @@ namespace Spacebox.Game.Player
             IsActive = state;
         }
 
-        public void Draw(Camera camera)
+        public void Draw()
         {
-            spotLight.Render(camera);
+            if(Camera.Main != null)
+            spotLight.Render(Camera.Main);
         }
     }
 }

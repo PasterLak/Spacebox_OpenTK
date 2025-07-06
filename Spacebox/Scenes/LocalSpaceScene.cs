@@ -13,7 +13,7 @@ namespace Spacebox.Scenes
         {
             localPlayer = new Astronaut(new Vector3(5, 5, 5));
             localPlayer.GameMode = GameMode.Creative;
-            SceneGraph.AddRoot(localPlayer);
+           
             base.LoadContent();
         }
     }

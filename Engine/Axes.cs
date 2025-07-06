@@ -69,6 +69,13 @@ namespace Engine
             }
         }
 
+        public override void Render()
+        {
+            base.Render();
+
+            Render(Camera.Main);
+        }
+
         public void Render(Camera camera)
         {
             Render(camera.GetViewMatrix(), camera.GetProjectionMatrix());
