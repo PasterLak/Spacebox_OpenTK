@@ -166,7 +166,7 @@ namespace Engine
 
             var camera = Camera.Main;
 
-            var finalModel = GetModelMatrix();
+            var finalModel = GetRenderModelMatrix();
 
             Material.Color = _color;
             Material.SetUniforms(finalModel);

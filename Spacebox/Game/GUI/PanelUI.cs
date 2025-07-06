@@ -5,6 +5,7 @@ using Spacebox.Game.Player;
 using Engine.Audio;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Tools;
+using Spacebox.Game.Player.Interactions;
 
 
 namespace Spacebox.Game.GUI

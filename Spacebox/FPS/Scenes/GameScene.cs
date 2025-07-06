@@ -124,7 +124,7 @@ namespace Spacebox.FPS.Scenes
         {
             DirectionalLight sun = new DirectionalLight(_lightingShader);
 
-            Renderer.AddDrawable(sun);
+            //Renderer.AddDrawable(sun);
         }
 
         private void LoadModels()
@@ -135,7 +135,7 @@ namespace Spacebox.FPS.Scenes
             for (int i = 0; i < 4; i++)
             {
                 planes[i] = new Model(Resources.Load<Mesh>("Resources/Models/plane.obj"), mat);
-                Renderer.AddDrawable(planes[i]);
+                //Renderer.AddDrawable(planes[i]);
 
                 CollisionManager.Add(planes[i]);
             }
@@ -202,17 +202,17 @@ namespace Spacebox.FPS.Scenes
 
             //Tree tree = new Tree(new Vector3(5, 0, 5), _lightingShader);
 
-            Renderer.AddDrawable(player);
+           // Renderer.AddDrawable(player);
 
             // renderer.AddDrawable(tree);
-            Renderer.AddDrawable(stone1);
-            Renderer.AddDrawable(cube);
-            Renderer.AddDrawable(arrow);
+           //Renderer.AddDrawable(stone1);
+            //Renderer.AddDrawable(cube);
+           // Renderer.AddDrawable(arrow);
             // renderer.AddDrawable(water);
             //renderer.AddDrawable(skybox);
             //renderer.AddDrawable(skybox2);
-            Renderer.AddDrawable(terrain);
-            Renderer.AddDrawable(tv);
+           // Renderer.AddDrawable(terrain);
+           // Renderer.AddDrawable(tv);
             player.Name = "Player";
 
 
@@ -234,7 +234,7 @@ namespace Spacebox.FPS.Scenes
 
                 Tree t = new Tree(point - new Vector3(10, 0, 10), _lightingShader);
 
-                Renderer.AddDrawable(t);
+               // Renderer.AddDrawable(t);
                 //CollisionManager.Add(t.GetModel());
             }
         }
@@ -353,7 +353,7 @@ namespace Spacebox.FPS.Scenes
             GL.Disable(EnableCap.Blend);
             water.DrawTransparent(player);
 
-            Renderer.RenderAll(player);
+           // Renderer.RenderAll(player);
 
 
 
@@ -366,7 +366,7 @@ namespace Spacebox.FPS.Scenes
             //textRenderer.RenderText("FPS: " + Time.FPS, 10, 50, 2f, new Vector3(1, 1, 1));
             //textRenderer.RenderText("Delta: " + Time.Delta, 10, 80, 2f, new Vector3(1, 1, 1));
             // textRenderer.RenderText("Pos: " + $" {(Vector3i)player.Position}", 10, 110, 2f, new Vector3(1, 1, 1));
-            SceneObjectPanel.Render(Renderer.GetObjects());
+          //  SceneObjectPanel.Render(Renderer.GetObjects());
 
 
         }

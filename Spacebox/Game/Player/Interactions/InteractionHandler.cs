@@ -1,11 +1,12 @@
 using Engine;
 
-namespace Spacebox.Game.Player;
+namespace Spacebox.Game.Player.Interactions;
 
 public class InteractionHandler
 {
     private InteractionMode _interaction;
-    public InteractionMode Interaction {
+    public InteractionMode Interaction
+    {
         get => _interaction;
         set { SetInteraction(value, _gameMode); }
     }
@@ -19,7 +20,7 @@ public class InteractionHandler
         {
             typeof(InteractionDefault)
         };
-        
+
         SetInteraction(new InteractionDefault(), gameMode);
     }
 
@@ -44,8 +45,8 @@ public class InteractionHandler
             Debug.Error("[Interactionhandler] Invalid interaction type or this interaction is not allowed: " + interaction.GetType().Name);
             return;
         }
-        
-        if(_interaction != null) Interaction.OnDisable();
+
+        if (_interaction != null) Interaction.OnDisable();
         interaction.GameMode = gameMode;
         interaction.OnEnable();
         _interaction = interaction;

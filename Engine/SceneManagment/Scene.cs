@@ -6,7 +6,7 @@ namespace Engine.SceneManagment
     {
       
         public CollisionManager CollisionManager { get; private set; }
-        public Renderer Renderer { get; private set; }
+       
         public List<IDisposable> Disposables { get; private set; } = new List<IDisposable>();
 
         public Scene(string[] args)
@@ -18,7 +18,7 @@ namespace Engine.SceneManagment
         private void Init()
         {
             CollisionManager = new CollisionManager();
-            Renderer = new Renderer();
+            
 
             Name = "DefaultName";
             Resizable = false;

@@ -132,7 +132,7 @@ namespace Spacebox
                 return;
 
 
-            Material.SetUniforms(GetModelMatrix());
+            Material.SetUniforms(GetRenderModelMatrix());
             Material.Use();
 
             GL.BindVertexArray(_buffer.VAO);

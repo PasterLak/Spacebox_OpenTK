@@ -132,7 +132,7 @@ namespace Engine
             GL.CullFace(CullFaceMode.Back);
 
 
-            var matModel = GetModelMatrix();
+            var matModel = GetRenderModelMatrix();
 
 
             Material.Color = _color;

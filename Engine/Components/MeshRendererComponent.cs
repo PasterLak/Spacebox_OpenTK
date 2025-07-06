@@ -27,7 +27,7 @@ namespace Engine.Components
 
             Material.Use();
             
-            Material.Shader.SetMatrix4("model", Owner.GetModelMatrix());
+            Material.Shader.SetMatrix4("model", Owner.GetRenderModelMatrix());
             Material.Shader.SetMatrix4("view", Camera.Main.GetViewMatrix());
             Material.Shader.SetMatrix4("projection", Camera.Main.GetProjectionMatrix());
 

@@ -14,6 +14,7 @@ using Engine.UI;
 using Engine.Components;
 using Engine.Utils;
 using Spacebox.Game.Player;
+using Engine.Physics;
 
 
 
@@ -28,6 +29,7 @@ namespace Spacebox.Scenes
 
         private CubeRenderer cubeRenderer;
         Spacer spacer;
+        ColliderComponent vol;
         public MenuScene2(string[] args) : base(args)
         {
           
@@ -66,7 +68,7 @@ namespace Spacebox.Scenes
             AddChild(c1);
             c2.AttachComponent(new RotatorComponent(new Vector3(0, -30, 0)));
             c2.AttachComponent(new OBBCollider());
-            c1.AttachComponent(new OBBCollider());
+            vol = c1.AttachComponent(new OBBCollider());
             c1.RotateAround(new Vector3(x, 0, 0), Vector3.UnitY, speed * 1);
 
             Node3D model = new Node3D();
@@ -78,11 +80,10 @@ namespace Spacebox.Scenes
             AddChild(model);
             var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
 
-            var mesh = GenMesh.CreateCube();
-            skybox = new Skybox(mesh, skyboxTexture);
+            skybox = new Skybox(skyboxTexture);
 
             skybox.IsAmbientAffected = false;
-            //AddChild(skybox);
+            AddChild(skybox);
 
             CenteredImageMenu.LoadImage("Resources/Textures/spaceboxLogo.png", true);
 
@@ -113,7 +114,7 @@ namespace Spacebox.Scenes
 
         public override void Render()
         {
-           skybox. DrawTransparent(Camera.Main);
+           //skybox. DrawTransparent(Camera.Main);
             //skybox.Render();
             base.Render();
 
@@ -141,12 +142,23 @@ namespace Spacebox.Scenes
            base.Update();
 
             //sprite.UpdateWindowSize(Window.Instance.Size);
+
+            if (Camera.Main.Frustum.IsInFrustum(spacer.OBB.Volume))
+            {
+               
+                    Debug.Log("yes visible " + vol.ToString());
+            }
+            else
+            {
             
+                Debug.Log("no visible" + vol.ToString());
+            }
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
             //spacer.Update();
             if (Input.IsKeyDown(Keys.R))
             {
                 Camera.Main.CameraRelativeRender = !Camera.Main.CameraRelativeRender;
+                //RenderSpace.
             }
 
             if (Input.IsKeyDown(Keys.T))

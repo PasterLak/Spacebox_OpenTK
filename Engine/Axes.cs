@@ -84,7 +84,7 @@ namespace Engine
         public void Render(Matrix4 view, Matrix4 projection)
         {
             _shader.Use();
-            Matrix4 model = GetModelMatrix();
+            Matrix4 model = GetRenderModelMatrix();
 
             int modelLocation = GL.GetUniformLocation(_shader.Handle, "model");
             int viewLocation = GL.GetUniformLocation(_shader.Handle, "view");

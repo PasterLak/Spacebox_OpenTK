@@ -237,6 +237,7 @@ namespace Spacebox
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
+            RenderSpace.BeginFrame();
             Time.StartUpdate();
             Time.Update(e);
             _controller.Update(this, (float)e.Time);

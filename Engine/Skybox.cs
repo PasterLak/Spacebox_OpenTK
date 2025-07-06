@@ -11,6 +11,16 @@ namespace Engine
 
         public bool IsAmbientAffected = false;
 
+
+        public Skybox(Texture2D texture)
+        {
+            Mesh = GenMesh.CreateCube();
+
+            Material = new SkyboxMaterial(texture);
+
+            Scale = new Vector3(100, 100, 100);
+            Name = "Skybox";
+        }
         public Skybox(Mesh mesh, Texture2D texture)
         {
             Mesh = mesh;
@@ -33,9 +43,7 @@ namespace Engine
 
             Position = camera.Position;
 
-            bool cullFaceEnabled = GL.IsEnabled(EnableCap.CullFace);
-
-            Material.SetUniforms(GetModelMatrix());
+            Material.SetUniforms(GetRenderModelMatrix());
 
             if (IsAmbientAffected)
                 Material.Shader.SetVector3("ambient", Lighting.AmbientColor);

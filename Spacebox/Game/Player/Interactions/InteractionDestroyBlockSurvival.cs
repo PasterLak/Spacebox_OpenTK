@@ -1,4 +1,4 @@
-﻿namespace Spacebox.Game.Player;
+﻿namespace Spacebox.Game.Player.Interactions;
 using Engine;
 using Engine.Animation;
 using Engine.Audio;
@@ -171,10 +171,10 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
                 if (hit.block.Is<StorageBlock>(out var storageBlock))
                 {
                     //Debug.Log("Placed: " + ((Vector3i)(hit.blockPositionEntity )));
-                    storageBlock.SetPositionInChunk((hit.blockPositionIndex));
+                    storageBlock.SetPositionInChunk(hit.blockPositionIndex);
                 }
             }
-               
+
         }
         else
         {

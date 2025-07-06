@@ -19,6 +19,7 @@ using Spacebox.Game.GUI;
 using Spacebox.GUI;
 using Client;
 using Engine.Components;
+using Spacebox.Game.Player.Interactions;
 
 namespace Spacebox.Scenes
 {
@@ -325,6 +326,18 @@ namespace Spacebox.Scenes
                 Camera.Main.CameraRelativeRender = !Camera.Main.CameraRelativeRender;
 
 
+            }
+
+
+            if (Camera.Main.Frustum.IsInFrustum(spacer.OBB.Volume))
+            {
+              
+                  //  Debug.Log("yes visible " + spacer.OBB.Volume);
+            }
+            else
+            {
+             
+                 //   Debug.Log("no visible" + spacer.OBB.Volume);
             }
 
             if (Input.IsKeyDown(Keys.K))

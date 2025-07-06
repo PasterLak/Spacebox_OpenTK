@@ -2,6 +2,7 @@
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using Engine;
+using Spacebox.Game.Player.Interactions;
 namespace Spacebox.Game.Player;
 
 public class CameraMode : GameModeBase

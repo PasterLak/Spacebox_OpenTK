@@ -12,6 +12,14 @@ namespace Engine.Components
         public bool DebugCollision = true;
         public BoundingVolume Volume { get; protected set; }
 
+        public override void OnAttached()
+        {
+            base.OnAttached();
+
+            Recalculate();
+            
+        }
+
         public override void Update()
         {
             Recalculate();
@@ -21,6 +29,11 @@ namespace Engine.Components
 
         protected abstract void Recalculate();
         protected abstract void DrawDebug();
+
+        protected Vector3 GetOwnerWorldPositionWithOffset()
+        {
+            return Owner.GetWorldPosition() + Offset;
+        }
     }
 
     public class AABBCollider : ColliderComponent
@@ -30,7 +43,7 @@ namespace Engine.Components
         protected override void Recalculate()
         {
             Vector3 size = UseManualSize ? ManualSize : Owner.Scale;
-            Volume = new BoundingBox(Owner.GetWorldPosition() + Offset, size);
+            Volume = new BoundingBox(GetOwnerWorldPositionWithOffset(), size);
         }
 
         protected override void DrawDebug()
@@ -52,7 +65,7 @@ namespace Engine.Components
                 MathHelper.DegreesToRadians(Owner.Rotation.Y),
                 MathHelper.DegreesToRadians(Owner.Rotation.Z));
             Quaternion rot = Quaternion.FromEulerAngles(rad);
-            Volume = new BoundingBoxOBB(Owner.GetWorldPosition() + Offset, size, rot);
+            Volume = new BoundingBoxOBB(GetOwnerWorldPositionWithOffset(), size, rot);
         }
 
         protected override void DrawDebug()
@@ -69,7 +82,7 @@ namespace Engine.Components
         protected override void Recalculate()
         {
             float radius = UseManualSize ? ManualRadius : Owner.Scale.X * 0.5f;
-            Volume = new BoundingSphere(Owner.GetWorldPosition() + Offset, radius);
+            Volume = new BoundingSphere(GetOwnerWorldPositionWithOffset(), radius);
         }
 
         protected override void DrawDebug()

@@ -9,7 +9,7 @@ using OpenTK.Mathematics;
 using Engine;
 using Spacebox.Game.Generation.Blocks;
 
-namespace Spacebox.Game.Player;
+namespace Spacebox.Game.Player.Interactions;
 
 public class InteractionDefault : InteractionMode
 {
@@ -49,8 +49,8 @@ public class InteractionDefault : InteractionMode
                 CenteredText.Hide();
                 return;
             }
-            
-         
+
+
 
         }
         else

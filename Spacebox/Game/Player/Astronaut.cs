@@ -9,6 +9,7 @@ using Spacebox.Game.GUI;
 using Engine;
 using Spacebox.GUI;
 using System.Xml.Linq;
+using Spacebox.Game.Player.Interactions;
 
 
 namespace Spacebox.Game.Player

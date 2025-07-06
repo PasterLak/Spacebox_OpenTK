@@ -607,7 +607,7 @@ namespace Spacebox.Game.Generation
 
                 if (!visible)
                 {
-                    visible = camera.Frustum.IsInFrustum(chunk.GeometryBoundingBox, camera);
+                    visible = camera.Frustum.IsInFrustum(chunk.GeometryBoundingBox);
 
                 }
 

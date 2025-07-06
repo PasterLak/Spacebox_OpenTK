@@ -8,5 +8,6 @@ namespace Engine.Physics
         public abstract bool Intersects(BoundingVolume other);
         public abstract float GetLongestSide();
         public abstract BoundingVolume Clone();
+       // public override abstract string ToString();
     }
 }

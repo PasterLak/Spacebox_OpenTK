@@ -5,7 +5,7 @@ using Engine;
 using Spacebox.GUI;
 using Spacebox.Game.GUI;
 
-namespace Spacebox.Game.Player
+namespace Spacebox.Game.Player.Interactions
 {
     public class InteractionCameraPoint : InteractionMode
     {
@@ -158,7 +158,7 @@ namespace Spacebox.Game.Player
                         isFlying = true;
                         flightDistance = 0f;
                         CenteredText.Hide();
-                    }   
+                    }
                 }
             }
         }
@@ -174,12 +174,12 @@ namespace Spacebox.Game.Player
                     FlightSpeed = MathF.Max(0.01f, FlightSpeed + scrollDelta * 0.2f);
                 }
 
-                if(!isFlying)
+                if (!isFlying)
                 {
                     CenteredText.SetText($"Speed: {FlightSpeed:F1}");
                     CenteredText.Show();
                 }
-               
+
             }
             else
             {
@@ -224,7 +224,7 @@ namespace Spacebox.Game.Player
         {
             float t2 = t * t;
             float t3 = t2 * t;
-            return 0.5f * ((2f * p1)
+            return 0.5f * (2f * p1
                 + (-p0 + p2) * t
                 + (2f * p0 - 5f * p1 + 4f * p2 - p3) * t2
                 + (-p0 + 3f * p1 - 3f * p2 + p3) * t3);

@@ -1,7 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Engine.Physics;
-using Engine.Utils;
+
 
 
 namespace Engine
@@ -10,8 +10,6 @@ namespace Engine
     {
         public Mesh Mesh { get; private set; }
         public MaterialBase Material { get; private set; }
-        public bool BackfaceCulling { get; set; } = true;
-        private Axes _axes;
 
         public Model(Mesh mesh)
             : this( mesh, new Material())
@@ -27,7 +25,7 @@ namespace Engine
             Material = material;
             Name = "Model";
          
-            Matrix4 modelMatrix = GetModelMatrix();
+            Matrix4 modelMatrix = GetRenderModelMatrix();
 
             Vector3 worldMin = Vector3.TransformPosition(Mesh.GetBounds().Min, modelMatrix);
             Vector3 worldMax = Vector3.TransformPosition(Mesh.GetBounds().Max, modelMatrix);
@@ -36,7 +34,7 @@ namespace Engine
             b.Size = b.Size * Scale;
 
             BoundingVolume = b;
-            _axes = new Axes(Position, BoundingVolume.GetLongestSide() * 2);
+           
             //UpdateBounding();
 
             oldColor = Material.Color;
@@ -71,16 +69,8 @@ namespace Engine
         public void Render(Camera camera)
         {
 
-            if (VisualDebug.Enabled)
-            {
-              
-                _axes.SetPosition(Position);
-                _axes.SetRotation(Rotation);
-                _axes.Render(camera.GetViewMatrix(), camera.GetProjectionMatrix());
-            }
-
             Material.Use();
-            Material.SetUniforms(GetModelMatrix());
+            Material.SetUniforms(GetRenderModelMatrix());
             //Material.Shader.SetMatrix4("model", GetModelMatrix());
             Material.Shader.SetMatrix4("view", camera.GetViewMatrix());
             Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());

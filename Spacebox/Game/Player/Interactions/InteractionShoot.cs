@@ -9,9 +9,11 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
 
-namespace Spacebox.Game.Player;
+namespace Spacebox.Game.Player.Interactions;
 using Engine;
+using Spacebox.Game;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Player;
 
 public class InteractionShoot : InteractionMode
 {
@@ -40,7 +42,7 @@ public class InteractionShoot : InteractionMode
         AllowReload = true;
         if (BlockMiningEffect == null)
         {
-    
+
             var texture = Resources.Load<Texture2D>("Resources/Textures/blockHit.png");
             texture.FilterMode = FilterMode.Nearest;
             // texture
@@ -67,14 +69,14 @@ public class InteractionShoot : InteractionMode
             weapon = weapone;
             startPos = model.Position;
 
-           
-            if(shotSound == null)
+
+            if (shotSound == null)
             {
                 shotSound = new AudioSource(GameAssets.Sounds[weapone.ShotSound]); // 
                 shotSound.Volume = 1f;
             }
-               
-            
+
+
 
         }
 
@@ -202,7 +204,7 @@ public class InteractionShoot : InteractionMode
                 if (hit.block.Is<StorageBlock>(out var storageBlock))
                 {
                     //Debug.Log("Placed: " + ((Vector3i)(hit.blockPositionEntity )));
-                    storageBlock.SetPositionInChunk((hit.blockPositionIndex));
+                    storageBlock.SetPositionInChunk(hit.blockPositionIndex);
                 }
             }
             else
@@ -228,7 +230,7 @@ public class InteractionShoot : InteractionMode
             //lineRenderer.AddPoint(player.Position + player.Front);
             int count = 10;
             int count1 = 0;
-            Ray ray = new Engine.Physics.Ray(player.Position, player.Front, 1000);
+            Ray ray = new Ray(player.Position, player.Front, 1000);
 
 
             var projectile = ProjectilesPool.Take();

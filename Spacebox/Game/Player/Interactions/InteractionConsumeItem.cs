@@ -4,7 +4,7 @@ using Engine.Audio;
 using Spacebox.Game.GUI;
 using Engine;
 
-namespace Spacebox.Game.Player;
+namespace Spacebox.Game.Player.Interactions;
 
 public class InteractionConsumeItem : InteractionMode
 {
@@ -20,12 +20,12 @@ public class InteractionConsumeItem : InteractionMode
 
     public override void OnEnable()
     {
-        
+
     }
 
     public override void OnDisable()
     {
-        
+
     }
 
     public override void Update(Astronaut player)
@@ -35,12 +35,12 @@ public class InteractionConsumeItem : InteractionMode
 
         if (_itemSlot == null) return;
         if (_itemSlot.Item == null) return;
-        if(!_itemSlot.HasItem) return;
+        if (!_itemSlot.HasItem) return;
 
         var consumable = _itemSlot.Item as ConsumableItem;
-        
-        if(consumable == null) return;
-        
+
+        if (consumable == null) return;
+
         ApplyConsumable(consumable, player);
 
         if (GameMode == GameMode.Survival)
@@ -48,12 +48,12 @@ public class InteractionConsumeItem : InteractionMode
 
         if (_itemSlot.Count == 0)
         {
-            _itemSlot = null;   
+            _itemSlot = null;
             player.SetInteraction(new InteractionDefault());
         }
 
     }
-    
+
     private void ApplyConsumable(ConsumableItem consumable, Astronaut player)
     {
         if (consumable != null)
@@ -64,7 +64,7 @@ public class InteractionConsumeItem : InteractionMode
                 {
                     useConsumableAudio.Stop();
                 }
-                
+
                 useConsumableAudio = new AudioSource(clip);
                 useConsumableAudio.Volume = 0.3f;
                 useConsumableAudio.Play();
@@ -91,6 +91,6 @@ public class InteractionConsumeItem : InteractionMode
 
     public override void Render(Astronaut player)
     {
-       
+
     }
 }

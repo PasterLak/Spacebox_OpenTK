@@ -330,8 +330,10 @@ namespace Spacebox.Game.Generation
             {
 
                 var entity = Entities[i];
-                if (cam.Frustum.IsInFrustum(entity.GeometryBoundingBox, cam))
+                
+                if (cam.Frustum.IsInFrustum(entity.GeometryBoundingBox))
                 {
+                    
                     var disSqr = Vector3.DistanceSquared(entity.GeometryBoundingBox.Center, cam.Position);
 
                     if (!entity.IsGenerated)
@@ -373,6 +375,10 @@ namespace Spacebox.Game.Generation
                     }
 
 
+                }
+                else
+                {
+                  
                 }
             }
 

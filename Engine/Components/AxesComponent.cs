@@ -37,7 +37,7 @@ namespace Engine.Components.Debug
 
             VisualDebug.DrawAxes(Owner, 1f);
             _shader.Use();
-            _shader.SetMatrix4("model", Owner.GetModelMatrix());
+            _shader.SetMatrix4("model", Owner.GetRenderModelMatrix());
             _shader.SetMatrix4("view", Camera.Main.GetViewMatrix());
             _shader.SetMatrix4("projection", Camera.Main.GetProjectionMatrix());
             bool depthEnabled = GL.IsEnabled(EnableCap.DepthTest);

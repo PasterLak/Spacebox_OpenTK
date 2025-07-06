@@ -103,7 +103,7 @@ namespace Spacebox.Game
 
             else
             {
-                model = itemCamera.GetModelMatrix();
+                model = itemCamera.GetRenderModelMatrix();
 
                 Matrix4 view = itemCamera.GetViewMatrix();
 

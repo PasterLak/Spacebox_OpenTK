@@ -11,7 +11,7 @@ using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Generation.Blocks;
 
-namespace Spacebox.Game.Player;
+namespace Spacebox.Game.Player.Interactions;
 
 public class InteractionEraser : InteractionMode
 {
@@ -147,7 +147,7 @@ public class InteractionEraser : InteractionMode
         if (Input.IsMouseButtonDown(MouseButton.Right))
         {
             var id = PanelUI.CurrentSlot().Item.Id;
-            BlockPointer p = new BlockPointer(id, entity, (Vector3)entity.WorldPositionToLocal(selectorPosition));
+            BlockPointer p = new BlockPointer(id, entity, entity.WorldPositionToLocal(selectorPosition));
 
             CreativeTools.SetPoint2(p);
 
@@ -170,7 +170,7 @@ public class InteractionEraser : InteractionMode
         if (Input.IsMouseButtonDown(MouseButton.Left))
         {
             var id = PanelUI.CurrentSlot().Item.Id;
-            BlockPointer p = new BlockPointer(id, entity, (Vector3)entity.WorldPositionToLocal(selectorPosition));
+            BlockPointer p = new BlockPointer(id, entity, entity.WorldPositionToLocal(selectorPosition));
 
             CreativeTools.SetPoint1(p);
 

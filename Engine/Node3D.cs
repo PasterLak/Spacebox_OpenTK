@@ -198,6 +198,13 @@ namespace Engine
                 MathHelper.RadiansToDegrees(rad.Z));
         }
 
+        public Vector3 GetWorldPositionRaw()
+        {
+            return Parent == null
+                ? Position
+                : Vector3.TransformPosition(Position, Parent.GetModelMatrixPoor());
+        }
+
         public static Vector3 QuaternionToEuler(Quaternion q)
         {
             q = Quaternion.Normalize(q);

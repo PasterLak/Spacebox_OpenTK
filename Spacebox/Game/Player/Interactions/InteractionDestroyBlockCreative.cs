@@ -1,4 +1,4 @@
-﻿namespace Spacebox.Game.Player;
+﻿namespace Spacebox.Game.Player.Interactions;
 using Engine;
 using Engine.Animation;
 using Engine.Audio;
@@ -75,7 +75,7 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
                 if (hit.block.Is<StorageBlock>(out var storageBlock))
                 {
 
-                    storageBlock.SetPositionInChunk((hit.blockPositionIndex));
+                    storageBlock.SetPositionInChunk(hit.blockPositionIndex);
                 }
             }
             else CenteredText.Hide();

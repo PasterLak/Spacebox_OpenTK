@@ -281,7 +281,7 @@ namespace Engine
         {
             if (!Enabled || node == null) return;
 
-            Matrix4 model = node.GetModelMatrix();
+            Matrix4 model = node.GetRenderModelMatrix();
             Vector3 origin = node.GetWorldPosition();
 
             Vector3 xDir = Vector3.Normalize(Vector3.TransformNormal(Vector3.UnitX, model)) * length;

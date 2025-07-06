@@ -13,7 +13,7 @@ using Client;
 using OpenTK.Windowing.Common.Input;
 using Spacebox.Game.Generation.Blocks;
 
-namespace Spacebox.Game.Player;
+namespace Spacebox.Game.Player.Interactions;
 
 public class InteractionPlaceBlock : InteractionMode
 {
@@ -117,17 +117,17 @@ public class InteractionPlaceBlock : InteractionMode
         if (Input.IsMouseButtonDown(MouseButton.Right))
         {
             Chunk chunk = hit.chunk;
-           
+
             if (chunk != null)
             {
                 if (PanelUI.TryPlaceItem(out var id, GameMode))
                 {
                     Block newBlock = GameAssets.CreateBlockFromId(id);
 
-                    if(newBlock.Is<StorageBlock>(out var storageBlock))
+                    if (newBlock.Is<StorageBlock>(out var storageBlock))
                     {
-                     
-                        
+
+
                         storageBlock.SetPositionInChunk(hit.blockPositionIndex);
                     }
 
@@ -136,9 +136,9 @@ public class InteractionPlaceBlock : InteractionMode
                     if (!hasSameSides)
                         newBlock.SetDirectionFromNormal(hit.normal);
 
-                   // int x = hit.blockPositionIndex.X + hit.normal.X;
-                   // int y = hit.blockPositionIndex.Y + hit.normal.Y;
-                   // int z = hit.blockPositionIndex.Z + hit.normal.Z;
+                    // int x = hit.blockPositionIndex.X + hit.normal.X;
+                    // int y = hit.blockPositionIndex.Y + hit.normal.Y;
+                    // int z = hit.blockPositionIndex.Z + hit.normal.Z;
 
                     //chunk.PlaceBlock(x, y, z, newBlock);
 
@@ -220,7 +220,7 @@ public class InteractionPlaceBlock : InteractionMode
         var direction = Block.GetDirectionFromNormal(norm);
 
         if (BlockSelector.Instance != null)
-        BlockSelector.Instance.UpdatePosition(selectorPosition, direction);
+            BlockSelector.Instance.UpdatePosition(selectorPosition, direction);
 
         if (entity != null)
         {
@@ -241,7 +241,7 @@ public class InteractionPlaceBlock : InteractionMode
             if (Input.IsKeyDown(Keys.KeyPad1))
             {
                 var id = PanelUI.CurrentSlot().Item.Id;
-                BlockPointer p = new BlockPointer(id, entity, (Vector3)entity.WorldPositionToLocal(selectorPosition));
+                BlockPointer p = new BlockPointer(id, entity, entity.WorldPositionToLocal(selectorPosition));
 
                 CreativeTools.AddBlock(p);
             }

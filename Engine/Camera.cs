@@ -46,7 +46,7 @@ namespace Engine
 
         }
 
-        public override void Update() { base.Update(); }
+        public override void Update() { Frustum.UpdateFrustum(this); base.Update(); }
 
 
         public virtual Matrix4 GetViewMatrix()
