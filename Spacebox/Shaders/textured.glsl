@@ -44,7 +44,7 @@ out vec4 FragColor;
 uniform sampler2D texture0;
 
 uniform vec4 color = vec4(1.0);
-uniform vec3 ambient = vec3(1.0);
+uniform vec3 ambient = vec3(1,1,1);
 uniform vec3 fog = vec3(0.05, 0.05, 0.05);
 
 vec4 applyFog(vec4 texColor)
@@ -61,5 +61,6 @@ void main()
 
     finalColor = applyFog(finalColor);
 
-    FragColor = mix(vec4(fog, finalColor.a), finalColor, vec4(ambient,1));
+    FragColor = finalColor * vec4(ambient,1);
+   
 }

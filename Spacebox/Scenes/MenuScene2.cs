@@ -35,7 +35,7 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
             int x = 20;
-            Lighting.FogColor = new Vector3(1,0,0);
+            Lighting.FogColor = new Vector3(0.2f);
             Lighting.FogDensity = 0.08f;
             //Theme.ApplySpaceboxTheme();
             var skyboxTexture = new SpaceTexture(512, 512, World.Seed);

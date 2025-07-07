@@ -16,7 +16,7 @@ public class ItemWorldModel : Node3D
        
         Mesh item = ItemModelGenerator.GenerateMeshFromTexture(itemTexture,  modelDepth);
         
-        var cm = AttachComponent(new ModelRendererComponent(new Model(item, new ItemMaterial(itemTexture))));
+        var cm = AttachComponent(new ModelRendererComponent(new Model(item, new TextureMaterial(itemTexture))));
         //cm.Offset = new Vector3(-0.5f, -0.5f, -modelDepth/2f);
         AttachComponent(new AxesDebugComponent());
         AttachComponent(new OBBCollider());

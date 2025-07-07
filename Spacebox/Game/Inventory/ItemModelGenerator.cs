@@ -36,20 +36,17 @@ namespace Spacebox.Game
             var mesh = BuildItemModel(texture, modelSize, modelDepth, drawOnlyVisibleSides);
             return ItemModelFromMesh(texture, mesh, isAnimated);
         }
+
         public static Mesh GenerateMeshFromTexture(
             Texture2D texture,
             float modelDepth = 0.2f,
             bool drawOnlyVisibleSides = false)
         {
             CellSize = 1;
-            return BuildItemModel(texture, 1f/texture.Width, modelDepth, drawOnlyVisibleSides);
-            
+            return BuildItemModel(texture, 1f / texture.Width, modelDepth, drawOnlyVisibleSides);
         }
 
-        private static ItemModel ItemModelFromMesh(Texture2D cellTexture,
-          Mesh mesh,
-            bool isAnimated
-          )
+        private static ItemModel ItemModelFromMesh(Texture2D cellTexture, Mesh mesh, bool isAnimated)
         {
             return isAnimated ? new AnimatedItemModel(mesh, cellTexture) : new ItemModel(mesh, cellTexture);
         }
@@ -67,15 +64,15 @@ namespace Spacebox.Game
             var quads = GreedyMesh(pixels, cellTexture.Width, cellTexture.Height);
 
             List<float> vertices = new();
-            List<uint>  indices  = new();
+            List<uint> indices = new();
             uint indexOffset = 0;
 
             foreach (var q in quads)
             {
-                Vector3 bl = new Vector3(q.X,                 q.Y,                 0) * modelSize;
-                Vector3 br = new Vector3(q.X + q.Width,       q.Y,                 0) * modelSize;
-                Vector3 tr = new Vector3(q.X + q.Width,       q.Y + q.Height,      0) * modelSize;
-                Vector3 tl = new Vector3(q.X,                 q.Y + q.Height,      0) * modelSize;
+                Vector3 bl = new Vector3(q.X, q.Y, 0) * modelSize;
+                Vector3 br = new Vector3(q.X + q.Width, q.Y, 0) * modelSize;
+                Vector3 tr = new Vector3(q.X + q.Width, q.Y + q.Height, 0) * modelSize;
+                Vector3 tl = new Vector3(q.X, q.Y + q.Height, 0) * modelSize;
 
                 var uv = GetUVs(q);
 
@@ -107,18 +104,16 @@ namespace Spacebox.Game
                 }
             }
 
-            if (!drawOnlyVisibleSides) // draw right side
+            if (!drawOnlyVisibleSides)
             {
-             
                 foreach (var q in quads)
                 {
-                    
-                    Vector3 bl = new Vector3(q.X,                 q.Y,                 0) * modelSize;
-                    Vector3 br = new Vector3(q.X + q.Width,       q.Y,                 0) * modelSize;
-                    Vector3 tr = new Vector3(q.X + q.Width,       q.Y + q.Height,      0) * modelSize;
-                    Vector3 tl = new Vector3(q.X,                 q.Y + q.Height,      0) * modelSize;
+                    Vector3 bl = new Vector3(q.X, q.Y, 0) * modelSize;
+                    Vector3 br = new Vector3(q.X + q.Width, q.Y, 0) * modelSize;
+                    Vector3 tr = new Vector3(q.X + q.Width, q.Y + q.Height, 0) * modelSize;
+                    Vector3 tl = new Vector3(q.X, q.Y + q.Height, 0) * modelSize;
 
-                    var offset = modelDepth;
+                    float offset = modelDepth;
                     bl.Z = offset;
                     br.Z = offset;
                     tr.Z = offset;
@@ -131,17 +126,16 @@ namespace Spacebox.Game
                 }
             }
 
-            return  new Mesh(vertices.ToArray(), indices.ToArray(), BuffersData.CreateItemModelBuffer());
-          
+            return new Mesh(vertices.ToArray(), indices.ToArray(), BuffersData.CreateItemModelBuffer());
         }
 
         public static Vector2[] GetUVs(Quad quad)
         {
             float pixelUV = 1f / CellSize;
-            Vector2 uvLeft     = new(quad.X * pixelUV,                 quad.Y * pixelUV);
-            Vector2 uvRight    = new((quad.X + quad.Width) * pixelUV,  quad.Y * pixelUV);
-            Vector2 uvTopRight = new((quad.X + quad.Width) * pixelUV,  (quad.Y + quad.Height) * pixelUV);
-            Vector2 uvTop      = new(quad.X * pixelUV,                 (quad.Y + quad.Height) * pixelUV);
+            Vector2 uvLeft = new(quad.X * pixelUV, quad.Y * pixelUV);
+            Vector2 uvRight = new((quad.X + quad.Width) * pixelUV, quad.Y * pixelUV);
+            Vector2 uvTopRight = new((quad.X + quad.Width) * pixelUV, (quad.Y + quad.Height) * pixelUV);
+            Vector2 uvTop = new(quad.X * pixelUV, (quad.Y + quad.Height) * pixelUV);
             return new[] { uvLeft, uvRight, uvTopRight, uvTop };
         }
     }

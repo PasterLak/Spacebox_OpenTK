@@ -23,8 +23,8 @@ namespace Spacebox.Game
         {
             MeshBuffer buffer = new MeshBuffer();
             buffer.AddAttribute("aPosition", 3);
-            buffer.AddAttribute("aTexCoord", 2);
             buffer.AddAttribute("aNormal", 3);
+            buffer.AddAttribute("aTexCoord", 2);
 
             return buffer;
         }
