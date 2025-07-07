@@ -73,15 +73,26 @@ namespace Spacebox.Scenes
             vol = c1.AttachComponent(new AABBCollider());
             //c1.RotateAround(new Vector3(x, 0, 0), Vector3.UnitY, speed * 1);
 
+            var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
             Node3D model = new Node3D();
-            Model m = new Model(GenMesh.CreateSphere(2));
+            Model m = new Model(GenMesh.CreateSphere(2), new TransparentMaterial(skyboxTexture));
             m.Material.Color = Color4.Red;
-
             model.AttachComponent(new ModelRendererComponent(m));
             model.AttachComponent(new SphereCollider());    
             model.Position = new Vector3(x+5,0,0);
             AddChild(model);
-            var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
+
+
+            var skyboxTexture2 = Resources.Load<Texture2D>("Resources/Textures/arSphere.png");
+            Node3D model2 = new Node3D();
+            var mat = new TextureMaterial(skyboxTexture2); mat.RenderMode = RenderMode.Fade;
+            Model m2 = new Model(GenMesh.CreateSphere(6), mat);
+            m2.Material.Color = Color4.White;
+            model2.AttachComponent(new ModelRendererComponent(m2));
+            model2.AttachComponent(new SphereCollider());
+            model2.Position = new Vector3(x + 6, 0, 0);
+            AddChild(model2);
+
 
             skybox = new Skybox(skyboxTexture);
 
@@ -143,6 +154,16 @@ namespace Spacebox.Scenes
         public override void Update()
         {
            base.Update();
+
+
+            Ray ray = new Ray(player2.Position, player2.Front, 5f);
+
+            if (ray.Intersects(spacer.OBB, out float distance))
+            {
+                //VisualDebug.DrawRay(ray, Color4.Red);
+                //VisualDebug.DrawAxes(ray.GetPoint(distance));
+               // Debug.Log("Spacer! dis: " + distance);
+            }
 
             //sprite.UpdateWindowSize(Window.Instance.Size);
             VisualDebug.DrawSphere(new Vector3(5,5,5), 3, Color4.Green);

@@ -53,8 +53,12 @@ namespace Engine
             if (child == null) return;
             if (Children.Remove(child))
             {
+                Debug.Log("removed");
                 child._parent = null;
                 child.MarkDirty();
+            }else
+            {
+                Debug.Log("not removed");
             }
         }
 

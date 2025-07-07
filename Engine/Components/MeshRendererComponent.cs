@@ -9,7 +9,7 @@ namespace Engine.Components
         public MaterialBase Material { get; }
 
         public MeshRendererComponent(Mesh mesh)
-            : this(mesh, new Material()) { }
+            : this(mesh, new ColorMaterial()) { }
 
         public MeshRendererComponent(Mesh mesh, MaterialBase material)
         {
@@ -27,7 +27,7 @@ namespace Engine.Components
           
             if (Mesh == null || Material == null || Camera.Main == null) return;
 
-            Material.Use();
+            Material.Apply(Owner);
             Engine.Debug.Log("----------------------");
             Material.Shader.SetMatrix4("model", Owner.GetRenderModelMatrix());
             Material.Shader.SetMatrix4("view", Camera.Main.GetViewMatrix());

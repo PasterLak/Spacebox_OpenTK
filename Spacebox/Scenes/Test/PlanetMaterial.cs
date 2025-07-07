@@ -14,9 +14,9 @@ public class PlanetMaterial : TextureMaterial
         RenderFace = RenderFace.Front;
     }
 
-    protected override void SetMaterialProperties()
+    protected override void UpdateDynamicUniforms()
     {
-        base.SetMaterialProperties();
+        base.UpdateDynamicUniforms();
         Camera cam = Camera.Main;
 
         Shader.SetVector3("cameraPos", cam.Position);

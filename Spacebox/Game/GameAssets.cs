@@ -27,7 +27,7 @@ namespace Spacebox.Game
         public static Dictionary<short, Texture2D> BlockDusts = new Dictionary<short, Texture2D>();
         public static Dictionary<short, AudioClip> ItemSounds = new Dictionary<short, AudioClip>();
         public static Dictionary<string, AudioClip> Sounds = new Dictionary<string, AudioClip>();
-
+        
         public static Dictionary<string, Dictionary<short, Recipe>> Recipes = new Dictionary<string, Dictionary<short, Recipe>>();
         public static Dictionary<string, CraftingCategory> CraftingCategories = new Dictionary<string, CraftingCategory>();
         public static Dictionary<short, Blueprint> Blueprints = new Dictionary<short, Blueprint>();
@@ -52,6 +52,7 @@ namespace Spacebox.Game
                 }
                 return false;
             }
+            
             return false;
         }
 

@@ -8,7 +8,7 @@ namespace Spacebox.FPS
     public class Water : Model, ITransparent
     {
         public Water(Shader shader) :
-            base(Resources.Load<Mesh>("Resources/Models/plane.obj"), new Material(shader,
+            base(Resources.Load<Mesh>("Resources/Models/plane.obj"), new TextureMaterial(shader,
                 Resources.Get<Texture2D>("Resources/Textures/Game/water.png")))
         {
 

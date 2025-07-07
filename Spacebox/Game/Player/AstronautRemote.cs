@@ -44,11 +44,11 @@ namespace Spacebox.Game.Player
             var texold = Engine.Resources.Get<Texture2D>("Resources/Textures/spacer.png");
             texold.UpdateTexture(true);
             playerShader = Resources.Load<Shader>("Shaders/player");
-            spacerOld = new Model(Resources.Load<Engine.Mesh>("Resources/Models/spacer.obj"), new Material(playerShader, texold));
+            spacerOld = new Model(Resources.Load<Engine.Mesh>("Resources/Models/spacer.obj"), new TextureMaterial(playerShader, texold));
             var tex = Resources.Load<Texture2D>("Resources/Textures/astronaut2.jpg");
             tex.FlipY();
             tex.FilterMode = FilterMode.Nearest;
-            spacer = new Model(Resources.Load<Engine.Mesh>("Resources/Models/astronaut2.obj"), new Material(playerShader, tex));
+            spacer = new Model(Resources.Load<Engine.Mesh>("Resources/Models/astronaut2.obj"), new TextureMaterial(playerShader, tex));
             tagg = new GUI.Tag($"[{playerData.ID}]{playerData.Name}", LatestPosition, new Color4(playerData.Color.X, playerData.Color.Y, playerData.Color.Z, 1));
             tagg.TextAlignment = GUI.Tag.Alignment.Center;
             GUI.Tag.CalculateFontSize(100);
@@ -84,7 +84,7 @@ namespace Spacebox.Game.Player
             int index = Math.Abs(id) % colors.Length;
             var selectedColor = colors[index];
             Texture2D tex = GetAstronautTexture(selectedColor);
-            var mat = new Material(playerShader, tex);
+            var mat = new TextureMaterial(playerShader, tex);
 
             var mesh1 = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Body_Fly.obj");
             var mesh2 = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Helmet_Closed.obj");

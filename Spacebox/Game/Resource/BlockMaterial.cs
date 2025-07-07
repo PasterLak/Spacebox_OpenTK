@@ -14,6 +14,8 @@ namespace Spacebox.Game.Resource
             RenderMode = RenderMode.Cutout;
             EmissionTexture = emissionAtlas;
             this.player = player;
+
+            AddTexture("textureAtlas", EmissionTexture);
             Shader.Use();
             Shader.SetInt("texture0", 0);
             Shader.SetInt("textureAtlas", 1);
@@ -22,16 +24,19 @@ namespace Spacebox.Game.Resource
             Shader.SetFloat("fogDensity", 0);
             Shader.SetVector3("fogColor", Lighting.FogColor);
             Shader.SetVector3("ambientColor", Lighting.AmbientColor);
+
+            
         }
 
-        protected override void SetMaterialProperties()
+        protected override void UpdateDynamicUniforms()
         {
-            base.SetMaterialProperties();
+            base.UpdateDynamicUniforms();
 
-            UseTexture(EmissionTexture, "textureAtlas");
-           
+            
+
             Shader.SetVector3("cameraPosition", player.Position);
             Shader.SetVector3("ambientColor", Lighting.AmbientColor);
         }
+ 
     }
 }

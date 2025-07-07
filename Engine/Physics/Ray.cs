@@ -1,5 +1,7 @@
-﻿using OpenTK.Mathematics;
-
+﻿using System;
+using System.Runtime.CompilerServices;
+using Engine.Components;
+using OpenTK.Mathematics;
 
 namespace Engine.Physics
 {
@@ -16,225 +18,168 @@ namespace Engine.Physics
             Length = length;
         }
 
-        public Vector3 GetPoint(float distanceFromOrigin)
-        {
-            return Origin + Direction * distanceFromOrigin;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector3 GetPoint(float distance) => Origin + Direction * distance;
 
+
+        public bool Intersects(ColliderComponent colliderComponent, out float distance)
+        {
+            return Intersects(colliderComponent.Volume, out distance);
+        }
+        public bool Intersects(BoundingVolume volume, out float distance)
+        {
+            switch (volume)
+            {
+                case BoundingSphere sphere:
+                    return Intersects(sphere, out distance);
+
+                case BoundingBox aabb:
+                    return Intersects(aabb, out distance);
+
+                case BoundingBoxOBB obb:
+                    return Intersects(obb, out distance);
+
+                default:
+                    distance = 0f;
+                    return false;
+            }
+        }
 
         public bool Intersects(BoundingSphere sphere, out float distance)
         {
-            Vector3 oc = Origin - sphere.Center;
-            float a = Vector3.Dot(Direction, Direction);
-            float b = 2.0f * Vector3.Dot(oc, Direction);
-            float c = Vector3.Dot(oc, oc) - sphere.Radius * sphere.Radius;
-            float discriminant = b * b - 4 * a * c;
-
-            if (discriminant < 0)
+            var oc = Origin - sphere.Center;
+            var b = Vector3.Dot(oc, Direction);
+            var c = Vector3.Dot(oc, oc) - sphere.Radius * sphere.Radius;
+            var h = b * b - c;
+            if (h < 0)
             {
-                distance = 0f;
+                distance = 0;
                 return false;
             }
-            else
+            h = MathF.Sqrt(h);
+            var t = -b - h;
+            if (t < 0) t = -b + h;
+            if (t < 0 || t > Length)
             {
-                float sqrtDiscriminant = MathF.Sqrt(discriminant);
-                float t1 = (-b - sqrtDiscriminant) / (2.0f * a);
-                float t2 = (-b + sqrtDiscriminant) / (2.0f * a);
-
-
-                if (t1 >= 0 && t1 <= Length)
-                {
-                    distance = t1;
-                    return true;
-                }
-
-                if (t2 >= 0 && t2 <= Length)
-                {
-                    distance = t2;
-                    return true;
-                }
-
-                distance = 0f;
+                distance = 0;
                 return false;
             }
+            distance = t;
+            return true;
         }
-
 
         public bool Intersects(BoundingBox box, out float distance)
         {
             distance = 0f;
-            float tMin = (box.Min.X - Origin.X) / Direction.X;
-            float tMax = (box.Max.X - Origin.X) / Direction.X;
+            float tMin = 0f;
+            float tMax = Length;
 
-            if (tMin > tMax)
+            for (int i = 0; i < 3; i++)
             {
-                float temp = tMin;
-                tMin = tMax;
-                tMax = temp;
-            }
-
-            float tyMin = (box.Min.Y - Origin.Y) / Direction.Y;
-            float tyMax = (box.Max.Y - Origin.Y) / Direction.Y;
-
-            if (tyMin > tyMax)
-            {
-                float temp = tyMin;
-                tyMin = tyMax;
-                tyMax = temp;
-            }
-
-            if (tMin > tyMax || tyMin > tMax)
-                return false;
-
-            if (tyMin > tMin)
-                tMin = tyMin;
-
-            if (tyMax < tMax)
-                tMax = tyMax;
-
-            float tzMin = (box.Min.Z - Origin.Z) / Direction.Z;
-            float tzMax = (box.Max.Z - Origin.Z) / Direction.Z;
-
-            if (tzMin > tzMax)
-            {
-                float temp = tzMin;
-                tzMin = tzMax;
-                tzMax = temp;
-            }
-
-            if (tMin > tzMax || tzMin > tMax)
-                return false;
-
-            if (tzMin > tMin)
-                tMin = tzMin;
-
-            if (tzMax < tMax)
-                tMax = tzMax;
-
-            distance = tMin;
-
-            if (distance < 0)
-            {
-                distance = tMax;
-                if (distance < 0)
-                    return false;
-            }
-
-            if (distance > Length)
-                return false;
-
-            return true;
-        }
-
-        public bool Intersects(BoundingBox box, out float tMin, out float tMax) // slab alg
-        {
-            tMin = 0f;
-            tMax = 0f;
-
-            tMin = float.NegativeInfinity;
-            tMax = float.PositiveInfinity;
-
-            for (byte i = 0; i < 3; i++)
-            {
-                float origin = Origin[i];
-                float direction = Direction[i];
+                float o = Origin[i];
+                float d = Direction[i];
                 float min = box.Min[i];
                 float max = box.Max[i];
 
-                if (MathF.Abs(direction) < 1e-8)
+                if (MathF.Abs(d) < 1e-8f)
                 {
-                    if (origin < min || origin > max)
-                    {
-                        return false;
-                    }
+                    if (o < min || o > max) return false;
+                    continue;
                 }
-                else
+
+                float invD = 1f / d;
+                float t1 = (min - o) * invD;
+                float t2 = (max - o) * invD;
+                if (t1 > t2)
                 {
-                    float invD = 1.0f / direction;
-                    float t1 = (min - origin) * invD;
-                    float t2 = (max - origin) * invD;
-
-                    if (t1 > t2)
-                    {
-                        float temp = t1;
-                        t1 = t2;
-                        t2 = temp;
-                    }
-
-                    if (t1 > tMin)
-                        tMin = t1;
-
-                    if (t2 < tMax)
-                        tMax = t2;
-
-                    if (tMin > tMax)
-                        return false;
-
-                    if (tMax < 0)
-                        return false;
+                    float tmp = t1;
+                    t1 = t2;
+                    t2 = tmp;
                 }
+
+                if (t1 > tMin) tMin = t1;
+                if (t2 < tMax) tMax = t2;
+                if (tMin > tMax) return false;
             }
 
-            if (tMin < 0)
-            {
-                tMin = tMax;
-                if (tMin < 0 || tMin > Length)
-                    return false;
-            }
-
-            if (tMin > Length)
-                return false;
-
-            return true;
+            distance = tMin < 0 ? tMax : tMin;
+            return distance >= 0 && distance <= Length;
         }
 
-
-        public Ray CalculateRicochetRay(Vector3 hitPos,Vector3SByte hitNormal, float length)
+        public bool Intersects(BoundingBoxOBB obb, out float distance)
         {
-            
+            distance = 0f;
+            var invRot = Quaternion.Invert(obb.Rotation);
+            var localOrigin = Vector3.Transform(Origin - obb.Center, invRot);
+            var localDir = Vector3.Transform(Direction, invRot);
+            localDir.Normalize();
 
-            const float epsilon = 0.002f;
-            var reflectionDirection = CalculateRicochet(this, hitPos, hitNormal);
-            Vector3 newOrigin = hitPos + reflectionDirection * epsilon;
-            return new Ray(newOrigin, reflectionDirection, length);
+            var extents = obb.Extents;
+            Vector3 min = -extents;
+            Vector3 max = extents;
+
+            float tMin = 0f;
+            float tMax = Length;
+
+            for (int i = 0; i < 3; i++)
+            {
+                float o = localOrigin[i];
+                float d = localDir[i];
+                float mi = min[i];
+                float ma = max[i];
+
+                if (MathF.Abs(d) < 1e-8f)
+                {
+                    if (o < mi || o > ma) return false;
+                    continue;
+                }
+
+                float invD = 1f / d;
+                float t1 = (mi - o) * invD;
+                float t2 = (ma - o) * invD;
+                if (t1 > t2)
+                {
+                    float tmp = t1;
+                    t1 = t2;
+                    t2 = tmp;
+                }
+
+                if (t1 > tMin) tMin = t1;
+                if (t2 < tMax) tMax = t2;
+                if (tMin > tMax) return false;
+            }
+
+            distance = tMin < 0 ? tMax : tMin;
+            return distance >= 0 && distance <= Length;
         }
 
+        public Ray CalculateRicochetRay(Vector3 hitPos, Vector3SByte hitNormal, float length)
+        {
+            const float eps = 0.002f;
+            var reflectionDir = CalculateRicochet(this, hitPos, hitNormal);
+            var newOrigin = hitPos + reflectionDir * eps;
+            return new Ray(newOrigin, reflectionDir, length);
+        }
 
         public static Vector3 CalculateRicochet(Ray ray, Vector3 hitPos, Vector3SByte hitNormal)
         {
-            const float epsilon = 1.01f;
-            Vector3 normal = new Vector3(
-                hitNormal.X,
-                hitNormal.Y,
-               hitNormal.Z
-            );
-            normal = (normal * epsilon).Normalized();
-
-
-            Vector3 incoming = ray.Direction.Normalized();
-
-            Vector3 reflection = incoming - 2f * Vector3.Dot(incoming, normal) * normal;
-
+            const float eps = 1.01f;
+            var n = new Vector3(hitNormal.X, hitNormal.Y, hitNormal.Z);
+            n = (n * eps).Normalized();
+            var incoming = ray.Direction.Normalized();
+            var reflection = incoming - 2f * Vector3.Dot(incoming, n) * n;
             return reflection.Normalized();
         }
 
         public static float CalculateIncidentAngle(Ray ray, Vector3SByte hitNormal)
         {
-            Vector3 normal = new Vector3(hitNormal.X, hitNormal.Y, hitNormal.Z).Normalized();
-            Vector3 incoming = -ray.Direction.Normalized(); 
-
-            float dot = Vector3.Dot(incoming, normal);
-
-      
-            dot = Math.Clamp(dot, -1.0f, 1.0f);
-
-            float angleRadians = MathF.Acos(dot);
-            float angleDegrees = MathHelper.RadiansToDegrees(angleRadians);
-
-            float angleWithPlane = 90f - angleDegrees;
-
-            return angleWithPlane;
+            var n = new Vector3(hitNormal.X, hitNormal.Y, hitNormal.Z).Normalized();
+            var incoming = -ray.Direction.Normalized();
+            var dot = Vector3.Dot(incoming, n);
+            dot = Math.Clamp(dot, -1f, 1f);
+            var angleRad = MathF.Acos(dot);
+            var angleDeg = MathHelper.RadiansToDegrees(angleRad);
+            return 90f - angleDeg;
         }
-
     }
 }

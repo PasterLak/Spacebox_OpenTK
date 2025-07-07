@@ -8,11 +8,5 @@
             RenderFace = RenderFace.Back;
         }
 
-        protected override void SetMaterialProperties()
-        {
-            base.SetMaterialProperties();
-
-            Shader.SetVector4("color", Color);
-        }
     }
 }

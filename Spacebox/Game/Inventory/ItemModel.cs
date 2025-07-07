@@ -81,10 +81,10 @@ namespace Spacebox.Game
              }*/
             if (UseMainCamera && Camera.Main != null)
             {
-                Vector3 pos = Camera.Main.CameraRelativeRender ? (Position - Camera.Main.Position) : Position;
+               
                 model =
                      Matrix4.CreateTranslation(offset) *
-                     Matrix4.CreateTranslation(pos) *
+                     Matrix4.CreateTranslation(RenderSpace.ToRender(Position)) *
                      Matrix4.CreateRotationY(additionalRotationAngle) *
                       Matrix4.CreateTranslation(Camera.Main.Position);
                 var cam = Camera.Main as Astronaut;
@@ -131,7 +131,7 @@ namespace Spacebox.Game
                 };
             }
 
-            material.SetUniforms(model);
+            material.Apply(model);
 
             Mesh.Render();
 

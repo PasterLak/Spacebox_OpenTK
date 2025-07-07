@@ -8,17 +8,27 @@ namespace Engine
 
         public TextureMaterial(Texture2D texture) : base(Resources.Load<Shader>("Shaders/textured"))
         {
-            MainTexture = texture;
-            RenderFace = RenderFace.Front;
-            RenderMode = RenderMode.Cutout;
+            Init(texture);
         }
 
         public TextureMaterial(Texture2D texture, Shader shader) : 
             base(shader)
         {
+            Init(texture);
+        }
+
+        public TextureMaterial( Shader shader, Texture2D texture) :
+            base(shader)
+        {
+            Init(texture);
+        }
+
+        private void Init(Texture2D texture)
+        {
             MainTexture = texture;
             RenderFace = RenderFace.Front;
             RenderMode = RenderMode.Cutout;
+            AddTexture("texture0", MainTexture);
         }
 
         public static MeshBuffer GetMeshBuffer()
@@ -33,12 +43,6 @@ namespace Engine
           return new MeshBuffer(attrs);
         }
 
-        protected override void SetMaterialProperties()
-        {
-            base.SetMaterialProperties();
-
-            UseTexture(MainTexture, "texture0");
-        }
 
     }
 }

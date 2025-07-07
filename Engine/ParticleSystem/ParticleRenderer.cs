@@ -114,7 +114,7 @@ namespace Engine
            
 
 
-            Material.SetUniforms(Matrix4.Identity);
+            Material.Apply(Matrix4.Identity);
             Material.Shader.SetMatrix4("view", cam.GetViewMatrix(), false);
             Material.Shader.SetMatrix4("projection", cam.GetProjectionMatrix(), false);
             Material.Shader.SetInt("rotationCase", _rotationCase);

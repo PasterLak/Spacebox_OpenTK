@@ -2,7 +2,7 @@
 
 namespace Engine
 {
-    public class Material : MaterialBase
+    public class MaterialOld : MaterialBase
     {
        
         public Texture2D Texture { get; private set; }
@@ -10,25 +10,25 @@ namespace Engine
         public Vector2 Offset { get;  set; } = Vector2.Zero;
         public Vector2 Tiling { get;  set; } = Vector2.One;
 
-        public Material() : base(null)
+        public MaterialOld() : base(null)
         {
             RenderFace = RenderFace.Front;
             RenderMode = RenderMode.Opaque;
-            Shader = Resources.Load<Shader>("Shaders/colored");
+           // Shader = Resources.Load<Shader>("Shaders/colored");
 
         }
 
-        public Material(Shader shader) : base(shader)
+        public MaterialOld(Shader shader) : base(shader)
         {
      
         }
 
-        public Material(Shader shader, Texture2D texture) : base(shader)
+        public MaterialOld(Shader shader, Texture2D texture) : base(shader)
         {
             Texture = texture;
         }
 
-        public override void Use()
+        /*public override void Use()
         {
             //GL.PolygonMode(MaterialFace.FrontAndBack, polygonMode);
 
@@ -41,6 +41,6 @@ namespace Engine
 
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-        }
+        }*/
     }
 }

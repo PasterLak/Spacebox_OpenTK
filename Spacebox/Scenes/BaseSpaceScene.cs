@@ -319,6 +319,8 @@ namespace Spacebox.Scenes
             dustSpawner.Update();
             MainThreadDispatcher.Instance.ExecutePending();
             world.Update();
+
+        
            
             if (Input.IsKeyDown(Keys.R))
             {
@@ -484,6 +486,8 @@ namespace Spacebox.Scenes
 
             TagManager.DrawTags(localPlayer, Window.Instance.Size.X, Window.Instance.Size.Y);
             BlackScreenOverlay.OnGUI();
+            CenteredText.Hide();
+
         }
 
         public override void UnloadContent()

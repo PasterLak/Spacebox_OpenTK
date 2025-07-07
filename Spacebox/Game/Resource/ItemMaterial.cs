@@ -13,13 +13,14 @@ namespace Spacebox.Game.Resource
             //RenderFace = RenderFace.Both;
         }
 
-        public Action Action; 
-         
-        protected override void SetMaterialProperties()
+        public Action Action;
+
+        protected override void UpdateDynamicUniforms()
         {
-            base.SetMaterialProperties();
+            base.UpdateDynamicUniforms();
 
             Action?.Invoke();
         }
+       
     }
 }

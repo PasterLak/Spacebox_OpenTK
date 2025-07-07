@@ -74,9 +74,8 @@ public class Model2 : SceneNode,  IGameComponent
         // GL.Enable(EnableCap.DepthTest);
         // GL.Enable(EnableCap.Blend);
             Material.RenderFace = RenderFace.Front;
-            Material.SetUniforms(WorldMatrix);
+            Material.Apply(WorldMatrix);
 
-            Material.Use();
             /*Material.Shader.SetMatrix4("model", WorldMatrix);
             Material.Shader.SetMatrix4("view", camera.GetViewMatrix());
             Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());*/

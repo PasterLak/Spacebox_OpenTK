@@ -14,12 +14,13 @@ using Engine;
 using Spacebox.Game;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Player;
+using System.Linq;
 
 public class InteractionShoot : InteractionMode
 {
 
     public static InteractionShoot Instance;
-    private static AudioSource shotSound;
+    private AudioSource shotSound;
     private InteractiveBlock lastInteractiveBlock;
     private ItemSlot selectedItemSlot;
     private AnimatedItemModel model;
@@ -72,7 +73,9 @@ public class InteractionShoot : InteractionMode
 
             if (shotSound == null)
             {
-                shotSound = new AudioSource(GameAssets.Sounds[weapone.ShotSound]); // 
+                var v = GameAssets.Sounds;
+                //Debug.Error(v.ContainsKey(weapone.ShotSound) + " HAS SOUND? IS NULL " + (v[weapone.ShotSound] == null));
+                shotSound = new AudioSource(v[weapone.ShotSound]); // 
                 shotSound.Volume = 1f;
             }
 

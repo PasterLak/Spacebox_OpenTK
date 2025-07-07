@@ -71,6 +71,7 @@ New
 engine:
 - remake SceneGraph
 - Components
+- BVH - Frustum Culling
 
 Small
 - double click to open a world

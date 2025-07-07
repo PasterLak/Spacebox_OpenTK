@@ -43,14 +43,14 @@ namespace Engine
 
             Position = camera.Position;
 
-            Material.SetUniforms(GetRenderModelMatrix());
+            Material.Apply(GetRenderModelMatrix());
 
             if (IsAmbientAffected)
                 Material.Shader.SetVector3("ambient", Lighting.AmbientColor);
             else
                 Material.Shader.SetVector3("ambient", new Vector3(1, 1, 1));  // can be optimized
 
-            Material.Use();
+            
             Mesh.Render();
 
         }

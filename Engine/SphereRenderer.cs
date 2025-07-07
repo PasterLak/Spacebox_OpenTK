@@ -107,9 +107,8 @@ namespace Engine
             var matModel = GetRenderModelMatrix();
 
             Material.Color = _color;
-            Material.SetUniforms(matModel);
-            Material.Use();
-
+            Material.Apply(matModel);
+          
             GL.BindVertexArray(_buffer.VAO);
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);

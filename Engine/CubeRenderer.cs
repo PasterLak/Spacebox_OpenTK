@@ -143,8 +143,8 @@ namespace Engine
 
 
             Material.Color = _color;
-            Material.SetUniforms(matModel);
-            Material.Use();
+   
+            Material.Apply(matModel);
 
             GL.BindVertexArray(_buffer.VAO);
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);

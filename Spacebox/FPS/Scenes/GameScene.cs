@@ -129,7 +129,7 @@ namespace Spacebox.FPS.Scenes
 
         private void LoadModels()
         {
-            Material mat = new Material(_lightingShader, new Texture2D("Resources/Textures/Game/base.png", true));
+            TextureMaterial mat = new TextureMaterial( new Texture2D("Resources/Textures/Game/base.png", true), _lightingShader);
 
 
             for (int i = 0; i < 4; i++)
@@ -173,23 +173,23 @@ namespace Spacebox.FPS.Scenes
             arrow.Position = new Vector3(1, 1, 1);
 
             Model terrain = new Model(Resources.Load<Mesh>("Resources/Models/terrain.obj"),
-                new Material(_lightingShader,
+                new TextureMaterial(_lightingShader,
                 new Texture2D("Resources/Textures/Game/grass2.jpg", false)));
             //terrain.Material.Tiling = new Vector2(25, 25);
 
 
-            Model tv = new Model(Resources.Load<Mesh>("Resources/Models/tv.obj"), new Material(_lightingShader, new Texture2D("Resources/Textures/Game/tv.png", true)));
+            Model tv = new Model(Resources.Load<Mesh>("Resources/Models/tv.obj"), new TextureMaterial(_lightingShader, new Texture2D("Resources/Textures/Game/tv.png", true)));
             tv.Position = new Vector3(2, 0.5f, 3);
             tv.Rotation = new Vector3(0, 0, 0);
 
             var tex = new Texture2D("Resources/Textures/spacer.png", true);
             tex.FlipY();
             tex.UpdateTexture(true);
-            Model stone1 = new Model(Resources.Load<Mesh>("Resources/Models/spacer.obj"), new Material(_lightingShader, tex));
+            Model stone1 = new Model(Resources.Load<Mesh>("Resources/Models/spacer.obj"), new TextureMaterial(_lightingShader, tex));
             stone1.Position = new Vector3(8, 1, 3);
             stone1.Rotation = new Vector3(0, 0, 0);
 
-            Model cube = new Model(Resources.Load<Mesh>("Resources/Models/cube.obj"), new Material(_lightingShader, new Texture2D("Resources/Textures/Game/container2.png", false)));
+            Model cube = new Model(Resources.Load<Mesh>("Resources/Models/cube.obj"), new TextureMaterial(_lightingShader, new Texture2D("Resources/Textures/Game/container2.png", false)));
             cube.Position = new Vector3(8, 0, 8);
             //cube.Rotation = new Vector3(0,45,0);
 

@@ -13,15 +13,17 @@ public class AtmosphereMaterial : TextureMaterial
 
         RenderFace = RenderFace.Both;
     }
-
-    protected override void SetMaterialProperties()
+    protected override void UpdateDynamicUniforms()
     {
-        base.SetMaterialProperties();
+        base.UpdateDynamicUniforms();
+
         Camera cam = Camera.Main;
 
         Shader.SetVector3("cameraPos", cam.Position);
         Shader.SetVector3("glowColor", GlowColor);
         Shader.SetFloat("glowIntensity", GlowIntensity);
+
     }
+
 }
 

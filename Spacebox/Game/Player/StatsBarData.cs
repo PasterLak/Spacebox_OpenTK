@@ -26,7 +26,6 @@ namespace Spacebox.Game.Player
 
         public void Decrement(int amount)
         {
-            if (Count <= 0) return;
             amount = MathHelper.Abs(amount);
 
             Count = Math.Max(Count - amount, 0);

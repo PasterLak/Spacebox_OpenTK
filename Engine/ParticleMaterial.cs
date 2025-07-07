@@ -11,6 +11,8 @@ namespace Engine
             MainTexture = texture;
             RenderFace = RenderFace.Both;
             RenderMode = RenderMode.Fade;
+
+            AddTexture("particleTexture", MainTexture);
         }
 
         public ParticleMaterial(Texture2D texture, Shader shader) :
@@ -19,14 +21,9 @@ namespace Engine
             MainTexture = texture;
             RenderFace = RenderFace.Both;
             RenderMode = RenderMode.Fade;
+            AddTexture("particleTexture", MainTexture);
         }
 
-        protected override void SetMaterialProperties()
-        {
-            base.SetMaterialProperties();
-
-            UseTexture(MainTexture, "particleTexture");
-        }
 
     }
 }

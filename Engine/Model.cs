@@ -12,7 +12,7 @@ namespace Engine
         public MaterialBase Material { get; private set; }
 
         public Model(Mesh mesh)
-            : this( mesh, new Material())
+            : this( mesh, new ColorMaterial())
         {
             Name = "Model";
         }
@@ -69,8 +69,8 @@ namespace Engine
         public void Render(Camera camera)
         {
 
-            Material.Use();
-            Material.SetUniforms(GetRenderModelMatrix());
+            Material.Apply(this);
+        
             //Material.Shader.SetMatrix4("model", GetModelMatrix());
             Material.Shader.SetMatrix4("view", camera.GetViewMatrix());
             Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());

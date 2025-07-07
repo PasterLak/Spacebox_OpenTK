@@ -45,6 +45,9 @@ namespace Engine.Audio
 
         public AudioSource(AudioClip clip)
         {
+            if (clip == null)
+                Debug.Error("[AudioSource] clip was null!");
+
             this.Clip = clip;
             clip.AudioSource = this;
             handle = AL.GenSource();

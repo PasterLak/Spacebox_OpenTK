@@ -72,8 +72,8 @@ namespace Spacebox.Scenes.Test
             atmosphere = new Model2("Resources/Models/sphere2.obj", atmosphereMat);
             mars = new Model2("Resources/Models/sphere2.obj", matMars);
             sun.AttachComponent(new HelloComponent());
-            sunMat.Shader.Use();
-            sunMat.SetUniforms(sun.WorldMatrix);
+          
+            sunMat.Apply(sun.WorldMatrix);
             moon = new Model2("Resources/Models/sphere2.obj", matMoon);
 
             mars.SetScale(0.15f);

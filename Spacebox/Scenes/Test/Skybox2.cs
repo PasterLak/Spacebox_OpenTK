@@ -33,14 +33,14 @@ namespace Spacebox.Scenes.Test
 
             bool cullFaceEnabled = GL.IsEnabled(EnableCap.CullFace);
 
-            Material.SetUniforms(WorldMatrix);
+            Material.Apply(WorldMatrix);
 
             if (IsAmbientAffected)
                 Material.Shader.SetVector3("ambient", Lighting.AmbientColor);
             else
                 Material.Shader.SetVector3("ambient", new Vector3(1, 1, 1));  // can be optimized
 
-            Material.Use();
+           
             Mesh.Render();
 
         }

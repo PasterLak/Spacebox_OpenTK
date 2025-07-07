@@ -57,7 +57,13 @@ namespace Spacebox.Game.GUI
         public static void OpenStorage(StorageBlock storageBlock, Astronaut astronaut)
         {
             StorageBlock = storageBlock;
-            Storage = storageBlock.Storage;
+            OpenStorage(storageBlock.Storage, astronaut);
+
+        }
+        public static void OpenStorage(Storage storage, Astronaut astronaut)
+        {
+
+            Storage = storage;
             Astronaut = astronaut;
             Storage.ConnectStorage(astronaut.Inventory);
             astronaut.Inventory.ConnectStorage(Storage);
@@ -150,9 +156,10 @@ namespace Spacebox.Game.GUI
             ImGui.SetCursorPos(paddingV);
             if (!editingName)
             {
-                ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), StorageBlock?.Name ?? "Storage");
+                var stb = StorageBlock;
+                ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), stb?.Name ?? Storage.Name);
                 ImGui.SameLine();
-                if (ImGui.ImageButton("##edit", PencilTexture, paddingV * 4))
+                if (stb != null && ImGui.ImageButton("##edit", PencilTexture, paddingV * 4))
                 {
                     StartNameEdit();
                 }
