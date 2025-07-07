@@ -4,22 +4,17 @@
     {
         public Node3D Owner { get; private set; }
 
-        private bool _enabled = true;
-        public bool Enabled
-        {
-            get { return _enabled; }
-            set { _enabled = value; }
-        }
+        public bool Enabled { get; set; } = true;
 
-        public virtual void OnAttached() { }
-        public virtual void OnDettached() { }
-        public virtual void Start() { }
-        public virtual void Update() { }
-        public virtual void Render() { }
+        public virtual void OnAttached(Node3D onOwner) { Owner = onOwner; }
 
-        public void SetOwner(Node3D owner)
+        public virtual void OnDetached()
         {
-            Owner = owner;
+            Owner = null;
         }
+        //public virtual void Start() { }
+        public virtual void OnUpdate() { }
+        public virtual void OnRender() { }
+
     }
 }

@@ -19,7 +19,6 @@ namespace Spacebox.Scenes
         {
         }
 
-
         public override void LoadContent()
         {
 

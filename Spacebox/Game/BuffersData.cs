@@ -1,6 +1,4 @@
-﻿
-
-using Engine;
+﻿using Engine;
 
 namespace Spacebox.Game
 {

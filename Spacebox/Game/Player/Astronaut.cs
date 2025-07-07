@@ -9,6 +9,8 @@ using Spacebox.Game.GUI;
 using Engine;
 using Spacebox.GUI;
 using System.Xml.Linq;
+using Engine.Components;
+using Engine.Utils;
 using Spacebox.Game.Player.Interactions;
 
 
@@ -49,7 +51,6 @@ namespace Spacebox.Game.Player
         public HitImage HitImage { get; private set; }
 
         private AudioSource useConsumableAudio;
-
         public HealthBar HealthBar { get; private set; }
         public PowerBar PowerBar { get; private set; }
         private GameModeBase _gameModeBase;
@@ -81,7 +82,7 @@ namespace Spacebox.Game.Player
             DepthFar = Settings.ViewDistance;
             base.Name = Name;
             Layer = CollisionLayer.Player;
-            VisualDebug.RemoveCollisionToDraw(this);
+         
             HealthBar = new HealthBar();
             PowerBar = new PowerBar();
 
@@ -89,7 +90,8 @@ namespace Spacebox.Game.Player
             SetRenderSpace(true);
             HitImage = new HitImage();
             Flashlight = new Flashlight(this);
-
+      
+            CreateModel(0);
             GameMode = GameMode.Creative;
 
             toggle = ToggleManager.Register("player");
@@ -156,10 +158,50 @@ namespace Spacebox.Game.Player
 
 
         }
+        private static Dictionary<string, Texture2D> astronautTextures = new Dictionary<string, Texture2D>();
+        private static Texture2D GetAstronautTexture(string color)
+        {
+            if (!astronautTextures.TryGetValue(color, out Texture2D tex))
+            {
+                string texturePath = $"Resources/Textures/Player/Astronaut_{color}.jpg";
+                tex = Resources.Load<Texture2D>(texturePath);
+                tex.FlipY();
+                tex.FilterMode = FilterMode.Nearest;
+             
+                astronautTextures[color] = tex;
+            }
+            return tex;
+        }
+        private ModelRendererComponent astBody;
+        private ModelRendererComponent astHelmet;
+        private ModelRendererComponent astTank;
+        private void CreateModel(int id)
+        {
+            var colors = new[] { "Yellow", "Orange", "Purple", "Blue", "Green", "Cyan", "Red", "White", "Black" };
+            int index = Math.Abs(id) % colors.Length;
+            var selectedColor = colors[index];
+            Texture2D tex = GetAstronautTexture(selectedColor);
+            var mat = new TextureMaterial( tex);
+
+            var mesh1 = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Body_Fly.obj");
+            var mesh2 = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Helmet_Closed.obj");
+            var mesh3 = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Tank_Fly.obj");
+
+            astBody = AttachComponent(new ModelRendererComponent(new Model(mesh1, mat)));
+            astHelmet = AttachComponent(new ModelRendererComponent(new Model(mesh2, mat)));
+            astTank = AttachComponent(new ModelRendererComponent(new Model(mesh3, mat)));
+        }
+
 
         public override void Update()
         {
+            astBody.Enabled = !IsMain;
+            astHelmet.Enabled = !IsMain;
+            astTank.Enabled = !IsMain;
+                
             base.Update();
+            
+            
             if (needResetNextFrame)
             {
                 ResetMousePosition();
@@ -202,22 +244,6 @@ namespace Spacebox.Game.Player
             {
                 FOV = 90;
             }
-
-            if (Input.IsKeyDown(Keys.F5))
-            {
-                VisualDebug.ShowPlayerCollision = !VisualDebug.ShowPlayerCollision;
-
-                if (VisualDebug.ShowPlayerCollision)
-                {
-                    VisualDebug.AddCollisionToDraw(this);
-                }
-                else
-                {
-                    VisualDebug.RemoveCollisionToDraw(this);
-                }
-            }
-
-
 
             if (Input.IsKeyDown(Keys.R))
             {
@@ -307,7 +333,7 @@ namespace Spacebox.Game.Player
         public void Render()
         {
             Render(this);
-
+            base.Render();  
             if (_gameModeBase != null)
             {
                 _gameModeBase.Render(this);

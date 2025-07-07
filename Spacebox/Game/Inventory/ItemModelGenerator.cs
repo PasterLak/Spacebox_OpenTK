@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿using System.Collections.Generic;
+using OpenTK.Mathematics;
 using Engine;
 using Spacebox.Game.Resource;
 using static Spacebox.Game.ItemModelGeneratorHelper;
@@ -9,154 +10,133 @@ namespace Spacebox.Game
     {
         private static int CellSize = 32;
 
-            public static ItemModel GenerateModel(Texture2D atlasTexture,
-            int cellX, int cellY, float modelSize = 1.0f, float modelDepth = 0.2f, bool isAnimated = false, bool drawOnlyVisibleSides = true)
+        public static ItemModel GenerateModelFromAtlas(
+            Texture2D atlasTexture,
+            int cellX,
+            int cellY,
+            float modelSize = 1f,
+            float modelDepth = 0.2f,
+            bool isAnimated = false,
+            bool drawOnlyVisibleSides = true)
         {
-            Texture2D cellTexture = UVAtlas.GetBlockTexture(atlasTexture, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
+            CellSize = 32;
+            var cellTexture = UVAtlas.GetBlockTexture(atlasTexture, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
+            var mesh = BuildItemModel(cellTexture, modelSize, modelDepth, drawOnlyVisibleSides);
+            return ItemModelFromMesh(cellTexture, mesh, isAnimated);
+        }
+
+        public static ItemModel GenerateModelFromTexture(
+            Texture2D texture,
+            float modelSize = 1f,
+            float modelDepth = 0.2f,
+            bool isAnimated = false,
+            bool drawOnlyVisibleSides = true)
+        {
+            CellSize = 1;
+            var mesh = BuildItemModel(texture, modelSize, modelDepth, drawOnlyVisibleSides);
+            return ItemModelFromMesh(texture, mesh, isAnimated);
+        }
+        public static Mesh GenerateMeshFromTexture(
+            Texture2D texture,
+            float modelDepth = 0.2f,
+            bool drawOnlyVisibleSides = false)
+        {
+            CellSize = 1;
+            return BuildItemModel(texture, 1f/texture.Width, modelDepth, drawOnlyVisibleSides);
+            
+        }
+
+        private static ItemModel ItemModelFromMesh(Texture2D cellTexture,
+          Mesh mesh,
+            bool isAnimated
+          )
+        {
+            return isAnimated ? new AnimatedItemModel(mesh, cellTexture) : new ItemModel(mesh, cellTexture);
+        }
+
+        private static Mesh BuildItemModel(
+            Texture2D cellTexture,
+            float modelSize,
+            float modelDepth,
+            bool drawOnlyVisibleSides)
+        {
             cellTexture.FlipX();
             CellSize = cellTexture.Width;
 
-            Color4[,] pixels = cellTexture.GetPixelData();
+            var pixels = cellTexture.GetPixelData();
+            var quads = GreedyMesh(pixels, cellTexture.Width, cellTexture.Height);
 
-            int width = cellTexture.Width;
-            int height = cellTexture.Height;
-
-            var quads = ItemModelGeneratorHelper.GreedyMesh(pixels, width, height);
-
-
-            List<float> vertices = new List<float>();
-            List<uint> indices = new List<uint>();
+            List<float> vertices = new();
+            List<uint>  indices  = new();
             uint indexOffset = 0;
 
-
-            foreach (var quad in quads)
+            foreach (var q in quads)
             {
-                Vector3 bottomLeft = new Vector3(quad.X, quad.Y, 0);
-                Vector3 bottomRight = new Vector3((quad.X + quad.Width), quad.Y, 0);
-                Vector3 topRight = new Vector3((quad.X + quad.Width), (quad.Y + quad.Height), 0);
-                Vector3 topLeft = new Vector3(quad.X, (quad.Y + quad.Height), 0);
+                Vector3 bl = new Vector3(q.X,                 q.Y,                 0) * modelSize;
+                Vector3 br = new Vector3(q.X + q.Width,       q.Y,                 0) * modelSize;
+                Vector3 tr = new Vector3(q.X + q.Width,       q.Y + q.Height,      0) * modelSize;
+                Vector3 tl = new Vector3(q.X,                 q.Y + q.Height,      0) * modelSize;
 
-                bottomLeft = bottomLeft * modelSize;
-                bottomRight = bottomRight * modelSize;
-                topRight = topRight * modelSize;
-                topLeft = topLeft * modelSize;
+                var uv = GetUVs(q);
 
-                var uv = GetUVs(quad);
-                Vector2 uv1 = new Vector2(quad.U, quad.V);
-                Vector2 uv2 = new Vector2(quad.U + quad.UWidth, quad.V);
-                Vector2 uv3 = new Vector2(quad.U + quad.UWidth, quad.V + quad.UHeight);
-                Vector2 uv4 = new Vector2(quad.U, quad.V + quad.UHeight);
-
-
-                AddFace(vertices, indices, indexOffset,
-                     topLeft, topRight, bottomRight, bottomLeft,
-                     new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
+                AddFace(vertices, indices, indexOffset, tl, tr, br, bl, Vector3.One, uv[0], uv[1], uv[2], uv[3]);
                 indexOffset += 4;
 
-
-                if (quad.NeedsTopSide && !drawOnlyVisibleSides)
+                if (q.NeedsTopSide && !drawOnlyVisibleSides)
                 {
-                    ItemModelGeneratorHelper.AddFaceButton(vertices, indices, indexOffset,
-                        quad, modelDepth, modelSize,
-                   uv[0], uv[1], uv[2], uv[3]);
-
+                    AddFaceButton(vertices, indices, indexOffset, q, modelDepth, modelSize, uv[0], uv[1], uv[2], uv[3]);
                     indexOffset += 4;
                 }
 
-                if (quad.NeedsBottomSide)
+                if (q.NeedsBottomSide)
                 {
-                    ItemModelGeneratorHelper.AddFaceTop(vertices, indices, indexOffset,
-                        quad, modelDepth, modelSize,
-                    uv[0], uv[1], uv[2], uv[3]);
-
+                    AddFaceTop(vertices, indices, indexOffset, q, modelDepth, modelSize, uv[0], uv[1], uv[2], uv[3]);
                     indexOffset += 4;
                 }
 
-                if (quad.NeedsRightSide && !drawOnlyVisibleSides)
+                if (q.NeedsRightSide && !drawOnlyVisibleSides)
                 {
-                    ItemModelGeneratorHelper.AddFaceForward(vertices, indices, indexOffset,
-                        quad, modelDepth, modelSize,
-                     uv[0], uv[1], uv[2], uv[3]);
-
-                    indexOffset += 4;
-                }
-                if (quad.NeedsLeftSide) // ++
-                {
-                    ItemModelGeneratorHelper.AddFaceBack
-                        (vertices, indices, indexOffset,
-                        quad, modelDepth, modelSize,
-                     uv[0], uv[1], uv[2], uv[3]);
-
+                    AddFaceForward(vertices, indices, indexOffset, q, modelDepth, modelSize, uv[0], uv[1], uv[2], uv[3]);
                     indexOffset += 4;
                 }
 
-
-
+                if (q.NeedsLeftSide)
+                {
+                    AddFaceBack(vertices, indices, indexOffset, q, modelDepth, modelSize, uv[0], uv[1], uv[2], uv[3]);
+                    indexOffset += 4;
+                }
             }
 
-            if (!drawOnlyVisibleSides)
+            if (!drawOnlyVisibleSides) // draw right side
             {
-                foreach (var quad in quads)
+                var offset = cellTexture.Width / 2f;
+                foreach (var q in quads)
                 {
-                    Vector3 bottomLeft = new Vector3(quad.X, quad.Y, 0);
-                    Vector3 bottomRight = new Vector3((quad.X + quad.Width), quad.Y, 0);
-                    Vector3 topRight = new Vector3((quad.X + quad.Width), (quad.Y + quad.Height), 0);
-                    Vector3 topLeft = new Vector3(quad.X, (quad.Y + quad.Height), 0);
+                    
+                    Vector3 bl = new Vector3(q.X,                 q.Y,                 offset) * modelSize;
+                    Vector3 br = new Vector3(q.X + q.Width,       q.Y,                 offset) * modelSize;
+                    Vector3 tr = new Vector3(q.X + q.Width,       q.Y + q.Height,      offset) * modelSize;
+                    Vector3 tl = new Vector3(q.X,                 q.Y + q.Height,      offset) * modelSize;
 
+                    var uv = GetUVs(q);
 
-                    bottomLeft = bottomLeft * modelSize;
-                    bottomRight = bottomRight * modelSize;
-                    topRight = topRight * modelSize;
-                    topLeft = topLeft * modelSize;
-
-                    bottomLeft = bottomLeft + new Vector3(0, 0, modelDepth);
-                    bottomRight = bottomRight + new Vector3(0, 0, modelDepth);
-                    topRight = topRight + new Vector3(0, 0, modelDepth);
-                    topLeft = topLeft + new Vector3(0, 0, modelDepth);
-
-
-                    var uv = GetUVs(quad);
-
-                    Vector2 uv1 = new Vector2(quad.U, quad.V);
-                    Vector2 uv2 = new Vector2(quad.U + quad.UWidth, quad.V);
-                    Vector2 uv3 = new Vector2(quad.U + quad.UWidth, quad.V + quad.UHeight);
-                    Vector2 uv4 = new Vector2(quad.U, quad.V + quad.UHeight);
-
-
-
-                    ItemModelGeneratorHelper.AddFace(vertices, indices, indexOffset,
-                         topLeft, bottomLeft, bottomRight, topRight,
-                         new Vector3(1.0f, 1.0f, 1.0f), uv[0], uv[1], uv[2], uv[3]);
-
+                    AddFace(vertices, indices, indexOffset, tl, bl, br, tr, Vector3.One, uv[0], uv[1], uv[2], uv[3]);
                     indexOffset += 4;
                 }
             }
 
-
-            float[] vertexArray = vertices.ToArray();
-            uint[] indexArray = indices.ToArray();
-            Mesh mesh = new Mesh(vertexArray, indexArray, BuffersData.CreateItemModelBuffer());
-
-            if(!isAnimated)
-                return new ItemModel(mesh, cellTexture);
-            else
-                return new AnimatedItemModel(mesh, cellTexture);
+            return  new Mesh(vertices.ToArray(), indices.ToArray(), BuffersData.CreateItemModelBuffer());
+          
         }
 
-        public static Vector2[] GetUVs(ItemModelGeneratorHelper.Quad quad)
+        public static Vector2[] GetUVs(Quad quad)
         {
             float pixelUV = 1f / CellSize;
-
-            Vector2 uvLeft = new Vector2(quad.X * pixelUV, quad.Y * pixelUV);
-            Vector2 uvRight = new Vector2((quad.X + quad.Width) * pixelUV, quad.Y * pixelUV);
-            Vector2 uvTopRight = new Vector2((quad.X + quad.Width) * pixelUV, (quad.Y + quad.Height) * pixelUV);
-            Vector2 uvTop = new Vector2(quad.X * pixelUV, (quad.Y + quad.Height) * pixelUV);
-
-            return new Vector2[] { uvLeft, uvRight, uvTopRight, uvTop };
-
-
+            Vector2 uvLeft     = new(quad.X * pixelUV,                 quad.Y * pixelUV);
+            Vector2 uvRight    = new((quad.X + quad.Width) * pixelUV,  quad.Y * pixelUV);
+            Vector2 uvTopRight = new((quad.X + quad.Width) * pixelUV,  (quad.Y + quad.Height) * pixelUV);
+            Vector2 uvTop      = new(quad.X * pixelUV,                 (quad.Y + quad.Height) * pixelUV);
+            return new[] { uvLeft, uvRight, uvTopRight, uvTop };
         }
-
-
     }
 }

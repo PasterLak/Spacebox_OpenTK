@@ -241,7 +241,7 @@ public class InteractionShoot : InteractionMode
             if (weapon.ProjectileID == 3)
                 projectile.OnDespawn += SetSphere;
 
-            if (projectileParameters == null) return;
+            //if (projectileParameters == null) return;
 
 
             light.Ambient = projectileParameters.Color3;

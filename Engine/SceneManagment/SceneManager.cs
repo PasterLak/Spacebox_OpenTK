@@ -138,14 +138,16 @@ namespace Engine.SceneManagment
                    
                     InputManager.RemoveAllActions(true);
                     CurrentScene.Dispose();
+                    
                     CurrentScene.UnloadContent();
+                    Camera.Main = null;
 
                     SoundManager.Dispose();
              
                     Resources.UnloadAll();
                     VisualDebug.Clear();
 
-                    Camera.Main = null;
+                    
                    // Debug.Log("Active Textures: " + GL.GetInteger(GetPName.TextureBinding2D));
                    // Debug.Log("Active Buffers: " + GL.GetInteger(GetPName.ArrayBufferBinding));
                     

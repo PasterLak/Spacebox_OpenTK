@@ -15,7 +15,7 @@ namespace Spacebox.Game
     public class Spacer : Node3D
     {
         protected Animator animator;
-        public StatsBarData Health { get; private set; }
+        private StatsBarData Health { get;  set; }
         public ColliderComponent OBB => obb;
         private ColliderComponent obb;
         public Storage Storage { get; private set; }
@@ -36,10 +36,6 @@ namespace Spacebox.Game
 
             obb = AttachComponent(new OBBCollider());
 
-           // AttachComponent(new MeshRendererComponent(
-             //   Resources.Load<Mesh>("Resources/Models/spacer.obj"), 
-            //    new TextureMaterial( spacerTex)));
-
             Model spacerModel = new Model(Resources.Load<Mesh>("Resources/Models/spacer.obj"), new TextureMaterial(spacerTex));
             AttachComponent(new ModelRendererComponent(spacerModel));
             AttachComponent(new AxesDebugComponent());
@@ -53,13 +49,19 @@ namespace Spacebox.Game
 
         }
 
+        public void Hit(Projectile projectile)
+        {
+            Health.Decrement(projectile.Parameters.Damage);
+        }
+        
         private void OnHit()
         {
-            Debug.Log("hit " + Health.Count);
+           
         }
+        
         private void OnKilled()
         {
-            Debug.Log("killed");
+           
             Storage.Clear();
             Parent?.RemoveChild(this);
         }
@@ -87,8 +89,7 @@ namespace Spacebox.Game
 
             if (ray.Intersects(OBB, out float distance))
             {
-                //Debug.Log("Spacer! dis: " + distance);
-
+              
                 if (distance < 3)
                 {
                     CenteredText.SetText("Press RMB to open");
@@ -96,14 +97,11 @@ namespace Spacebox.Game
 
                     if (Input.IsMouseButtonDown(MouseButton.Right))
                     {
-                        Health.Decrement(20);
+                        
                         StorageUI.OpenStorage(Storage, cam );
                     }
                 }
-                else
-                {
-                    //CenteredText.Hide();
-                }
+                
             }
         }
 

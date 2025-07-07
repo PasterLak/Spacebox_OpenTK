@@ -15,10 +15,8 @@ using Engine.UI;
 
 namespace Spacebox.Scenes
 {
-    public class MenuScene : Engine.SceneManagment.Scene
+    public class MenuScene : Scene
     {
-        private Skybox skybox;
-
         private Camera player;
         private DustSpawner spawner;
         private AudioSource music;
@@ -51,14 +49,11 @@ namespace Spacebox.Scenes
             canvas.AddChild(rect);
             
 
-                var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
+            var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
 
-            var mesh = Resources.Load<Engine.Mesh>("Resources/Models/cube.obj");
-            skybox = new Skybox(mesh, skyboxTexture);
-
-            skybox.IsAmbientAffected = false;
-
-
+            var mesh = Resources.Load<Mesh>("Resources/Models/cube.obj");
+      
+            AddChild(new Skybox(mesh, skyboxTexture));
             CenteredImageMenu.LoadImage("Resources/Textures/spaceboxLogo.png", true);
 
             Resources.Load<AudioClip>("Resources/Audio/UI/click1.ogg");
@@ -72,7 +67,7 @@ namespace Spacebox.Scenes
             music.IsLooped = true;
 
             music.Play();
-            AddChild(skybox);
+           
             InputManager.AddAction("inputOverlay", Keys.F6);
             InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
         
@@ -110,17 +105,10 @@ namespace Spacebox.Scenes
 
         public override void Start()
         {
-            
-            
-
-            // Input.HideCursor(); 
             CenteredImageMenu.ShowText = true;
             GameMenu.IsVisible = false;
-
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
-
             VerticalLinks.Init();
-
         }
 
 
@@ -136,8 +124,6 @@ namespace Spacebox.Scenes
         {
             Theme.ApplySpaceboxTheme();
            // ImFontPtr myFont = ImGui.GetIO().Fonts.Fonts[1];
-
-          
            // ImGui.PushFont(myFont);
             Input.ShowCursor();
             CenteredImageMenu.Draw();
@@ -150,9 +136,6 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
-            //skybox.Texture.Dispose();
-
-           // skyboxShader.Dispose();
             spawner.Dispose();
             music.Dispose();
             menu.Dispose();
@@ -163,9 +146,6 @@ namespace Spacebox.Scenes
             base.Update();
             CenteredImageMenu.Update();
             spawner.Update();
-            //sprite.UpdateWindowSize(Window.Instance.Size);
-           
-            //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
 
             if (Input.IsAnyKeyDown())
             {

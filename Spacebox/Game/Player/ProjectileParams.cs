@@ -1,12 +1,13 @@
 ﻿using OpenTK.Mathematics;
-using Engine;
+
 namespace Spacebox.Game.Player
 {
-    public class ProjectileParameters
+    public struct ProjectileParameters
     {
         public short ID { get; private set; } = -1;
         public string Name { get; private set; } = "projectiledefault";
         public float Speed { get; private set; }
+        public byte Mass { get; private set; } = 1;
         public int MaxTravelDistance { get; private set; }
         public float Length { get; private set; }
         public float Thickness { get; private set; }

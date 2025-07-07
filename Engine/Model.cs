@@ -6,7 +6,7 @@ using Engine.Physics;
 
 namespace Engine
 {
-    public class Model : StaticBody, INotTransparent
+    public class Model : StaticBody
     {
         public Mesh Mesh { get; private set; }
         public MaterialBase Material { get; private set; }
@@ -66,14 +66,17 @@ namespace Engine
         }
 
 
-        public void Render(Camera camera)
+        public void Render()
         {
-
+            var cam = Camera.Main;
+            
+            if(cam == null) return;
+            
             Material.Apply(this);
         
             //Material.Shader.SetMatrix4("model", GetModelMatrix());
-            Material.Shader.SetMatrix4("view", camera.GetViewMatrix());
-            Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());
+            Material.Shader.SetMatrix4("view", cam.GetViewMatrix());
+            Material.Shader.SetMatrix4("projection", cam.GetProjectionMatrix());
             Mesh.Render();
 
         }

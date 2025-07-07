@@ -12,15 +12,15 @@ namespace Engine.Components
         public bool DebugCollision = true;
         public BoundingVolume Volume { get; protected set; }
 
-        public override void OnAttached()
+        public override void OnAttached(Node3D owner)
         {
-            base.OnAttached();
+            base.OnAttached(owner);
 
             Recalculate();
             
         }
 
-        public override void Update()
+        public override void OnUpdate()
         {
             Recalculate();
             DrawDebug();

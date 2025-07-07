@@ -55,7 +55,7 @@ namespace Spacebox.Game.Player
             TagManager.RegisterTag(tagg);
           
             var uvIndex = GameAssets.AtlasItems.GetUVIndexByName("drill1");
-            itemModel = ItemModelGenerator.GenerateModel(GameAssets.ItemsTexture, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
+            itemModel = ItemModelGenerator.GenerateModelFromAtlas(GameAssets.ItemsTexture, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
             itemModel.UseMainCamera = true;
             itemModel.offset = Vector3.Zero;
             spotLight = new SpotLight(playerShader, Camera.Main.Front);
@@ -155,14 +155,14 @@ namespace Spacebox.Game.Player
             playerShader.SetFloat("spotLight.outerCutOff", MathF.Cos(MathHelper.DegreesToRadians(17.5f)));
             if (playerData.Name == "alconaut")
             {
-                spacerOld.Render(Camera.Main);
+                spacerOld.Render();
                 return;
             }
             spotLight.Render(Camera.Main);
             itemModel.Render();
-            astBody.Render(Camera.Main);
-            astHelmet.Render(Camera.Main);
-            astTank.Render(Camera.Main);
+            astBody.Render();
+            astHelmet.Render();
+            astTank.Render();
         }
     }
 }

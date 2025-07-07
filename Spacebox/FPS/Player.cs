@@ -28,7 +28,7 @@ namespace Spacebox.FPS
             spotLight = new SpotLight(new Shader("Shaders/lighting"), Front);
 
             Layer = CollisionLayer.Player;
-            VisualDebug.RemoveCollisionToDraw(this);
+            //VisualDebug.RemoveCollisionToDraw(this);
         }
 
         public Player(Vector3 position, Shader shader)
@@ -37,7 +37,7 @@ namespace Spacebox.FPS
             spotLight = new SpotLight(shader, Front);
             spotLight.IsActive = false;
             Layer = CollisionLayer.Player;
-            VisualDebug.RemoveCollisionToDraw(this);
+           // VisualDebug.RemoveCollisionToDraw(this);
         }
 
         public override void OnCollisionEnter(Collision other)
@@ -136,20 +136,7 @@ namespace Spacebox.FPS
                 movement -= Up * currentSpeed * (float)Time.Delta;
             }
 
-            if( Input.IsKeyDown(Keys.F5))
-            {
-                VisualDebug.ShowPlayerCollision = !VisualDebug.ShowPlayerCollision;
-
-                if(VisualDebug.ShowPlayerCollision)
-                {
-                    VisualDebug.AddCollisionToDraw(this);
-                }
-                else
-                {
-                    VisualDebug.RemoveCollisionToDraw(this);
-                }
-
-            }
+           
 
             if (movement != Vector3.Zero)
             {

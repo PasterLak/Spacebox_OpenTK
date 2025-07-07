@@ -8,10 +8,11 @@ namespace Engine
         private Vector3 _rotation = Vector3.Zero;
         private Vector3 _scale = Vector3.One;
         private bool _dirty = true;
-        private bool _relative = false;
         private Matrix4 _cached;
-        public Node3D? Owner { get; set; }
 
+        protected Node3D? Owner { get; set; }
+        
+      
         public virtual Vector3 Position
         {
             get => _position;

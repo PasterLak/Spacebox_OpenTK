@@ -18,7 +18,6 @@ using Spacebox.Game.Resource;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
 using Client;
-using Engine.Components;
 using Spacebox.Game.Player.Interactions;
 
 namespace Spacebox.Scenes
@@ -27,7 +26,7 @@ namespace Spacebox.Scenes
     {
        
         protected Astronaut localPlayer;
-        protected Skybox skybox;
+      
         protected World world;
  
         BlockMaterial blockMaterial;
@@ -50,7 +49,7 @@ namespace Spacebox.Scenes
         protected PointLight pLight;
         private SpheresPool SpheresPool;
         private bool isMultiplayer = false;
-      
+        private FreeCamera freeCamera;
         public BaseSpaceScene(string[] args) : base(args)
         {
             if((this as MultiplayerScene) != null)
@@ -175,10 +174,10 @@ namespace Spacebox.Scenes
             var texture = new SpaceTexture(512, 512, World.Seed);
 
             var mesh = Resources.Load<Engine.Mesh>("Resources/Models/cube.obj");
-            skybox = new Skybox(mesh,  texture);
+            var skybox = new Skybox(mesh,  texture);
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
             skybox.IsAmbientAffected = false;
-            
+            AddChild(skybox);
 
             radarWindow = new RadarUI(texture);
 
@@ -250,6 +249,8 @@ namespace Spacebox.Scenes
  
             spacer = new Spacer(localPlayer.Position + new Vector3(5, 5, 7));
             AddChild(spacer);
+            freeCamera = AddChild(new FreeCamera(localPlayer.Position));
+            Camera.Main = localPlayer;
             //AddChild(localPlayer);
             WelcomeUI.OnPlayerSpawned(World.Data.Info.ShowWelcomeWindow);
             WelcomeUI.Init();
@@ -325,6 +326,18 @@ namespace Spacebox.Scenes
             if (Input.IsKeyDown(Keys.R))
             {
                 RenderSpace.SwitchSpace();
+
+            }
+            if (Input.IsKeyDown(Keys.C))
+            {
+                if (localPlayer.IsMain)
+                {
+                    Camera.Main = freeCamera;
+                }
+                else
+                {
+                    Camera.Main = localPlayer;
+                }
 
             }
 
@@ -424,7 +437,7 @@ namespace Spacebox.Scenes
            base.Render();
             DisposalManager.ProcessDisposals();
 
-            skybox.DrawTransparent(localPlayer);
+            //skybox.DrawTransparent(localPlayer);
            
             pointLightsPool.Render();
 

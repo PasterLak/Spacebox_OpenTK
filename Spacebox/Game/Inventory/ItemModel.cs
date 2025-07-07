@@ -18,7 +18,7 @@ namespace Spacebox.Game
         public bool debug = false;
         private Matrix4 model;
 
-        private ItemMaterial material;
+        public ItemMaterial Material { get; private set; }
         private Camera itemCamera;
         public bool UseMainCamera { get; set; } = false;
 
@@ -28,7 +28,7 @@ namespace Spacebox.Game
          
             texture.FilterMode = FilterMode.Nearest;
 
-            material = new ItemMaterial(texture);
+            Material = new ItemMaterial(texture);
 
             itemCamera = new Camera360Base(Vector3.Zero, false);
             itemCamera.AspectRatio = Window.Instance.GetAspectRatio();
@@ -53,8 +53,10 @@ namespace Spacebox.Game
         {
            
         }
-        public virtual void Render()
+        public override void Render()
         {
+            
+            base.Render();
             if (!EnableRender)
             {
                 return;
@@ -64,21 +66,7 @@ namespace Spacebox.Game
             if (debug)
                 PlaceModelDebug();
             VisualDebug.DrawPosition(Position, Color4.Red);
-            /* if (UseMainCamera && Camera.Main != null)
-             {
-
-                 var pos = Camera.Main.CameraRelativeRender ? Position  : Position;
-                 model =
-                      Matrix4.CreateTranslation(offset) *
-                      Matrix4.CreateTranslation(pos) *
-                      Matrix4.CreateRotationY(additionalRotationAngle);
-                 shader.Use();
-
-                 var cam = Camera.Main as Astronaut;
-                 shader.SetMatrix4("model", model);
-                 shader.SetMatrix4("view", cam.GetViewMatrix());
-                 shader.SetMatrix4("projection", cam.GetProjectionMatrix());
-             }*/
+           
             if (UseMainCamera && Camera.Main != null)
             {
                
@@ -89,14 +77,14 @@ namespace Spacebox.Game
                       Matrix4.CreateTranslation(Camera.Main.Position);
                 var cam = Camera.Main as Astronaut;
 
-
-                material.Action = () =>
+                Material.Apply(model);
+                /*material.Action = () =>
                 {
                     material.Shader.Use();
                     material.Shader.SetMatrix4("model", model);
                     material.Shader.SetMatrix4("view", cam.GetViewMatrix());
                     material.Shader.SetMatrix4("projection", cam.GetProjectionMatrix());
-                };
+                };*/
 
                
             }
@@ -122,16 +110,16 @@ namespace Spacebox.Game
                      additionalRotation *
                      Matrix4.CreateTranslation(itemCamera.Position);
 
-                material.Action = () =>
+                Material.Action = () =>
                 {
-                    material.Shader.Use();
-                    material.Shader.SetMatrix4("model", model);
-                    material.Shader.SetMatrix4("view", itemCamera.GetViewMatrix());
-                    material.Shader.SetMatrix4("projection", itemCamera.GetProjectionMatrix());
+                    Material.Shader.Use();
+                    Material.Shader.SetMatrix4("model", model);
+                    Material.Shader.SetMatrix4("view", itemCamera.GetViewMatrix());
+                    Material.Shader.SetMatrix4("projection", itemCamera.GetProjectionMatrix());
                 };
             }
 
-            material.Apply(model);
+            Material.Apply(model);
 
             Mesh.Render();
 

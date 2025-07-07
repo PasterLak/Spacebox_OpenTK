@@ -344,9 +344,9 @@ namespace Spacebox.FPS.Scenes
 
             GL.DepthMask(false);
 
-            skyboxExtern.DrawTransparent(player);
+            skyboxExtern.Render();
 
-            skybox.DrawTransparent(player);
+            skybox.Render();
 
 
             GL.DepthMask(true); 

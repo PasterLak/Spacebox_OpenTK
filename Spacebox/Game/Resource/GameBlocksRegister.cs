@@ -66,7 +66,7 @@ namespace Spacebox.Game
         private static void GenerateItemModel(byte coordX, byte coordY, Item item)
         {
             bool isAnimated = item is DrillItem || item is WeaponItem;
-            ItemModel model = ItemModelGenerator.GenerateModel(
+            ItemModel model = ItemModelGenerator.GenerateModelFromAtlas(
                 GameAssets.ItemsTexture,
                 coordX,
                 coordY,

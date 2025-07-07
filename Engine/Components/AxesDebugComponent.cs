@@ -12,19 +12,19 @@ namespace Engine.Components.Debug
             _length = length;
         }
 
-        public override void OnAttached()
+        public override void OnAttached(Node3D owner)
         {
-        
+            base.OnAttached(owner); 
         }
 
-        public override void Render()
+        public override void OnRender()
         {
 
             VisualDebug.DrawAxes(Owner, _length);
            
         }
 
-        public override void OnDettached()
+        public override void OnDetached()
         {
            
         }

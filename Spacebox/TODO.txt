@@ -1,6 +1,10 @@
 
 
+012
 
+- local rot, pos for node3d
+- remove statics 
+- 
 
 For demo:
 
@@ -9,7 +13,7 @@ For demo:
 - categories in creative?
 + use sound effect
 - fix mod 2
-- modding guide
++ modding guide
 + fist craft test
 + shooting?
 + items animation

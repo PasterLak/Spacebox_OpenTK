@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Engine.Components;
-using Engine.Components.Debug;
-using Engine.SceneManagment;
+﻿using Engine.Components;
 using OpenTK.Mathematics;
 
 namespace Engine
@@ -35,8 +31,16 @@ namespace Engine
         public bool HasChildren => Children.Count > 0;
         public List<Component> Components { get; } = new();
         public bool HasComponents => Components.Count > 0;
+        
+        public bool Enabled { get; set; } = true;   
+        
         public Node3D()
         {
+            Owner = this;
+        }
+        public Node3D(Vector3 position)
+        {
+            Position = position;    
             Owner = this;
         }
 
@@ -47,60 +51,57 @@ namespace Engine
             return child;
         }
 
-
         public void RemoveChild(Node3D child)
         {
             if (child == null) return;
             if (Children.Remove(child))
             {
-                Debug.Log("removed");
                 child._parent = null;
                 child.MarkDirty();
-            }else
-            {
-                Debug.Log("not removed");
             }
         }
 
         public T AttachComponent<T>(T component) where T : Component
         {
             if (component == null || Components.Contains(component)) return component;
-            component.SetOwner(this);
-            component.OnAttached();
+          
+            component.OnAttached(this);
             Components.Add(component);
             return component;
         }
 
-
         public void DetachComponent(Component component)
         {
             if (component == null) return;
-            if (Components.Remove(component)) component.OnDettached();
+            if (Components.Remove(component)) component.OnDetached();
         }
 
         public virtual void Update()
         {
+            if(!Enabled) return;
+            
             _ = GetModelMatrix();
             for (int i = 0; i < Components.Count; i++)
-                if (Components[i].Enabled) Components[i].Update();
+                if (Components[i].Enabled) Components[i].OnUpdate();
             for (int i = 0; i < Children.Count; i++)
                 Children[i].Update();
         }
 
         public virtual void Render()
         {
-            //RenderSelf();
-            foreach (var cmp in Components)
+            if(!Enabled) return;
+            
+            for (var i = 0; i < Components.Count; i++)
+            {
+                var cmp = Components[i];
                 if (cmp.Enabled)
                 {
-                    cmp.Render();
-                   
+                    cmp.OnRender();
                 }
-            /*for (int i = 0; i < Children.Count; i++)
-                Children[i].Render();*/
+            }
         }
 
-        public void Traverse(Action<Node3D> action)
+        public void Traverse(Action<Node3D>? action)
         {
             if (action == null) return;
             action(this);
@@ -256,7 +257,7 @@ namespace Engine
         public Vector3 Up => Vector3.Normalize(Vector3.Cross(Right, Forward));
 
 
-        public void PrintHierarchy()
+        protected void PrintHierarchy()
         {
             Debug.Log("------------------- SceneGraph -------------------");
             PrintHierarchy(0);

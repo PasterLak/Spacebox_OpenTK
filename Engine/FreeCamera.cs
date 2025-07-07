@@ -18,7 +18,7 @@ namespace Engine
         {
             Input.HideCursor();
             Name = "FreeCamera";
-
+            
            var c = AttachComponent(new SphereCollider());
             c.DebugCollision = false;
 

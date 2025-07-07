@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Engine.Physics;
 
@@ -18,9 +16,7 @@ namespace Engine
         public static Matrix4 ProjectionMatrix { get; set; }
         public static Matrix4 ViewMatrix { get; set; }
         public static bool Enabled = false;
-        public static bool ShowPlayerCollision = false;
-        private static readonly List<Collision> _collisions = new();
-        public static CameraFrustum CameraFrustum;
+     
         private static float LineWidth = 1.0f;
 
         static VisualDebug()
@@ -62,17 +58,6 @@ namespace Engine
             var pos = transform.GetWorldPosition();
             DrawLine(pos, pos + Vector3.UnitZ, new Color4(0, 0, 1, 1));
             DrawBoundingSphere(new BoundingSphere(pos, 0.1f), Color4.Blue);
-        }
-
-        public static void AddCollisionToDraw(Collision collision)
-        {
-            _collisions.Add(collision);
-        }
-
-        public static void RemoveCollisionToDraw(Collision collision)
-        {
-            if (_collisions.Contains(collision))
-                _collisions.Remove(collision);
         }
 
         public static void DrawPoint(Vector3 position, float size, Color4 color)
@@ -296,7 +281,7 @@ namespace Engine
         public static void Render()
         {
             if (!Enabled) return;
-            if (_points.Count == 0 && _lines.Count == 0 && _triangles.Count == 0 && _collisions.Count == 0) return;
+            if (_points.Count == 0 && _lines.Count == 0 && _triangles.Count == 0) return;
 
             Camera cam = Camera.Main;
             if (cam != null)
@@ -305,9 +290,7 @@ namespace Engine
                 ViewMatrix = cam.GetViewMatrix();
             }
             else return;
-
-            foreach (var col in _collisions) col.DrawDebug();
-
+            
             _shader.Use();
             _shader.SetMatrix4("model", Matrix4.Identity * Matrix4.CreateTranslation(-RenderSpace.Origin));
             _shader.SetMatrix4("view", ViewMatrix);
@@ -361,7 +344,6 @@ namespace Engine
             _points.Clear();
             _lines.Clear();
             _triangles.Clear();
-            _collisions.Clear();
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using OpenTK.Mathematics;
-
 using Engine.Audio;
 using Engine.Physics;
 using Engine.Light;
@@ -19,7 +18,7 @@ namespace Spacebox.Game.Player
         private byte currentDamage = 0;
         private bool canRicochet = false;
 
-        private ProjectileParameters parameters;
+        public ProjectileParameters Parameters { get; set; }
         private Ray ray;
         private bool _isActive = false;
         public bool IsActive { get => _isActive; set => _isActive = value; }
@@ -53,7 +52,7 @@ namespace Spacebox.Game.Player
             this.useLight = useLight;
             this.ray = ray;
             ray.Length = 1f;
-            this.parameters = parameters;
+            this.Parameters = parameters;
             IsActive = true;
             currentDamage = parameters.Damage;
             canRicochet = parameters.RicochetAngle > 0;
@@ -114,16 +113,16 @@ namespace Spacebox.Game.Player
         {
             if (!_isActive) return;
 
-            Vector3 movement = ray.Direction * parameters.Speed * Time.Delta;
+            Vector3 movement = ray.Direction * Parameters.Speed * Time.Delta;
             Position += movement;
 
             ray.Origin += movement;
-            distanceTraveled += parameters.Speed * Time.Delta;
+            distanceTraveled += Parameters.Speed * Time.Delta;
 
             if (useLight)
                 light.Position = Position;
 
-            if (distanceTraveled >= parameters.MaxTravelDistance)
+            if (distanceTraveled >= Parameters.MaxTravelDistance)
             {
                 IsActive = false;
 
@@ -139,19 +138,19 @@ namespace Spacebox.Game.Player
             if (World.CurrentSector.Raycast(ray, out var hit))
             {
 
-                if (canRicochet && currentRicochets < parameters.PossibleRicochets)
+                if (canRicochet && currentRicochets < Parameters.PossibleRicochets)
                 {
 
                     var angle = Ray.CalculateIncidentAngle(ray, hit.normal);
 
-                    if (angle <= parameters.RicochetAngle)
+                    if (angle <= Parameters.RicochetAngle)
                     {
                         ray = ray.CalculateRicochetRay(hit.position, hit.normal, ray.Length);
                         ricochetSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 100);
                         ricochetSound.Play();
                         lineRenderer.ClearPoints();
                         lineRenderer.AddPoint(Vector3.Zero);
-                        lineRenderer.AddPoint(ray.Direction * parameters.Length);
+                        lineRenderer.AddPoint(ray.Direction * Parameters.Length);
                         currentRicochets++;
 
                         if (currentRicochets == 5)
@@ -193,6 +192,12 @@ namespace Spacebox.Game.Player
                 }
             }
         }
+        
+        public static float GetImpulseMagnitude(float speed, float mass) =>
+            mass * speed;
+
+        public static Vector3 GetImpulseVector(Vector3 direction, float speed, float mass) =>
+            direction.Normalized() * (mass * speed);
 
         public void Render()
         {

@@ -192,7 +192,7 @@ namespace Spacebox.Game
         {
             if (Projectiles.Count == 0)
             {
-                projectile = null;
+                projectile = new ProjectileParameters();
                 return false;
             }
             foreach (var item in Projectiles)
@@ -203,7 +203,7 @@ namespace Spacebox.Game
                     return true;
                 }
             }
-            projectile = null;
+            projectile = new ProjectileParameters();
             return false;
         }
 

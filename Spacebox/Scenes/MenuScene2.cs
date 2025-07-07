@@ -2,6 +2,7 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Engine;
+using Engine.Audio;
 using Spacebox.Game.Effects;
 using Engine.Audio;
 using Spacebox.Game.GUI;
@@ -12,24 +13,20 @@ using Spacebox.Game.Generation;
 using Engine.SceneManagment;
 using Engine.UI;
 using Engine.Components;
+using Engine.Components.Debug;
 using Engine.Utils;
 using Spacebox.Game.Player;
 using Engine.Physics;
-
+using Spacebox.Game.Resource;
 
 
 namespace Spacebox.Scenes
 {
-    public class MenuScene2 : Engine.SceneManagment.Scene
+    public class MenuScene2 : Scene
     {
-        private Skybox skybox;
+        private FreeCamera player;
+        private FreeCamera player2;
 
-        private Engine.FreeCamera player;
-        private Engine.FreeCamera player2;
-
-        private CubeRenderer cubeRenderer;
-        Spacer spacer;
-        ColliderComponent vol;
         public MenuScene2(string[] args) : base(args)
         {
           
@@ -39,23 +36,17 @@ namespace Spacebox.Scenes
         {
             int x = 20;
             //Theme.ApplySpaceboxTheme();
-
-            float winX = Window.Instance.Size.X;
-            float winY = Window.Instance.Size.Y;
-            var speed = 15f * Time.Delta;
-            //sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
-            //GL.Enable(EnableCap.DepthTest);
-
-            
-           // player = AddChild(new FreeCamera(new Vector3(0, 0, 5)));
+            var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
+            AddChild(new Skybox(skyboxTexture)).IsAmbientAffected = false;
+           player = AddChild(new FreeCamera(new Vector3(0, 0, 5)));
             player2 = AddChild(new FreeCamera(new Vector3(x, 5, 5)));
-            
-            cubeRenderer = new CubeRenderer(new Vector3(1,0,1));
+           
+            var cubeRenderer = new CubeRenderer(new Vector3(1,0,1));
             cubeRenderer.AttachComponent(new SphereCollider());
             cubeRenderer.Color = Color4.Green;
             cubeRenderer.AttachComponent(new RotatorComponent(new Vector3(0, 30, 0)));
-            spacer = new Spacer(new Vector3(x,2,0));
-            AddChild(spacer);
+  
+            var spacer = AddChild(new Spacer(new Vector3(x,2,0)));
             AddChild(cubeRenderer);
             var f1 = new CubeRenderer(new Vector3(x,-1,0));
             f1.AttachComponent(new OBBCollider());
@@ -70,42 +61,43 @@ namespace Spacebox.Scenes
             AddChild(c1);
             c2.AttachComponent(new RotatorComponent(new Vector3(0, -30, 0)));
             c2.AttachComponent(new AABBCollider());
-            vol = c1.AttachComponent(new AABBCollider());
+            c1.AttachComponent(new AABBCollider());
             //c1.RotateAround(new Vector3(x, 0, 0), Vector3.UnitY, speed * 1);
 
-            var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
-            Node3D model = new Node3D();
+         
+            Node3D model = new Node3D(new Vector3(x+5,0,0));
             Model m = new Model(GenMesh.CreateSphere(2), new TransparentMaterial(skyboxTexture));
             m.Material.Color = Color4.Red;
             model.AttachComponent(new ModelRendererComponent(m));
             model.AttachComponent(new SphereCollider());    
-            model.Position = new Vector3(x+5,0,0);
             AddChild(model);
 
 
-            var skyboxTexture2 = Resources.Load<Texture2D>("Resources/Textures/arSphere.png");
-            Node3D model2 = new Node3D();
+            Engine.Texture2D skyboxTexture2 = Resources.Load<Engine.Texture2D>("Resources/Textures/arSphere.png");
+            Node3D model2 = new Node3D(new Vector3(x + 6, 0, 0));
             var mat = new TextureMaterial(skyboxTexture2); mat.RenderMode = RenderMode.Fade;
             Model m2 = new Model(GenMesh.CreateSphere(6), mat);
             m2.Material.Color = Color4.White;
             model2.AttachComponent(new ModelRendererComponent(m2));
             model2.AttachComponent(new SphereCollider());
-            model2.Position = new Vector3(x + 6, 0, 0);
             AddChild(model2);
+            
+            var itemTexture = Resources.Load<Texture2D>("Resources/Textures/UI/trash.png");
+            itemTexture.FilterMode = FilterMode.Nearest;
 
+            var modelDepth = 0.5f;
+            Mesh item = ItemModelGenerator.GenerateMeshFromTexture(itemTexture,  modelDepth);
+ 
+            Node3D itemModel = new Node3D(new Vector3(1, 1, 1));
+            var cm = itemModel.AttachComponent(new ModelRendererComponent(new Model(item, new ItemMaterial(itemTexture))));
+            cm.Offset = new Vector3(-0.5f, -0.5f, -modelDepth/2f);
+            itemModel.AttachComponent(new AxesDebugComponent());
+            itemModel.AttachComponent(new OBBCollider());
+            spacer.AddChild(itemModel);
 
-            skybox = new Skybox(skyboxTexture);
-
-            skybox.IsAmbientAffected = false;
-            AddChild(skybox);
-
-            CenteredImageMenu.LoadImage("Resources/Textures/spaceboxLogo.png", true);
-
-            Resources.Load<AudioClip>("Resources/Audio/UI/click1.ogg");
-
-
-            var clip = Resources.Load<AudioClip>("Resources/Audio/Music/music.ogg");
-
+            //var mo = spacer.AddChild(new ItemWorldModel("Resources/Textures/UI/trash.png"));
+            
+            
 
             InputManager.AddAction("inputOverlay", Keys.F6);
             InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
@@ -117,68 +109,28 @@ namespace Spacebox.Scenes
 
         public override void Start()
         {
-            
-            
-
-            // Input.HideCursor(); 
-         PrintHierarchy();
-
-        }
-
-
-        public override void Render()
-        {
-            //skybox. DrawTransparent(Camera.Main);
-            //skybox.Render();
-            base.Render();
-          
-
-            //spacer.Render();
+            PrintHierarchy();
         }
 
         public override void OnGUI()
         {
-          
-           // ImGui.PopFont();
+
         }
 
         public override void UnloadContent()
         {
-            //skybox.Texture.Dispose();
-
-           // skyboxShader.Dispose();
             
-          
+        }
+
+        public override void Render()
+        {
+            base.Render();
         }
 
         public override void Update()
         {
            base.Update();
 
-
-            Ray ray = new Ray(player2.Position, player2.Front, 5f);
-
-            if (ray.Intersects(spacer.OBB, out float distance))
-            {
-                //VisualDebug.DrawRay(ray, Color4.Red);
-                //VisualDebug.DrawAxes(ray.GetPoint(distance));
-               // Debug.Log("Spacer! dis: " + distance);
-            }
-
-            //sprite.UpdateWindowSize(Window.Instance.Size);
-            VisualDebug.DrawSphere(new Vector3(5,5,5), 3, Color4.Green);
-            if (Camera.Main.Frustum.IsInFrustum(spacer.OBB.Volume))
-            {
-               
-                //  Debug.Log("yes visible " + vol.ToString());
-            }
-            else
-            {
-            
-               // Debug.Log("no visible" + vol.ToString());
-            }
-            //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
-            //spacer.Update();
             if (Input.IsKeyDown(Keys.R))
             {
                 RenderSpace.SwitchSpace();
