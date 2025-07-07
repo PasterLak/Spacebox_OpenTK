@@ -69,7 +69,8 @@ New
 - rename storage, preview storage name if hovered
 
 engine:
-- 
+- remake SceneGraph
+- Components
 
 Small
 - double click to open a world

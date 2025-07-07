@@ -19,6 +19,7 @@ namespace Engine.Light
         public virtual void Render(Camera camera)
         {
             if (Shader == null) return;
+            if(camera == null) return;
             Shader.Use();
             Shader.SetMatrix4("view", camera.GetViewMatrix());
             Shader.SetMatrix4("projection", camera.GetProjectionMatrix());

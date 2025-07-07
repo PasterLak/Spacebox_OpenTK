@@ -16,7 +16,8 @@ namespace Engine.GUI
                 Vector3i playerPosInt = new Vector3i((int)cam.Position.X, (int)cam.Position.Y, (int)cam.Position.Z);
                 ImGui.Text($"Camera Position: {playerPosInt}");
                 ImGui.Text($"Camera-Relative Rendering: {cam.CameraRelativeRender}");
-                
+                ImGui.Text($"[BVH] Visible:{BVHCuller.VisibleObjects} Culled:{BVHCuller.CulledObjects}");
+
             }
 
             AfterDraw?.Invoke();

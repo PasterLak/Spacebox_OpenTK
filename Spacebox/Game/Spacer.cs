@@ -26,9 +26,13 @@ namespace Spacebox.Game
             storage = new Storage(4,4);
 
             obb = AttachComponent(new OBBCollider());
-            AttachComponent(new MeshRendererComponent(
-                Resources.Load<Mesh>("Resources/Models/spacer.obj"), 
-                new Material(Resources.Load<Shader>("Shaders/player"), spacerTex)));
+
+           // AttachComponent(new MeshRendererComponent(
+             //   Resources.Load<Mesh>("Resources/Models/spacer.obj"), 
+            //    new TextureMaterial( spacerTex)));
+
+            Model spacerModel = new Model(Resources.Load<Mesh>("Resources/Models/spacer.obj"), new TextureMaterial(spacerTex));
+            AttachComponent(new ModelRendererComponent(spacerModel));
             AttachComponent(new AxesDebugComponent());
 
             animator = new Animator(this);
@@ -41,14 +45,15 @@ namespace Spacebox.Game
         public override void Update()
         {
             base.Update();
-        
+          
             animator.Update();
         }
 
         public override void Render()
         {
             base.Render();
-
+           
         }
+
     }
 }

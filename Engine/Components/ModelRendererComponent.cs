@@ -20,8 +20,12 @@ namespace Engine.Components
         {
             if (Model == null || Model.Material == null || Camera.Main == null) return;
 
-            Model.Position = Owner.Position;
-           Model.Render(Camera.Main);
+            Model.Material.Use();
+            Model.Material.SetUniforms(Owner.GetRenderModelMatrix());
+            //Material.Shader.SetMatrix4("model", GetModelMatrix());
+            Model.Material.Shader.SetMatrix4("view", Camera.Main.GetViewMatrix());
+            Model.Material.Shader.SetMatrix4("projection", Camera.Main.GetProjectionMatrix());
+            Model.Mesh.Render();
 
         }
 

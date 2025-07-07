@@ -38,6 +38,8 @@ namespace Engine.SceneManagment
         public virtual void Render()
         {
             base.Render();
+         BVHCuller.Render(this, Camera.Main);
+    
         }
 
         public abstract void OnGUI();

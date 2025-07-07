@@ -34,7 +34,7 @@ namespace Engine
         {
             DrawTransparent(Camera.Main);
             base.Render();
-            
+           
         }
 
 

@@ -312,8 +312,7 @@ namespace Spacebox.Scenes
         {
             Time.HandleTicks();
 
-            var node = this as Node3D;
-            node.Update();
+            base.Update();
 
             localPlayer.Update();
             blockDestructionManager.Update();
@@ -420,7 +419,7 @@ namespace Spacebox.Scenes
         public Action OnRenderCenter;
         public override void Render()
         {
-           
+           base.Render();
             DisposalManager.ProcessDisposals();
 
             skybox.DrawTransparent(localPlayer);

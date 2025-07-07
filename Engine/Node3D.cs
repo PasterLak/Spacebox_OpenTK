@@ -34,7 +34,7 @@ namespace Engine
         public List<Node3D> Children { get; } = new();
         public bool HasChildren => Children.Count > 0;
         public List<Component> Components { get; } = new();
-
+        public bool HasComponents => Components.Count > 0;
         public Node3D()
         {
             Owner = this;
@@ -85,10 +85,15 @@ namespace Engine
 
         public virtual void Render()
         {
-            for (int i = 0; i < Components.Count; i++)
-                if (Components[i].Enabled) Components[i].Render();
-            for (int i = 0; i < Children.Count; i++)
-                Children[i].Render();
+            //RenderSelf();
+            foreach (var cmp in Components)
+                if (cmp.Enabled)
+                {
+                    cmp.Render();
+                   
+                }
+            /*for (int i = 0; i < Children.Count; i++)
+                Children[i].Render();*/
         }
 
         public void Traverse(Action<Node3D> action)

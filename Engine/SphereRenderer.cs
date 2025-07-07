@@ -88,7 +88,7 @@ namespace Engine
             _buffer.SetAttributes();
         }
 
-        public void Render()
+        public override void Render()
         {
             if (!Enabled) return;
             if (_geometryNeedsUpdate) RebuildSphere();

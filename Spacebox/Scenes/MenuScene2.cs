@@ -47,10 +47,10 @@ namespace Spacebox.Scenes
             //GL.Enable(EnableCap.DepthTest);
 
             
-            player = AddChild(new FreeCamera(new Vector3(0, 0, 5)));
+           // player = AddChild(new FreeCamera(new Vector3(0, 0, 5)));
             player2 = AddChild(new FreeCamera(new Vector3(x, 5, 5)));
             
-            cubeRenderer = new CubeRenderer(new Vector3(0));
+            cubeRenderer = new CubeRenderer(new Vector3(1,0,1));
             cubeRenderer.AttachComponent(new SphereCollider());
             cubeRenderer.Color = Color4.Green;
             cubeRenderer.AttachComponent(new RotatorComponent(new Vector3(0, 30, 0)));
@@ -58,24 +58,27 @@ namespace Spacebox.Scenes
             AddChild(spacer);
             AddChild(cubeRenderer);
             var f1 = new CubeRenderer(new Vector3(x,-1,0));
-            cubeRenderer.AddChild(f1);
+            f1.AttachComponent(new OBBCollider());
+            AddChild(f1);
 
             var c1 = new CubeRenderer(new Vector3(x-3, 0, 0));
             var c2 = new CubeRenderer(new Vector3(x, -1, 0));
             
-            c1.Color = Color4.Red;
+            c1.Color = Color4.DeepPink;
+            c2.Color = Color4.Pink ;
             c1.AddChild(c2);
             AddChild(c1);
             c2.AttachComponent(new RotatorComponent(new Vector3(0, -30, 0)));
-            c2.AttachComponent(new OBBCollider());
-            vol = c1.AttachComponent(new OBBCollider());
-            c1.RotateAround(new Vector3(x, 0, 0), Vector3.UnitY, speed * 1);
+            c2.AttachComponent(new AABBCollider());
+            vol = c1.AttachComponent(new AABBCollider());
+            //c1.RotateAround(new Vector3(x, 0, 0), Vector3.UnitY, speed * 1);
 
             Node3D model = new Node3D();
             Model m = new Model(GenMesh.CreateSphere(2));
             m.Material.Color = Color4.Red;
 
             model.AttachComponent(new ModelRendererComponent(m));
+            model.AttachComponent(new SphereCollider());    
             model.Position = new Vector3(x+5,0,0);
             AddChild(model);
             var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
@@ -114,11 +117,11 @@ namespace Spacebox.Scenes
 
         public override void Render()
         {
-           //skybox. DrawTransparent(Camera.Main);
+            //skybox. DrawTransparent(Camera.Main);
             //skybox.Render();
             base.Render();
-
           
+
             //spacer.Render();
         }
 

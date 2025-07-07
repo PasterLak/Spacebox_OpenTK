@@ -121,6 +121,8 @@ namespace Engine
             AttachComponent(new AxesDebugComponent());
         }
 
+        
+
         public override void Render()
         {
             base.Render();
