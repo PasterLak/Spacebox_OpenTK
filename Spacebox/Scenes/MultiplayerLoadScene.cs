@@ -174,7 +174,7 @@ namespace Spacebox.Scenes
         }
         public override void UnloadContent()
         {
-            CenteredText.Hide();
+            //CenteredText.Hide();
            // skybox.Texture.Dispose();
             skyboxShader.Dispose();
         }

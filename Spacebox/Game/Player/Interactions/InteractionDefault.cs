@@ -20,7 +20,7 @@ public class InteractionDefault : InteractionMode
 
     public override void OnDisable()
     {
-        CenteredText.Hide();
+        //CenteredText.Hide();
     }
 
     public override void Update(Astronaut player)
@@ -46,7 +46,7 @@ public class InteractionDefault : InteractionMode
             }
             else
             {
-                CenteredText.Hide();
+               // CenteredText.Hide();
                 return;
             }
 
@@ -55,7 +55,7 @@ public class InteractionDefault : InteractionMode
         }
         else
         {
-            CenteredText.Hide();
+           // CenteredText.Hide();
         }
     }
 

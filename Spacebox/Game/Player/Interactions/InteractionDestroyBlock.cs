@@ -62,7 +62,7 @@ public abstract class InteractionDestroyBlock : InteractionMode
     public override void OnDisable()
     {
         BlockSelector.IsVisible = false;
-        CenteredText.Hide();
+       // CenteredText.Hide();
         selectedItemSlot = null;
         model?.Animator.Clear();
     }

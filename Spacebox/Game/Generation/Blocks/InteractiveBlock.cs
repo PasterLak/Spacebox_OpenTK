@@ -47,7 +47,7 @@ namespace Spacebox.Game.Generation.Blocks
         private void OnNotHovered()
         {
 
-            CenteredText.Hide();
+            //CenteredText.Hide();
         }
 
         public static void UpdateInteractive(InteractiveBlock block, Astronaut player, Chunk chunk, Vector3 hitPos)

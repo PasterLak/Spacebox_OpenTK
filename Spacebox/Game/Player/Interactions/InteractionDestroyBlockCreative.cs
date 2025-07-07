@@ -78,13 +78,13 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
                     storageBlock.SetPositionInChunk(hit.blockPositionIndex);
                 }
             }
-            else CenteredText.Hide();
+            //else CenteredText.Hide();
         }
         else
         {
             AImedBlockElement.AimedBlock = null;
             BlockSelector.IsVisible = false;
-            CenteredText.Hide();
+            //CenteredText.Hide();
             if (Input.IsMouseButtonDown(MouseButton.Left))
                 model.SetAnimation(true);
         }

@@ -163,9 +163,8 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
                     light.IsActive = true;
             }
             lastInteractiveBlock = hit.block as InteractiveBlock;
-            if (lastInteractiveBlock == null)
-                CenteredText.Hide();
-            else
+            if (lastInteractiveBlock != null)
+             
             {
                 InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
                 if (hit.block.Is<StorageBlock>(out var storageBlock))
@@ -180,7 +179,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         {
             BlockMiningEffect.Enabled = false;
             BlockSelector.IsVisible = false;
-            CenteredText.Hide();
+           // CenteredText.Hide();
             if (Input.IsMouseButtonDown(MouseButton.Left))
                 model.SetAnimation(true);
             if (Input.IsMouseButton(MouseButton.Left))

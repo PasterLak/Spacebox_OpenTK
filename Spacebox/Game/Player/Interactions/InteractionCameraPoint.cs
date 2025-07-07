@@ -157,7 +157,7 @@ namespace Spacebox.Game.Player.Interactions
                     {
                         isFlying = true;
                         flightDistance = 0f;
-                        CenteredText.Hide();
+                        //CenteredText.Hide();
                     }
                 }
             }
@@ -184,7 +184,7 @@ namespace Spacebox.Game.Player.Interactions
             else
             {
                 PanelUI.AllowScroll = true;
-                CenteredText.Hide();
+                //CenteredText.Hide();
             }
         }
 

@@ -111,7 +111,7 @@ public class InteractionShoot : InteractionMode
 
     public override void OnDisable()
     {
-        CenteredText.Hide();
+       // CenteredText.Hide();
         selectedItemSlot = null;
         //BlockMiningEffect.Enabled = false;
         model.Animator.Clear();
@@ -212,13 +212,13 @@ public class InteractionShoot : InteractionMode
             }
             else
             {
-                CenteredText.Hide();
+                //CenteredText.Hide();
 
             }
         }
         else
         {
-            CenteredText.Hide();
+            //CenteredText.Hide();
         }
 
         if (canShoot && Input.IsMouseButton(0))
