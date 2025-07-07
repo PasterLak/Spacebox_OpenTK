@@ -3,23 +3,23 @@
     public class PointLightsPool : IDisposable
     {
 
-        public static PointLightsPool Instance;
+        public static PointLightsPool? Instance;
 
         private Pool<PointLight> pool;
         private List<PointLight> activeLights;
         private Shader shader;
-        private Camera camera;
 
-        public PointLightsPool(Shader shader, Camera camera, int initSize)
+
+        public PointLightsPool(Shader shader, int initSize)
         {
             if (Instance == null)
                 Instance = this;
             else
             {
                 Instance = this;
-                Debug.Log("PointLightsPool Instance already exists!");
+                Debug.Error("[PointLightsPool] Instance already exists!");
             }
-            this.camera = camera;
+
             this.shader = shader;
             pool = new Pool<PointLight>(initSize, true);
             activeLights = new List<PointLight>();
@@ -93,7 +93,7 @@
                 if (ind[i])
                 {
                     var light = activeLights[i];
-                    light.SetShaderParams(active++, camera);
+                    light.SetShaderParams(active++, Camera.Main);
                 }
 
             }

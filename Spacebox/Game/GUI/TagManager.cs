@@ -46,8 +46,10 @@ namespace Spacebox.Game.GUI
             _tags.Clear();
         }
 
-        public static void DrawTags(Camera camera, int screenWidth, int screenHeight)
-        {   
+        public static void DrawTags(int screenWidth, int screenHeight)
+        {
+            var camera = Camera.Main;
+
             if (camera == null) return;
             if (_tags.Count == 0) return;
             if (!Settings.ShowInterface) return;

@@ -41,6 +41,7 @@
 	  <None Remove="shaders\atmosphere.glsl" />
 	  <None Remove="Shaders\basic.vs" />
 	  <None Remove="shaders\colorReplace.glsl" />
+	  <None Remove="shaders\fade.glsl" />
 	  <None Remove="Shaders\outline.glsl" />
 	  <None Remove="shaders\passthrough.glsl" />
 	  <None Remove="shaders\planet.glsl" />

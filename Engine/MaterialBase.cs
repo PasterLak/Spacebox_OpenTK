@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
@@ -11,6 +10,8 @@ namespace Engine
     {
         public Shader Shader { get; }
         public Color4 Color { get; set; } = Color4.White;
+        public bool UseFog { get; set; } = true;
+        public bool UseAmbientLight { get; set; } = true;
         public RenderMode RenderMode { get; set; } = RenderMode.Opaque;
         public RenderFace RenderFace { get; set; } = RenderFace.Both;
         public int RenderQueue { get; set; } = 1000;
@@ -63,9 +64,24 @@ namespace Engine
             }
         }
 
-        void _setFixed() => Shader.SetVector4("color", Color);
+        private void _setFixed()  // global variables for glsl
+        {
+            Shader.SetVector4("color", Color);
+            Shader.SetVector3("ambient", UseAmbientLight ? Lighting.AmbientColor : new Vector3(1,1,1));
 
-        void _setUser()
+            Shader.SetVector3("fog", Lighting.FogColor);
+            Shader.SetFloat("fogDensity", UseFog ? Lighting.FogDensity : 0);
+
+            var camera = Camera.Main;
+            if (camera != null)
+            {
+                Shader.SetVector3("cameraPosition", camera.Position - RenderSpace.Origin);
+               
+            }
+            
+        }
+
+        private void _setUser()
         {
             foreach (var (name, val) in _parameters)
             {
@@ -82,7 +98,7 @@ namespace Engine
             }
         }
 
-        void _setMVP(Matrix4 model)
+        private void _setMVP(Matrix4 model)
         {
             var cam = Camera.Main;
             Shader.SetMatrix4("model", model);
@@ -117,13 +133,10 @@ namespace Engine
             if (enableDepthTest) GL.Enable(EnableCap.DepthTest);
             else GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.DepthTest);
-            //if (mode == RenderMode.Transparent)
-            //    GL.DepthMask(false);
-            // else
-            //    GL.DepthMask(true);
+         
 
-            //GL.DepthMask(depthWrite);
-
+            //GL.DepthMask(RenderMode == RenderMode.Opaque || RenderMode == RenderMode.Cutout);
+      
 
             if (enableBlending)
             {
@@ -135,7 +148,7 @@ namespace Engine
                 GL.Disable(EnableCap.Blend);
             }
         }
-        void _applyState()
+        private void _applyState()
         {
             if (RenderFace == RenderFace.Both) GL.Disable(EnableCap.CullFace);
             else { GL.Enable(EnableCap.CullFace); GL.CullFace(RenderFace == RenderFace.Front ? CullFaceMode.Back : CullFaceMode.Front); }

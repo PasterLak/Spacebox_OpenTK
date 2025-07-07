@@ -51,6 +51,33 @@ namespace Engine
             return child;
         }
 
+        //  ──────────────────────────────────────────────────────────────────────────────
+        //  Вставь в Node3D (или в статический helper-класс, если удобней).
+        //  ──────────────────────────────────────────────────────────────────────────────
+        public T AddChildKeepWorld<T>(T child) where T : Node3D
+        {
+            if (child == null || ReferenceEquals(child, this)) return child;
+
+            // 1. запоминаем текущую мировую матрицу ребёнка
+            Matrix4 worldChild = child.GetModelMatrix();
+
+            // 2. назначаем нового родителя (без перестройки трансформа)
+            child._parent?.Children.Remove(child);
+            child._parent = this;
+            Children.Add(child);
+
+            // 3. вычисляем локальный = worldChild * inverse(parentWorld)
+            Matrix4 local = worldChild * Matrix4.Invert(GetModelMatrix());
+
+            // 4. декомпозируем и пишем как локальный трансформ
+            child.Position = local.ExtractTranslation();
+            child.Scale = local.ExtractScale();
+            child.Rotation = QuaternionToEulerDegrees(local.ExtractRotation());
+
+            child.MarkDirty();
+            return child;
+        }
+
         public void RemoveChild(Node3D child)
         {
             if (child == null) return;

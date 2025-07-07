@@ -20,10 +20,7 @@ namespace Spacebox.Game.Resource
             Shader.SetInt("texture0", 0);
             Shader.SetInt("textureAtlas", 1);
 
-           
-            Shader.SetFloat("fogDensity", 0);
-            Shader.SetVector3("fogColor", Lighting.FogColor);
-            Shader.SetVector3("ambientColor", Lighting.AmbientColor);
+       
 
             
         }
@@ -31,11 +28,7 @@ namespace Spacebox.Game.Resource
         protected override void UpdateDynamicUniforms()
         {
             base.UpdateDynamicUniforms();
-
-            
-
-            Shader.SetVector3("cameraPosition", player.Position);
-            Shader.SetVector3("ambientColor", Lighting.AmbientColor);
+           
         }
  
     }

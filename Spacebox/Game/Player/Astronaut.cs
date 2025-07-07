@@ -125,6 +125,9 @@ namespace Spacebox.Game.Player
             Inventory.ConnectStorage(Panel);
 
             _axes = new Axes(Position, 0.01f);
+
+            var mo = AddChild(new ItemWorldModel("Resources/Textures/UI/trash.png"));
+           
         }
 
         private void SetGameMode(GameMode mode)

@@ -15,12 +15,11 @@ namespace Spacebox.Game.GUI
                 var cam = Camera.Main;
                 Astronaut ast = cam as Astronaut;
 
-                if (ast != null)
-                {
+                if (ast == null) return;
+
                     string formatted = ast.InertiaController.Velocity.Length.ToString("0.0");
                     ImGui.Text($"Speed: {formatted}");
-                }
-                
+               
                 ImGui.Text($"Gamemode: {ast.GameMode}");
                 
                 if(ast.CurrentInteraction != null)

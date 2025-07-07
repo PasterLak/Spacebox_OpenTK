@@ -36,7 +36,8 @@ namespace Spacebox.Game
 
             obb = AttachComponent(new OBBCollider());
 
-            Model spacerModel = new Model(Resources.Load<Mesh>("Resources/Models/spacer.obj"), new TextureMaterial(spacerTex));
+            Model spacerModel = new Model(Resources.Load<Mesh>("Resources/Models/spacer.obj"), 
+                new TextureMaterial(spacerTex));
             AttachComponent(new ModelRendererComponent(spacerModel));
             AttachComponent(new AxesDebugComponent());
 
@@ -46,6 +47,12 @@ namespace Spacebox.Game
             animator.AddAnimation(new RotateAnimation(Vector3.UnitY, 5f, 0f));
 
             AddItems(Storage);
+
+            var mo = AddChild(new ItemWorldModel("Resources/Textures/Old/drill6.png", 0.1f));
+            mo.Rotate(new Vector3(0,90,0));
+            mo.SetScale(0.5f);
+            mo.Position = new Vector3(0.3f,-0.2f,-0.2f);
+
 
         }
 

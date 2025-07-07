@@ -109,14 +109,20 @@ namespace Spacebox.Game
 
             if (!drawOnlyVisibleSides) // draw right side
             {
-                var offset = cellTexture.Width / 2f;
+             
                 foreach (var q in quads)
                 {
                     
-                    Vector3 bl = new Vector3(q.X,                 q.Y,                 offset) * modelSize;
-                    Vector3 br = new Vector3(q.X + q.Width,       q.Y,                 offset) * modelSize;
-                    Vector3 tr = new Vector3(q.X + q.Width,       q.Y + q.Height,      offset) * modelSize;
-                    Vector3 tl = new Vector3(q.X,                 q.Y + q.Height,      offset) * modelSize;
+                    Vector3 bl = new Vector3(q.X,                 q.Y,                 0) * modelSize;
+                    Vector3 br = new Vector3(q.X + q.Width,       q.Y,                 0) * modelSize;
+                    Vector3 tr = new Vector3(q.X + q.Width,       q.Y + q.Height,      0) * modelSize;
+                    Vector3 tl = new Vector3(q.X,                 q.Y + q.Height,      0) * modelSize;
+
+                    var offset = modelDepth;
+                    bl.Z = offset;
+                    br.Z = offset;
+                    tr.Z = offset;
+                    tl.Z = offset;
 
                     var uv = GetUVs(q);
 

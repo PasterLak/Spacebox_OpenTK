@@ -13,11 +13,11 @@ public class ItemWorldModel : Node3D
         var itemTexture = Resources.Load<Texture2D>(texturePath);
         itemTexture.FilterMode = FilterMode.Nearest;
 
-         modelDepth = 0.5f;
+       
         Mesh item = ItemModelGenerator.GenerateMeshFromTexture(itemTexture,  modelDepth);
         
         var cm = AttachComponent(new ModelRendererComponent(new Model(item, new ItemMaterial(itemTexture))));
-        cm.Offset = new Vector3(-0.5f, -0.5f, -modelDepth/2f);
+        //cm.Offset = new Vector3(-0.5f, -0.5f, -modelDepth/2f);
         AttachComponent(new AxesDebugComponent());
         AttachComponent(new OBBCollider());
        

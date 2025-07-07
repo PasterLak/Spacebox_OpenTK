@@ -6,10 +6,10 @@ namespace Engine
 {
     public static class Lighting
     {
-        public static Vector3 AmbientColor ;
+        public static Vector3 AmbientColor = new Vector3(1);
         public static Color BackgroundColor = Color.Black;
         public static Vector3 FogColor;
-        public static float FogDensity = 0.05f;
+        public static float FogDensity = 0.1f;
 
         public static void AddAmbient()
         {

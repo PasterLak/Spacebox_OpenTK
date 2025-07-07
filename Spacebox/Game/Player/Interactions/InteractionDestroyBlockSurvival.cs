@@ -32,12 +32,18 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             texture.FilterMode = FilterMode.Nearest;
             BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1), texture, Resources.Load<Shader>("Shaders/particle"));
         }
-        light = PointLightsPool.Instance.Take();
-        light.Range = 8;
-        light.Ambient = new Color3Byte(100, 116, 255).ToVector3();
-        light.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
-        light.Specular = new Color3Byte(0, 0, 0).ToVector3();
-        light.IsActive = false;
+            var pool = PointLightsPool.Instance;
+
+        //Debug.Error("POOl is null " + (pool is null));
+
+            light = pool.Take();
+            light.Range = 8;
+            light.Ambient = new Color3Byte(100, 116, 255).ToVector3();
+            light.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
+            light.Specular = new Color3Byte(0, 0, 0).ToVector3();
+            light.IsActive = false;
+        
+       
     }
 
     public override void OnEnable()

@@ -70,8 +70,9 @@ namespace Spacebox.Game.Player
         {
             foreach (var s in spheres.ToArray())
                 PutBack(s);
+            Instance = null;
 
-            
+
         }
     }
 }

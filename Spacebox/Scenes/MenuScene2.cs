@@ -35,6 +35,8 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
             int x = 20;
+            Lighting.FogColor = new Vector3(1,0,0);
+            Lighting.FogDensity = 0.08f;
             //Theme.ApplySpaceboxTheme();
             var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
             AddChild(new Skybox(skyboxTexture)).IsAmbientAffected = false;
@@ -53,15 +55,15 @@ namespace Spacebox.Scenes
             AddChild(f1);
 
             var c1 = new CubeRenderer(new Vector3(x-3, 0, 0));
-            var c2 = new CubeRenderer(new Vector3(x, -1, 0));
+            var c2 = new CubeRenderer(new Vector3(1, 0, 0));
             
             c1.Color = Color4.DeepPink;
             c2.Color = Color4.Pink ;
             c1.AddChild(c2);
-            AddChild(c1);
+            //AddChild(c1);
             c2.AttachComponent(new RotatorComponent(new Vector3(0, -30, 0)));
-            c2.AttachComponent(new AABBCollider());
-            c1.AttachComponent(new AABBCollider());
+            c2.AttachComponent(new OBBCollider());
+            c1.AttachComponent(new OBBCollider());
             //c1.RotateAround(new Vector3(x, 0, 0), Vector3.UnitY, speed * 1);
 
          
@@ -74,13 +76,13 @@ namespace Spacebox.Scenes
 
 
             Engine.Texture2D skyboxTexture2 = Resources.Load<Engine.Texture2D>("Resources/Textures/arSphere.png");
-            Node3D model2 = new Node3D(new Vector3(x + 6, 0, 0));
-            var mat = new TextureMaterial(skyboxTexture2); mat.RenderMode = RenderMode.Fade;
+            Node3D sphere = new Node3D(new Vector3(0, 0, 1));
+            var mat = new FadeMaterial(skyboxTexture2); 
             Model m2 = new Model(GenMesh.CreateSphere(6), mat);
             m2.Material.Color = Color4.White;
-            model2.AttachComponent(new ModelRendererComponent(m2));
-            model2.AttachComponent(new SphereCollider());
-            AddChild(model2);
+            sphere.AttachComponent(new ModelRendererComponent(m2));
+            sphere.AttachComponent(new SphereCollider());
+            spacer.AddChild(sphere);
             
             var itemTexture = Resources.Load<Texture2D>("Resources/Textures/UI/trash.png");
             itemTexture.FilterMode = FilterMode.Nearest;
@@ -93,10 +95,12 @@ namespace Spacebox.Scenes
             cm.Offset = new Vector3(-0.5f, -0.5f, -modelDepth/2f);
             itemModel.AttachComponent(new AxesDebugComponent());
             itemModel.AttachComponent(new OBBCollider());
-            spacer.AddChild(itemModel);
+            //c1.Position = new Vector3(0);
+            //spacer.AddChild(c1);
 
-            //var mo = spacer.AddChild(new ItemWorldModel("Resources/Textures/UI/trash.png"));
-            
+            AddChild(c1);
+
+           
             
 
             InputManager.AddAction("inputOverlay", Keys.F6);

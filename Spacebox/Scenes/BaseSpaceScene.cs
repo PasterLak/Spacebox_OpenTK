@@ -31,7 +31,7 @@ namespace Spacebox.Scenes
  
         BlockMaterial blockMaterial;
         protected string worldName;
-        protected PointLightsPool pointLightsPool;
+    
         protected BlockSelector blockSelector;
         protected RadarUI radarWindow;
 
@@ -178,7 +178,7 @@ namespace Spacebox.Scenes
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
             skybox.IsAmbientAffected = false;
             AddChild(skybox);
-
+           
             radarWindow = new RadarUI(texture);
 
             if (localPlayer == null)
@@ -215,8 +215,8 @@ namespace Spacebox.Scenes
             localPlayer.GameMode = World.Data.Info.GameMode;
            
             blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.LightAtlas, localPlayer);
+            PointLightsPool.Instance = new PointLightsPool(blockMaterial.Shader, 64);
 
-            pointLightsPool = new PointLightsPool(blockMaterial.Shader, localPlayer, 64);
 
             blockDestructionManager = new BlockDestructionManager(localPlayer);
             dustSpawner = new DustSpawner(localPlayer);
@@ -439,11 +439,9 @@ namespace Spacebox.Scenes
 
             //skybox.DrawTransparent(localPlayer);
            
-            pointLightsPool.Render();
+            PointLightsPool.Instance.Render();
 
-            Vector3 camPos = localPlayer.CameraRelativeRender ? Vector3.Zero : localPlayer.Position;
-
-
+         
             if (InteractionShoot.ProjectilesPool != null)
                 InteractionShoot.ProjectilesPool.Render();
 
@@ -497,7 +495,7 @@ namespace Spacebox.Scenes
                 WorldTextDebug.OnGUI();
             }
 
-            TagManager.DrawTags(localPlayer, Window.Instance.Size.X, Window.Instance.Size.Y);
+            TagManager.DrawTags( Window.Instance.Size.X, Window.Instance.Size.Y);
             BlackScreenOverlay.OnGUI();
             CenteredText.Hide();
 
@@ -513,7 +511,7 @@ namespace Spacebox.Scenes
             TickTaskManager.Dispose();
      
             dustSpawner.Dispose();
-            pointLightsPool.Dispose();
+            PointLightsPool.Instance.Dispose();
             ambient.Dispose();
             Chat.Clear();
             if (InteractionShoot.ProjectilesPool != null)

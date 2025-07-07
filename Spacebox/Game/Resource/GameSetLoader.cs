@@ -759,7 +759,7 @@ namespace Spacebox.Game.Resource
                     if (Path.GetFileNameWithoutExtension(file).Equals("lighting", StringComparison.OrdinalIgnoreCase))
                     {
                         LoadLighting(optionalPath);
-                        Debug.Log("Lighting file was loaded!");
+                        
                     }
                 }
             }
@@ -781,10 +781,13 @@ namespace Spacebox.Game.Resource
                         Lighting.FogColor = settings.FogColor.ToVector3();
                         Lighting.FogDensity = settings.FogDensity;
                     }
+                    else Debug.Error($"[GameSetLoader] Error loading lighting settings: Modlighting settings = null");
+
+                    Debug.Log("[GameSetLoader] Lighting file was loaded! ");
                 }
                 catch (Exception ex)
                 {
-                    Debug.Error($"Error loading lighting settings: {ex.Message}");
+                    Debug.Error($"[GameSetLoader] Error loading lighting settings: {ex.Message}");
                 }
             }
         }

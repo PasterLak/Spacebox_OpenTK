@@ -31,7 +31,7 @@ float calcFog(vec4 worldPosition, float distanceMultiplicator)
 
 void main()
 {
-    vec4 worldPosition =    vec4(aPosition,1.0) * model; // vec4(aPosition,1.0)*model;  model * vec4(aPosition,1.0)
+    vec4 worldPosition = vec4(aPosition,1.0) * model; // vec4(aPosition,1.0)*model;  model * vec4(aPosition,1.0)
     gl_Position = worldPosition*view*projection; // worldPosition*view projection * view * worldPosition; 
     TexCoord = aTexCoord;
     Color = aColor;
@@ -81,8 +81,8 @@ uniform sampler2D texture0;
 uniform sampler2D textureAtlas;
 uniform vec3 viewPos;
 uniform float material_shininess;
-uniform vec3 fogColor = vec3(1,0,0);
-uniform vec3 ambientColor = vec3(0.2, 0.2, 0.2);
+uniform vec3 fog = vec3(1,0,0);
+uniform vec3 ambient = vec3(0.2, 0.2, 0.2);
 
 in vec2 TexCoord;
 in vec3 Color;
@@ -135,12 +135,12 @@ vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, v
 
 vec4 applyFog(vec4 texColor)
 {
-    return mix(vec4(fogColor, texColor.a), texColor, FogFactor);
+    return mix(vec4(fog, texColor.a), texColor, FogFactor);
 }
 
 vec4 applyFog2(vec4 texColor)
 {
-    return mix(vec4(fogColor, texColor.a), texColor, FogFactor2);
+    return mix(vec4(fog, texColor.a), texColor, FogFactor2);
 }
 
 void main()
@@ -152,7 +152,7 @@ void main()
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
 
-    vec3 ambient = baseTexColor.rgb * (ambientColor + Color);
+    vec3 ambient2 = baseTexColor.rgb * (ambient + Color);
     vec3 lighting = calcSpotLight(spotLight, norm, FragPos, viewDir, baseTexColor.rgb);
 
     for(int i = 0; i < pointLightCount; i++)
@@ -163,7 +163,7 @@ void main()
         
     }
 
-    vec3 finalColor = ambient * AO + lighting;
+    vec3 finalColor = ambient2 * AO + lighting;
     vec4 foggedColor = applyFog(vec4(finalColor, baseTexColor.a));
     vec3 combinedColor = mix(foggedColor.rgb, applyFog2(vec4(baseTexColor.rgb, 1)).rgb, isActive == 0 ? 0 : atlasTexColor.a);
 
