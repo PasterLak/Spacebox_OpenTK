@@ -72,6 +72,7 @@ namespace Spacebox.Game.Player
         }
 
         private Toggi toggle;
+        ItemWorldModel itemInHand;
         public Astronaut(Vector3 position)
             : base(position)
         {
@@ -101,6 +102,12 @@ namespace Spacebox.Game.Player
                 needResetNextFrame = state;
                 _canMove = state;
             };
+
+             itemInHand = AddChild(new ItemWorldModel("Resources/Textures/Old/drill6.png", 0.1f));
+            itemInHand.Rotate(new Vector3(10, 90, -10));
+            itemInHand.SetScale(0.6f);
+            itemInHand.Position = new Vector3(0.35f, -0.47f, -0.25f);
+           
         }
 
         public void ResetMousePosition()
@@ -126,7 +133,7 @@ namespace Spacebox.Game.Player
 
             _axes = new Axes(Position, 0.01f);
 
-            var mo = AddChild(new ItemWorldModel("Resources/Textures/UI/trash.png"));
+            
            
         }
 
@@ -232,8 +239,10 @@ namespace Spacebox.Game.Player
 
             HitImage.Update();
 
+            if (!IsMain) return;
             _gameModeBase.HandleInput(this);
 
+            
             if (!CanMove) return;
 
             if (Input.IsMouseButton(MouseButton.Middle))

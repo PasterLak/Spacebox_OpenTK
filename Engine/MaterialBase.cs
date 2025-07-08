@@ -64,21 +64,9 @@ namespace Engine
             }
         }
 
-        private void _setFixed()  // global variables for glsl
+        private void _setFixed()  // basic variables for materials
         {
-            Shader.SetVector4("color", Color);
-            Shader.SetVector3("ambient", UseAmbientLight ? Lighting.AmbientColor : new Vector3(1,1,1));
-
-            Shader.SetVector3("fog", Lighting.FogColor);
-            Shader.SetFloat("fogDensity", UseFog ? Lighting.FogDensity : 0);
-
-            var camera = Camera.Main;
-            if (camera != null)
-            {
-                Shader.SetVector3("cameraPosition", camera.Position - RenderSpace.Origin);
-               
-            }
-            
+            Shader.SetVector4("color", Color);  
         }
 
         private void _setUser()

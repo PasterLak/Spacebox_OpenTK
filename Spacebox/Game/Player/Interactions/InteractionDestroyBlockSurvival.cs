@@ -37,11 +37,11 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         //Debug.Error("POOl is null " + (pool is null));
 
             light = pool.Take();
-            light.Range = 8;
+           /* light.Range = 8;
             light.Ambient = new Color3Byte(100, 116, 255).ToVector3();
             light.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
-            light.Specular = new Color3Byte(0, 0, 0).ToVector3();
-            light.IsActive = false;
+            light.Specular = new Color3Byte(0, 0, 0).ToVector3();*/
+            light.Enabled = false;
         
        
     }

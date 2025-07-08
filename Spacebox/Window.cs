@@ -12,6 +12,8 @@ using Engine.GUI;
 using Spacebox.Game.GUI;
 using Engine;
 using Engine.PostProcessing;
+using Engine.Light;
+using Engine.Graphics;
 
 namespace Spacebox
 {
@@ -76,8 +78,9 @@ namespace Spacebox
         protected override void OnLoad()
         {
             base.OnLoad();
-            AppIconLoader.LoadAndSetIcon(this, "Resources/Textures/icon.png");
 
+            AppIconLoader.LoadAndSetIcon(this, "Resources/Textures/icon.png");
+            
             Debug.Log("[Engine started!]");
             Input.Initialize(this);
 
@@ -195,6 +198,8 @@ namespace Spacebox
             Time.StartRender();
             FrameLimiter.Update();
 
+            LightSystem.Update();
+
             SceneRenderer.Render(() =>
             {
                 RenderScene();
@@ -238,6 +243,7 @@ namespace Spacebox
         {
             base.OnUpdateFrame(e);
             RenderSpace.BeginFrame();
+            GlobalUniforms.Push();
             Time.StartUpdate();
             Time.Update(e);
             _controller.Update(this, (float)e.Time);

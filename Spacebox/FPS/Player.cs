@@ -25,7 +25,7 @@ namespace Spacebox.FPS
         public Player(Vector3 position)
             : base(position)
         {
-            spotLight = new SpotLight(new Shader("Shaders/lighting"), Front);
+            spotLight = new SpotLight();
 
             Layer = CollisionLayer.Player;
             //VisualDebug.RemoveCollisionToDraw(this);
@@ -34,8 +34,8 @@ namespace Spacebox.FPS
         public Player(Vector3 position, Shader shader)
             : base(position)
         {
-            spotLight = new SpotLight(shader, Front);
-            spotLight.IsActive = false;
+            spotLight = new SpotLight();
+            spotLight.Enabled = false;
             Layer = CollisionLayer.Player;
            // VisualDebug.RemoveCollisionToDraw(this);
         }
@@ -54,7 +54,7 @@ namespace Spacebox.FPS
         {
             if (Input.IsKeyDown(Keys.F))
             {
-                spotLight.IsActive = !spotLight.IsActive;
+                spotLight.Enabled = !spotLight.Enabled;
                 //audio.Play();
             }
 
@@ -209,7 +209,7 @@ namespace Spacebox.FPS
         public void Render(Camera camera)
         {
             
-            spotLight.Render(this);
+            //spotLight.Render(this);
         }
     }
 }

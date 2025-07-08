@@ -29,7 +29,7 @@ namespace Spacebox.FPS.Scenes
         private Texture2D _diffuseMap;
 
         private Texture2D _specularMap;
-        private List<Light> _lights;
+        private List<LightBase> _lights;
 
         private Player player;
 
@@ -122,7 +122,7 @@ namespace Spacebox.FPS.Scenes
 
         private void LoadLights()
         {
-            DirectionalLight sun = new DirectionalLight(_lightingShader);
+            DirectionalLight sun = new DirectionalLight();
 
             //Renderer.AddDrawable(sun);
         }

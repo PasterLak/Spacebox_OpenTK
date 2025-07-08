@@ -1,4 +1,5 @@
 ﻿using Engine.Components;
+using Engine.Light;
 using OpenTK.Mathematics;
 
 namespace Engine
@@ -37,6 +38,7 @@ namespace Engine
         public Node3D()
         {
             Owner = this;
+            
         }
         public Node3D(Vector3 position)
         {
@@ -103,6 +105,19 @@ namespace Engine
             if (Components.Remove(component)) component.OnDetached();
         }
 
+        public virtual void Destroy()
+        {
+           
+
+           // Debug.Log("Cleared NODE - " + Name);
+            for (int i = 0; i < Components.Count; i++)
+                Components[i].OnDetached();
+
+            for (int i = Children.Count - 1; i >= 0; i--)
+                Children[i].Destroy();           
+
+            Parent?.RemoveChild(this);           
+        }
         public virtual void Update()
         {
             if(!Enabled) return;
@@ -235,12 +250,7 @@ namespace Engine
                 MathHelper.RadiansToDegrees(rad.Z));
         }
 
-        public Vector3 GetWorldPositionRaw()
-        {
-            return Parent == null
-                ? Position
-                : Vector3.TransformPosition(Position, Parent.GetModelMatrixPoor());
-        }
+       
 
         public static Vector3 QuaternionToEuler(Quaternion q)
         {
@@ -287,15 +297,18 @@ namespace Engine
         protected void PrintHierarchy()
         {
             Debug.Log("------------------- SceneGraph -------------------");
-            PrintHierarchy(0);
-            Debug.Log("------------------- SceneGraph -------------------");
+            var objectsCount = PrintHierarchy(0);
+            Debug.Log($"------------------- SceneGraph [{ objectsCount}] -----------------");
         }
 
-        private void PrintHierarchy(int depth = 0)
+        private int PrintHierarchy(int depth = 0, int count = 1)
         {
-            Debug.Log($"{new string(' ', depth * 2)}{Name} [{Components.Count}]");
+            Debug.Log($"[{Components.Count}]{new string('-', depth * 2)}{Name}");
+            
             foreach (var child in Children)
-                child.PrintHierarchy(depth + 1);
+                count = child.PrintHierarchy(depth + 1, ++count);
+
+            return count;
         }
 
     }

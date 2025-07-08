@@ -11,6 +11,7 @@ using ImGuiNET;
 using Spacebox.Game.Generation;
 using Engine.SceneManagment;
 using Engine.UI;
+using Engine.Light;
 
 
 namespace Spacebox.Scenes
@@ -109,6 +110,8 @@ namespace Spacebox.Scenes
             GameMenu.IsVisible = false;
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
             VerticalLinks.Init();
+
+            Debug.Log("LIGHT in new scene start: " + LightSystem.GetLightsCount);
         }
 
 

@@ -2,6 +2,7 @@
 using Engine.Animation;
 using Engine.Components;
 using Engine.Components.Debug;
+using Engine.Light;
 using Engine.Physics;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -25,7 +26,7 @@ namespace Spacebox.Game
             Texture2D spacerTex = Resources.Get<Texture2D>("Resources/Textures/spacer.png");
             spacerTex.FlipY();
             spacerTex.UpdateTexture(true);
-            Name = "Spacer";
+            Name = nameof(Spacer);
             Health = new StatsBarData();
             Health.MaxCount = 100;
             Health.Count = 100;
@@ -47,12 +48,12 @@ namespace Spacebox.Game
             animator.AddAnimation(new RotateAnimation(Vector3.UnitY, 5f, 0f));
 
             AddItems(Storage);
-
+/*
             var mo = AddChild(new ItemWorldModel("Resources/Textures/Old/drill6.png", 0.1f));
             mo.Rotate(new Vector3(0,90,0));
             mo.SetScale(0.5f);
             mo.Position = new Vector3(0.3f,-0.2f,-0.2f);
-
+*/
 
         }
 

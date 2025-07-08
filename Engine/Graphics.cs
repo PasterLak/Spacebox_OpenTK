@@ -2,7 +2,7 @@
 
 namespace Engine
 {
-    public static class Graphics
+    public static class GraphicsBase
     {
         public static IGraphicsAPI API { get; private set; } = new GL4GraphicsAPI();
 

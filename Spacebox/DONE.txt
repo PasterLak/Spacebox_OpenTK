@@ -94,6 +94,8 @@ Engine
 - remake SceneGraph
 - Components
 - BVH - Frustum Culling
+- LightSystem
+- GlobalUniforms for shaders
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.1

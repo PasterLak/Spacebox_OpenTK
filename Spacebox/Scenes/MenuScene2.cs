@@ -2,9 +2,7 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Engine;
-using Engine.Audio;
-using Spacebox.Game.Effects;
-using Engine.Audio;
+
 using Spacebox.Game.GUI;
 using Spacebox.Game;
 using Spacebox.Game.GUI.Menu;
@@ -18,6 +16,7 @@ using Engine.Utils;
 using Spacebox.Game.Player;
 using Engine.Physics;
 using Spacebox.Game.Resource;
+using Engine.Light;
 
 
 namespace Spacebox.Scenes
@@ -31,12 +30,13 @@ namespace Spacebox.Scenes
         {
           
         }
-
+        SpotLight flashlight;
         public override void LoadContent()
         {
             int x = 20;
-            Lighting.FogColor = new Vector3(0.2f);
+            Lighting.FogColor = new Vector3(0.1f);
             Lighting.FogDensity = 0.08f;
+            Lighting.AmbientColor = new Vector3(0.4f);
             //Theme.ApplySpaceboxTheme();
             var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
             AddChild(new Skybox(skyboxTexture)).IsAmbientAffected = false;
@@ -68,7 +68,7 @@ namespace Spacebox.Scenes
 
          
             Node3D model = new Node3D(new Vector3(x+5,0,0));
-            Model m = new Model(GenMesh.CreateSphere(2), new TransparentMaterial(skyboxTexture));
+            Model m = new Model(GenMesh.CreateSphere(2), new TextureMaterial(skyboxTexture));
             m.Material.Color = Color4.Red;
             model.AttachComponent(new ModelRendererComponent(m));
             model.AttachComponent(new SphereCollider());    
@@ -100,8 +100,38 @@ namespace Spacebox.Scenes
 
             AddChild(c1);
 
-           
+            var sun = new DirectionalLight { Rotation = new Vector3(45, -30, 0), 
+                Intensity = 1 };
+            sun.Diffuse = new Color3Byte(209, 201, 157).ToVector3();
             
+            sun.Enabled = true;
+            AddChild(sun);
+
+            var sun2 = new PointLight { 
+                Intensity = 2,
+                Range = 7f
+           };
+            sun2.Position = new Vector3(0,0,0);
+            sun2.Diffuse = new Color3Byte(0, 255, 0).ToVector3();
+           
+            sun2.Enabled = false;
+            player2.AddChild(sun2);
+
+
+            flashlight = new SpotLight
+            {
+                Constant = 1.0f,
+                Linear = 0.09f,
+                Quadratic = 0.032f,
+                CutOff = MathF.Cos(MathHelper.DegreesToRadians(12.5f)),
+                OuterCutOff = MathF.Cos(MathHelper.DegreesToRadians(17.5f)),
+                Intensity = 1.0f                          
+            };
+
+            player2.AddChild(flashlight);
+            flashlight.Position = Vector3.Zero;
+
+
 
             InputManager.AddAction("inputOverlay", Keys.F6);
             InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
@@ -134,6 +164,7 @@ namespace Spacebox.Scenes
         public override void Update()
         {
            base.Update();
+            flashlight.Direction = player2.Front;
 
             if (Input.IsKeyDown(Keys.R))
             {

@@ -32,6 +32,7 @@ namespace Engine
             }
 
             UpdateOrigin();
+           
         }
 
         public static void UpdateOrigin()

@@ -1,5 +1,7 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using System.Text;
 
 namespace Engine
 {
@@ -14,7 +16,7 @@ namespace Engine
 
         private FileSystemWatcher _watcher;
         private readonly string _shaderPath;
-     
+
         private bool _isProcessingChange = false;
         private bool _isReloadingShader = false;
 
@@ -30,7 +32,7 @@ namespace Engine
         public Shader(string shaderPath)
         {
             _shaderPath = shaderPath;
-           
+
             Load();
             _hotReloader = new HotReloader(_shaderPath, OnShaderFileChanged);
         }
@@ -40,7 +42,7 @@ namespace Engine
             if (_isProcessingChange)
                 return;
             _isProcessingChange = true;
-            _hotReloader.Disable(); 
+            _hotReloader.Disable();
 
             Task.Run(async () =>
             {
@@ -60,10 +62,25 @@ namespace Engine
                 {
                     ReloadShader();
                     _isProcessingChange = false;
-                    _hotReloader.Enable(); 
+                    _hotReloader.Enable();
                 });
             });
         }
+
+        private void BindUniformBlocks(int program)
+        {
+            GL.GetProgram(program, GetProgramParameterName.ActiveUniformBlocks, out int count);
+
+            for (int i = 0; i < count; i++)
+            {
+                GL.GetActiveUniformBlockName(program, i, 64, out int len, out string raw);
+                string name = len > 0 ? raw.Substring(0, len) : raw;
+
+                int binding = BindingAllocator.GetOrAssign(name);
+                GL.UniformBlockBinding(program, i, binding);
+            }
+        }
+
 
         private void Load()
         {
@@ -84,6 +101,7 @@ namespace Engine
                 GL.AttachShader(newHandle, geometryShader);
             GL.AttachShader(newHandle, fragmentShader);
             LinkProgram(newHandle);
+            BindUniformBlocks(newHandle);
 
             GL.DetachShader(newHandle, vertexShader);
             GL.DetachShader(newHandle, fragmentShader);
@@ -243,7 +261,7 @@ namespace Engine
 
         public IResource Load(string path)
         {
-          
+
             return new Shader(path);
         }
 
@@ -251,36 +269,91 @@ namespace Engine
 
     public static class ShaderParser
     {
-        public static (string vertexShaderSource, string fragmentShaderSource, string geometryShaderSource) ParseShaders(string filePath)
+        // ─── ShaderParser.ParseShaders () ────────────────────────────────────────
+        public static (string vertexShaderSource, string fragmentShaderSource, string geometryShaderSource)
+            ParseShaders(string filePath)
         {
             var lines = File.ReadAllLines(filePath + ".glsl");
-            bool inVertex = false, inFragment = false, inGeometry = false;
-            string vertexSrc = "", fragmentSrc = "", geometrySrc = "";
+
+            bool inVert = false, inFrag = false, inGeom = false;
+            var v = new StringBuilder();
+            var f = new StringBuilder();
+            var g = new StringBuilder();
+
             foreach (var line in lines)
             {
-                if (line.Contains("--Vert"))
-                {
-                    inVertex = true; inFragment = false; inGeometry = false;
-                    continue;
-                }
-                if (line.Contains("--Frag"))
-                {
-                    inVertex = false; inFragment = true; inGeometry = false;
-                    continue;
-                }
-                if (line.Contains("--Geom"))
-                {
-                    inVertex = false; inFragment = false; inGeometry = true;
-                    continue;
-                }
-                if (inVertex) vertexSrc += line + "\n";
-                else if (inFragment) fragmentSrc += line + "\n";
-                else if (inGeometry) geometrySrc += line + "\n";
+                if (line.Contains("--Vert")) { inVert = true; inFrag = inGeom = false; continue; }
+                if (line.Contains("--Frag")) { inFrag = true; inVert = inGeom = false; continue; }
+                if (line.Contains("--Geom")) { inGeom = true; inVert = inFrag = false; continue; }
+
+                if (inVert) v.AppendLine(line);
+                if (inFrag) f.AppendLine(line);
+                if (inGeom) g.AppendLine(line);
             }
-            if (string.IsNullOrWhiteSpace(vertexSrc) || string.IsNullOrWhiteSpace(fragmentSrc))
+
+            string dir = Path.GetDirectoryName(filePath)!;
+
+            string vertSrc = ExpandIncludes(v.ToString(), dir);
+            string fragSrc = ExpandIncludes(f.ToString(), dir);
+            string geomSrc = ExpandIncludes(g.ToString(), dir);
+
+            if (string.IsNullOrWhiteSpace(vertSrc) || string.IsNullOrWhiteSpace(fragSrc))
                 throw new Exception("Both vertex and fragment shader sources must be provided.");
-            return (vertexSrc, fragmentSrc, geometrySrc);
+
+            return (vertSrc, fragSrc, geomSrc);
         }
+
+        // ─── ShaderParser.ExpandIncludes () ──────────────────────────────────────────
+        static string ExpandIncludes(string src, string dir, HashSet<string>? visited = null)
+        {
+            visited ??= new HashSet<string>();
+            var sb = new StringBuilder();
+            int lineNo = 1;
+            bool globalsInjected = false;
+
+            foreach (var raw in src.Split('\n'))
+            {
+                var t = raw.TrimStart();
+
+
+                if (t.StartsWith("#include"))
+                {
+                    int q1 = t.IndexOf('"') + 1;
+                    int q2 = t.LastIndexOf('"');
+                    if (q1 <= 0 || q2 <= q1) continue;
+
+                    string incName = t[q1..q2];
+                    string incPath = Path.Combine(dir, incName);
+
+                    if (!visited.Add(incPath)) continue;
+                    if (!File.Exists(incPath))
+                        throw new FileNotFoundException($"Include not found: {incPath}");
+
+                    string included = File.ReadAllText(incPath);
+                    sb.AppendLine(ExpandIncludes(included, Path.GetDirectoryName(incPath)!, visited));
+                    sb.AppendLine($"#line {++lineNo}");
+                }
+                else if (t.StartsWith("#version"))
+                {
+
+                    if (!globalsInjected && t.StartsWith("#version"))
+                    {
+                        sb.AppendLine(raw);
+                        sb.AppendLine(GlobalUniforms.GenerateCode());
+                        globalsInjected = true;
+                    }
+                    lineNo++;
+
+                }
+                else
+                {
+                    sb.AppendLine(raw);
+                    lineNo++;
+                }
+            }
+            return sb.ToString();
+        }
+
     }
 
     public class HotReloader : IDisposable

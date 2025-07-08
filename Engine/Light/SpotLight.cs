@@ -1,69 +1,37 @@
 ﻿using OpenTK.Mathematics;
 
-
 namespace Engine.Light
 {
-    public class SpotLight : Light
+    public sealed class SpotLight : LightBase
     {
-        private Vector3 _ambient = new Vector3(0.15f);
-        private Vector3 _diffuse = new Vector3(1.0f, 1.0f, 0.9f);
-        private Vector3 _specular = new Vector3(1.0f);
+        internal override LightKind Kind => LightKind.Spot;
 
-        public override Vector3 Ambient
-        {
-            get => _ambient;
-            set => _ambient = value;
-        }
-        public override Vector3 Diffuse
-        {
-            get => _diffuse;
-            set => _diffuse = value;
-        }
-        public override Vector3 Specular
-        {
-            get => _specular;
-            set => _specular = value;
-        }
+        public Vector3 Direction { get; set; } = -Vector3.UnitZ;
 
-        public bool IsActive = false;
-        public bool UseSpecular = true;
+        public float CutOff { get; set; } = MathF.Cos(MathHelper.DegreesToRadians(12.5f));
+        public float OuterCutOff { get; set; } = MathF.Cos(MathHelper.DegreesToRadians(17.5f));
 
-        public Vector3 Direction { get; set; }
-        public float CutOffRadians { get; set; } = MathF.Cos(MathHelper.DegreesToRadians(12.5f));
-        public float OuterCutOffRadians { get; set; } = MathF.Cos(MathHelper.DegreesToRadians(20.5f));
         public float Constant { get; set; } = 1.0f;
         public float Linear { get; set; } = 0.09f;
         public float Quadratic { get; set; } = 0.032f;
 
-        public SpotLight(Shader shader, Vector3 direction) : base(shader)
+
+        public SpotLight(Vector3 direction) 
         {
             Direction = direction;
+
+            Diffuse = new(1f);
+            Specular = new(1f);
+            Name = nameof(SpotLight); 
+        }
+        public SpotLight()
+        {
+            Diffuse = new(1f);
+            Specular = new(1f);
+            Name = nameof(SpotLight);
         }
 
-        public override void Render(Camera camera)
-        {
-            base.Render(camera);
-            var position = camera.CameraRelativeRender ? Vector3.Zero : camera.Position;
-            Shader.SetVector3("spotLight.position", position);
-            Shader.SetVector3("spotLight.direction", camera.Front);
-            Shader.SetFloat("material_shininess", 32.0f);
-            if (!IsActive)
-            {
-                Shader.SetVector3("spotLight.ambient", Vector3.Zero);
-                Shader.SetVector3("spotLight.diffuse", Vector3.Zero);
-                if (UseSpecular) Shader.SetVector3("spotLight.specular", Vector3.Zero);
-            }
-            else
-            {
-                Shader.SetVector3("spotLight.ambient", Ambient);
-                Shader.SetVector3("spotLight.diffuse", Diffuse);
-                if (UseSpecular) Shader.SetVector3("spotLight.specular", Specular);
-            }
-            Shader.SetFloat("spotLight.constant", Constant);
-            Shader.SetFloat("spotLight.linear", Linear);
-            Shader.SetFloat("spotLight.quadratic", Quadratic);
-            Shader.SetFloat("spotLight.cutOff", CutOffRadians);
-            Shader.SetFloat("spotLight.outerCutOff", OuterCutOffRadians);
-        }
+        
+
     }
 }

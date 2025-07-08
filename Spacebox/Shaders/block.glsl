@@ -1,6 +1,8 @@
 ﻿--Vert
 
 #version 330 core
+
+
 layout (location = 0) in vec3 aPosition;
 layout (location = 1) in vec2 aTexCoord;
 layout (location = 2) in vec3 aColor;
@@ -20,13 +22,11 @@ out float isActive;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-uniform vec3 cameraPosition = vec3(0,0,0);
-uniform float fogDensity = 0.08;
 
 float calcFog(vec4 worldPosition, float distanceMultiplicator)
 {
-    float distance = length(worldPosition.xyz - cameraPosition) * distanceMultiplicator;
-    return exp(-pow(fogDensity*distance,2.0));
+    float distance = length(worldPosition.xyz - CAMERA_POS) * distanceMultiplicator;
+    return exp(-pow(FOG_DENSITY*distance,2.0));
 }
 
 void main()
@@ -47,6 +47,8 @@ void main()
 
 --Frag
 #version 330 core
+
+#include "includes/core.fs"
 
 struct SpotLight {
     vec3 position;
@@ -79,10 +81,8 @@ uniform SpotLight spotLight;
 
 uniform sampler2D texture0;
 uniform sampler2D textureAtlas;
-uniform vec3 viewPos;
 uniform float material_shininess;
-uniform vec3 fog = vec3(1,0,0);
-uniform vec3 ambient = vec3(0.2, 0.2, 0.2);
+
 
 in vec2 TexCoord;
 in vec3 Color;
@@ -135,12 +135,12 @@ vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, v
 
 vec4 applyFog(vec4 texColor)
 {
-    return mix(vec4(fog, texColor.a), texColor, FogFactor);
+    return mix(vec4(FOG, texColor.a), texColor, FogFactor);
 }
 
 vec4 applyFog2(vec4 texColor)
 {
-    return mix(vec4(fog, texColor.a), texColor, FogFactor2);
+    return mix(vec4(FOG, texColor.a), texColor, FogFactor2);
 }
 
 void main()
@@ -150,9 +150,9 @@ void main()
     if(baseTexColor.a < 0.1) discard;
 
     vec3 norm = normalize(Normal);
-    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 viewDir = normalize(CAMERA_POS - FragPos);
 
-    vec3 ambient2 = baseTexColor.rgb * (ambient + Color);
+    vec3 ambient2 = baseTexColor.rgb * (AMBIENT + Color);
     vec3 lighting = calcSpotLight(spotLight, norm, FragPos, viewDir, baseTexColor.rgb);
 
     for(int i = 0; i < pointLightCount; i++)

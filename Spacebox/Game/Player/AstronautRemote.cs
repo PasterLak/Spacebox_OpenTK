@@ -58,9 +58,9 @@ namespace Spacebox.Game.Player
             itemModel = ItemModelGenerator.GenerateModelFromAtlas(GameAssets.ItemsTexture, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
             itemModel.UseMainCamera = true;
             itemModel.offset = Vector3.Zero;
-            spotLight = new SpotLight(playerShader, Camera.Main.Front);
-            spotLight.UseSpecular = false;
-            spotLight.IsActive = true;
+            spotLight = new SpotLight();
+            //spotLight.spec = false;
+            spotLight.Enabled = true;
             Create(player.ID);
         }
 
@@ -158,7 +158,7 @@ namespace Spacebox.Game.Player
                 spacerOld.Render();
                 return;
             }
-            spotLight.Render(Camera.Main);
+            //spotLight.Render(Camera.Main);
             itemModel.Render();
             astBody.Render();
             astHelmet.Render();

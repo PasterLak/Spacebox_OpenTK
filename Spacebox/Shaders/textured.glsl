@@ -1,66 +1,76 @@
---Vert
+﻿--Vert
 #version 330 core
 
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTexCoords;
+
+layout(location = 0) in vec3 vertexPosition;
+layout(location = 1) in vec3 vertexNormal;
+layout(location = 2) in vec2 vertexTexCoords;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-uniform vec3 cameraPosition;
-uniform float fogDensity;
+out vec3 worldNormal;
+out vec3 worldPosition;
+out vec2 texCoords;
+out float fogFactor;
 
-out vec3 Normal;
-out vec3 FragPos;
-out vec2 TexCoord;
-out float FogFactor;
-
-float calcFog(vec4 worldPosition, float distanceMultiplicator)
+float ComputeFogFactor(vec4 pos, vec3 camPos, float fogDensity)
 {
-    float distance = length(worldPosition.xyz - cameraPosition) * distanceMultiplicator;
-    return exp(-pow(fogDensity * distance, 2.0));
+    float d = length(pos.xyz - camPos) * 1.0;
+    return exp(-pow(fogDensity * d, 2.0));
 }
+
 void main()
 {
-    vec4 worldPosition = vec4(aPos, 1.0) * model;
-    gl_Position = worldPosition * view * projection;
-    FragPos = vec3(worldPosition);
-    Normal = mat3(transpose(inverse(model))) * aNormal;
-    TexCoord = aTexCoords;
-    FogFactor = calcFog(worldPosition, 1.0);
+    vec4 posWorld = vec4(vertexPosition, 1.0) * model;
+    gl_Position   = posWorld * view * projection;
+    worldPosition = posWorld.xyz;
+    worldNormal   = mat3(transpose(inverse(model))) * vertexNormal;
+    texCoords     = vertexTexCoords;
+    fogFactor     = ComputeFogFactor(posWorld, CAMERA_POS, FOG_DENSITY);
 }
-
-
 
 --Frag
-
-
 #version 330 core
-in vec2 TexCoord;
-in float FogFactor;
-out vec4 FragColor;
+#include "includes/lighting.fs"
+
+
+uniform vec4 color = vec4(1,1,1,1);
+
+in vec3 worldPosition;
+in vec3 worldNormal;
+in vec2 texCoords;
+in float fogFactor;
+
+out vec4 finalColor;
+
 uniform sampler2D texture0;
 
-uniform vec4 color = vec4(1.0);
-uniform vec3 ambient = vec3(1,1,1);
-uniform vec3 fog = vec3(0.05, 0.05, 0.05);
 
-vec4 applyFog(vec4 texColor)
+vec4 ApplyFog(vec4 c, vec3 fogColor, float fogFactor) 
 {
-    return mix(vec4(fog, texColor.a), texColor, FogFactor);
+     return mix(vec4(fogColor, c.a), c, fogFactor); 
 }
 
 void main()
 {
-    vec4 pixel = texture(texture0, TexCoord);
-    if(pixel.a < 0.1)
-        discard;
-    vec4 finalColor = pixel * color;
+    vec4 textureColor = texture(texture0, texCoords);
+    if(textureColor.a < 0.1) discard;
 
-    finalColor = applyFog(finalColor);
-
-    FragColor = finalColor * vec4(ambient,1);
+    vec3 N = normalize(worldNormal);
+    vec3 V = normalize(CAMERA_POS - worldPosition);
+    vec3 baseColor = textureColor.rgb;
    
+    vec3 lighting =
+          AMBIENT +
+          accumulateDirLights (N, V, baseColor) +
+          accumulatePointLights(N, V, worldPosition, baseColor) +
+          accumulateSpotLights(N, V, worldPosition, baseColor);
+
+    vec4 shaded = vec4(baseColor * color.rgb * lighting, textureColor.a);
+
+    shaded = ApplyFog(shaded, FOG, fogFactor);
+    
+    finalColor  = shaded;
 }

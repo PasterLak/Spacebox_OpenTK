@@ -96,11 +96,11 @@ namespace Spacebox.Game.Player
                 light = PointLightsPool.Instance.Take();
 
                 light.Range = 4;
-                light.Ambient = parameters.Color3;
+                //light.Ambient = parameters.Color3;
                 // light.Diffuse = parameters.Color3;
-                light.Diffuse = Vector3.Zero;
-                light.Specular = Vector3.Zero;
-                light.IsActive = true;
+               // light.Diffuse = Vector3.Zero;
+               // light.Specular = Vector3.Zero;
+                light.Enabled = true;
             }
 
 

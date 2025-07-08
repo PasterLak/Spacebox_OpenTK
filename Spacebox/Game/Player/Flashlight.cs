@@ -17,7 +17,7 @@ namespace Spacebox.Game.Player
             set
             {
                 _isActive = value;
-                spotLight.IsActive = value;
+                spotLight.Enabled = value;
             }
         }
 
@@ -27,9 +27,8 @@ namespace Spacebox.Game.Player
         public Flashlight(Camera camera)
         {
             var shader = Engine.Resources.Load<Shader>("Shaders/block");
-            spotLight = new SpotLight(shader,
-                camera.Front);
-            spotLight.UseSpecular = false;
+            spotLight = new SpotLight();
+           // spotLight.UseSpecular = false;
 
             var clip = Engine.Resources.Load<AudioClip>("Resources/Audio/flashlight.ogg");
             audio = new AudioSource(clip);
@@ -62,8 +61,8 @@ namespace Spacebox.Game.Player
 
         public void Draw()
         {
-            if(Camera.Main != null)
-            spotLight.Render(Camera.Main);
+            if (Camera.Main != null) ;
+           // spotLight.Render(Camera.Main);
         }
     }
 }

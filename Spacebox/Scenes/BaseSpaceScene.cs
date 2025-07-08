@@ -215,7 +215,7 @@ namespace Spacebox.Scenes
             localPlayer.GameMode = World.Data.Info.GameMode;
            
             blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.LightAtlas, localPlayer);
-            PointLightsPool.Instance = new PointLightsPool(blockMaterial.Shader, 64);
+            PointLightsPool.Instance = new PointLightsPool(blockMaterial.Shader, 1);
 
 
             blockDestructionManager = new BlockDestructionManager(localPlayer);
@@ -251,7 +251,7 @@ namespace Spacebox.Scenes
             AddChild(spacer);
             freeCamera = AddChild(new FreeCamera(localPlayer.Position));
             Camera.Main = localPlayer;
-            //AddChild(localPlayer);
+            AddChild(localPlayer);
             WelcomeUI.OnPlayerSpawned(World.Data.Info.ShowWelcomeWindow);
             WelcomeUI.Init();
             PauseUI.Init();
@@ -280,16 +280,26 @@ namespace Spacebox.Scenes
 
        
             pLight = PointLightsPool.Instance.Take();
-            pLight.Ambient = new Vector3(1, 0, 0);
+           /* pLight.Ambient = new Vector3(1, 0, 0);
             pLight.Position = localPlayer.Position;
             pLight.Range = 25;
             pLight.Ambient = new Color3Byte(100, 116, 255).ToVector3();
             pLight.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
             pLight.Specular = new Color3Byte(100, 116, 255).ToVector3();
-          
-            pLight.IsActive = false;
+          */
+            pLight.Enabled = false;
 
             Chat.Write("Welcome to Spacebox!",Color4.Yellow);
+
+            var sun = new DirectionalLight
+            {
+                Rotation = new Vector3(45, 45, 45),
+                Intensity = 1
+            };
+            sun.Diffuse = new Color3Byte(209, 201, 157).ToVector3();
+
+            sun.Enabled = false;
+            AddChild(sun);
         }
 
         private void OnDebugStateChanged(bool state)
@@ -315,7 +325,7 @@ namespace Spacebox.Scenes
 
             base.Update();
 
-            localPlayer.Update();
+            //localPlayer.Update();
             blockDestructionManager.Update();
             dustSpawner.Update();
             MainThreadDispatcher.Instance.ExecutePending();
@@ -451,7 +461,7 @@ namespace Spacebox.Scenes
             if (InteractionShoot.lineRenderer != null)
                 InteractionShoot.lineRenderer.Render();
 
-            localPlayer.Render();
+           // localPlayer.Render();
             var node = this as Node3D;
             node.Render();
 

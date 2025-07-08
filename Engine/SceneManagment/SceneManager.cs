@@ -1,6 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Desktop;
 using Engine.Audio;
+using Engine.Light;
 
 
 namespace Engine.SceneManagment
@@ -130,20 +131,22 @@ namespace Engine.SceneManagment
                     Debug.Log("[SceneManager] Unloading content ",
                     Color4.White);
                     DisposablesUnloader.Dispose();
-
-                    Scene sceneBase = CurrentScene as Scene;
+                    Debug.Log("LIGHT in old scene: " + LightSystem.GetLightsCount);
+                    Scene sceneBase = CurrentScene as Scene; // ???
                     sceneBase.Dispose();
 
                     
                    
                     InputManager.RemoveAllActions(true);
+                    CurrentScene.Destroy();
+                    LightSystem.Clear();
                     CurrentScene.Dispose();
                     
                     CurrentScene.UnloadContent();
                     Camera.Main = null;
 
                     SoundManager.Dispose();
-             
+                    
                     Resources.UnloadAll();
                     VisualDebug.Clear();
 
@@ -160,6 +163,7 @@ namespace Engine.SceneManagment
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
 
+                Debug.Log("LIGHT in new scene: " + LightSystem.GetLightsCount);
                 Debug.Log("[SceneManager] Loading scene ", Color4.White);
                 _currentSceneType = _nextSceneType;
                 _nextSceneType = null;

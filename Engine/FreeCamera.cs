@@ -1,4 +1,5 @@
 ﻿using Engine.Components;
+using Engine.Light;
 using Engine.Utils;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -13,7 +14,7 @@ namespace Engine
         private float _yaw = -90f;
 
         private ModelRendererComponent _renderer;
-
+        SpotLight flashlight;
         public FreeCamera(Vector3 position, bool isMain = true) : base(position, isMain) 
         {
             Input.HideCursor();
@@ -26,12 +27,39 @@ namespace Engine
              _renderer = AttachComponent(new ModelRendererComponent(m));
             _renderer.Model.Material.Color = Color4.Blue;
             _renderer.Model.Material.RenderFace = RenderFace.Front;
+
+             var sun2 = new PointLight
+             {
+
+                 Range = 9f
+             };
+             sun2.Position = new Vector3(0, 0, 0);
+             sun2.Diffuse = new Color3Byte(78, 114, 212).ToVector3();
+             sun2.Intensity = 3;
+             sun2.Enabled = false;
+             AddChild(sun2);
+
+
+             flashlight = new SpotLight
+             {
+                 Constant = 1.0f,
+                 Linear = 0.09f,
+                 Quadratic = 0.032f,
+                 CutOff = MathF.Cos(MathHelper.DegreesToRadians(12.5f)),
+                 OuterCutOff = MathF.Cos(MathHelper.DegreesToRadians(17.5f)),
+                 Intensity = 1.0f
+             };
+
+            AddChild(flashlight);
+             flashlight.Position = Vector3.Zero;
+             flashlight.Enabled = false;
+            
         }
 
         public override void Update()
         {
             float dt = Time.Delta;
-
+            flashlight.Direction = Front;
             //VisualDebug.DrawAxes(Position + Forward * 3f);
             if (IsMain)
             {

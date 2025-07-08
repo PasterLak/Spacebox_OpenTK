@@ -32,9 +32,9 @@ void main()
 
 #version 330 core
 
+
 in vec2 TexCoords;
 
-uniform vec3 ambient = vec3(1, 0.8, 0.8); 
 out vec4 FragColor;
 
 uniform sampler2D mainTexture;
@@ -43,7 +43,7 @@ void main()
 {
     vec4 texColor = texture(mainTexture, TexCoords);
     
-    vec3 color = texColor.rgb * ambient;
+    vec3 color = texColor.rgb;
   
     //color = clamp(color, 0, 1);
     FragColor = vec4(color, texColor.a);

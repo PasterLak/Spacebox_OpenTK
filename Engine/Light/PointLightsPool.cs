@@ -26,7 +26,7 @@
 
             foreach (PointLight light in pool.GetAllObjects())
             {
-                light.Shader = shader;
+               // light.Shader = shader;
             }
         }
 
@@ -36,7 +36,7 @@
 
             var light = pool.Take();
             activeLights.Add(light);
-            light.IsActive = true;
+            light.Enabled = true;
 
             return light;
         }
@@ -48,7 +48,7 @@
                 Debug.Error("[PointLightsPool] PutBack: light was null");
                 return;
             }
-            light.IsActive = false;
+            light.Enabled = false;
             activeLights.Remove(light);
             pool.Release(light);
         }
@@ -70,7 +70,7 @@
             bool[] ind = new bool[count];
             for (int i = 0; i < count; i++)
             {
-                if (activeLights[i].IsActive)
+                if (activeLights[i].Enabled)
                 {
                     ind[i] = true;
                     active++;
@@ -93,7 +93,7 @@
                 if (ind[i])
                 {
                     var light = activeLights[i];
-                    light.SetShaderParams(active++, Camera.Main);
+                   // light.SetShaderParams(active++, Camera.Main);
                 }
 
             }

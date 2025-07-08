@@ -1,4 +1,5 @@
 ﻿using Engine.Physics;
+using System.Xml.Linq;
 
 namespace Engine.SceneManagment
 {
@@ -46,8 +47,9 @@ namespace Engine.SceneManagment
 
         public void Dispose()
         {
-
-            if(Disposables.Count > 0)
+           
+               
+            if (Disposables.Count > 0)
             {
                 foreach(IDisposable disposable in Disposables)
                 {
@@ -56,6 +58,8 @@ namespace Engine.SceneManagment
 
                 Disposables = null;
             }
+
+            
             
         }
 

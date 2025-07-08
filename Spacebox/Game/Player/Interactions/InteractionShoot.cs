@@ -86,10 +86,10 @@ public class InteractionShoot : InteractionMode
         light = PointLightsPool.Instance.Take();
 
         light.Range = 4;
-        light.Ambient = new Color3Byte(100, 116, 255).ToVector3();
+       /* light.Ambient = new Color3Byte(100, 116, 255).ToVector3();
         light.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
         light.Specular = new Color3Byte(0, 0, 0).ToVector3();
-        light.IsActive = false;
+        light.IsActive = false;*/
     }
 
     bool renderSphere = false;
@@ -244,8 +244,8 @@ public class InteractionShoot : InteractionMode
             //if (projectileParameters == null) return;
 
 
-            light.Ambient = projectileParameters.Color3;
-            light.IsActive = false;
+            //light.Ambient = projectileParameters.Color3;
+            light.Enabled = false;
             lightTime = 1f;
             dir = player.Front;
             light.Position = player.Position;
