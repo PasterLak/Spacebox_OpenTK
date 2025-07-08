@@ -15,10 +15,13 @@ out vec3 worldPosition;
 out vec2 texCoords;
 out float fogFactor;
 
-float ComputeFogFactor(vec4 pos, vec3 camPos, float fogDensity)
+#define FOG_LN2 1.44269504
+
+float fogFac(vec3 p, float k, float density)
 {
-    float d = length(pos.xyz - camPos) * 1.0;
-    return exp(-pow(fogDensity * d, 2.0));
+    float d2   = dot(p - CAMERA_POS, p - CAMERA_POS);   
+    float kd2  = k * k * d2;                            
+    return exp2(-(density) * kd2 * FOG_LN2);       
 }
 
 void main()
@@ -28,7 +31,7 @@ void main()
     worldPosition = posWorld.xyz;
     worldNormal   = mat3(transpose(inverse(model))) * vertexNormal;
     texCoords     = vertexTexCoords;
-    fogFactor     = ComputeFogFactor(posWorld, CAMERA_POS, FOG_DENSITY);
+    fogFactor     = fogFac(posWorld.xyz, 1.0, FOG_DENSITY);
 }
 
 --Frag
@@ -48,11 +51,6 @@ out vec4 finalColor;
 uniform sampler2D texture0;
 
 
-vec4 ApplyFog(vec4 c, vec3 fogColor, float fogFactor) 
-{
-     return mix(vec4(fogColor, c.a), c, fogFactor); 
-}
-
 void main()
 {
     vec4 textureColor = texture(texture0, texCoords);
@@ -70,7 +68,7 @@ void main()
 
     vec4 shaded = vec4(baseColor * color.rgb * lighting, textureColor.a);
 
-    shaded = ApplyFog(shaded, FOG, fogFactor);
+    shaded = fogMix(shaded, fogFactor, FOG);
     
     finalColor  = shaded;
 }

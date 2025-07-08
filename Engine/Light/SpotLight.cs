@@ -2,12 +2,21 @@
 
 namespace Engine.Light
 {
-    public sealed class SpotLight : LightBase
+    public class SpotLight : LightBase
     {
         internal override LightKind Kind => LightKind.Spot;
 
-        public Vector3 Direction { get; set; } = -Vector3.UnitZ;
-
+        private Vector3 _direction = -Vector3.UnitZ;
+        public Vector3 Direction
+        {
+            get
+            {
+                if (!GetDirectionFromNode) return _direction;
+                return WorldForward;
+            }
+            set => _direction = value;
+        }
+        public bool GetDirectionFromNode = false;
         public float CutOff { get; set; } = MathF.Cos(MathHelper.DegreesToRadians(12.5f));
         public float OuterCutOff { get; set; } = MathF.Cos(MathHelper.DegreesToRadians(17.5f));
 

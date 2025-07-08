@@ -23,12 +23,12 @@ namespace Engine
            var c = AttachComponent(new SphereCollider());
             c.DebugCollision = false;
 
-            Model m = new Model(GenMesh.CreateSphere(4), new ColorMaterial());
+            /*Model m = new Model(GenMesh.CreateSphere(4), new ColorMaterial());
              _renderer = AttachComponent(new ModelRendererComponent(m));
             _renderer.Model.Material.Color = Color4.Blue;
-            _renderer.Model.Material.RenderFace = RenderFace.Front;
+            _renderer.Model.Material.RenderFace = RenderFace.Front;*/
 
-             var sun2 = new PointLight
+             /*var sun2 = new PointLight
              {
 
                  Range = 9f
@@ -52,18 +52,18 @@ namespace Engine
 
             AddChild(flashlight);
              flashlight.Position = Vector3.Zero;
-             flashlight.Enabled = false;
+             flashlight.Enabled = true;*/
             
         }
 
         public override void Update()
         {
             float dt = Time.Delta;
-            flashlight.Direction = Front;
+            //flashlight.Direction = Front;
             //VisualDebug.DrawAxes(Position + Forward * 3f);
             if (IsMain)
             {
-                _renderer.Enabled = false;
+                //_renderer.Enabled = false;
                 Vector3 dir = Vector3.Zero;
 
                 float speedShift = (Input.IsKey(Keys.LeftShift)) ? 3 : 1;
@@ -84,7 +84,7 @@ namespace Engine
             }
             else
             {
-                _renderer.Enabled = true;
+               // _renderer.Enabled = true;
                
             }
             

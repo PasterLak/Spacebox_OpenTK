@@ -52,15 +52,13 @@ namespace Engine
         public Matrix4 GetModelMatrix()
         {
 
-            Matrix4 local = BuildLocalMatrix(_position);
+            Matrix4 local = BuildLocalMatrix();
 
             return Owner?.Parent != null
                    ? local * Owner.Parent.GetModelMatrix()
                    : local;
         }
-      
-        public Matrix4 GetModelMatrixPoor() => BuildLocalMatrix(_position);
-
+ 
         public void ResetTransform()
         {
             _position = Vector3.Zero;
@@ -78,11 +76,11 @@ namespace Engine
                 Owner.Children[i].MarkDirty();
         }
 
-        private Matrix4 BuildLocalMatrix(Vector3 pos)
+        private Matrix4 BuildLocalMatrix()
         {
             if (!_dirty) return _cached;
 
-            var translation = Matrix4.CreateTranslation(pos);
+            var translation = Matrix4.CreateTranslation(_position);
             var rotX = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(_rotation.X));
             var rotY = Matrix4.CreateRotationY(MathHelper.DegreesToRadians(_rotation.Y));
             var rotZ = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(_rotation.Z));

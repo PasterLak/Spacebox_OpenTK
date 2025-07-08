@@ -10,7 +10,7 @@ namespace Engine.Graphics
     {
         public Vector3 AMBIENT; public float FOG_DENSITY;
         public Vector3 FOG; public float RANDOM01;
-        public Vector3 CAMERA_POS; public float pad2;
+        public Vector3 CAMERA_POS; public float TIME;
     }
 
     public static class GlobalUniforms
@@ -49,7 +49,7 @@ namespace Engine.Graphics
             ("vec3",  nameof(GlobalsGpu.FOG)),
             ("float", nameof(GlobalsGpu.RANDOM01)),
             ("vec3",  nameof(GlobalsGpu.CAMERA_POS)),
-            ("float", nameof(GlobalsGpu.pad2))
+            ("float", nameof(GlobalsGpu.TIME))
             });
         }
 
@@ -63,6 +63,7 @@ namespace Engine.Graphics
             g.RANDOM01 = _random.NextSingle();
             g.CAMERA_POS = Camera.Main != null ?
                 Camera.Main.Position - RenderSpace.Origin : new Vector3(0);
+            g.TIME = Time.Total;
 
             _ubo.Update(stackalloc GlobalsGpu[1] { g });
         }

@@ -31,7 +31,7 @@ namespace Spacebox.Game.Player
                     RotationW = player.GetRotation().W,
                     Health = player.HealthBar.StatsData.Count,
                     Power = player.PowerBar.StatsData.Count,
-                    IsFlashlightOn = player.Flashlight.IsActive,
+                    IsFlashlightOn = player.Flashlight.Enabled,
                     InventorySlots = new List<SavedItemSlot>(),
                     PanelSlots = new List<SavedItemSlot>()
                 };
@@ -91,7 +91,7 @@ namespace Spacebox.Game.Player
 
                     World.CurrentSector.SpawnPlayerNearAsteroid(player, new Random(World.Seed));
                     GameSetLoader.GiveStartItems(player, GameAssets.Items);
-                    player.Flashlight.IsActive = true;
+                    player.Flashlight.Enabled = true;
 
                     return;
                 }
@@ -114,7 +114,7 @@ namespace Spacebox.Game.Player
 
                 player.Inventory.Clear();
                 player.Panel.Clear();
-                player.Flashlight.IsActive = data.IsFlashlightOn;
+                player.Flashlight.Enabled = data.IsFlashlightOn;
 
                 foreach (var savedSlot in data.InventorySlots)
                 {

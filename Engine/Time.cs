@@ -7,6 +7,7 @@ namespace Engine
     {
         public static FrameEventArgs Frame;
         public static float Delta => (float)Frame.Time * TimeSize;
+        public static float Total { get; internal set; }
         public static float TimeSize = 1f;
 
         private static int _frameCount = 0;
@@ -74,6 +75,9 @@ namespace Engine
         public static void Update(FrameEventArgs frame)
         {
             Frame = frame;
+            Total += Time.Delta;
+            if (Total > 100000f)                
+                Total -= 100000f;
             UpdateFPS(frame);
         }
 

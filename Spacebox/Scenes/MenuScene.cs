@@ -111,7 +111,7 @@ namespace Spacebox.Scenes
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
             VerticalLinks.Init();
 
-            Debug.Log("LIGHT in new scene start: " + LightSystem.GetLightsCount);
+            Debug.Log("LIGHT in new scene start: " + LightSystem.GetRegisteredLightsCount);
         }
 
 

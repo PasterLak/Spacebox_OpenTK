@@ -43,9 +43,9 @@ namespace Spacebox.Game.GUI
 
             if (distance <= 0f)
                 return MaxFontSize;
-            if (distance >= 8000f)
+            if (distance >= 18000f)
                 return MinFontSize;
-            float size = MaxFontSize - (MaxFontSize - MinFontSize) * (distance / 8000f);
+            float size = MaxFontSize - (MaxFontSize - MinFontSize) * (distance / 18000f);
             return MathHelper.Clamp(size, MinFontSize, MaxFontSize);
         }
 

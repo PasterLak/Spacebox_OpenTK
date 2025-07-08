@@ -4,32 +4,21 @@ using Engine.Audio;
 
 using Engine.Light;
 using Engine;
+using OpenTK.Mathematics;
 
 namespace Spacebox.Game.Player
 {
-    public class Flashlight
+    public class Flashlight : SpotLight
     {
-        private bool _isActive = false;
-
-        public bool IsActive
-        {
-            get { return _isActive; }
-            set
-            {
-                _isActive = value;
-                spotLight.Enabled = value;
-            }
-        }
-
-        private SpotLight spotLight;
+  
         private AudioSource audio;
         private Toggi toggle;
-        public Flashlight(Camera camera)
+        public Flashlight()
         {
-            var shader = Engine.Resources.Load<Shader>("Shaders/block");
-            spotLight = new SpotLight();
-           // spotLight.UseSpecular = false;
+            GetDirectionFromNode = true;
+            Direction = -Vector3.UnitZ;
 
+            Specular = new Vector3 (0.5f);
             var clip = Engine.Resources.Load<AudioClip>("Resources/Audio/flashlight.ogg");
             audio = new AudioSource(clip);
             audio.Volume = 0.5f;
@@ -40,29 +29,29 @@ namespace Spacebox.Game.Player
             {
                 audio.Play();
 
-                IsActive = !IsActive;
+                Enabled = !Enabled;
             });
 
 
             toggle = ToggleManager.Register("flashlight");
             toggle.OnStateChanged += state => 
-            { 
-                IsActive = state; 
+            {
+                Enabled = state; 
             };
 
             // use:
             //ToggleManager.SetState("flashlight", true);
         }
 
+        public override void Update()
+        {
+            base.Update();
+            Direction = Parent.Forward;
+        }
         private void OnToggle(bool state)
         {
-            IsActive = state;
+            Enabled = state;
         }
 
-        public void Draw()
-        {
-            if (Camera.Main != null) ;
-           // spotLight.Render(Camera.Main);
-        }
     }
 }

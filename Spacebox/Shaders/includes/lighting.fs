@@ -1,6 +1,15 @@
-﻿#define MAX_DIR    4
+﻿
+
+// lighting.fs
+// use:   #include "includes/lighting.fs"
+#define MAX_DIR    4
 #define MAX_POINT 64
 #define MAX_SPOT  32
+
+struct LightsCount
+{ int dir; int point;
+  int spot; int pad; 
+ };
 
 struct DirLight
 { vec3 direction; float intensity;
@@ -21,41 +30,45 @@ float quadratic; float intensity;
  vec3 diffuse; float pad2;
   vec3 specular; float pad3; };
 
+layout(std140) uniform LightsCountBlock   { LightsCount   lightsCount; };
 layout(std140) uniform DirBlock   { DirLight   dirLights  [MAX_DIR  ]; };
 layout(std140) uniform PointBlock { PointLight pointLights[MAX_POINT]; };
 layout(std140) uniform SpotBlock  { SpotLight  spotLights [MAX_SPOT ]; };
 
 
-
+vec4 fogMix(vec4 color,float factor, vec3 fogColor)
+{return mix(vec4(fogColor,color.a),color,factor);}
 
 vec3 accumulateDirLights(vec3 N, vec3 V, vec3 baseCol)
 {
     vec3 sum = vec3(0.0);
-    for(int i = 0; i < MAX_DIR; ++i)
+
+    int count = lightsCount.dir;
+    if(count==0) return vec3(0);
+
+    vec3 ambientFinal = AMBIENT * baseCol;
+
+    for(int i = 0; i < count; ++i)
     {
         float I = dirLights[i].intensity;
-        if(I == 0.0) continue;
 
         vec3 dir = dirLights[i].direction;
-        float len = length(dir);
-        if(len == 0.0) continue;
 
         vec3 L = normalize(-dir);
         float diff = max(dot(N, L), 0.0);
         vec3 halfVec = normalize(L + V);
         float spec = pow(max(dot(N, halfVec), 0.0), 32.0);
 
-        sum += AMBIENT  * baseCol * I +
+        sum += ambientFinal * I +
                dirLights[i].diffuse  * diff    * baseCol * I +
                dirLights[i].specular * spec               * I;
     }
     return sum;
 }
 
-vec3 calcPointLight(PointLight L, vec3 N, vec3 V, vec3 P, vec3 baseCol)
+vec3 calcPointLight(PointLight L, vec3 N, vec3 V, vec3 P, 
+vec3 baseCol, vec3 ambientFinal)
 {
-    if(L.constant == 0.0 && L.linear == 0.0 && L.quadratic == 0.0)
-        return vec3(0.0);
 
     float I = L.intensity;
     vec3 Ldir = L.position - P;
@@ -67,7 +80,7 @@ vec3 calcPointLight(PointLight L, vec3 N, vec3 V, vec3 P, vec3 baseCol)
     vec3 halfV  = normalize(Ldir + V);
     float spec  = pow(max(dot(N, halfV), 0.0), 32.0);
 
-    return (AMBIENT * baseCol  * I+
+    return (ambientFinal * I+
             L.diffuse * diff * baseCol * I +
             L.specular * spec) * atten * I;
 }
@@ -75,17 +88,18 @@ vec3 calcPointLight(PointLight L, vec3 N, vec3 V, vec3 P, vec3 baseCol)
 vec3 accumulatePointLights(vec3 N, vec3 V, vec3 P, vec3 baseCol)
 {
     vec3 sum = vec3(0.0);
-    for(int i = 0; i < MAX_POINT; ++i)
-        sum += calcPointLight(pointLights[i], N, V, P, baseCol);
+    int count = lightsCount.point;
+    if(count==0) return vec3(0);
+
+    vec3 ambientFinal = AMBIENT * baseCol ;
+
+    for(int i = 0; i < count; ++i)
+        sum += calcPointLight(pointLights[i], N, V, P, baseCol,ambientFinal);
     return sum;
 }
 
-vec3 calcSpotLight(SpotLight L, vec3 N, vec3 V, vec3 P, vec3 baseCol)
+vec3 calcSpotLight(SpotLight L, vec3 N, vec3 V, vec3 P, vec3 baseCol, vec3 ambientFinal)
 {
-    if(L.constant == 0.0 && L.linear == 0.0 && L.quadratic == 0.0)
-        return vec3(0.0);
-
-    if(length(L.direction) == 0.0) return vec3(0.0);
 
     float span = L.innerCut - L.outerCut;
     if(span <= 0.0) return vec3(0.0);
@@ -104,7 +118,7 @@ vec3 calcSpotLight(SpotLight L, vec3 N, vec3 V, vec3 P, vec3 baseCol)
     vec3 halfV  = normalize(Ldir + V);
     float spec  = pow(max(dot(N, halfV), 0.0), 32.0);
 
-    return (AMBIENT * baseCol  * I+
+    return (ambientFinal * I +
             L.diffuse * diff * baseCol * I +
             L.specular * spec) * atten * spot * I;
 }
@@ -112,11 +126,15 @@ vec3 calcSpotLight(SpotLight L, vec3 N, vec3 V, vec3 P, vec3 baseCol)
 vec3 accumulateSpotLights(vec3 N, vec3 V, vec3 P, vec3 baseCol)
 {
     vec3 sum = vec3(0.0);
-    for(int i = 0; i < MAX_SPOT; ++i){
+     int count = lightsCount.spot;
+     if(count==0) return vec3(0);
+
+     vec3 ambientFinal = AMBIENT * baseCol;
+    for(int i = 0; i < count; ++i){
 
         if(spotLights[i].intensity == 0.0) continue;
 
-        sum += calcSpotLight(spotLights[i], N, V, P, baseCol);
+        sum += calcSpotLight(spotLights[i], N, V, P, baseCol,ambientFinal);
     }
         
     return sum;

@@ -22,7 +22,7 @@ namespace Engine
         private bool _cameraRelativeRender = false;
 
         public bool CameraRelativeRender => _cameraRelativeRender;
-        public void SetRenderSpace(bool renderSpace) 
+        public void SetRenderSpace(bool renderSpace)
         {
             _cameraRelativeRender = renderSpace;
         }
@@ -52,10 +52,12 @@ namespace Engine
 
         }
 
-        public override void Update() {
+        public override void Update()
+        {
             RenderSpace.UpdateOrigin();
             Frustum.UpdateFrustum(this);
-            base.Update(); }
+            base.Update();
+        }
 
 
         public virtual Matrix4 GetViewMatrix()
@@ -75,39 +77,29 @@ namespace Engine
 
         protected abstract void UpdateVectors();
 
+
         public Vector2 WorldToScreenPoint(Vector3 worldPosition, int screenWidth, int screenHeight)
         {
-            if (_cameraRelativeRender) worldPosition = worldPosition - Position;
+            worldPosition = RenderSpace.ToRender(worldPosition);
 
             Matrix4 viewMatrix = GetViewMatrix();
             Matrix4 projectionMatrix = GetProjectionMatrix();
 
-            Vector4 worldPos = new Vector4(worldPosition, 1.0f);
+            Vector4 clip = new Vector4(worldPosition, 1.0f) * viewMatrix * projectionMatrix;
 
-            Vector4 viewPos = worldPos * viewMatrix;
-            Vector4 projPos = viewPos * projectionMatrix;
-
-            if (Math.Abs(projPos.W) < 1e-6f)
+            if (clip.W <= 0.000001f)
                 return Vector2.Zero;
 
+            Vector3 ndc = new Vector3(clip.X, clip.Y, clip.Z) / clip.W;
 
-            Vector3 ndc = new Vector3(
-                projPos.X / projPos.W,
-                projPos.Y / projPos.W,
-                projPos.Z / projPos.W
-            );
-
-            if (ndc.X < -1.0f || ndc.X > 1.0f ||
-                ndc.Y < -1.0f || ndc.Y > 1.0f ||
-                ndc.Z < -1.0f || ndc.Z > 1.0f)
+            if (ndc.X < -1f || ndc.X > 1f || ndc.Y < -1f || ndc.Y > 1f)
                 return Vector2.Zero;
 
-            Vector2 screenPos = new Vector2(
-                (ndc.X + 1.0f) * 0.5f * screenWidth,
-                (1.0f - ndc.Y) * 0.5f * screenHeight
+            return new Vector2(
+                (ndc.X + 1f) * 0.5f * screenWidth,
+                (1f - ndc.Y) * 0.5f * screenHeight
             );
-
-            return screenPos;
         }
+
     }
 }

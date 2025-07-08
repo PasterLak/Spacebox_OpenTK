@@ -56,6 +56,7 @@
 	  <None Remove="shaders\sphere.glsl" />
 	  <None Remove="shaders\sun.glsl" />
 	  <None Remove="shaders\transparent.glsl" />
+	  <None Remove="shaders\water.glsl" />
 	</ItemGroup>
 
 	<ItemGroup>

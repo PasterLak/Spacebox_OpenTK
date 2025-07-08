@@ -76,6 +76,61 @@ namespace Engine.Utils
             return r;
         }
 
+
+        public static Mesh CreateTiledPlane(int tilesX, int tilesZ)
+        {
+            tilesX = Math.Max(1, tilesX);
+            tilesZ = Math.Max(1, tilesZ);
+
+            int maxT = Math.Max(tilesX, tilesZ);
+            float width = tilesX / (float)maxT;
+            float depth = tilesZ / (float)maxT;
+
+            float stepX = width / tilesX;
+            float stepZ = depth / tilesZ;
+            float x0 = -width * 0.5f;
+            float z0 = -depth * 0.5f;
+
+            List<float> verts = new();
+            List<uint> idx = new();
+
+            for (int z = 0; z <= tilesZ; ++z)
+            {
+                for (int x = 0; x <= tilesX; ++x)
+                {
+                    float px = x0 + x * stepX;
+                    float pz = z0 + z * stepZ;
+
+                    verts.AddRange(new[]
+                    {
+                px, 0f, pz,
+                0f, 1f, 0f,
+                (float)x / tilesX,
+                (float)z / tilesZ
+            });
+
+                    if (x < tilesX && z < tilesZ)
+                    {
+                        uint start = (uint)(z * (tilesX + 1) + x);
+                        idx.AddRange(new[]
+                        {
+                    start,
+                    (uint)(start + tilesX + 1),
+                    (uint)(start + 1),
+                    (uint)(start + 1),
+                    (uint)(start + tilesX + 1),
+                    (uint)(start + tilesX + 2)
+                });
+                    }
+                }
+            }
+
+            var mesh = new Mesh(verts.ToArray(), idx.ToArray(), TextureMaterial.GetMeshBuffer());
+            Resources.AddResourceToDispose(mesh);
+            return mesh;
+        }
+
+
         public static Mesh CreateCube()
         {
             float[] v = {

@@ -250,6 +250,8 @@ namespace Spacebox.Scenes
             spacer = new Spacer(localPlayer.Position + new Vector3(5, 5, 7));
             AddChild(spacer);
             freeCamera = AddChild(new FreeCamera(localPlayer.Position));
+            freeCamera.FOV = localPlayer.FOV;
+            freeCamera.DepthFar = localPlayer.DepthFar;
             Camera.Main = localPlayer;
             AddChild(localPlayer);
             WelcomeUI.OnPlayerSpawned(World.Data.Info.ShowWelcomeWindow);
@@ -486,7 +488,7 @@ namespace Spacebox.Scenes
         {
             HealthColorOverlay.OnGUI();
             CenteredText.OnGUI();
-            TagText.OnGUI();
+           
             radarWindow.OnGUI();
             ResourceProcessingGUI.OnGUI();
             CraftingGUI.OnGUI();

@@ -53,32 +53,6 @@ namespace Engine
             return child;
         }
 
-        //  ──────────────────────────────────────────────────────────────────────────────
-        //  Вставь в Node3D (или в статический helper-класс, если удобней).
-        //  ──────────────────────────────────────────────────────────────────────────────
-        public T AddChildKeepWorld<T>(T child) where T : Node3D
-        {
-            if (child == null || ReferenceEquals(child, this)) return child;
-
-            // 1. запоминаем текущую мировую матрицу ребёнка
-            Matrix4 worldChild = child.GetModelMatrix();
-
-            // 2. назначаем нового родителя (без перестройки трансформа)
-            child._parent?.Children.Remove(child);
-            child._parent = this;
-            Children.Add(child);
-
-            // 3. вычисляем локальный = worldChild * inverse(parentWorld)
-            Matrix4 local = worldChild * Matrix4.Invert(GetModelMatrix());
-
-            // 4. декомпозируем и пишем как локальный трансформ
-            child.Position = local.ExtractTranslation();
-            child.Scale = local.ExtractScale();
-            child.Rotation = QuaternionToEulerDegrees(local.ExtractRotation());
-
-            child.MarkDirty();
-            return child;
-        }
 
         public void RemoveChild(Node3D child)
         {
@@ -107,9 +81,7 @@ namespace Engine
 
         public virtual void Destroy()
         {
-           
 
-           // Debug.Log("Cleared NODE - " + Name);
             for (int i = 0; i < Components.Count; i++)
                 Components[i].OnDetached();
 
@@ -207,7 +179,7 @@ namespace Engine
 
         public static Vector3 LocalToWorld(Vector3 localPosition, Node3D node)
         {
-            return Vector3.TransformPosition(localPosition, node.GetModelMatrixPoor());
+            return Vector3.TransformPosition(localPosition, node.GetModelMatrix());
         }
         public void Translate(Vector3 localTranslation)
         {
@@ -250,7 +222,6 @@ namespace Engine
                 MathHelper.RadiansToDegrees(rad.Z));
         }
 
-       
 
         public static Vector3 QuaternionToEuler(Quaternion q)
         {
@@ -276,6 +247,20 @@ namespace Engine
                 MathHelper.DegreesToRadians(eulerDegrees.Y),
                 MathHelper.DegreesToRadians(eulerDegrees.Z));
             return Quaternion.FromEulerAngles(rad);
+        }
+
+       
+        public Vector3 WorldForward
+        {
+            get
+            {
+          
+                Matrix4 m = GetModelMatrix();        
+
+                Vector3 dir = Vector3.Transform(new Vector3(0, 0, -1), m.ExtractRotation()).Normalized();
+
+                return dir;
+            }
         }
 
         public Vector3 Forward

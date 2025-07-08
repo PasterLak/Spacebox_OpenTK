@@ -131,7 +131,7 @@ namespace Engine.SceneManagment
                     Debug.Log("[SceneManager] Unloading content ",
                     Color4.White);
                     DisposablesUnloader.Dispose();
-                    Debug.Log("LIGHT in old scene: " + LightSystem.GetLightsCount);
+                    Debug.Log("LIGHT in old scene: " + LightSystem.GetRegisteredLightsCount);
                     Scene sceneBase = CurrentScene as Scene; // ???
                     sceneBase.Dispose();
 
@@ -163,7 +163,7 @@ namespace Engine.SceneManagment
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
 
-                Debug.Log("LIGHT in new scene: " + LightSystem.GetLightsCount);
+                Debug.Log("LIGHT in new scene: " + LightSystem.GetRegisteredLightsCount);
                 Debug.Log("[SceneManager] Loading scene ", Color4.White);
                 _currentSceneType = _nextSceneType;
                 _nextSceneType = null;

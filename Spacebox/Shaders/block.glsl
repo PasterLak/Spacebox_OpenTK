@@ -1,174 +1,95 @@
 ﻿--Vert
-
 #version 330 core
 
+layout(location = 0) in vec3 aPosition;
+layout(location = 1) in vec2 aTexCoord;
+layout(location = 2) in vec3 aColor;
+layout(location = 3) in vec3 aNormal;
+layout(location = 4) in vec2 aAO;
 
-layout (location = 0) in vec3 aPosition;
-layout (location = 1) in vec2 aTexCoord;
-layout (location = 2) in vec3 aColor;
-layout (location = 3) in vec3 aNormal;
-layout (location = 4) in vec2 aAO;
-
-
-out vec2 TexCoord;
-out vec3 Color;
-out float FogFactor;
-out float FogFactor2;
-out vec3 Normal;
-out vec3 FragPos;
-out float AO;
-out float isActive;
+out vec2 vUV;
+out vec3 vColor;
+out float vFog1;
+out float vFog2;
+out vec3 vNormal;
+out vec3 vPos;
+out vec3  vBase; 
+out float vAO;
+out float vAtlasFlag;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-float calcFog(vec4 worldPosition, float distanceMultiplicator)
+#define FOG_LN2 1.44269504
+
+float fogFac(vec3 p, float k)
 {
-    float distance = length(worldPosition.xyz - CAMERA_POS) * distanceMultiplicator;
-    return exp(-pow(FOG_DENSITY*distance,2.0));
+    float d2   = dot(p - CAMERA_POS, p - CAMERA_POS);   
+    float kd2  = k * k * d2;                            
+    return exp2(-(FOG_DENSITY) * kd2 * FOG_LN2);       
 }
 
 void main()
 {
-    vec4 worldPosition = vec4(aPosition,1.0) * model; // vec4(aPosition,1.0)*model;  model * vec4(aPosition,1.0)
-    gl_Position = worldPosition*view*projection; // worldPosition*view projection * view * worldPosition; 
-    TexCoord = aTexCoord;
-    Color = aColor;
-    FragPos = vec3(worldPosition);
-    Normal = aNormal * mat3(transpose(inverse(model)));
-    FogFactor = calcFog(worldPosition,1);
-    FogFactor2 = calcFog(worldPosition,0.5f);
-    AO = aAO.x;
-    isActive = aAO.y;
+    vec4 wp=vec4(aPosition,1.0)*model;
+    gl_Position=wp*view*projection;
+
+    vUV         = aTexCoord;
+    vColor      = aColor;
+    vPos        = wp.xyz;
+    vNormal     = aNormal*mat3(transpose(inverse(model)));
+     vBase     = (AMBIENT + aColor) * aAO.x;
+    vFog1       = fogFac(wp.xyz,1.0);
+    vFog2       = fogFac(wp.xyz,0.5);
+    vAO         = aAO.x;
+    vAtlasFlag  = aAO.y;
 }
-
-
 
 --Frag
 #version 330 core
+#include "includes/lighting.fs"
 
-#include "includes/core.fs"
+in vec2  vUV;
+in vec3  vColor;
+in float vFog1;
+in float vFog2;
+in vec3  vNormal;
+in vec3  vPos;
+in float vAO;
+in vec3  vBase;
+in float vAtlasFlag;
 
-struct SpotLight {
-    vec3 position;
-    vec3 direction;
-    float cutOff;
-    float outerCutOff;
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-    float constant;
-    float linear;
-    float quadratic;
-};
+layout(location = 0) out vec4 gColor;
+layout(location = 1) out vec4 gNormal;
 
-struct PointLight {
-    vec3 position;
-    float constant;
-    float linear;
-    float quadratic;
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-
-};
-
-#define MAX_POINT_LIGHTS 32
-uniform int pointLightCount;
-uniform PointLight pointLights[MAX_POINT_LIGHTS];
-uniform SpotLight spotLight;
-
+uniform vec4  color      = vec4(1,1,1,1);
 uniform sampler2D texture0;
 uniform sampler2D textureAtlas;
-uniform float material_shininess;
 
-
-in vec2 TexCoord;
-in vec3 Color;
-in float FogFactor;
-in float FogFactor2;
-in vec3 Normal;
-in vec3 FragPos;
-in float AO;
-in float isActive;
-
-layout(location = 0) out vec4 gColor;   
-layout(location = 1) out vec4 gNormal; 
-
-vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffC)
-{
-    vec3 lightDir = normalize(light.position - fragPos);
-    float diff = max(dot(normal, lightDir), 0.0);
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material_shininess);
-    float distance = length(light.position - fragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-    float theta = dot(lightDir, normalize(-light.direction));
-    float epsilon = light.cutOff - light.outerCutOff;
-    float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
-    vec3 ambient = light.ambient * diffC;
-    vec3 diffuse = light.diffuse * diff * diffC;
-    vec3 specular = light.specular * spec * vec3(1.0);
-    ambient *= attenuation;
-    diffuse *= attenuation * intensity;
-    specular *= attenuation * intensity;
-    return (ambient + diffuse + specular);
-}
-
-vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffC)
-{
-    vec3 lightDir = normalize(light.position - fragPos);
-    float diff = max(dot(normal, lightDir), 0.0);
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material_shininess);
-    float distance = length(light.position - fragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-    vec3 ambient = light.ambient * diffC;
-    vec3 diffuse = light.diffuse * diff * diffC;
-    vec3 specular = light.specular * spec * vec3(1.0);
-    ambient *= attenuation;
-    diffuse *= attenuation;
-    specular *= attenuation;
-    return (ambient + diffuse + specular);
-}
-
-vec4 applyFog(vec4 texColor)
-{
-    return mix(vec4(FOG, texColor.a), texColor, FogFactor);
-}
-
-vec4 applyFog2(vec4 texColor)
-{
-    return mix(vec4(FOG, texColor.a), texColor, FogFactor2);
-}
 
 void main()
 {
-    vec4 baseTexColor = texture(texture0, TexCoord);
-    vec4 atlasTexColor = texture(textureAtlas, TexCoord);
-    if(baseTexColor.a < 0.1) discard;
+    vec4 baseTex = texture(texture0,vUV);
+    if(baseTex.a < 0.1) discard;
 
-    vec3 norm = normalize(Normal);
-    vec3 viewDir = normalize(CAMERA_POS - FragPos);
+    vec3 N = normalize(vNormal);
+    vec3 V = normalize(CAMERA_POS - vPos);
+    vec3 base = baseTex.rgb;
 
-    vec3 ambient2 = baseTexColor.rgb * (AMBIENT + Color);
-    vec3 lighting = calcSpotLight(spotLight, norm, FragPos, viewDir, baseTexColor.rgb);
+    vec3 light = accumulateDirLights(N,V,base) +
+                 accumulatePointLights(N,V,vPos,base) +
+                 accumulateSpotLights(N,V,vPos,base);
 
-    for(int i = 0; i < pointLightCount; i++)
-    {
-        if(i >= MAX_POINT_LIGHTS) continue;
-     
-        lighting += calcPointLight(pointLights[i], norm, FragPos, viewDir, baseTexColor.rgb);
-        
-    }
+    vec3 col  = (base*vBase) + light;
 
-    vec3 finalColor = ambient2 * AO + lighting;
-    vec4 foggedColor = applyFog(vec4(finalColor, baseTexColor.a));
-    vec3 combinedColor = mix(foggedColor.rgb, applyFog2(vec4(baseTexColor.rgb, 1)).rgb, isActive == 0 ? 0 : atlasTexColor.a);
+    vec4 fogged1 = fogMix(vec4(col ,baseTex.a),vFog1, FOG);
+    vec4 fogged2 = fogMix(vec4(base,1.0),vFog2, FOG);
 
-    gColor  = vec4(combinedColor, foggedColor.a);
+    vec4 atlas   = texture(textureAtlas,vUV);
+    float aMix = (vAtlasFlag==0.0)?0.0:atlas.a;
+    vec3 mixed   = mix(fogged1.rgb,fogged2.rgb,aMix);
 
-    vec3 N = normalize(Normal);                      
-    gNormal = vec4(N * 0.5 + 0.5, 1.0);  
+    gColor  = vec4(mixed,fogged1.a);
+    gNormal = vec4(N*0.5+0.5,1.0);
 }

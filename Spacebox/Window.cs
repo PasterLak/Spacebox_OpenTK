@@ -128,7 +128,7 @@ namespace Spacebox
             var sha3 = Resources.Load<Shader>("Shaders/PostProcessing/vignette", true);
             var vignetteEffect = new VignetteEffect(sha3);
             vignetteEffect.Enabled = false;
-            _processManager.AddEffect(vignetteEffect);
+            //_processManager.AddEffect(vignetteEffect);
 
             var sha4 = Resources.Load<Shader>("Shaders/PostProcessing/edgeDetection", true);
 

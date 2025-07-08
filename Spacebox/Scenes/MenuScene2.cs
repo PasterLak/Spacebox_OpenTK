@@ -35,7 +35,7 @@ namespace Spacebox.Scenes
         {
             int x = 20;
             Lighting.FogColor = new Vector3(0.1f);
-            Lighting.FogDensity = 0.08f;
+            Lighting.FogDensity = 32;
             Lighting.AmbientColor = new Vector3(0.4f);
             //Theme.ApplySpaceboxTheme();
             var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
@@ -114,7 +114,7 @@ namespace Spacebox.Scenes
             sun2.Position = new Vector3(0,0,0);
             sun2.Diffuse = new Color3Byte(0, 255, 0).ToVector3();
            
-            sun2.Enabled = false;
+            sun2.Enabled = true;
             player2.AddChild(sun2);
 
 
@@ -135,7 +135,18 @@ namespace Spacebox.Scenes
 
             InputManager.AddAction("inputOverlay", Keys.F6);
             InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
-        
+
+
+            Texture2D waterTexture = Resources.Load<Engine.Texture2D>("Resources/Textures/Space/noise.jpg");
+            Node3D plane = new Node3D(new Vector3(0, 0, 0));
+            plane.SetScale(25);
+            var waterMat = new WaterMaterial(waterTexture);
+            Model waterModel = new Model(GenMesh.CreateTiledPlane(64,64), waterMat);
+            waterModel.Material.Color = Color4.White;
+            plane.AttachComponent(new ModelRendererComponent(waterModel));
+            plane.AttachComponent(new SphereCollider());
+            AddChild(plane);
+
         }
 
       

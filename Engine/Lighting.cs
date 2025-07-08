@@ -10,7 +10,14 @@ namespace Engine
         public static Vector3 AmbientColor = new Vector3(1);
         public static Color BackgroundColor = Color.Black;
         public static Vector3 FogColor;
-        public static float FogDensity = 0.1f;
+
+        private static float _fogDensity = 32;
+
+        public static float FogDensity
+        {
+            get => _fogDensity;
+            set { _fogDensity = value/10_000.0f; }
+        }
 
         public static void AddAmbient()
         {

@@ -90,8 +90,13 @@ namespace Spacebox.Game.Player
             SetData();
             SetRenderSpace(true);
             HitImage = new HitImage();
-            Flashlight = new Flashlight(this);
-      
+            Flashlight = new Flashlight();
+
+            AddChild(Flashlight);
+            Flashlight.Position = new Vector3(0,0,-0.3f);
+            Flashlight.Rotation = Vector3.Zero;
+
+
             CreateModel(0);
             GameMode = GameMode.Creative;
 
@@ -208,7 +213,10 @@ namespace Spacebox.Game.Player
             astBody.Enabled = !IsMain;
             astHelmet.Enabled = !IsMain;
             astTank.Enabled = !IsMain;
-                
+
+            itemInHand.Enabled = !IsMain;
+
+
             base.Update();
             
             
@@ -355,7 +363,7 @@ namespace Spacebox.Game.Player
         public void Render(Camera camera)
         {
             base.Render();
-            Flashlight.Draw();
+            
 
             if (VisualDebug.Enabled)
             {
