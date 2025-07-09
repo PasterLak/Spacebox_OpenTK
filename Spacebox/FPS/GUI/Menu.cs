@@ -1,6 +1,6 @@
 ﻿using ImGuiNET;
 
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 using Spacebox.Scenes;
 using System.Numerics;
 using Spacebox.FPS.Scenes;
@@ -57,7 +57,7 @@ namespace Spacebox.FPS.GUI
             ImGui.SetCursorPosX(xOffset);
             if (ImGui.Button("Load Game Scene", new Vector2(buttonWidth, buttonHeight)))
             {
-                SceneManager.LoadScene(typeof(GameScene));
+                //SceneManager.Load<(typeof(OldGameScene));
             }
 
             ImGui.Spacing();

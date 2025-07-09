@@ -5,9 +5,7 @@ namespace Spacebox.Scenes
 {
     public class LocalSpaceScene : BaseSpaceScene
     {
-        public LocalSpaceScene(string[] args) : base(args)
-        {
-        }
+
 
         public override void LoadContent()
         {

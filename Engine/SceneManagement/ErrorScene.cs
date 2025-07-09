@@ -1,12 +1,12 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using System.Drawing;
 
-namespace Engine.SceneManagment
+namespace Engine.SceneManagement
 {
     public class ErrorScene : Scene
     {
  
-        public ErrorScene(string[] args) : base(args)
+        public ErrorScene()
         {
         }
 

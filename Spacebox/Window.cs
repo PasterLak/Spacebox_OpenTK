@@ -5,7 +5,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
 using Spacebox.Scenes;
 using Engine.Audio;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 using ImGuiNET;
 using Engine.Utils;
 using Engine.GUI;
@@ -14,6 +14,7 @@ using Engine;
 using Engine.PostProcessing;
 using Engine.Light;
 using Engine.Graphics;
+using Spacebox.FPS.Scenes;
 
 namespace Spacebox
 {
@@ -88,7 +89,16 @@ namespace Spacebox
             FrameLimiter.Initialize(120);
             FrameLimiter.IsRunning = true;
 
-            SceneManager.Initialize(this, typeof(MenuScene2));
+            SceneManager.Initialize(this, () => {
+                SceneManager.Register<Spacebox.Scenes.MenuScene>();
+                SceneManager.Register<Spacebox.Scenes.MenuScene2>();
+                SceneManager.Register<Spacebox.Scenes.LocalSpaceScene>();
+                SceneManager.Register<Spacebox.Scenes.MultiplayerScene>();
+            
+                SceneManager.Register<Spacebox.Scenes.LogoScene>();
+                // SceneManager.Register<LocalSpaceScene>();
+
+            });
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
             LoadStarPixelFont();
 
@@ -144,6 +154,8 @@ namespace Spacebox
             MinimumSize = new Vector2i(640, 360);
             FullscreenRenderer = new FullscreenRenderer();
             shaderpass = sha;
+
+            SceneManager.Load<MenuScene2, MenuScene2Params>(new MenuScene2Params());
         }
 
         private static AudioSource screenShotAudio;
@@ -157,9 +169,9 @@ namespace Spacebox
         private void RenderScene()
         {
 
-            if (SceneManager.CurrentScene != null)
+            if (SceneManager.Current != null)
             {
-                SceneManager.CurrentScene.Render();
+                SceneManager.Current.Render();
                 VisualDebug.Render();
             }
 
@@ -171,10 +183,10 @@ namespace Spacebox
         private void RenderUI()
         {
             Time.StartOnGUI();
-            if (SceneManager.CurrentScene != null)
+            if (SceneManager.Current != null)
             {
 
-                SceneManager.CurrentScene.OnGUI();
+                SceneManager.Current.OnGUI();
                 Debug.Render(new Vector2(ClientSize.X, ClientSize.Y).ToSystemVector2());
                 Overlay.OnGUI();
                 InputOverlay.OnGUI();
@@ -340,8 +352,8 @@ namespace Spacebox
 
         public void Quit()
         {
-            if (SceneManager.CurrentScene != null)
-                SceneManager.CurrentScene.UnloadContent();
+            if (SceneManager.Current != null)
+                SceneManager.Current.UnloadContent();
 
             AudioDevice.Instance.Dispose();
             _processManager.Dispose();

@@ -1,4 +1,4 @@
-﻿using Engine.SceneManagment;
+﻿using Engine.SceneManagement;
 using Spacebox.Game.GUI;
 using Spacebox.Scenes;
 using SpaceNetwork;
@@ -17,7 +17,7 @@ namespace Spacebox.Client
                 world.Seed,
                 modConfig.FolderName
             };
-            SceneManager.LoadScene(typeof(LocalSpaceScene), args.ToArray());
+            SceneManager.Load<LocalSpaceScene>(); // args.ToArray()
         }
 
         public static void LaunchMultiplayerGame(WorldInfo world, ModConfig modConfig, ServerInfo serverInfo, string playerName, string appKey)
@@ -33,7 +33,7 @@ namespace Spacebox.Client
                 serverInfo.Port.ToString(),
                 playerName
             };
-            SceneManager.LoadScene(typeof(MultiplayerLoadScene), args.ToArray());
+            SceneManager.Load<MultiplayerLoadScene>(); // args.ToArray()
         }
     }
 }

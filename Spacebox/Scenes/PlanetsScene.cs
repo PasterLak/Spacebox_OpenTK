@@ -13,12 +13,12 @@ using Spacebox.Scenes.Test;
 using Spacebox.Game.Player;
 using Spacebox.FPS.GUI;
 using Engine.GUI;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 
 
 namespace Spacebox.Scenes
 {
-    public class PlanetsScene : Engine.SceneManagment.Scene
+    public class PlanetsScene : Engine.SceneManagement.Scene
     {
         private Skybox2 skybox;
 
@@ -29,7 +29,7 @@ namespace Spacebox.Scenes
         private Axes axes;
         CubeParent cube;
         Sprite sprite;
-        public PlanetsScene(string[] args) : base(args)
+        public PlanetsScene(string[] args)
         {
 
         }
@@ -191,10 +191,7 @@ namespace Spacebox.Scenes
             {
                 player.FOV -= 1;
             }
-            if (Input.IsKeyDown(Keys.T))
-            {
-                SceneManager.LoadScene(typeof(LogoScene));
-            }
+         
             if (Input.IsKeyDown(Keys.N))
             {
                 NodeUI.IsVisible = !NodeUI.IsVisible;

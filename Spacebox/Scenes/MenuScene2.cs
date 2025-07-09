@@ -8,7 +8,7 @@ using Spacebox.Game;
 using Spacebox.Game.GUI.Menu;
 using ImGuiNET;
 using Spacebox.Game.Generation;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 using Engine.UI;
 using Engine.Components;
 using Engine.Components.Debug;
@@ -21,12 +21,21 @@ using Engine.Light;
 
 namespace Spacebox.Scenes
 {
-    public class MenuScene2 : Scene
+
+    public struct MenuScene2Params
+    {
+        public string text = "PARAMS!!!!!!!!!!!!!!";
+
+        public MenuScene2Params()
+        {
+        }
+    }
+    public class MenuScene2 : Scene, ISceneWithParam<MenuScene2Params>
     {
         private FreeCamera player;
         private FreeCamera player2;
 
-        public MenuScene2(string[] args) : base(args)
+        public MenuScene2()
         {
           
         }
@@ -153,13 +162,13 @@ namespace Spacebox.Scenes
 
         }
 
-      
-
-
+  
         public override void Start()
         {
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 0), 1);
             PrintHierarchy();
+
+            Debug.Success("START");
         }
 
         public override void OnGUI()
@@ -189,13 +198,10 @@ namespace Spacebox.Scenes
 
             if (Input.IsKeyDown(Keys.O))
             {
-                SceneManager.ReloadScene();
+                SceneManager.Reload();
             }
 
-            if (Input.IsKeyDown(Keys.T))
-            {
-               SceneManager.LoadScene(typeof(LogoScene));
-            }
+      
 
             if (Input.IsKeyDown(Keys.C))
             {
@@ -210,9 +216,14 @@ namespace Spacebox.Scenes
 
             if (Input.IsKeyDown(Keys.RightControl))
             {
-                SceneManager.LoadScene(typeof(MenuScene));
+                SceneManager.Load<MenuScene>();
             }
 
+        }
+
+        public void Initialize(MenuScene2Params param)
+        {
+            Debug.Log(param.text);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Engine.Physics;
-using System.Xml.Linq;
 
-namespace Engine.SceneManagment
+namespace Engine.SceneManagement
 {
     public abstract class Scene : Node3D, IDisposable
     {
@@ -10,7 +9,7 @@ namespace Engine.SceneManagment
        
         public List<IDisposable> Disposables { get; private set; } = new List<IDisposable>();
 
-        public Scene(string[] args)
+        protected Scene()
         {
 
             Init();
@@ -39,7 +38,7 @@ namespace Engine.SceneManagment
         public virtual void Render()
         {
             base.Render();
-         BVHCuller.Render(this, Camera.Main);
+            BVHCuller.Render(this, Camera.Main);
     
         }
 

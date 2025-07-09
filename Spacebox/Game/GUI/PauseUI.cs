@@ -1,7 +1,7 @@
 ﻿using ImGuiNET;
 
 using Engine.Audio;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 using Engine;
 using Spacebox.Game.Generation;
 
@@ -103,7 +103,7 @@ namespace Spacebox.Game.GUI
                 click1?.Play();
                 ToggleManager.SetState("pause", false);
                 ToggleManager.SetState("panel", true);
-                SceneManager.LoadScene(typeof(MenuScene));
+                SceneManager.Load<MenuScene>();
             });
             currentY += buttonHeight + spacing;
             ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));

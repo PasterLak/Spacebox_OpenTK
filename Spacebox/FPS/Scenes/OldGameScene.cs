@@ -5,16 +5,17 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using Engine.Audio;
 using Engine.Physics;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 using Engine.Light;
 
 using Spacebox.FPS.GUI;
 using Engine;
+using Spacebox.Scenes;
 
 
 namespace Spacebox.FPS.Scenes
 {
-    internal class GameScene : Scene
+    public class OldGameScene : Scene
     {
         private int _vertexBufferObject;
 
@@ -46,7 +47,7 @@ namespace Spacebox.FPS.Scenes
         Water water;
         Skybox skybox; Skybox skyboxExtern;
 
-        public GameScene(string[] args) : base(args)
+        public OldGameScene(string[] args) 
         {
         }
 
@@ -386,7 +387,7 @@ namespace Spacebox.FPS.Scenes
         {
             if (Input.IsKeyDown(Keys.Backspace))
             {
-                SceneManager.LoadScene(typeof(MenuScene));
+                //SceneManager.Load<MenuScene>();
             }
 
             if (Input.IsKeyDown(Keys.Tab))

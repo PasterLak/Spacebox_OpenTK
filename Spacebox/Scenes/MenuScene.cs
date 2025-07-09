@@ -9,7 +9,7 @@ using Spacebox.Game;
 using Spacebox.Game.GUI.Menu;
 using ImGuiNET;
 using Spacebox.Game.Generation;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 using Engine.UI;
 using Engine.Light;
 using Spacebox.GUI;
@@ -25,7 +25,7 @@ namespace Spacebox.Scenes
         private GameMenu menu;
 
         private Canvas canvas;
-        public MenuScene(string[] args) : base(args)
+        public MenuScene()
         {
           
         }
@@ -112,7 +112,6 @@ namespace Spacebox.Scenes
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
             VerticalLinks.Init();
 
-            Debug.Log("LIGHT in new scene start: " + LightSystem.GetRegisteredLightsCount);
         }
 
 
@@ -135,7 +134,7 @@ namespace Spacebox.Scenes
             HealthColorOverlay.OnGUI();
             VerticalLinks.Draw();
             menu.Render();
-            canvas.Draw();
+            //canvas.Draw();
            // ImGui.PopFont();
         }
 
@@ -162,7 +161,7 @@ namespace Spacebox.Scenes
             if (Input.IsKeyDown(Keys.T))
             {
                 BlackScreenOverlay.IsEnabled = true;
-               SceneManager.LoadScene(typeof(LogoScene));
+                SceneManager.Load<LogoScene>();
             }
 
         }

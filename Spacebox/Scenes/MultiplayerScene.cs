@@ -1,6 +1,6 @@
 ﻿using Client;
 using Engine;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 using OpenTK.Mathematics;
 using Spacebox.Game;
 using Spacebox.Game.Commands;
@@ -14,8 +14,11 @@ namespace Spacebox.Scenes
     public class MultiplayerScene : BaseSpaceScene
     {
 
+        public MultiplayerScene()
+        {
 
-        public MultiplayerScene(string[] args) : base(args)
+        }
+        public MultiplayerScene(string[] args) 
         {
 
         }
@@ -29,7 +32,7 @@ namespace Spacebox.Scenes
             if (ClientNetwork.Instance == null)
             {
                 Debug.Error("No existing connection. Returning to Multiplayer Menu.");
-                SceneManager.LoadScene(typeof(MenuScene));
+                SceneManager.Load<MenuScene>();
                 return;
             }
             base.LoadContent();
@@ -87,7 +90,7 @@ namespace Spacebox.Scenes
             if (!ClientNetwork.Instance.IsConnected)
             {
                 Debug.Error("Lost connection to server. Returning to Multiplayer Menu.");
-                SceneManager.LoadScene(typeof(MenuScene));
+                SceneManager.Load<MenuScene>();
                 return;
             }
 

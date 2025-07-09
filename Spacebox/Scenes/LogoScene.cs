@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using Engine.GUI;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 
 using Engine;
 using Engine.Audio;
@@ -15,10 +15,7 @@ namespace Spacebox.Scenes
 
         Sprite sprite;
         AudioSource audio;
-        public LogoScene(string[] args) : base(args)
-        {
-        }
-
+  
         public override void LoadContent()
         {
 
@@ -56,7 +53,7 @@ namespace Spacebox.Scenes
         public override void Start()
         {
 
-            SceneManager.LoadScene(typeof(MenuScene));
+            SceneManager.Load<MenuScene>();
             //SceneManager.LoadScene(typeof(TestScene));
 
             Input.HideCursor(); audio.Play();
@@ -98,21 +95,7 @@ namespace Spacebox.Scenes
             sprite.UpdateSize(Window.Instance.Size);
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
            // SceneSwitcher.Update(typeof(AScene));
-            if (Input.IsKeyDown(Keys.S))
-            {
-                SceneManager.LoadScene(typeof(MenuScene));
-            }
-
-            if (Input.IsKeyDown(Keys.T))
-            {
-                SceneManager.LoadScene(typeof(PlanetsScene));
-            }
-
-            if (Input.IsKeyDown(Keys.E))
-            {
-                SceneManager.LoadScene(typeof(BScene));
-            }
-
+          
             if (Input.IsKeyDown(Keys.R))
             {
                 sprite.Shader.ReloadShader();

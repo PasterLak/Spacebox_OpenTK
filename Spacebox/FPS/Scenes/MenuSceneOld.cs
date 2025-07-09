@@ -4,7 +4,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using Engine.Audio;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 using Spacebox.FPS.GUI;
 
 using Spacebox.Scenes;
@@ -12,15 +12,20 @@ using Engine;
 
 namespace Spacebox.FPS.Scenes
 {
-    internal class MenuScene : Scene
+    internal class MenuSceneOld : Scene
     {
 
         Menu menu = new Menu();
-        public MenuScene(string[] args) : base(args)
+
+        public MenuSceneOld()
+        {
+
+        }
+        public MenuSceneOld(string[] args)
         {
         }
 
-        ~MenuScene()
+        ~MenuSceneOld()
         {
 
 
@@ -94,12 +99,12 @@ namespace Spacebox.FPS.Scenes
         {
             if (Input.IsKeyDown(Keys.Enter))
             {
-                SceneManager.LoadScene(typeof(GameScene));
+               // SceneManager.LoadScene(typeof(OldGameScene));
             }
 
             if (Input.IsKeyDown(Keys.S))
             {
-                SceneManager.LoadScene(typeof(Spacebox.Scenes.MenuScene));
+               // SceneManager.LoadScene(typeof(Spacebox.Scenes.MenuScene));
             }
 
         }

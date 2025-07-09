@@ -4,7 +4,7 @@ using System.Text.Json;
 using ImGuiNET;
 using Engine;
 using Engine.Audio;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 using Spacebox.Game.Player;
 using Spacebox.Scenes;
 using static Spacebox.Game.Resource.GameSetLoader;
@@ -350,13 +350,21 @@ namespace Spacebox.Game.GUI.Menu
             args.Add(world.Seed);
             args.Add(modInfo.FolderName);
 
+            var arg = new SpaceSceneArgs()
+            {
+                worldName = world.Name,
+                modId = world.ModId,
+                seed = world.Seed,
+                modfolderName = modInfo.FolderName
+            };
+
             if (multiplayer)
             {
-                SceneManager.LoadScene(typeof(MultiplayerScene), args.ToArray());
+                SceneManager.Load<MultiplayerScene, SpaceSceneArgs>(arg); // args.ToArray());
             }
             else
             {
-                SceneManager.LoadScene(typeof(LocalSpaceScene), args.ToArray());
+                SceneManager.Load<LocalSpaceScene, SpaceSceneArgs>(arg); // args.ToArray());
             }
 
         }

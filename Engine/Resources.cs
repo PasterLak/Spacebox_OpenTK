@@ -1,6 +1,6 @@
 ﻿
 using Engine.Audio;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 using Engine.Utils;
 using OpenTK.Mathematics;
 
@@ -293,7 +293,7 @@ namespace Engine
             {
                 sum += t.Value.Count;
             }
-            Debug.Log($"[Resources][Scene: {SceneManager.CurrentScene.Name}] Loaded resources: {sum}", Color4.Yellow);
+            Debug.Log($"[Resources][Scene: {SceneManager.Current.Name}] Loaded resources: {sum}", Color4.Yellow);
 
             if (sum == 0) return;
 

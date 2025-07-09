@@ -4,7 +4,7 @@ using Engine.Audio;
 using Engine.GUI;
 using Engine.Light;
 using Engine.Physics;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -22,7 +22,24 @@ using Spacebox.Game.Player.Interactions;
 
 namespace Spacebox.Scenes
 {
-    public abstract class BaseSpaceScene : Scene
+
+    public struct SpaceSceneArgs
+    {
+        // (worldName/server, modId, seed, modfolder) + ( modfolderName, key, ip, port, nickname)
+        public string worldName;
+        public string modId;
+        public string seed;
+        public string modfolder;
+        public string modfolderName;
+        public string key;
+        public string ip;
+        public int port;
+        public string nickname;
+        public SpaceSceneArgs() { }
+
+
+    }
+    public abstract class BaseSpaceScene : Scene, ISceneWithParam<SpaceSceneArgs>
     {
        
         protected Astronaut localPlayer;
@@ -50,52 +67,47 @@ namespace Spacebox.Scenes
         private SpheresPool SpheresPool;
         private bool isMultiplayer = false;
         private FreeCamera freeCamera;
-        public BaseSpaceScene(string[] args) : base(args)
+
+        public void Initialize(SpaceSceneArgs param)
         {
-            if((this as MultiplayerScene) != null)
+            if ((this as MultiplayerScene) != null)
             {
                 isMultiplayer = true;// (worldName/server, modId, seed, modfolder) + ( modfolderName, key, ip, port, nickname)
-               
-                foreach(var arg in args)
-                {
-                    Debug.Warning(arg.ToString());
-                }
             }
 
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 0), 1);
 
             //  (worldName, modId, seed, modfolder)
-            if (args.Length >= 4)
-            {
-                worldName = args[0];
+            
+                worldName = param.worldName;
                 var modFolderName = "";
-                var modId = args[1];
-                var seedString = args[2];
+                var modId = param.modId;
+                var seedString = param.seed;
 
                 if (isMultiplayer)
                 {
-                    if(ClientNetwork.Instance!= null)
+                    if (ClientNetwork.Instance != null)
                     {
                         modFolderName = ClientNetwork.Instance.ReceivedServerInfo.ModFolderName;
                     }
                 }
                 else
                 {
-                    modFolderName = args[3];
+                    modFolderName = param.modfolderName;
                 }
 
                 string serverName = "";
 
-                if(isMultiplayer)
+                if (isMultiplayer)
                 {
                     serverName = worldName;
                 }
 
 
-                string modsFolder =  ModPath.GetModsPath(isMultiplayer, serverName);
-  
+                string modsFolder = ModPath.GetModsPath(isMultiplayer, serverName);
+
                 string blocksPath = ModPath.GetBlocksPath(modsFolder, modFolderName);
-            
+
                 string itemsPath = ModPath.GetItemsPath(modsFolder, modFolderName);
                 string emissionPath = ModPath.GetEmissionsPath(modsFolder, modFolderName);
 
@@ -117,10 +129,10 @@ namespace Spacebox.Scenes
                 }
                 else
                 {
-                   // World.Random = new Random();
+                    // World.Random = new Random();
                     Debug.Error("Wrong seed format! Seed: " + seedString);
                 }
-            }
+            
 
             BlackScreenOverlay.IsEnabled = true;
             BlackScreenOverlay.OnGUI();
@@ -150,6 +162,7 @@ namespace Spacebox.Scenes
                 InputOverlay.IsVisible = !InputOverlay.IsVisible;
             });
         }
+
 
         private void InitializeGamesetData(string blocksPath, string itemsPath, string emissionPath, string modId, byte blockSizePixels, string serverName)
         {
@@ -408,7 +421,7 @@ namespace Spacebox.Scenes
             {
                 if (Input.IsKeyDown(Keys.KeyPadEnter))
                 {
-                    SceneManager.LoadScene(typeof(MenuScene));
+                    SceneManager.Load<MenuScene>();
                 }
                 if (Input.IsKeyDown(Keys.F8))
                 {
@@ -532,5 +545,7 @@ namespace Spacebox.Scenes
             InteractionPlaceBlock.lineRenderer = null;
             InteractionDestroyBlockSurvival.BlockMiningEffect = null;
         }
+
+        
     }
 }

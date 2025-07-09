@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using Engine.GUI;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 
 using Engine;
 using Engine.Audio;
@@ -13,10 +13,7 @@ namespace Spacebox.Scenes
     public class AScene : Scene
     {
 
-        public AScene(string[] args) : base(args)
-        {
-        }
-
+      
 
         public override void LoadContent()
         {
@@ -52,21 +49,6 @@ namespace Spacebox.Scenes
         {
 
             SceneSwitcher.Update(typeof(MenuScene));
-
-            if (Input.IsKeyDown(Keys.S))
-            {
-                SceneManager.LoadScene(typeof(MenuScene));
-            }
-
-            if (Input.IsKeyDown(Keys.T))
-            {
-                SceneManager.LoadScene(typeof(PlanetsScene));
-            }
-
-            if (Input.IsKeyDown(Keys.B))
-            {
-                SceneManager.LoadScene(typeof(BScene));
-            }
 
           
 

@@ -13,13 +13,13 @@ using Spacebox.Scenes.Test;
 using Spacebox.Game.Player;
 using Spacebox.FPS.GUI;
 using Engine.GUI;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 using Engine.Components;
 
 
 namespace Spacebox.Scenes
 {
-    public class PlanetsScene2 : Engine.SceneManagment.Scene
+    public class PlanetsScene2 : Engine.SceneManagement.Scene
     {
         private Skybox2 skybox;
 
@@ -38,10 +38,7 @@ namespace Spacebox.Scenes
         private Node3D mars = new Node3D();
 
         private Node3D moon;
-        public PlanetsScene2(string[] args) : base(args)
-        {
-
-        }
+   
 
         public override void LoadContent()
         {
@@ -238,7 +235,7 @@ namespace Spacebox.Scenes
             }
             if (Input.IsKeyDown(Keys.T))
             {
-                SceneManager.LoadScene(typeof(LogoScene));
+                SceneManager.Load<LogoScene>();
             }
             if (Input.IsKeyDown(Keys.N))
             {

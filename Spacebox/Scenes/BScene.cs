@@ -1,5 +1,5 @@
 ﻿using OpenTK.Windowing.GraphicsLibraryFramework;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 
 using Engine;
 
@@ -25,7 +25,7 @@ namespace Spacebox.Scenes
                 counter++;
 
                 Debug.Log($"<<< {counter} >>>");
-                SceneManager.LoadScene(type);
+               // SceneManager.LoadScene(type);
             }
         }
     }
@@ -33,7 +33,7 @@ namespace Spacebox.Scenes
     {
 
         private FreeCamera0 player;
-        public BScene(string[] args) : base(args)
+        public BScene(string[] args) 
         {
         }
 
@@ -167,21 +167,7 @@ namespace Spacebox.Scenes
            // player.Update();
             SceneSwitcher.Update(typeof(AScene));
 
-            if (Input.IsKeyDown(Keys.S))
-            {
-                SceneManager.LoadScene(typeof(MenuScene));
-            }
-
-            if (Input.IsKeyDown(Keys.T))
-            {
-                SceneManager.LoadScene(typeof(PlanetsScene));
-            }
-
-            if (Input.IsKeyDown(Keys.A))
-            {
-                SceneManager.LoadScene(typeof(AScene));
-            }
-
+            
           
 
         }

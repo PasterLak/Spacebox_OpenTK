@@ -75,7 +75,7 @@ namespace Spacebox.Game
         }
         private void AddItems(Storage storage) // hard coded
         {
-            var item = GameAssets.GetItemByName("Iron Ingot");
+            var item = GameAssets.GetItemByName("Beer");
             if (item != null)
             {
                 storage.TryAddItem(item, 6);

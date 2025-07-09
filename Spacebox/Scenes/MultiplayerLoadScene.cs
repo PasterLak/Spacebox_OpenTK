@@ -1,7 +1,7 @@
 ﻿
 using Client;
 using Engine;
-using Engine.SceneManagment;
+using Engine.SceneManagement;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Spacebox.Game;
@@ -30,7 +30,13 @@ namespace Spacebox.Scenes
         private Skybox skybox;
         private Shader skyboxShader;
         private bool readyToLaunch = false;
-        public MultiplayerLoadScene(string[] args) : base(args)
+
+
+        public MultiplayerLoadScene()
+        {
+
+        }
+        public MultiplayerLoadScene(string[] args) 
         {
             sceneArgs = args;
             if (args.Length >= 8)
@@ -142,7 +148,17 @@ namespace Spacebox.Scenes
                         var world = new WorldInfo { Name = serverInfo.Name, ModId = sceneArgs[1], Seed = sceneArgs[2], FolderName = sceneArgs[3] };
                         var modConfig = new ModConfig { ModId = sceneArgs[1], FolderName = sceneArgs[3] };
                         WriteInfo($"Connected to: <{serverInfo.Name}> host: {host} port: {port}");
-                        SceneManager.LoadScene(typeof(MultiplayerScene), sceneArgs);
+
+                        /*SceneManager.Load<MultiplayerScene, SpaceSceneArgs>(new SpaceSceneArgs()
+                        {
+                            worldName = serverInfo.Name,
+                            modId = world.ModId,
+                            seed = world.Seed,
+                            modfolder = world.FolderName,
+                            port = port,
+                            
+
+                        }); */
                     }
                 }
                 else
@@ -158,7 +174,7 @@ namespace Spacebox.Scenes
                     {
                         WriteError("Returning to Multiplayer Menu.");
                         ClientNetwork.Instance = null;
-                        SceneManager.LoadScene(typeof(MenuScene));
+                        SceneManager.Load<MenuScene>();
                     }
                 }
             }
