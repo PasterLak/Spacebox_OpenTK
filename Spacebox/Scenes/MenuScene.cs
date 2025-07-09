@@ -12,6 +12,7 @@ using Spacebox.Game.Generation;
 using Engine.SceneManagment;
 using Engine.UI;
 using Engine.Light;
+using Spacebox.GUI;
 
 
 namespace Spacebox.Scenes
@@ -126,8 +127,9 @@ namespace Spacebox.Scenes
         public override void OnGUI()
         {
             Theme.ApplySpaceboxTheme();
-           // ImFontPtr myFont = ImGui.GetIO().Fonts.Fonts[1];
-           // ImGui.PushFont(myFont);
+            // ImFontPtr myFont = ImGui.GetIO().Fonts.Fonts[1];
+            // ImGui.PushFont(myFont);
+            BlackScreenOverlay.OnGUI();
             Input.ShowCursor();
             CenteredImageMenu.Draw();
             HealthColorOverlay.OnGUI();
@@ -159,6 +161,7 @@ namespace Spacebox.Scenes
 
             if (Input.IsKeyDown(Keys.T))
             {
+                BlackScreenOverlay.IsEnabled = true;
                SceneManager.LoadScene(typeof(LogoScene));
             }
 

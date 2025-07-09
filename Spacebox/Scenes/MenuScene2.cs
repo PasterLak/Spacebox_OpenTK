@@ -35,12 +35,16 @@ namespace Spacebox.Scenes
         {
             int x = 20;
             Lighting.FogColor = new Vector3(0.1f);
-            Lighting.FogDensity = 32;
-            Lighting.AmbientColor = new Vector3(0.4f);
+            Lighting.FogDensity = 0;
+            Lighting.AmbientColor = new Vector3(0.6f);
             //Theme.ApplySpaceboxTheme();
             var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
-            AddChild(new Skybox(skyboxTexture)).IsAmbientAffected = false;
-           player = AddChild(new FreeCamera(new Vector3(0, 0, 5)));
+            var sky = Resources.Load<Texture2D>("Resources/Textures/Space/dom.png");
+            var sky2 = Resources.Load<Mesh>("Resources/Models/cube.obj");
+            var skyBox = AddChild(new Skybox(GenMesh.CreateCube(), new SkyboxProceduralMaterial()));
+            skyBox.IsAmbientAffected = false;
+            skyBox.SetScale(300);
+            player = AddChild(new FreeCamera(new Vector3(0, 0, 5)));
             player2 = AddChild(new FreeCamera(new Vector3(x, 5, 5)));
            
             var cubeRenderer = new CubeRenderer(new Vector3(1,0,1));
@@ -139,9 +143,9 @@ namespace Spacebox.Scenes
 
             Texture2D waterTexture = Resources.Load<Engine.Texture2D>("Resources/Textures/Space/noise.jpg");
             Node3D plane = new Node3D(new Vector3(0, 0, 0));
-            plane.SetScale(25);
+            plane.SetScale(1000);
             var waterMat = new WaterMaterial(waterTexture);
-            Model waterModel = new Model(GenMesh.CreateTiledPlane(64,64), waterMat);
+            Model waterModel = new Model(GenMesh.CreateTiledPlane(1024, 1024), waterMat);
             waterModel.Material.Color = Color4.White;
             plane.AttachComponent(new ModelRendererComponent(waterModel));
             plane.AttachComponent(new SphereCollider());
@@ -154,12 +158,13 @@ namespace Spacebox.Scenes
 
         public override void Start()
         {
+            HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 0), 1);
             PrintHierarchy();
         }
 
         public override void OnGUI()
         {
-
+            HealthColorOverlay.OnGUI();
         }
 
         public override void UnloadContent()
@@ -180,6 +185,11 @@ namespace Spacebox.Scenes
             if (Input.IsKeyDown(Keys.R))
             {
                 RenderSpace.SwitchSpace();
+            }
+
+            if (Input.IsKeyDown(Keys.O))
+            {
+                SceneManager.ReloadScene();
             }
 
             if (Input.IsKeyDown(Keys.T))

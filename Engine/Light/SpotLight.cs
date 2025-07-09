@@ -24,6 +24,18 @@ namespace Engine.Light
         public float Linear { get; set; } = 0.09f;
         public float Quadratic { get; set; } = 0.032f;
 
+        private float _range = 10f;
+        public float Range
+        {
+            get => _range;
+            set
+            {
+                _range = value;
+                Linear = 4.5f / _range;
+                Quadratic = 75f / (_range * _range);
+            }
+        }
+
 
         public SpotLight(Vector3 direction) 
         {

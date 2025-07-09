@@ -75,7 +75,7 @@ namespace Engine.SceneManagment
 
         private static void GetAllScenes()
         {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies(); 
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             foreach (var assembly in assemblies)
             {
@@ -96,6 +96,18 @@ namespace Engine.SceneManagment
             if (!types.Contains(scene))
             {
                 types.Add(scene);
+            }
+        }
+
+        public static void ReloadScene()
+        {
+            ReloadScene(new string[0]);
+        }
+        public static void ReloadScene(string[] args)
+        {
+            if (CurrentScene != null)
+            {
+                LoadScene(CurrentScene.GetType(), args);
             }
         }
         public static void LoadScene(Type sceneType)
@@ -135,25 +147,25 @@ namespace Engine.SceneManagment
                     Scene sceneBase = CurrentScene as Scene; // ???
                     sceneBase.Dispose();
 
-                    
-                   
+
+
                     InputManager.RemoveAllActions(true);
                     CurrentScene.Destroy();
                     LightSystem.Clear();
                     CurrentScene.Dispose();
-                    
+
                     CurrentScene.UnloadContent();
                     Camera.Main = null;
 
                     SoundManager.Dispose();
-                    
+
                     Resources.UnloadAll();
                     VisualDebug.Clear();
 
-                    
-                   // Debug.Log("Active Textures: " + GL.GetInteger(GetPName.TextureBinding2D));
-                   // Debug.Log("Active Buffers: " + GL.GetInteger(GetPName.ArrayBufferBinding));
-                    
+
+                    // Debug.Log("Active Textures: " + GL.GetInteger(GetPName.TextureBinding2D));
+                    // Debug.Log("Active Buffers: " + GL.GetInteger(GetPName.ArrayBufferBinding));
+
 
                     Debug.Log("[SceneManager] Content was unloaded ",
                     Color4.White);
@@ -168,9 +180,9 @@ namespace Engine.SceneManagment
                 _currentSceneType = _nextSceneType;
                 _nextSceneType = null;
 
-                Scene sceneInstance = Activator.CreateInstance(_currentSceneType.typ, new object[] { args }) as Scene; 
+                Scene sceneInstance = Activator.CreateInstance(_currentSceneType.typ, new object[] { args }) as Scene;
 
-      
+
 
                 CurrentScene = sceneInstance;
 
@@ -180,7 +192,7 @@ namespace Engine.SceneManagment
                     Color4.Yellow);
 
                 CurrentScene.LoadContent();
-                
+
                 CurrentScene.Start();
                 Resources.PrintLoadedResources();
 

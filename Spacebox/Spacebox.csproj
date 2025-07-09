@@ -53,6 +53,7 @@
 	  <None Remove="Shaders\PostProcessing\edgeDetection.glsl" />
 	  <None Remove="shaders\postprocessing\normalView.glsl" />
 	  <None Remove="Shaders\PostProcessing\vignette.glsl" />
+	  <None Remove="Shaders\procedural_skybox.glsl" />
 	  <None Remove="shaders\sphere.glsl" />
 	  <None Remove="shaders\sun.glsl" />
 	  <None Remove="shaders\transparent.glsl" />

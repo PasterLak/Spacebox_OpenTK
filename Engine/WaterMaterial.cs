@@ -11,11 +11,20 @@ namespace Engine
         public WaterMaterial(Texture2D noise) : base(Resources.Load<Shader>("Shaders/water"))
         {
             Noise = noise;
-            RenderMode = RenderMode.Transparent;
+            RenderMode = RenderMode.Opaque;
             RenderFace = RenderFace.Both;
             AddTexture("noiseMap", Noise);
         }
 
+        protected override void ApplyRenderSettings()
+        {
+            base.ApplyRenderSettings();
+
+
+            GL.Enable(EnableCap.DepthTest); // никакого depth-test’а
+            GL.DepthMask(true);             // и записи глубины
+           GL.Enable(EnableCap.Blend);     // без смешения
+        }
         protected override void UpdateDynamicUniforms()
         {
        

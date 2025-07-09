@@ -9,6 +9,7 @@ using Spacebox.Game.Player;
 using Spacebox.Scenes;
 using static Spacebox.Game.Resource.GameSetLoader;
 using Spacebox.Game.Resource;
+using Spacebox.GUI;
 
 namespace Spacebox.Game.GUI.Menu
 {
@@ -73,6 +74,7 @@ namespace Spacebox.Game.GUI.Menu
                 {
                     if (w.Name == "Developer")
                     {
+                        BlackScreenOverlay.IsEnabled = true;
                         selectedWorld = w;
                         Click1.Play();
                         if (VersionConverter.IsVersionOld(selectedWorld.GameVersion, Application.Version))

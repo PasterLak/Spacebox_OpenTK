@@ -291,17 +291,8 @@ namespace Spacebox.Scenes
           */
             pLight.Enabled = false;
 
-            Chat.Write("Welcome to Spacebox!",Color4.Yellow);
+            Chat.Write("Welcome to Spacebox!",Color4.Yellow); 
 
-            var sun = new DirectionalLight
-            {
-                Rotation = new Vector3(45, 45, 45),
-                Intensity = 1
-            };
-            sun.Diffuse = new Color3Byte(209, 201, 157).ToVector3();
-
-            sun.Enabled = false;
-            AddChild(sun);
         }
 
         private void OnDebugStateChanged(bool state)
