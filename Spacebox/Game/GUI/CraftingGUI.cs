@@ -98,8 +98,8 @@ namespace Spacebox.Game.GUI
    
            
 
-            scrollAudio = new AudioSource(SoundManager.GetClip("scroll"));
-            clickAudio = new AudioSource(SoundManager.GetClip("click1"));
+            scrollAudio = new AudioSource(Resources.Load<AudioClip>("scroll"));
+            clickAudio = new AudioSource(Resources.Load<AudioClip>("click1"));
 
             var inventory = ToggleManager.Register("crafting");
             inventory.IsUI = true;
@@ -110,14 +110,14 @@ namespace Spacebox.Game.GUI
 
             if (openSound == null)
             {
-                openSound = new AudioSource(SoundManager.GetClip("openBlock1"));
+                openSound = new AudioSource(Resources.Load<AudioClip>("openBlock1"));
                 openSound.Volume = 1f;
 
             }
 
             if (closeSound == null)
             {
-                closeSound = new AudioSource(SoundManager.GetClip("openBlock4"));
+                closeSound = new AudioSource(Resources.Load<AudioClip>("openBlock4"));
                 closeSound.Volume = 1f;
 
             }

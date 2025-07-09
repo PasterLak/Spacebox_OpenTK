@@ -49,7 +49,7 @@ namespace Spacebox.Game.GUI
             inventory.IsUI = true;
             inventory.OnStateChanged += s => IsVisible = s;
 
-            splitAudio = new AudioSource(SoundManager.GetClip("splitStack"));
+            splitAudio = new AudioSource(Resources.Load<AudioClip>("splitStack"));
             openSound = new AudioSource(Resources.Get<AudioClip>("openStorage"));
             closeSound = new AudioSource(Resources.Get<AudioClip>("closeStorage"));
         }

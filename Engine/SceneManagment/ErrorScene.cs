@@ -5,6 +5,7 @@ namespace Engine.SceneManagment
 {
     public class ErrorScene : Scene
     {
+ 
         public ErrorScene(string[] args) : base(args)
         {
         }

@@ -35,7 +35,7 @@ namespace Spacebox.Game.GUI
                 IsVisible = s;
             };
 
-            splitAudio = new AudioSource(SoundManager.GetClip("splitStack"));
+            splitAudio = new AudioSource(Resources.Load<AudioClip>("splitStack"));
         }
         private static void HandleInput()
         {

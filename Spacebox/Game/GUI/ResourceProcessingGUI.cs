@@ -119,28 +119,28 @@ namespace Spacebox.Game.GUI
 
             if (craftedSound == null)
             {
-                craftedSound = new AudioSource(SoundManager.GetClip("crafted"));
+                craftedSound = new AudioSource(Resources.Load<AudioClip>("crafted"));
                 craftedSound.Volume = 1f;
 
             }
 
             if (openSound == null)
             {
-                openSound = new AudioSource(SoundManager.GetClip("openBlock1"));
+                openSound = new AudioSource(Resources.Load<AudioClip>("openBlock1"));
                 openSound.Volume = 1f;
 
             }
 
             if (closeSound == null)
             {
-                closeSound = new AudioSource(SoundManager.GetClip("openBlock4"));
+                closeSound = new AudioSource(Resources.Load<AudioClip>("openBlock4"));
                 closeSound.Volume = 1f;
 
             }
 
             if (pickupSound == null)
             {
-                pickupSound = new AudioSource(SoundManager.GetClip("pickupDefault"));
+                pickupSound = new AudioSource(Resources.Load<AudioClip>("pickupDefault"));
                 pickupSound.Volume = 0.5f;
 
             }

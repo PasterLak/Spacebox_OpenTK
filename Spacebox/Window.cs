@@ -112,7 +112,7 @@ namespace Spacebox
             InputManager.AddAction("screenshot", Keys.F12, true);
             InputManager.RegisterCallback("screenshot", () => { DoScreenshot = true; });
 
-            screenShotAudio = new AudioSource(SoundManager.AddPermanentClip("screenshot"));
+            screenShotAudio = new AudioSource(Resources.Load<AudioClip>("screenshot", true));
             CenterWindow();
 
             _processManager = new PostProcessManager();
@@ -343,7 +343,6 @@ namespace Spacebox
             if (SceneManager.CurrentScene != null)
                 SceneManager.CurrentScene.UnloadContent();
 
-            SoundManager.DisposeAll();
             AudioDevice.Instance.Dispose();
             _processManager.Dispose();
             NumberStorage.SaveNumbers(path, Location.X, Location.Y);

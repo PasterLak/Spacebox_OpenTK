@@ -134,41 +134,35 @@ namespace Engine.SceneManagment
 
         }
 
+        private static void UnloadScene()
+        {
+            Debug.Log("[SceneManager] Unloading content ",
+                    Color4.White);
+            DisposablesUnloader.Dispose();
+
+            InputManager.RemoveAllActions(true);
+            EventBus.Clear();
+            CurrentScene.Destroy();
+            LightSystem.Clear();
+            CurrentScene.Dispose();
+
+            CurrentScene.UnloadContent();
+            Camera.Main = null;
+
+            Resources.UnloadAll();
+            VisualDebug.Clear();
+
+
+            Debug.Log("[SceneManager] Content was unloaded ",
+            Color4.White);
+        }
         private static void StartNextScene(string[] args)
         {
             if (_nextSceneType != null)
             {
                 if (CurrentScene != null)
                 {
-                    Debug.Log("[SceneManager] Unloading content ",
-                    Color4.White);
-                    DisposablesUnloader.Dispose();
-                    Debug.Log("LIGHT in old scene: " + LightSystem.GetRegisteredLightsCount);
-                    Scene sceneBase = CurrentScene as Scene; // ???
-                    sceneBase.Dispose();
-
-
-
-                    InputManager.RemoveAllActions(true);
-                    CurrentScene.Destroy();
-                    LightSystem.Clear();
-                    CurrentScene.Dispose();
-
-                    CurrentScene.UnloadContent();
-                    Camera.Main = null;
-
-                    SoundManager.Dispose();
-
-                    Resources.UnloadAll();
-                    VisualDebug.Clear();
-
-
-                    // Debug.Log("Active Textures: " + GL.GetInteger(GetPName.TextureBinding2D));
-                    // Debug.Log("Active Buffers: " + GL.GetInteger(GetPName.ArrayBufferBinding));
-
-
-                    Debug.Log("[SceneManager] Content was unloaded ",
-                    Color4.White);
+                    UnloadScene();
                 }
 
                 GC.Collect();
@@ -186,7 +180,7 @@ namespace Engine.SceneManagment
 
                 CurrentScene = sceneInstance;
 
-                CurrentScene.Name = _currentSceneType.typ.Name;
+                CurrentScene.Name = (_currentSceneType).typ.Name;
 
                 Debug.Log("[SceneManager] Scene Loaded: [" + CurrentScene.Name + "] ",
                     Color4.Yellow);

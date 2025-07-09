@@ -35,7 +35,7 @@ namespace Spacebox.Game.GUI
 
         public static void Init()
         {
-            clickAudio = new AudioSource(SoundManager.GetClip("click1"));
+            clickAudio = new AudioSource(Resources.Load<AudioClip>("click1"));
             var texture = Engine.Resources.Get<Texture2D>("Resources/Textures/UI/welcome.jpg");
             texture.FlipY();
             texture.UpdateTexture(true);

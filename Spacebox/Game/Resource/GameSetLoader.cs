@@ -161,7 +161,7 @@ namespace Spacebox.Game.Resource
                 }
 
                 if (!GameAssets.Sounds.ContainsKey("error"))
-                    GameAssets.Sounds.Add("error", SoundManager.AddClip("error"));
+                    GameAssets.Sounds.Add("error", Resources.Load<AudioClip>("error"));
             }
             catch (Exception ex)
             {

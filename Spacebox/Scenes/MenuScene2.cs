@@ -111,7 +111,7 @@ namespace Spacebox.Scenes
             sun.Enabled = true;
             AddChild(sun);
 
-            var sun2 = new PointLight { 
+            /*var sun2 = new PointLight { 
                 Intensity = 2,
                 Range = 7f
            };
@@ -119,7 +119,7 @@ namespace Spacebox.Scenes
             sun2.Diffuse = new Color3Byte(0, 255, 0).ToVector3();
            
             sun2.Enabled = true;
-            player2.AddChild(sun2);
+            player2.AddChild(sun2);*/
 
 
             flashlight = new SpotLight
@@ -131,7 +131,7 @@ namespace Spacebox.Scenes
                 OuterCutOff = MathF.Cos(MathHelper.DegreesToRadians(17.5f)),
                 Intensity = 1.0f                          
             };
-
+            flashlight.Enabled = false;
             player2.AddChild(flashlight);
             flashlight.Position = Vector3.Zero;
 

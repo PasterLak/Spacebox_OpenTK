@@ -36,8 +36,8 @@ namespace Spacebox.FPS.Scenes
             // music music.wave (Music/) 
 
 
-            SoundManager.AddClip("music");
-            SoundManager.AddClip("shooting");
+            //SoundManager.AddClip("music");
+           // SoundManager.AddClip("shooting");
 
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);

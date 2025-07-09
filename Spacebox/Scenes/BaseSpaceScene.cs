@@ -195,8 +195,8 @@ namespace Spacebox.Scenes
             PlayerSaveLoadManager.LoadPlayer(localPlayer, World.Data.WorldFolderPath);
             CollisionManager.Add(localPlayer);
 
-            Death = new AudioSource(SoundManager.GetClip("death2"));
-            ambient = new AudioSource(SoundManager.GetClip("Music/spaceBackground"));
+            Death = new AudioSource(Resources.Load<AudioClip>("death2"));
+            ambient = new AudioSource(Resources.Load<AudioClip>("Music/spaceBackground"));
             ambient.IsLooped = true;
             ambient.Volume = 0.05f;
             ambient.Play();

@@ -12,7 +12,7 @@ namespace Engine.Audio
         public AudioSource AudioSource { get; set; }
         private bool isDisposed = false;
 
-
+        private static readonly List<string> AllowedExtensions = new List<string> { ".wav", ".ogg" };
         private FileStream fileStream;
         private BinaryReader reader;
         private readonly int bufferSize = 4096;
@@ -28,7 +28,7 @@ namespace Engine.Audio
         public AudioClip(string filename, AudioLoadMode loadMode = AudioLoadMode.LoadIntoMemory)
         {
 
-            string resolvedPath = AudioPathResolver.ResolvePath(filename, AppDomain.CurrentDomain.BaseDirectory, SoundManager.AllowedExtensions);
+            string resolvedPath = AudioPathResolver.ResolvePath(filename, AppDomain.CurrentDomain.BaseDirectory, AllowedExtensions);
             if (resolvedPath == null)
             {
                 throw new FileNotFoundException($"Audio file for '{filename}' not found.");

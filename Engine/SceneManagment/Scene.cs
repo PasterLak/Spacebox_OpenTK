@@ -45,7 +45,7 @@ namespace Engine.SceneManagment
 
         public abstract void OnGUI();
 
-        public void Dispose()
+        public virtual void Dispose()
         {
            
                

@@ -27,7 +27,7 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
     {
         if (blockDestroy == null)
         {
-            blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroyDefault"));
+            blockDestroy = new AudioSource(Resources.Load<AudioClip>("blockDestroyDefault"));
             blockDestroy.Volume = 1f;
         }
         if (BlockSelector.Instance != null)

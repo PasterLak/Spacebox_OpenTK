@@ -36,15 +36,15 @@ public class MovementMode : GameModeBase
 
         if (flySpeedUpAudio == null)
         {
-            flySpeedUpAudio = new AudioSource(SoundManager.GetClip("flySpeedUp"));
+            flySpeedUpAudio = new AudioSource(Resources.Load<AudioClip>("flySpeedUp"));
             flySpeedUpAudio.IsLooped = true;
             flySpeedUpAudio.Volume = 0.1f;
         }
            
        
 
-        wallhitAudio = new AudioSource(SoundManager.GetClip("wallhit"));
-        wallhitAudio2 = new AudioSource(SoundManager.GetClip("wallHit2"));
+        wallhitAudio = new AudioSource(Resources.Load<AudioClip>("wallhit"));
+        wallhitAudio2 = new AudioSource(Resources.Load<AudioClip>("wallHit2"));
 
 
     }
@@ -79,7 +79,7 @@ public class MovementMode : GameModeBase
     {
         if (blockDestroy == null)
         {
-            blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroyDefault"));
+            blockDestroy = new AudioSource(Resources.Load<AudioClip>("blockDestroyDefault"));
             blockDestroy.Volume = 1f;
         }
     }

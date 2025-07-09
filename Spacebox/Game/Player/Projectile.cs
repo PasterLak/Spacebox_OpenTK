@@ -72,21 +72,21 @@ namespace Spacebox.Game.Player
             if (ricochetSound == null)
             {
 
-                ricochetSound = new AudioSource(SoundManager.GetClip("ricochet"));
+                ricochetSound = new AudioSource(Resources.Load<AudioClip>("ricochet"));
                 ricochetSound.Volume = 1f;
 
             }
             if (hitSound == null)
             {
 
-                hitSound = new AudioSource(SoundManager.GetClip("hitBlock"));
+                hitSound = new AudioSource(Resources.Load<AudioClip>("hitBlock"));
                 hitSound.Volume = 1f;
 
             }
             if (explosionSound == null)
             {
 
-                explosionSound = new AudioSource(SoundManager.GetClip("arExplosion"));
+                explosionSound = new AudioSource(Resources.Load<AudioClip>("arExplosion"));
                 explosionSound.Volume = 1f;
 
             }

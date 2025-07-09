@@ -45,7 +45,7 @@ namespace Spacebox.Game.GUI
             Storage = Player.Panel;
             SlotTexture = slotTexture;
             SelectedTexture = selectedTexture;
-            scrollAudio = new AudioSource(SoundManager.GetClip("scroll"));
+            scrollAudio = new AudioSource(Resources.Load<AudioClip>("scroll"));
          
             InventoryUIHelper.SetDefaultIcon(slotTexture, selectedTexture);
             SetSelectedSlot(0);

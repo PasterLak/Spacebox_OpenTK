@@ -25,7 +25,7 @@ public class InteractionPlaceBlock : InteractionMode
     public override void OnEnable()
     {
         if (blockPlace == null)
-            blockPlace = new AudioSource(SoundManager.GetClip("blockPlaceDefault"));
+            blockPlace = new AudioSource(Resources.Load<AudioClip>("blockPlaceDefault"));
 
         if (BlockSelector.Instance != null)
             BlockSelector.Instance.SimpleBlock.Material.Shader.SetVector4("color", new Vector4(1, 1, 1, 0.5f));

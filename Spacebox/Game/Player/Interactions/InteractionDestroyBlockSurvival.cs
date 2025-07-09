@@ -50,18 +50,18 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
     {
         if (blockDestroy == null)
         {
-            blockDestroy = new AudioSource(SoundManager.GetClip("blockDestroyDefault"));
+            blockDestroy = new AudioSource(Resources.Load<AudioClip>("blockDestroyDefault"));
             blockDestroy.Volume = 1f;
         }
         if (drillAudio == null)
         {
-            drillAudio = new AudioSource(SoundManager.GetClip("drill1"));
+            drillAudio = new AudioSource(Resources.Load<AudioClip>("drill1"));
             drillAudio.Volume = 1f;
             drillAudio.IsLooped = true;
         }
         if (drill0Audio == null)
         {
-            drill0Audio = new AudioSource(SoundManager.GetClip("drill0"));
+            drill0Audio = new AudioSource(Resources.Load<AudioClip>("drill0"));
             drill0Audio.Volume = 1f;
             drill0Audio.IsLooped = true;
         }

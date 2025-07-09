@@ -75,8 +75,8 @@ namespace Spacebox.Game.GUI
             _scanning.FilterMode = FilterMode.Nearest;
             _mask.FilterMode = FilterMode.Nearest;
 
-            _scanningAudio = new AudioSource(SoundManager.GetClip("radarScanning"));
-            _foundAudio = new AudioSource(SoundManager.GetClip("radarFound"));
+            _scanningAudio = new AudioSource(Resources.Load<AudioClip>("radarScanning"));
+            _foundAudio = new AudioSource(Resources.Load<AudioClip>("radarFound"));
 
 
             var inventory = ToggleManager.Register("radar");
@@ -88,14 +88,14 @@ namespace Spacebox.Game.GUI
 
             if (openSound == null)
             {
-                openSound = new AudioSource(SoundManager.GetClip("openBlock1"));
+                openSound = new AudioSource(Resources.Load<AudioClip>("openBlock1"));
                 openSound.Volume = 1f;
 
             }
 
             if (closeSound == null)
             {
-                closeSound = new AudioSource(SoundManager.GetClip("openBlock4"));
+                closeSound = new AudioSource(Resources.Load<AudioClip>("openBlock4"));
                 closeSound.Volume = 1f;
 
             }
