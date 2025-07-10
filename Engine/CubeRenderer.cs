@@ -7,11 +7,9 @@ namespace Engine
 {
     public class CubeRenderer : Node3D, IDisposable
     {
-        public bool Enabled = true;
         public MaterialBase Material;
         private MeshBuffer _buffer;
 
-        private Vector3 _position;
         private Color4 _color = Color4.White;
         public Color4 Color
         {
@@ -89,7 +87,7 @@ namespace Engine
 
         public CubeRenderer(Vector3 position, MeshBuffer buffer)
         {
-            _position = position;
+           
             Position = position;
             Name = "CubeRenderer";
             Material = new ColorMaterial();
@@ -103,7 +101,7 @@ namespace Engine
 
         public CubeRenderer(Vector3 position)
         {
-            _position = position;
+          
             Position = position;
             Name = "CubeRenderer";
             Material = new ColorMaterial();

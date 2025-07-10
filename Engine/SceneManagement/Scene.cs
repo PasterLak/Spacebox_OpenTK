@@ -1,4 +1,5 @@
-﻿using Engine.Physics;
+﻿using Engine.Light;
+using Engine.Physics;
 
 namespace Engine.SceneManagement
 {
@@ -37,12 +38,25 @@ namespace Engine.SceneManagement
 
         public virtual void Render()
         {
+            if(Lighting.Skybox != null) Lighting.Skybox.Render();
             base.Render();
             BVHCuller.Render(this, Camera.Main);
     
         }
 
         public abstract void OnGUI();
+
+        public override void Destroy()
+        {
+            base.Destroy();
+
+            if(Lighting.Skybox != null )
+            {
+                Lighting.Skybox.Destroy();
+                Lighting.Skybox = null;
+            }
+           
+        }
 
         public virtual void Dispose()
         {

@@ -49,6 +49,10 @@ namespace Engine
         public T AddChild<T>(T child) where T : Node3D
         {
             if (child == null || ReferenceEquals(child, this)) return child;
+            if(child is Skybox)
+            {
+                Lighting.Skybox = child;
+            }
             child.Parent = this;
             return child;
         }

@@ -19,29 +19,19 @@ namespace Spacebox.Scenes
 {
     public class MenuScene : Scene
     {
-        private Camera player;
+
         private DustSpawner spawner;
         private AudioSource music;
         private GameMenu menu;
 
         private Canvas canvas;
-        public MenuScene()
-        {
-          
-        }
 
         public override void LoadContent()
         {
          
             //Theme.ApplySpaceboxTheme();
 
-            float winX = Window.Instance.Size.X;
-            float winY = Window.Instance.Size.Y;
-    
-            //sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
-            //GL.Enable(EnableCap.DepthTest);
-
-            player = new CameraBasic(new Vector3(0, 0, 0));
+            var player = new CameraBasic(new Vector3(0, 0, 0));
             AddChild(player);   
             canvas = new Canvas(new Vector2i(1280,720), Window.Instance);
 
@@ -55,13 +45,13 @@ namespace Spacebox.Scenes
 
             var mesh = Resources.Load<Mesh>("Resources/Models/cube.obj");
       
-            AddChild(new Skybox(mesh, skyboxTexture));
+            Lighting.Skybox = new Skybox(mesh, skyboxTexture);
             CenteredImageMenu.LoadImage("Resources/Textures/spaceboxLogo.png", true);
 
             Resources.Load<AudioClip>("Resources/Audio/UI/click1.ogg");
             menu = new GameMenu();
             
-            SetDustSpawner();
+            SetDustSpawner(player);
 
             var clip = Resources.Load<AudioClip>("Resources/Audio/Music/music.ogg");
 
@@ -75,9 +65,9 @@ namespace Spacebox.Scenes
         
         }
 
-        private void SetDustSpawner()
+        private void SetDustSpawner(Camera camera)
         {
-            spawner = new DustSpawner(player);
+            spawner = new DustSpawner(camera);
 
 
             spawner.ParticleSystem.MaxParticles = 1000;
@@ -117,9 +107,9 @@ namespace Spacebox.Scenes
 
         public override void Render()
         {
-            
+           
+
             base.Render();
-            //skybox.DrawTransparent(player);
             spawner.Render();
         }
 

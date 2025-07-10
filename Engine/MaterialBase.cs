@@ -6,7 +6,7 @@ namespace Engine
 {
     public enum RenderMode : byte { Opaque, Cutout, Fade, Transparent }
     public enum RenderFace : byte { Both, Front, Back }
-        public class MaterialBase
+    public class MaterialBase 
     {
         public Shader Shader { get; }
         public Color4 Color { get; set; } = Color4.White;
@@ -46,7 +46,7 @@ namespace Engine
             //_applyState();
             ApplyRenderSettings();
             _bindTextures();
-           
+
             _setMVP(model);
             _setFixed();
             UpdateDynamicUniforms();
@@ -55,7 +55,7 @@ namespace Engine
 
         protected virtual void UpdateDynamicUniforms() { }
 
-          void _bindTextures()
+        void _bindTextures()
         {
             foreach (var (name, slot) in _slots)
             {
@@ -66,7 +66,7 @@ namespace Engine
 
         private void _setFixed()  // basic variables for materials
         {
-            Shader.SetVector4("color", Color);  
+            Shader.SetVector4("color", Color);
         }
 
         private void _setUser()
@@ -93,7 +93,7 @@ namespace Engine
             if (cam == null) return;
             var view = cam.GetViewMatrix();
             var proj = cam.GetProjectionMatrix();
-            
+
             Shader.SetMatrix4("view", view);
             Shader.SetMatrix4("projection", proj);
         }
@@ -115,16 +115,14 @@ namespace Engine
         }
         private void SetRenderMode(RenderMode mode)
         {
-            bool enableDepthTest = mode != RenderMode.Transparent;
-            bool enableBlending = mode == RenderMode.Fade || mode == RenderMode.Transparent;
-            bool depthWrite = mode == RenderMode.Opaque || mode == RenderMode.Cutout;
-            if (enableDepthTest) GL.Enable(EnableCap.DepthTest);
-            else GL.Disable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.DepthTest);
-         
+            bool depthTest          = mode != RenderMode.Transparent;
+            bool enableBlending     = mode == RenderMode.Fade || mode == RenderMode.Transparent;
+            bool depthWrite         = mode == RenderMode.Opaque || mode == RenderMode.Cutout;
 
-            //GL.DepthMask(RenderMode == RenderMode.Opaque || RenderMode == RenderMode.Cutout);
-      
+            if (depthTest)  GL.Enable(EnableCap.DepthTest);
+            else            GL.Disable(EnableCap.DepthTest);
+           
+            GL.DepthMask(depthWrite);
 
             if (enableBlending)
             {
@@ -151,5 +149,6 @@ namespace Engine
             if (blend) { GL.Enable(EnableCap.Blend); GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha); }
             else GL.Disable(EnableCap.Blend);
         }
+
     }
 }

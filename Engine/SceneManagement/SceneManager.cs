@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using OpenTK.Windowing.Desktop;
+﻿using OpenTK.Windowing.Desktop;
 using OpenTK.Mathematics;
-using Engine.Audio;
 using Engine.Light;
-using Engine.Physics;
-using Engine.SceneManagement;
 
 namespace Engine.SceneManagement
 {
-    public interface ISceneWithParam<T>
+    public interface ISceneWithArgs<T>
     {
         void Initialize(T param);
     }
@@ -22,11 +16,10 @@ namespace Engine.SceneManagement
         static Scene _current;
 
         public static Scene Current => _current;
-        public static GameWindow GameWindow { get; private set; }
 
-        public static void Initialize(GameWindow window, Action registerScenes)
+        public static void Initialize( Action registerScenes)
         {
-            GameWindow = window;
+            
             registerScenes();
             Register<ErrorScene>();
             Load<ErrorScene>();
@@ -36,7 +29,11 @@ namespace Engine.SceneManagement
         public static void Load<TScene>() where TScene : Scene, new()
         {
             if (!_registeredScenes.Contains(typeof(TScene)))
-                throw new InvalidOperationException($"Scene {typeof(TScene).Name} not registered.");
+            {
+                Debug.Error($"[SceneManager] Scene {typeof(TScene).Name} not registered.");
+                Load<ErrorScene>();
+                return;
+            }
             Debug.Log("[SceneManager] Loading scene ", Color4.White);
             _nextFactory = () =>
             {
@@ -49,10 +46,15 @@ namespace Engine.SceneManagement
         }
 
         public static void Load<TScene, TParam>(TParam param)
-            where TScene : Scene, ISceneWithParam<TParam>, new()
+            where TScene : Scene, ISceneWithArgs<TParam>, new()
         {
             if (!_registeredScenes.Contains(typeof(TScene)))
-                throw new InvalidOperationException($"Scene {typeof(TScene).Name} not registered.");
+            {
+                Debug.Error($"[SceneManager] Scene {typeof(TScene).Name} not registered.");
+                Load<ErrorScene>();
+                return;
+            }
+               
             Debug.Log("[SceneManager] Loading scene ", Color4.White);
             _nextFactory = () =>
             {
@@ -81,7 +83,7 @@ namespace Engine.SceneManagement
 
        
 
-        static void Switch()
+        private static void Switch()
         {
             if (_current != null)
             {
@@ -93,7 +95,7 @@ namespace Engine.SceneManagement
                 _current.UnloadContent();
                 _current.Dispose();
                 LightSystem.Clear();
-                InputManager.RemoveAllActions();
+                InputManager.RemoveAllActions(true);
                 EventBus.Clear();
                 Camera.Main = null;
                 Resources.UnloadAll();

@@ -13,7 +13,7 @@ namespace Engine.SceneManagement
         public override void LoadContent()
         {
            // Window.Instance.Title = "Error";
-            GL.ClearColor(Color.Red);
+           
         }
 
         public override void Start()
@@ -24,7 +24,7 @@ namespace Engine.SceneManagement
 
         public override void Render()
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.ClearColor(Color.Red);
         }
 
         public override void OnGUI()

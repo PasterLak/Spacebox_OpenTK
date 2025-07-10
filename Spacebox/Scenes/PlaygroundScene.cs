@@ -30,12 +30,12 @@ namespace Spacebox.Scenes
         {
         }
     }
-    public class MenuScene2 : Scene, ISceneWithParam<MenuScene2Params>
+    public class PlaygroundScene : Scene, ISceneWithArgs<MenuScene2Params>
     {
         private FreeCamera player;
         private FreeCamera player2;
 
-        public MenuScene2()
+        public PlaygroundScene()
         {
           
         }
@@ -51,7 +51,7 @@ namespace Spacebox.Scenes
             var sky = Resources.Load<Texture2D>("Resources/Textures/Space/dom.png");
             var sky2 = Resources.Load<Mesh>("Resources/Models/cube.obj");
             var skyBox = AddChild(new Skybox(GenMesh.CreateCube(), new SkyboxProceduralMaterial()));
-            skyBox.IsAmbientAffected = false;
+            
             skyBox.SetScale(300);
             player = AddChild(new FreeCamera(new Vector3(0, 0, 5)));
             player2 = AddChild(new FreeCamera(new Vector3(x, 5, 5)));

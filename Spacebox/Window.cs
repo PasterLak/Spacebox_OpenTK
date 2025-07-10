@@ -89,12 +89,11 @@ namespace Spacebox
             FrameLimiter.Initialize(120);
             FrameLimiter.IsRunning = true;
 
-            SceneManager.Initialize(this, () => {
+            SceneManager.Initialize(() => {
                 SceneManager.Register<Spacebox.Scenes.MenuScene>();
-                SceneManager.Register<Spacebox.Scenes.MenuScene2>();
+                SceneManager.Register<Spacebox.Scenes.PlaygroundScene>();
                 SceneManager.Register<Spacebox.Scenes.LocalSpaceScene>();
                 SceneManager.Register<Spacebox.Scenes.MultiplayerScene>();
-            
                 SceneManager.Register<Spacebox.Scenes.LogoScene>();
                 // SceneManager.Register<LocalSpaceScene>();
 
@@ -155,7 +154,7 @@ namespace Spacebox
             FullscreenRenderer = new FullscreenRenderer();
             shaderpass = sha;
 
-            SceneManager.Load<MenuScene2, MenuScene2Params>(new MenuScene2Params());
+            SceneManager.Load<MenuScene>();
         }
 
         private static AudioSource screenShotAudio;
@@ -180,7 +179,7 @@ namespace Spacebox
 
         }
 
-        private void RenderUI()
+        private void OnGUI()
         {
             Time.StartOnGUI();
             if (SceneManager.Current != null)
@@ -211,7 +210,7 @@ namespace Spacebox
             FrameLimiter.Update();
 
             LightSystem.Update();
-
+           
             SceneRenderer.Render(() =>
             {
                 RenderScene();
@@ -233,13 +232,13 @@ namespace Spacebox
 
             if(Input.IsKeyDown(Keys.P))
             {
-                FramebufferCapture.SaveGBufferTextures(SceneRenderer, ClientSize);
+               // FramebufferCapture.SaveGBufferTextures(SceneRenderer, ClientSize);
             }
 
             //GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
 
 
-            RenderUI();
+            OnGUI();
 
             SwapBuffers();
 

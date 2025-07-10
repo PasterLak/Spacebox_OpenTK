@@ -5,7 +5,6 @@ namespace Engine
 {
     public class LineRenderer : Node3D, IDisposable
     {
-        public bool Enabled = true;
         public MaterialBase Material;
         private MeshBuffer _buffer;
         public List<Vector3> Points = new List<Vector3>();
@@ -33,8 +32,6 @@ namespace Engine
         private float[] _vertices;
         private uint[] _indices;
         private bool _geometryNeedsUpdate = true;
-
-        
 
         public void Pop()
         {
@@ -157,9 +154,10 @@ namespace Engine
             _buffer.SetAttributes();
         }
 
-        public void Render()
+        public override void Render()
         {
             if (!Enabled) return;
+            base.Render();
             if (_geometryNeedsUpdate) RebuildGeometry();
             if (_vertices.Length == 0 || _indices.Length == 0) return;
             if (Camera.Main == null) return;

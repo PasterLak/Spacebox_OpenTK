@@ -1,11 +1,12 @@
 ﻿using Engine;
+using Engine.Light;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
 
 namespace Spacebox.Scenes.Test
 {
- 
+
     public class Skybox2 : SceneNode, ITransparent
     {
         public Mesh Mesh { get; private set; }

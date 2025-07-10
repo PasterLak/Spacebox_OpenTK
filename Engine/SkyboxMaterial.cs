@@ -4,7 +4,7 @@
     {
         public SkyboxMaterial(Texture2D texture) : base(texture, Resources.Load<Shader>("Shaders/skybox"))
         {
-            RenderMode = RenderMode.Fade;
+            RenderMode = RenderMode.Opaque;
             RenderFace = RenderFace.Back;
         }
 

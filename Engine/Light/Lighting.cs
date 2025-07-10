@@ -1,27 +1,39 @@
-﻿using Engine.Graphics;
+﻿
 using OpenTK.Mathematics;
 using System.Drawing;
 
 
-namespace Engine
+namespace Engine.Light
 {
     public static class Lighting
     {
         public static Vector3 AmbientColor = new Vector3(1);
-        public static Color BackgroundColor = Color.Black;
         public static Vector3 FogColor;
 
         private static float _fogDensity = 32;
-
         public static float FogDensity
         {
             get => _fogDensity;
-            set { _fogDensity = value/10_000.0f; }
+            set { _fogDensity = value / 10_000.0f; }
+        }
+
+        private static Node3D _skybox;
+        public static Node3D? Skybox
+        {
+            get => _skybox;
+            set
+            {
+                if (_skybox != null)
+                {
+                    _skybox.Destroy();
+                }
+                _skybox = value;
+            }
         }
 
         public static void AddAmbient()
         {
-           AmbientColor += new Vector3(0.1f, 0.1f, 0.1f);
+            AmbientColor += new Vector3(0.1f, 0.1f, 0.1f);
 
             if (AmbientColor.X > 1)
                 AmbientColor = new Vector3

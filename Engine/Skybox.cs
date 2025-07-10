@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Engine.Utils;
+using Engine.Light;
 
 namespace Engine
 {
@@ -8,9 +9,6 @@ namespace Engine
     {
         public Mesh Mesh { get; private set; }
         public MaterialBase Material { get; private set; }
-
-        public bool IsAmbientAffected = false;
-
 
         public Skybox(Texture2D texture)
         {
@@ -41,15 +39,30 @@ namespace Engine
             
             Position = cam.Position;
 
+            GL.Disable(EnableCap.DepthTest);
+            GL.DepthMask(false);
+
+
             Material.Apply(GetRenderModelMatrix());
 
-            
+            GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
+
+
             Mesh.Render();
             
             base.Render();
            
         }
 
-      
+        public override void Destroy()
+        {
+            base.Destroy();
+
+            Mesh.Dispose();
+
+        }
+
+
     }
 }

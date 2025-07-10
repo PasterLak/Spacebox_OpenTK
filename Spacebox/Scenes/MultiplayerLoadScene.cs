@@ -57,7 +57,7 @@ namespace Spacebox.Scenes
             var mesh = Resources.Load<Engine.Mesh>("Resources/Models/cube.obj");
             skybox = new Skybox(mesh,
                 new SpaceTexture(512, 512, World.Seed));
-            skybox.IsAmbientAffected = false;
+           
             Debug.Warning("Trying to connect to server...");
             CenteredText.SetText("Trying to connect to server...");
             ThreadPool.QueueUserWorkItem(_ =>

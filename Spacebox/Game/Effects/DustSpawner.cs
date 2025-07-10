@@ -48,8 +48,8 @@ namespace Spacebox.Game.Effects
                 LifetimeMax = 30f,
                 SizeMin = 0.05f,
                 SizeMax = 0.2f,
-                StartColorMin = new Vector4(1f, 1f, 1f, 0f),
-                StartColorMax = new Vector4(1f, 1f, 1f, 0f),
+                StartColorMin = new Vector4(1f, 1f, 1f, 1f),
+                StartColorMax = new Vector4(1f, 1f, 1f, 1f),
                 EndColorMin = new Vector4(1f, 1f, 1f, 1f),
                 EndColorMax = new Vector4(0.8f, 0.8f, 0.8f, 1f),
                 SpawnRadius = 70f

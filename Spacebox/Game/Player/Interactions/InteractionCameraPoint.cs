@@ -112,7 +112,12 @@ namespace Spacebox.Game.Player.Interactions
 
         public override void Render(Astronaut player)
         {
-            if (!isFlying) lineRenderer.Render();
+
+            if (!isFlying)
+            {
+
+                lineRenderer.Render();
+            }
 
             if (!isFlying)
             {
@@ -120,7 +125,11 @@ namespace Spacebox.Game.Player.Interactions
                 if (lineRenderer.Points.Count > 0)
                 {
                     cubeRenderer.Position = lineRenderer.Points[0];
-                    cubeRenderer.Render();
+                    if (cubeRenderer.Enabled)
+                    {
+                        cubeRenderer.Render();
+                    }
+
                 }
             }
             else

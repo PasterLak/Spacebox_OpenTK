@@ -4,6 +4,7 @@ using Engine.Audio;
 using Spacebox.Game.Player;
 using Engine;
 using Spacebox.Scenes;
+using Engine.Light;
 
 namespace Spacebox.Game.Resource
 {

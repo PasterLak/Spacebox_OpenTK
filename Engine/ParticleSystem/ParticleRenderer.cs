@@ -120,15 +120,9 @@ namespace Engine
             Material.Shader.SetInt("rotationCase", _rotationCase);
             
 
-
-
-            GL.DepthMask(false);
             GL.BindVertexArray(_quad.VAO);
             GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, _aliveCount);
             GL.BindVertexArray(0);
-
-            GL.DepthMask(true);
-          
 
         }
 

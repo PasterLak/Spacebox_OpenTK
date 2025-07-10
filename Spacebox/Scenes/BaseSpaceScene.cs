@@ -39,7 +39,7 @@ namespace Spacebox.Scenes
 
 
     }
-    public abstract class BaseSpaceScene : Scene, ISceneWithParam<SpaceSceneArgs>
+    public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     {
        
         protected Astronaut localPlayer;
@@ -189,8 +189,8 @@ namespace Spacebox.Scenes
             var mesh = Resources.Load<Engine.Mesh>("Resources/Models/cube.obj");
             var skybox = new Skybox(mesh,  texture);
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
-            skybox.IsAmbientAffected = false;
-            AddChild(skybox);
+           
+            Lighting.Skybox = skybox;
            
             radarWindow = new RadarUI(texture);
 

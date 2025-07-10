@@ -16,7 +16,7 @@ using Spacebox.Game.Player.Interactions;
 
 namespace Spacebox.Game.Player
 {
-    public class Astronaut : Camera360Base, INotTransparent
+    public class Astronaut : Camera360Base
     {
         
         public Inventory Inventory { get; private set; }
@@ -350,31 +350,24 @@ namespace Spacebox.Game.Player
             _gameModeBase.SetInteraction(mode);
         }
 
-        public void Render()
+        public override void Render()
         {
-            Render(this);
-            base.Render();  
+          
+            base.Render();
+
+            if (VisualDebug.Enabled)
+            {
+                _axes.Position = Position + Front * 0.1f;
+                _axes.Render(this);
+            }
+
             if (_gameModeBase != null)
             {
                 _gameModeBase.Render(this);
             }
         }
 
-        public void Render(Camera camera)
-        {
-            base.Render();
-            
-
-            if (VisualDebug.Enabled)
-            {
-                _axes.Position = Position + Front * 0.1f;
-                _axes.Render(camera);
-            }
-
-
-        }
-
-        public void OnGUI()
+         public void OnGUI()
         {
             PowerBar.OnGUI();
             HealthBar.OnGUI();
