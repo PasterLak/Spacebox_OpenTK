@@ -278,6 +278,104 @@ namespace Engine
             DrawLine(origin, origin + zDir, Color4.Blue);
         }
 
+        public static void DrawBox(Vector3 center, Vector3 size, Color4 color)
+        {
+            var h = size * 0.5f;
+            var corners = new Vector3[8];
+            corners[0] = center + new Vector3(-h.X, -h.Y, -h.Z);
+            corners[1] = center + new Vector3(h.X, -h.Y, -h.Z);
+            corners[2] = center + new Vector3(h.X, h.Y, -h.Z);
+            corners[3] = center + new Vector3(-h.X, h.Y, -h.Z);
+            corners[4] = center + new Vector3(-h.X, -h.Y, h.Z);
+            corners[5] = center + new Vector3(h.X, -h.Y, h.Z);
+            corners[6] = center + new Vector3(h.X, h.Y, h.Z);
+            corners[7] = center + new Vector3(-h.X, h.Y, h.Z);
+
+            // bottom
+            DrawLine(corners[0], corners[1], color);
+            DrawLine(corners[1], corners[2], color);
+            DrawLine(corners[2], corners[3], color);
+            DrawLine(corners[3], corners[0], color);
+            // top
+            DrawLine(corners[4], corners[5], color);
+            DrawLine(corners[5], corners[6], color);
+            DrawLine(corners[6], corners[7], color);
+            DrawLine(corners[7], corners[4], color);
+            // sides
+            for (int i = 0; i < 4; i++)
+                DrawLine(corners[i], corners[i + 4], color);
+        }
+
+        public static void DrawCone(Vector3 apex, Vector3 direction, float angleDeg, float height, Color4 color, int segments = 24)
+        {
+            var axis = direction.Normalized();
+            // build orthonormal basis (u,v) around axis
+            Vector3 u = Vector3.Cross(axis, Vector3.UnitY).LengthSquared < 0.001f
+                ? Vector3.Cross(axis, Vector3.UnitX)
+                : Vector3.Cross(axis, Vector3.UnitY);
+            u.Normalize();
+            Vector3 v = Vector3.Cross(axis, u).Normalized();
+
+            float radius = MathF.Tan(MathHelper.DegreesToRadians(angleDeg)) * height;
+            var baseCenter = apex + axis * height;
+            var pts = new Vector3[segments];
+            for (int i = 0; i < segments; i++)
+            {
+                float theta = 2 * MathHelper.Pi * i / segments;
+                pts[i] = baseCenter + (u * MathF.Cos(theta) + v * MathF.Sin(theta)) * radius;
+            }
+
+            // draw base circle
+            for (int i = 0; i < segments; i++)
+                DrawLine(pts[i], pts[(i + 1) % segments], color);
+            // draw sides
+            for (int i = 0; i < segments; i++)
+                DrawLine(apex, pts[i], color);
+        }
+
+        public static void DrawPlane(Vector3 center, Vector3 normal, float width, float height, Color4 color)
+        {
+            var n = normal.Normalized();
+            Vector3 u = Vector3.Cross(n, Vector3.UnitY).LengthSquared < 0.001f
+                ? Vector3.Cross(n, Vector3.UnitX)
+                : Vector3.Cross(n, Vector3.UnitY);
+            u.Normalize();
+            Vector3 v = Vector3.Cross(n, u).Normalized();
+
+            var hw = width * 0.5f;
+            var hh = height * 0.5f;
+            var corners = new[]
+            {
+        center + u * -hw + v * -hh,
+        center + u *  hw + v * -hh,
+        center + u *  hw + v *  hh,
+        center + u * -hw + v *  hh,
+    };
+
+            for (int i = 0; i < 4; i++)
+                DrawLine(corners[i], corners[(i + 1) % 4], color);
+        }
+
+        public static void DrawDisk(Vector3 center, Vector3 normal, float radius, Color4 color, int segments = 32)
+        {
+            var n = normal.Normalized();
+            Vector3 u = Vector3.Cross(n, Vector3.UnitY).LengthSquared < 0.001f
+                ? Vector3.Cross(n, Vector3.UnitX)
+                : Vector3.Cross(n, Vector3.UnitY);
+            u.Normalize();
+            Vector3 v = Vector3.Cross(n, u).Normalized();
+
+            Vector3 prev = center + u * radius;
+            for (int i = 1; i <= segments; i++)
+            {
+                float theta = 2 * MathHelper.Pi * i / segments;
+                Vector3 next = center + (u * MathF.Cos(theta) + v * MathF.Sin(theta)) * radius;
+                DrawLine(prev, next, color);
+                prev = next;
+            }
+        }
+
+
         public static void Render()
         {
             if (!Enabled) return;

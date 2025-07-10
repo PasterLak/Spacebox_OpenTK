@@ -95,7 +95,7 @@ namespace Spacebox
                 SceneManager.Register<Spacebox.Scenes.LocalSpaceScene>();
                 SceneManager.Register<Spacebox.Scenes.MultiplayerScene>();
                 SceneManager.Register<Spacebox.Scenes.LogoScene>();
-                // SceneManager.Register<LocalSpaceScene>();
+                 SceneManager.Register<ParticleSystemEditor>();
 
             });
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
@@ -154,7 +154,8 @@ namespace Spacebox
             FullscreenRenderer = new FullscreenRenderer();
             shaderpass = sha;
 
-            SceneManager.Load<MenuScene>();
+            //SceneManager.Load<MenuScene>();
+            SceneManager.Load<ParticleSystemEditor>();
         }
 
         private static AudioSource screenShotAudio;

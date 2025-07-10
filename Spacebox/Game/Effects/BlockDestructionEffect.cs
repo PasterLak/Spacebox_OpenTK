@@ -19,7 +19,7 @@ namespace Spacebox.Game.Effects
         private Vector3 color = Vector3.One;
 
 
-        public bool IsFinished => elapsedTime >= duration && particleSystem.GetParticles().Count == 0;
+        public bool IsFinished => elapsedTime >= duration && particleSystem.ParticlesCount == 0;
 
         public BlockDestructionEffect(Camera camera, Vector3 position, Vector3 color, Texture2D texture, Shader shader)
         {
@@ -35,19 +35,21 @@ namespace Spacebox.Game.Effects
             //dustTexture = new Texture2D("Resources/Textures/blockDust.png", true);
             dustTexture = texture;
 
-            particleSystem = new ParticleSystem(dustTexture, shader)
+            particleSystem = new ParticleSystem(new ParticleMaterial(dustTexture) ,new SphereEmitter());
+
+            /*particleSystem = new ParticleSystem(dustTexture, shader)
             {
                 Position = position,
                 UseLocalCoordinates = false,
                 EmitterPositionOffset = Vector3.Zero,
                 //EmitterDirection = new Vector3(0, 1, 0), 
-                MaxParticles = 30,
-                SpawnRate = 1000f
-            };
+                Max = 30,
+                Rate = 1000f
+            };*/
 
             //particleSystem.Renderer = new ParticleRenderer(texture, particleSystem, shader);
 
-            var emitter = new Emitter(particleSystem)
+            var emitter = new EmitterOld(particleSystem)
             {
                 LifetimeMin = 1f,
                 LifetimeMax = 2f,
@@ -66,8 +68,8 @@ namespace Spacebox.Game.Effects
                 RandomUVRotation = true,
             };
 
-            particleSystem.Emitter = emitter;
-            particleSystem.UseLocalCoordinates = true;
+           // particleSystem.Emitter = emitter;
+           // particleSystem.UseLocalCoordinates = true;
             //particleShader = new Shader("Shaders/particleShader");
             particleShader = shader;
             //particleShader.Use();
@@ -81,27 +83,27 @@ namespace Spacebox.Game.Effects
                 elapsedTime += Time.Delta;
                 if (elapsedTime >= duration)
                 {
-                    particleSystem.SpawnRate = 0f;
+                    particleSystem.Rate = 0f;
                 }
             }
             particleSystem.Update();
 
-            if (particleSystem.GetParticles().Count == particleSystem.MaxParticles)
+            if (particleSystem.ParticlesCount == particleSystem.Max)
             {
-                particleSystem.SpawnRate = 0f;
+                particleSystem.Rate = 0f;
             }
         }
 
         public void Render()
         {
 
-            particleSystem.Renderer.Material.Shader.SetVector3("color", color);
-            particleSystem.Draw(camera);
+          //  particleSystem.Renderer.Material.Shader.SetVector3("color", color);
+          //  particleSystem.Draw(camera);
         }
 
         public void Dispose()
         {
-            particleSystem.Dispose();
+          //  particleSystem.Dispose();
             //dustTexture.Dispose();
             //particleShader.Dispose();
         }

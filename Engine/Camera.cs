@@ -3,9 +3,28 @@ using Engine.Physics;
 
 namespace Engine
 {
+    public enum ProjectionType : byte
+    {
+        Perspective,
+        Orthographic
+    }
     public abstract class Camera : DynamicBody
     {
         public static Camera Main;
+
+        private ProjectionType _projectionType = ProjectionType.Perspective;
+        public ProjectionType Projection
+        {
+            get => _projectionType;
+            set => _projectionType = value;
+        }
+        private float _orthoSize = 10f;
+        public float OrthoSize
+        {
+            get => _orthoSize;
+            set => _orthoSize = MathHelper.Max(0.1f, value);
+        }
+
         protected Vector3 _front = -Vector3.UnitZ;
         protected Vector3 _up = Vector3.UnitY;
         protected Vector3 _right = Vector3.UnitX;
@@ -72,9 +91,23 @@ namespace Engine
 
         public Matrix4 GetProjectionMatrix()
         {
-            return Matrix4.CreatePerspectiveFieldOfView(_fov, AspectRatio, DepthNear, DepthFar);
+            switch (_projectionType)
+            {
+                case ProjectionType.Orthographic:
+                    float halfHeight = _orthoSize;
+                    float halfWidth = _orthoSize * AspectRatio;
+                    return Matrix4.CreateOrthographicOffCenter(
+                        -halfWidth, halfWidth,
+                        -halfHeight, halfHeight,
+                         DepthNear, DepthFar
+                    );
+                case ProjectionType.Perspective:
+                default:
+                    return Matrix4.CreatePerspectiveFieldOfView(
+                        _fov, AspectRatio, DepthNear, DepthFar
+                    );
+            }
         }
-
         protected abstract void UpdateVectors();
 
 

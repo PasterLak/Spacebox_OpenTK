@@ -17,7 +17,7 @@ namespace Spacebox.Game.Effects
 
         private Vector3 color = Vector3.One;
 
-        public bool IsFinished => elapsedTime >= duration && ParticleSystem.GetParticles().Count == 0;
+        public bool IsFinished => elapsedTime >= duration && ParticleSystem.ParticlesCount == 0;
         public Block Block { get; set; }
 
         private Vector3 _position;
@@ -54,19 +54,20 @@ namespace Spacebox.Game.Effects
         {
             if (ParticleSystem != null)
             {
-                ParticleSystem.Dispose();
+              //  ParticleSystem.Dispose();
             }
 
-            ParticleSystem = new ParticleSystem(dustTexture, particleShader)
+            ParticleSystem = new ParticleSystem(new ParticleMaterial(dustTexture), new SphereEmitter());
+            /*ParticleSystem = new ParticleSystem(dustTexture, particleShader)
             {
                 Position = position,
                 UseLocalCoordinates = true,
                 EmitterPositionOffset = Vector3.Zero,
-                MaxParticles = 1,
-                SpawnRate = 100f
-            };
+                Max = 1,
+                Rate = 100f
+            };*/
 
-            var emitter = new Emitter(ParticleSystem)
+            var emitter = new EmitterOld(ParticleSystem)
             {
                 LifetimeMin = 20f,
                 LifetimeMax = 20f,
@@ -84,8 +85,8 @@ namespace Spacebox.Game.Effects
                 RandomUVRotation = false,
             };
 
-            ParticleSystem.Emitter = emitter;
-            ParticleSystem.Renderer.SetFixedRotation180();
+            //ParticleSystem.Emitter = emitter;
+           // ParticleSystem.Renderer.SetFixedRotation180();
         }
 
         public void Update()
@@ -95,7 +96,7 @@ namespace Spacebox.Game.Effects
                 elapsedTime += Time.Delta;
                 if (elapsedTime >= duration)
                 {
-                    ParticleSystem.SpawnRate = 0f;
+                    ParticleSystem.Rate = 0f;
                 }
             }
 
@@ -109,7 +110,7 @@ namespace Spacebox.Game.Effects
                 particleShader.Use();
                 particleShader.SetVector3("color", color);
             }
-            ParticleSystem.Draw(camera);
+           // ParticleSystem.Draw(camera);
         }
 
         public void Reset()
@@ -123,7 +124,7 @@ namespace Spacebox.Game.Effects
 
             if (ParticleSystem != null)
             {
-                ParticleSystem.Dispose();
+               // ParticleSystem.Dispose();
                 ParticleSystem = null;
             }
 
@@ -133,7 +134,7 @@ namespace Spacebox.Game.Effects
 
         public void Dispose()
         {
-            ParticleSystem?.Dispose();
+           // ParticleSystem?.Dispose();
         }
     }
 }

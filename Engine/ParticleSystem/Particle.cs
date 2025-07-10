@@ -13,28 +13,29 @@ namespace Engine
         public Vector4 EndColor;
         public float Size;
 
-        public bool IsAlive => Age < Lifetime;
+        public bool Alive => Age < Lifetime;
 
         public Particle(Vector3 position, Vector3 velocity, float lifetime, Vector4 startColor, Vector4 endColor, float size)
         {
             Position = position;
             Velocity = velocity;
             Lifetime = lifetime;
-            Age = 0f;
             StartColor = startColor;
             EndColor = endColor;
             Size = size;
         }
 
-        public void Update(float deltaTime)
+        public void Update()
         {
+            var deltaTime = Time.Delta;
+
             Age += deltaTime;
-            if (IsAlive)
+            if (Alive)
             {
-                Position += Velocity * deltaTime;
+                Position += (Velocity ) * deltaTime;
             }
         }
-
+        public Vector4 Color => Vector4.Lerp(StartColor, EndColor, MathHelper.Clamp(Age / Lifetime, 0f, 1f));
         public Vector4 GetCurrentColor()
         {
             float t = MathHelper.Clamp(Age / Lifetime, 0f, 1f);

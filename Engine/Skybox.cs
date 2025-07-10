@@ -39,18 +39,19 @@ namespace Engine
             
             Position = cam.Position;
 
+           
+
             GL.Disable(EnableCap.DepthTest);
             GL.DepthMask(false);
-
+            GL.Disable(EnableCap.Blend);
 
             Material.Apply(GetRenderModelMatrix());
 
+
+            Mesh.Render();
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
 
-
-            Mesh.Render();
-            
             base.Render();
            
         }

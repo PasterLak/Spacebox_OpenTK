@@ -148,12 +148,12 @@ namespace Spacebox.Scenes
             spawner = new DustSpawner(player);
 
 
-            spawner.ParticleSystem.MaxParticles = 1000;
-            spawner.ParticleSystem.SpawnRate = 200;
+            spawner.ParticleSystem.Max = 1000;
+            spawner.ParticleSystem.Rate = 200;
             spawner.Position = new Vector3(0, 0, 0);
 
 
-            var emitter = new Emitter(spawner.ParticleSystem)
+            var emitter = new EmitterOld(spawner.ParticleSystem)
             {
                 SpeedMin = 0f,
                 SpeedMax = 0f,
@@ -168,8 +168,8 @@ namespace Spacebox.Scenes
                 SpawnRadius = 100f,
                 EmitterDirection = new Vector3(0, 0, 0),
             };
-            spawner.ParticleSystem.UseLocalCoordinates = false;
-            spawner.ParticleSystem.Emitter = emitter;
+           // spawner.ParticleSystem.UseLocalCoordinates = false;
+           // spawner.ParticleSystem.Emitter = emitter;
         }
 
 

@@ -70,12 +70,12 @@ namespace Spacebox.Scenes
             spawner = new DustSpawner(camera);
 
 
-            spawner.ParticleSystem.MaxParticles = 1000;
-            spawner.ParticleSystem.SpawnRate = 200;
+            spawner.ParticleSystem.Max = 1000;
+            spawner.ParticleSystem.Rate = 200;
             spawner.Position = new Vector3(0, 0, 10);
 
 
-            var emitter = new Emitter(spawner.ParticleSystem)
+            var emitter = new EmitterOld(spawner.ParticleSystem)
             {
                 SpeedMin = 5f,
                 SpeedMax = 10f,
@@ -91,7 +91,7 @@ namespace Spacebox.Scenes
                 EmitterDirection = new Vector3(0, 0, 1),
             };
 
-            spawner.ParticleSystem.Emitter = emitter;
+           // spawner.ParticleSystem.Emitter = emitter;
         }
 
 

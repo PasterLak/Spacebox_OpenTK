@@ -30,17 +30,19 @@ namespace Spacebox.Game.Effects
 
             particleShader = Resources.Load<Shader>("Shaders/particle");
 
-            ParticleSystem = new ParticleSystem(dustTexture, particleShader)
+            ParticleSystem = new ParticleSystem(new ParticleMaterial(dustTexture), new SphereEmitter());
+
+            /*ParticleSystem = new ParticleSystem(dustTexture, particleShader)
             {
                 Position = Position,
                 UseLocalCoordinates = false,
-                MaxParticles = 350,
-                SpawnRate = 40f
-            };
+                Max = 350,
+                Rate = 40f
+            };*/
 
-            ParticleSystem.AllowDebug = false;
+            //ParticleSystem.AllowDebug = false;
 
-            var emitter = new Emitter(ParticleSystem)
+            var emitter = new EmitterOld(ParticleSystem)
             {
                 SpeedMin = 0f,
                 SpeedMax = 0f,
@@ -55,8 +57,8 @@ namespace Spacebox.Game.Effects
                 SpawnRadius = 70f
             };
 
-            ParticleSystem.Emitter = emitter;
-            ParticleSystem.Renderer.RandomRotation = false;
+            //ParticleSystem.Emitter = emitter;
+            //ParticleSystem.Renderer.RandomRotation = false;
 
             particleShader.Use();
             particleShader.SetInt("particleTexture", 0);
@@ -70,19 +72,19 @@ namespace Spacebox.Game.Effects
 
         public void Render()
         {
-            ParticleSystem.Renderer.Material.Shader.SetVector3("color", new Vector3(1, 1, 1));
+           // ParticleSystem.Renderer.Material.Shader.SetVector3("color", new Vector3(1, 1, 1));
 
             Astronaut ast = camera as Astronaut;
 
-            if(ast == null)
-            ParticleSystem.Draw(camera);
-            else
-                ParticleSystem.Draw(ast);
+           // if(ast == null)
+          //  ParticleSystem.Draw(camera);
+          //  else
+          //      ParticleSystem.Draw(ast);
         }
 
         public void Dispose()
         {
-            ParticleSystem.Dispose();
+         //   ParticleSystem.Dispose();
             particleShader.Dispose();
         }
     }

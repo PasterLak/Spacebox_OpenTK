@@ -37,7 +37,7 @@ namespace Spacebox.Scenes
 
         public PlaygroundScene()
         {
-          
+
         }
         SpotLight flashlight;
         public override void LoadContent()
@@ -51,27 +51,27 @@ namespace Spacebox.Scenes
             var sky = Resources.Load<Texture2D>("Resources/Textures/Space/dom.png");
             var sky2 = Resources.Load<Mesh>("Resources/Models/cube.obj");
             var skyBox = AddChild(new Skybox(GenMesh.CreateCube(), new SkyboxProceduralMaterial()));
-            
+
             skyBox.SetScale(300);
             player = AddChild(new FreeCamera(new Vector3(0, 0, 5)));
             player2 = AddChild(new FreeCamera(new Vector3(x, 5, 5)));
-           
-            var cubeRenderer = new CubeRenderer(new Vector3(1,0,1));
+
+            var cubeRenderer = new CubeRenderer(new Vector3(1, 0, 1));
             cubeRenderer.AttachComponent(new SphereCollider());
             cubeRenderer.Color = Color4.Green;
             cubeRenderer.AttachComponent(new RotatorComponent(new Vector3(0, 30, 0)));
-  
-            var spacer = AddChild(new Spacer(new Vector3(x,2,0)));
+
+            var spacer = AddChild(new Spacer(new Vector3(x, 2, 0)));
             AddChild(cubeRenderer);
-            var f1 = new CubeRenderer(new Vector3(x,-1,0));
+            var f1 = new CubeRenderer(new Vector3(x, -1, 0));
             f1.AttachComponent(new OBBCollider());
             AddChild(f1);
 
-            var c1 = new CubeRenderer(new Vector3(x-3, 0, 0));
+            var c1 = new CubeRenderer(new Vector3(x - 3, 0, 0));
             var c2 = new CubeRenderer(new Vector3(1, 0, 0));
-            
+
             c1.Color = Color4.DeepPink;
-            c2.Color = Color4.Pink ;
+            c2.Color = Color4.Pink;
             c1.AddChild(c2);
             //AddChild(c1);
             c2.AttachComponent(new RotatorComponent(new Vector3(0, -30, 0)));
@@ -79,33 +79,33 @@ namespace Spacebox.Scenes
             c1.AttachComponent(new OBBCollider());
             //c1.RotateAround(new Vector3(x, 0, 0), Vector3.UnitY, speed * 1);
 
-         
-            Node3D model = new Node3D(new Vector3(x+5,0,0));
+
+            Node3D model = new Node3D(new Vector3(x + 5, 0, 0));
             Model m = new Model(GenMesh.CreateSphere(2), new TextureMaterial(skyboxTexture));
             m.Material.Color = Color4.Red;
             model.AttachComponent(new ModelRendererComponent(m));
-            model.AttachComponent(new SphereCollider());    
+            model.AttachComponent(new SphereCollider());
             AddChild(model);
 
 
             Engine.Texture2D skyboxTexture2 = Resources.Load<Engine.Texture2D>("Resources/Textures/arSphere.png");
             Node3D sphere = new Node3D(new Vector3(0, 0, 1));
-            var mat = new FadeMaterial(skyboxTexture2); 
+            var mat = new FadeMaterial(skyboxTexture2);
             Model m2 = new Model(GenMesh.CreateSphere(6), mat);
             m2.Material.Color = Color4.White;
             sphere.AttachComponent(new ModelRendererComponent(m2));
             sphere.AttachComponent(new SphereCollider());
             spacer.AddChild(sphere);
-            
+
             var itemTexture = Resources.Load<Texture2D>("Resources/Textures/UI/trash.png");
             itemTexture.FilterMode = FilterMode.Nearest;
 
             var modelDepth = 0.5f;
-            Mesh item = ItemModelGenerator.GenerateMeshFromTexture(itemTexture,  modelDepth);
- 
+            Mesh item = ItemModelGenerator.GenerateMeshFromTexture(itemTexture, modelDepth);
+
             Node3D itemModel = new Node3D(new Vector3(1, 1, 1));
             var cm = itemModel.AttachComponent(new ModelRendererComponent(new Model(item, new ItemMaterial(itemTexture))));
-            cm.Offset = new Vector3(-0.5f, -0.5f, -modelDepth/2f);
+            cm.Offset = new Vector3(-0.5f, -0.5f, -modelDepth / 2f);
             itemModel.AttachComponent(new AxesDebugComponent());
             itemModel.AttachComponent(new OBBCollider());
             //c1.Position = new Vector3(0);
@@ -113,10 +113,13 @@ namespace Spacebox.Scenes
 
             AddChild(c1);
 
-            var sun = new DirectionalLight { Rotation = new Vector3(45, -30, 0), 
-                Intensity = 1 };
+            var sun = new DirectionalLight
+            {
+                Rotation = new Vector3(45, -30, 0),
+                Intensity = 1
+            };
             sun.Diffuse = new Color3Byte(209, 201, 157).ToVector3();
-            
+
             sun.Enabled = true;
             AddChild(sun);
 
@@ -138,7 +141,7 @@ namespace Spacebox.Scenes
                 Quadratic = 0.032f,
                 CutOff = MathF.Cos(MathHelper.DegreesToRadians(12.5f)),
                 OuterCutOff = MathF.Cos(MathHelper.DegreesToRadians(17.5f)),
-                Intensity = 1.0f                          
+                Intensity = 1.0f
             };
             flashlight.Enabled = false;
             player2.AddChild(flashlight);
@@ -158,17 +161,45 @@ namespace Spacebox.Scenes
             waterModel.Material.Color = Color4.White;
             plane.AttachComponent(new ModelRendererComponent(waterModel));
             plane.AttachComponent(new SphereCollider());
-            AddChild(plane);
+            //AddChild(plane);
+
+            var emitter = new SphereEmitter
+            {
+                Center = Vector3.Zero,
+                Radius = 0.5f,
+                SpeedMin = 0.2f,
+                SpeedMax = 1f,
+                LifeMin = 3f,
+                LifeMax = 5f,
+                SizeMin = 0.1f,
+                SizeMax = 0.2f,
+                ColorStart = new Vector4(1, 1, 1, 1),
+                ColorEnd = new Vector4(1, 1, 1, 0)
+            };
+
+            var dust = Resources.Load<Texture2D>("Resources/Textures/dust.png");
+            dust.FilterMode = FilterMode.Nearest;
+
+            system = new ParticleSystem(new ParticleMaterial(dust), emitter) { Max = 500, Rate = 100 };
+
+
+
+
+            // system.AttachComponent(new MoverComponent(new Vector3(1,0,0), 20));
+            system.Position = new Vector3(0);
+            AddChild(system);
+
+
 
         }
+        ParticleSystem system;
 
-  
+
         public override void Start()
         {
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 0), 1);
             PrintHierarchy();
 
-            Debug.Success("START");
         }
 
         public override void OnGUI()
@@ -178,17 +209,25 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
-            
-        }
 
+        }
+        Vector3 targetr;
         public override void Render()
         {
             base.Render();
+
+            system.Translate(new Vector3(0, 0, 2 * Time.Delta));
+
+            if (Input.IsKeyDown(Keys.L))
+            {
+                system.Max = 2000;
+                system.Rate = 500;
+            }
         }
 
         public override void Update()
         {
-           base.Update();
+            base.Update();
             flashlight.Direction = player2.Front;
 
             if (Input.IsKeyDown(Keys.R))
@@ -201,14 +240,15 @@ namespace Spacebox.Scenes
                 SceneManager.Reload();
             }
 
-      
+
 
             if (Input.IsKeyDown(Keys.C))
             {
-               if(player.IsMain)
+                if (player.IsMain)
                 {
                     Camera.Main = player2;
-                }else
+                }
+                else
                 {
                     Camera.Main = player;
                 }

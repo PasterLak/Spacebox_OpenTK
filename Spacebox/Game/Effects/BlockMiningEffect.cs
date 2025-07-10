@@ -18,7 +18,7 @@ namespace Spacebox.Game.Effects
         private Vector3 color = Vector3.One;
         public bool Enabled = false;
 
-        public bool IsFinished => elapsedTime >= duration && ParticleSystem.GetParticles().Count == 0;
+        public bool IsFinished => elapsedTime >= duration && ParticleSystem.ParticlesCount == 0;
 
         public BlockMiningEffect(Camera camera, Vector3 position, Vector3 color, Texture2D texture, Shader shader)
         {
@@ -34,19 +34,21 @@ namespace Spacebox.Game.Effects
             //dustTexture = new Texture2D("Resources/Textures/blockDust.png", true);
             dustTexture = texture;
 
-            ParticleSystem = new ParticleSystem(dustTexture, shader)
+            ParticleSystem = new ParticleSystem(new ParticleMaterial(dustTexture),new SphereEmitter());
+
+            /*ParticleSystem = new ParticleSystem(dustTexture, shader)
             {
                 Position = position,
                 UseLocalCoordinates = false,
                 EmitterPositionOffset = Vector3.Zero,
                 //EmitterDirection = new Vector3(0, 1, 0), 
-                MaxParticles = 30,
-                SpawnRate = 50f
-            };
+                Max = 30,
+                Rate = 50f
+            };*/
 
             //particleSystem.Renderer = new ParticleRenderer(texture, particleSystem, shader);
 
-            var emitter = new Emitter(ParticleSystem)
+            var emitter = new EmitterOld(ParticleSystem)
             {
                 LifetimeMin = 0.1f,
                 LifetimeMax = 0.2f,
@@ -65,8 +67,8 @@ namespace Spacebox.Game.Effects
                 RandomUVRotation = true,
             };
 
-            ParticleSystem.Emitter = emitter;
-            ParticleSystem.UseLocalCoordinates = false;
+            //ParticleSystem.Emitter = emitter;
+           // ParticleSystem.UseLocalCoordinates = false;
             //particleShader = new Shader("Shaders/particleShader");
             particleShader = shader;
             //particleShader.Use();
@@ -75,8 +77,8 @@ namespace Spacebox.Game.Effects
 
         private bool _canDestroyBlock = true;
 
-        private Emitter emitter;
-        private Emitter emitter2;
+        private EmitterOld emitter;
+        private EmitterOld emitter2;
         public void SetEmitter(bool canDestroyBlock)
         {
             if (_canDestroyBlock == canDestroyBlock) return;
@@ -86,7 +88,7 @@ namespace Spacebox.Game.Effects
             if (canDestroyBlock)
             {
                 if (emitter == null)
-                    emitter = new Emitter(ParticleSystem)
+                    emitter = new EmitterOld(ParticleSystem)
                 {
                     LifetimeMin = 0.05f,
                     LifetimeMax = 0.2f,
@@ -105,12 +107,12 @@ namespace Spacebox.Game.Effects
                     RandomUVRotation = true,
                 };
 
-                ParticleSystem.Emitter = emitter;
+              //  ParticleSystem.Emitter = emitter;
             }
             else
             {
                 if(emitter2 == null)
-                 emitter2 = new Emitter(ParticleSystem)
+                 emitter2 = new EmitterOld(ParticleSystem)
                 {
                     LifetimeMin = 0.08f,
                     LifetimeMax = 0.25f,
@@ -129,7 +131,7 @@ namespace Spacebox.Game.Effects
                     RandomUVRotation = true,
                 };
 
-                ParticleSystem.Emitter = emitter2;
+               // ParticleSystem.Emitter = emitter2;
             }
             
         }
@@ -145,9 +147,9 @@ namespace Spacebox.Game.Effects
                 }
             }
             ParticleSystem.Update();
-            ParticleSystem.Renderer.RandomRotation = true;
+           // ParticleSystem.Renderer.RandomRotation = true;
 
-            if (ParticleSystem.GetParticles().Count == ParticleSystem.MaxParticles)
+            if (ParticleSystem.ParticlesCount == ParticleSystem.Max)
             {
                 //ParticleSystem.SpawnRate = 0f;
             }
@@ -156,19 +158,19 @@ namespace Spacebox.Game.Effects
         public void Render()
         {
             if(!Enabled) return;
-            ParticleSystem.Renderer.Material.Shader.SetVector3("color", color);
-            ParticleSystem.Draw(camera);
+           // ParticleSystem.Renderer.Material.Shader.SetVector3("color", color);
+            //ParticleSystem.Draw(camera);
         }
 
         public void ClearParticles()
         {
-            ParticleSystem.GetParticles().Clear();
-            ParticleSystem.Renderer.Update();
+           // ParticleSystem.GetParticles().Clear();
+            //ParticleSystem.Renderer.Update();
         }
 
         public void Dispose()
         {
-            ParticleSystem.Dispose();
+          //  ParticleSystem.Dispose();
             //dustTexture.Dispose();
             //particleShader.Dispose();
         }

@@ -2,7 +2,7 @@
 
 namespace Engine
 {
-    public class Emitter
+    public class EmitterOld : EmitterBase
     {
         private ParticleSystem particleSystem;
         private Random random = new Random();
@@ -30,7 +30,7 @@ namespace Engine
             set
             {
                 _randomUVRotation = value;
-                particleSystem.Renderer.RandomRotation = _randomUVRotation;
+               // particleSystem.Renderer.RandomRotation = _randomUVRotation;
             }
         }
 
@@ -39,7 +39,7 @@ namespace Engine
 
         public bool EnableRandomDirection { get; set; } = false;
 
-        public Emitter(ParticleSystem system)
+        public EmitterOld(ParticleSystem system)
         {
             particleSystem = system;
         }
@@ -47,9 +47,9 @@ namespace Engine
         public void Emit()
         {
             Vector3 randomPosition = RandomPointInSphere(SpawnRadius);
-            Vector3 position = particleSystem.UseLocalCoordinates
-            ? randomPosition + particleSystem.EmitterPositionOffset
-            : particleSystem.Position + randomPosition + particleSystem.EmitterPositionOffset;
+           // Vector3 position = particleSystem.UseLocalCoordinates
+          //  ? randomPosition + particleSystem.EmitterPositionOffset
+          //  : particleSystem.Position + randomPosition + particleSystem.EmitterPositionOffset;
 
 
             Vector3 velocity;
@@ -85,8 +85,8 @@ namespace Engine
                 MathHelper.Lerp(EndColorMin.W, EndColorMax.W, (float)random.NextDouble())
             );
 
-            Particle particle = new Particle(position, velocity, lifetime, startColor, endColor, size);
-            particleSystem.AddParticle(particle);
+           // Particle particle = new Particle(position, velocity, lifetime, startColor, endColor, size);
+           // particleSystem.AddParticle(particle);
         }
 
         private Vector3 RandomPointInSphere(float radius)
@@ -111,6 +111,17 @@ namespace Engine
             float y = MathF.Sin(phi) * MathF.Sin(theta);
             float z = MathF.Cos(phi);
             return new Vector3(x, y, z).Normalized();
+        }
+
+  
+        public override Particle Create()
+        {
+            return null;
+        }
+
+        public override void Debug()
+        {
+            //throw new NotImplementedException();
         }
     }
 }

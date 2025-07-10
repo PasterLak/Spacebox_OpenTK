@@ -6,6 +6,12 @@ namespace Engine
     {
         public string Name;
         public byte Size;
+
+        public BufferAttribute(string name, byte size)
+        {
+            Name = name;
+            Size = size;
+        }
     }
     public class MeshBuffer : IDisposable
     {
