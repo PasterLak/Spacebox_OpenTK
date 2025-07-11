@@ -214,7 +214,7 @@ namespace Engine
             Rotation = QuaternionToEulerDegrees(rot * ToQuaternion(Rotation));
         }
 
-        public Vector3 GetWorldPosition() => Parent == null ? Position : Parent.LocalToWorld(Position);
+        public Vector3 PositionWorld => Parent == null ? Position : Parent.LocalToWorld(Position);
 
         public bool Equals(Node3D? other) => !(other is null) && _id.Equals(other._id);
 

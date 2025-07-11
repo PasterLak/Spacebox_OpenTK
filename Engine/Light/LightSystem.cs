@@ -93,13 +93,13 @@ namespace Engine.Light
 
 
                         var pl = (PointLight)l; float k = pl.Intensity;
-                        var camPos = cam.GetWorldPosition();
-                        var lightPos = pl.GetWorldPosition();
+                        var camPos = cam.PositionWorld;
+                        var lightPos = pl.PositionWorld;
                         if ((lightPos - camPos).LengthSquared >= DistanceToRenderLight)
                             continue;
                         pt[p++] = new PointGpu
                         {
-                            position = pl.GetWorldPosition() - RenderSpace.Origin,
+                            position = pl.PositionWorld - RenderSpace.Origin,
                             constant = pl.Constant,
                             linear = pl.Linear,
                             quadratic = pl.Quadratic,
@@ -111,13 +111,13 @@ namespace Engine.Light
 
                     case LightKind.Spot when s < MAX_SPOT:
                         var sl = (SpotLight)l;
-                        var camPos2 = cam.GetWorldPosition();
-                        var lightPos2 = sl.GetWorldPosition();
+                        var camPos2 = cam.PositionWorld;
+                        var lightPos2 = sl.PositionWorld;
                         if ((lightPos2 - camPos2).LengthSquared >= DistanceToRenderLight)
                             continue;
                         sp[s++] = new SpotGpu
                         {
-                            position = sl.GetWorldPosition() - RenderSpace.Origin,
+                            position = sl.PositionWorld - RenderSpace.Origin,
                             constant = sl.Constant,
                             direction = Vector3.Normalize(sl.Direction),
                             linear = sl.Linear,

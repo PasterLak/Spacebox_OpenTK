@@ -1,8 +1,6 @@
 ﻿using Engine;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Engine.Physics;
-using Spacebox.GUI;
 
 namespace Spacebox.Game.Player
 {

@@ -138,7 +138,7 @@ namespace Spacebox.FPS.Scenes
                 planes[i] = new Model(Resources.Load<Mesh>("Resources/Models/plane.obj"), mat);
                 //Renderer.AddDrawable(planes[i]);
 
-                CollisionManager.Add(planes[i]);
+               // CollisionManager.Add(planes[i]);
             }
 
 
@@ -219,14 +219,14 @@ namespace Spacebox.FPS.Scenes
 
             //collisionManager.Add(terrain);
 
-            CollisionManager.Add(stone1);
-            CollisionManager.Add(cube);
-            CollisionManager.Add(tv);
-            CollisionManager.Add(arrow);
-            CollisionManager.Add(player);
+           // CollisionManager.Add(stone1);
+          //  CollisionManager.Add(cube);
+          //  CollisionManager.Add(tv);
+           // CollisionManager.Add(arrow);
+           // CollisionManager.Add(player);
 
             Trigger trigger = new Trigger(new Vector3(3, 1, 5), new Vector3(1, 2, 1.5f));
-            CollisionManager.Add(trigger);
+           // CollisionManager.Add(trigger);
 
             var points = terrain.Mesh.GetRandomPoints(20);
 
@@ -336,7 +336,7 @@ namespace Spacebox.FPS.Scenes
             //Debug.ViewMatrix = player.GetViewMatrix();
 
 
-            CollisionManager.CheckCollisions();
+           // CollisionManager.CheckCollisions();
 
 
 
@@ -429,7 +429,7 @@ namespace Spacebox.FPS.Scenes
             player.Update();
 
         
-            foreach (var obj in CollisionManager.Collidables)
+            /*foreach (var obj in CollisionManager.Collidables)
             {
               
                 BoundingVolume oldVolume = obj.BoundingVolume.Clone();
@@ -437,8 +437,8 @@ namespace Spacebox.FPS.Scenes
                 if (!obj.IsStatic)
                     obj.UpdateBounding();
 
-                CollisionManager.Update(obj, oldVolume);
-            }
+               // CollisionManager.Update(obj, oldVolume);
+            }*/
 
             if (Input.IsKeyDown(Keys.F))
             {

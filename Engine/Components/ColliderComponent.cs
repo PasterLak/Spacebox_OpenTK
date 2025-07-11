@@ -32,7 +32,7 @@ namespace Engine.Components
 
         protected Vector3 GetOwnerWorldPositionWithOffset()
         {
-            return Owner.GetWorldPosition() + Offset;
+            return Owner.PositionWorld + Offset;
         }
     }
 

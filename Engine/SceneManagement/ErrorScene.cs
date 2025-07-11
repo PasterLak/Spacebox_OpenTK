@@ -25,6 +25,7 @@ namespace Engine.SceneManagement
         public override void Render()
         {
             GL.ClearColor(Color.Red);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         }
 
         public override void OnGUI()

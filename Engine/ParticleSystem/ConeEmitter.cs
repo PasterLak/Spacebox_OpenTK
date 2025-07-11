@@ -1,4 +1,4 @@
-﻿// ConeEmitter.cs
+﻿
 using OpenTK.Mathematics;
 
 namespace Engine
@@ -48,7 +48,7 @@ namespace Engine
 
         public override void Debug()
         {
-            VisualDebug.DrawCone(Apex, Axis, Angle, Height, Color4.Cyan);
+            VisualDebug.DrawCone(Apex, Axis, Angle, Height, Color4.Cyan, 12);
         }
     }
 }

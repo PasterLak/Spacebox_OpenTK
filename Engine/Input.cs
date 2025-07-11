@@ -15,25 +15,19 @@ namespace Engine
 
         public Input() { }
 
-        public static void Initialize(GameWindow gameWindow) 
-        { 
-            if(_instance == null)
+        public static void Initialize(GameWindow gameWindow)
+        {
+            if (_instance == null)
             {
                 _instance = new Input();
                 _gameWindow = gameWindow;
                 _lastState = gameWindow.KeyboardState;
             }
-            else  
+            else
             {
                 Console.WriteLine("There are already an Input Object!");
             }
-            
-        }
 
-
-        public static void Update()
-        {
-        
         }
 
         public static bool IsKey(Keys key)
@@ -48,10 +42,10 @@ namespace Engine
             return _lastState.IsKeyReleased(key);
 
         }
-       
+
         public static bool IsKeyDown(Keys key)
         {
-           
+
             return _lastState.IsKeyPressed(key);
 
         }
@@ -80,15 +74,15 @@ namespace Engine
 
         public static bool IsAnyKeyDown()
         {
-            
+
             return _lastState.IsAnyKeyDown || Mouse.IsAnyButtonDown;
         }
 
         public static void SetCursorState(CursorState state)
         {
             _gameWindow.CursorState = state;
-            
-           // MoveCursorToCenter();
+
+            // MoveCursorToCenter();
 
         }
         public static void HideCursor()
@@ -99,7 +93,7 @@ namespace Engine
 
         public static void MoveCursorToCenter()
         {
-            _gameWindow.MousePosition = GetCenter(_gameWindow); 
+            _gameWindow.MousePosition = GetCenter(_gameWindow);
         }
 
         public static Vector2 GetCenter(GameWindow window)
@@ -117,7 +111,7 @@ namespace Engine
         public static void ShowCursor()
         {
             SetCursorState(CursorState.Normal);
-            
+
         }
 
         public static CursorState GetCursorState()

@@ -12,6 +12,13 @@ namespace Engine
         [JsonPropertyName("g")] public byte G { get; set; }
         [JsonPropertyName("b")] public byte B { get; set; }
 
+        public Color3Byte(byte i)
+        {
+            this.R = i;
+            this.G = i;
+            this.B = i;
+        }
+
         public Color3Byte(byte r, byte g, byte b)
         {
             this.R = r;

@@ -5,9 +5,7 @@ namespace Engine.SceneManagement
 {
     public abstract class Scene : Node3D, IDisposable
     {
-      
-        public CollisionManager CollisionManager { get; private set; }
-       
+
         public List<IDisposable> Disposables { get; private set; } = new List<IDisposable>();
 
         protected Scene()
@@ -18,9 +16,7 @@ namespace Engine.SceneManagement
 
         private void Init()
         {
-            CollisionManager = new CollisionManager();
-            
-
+           
             Name = "DefaultName";
             Resizable = false;
         }

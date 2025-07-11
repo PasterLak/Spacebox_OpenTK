@@ -55,7 +55,7 @@ namespace Engine
         public static void DrawTransform(Node3D transform)
         {
             if (transform == null) return;
-            var pos = transform.GetWorldPosition();
+            var pos = transform.PositionWorld;
             DrawLine(pos, pos + Vector3.UnitZ, new Color4(0, 0, 1, 1));
             DrawBoundingSphere(new BoundingSphere(pos, 0.1f), Color4.Blue);
         }
@@ -267,7 +267,7 @@ namespace Engine
             if (!Enabled || node == null) return;
 
             Matrix4 model = node.GetRenderModelMatrix();
-            Vector3 origin = node.GetWorldPosition();
+            Vector3 origin = node.PositionWorld;
 
             Vector3 xDir = Vector3.Normalize(Vector3.TransformNormal(Vector3.UnitX, model)) * length;
             Vector3 yDir = Vector3.Normalize(Vector3.TransformNormal(Vector3.UnitY, model)) * length;

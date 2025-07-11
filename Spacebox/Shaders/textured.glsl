@@ -14,7 +14,7 @@ out vec3 worldNormal;
 out vec3 worldPosition;
 out vec2 texCoords;
 out float fogFactor;
-
+// купупкыурукырыр
 #define FOG_LN2 1.44269504
 
 float fogFac(vec3 p, float k, float density)

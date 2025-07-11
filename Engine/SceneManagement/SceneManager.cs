@@ -11,9 +11,10 @@ namespace Engine.SceneManagement
     public static class SceneManager
     {
         static readonly HashSet<Type> _registeredScenes = new();
+        private static readonly Stack<Func<Scene>> _history = new();
         static Func<Scene> _nextFactory;
-        static Func<Scene> _lastFactory;
         static Scene _current;
+        static Func<Scene> _lastFactory;
 
         public static Scene Current => _current;
 
@@ -22,18 +23,23 @@ namespace Engine.SceneManagement
             
             registerScenes();
             Register<ErrorScene>();
+
             Load<ErrorScene>();
         }
 
  
         public static void Load<TScene>() where TScene : Scene, new()
         {
+            
             if (!_registeredScenes.Contains(typeof(TScene)))
             {
                 Debug.Error($"[SceneManager] Scene {typeof(TScene).Name} not registered.");
                 Load<ErrorScene>();
                 return;
             }
+            if (_nextFactory != null)
+                _history.Push(_nextFactory);
+
             Debug.Log("[SceneManager] Loading scene ", Color4.White);
             _nextFactory = () =>
             {
@@ -42,6 +48,7 @@ namespace Engine.SceneManagement
                 return s;
             };
             _lastFactory = _nextFactory;
+
             Switch();
         }
 
@@ -54,7 +61,10 @@ namespace Engine.SceneManagement
                 Load<ErrorScene>();
                 return;
             }
-               
+
+            if (_nextFactory != null)
+                _history.Push(_nextFactory);
+
             Debug.Log("[SceneManager] Loading scene ", Color4.White);
             _nextFactory = () =>
             {
@@ -64,12 +74,13 @@ namespace Engine.SceneManagement
                 return s;
             };
             _lastFactory = _nextFactory;
+
             Switch();
         }
 
         public static void Reload()
         {
-            if (_lastFactory == null) return;
+            if (_history.Count == 0) return;
             _nextFactory = _lastFactory;
             Switch();
         }
@@ -81,12 +92,17 @@ namespace Engine.SceneManagement
             _registeredScenes.Add(typeof(TScene));
         }
 
-       
-
+        public static void LoadPrevious()
+        {
+            if (_history.Count == 0) return;
+            _nextFactory = _history.Pop();
+            Switch();
+        }
         private static void Switch()
         {
             if (_current != null)
             {
+       
                 var name = _current.Name;
                 Debug.Log("[SceneManager] Unloading scene: " + name, Color4.White);
                 DisposablesUnloader.Dispose();

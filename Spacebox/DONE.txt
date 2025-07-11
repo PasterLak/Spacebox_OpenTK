@@ -96,6 +96,9 @@ Engine
 - BVH - Frustum Culling
 - LightSystem
 - GlobalUniforms for shaders
+- procedural skybox
+- better scene manager, scene args
+- new particle system
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.1

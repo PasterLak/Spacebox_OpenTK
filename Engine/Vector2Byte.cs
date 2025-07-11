@@ -9,6 +9,12 @@ public struct Vector2Byte
     [JsonPropertyName("y")]
     public byte Y { get; set; }
 
+    public Vector2Byte(byte i)
+    {
+        this.X = i;
+        this.Y = i;
+    }
+
     public Vector2Byte(byte x, byte y)
     {
         this.X = x;

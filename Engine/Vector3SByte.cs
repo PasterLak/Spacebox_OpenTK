@@ -11,6 +11,13 @@ namespace Engine
 
         public sbyte Z { get; set; }
 
+        public Vector3SByte(sbyte i)
+        {
+            this.X = i;
+            this.Y = i;
+            this.Z = i;
+        }
+
         public Vector3SByte(sbyte x, sbyte y, sbyte z)
         {
             this.X = x;

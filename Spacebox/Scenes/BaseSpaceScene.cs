@@ -204,7 +204,7 @@ namespace Spacebox.Scenes
             world = new World(localPlayer);
           
             PlayerSaveLoadManager.LoadPlayer(localPlayer, World.Data.WorldFolderPath);
-            CollisionManager.Add(localPlayer);
+            //CollisionManager.Add(localPlayer);
 
             Death = new AudioSource(Resources.Load<AudioClip>("death2"));
             ambient = new AudioSource(Resources.Load<AudioClip>("Music/spaceBackground"));

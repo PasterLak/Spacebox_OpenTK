@@ -1,6 +1,7 @@
 ﻿using Engine.Components.Debug;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Drawing;
 
 namespace Engine.SceneManagement
@@ -104,6 +105,11 @@ namespace Engine.SceneManagement
         public override void Update()
         {
             base.Update();
+            if (Input.IsKeyDown(Keys.T))
+            {
+               
+                SceneManager.Reload();
+            }
         }
     }
 }

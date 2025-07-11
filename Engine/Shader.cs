@@ -2,6 +2,7 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Engine
 {
@@ -122,7 +123,7 @@ namespace Engine
             _previousUniformLocations = _uniformLocations;
             Handle = newHandle;
             _uniformLocations = newUniforms;
-            Debug.Log($"[Shader] Compiled! Handle:{Handle} Name: {Path.GetFileName(_shaderPath)}", Color4.BlueViolet);
+            Debug.Log($"[Shader] Compiled! Handle:{Handle} - {Path.GetFileName(_shaderPath)}", Color4.BlueViolet);
         }
 
         public void ReloadShader()
@@ -266,14 +267,35 @@ namespace Engine
         }
 
     }
-
+  
     public static class ShaderParser
     {
-        // ─── ShaderParser.ParseShaders () ────────────────────────────────────────
-        public static (string vertexShaderSource, string fragmentShaderSource, string geometryShaderSource)
-            ParseShaders(string filePath)
+
+        public static string RemoveComments(string src)
         {
+            // 1) remove /* ... */ 
+            string noBlock = Regex.Replace(
+                src,
+                @"/\*.*?\*/",
+                "",
+                RegexOptions.Singleline
+            );
+            // 2) remove // 
+            string noLine = Regex.Replace(
+                noBlock,
+                @"//.*?$",
+                "",
+                RegexOptions.Multiline
+            );
+            return noLine;
+        }
+
+        public static (string vertexShaderSource, string fragmentShaderSource, string geometryShaderSource)
+                ParseShaders(string filePath)
+        {
+
             var lines = File.ReadAllLines(filePath + ".glsl");
+
 
             bool inVert = false, inFrag = false, inGeom = false;
             var v = new StringBuilder();
@@ -297,13 +319,17 @@ namespace Engine
             string fragSrc = ExpandIncludes(f.ToString(), dir);
             string geomSrc = ExpandIncludes(g.ToString(), dir);
 
+
+            vertSrc = RemoveComments(vertSrc);
+            fragSrc = RemoveComments(fragSrc);
+            geomSrc = RemoveComments(geomSrc);
+
             if (string.IsNullOrWhiteSpace(vertSrc) || string.IsNullOrWhiteSpace(fragSrc))
                 throw new Exception("Both vertex and fragment shader sources must be provided.");
 
             return (vertSrc, fragSrc, geomSrc);
         }
 
-        // ─── ShaderParser.ExpandIncludes () ──────────────────────────────────────────
         static string ExpandIncludes(string src, string dir, HashSet<string>? visited = null)
         {
             visited ??= new HashSet<string>();
@@ -345,6 +371,7 @@ namespace Engine
                     lineNo++;
 
                 }
+
                 else
                 {
                     sb.AppendLine(raw);

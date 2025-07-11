@@ -7,6 +7,13 @@ public struct Vector3Byte
     [JsonPropertyName("y")] public byte Y { get; set; }
     [JsonPropertyName("z")] public byte Z { get; set; }
 
+    public Vector3Byte(byte i)
+    {
+        this.X = i;
+        this.Y = i;
+        this.Z = i;
+    }
+
     public Vector3Byte(byte x, byte y, byte z)
     {
         this.X = x;
