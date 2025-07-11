@@ -21,6 +21,39 @@ namespace Spacebox.Game.Effects
             Initialize();
         }
 
+        public static ParticleSystem CreateDust()
+        {
+            var emitter = new SphereEmitter
+            {
+                SpeedMin = 0,
+                SpeedMax = 0,
+                LifeMin = 10f,
+                LifeMax = 30f,
+                StartSizeMin = 0.03f,
+                StartSizeMax = 0.05f,
+                EndSizeMin = 0.1f,
+                EndSizeMax = 0.2f,
+                AccelerationStart = new Vector3(0f, 0f, 0f),
+                AccelerationEnd = new Vector3(0f, 0f, 0f),
+                RotationSpeedMin = 0f,
+                RotationSpeedMax = 180f,
+                ColorStart = new Vector4(1f, 1f, 1f, 0f),
+                ColorEnd = new Vector4(0.8f, 0.8f, 0.8f, 1f),
+                Center = new Vector3(0f, 0f, 0f),
+                Radius = 100
+            };
+
+            var dust = Resources.Load<Texture2D>("Resources/Textures/dust.png");
+            var system = new ParticleSystem(new ParticleMaterial(dust), emitter);
+
+            system.Max = 350;
+            system.Rate = 40;
+            system.Space = SimulationSpace.World;
+            system.Position = new Vector3(0, 0, -30);
+            system.Rotation = new Vector3(90, 0, 0);
+            system.Prewarm(2f);
+            return system;
+        }
         private void Initialize()
         {
 
@@ -74,7 +107,7 @@ namespace Spacebox.Game.Effects
         {
            // ParticleSystem.Renderer.Material.Shader.SetVector3("color", new Vector3(1, 1, 1));
 
-            Astronaut ast = camera as Astronaut;
+           // Astronaut ast = camera as Astronaut;
 
            // if(ast == null)
           //  ParticleSystem.Draw(camera);

@@ -1,45 +1,62 @@
-﻿
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 
 namespace Engine
 {
     public class Particle
     {
+        public float StartSize;
+        public float EndSize;
+
         public Vector3 Position;
         public Vector3 Velocity;
+        public Vector3 AccStart;
+        public Vector3 AccEnd;
+        public float Rotation;
+        public float RotationSpeed;
+        public float Life;
         public float Age;
-        public float Lifetime;
-        public Vector4 StartColor;
-        public Vector4 EndColor;
+        public Vector4 ColorStart;
+        public Vector4 ColorEnd;
+        public Vector4 Color;
         public float Size;
+        public bool Alive => Age < Life;
 
-        public bool Alive => Age < Lifetime;
-
-        public Particle(Vector3 position, Vector3 velocity, float lifetime, Vector4 startColor, Vector4 endColor, float size)
+        public Particle(
+            Vector3 pos,
+            Vector3 vel,
+            float life,
+            Vector4 c0,
+            Vector4 c1,
+            float startSize,
+            float endSize)
         {
-            Position = position;
-            Velocity = velocity;
-            Lifetime = lifetime;
-            StartColor = startColor;
-            EndColor = endColor;
-            Size = size;
+            Position = pos;
+            Velocity = vel;
+            AccStart = Vector3.Zero;
+            AccEnd = Vector3.Zero;
+            Rotation = 0f;
+            RotationSpeed = 0f;
+            Life = life;
+            Age = 0f;
+            ColorStart = c0;
+            ColorEnd = c1;
+            Color = c0;
+            StartSize = startSize;
+            EndSize = endSize;
+            Size = startSize;
         }
 
         public void Update()
         {
-            var deltaTime = Time.Delta;
-
-            Age += deltaTime;
-            if (Alive)
-            {
-                Position += (Velocity ) * deltaTime;
-            }
-        }
-        public Vector4 Color => Vector4.Lerp(StartColor, EndColor, MathHelper.Clamp(Age / Lifetime, 0f, 1f));
-        public Vector4 GetCurrentColor()
-        {
-            float t = MathHelper.Clamp(Age / Lifetime, 0f, 1f);
-            return Vector4.Lerp(StartColor, EndColor, t);
+            float dt = Time.Delta;
+            Age += dt;
+            float t = MathHelper.Clamp(Age / Life, 0f, 1f);
+            Vector3 acc = Vector3.Lerp(AccStart, AccEnd, t);
+            Velocity += acc * dt;
+            Position += Velocity * dt;
+            Rotation += RotationSpeed * dt;
+            Color = Vector4.Lerp(ColorStart, ColorEnd, t);
+            Size = MathHelper.Lerp(StartSize, EndSize, t);
         }
     }
 }

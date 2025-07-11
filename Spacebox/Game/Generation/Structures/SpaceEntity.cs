@@ -84,8 +84,8 @@ namespace Spacebox.Game.Generation
         {
 
             StarsEffect = new StarsEffect(World.Instance.Player);
-            StarParticle = new Particle(GeometryBoundingBox.Center, Vector3.Zero, 9999999, new Vector4(1, 1, 1, 1), new Vector4(0, 0, 0, 0), 64);
-            StarsEffect.ParticleSystem.AddParticle(StarParticle);
+           // StarParticle = new Particle(GeometryBoundingBox.Center, Vector3.Zero, 9999999, new Vector4(1, 1, 1, 1), new Vector4(0, 0, 0, 0), 64);
+           // StarsEffect.ParticleSystem.AddParticle(StarParticle);
         }
 
 
@@ -580,9 +580,9 @@ namespace Spacebox.Game.Generation
                 size = sizeMin + (sizeMax - sizeMin) * t;
             }
 
-            StarParticle.StartColor = new Vector4(1, 1, 1, alpha);
-            StarParticle.EndColor = new Vector4(1, 1, 1, alpha);
-            StarParticle.Size = size;
+           // StarParticle.ColorStart = new Vector4(1, 1, 1, alpha);
+           // StarParticle.ColorEnd = new Vector4(1, 1, 1, alpha);
+           // StarParticle.Size = size;
 
             StarsEffect.Update();
             StarsEffect.Render();
@@ -706,7 +706,7 @@ namespace Spacebox.Game.Generation
             CenterOfMass = sumPosCenterOfMass / Mass;
             tag.WorldPosition = CenterOfMass;
 
-            StarParticle.Position = CenterOfMass;
+           // StarParticle.Position = CenterOfMass;
         }
 
         public static List<Chunk> RemoveBlocksInLocalBox(SpaceEntity entity, BoundingBox localBox)

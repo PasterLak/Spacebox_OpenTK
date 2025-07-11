@@ -102,7 +102,11 @@ namespace Engine
             for (int i = 0; i < Components.Count; i++)
                 if (Components[i].Enabled) Components[i].OnUpdate();
             for (int i = 0; i < Children.Count; i++)
+            {
+                if(Children[i].Enabled)
                 Children[i].Update();
+            }
+               
         }
 
         public virtual void Render()
@@ -116,6 +120,11 @@ namespace Engine
                 {
                     cmp.OnRender();
                 }
+            }
+            for (int i = 0; i < Children.Count; i++)
+            {
+                if (Children[i].Enabled)
+                    Children[i].Render();
             }
         }
 

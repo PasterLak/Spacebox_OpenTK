@@ -20,7 +20,6 @@ namespace Spacebox.Scenes
     public class MenuScene : Scene
     {
 
-        private DustSpawner spawner;
         private AudioSource music;
         private GameMenu menu;
 
@@ -32,7 +31,9 @@ namespace Spacebox.Scenes
             //Theme.ApplySpaceboxTheme();
 
             var player = new CameraBasic(new Vector3(0, 0, 0));
-            AddChild(player);   
+            AddChild(player);
+            player.FOV = 100;
+
             canvas = new Canvas(new Vector2i(1280,720), Window.Instance);
 
             var rect = new Rect(new Vector2(0, 0), new Vector2(1280/2f,720/2f));
@@ -51,7 +52,7 @@ namespace Spacebox.Scenes
             Resources.Load<AudioClip>("Resources/Audio/UI/click1.ogg");
             menu = new GameMenu();
             
-            SetDustSpawner(player);
+            SetDustSpawner();
 
             var clip = Resources.Load<AudioClip>("Resources/Audio/Music/music.ogg");
 
@@ -65,33 +66,43 @@ namespace Spacebox.Scenes
         
         }
 
-        private void SetDustSpawner(Camera camera)
+        private void SetDustSpawner()
         {
-            spawner = new DustSpawner(camera);
-
-
-            spawner.ParticleSystem.Max = 1000;
-            spawner.ParticleSystem.Rate = 200;
-            spawner.Position = new Vector3(0, 0, 10);
-
-
-            var emitter = new EmitterOld(spawner.ParticleSystem)
+    
+            var emitter = new PlaneEmitter
             {
-                SpeedMin = 5f,
-                SpeedMax = 10f,
-                LifetimeMin = 5f,
-                LifetimeMax = 10f,
-                SizeMin = 0.1f,
-                SizeMax = 0.2f,
-                StartColorMin = new Vector4(1f, 1f, 1f, 1f),
-                StartColorMax = new Vector4(1f, 1f, 1f, 1f),
-                EndColorMin = new Vector4(1f, 1f, 1f, 0f),
-                EndColorMax = new Vector4(0.9f, 0.9f, 0.9f, 0f),
-                SpawnRadius = 70f,
-                EmitterDirection = new Vector3(0, 0, 1),
+                SpeedMin = 3,
+                SpeedMax = 8,
+                LifeMin = 7f,
+                LifeMax = 10f,
+                StartSizeMin = 0.05f,
+                StartSizeMax = 0.1f,
+                EndSizeMin = 0.1f,
+                EndSizeMax = 0.2f,
+                AccelerationStart = new Vector3(0f, 0f, 0f),
+                AccelerationEnd = new Vector3(0f, 0f, 0f),
+                RotationSpeedMin = 0f,
+                RotationSpeedMax = 180f,
+                ColorStart = new Vector4(0.5f, 0.5f, 0.5f, 0.7f),
+                ColorEnd = new Vector4(1f, 1f, 1f, 1f),
+                Center = new Vector3(0f, 0f, 0f),
+                Normal = new Vector3(0f, 1f, 0f),
+                Width = 70f,
+                Height = 70f,
+                Direction = new Vector3(0f, 1f, 0f),
             };
 
-           // spawner.ParticleSystem.Emitter = emitter;
+            var dust = Resources.Load<Texture2D>("Resources/Textures/dust.png");
+            var system = new ParticleSystem(new ParticleMaterial(dust), emitter);
+            system.Max = 500;
+            system.Rate = 70f;
+            system.Space = SimulationSpace.Local;
+            system.Position = new Vector3(0,0,-30);
+            system.Rotation = new Vector3(90,0,0);
+
+            system.Prewarm(50f);
+            AddChild(system);
+           
         }
 
 
@@ -107,10 +118,9 @@ namespace Spacebox.Scenes
 
         public override void Render()
         {
-           
 
             base.Render();
-            spawner.Render();
+ 
         }
 
         public override void OnGUI()
@@ -130,7 +140,6 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
-            spawner.Dispose();
             music.Dispose();
             menu.Dispose();
         }
@@ -139,7 +148,6 @@ namespace Spacebox.Scenes
         {
             base.Update();
             CenteredImageMenu.Update();
-            spawner.Update();
 
             if (Input.IsAnyKeyDown())
             {

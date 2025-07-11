@@ -57,8 +57,6 @@ namespace Spacebox.Scenes
         protected static bool DeathOn = false;
         protected AudioSource ambient;
 
-      
-        protected DustSpawner dustSpawner;
         protected BlockDestructionManager blockDestructionManager;
         protected Animator animator;
         public static Spacer spacer;
@@ -232,9 +230,8 @@ namespace Spacebox.Scenes
 
 
             blockDestructionManager = new BlockDestructionManager(localPlayer);
-            dustSpawner = new DustSpawner(localPlayer);
+            localPlayer.AddChild(DustSpawner.CreateDust());
 
-      
             Debug.RegisterCommand(new ChatCommand());
             Debug.RegisterCommand(new DebugTexturesCommand());
             Debug.RegisterCommand(new TeleportCommand(localPlayer));
@@ -333,7 +330,6 @@ namespace Spacebox.Scenes
 
             //localPlayer.Update();
             blockDestructionManager.Update();
-            dustSpawner.Update();
             MainThreadDispatcher.Instance.ExecutePending();
             world.Update();
 
@@ -442,7 +438,6 @@ namespace Spacebox.Scenes
           
             //spacer.Update();
             Chat.Update();
-            dustSpawner.Update();
             PanelUI.Update();
             animator.Update();
         }
@@ -467,11 +462,7 @@ namespace Spacebox.Scenes
             if (InteractionShoot.lineRenderer != null)
                 InteractionShoot.lineRenderer.Render();
 
-           // localPlayer.Render();
-            var node = this as Node3D;
-            node.Render();
-
-            world.Render(blockMaterial);
+             world.Render(blockMaterial);
             
             blockDestructionManager.Render();
          
@@ -485,7 +476,6 @@ namespace Spacebox.Scenes
             SpheresPool.Render();
 
             PanelUI.DrawItemModel();
-            dustSpawner.Render();
         }
 
         public override void OnGUI()
@@ -526,7 +516,7 @@ namespace Spacebox.Scenes
             blockSelector.Dispose();
             TickTaskManager.Dispose();
      
-            dustSpawner.Dispose();
+         
             PointLightsPool.Instance.Dispose();
             ambient.Dispose();
             Chat.Clear();

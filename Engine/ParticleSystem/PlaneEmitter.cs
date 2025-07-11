@@ -1,4 +1,4 @@
-﻿
+﻿// PlaneEmitter.cs
 using OpenTK.Mathematics;
 
 namespace Engine
@@ -21,15 +21,18 @@ namespace Engine
             var pos = Center + axis1 * u + axis2 * v;
             var vel = Direction.Normalized() * Range(SpeedMin, SpeedMax);
             var life = Range(LifeMin, LifeMax);
-            var sz = Range(SizeMin, SizeMax);
-            var sc = Vector4.Lerp(ColorStart, ColorEnd, NextFloat());
-            var ec = Vector4.Lerp(ColorStart, ColorEnd, NextFloat());
-            return new Particle(pos, vel, life, sc, ec, sz);
+            var startSize = Range(StartSizeMin, StartSizeMax);
+            var endSize = Range(EndSizeMin, EndSizeMax);
+            var p = new Particle(pos, vel, life, ColorStart, ColorEnd, startSize, endSize);
+            p.AccStart = AccelerationStart;
+            p.AccEnd = AccelerationEnd;
+            p.RotationSpeed = Range(RotationSpeedMin, RotationSpeedMax);
+            return p;
         }
 
         public override void Debug()
         {
-            VisualDebug.DrawPlane(Center, Normal,Width, Height, Color4.Cyan);
+            VisualDebug.DrawPlane(Center, Normal, Width, Height, Color4.Cyan);
         }
     }
 }

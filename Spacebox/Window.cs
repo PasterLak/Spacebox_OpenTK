@@ -155,7 +155,7 @@ namespace Spacebox
             shaderpass = sha;
 
             //SceneManager.Load<MenuScene>();
-            SceneManager.Load<ParticleSystemEditor>();
+            SceneManager.Load<MenuScene>();
         }
 
         private static AudioSource screenShotAudio;
