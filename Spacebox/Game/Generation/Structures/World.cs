@@ -129,7 +129,6 @@ namespace Spacebox.Game.Generation
 
             CurrentSector?.Update();
 
-
             if (Input.IsKeyDown(Keys.KeyPad8))
             {
 
@@ -151,8 +150,6 @@ namespace Spacebox.Game.Generation
         {
            
             CurrentSector?.Render(material);
-
-
             DropEffectManager.Render();
             DestructionManager.Render();
 
@@ -169,10 +166,7 @@ namespace Spacebox.Game.Generation
             Vector3 sectorCenter = sectorPosition + new Vector3(Sector.SizeBlocksHalf);
             Vector3 sectorSize = new Vector3(Sector.SizeBlocks, Sector.SizeBlocks, Sector.SizeBlocks);
 
-            BoundingBox sectorBounds = new BoundingBox(sectorCenter, sectorSize);
-
-            worldOctree.Add(newSector, sectorBounds);
-
+            worldOctree.Add(newSector, new BoundingBox(sectorCenter, sectorSize));
 
             return newSector;
         }
@@ -208,9 +202,7 @@ namespace Spacebox.Game.Generation
             {
                 collideInfo = new CollideInfo();
                 return false;
-
             }
-
             return CurrentSector.IsColliding(pos, volume, out collideInfo);
         }
 

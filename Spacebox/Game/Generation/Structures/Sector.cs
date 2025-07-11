@@ -71,7 +71,7 @@ namespace Spacebox.Game.Generation
 
         }
 
-        public void SpawnPlayerRandomInSector(Astronaut player, Random random)
+        public void PlacePlayerRandomInSector(Astronaut player, Random random)
         {
 
             if (TryGetNearestEntity(GetCenter(), out var entity))
@@ -80,7 +80,6 @@ namespace Spacebox.Game.Generation
             }
             else
                 player.Position = GetRandomPositionWithCollisionCheck(random, 0.2f);
-
 
         }
 
@@ -115,7 +114,6 @@ namespace Spacebox.Game.Generation
                 near = IsPointInEntity(pos, out var nearest4);
             }
 
-
             return pos;
         }
 
@@ -130,7 +128,7 @@ namespace Spacebox.Game.Generation
 
             if (Entities.Count == 0) return;
 
-            SpawnPlayerRandomInSector(player, random);
+            PlacePlayerRandomInSector(player, random);
             return;
 
             var asteroidID = random.Next(0, Entities.Count);
