@@ -12,9 +12,10 @@
         {
             Owner = null;
         }
-        //public virtual void Start() { }
+        public virtual void Start() { }
         public virtual void OnUpdate() { }
         public virtual void OnRender() { }
+        public virtual void OnGUI() { }
 
     }
 }

@@ -24,7 +24,9 @@ namespace Engine.SceneManagement
         public abstract void LoadContent();
         public abstract void UnloadContent();
 
-        public virtual void Start() { }
+        public override void Start() {
+            base.Start();
+        }
 
         public virtual void Update()
         {

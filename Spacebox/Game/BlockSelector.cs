@@ -23,14 +23,14 @@ namespace Spacebox.Game
         private Texture2D currentTexture;
 
         private Direction blockDirection = Direction.Up;
-        public BlockSelector() 
+        private Astronaut astronaut;
+        public BlockSelector(Astronaut astronaut) 
         {
             Instance = this;
-           
+            this.astronaut = astronaut;
             selectorTexture = Resources.Load<Texture2D>("Resources/Textures/selector.png");
 
             selectorTexture.FilterMode = FilterMode.Nearest;
-
 
 
             SimpleBlock = new SimpleBlock(new TextureMaterial(selectorTexture), Vector3.Zero);
@@ -117,7 +117,7 @@ namespace Spacebox.Game
         }
 
 
-        public void Render(Astronaut camera)
+        public void Render()
         {
           
             if(!IsVisible) return;
@@ -128,7 +128,7 @@ namespace Spacebox.Game
 
             //GL.Enable(EnableCap.DepthTest);
             //blockModel.Draw(camera);
-            SimpleBlock.Render(camera);
+            SimpleBlock.Render(astronaut);
 
             //GL.Disable(EnableCap.DepthTest);
 

@@ -230,6 +230,7 @@ namespace Spacebox.Game.Generation
 
         public void Render(BlockMaterial material)
         {
+           
             if (!_isLoadedOrGenerated) return;
 
             if (NeedsToRegenerateMesh)
@@ -417,6 +418,7 @@ namespace Spacebox.Game.Generation
             int lod1Threshold = ((int)LOD.L1) * ((int)LOD.L1);
             int lod2Threshold = ((int)LOD.L2) * ((int)LOD.L2);
 
+      
 
             if (distanceSquared <= lod0Threshold)
             {

@@ -18,7 +18,7 @@ namespace Spacebox.Benchmarks
                 .WithLaunchCount(1)
                 .WithWarmupCount(3)
                 .WithIterationCount(15));
-           // AddDiagnoser(MemoryDiagnoser.Default);
+            // AddDiagnoser(MemoryDiagnoser.Default);
         }
     }
 
@@ -30,6 +30,7 @@ namespace Spacebox.Benchmarks
 
         public static IEnumerable<Vector3> NormalVectors => new List<Vector3>
     {
+
         new Vector3(1f, 0f, 0f)
     };
 
@@ -39,20 +40,20 @@ namespace Spacebox.Benchmarks
         [Benchmark]
         public void OldImplementation()
         {
-            
-                var direction = Block.GetDirectionFromNormal(testNormal);
-            
+
+            var direction = Block.GetDirectionFromNormal(testNormal);
+
         }
 
         [Benchmark]
         public void NewImplementation()
         {
-        
-                var direction = Block.GetDirectionFromNormal(testNormal);
-            
+
+            var direction = Block.GetDirectionFromNormal(testNormal);
+
         }
 
     }
 
-    
+
 }

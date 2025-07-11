@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Components;
 using Engine.GUI;
 using Engine.Physics;
 using OpenTK.Mathematics;
@@ -32,7 +33,7 @@ namespace Spacebox.Game.Generation
         public WorldSaveLoader(World world) { this.world = world; }
 
     }
-    public class World : IDisposable, ISpaceStructure
+    public class World : Component, ISpaceStructure
     {
         public static World Instance;
 
@@ -46,12 +47,13 @@ namespace Spacebox.Game.Generation
         public static Sector? CurrentSector { get; private set; }
 
         private readonly Octree<Sector> worldOctree;
+        BlockMaterial material;
 
-
-        public World(Astronaut player)
+        public World(Astronaut player, BlockMaterial material)
         {
             Instance = this;
             Player = player;
+            this.material = material;
 
             worldOctree = new Octree<Sector>(
                 Sector.SizeBlocks * SizeSectors,
@@ -118,8 +120,9 @@ namespace Spacebox.Game.Generation
             CurrentSector = LoadSector(sectorToCheck);
         }
 
-        public void Update()
+        public override void OnUpdate()
         {
+         
             DropEffectManager.Update();
             DestructionManager.Update();
             worldOctree.DrawDebug();
@@ -144,9 +147,9 @@ namespace Spacebox.Game.Generation
 
         }
 
-        public void Render(BlockMaterial material)
+        public override void OnRender()
         {
-
+           
             CurrentSector?.Render(material);
 
 
@@ -211,8 +214,10 @@ namespace Spacebox.Game.Generation
             return CurrentSector.IsColliding(pos, volume, out collideInfo);
         }
 
-        public void Dispose()
+        public override void OnDetached()
         {
+            base.OnDetached();
+     
             Data = null;
             DropEffectManager.Dispose();
             DropEffectManager = null;

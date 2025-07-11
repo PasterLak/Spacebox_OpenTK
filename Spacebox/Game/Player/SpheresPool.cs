@@ -62,6 +62,7 @@ namespace Spacebox.Game.Player
 
         public void Render()
         {
+            return;
             for (int i = 0; i < spheres.Count; i++)
                 spheres[i].Render();
         }

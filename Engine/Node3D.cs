@@ -83,14 +83,34 @@ namespace Engine
             if (Components.Remove(component)) component.OnDetached();
         }
 
+        public virtual void Start()
+        {
+            for (int i = 0; i < Components.Count; i++)
+            {
+                if(Components[i].Enabled)
+               Components[i].Start();
+            }
+
+            for (int i = Children.Count - 1; i >= 0; i--)
+            {
+                Children[i].Start();
+            }
+        }
         public virtual void Destroy()
         {
 
             for (int i = 0; i < Components.Count; i++)
-                Components[i].OnDetached();
-
+            {
+                DetachComponent(Components[i]);
+            }
+               
             for (int i = Children.Count - 1; i >= 0; i--)
-                Children[i].Destroy();           
+            {
+                var child = Children[i];
+                RemoveChild(child);
+                child.Destroy();
+            }
+                  
 
             Parent?.RemoveChild(this);           
         }

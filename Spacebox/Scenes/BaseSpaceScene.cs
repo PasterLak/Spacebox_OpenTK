@@ -1,11 +1,7 @@
 ﻿using Engine;
-using Engine.Animation;
-using Engine.Audio;
 using Engine.GUI;
 using Engine.Light;
-using Engine.Physics;
 using Engine.SceneManagement;
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -17,8 +13,8 @@ using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
-using Client;
 using Spacebox.Game.Player.Interactions;
+using Engine.Components;
 
 namespace Spacebox.Scenes
 {
@@ -41,96 +37,28 @@ namespace Spacebox.Scenes
     }
     public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     {
-       
+
         protected Astronaut localPlayer;
-      
-        protected World world;
- 
-        BlockMaterial blockMaterial;
-        protected string worldName;
-    
+
+        protected BlockMaterial blockMaterial;
+        protected SpaceSceneArgs SceneArgs;
+
         protected BlockSelector blockSelector;
         protected RadarUI radarWindow;
 
-      
-        protected AudioSource Death;
-        protected static bool DeathOn = false;
-        protected AudioSource ambient;
-
         protected BlockDestructionManager blockDestructionManager;
-        protected Animator animator;
-        public static Spacer spacer;
-      
+
         protected PointLight pLight;
         private SpheresPool SpheresPool;
-        private bool isMultiplayer = false;
         private FreeCamera freeCamera;
 
         public void Initialize(SpaceSceneArgs param)
         {
-            if ((this as MultiplayerScene) != null)
-            {
-                isMultiplayer = true;// (worldName/server, modId, seed, modfolder) + ( modfolderName, key, ip, port, nickname)
-            }
+            SceneArgs = param;
+
+            SceneAssetsPreloader.Preload(param, this, localPlayer);
 
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 0), 1);
-
-            //  (worldName, modId, seed, modfolder)
-            
-                worldName = param.worldName;
-                var modFolderName = "";
-                var modId = param.modId;
-                var seedString = param.seed;
-
-                if (isMultiplayer)
-                {
-                    if (ClientNetwork.Instance != null)
-                    {
-                        modFolderName = ClientNetwork.Instance.ReceivedServerInfo.ModFolderName;
-                    }
-                }
-                else
-                {
-                    modFolderName = param.modfolderName;
-                }
-
-                string serverName = "";
-
-                if (isMultiplayer)
-                {
-                    serverName = worldName;
-                }
-
-
-                string modsFolder = ModPath.GetModsPath(isMultiplayer, serverName);
-
-                string blocksPath = ModPath.GetBlocksPath(modsFolder, modFolderName);
-
-                string itemsPath = ModPath.GetItemsPath(modsFolder, modFolderName);
-                string emissionPath = ModPath.GetEmissionsPath(modsFolder, modFolderName);
-
-                if (GameAssets.IsInitialized)
-                {
-                    if (GameAssets.ModId.ToLower() != modId.ToLower())
-                    {
-                        GameAssets.DisposeAll();
-                        InitializeGamesetData(blocksPath, itemsPath, emissionPath, modId, 32, serverName);
-                    }
-                }
-                else
-                {
-                    InitializeGamesetData(blocksPath, itemsPath, emissionPath, modId, 32, serverName);
-                }
-                if (int.TryParse(seedString, out var seed))
-                {
-                    //World.Random = new Random(seed);
-                }
-                else
-                {
-                    // World.Random = new Random();
-                    Debug.Error("Wrong seed format! Seed: " + seedString);
-                }
-            
 
             BlackScreenOverlay.IsEnabled = true;
             BlackScreenOverlay.OnGUI();
@@ -161,35 +89,17 @@ namespace Spacebox.Scenes
             });
         }
 
-
-        private void InitializeGamesetData(string blocksPath, string itemsPath, string emissionPath, string modId, byte blockSizePixels, string serverName)
-        {
-
-            GameAssets.AtlasBlocks = new AtlasTexture();
-            GameAssets.AtlasItems = new AtlasTexture();
-            var texture = GameAssets.AtlasBlocks.CreateTexture(blocksPath, blockSizePixels, false);
-            var items = GameAssets.AtlasItems.CreateTexture(itemsPath, blockSizePixels, false);
-            var emissions = GameAssets.AtlasBlocks.CreateEmission(emissionPath);
-            GameAssets.BlocksTexture = texture;
-            GameAssets.ItemsTexture = items;
-            GameAssets.LightAtlas = emissions;
-           
-            GameSetLoader.Load(modId, isMultiplayer, isMultiplayer ? serverName : "");
-            GameAssets.IsInitialized = true;
-        }
-
         public override void LoadContent()
         {
 
-       
             var texture = new SpaceTexture(512, 512, World.Seed);
 
             var mesh = Resources.Load<Engine.Mesh>("Resources/Models/cube.obj");
-            var skybox = new Skybox(mesh,  texture);
+            var skybox = new Skybox(mesh, texture);
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
-           
+
             Lighting.Skybox = skybox;
-           
+
             radarWindow = new RadarUI(texture);
 
             if (localPlayer == null)
@@ -198,19 +108,17 @@ namespace Spacebox.Scenes
             }
 
             PanelUI.Player = localPlayer;
-          
 
-            World.LoadWorldInfo(worldName);
-            world = new World(localPlayer);
-          
+
+            World.LoadWorldInfo(SceneArgs.worldName);
+            blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.LightAtlas, localPlayer);
+            AttachComponent(new World(localPlayer, blockMaterial));
+
             PlayerSaveLoadManager.LoadPlayer(localPlayer, World.Data.WorldFolderPath);
             //CollisionManager.Add(localPlayer);
 
-            Death = new AudioSource(Resources.Load<AudioClip>("death2"));
-            ambient = new AudioSource(Resources.Load<AudioClip>("Music/spaceBackground"));
-            ambient.IsLooped = true;
-            ambient.Volume = 0.05f;
-            ambient.Play();
+            AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/spaceBackground.ogg")).Audio.Volume = 0.05f;
+
 
             var cameraElement = Overlay.GetElementByType(typeof(CameraElement));
             if (cameraElement != null)
@@ -221,11 +129,10 @@ namespace Spacebox.Scenes
 
             Input.SetCursorState(CursorState.Grabbed);
 
-           
+
 
             localPlayer.GameMode = World.Data.Info.GameMode;
-           
-            blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.LightAtlas, localPlayer);
+
             PointLightsPool.Instance = new PointLightsPool(blockMaterial.Shader, 1);
 
 
@@ -240,7 +147,7 @@ namespace Spacebox.Scenes
             Debug.RegisterCommand(new GameModCommand(localPlayer));
             Debug.RegisterCommand(new SpawnAroundAsteroidCommand(localPlayer));
 
-         
+
             Texture2D slotTex = Resources.Load<Texture2D>("Resources/Textures/slot.png");
             Texture2D selectedSlotTex = Resources.Load<Texture2D>("Resources/Textures/selectedSlot.png");
 
@@ -254,24 +161,28 @@ namespace Spacebox.Scenes
             InventoryUI.Player = localPlayer;
             CreativeWindowUI.SetDefaultIcon(slotTex.Handle, localPlayer);
 
-            blockSelector = new BlockSelector();
+            blockSelector = new BlockSelector(localPlayer);
 
- 
-            spacer = new Spacer(localPlayer.Position + new Vector3(5, 5, 7));
-            AddChild(spacer);
+            AddChild(new Spacer(localPlayer.Position + new Vector3(5, 5, 7)));
             freeCamera = AddChild(new FreeCamera(localPlayer.Position));
             freeCamera.FOV = localPlayer.FOV;
             freeCamera.DepthFar = localPlayer.DepthFar;
             Camera.Main = localPlayer;
-            AddChild(localPlayer);
+           
             WelcomeUI.OnPlayerSpawned(World.Data.Info.ShowWelcomeWindow);
             WelcomeUI.Init();
             PauseUI.Init();
             SpheresPool = new SpheresPool();
+
+
+            var dir = AddChild(new DirectionalLight());
+            
         }
 
         public override void Start()
         {
+            base.Start();
+
             Input.HideCursor();
             BlackScreenOverlay.IsEnabled = false;
 
@@ -281,27 +192,14 @@ namespace Spacebox.Scenes
             };
             CraftingGUI.Init();
 
-         
-            animator = new Animator(spacer);
-            animator.AddAnimation(new MoveAnimation(spacer.Position, spacer.Position + new Vector3(0, 0, 1000), 5000f, false));
-            animator.AddAnimation(new RotateAnimation(Vector3.UnitX, 5f, 0f));
-            animator.AddAnimation(new RotateAnimation(Vector3.UnitY, 5f, 0f));
-
             Debug.OnVisibilityWasChanged += OnDebugStateChanged;
             Window.OnResized += TagManager.OnResized;
 
-       
+
             pLight = PointLightsPool.Instance.Take();
-           /* pLight.Ambient = new Vector3(1, 0, 0);
-            pLight.Position = localPlayer.Position;
-            pLight.Range = 25;
-            pLight.Ambient = new Color3Byte(100, 116, 255).ToVector3();
-            pLight.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
-            pLight.Specular = new Color3Byte(100, 116, 255).ToVector3();
-          */
             pLight.Enabled = false;
 
-            Chat.Write("Welcome to Spacebox!",Color4.Yellow); 
+            Chat.Write("Welcome to Spacebox!", Color4.Yellow);
 
         }
 
@@ -316,7 +214,7 @@ namespace Spacebox.Scenes
             ToggleManager.SetState("inventory", false);
             Input.MoveCursorToCenter();
 
-            if(Chat.IsVisible)
+            if (Chat.IsVisible)
             {
                 Chat.IsVisible = false;
             }
@@ -328,13 +226,9 @@ namespace Spacebox.Scenes
 
             base.Update();
 
-            //localPlayer.Update();
             blockDestructionManager.Update();
             MainThreadDispatcher.Instance.ExecutePending();
-            world.Update();
 
-        
-           
             if (Input.IsKeyDown(Keys.R))
             {
                 RenderSpace.SwitchSpace();
@@ -354,47 +248,19 @@ namespace Spacebox.Scenes
             }
 
 
-            if (Camera.Main.Frustum.IsInFrustum(spacer.OBB.Volume))
-            {
-              
-                  //  Debug.Log("yes visible " + spacer.OBB.Volume);
-            }
-            else
-            {
-             
-                 //   Debug.Log("no visible" + spacer.OBB.Volume);
-            }
-
-            if (Input.IsKeyDown(Keys.K))
-            {
-                /*
-                var l = PointLightsPool.Instance.Take();
-                l.IsActive = true;
-                l.Position = localPlayer.Position;
-                l.Range = 20;
-                l.Ambient = new Color3Byte(100, 116, 255).ToVector3();
-                l.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
-                l.Specular = new Color3Byte(0, 0, 0).ToVector3();
-              */
-            }
-
             if (Input.IsKeyDown(Keys.Escape))
             {
                 if (Chat.IsVisible && Chat.FocusInput)
                 {
-                 
-                    
                     return;
                 }
 
-               
                 int opened = ToggleManager.OpenedWindowsCount;
 
                 ToggleManager.DisableAllWindows();
 
                 if (opened > 0)
                 {
-                   // Debug.Log("Opened!");
                     ToggleManager.SetState("inventory", false);
                     ToggleManager.SetState("mouse", false);
                     ToggleManager.SetState("player", true);
@@ -423,36 +289,22 @@ namespace Spacebox.Scenes
                 {
                     Settings.ShowInterface = !Settings.ShowInterface;
                 }
-              
+
             }
 
-            if (DeathOn)
-            {
-                if (!Death.IsPlaying)
-                {
-                    Window.Instance.Quit();
-                }
-            }
-
-
-          
-            //spacer.Update();
             Chat.Update();
             PanelUI.Update();
-            animator.Update();
         }
 
         public Action OnRenderCenter;
         public override void Render()
         {
-           base.Render();
+            base.Render();
             DisposalManager.ProcessDisposals();
 
-            //skybox.DrawTransparent(localPlayer);
-           
             PointLightsPool.Instance.Render();
 
-         
+
             if (InteractionShoot.ProjectilesPool != null)
                 InteractionShoot.ProjectilesPool.Render();
 
@@ -462,16 +314,14 @@ namespace Spacebox.Scenes
             if (InteractionShoot.lineRenderer != null)
                 InteractionShoot.lineRenderer.Render();
 
-             world.Render(blockMaterial);
-            
             blockDestructionManager.Render();
-         
+
             OnRenderCenter?.Invoke();
             if (InteractionDestroyBlockSurvival.BlockMiningEffect != null)
                 InteractionDestroyBlockSurvival.BlockMiningEffect.Render();
 
-         
-            //blockSelector.Render(localPlayer);
+
+            blockSelector.Render();
 
             SpheresPool.Render();
 
@@ -482,7 +332,7 @@ namespace Spacebox.Scenes
         {
             HealthColorOverlay.OnGUI();
             CenteredText.OnGUI();
-           
+
             radarWindow.OnGUI();
             ResourceProcessingGUI.OnGUI();
             CraftingGUI.OnGUI();
@@ -501,7 +351,7 @@ namespace Spacebox.Scenes
                 WorldTextDebug.OnGUI();
             }
 
-            TagManager.DrawTags( Window.Instance.Size.X, Window.Instance.Size.Y);
+            TagManager.DrawTags(Window.Instance.Size.X, Window.Instance.Size.Y);
             BlackScreenOverlay.OnGUI();
             CenteredText.Hide();
 
@@ -509,26 +359,21 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
-            localPlayer = null;
             PanelUI.Player = null;
-            spacer = null;
-            
+
             blockSelector.Dispose();
             TickTaskManager.Dispose();
-     
-         
+
             PointLightsPool.Instance.Dispose();
-            ambient.Dispose();
             Chat.Clear();
             if (InteractionShoot.ProjectilesPool != null)
                 InteractionShoot.ProjectilesPool.Dispose();
-
             ToggleManager.DisableAllWindows();
             blockDestructionManager.Dispose();
-            World.DropEffectManager.Dispose();
+
             TagManager.ClearTags();
             Window.OnResized -= TagManager.OnResized;
-            world.Dispose();
+
             ToggleManager.Dispose();
             Debug.OnVisibilityWasChanged -= OnDebugStateChanged;
             SpheresPool.Dispose();
@@ -536,6 +381,6 @@ namespace Spacebox.Scenes
             InteractionDestroyBlockSurvival.BlockMiningEffect = null;
         }
 
-        
+
     }
 }

@@ -49,6 +49,7 @@ namespace Spacebox.Game.Effects
 
         public void Render()
         {
+           
             foreach (var effect in activeEffects)
             {
                 effect.Render();

@@ -35,45 +35,25 @@ namespace Spacebox.Game.Effects
             //dustTexture = new Texture2D("Resources/Textures/blockDust.png", true);
             dustTexture = texture;
 
-            particleSystem = new ParticleSystem(new ParticleMaterial(dustTexture) ,new SphereEmitter());
-
-            /*particleSystem = new ParticleSystem(dustTexture, shader)
+            var emitter = new SphereEmitter()
             {
-                Position = position,
-                UseLocalCoordinates = false,
-                EmitterPositionOffset = Vector3.Zero,
-                //EmitterDirection = new Vector3(0, 1, 0), 
-                Max = 30,
-                Rate = 1000f
-            };*/
+                LifeMin = 1f,
+                LifeMax = 2f,
+                StartSizeMin = 0.02f,
+                StartSizeMax = 0.2f,
+                ColorStart = new Vector4(1f, 1f, 1f, 1f),
 
-            //particleSystem.Renderer = new ParticleRenderer(texture, particleSystem, shader);
+                ColorEnd = new Vector4(0.8f, 0.5f, 0.5f, 0f),
 
-            var emitter = new EmitterOld(particleSystem)
-            {
-                LifetimeMin = 1f,
-                LifetimeMax = 2f,
-                SizeMin = 0.02f,
-                SizeMax = 0.2f,
-                StartColorMin = new Vector4(1f, 1f, 1f, 1f),
-                StartColorMax = new Vector4(1f, 1f, 1f, 1f),
-                EndColorMin = new Vector4(0.8f, 0.5f, 0.5f, 0f),
-                EndColorMax = new Vector4(1f, 1f, 0.5f, 0f),
-                SpawnRadius = 0.4f,
+                Radius = 0.4f,
                 SpeedMin = 0.005f,
                 SpeedMax = 0.1f,
-                EmitterDirection = Vector3.UnitY,
-
-                EnableRandomDirection = true,
-                RandomUVRotation = true,
+                //Dire = Vector3.UnitY,
             };
 
-           // particleSystem.Emitter = emitter;
-           // particleSystem.UseLocalCoordinates = true;
-            //particleShader = new Shader("Shaders/particleShader");
-            particleShader = shader;
-            //particleShader.Use();
-            //particleShader.SetInt("particleTexture", 0);
+            particleSystem = new ParticleSystem(new ParticleMaterial(dustTexture) ,new SphereEmitter());
+            particleSystem.Space = SimulationSpace.Local;
+
         }
 
         public void Update()

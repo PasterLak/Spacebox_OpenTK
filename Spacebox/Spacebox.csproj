@@ -35,9 +35,11 @@
 
 	<ItemGroup>
 	  <None Remove="gamesets\default\crafting.json" />
+	  <None Remove="gamesets\default\generation.json" />
 	  <None Remove="gamesets\default\projectiles.json" />
 	  <None Remove="gamesets\default\recipes.json" />
 	  <None Remove="GameSets\Default\UI\settings.json" />
+	  <None Remove="gamesets\loots.json" />
 	  <None Remove="shaders\atmosphere.glsl" />
 	  <None Remove="Shaders\basic.vs" />
 	  <None Remove="shaders\colorReplace.glsl" />

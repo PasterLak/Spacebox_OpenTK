@@ -56,7 +56,7 @@ namespace Spacebox.Tests.Generation
             {
                 Position = new Vector3(0, 0, 0)
             };
-            var world = new World(player);
+            var world = new World(player, null);
 
             var sectorIndices = new[]
             {
@@ -92,7 +92,7 @@ namespace Spacebox.Tests.Generation
             {
                 Position = new Vector3(10f, 20f, 30f)
             };
-            var world = new World(player);
+            var world = new World(player, null);
 
             var testCases = new[]
             {

@@ -16,12 +16,13 @@ namespace Spacebox.Benchmarks
             Console.WriteLine("Tests...");
           
 
-            long before = GC.GetTotalMemory(true);
+           /* long before = GC.GetTotalMemory(true);
             var block = new Spacebox.Game.Generation.Block2();
             long after = GC.GetTotalMemory(true);
 
-            Console.WriteLine($"Size of Block: {after - before} bytes");
-            var summary = BenchmarkRunner.Run<BlockBenchmark>();
+            Console.WriteLine($"Size of Block: {after - before} bytes");*/
+            Console.WriteLine($"--------------------------------------------");
+            var summary = BenchmarkRunner.Run<InternalCavitiesBenchmark>();
         }
 
         

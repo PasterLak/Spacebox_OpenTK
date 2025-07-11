@@ -44,6 +44,7 @@ namespace Spacebox.Game.Effects
             };
 
             var dust = Resources.Load<Texture2D>("Resources/Textures/dust.png");
+            dust.FilterMode = FilterMode.Nearest; 
             var system = new ParticleSystem(new ParticleMaterial(dust), emitter);
 
             system.Max = 350;

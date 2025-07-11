@@ -13,6 +13,7 @@ using Engine.SceneManagement;
 using Engine.UI;
 using Engine.Light;
 using Spacebox.GUI;
+using Engine.Components;
 
 
 namespace Spacebox.Scenes
@@ -20,7 +21,6 @@ namespace Spacebox.Scenes
     public class MenuScene : Scene
     {
 
-        private AudioSource music;
         private GameMenu menu;
 
         private Canvas canvas;
@@ -54,12 +54,8 @@ namespace Spacebox.Scenes
             
             SetDustSpawner();
 
-            var clip = Resources.Load<AudioClip>("Resources/Audio/Music/music.ogg");
+            AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/music.ogg"));
 
-            music = new AudioSource(clip);
-            music.IsLooped = true;
-
-            music.Play();
            
             InputManager.AddAction("inputOverlay", Keys.F6);
             InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
@@ -108,6 +104,7 @@ namespace Spacebox.Scenes
 
         public override void Start()
         {
+            base.Start();
             CenteredImageMenu.ShowText = true;
             GameMenu.IsVisible = false;
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
@@ -140,7 +137,6 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
-            music.Dispose();
             menu.Dispose();
         }
 

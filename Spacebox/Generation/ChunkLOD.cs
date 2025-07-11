@@ -1,7 +1,7 @@
-﻿
-using Engine;
+﻿using Engine;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Generation;
 
 
 
@@ -39,7 +39,7 @@ namespace Spacebox.Game.Generation
             {
                 bool[,,] lodData = (downscale > 1) ? CreateDownscaledData(fullData, downscale) : fullData;
 
-                RemoveInternalCavities(ref lodData);
+                InternalCavitiesBits.FillInternalCavities(ref lodData);
                 return GenerateGreedyMesh(lodData, downscale, customUV);
             });
         }
@@ -272,56 +272,7 @@ namespace Spacebox.Game.Generation
             verts.Add(1f); verts.Add(0f);
         }
 
-        public static void RemoveInternalCavities(ref bool[,,] data)
-        {
-            int sx = data.GetLength(0), sy = data.GetLength(1), sz = data.GetLength(2);
-            bool[,,] mask = new bool[sx + 2, sy + 2, sz + 2];
-            for (int x = 0; x < sx; x++)
-                for (int y = 0; y < sy; y++)
-                    for (int z = 0; z < sz; z++)
-                        mask[x + 1, y + 1, z + 1] = data[x, y, z];
-            int px = sx + 2, py = sy + 2, pz = sz + 2;
-            Queue<(int, int, int)> queue = new Queue<(int, int, int)>();
-            for (int x = 0; x < px; x++)
-                for (int y = 0; y < py; y++)
-                {
-                    if (!mask[x, y, 0]) { mask[x, y, 0] = true; queue.Enqueue((x, y, 0)); }
-                    if (!mask[x, y, pz - 1]) { mask[x, y, pz - 1] = true; queue.Enqueue((x, y, pz - 1)); }
-                }
-            for (int x = 0; x < px; x++)
-                for (int z = 0; z < pz; z++)
-                {
-                    if (!mask[x, 0, z]) { mask[x, 0, z] = true; queue.Enqueue((x, 0, z)); }
-                    if (!mask[x, py - 1, z]) { mask[x, py - 1, z] = true; queue.Enqueue((x, py - 1, z)); }
-                }
-            for (int y = 0; y < py; y++)
-                for (int z = 0; z < pz; z++)
-                {
-                    if (!mask[0, y, z]) { mask[0, y, z] = true; queue.Enqueue((0, y, z)); }
-                    if (!mask[px - 1, y, z]) { mask[px - 1, y, z] = true; queue.Enqueue((px - 1, y, z)); }
-                }
-            int[] dx = { 1, -1, 0, 0, 0, 0 };
-            int[] dy = { 0, 0, 1, -1, 0, 0 };
-            int[] dz = { 0, 0, 0, 0, 1, -1 };
-            while (queue.Count > 0)
-            {
-                var (cx, cy, cz) = queue.Dequeue();
-                for (int i = 0; i < 6; i++)
-                {
-                    int nx = cx + dx[i], ny = cy + dy[i], nz = cz + dz[i];
-                    if (nx >= 0 && nx < px && ny >= 0 && ny < py && nz >= 0 && nz < pz && !mask[nx, ny, nz])
-                    {
-                        mask[nx, ny, nz] = true;
-                        queue.Enqueue((nx, ny, nz));
-                    }
-                }
-            }
-            for (int x = 0; x < sx; x++)
-                for (int y = 0; y < sy; y++)
-                    for (int z = 0; z < sz; z++)
-                        if (!mask[x + 1, y + 1, z + 1])
-                            data[x, y, z] = true;
-        }
+        
 
     }
 }

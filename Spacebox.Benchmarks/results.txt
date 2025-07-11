@@ -1,0 +1,9 @@
+
+InternalCavitiesBenchmark
+
+| Method         | Mean     | Error   | StdDev  | Gen0    | Gen1    | Gen2    | Allocated |
+|--------------- |---------:|--------:|--------:|--------:|--------:|--------:|----------:|
+| UnityVersion   | 735.6 us | 2.60 us | 2.31 us | 41.0156 | 41.0156 | 41.0156 | 326.89 KB |
+| BitwiseVersion | 290.8 us | 1.74 us | 1.55 us |  3.4180 |       - |       - |  44.16 KB |
+
+~61 % faster, 7 times less memory used
