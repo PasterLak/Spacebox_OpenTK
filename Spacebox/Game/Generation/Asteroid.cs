@@ -1,14 +1,17 @@
 ﻿using OpenTK.Mathematics;
 using Engine;
+using Engine.Utils;
 
 namespace Spacebox.Game.Generation
 {
     public abstract class Asteroid : SpaceEntity
     {
         public const int ChunkSize = Chunk.Size;
-
-        public Asteroid(int id, Vector3 positionWorld, Sector sector)
-            : base(id, positionWorld, sector) { }
+        protected readonly int Seed;
+        public Asteroid(ulong id, Vector3 positionWorld, Sector sector)
+            : base(id, positionWorld, sector) {
+            Seed = SeedHelper.ToIntSeed(id);
+        }
 
         public virtual void OnGenerate() { }
 

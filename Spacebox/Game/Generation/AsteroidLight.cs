@@ -1,15 +1,15 @@
 ﻿using OpenTK.Mathematics;
 using Engine;
+using Spacebox.Generation;
+
 
 namespace Spacebox.Game.Generation
 {
-
     public class AsteroidLight : Asteroid
     {
         public const int ChunkCount = 1;
 
-
-        public AsteroidLight(int id, Vector3 positionWorld, Sector sector)
+        public AsteroidLight(ulong id, Vector3 positionWorld, Sector sector)
             : base(id, positionWorld, sector) { }
 
         public override void OnGenerate()
@@ -21,10 +21,14 @@ namespace Spacebox.Game.Generation
                         var idx = new Vector3SByte((sbyte)x, (sbyte)y, (sbyte)z);
                         var chunk = new Chunk(idx, this, true);
                         FillChunkNoise(chunk);
+                        WriteChunkData(chunk);
                         AddChunk(chunk, false);
                     }
             IsGenerated = true;
         }
+
+        private int[,,] _voxelData;
+        private int _gridSize;
 
         public override void FillChunkNoise(Chunk chunk)
         {
@@ -32,41 +36,46 @@ namespace Spacebox.Game.Generation
             var generator = new AsteroidVoxelDataGenerator(
                 asteroidDiameter: diameter,
                 blockSize: 1f,
-                threshold: 90,
-                noiseOctaves: 4,
-                noiseScale: 0.03f,
-                seed: World.Seed,
+                threshold: 33,
+                noiseOctaves: 3,
+                noiseScale: 1f,
+                seed: Seed,
                 type: AsteroidType.Light
             );
             generator.GenerateData();
-            var data = generator.voxelData;
-            int size = generator.gridSize;
+            _voxelData = generator.voxelData;
+            _gridSize = generator.gridSize;
 
-            int offsetX = chunk.PositionIndex.X * ChunkSize - size / 2;
-            int offsetY = chunk.PositionIndex.Y * ChunkSize - size / 2;
-            int offsetZ = chunk.PositionIndex.Z * ChunkSize - size / 2;
+            var oreParams = new AsteroidOreGeneratorParameters(
+                outerOreVeinChance: 0.03f, outerOreMaxVeinSize: 8, outerOreIds: new[] { 4,5,6,7 },
+                middleOreVeinChance: 0.03f, middleOreMaxVeinSize: 6, middleOreIds: new[] { 8,9,11,13 },
+                deepOreVeinChance: 0.0f, deepOreMaxVeinSize: 0, deepOreIds: System.Array.Empty<int>(),
+                oreSeed: Seed
+            );
+            var oreGen = new AsteroidOreGenerator(oreParams);
+            oreGen.ApplyOres(ref _voxelData, Spacebox.Generation.AsteroidType.Light);
+        }
+
+        private void WriteChunkData(Chunk chunk)
+        {
+            int half = _gridSize / 2;
+            int ox = chunk.PositionIndex.X * ChunkSize - half;
+            int oy = chunk.PositionIndex.Y * ChunkSize - half;
+            int oz = chunk.PositionIndex.Z * ChunkSize - half;
 
             for (int x = 0; x < Chunk.Size; x++)
                 for (int y = 0; y < Chunk.Size; y++)
                     for (int z = 0; z < Chunk.Size; z++)
                     {
-                        int dataX = x + offsetX;
-                        int dataY = y + offsetY;
-                        int dataZ = z + offsetZ;
-                        if (dataX < 0 || dataY < 0 || dataZ < 0 || dataX >= size || dataY >= size || dataZ >= size)
-                        {
+                        int gx = x , gy = y , gz = z ;
+                        if (gx < 0 || gy < 0 || gz < 0 || gx >= _gridSize || gy >= _gridSize || gz >= _gridSize)
                             chunk.Blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
-                        }
                         else
                         {
-                            int blockId = data[dataX, dataY, dataZ];
-                            chunk.Blocks[x, y, z] = GameAssets.CreateBlockFromId((short)blockId);
+                            int id = _voxelData[gx, gy, gz];
+                            chunk.Blocks[x, y, z] = GameAssets.CreateBlockFromId((short)id);
                         }
                     }
         }
     }
-
-
-
-
 }

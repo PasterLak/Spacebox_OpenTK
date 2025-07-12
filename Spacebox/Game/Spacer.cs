@@ -48,12 +48,12 @@ namespace Spacebox.Game
             animator.AddAnimation(new RotateAnimation(Vector3.UnitY, 5f, 0f));
 
             AddItems(Storage);
-/*
-            var mo = AddChild(new ItemWorldModel("Resources/Textures/Old/drill6.png", 0.1f));
+
+            /*var mo = AddChild(new ItemWorldModel("Resources/Textures/Old/drill6.png", 0.1f));
             mo.Rotate(new Vector3(0,90,0));
             mo.SetScale(0.5f);
-            mo.Position = new Vector3(0.3f,-0.2f,-0.2f);
-*/
+            mo.Position = new Vector3(0.3f,-0.2f,-0.2f);*/
+
 
         }
 
@@ -87,7 +87,7 @@ namespace Spacebox.Game
         {
             base.Update();
           
-            animator.Update();
+            animator?.Update();
 
             var cam = Camera.Main as Astronaut;
 

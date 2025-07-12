@@ -63,7 +63,7 @@ namespace Spacebox.Game.Generation.Tools
 
 
 
-            SpaceEntity spaceEntity = new SpaceEntity(id, new Vector3(x, y, z), sector);
+            SpaceEntity spaceEntity = new SpaceEntity((ulong)id, new Vector3(x, y, z), sector);
             spaceEntity.Name = name;
 
 
@@ -133,7 +133,7 @@ namespace Spacebox.Game.Generation.Tools
             var root = new CompoundTag(entity.GetType().Name);
 
 
-            root.Add(new IntTag("id", entity.EntityID));
+            root.Add(new IntTag("id", (int)entity.EntityID)); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!   should be ulong
             root.Add(new StringTag("name", entity.Name));
 
             root.Add(new FloatTag("worldX", entity.PositionWorld.X));

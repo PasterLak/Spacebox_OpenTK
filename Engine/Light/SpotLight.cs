@@ -17,8 +17,11 @@ namespace Engine.Light
             set => _direction = value;
         }
         public bool GetDirectionFromNode = false;
-        public float CutOff { get; set; } = MathF.Cos(MathHelper.DegreesToRadians(12.5f));
-        public float OuterCutOff { get; set; } = MathF.Cos(MathHelper.DegreesToRadians(17.5f));
+
+        private float _cutOff = MathF.Cos(MathHelper.DegreesToRadians(12.5f));
+        private float _outerCutOff = MathF.Cos(MathHelper.DegreesToRadians(17.5f));
+        public float CutOff { get => _cutOff; set => MathF.Cos(MathHelper.DegreesToRadians(value)); }
+        public float OuterCutOff { get => _outerCutOff; set => MathF.Cos(MathHelper.DegreesToRadians(value)); }
 
         public float Constant { get; set; } = 1.0f;
         public float Linear { get; set; } = 0.09f;

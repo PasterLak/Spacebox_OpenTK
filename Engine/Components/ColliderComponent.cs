@@ -16,6 +16,8 @@ namespace Engine.Components
         {
             base.OnAttached(owner);
 
+            if(owner is Camera) { DebugCollision = false; }
+            
             Recalculate();
             
         }

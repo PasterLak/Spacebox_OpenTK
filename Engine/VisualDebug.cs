@@ -378,7 +378,7 @@ namespace Engine
 
         public static void Render()
         {
-            
+         
             if (!Enabled) return;
             if (_points.Count == 0 && _lines.Count == 0 && _triangles.Count == 0) return;
 

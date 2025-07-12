@@ -86,6 +86,7 @@ namespace Spacebox.Game.Generation
                         {
                             voxelData[ix, iy, iz] = 0;
                         }
+                      
                     }
                 }
             }

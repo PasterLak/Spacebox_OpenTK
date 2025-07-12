@@ -12,6 +12,7 @@ using System.Xml.Linq;
 using Engine.Components;
 using Engine.Utils;
 using Spacebox.Game.Player.Interactions;
+using Engine.Light;
 
 
 namespace Spacebox.Game.Player
@@ -112,7 +113,15 @@ namespace Spacebox.Game.Player
             itemInHand.Rotate(new Vector3(10, 90, -10));
             itemInHand.SetScale(0.6f);
             itemInHand.Position = new Vector3(0.35f, -0.47f, -0.25f);
-           
+
+            Flashlight.CutOff = 15;
+            Flashlight.OuterCutOff = 20;
+            var point = AddChild(new PointLight());
+            point.Position = new Vector3(0, 0, -0.5f);
+            point.Diffuse = new Vector3(56, 204, 209);
+            point.Intensity = 0.25f;
+            point.Range = 5;
+
         }
 
         public void ResetMousePosition()

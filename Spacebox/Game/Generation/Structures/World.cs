@@ -59,7 +59,6 @@ namespace Spacebox.Game.Generation
                 Sector.SizeBlocks * SizeSectors,
                 Vector3.Zero, Sector.SizeBlocks, 1.0f);
 
-            Load();
 
             DropEffectManager = new DropEffectManager(player);
             DestructionManager = new BlockDestructionManager(player);

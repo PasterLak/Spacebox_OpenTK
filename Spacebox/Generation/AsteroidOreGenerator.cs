@@ -1,14 +1,15 @@
 ﻿using OpenTK.Mathematics;
 
-public enum AsteroidType
-{
-    Light,
-    Medium,
-    Heavy
-}
+
 
 namespace Spacebox.Generation
 {
+    public enum AsteroidType
+    {
+        Light,
+        Medium,
+        Heavy
+    }
     public struct AsteroidOreGeneratorParameters
     {
         public float OuterOreVeinChance;
@@ -68,7 +69,7 @@ namespace Spacebox.Generation
             rng = new Random(parameters.OreSeed);
         }
 
-        public void ApplyOres(int[,,] voxelData, AsteroidType asteroidType)
+        public void ApplyOres(ref int[,,] voxelData, AsteroidType asteroidType)
         {
             int gridSize = voxelData.GetLength(0);
             for (int x = 0; x < gridSize; x++)
@@ -81,24 +82,24 @@ namespace Spacebox.Generation
                         if (blockId == 1)
                         {
                             if (rng.NextDouble() < parameters.OuterOreVeinChance)
-                                StartOreVein(voxelData, x, y, z, 1, parameters.OuterOreIds, parameters.OuterOreMaxVeinSize);
+                                StartOreVein(ref voxelData, x, y, z, 1, parameters.OuterOreIds, parameters.OuterOreMaxVeinSize);
                         }
                         else if (blockId == 2)
                         {
                             if (rng.NextDouble() < parameters.MiddleOreVeinChance)
-                                StartOreVein(voxelData, x, y, z, 2, parameters.MiddleOreIds, parameters.MiddleOreMaxVeinSize);
+                                StartOreVein(ref voxelData, x, y, z, 2, parameters.MiddleOreIds, parameters.MiddleOreMaxVeinSize);
                         }
                         else if (blockId == 3 && asteroidType != AsteroidType.Light)
                         {
                             if (rng.NextDouble() < parameters.DeepOreVeinChance)
-                                StartOreVein(voxelData, x, y, z, 3, parameters.DeepOreIds, parameters.DeepOreMaxVeinSize);
+                                StartOreVein(ref voxelData, x, y, z, 3, parameters.DeepOreIds, parameters.DeepOreMaxVeinSize);
                         }
                     }
                 }
             }
         }
 
-        private void StartOreVein(int[,,] voxelData, int startX, int startY, int startZ, int targetLayerId, int[] allowedOreIds, int maxVeinSize)
+        private void StartOreVein(ref int[,,] voxelData, int startX, int startY, int startZ, int targetLayerId, int[] allowedOreIds, int maxVeinSize)
         {
             int gridSize = voxelData.GetLength(0);
             Queue<Vector3i> queue = new Queue<Vector3i>();
@@ -128,6 +129,14 @@ namespace Spacebox.Generation
                     }
                 }
             }
+            int oreId = allowedOreIds[rng.Next( allowedOreIds.Length)];
+
+            if (veinBlocks.Count <= 1)
+            {
+                var single = veinBlocks[0];
+                voxelData[single.X, single.Y, single.Z] = oreId;
+                return;
+            }
 
             for (int i = 0; i < veinBlocks.Count; i++)
             {
@@ -149,7 +158,7 @@ namespace Spacebox.Generation
                 }
                 if (!skip)
                 {
-                    int oreId = allowedOreIds[rng.Next(0, allowedOreIds.Length)];
+                 
                     voxelData[pos.X, pos.Y, pos.Z] = oreId;
                 }
             }

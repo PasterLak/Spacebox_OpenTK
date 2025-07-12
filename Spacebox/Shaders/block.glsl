@@ -77,7 +77,8 @@ void main()
     vec3 V = normalize(CAMERA_POS - vPos);
     vec3 base = baseTex.rgb;
 
-    vec3 light = accumulateDirLights(N,V,base) +
+    vec3 light = 
+    //accumulateDirLights(N,V,base) +
                  accumulatePointLights(N,V,vPos,base) +
                  accumulateSpotLights(N,V,vPos,base);
 

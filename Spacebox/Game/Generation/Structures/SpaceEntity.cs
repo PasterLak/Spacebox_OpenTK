@@ -1,7 +1,6 @@
 ﻿using OpenTK.Mathematics;
 
 using Engine.Physics;
-using OpenTK.Graphics.OpenGL4;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Effects;
@@ -14,12 +13,12 @@ namespace Spacebox.Game.Generation
 {
     public class SpaceEntity : SpatialCell, IDisposable, ISpaceStructure
     {
-        public const byte SizeChunks = 4; // will be 16
+        public const byte SizeChunks = 16; // will be 16
         public const byte SizeChunksHalf = SizeChunks / 2;
         public const short SizeBlocks = SizeChunks * Chunk.Size;
         public const short SizeBlocksHalf = SizeChunks * Chunk.Size / 2;
 
-        public int EntityID { get; private set; } = 0;
+        public readonly ulong EntityID;
         public ulong Mass { get; set; } = 0;
 
         public Octree<Chunk> Octree { get; private set; } // local coords
@@ -44,7 +43,7 @@ namespace Spacebox.Game.Generation
         public StarsEffect StarsEffect { get; private set; }
 
 
-        public SpaceEntity(int id, Vector3 positionWorld, Sector sector)
+        public SpaceEntity(ulong id, Vector3 positionWorld, Sector sector)
         {
             EntityID = id;
             Position = positionWorld;
@@ -59,7 +58,7 @@ namespace Spacebox.Game.Generation
             ElectricManager = new ElectricNetworkManager();
 
             // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
-            tag = CreateTag(GeometryBoundingBox.Center);
+            tag = CreateTag(positionWorld);
             CreateStar();
         }
 
@@ -77,7 +76,7 @@ namespace Spacebox.Game.Generation
 
 
             // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
-            tag = CreateTag(GeometryBoundingBox.Center);
+            tag = CreateTag(positionWorld);
             CreateStar();
         }
         private void CreateStar()
@@ -445,7 +444,7 @@ namespace Spacebox.Game.Generation
                 {
 
                     bool isAsteroid = this as Asteroid != null;
-                    tag.Text = $" {EntityID} {Name} isAsteroid: {isAsteroid}\n" +
+                    tag.Text = $"{Name}{EntityID} isAsteroid: {isAsteroid}\n" +
                         $"Wpos: {Block.RoundVector3(PositionWorld)}\n" +
                         $"{dis} m\n" +
                            $"{_entityMassString} tn, gR: {(int)GravityRadius} m";
@@ -543,7 +542,7 @@ namespace Spacebox.Game.Generation
 
         public void RenderEffect(float disSqr)
         {
-
+            return;
             var disMin = 300f * 300f;
             var disMax = 3000f * 3000f;
 
@@ -595,7 +594,7 @@ namespace Spacebox.Game.Generation
 
 
             chunks.Clear();
-            Octree.FindDataInRadius(WorldPositionToLocal(camera.Position), 512, chunks);
+            Octree.FindDataInRadius(WorldPositionToLocal(camera.Position), 1000, chunks);
 
             foreach (var chunk in chunks)
             {

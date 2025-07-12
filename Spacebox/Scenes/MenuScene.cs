@@ -160,8 +160,8 @@ namespace Spacebox.Scenes
 
             if (Input.IsKeyDown(Keys.P))
             {
-                BlackScreenOverlay.IsEnabled = true;
-                SceneManager.Load<ParticleSystemEditor>();
+               // BlackScreenOverlay.IsEnabled = true;
+                //SceneManager.Load<ParticleSystemEditor>();
             }
 
         }

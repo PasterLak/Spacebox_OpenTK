@@ -1,13 +1,14 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Game.Generation;
 
 namespace Engine.Generation
 {
     public struct GeneratorSettings
     {
-        public Vector3 SectorSize;
+     
         public int Count;
         public int RejectionSamples;
-        public uint Seed;
+        public int Seed;
 
     }
 
@@ -20,16 +21,17 @@ namespace Engine.Generation
     {
         public List<Vector3> Generate(in GeneratorSettings settings)
         {
+            var size = new Vector3(Sector.SizeBlocks);
             var rng = new Random((int)settings.Seed);
             var points = new List<Vector3>(settings.Count);
-            points.Add(RandomPoint(rng, settings.SectorSize));
+            points.Add(RandomPoint(rng, size));
             while (points.Count < settings.Count)
             {
                 Vector3 best = default;
                 float bestDist = -1f;
                 for (int i = 0; i < settings.RejectionSamples; i++)
                 {
-                    var cand = RandomPoint(rng, settings.SectorSize);
+                    var cand = RandomPoint(rng, size);
                     float dmin = float.MaxValue;
                     foreach (var p in points)
                     {
@@ -67,19 +69,20 @@ namespace Engine.Generation
         }
         public List<Vector3> Generate(in GeneratorSettings settings)
         {
+            var size = new Vector3(Sector.SizeBlocks);
             var rng = new Random((int)settings.Seed);
             var points = new List<Vector3>();
             float minDist = radius;
             float minDist2 = minDist * minDist;
-            // первая точка
-            points.Add(RandomPoint(rng, settings.SectorSize));
-            // остальные
+   
+            points.Add(RandomPoint(rng, size));
+    
             while (points.Count < settings.Count)
             {
                 bool placed = false;
                 for (int i = 0; i < settings.RejectionSamples; i++)
                 {
-                    var cand = RandomPoint(rng, settings.SectorSize);
+                    var cand = RandomPoint(rng, size);
                     bool ok = true;
                     foreach (var p in points)
                     {

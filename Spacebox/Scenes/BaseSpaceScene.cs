@@ -112,8 +112,8 @@ namespace Spacebox.Scenes
 
             World.LoadWorldInfo(SceneArgs.worldName);
             blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.LightAtlas, localPlayer);
-            AttachComponent(new World(localPlayer, blockMaterial));
-
+            var world = AttachComponent(new World(localPlayer, blockMaterial));
+            world.Load();
             PlayerSaveLoadManager.LoadPlayer(localPlayer, World.Data.WorldFolderPath);
             //CollisionManager.Add(localPlayer);
 
@@ -175,8 +175,7 @@ namespace Spacebox.Scenes
             SpheresPool = new SpheresPool();
 
 
-            var dir = AddChild(new DirectionalLight());
-            
+            AddChild(new DirectionalLight());
         }
 
         public override void Start()
@@ -330,6 +329,7 @@ namespace Spacebox.Scenes
 
         public override void OnGUI()
         {
+        
             HealthColorOverlay.OnGUI();
             CenteredText.OnGUI();
 

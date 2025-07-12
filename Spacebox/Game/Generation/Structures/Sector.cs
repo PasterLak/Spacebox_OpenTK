@@ -1,4 +1,6 @@
 ﻿using Engine;
+using Engine.Components;
+using Engine.Generation;
 using Engine.Physics;
 using Engine.Utils;
 using OpenTK.Mathematics;
@@ -10,11 +12,28 @@ using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation
 {
+    public class NotGeneratedEntity
+    {
+        public ulong Id;
+        public EntityType entityType;
+        public Vector3 positionInSector;
+        public Vector3 positionWorld;
+        public Vector3 rotation;
+    }
+    public enum EntityType : byte
+    {
+        MadeByPlayer,
+        AsteroidLight,
+        AsteroidMedium,
+        AsteroidHeavy
+    }
     public class Sector : SpatialCell, IDisposable, ISpaceStructure
     {
         // ------------------ CONST --------------------------------------------
         public const short SizeBlocks = 8192; // 256 512 2048 4096 8192
         public const short SizeBlocksHalf = SizeBlocks / 2;
+
+        public readonly ulong Seed;
 
         // ------------------ Properties --------------------------------------------
 
@@ -22,18 +41,21 @@ namespace Spacebox.Game.Generation
         public World World { get; private set; }
 
         public List<SpaceEntity> Entities { get; private set; }
+        private Dictionary<ulong, NotGeneratedEntity> EntitiesGeneratedData { get; set; }
+
         public Dictionary<string, SpaceEntity> EntitiesNames { get; private set; }
 
         // ------------------ Private --------------------------------------------
         private readonly PointOctree<SpaceEntity> sectorOctree;
+        private readonly PointOctree<NotGeneratedEntity> octreeNotGenerated;
 
         private bool isEdited = false;
-        private int MaxEntityID = 3;
 
         public Sector(Vector3 positionWorld, Vector3i positionIndex, World world)
         {
             PositionWorld = positionWorld;
             PositionIndex = positionIndex;
+            Seed = SeedHelper.GetSectorId(World.Seed, positionIndex);
             World = world;
 
             Vector3 sectorCenter = PositionWorld + new Vector3(SizeBlocksHalf);
@@ -42,15 +64,14 @@ namespace Spacebox.Game.Generation
             BoundingBox = new BoundingBox(sectorCenter, sectorSize);
 
             sectorOctree = new PointOctree<SpaceEntity>(SizeBlocks, positionWorld, 1);
+            octreeNotGenerated = new PointOctree<NotGeneratedEntity>(SizeBlocks, positionWorld, 1);
+            EntitiesGeneratedData = new Dictionary<ulong, NotGeneratedEntity>();
 
             Entities = new List<SpaceEntity>();
             EntitiesNames = new Dictionary<string, SpaceEntity>();
 
 
-            Random random = RandomHelper.CreateRandomFromSeed(World.Seed, positionIndex);
-            int numAsteroids = random.Next(2, 5);
-
-            if (WorldSaveLoad.CanLoadSectorHere(PositionIndex, out var sectorFolderPath))
+            /*if (WorldSaveLoad.CanLoadSectorHere(PositionIndex, out var sectorFolderPath))
             {
 
                 var entities = WorldSaveLoad.LoadSpaceEntities(this);
@@ -62,13 +83,77 @@ namespace Spacebox.Game.Generation
                     e.GenerateMesh();
                 }
 
-            }
+            }*/
 
-            for (int i = 0; i < numAsteroids; i++)
+
+            /*for (int i = 0; i < numAsteroids; i++)
             {
                 SpawnPoints(random, i);
-            }
+            }*/
+            PopulateSector();
+        }
 
+        private void PopulateSector()
+        {
+            var points = GenerateAsteroidPositions(32, 64);
+            DebugPositions(new Vector3[] {new Vector3(3323,1888,4183)});
+            GenerateDataForPoints(new Vector3[] { new Vector3(3323, 1888, 4183) });
+        }
+
+        private void GenerateDataForPoints(Vector3[] positions)
+        {
+            Random random = new Random(SeedHelper.ToIntSeed(Seed));
+            foreach (var point in positions)
+            {
+                var data = new NotGeneratedEntity();
+                data.positionInSector = point;
+                data.positionWorld = LocalToWorld(point);
+                data.Id = SeedHelper.GetAsteroidId(Seed, point);
+
+                var type = random.Next(0,3);
+
+                switch(type)
+                {
+                    case 0: data.entityType = EntityType.AsteroidLight;
+                        break;
+                    case 1:
+                        data.entityType = EntityType.AsteroidMedium;
+                        break;
+                    default:
+                        data.entityType = EntityType.AsteroidHeavy;
+                        break;
+                }
+                data.rotation = Vector3.Zero;
+
+                EntitiesGeneratedData.Add(data.Id, data);
+                octreeNotGenerated.Add(data, point);
+            }
+        }
+
+        
+
+        private void DebugPositions(Vector3[] positions)
+        {
+            foreach (var point in positions)
+            {
+                Debug.Log(point);
+                var cube = World.Owner.AddChild(new CubeRenderer(LocalToWorld(point)));
+                cube.AttachComponent(new AABBCollider());
+                cube.Color = Color4.Green;
+                cube.SetScale(8);
+            }
+        }
+
+        private Vector3[] GenerateAsteroidPositions(int minCount, int maxCount)
+        {
+            var seed = SeedHelper.ToIntSeed(Seed);
+            Random random = new Random(seed);
+            var settings = new GeneratorSettings();
+            settings.RejectionSamples = 5;
+            settings.Seed = seed;
+            settings.Count = random.Next(minCount, maxCount);
+
+            return SectorPointProvider.CreatePoints(new FarthestPointGenerator(), settings).ToArray();
         }
 
         public void PlacePlayerRandomInSector(Astronaut player, Random random)
@@ -181,38 +266,34 @@ namespace Spacebox.Game.Generation
         }
 
 
-        private void SpawnPoints(Random random, int id)
+
+        private void GenerateAsteroidFromPoint(NotGeneratedEntity data)
         {
 
-            var name = "Asteroid" + id;
-            Vector3 asteroidWorldPosition;
-            asteroidWorldPosition = GetRandomPosition(PositionWorld, 0.1f, random);
+            Asteroid entity;
 
-            if (EntitiesNames.ContainsKey(name)) { return; }
 
-            while (!IsPositionValid(asteroidWorldPosition))
+            switch (data.entityType)
             {
-                asteroidWorldPosition = GetRandomPosition(PositionWorld, 0.1f, random);
+               /* case EntityType.AsteroidHeavy:
+                    entity = new AsteroidHeavy(data.Id, data.positionWorld, this);
+                    entity.Name = "HA";
+                    break;
+                case EntityType.AsteroidMedium:
+                    entity = new AsteroidMedium(data.Id, data.positionWorld, this);
+                    entity.Name = "MA";
+                    break;*/
+                case EntityType.AsteroidHeavy:
+                default:
+                    entity = new AsteroidHeavy(data.Id, data.positionWorld, this);
+                    entity.Name = "LA";
+                    break;
             }
 
-            var size = random.Next(0, 3); size = 0;
-            Asteroid asteroid;
 
-            if (size == 0)
-            {
-                asteroid = new AsteroidLight(id, asteroidWorldPosition, this);
-            }
-            else if (size == 1)
-            {
-                asteroid = new AsteroidMedium(id, asteroidWorldPosition, this);
-            }
-            else
-            {
-                asteroid = new AsteroidHeavy(id, asteroidWorldPosition, this);
-            }
-
-            asteroid.Name = name;
-            AddEntity(asteroid, asteroidWorldPosition);
+            Entities.Add(entity);
+            sectorOctree.Add(entity, data.positionWorld);
+            octreeNotGenerated.Remove(data);
 
         }
 
@@ -239,20 +320,6 @@ namespace Spacebox.Game.Generation
             }
 
             return false;
-        }
-
-        public SpaceEntity CreateEntity(Vector3 positionWorld)
-        {
-            SpaceEntity entity = new SpaceEntity(0, positionWorld, this);
-            entity.Name = "NewEntity" + MaxEntityID++;
-
-            while (EntitiesNames.ContainsKey(entity.Name))
-            {
-                entity.Name = "NewEntity" + MaxEntityID++;
-            }
-            AddEntity(entity, positionWorld);
-
-            return entity;
         }
 
         private void AddEntity(SpaceEntity entity, Vector3 positionWorld)
@@ -302,9 +369,33 @@ namespace Spacebox.Game.Generation
             return innerBounds.Contains(position);
         }
 
+        public SpaceEntity CreateEntity(Vector3 positionWorld)
+        {
+            SpaceEntity entity = new SpaceEntity(0, positionWorld, this);
+            // entity.Name = "NewEntity" + MaxEntityID++;
+
+            while (EntitiesNames.ContainsKey(entity.Name))
+            {
+                // entity.Name = "NewEntity" + MaxEntityID++;
+            }
+            AddEntity(entity, positionWorld);
+
+            return entity;
+        }
+
         public void Update()
         {
+            var camera = Camera.Main;
+            if (camera == null) return;
+            List<NotGeneratedEntity> nearby = new List<NotGeneratedEntity>();
+            if (octreeNotGenerated.GetNearbyNonAlloc(camera.PositionWorld, 1000, nearby))
+            {
+                foreach (var entity in nearby)
+                {
 
+                    GenerateAsteroidFromPoint(entity);
+                }
+            }
             for (int i = 0; i < Entities.Count; i++)
             {
                 Entities[i].Update();
@@ -328,10 +419,10 @@ namespace Spacebox.Game.Generation
             {
 
                 var entity = Entities[i];
-                
+
                 if (cam.Frustum.IsInFrustum(entity.GeometryBoundingBox))
                 {
-                    
+
                     var disSqr = Vector3.DistanceSquared(entity.GeometryBoundingBox.Center, cam.Position);
 
                     if (!entity.IsGenerated)
@@ -346,7 +437,7 @@ namespace Spacebox.Game.Generation
                         continue;
                     }
 
-                    if (disSqr < 500 * 500)
+                    if (disSqr < 1000 * 1000)
                     {
                         if (!entity.Tag.Enabled)
                         {
@@ -376,7 +467,7 @@ namespace Spacebox.Game.Generation
                 }
                 else
                 {
-                  
+
                 }
             }
 
@@ -392,6 +483,11 @@ namespace Spacebox.Game.Generation
 
             Entities = null;
             EntitiesNames = null;
+        }
+
+        public Vector3 LocalToWorldPosition(Vector3 local)
+        {
+            return PositionWorld + local;
         }
 
         public string ToFolderName()
