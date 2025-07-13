@@ -14,7 +14,9 @@ namespace Engine.GUI
             {
                 var cam = Camera.Main;
                 Vector3i playerPosInt = new Vector3i((int)cam.Position.X, (int)cam.Position.Y, (int)cam.Position.Z);
-                ImGui.Text($"Camera Position: {playerPosInt}");
+                Vector3i playerRotInt = new Vector3i((int)cam.Rotation.X, (int)cam.Rotation.Y, (int)cam.Rotation.Z);
+
+                ImGui.Text($"Camera Pos: {playerPosInt} Rot: {playerRotInt}");
                 ImGui.Text($"Camera-Relative Rendering: {cam.CameraRelativeRender}");
                 ImGui.Text($"[BVH] Visible:{BVHCuller.VisibleObjects} Culled:{BVHCuller.CulledObjects}");
 

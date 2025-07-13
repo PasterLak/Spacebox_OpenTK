@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Multithreading;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Generation;
@@ -32,16 +33,23 @@ namespace Spacebox.Game.Generation
             return data;
         }
 
-        public Task<MeshData> GenerateFromBlocksAsync(Block[,,] blocks, int downscale, Vector2[] customUV = null)
+        public void GenerateFromBlocksAsync(Block[,,] blocks, int downscale, Vector2[] customUV, Action<MeshData> onComplete)
         {
             bool[,,] fullData = ConvertBlocksToBool(blocks);
-            return Task.Run(() =>
+            WorkerPoolManager.Enqueue<MeshData>(token =>
             {
-                bool[,,] lodData = (downscale > 1) ? CreateDownscaledData(fullData, downscale) : fullData;
-
+                token.ThrowIfCancellationRequested();
+                bool[,,] lodData = downscale > 1
+                    ? CreateDownscaledData(fullData, downscale)
+                    : fullData;
                 InternalCavitiesBits.FillInternalCavities(ref lodData);
+                token.ThrowIfCancellationRequested();
                 return GenerateGreedyMesh(lodData, downscale, customUV);
-            });
+            }, WorkerPoolManager.Priority.Medium).ContinueWith(t =>
+            {
+                if (t.Status == TaskStatus.RanToCompletion)
+                    onComplete(t.Result);
+            }, TaskScheduler.Default);
         }
 
         private static bool[,,] CreateDownscaledData(bool[,,] data, int downscale)
@@ -271,8 +279,6 @@ namespace Spacebox.Game.Generation
             verts.Add(normal.X); verts.Add(normal.Y); verts.Add(normal.Z);
             verts.Add(1f); verts.Add(0f);
         }
-
-        
 
     }
 }

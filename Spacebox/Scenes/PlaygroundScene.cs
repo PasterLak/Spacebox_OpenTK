@@ -161,7 +161,7 @@ namespace Spacebox.Scenes
             waterModel.Material.Color = Color4.White;
             plane.AttachComponent(new ModelRendererComponent(waterModel));
             plane.AttachComponent(new SphereCollider());
-            //AddChild(plane);
+            AddChild(plane);
 
             var emitter = new SphereEmitter
             {
@@ -187,7 +187,7 @@ namespace Spacebox.Scenes
 
             // system.AttachComponent(new MoverComponent(new Vector3(1,0,0), 20));
             system.Position = new Vector3(0);
-            AddChild(system);
+            //AddChild(system);
 
 
 

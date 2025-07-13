@@ -200,6 +200,8 @@ namespace Spacebox.Scenes
 
             Chat.Write("Welcome to Spacebox!", Color4.Yellow);
 
+           // Debug.Log(World.CurrentSector.WorldToLocalPosition(Camera.Main.Position));
+
         }
 
         private void OnDebugStateChanged(bool state)

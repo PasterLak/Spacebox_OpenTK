@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿using Engine;
+using OpenTK.Mathematics;
 using Spacebox.Generation;
 
 namespace Spacebox.Game.Generation
@@ -10,7 +11,7 @@ namespace Spacebox.Game.Generation
         public int[,,] voxelData;
         public int gridSize;
         public float blockSize;
-        public float asteroidDiameter;
+        public Vector3 asteroidDimensions;
         public int threshold;
         public byte noiseOctaves;
         public float noiseScale;
@@ -20,7 +21,7 @@ namespace Spacebox.Game.Generation
         public int[,,] VoxelData => voxelData;
 
         public AsteroidVoxelDataGenerator(
-            float asteroidDiameter,
+            Vector3 asteroidDimensions,
             float blockSize,
             int threshold,
             byte noiseOctaves,
@@ -30,7 +31,7 @@ namespace Spacebox.Game.Generation
         )
         {
             this.type = type;
-            this.asteroidDiameter = asteroidDiameter;
+            this.asteroidDimensions = asteroidDimensions;
             this.blockSize = blockSize;
             this.threshold = threshold;
             this.noiseOctaves = noiseOctaves;
@@ -38,16 +39,86 @@ namespace Spacebox.Game.Generation
             this.seed = seed;
         }
 
+        public int[,,] GenerateDataForChunk(Vector3SByte chunkIdx, int chunkSize)
+        {
+            if (noiseGenerator == null)
+            {
+                noiseGenerator = new NoiseGenerator(seed);
+                noiseGenerator.Masks.sphericalFalloffDistance =  asteroidDimensions.X * 0.5f;
+                noiseGenerator.Masks.sphericalGradient = true;
+            }
+
+            gridSize = (int)MathF.Ceiling(asteroidDimensions.X / blockSize);
+            if (gridSize % 2 == 0) gridSize++;
+
+            Vector3 regionSize = asteroidDimensions;
+            Vector3 noiseOffset = regionSize * 0.5f;
+            float radius = asteroidDimensions.X * 0.5f ;
+
+            var chunkData = new int[chunkSize, chunkSize, chunkSize];
+
+            for (int x = 0; x < chunkSize; x++)
+                for (int y = 0; y < chunkSize; y++)
+                    for (int z = 0; z < chunkSize; z++)
+                    {
+                      
+                        int gx = chunkIdx.X * chunkSize + x;
+                        int gy = chunkIdx.Y * chunkSize + y;
+                        int gz = chunkIdx.Z * chunkSize + z;
+
+                        Vector3 pos = new Vector3(gx, gy, gz) * blockSize;
+                        Vector3 samplePos = (pos + noiseOffset) * noiseScale;
+
+                        byte noiseValue = noiseGenerator.PerlinNoise3DWithMask(
+                            samplePos,
+                            ref regionSize,
+                            noiseOctaves,
+                            noiseGenerator.Masks.SphericalMaskFunction
+                        );
+
+                        /*byte noiseValue = noiseGenerator.PerlinNoise3D(
+                           samplePos.X, samplePos.Y, samplePos.Z,
+                           //  ref regionSize,
+                           noiseOctaves
+                       // noiseGenerator.Masks.SphericalMaskFunction
+                       );*/
+
+                        int blockId;
+                        if (noiseValue > threshold)
+                        {
+                            float distance = pos.Length;
+                           // float radius = asteroidDimensions.X * 0.5f;
+                            float norm = distance / radius  * 100;
+
+                            if (type == AsteroidType.Light)
+                                blockId = norm >= 40 ? 1 : 2;
+                            else if (type == AsteroidType.Medium)
+                                blockId = norm >= 60 ? 1 : (norm >= 30 ? 2 : 3);
+                            else
+                                blockId = norm >= 70 ? 1 : (norm >= 40 ? 2 : 3);
+                        }
+                        else
+                        {
+                            blockId = 0;
+                        }
+
+                        chunkData[x, y, z] = blockId;
+                    }
+
+            return chunkData;
+        }
+
+
         public void GenerateData()
         {
             noiseGenerator = new NoiseGenerator(seed);
-            noiseGenerator.Masks.sphericalFalloffDistance = asteroidDiameter * 0.5f;
+            noiseGenerator.Masks.sphericalFalloffDistance = asteroidDimensions.X * 0.5f;
             noiseGenerator.Masks.sphericalGradient = true;
-            gridSize = (int)System.MathF.Ceiling(asteroidDiameter / blockSize);
+            gridSize = (int)System.MathF.Ceiling(asteroidDimensions.X / blockSize);
             if (gridSize % 2 == 0) gridSize++;
             int half = gridSize / 2;
             voxelData = new int[gridSize, gridSize, gridSize];
-            Vector3 regionSize = new Vector3(asteroidDiameter, asteroidDiameter, asteroidDiameter);
+            Vector3 regionSize = asteroidDimensions;
             Vector3 noiseOffset = regionSize * 0.5f;
 
             for (int x = -half; x <= half; x++)
@@ -65,7 +136,7 @@ namespace Spacebox.Game.Generation
                         if (noiseValue > threshold)
                         {
                             float distance = pos.Length;
-                            float radius = asteroidDiameter * 0.5f;
+                            float radius = asteroidDimensions.X * 0.5f;
                             float normalized = distance / radius;
                             int blockId;
                             if (type == AsteroidType.Light)

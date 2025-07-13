@@ -14,6 +14,7 @@ using Engine.UI;
 using Engine.Light;
 using Spacebox.GUI;
 using Engine.Components;
+using Engine.Multithreading;
 
 
 namespace Spacebox.Scenes
@@ -110,6 +111,7 @@ namespace Spacebox.Scenes
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
             VerticalLinks.Init();
 
+           // _ = WorkerPoolTest.RunTest();
         }
 
 

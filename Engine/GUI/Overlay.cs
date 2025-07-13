@@ -31,6 +31,7 @@ namespace Engine.GUI
             OverlayElements.Add(new CameraElement());
             
             OverlayElements.Add(new GameLoopElement());
+            OverlayElements.Add(new ThreadsElement());
         }
 
         public static void AddElement(OverlayElement element)

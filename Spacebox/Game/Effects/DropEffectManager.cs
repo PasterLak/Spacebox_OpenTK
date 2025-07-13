@@ -11,8 +11,7 @@ namespace Spacebox.Game.Effects
     {
         private List<DropEffect> activeEffects = new List<DropEffect>();
         private Astronaut player;
-        private Shader shader;
-
+ 
         public const float DropLifeTime = 20f;
 
         private readonly float maxSpeed = 20f;
@@ -34,7 +33,6 @@ namespace Spacebox.Game.Effects
             this.maxSpeed = maxSpeed;
             moveDistanceSquared = moveDistance * moveDistance;
             pickupDistanceSquared = pickupDistance * pickupDistance;
-            shader = Resources.Load<Shader>("Shaders/particle");
 
             for (int i = 0; i < 3; i++)
             {
@@ -53,7 +51,7 @@ namespace Spacebox.Game.Effects
                 position + new Vector3(0.5f, 0.5f, 0.5f),
                 color,
                 texture,
-                shader,
+               
                 block
             );
             activeEffects.Add(dropEffect);
@@ -101,17 +99,17 @@ namespace Spacebox.Game.Effects
 
             SortEffectsByDistanceDescending();
 
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            GL.DepthMask(false);
+            //GL.Enable(EnableCap.Blend);
+           // GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+           // GL.DepthMask(false);
 
             foreach (var effect in activeEffects)
             {
                 effect.Render();
             }
 
-            GL.DepthMask(true);
-            GL.Disable(EnableCap.Blend);
+          //  GL.DepthMask(true);
+           // GL.Disable(EnableCap.Blend);
         }
 
         private void SortEffectsByDistanceDescending()

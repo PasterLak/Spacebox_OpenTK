@@ -1,37 +1,78 @@
-﻿using ImGuiNET;
+﻿using Engine;
+using Engine.GUI;
+using ImGuiNET;
+using System.Numerics;
 
-
-namespace Engine.GUI
+internal class GameLoopElement : OverlayElement
 {
-    internal class GameLoopElement : OverlayElement
+    private float timer;
+    private float cachedRenderTime;
+    private float cachedAvgRenderTime;
+    private float cachedUpdateTime;
+    private float cachedAvgUpdateTime;
+    private float cachedOnGUITime;
+    private float cachedAvgOnGUITime;
+    private float cachedRenderPercent;
+    private float cachedUpdatePercent;
+    private float cachedOnGUIpercent;
+
+
+public override void OnGUIText()
     {
-       
-        public override void OnGUIText()
+        timer += Time.Delta;
+        if (timer >= 1f)
         {
-            ImGui.Text($" ");
-            ImGui.Text($"[GAME LOOP DEBUG]");
-            ImGui.Text($" ");
-            ImGui.Text($"Render Time: {Time.RenderTime:F2} ms");
-            ImGui.Text($"Avg Render Time: {Time.AverageRenderTime:F2} ms");
-            ImGui.Text($"Update Time: {Time.UpdateTime:F2} ms");
-            ImGui.Text($"Avg Update Time: {Time.AverageUpdateTime:F2} ms");
-            ImGui.Text($"OnGUI Time: {Time.OnGUITime:F2} ms");
-            ImGui.Text($"Avg OnGUI Time: {Time.AverageOnGUITime:F2} ms");
-            ImGui.Text($" ");
-            ImGui.Text($"Render: {Time.RenderTimePercent} %, Update: {Time.UpdateTimePercent}%, OnGUI: {Time.OnGUITimePercent}%");
-            ImGui.Text($" ");
-            ImGui.Text($"Console On (F1): {Debug.IsVisible}");
-            ImGui.Text($"Debug On (F4): {VisualDebug.Enabled}");
-            ImGui.Text($"FrameLimiter On (F7): {(FrameLimiter.TargetFPS == 120 ? true : false)}");
-            ImGui.Text($"Wireframe Mode (F10) ");
-            ImGui.Text($" ");
-          
-           /* if (GameBlocks.IsInitialized)
-            {
-                var size = GameBlocks.AtlasBlocks.SizeBlocks * GameBlocks.AtlasBlocks.BlockSizePixels;
-                var size2 = GameBlocks.AtlasItems.SizeBlocks * GameBlocks.AtlasItems.BlockSizePixels;
-                ImGui.Text($"Atlas Blocks: {size}x{size}, Items: {size2}x{size2}");
-            }*/
+            cachedAvgRenderTime = (float)Time.AverageRenderTime;
+            cachedAvgUpdateTime = (float)Time.AverageUpdateTime;
+            cachedAvgOnGUITime = (float)Time.AverageOnGUITime;
+            cachedRenderPercent = Time.RenderTimePercent;
+            cachedUpdatePercent = Time.UpdateTimePercent;
+            cachedOnGUIpercent = Time.OnGUITimePercent;
+            timer = 0f;
         }
+
+        ImGui.Text(" ");
+        ImGui.Text("[GAME LOOP DEBUG]");
+        ImGui.Text(" ");
+        ImGui.Text($"Avg Render Time: {cachedAvgRenderTime:F2} ms");
+        ImGui.Text($"Avg Update Time: {cachedAvgUpdateTime:F2} ms");
+        ImGui.Text($"Avg OnGUI Time: {cachedAvgOnGUITime:F2} ms");
+        ImGui.Text(" ");
+        ImGui.Text($"FrameLimiter (F7): {(FrameLimiter.TargetFPS == 120)}");
+        ImGui.Text(" ");
+
+        DrawPercentBar("Render", cachedRenderPercent); 
+        DrawPercentBar("Update", cachedUpdatePercent); 
+        DrawPercentBar("OnGUI", cachedOnGUIpercent);
+        ImGui.Text(" ");
     }
+
+    private void DrawPercentBar(string label, float percent)
+    {
+        ImGui.Text($"{label}: {percent:F0} %");
+        var drawList = ImGui.GetWindowDrawList();
+        var pos = ImGui.GetCursorScreenPos();
+        const float width = 200f;
+        const float height = 8f;
+        float segmentWidth = width / 100f;
+        int filled = (int)percent;
+
+        for (int i = 0; i < 100; i++)
+        {
+            var x0 = pos.X + i * segmentWidth;
+            var y0 = pos.Y;
+            var x1 = x0 + segmentWidth - 1;
+            var y1 = y0 + height;
+            uint col = (uint)ImGui.GetColorU32(i < filled
+                ? ImGuiCol.PlotHistogram  // or Green
+                : ImGuiCol.FrameBg        // or Grey
+            );
+            drawList.AddRectFilled(new Vector2(x0, y0), new Vector2(x1, y1), col);
+        }
+        
+        ImGui.Dummy(new Vector2(width, height));
+        ImGui.Text(" ");
+    }
+
+
 }

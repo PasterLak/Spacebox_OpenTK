@@ -296,7 +296,7 @@ namespace Spacebox.Game.GUI
                 }
 
                 ImGui.BeginTooltip();
-                ImGui.Text($"Id:{slot.Item.Id}\n{slot.Item.Name}\n{text}");
+                ImGui.Text($"{slot.Item.Name}\n{text}");
                 ImGui.EndTooltip();
             }
         }

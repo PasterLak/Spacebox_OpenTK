@@ -33,6 +33,7 @@ namespace Engine
         public CameraBasic(Vector3 position)
             : base(position)
         {
+            Name = "CameraBasic";
         }
 
         protected override void UpdateVectors()

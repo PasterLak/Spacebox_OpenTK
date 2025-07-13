@@ -32,9 +32,9 @@ namespace Spacebox.Game.Generation
 
         private void GenerateVoxelData()
         {
-            float diameter = ChunkCount * ChunkSize;
+            Vector3 diameter = new Vector3(ChunkCount * ChunkSize, ChunkCount * ChunkSize, ChunkCount * ChunkSize);
             var gen = new AsteroidVoxelDataGenerator(
-                asteroidDiameter: diameter,
+                 diameter,
                 blockSize: 1f,
                 threshold: 34,
                 noiseOctaves: 4,

@@ -66,7 +66,7 @@ namespace Engine
             Position = position;
 
             AllowCollisionDebug = false;
-
+            Name = "Camera";
             UpdateVectors();
 
         }

@@ -45,6 +45,11 @@ namespace Engine.Utils
             return Mix(h);
         }
 
+        public static int GetChunkIdInt(ulong asteroidId, Vector3SByte chunkCoord)
+        {
+            return ToIntSeed(GetChunkId(asteroidId, chunkCoord));
+        }
+
         public static int ToIntSeed(ulong id)
         {
             return (int)(id & 0xFFFFFFFFu);

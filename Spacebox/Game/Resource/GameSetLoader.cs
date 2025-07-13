@@ -6,6 +6,7 @@ using Engine;
 using Spacebox.Scenes;
 using Engine.Light;
 
+
 namespace Spacebox.Game.Resource
 {
     public static class GameSetLoader
@@ -56,6 +57,7 @@ namespace Spacebox.Game.Resource
             LoadItems(modPath, defaultModPath);
             LoadRecipes(modPath, defaultModPath);
             LoadCrafting(modPath, defaultModPath);
+            LoadLoot(modPath, defaultModPath);
             LoadSettings(modPath);
             LoadOptionalFiles(modPath);
 
@@ -525,6 +527,40 @@ namespace Spacebox.Game.Resource
                 Debug.Error($"[GamesetLoader] Error loading blueprints: {ex.Message}");
             }
         }
+
+        private static void LoadLoot(string modPath, string defaultModPath)
+        {
+            string file = GetFilePath(modPath, defaultModPath, "loot.json");
+            if (file == null) return;
+
+            try
+            {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    ReadCommentHandling = JsonCommentHandling.Skip
+                };
+
+                string json = File.ReadAllText(file);
+                LootConfig loot = JsonSerializer.Deserialize<LootConfig>(json, options);
+
+                if (loot == null)
+                {
+                    Debug.Error("[GameSetLoader] Loot config was null!");
+                    return;
+                }
+
+                loot.Validate();
+                GameAssets.LootConfig = loot;
+
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"[GameSetLoader] Error loading loot config: {ex.Message}");
+                return;
+            }
+        }
+
 
         private static void PutItemsToCategories()
         {

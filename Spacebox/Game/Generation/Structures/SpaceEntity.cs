@@ -47,7 +47,7 @@ namespace Spacebox.Game.Generation
         {
             EntityID = id;
             Position = positionWorld;
-            PositionWorld = positionWorld;
+            PositionWorld = positionWorld; 
             Sector = sector;
             BoundingBox = new BoundingBox(positionWorld, new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));
             sumPosCenterOfMass = positionWorld;
@@ -430,8 +430,9 @@ namespace Spacebox.Game.Generation
         {
             return local + PositionWorld;
         }
-        public void Update()
+        public override void Update()
         {
+            base.Update();
             Camera camera = Camera.Main;
 
             if (camera != null)
@@ -591,40 +592,37 @@ namespace Spacebox.Game.Generation
         public void Render(Camera camera, BlockMaterial material)
         {
 
-
-
             chunks.Clear();
-            Octree.FindDataInRadius(WorldPositionToLocal(camera.Position), 1000, chunks);
+            Octree.FindDataInRadius(WorldPositionToLocal(camera.Position), Settings.CHUNK_VISIBLE_RADIUS, chunks);
 
             foreach (var chunk in chunks)
             {
 
+                var dis = (int)(camera.Position - chunk.GeometryBoundingBox.Center).LengthSquared;
 
-                bool visible = false;
-
-                visible = chunk.GeometryBoundingBox.Contains(camera.Position);
-
-                if (!visible)
+                if(dis < Settings.CHUNK_VISIBLE_RADIUS * Settings.CHUNK_VISIBLE_RADIUS)
                 {
-                    visible = camera.Frustum.IsInFrustum(chunk.GeometryBoundingBox);
+                    bool visible = chunk.GeometryBoundingBox.Contains(camera.Position);
 
+                    if (!visible)
+                    {
+                        visible = camera.Frustum.IsInFrustum(chunk.GeometryBoundingBox);
+                    }
+
+                    if (!visible) continue;
+
+                    if (chunk.NeedsToRegenerateMesh)
+                    {
+                        chunk.GenerateMesh(false);
+
+                        chunk.NeedsToRegenerateMesh = false;
+                    }
+
+                    chunk.SetLOD(dis);
+                    chunk.Render(material);
                 }
-
-                if (!visible) continue;
-
-                if (chunk.NeedsToRegenerateMesh)
-                {
-                    chunk.GenerateMesh(false);
-
-                    chunk.NeedsToRegenerateMesh = false;
-                }
-
-                chunk.SetLOD((int)Vector3.DistanceSquared(camera.Position, chunk.GeometryBoundingBox.Center));
-                chunk.Render(material);
 
             }
-
-
 
             if (VisualDebug.Enabled)
             {
@@ -634,7 +632,6 @@ namespace Spacebox.Game.Generation
                 VisualDebug.DrawBoundingBox(GeometryBoundingBox, Color4.Orange);
                 VisualDebug.DrawPosition(CenterOfMass, 8, Color4.Lime);
 
-                //VisualDebug.DrawSphere(CenterOfMass, GravityRadius, 16, Color4.Blue);
             }
 
         }
@@ -860,9 +857,19 @@ namespace Spacebox.Game.Generation
 
         public void Dispose()
         {
+            Sector = null;
+            foreach(var mesh in MeshesTogenerate)
+            {
+                mesh.Dispose();
+            }
+            foreach (var ch in Chunks)
+            {
+                ch.Dispose();
+            }
+            StarsEffect.Dispose();
             if (tag != null)
             {
-                TagManager.UnregisterTag(tag);
+                //TagManager.UnregisterTag(tag);
             }
             StarsEffect.Dispose();
         }

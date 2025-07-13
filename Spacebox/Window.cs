@@ -15,6 +15,8 @@ using Engine.PostProcessing;
 using Engine.Light;
 using Engine.Graphics;
 using Spacebox.FPS.Scenes;
+using Engine.Multithreading;
+using Engine.UI;
 
 namespace Spacebox
 {
@@ -154,8 +156,9 @@ namespace Spacebox
             FullscreenRenderer = new FullscreenRenderer();
             shaderpass = sha;
 
-            //SceneManager.Load<MenuScene>();
-            SceneManager.Load<MenuScene>();
+            //SceneManager.Load<PlaygroundScene>();
+          // SceneManager.Load<ParticleSystemEditor>();
+             SceneManager.Load<MenuScene>();
         }
 
         private static AudioSource screenShotAudio;
@@ -189,6 +192,7 @@ namespace Spacebox
                 SceneManager.Current.OnGUI();
                 Debug.Render(new Vector2(ClientSize.X, ClientSize.Y).ToSystemVector2());
                 Overlay.OnGUI();
+                DevGui.Draw();
                 InputOverlay.OnGUI();
                 if (_debugUI)
                 {
@@ -363,6 +367,8 @@ namespace Spacebox
             SceneRenderer.Dispose();
             Debug.SaveMessagesToFile(true);
             Close();
+
+            WorkerPoolManager.Shutdown();
         }
 
         public static void Shutdown(object sender, EventArgs e)

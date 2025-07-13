@@ -82,45 +82,62 @@ namespace Spacebox.Generation
                         if (blockId == 1)
                         {
                             if (rng.NextDouble() < parameters.OuterOreVeinChance)
-                                StartOreVein(ref voxelData, x, y, z, 1, parameters.OuterOreIds, parameters.OuterOreMaxVeinSize);
+                                StartVein(ref voxelData, x, y, z, 1, parameters.OuterOreIds, parameters.OuterOreMaxVeinSize);
                         }
                         else if (blockId == 2)
                         {
                             if (rng.NextDouble() < parameters.MiddleOreVeinChance)
-                                StartOreVein(ref voxelData, x, y, z, 2, parameters.MiddleOreIds, parameters.MiddleOreMaxVeinSize);
+                                StartVein(ref voxelData, x, y, z, 2, parameters.MiddleOreIds, parameters.MiddleOreMaxVeinSize);
                         }
                         else if (blockId == 3 && asteroidType != AsteroidType.Light)
                         {
                             if (rng.NextDouble() < parameters.DeepOreVeinChance)
-                                StartOreVein(ref voxelData, x, y, z, 3, parameters.DeepOreIds, parameters.DeepOreMaxVeinSize);
+                                StartVein(ref voxelData, x, y, z, 3, parameters.DeepOreIds, parameters.DeepOreMaxVeinSize);
                         }
                     }
                 }
             }
         }
 
-        private void StartOreVein(ref int[,,] voxelData, int startX, int startY, int startZ, int targetLayerId, int[] allowedOreIds, int maxVeinSize)
+        public void ApplyOresToChunk(ref int[,,] voxelData, AsteroidType asteroidType)
         {
-            int gridSize = voxelData.GetLength(0);
-            Queue<Vector3i> queue = new Queue<Vector3i>();
-            HashSet<Vector3i> visited = new HashSet<Vector3i>();
-            List<Vector3i> veinBlocks = new List<Vector3i>();
-            Vector3i start = new Vector3i(startX, startY, startZ);
+            int size = voxelData.GetLength(0);
+            for (int x = 0; x < size; x++)
+                for (int y = 0; y < size; y++)
+                    for (int z = 0; z < size; z++)
+                    {
+                        int id = voxelData[x, y, z];
+                        if (id == 1 && rng.NextDouble() < parameters.OuterOreVeinChance)
+                            StartVein(ref voxelData, x, y, z, 1, parameters.OuterOreIds, parameters.OuterOreMaxVeinSize);
+                        else if (id == 2 && rng.NextDouble() < parameters.MiddleOreVeinChance)
+                            StartVein(ref voxelData, x, y, z, 2, parameters.MiddleOreIds, parameters.MiddleOreMaxVeinSize);
+                        else if (id == 3 && asteroidType != AsteroidType.Light && rng.NextDouble() < parameters.DeepOreVeinChance)
+                            StartVein(ref voxelData, x, y, z, 3, parameters.DeepOreIds, parameters.DeepOreMaxVeinSize);
+                    }
+        }
+
+        private void StartVein(ref int[,,] voxelData, int startX, int startY, int startZ, int targetLayer, int[] ores, int maxSize)
+        {
+            int size = voxelData.GetLength(0);
+            var queue = new Queue<Vector3i>();
+            var visited = new HashSet<Vector3i>();
+            var vein = new List<Vector3i>();
+            var start = new Vector3i(startX, startY, startZ);
             queue.Enqueue(start);
             visited.Add(start);
 
-            while (queue.Count > 0 && veinBlocks.Count < maxVeinSize)
+            while (queue.Count > 0 && vein.Count < maxSize)
             {
-                Vector3i current = queue.Dequeue();
-                if (voxelData[current.X, current.Y, current.Z] == targetLayerId)
+                var cur = queue.Dequeue();
+                if (voxelData[cur.X, cur.Y, cur.Z] == targetLayer)
                 {
-                    veinBlocks.Add(current);
-                    for (int i = 0; i < neighborOffsets.Length; i++)
+                    vein.Add(cur);
+                    foreach (var off in neighborOffsets)
                     {
-                        Vector3i n = current + neighborOffsets[i];
-                        if (n.X < 0 || n.Y < 0 || n.Z < 0 || n.X >= gridSize || n.Y >= gridSize || n.Z >= gridSize)
+                        var n = cur + off;
+                        if (n.X < 0 || n.Y < 0 || n.Z < 0 || n.X >= size || n.Y >= size || n.Z >= size)
                             continue;
-                        if (!visited.Contains(n) && voxelData[n.X, n.Y, n.Z] == targetLayerId)
+                        if (!visited.Contains(n) && voxelData[n.X, n.Y, n.Z] == targetLayer)
                         {
                             visited.Add(n);
                             if (rng.NextDouble() < 0.5)
@@ -129,39 +146,14 @@ namespace Spacebox.Generation
                     }
                 }
             }
-            int oreId = allowedOreIds[rng.Next( allowedOreIds.Length)];
 
-            if (veinBlocks.Count <= 1)
-            {
-                var single = veinBlocks[0];
-                voxelData[single.X, single.Y, single.Z] = oreId;
+            if (vein.Count == 0)
                 return;
-            }
 
-            for (int i = 0; i < veinBlocks.Count; i++)
-            {
-                Vector3i pos = veinBlocks[i];
-                bool skip = false;
-                if (targetLayerId == 3 && allowedOreIds.Length == 1 && allowedOreIds[0] == 11)
-                {
-                    for (int j = 0; j < neighborOffsets.Length; j++)
-                    {
-                        Vector3i n = pos + neighborOffsets[j];
-                        if (n.X < 0 || n.Y < 0 || n.Z < 0 || n.X >= gridSize || n.Y >= gridSize || n.Z >= gridSize)
-                            continue;
-                        if (voxelData[n.X, n.Y, n.Z] == 0)
-                        {
-                            skip = true;
-                            break;
-                        }
-                    }
-                }
-                if (!skip)
-                {
-                 
-                    voxelData[pos.X, pos.Y, pos.Z] = oreId;
-                }
-            }
+            int oreId = ores[rng.Next(ores.Length)];
+            foreach (var v in vein)
+                voxelData[v.X, v.Y, v.Z] = oreId;
         }
+
     }
 }

@@ -8,7 +8,7 @@ namespace Spacebox.Game.Effects
     public class DropEffect : IDisposable
     {
         public ParticleSystem ParticleSystem { get; private set; }
-        private Shader particleShader;
+
         private Texture2D dustTexture;
         private Camera camera;
 
@@ -29,13 +29,14 @@ namespace Spacebox.Game.Effects
                 _position = value;
                 if (ParticleSystem != null)
                     ParticleSystem.Position = _position;
+
             }
         }
 
         public Vector3 Velocity { get; set; }
 
 
-        public void Initialize(Astronaut player, Vector3 position, Vector3 color, Texture2D texture, Shader shader, Block block)
+        public void Initialize(Astronaut player, Vector3 position, Vector3 color, Texture2D texture, Block block)
         {
             camera = player;
             Position = position;
@@ -44,49 +45,47 @@ namespace Spacebox.Game.Effects
             Velocity = Vector3.Zero;
             elapsedTime = 0f;
             dustTexture = texture;
-            particleShader = shader;
 
-            InitializeParticleSystem(position, texture, shader);
-            
+
+            InitializeParticleSystem(position, texture);
+
         }
 
-        private void InitializeParticleSystem(Vector3 position, Texture2D texture, Shader shader)
+        private void InitializeParticleSystem(Vector3 position, Texture2D texture)
         {
             if (ParticleSystem != null)
             {
-              //  ParticleSystem.Dispose();
+                //  ParticleSystem.Dispose();
             }
 
-            ParticleSystem = new ParticleSystem(new ParticleMaterial(dustTexture), new SphereEmitter());
-            /*ParticleSystem = new ParticleSystem(dustTexture, particleShader)
+            var emitter = new PointEmitter()
             {
-                Position = position,
-                UseLocalCoordinates = true,
-                EmitterPositionOffset = Vector3.Zero,
-                Max = 1,
-                Rate = 100f
-            };*/
-
-            var emitter = new EmitterOld(ParticleSystem)
-            {
-                LifetimeMin = 20f,
-                LifetimeMax = 20f,
-                SizeMin = 0.2f,
-                SizeMax = 0.2f,
-                StartColorMin = new Vector4(1f, 1f, 1f, 1f),
-                StartColorMax = new Vector4(1f, 1f, 1f, 1f),
-                EndColorMin = new Vector4(1f, 1f, 1f, 1f),
-                EndColorMax = new Vector4(1f, 1f, 1f, 1f),
-                SpawnRadius = 0f,
+                LifeMin = 20,
+                LifeMax = 20,
+                StartSizeMin = 0.2f,
+                StartSizeMax = 0.2f,
+                EndSizeMin = 0.2f,
+                EndSizeMax = 0.2f,
+                ColorStart = new Vector4(1f, 1f, 1f, 1f),
+                ColorEnd = new Vector4(1f, 1f, 1f, 1f),
+            
                 SpeedMin = 0,
                 SpeedMax = 0,
-                EmitterDirection = Vector3.UnitY,
-                EnableRandomDirection = false,
-                RandomUVRotation = false,
+                
+
             };
 
-            //ParticleSystem.Emitter = emitter;
-           // ParticleSystem.Renderer.SetFixedRotation180();
+
+            ParticleSystem = new ParticleSystem(new ParticleMaterial(dustTexture), emitter)
+            {
+                Rate = 100,
+                Max = 1
+            };
+            ParticleSystem.Position = position;
+
+            ParticleSystem.Max = 1;
+            ParticleSystem.Space = SimulationSpace.Local;
+
         }
 
         public void Update()
@@ -105,12 +104,8 @@ namespace Spacebox.Game.Effects
 
         public void Render()
         {
-            if (particleShader != null)
-            {
-                particleShader.Use();
-                particleShader.SetVector3("color", color);
-            }
-           // ParticleSystem.Draw(camera);
+
+             ParticleSystem.Render();
         }
 
         public void Reset()
@@ -124,17 +119,17 @@ namespace Spacebox.Game.Effects
 
             if (ParticleSystem != null)
             {
-               // ParticleSystem.Dispose();
+                // ParticleSystem.Dispose();
                 ParticleSystem = null;
             }
 
             dustTexture = null;
-            particleShader = null;
+
         }
 
         public void Dispose()
         {
-           // ParticleSystem?.Dispose();
+            // ParticleSystem?.Dispose();
         }
     }
 }

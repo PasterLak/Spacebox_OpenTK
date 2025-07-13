@@ -32,6 +32,8 @@ namespace Spacebox
 
                 Flags = ContextFlags.ForwardCompatible,
             };
+         
+            SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
 
 
             using (var window = new Window(GameWindowSettings.Default, nativeWindowSettings))

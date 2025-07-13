@@ -1,5 +1,4 @@
 ﻿using OpenTK.Mathematics;
-using Engine;
 using Engine.Utils;
 
 namespace Spacebox.Game.Generation
@@ -16,6 +15,8 @@ namespace Spacebox.Game.Generation
         public virtual void OnGenerate() { }
 
         public virtual void FillChunkNoise(Chunk chunk) { }
+
+
     }
 
 }

@@ -27,7 +27,28 @@ namespace Engine.SceneManagement
             Load<ErrorScene>();
         }
 
- 
+        public static void Load(Type sceneType)
+        {
+            if (!_registeredScenes.Contains(sceneType))
+            {
+                Debug.Error($"[SceneManager] Scene {sceneType.Name} not registered.");
+                Load<ErrorScene>();
+                return;
+            }
+
+            if (_nextFactory != null)
+                _history.Push(_nextFactory);
+
+            _nextFactory = () =>
+            {
+                var s = (Scene)Activator.CreateInstance(sceneType)!;
+                s.Name = sceneType.Name;
+                return s;
+            };
+            _lastFactory = _nextFactory;
+            Switch();
+        }
+
         public static void Load<TScene>() where TScene : Scene, new()
         {
             

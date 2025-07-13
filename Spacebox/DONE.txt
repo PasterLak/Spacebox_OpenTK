@@ -77,6 +77,9 @@ New
 - storage block with save/load 
 - rename storage, preview storage name if hovered
 - storage in spacer
+- new world generation
+- loot generator
+- spacer has loot
 
 
 Small
@@ -99,6 +102,8 @@ Engine
 - procedural skybox
 - better scene manager, scene args
 - new particle system
+- multi threading - workers
+- dev gui
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.1

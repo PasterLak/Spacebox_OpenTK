@@ -14,17 +14,17 @@ namespace Engine.Generation
 
     public interface IPointGenerator
     {
-        List<Vector3> Generate(in GeneratorSettings settings);
+        List<Vector3> Generate(in GeneratorSettings settings, Vector3 sectorIndex);
     }
 
     public class FarthestPointGenerator : IPointGenerator
     {
-        public List<Vector3> Generate(in GeneratorSettings settings)
+        public List<Vector3> Generate(in GeneratorSettings settings, Vector3 sectorIndex)
         {
             var size = new Vector3(Sector.SizeBlocks);
             var rng = new Random((int)settings.Seed);
             var points = new List<Vector3>(settings.Count);
-            points.Add(RandomPoint(rng, size));
+            points.Add(sectorIndex+RandomPoint(rng, size));
             while (points.Count < settings.Count)
             {
                 Vector3 best = default;
@@ -44,7 +44,7 @@ namespace Engine.Generation
                         best = cand;
                     }
                 }
-                points.Add(best);
+                points.Add(sectorIndex +best);
             }
             return points;
         }
@@ -67,7 +67,7 @@ namespace Engine.Generation
         {
             this.radius = radius;
         }
-        public List<Vector3> Generate(in GeneratorSettings settings)
+        public List<Vector3> Generate(in GeneratorSettings settings, Vector3 sectorIndex)
         {
             var size = new Vector3(Sector.SizeBlocks);
             var rng = new Random((int)settings.Seed);
@@ -75,7 +75,7 @@ namespace Engine.Generation
             float minDist = radius;
             float minDist2 = minDist * minDist;
    
-            points.Add(RandomPoint(rng, size));
+            points.Add(sectorIndex + RandomPoint(rng, size));
     
             while (points.Count < settings.Count)
             {
@@ -94,7 +94,7 @@ namespace Engine.Generation
                     }
                     if (ok)
                     {
-                        points.Add(cand);
+                        points.Add(sectorIndex + cand);
                         placed = true;
                         break;
                     }
@@ -117,9 +117,10 @@ namespace Engine.Generation
 
     public static class SectorPointProvider
     {
-        public static List<Vector3> CreatePoints(IPointGenerator generator, GeneratorSettings settings)
+        public static List<Vector3> CreatePoints(IPointGenerator generator, GeneratorSettings settings, Vector3 sectorWorldPos
+            )
         {
-            return generator.Generate(in settings);
+            return generator.Generate(in settings, sectorWorldPos);
         }
     }
 }

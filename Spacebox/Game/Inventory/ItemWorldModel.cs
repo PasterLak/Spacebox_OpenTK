@@ -1,8 +1,7 @@
 using Engine;
 using Engine.Components;
 using Engine.Components.Debug;
-using OpenTK.Mathematics;
-using Spacebox.Game.Resource;
+
 
 namespace Spacebox.Game;
 
@@ -13,7 +12,7 @@ public class ItemWorldModel : Node3D
         var itemTexture = Resources.Load<Texture2D>(texturePath);
         itemTexture.FilterMode = FilterMode.Nearest;
 
-       
+        Name = "ItemWorldModel";
         Mesh item = ItemModelGenerator.GenerateMeshFromTexture(itemTexture,  modelDepth);
         
         var cm = AttachComponent(new ModelRendererComponent(new Model(item, new TextureMaterial(itemTexture))));

@@ -4,8 +4,10 @@ using Engine.Components;
 using Engine.Components.Debug;
 using Engine.Light;
 using Engine.Physics;
+using Engine.Utils;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 using Spacebox.GUI;
@@ -16,11 +18,14 @@ namespace Spacebox.Game
     public class Spacer : Node3D
     {
         protected Animator animator;
-        private StatsBarData Health { get;  set; }
+        private StatsBarData Health { get; set; }
         public ColliderComponent OBB => obb;
         private ColliderComponent obb;
         public Storage Storage { get; private set; }
-        public Spacer(Vector3 pos) {
+
+        private bool lootWasGenerated = false;
+        public Spacer(Vector3 pos)
+        {
 
             Position = pos;
             Texture2D spacerTex = Resources.Get<Texture2D>("Resources/Textures/spacer.png");
@@ -32,12 +37,12 @@ namespace Spacebox.Game
             Health.Count = 100;
             Health.DataChanged += OnHit;
             Health.OnEqualZero += OnKilled;
-            Storage = new Storage(3,3);
+            Storage = new Storage(3, 3);
             Storage.Name = Name;
 
             obb = AttachComponent(new OBBCollider());
 
-            Model spacerModel = new Model(Resources.Load<Mesh>("Resources/Models/spacer.obj"), 
+            Model spacerModel = new Model(Resources.Load<Mesh>("Resources/Models/spacer.obj"),
                 new TextureMaterial(spacerTex));
             AttachComponent(new ModelRendererComponent(spacerModel));
             AttachComponent(new AxesDebugComponent());
@@ -47,7 +52,6 @@ namespace Spacebox.Game
             animator.AddAnimation(new RotateAnimation(Vector3.UnitX, 5f, 0f));
             animator.AddAnimation(new RotateAnimation(Vector3.UnitY, 5f, 0f));
 
-            AddItems(Storage);
 
             /*var mo = AddChild(new ItemWorldModel("Resources/Textures/Old/drill6.png", 0.1f));
             mo.Rotate(new Vector3(0,90,0));
@@ -61,32 +65,41 @@ namespace Spacebox.Game
         {
             Health.Decrement(projectile.Parameters.Damage);
         }
-        
+
         private void OnHit()
         {
-           
+
         }
-        
+
+        private void GenerateLoot()
+        {
+            Storage.Clear();
+            AddItems(Storage);
+            lootWasGenerated = true;
+        }
+
         private void OnKilled()
         {
-           
+
             Storage.Clear();
             Parent?.RemoveChild(this);
         }
-        private void AddItems(Storage storage) // hard coded
+        private void AddItems(Storage storage)
         {
-            var item = GameAssets.GetItemByName("Beer");
-            if (item != null)
+            var items = GameAssets.LootConfig.GenerateLoot("spacer", SeedHelper.ToIntSeed(World.CurrentSector.Seed), storage.SlotsCount);
+
+            foreach (var item in items)
             {
-                storage.TryAddItem(item, 6);
+                storage.TryAddItem(item.Item, (byte)item.Quantity);
             }
-           
+
+
         }
 
         public override void Update()
         {
             base.Update();
-          
+
             animator?.Update();
 
             var cam = Camera.Main as Astronaut;
@@ -97,7 +110,7 @@ namespace Spacebox.Game
 
             if (ray.Intersects(OBB, out float distance))
             {
-              
+
                 if (distance < 3)
                 {
                     CenteredText.SetText("Press RMB to open");
@@ -105,18 +118,19 @@ namespace Spacebox.Game
 
                     if (Input.IsMouseButtonDown(MouseButton.Right))
                     {
-                        
-                        StorageUI.OpenStorage(Storage, cam );
+                        if (!lootWasGenerated)
+                            GenerateLoot();
+                        StorageUI.OpenStorage(Storage, cam);
                     }
                 }
-                
+
             }
         }
 
         public override void Render()
         {
             base.Render();
-           
+
         }
 
     }

@@ -45,6 +45,8 @@ namespace Engine
             Emitter = emitter;
             Emitter.ParticleSystem = this;
             _renderer = new ParticleRenderer(material, Max);
+
+            Name = "ParticleSystem_"+ emitter.GetType().Name;
         }
 
         public override void Update()

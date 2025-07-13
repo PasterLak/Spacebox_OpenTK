@@ -22,7 +22,7 @@ namespace Spacebox.Benchmarks
 
             Console.WriteLine($"Size of Block: {after - before} bytes");*/
             Console.WriteLine($"--------------------------------------------");
-            var summary = BenchmarkRunner.Run<InternalCavitiesBenchmark>();
+            var summary = BenchmarkRunner.Run<DownscaleBenchmarks>();
         }
 
         

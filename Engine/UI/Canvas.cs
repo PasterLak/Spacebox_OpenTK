@@ -15,7 +15,7 @@ namespace Engine.UI
         public Canvas(Vector2i virtualSize, GameWindow window)
         {
             VirtualSize = virtualSize;
-
+            
             ScreenSize = window.ClientSize;
             //Debug.Log($"sizes real {ScreenSize} virt {virtualSize}");
             window.Resize += Resize;

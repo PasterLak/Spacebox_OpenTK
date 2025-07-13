@@ -97,12 +97,18 @@ public class AOVoxels
 
     private static bool isPrecalculated = false;
 
+    static AOVoxels()
+    {
+        CalculateMasks();
+        CalculateSideBlockPositions();
+        isPrecalculated = true;
+    }
     public static void Init()
     {
         if (isPrecalculated) return;
 
-        CalculateMasks();
-        CalculateSideBlockPositions();
+       //CalculateMasks();
+       // CalculateSideBlockPositions();
 
         isPrecalculated = true;
 
@@ -142,7 +148,7 @@ public class AOVoxels
     {
         foreach (Face face in Enum.GetValues(typeof(Face)))
         {
-            CachedMasks.Add(face, CreateMask(CubeMeshData.GetFaceVertices(face)));
+            CachedMasks.TryAdd(face, CreateMask(CubeMeshData.GetFaceVertices(face)));
         }
     }
 
@@ -171,7 +177,7 @@ public class AOVoxels
                 faceData.neigbordPositions.Add(ver, sidePos);
             }
 
-            CachedSidesToCheck.Add(face, faceData);
+            CachedSidesToCheck.TryAdd(face, faceData);
         }
     }
 

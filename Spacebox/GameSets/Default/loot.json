@@ -1,0 +1,52 @@
+{
+  "lootTables": {
+    "spacer": [
+      {
+        "itemId": "Med Kit",
+        "probability": 100,
+        "minCount": 1,
+        "maxCount": 1
+      },
+      {
+        "itemId": "Water",
+        "probability": 50,
+        "minCount": 1,
+        "maxCount": 3
+      },
+       {
+        "itemId": "Cobalt Crystal",
+        "probability": 30,
+        "minCount": 1,
+        "maxCount": 3
+      },
+      {
+        "itemId": "Energy Cell",
+        "probability": 10,
+        "minCount": 1,
+        "maxCount": 3
+      },
+      {
+        "itemId": "Pistol",
+        "probability": 100,
+        "minCount": 1,
+        "maxCount": 1
+      }
+
+    ],
+    "chestLoot2": [
+      {
+        "itemId": "diamond",
+        "probability": 5,
+        "minCount": 1,
+        "maxCount": 1
+      },
+   
+      {
+        "itemId": "magic_scroll",
+        "probability": 25,
+        "minCount": 1,
+        "maxCount": 1
+      }
+    ]
+  }
+}

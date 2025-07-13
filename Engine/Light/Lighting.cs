@@ -10,7 +10,7 @@ namespace Engine.Light
         public static Vector3 AmbientColor = new Vector3(1);
         public static Vector3 FogColor;
 
-        private static float _fogDensity = 32;
+        private static float _fogDensity = 32 / 10_000.0f;
         public static float FogDensity
         {
             get => _fogDensity;

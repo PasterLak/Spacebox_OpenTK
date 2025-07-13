@@ -8,14 +8,15 @@ namespace Engine
     public static class ParticleSystemUI
     {
         private static int _activeIndex = 0;
-        private static readonly string[] _emitterNames = { "Box", "Cone", "Disk", "Plane", "Sphere" };
+        private static readonly string[] _emitterNames = { "Box", "Cone", "Disk", "Plane", "Sphere", "Point" };
         private static readonly Type[] _emitterTypes =
         {
             typeof(BoxEmitter),
             typeof(ConeEmitter),
             typeof(DiskEmitter),
             typeof(PlaneEmitter),
-            typeof(SphereEmitter)
+            typeof(SphereEmitter),
+            typeof(PointEmitter)
         };
 
         public static void Show(ParticleSystem[] systems, OrbitalCamera camera)
@@ -351,6 +352,13 @@ namespace Engine
                     float s1v = ((SphereEmitter)e).Radius;
                     if (ImGui.DragFloat("##s1v", ref s1v, 0.1f, 0f, 0f, "%.2f")) ((SphereEmitter)e).Radius = s1v;
                     ImGui.NextColumn();
+                    break;
+                case 5:
+                    ImGui.Text("Point Center"); ImGui.NextColumn();
+                    var s0v2 = ((PointEmitter)e).Position.ToSystemVector3();
+                    if (ImGui.DragFloat3("##s0v2", ref s0v2, 0.1f, 0f, 0f, "%.2f")) ((PointEmitter)e).Position = s0v2.ToOpenTKVector3();
+                    ImGui.NextColumn();
+
                     break;
             }
             ImGui.Separator();

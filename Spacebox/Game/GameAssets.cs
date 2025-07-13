@@ -19,6 +19,8 @@ namespace Spacebox.Game
         public static Texture2D LightAtlas { get; set; }
         public static Texture2D DustTexture { get; set; }
 
+        public static LootConfig LootConfig { get; set; }
+
         public static Dictionary<short, BlockData> Blocks = new Dictionary<short, BlockData>();
         public static Dictionary<short, Item> Items = new Dictionary<short, Item>();
         public static Dictionary<short, ItemModel> ItemModels = new Dictionary<short, ItemModel>();
@@ -222,6 +224,7 @@ namespace Spacebox.Game
             foreach (var c in Sounds.Values)
                 c?.Dispose();
             Recipes.Clear();
+            LootConfig = null;
             Projectiles.Clear();
             Blocks.Clear();
             Items.Clear();

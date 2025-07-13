@@ -116,11 +116,13 @@ namespace Spacebox.Game.Player
 
             Flashlight.CutOff = 15;
             Flashlight.OuterCutOff = 20;
-            var point = AddChild(new PointLight());
+
+
+            /*var point = AddChild(new PointLight());
             point.Position = new Vector3(0, 0, -0.5f);
             point.Diffuse = new Vector3(56, 204, 209);
             point.Intensity = 0.25f;
-            point.Range = 5;
+            point.Range = 5;*/
 
         }
 

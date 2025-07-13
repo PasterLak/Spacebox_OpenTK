@@ -54,7 +54,8 @@ namespace Spacebox.Game.Generation
         private LOD Lod = LOD.None;
         public enum LOD : short
         {
-            None = 0, L0 = 128, L1 = 200, L2 = 256, L3 = 512
+            None = 0, L0 = Settings.LOD0, L1 = Settings.LOD1, L2 = Settings.LOD2, L3 = Settings.LOD3
+           
         }
 
         public Chunk(Vector3SByte positionIndex, SpaceEntity spaceEntity, bool emptyChunk = false)
@@ -181,6 +182,7 @@ namespace Spacebox.Game.Generation
 
         public void GenerateMesh(bool doLight)
         {
+           
             if (!_isLoadedOrGenerated) return;
             NeedsToRegenerateMesh = false;
             // Debug.Log("Regen " + PositionIndex);
@@ -372,43 +374,41 @@ namespace Spacebox.Game.Generation
             NeedsToRegenerateMesh = true;
         }
 
-        private async Task CreateLOD(LOD lod)
+        private void CreateLOD(LOD lod)
         {
+           
+            int downscale;
+            Vector2[] uv;
             switch (lod)
             {
                 case LOD.L1:
-                    await GenerateLODMeshAsync(1, GameAssets.AtlasBlocks.GetUVByName("LOD"));
+                    downscale = 1;
+                    uv = GameAssets.AtlasBlocks.GetUVByName("LOD");
                     break;
                 case LOD.L2:
-                    await GenerateLODMeshAsync(2, GameAssets.AtlasBlocks.GetUVByName("LOD"));
+                    downscale = 2;
+                    uv = GameAssets.AtlasBlocks.GetUVByName("LOD");
                     break;
                 case LOD.L3:
-                    await GenerateLODMeshAsync(4, GameAssets.AtlasBlocks.GetUVByName("LOD"));
+                    downscale = 4;
+                    uv = GameAssets.AtlasBlocks.GetUVByName("LOD");
                     break;
+                default: return;
             }
-        }
-
-
-
-        public async Task GenerateLODMeshAsync(int downscale, Vector2[] uv = null)
-        {
-
-            LOD requestedLOD = Lod;
-            var generator = new ChunkLODMeshGenerator();
-            MeshData data = await generator.GenerateFromBlocksAsync(this.Blocks, downscale, uv).ConfigureAwait(false);
-
-            MainThreadDispatcher.Instance.Enqueue(() =>
-            {
-
-                if (Lod == requestedLOD)
+            var requested = lod;
+            new ChunkLODMeshGenerator()
+                .GenerateFromBlocksAsync(this.Blocks, downscale, uv, data =>
                 {
-                    _mesh?.Dispose();
-                    _mesh = new Mesh(data.Vertices, data.Indices, BuffersData.CreateBlockBuffer());
-                }
-            });
+                    MainThreadDispatcher.Instance.Enqueue(() =>
+                    {
+                        if (Lod == requested)
+                        {
+                            _mesh?.Dispose();
+                            _mesh = new Mesh(data.Vertices, data.Indices, BuffersData.CreateBlockBuffer());
+                        }
+                    });
+                });
         }
-
-
 
 
 
@@ -574,6 +574,7 @@ namespace Spacebox.Game.Generation
         public void Dispose()
         {
             _mesh?.Dispose();
+            OnChunkModified = null;
         }
 
 
