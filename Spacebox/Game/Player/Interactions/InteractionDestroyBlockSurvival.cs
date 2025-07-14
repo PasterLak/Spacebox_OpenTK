@@ -36,11 +36,24 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
 
         //Debug.Error("POOl is null " + (pool is null));
 
-            light = pool.Take();
-           /* light.Range = 8;
-            light.Ambient = new Color3Byte(100, 116, 255).ToVector3();
+            light = new PointLight();
+            light.Range = 8;
+
+        DrillItem drillItem = itemSlot.Item as DrillItem;
+        //  light.Diffuse = new Color3Byte(100, 116, 255).ToVector3(); orig
+        if(drillItem != null )
+        {
+            light.Diffuse = drillItem.DrillColor.ToVector3();
+           // light.Diffuse = new Color3Byte(85, 51, 255).ToVector3();
+        }
+        else
+        {
             light.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
-            light.Specular = new Color3Byte(0, 0, 0).ToVector3();*/
+        }
+       
+        // light.Diffuse = new Color3Byte(201, 48, 178).ToVector3();  // pink
+        light.Specular = new Color3Byte(0, 0, 0).ToVector3();
+        light.Intensity = 1.5f;
             light.Enabled = false;
         
        
@@ -76,13 +89,15 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
     {
         base.OnDisable();
         lastBlock = null;
+        if(BlockMiningEffect != null)
         BlockMiningEffect.Enabled = false;
         model.SetAnimation(false);
         BlockMiningEffect.ClearParticles();
         drillAudio.Stop();
         drill0Audio.Stop();
-        light.IsActive = false;
-        PointLightsPool.Instance.PutBack(light);
+        light.Enabled = false;
+        light.Destroy();
+        light = null;
     }
 
     private void ProcessDestroying(HitInfo hit, byte power)
@@ -93,6 +108,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             DestroyBlock(hit);
             return;
         }
+        BlockMiningEffect.SetEmitter(true);
         if (lastBlock == null || lastBlock != hit.block)
             _time = timeToDamage;
         lastBlock = hit.block;
@@ -123,14 +139,15 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             BlockMiningEffect.Enabled = false;
             drillAudio.Stop();
             drill0Audio.Stop();
-            light.IsActive = false;
+            light.Enabled = false;
         }
+       
         if (!player.CanMove)
         {
             if (Input.IsKeyDown(Keys.F) && lastInteractiveBlock != null)
                 lastInteractiveBlock.Use(player);
             model.SetAnimation(false);
-            light.IsActive = false;
+            light.Enabled = false;
             return;
         }
 
@@ -147,11 +164,19 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
                 var blockData = GameAssets.GetBlockDataById(hit.block.BlockId);
                 BlockMiningEffect.Enabled = true;
                 BlockMiningEffect.ParticleSystem.Position = hit.position + new Vector3(hit.normal.X, hit.normal.Y, hit.normal.Z) * 0.05f;
+
+                var cone = BlockMiningEffect.ParticleSystem.Emitter as ConeEmitter;
+
+                if(cone != null)
+                {
+                    cone.Direction = hit.normal.ToVector3();
+                }
+              
                 BlockMiningEffect.Update();
                 if (!model.Animator.IsActive)
                     model.SetAnimation(true);
-                if (!light.IsActive)
-                    light.IsActive = true;
+                if (!light.Enabled)
+                    light.Enabled = true;
                 light.Position = player.Position;
                 if (item != null)
                 {
@@ -165,8 +190,8 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             {
                 model.SetAnimation(true);
                 BlockMiningEffect.Enabled = true;
-                if (!light.IsActive)
-                    light.IsActive = true;
+                if (!light.Enabled)
+                    light.Enabled = true;
             }
             lastInteractiveBlock = hit.block as InteractiveBlock;
             if (lastInteractiveBlock != null)

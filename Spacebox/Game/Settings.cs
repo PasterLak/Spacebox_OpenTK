@@ -7,7 +7,7 @@ namespace Spacebox.Game
         public static float FOV = 90;
         public static int ViewDistance = 10000;
 
-        public const int LOD0 = 128;
+        public const int LOD0 = 150;
         public const int LOD1 = 200;
         public const int LOD2 = 256;
         public const int LOD3 = 512;

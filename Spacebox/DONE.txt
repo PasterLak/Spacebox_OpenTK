@@ -43,10 +43,14 @@ What the game needs:
 - 
 
 
- ToDo:
+ ToDo for 0.1.2:
 
-- maybe better generation (different objects and resources)
+-  better generation (different objects and resources)
 - thulium/ponium crafts
+- 
+
+additional
+- options
 
 - fix effect drop
 
@@ -80,6 +84,7 @@ New
 - new world generation
 - loot generator
 - spacer has loot
+- different drill color (point light)
 
 
 Small

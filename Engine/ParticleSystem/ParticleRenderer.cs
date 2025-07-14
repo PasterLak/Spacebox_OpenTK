@@ -11,11 +11,11 @@ namespace Engine
         private readonly int _instVbo;
         private float[] _data;
         private int _count;
-        private readonly MaterialBase _material;
+        public ParticleMaterial Material;
         private int _maxParticles;
-        public ParticleRenderer(MaterialBase material, int maxParticles)
+        public ParticleRenderer(ParticleMaterial material, int maxParticles)
         {
-            _material = material;
+            Material = material;
             _quad = new MeshBuffer(new[] { new BufferAttribute("aPos", 3), new BufferAttribute("aUV", 2) });
             float[] v = {
         -0.5f, -0.5f, 0, 0, 0,
@@ -66,9 +66,9 @@ namespace Engine
             _count = 0;
             GL.Disable(EnableCap.DepthTest);
             GL.DepthMask(false);
-            _material.Apply(Matrix4.Identity);
-            _material.Shader.SetMatrix4("view", cam.GetViewMatrix(), false);
-            _material.Shader.SetMatrix4("projection", cam.GetProjectionMatrix(), false);
+            Material.Apply(Matrix4.Identity);
+            Material.Shader.SetMatrix4("view", cam.GetViewMatrix(), false);
+            Material.Shader.SetMatrix4("projection", cam.GetProjectionMatrix(), false);
 
         }
 

@@ -96,7 +96,13 @@
             ]
         },
 
+        {
+            "Product": {"Item": "Aluminium Chest", "Quantity": 1},
+            "Ingredients": [
+                {"Item": "Aluminium Panels", "Quantity": 3}
+           ]
 
+        },
 
         {
             "Product": {"Item": "Window", "Quantity": 1},

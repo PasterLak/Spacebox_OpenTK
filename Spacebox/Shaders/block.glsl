@@ -33,7 +33,7 @@ float fogFac(vec3 p, float k)
 void main()
 {
     vec4 wp=vec4(aPosition,1.0)*model;
-    gl_Position=wp*view*projection;
+    gl_Position=wp*VIEW*PROJECTION;
 
     vUV         = aTexCoord;
     vColor      = aColor;

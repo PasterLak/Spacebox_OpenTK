@@ -707,6 +707,7 @@ namespace Spacebox.Game.Resource
             {
                 Power = data.Power,
                 Category = data.Category,
+                DrillColor = data.DrillColor,
             };
             GameAssetsRegister.RegisterItem(drillItem, data.Sprite);
         }

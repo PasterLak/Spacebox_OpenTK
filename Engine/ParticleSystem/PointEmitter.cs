@@ -5,22 +5,30 @@ namespace Engine
     public class PointEmitter : EmitterBase
     {
         public Vector3 Position = Vector3.Zero;
+        public Vector3 Direction = Vector3.Zero;
 
         public override Particle Create()
         {
-  
-            float z = NextFloat() * 2f - 1f;
-            float t = NextFloat() * MathF.Tau;
-            float rxy = MathF.Sqrt(1f - z * z);
-            var dir = new Vector3(rxy * MathF.Cos(t), rxy * MathF.Sin(t), z);
+            Vector3 dir;
 
-            var pos = Position;
+            if (Direction.LengthSquared < 1e-6f)          
+            {
+                float z = NextFloat() * 2f - 1f;
+                float phi = NextFloat() * MathF.Tau;
+                float r = MathF.Sqrt(1f - z * z);
+                dir = new Vector3(r * MathF.Cos(phi), r * MathF.Sin(phi), z);
+            }
+            else
+            {
+                dir = Vector3.Normalize(Direction);       
+            }
+
             var vel = dir * Range(SpeedMin, SpeedMax);
             var life = Range(LifeMin, LifeMax);
             var startSize = Range(StartSizeMin, StartSizeMax);
             var endSize = Range(EndSizeMin, EndSizeMax);
 
-            var p = new Particle(pos, vel, life, ColorStart, ColorEnd, startSize, endSize)
+            var p = new Particle(Position, vel, life, ColorStart, ColorEnd, startSize, endSize)
             {
                 AccStart = AccelerationStart,
                 AccEnd = AccelerationEnd,

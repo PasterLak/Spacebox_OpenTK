@@ -1,4 +1,5 @@
 ﻿using Engine.Components.Debug;
+using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -16,7 +17,7 @@ namespace Engine.SceneManagement
         ParticleSystem system2;
         public override void LoadContent()
         {
-            ThemeUIEngine.ApplyDarkTheme();
+            
             camera = AddChild(new OrbitalCamera(Vector3.Zero, 10, 1, 100));
             camera.Projection = ProjectionType.Orthographic;
             //AddChild(new CubeRenderer(Vector3.Zero));
@@ -84,6 +85,7 @@ namespace Engine.SceneManagement
         public override void Start()
         {
            
+          
         }
 
 

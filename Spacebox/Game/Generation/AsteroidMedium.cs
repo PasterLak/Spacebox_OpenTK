@@ -9,7 +9,7 @@ namespace Spacebox.Game.Generation
 {
     public class AsteroidMedium : Asteroid
     {
-        public const int ChunkCount = 2;
+        public const int ChunkCount = 4;
         private readonly AsteroidVoxelDataGenerator voxelGen;
         private readonly int chunkSize;
         private readonly object _genLock = new();
@@ -17,6 +17,7 @@ namespace Spacebox.Game.Generation
         private readonly HashSet<Vector3SByte> generatingChunks = new();
         private readonly HashSet<Vector3SByte> loadedChunks = new HashSet<Vector3SByte>();
 
+        readonly Dictionary<Vector3SByte, List<Vector3i>> _worm = new Dictionary<Vector3SByte, List<Vector3i>>();
         public AsteroidMedium(ulong id, Vector3 positionWorld, Sector sector)
             : base(id, positionWorld, sector)
         {
@@ -31,6 +32,25 @@ namespace Spacebox.Game.Generation
                 type: AsteroidType.Medium
             );
             chunkSize = Chunk.Size;
+
+
+            int worldVox = Chunk.Size * AsteroidMedium.ChunkCount;
+            var wormParams = new WormParameters(3 * ChunkCount, 4, 0.5f, ChunkCount * ChunkSize, ComputeStep(4, 1), (int)Seed);
+
+           // var tunnelMap = new Dictionary<Vector3SByte, List<Vector3i>>(128);
+            foreach (var (c, v) in PerlinWorms.Voxels(wormParams, ChunkCount, Chunk.Size))
+            {
+                if (!_worm.TryGetValue(c, out var lst)) 
+                    _worm[c] = lst = new List<Vector3i>(32);
+                lst.Add(v);
+            }
+         
+           // _worm = tunnelMap;
+        }
+        static float ComputeStep(byte wormDiameter, float overlapK = 0.75f) // 1=  fast, big steps| 0 = slow, smooth steps
+        {
+            float step = (wormDiameter * 0.5f) * overlapK;
+            return step < 1f ? 1f : step;
         }
 
         public override void OnGenerate()
@@ -123,6 +143,13 @@ namespace Spacebox.Game.Generation
         {
             var chunk = new Chunk(idx, this, true);
             var data = voxelGen.GenerateDataForChunk(idx, chunkSize);
+
+            var chunkSeed = SeedHelper.GetChunkIdInt(EntityID, idx);
+
+            if (_worm != null && _worm.TryGetValue(idx, out var list))
+                foreach (var v in list) data[v.X, v.Y, v.Z] = 0;
+
+
             var oreGen = new AsteroidOreGenerator(new AsteroidOreGeneratorParameters(
                 outerOreVeinChance: 0.02f,
                 outerOreMaxVeinSize: 10,
@@ -133,7 +160,7 @@ namespace Spacebox.Game.Generation
                 deepOreVeinChance: 0.008f,
                 deepOreMaxVeinSize: 1,
                 deepOreIds: new[] { 10 },
-                oreSeed: SeedHelper.GetChunkIdInt(EntityID, idx)
+                oreSeed: chunkSeed
             ));
             oreGen.ApplyOresToChunk(ref data, Spacebox.Generation.AsteroidType.Medium);
             for (int x = 0; x < chunkSize; x++)

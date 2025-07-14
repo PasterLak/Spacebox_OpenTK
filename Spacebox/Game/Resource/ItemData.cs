@@ -22,6 +22,7 @@ namespace Spacebox.Game.Resource
     public class DrillItemData : ItemData
     {
         public byte Power { get; set; } = 0;
+        public Color3Byte DrillColor { get; set; } = new Color3Byte(100, 116, 255);
     }
 
     public class ConsumableItemData : ItemData

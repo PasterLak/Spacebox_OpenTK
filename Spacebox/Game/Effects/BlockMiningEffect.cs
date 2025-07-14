@@ -11,7 +11,9 @@ namespace Spacebox.Game.Effects
         private Shader particleShader;
         private Texture2D dustTexture;
         private Camera camera;
-
+        ParticleSystem ParticleSystem2;
+        ConeEmitter emitter1;
+        PlaneEmitter emitter2; 
         private float elapsedTime = 0f;
         private const float duration = 2f;
 
@@ -34,8 +36,68 @@ namespace Spacebox.Game.Effects
             //dustTexture = new Texture2D("Resources/Textures/blockDust.png", true);
             dustTexture = texture;
 
-            ParticleSystem = new ParticleSystem(new ParticleMaterial(dustTexture),new SphereEmitter());
 
+             emitter1 = new ConeEmitter
+            {
+                SpeedMin = 2f,
+                SpeedMax = 3f,
+                LifeMin = 0.2f,
+                LifeMax = 0.2f,
+                StartSizeMin = 0.2f,
+                StartSizeMax = 0.3f,
+                EndSizeMin = 0.05f,
+                EndSizeMax = 0.1f,
+                AccelerationStart = new Vector3(0f, 0f, 0f),
+                AccelerationEnd = new Vector3(0f, 0f, 0f),
+                RotationSpeedMin = 0f,
+                RotationSpeedMax = 180f,
+                ColorStart = new Vector4(1f, 1f, 0.9f, 1f),
+                ColorEnd = new Vector4(0.5441632f, 0.29267818f, 0f, 0f),
+                Apex = new Vector3(0f, 0f, 0f),
+                Axis = new Vector3(0f, 1f, 0f),
+                Angle = 12f,
+                Height = 0.1f,
+            };
+
+            emitter2 = new PlaneEmitter
+            {
+                SpeedMin = 0f,
+                SpeedMax = 0f,
+                LifeMin = 1f,
+                LifeMax = 1f,
+                StartSizeMin = 0.1f,
+                StartSizeMax = 0.2f,
+                EndSizeMin = 0.1f,
+                EndSizeMax = 0.5f,
+                AccelerationStart = new Vector3(0f, 0f, 0f),
+                AccelerationEnd = new Vector3(0f, 0f, 0f),
+                RotationSpeedMin = 0f,
+                RotationSpeedMax = 180f,
+                ColorStart = new Vector4(0.26762748f, 0.26760072f, 0.26760072f, 1f),
+                ColorEnd = new Vector4(0.3336568f, 0.3336234f, 0.3336234f, 0f),
+                Center = new Vector3(0f, 0f, 0f),
+                Normal = new Vector3(0f, 1f, 0f),
+                Width = 0.2f,
+                Height = 0.2f,
+                Direction = new Vector3(0f, 1f, 0f),
+            };
+
+             ParticleSystem2 = new ParticleSystem(new ParticleMaterial(dustTexture), emitter2)
+            {
+                Rate = 20,
+                Max = 100
+            };
+
+            ParticleSystem2.Space = SimulationSpace.World;
+
+            ParticleSystem = new ParticleSystem(new ParticleMaterial(dustTexture), emitter1)
+            {
+                Rate = 100,
+                Max = 200
+            };
+            ParticleSystem.Space = SimulationSpace.World;
+
+            // ParticleSystem.Space = SimulationSpace.Local;
             /*ParticleSystem = new ParticleSystem(dustTexture, shader)
             {
                 Position = position,
@@ -48,27 +110,10 @@ namespace Spacebox.Game.Effects
 
             //particleSystem.Renderer = new ParticleRenderer(texture, particleSystem, shader);
 
-            var emitter = new EmitterOld(ParticleSystem)
-            {
-                LifetimeMin = 0.1f,
-                LifetimeMax = 0.2f,
-                SizeMin = 0.1f,
-                SizeMax = 0.2f,
-                StartColorMin = new Vector4(1f, 1f, 0.8f, 1f),
-                StartColorMax = new Vector4(1f, 1f, 1f, 1f),
-                EndColorMin = new Vector4(1f, 1f, 1f, 0f),
-                EndColorMax = new Vector4(1f, 1f, 1f, 0f),
-                SpawnRadius = 0.02f,
-                SpeedMin = 0.1f,
-                SpeedMax = 0.3f,
-                EmitterDirection = Vector3.UnitY,
 
-                EnableRandomDirection = true,
-                RandomUVRotation = true,
-            };
 
             //ParticleSystem.Emitter = emitter;
-           // ParticleSystem.UseLocalCoordinates = false;
+            // ParticleSystem.UseLocalCoordinates = false;
             //particleShader = new Shader("Shaders/particleShader");
             particleShader = shader;
             //particleShader.Use();
@@ -77,8 +122,6 @@ namespace Spacebox.Game.Effects
 
         private bool _canDestroyBlock = true;
 
-        private EmitterOld emitter;
-        private EmitterOld emitter2;
         public void SetEmitter(bool canDestroyBlock)
         {
             if (_canDestroyBlock == canDestroyBlock) return;
@@ -87,51 +130,18 @@ namespace Spacebox.Game.Effects
 
             if (canDestroyBlock)
             {
-                if (emitter == null)
-                    emitter = new EmitterOld(ParticleSystem)
-                {
-                    LifetimeMin = 0.05f,
-                    LifetimeMax = 0.2f,
-                    SizeMin = 0.05f,
-                    SizeMax = 0.35f,
-                    StartColorMin = new Vector4(1f, 1f, 0.8f, 1f),
-                    StartColorMax = new Vector4(1f, 1f, 1f, 1f),
-                    EndColorMin = new Vector4(1f, 1f, 1f, 0f),
-                    EndColorMax = new Vector4(1f, 1f, 1f, 0f),
-                    SpawnRadius = 0.02f,
-                    SpeedMin = 0.1f,
-                    SpeedMax = 0.3f,
-                    EmitterDirection = Vector3.UnitY,
+               
+                ParticleSystem.Emitter.ColorStart = new Vector4(1f, 1f, 0.9f, 1f); 
+                ParticleSystem.Emitter.ColorEnd = new Vector4(0.5441632f, 0.29267818f, 0f, 0f);
 
-                    EnableRandomDirection = true,
-                    RandomUVRotation = true,
-                };
-
-              //  ParticleSystem.Emitter = emitter;
+                //  ParticleSystem.Emitter = emitter;
             }
             else
             {
-                if(emitter2 == null)
-                 emitter2 = new EmitterOld(ParticleSystem)
-                {
-                    LifetimeMin = 0.08f,
-                    LifetimeMax = 0.25f,
-                    SizeMin = 0.05f,
-                    SizeMax = 0.45f,
-                    StartColorMin = new Vector4(1f, 1f, 0f, 1f),
-                    StartColorMax = new Vector4(1f, 1f, 0f, 1f),
-                    EndColorMin = new Vector4(1f, 1f, 0f, 0f),
-                    EndColorMax = new Vector4(1f, 1f, 0f, 0f),
-                    SpawnRadius = 0.02f,
-                    SpeedMin = 0.1f,
-                    SpeedMax = 0.3f,
-                    EmitterDirection = Vector3.UnitY,
-
-                    EnableRandomDirection = true,
-                    RandomUVRotation = true,
-                };
-
-               // ParticleSystem.Emitter = emitter2;
+              
+                ParticleSystem.Emitter.ColorStart = new Vector4(1f, 1f, 0f, 1f);
+                ParticleSystem.Emitter.ColorEnd = new Vector4(0.5441632f, 0.29267818f, 0f, 0f);
+                // ParticleSystem.Emitter = emitter2;
             }
             
         }
@@ -140,37 +150,52 @@ namespace Spacebox.Game.Effects
         {
             if (elapsedTime < duration)
             {
-                //elapsedTime += Time.Delta;
+                elapsedTime += Time.Delta;
                 if (elapsedTime >= duration)
                 {
-                    //ParticleSystem.SpawnRate = 0f;
+                   // ParticleSystem.Rate = 0f;
                 }
             }
             ParticleSystem.Update();
+            emitter2.Direction = emitter1.Direction;
+            ParticleSystem2.Update();
+
+            if(ParticleSystem.Enabled)
+            {
+                ParticleSystem2.Position = ParticleSystem.Position;
+                ParticleSystem2.Rate = 20;
+            }
+            else
+            {
+                ParticleSystem2.Rate = 0;
+            }
            // ParticleSystem.Renderer.RandomRotation = true;
 
             if (ParticleSystem.ParticlesCount == ParticleSystem.Max)
             {
-                //ParticleSystem.SpawnRate = 0f;
+               // ParticleSystem.Rate = 0f;
             }
         }
 
         public void Render()
         {
             if(!Enabled) return;
-           // ParticleSystem.Renderer.Material.Shader.SetVector3("color", color);
-            //ParticleSystem.Draw(camera);
+          
+            ParticleSystem.Render();
+            ParticleSystem2.Render();
         }
 
         public void ClearParticles()
         {
-           // ParticleSystem.GetParticles().Clear();
-            //ParticleSystem.Renderer.Update();
+            ParticleSystem.ClearParticles();
+            ParticleSystem2.ClearParticles();
+
         }
 
         public void Dispose()
         {
-          //  ParticleSystem.Dispose();
+            ParticleSystem.Destroy();
+            ParticleSystem2.Destroy();
             //dustTexture.Dispose();
             //particleShader.Dispose();
         }

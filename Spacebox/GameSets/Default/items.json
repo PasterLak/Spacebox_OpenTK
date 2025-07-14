@@ -7,7 +7,11 @@
         "Sprite": "drill1",
         "MaxStack": 1,
         "ModelDepth": 1.5,
-        "Power": 1
+        "Power": 1,
+        "DrillColor" : {
+        "r": 118,
+        "g": 135,
+        "b": 214 }
     },
     {
         "Name": "Cobalt Drill",
@@ -16,7 +20,11 @@
         "Sprite": "drill2",
         "MaxStack": 1,
         "ModelDepth": 2,
-        "Power": 2
+        "Power": 2,
+        "DrillColor" : {
+        "r": 38,  
+        "g": 212,
+        "b": 194 }
     },
     {
         "Name": "Iron Drill",
@@ -25,7 +33,11 @@
         "Sprite": "drill3",
         "MaxStack": 1,
         "ModelDepth": 2,
-        "Power": 3
+        "Power": 3,
+        "DrillColor" : {
+        "r": 38,  
+        "g": 192,
+        "b": 212 }
     },
     {
         "Name": "Triple Iron Drill",
@@ -34,7 +46,11 @@
         "Sprite": "drill4",
         "MaxStack": 1,
         "ModelDepth": 4,
-        "Power": 4
+        "Power": 4,
+         "DrillColor" : {
+        "r": 38,  
+        "g": 180,
+        "b": 212 }
     },
     {
         "Name": "Titanium Drill",
@@ -43,7 +59,11 @@
         "Sprite": "drill5",
         "MaxStack": 1,
         "ModelDepth": 3,
-        "Power": 5
+        "Power": 5,
+         "DrillColor" : {
+        "r": 57,  
+        "g": 76,
+        "b": 219 }
     },
      {
         "Name": "Obscurium Drill",
@@ -52,8 +72,12 @@
         "Sprite": "drill6",
         "MaxStack": 1,
         "ModelDepth": 3,
-        "Power": 6
-    },
+        "Power": 6,
+         "DrillColor" : {       
+        "r": 201,  
+        "g": 48,
+        "b": 178 }
+     },
     {
         "Name": "Pistol",
         "Type": "weapon",

@@ -32,24 +32,24 @@ namespace Engine
         public bool HasChildren => Children.Count > 0;
         public List<Component> Components { get; } = new();
         public bool HasComponents => Components.Count > 0;
-        
-        public bool Enabled { get; set; } = true;   
-        
+
+        public bool Enabled { get; set; } = true;
+
         public Node3D()
         {
             Owner = this;
-            
+
         }
         public Node3D(Vector3 position)
         {
-            Position = position;    
+            Position = position;
             Owner = this;
         }
 
         public T AddChild<T>(T child) where T : Node3D
         {
             if (child == null || ReferenceEquals(child, this)) return child;
-            if(child is Skybox)
+            if (child is Skybox)
             {
                 Lighting.Skybox = child;
             }
@@ -71,7 +71,7 @@ namespace Engine
         public T AttachComponent<T>(T component) where T : Component
         {
             if (component == null || Components.Contains(component)) return component;
-          
+
             component.OnAttached(this);
             Components.Add(component);
             return component;
@@ -87,8 +87,8 @@ namespace Engine
         {
             for (int i = 0; i < Components.Count; i++)
             {
-                if(Components[i].Enabled)
-               Components[i].Start();
+                if (Components[i].Enabled)
+                    Components[i].Start();
             }
 
             for (int i = Children.Count - 1; i >= 0; i--)
@@ -103,36 +103,36 @@ namespace Engine
             {
                 DetachComponent(Components[i]);
             }
-               
+
             for (int i = Children.Count - 1; i >= 0; i--)
             {
                 var child = Children[i];
                 RemoveChild(child);
                 child.Destroy();
             }
-                  
 
-            Parent?.RemoveChild(this);           
+
+            Parent?.RemoveChild(this);
         }
         public virtual void Update()
         {
-            if(!Enabled) return;
-            
+            if (!Enabled) return;
+
             _ = GetModelMatrix();
             for (int i = 0; i < Components.Count; i++)
                 if (Components[i].Enabled) Components[i].OnUpdate();
             for (int i = 0; i < Children.Count; i++)
             {
-                if(Children[i].Enabled)
-                Children[i].Update();
+                if (Children[i].Enabled)
+                    Children[i].Update();
             }
-               
+
         }
 
         public virtual void Render()
         {
-            if(!Enabled) return;
-            
+            if (!Enabled) return;
+
             for (var i = 0; i < Components.Count; i++)
             {
                 var cmp = Components[i];
@@ -282,18 +282,32 @@ namespace Engine
             return Quaternion.FromEulerAngles(rad);
         }
 
-       
+
         public Vector3 WorldForward
         {
             get
             {
-          
-                Matrix4 m = GetModelMatrix();        
+
+                Matrix4 m = GetModelMatrix();
 
                 Vector3 dir = Vector3.Transform(new Vector3(0, 0, -1), m.ExtractRotation()).Normalized();
 
                 return dir;
             }
+        }
+        public void RotateByNormal(Vector3 normal)
+        {
+            if (normal.LengthSquared == 0f) return;
+
+            normal.Normalize();
+
+            float yaw = MathF.Atan2(normal.X, normal.Z);
+            float pitch = MathF.Atan2(-normal.Y, MathF.Sqrt(normal.X * normal.X + normal.Z * normal.Z));
+
+            Rotation = new Vector3(
+                MathHelper.RadiansToDegrees(pitch),
+                MathHelper.RadiansToDegrees(yaw),
+                0f);
         }
 
         public Vector3 Forward
@@ -316,13 +330,13 @@ namespace Engine
         {
             Debug.Log("------------------- SceneGraph -------------------");
             var objectsCount = PrintHierarchy(0);
-            Debug.Log($"------------------- SceneGraph [{ objectsCount}] -----------------");
+            Debug.Log($"------------------- SceneGraph [{objectsCount}] -----------------");
         }
 
         private int PrintHierarchy(int depth = 0, int count = 1)
         {
             Debug.Log($"[{Components.Count}]{new string('-', depth * 2)}{Name}");
-            
+
             foreach (var child in Children)
                 count = child.PrintHierarchy(depth + 1, ++count);
 
