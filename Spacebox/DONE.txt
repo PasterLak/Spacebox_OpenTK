@@ -109,6 +109,7 @@ Engine
 - new particle system
 - multi threading - workers
 - dev gui
+- billboards
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.1

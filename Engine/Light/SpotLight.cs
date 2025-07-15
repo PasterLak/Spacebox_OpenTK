@@ -12,7 +12,7 @@ namespace Engine.Light
             get
             {
                 if (!GetDirectionFromNode) return _direction;
-                return WorldForward;
+                return ForwardWorld;
             }
             set => _direction = value;
         }

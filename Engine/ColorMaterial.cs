@@ -8,5 +8,11 @@
             RenderMode = RenderMode.Opaque;
         }
 
+        public ColorMaterial(Shader customShader) : base(customShader)
+        {
+            RenderFace = RenderFace.Front;
+            RenderMode = RenderMode.Opaque;
+        }
+
     }
 }

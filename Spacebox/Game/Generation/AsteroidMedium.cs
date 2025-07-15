@@ -26,7 +26,7 @@ namespace Spacebox.Game.Generation
                 asteroidDimensions: diameter,
                 blockSize: 1f,
                 threshold: 33,
-                noiseOctaves: 3,
+                noiseOctaves: 4,
                 noiseScale: 1f,
                 seed: (int)Seed,
                 type: AsteroidType.Medium
@@ -35,7 +35,8 @@ namespace Spacebox.Game.Generation
 
 
             int worldVox = Chunk.Size * AsteroidMedium.ChunkCount;
-            var wormParams = new WormParameters(3 * ChunkCount, 4, 0.5f, ChunkCount * ChunkSize, ComputeStep(4, 1), (int)Seed);
+                                                                            // asteroid 7 max
+            var wormParams = new WormParameters(3 * ChunkCount, 4, 0.5f, (byte)(MathHelper.Min(ChunkCount*Chunk.Size, 255)), ComputeStep(4, 1), (int)Seed);
 
            // var tunnelMap = new Dictionary<Vector3SByte, List<Vector3i>>(128);
             foreach (var (c, v) in PerlinWorms.Voxels(wormParams, ChunkCount, Chunk.Size))

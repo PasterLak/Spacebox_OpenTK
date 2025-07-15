@@ -31,7 +31,7 @@ namespace Spacebox.Scenes
          
             //Theme.ApplySpaceboxTheme();
 
-            var player = new CameraBasic(new Vector3(0, 0, 0));
+            var player = new CameraStatic(new Vector3(0, 0, 0));
             AddChild(player);
             player.FOV = 100;
 

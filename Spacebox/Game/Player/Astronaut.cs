@@ -134,7 +134,7 @@ namespace Spacebox.Game.Player
 
         }
 
-
+        ModelRendererComponent spot;
         private void SetData()
         {
 
@@ -149,10 +149,22 @@ namespace Spacebox.Game.Player
 
             _axes = new Axes(Position, 0.01f);
 
-            
-           
-        }
+             node = new Node3D();
 
+            var mat = new SpotMaterial(Flashlight);
+           // mat.RenderMode = RenderMode.Transparent;
+            mat.RenderFace = RenderFace.Both;
+
+            Model model = new Model(GenMesh.CreateCone(30, 1, Vector3.UnitZ, Vector3.Zero, 24), mat);
+            spot = node.AttachComponent(new ModelRendererComponent(model));
+            node.Rotate(0,180,0);
+            node.AttachComponent(new SphereCollider());
+            Debug.Log(node.PositionWorld);
+            AddChild(node);
+            Debug.Log(node.PositionWorld);
+
+        }
+        Node3D node; 
         private void SetGameMode(GameMode mode)
         {
             if (_gameModeBase != null)
@@ -227,10 +239,10 @@ namespace Spacebox.Game.Player
 
             itemInHand.Enabled = !IsMain;
 
-
+          
             base.Update();
-            
-            
+
+
             if (needResetNextFrame)
             {
                 ResetMousePosition();

@@ -283,7 +283,7 @@ namespace Engine
         }
 
 
-        public Vector3 WorldForward
+        public Vector3 ForwardWorld
         {
             get
             {
@@ -310,7 +310,7 @@ namespace Engine
                 0f);
         }
 
-        public Vector3 Forward
+        public Vector3 ForwardLocal
         {
             get
             {
@@ -322,8 +322,8 @@ namespace Engine
             }
         }
 
-        public Vector3 Right => Vector3.Normalize(Vector3.Cross(Forward, Vector3.UnitY));
-        public Vector3 Up => Vector3.Normalize(Vector3.Cross(Right, Forward));
+        public Vector3 Right => Vector3.Normalize(Vector3.Cross(ForwardLocal, Vector3.UnitY));
+        public Vector3 Up => Vector3.Normalize(Vector3.Cross(Right, ForwardLocal));
 
 
         protected void PrintHierarchy()

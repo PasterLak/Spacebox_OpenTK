@@ -4,7 +4,7 @@ using OpenTK.Mathematics;
 
 namespace Engine
 {
-    public class CameraBasic : Camera
+    public class CameraStatic : Camera
     {
         private float _pitch;
         private float _yaw = -MathHelper.PiOver2;
@@ -30,7 +30,7 @@ namespace Engine
             }
         }
 
-        public CameraBasic(Vector3 position)
+        public CameraStatic(Vector3 position)
             : base(position)
         {
             Name = "CameraBasic";

@@ -52,7 +52,7 @@ namespace Spacebox.Scenes
         }
         public override void LoadContent()
         {
-            player = new CameraBasic(new Vector3(0, 0, 0));
+            player = new CameraStatic(new Vector3(0, 0, 0));
 
             var mesh = Resources.Load<Engine.Mesh>("Resources/Models/cube.obj");
             skybox = new Skybox(mesh,

@@ -177,5 +177,87 @@ namespace Engine.Utils
             Resources.AddResourceToDispose(r);
             return r;
         }
+
+
+        public static Mesh CreateCone(
+     float angleDeg,
+     float length,
+     Vector3 direction,
+     Vector3 eulerAngles,
+     int segments = 24)
+        {
+            float radius = MathF.Tan(MathHelper.DegreesToRadians(angleDeg)) * length;
+
+            Vector3 dirNorm = direction.Normalized();
+            Vector3 axis = Vector3.Cross(Vector3.UnitZ, dirNorm);
+            float dot = Vector3.Dot(Vector3.UnitZ, dirNorm);
+            float clamped = MathF.Max(-1f, MathF.Min(1f, dot));
+            float alignAngle = MathF.Acos(clamped);
+            Quaternion rotAlign = Quaternion.FromAxisAngle(
+                axis.LengthFast > 1e-6f ? axis.Normalized() : Vector3.UnitX,
+                alignAngle);
+
+            Quaternion rotEuler = Quaternion.FromEulerAngles(
+                MathHelper.DegreesToRadians(eulerAngles.X),
+                MathHelper.DegreesToRadians(eulerAngles.Y),
+                MathHelper.DegreesToRadians(eulerAngles.Z));
+
+            Quaternion rot = rotEuler * rotAlign;
+
+            var verts = new List<float>();
+            var idx = new List<int>();
+
+            var p0 = rot * new Vector3(0, 0, 0);
+            var n0 = rot * Vector3.UnitZ;
+            verts.AddRange(new[] { p0.X, p0.Y, p0.Z, n0.X, n0.Y, n0.Z, 0.5f, 1f });
+
+            var p1 = rot * new Vector3(0, 0, length);
+            var n1 = rot * -Vector3.UnitZ;
+            verts.AddRange(new[] { p1.X, p1.Y, p1.Z, n1.X, n1.Y, n1.Z, 0.5f, 0f });
+
+            for (int i = 0; i <= segments; i++)
+            {
+                float t = i / (float)segments;
+                float theta = MathHelper.TwoPi * t;
+                var lp = new Vector3(
+                    radius * MathF.Cos(theta),
+                    radius * MathF.Sin(theta),
+                    length);
+                var wp = rot * lp;
+
+                var snLocal = new Vector3(lp.X, lp.Y, radius / length);
+                var snWorld = rot * Vector3.Normalize(snLocal);
+
+                verts.AddRange(new[]
+                {
+            wp.X, wp.Y, wp.Z,
+            snWorld.X, snWorld.Y, snWorld.Z,
+            t, 0f
+        });
+            }
+
+            int apexIndex = 0, firstRing = 2;
+            for (int i = 0; i < segments; i++)
+            {
+                idx.Add(apexIndex);
+                idx.Add(firstRing + i + 1);
+                idx.Add(firstRing + i);
+            }
+
+            int baseCenterIndex = 1;
+            for (int i = 0; i < segments; i++)
+            {
+                idx.Add(baseCenterIndex);
+                idx.Add(firstRing + i);
+                idx.Add(firstRing + i + 1);
+            }
+
+            var mesh = new Mesh(verts.ToArray(), idx.ToArray());
+            Resources.AddResourceToDispose(mesh);
+            return mesh;
+        }
+
+
+
     }
 }

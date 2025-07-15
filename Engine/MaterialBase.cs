@@ -16,6 +16,8 @@ namespace Engine
         public RenderFace RenderFace { get; set; } = RenderFace.Both;
         public int RenderQueue { get; set; } = 1000;
 
+        public bool TransposeMatrices = true;
+
         readonly Dictionary<string, (TextureUnit unit, Texture2D tex)> _slots = new();
         readonly Dictionary<string, object> _parameters = new();
         readonly int _maxUnits = GL.GetInteger(GetPName.MaxCombinedTextureImageUnits);
@@ -89,13 +91,13 @@ namespace Engine
         private void _setMVP(Matrix4 model)
         {
             var cam = Camera.Main;
-            Shader.SetMatrix4("model", model);
+            Shader.SetMatrix4("model", model, TransposeMatrices);
             if (cam == null) return;
             var view = cam.GetViewMatrix();
             var proj = cam.GetProjectionMatrix();
 
-            Shader.SetMatrix4("view", view);
-            Shader.SetMatrix4("projection", proj);
+            Shader.SetMatrix4("view", view, TransposeMatrices);
+            Shader.SetMatrix4("projection", proj, TransposeMatrices);
         }
         protected virtual void ApplyRenderSettings()
         {

@@ -42,6 +42,7 @@
 	  <None Remove="gamesets\loots.json" />
 	  <None Remove="shaders\atmosphere.glsl" />
 	  <None Remove="Shaders\basic.vs" />
+	  <None Remove="shaders\billboard.glsl" />
 	  <None Remove="shaders\colorReplace.glsl" />
 	  <None Remove="shaders\fade.glsl" />
 	  <None Remove="Shaders\includes\core.fs" />
@@ -57,6 +58,7 @@
 	  <None Remove="Shaders\PostProcessing\vignette.glsl" />
 	  <None Remove="Shaders\procedural_skybox.glsl" />
 	  <None Remove="shaders\sphere.glsl" />
+	  <None Remove="shaders\spot.glsl" />
 	  <None Remove="shaders\sun.glsl" />
 	  <None Remove="shaders\transparent.glsl" />
 	  <None Remove="shaders\water.glsl" />

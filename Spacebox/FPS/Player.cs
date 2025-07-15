@@ -9,7 +9,7 @@ using Engine;
 
 namespace Spacebox.FPS
 {
-    public class Player : CameraBasic, INotTransparent
+    public class Player : CameraStatic, INotTransparent
     {
         private float _cameraSpeed = 2.5f;
         private float _shiftSpeed = 5.5f;

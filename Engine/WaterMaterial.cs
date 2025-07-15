@@ -21,9 +21,9 @@ namespace Engine
             base.ApplyRenderSettings();
 
 
-            GL.Enable(EnableCap.DepthTest); // никакого depth-test’а
-            GL.DepthMask(true);             // и записи глубины
-           GL.Enable(EnableCap.Blend);     // без смешения
+           // GL.Enable(EnableCap.DepthTest); 
+          //  GL.DepthMask(true);          
+          // GL.Enable(EnableCap.Blend);   
         }
         protected override void UpdateDynamicUniforms()
         {

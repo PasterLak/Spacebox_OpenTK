@@ -46,7 +46,7 @@ namespace Spacebox.Game.Player
         public override void Update()
         {
             base.Update();
-            Direction = Parent.Forward;
+            Direction = Parent.ForwardLocal;
         }
         private void OnToggle(bool state)
         {

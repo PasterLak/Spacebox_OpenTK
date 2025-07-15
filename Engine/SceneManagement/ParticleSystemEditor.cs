@@ -1,4 +1,7 @@
-﻿using Engine.Components.Debug;
+﻿using Engine.Components;
+using Engine.Components.Debug;
+using Engine.Light;
+using Engine.Utils;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -80,12 +83,32 @@ namespace Engine.SceneManagement
 
             AddChild(system2);
 
+
+            Node3D node = new Node3D();
+
+            var l = node.AddChild(new SpotLight(new Vector3(0, 1, 0)));
+            l.GetDirectionFromNode = true;
+
+
+            var mat = new SpotMaterial(l);
+            mat.RenderMode = RenderMode.Transparent;
+            mat.RenderFace = RenderFace.Both; 
+
+            Model model = new Model(GenMesh.CreateCone(30,1, Vector3.UnitY, Vector3.Zero, 24), mat); 
+            node.AttachComponent(new ModelRendererComponent(model));
+            node.Rotate( new Vector3(90,0,0));
+            node.Position = new Vector3(0, 5, 0);
+            AddChild(node);
+
+
+            AttachComponent(new BillboardComponent(dust2));
+
         }
 
         public override void Start()
         {
-           
-          
+
+            Input.ShowCursor();
         }
 
 

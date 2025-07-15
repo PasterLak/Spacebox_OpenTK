@@ -182,7 +182,7 @@ namespace Spacebox.Game.Generation
 
         public void GenerateMesh(bool doLight)
         {
-           
+            
             if (!_isLoadedOrGenerated) return;
             NeedsToRegenerateMesh = false;
             // Debug.Log("Regen " + PositionIndex);
@@ -376,21 +376,21 @@ namespace Spacebox.Game.Generation
 
         private void CreateLOD(LOD lod)
         {
-           
+            
             int downscale;
             Vector2[] uv;
             switch (lod)
             {
                 case LOD.L1:
-                    downscale = 1;
-                    uv = GameAssets.AtlasBlocks.GetUVByName("LOD");
-                    break;
-                case LOD.L2:
                     downscale = 2;
                     uv = GameAssets.AtlasBlocks.GetUVByName("LOD");
                     break;
+                case LOD.L2:
+                    downscale = 8;
+                    uv = GameAssets.AtlasBlocks.GetUVByName("LOD");
+                    break;
                 case LOD.L3:
-                    downscale = 4;
+                    downscale = 16;
                     uv = GameAssets.AtlasBlocks.GetUVByName("LOD");
                     break;
                 default: return;
@@ -418,8 +418,13 @@ namespace Spacebox.Game.Generation
             int lod1Threshold = ((int)LOD.L1) * ((int)LOD.L1);
             int lod2Threshold = ((int)LOD.L2) * ((int)LOD.L2);
 
-      
 
+            if (Lod != LOD.L3)
+            {
+             //   Lod = LOD.L3;
+              //  CreateLOD(Lod);
+            }
+            //return;
             if (distanceSquared <= lod0Threshold)
             {
                 if (Lod != LOD.L0)

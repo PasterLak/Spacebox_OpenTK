@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using Engine.Physics;
+using Engine.Components;
 
 namespace Engine
 {
@@ -10,7 +11,22 @@ namespace Engine
     }
     public abstract class Camera : DynamicBody
     {
-        public static Camera Main;
+        private static Camera _instance;
+        public static Camera Main
+        {
+            get { return _instance; }
+            set
+            {
+                var oldCam = _instance;
+                _instance = value;
+
+                if(_instance != null)
+                _instance.OnMainCameraChanged();
+
+                if( oldCam != null )
+                oldCam.OnMainCameraChanged();
+            }
+        }
 
         private ProjectionType _projectionType = ProjectionType.Perspective;
         public ProjectionType Projection
@@ -37,6 +53,15 @@ namespace Engine
         public Vector3 Up => _up;
         public Vector3 Right => _right;
 
+        public void OnMainCameraChanged()
+        {
+            if(gizmo != null)
+            {
+                
+                gizmo.Enabled = this != Main;
+            }
+           
+        }
         public bool IsMain => Main == this;
         private bool _cameraRelativeRender = false;
 
@@ -47,7 +72,7 @@ namespace Engine
         }
 
         public CameraFrustum Frustum { get; private set; } = new CameraFrustum();
-
+        private Component gizmo;
         public float FOV
         {
             get => MathHelper.RadiansToDegrees(_fov);
@@ -68,6 +93,10 @@ namespace Engine
             AllowCollisionDebug = false;
             Name = "Camera";
             UpdateVectors();
+
+
+            var gizmoCam = Resources.Load<Texture2D>("Resources/Textures/Gizmos/camera.png");
+            gizmo = AttachComponent(new GizmoIconComponent(gizmoCam, 1f,1f));
 
         }
 

@@ -24,7 +24,7 @@ namespace Engine
         #region textures
         struct TexEntry { public string Path; public Texture2D Tex; }
         static readonly List<TexEntry> _tex = new();
-        static Texture2D _curTex; // активная текстура-превью
+        static Texture2D _curTex; 
         static string[] CollectTexturePaths(string rootDirectory, params string[] formats)
         {
             if (string.IsNullOrWhiteSpace(rootDirectory) || !Directory.Exists(rootDirectory))
@@ -54,15 +54,13 @@ namespace Engine
             {
                 var t = Resources.Load<Texture2D>(p);
 
-                
-               // t.FlipY();
                 t.FilterMode = FilterMode.Nearest;
                 _tex.Add(new TexEntry { Path = p, Tex = t });
             }
 
             _curTex = _tex.Count > 0 ? _tex[0].Tex : null;
         }
-    ----------------------------------------------------------
+
         static void DrawTextureRow(ref Texture2D curTex,
                                    IReadOnlyList<TexEntry> texBank, ParticleSystem ps,
                                    string pickerPopupId = "##texPicker")
@@ -76,7 +74,6 @@ namespace Engine
 
             ImGui.Columns(2, "tex_row", false);
             ImGui.SetColumnWidth(0, previewW);
-            // --- preview column --------------------------------------------------
             Vector2 pv = new(previewW, previewW);
             if (ImGui.ImageButton("##texPreview", (IntPtr)curTex.Handle, pv))
                 ImGui.OpenPopup(pickerPopupId);
@@ -110,10 +107,9 @@ namespace Engine
             if (!ImGui.BeginPopup(popupId))
                 return;
 
-            //--- target popup size ─ 30 % of screen width × 40 % of screen height
             var io = ImGui.GetIO();
             var desired = new Vector2(io.DisplaySize.X * .30f, io.DisplaySize.Y * .40f);
-            var minSize = new Vector2(700, 450);                // never smaller than this
+            var minSize = new Vector2(700, 450);              
             var popupSize = new Vector2(MathF.Max(desired.X, minSize.X),
                                          MathF.Max(desired.Y, minSize.Y));
 
@@ -122,7 +118,7 @@ namespace Engine
             float avail = ImGui.GetContentRegionAvail().X;
             float spacing = ImGui.GetStyle().ItemSpacing.X;
 
-            const float baseThumb = 96f;                           // desired thumb size
+            const float baseThumb = 96f;                        
             int columns = Math.Max(1, (int)((popupSize.X + spacing) / (baseThumb + spacing)));
             float thumb = (popupSize.X - spacing * (columns - 1)) / columns;
 
@@ -271,7 +267,6 @@ namespace Engine
             ImGui.Text(label);
             ImGui.NextColumn();
 
-            // --- правый блок: «X Y Z» ---
             float avail = ImGui.GetContentRegionAvail().X;      
             float spacing = ImGui.GetStyle().ItemSpacing.X;
             float lblW = ImGui.CalcTextSize("X").X;          
