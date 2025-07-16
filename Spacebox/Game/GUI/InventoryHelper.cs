@@ -301,7 +301,46 @@ namespace Spacebox.Game.GUI
             }
         }
 
+        public static void SortStorageButtons(float windowWidth, float padding, Storage storage)
+        {
+            ImGui.SameLine();
 
+            var text = "A>z";
+            var tSize = ImGui.CalcTextSize(text);
+            //ImGui.Dummy(new Vector2(windowWidth/2f, padding)); ImGui.SameLine();
+            ImGui.SetCursorPos(new Vector2(windowWidth - tSize.X, tSize.Y / 2f));
+            ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep);
+            if (ImGui.SmallButton(text))
+            {
+                storage.CombineStacks();
+                storage.SortByStackCountGrouped();
+            }
+
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                ImGui.Text("Sort all");
+                ImGui.EndTooltip();
+            }
+
+            var text2 = "><";
+            var tSize2 = ImGui.CalcTextSize(text2);
+            //ImGui.Dummy(new Vector2(windowWidth/2f, padding)); ImGui.SameLine();
+            ImGui.SetCursorPos(new Vector2(windowWidth - tSize2.X - tSize.X - padding, tSize2.Y / 2f));
+            ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep);
+            if (ImGui.SmallButton(text2))
+            {
+                storage.CombineStacks();
+            }
+
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                ImGui.Text("Combine same stacks");
+                ImGui.EndTooltip();
+            }
+            ImGui.PopStyleColor();
+        }
         private static void OnSlotRightClicked(ItemSlot slot)
         {
 

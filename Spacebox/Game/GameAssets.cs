@@ -157,6 +157,28 @@ namespace Spacebox.Game
             else
                 return Sounds[blockData.SoundDestroy];
         }
+        public static Storage CreateCreativeStorage(byte sizeX, List<Item> items)
+        {
+            List<Item> filtered = items.Where(i => i.Id != 0).ToList();
+            byte sizeY = (byte)((filtered.Count + sizeX - 1) / sizeX);
+
+            Storage storage = new Storage(sizeX, sizeY);
+
+            int idx = 0;
+            for (int y = 0; y < sizeY; y++)
+            {
+                for (int x = 0; x < sizeX; x++)
+                {
+                    if (idx >= filtered.Count) break;
+                    ItemSlot slot = storage.GetSlot(x, y);
+                    slot.Item = filtered[idx];
+                    slot.Count = 1;
+                    idx++;
+                }
+            }
+
+            return storage;
+        }
 
         public static Storage CreateCreativeStorage(byte sizeX)
         {

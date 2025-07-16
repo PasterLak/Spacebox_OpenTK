@@ -274,7 +274,7 @@
         "Name": "Med Kit",
         "Sprite": "health3",
         "Type": "consumable",
-        "Category" : "items",
+        "Category" : "consumables",
         "Sound" : "heal",
         "HealAmount": 50,
         "MaxStack": 64,
@@ -329,8 +329,9 @@
     },
      {
         "Name": "Compressed Oxygen",
-        "Category" : "items",
+        "Category" : "consumables",
         "Sprite": "oxygen",
+        
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
@@ -338,7 +339,7 @@
         "Name": "Power",
         "Sprite": "power",
         "Type": "consumable",
-        "Category" : "items",
+         "Category" : "consumables",
         "Sound" : "use",
         "PowerAmount": 100,
         "MaxStack": 64,
@@ -348,6 +349,7 @@
         "Name": "Beer",
         "Sprite": "beer",
         "Type": "consumable",
+
         "Sound" : "beer",
         "HealAmount": 10,
         "MaxStack": 20,

@@ -149,7 +149,7 @@ namespace Spacebox.Game.Player
 
             _axes = new Axes(Position, 0.01f);
 
-             node = new Node3D();
+            /* node = new Node3D();
 
             var mat = new SpotMaterial(Flashlight);
            // mat.RenderMode = RenderMode.Transparent;
@@ -159,9 +159,9 @@ namespace Spacebox.Game.Player
             spot = node.AttachComponent(new ModelRendererComponent(model));
             node.Rotate(0,180,0);
             node.AttachComponent(new SphereCollider());
-            Debug.Log(node.PositionWorld);
-            AddChild(node);
-            Debug.Log(node.PositionWorld);
+        
+            AddChild(node);*/
+          
 
         }
         Node3D node; 

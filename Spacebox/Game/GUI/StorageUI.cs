@@ -151,9 +151,12 @@ namespace Spacebox.Game.GUI
 
             ImGui.Begin("Storage", windowFlags);
 
+            
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV, displaySize.Y);
 
             ImGui.SetCursorPos(paddingV);
+           
+          
             if (!editingName)
             {
                 var stb = StorageBlock;
@@ -175,7 +178,8 @@ namespace Spacebox.Game.GUI
                     SaveName();
                 }
             }
-
+            ImGui.SameLine();
+            InventoryUIHelper.SortStorageButtons(windowWidth, padding, Storage);
             ImGui.SetCursorPos(paddingV + new Vector2(0, padding * 4));
             InventoryUIHelper.RenderStorage(Storage, OnSlotClicked, Storage.SizeX);
 

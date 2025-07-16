@@ -21,8 +21,14 @@
             "Name" : "Doors",
             "Icon" : "Titanium Heavy Block"
         },
-
         {
+            "Id" : "other",
+            "Name" : "Other",
+            "Icon" : "Aluminium Crate"
+        },
+
+
+         {
             "Id" : "drills",
             "Name" : "Drills",
             "Icon" : "Aluminium Drill"
@@ -42,6 +48,16 @@
             "Name" : "Items",
             "Icon" : "Microchip"
         }
+        ,
+        
+        {
+            "Id" : "consumables",
+            "Name" : "Consumables",
+            "Icon" : "Med Kit"
+        }
+
+        
+        
         
     ],
 
@@ -97,7 +113,7 @@
         },
 
         {
-            "Product": {"Item": "Aluminium Chest", "Quantity": 1},
+            "Product": {"Item": "Aluminium Crate", "Quantity": 1},
             "Ingredients": [
                 {"Item": "Aluminium Panels", "Quantity": 3}
            ]

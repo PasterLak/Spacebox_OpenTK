@@ -85,6 +85,8 @@ New
 - loot generator
 - spacer has loot
 - different drill color (point light)
+- sort items button in inventory and storage
+- better creative UI + categories there
 
 
 Small

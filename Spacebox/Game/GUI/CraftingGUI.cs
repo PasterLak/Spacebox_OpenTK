@@ -5,6 +5,7 @@ using Engine;
 using Spacebox.Game.Player;
 using System.Numerics;
 using Spacebox.Game.GUI.Menu;
+using System.Diagnostics.Metrics;
 
 
 namespace Spacebox.Game.GUI
@@ -15,7 +16,7 @@ namespace Spacebox.Game.GUI
         public string Name { get; set; } = "x";
         public string Icon { get; set; } = "";
         public IntPtr IconPtr { get; set; } = IntPtr.Zero;
-        public int SlotsCount => Items.Count;
+        public int ItemsCountInCategory => Items.Count;
         public List<Data> Items = new List<Data>();
 
         public class Data
@@ -49,8 +50,8 @@ namespace Spacebox.Game.GUI
 
         private static bool showGrid = false;
         private static int selectedButton = -1;
-        private static int usedSlots = 8;
-        private static int totalSlots = 8;
+        private static int usedSlots = 0;
+        private static int totalSlots = 0;
         private static IntPtr SlotTexture;
 
         private static CraftingCategory[] category;
@@ -62,6 +63,10 @@ namespace Spacebox.Game.GUI
 
         private static AudioSource openSound;
         private static AudioSource closeSound;
+
+        private static int ColumnsOfItems;
+
+
         public static void Toggle(Astronaut player)
         {
             var v = !IsVisible;
@@ -86,17 +91,20 @@ namespace Spacebox.Game.GUI
             Panel = player.Panel;
             showGrid = false;
         }
-
+        static int CategoriesCountX = 0;
+        const int CategoriesCountY = 2;
         public static void Init()
         {
             category = GameAssets.CraftingCategories.Values.ToArray();
+            CategoriesCountX = (int)(category.Length/ CategoriesCountY) + (int)(category.Length % CategoriesCountY);
+
+            var slotSize = CategoriesCountX * 1.5f;
+
+            ColumnsOfItems = (int)Math.Ceiling(slotSize);
 
             var tex = Resources.Load<Texture2D>("Resources/Textures/slot.png");
             tex.FilterMode = FilterMode.Nearest;
             SlotTexture = tex.Handle;
-
-   
-           
 
             scrollAudio = new AudioSource(Resources.Load<AudioClip>("scroll"));
             clickAudio = new AudioSource(Resources.Load<AudioClip>("click1"));
@@ -122,13 +130,13 @@ namespace Spacebox.Game.GUI
 
             }
         }
-
+     
         public static void OnGUI()
         {
             if (!_isVisible) return;
             Vector2 displaySize = ImGui.GetIO().DisplaySize;
             //ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
-            float windowWidth = displaySize.Y * 0.4f;
+            float windowWidth = displaySize.Y * (0.1f * CategoriesCountX);
             float windowHeight = displaySize.Y * 0.25f;
             var windowPos = GameMenu.CenterNextWindow3(windowWidth, windowHeight);
             ImGui.Begin("Crafting",
@@ -155,14 +163,13 @@ namespace Spacebox.Game.GUI
             if (!showGrid)
             {
 
-                const int countX = 4;
-                const int countY = 2;
-                float buttonWidth = windowWidth / countX;
-                float buttonHeight = (windowHeight - topOffset) / countY;
-
-                for (int y = 0; y < countY; y++)
+               
+                float buttonWidth = windowWidth / CategoriesCountX;
+                float buttonHeight = (windowHeight - topOffset) / CategoriesCountY;
+               
+                for (int y = 0; y < CategoriesCountY; y++)
                 {
-                    for (int x = 0; x < countX; x++)
+                    for (int x = 0; x < CategoriesCountX; x++)
                     {
                         ImGui.SetCursorPos(new Vector2(
                             x * buttonWidth + spacing,
@@ -170,17 +177,22 @@ namespace Spacebox.Game.GUI
                         ));
                         float btnWidth = buttonWidth - spacing * 2;
                         float btnHeight = buttonHeight - spacing * 2;
-                        string btnLabel = category[y * countX + x].Name;
-                        MenuButton(btnLabel, Vector2.Zero, btnWidth, btnHeight, (str) =>
+
+                        var categoryIndex = y * CategoriesCountX + x;
+
+                        if (categoryIndex >= category.Length) continue;
+                     
+                        string btnLabel = category[categoryIndex].Name;
+                        CraftingCategoryButton(btnLabel, Vector2.Zero, btnWidth, btnHeight, (str) =>
                         {
-                            selectedButton = y * countX + x;
-                            usedSlots = category[selectedButton].SlotsCount;
-                            //totalSlots = ((usedSlots + (6 - 1)) / 6) * 6;
+                            selectedButton = categoryIndex;
+                            usedSlots = category[selectedButton].ItemsCountInCategory;
 
-                            totalSlots = 3 * 6;
-
-                            showGrid = true;
-                        }, y * countX + x);
+                            int rows = (usedSlots + ColumnsOfItems - 1) / ColumnsOfItems;
+                            totalSlots = 5 * ColumnsOfItems ;
+                            _resetScroll = true;
+                             showGrid = true;
+                        }, y * CategoriesCountX + x);
                     }
                 }
             }
@@ -192,68 +204,58 @@ namespace Spacebox.Game.GUI
             // ImGui.PopStyleColor(6);
             ImGui.End();
         }
-
+        static bool _resetScroll;
         private static void DrawGridWithSlots(float windowWidth, float windowHeight, float topOffset)
         {
             float spacing = windowHeight * 0.02f;
-            //float scrollbarSize = ImGui.GetStyle().ScrollbarSize;
             float childX = spacing;
             float childY = spacing;
-            float childW = windowWidth - spacing * 2; // - scrollbarSize;
+            float childW = windowWidth - spacing * 2;
             float childH = windowHeight - spacing * 2;
-            ImGui.SetCursorPos(new Vector2(childX, childY));
-            ImGui.BeginChild("GridChild",
-                new Vector2(childW, childH), // childW + scrollbarSize
-                ImGuiChildFlags.None,
-                ImGuiWindowFlags.NoScrollbar
-                | ImGuiWindowFlags.NoScrollbar
 
-                );
-
-            string categoryName = $"{category[selectedButton].Name}";
+            string categoryName = category[selectedButton].Name;
             var titleSize = ImGui.CalcTextSize(categoryName);
-            float titlePosX = (childW - titleSize.X) * 0.5f;
-            ImGui.SetCursorPos(new Vector2(titlePosX, spacing));
-            ImGui.Text(categoryName);
-
             float backButtonWidth = topOffset * 2.5f;
             float backButtonHeight = topOffset;
-            float backButtonX = childW - backButtonWidth - spacing;
-            float backButtonY = spacing;
+            float headerHeight = spacing * 2 + backButtonHeight;
 
-            ImGui.SetCursorPos(new Vector2(backButtonX, backButtonY));
-
-            //GameMenu.DrawElementColors(new Vector2(backButtonX, backButtonY), new Vector2(backButtonWidth, backButtonHeight), ImGui.GetIO().DisplaySize.Y);
+            ImGui.SetCursorPos(new Vector2(childX, childY));
+            ImGui.BeginChild("HeaderChild", new Vector2(childW, headerHeight), ImGuiChildFlags.None, ImGuiWindowFlags.NoScrollbar);
+            ImGui.SetCursorPos(new Vector2((childW - titleSize.X) * 0.5f, spacing));
+            ImGui.Text(categoryName);
+            ImGui.SetCursorPos(new Vector2(childW - backButtonWidth - spacing, spacing));
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1f));
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1f));
-
             if (ImGui.Button("Back", new Vector2(backButtonWidth, backButtonHeight)))
             {
                 clickAudio.Play();
                 showGrid = false;
             }
             ImGui.PopStyleColor(3);
+            ImGui.EndChild();
 
-            float gridOffsetY = spacing + backButtonHeight + spacing;
-            ImGui.SetCursorPos(new Vector2(0, gridOffsetY));
-            float gridHeight = childH - gridOffsetY - spacing;
-            // ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, Vector2.Zero);
-            ImGui.BeginTable("Grid", 6, ImGuiTableFlags.NoBordersInBody, new Vector2(childW, gridHeight));
+            ImGui.SetCursorPos(new Vector2(childX, childY + headerHeight));
+            float gridHeight = childH - headerHeight - spacing;
+            ImGui.BeginChild("GridScroll", new Vector2(childW, gridHeight), ImGuiChildFlags.None,  ImGuiWindowFlags.NoScrollbar);
+            if (_resetScroll)
+            {
+                ImGui.SetScrollY(0f);
+                _resetScroll = false;
+            }
+            ImGui.BeginTable("Grid", ColumnsOfItems, ImGuiTableFlags.NoBordersInBody, new Vector2(childW, gridHeight));
             for (int i = 0; i < totalSlots; i++)
             {
                 ImGui.TableNextColumn();
-
                 if (i < usedSlots)
-                    SlotWithItem("", Vector2.Zero, childW / 6, childW / 6, OnClick, i);
+                    SlotWithItem("", Vector2.Zero, childW / ColumnsOfItems, childW / ColumnsOfItems, OnClick, i);
                 else
-                    EmptySlot("", Vector2.Zero, childW / 6, childW / 6, OnClick, i);
+                    EmptySlot("", Vector2.Zero, childW / ColumnsOfItems, childW / ColumnsOfItems, OnClick, i);
             }
-
             ImGui.EndTable();
-            //  ImGui.PopStyleVar();
             ImGui.EndChild();
         }
+
 
         private static void OnClick(Blueprint blueprint)
         {
@@ -338,18 +340,12 @@ namespace Spacebox.Game.GUI
 
         public static void EmptySlot(string label, Vector2 pos, float width, float height, Action<Blueprint> onClick, int slotId)
         {
-            Vector2 buttonPos = ImGui.GetCursorScreenPos();
-            float offsetValue = height * 0.1f;
-            Vector2 offset = new Vector2(offsetValue, offsetValue);
-            uint borderColor = Theme.Colors.BorderLightUint;
-            uint lightColor = Theme.Colors.BorderDarkUint;
+            ImGui.Dummy(new Vector2(width, height));
+            var p0 = ImGui.GetItemRectMin();
+            var p1 = ImGui.GetItemRectMax();
             var drawList = ImGui.GetWindowDrawList();
-
-            drawList.AddRect(buttonPos, buttonPos + new Vector2(width, height), Theme.Colors.BackgroundUint);
-            //drawList.AddImage(SlotTexture, buttonPos , buttonPos + new Vector2(width, height) );
-
-            drawList.AddImage(SlotTexture, buttonPos, buttonPos + new Vector2(width, height)
-                              );
+            drawList.AddRect(p0, p1, Theme.Colors.BackgroundUint);
+            drawList.AddImage(SlotTexture, p0, p1);
 
         }
 
@@ -539,7 +535,7 @@ namespace Spacebox.Game.GUI
         }
 
 
-        public static void MenuButton(string label, Vector2 pos, float width, float height, Action<string> onClick, int categoryId)
+        public static void CraftingCategoryButton(string label, Vector2 pos, float width, float height, Action<string> onClick, int categoryId)
         {
             Vector2 buttonPos = ImGui.GetCursorScreenPos();
             float offsetValue = height * 0.1f;

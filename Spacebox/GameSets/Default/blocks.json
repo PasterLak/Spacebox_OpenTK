@@ -384,7 +384,7 @@
     },
     {
         "Name": "AI Core",
-        "Category": "resources",
+        "Category": "other",
         "Sides": "core",
         "Mass": 50,
         "PowerToDrill": 3,
@@ -444,7 +444,7 @@
     },
     {
         "Name": "Aim Block",
-        "Category": "blocks",
+        "Category": "other",
         "Sides": "aim",
 
         "PowerToDrill": 1,
@@ -481,7 +481,7 @@
         "IsTransparent": false
     },
     {
-        "Name": "Aluminium Chest",
+        "Name": "Aluminium Crate",
         "Type" : "storage",
         "Category": "doors",
         "Sides": "aluChestSide",

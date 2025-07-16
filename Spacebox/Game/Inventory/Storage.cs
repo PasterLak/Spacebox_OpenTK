@@ -297,6 +297,91 @@ namespace Spacebox.Game
             }
         }
 
+        public void SortByStackCountGrouped()
+        {
+            var data = new List<(Item item, byte count)>();
+            var stacks = new Dictionary<string, int>();
+
+            for (int x = 0; x < SizeX; x++)
+                for (int y = 0; y < SizeY; y++)
+                {
+                    var s = Slots[x, y];
+                    if (!s.HasItem) continue;
+
+                    data.Add((s.Item, s.Count));
+
+                    if (stacks.TryGetValue(s.Item.Name, out var c))
+                        stacks[s.Item.Name] = c + 1;
+                    else
+                        stacks[s.Item.Name] = 1;
+                }
+
+            var sorted = data
+                .OrderByDescending(e => stacks[e.item.Name])      
+                .ThenBy(e => e.item.Name, StringComparer.Ordinal) 
+                .ToList();
+
+            int idx = 0;
+            for (int x = 0; x < SizeX; x++)
+                for (int y = 0; y < SizeY; y++)
+                {
+                    if (idx < sorted.Count)
+                    {
+                        var (it, cnt) = sorted[idx++];
+                        Slots[x, y].Item = it;
+                        Slots[x, y].Count = cnt;
+                    }
+                    else
+                    {
+                        Slots[x, y].Count = 0;
+                    }
+                }
+
+            OnDataWasChanged?.Invoke(this);
+        }
+
+        public void CombineStacks()
+        {
+            var groups = new Dictionary<short, List<ItemSlot>>();
+
+            // собрать ссылки на слоты по Id предметов
+            foreach (var s in GetAllSlots())
+                if (s.HasItem)
+                {
+                    if (!groups.TryGetValue(s.Item.Id, out var list))
+                    {
+                        list = new List<ItemSlot>();
+                        groups[s.Item.Id] = list;
+                    }
+                    list.Add(s);
+                }
+
+            // для каждого типа предмета перераспределить количество по тем же слотам
+            foreach (var pair in groups)
+            {
+                var slots = pair.Value;
+                int total = slots.Sum(sl => sl.Count);
+                byte stackMax = slots[0].Item.StackSize;
+
+                int idx = 0;
+                while (total > 0 && idx < slots.Count)
+                {
+                    byte put = (byte)Math.Min(stackMax, total);
+                    slots[idx].Count = put;
+                    total -= put;
+                    idx++;
+                }
+
+                // оставшиеся слоты этого предмета очищаем
+                for (int i = idx; i < slots.Count; i++)
+                    slots[i].Count = 0;
+            }
+
+            OnDataWasChanged?.Invoke(this);
+        }
+
+
+
         public bool HasAnyItems()
         {
             for (int x = 0; x < SizeX; x++)

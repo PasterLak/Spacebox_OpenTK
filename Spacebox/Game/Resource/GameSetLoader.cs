@@ -506,7 +506,6 @@ namespace Spacebox.Game.Resource
                             }
 
 
-
                             GameAssets.CraftingCategories.Add(category.Id, category);
                         }
                         else

@@ -115,12 +115,12 @@ namespace Spacebox.Game.GUI
 
 
             ImGui.Begin("Inventory", windowFlags);
-
+          
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV, displaySize.Y);
 
             ImGui.SetCursorPos(paddingV );
             ImGui.TextColored( new Vector4(0.9f, 0.9f, 0.9f, 1f), "Inventory");
-
+            InventoryUIHelper.SortStorageButtons(windowWidth, padding, storage);
 
             ImGui.SetCursorPos(paddingV + new Vector2(0, padding * 4));
             InventoryUIHelper.RenderStorage(storage, OnSlotClicked, storage.SizeX);
@@ -128,6 +128,7 @@ namespace Spacebox.Game.GUI
             ImGui.End();
         }
 
+        
         private static void OnSlotClicked(ItemSlot slot)
         {
 

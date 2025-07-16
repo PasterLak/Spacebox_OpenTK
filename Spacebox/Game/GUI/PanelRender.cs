@@ -11,52 +11,73 @@ namespace Spacebox.Game.GUI
     {
         public static void Render(Storage storage, float slotSize, nint slotTexture, nint selectedTexture, short selectedSlotId, float time)
         {
-            if (!Settings.ShowInterface) return;
-            if (!PanelUI.IsVisible) return;
-            if (storage == null) return;
+            if (!Settings.ShowInterface || !PanelUI.IsVisible || storage == null) return;
+
             ImGuiIOPtr io = ImGui.GetIO();
             slotSize = InventoryUIHelper.SlotSize;
             float windowWidth = storage.SizeY * slotSize;
             float windowHeight = storage.SizeX * slotSize;
             Vector2 displaySize = io.DisplaySize;
-            Vector2 windowPos = new Vector2((displaySize.X - windowWidth) / 2, (displaySize.Y - windowHeight) * 0.95f);
-            float padding = slotSize * 0.05f;
-            Vector2 paddingV = new Vector2(padding, padding);
+            Vector2 windowPos = new Vector2(
+                (displaySize.X - windowWidth) / 2f,
+                (displaySize.Y - windowHeight) * 0.95f
+            );
+
             ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight) + paddingV + paddingV);
-            ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoResize |
-                                           ImGuiWindowFlags.NoCollapse |
-                                           ImGuiWindowFlags.NoMove |
-                                           ImGuiWindowFlags.NoTitleBar |
-                                           ImGuiWindowFlags.NoScrollbar |
-                                           ImGuiWindowFlags.NoScrollWithMouse |
-                                           ImGuiWindowFlags.NoBringToFrontOnFocus |
-                                           ImGuiWindowFlags.NoFocusOnAppearing;
-            ImGui.Begin("Panel", windowFlags);
-            GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight) + paddingV + paddingV, displaySize.Y, 0.003f);
-            ImGui.SetCursorPos(paddingV);
-            if (ImGui.BeginTable("PanelTable", storage.SizeY, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit))
+            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight), ImGuiCond.Always);
+
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+            ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, Vector2.Zero);
+            ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Vector2.Zero);
+
+            ImGui.Begin("Panel",
+                ImGuiWindowFlags.NoResize |
+                ImGuiWindowFlags.NoCollapse |
+                ImGuiWindowFlags.NoMove |
+                ImGuiWindowFlags.NoTitleBar |
+                ImGuiWindowFlags.NoScrollbar |
+                ImGuiWindowFlags.NoScrollWithMouse |
+                ImGuiWindowFlags.NoBringToFrontOnFocus |
+                ImGuiWindowFlags.NoFocusOnAppearing
+            );
+
+            ImGui.SetCursorPos(Vector2.Zero);
+
+            if (ImGui.BeginTable("PanelTable", storage.SizeY,
+                ImGuiTableFlags.RowBg |
+                ImGuiTableFlags.NoBordersInBody |
+                ImGuiTableFlags.NoPadInnerX |
+                ImGuiTableFlags.NoPadOuterX |
+                ImGuiTableFlags.SizingFixedSame |
+                ImGuiTableFlags.NoHostExtendX
+            ))
             {
-                for (int y = 0; y < storage.SizeY; y++)
-                    ImGui.TableSetupColumn($"##columnPanel_{y}", ImGuiTableColumnFlags.WidthFixed, slotSize);
-                for (int x = 0; x < storage.SizeX; x++)
+                for (int col = 0; col < storage.SizeY; col++)
+                    ImGui.TableSetupColumn($"##col{col}", ImGuiTableColumnFlags.WidthFixed, slotSize);
+
+                for (int row = 0; row < storage.SizeX; row++)
                 {
-                    ImGui.TableNextRow();
-                    for (int y = 0; y < storage.SizeY; y++)
+                    ImGui.TableNextRow(ImGuiTableRowFlags.None, slotSize);
+                    for (int col = 0; col < storage.SizeY; col++)
                     {
-                        ImGui.TableSetColumnIndex(y);
-                        ItemSlot slot = storage.GetSlot(x, y);
+                        ImGui.TableSetColumnIndex(col);
+                        var slot = storage.GetSlot(row, col);
                         if (slot == null) continue;
-                        string id = $"slotPanel_{x}_{y}";
-                        bool isSelected = (x == 0 && y == selectedSlotId);
-                        InventoryUIHelper.DrawSlot(slot, id, PanelUI.OnSlotClicked, isSelected);
+                        string id = $"slot_{row}_{col}";
+                        bool selected = (row == 0 && col == selectedSlotId);
+                        InventoryUIHelper.DrawSlot(slot, id, PanelUI.OnSlotClicked, selected);
                         InventoryUIHelper.ShowTooltip(slot);
                     }
                 }
+
                 ImGui.EndTable();
             }
+
             ImGui.End();
+            ImGui.PopStyleVar(3);
         }
+
+
 
         public static void DrawItemName(string name)
         {
