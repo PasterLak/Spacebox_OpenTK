@@ -3,7 +3,7 @@
     "ModName": "Default",
     "Description": "Basic set of blocks and items",
     "Author": "PasterLak",
-    "Version": "0.1.1",
+    "Version": "0.1.2",
     "BlockSize": 32,
 
     "Textures": [

@@ -59,28 +59,9 @@ namespace Spacebox.Game.GUI.Menu
 
 
             ImGui.EndChild();
-            var drawList = ImGui.GetWindowDrawList();
-            var a = new Vector2(windowPos.X + horizontalMargin + contentWidth * 0.6f, windowPos.Y + verticalSpacing*2.5f);
-            var previewMax = a + new Vector2(contentWidth * 0.4f, listHeight);
-            drawList.AddRectFilled(a, previewMax, Theme.Colors.BorderDarkUint);
 
-            
 
-            WorldInfo selectedWorld = menu.selectedWorld;
-            if (selectedWorld != null)
-            {
-                var preview = selectedWorld.WorldPreview;
-
-                if (preview != null)
-                {
-                    var mirgin = new Vector2(horizontalMargin*0.1f, horizontalMargin * 0.1f);
-                    drawList.AddImage(preview.Handle,a + mirgin, a + new Vector2(contentWidth * 0.4f, listHeight) - mirgin);
-                }
-                else
-                {
-                    drawList.AddText(a, Theme.Colors.BorderLightUint, " This world has \n no preview image");
-                }
-            }
+            DrawWorldPreview(windowPos, horizontalMargin, contentWidth, verticalSpacing, listHeight);
 
 
             ImGui.Dummy(new Vector2(0, verticalSpacing));
@@ -91,7 +72,7 @@ namespace Spacebox.Game.GUI.Menu
             {
                 ImGui.Text(" Name: " + menu.selectedWorld.Name);
                 ImGui.Text(" Author: " + menu.selectedWorld.Author + " Game mode: " + menu.selectedWorld.GameMode);
-                ImGui.Text(" Mod: " + menu.GetModNameById(menu.selectedWorld.ModId));
+                ImGui.Text(" Mod: " + menu.GetModNameById(menu.selectedWorld.ModId) + $"({menu.GetModById(menu.selectedWorld.ModId).Version})");
                 if (menu.selectedWorld.GameVersion != Application.Version)
                 {
                     ImGui.TextColored(new Vector4(1, 0, 0, 1), " Version: " + menu.selectedWorld.GameVersion);
@@ -163,5 +144,66 @@ namespace Spacebox.Game.GUI.Menu
                 });
             ImGui.End();
         }
+
+
+        private void DrawWorldPreview(Vector2 windowPos,float horizontalMargin,float contentWidth, float verticalSpacing, float listHeight)
+        {
+            var drawList = ImGui.GetWindowDrawList();
+            var a = new Vector2(windowPos.X + horizontalMargin + contentWidth * 0.6f,
+                                windowPos.Y + verticalSpacing * 2.5f);
+            var areaSize = new Vector2(contentWidth * 0.4f, listHeight);
+            var previewMax = a + areaSize;
+            drawList.AddRectFilled(a, previewMax, Theme.Colors.BorderDarkUint);
+
+            WorldInfo selectedWorld = menu.selectedWorld;
+            if (selectedWorld != null)
+            {
+                var preview = selectedWorld.WorldPreview;
+                if (preview != null)
+                {
+                    var margin = new Vector2(horizontalMargin * 0.1f);
+                    drawList.AddImage(preview.Handle,
+                                      a + margin,
+                                      previewMax - margin);
+                }
+                else
+                {
+                    ImFontPtr font = ImGui.GetFont();
+
+                    float fontSize = areaSize.Y * 0.1f;
+
+                    float fontScale = fontSize / ImGui.GetFontSize();
+
+                    string text = "This world has no\npreview image yet :(";
+                    var lines = text.Split('\n');
+
+                    float lineHeight = fontSize;
+
+                    float totalH = lines.Length * lineHeight;
+
+                    float startY = a.Y + (areaSize.Y - totalH) * 0.5f;
+
+                    foreach (var line in lines)
+                    {
+
+                        Vector2 baseSize = ImGui.CalcTextSize(line);
+
+                        Vector2 textSize = baseSize * fontScale;
+
+                        float x = a.X + (areaSize.X - textSize.X) * 0.5f;
+                        drawList.AddText(font, fontSize,
+                                         new Vector2(x, startY),
+                                         Theme.Colors.BorderLightUint,
+                                         line);
+                        startY += lineHeight;
+                    }
+                }
+            }
+
+        }
+
     }
+
+
+
 }

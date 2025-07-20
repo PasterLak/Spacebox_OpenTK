@@ -9,7 +9,7 @@ namespace Spacebox.Game.Generation
 {
     public class AsteroidMedium : Asteroid
     {
-        public const int ChunkCount = 4;
+        public const int ChunkCount = 2;
         private readonly AsteroidVoxelDataGenerator voxelGen;
         private readonly int chunkSize;
         private readonly object _genLock = new();

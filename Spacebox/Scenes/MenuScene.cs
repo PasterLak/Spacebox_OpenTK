@@ -55,7 +55,7 @@ namespace Spacebox.Scenes
             
             SetDustSpawner();
 
-            AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/music.ogg"));
+            //AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/music.ogg"));
 
            
             InputManager.AddAction("inputOverlay", Keys.F6);

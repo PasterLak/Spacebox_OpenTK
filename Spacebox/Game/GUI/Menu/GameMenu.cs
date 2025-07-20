@@ -16,7 +16,7 @@ namespace Spacebox.Game.GUI.Menu
     public class GameMenu : IDisposable
     {
         public static bool IsVisible = false;
-        public enum MenuState { Main, WorldSelect, NewWorld, Options, Multiplayer, SettingsControls }
+        public enum MenuState { Main, WorldSelect, NewWorld, Options, Multiplayer, SettingsControls, Controls }
         private MenuState currentState = MenuState.Main;
         private List<WorldInfo> worlds = new List<WorldInfo>();
         private List<ModConfig> gameSets = new List<ModConfig>();
@@ -41,6 +41,7 @@ namespace Spacebox.Game.GUI.Menu
         public DeleteWindow deleteWindow;
         public UpdateVersionWindow updateVersionWindow;
         public SettingsControlsWindow settingsControlsWindow;
+        public ControlsWindow controlsWindow;
 
         public GameMenu()
         {
@@ -63,6 +64,7 @@ namespace Spacebox.Game.GUI.Menu
             deleteWindow = new DeleteWindow(this);
             updateVersionWindow = new UpdateVersionWindow(this);
             settingsControlsWindow = new SettingsControlsWindow(this);
+            controlsWindow = new ControlsWindow(this);
         }
 
         public void Render()
@@ -117,6 +119,9 @@ namespace Spacebox.Game.GUI.Menu
                     break;
                 case MenuState.SettingsControls:
                     settingsControlsWindow.Render();
+                    break;
+                case MenuState.Controls:
+                    controlsWindow.Render();
                     break;
             }
             if (showDeleteWindow) deleteWindow.Render();
@@ -194,6 +199,15 @@ namespace Spacebox.Game.GUI.Menu
             Random r = new Random();
             newWorldSeed = r.Next(int.MinValue, int.MaxValue).ToString();
             newWorldName = GetNewWorldUniqueName();
+        }
+
+        public ModConfig? GetModById(string id)
+        {
+            foreach (var m in gameSets)
+            {
+                if (m.ModId == id) return m;
+            }
+            return null;
         }
 
         public string GetModNameById(string id)
@@ -377,7 +391,7 @@ namespace Spacebox.Game.GUI.Menu
             worlds.Remove(world);
             selectedWorld = null;
         }
-
+        public void SetStateToControls() { currentState = MenuState.Controls; }
         public void SetStateToMain() { currentState = MenuState.Main; }
         public void SetStateToWorldSelect() { currentState = MenuState.WorldSelect; }
         public void SetStateToNewWorld() { currentState = MenuState.NewWorld; }

@@ -267,9 +267,20 @@
             "Product": {"Item": "Titanium Panels", "Quantity": 3},
             "Ingredients": [{"Item": "Titanium Ingot", "Quantity": 1}]
         },
+         {
+            "Product": {"Item": "DNA Sample", "Quantity": 1},
+            "Ingredients": [
+                {"Item": "Med Kit", "Quantity": 1},
+                {"Item": "Water", "Quantity": 1},
+                {"Item": "Glass", "Quantity": 1}
+            ]
+        },
         {
             "Product": {"Item": "Med Kit", "Quantity": 1},
-            "Ingredients": [{"Item": "Compressed Oxygen", "Quantity": 1}]
+            "Ingredients": [
+                {"Item": "Compressed Oxygen", "Quantity": 1},
+                {"Item": "Water", "Quantity": 1}
+            ]
         },
         {
             "Product": {"Item": "Power", "Quantity": 1},

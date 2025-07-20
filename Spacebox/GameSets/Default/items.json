@@ -127,6 +127,22 @@
          "ShotSound" : "pistole2"
     },
     {
+        "Name": "Sniper",
+        "Type": "weapon",
+        "Category" : "weapons",
+        "Sprite": "sniper",
+        "MaxStack": 1,
+        "ModelDepth": 2,
+        "Damage": 20,
+        "ReloadTime": 25,
+        "Spread": 0,
+        "Pushback": 15,
+        "AnimationSpeed": 0.6,
+        "PowerUsage" : 15,
+        "Projectile" : "sniperProjectile",
+         "ShotSound" : "pistole2"
+    },
+    {
         "Name": "Impulse Rifle",
         "Type": "weapon",
         "Category" : "weapons",
@@ -368,5 +384,26 @@
         "Sprite": "microchip",
         "MaxStack": 64,
         "ModelDepth": 1.0
+    },
+    {
+        "Name": "DNA Sample",
+        "Category" : "items",
+        "Sprite": "dna",
+        "MaxStack": 8,
+        "ModelDepth": 2.0
+    },
+    {
+        "Name": "VHS",
+        "Category" : "items",
+        "Sprite": "vhs",
+        "MaxStack": 8,
+        "ModelDepth": 2.0
+    },
+    {
+        "Name": "Cable",
+        "Category" : "items",
+        "Sprite": "cable",
+        "MaxStack": 8,
+        "ModelDepth": 2.0
     }
 ]

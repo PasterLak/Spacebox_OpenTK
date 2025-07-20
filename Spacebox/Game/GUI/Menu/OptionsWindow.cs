@@ -5,14 +5,14 @@ using ImGuiNET;
 
 namespace Spacebox.Game.GUI.Menu
 {
-    public class OptionsWindow : MenuWindow
+    public class OptionsWindow 
     {
         private GameMenu menu;
         public OptionsWindow(GameMenu menu)
         {
             this.menu = menu;
         }
-        public override void Render()
+        public void Render()
         {
             Vector2 windowSize = ImGui.GetIO().DisplaySize;
             float windowWidth = windowSize.X * 0.15f;
@@ -53,7 +53,8 @@ namespace Spacebox.Game.GUI.Menu
             GameMenu.CenterButtonWithBackground("Controls", buttonWidth, buttonHeight, () =>
             {
                 menu.Click1.Play();
-                menu.SetStateToSettingsControls();
+                menu.SetStateToControls();
+              
             });
             currentY += buttonHeight + spacing;
             ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));

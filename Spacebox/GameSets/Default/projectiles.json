@@ -7,6 +7,7 @@
         "Thickness": 0.05,
         "Color": {"r": 0,"g": 0,"b": 255},
         "Damage": 2,
+        "DamageBlocks": 0,
         "RicochetAngle": 30,
         "PossibleRicochets": 3
     },
@@ -18,6 +19,7 @@
         "Thickness": 0.05,
         "Color": {"r": 0,"g": 0,"b": 255},
         "Damage": 4,
+        "DamageBlocks": 2,
         "RicochetAngle": 25,
         "PossibleRicochets": 3
     },
@@ -29,6 +31,7 @@
         "Thickness": 0.05,
         "Color": {"r": 0,"g": 255,"b": 0},
         "Damage": 3,
+        "DamageBlocks": 2,
         "RicochetAngle": 20,
         "PossibleRicochets": 2
     },
@@ -40,8 +43,21 @@
         "Thickness": 0.2,
         "Color": {"r": 178,"g": 0,"b": 255},
         "Damage": 50,
+        "DamageBlocks" : 60,
         "RicochetAngle": 70,
         "PossibleRicochets": 5
+    },
+    {
+        "Name": "sniperProjectile",
+        "Speed": 40,
+        "MaxTravelDistance": 110,
+        "Length": 0.66,
+        "Thickness": 0.05,
+        "Color": {"r": 0,"g": 0,"b": 255},
+        "Damage": 25,
+        "DamageBlocks" : 10,
+        "RicochetAngle": 15,
+        "PossibleRicochets": 2
     }
 
 ]
