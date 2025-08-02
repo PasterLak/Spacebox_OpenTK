@@ -134,7 +134,7 @@ namespace Spacebox.Game
 
             if (!File.Exists(path))
             {
-                Save(path, defaults);
+                Save( defaults);
                 return defaults;
             }
 
@@ -155,15 +155,17 @@ namespace Spacebox.Game
                 : new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "English" };
 
             bool changed = loaded.ValidateAgainst(defaults, langSet);
-            if (changed) Save(path, loaded);
+            if (changed) Save( loaded);
 
             Debug.Success($"Game settings loaded from {path} (schema version: {loaded.Meta.SchemaVersion})");
 
             return loaded;
         }
 
-        public static void Save(string path, GameSettings settings)
+        public static void Save(GameSettings settings)
         {
+            var p = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
+            string path = Path.Combine(p, "Settings.json");
             var dir = Path.GetDirectoryName(path);
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
             var json = JsonSerializer.Serialize(settings, JsonOpts);

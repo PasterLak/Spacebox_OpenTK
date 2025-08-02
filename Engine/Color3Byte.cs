@@ -1,11 +1,10 @@
 ﻿using OpenTK.Mathematics;
-using System;
 using System.Text.Json.Serialization;
 
 
 namespace Engine
 {
-    
+
     public struct Color3Byte : IEquatable<Color3Byte>
     {
         [JsonPropertyName("r")] public byte R { get; set; }
@@ -49,10 +48,14 @@ namespace Engine
 
         public Color3Byte(Vector3 v)
         {
+            v = v * 255;
             this.R = (byte)Clamp((int)v.X, 0, byte.MaxValue);
             this.G = (byte)Clamp((int)v.Y, 0, byte.MaxValue);
             this.B = (byte)Clamp((int)v.Z, 0, byte.MaxValue);
         }
+
+        public static Color3Byte One => White;
+        public static Color3Byte Zero => Black;
 
         public static Color3Byte White => new Color3Byte(255, 255, 255);
         public static Color3Byte Black => new Color3Byte(0, 0, 0);
@@ -66,6 +69,10 @@ namespace Engine
         public static Color3Byte Purple => new Color3Byte(128, 0, 128);
         public static Color3Byte Gray => new Color3Byte(128, 128, 128);
         public static Color3Byte Transparent => new Color3Byte(0, 0, 0);
+
+       // public static Vector3 operator *(Color3Byte c, float s)
+       //     => new Vector3(c.R / 255f, c.G / 255f, c.B / 255f) * s;
+
 
         public static Color3Byte operator +(Color3Byte c1, Color3Byte c2)
         {

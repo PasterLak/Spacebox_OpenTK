@@ -38,7 +38,7 @@ namespace Spacebox.Game.Generation.Blocks
         //           = 35 bit
 
         public Vector3 Color { get; set; } = Vector3.One;
-        public Vector3 LightColor { get; set; } = Vector3.Zero;
+        public Color3Byte LightColor { get; set; } = Color3Byte.Black;
         public float LightLevel { get; set; }
 
         public Block() { }
@@ -59,7 +59,7 @@ namespace Spacebox.Game.Generation.Blocks
         public Block(BlockData blockData)
         {
             BlockId = blockData.Id;
-            LightColor = blockData.LightColor;
+            LightColor = new Color3Byte(blockData.LightColor);
             SetBlockId(blockData.Id);
             SetDirection(Direction.Up);
             SetMass(blockData.Mass);
@@ -69,7 +69,7 @@ namespace Spacebox.Game.Generation.Blocks
 
             SetEnableEmission(true);
 
-            if (LightColor != Vector3.Zero)
+            if (LightColor != Color3Byte.Black)
             {
                 LightLevel = 15;
                 SetLight(true);
@@ -251,7 +251,7 @@ namespace Spacebox.Game.Generation.Blocks
 
 
         public bool Is<T>() where T : Block => this is T;
-        public bool Is<T>(out T res) where T : Block
+        public bool Is<T>(out T? res) where T : Block
         {
             res = this as T;
             return res != null;
@@ -260,7 +260,7 @@ namespace Spacebox.Game.Generation.Blocks
         public override string ToString()
         {
             return $"ID={BlockId}, Dir={Direction}, Mass={Mass}, Dur={Durability}, \nFlags=[T={IsTransparent}, A={IsAir}, L={IsLight}, E={EnableEmission}], " +
-                   $"\nCol={RoundVector3(Color)}, LCol={RoundVector3(LightColor)}, LLvl={RoundFloat(LightLevel)}";
+                   $"\nCol={RoundVector3(Color)}, LCol={LightColor}, LLvl={RoundFloat(LightLevel)}";
         }
 
         public static float RoundFloat(float x)

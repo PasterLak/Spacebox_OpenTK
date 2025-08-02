@@ -68,19 +68,19 @@ namespace Spacebox.Game.Generation
 
                     const float att = 0.8f;
                     var newLvl = lvl * att;
-                    var newClr = block.LightColor * att;
+                    var newClr = block.LightColor.ToVector3() * att;
 
                     if (newLvl > nb.LightLevel + 0.01f)
                     {
                         nb.LightLevel = newLvl;
-                        nb.LightColor = newClr;
+                        nb.LightColor = new Color3Byte(newClr );
                         nChunk.Blocks[bx, by, bz] = nb;
                         changedChunks.Add(nChunk);
                         lightQueue.Enqueue((nChunk, bx, by, bz));
                     }
                     else if (System.MathF.Abs(newLvl - nb.LightLevel) < 0.01f)
                     {
-                        nb.LightColor = (nb.LightColor + newClr) * 0.5f;
+                        nb.LightColor = new Color3Byte((nb.LightColor.ToVector3() + newClr) * 0.5f );
                         nChunk.Blocks[bx, by, bz] = nb;
                         changedChunks.Add(nChunk);
                     }
@@ -110,7 +110,7 @@ namespace Spacebox.Game.Generation
                         if (b.LightLevel < 15f)
                         {
                             b.LightLevel = 0f;
-                            b.LightColor = Vector3.Zero;
+                            b.LightColor = Color3Byte.Zero;
                             c.Blocks[x, y, z] = b;
                         }
                     }

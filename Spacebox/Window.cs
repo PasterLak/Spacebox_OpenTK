@@ -147,10 +147,10 @@ namespace Spacebox
 
 
             var normalShader = Resources.Load<Shader>("Shaders/PostProcessing/normalView", true);
-            // _processManager.AddEffect(new NormalViewEffect(normalShader, SceneRenderer));
+             _processManager.AddEffect(new NormalViewEffect(normalShader, SceneRenderer));
 
             var depthShader = Resources.Load<Shader>("Shaders/PostProcessing/depthView", true);
-            // _processManager.AddEffect(new DepthViewEffect(depthShader, SceneRenderer, 0.1f, 10f));
+             //_processManager.AddEffect(new DepthViewEffect(depthShader, SceneRenderer, 0.1f, 800f));
 
             // _processManager.AddEffect(new EdgeDetectionEffect(sha4));
 

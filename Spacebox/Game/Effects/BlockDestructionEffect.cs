@@ -16,12 +16,12 @@ namespace Spacebox.Game.Effects
         private float elapsedTime = 0f;
         private const float duration = 2f;
 
-        private Vector3 color = Vector3.One;
+        private Color3Byte color = Color3Byte.White;
 
 
         public bool IsFinished => elapsedTime >= duration && particleSystem.ParticlesCount == 0;
 
-        public BlockDestructionEffect(Camera camera, Vector3 position, Vector3 color, Texture2D texture, Shader shader)
+        public BlockDestructionEffect(Camera camera, Vector3 position, Color3Byte color, Texture2D texture, Shader shader)
         {
             this.camera = camera;
 

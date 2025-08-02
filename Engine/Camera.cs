@@ -48,7 +48,7 @@ namespace Engine
         private float _fov = MathHelper.DegreesToRadians(80f);
         public float AspectRatio { get; set; } = 16f / 9f;
         public float DepthNear = 0.1f;
-        public float DepthFar = 2000f;
+        public float DepthFar = 800f;
         public Vector3 Front => _front;
         public Vector3 Up => _up;
         public Vector3 Right => _right;

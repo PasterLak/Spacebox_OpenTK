@@ -15,7 +15,7 @@ namespace Spacebox.Game.Effects
         private float elapsedTime = 0f;
         public const float duration = 20f;
 
-        private Vector3 color = Vector3.One;
+        private Color3Byte color = Color3Byte.White;
 
         public bool IsFinished => elapsedTime >= duration && ParticleSystem.ParticlesCount == 0;
         public Block Block { get; set; }
@@ -36,7 +36,7 @@ namespace Spacebox.Game.Effects
         public Vector3 Velocity { get; set; }
 
 
-        public void Initialize(Astronaut player, Vector3 position, Vector3 color, Texture2D texture, Block block)
+        public void Initialize(Astronaut player, Vector3 position, Color3Byte color, Texture2D texture, Block block)
         {
             camera = player;
             Position = position;
@@ -111,7 +111,7 @@ namespace Spacebox.Game.Effects
         public void Reset()
         {
             elapsedTime = 0f;
-            color = Vector3.One;
+            color = Color3Byte.White;
             Block = null;
             Position = Vector3.Zero;
             Velocity = Vector3.Zero;

@@ -98,7 +98,7 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.EndTable();
                 },
                 () => { menu.Click1.Play(); menu.SetStateToOptions();
-                    SettingsService.Save(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "/Resources/Settings.json"), Settings.AsGameSettings());
+                    SettingsService.Save(Settings.AsGameSettings());
 
 
                 },

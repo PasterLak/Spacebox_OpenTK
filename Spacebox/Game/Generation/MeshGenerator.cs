@@ -111,7 +111,7 @@ namespace Spacebox.Game.Generation
                                 var currentLightLevel = block.LightLevel / 15f;
                                 var currentLightColor = block.LightColor;
                                 float neighborLightLevel = 0f;
-                                Vector3 neighborLightColor = Vector3.Zero;
+                                Color3Byte neighborLightColor = Color3Byte.Zero;
                                 var neighborBlock = GetBlockFromThisOrNeighborChunk(nx, ny, nz);
                                 if (neighborBlock != null)
                                 {
@@ -119,7 +119,7 @@ namespace Spacebox.Game.Generation
                                     neighborLightColor = neighborBlock.LightColor;
                                 }
                                // float averageLightLevel = (currentLightLevel + neighborLightLevel) * 0.5f;
-                                var averageLightColor = (currentLightColor * currentLightLevel + neighborLightColor * neighborLightLevel)
+                                var averageLightColor = (currentLightColor.ToVector3() * currentLightLevel + neighborLightColor.ToVector3() * neighborLightLevel)
                                                         / (currentLightLevel + neighborLightLevel + 0.001f);
                                 Vector3 ambient = new Vector3(0.2f, 0.2f, 0.2f);
                                 var vertexColor = Vector3.Clamp(block.Color * (averageLightColor + ambient), Vector3.Zero, Vector3.One);
