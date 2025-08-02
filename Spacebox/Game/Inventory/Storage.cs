@@ -17,7 +17,7 @@ namespace Spacebox.Game
 
         public readonly int SlotsCount;
 
-        private ItemSlot[,] Slots;
+        private ItemSlot[,] _slots;
 
         public Action<Storage> OnDataWasChanged;
 
@@ -34,7 +34,7 @@ namespace Spacebox.Game
             Id = MaxId;
             MaxId++;
 
-            Slots = new ItemSlot[SizeX, SizeY];
+            _slots = new ItemSlot[SizeX, SizeY];
 
             FillSlots();
         }
@@ -56,15 +56,15 @@ namespace Spacebox.Game
             {
                 for (byte y = 0; y < SizeY; y++)
                 {
-                    Slots[x, y] = new ItemSlot(this, x, y);
+                    _slots[x, y] = new ItemSlot(this, x, y);
                 }
             }
         }
 
         public void Clear()
         {
-            Slots = null;
-            Slots = new ItemSlot[SizeX, SizeY];
+            _slots = null;
+            _slots = new ItemSlot[SizeX, SizeY];
             FillSlots();
             OnDataWasChanged?.Invoke(this);
         }
@@ -152,12 +152,12 @@ namespace Spacebox.Game
                     }
 
                     rest = count;
-                 
+
                     return false;
                 }
             }
             rest = count;
-          
+
             return false;
         }
 
@@ -167,7 +167,7 @@ namespace Spacebox.Game
             {
                 for (byte y = 0; y < SizeY; y++)
                 {
-                    var slot = Slots[x, y];
+                    var slot = _slots[x, y];
 
                     if (slot.HasItem && slot.Item.Id == item.Id)
                     {
@@ -200,7 +200,7 @@ namespace Spacebox.Game
         {
             if (!HasItem(item, quantity)) return false;
 
-            RemoveItem( item, quantity);
+            RemoveItem(item, quantity);
             return true;
         }
 
@@ -212,7 +212,7 @@ namespace Spacebox.Game
             {
                 for (byte y = 0; y < SizeY; y++)
                 {
-                    var slot = Slots[x, y];
+                    var slot = _slots[x, y];
 
                     if (slot.HasItem && slot.Item.Id == item.Id)
                     {
@@ -232,9 +232,9 @@ namespace Spacebox.Game
             {
                 for (byte y = 0; y < SizeY; y++)
                 {
-                    if (Slots[x, y].Item.Id == item.Id)
+                    if (_slots[x, y].Item.Id == item.Id)
                     {
-                        q += Slots[x, y].Count;
+                        q += _slots[x, y].Count;
                     }
                 }
             }
@@ -250,9 +250,9 @@ namespace Spacebox.Game
             {
                 for (int y = 0; y < SizeY; y++)
                 {
-                    if (Slots[x, y].Count == 0)
+                    if (_slots[x, y].Count == 0)
                     {
-                        slot = Slots[x, y];
+                        slot = _slots[x, y];
                         return true;
                     }
                 }
@@ -269,14 +269,14 @@ namespace Spacebox.Game
             {
                 for (int y = 0; y < SizeY; y++)
                 {
-                    if (Slots[x, y].Count == 0) continue;
+                    if (_slots[x, y].Count == 0) continue;
 
 
-                    if (Slots[x, y].Item.Id == item.Id)
+                    if (_slots[x, y].Item.Id == item.Id)
                     {
-                        if (Slots[x, y].Count >= item.StackSize) continue;
+                        if (_slots[x, y].Count >= item.StackSize) continue;
 
-                        slot = Slots[x, y];
+                        slot = _slots[x, y];
                         return true;
                     }
 
@@ -305,7 +305,7 @@ namespace Spacebox.Game
             for (int x = 0; x < SizeX; x++)
                 for (int y = 0; y < SizeY; y++)
                 {
-                    var s = Slots[x, y];
+                    var s = _slots[x, y];
                     if (!s.HasItem) continue;
 
                     data.Add((s.Item, s.Count));
@@ -317,8 +317,8 @@ namespace Spacebox.Game
                 }
 
             var sorted = data
-                .OrderByDescending(e => stacks[e.item.Name])      
-                .ThenBy(e => e.item.Name, StringComparer.Ordinal) 
+                .OrderByDescending(e => stacks[e.item.Name])
+                .ThenBy(e => e.item.Name, StringComparer.Ordinal)
                 .ToList();
 
             int idx = 0;
@@ -328,12 +328,12 @@ namespace Spacebox.Game
                     if (idx < sorted.Count)
                     {
                         var (it, cnt) = sorted[idx++];
-                        Slots[x, y].Item = it;
-                        Slots[x, y].Count = cnt;
+                        _slots[x, y].Item = it;
+                        _slots[x, y].Count = cnt;
                     }
                     else
                     {
-                        Slots[x, y].Count = 0;
+                        _slots[x, y].Count = 0;
                     }
                 }
 
@@ -344,7 +344,6 @@ namespace Spacebox.Game
         {
             var groups = new Dictionary<short, List<ItemSlot>>();
 
-            // собрать ссылки на слоты по Id предметов
             foreach (var s in GetAllSlots())
                 if (s.HasItem)
                 {
@@ -356,7 +355,6 @@ namespace Spacebox.Game
                     list.Add(s);
                 }
 
-            // для каждого типа предмета перераспределить количество по тем же слотам
             foreach (var pair in groups)
             {
                 var slots = pair.Value;
@@ -371,8 +369,6 @@ namespace Spacebox.Game
                     total -= put;
                     idx++;
                 }
-
-                // оставшиеся слоты этого предмета очищаем
                 for (int i = idx; i < slots.Count; i++)
                     slots[i].Count = 0;
             }
@@ -388,7 +384,7 @@ namespace Spacebox.Game
             {
                 for (int y = 0; y < SizeY; y++)
                 {
-                   if(Slots[x, y].HasItem) return true; 
+                    if (_slots[x, y].HasItem) return true;
                 }
             }
             return false;
@@ -397,14 +393,14 @@ namespace Spacebox.Game
         {
             if (x >= 0 && x < SizeX && y >= 0 && y < SizeY)
             {
-                return Slots[x, y];
+                return _slots[x, y];
             }
             return null;
         }
 
         public void SetSlot(int x, int y, Item item, byte count)
         {
-            Slots[x, y].SetData(item, count);
+            _slots[x, y].SetData(item, count);
             OnDataWasChanged?.Invoke(this);
         }
 

@@ -91,73 +91,99 @@ namespace Engine
         public static void WriteLine(string message)
         {
             AddMessage($"{message}");
+
+#if DEBUG
             Console.WriteLine($"{message}");
+#endif
         }
 
         public static void Write(string message)
         {
             AddMessage($"{message}");
+#if DEBUG
             Console.WriteLine($"{message}");
+#endif
+
         }
 
         public static void Log(string message, OpenTK.Mathematics.Color4 color)
         {
             AddMessage($"{message}", color);
+#if DEBUG
             Console.WriteLine($"{message}");
+#endif
         }
 
         public static void Log(object sender, string message, OpenTK.Mathematics.Color4 color)
         {
             AddMessage($"[{sender.GetType().Name}] {message}", color);
+#if DEBUG
             Console.WriteLine($"[{sender.GetType().Name}] {message}");
+#endif
         }
         public static void Log(object sender, string message)
         {
             AddMessage($"[{sender.GetType().Name}] {message}", Color.White);
+#if DEBUG
             Console.WriteLine($"[{sender.GetType().Name}] {message}");
+#endif
         }
 
         public static void Success(object sender, string message)
         {
             AddMessage($"[Success][{sender.GetType().Name}] {message}", new Vector4(0, 1, 0, 1));
+#if DEBUG
             Console.WriteLine($"[Success][{sender.GetType().Name}] {message}");
+#endif
         }
 
         public static void Success(string message)
         {
             AddMessage($"[Success] {message}", new Vector4(0, 1, 0, 1));
+#if DEBUG
             Console.WriteLine($"[Success] {message}");
+#endif
         }
 
         public static void Warning(string message)
         {
             AddMessage($"[Warning] {message}", new Vector4(1, 0.45f, 0, 1));
+#if DEBUG
             Console.WriteLine($"[Warning] {message}");
+#endif
         }
 
         public static void Log(string message, Vector4 color)
         {
             AddMessage($"{message}", color);
+#if DEBUG
             Console.WriteLine($"{message}");
+#endif
         }
 
         public static void Log(object message)
         {
             //AddMessage($"[DEBUG] {message}", new Vector4(0.2f, 0.7f, 1f, 1f));
             AddMessage($"{message.ToString()}", new Vector4(1, 1, 1f, 1f));
+#if DEBUG
             Console.WriteLine($"{message.ToString()}");
+#endif
         }
         public static void Log(string message)
         {
             //AddMessage($"[DEBUG] {message}", new Vector4(0.2f, 0.7f, 1f, 1f));
             AddMessage($"{message}", new Vector4(1, 1, 1f, 1f));
+#if DEBUG
             Console.WriteLine($"{message}");
+#endif
         }
 
         public static void Error(string message)
         {
             AddMessage($"[ERROR] {message}", new Vector4(1f, 0f, 0f, 1f));
+#if DEBUG
             Console.WriteLine($"[ERROR] {message}");
+#endif
         }
 
         public static void ClearMessages()

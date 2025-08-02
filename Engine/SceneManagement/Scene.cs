@@ -34,11 +34,19 @@ namespace Engine.SceneManagement
         }
 
 
+        static readonly Prof.Token T_SceneSkybox = Prof.RegisterTimer("Render.Scene.Skybox");
+        static readonly Prof.Token T_SceneBVH = Prof.RegisterTimer("Render.Scene.BVH");
+
         public virtual void Render()
         {
-            if(Lighting.Skybox != null) Lighting.Skybox.Render();
+            if (Lighting.Skybox != null)
+            {
+                using(Prof.Time(T_SceneSkybox))
+                Lighting.Skybox.Render();
+            }
             base.Render();
-            BVHCuller.Render(this, Camera.Main);
+            using (Prof.Time(T_SceneBVH))
+                BVHCuller.Render(this, Camera.Main);
     
         }
 

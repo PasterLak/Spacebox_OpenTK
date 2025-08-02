@@ -50,9 +50,9 @@ namespace Spacebox.Scenes
             var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
             var sky = Resources.Load<Texture2D>("Resources/Textures/Space/dom.png");
             var sky2 = Resources.Load<Mesh>("Resources/Models/cube.obj");
-            var skyBox = AddChild(new Skybox(GenMesh.CreateCube(), new SkyboxProceduralMaterial()));
+           // var skyBox = AddChild(new Skybox(GenMesh.CreateCube(), new SkyboxProceduralMaterial()));
 
-            skyBox.SetScale(300);
+            //skyBox.SetScale(300);
             player = AddChild(new FreeCamera(new Vector3(0, 0, 5)));
             player2 = AddChild(new FreeCamera(new Vector3(x, 5, 5)));
 
@@ -161,7 +161,7 @@ namespace Spacebox.Scenes
             waterModel.Material.Color = Color4.White;
             plane.AttachComponent(new ModelRendererComponent(waterModel));
             plane.AttachComponent(new SphereCollider());
-            AddChild(plane);
+            //AddChild(plane);
 
             var emitter = new SphereEmitter
             {

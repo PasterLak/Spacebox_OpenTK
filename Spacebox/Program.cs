@@ -30,6 +30,8 @@ namespace Spacebox
                 APIVersion = new Version(3, 3),
                 // This is needed to run on macos
 
+               
+
                 Flags = ContextFlags.ForwardCompatible,
             };
          
@@ -38,7 +40,7 @@ namespace Spacebox
 
             using (var window = new Window(GameWindowSettings.Default, nativeWindowSettings))
             {
-
+               // window.UpdateFrequency = 999;
                 window.Run();
             }
 

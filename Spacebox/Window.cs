@@ -18,6 +18,7 @@ using Spacebox.FPS.Scenes;
 using Engine.Multithreading;
 using Engine.UI;
 
+
 namespace Spacebox
 {
     public interface IGameWindow
@@ -45,7 +46,7 @@ namespace Spacebox
         {
             Instance = this;
             minimizedWindowSize = nativeWindowSettings.ClientSize;
-
+          
         }
 
         public static unsafe void LoadStarPixelFont(float fontSize = 16.0f)
@@ -83,7 +84,7 @@ namespace Spacebox
             base.OnLoad();
 
             AppIconLoader.LoadAndSetIcon(this, "Resources/Textures/icon.png");
-            
+
             Debug.Log("[Engine started!]");
             Input.Initialize(this);
 
@@ -91,13 +92,14 @@ namespace Spacebox
             FrameLimiter.Initialize(120);
             FrameLimiter.IsRunning = true;
 
-            SceneManager.Initialize(() => {
+            SceneManager.Initialize(() =>
+            {
                 SceneManager.Register<Spacebox.Scenes.MenuScene>();
                 SceneManager.Register<Spacebox.Scenes.PlaygroundScene>();
                 SceneManager.Register<Spacebox.Scenes.LocalSpaceScene>();
                 SceneManager.Register<Spacebox.Scenes.MultiplayerScene>();
                 SceneManager.Register<Spacebox.Scenes.LogoScene>();
-                 SceneManager.Register<ParticleSystemEditor>();
+                SceneManager.Register<ParticleSystemEditor>();
 
             });
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
@@ -139,16 +141,16 @@ namespace Spacebox
             var sha3 = Resources.Load<Shader>("Shaders/PostProcessing/vignette", true);
             var vignetteEffect = new VignetteEffect(sha3);
             vignetteEffect.Enabled = false;
-            //_processManager.AddEffect(vignetteEffect);
+            _processManager.AddEffect(vignetteEffect);
 
             var sha4 = Resources.Load<Shader>("Shaders/PostProcessing/edgeDetection", true);
 
 
             var normalShader = Resources.Load<Shader>("Shaders/PostProcessing/normalView", true);
-           // _processManager.AddEffect(new NormalViewEffect(normalShader, SceneRenderer));
+            // _processManager.AddEffect(new NormalViewEffect(normalShader, SceneRenderer));
 
             var depthShader = Resources.Load<Shader>("Shaders/PostProcessing/depthView", true);
-            //_processManager.AddEffect(new DepthViewEffect(depthShader, SceneRenderer, 0.1f, 10f));
+            // _processManager.AddEffect(new DepthViewEffect(depthShader, SceneRenderer, 0.1f, 10f));
 
             // _processManager.AddEffect(new EdgeDetectionEffect(sha4));
 
@@ -157,8 +159,13 @@ namespace Spacebox
             shaderpass = sha;
 
             //SceneManager.Load<PlaygroundScene>();
-          // SceneManager.Load<ParticleSystemEditor>();
-             SceneManager.Load<MenuScene>();
+            // SceneManager.Load<ParticleSystemEditor>();
+#if DEBUG
+            SceneManager.Load<MenuScene>();
+#else
+ 
+            SceneManager.Load<LogoScene>();
+#endif
         }
 
         private static AudioSource screenShotAudio;
@@ -169,13 +176,18 @@ namespace Spacebox
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(1, 1, 1), 0.2f);
         }
 
+        static readonly Prof.Token T_VisualDebug = Prof.RegisterTimer("Visual Debug");
+        static readonly Prof.Token T_SceneRender = Prof.RegisterTimer("Scene Render");
         private void RenderScene()
         {
 
             if (SceneManager.Current != null)
             {
-                SceneManager.Current.Render();
-                VisualDebug.Render();
+                using (Prof.Time(T_SceneRender))
+                    SceneManager.Current.Render();
+
+                using (Prof.Time(T_VisualDebug))
+                    VisualDebug.Render();
             }
 
             if (FramebufferCapture.IsActive) FramebufferCapture.IsActive = false;
@@ -185,7 +197,7 @@ namespace Spacebox
 
         private void OnGUI()
         {
-            Time.StartOnGUI();
+
             if (SceneManager.Current != null)
             {
 
@@ -199,7 +211,7 @@ namespace Spacebox
                     ImGui.ShowDemoWindow();
                 }
             }
-            Time.EndOnGUI();
+
 
             if (Camera.Main != null)
                 _controller.Render();
@@ -208,75 +220,130 @@ namespace Spacebox
         }
         FullscreenRenderer FullscreenRenderer;
         Shader shaderpass;
+
+        static readonly Prof.Token T_LightSystemUpdate = Prof.RegisterTimer("Render.LightSystem");
+        static readonly Prof.Token T_Render = Prof.RegisterTimer("Render.All");
+        static readonly Prof.Token T_OnGUI = Prof.RegisterTimer("Render.OnGUI");
+        static readonly Prof.Token T_Update = Prof.RegisterTimer("Update.All");
+        static readonly Prof.Token T_UpdateScene = Prof.RegisterTimer("Update.Scene");
+        static readonly Prof.Token T_PostProcessing = Prof.RegisterTimer("Render.PostFX");
+        static readonly Prof.Token T_Swap = Prof.RegisterTimer("Render.Swap");
+
+
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+
             base.OnRenderFrame(e);
-            Time.StartRender();
-            FrameLimiter.Update();
-
-            LightSystem.Update();
-           
-            SceneRenderer.Render(() =>
+            using (Prof.Time(T_Render))
             {
-                RenderScene();
-            });
+
+                Time.StartRender();
+
+
+                FrameLimiter.Update();
+
+
+                using (Prof.Time(T_LightSystemUpdate))
+                {
+                    LightSystem.Update();
+                }
 
 
 
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.CullFace);
+                SceneRenderer.Render(() =>
+                {
+                    RenderScene();
+                });
 
 
 
-            //FullscreenRenderer.RenderToScreen(SceneRenderer.SceneTexture, shaderpass, ClientSize);
-            _processManager.Process(SceneRenderer, ClientSize);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
+                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+                GL.Disable(EnableCap.DepthTest);
+                GL.Disable(EnableCap.CullFace);
 
-            if(Input.IsKeyDown(Keys.P))
-            {
-               // FramebufferCapture.SaveGBufferTextures(SceneRenderer, ClientSize);
+
+
+                //FullscreenRenderer.RenderToScreen(SceneRenderer.SceneTexture, shaderpass, ClientSize);
+                using (Prof.Time(T_PostProcessing))
+                {
+                    _processManager.Process(SceneRenderer, ClientSize);
+                }
+
+
+                using (Prof.Time(T_OnGUI))
+                {
+                    Time.StartOnGUI();
+                    OnGUI();
+                    Time.EndOnGUI();
+                }
+
+                using (Prof.Time(T_Swap))
+                {
+                    SwapBuffers();
+                }
+
+
+                Time.EndRender();
             }
-
-            //GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
-
-
-            OnGUI();
-
-            SwapBuffers();
-
-            Time.EndRender();
             if (DoScreenshot)
             {
                 Screenshot();
                 DoScreenshot = false;
             }
+
+
+            if (ProfDumpTimer.TimeSinceLastDump() >= 1.0)
+            {
+                Prof.DumpToConsole();
+                ProfDumpTimer.ResetDumpTimer();
+            }
+
+        }
+        static class ProfDumpTimer
+        {
+            static readonly System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+            static long lastTicks;
+
+            public static double TimeSinceLastDump() =>
+                (sw.ElapsedTicks - lastTicks) / (double)System.Diagnostics.Stopwatch.Frequency;
+
+            public static void ResetDumpTimer() =>
+                lastTicks = sw.ElapsedTicks;
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            base.OnUpdateFrame(e);
-            RenderSpace.BeginFrame();
-            GlobalUniforms.Push();
-            Time.StartUpdate();
-            Time.Update(e);
-            _controller.Update(this, (float)e.Time);
-            InputManager.Update();
+            Prof.ResetFrame();
 
-            while (_mainThreadActions.TryDequeue(out var action))
+            using (Prof.Time(T_Update))
             {
-                try { action.Invoke(); }
-                catch (Exception ex) { Debug.Error($"Exception in main thread action: {ex}"); }
+
+                base.OnUpdateFrame(e);
+                RenderSpace.BeginFrame();
+                GlobalUniforms.Push();
+                Time.StartUpdate();
+                Time.Update(e);
+                _controller.Update(this, (float)e.Time);
+                InputManager.Update();
+
+                while (_mainThreadActions.TryDequeue(out var action))
+                {
+                    try { action.Invoke(); }
+                    catch (Exception ex) { Debug.Error($"Exception in main thread action: {ex}"); }
+                }
+
+                UpdateInputs();
+                using (Prof.Time(T_UpdateScene))
+                {
+
+                    SceneManager.Update();
+                }
+
+                Time.EndUpdate();
+                AudioDevice.Instance.Update();
             }
-
-            UpdateInputs();
-
-            SceneManager.Update();
-
-            Time.EndUpdate();
-            AudioDevice.Instance.Update();
         }
 
         private void UpdateInputs()
@@ -373,7 +440,7 @@ namespace Spacebox
 
         public static void Shutdown(object sender, EventArgs e)
         {
-           // Quit();
+            Debug.SaveMessagesToFile(true);
         }
 
         protected override void OnMouseWheel(MouseWheelEventArgs e)

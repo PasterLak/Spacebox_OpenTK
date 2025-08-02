@@ -13,7 +13,9 @@ dotnet publish Spacebox/Spacebox.csproj -c Release -r win-x64 --self-contained t
 
 dotnet publish Spacebox/Spacebox.csproj -c Release -r osx-x64  --output ./publish
 
+LINUX
 dotnet publish -c Release -r linux-x64 --self-contained true --output ./publish
+dotnet publish Spacebox/Spacebox.csproj -c Release -r linux-x64 --self-contained true --output ./publish
 
 ./stats.ps1
 wsl ./stats.sh
@@ -112,6 +114,7 @@ Engine
 - multi threading - workers
 - dev gui
 - billboards
+- profiling, console only in debug
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.1

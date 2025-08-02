@@ -133,7 +133,7 @@ namespace Spacebox.Scenes
 
             localPlayer.GameMode = World.Data.Info.GameMode;
 
-            PointLightsPool.Instance = new PointLightsPool(blockMaterial.Shader, 1);
+            PointLightsPool.Instance = new PointLightsPool( 1);
 
 
             blockDestructionManager = new BlockDestructionManager(localPlayer);

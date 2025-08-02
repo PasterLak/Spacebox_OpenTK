@@ -40,7 +40,7 @@ New-Item -Path "$publishDir" -ItemType Directory -Force | Out-Null
 
 # Step 1: Publish project
 Write-Host "Publishing project..."
-
+# -p:OutputType=WinExe
 $logTemp = Join-Path $env:TEMP "spacebox_build_log.txt"
 dotnet publish $projectFile -c $configuration -r $runtime --no-self-contained *> $logTemp
 

@@ -405,5 +405,12 @@
         "Sprite": "cable",
         "MaxStack": 8,
         "ModelDepth": 2.0
+    },
+    {
+        "Name": "Bottle",
+        "Category" : "items",
+        "Sprite": "bottle",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
     }
 ]

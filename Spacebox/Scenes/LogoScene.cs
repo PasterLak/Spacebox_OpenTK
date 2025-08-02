@@ -19,7 +19,7 @@ namespace Spacebox.Scenes
         public override void LoadContent()
         {
 
-            Resources.LoadAllAsync<AudioClip>(
+            /*Resources.LoadAllAsync<AudioClip>(
                 new[]
                 {
                     "Resources/Audio/death2.ogg",
@@ -46,7 +46,7 @@ namespace Spacebox.Scenes
                 new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y), sp);
 
             var clip = Resources.Get<AudioClip>("ambientMain");
-            audio = new AudioSource(clip);
+            audio = new AudioSource(clip);*/
 
         }
 
@@ -56,7 +56,7 @@ namespace Spacebox.Scenes
             SceneManager.Load<MenuScene>();
             //SceneManager.LoadScene(typeof(TestScene));
 
-            Input.HideCursor(); audio.Play();
+            Input.HideCursor(); //audio.Play();
 
             Debug.Log(GL.GetString(StringName.Renderer));
             Debug.Log(GL.GetString(StringName.Vendor));
@@ -71,7 +71,6 @@ namespace Spacebox.Scenes
 
         public override void Render()
         {
-            //GL.Clear(ClearBufferMask.ColorBufferBit);
 
             sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
 
@@ -83,8 +82,8 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
-            sprite.Dispose();
-            audio.Dispose();
+            //sprite.Dispose();
+          //  audio.Dispose();
 
         }
 

@@ -7,10 +7,10 @@
 
         private Pool<PointLight> pool;
         private List<PointLight> activeLights;
-        private Shader shader;
+    
 
 
-        public PointLightsPool(Shader shader, int initSize)
+        public PointLightsPool( int initSize)
         {
             if (Instance == null)
                 Instance = this;
@@ -20,7 +20,7 @@
                 Debug.Error("[PointLightsPool] Instance already exists!");
             }
 
-            this.shader = shader;
+         
             pool = new Pool<PointLight>(initSize, true);
             activeLights = new List<PointLight>();
 
@@ -56,13 +56,12 @@
 
         public void Render()
         {
-            if (shader == null) return;
-
+        
             int count = activeLights.Count;
 
             if (count == 0)
             {
-                shader.SetInt("pointLightCount", 0);
+             
                 return;
             }
 
@@ -81,11 +80,11 @@
 
             if (active == 0)
             {
-                shader.SetInt("pointLightCount", 0);
+               // shader.SetInt("pointLightCount", 0);
                 return;
             }
 
-            shader.SetInt("pointLightCount", active);
+           // shader.SetInt("pointLightCount", active);
             active = 0;
             for (int i = 0; i < count; i++)
             {

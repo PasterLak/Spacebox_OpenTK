@@ -7,9 +7,9 @@ namespace Engine.Light
 
     public static class LightSystem
     {
-        const int MAX_DIR = 4;
-        const int MAX_POINT = 64;
-        const int MAX_SPOT = 32;
+        public const int MAX_DIR = 4;
+        public const int MAX_POINT = 64;
+        public const int MAX_SPOT = 32;
 
         static readonly List<LightBase> _all = new();
 
@@ -52,8 +52,11 @@ namespace Engine.Light
         public static void Register(LightBase l) { if (!_all.Contains(l)) _all.Add(l); }
         public static void Unregister(LightBase l) { _all.Remove(l); }
         public static int GetRegisteredLightsCount => _all.Count;
+        public static int ActivePointLights { get; private set; }
+        public static int ActiveDirectionalLights { get; private set; }
+        public static int ActiveSpotLights { get; private set; }
 
-        public const int DistanceToRenderLight = 128 * 128;
+        public const int DistanceToRenderLight = 128 * 128; // to settings
         public static void Clear() => _all.Clear();
 
         public static void Update()
@@ -131,6 +134,10 @@ namespace Engine.Light
                         break;
                 }
             }
+
+            ActivePointLights = p;
+            ActiveDirectionalLights = d;
+            ActiveSpotLights = s;
 
             _cntUBO.Update(stackalloc LightsCountGpu[1] { new LightsCountGpu { dir = d, point = p, spot = s } });
             _dirUBO.Update(dir[..d]);

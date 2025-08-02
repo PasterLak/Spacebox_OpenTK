@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>$(DefineConstants);PROFILING;ASSERTS</DefineConstants>
+  </PropertyGroup>
+</Project>

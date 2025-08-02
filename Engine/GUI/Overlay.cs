@@ -11,7 +11,16 @@ namespace Engine.GUI
 
     public class Overlay
     {
-        public static bool IsVisible = false;
+        private static bool _isVisible = false;
+        public static bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                _isVisible = value;
+                Time.EnableProfiling = value;
+            }
+        }
 
 
         public static NumVector4 Red = new NumVector4(1f, 0f, 0f, 1f);
@@ -31,6 +40,7 @@ namespace Engine.GUI
             OverlayElements.Add(new CameraElement());
             
             OverlayElements.Add(new GameLoopElement());
+            OverlayElements.Add(new LightingElement());
             OverlayElements.Add(new ThreadsElement());
         }
 
@@ -43,7 +53,7 @@ namespace Engine.GUI
 
         public static void OnGUI()
         {
-            if (!IsVisible) return;
+            if (!_isVisible) return;
 
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new NumVector4(0, 0, 0, 0.8f));
             ImGui.Begin("Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar);

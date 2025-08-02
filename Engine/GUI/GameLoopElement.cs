@@ -49,7 +49,7 @@ public override void OnGUIText()
 
     private void DrawPercentBar(string label, float percent)
     {
-        ImGui.Text($"{label}: {percent:F0} %");
+        ImGui.Text($"{label}: {percent:F0}");
         var drawList = ImGui.GetWindowDrawList();
         var pos = ImGui.GetCursorScreenPos();
         const float width = 200f;

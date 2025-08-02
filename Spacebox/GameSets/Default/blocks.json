@@ -504,6 +504,19 @@
         "Mass": 4,
         "Durability": 10,
         "IsTransparent": false
+    },
+     {
+        "Name": "DNA Reconstructor",
+        
+        "Category": "other",
+        "Top": "spawnerTop",
+        "Bottom": "bottom",
+        "Sides": "spawnerSide",
+     
+        "PowerToDrill": 1,
+        "Mass": 6,
+        "Durability": 6,
+        "IsTransparent": false
     }
 
 ]

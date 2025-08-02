@@ -13,12 +13,15 @@ namespace Engine
         public static Color4 DebugColor = new(1f, 0f, 1f, 1f);
         public static int VisibleObjects, CulledObjects;
 
+        static readonly Prof.Token T_SceneBVH = Prof.RegisterTimer("BVH.Build");
+
         public static void Render(Node3D root, Camera cam)
         {
             if (root == null || cam == null) return;
 
             cache.Clear();
             visibleNames.Clear();
+            using(Prof.Time(T_SceneBVH))
             Build(root);
 
             VisibleObjects = CulledObjects = 0;
