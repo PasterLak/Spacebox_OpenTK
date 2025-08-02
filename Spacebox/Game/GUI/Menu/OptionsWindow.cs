@@ -1,18 +1,33 @@
 ﻿
 using System.Numerics;
+using Engine;
 using ImGuiNET;
 
 
 namespace Spacebox.Game.GUI.Menu
 {
-    public class OptionsWindow 
+    public class OptionsWindow : MenuWindow
     {
         private GameMenu menu;
+
         public OptionsWindow(GameMenu menu)
         {
             this.menu = menu;
+
+            LoadGameSettings();
         }
-        public void Render()
+
+        private void LoadGameSettings()
+        {
+            var s = SettingsService.Load(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "/Resources/Settings.json"));
+           
+            Settings.Audio = s.Audio;
+            Settings.Gameplay = s.Game;
+            Settings.Graphics = s.Graphics;
+            Settings.Meta = s.Meta;
+
+        }
+        public override void Render()
         {
             Vector2 windowSize = ImGui.GetIO().DisplaySize;
             float windowWidth = windowSize.X * 0.15f;
@@ -32,21 +47,25 @@ namespace Spacebox.Game.GUI.Menu
             GameMenu.CenterButtonWithBackground("Audio", buttonWidth, buttonHeight, () =>
             {
                 menu.Click1.Play();
-               
+                menu.Open<AudioWindow>();   
+
             });
             currentY += buttonHeight + spacing;
             ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
             GameMenu.CenterButtonWithBackground("Game", buttonWidth, buttonHeight, () =>
             {
                 menu.Click1.Play();
-               
+                menu.Open<GameWindow>();
+
             });
             currentY += buttonHeight + spacing;
             ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
             GameMenu.CenterButtonWithBackground("Graphics", buttonWidth, buttonHeight, () =>
             {
                 menu.Click1.Play();
-               
+                menu.SetStateToGraphics();
+
+
             });
             currentY += buttonHeight + spacing;
             ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));

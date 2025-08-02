@@ -100,6 +100,11 @@ namespace Spacebox.Game.Effects
 
         public void Update()
         {
+            if(Settings.Graphics.EffectsEnabled == false)
+            {
+            
+                return;
+            }
             ParticleSystem.Position = camera.Position;
             ParticleSystem.Update();
         }

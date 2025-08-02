@@ -4,7 +4,7 @@ namespace Engine.Components
 {
     public class BackgroundMusicComponent : Component
     {
-
+        public bool PlayOnStart { get; set; } = true;
         public AudioSource Audio { get; private set; }
         public BackgroundMusicComponent(string path) 
         {
@@ -24,7 +24,11 @@ namespace Engine.Components
         {
             base.Start();
 
-            Audio.Play();
+            if(PlayOnStart)
+            {
+                Audio.Play();
+            }
+          
         }
 
         public override void OnDetached()

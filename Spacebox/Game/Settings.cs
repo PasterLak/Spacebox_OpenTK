@@ -4,7 +4,25 @@ namespace Spacebox.Game
 {
     public class Settings
     {
-        public static float FOV = 90;
+        public static GameSettings G { get; set; } = new GameSettings();
+        public static AudioSettings Audio { get; set; } = new AudioSettings();
+        public static GraphicsSettings Graphics { get; set; } = new GraphicsSettings();
+        public static GameplaySettings Gameplay { get; set; } = new GameplaySettings();
+        public static MetaSettings Meta { get; set; } = new MetaSettings();
+
+        public static GameSettings AsGameSettings()
+        {
+            var newSettings = new GameSettings
+            {
+                Audio = Audio,
+                Graphics = Graphics,
+                Game = Gameplay,
+                Meta = Meta
+            };
+
+            return newSettings;
+        }
+
         public static int ViewDistance = 10000;
 
         public const int LOD0 = 150;

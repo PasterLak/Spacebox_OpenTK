@@ -125,6 +125,7 @@ namespace Spacebox.Game.Effects
         public void SetEmitter(bool canDestroyBlock)
         {
             if (_canDestroyBlock == canDestroyBlock) return;
+            if (!Settings.Graphics.EffectsEnabled) return;
 
             _canDestroyBlock = canDestroyBlock;
 
@@ -148,6 +149,7 @@ namespace Spacebox.Game.Effects
 
         public void Update()
         {
+            if (!Settings.Graphics.EffectsEnabled) return;
             if (elapsedTime < duration)
             {
                 elapsedTime += Time.Delta;
@@ -180,7 +182,9 @@ namespace Spacebox.Game.Effects
         public void Render()
         {
             if(!Enabled) return;
-          
+
+            if(!Settings.Graphics.EffectsEnabled) return;
+
             ParticleSystem.Render();
             ParticleSystem2.Render();
         }

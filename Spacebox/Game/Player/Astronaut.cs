@@ -77,7 +77,7 @@ namespace Spacebox.Game.Player
         public Astronaut(Vector3 position)
             : base(position)
         {
-            FOV = 90;
+            FOV = Settings.Graphics.Fov;
             
             Name = "Player";
             DepthNear = 0.01f;

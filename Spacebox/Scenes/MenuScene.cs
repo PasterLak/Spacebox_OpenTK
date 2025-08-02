@@ -52,12 +52,22 @@ namespace Spacebox.Scenes
 
             Resources.Load<AudioClip>("Resources/Audio/UI/click1.ogg");
             menu = new GameMenu();
-            
+
+            if(Settings.Graphics.EffectsEnabled)
             SetDustSpawner();
 
-            AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/music.ogg"));
+            var music = AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/music.ogg"));
+            music.PlayOnStart = false;
+            if (Settings.Audio.MenuMusic)
+            {
+                music.Audio.Play();
+            }
+            else
+            {
+                music.Audio.IsLooped = false;
+                music.Audio.Stop();
+            }
 
-           
             InputManager.AddAction("inputOverlay", Keys.F6);
             InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
         
@@ -65,6 +75,7 @@ namespace Spacebox.Scenes
 
         private void SetDustSpawner()
         {
+
     
             var emitter = new PlaneEmitter
             {

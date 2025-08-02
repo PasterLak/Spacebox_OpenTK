@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "schema_version": 1
+  },
+  "audio": {
+    "master": 100,
+    "ambient": 80,
+    "music": 80,
+    "effects": 90,
+    "ui": 75,
+    "mute_when_unfocused": false,
+    "menu_music": true
+  },
+  "graphics": {
+    "window_mode": "Windowed",
+    "vsync": true,
+    "post_processing": true,
+    "shadows": true,
+    "effects_enabled": false,
+    "fov": 90,
+    "resolution_scale_percent": 100
+  },
+  "game": {
+    "draw_distance": 12,
+    "language": "English",
+    "keep_inventory": false
+  },
+  "controls": {
+    "bindings": {
+      "move_forward": ["W"],
+      "move_backward": ["S"],
+      "move_left": ["A"],
+      "move_right": ["D"],
+      "open_inventory": ["Tab"],
+      "flashlight": ["F"],
+      "speed_up": ["LeftShift"]
+    }
+  }
+}

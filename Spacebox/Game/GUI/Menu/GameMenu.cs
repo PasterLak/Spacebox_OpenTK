@@ -1,5 +1,4 @@
-﻿
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text.Json;
 using ImGuiNET;
 using Engine;
@@ -13,13 +12,16 @@ using Spacebox.GUI;
 
 namespace Spacebox.Game.GUI.Menu
 {
+
     public class GameMenu : IDisposable
     {
         public static bool IsVisible = false;
-        public enum MenuState { Main, WorldSelect, NewWorld, Options, Multiplayer, SettingsControls, Controls }
-        private MenuState currentState = MenuState.Main;
-        private List<WorldInfo> worlds = new List<WorldInfo>();
-        private List<ModConfig> gameSets = new List<ModConfig>();
+
+        private readonly Dictionary<System.Type, MenuWindow> windows = new();
+        private System.Type currentWindowType;
+
+        private readonly List<WorldInfo> worlds = new();
+        private readonly List<ModConfig> gameSets = new();
         private readonly string[] gamemodes;
         private int selectedGameModeIndex = 1;
         public string newWorldName = "New World";
@@ -33,43 +35,60 @@ namespace Spacebox.Game.GUI.Menu
         public AudioSource Click1;
         public bool showDeleteWindow = false;
         public bool showVersionConvertWindow = false;
-        public MainMenuWindow mainMenuWindow;
-        public WorldSelectWindow worldSelectWindow;
-        public NewWorldWindow newWorldWindow;
-        public OptionsWindow optionsWindow;
-        public MultiplayerWindow multiplayerWindow;
-        public DeleteWindow deleteWindow;
-        public UpdateVersionWindow updateVersionWindow;
-        public SettingsControlsWindow settingsControlsWindow;
-        public ControlsWindow controlsWindow;
+
+
+        private DeleteWindow deleteWindow;
+        private UpdateVersionWindow updateVersionWindow;
 
         public GameMenu()
         {
             Click1 = new AudioSource(Resources.Get<AudioClip>("Resources/Audio/UI/click1.ogg"));
             WorldInfoSaver.LoadWorlds(worlds);
-
             GameSetsUnpacker.UnpackMods(true);
-
             LoadGameSets();
-
 
             trashIcon = Resources.Load<Texture2D>("Resources/Textures/UI/trash.png");
             trashIcon.FlipY();
+
             gamemodes = Enum.GetNames<GameMode>();
-            mainMenuWindow = new MainMenuWindow(this);
-            worldSelectWindow = new WorldSelectWindow(this);
-            newWorldWindow = new NewWorldWindow(this);
-            optionsWindow = new OptionsWindow(this);
-            multiplayerWindow = new MultiplayerWindow(this);
+
+            Reg(new MainMenuWindow(this));
+            Reg(new WorldSelectWindow(this));
+            Reg(new NewWorldWindow(this));
+            Reg(new OptionsWindow(this));
+            Reg(new MultiplayerWindow(this));
+            Reg(new SettingsControlsWindow(this));
+            Reg(new ControlsWindow(this));
+            Reg(new GraphicsWindow(this));
+            Reg(new AudioWindow(this));
+            Reg(new GameWindow(this));
+
             deleteWindow = new DeleteWindow(this);
             updateVersionWindow = new UpdateVersionWindow(this);
-            settingsControlsWindow = new SettingsControlsWindow(this);
-            controlsWindow = new ControlsWindow(this);
+
+            currentWindowType = typeof(MainMenuWindow);
+        }
+
+        private T Reg<T>(T window) where T : MenuWindow
+        {
+            windows[typeof(T)] = window;
+            return window;
+        }
+
+        public void Open<T>() where T : MenuWindow
+        {
+            var t = typeof(T);
+            if (windows.ContainsKey(t)) currentWindowType = t;
+        }
+
+        public T Get<T>() where T : MenuWindow
+        {
+            if (windows.TryGetValue(typeof(T), out var w)) return (T)w;
+            return null;
         }
 
         public void Render()
         {
-
             if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.RightAlt))
             {
                 foreach (var w in worlds)
@@ -80,18 +99,15 @@ namespace Spacebox.Game.GUI.Menu
                         selectedWorld = w;
                         Click1.Play();
                         if (VersionConverter.IsVersionOld(selectedWorld.GameVersion, Application.Version))
-                        {
                             showVersionConvertWindow = true;
-                        }
                         else
-                        {
                             LoadWorld(selectedWorld);
-                        }
                     }
                 }
             }
 
             if (!IsVisible) return;
+
             oldItemSpacing = ImGui.GetStyle().ItemSpacing;
             oldWindowPadding = ImGui.GetStyle().WindowPadding;
             ImGui.GetStyle().ItemSpacing = Vector2.Zero;
@@ -100,33 +116,13 @@ namespace Spacebox.Game.GUI.Menu
             ImGui.PushStyleColor(ImGuiCol.Header, new Vector4(1f, 0.72f, 0f, 1f));
             ImGui.PushStyleColor(ImGuiCol.ChildBg, Theme.Colors.Deep);
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
-            switch (currentState)
-            {
-                case MenuState.Main:
-                    mainMenuWindow.Render();
-                    break;
-                case MenuState.WorldSelect:
-                    worldSelectWindow.Render();
-                    break;
-                case MenuState.NewWorld:
-                    newWorldWindow.Render();
-                    break;
-                case MenuState.Options:
-                    optionsWindow.Render();
-                    break;
-                case MenuState.Multiplayer:
-                    multiplayerWindow.Render();
-                    break;
-                case MenuState.SettingsControls:
-                    settingsControlsWindow.Render();
-                    break;
-                case MenuState.Controls:
-                    controlsWindow.Render();
-                    break;
-            }
+
+            if (currentWindowType != null && windows.TryGetValue(currentWindowType, out var wnd))
+                wnd.Render();
+
             if (showDeleteWindow) deleteWindow.Render();
             if (showVersionConvertWindow) updateVersionWindow.Render();
-            
+
             ImGui.PopStyleColor(5);
             ImGui.GetStyle().ItemSpacing = oldItemSpacing;
             ImGui.GetStyle().WindowPadding = oldWindowPadding;
@@ -263,6 +259,8 @@ namespace Spacebox.Game.GUI.Menu
             ImGui.PopStyleVar();
         }
 
+        
+
         private void LoadGameSets()
         {
             gameSets.Clear();
@@ -276,8 +274,11 @@ namespace Spacebox.Game.GUI.Menu
                 {
                     string jsonContent = File.ReadAllText(configJsonPath);
                     ModConfig gameSetInfo = JsonSerializer.Deserialize<ModConfig>(jsonContent);
-                    gameSetInfo.FolderName = Path.GetFileName(modFolder);
-                    if (gameSetInfo != null) gameSets.Add(gameSetInfo);
+                    if (gameSetInfo != null)
+                    {
+                        gameSetInfo.FolderName = Path.GetFileName(modFolder);
+                        gameSets.Add(gameSetInfo);
+                    }
                 }
             }
         }
@@ -326,6 +327,23 @@ namespace Spacebox.Game.GUI.Menu
             }
         }
 
+        public static void ButtonWithBackground2(string label, Vector2 size, Vector2 cursorPos, Action onClick)
+        {
+            ImGui.SetCursorPos(cursorPos);
+            Vector2 buttonPos = ImGui.GetCursorScreenPos();
+            float offsetValue = size.Y * 0.1f;
+            Vector2 offset = new Vector2(offsetValue, offsetValue);
+            uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
+            uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
+            var drawList = ImGui.GetWindowDrawList();
+            drawList.AddRectFilled(buttonPos - offset, buttonPos + size + offset, borderColor);
+            drawList.AddRectFilled(buttonPos, buttonPos + size + offset, lightColor);
+            if (ImGui.Button(label, size))
+            {
+                onClick?.Invoke();
+            }
+        }
+
         public void ButtonWithBackgroundAndIcon(string label, Vector2 size, Vector2 cursorPos, Action onClick)
         {
             ImGui.SetCursorPos(cursorPos);
@@ -349,38 +367,24 @@ namespace Spacebox.Game.GUI.Menu
 
         public void LoadWorld(WorldInfo world, bool multiplayer = false)
         {
-            List<string> args = new List<string>();
             ModConfig modInfo = null;
             foreach (var mod in gameSets)
             {
-                if (mod.ModId == world.ModId)
-                {
-                    modInfo = mod;
-                    break;
-                }
+                if (mod.ModId == world.ModId) { modInfo = mod; break; }
             }
-            args.Add(world.Name);
-            args.Add(world.ModId);
-            args.Add(world.Seed);
-            args.Add(modInfo.FolderName);
 
             var arg = new SpaceSceneArgs()
             {
                 worldName = world.Name,
                 modId = world.ModId,
                 seed = world.Seed,
-                modfolderName = modInfo.FolderName
+                modfolderName = modInfo?.FolderName ?? ""
             };
 
             if (multiplayer)
-            {
-                SceneManager.Load<MultiplayerScene, SpaceSceneArgs>(arg); // args.ToArray());
-            }
+                SceneManager.Load<MultiplayerScene, SpaceSceneArgs>(arg);
             else
-            {
-                SceneManager.Load<LocalSpaceScene, SpaceSceneArgs>(arg); // args.ToArray());
-            }
-
+                SceneManager.Load<LocalSpaceScene, SpaceSceneArgs>(arg);
         }
 
         public void DeleteWorld(WorldInfo world)
@@ -391,21 +395,24 @@ namespace Spacebox.Game.GUI.Menu
             worlds.Remove(world);
             selectedWorld = null;
         }
-        public void SetStateToControls() { currentState = MenuState.Controls; }
-        public void SetStateToMain() { currentState = MenuState.Main; }
-        public void SetStateToWorldSelect() { currentState = MenuState.WorldSelect; }
-        public void SetStateToNewWorld() { currentState = MenuState.NewWorld; }
-        public void SetStateToOptions() { currentState = MenuState.Options; }
-        public void SetStateToMultiplayer() { currentState = MenuState.Multiplayer; }
-        public void SetStateToSettingsControls() { currentState = MenuState.SettingsControls; }
 
         public void Dispose()
         {
             Click1.Stop();
-
             Click1.Clip.AudioSource = null;
-
             Click1.Dispose();
         }
+
+        public List<WorldInfo> GetWorlds() => worlds;
+        public List<ModConfig> GetGameSets() => gameSets;
+
+        public void SetStateToControls() => Open<ControlsWindow>();
+        public void SetStateToMain() => Open<MainMenuWindow>();
+        public void SetStateToWorldSelect() => Open<WorldSelectWindow>();
+        public void SetStateToNewWorld() => Open<NewWorldWindow>();
+        public void SetStateToOptions() => Open<OptionsWindow>();
+        public void SetStateToMultiplayer() => Open<MultiplayerWindow>();
+        public void SetStateToSettingsControls() => Open<SettingsControlsWindow>();
+        public void SetStateToGraphics() => Open<GraphicsWindow>();
     }
 }

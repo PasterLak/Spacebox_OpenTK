@@ -27,65 +27,76 @@ namespace Spacebox.Game.GUI.Menu
         }
         public override void Render()
         {
-            Vector2 windowSize = ImGui.GetIO().DisplaySize;
-            float windowWidth = windowSize.X * 0.15f;
-            float windowHeight = windowSize.Y * 0.3f;
-            Vector2 windowPos = GameMenu.CenterNextWindow2(windowWidth, windowHeight);
-            ImGui.SetNextWindowPos(windowPos);
-            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight));
-            ImGui.Begin("Controls", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove
-                | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
-            float buttonWidth = windowWidth * 0.9f;
-            float buttonHeight = windowHeight * 0.12f;
-            GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), windowSize.Y, 0.005f);
-            int buttonCount = 5;
-            float spacing = (windowHeight - (buttonCount * buttonHeight)) / (buttonCount + 1);
-            float currentY = spacing;
+            SettingsUI.Render("Controls", "Controls", menu, 5,
+                (listSize, rowH) =>
+                {
+                    ImGui.Text("Action             Key");
+                    ImGui.Dummy(new Vector2(listSize.X, rowH * 0.25f));
 
-            var listSize = new Vector2(buttonWidth, windowHeight - buttonHeight - spacing * 3);
+                    ImGui.BeginTable("table##controls", 2, ImGuiTableFlags.NoBordersInBody);
+                    float totalW = listSize.X;
+                    ImGui.TableSetupColumn("Action", ImGuiTableColumnFlags.WidthFixed, totalW * 0.7f);
+                    ImGui.TableSetupColumn("Key", ImGuiTableColumnFlags.WidthFixed, totalW * 0.3f);
 
-            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2,  spacing));
-            ImGui.BeginChild("list", listSize);
-
-            ImGui.Text("Change controls");
-            ImGui.Dummy(new Vector2(buttonWidth, spacing /2f));
-            ImGui.Text("Action             Key");
-
-            ImGui.BeginTable("table", 2, ImGuiTableFlags.NoBordersInBody);
-          
-
-            float totalW = listSize.X;
-            ImGui.TableSetupColumn("Key", ImGuiTableColumnFlags.WidthFixed, totalW * 0.7f);
-            ImGui.TableSetupColumn("Action", ImGuiTableColumnFlags.WidthFixed, totalW * 0.3f);
-
-            foreach (var kv in controls)
-            {
-                ImGui.TableNextRow();
-                ImGui.TableNextColumn();
-                ImGui.Button(kv.Key, new Vector2(totalW * 0.7f, listSize.Y / 6f));
-                ImGui.TableNextColumn();
-                ImGui.Button(kv.Value, new Vector2(totalW * 0.3f, listSize.Y / 6f));
-            }
-
-
-            ImGui.EndTable();
-
-            ImGui.EndChild();
-         
-           
-            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, windowHeight - buttonHeight - spacing));
-            menu.ButtonWithBackground("Save", new Vector2(listSize.X / 2f - spacing, buttonHeight), new Vector2(spacing , windowHeight - buttonHeight - spacing), () =>
-            {
-                menu.Click1.Play();
-                menu.SetStateToOptions();
-            });
-           // ImGui.SameLine();
-            menu.ButtonWithBackground("Back", new Vector2(listSize.X / 2f-spacing, buttonHeight), new Vector2(windowWidth - listSize.X / 2f , windowHeight - buttonHeight - spacing),() =>
-            {
-                menu.Click1.Play();
-                menu.SetStateToOptions();
-            });
-            ImGui.End();
+                    foreach (var kv in controls)
+                    {
+                        ImGui.TableNextRow();
+                        ImGui.TableNextColumn();
+                        ImGui.Button(kv.Key, new Vector2(totalW * 0.7f, rowH));
+                        ImGui.TableNextColumn();
+                        ImGui.Button(kv.Value, new Vector2(totalW * 0.3f, rowH));
+                    }
+                    ImGui.EndTable();
+                },
+                () => { menu.Click1.Play(); menu.SetStateToOptions(); },
+                () => { menu.Click1.Play(); menu.SetStateToOptions(); }
+            );
         }
+
+
+        public static class SettingsUI
+        {
+            public static void Render(string windowId, string header, GameMenu menu, int buttonCount, Action<Vector2, float> drawContent, Action onSave, Action onBack)
+            {
+                var io = ImGui.GetIO();
+                float ww = io.DisplaySize.X * 0.25f;
+                float wh = io.DisplaySize.Y * 0.3f;
+                var pos = GameMenu.CenterNextWindow2(ww, wh);
+
+                ImGui.SetNextWindowPos(pos);
+                ImGui.SetNextWindowSize(new Vector2(ww, wh));
+                ImGui.Begin(windowId, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
+
+                GameMenu.DrawElementColors(pos, new Vector2(ww, wh), io.DisplaySize.Y, 0.005f);
+
+                float btnW = ww * 0.9f;
+                float btnH = wh * 0.12f;
+                float spacing = (wh - (buttonCount * btnH)) / (buttonCount + 1);
+
+                ImGui.SetCursorPos(new Vector2((ww - btnW) / 2f, spacing));
+                var textSize = ImGui.CalcTextSize(header);
+                ImGui.SetCursorPos(new Vector2((ww - textSize.X) / 2f, spacing));
+                ImGui.Text(header);
+
+                float headerBlockH = ImGui.GetTextLineHeightWithSpacing() * 1.2f;
+                var listSize = new Vector2(btnW, wh - btnH - spacing * 3 - headerBlockH);
+
+                ImGui.SetCursorPos(new Vector2((ww - btnW) / 2f, spacing + headerBlockH));
+                ImGui.BeginChild($"list##{windowId}", listSize);
+
+                float rowH = listSize.Y / 6f;
+                drawContent(listSize, rowH);
+
+                ImGui.EndChild();
+
+                ImGui.SetCursorPos(new Vector2((ww - btnW) / 2f, wh - btnH - spacing));
+                menu.ButtonWithBackground("Save", new Vector2(listSize.X / 2f - spacing, btnH), new Vector2(spacing, wh - btnH - spacing), onSave);
+                menu.ButtonWithBackground("Back", new Vector2(listSize.X / 2f - spacing, btnH), new Vector2(ww - listSize.X / 2f, wh - btnH - spacing), onBack);
+
+                ImGui.End();
+            }
+        }
+
+
     }
 }

@@ -137,6 +137,8 @@ namespace Spacebox.Scenes
 
 
             blockDestructionManager = new BlockDestructionManager(localPlayer);
+
+            if (Settings.Graphics.EffectsEnabled == true)
             localPlayer.AddChild(DustSpawner.CreateDust());
 
             Debug.RegisterCommand(new ChatCommand());

@@ -1,7 +1,7 @@
-﻿
-using System.Numerics;
+﻿using Engine;
 using ImGuiNET;
-
+using System.Numerics;
+using static Spacebox.Game.GUI.Menu.ControlsWindow;
 
 namespace Spacebox.Game.GUI.Menu
 {
@@ -9,83 +9,121 @@ namespace Spacebox.Game.GUI.Menu
     {
         private GameMenu menu;
 
-        private Dictionary<string, string> controls = new Dictionary<string, string>()
-        {
-            { "move forward", "W"},
-            { "move backward", "S"},
-            { "move left", "A"},
-            { "move right", "D"},
-            { "open inventory", "Tab"},
-            { "flashlight", "F"},
-            { "speed up", "Shift"},
-
-        };
+        private bool _vsync = true;
+        private bool _postProcessing = true;
+        private bool _shadows = true;
+        private bool _enableEffects = false;
+        private int _fov = 75;
+        private int _resolution = 100;
+        private readonly string[] _modes = { "Fullscreen", "Borderless", "Windowed" };
+        private int _modeIndex = 2;
 
         public GraphicsWindow(GameMenu menu)
         {
             this.menu = menu;
         }
+
         public override void Render()
         {
-            Vector2 windowSize = ImGui.GetIO().DisplaySize;
-            float windowWidth = windowSize.X * 0.15f;
-            float windowHeight = windowSize.Y * 0.3f;
-            Vector2 windowPos = GameMenu.CenterNextWindow2(windowWidth, windowHeight);
-            ImGui.SetNextWindowPos(windowPos);
-            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight));
-            ImGui.Begin("Controls", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove
-                | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
-            float buttonWidth = windowWidth * 0.9f;
-            float buttonHeight = windowHeight * 0.12f;
-            GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), windowSize.Y, 0.005f);
-            int buttonCount = 5;
-            float spacing = (windowHeight - (buttonCount * buttonHeight)) / (buttonCount + 1);
-            float currentY = spacing;
 
-            var listSize = new Vector2(buttonWidth, windowHeight - buttonHeight - spacing * 3);
+            _vsync =Settings.Graphics.VSync;
+            _postProcessing = Settings.Graphics.PostProcessing;
+            _shadows =Settings.Graphics.Shadows;
+            _enableEffects = Settings.Graphics.EffectsEnabled;
+            _fov = Settings.Graphics.Fov;
+            _resolution = Settings.Graphics.ResolutionScalePercent;
+            _modeIndex = (int)Settings.Graphics.WindowMode;
+         
 
-            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, spacing));
-            ImGui.BeginChild("list", listSize);
+            SettingsUI.Render("Graphics", "Graphics", menu, 5,
+                (listSize, rowH) =>
+                {
+                    ImGui.BeginTable("table##graphics", 2, ImGuiTableFlags.NoBordersInBody);
+                    float totalW = listSize.X;
+                    ImGui.TableSetupColumn("Label", ImGuiTableColumnFlags.WidthFixed, totalW * 0.7f);
+                    ImGui.TableSetupColumn("Value", ImGuiTableColumnFlags.WidthFixed, totalW * 0.3f);
 
-            ImGui.Text("Change controls");
-            ImGui.Dummy(new Vector2(buttonWidth, spacing / 2f));
-            ImGui.Text("Action             Key");
+                    var dummyOffset = new Vector2(totalW * 0.3f / 1.4f, 0);
 
-            ImGui.BeginTable("table", 2, ImGuiTableFlags.NoBordersInBody);
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+                    ImGui.Text("Window Mode");
+                    ImGui.TableNextColumn();
+                    ImGui.SetNextItemWidth(totalW * 0.28f);
+                    ImGui.Combo("##winmode", ref _modeIndex, _modes, _modes.Length);
+                   
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+                 
+                    ImGui.Text("VSync");
+                    ImGui.TableNextColumn();
+                    ImGui.Dummy(dummyOffset); ImGui.SameLine();
+                    ImGui.Checkbox("##vsync", ref _vsync);
+
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+                    ImGui.Text("Post Processing");
+                    ImGui.TableNextColumn();
+                    ImGui.Dummy(dummyOffset); ImGui.SameLine();
+                    ImGui.Checkbox("##bloom", ref _postProcessing );
+
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+                    ImGui.Text("Shadows");
+                    ImGui.TableNextColumn();
+                    ImGui.Dummy(dummyOffset); ImGui.SameLine();
+                    ImGui.Checkbox("##shadows", ref _shadows);
+
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+                    ImGui.Text("Enable Effects");
+                    ImGui.TableNextColumn();
+                    ImGui.Dummy(dummyOffset); ImGui.SameLine();
+                    ImGui.Checkbox("##mblur", ref _enableEffects);
+
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+                    ImGui.Text("FOV");
+                    ImGui.TableNextColumn();
+                    ImGui.SetNextItemWidth(totalW * 0.28f);
+                    ImGui.SliderInt("##fov", ref _fov, 50, 120);
+
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+                    ImGui.Text("Resolution");
+                    ImGui.TableNextColumn();
+                    ImGui.SetNextItemWidth(totalW * 0.28f);
+                    ImGui.SliderInt("##resolution", ref _resolution, 10, 100);
+
+                    ImGui.EndTable();
+                },
+                () => { menu.Click1.Play(); menu.SetStateToOptions();
+                    SettingsService.Save(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "/Resources/Settings.json"), Settings.AsGameSettings());
 
 
-            float totalW = listSize.X;
-            ImGui.TableSetupColumn("Key", ImGuiTableColumnFlags.WidthFixed, totalW * 0.7f);
-            ImGui.TableSetupColumn("Action", ImGuiTableColumnFlags.WidthFixed, totalW * 0.3f);
+                },
+                () => { menu.Click1.Play(); menu.SetStateToOptions(); }
+            );
 
-            foreach (var kv in controls)
+            Settings.Graphics.VSync = _vsync;
+            Settings.Graphics.PostProcessing = _postProcessing;
+            Settings.Graphics.Shadows = _shadows;
+            Settings.Graphics.EffectsEnabled = _enableEffects;
+            Settings.Graphics.Fov = _fov;
+            Settings.Graphics.ResolutionScalePercent = _resolution;
+          
+            if(_modes[_modeIndex] == "Fullscreen")
             {
-                ImGui.TableNextRow();
-                ImGui.TableNextColumn();
-                ImGui.Button(kv.Key, new Vector2(totalW * 0.7f, listSize.Y / 6f));
-                ImGui.TableNextColumn();
-                ImGui.Button(kv.Value, new Vector2(totalW * 0.3f, listSize.Y / 6f));
+                Settings.Graphics.WindowMode = WindowMode.Fullscreen;
             }
-
-
-            ImGui.EndTable();
-
-            ImGui.EndChild();
-
-
-            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, windowHeight - buttonHeight - spacing));
-            menu.ButtonWithBackground("Save", new Vector2(listSize.X / 2f - spacing, buttonHeight), new Vector2(spacing, windowHeight - buttonHeight - spacing), () =>
+            else if(_modes[_modeIndex] == "Borderless")
             {
-                menu.Click1.Play();
-                menu.SetStateToOptions();
-            });
-            // ImGui.SameLine();
-            menu.ButtonWithBackground("Back", new Vector2(listSize.X / 2f - spacing, buttonHeight), new Vector2(windowWidth - listSize.X / 2f, windowHeight - buttonHeight - spacing), () =>
+                Settings.Graphics.WindowMode = WindowMode.Borderless;
+            }
+            else
             {
-                menu.Click1.Play();
-                menu.SetStateToOptions();
-            });
-            ImGui.End();
+                Settings.Graphics.WindowMode = WindowMode.Windowed;
+            }
         }
     }
 }
