@@ -130,6 +130,8 @@ namespace Spacebox.Game
             var defaults = GameSettings.Default();
             GameSettings loaded;
 
+            Debug.Warning($"Loading game settings from {path}...");
+
             if (!File.Exists(path))
             {
                 Save(path, defaults);
