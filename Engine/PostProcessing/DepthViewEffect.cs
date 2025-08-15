@@ -11,7 +11,7 @@ namespace Engine.PostProcessing
 
         private float nearPlane, farPlane;
 
-        public DepthViewEffect(Shader shader, SceneRenderer renderer, float nearPlane = 0.1f, float farPlane = 10f)
+        public DepthViewEffect(Shader shader, SceneRenderer renderer, float nearPlane = 0.1f, float farPlane = 100f)
         {
             this.shader = shader;
             this.nearPlane = nearPlane;
@@ -29,8 +29,7 @@ namespace Engine.PostProcessing
             var cam = Camera.Main;
             if (cam == null) return;
             shader.SetFloat("uNear", 0.1f);
-            shader.SetFloat("uFar", 10f);
-            shader.SetVector2("uResolution", new Vector2(clientSize.X, clientSize.Y));
+            shader.SetFloat("uFar", 800f);
         }
     }
 }

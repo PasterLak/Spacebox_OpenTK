@@ -119,6 +119,7 @@ namespace Spacebox.Game.GUI.Menu
                         menu.Click1.Play();
                         menu.showDeleteWindow = true;
                     });
+                UIHelper.ShowTooltip("Delete the world");
             }
             ImGui.Dummy(new Vector2(0, verticalSpacing));
             float bottomButtonSpacing = windowWidth * 0.02f;

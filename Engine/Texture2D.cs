@@ -47,6 +47,7 @@ namespace Engine
             Height = pixelData.Height;
             _filterMode = filterMode;
             Handle = GL.GenTexture();
+            GPUDebug.LabelTexture(Handle, "Texture2D PixelData");
             Use();
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0,
                 OpenTK.Graphics.OpenGL4.PixelFormat.Rgba, PixelType.UnsignedByte, pixelData.Data);
@@ -59,6 +60,7 @@ namespace Engine
             Height = height;
             pixels = new Color4[width, height];
             Handle = GL.GenTexture();
+            GPUDebug.LabelTexture(Handle, "Texture2D");
             for (int y = 0; y < Height; y++)
                 for (int x = 0; x < Width; x++)
                     pixels[x, y] = new Color4(1f, 1f, 1f, 1f);
@@ -70,6 +72,7 @@ namespace Engine
         public Texture2D(string path, bool pixelated = false, bool flipY = true)
         {
             Handle = GL.GenTexture();
+            GPUDebug.LabelTexture(Handle, "Texture2D " + path);
             Use();
             try { LoadTextureFromFile(path, flipY); }
             catch (Exception ex)
@@ -238,16 +241,38 @@ namespace Engine
 
             pixels = newColorPixels;
         }
+        private void EnsureCpuPixels()
+        {
+            if (pixels != null) return;
+            Use();
+            byte[] raw = new byte[Width * Height * 4];
+            GL.GetTexImage(TextureTarget.Texture2D, 0,
+                           OpenTK.Graphics.OpenGL4.PixelFormat.Rgba,
+                           PixelType.UnsignedByte, raw);
+
+            pixels = new Color4[Width, Height];
+            int i = 0;
+            for (int y = 0; y < Height; y++)
+                for (int x = 0; x < Width; x++)
+                {
+                    float r = raw[i++] / 255f;
+                    float g = raw[i++] / 255f;
+                    float b = raw[i++] / 255f;
+                    float a = raw[i++] / 255f;
+                    pixels[x, y] = new Color4(r, g, b, a);
+                }
+        }
 
         public void SaveToPng(string path, bool flipY = false, bool doAsync = true)
         {
+            if (pixels == null) EnsureCpuPixels();
             if (pixels == null)
             {
                 Debug.Error("[Texture2D] No pixel data available to save.");
                 return;
             }
 
-            if(doAsync)
+            if (doAsync)
             {
                 Task.Run(() =>
                 {

@@ -28,8 +28,10 @@ namespace Engine
 
             //  FloatsPerVertex = buffer.FloatsPerVertex;
             buffer.BindBuffer(ref vertices, ref indices);
-
+         
             buffer.SetAttributes();
+            GPUDebug.LabelVertexArray(buffer.VAO, "Mesh VAO");
+            GPUDebug.LabelVertexArray(buffer.VBO, "Mesh VBO");
         }
 
         public Mesh(float[] vertices, int[] indices)
@@ -49,6 +51,8 @@ namespace Engine
             uint[] indicesUInt = indices.Select(x => (uint)x).ToArray();
             buffer.BindBuffer(ref vertices, ref indicesUInt);
             buffer.SetAttributes();
+            GPUDebug.LabelVertexArray(buffer.VAO, "Mesh VAO");
+            GPUDebug.LabelVertexArray(buffer.VBO, "Mesh VBO");
         }
 
         public Mesh(string path)
@@ -67,6 +71,9 @@ namespace Engine
             uint[] indicesUInt = indices.Select(x => (uint)x).ToArray();
             buffer.BindBuffer(ref vertices, ref indicesUInt);
             buffer.SetAttributes();
+
+            GPUDebug.LabelVertexArray(buffer.VAO, "Mesh VAO " + path);
+            GPUDebug.LabelVertexArray(buffer.VBO, "Mesh VBO " + path);
         }
 
         public BoundingBox GetBounds() => _bounds ?? new BoundingBox(Vector3.Zero, Vector3.Zero);

@@ -71,15 +71,20 @@ namespace Engine
 
         public void Render(Action renderScene)
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, Fbo);
-            GL.Viewport(0, 0, width, height);
-            GL.DepthMask(true);
-            GL.ClearColor(0f, 0f, 0f, 1f);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            
-            renderScene.Invoke();
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            using (GPUDebug.Group("RENDER.SCENE"))
+            {
+             
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, Fbo);
+                GL.Viewport(0, 0, width, height);
+                GL.DepthMask(true);
+                GL.ClearColor(0f, 0f, 0f, 1f);
+                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+                GPUDebug.Marker("START");
+                renderScene.Invoke();
+                GPUDebug.Marker("END");
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            }
         }
 
         public void Dispose()

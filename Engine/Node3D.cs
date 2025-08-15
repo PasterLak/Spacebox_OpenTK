@@ -143,8 +143,8 @@ namespace Engine
             }
             for (int i = 0; i < Children.Count; i++)
             {
-                if (Children[i].Enabled)
-                    Children[i].Render();
+               // if (Children[i].Enabled)
+               //     Children[i].Render();
             }
         }
 

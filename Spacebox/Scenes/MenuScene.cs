@@ -123,6 +123,28 @@ namespace Spacebox.Scenes
             VerticalLinks.Init();
 
            // _ = WorkerPoolTest.RunTest();
+
+            var colors = new Color4[]
+            {
+                Color4.Red, Color4.Green, Color4.Blue, Color4.Yellow,
+                Color4.Magenta, Color4.Cyan, Color4.Orange, Color4.Purple,
+                Color4.Magenta, Color4.Cyan, Color4.Orange, Color4.Purple,
+                Color4.Magenta, Color4.Cyan, Color4.Orange, Color4.Purple
+            };
+
+            TextureFile.Save("Resources/Textures/test1.txt", colors, false);
+            TextureFile.Save("Resources/Textures/test2.txt", colors, false, TextureFile.SaveMode.Binary);
+            TextureFile.Save("Resources/Textures/test3.txt", colors, false, TextureFile.SaveMode.Compressed);
+            TextureFile.Save("Resources/Textures/test4.txt", colors, false, TextureFile.SaveMode.All);
+            TextureFile.Save("Resources/Textures/test1n.txt", colors, false, TextureFile.SaveMode.Text, TextureFile.PaletteMode.None);
+            TextureFile.Save("Resources/Textures/test2n.txt", colors, false, TextureFile.SaveMode.Binary, TextureFile.PaletteMode.None);
+            TextureFile.Save("Resources/Textures/test3n.txt", colors, false, TextureFile.SaveMode.Compressed, TextureFile.PaletteMode.None);
+            TextureFile.Save("Resources/Textures/test4n.txt", colors, false, TextureFile.SaveMode.All, TextureFile.PaletteMode.None);
+            TextureFile.Save("Resources/Textures/test1na.txt", colors, false, TextureFile.SaveMode.Text, TextureFile.PaletteMode.Auto);
+            TextureFile.Save("Resources/Textures/test2na.txt", colors, false, TextureFile.SaveMode.Binary, TextureFile.PaletteMode.Auto);
+            TextureFile.Save("Resources/Textures/test3na.txt", colors, false, TextureFile.SaveMode.Compressed, TextureFile.PaletteMode.Auto);
+            TextureFile.Save("Resources/Textures/test4na.txt", colors, false, TextureFile.SaveMode.All, TextureFile.PaletteMode.Auto);
+
         }
 
 

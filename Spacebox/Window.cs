@@ -1,22 +1,22 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine;
+using Engine.Audio;
+using Engine.Graphics;
+using Engine.GUI;
+using Engine.Light;
+using Engine.Multithreading;
+using Engine.PostProcessing;
+using Engine.SceneManagement;
+using Engine.UI;
+using Engine.Utils;
+using ImGuiNET;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
-using Spacebox.Scenes;
-using Engine.Audio;
-using Engine.SceneManagement;
-using ImGuiNET;
-using Engine.Utils;
-using Engine.GUI;
-using Spacebox.Game.GUI;
-using Engine;
-using Engine.PostProcessing;
-using Engine.Light;
-using Engine.Graphics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.FPS.Scenes;
-using Engine.Multithreading;
-using Engine.UI;
+using Spacebox.Game.GUI;
+using Spacebox.Scenes;
 
 
 namespace Spacebox
@@ -46,7 +46,10 @@ namespace Spacebox
         {
             Instance = this;
             minimizedWindowSize = nativeWindowSettings.ClientSize;
-          
+
+            GPUDebug.Initialize(true);
+
+
         }
 
         public static unsafe void LoadStarPixelFont(float fontSize = 16.0f)
@@ -147,12 +150,21 @@ namespace Spacebox
 
 
             var normalShader = Resources.Load<Shader>("Shaders/PostProcessing/normalView", true);
-             _processManager.AddEffect(new NormalViewEffect(normalShader, SceneRenderer));
+            // _processManager.AddEffect(new NormalViewEffect(normalShader, SceneRenderer));
 
             var depthShader = Resources.Load<Shader>("Shaders/PostProcessing/depthView", true);
-             //_processManager.AddEffect(new DepthViewEffect(depthShader, SceneRenderer, 0.1f, 800f));
+            //_processManager.AddEffect(new DepthViewEffect(depthShader, SceneRenderer, 0.1f, 100f));
 
             // _processManager.AddEffect(new EdgeDetectionEffect(sha4));
+
+            Texture2D ssaoNoiseTex = SsaoNoise.GenerateRotationNoise(4, 1234);
+
+            ssaoNoiseTex.SaveToPng("ssao_noise.png");
+
+
+            var ssao = Resources.Load<Shader>("Shaders/PostProcessing/ssao", true);
+           // _processManager.AddEffect(new SSAOEffect(ssao, SceneRenderer, ssaoNoiseTex));
+
 
             MinimumSize = new Vector2i(640, 360);
             FullscreenRenderer = new FullscreenRenderer();
@@ -264,19 +276,24 @@ namespace Spacebox
                 GL.Disable(EnableCap.CullFace);
 
 
-
-                //FullscreenRenderer.RenderToScreen(SceneRenderer.SceneTexture, shaderpass, ClientSize);
-                using (Prof.Time(T_PostProcessing))
+                using (GPUDebug.Group("POST PROCESSING"))
                 {
-                    _processManager.Process(SceneRenderer, ClientSize);
+                    //FullscreenRenderer.RenderToScreen(SceneRenderer.SceneTexture, shaderpass, ClientSize);
+                    using (Prof.Time(T_PostProcessing))
+                    {
+                        _processManager.Process(SceneRenderer, ClientSize);
+                    }
                 }
 
 
                 using (Prof.Time(T_OnGUI))
                 {
-                    Time.StartOnGUI();
-                    OnGUI();
-                    Time.EndOnGUI();
+                    using (GPUDebug.Group("GUI"))
+                    {
+                        Time.StartOnGUI();
+                        OnGUI();
+                        Time.EndOnGUI();
+                    }
                 }
 
                 using (Prof.Time(T_Swap))

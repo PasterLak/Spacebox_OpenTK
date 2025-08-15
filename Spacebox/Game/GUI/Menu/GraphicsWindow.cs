@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Light;
 using ImGuiNET;
 using System.Numerics;
 using static Spacebox.Game.GUI.Menu.ControlsWindow;
@@ -23,6 +24,7 @@ namespace Spacebox.Game.GUI.Menu
             this.menu = menu;
         }
 
+    
         public override void Render()
         {
 
@@ -48,24 +50,31 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
                     ImGui.Text("Window Mode");
+                    
                     ImGui.TableNextColumn();
                     ImGui.SetNextItemWidth(totalW * 0.28f);
                     ImGui.Combo("##winmode", ref _modeIndex, _modes, _modes.Length);
-                   
+                    UIHelper.ShowTooltip("Switch between fullscreen, windowed, or borderless display modes");
+
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
-                 
+
                     ImGui.Text("VSync");
+                  
                     ImGui.TableNextColumn();
                     ImGui.Dummy(dummyOffset); ImGui.SameLine();
                     ImGui.Checkbox("##vsync", ref _vsync);
+                    UIHelper.ShowTooltip("Synchronizes frame rate with monitor refresh rate to reduce screen tearing");
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
                     ImGui.Text("Post Processing");
+                    
+                
                     ImGui.TableNextColumn();
                     ImGui.Dummy(dummyOffset); ImGui.SameLine();
                     ImGui.Checkbox("##bloom", ref _postProcessing );
+                    UIHelper.ShowTooltip("Applies visual enhancements like bloom, color grading, and depth of field");
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
@@ -74,19 +83,23 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.Dummy(dummyOffset); ImGui.SameLine();
                     ImGui.Checkbox("##shadows", ref _shadows);
 
-                    ImGui.TableNextRow();
+                    ImGui.TableNextRow(); 
                     ImGui.TableNextColumn();
                     ImGui.Text("Enable Effects");
                     ImGui.TableNextColumn();
                     ImGui.Dummy(dummyOffset); ImGui.SameLine();
+                   
                     ImGui.Checkbox("##mblur", ref _enableEffects);
+                    UIHelper.ShowTooltip("Toggles visual effects such as particles, dust");
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
                     ImGui.Text("FOV");
+                  
                     ImGui.TableNextColumn();
                     ImGui.SetNextItemWidth(totalW * 0.28f);
                     ImGui.SliderInt("##fov", ref _fov, 50, 120);
+                    UIHelper.ShowTooltip("Adjusts your field of view — higher values let you see more of the scene");
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();

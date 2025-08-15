@@ -68,7 +68,7 @@ namespace Spacebox.Game.Player
         {
             if (!astronautTextures.TryGetValue(color, out Texture2D tex))
             {
-                string texturePath = $"Resources/Textures/Player/Astronaut_{color}.jpg";
+                string texturePath = $"Resources/Textures/Skins/Astronaut_{color}.jpg";
                 tex = Resources.Load<Texture2D>(texturePath);
                 tex.FlipY();
                 tex.FilterMode = FilterMode.Nearest;

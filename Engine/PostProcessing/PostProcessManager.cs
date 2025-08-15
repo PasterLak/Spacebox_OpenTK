@@ -102,7 +102,8 @@ namespace Engine.PostProcessing
                 currentPingPong = 1 - currentPingPong;
             }
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.Viewport(0, 0, clientSize.X, clientSize.Y);
+           
+                GL.Viewport(0, 0, clientSize.X, clientSize.Y);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, readTexture);

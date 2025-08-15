@@ -11,6 +11,7 @@ namespace Engine
         private static readonly List<string> visibleNames = new();
         public static bool DebugGroups = true;
         public static Color4 DebugColor = new(1f, 0f, 1f, 1f);
+
         public static int VisibleObjects, CulledObjects;
 
         static readonly Prof.Token T_SceneBVH = Prof.RegisterTimer("BVH.Build");
@@ -84,7 +85,13 @@ namespace Engine
                 CulledObjects++;
             }
 
-            foreach (var ch in node.Children) Draw(ch, cam);
+            foreach (var ch in node.Children)
+            {
+                if (ch.Enabled)
+                {
+                    Draw(ch, cam);
+                }
+            }
         }
 
         /* ---------- Helpers ------------------------------------------------ */

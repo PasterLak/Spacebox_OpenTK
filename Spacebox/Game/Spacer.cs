@@ -125,10 +125,12 @@ namespace Spacebox.Game
                 }
 
             }
+           
         }
-
+        
         public override void Render()
         {
+           
             base.Render();
 
         }

@@ -50,6 +50,7 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.TableNextColumn();
                     ImGui.SetNextItemWidth(totalW * 0.28f);
                     ImGui.SliderInt("##master", ref _master, 0, 100);
+                    UIHelper.ShowTooltip("Controls the overall volume of the game");
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
@@ -57,6 +58,7 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.TableNextColumn();
                     ImGui.SetNextItemWidth(totalW * 0.28f);
                     ImGui.SliderInt("##ambient", ref _ambient, 0, 100 );
+                    UIHelper.ShowTooltip("Adjusts background and environmental sounds");
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
@@ -64,6 +66,7 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.TableNextColumn();
                     ImGui.SetNextItemWidth(totalW * 0.28f);
                     ImGui.SliderInt("##music", ref _music, 0, 100);
+                    UIHelper.ShowTooltip("Controls the volume of in-game music");
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
@@ -71,6 +74,7 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.TableNextColumn();
                     ImGui.SetNextItemWidth(totalW * 0.28f);
                     ImGui.SliderInt("##effects", ref _effects, 0, 100);
+                    UIHelper.ShowTooltip("Controls sounds from actions, combat, and events");
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
@@ -78,6 +82,7 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.TableNextColumn();
                     ImGui.SetNextItemWidth(totalW * 0.28f);
                     ImGui.SliderInt("##ui", ref _ui, 0, 100);
+                    UIHelper.ShowTooltip("Adjusts menu and interface sound effects");
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
@@ -85,6 +90,7 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.TableNextColumn();
                     ImGui.Dummy(dummyOffset); ImGui.SameLine();
                     ImGui.Checkbox("##muteUnfocused", ref _muteWhenUnfocused);
+                    UIHelper.ShowTooltip("Mutes the game when it is not the active window");
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
@@ -92,6 +98,8 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.TableNextColumn();
                     ImGui.Dummy(dummyOffset); ImGui.SameLine();
                     ImGui.Checkbox("##menuMusic", ref _menuMusic);
+                    UIHelper.ShowTooltip("Toggles background music in menu");
+
 
                     ImGui.EndTable();
                 },

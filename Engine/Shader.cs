@@ -1,6 +1,7 @@
 ﻿using Engine.Graphics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using SkiaSharp;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -123,6 +124,7 @@ namespace Engine
             _previousUniformLocations = _uniformLocations;
             Handle = newHandle;
             _uniformLocations = newUniforms;
+            GPUDebug.LabelProgram(Handle, _shaderPath);
             Debug.Log($"[Shader] Compiled! Handle:{Handle} - {Path.GetFileName(_shaderPath)}", Color4.BlueViolet);
         }
 
@@ -191,6 +193,7 @@ namespace Engine
         {
             if (_isReloadingShader || Handle == 0) return;
             GL.UseProgram(Handle);
+           
         }
 
         public int GetAttribLocation(string attribName) => GL.GetAttribLocation(Handle, attribName);

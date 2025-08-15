@@ -61,6 +61,8 @@ void main()
         vec3 ambient = 0.1 * lightColor;
         vec3  result = (ambient + diffuse) * objectColor * vec3(texColor);
 
+
+     //    gColor  =  vec4(vec3(gl_FragCoord.z), 1.0);
     gColor = vec4(result, texColor.a);
 
              

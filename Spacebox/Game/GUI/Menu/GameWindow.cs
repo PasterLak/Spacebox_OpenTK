@@ -40,6 +40,7 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.TableNextColumn();
                     ImGui.SetNextItemWidth(totalW * 0.28f);
                     ImGui.SliderInt("##drawdistance", ref _drawDistance, 2, 32);
+                    UIHelper.ShowTooltip("Controls how far objects are rendered");
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
@@ -47,6 +48,7 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.TableNextColumn();
                     ImGui.SetNextItemWidth(totalW * 0.28f);
                     ImGui.Combo("##language", ref _languageIndex, _languages, _languages.Length);
+                    UIHelper.ShowTooltip("Select the game’s display language");
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
@@ -54,6 +56,7 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.TableNextColumn();
                     ImGui.Dummy(dummyOffset); ImGui.SameLine();
                     ImGui.Checkbox("##keepinv", ref _keepInventory);
+                    UIHelper.ShowTooltip("Retain items after death instead of losing them");
 
                     ImGui.EndTable();
                 },

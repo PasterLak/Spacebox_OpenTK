@@ -60,7 +60,6 @@ namespace Spacebox.Game.Resource
             SizeBlocks = size.X;
             Texture2D atlas = PlaceTexturesInAtlas(size, blockSizePixels, populateFromTopToBottom);
 
-            //atlas.FlipY();
             atlas.UpdateTexture(true);
 
 
@@ -154,6 +153,7 @@ namespace Spacebox.Game.Resource
             int sidePixels = sideBlocks * blockSizePixels;
 
             Texture2D atlas = new Texture2D(sidePixels, sidePixels);
+            GPUDebug.LabelTexture(atlas.Handle, "AtlasTexture");
             Color4[,] atlasPixels = new Color4[sidePixels, sidePixels];
 
             for (int i = 0; i < sidePixels; i++)
@@ -320,9 +320,8 @@ namespace Spacebox.Game.Resource
             if (!Directory.Exists(path))
             {
 
-                Debug.Error($"Directory was not found: " + path);
+                Debug.Error($"[AtlasTexture] Directory was not found: " + path);
                 return new TextureData[0];
-                //return (new Texture2D[0], new string[0]);
             }
 
             string[] files = GameSetLoader.GetFilesRecursive(path, new string[] { ".png", ".jpeg", ".jpg" });

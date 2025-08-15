@@ -44,7 +44,7 @@ namespace Engine.SceneManagement
                 using(Prof.Time(T_SceneSkybox))
                 Lighting.Skybox.Render();
             }
-            base.Render();
+          //  base.Render();
             using (Prof.Time(T_SceneBVH))
                 BVHCuller.Render(this, Camera.Main);
     
