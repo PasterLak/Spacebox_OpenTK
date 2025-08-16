@@ -72,7 +72,17 @@ namespace Spacebox.Game.GUI.Menu
             {
                 ImGui.Text(" Name: " + menu.selectedWorld.Name);
                 ImGui.Text(" Author: " + menu.selectedWorld.Author + " Game mode: " + menu.selectedWorld.GameMode);
-                ImGui.Text(" Mod: " + menu.GetModNameById(menu.selectedWorld.ModId) + $"({menu.GetModById(menu.selectedWorld.ModId).Version})");
+
+                var mod =  menu.GetModById(menu.selectedWorld.ModId);
+                string version = "uknown version";
+                string name = menu.selectedWorld.ModId;
+                if (mod != null)
+                {
+                    version = mod.Version;
+                   
+                }
+
+                ImGui.Text(" Mod: " + name + $"({version})");
                 if (menu.selectedWorld.GameVersion != Application.Version)
                 {
                     ImGui.TextColored(new Vector4(1, 0, 0, 1), " Version: " + menu.selectedWorld.GameVersion);

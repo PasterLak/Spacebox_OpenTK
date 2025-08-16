@@ -12,6 +12,7 @@ using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
+using static Spacebox.Game.GUI.CraftingCategory;
 
 
 /*
@@ -65,17 +66,25 @@ namespace Spacebox.Game.Generation
             Overlay.AddElement(new WorldOverlayElement(this));
 
         }
-
+        bool saveWasPressed = false;
         public void Save()
         {
+            /*if(!saveWasPressed){
+                saveWasPressed = true;
+                PanelUI.HideItemModel();
+                return;
+            }*/
             Player.Save();
             WorldSaveLoad.SaveWorld(Data.WorldFolderPath);
+            Data.Info.GameMode = Player.GameMode;
             WorldInfoSaver.Save(Data.Info);
 
             var screenSize = Window.Instance.ClientSize;
             string path = Path.Combine(Data.WorldFolderPath, "preview.jpg");
 
             FramebufferCapture.SaveWorldPreview(screenSize, path);
+            saveWasPressed = false;
+            PanelUI.ShowItemModel();
 
         }
 
@@ -120,7 +129,10 @@ namespace Spacebox.Game.Generation
                 sector.Value.Update();
             }
 
+            
+
         }
+
         private readonly HashSet<Vector3i> loadingSectors = new HashSet<Vector3i>();
 
         private static readonly Vector3i[] NeighborDirs = new[]

@@ -1,5 +1,6 @@
 [
     {
+        "ID": "light_rock",
         "Name": "Light Rock",
         "Sides": "lightRock",
         "PowerToDrill": 1,
@@ -8,6 +9,7 @@
         "SoundPlace": "blockPlaceLight"
     },
     {
+        "ID": "medium_rock",
         "Name": "Medium Rock",
         "Sides": "mediumRock",
         "PowerToDrill": 3,
@@ -15,6 +17,7 @@
         "Durability": 10
     },
     {
+        "ID": "heavy_rock",
         "Name": "Heavy Rock",
         "Sides": "heavyRock",
         "PowerToDrill": 5,
@@ -23,6 +26,7 @@
         "SoundPlace": "blockPlaceHeavy"
     },
     {
+        "ID": "cobaltite_rock",
         "Name": "Cobaltite Rock",
         "Sides": "cobaltite",
         "PowerToDrill": 1,
@@ -30,6 +34,7 @@
         "Durability": 5
     },
     {
+        "ID": "ice_rock",
         "Name": "Ice Rock",
         "Sides": "ice",
         "PowerToDrill": 1,
@@ -37,6 +42,7 @@
         "Durability": 2
     },
     {
+        "ID": "aluminium_ore",
         "Name": "Aluminium Ore",
         "Sides": "aluOre",
         "PowerToDrill": 1,
@@ -44,6 +50,7 @@
         "Durability": 3
     },
     {
+        "ID": "iron_ore",
         "Name": "Iron Ore",
         "Sides": "ironOre",
         "PowerToDrill": 2,
@@ -51,6 +58,7 @@
         "Durability": 6
     },
     {
+        "ID": "titanium_ore",
         "Name": "Titanium Ore",
         "Sides": "titaniumOre",
         "PowerToDrill": 4,
@@ -58,6 +66,7 @@
         "Durability": 9
     },
     {
+        "ID": "thulium_ore",
         "Name": "Thulium Ore",
         "Sides": "yellowOre",
         "PowerToDrill": 3,
@@ -65,6 +74,7 @@
         "Durability": 7
     },
     {
+        "ID": "obscurium_ore",
         "Name": "Obscurium Ore",
         "Sides": "pinkOre",
         "PowerToDrill": 5,
@@ -72,6 +82,7 @@
         "Durability": 50
     },
     {
+        "ID": "uranium_ore",
         "Name": "Uranium Ore",
         "Sides": "greenOre",
         "PowerToDrill": 3,
@@ -79,93 +90,103 @@
         "Durability": 12
     },
     {
+        "ID": "aluminium_block_light",
         "Name": "Aluminium Light Block",
         "Category": "blocks",
         "Sides": "aluLight",
-         "PowerToDrill": 1,
+        "PowerToDrill": 1,
         "Mass": 2,
         "Durability": 10,
         "IsTransparent": false,
         "SoundPlace": "blockPlaceLight"
     },
     {
+        "ID": "aluminium_block_medium",
         "Name": "Aluminium Medium Block",
         "Category": "blocks",
         "Sides": "aluMedium",
-         "PowerToDrill": 2,
+        "PowerToDrill": 2,
         "Mass": 4,
         "Durability": 20,
         "IsTransparent": false
     },
     {
+        "ID": "aluminium_block_heavy",
         "Name": "Aluminium Heavy Block",
         "Category": "blocks",
         "Sides": "aluHeavy",
-         "PowerToDrill": 3,
+        "PowerToDrill": 3,
         "Mass": 6,
         "Durability": 30,
         "IsTransparent": false,
         "SoundPlace": "blockPlaceHeavy"
     },
     {
+        "ID": "iron_block_light",
         "Name": "Iron Light Block",
         "Category": "blocks",
         "Sides": "ironLight",
-         "PowerToDrill":2 ,
+        "PowerToDrill": 2,
         "Mass": 4,
         "Durability": 40,
         "IsTransparent": false,
         "SoundPlace": "blockPlaceLight"
     },
     {
+        "ID": "iron_block_medium",
         "Name": "Iron Medium Block",
         "Category": "blocks",
         "Sides": "ironMedium",
-         "PowerToDrill": 3,
+        "PowerToDrill": 3,
         "Mass": 6,
         "Durability": 60,
         "IsTransparent": false
     },
     {
+        "ID": "iron_block_heavy",
         "Name": "Iron Heavy Block",
         "Category": "blocks",
         "Sides": "ironHeavy",
-         "PowerToDrill": 4,
+        "PowerToDrill": 4,
         "Mass": 8,
         "Durability": 80,
         "IsTransparent": false,
         "SoundPlace": "blockPlaceHeavy"
     },
     {
+        "ID": "titanium_block_light",
         "Name": "Titanium Light Block",
         "Category": "blocks",
         "Sides": "titLight",
-         "PowerToDrill": 3,
+        "PowerToDrill": 3,
         "Mass": 5,
         "Durability": 80,
         "IsTransparent": false,
         "SoundPlace": "blockPlaceLight"
     },
     {
+        "ID": "titanium_block_medium",
         "Name": "Titanium Medium Block",
         "Category": "blocks",
         "Sides": "titMedium",
-         "PowerToDrill": 4,
+        "PowerToDrill": 4,
         "Mass": 8,
         "Durability": 100,
         "IsTransparent": false
     },
     {
+        "ID": "titanium_block_heavy",
         "Name": "Titanium Heavy Block",
         "Category": "blocks",
         "Sides": "titHeavy",
-         "PowerToDrill": 5,
+        "PowerToDrill": 5,
         "Mass": 10,
         "Durability": 120,
         "IsTransparent": false,
         "SoundPlace": "blockPlaceHeavy"
     },
     {
+        "ID": "window",
         "Name": "Window",
         "Category": "windows",
         "Sides": "window",
@@ -176,6 +197,7 @@
         "SoundPlace": "placeGlass"
     },
     {
+        "ID": "basic_machine",
         "Name": "Basic Machine",
         "Category": "resources",
         "Sides": "basicMachine",
@@ -184,16 +206,18 @@
         "IsTransparent": false
     },
     {
+        "ID": "reinforced_window",
         "Name": "Reinforced Window",
         "Category": "windows",
         "Sides": "window2",
         "Mass": 2,
-         "Durability": 10,
+        "Durability": 10,
         "IsTransparent": true,
         "SoundDestroy": "blockDestroyGlass",
         "SoundPlace": "placeMetal"
     },
     {
+        "ID": "crafting_table",
         "Name": "Crafting Table",
         "Category": "resources",
         "Type": "craftingtable",
@@ -204,6 +228,7 @@
         "IsTransparent": false
     },
     {
+        "ID": "furnace",
         "Name": "Furnace",
         "Type": "furnace",
         "Category": "resources",
@@ -213,6 +238,7 @@
         "Efficiency": 1
     },
     {
+        "ID": "enhanced_furnace",
         "Name": "Enhanced Furnace",
         "Type": "furnace",
         "Category": "resources",
@@ -220,9 +246,10 @@
         "Top": "bottom",
         "Bottom": "bottom",
         "Efficiency": 1.3,
-         "PowerToDrill": 3
+        "PowerToDrill": 3
     },
     {
+        "ID": "crusher",
         "Name": "Crusher",
         "Type": "crusher",
         "Category": "resources",
@@ -231,9 +258,9 @@
         "Bottom": "bottom",
         "Efficiency": 0.7,
         "IsTransparent": false
-        
     },
     {
+        "ID": "enhanced_crusher",
         "Name": "Enhanced Crusher",
         "Type": "crusher",
         "Category": "resources",
@@ -245,6 +272,7 @@
         "PowerToDrill": 3
     },
     {
+        "ID": "analyzer",
         "Name": "Analyzer",
         "Type": "interactive",
         "Category": "resources",
@@ -254,6 +282,7 @@
         "IsTransparent": false
     },
     {
+        "ID": "radar",
         "Name": "Radar",
         "Type": "radar",
         "Category": "resources",
@@ -263,6 +292,7 @@
         "IsTransparent": false
     },
     {
+        "ID": "disassembler",
         "Name": "Disassembler",
         "Type": "disassembler",
         "Category": "resources",
@@ -273,19 +303,22 @@
         "IsTransparent": false
     },
     {
+        "ID": "cable_block",
         "Name": "Cable Block",
-         "Type": "cable",
+        "Type": "cable",
         "Sides": "wire",
         "Category": "blocks",
         "IsTransparent": false
     },
     {
+        "ID": "cable_pro",
         "Name": "Cable Pro",
         "Sides": "wirePro",
         "Category": "blocks",
         "IsTransparent": true
     },
     {
+        "ID": "light_white",
         "Name": "Light White",
         "Category": "lights",
         "Sides": "white",
@@ -296,9 +329,9 @@
         },
         "SoundDestroy": "blockDestroyGlass",
         "SoundPlace": "placeMetal2"
-
     },
     {
+        "ID": "light_blue",
         "Name": "Light Blue",
         "Category": "lights",
         "Sides": "blue",
@@ -311,6 +344,7 @@
         "SoundPlace": "placeMetal2"
     },
     {
+        "ID": "light_red",
         "Name": "Light Red",
         "Category": "lights",
         "Sides": "red",
@@ -323,6 +357,7 @@
         "SoundPlace": "placeMetal2"
     },
     {
+        "ID": "light_yellow",
         "Name": "Light Yellow",
         "Category": "lights",
         "Sides": "yellow",
@@ -335,6 +370,7 @@
         "SoundPlace": "placeMetal2"
     },
     {
+        "ID": "light_cyan",
         "Name": "Light Cyan",
         "Category": "lights",
         "Sides": "cyan",
@@ -347,6 +383,7 @@
         "SoundPlace": "placeMetal2"
     },
     {
+        "ID": "light_orange",
         "Name": "Light Orange",
         "Category": "lights",
         "Sides": "orange",
@@ -359,6 +396,7 @@
         "SoundPlace": "placeMetal2"
     },
     {
+        "ID": "light_green",
         "Name": "Light Green",
         "Category": "lights",
         "Sides": "green",
@@ -371,6 +409,7 @@
         "SoundPlace": "placeMetal2"
     },
     {
+        "ID": "light_pink",
         "Name": "Light Pink",
         "Category": "lights",
         "Sides": "pink",
@@ -383,6 +422,7 @@
         "SoundPlace": "placeMetal2"
     },
     {
+        "ID": "ai_core",
         "Name": "AI Core",
         "Category": "other",
         "Sides": "core",
@@ -393,12 +433,14 @@
         "SoundPlace": "blockPlaceHeavy"
     },
     {
+        "ID": "just_block",
         "Name": "Just Block",
         "Category": "blocks",
         "Sides": "block",
         "IsTransparent": false
     },
     {
+        "ID": "moritz",
         "Name": "Moritz",
         "Category": "blocks",
         "Sides": "moritz",
@@ -415,6 +457,7 @@
         "SoundDestroy": "blockDestroyMoritz"
     },
     {
+        "ID": "basic_engine",
         "Name": "Basic Engine",
         "Category": "blocks",
         "Sides": "engine1Side",
@@ -424,11 +467,11 @@
         "Mass": 3,
         "Durability": 35,
         "IsTransparent": false,
-
         "SoundPlace": "blockPlaceHeavy",
         "SoundDestroy": "blockPlaceHeavy"
     },
     {
+        "ID": "basic_cannon",
         "Name": "Basic Cannon",
         "Category": "blocks",
         "Sides": "cannon1Side",
@@ -438,24 +481,23 @@
         "Mass": 3,
         "Durability": 35,
         "IsTransparent": false,
-
         "SoundPlace": "blockPlaceHeavy",
         "SoundDestroy": "blockPlaceHeavy"
     },
     {
+        "ID": "aim_block",
         "Name": "Aim Block",
         "Category": "other",
         "Sides": "aim",
-
         "PowerToDrill": 1,
         "Mass": 1,
         "Durability": 5,
         "IsTransparent": true,
-
         "SoundPlace": "blockPlaceLight",
         "SoundDestroy": "blockPlaceLight"
     },
     {
+        "ID": "gravity_generator",
         "Name": "Gravity Generator",
         "Category": "resources",
         "Sides": "gravitySide",
@@ -465,11 +507,11 @@
         "Mass": 255,
         "Durability": 100,
         "IsTransparent": false,
-
         "SoundPlace": "blockPlaceHeavy",
         "SoundDestroy": "blockPlaceHeavy"
     },
     {
+        "ID": "console",
         "Name": "Console",
         "Category": "resources",
         "Sides": "gravityTop",
@@ -481,42 +523,41 @@
         "IsTransparent": false
     },
     {
+        "ID": "aluminium_crate",
         "Name": "Aluminium Crate",
-        "Type" : "storage",
+        "Type": "storage",
         "Category": "other",
         "Sides": "aluChestSide",
         "Top": "aluChestTop",
         "Bottom": "aluChestTop",
-        "SizeX" : 4,
-        "SizeY" : 3,
+        "SizeX": 4,
+        "SizeY": 3,
         "PowerToDrill": 1,
         "Mass": 4,
         "Durability": 10,
         "IsTransparent": false
     },
-     {
+    {
+        "ID": "cobalt_power_block",
         "Name": "Standard Cobalt Power Block",
-        "Type" : "generator",
+        "Type": "generator",
         "Category": "resources",
         "Sides": "generator",
-     
         "PowerToDrill": 1,
         "Mass": 4,
         "Durability": 10,
         "IsTransparent": false
     },
-     {
+    {
+        "ID": "dna_reconstructor",
         "Name": "DNA Reconstructor",
-        
         "Category": "other",
         "Top": "spawnerTop",
         "Bottom": "bottom",
         "Sides": "spawnerSide",
-     
         "PowerToDrill": 1,
         "Mass": 6,
         "Durability": 6,
         "IsTransparent": false
     }
-
 ]

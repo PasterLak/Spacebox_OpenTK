@@ -1,11 +1,10 @@
-﻿// In your test project (e.g., WorldTests.cs)
-using System;
+﻿
 using System.Reflection;
 using Xunit;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
 using Engine;
-using Spacebox.Game.Player; // Adjust namespaces as necessary
+using Spacebox.Game.Player; 
 using System.Threading.Tasks;
 
 namespace Spacebox.Tests.Generation

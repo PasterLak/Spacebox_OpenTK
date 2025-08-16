@@ -1,87 +1,100 @@
 [
     {
         "Info": "Tags:  Name, Type<Drill,Weapone,Item>, Sprite, MaxStack, ModelDepth",
+        "ID": "aluminium_drill",
         "Name": "Aluminium Drill",
         "Type": "drill",
-        "Category" : "drills",
+        "Category": "drills",
         "Sprite": "drill1",
         "MaxStack": 1,
         "ModelDepth": 1.5,
         "Power": 1,
-        "DrillColor" : {
-        "r": 118,
-        "g": 135,
-        "b": 214 }
+        "DrillColor": {
+            "r": 118,
+            "g": 135,
+            "b": 214
+        }
     },
     {
+        "ID": "cobalt_drill",
         "Name": "Cobalt Drill",
         "Type": "drill",
-        "Category" : "drills",
+        "Category": "drills",
         "Sprite": "drill2",
         "MaxStack": 1,
         "ModelDepth": 2,
         "Power": 2,
-        "DrillColor" : {
-        "r": 38,  
-        "g": 212,
-        "b": 194 }
+        "DrillColor": {
+            "r": 38,
+            "g": 212,
+            "b": 194
+        }
     },
     {
+        "ID": "iron_drill",
         "Name": "Iron Drill",
         "Type": "drill",
-        "Category" : "drills",
+        "Category": "drills",
         "Sprite": "drill3",
         "MaxStack": 1,
         "ModelDepth": 2,
         "Power": 3,
-        "DrillColor" : {
-        "r": 38,  
-        "g": 192,
-        "b": 212 }
+        "DrillColor": {
+            "r": 38,
+            "g": 192,
+            "b": 212
+        }
     },
     {
+        "ID": "triple_iron_drill",
         "Name": "Triple Iron Drill",
         "Type": "drill",
-        "Category" : "drills",
+        "Category": "drills",
         "Sprite": "drill4",
         "MaxStack": 1,
         "ModelDepth": 4,
         "Power": 4,
-         "DrillColor" : {
-        "r": 38,  
-        "g": 180,
-        "b": 212 }
+        "DrillColor": {
+            "r": 38,
+            "g": 180,
+            "b": 212
+        }
     },
     {
+        "ID": "titanium_drill",
         "Name": "Titanium Drill",
         "Type": "drill",
-        "Category" : "drills",
+        "Category": "drills",
         "Sprite": "drill5",
         "MaxStack": 1,
         "ModelDepth": 3,
         "Power": 5,
-         "DrillColor" : {
-        "r": 57,  
-        "g": 76,
-        "b": 219 }
+        "DrillColor": {
+            "r": 57,
+            "g": 76,
+            "b": 219
+        }
     },
-     {
+    {
+        "ID": "obscurium_drill",
         "Name": "Obscurium Drill",
         "Type": "drill",
-        "Category" : "drills",
+        "Category": "drills",
         "Sprite": "drill6",
         "MaxStack": 1,
         "ModelDepth": 3,
         "Power": 6,
-         "DrillColor" : {       
-        "r": 201,  
-        "g": 48,
-        "b": 178 }
-     },
+        "DrillColor": {
+            "r": 201,
+            "g": 48,
+            "b": 178
+        }
+    },
     {
+        "ID": "pistol",
         "Name": "Pistol",
         "Type": "weapon",
-        "Category" : "weapons",
+        "Category": "weapons",
         "Sprite": "weapon1",
         "MaxStack": 1,
         "ModelDepth": 1.5,
@@ -90,14 +103,15 @@
         "Spread": 0,
         "Pushback": 18,
         "AnimationSpeed": 0.5,
-        "PowerUsage" : 3,
-        "Projectile" : "pistoleProjectile",
-        "ShotSound" : "pistole2"
+        "PowerUsage": 3,
+        "Projectile": "pistoleProjectile",
+        "ShotSound": "pistole2"
     },
     {
+        "ID": "smg",
         "Name": "SMG",
         "Type": "weapon",
-        "Category" : "weapons",
+        "Category": "weapons",
         "Sprite": "weapon2",
         "MaxStack": 1,
         "ModelDepth": 2,
@@ -106,14 +120,15 @@
         "Spread": 0,
         "Pushback": 20,
         "AnimationSpeed": 0.5,
-        "PowerUsage" : 5,
-        "Projectile" : "smgProjectile",
-         "ShotSound" : "pistole2"
+        "PowerUsage": 5,
+        "Projectile": "smgProjectile",
+        "ShotSound": "pistole2"
     },
     {
+        "ID": "assault_rifle",
         "Name": "Assault Rifle",
         "Type": "weapon",
-        "Category" : "weapons",
+        "Category": "weapons",
         "Sprite": "weapon3",
         "MaxStack": 1,
         "ModelDepth": 2,
@@ -122,14 +137,15 @@
         "Spread": 0,
         "Pushback": 15,
         "AnimationSpeed": 0.6,
-        "PowerUsage" : 4,
-        "Projectile" : "assaultProjectile",
-         "ShotSound" : "pistole2"
+        "PowerUsage": 4,
+        "Projectile": "assaultProjectile",
+        "ShotSound": "pistole2"
     },
     {
+        "ID": "sniper",
         "Name": "Sniper",
         "Type": "weapon",
-        "Category" : "weapons",
+        "Category": "weapons",
         "Sprite": "sniper",
         "MaxStack": 1,
         "ModelDepth": 2,
@@ -138,14 +154,15 @@
         "Spread": 0,
         "Pushback": 15,
         "AnimationSpeed": 0.6,
-        "PowerUsage" : 15,
-        "Projectile" : "sniperProjectile",
-         "ShotSound" : "pistole2"
+        "PowerUsage": 15,
+        "Projectile": "sniperProjectile",
+        "ShotSound": "pistole2"
     },
     {
+        "ID": "impulse_rifle",
         "Name": "Impulse Rifle",
         "Type": "weapon",
-        "Category" : "weapons",
+        "Category": "weapons",
         "Sprite": "weapon4",
         "MaxStack": 1,
         "ModelDepth": 3,
@@ -154,261 +171,311 @@
         "Spread": 0,
         "Pushback": 30,
         "AnimationSpeed": 0.25,
-        "PowerUsage" : 35,
-        "Projectile" : "arProjectile",
-         "ShotSound" : "ar"
+        "PowerUsage": 35,
+        "Projectile": "arProjectile",
+        "ShotSound": "ar"
     },
     {
+        "ID": "aluminium_drill_bit",
         "Name": "Aluminium Drill Bit",
         "Sprite": "aluDrillBit",
-        "Category" : "items",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
     {
+        "ID": "iron_drill_bit",
         "Name": "Iron Drill Bit",
         "Sprite": "ironDrillBit",
-        "Category" : "items",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
     {
+        "ID": "titanium_drill_bit",
         "Name": "Titanium Drill Bit",
         "Sprite": "titDrillBit",
-        "Category" : "items",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
     {
+        "ID": "cobalt_ingot",
         "Name": "Cobalt Ingot",
         "Sprite": "cobaltIngot",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
-        {
+    {
+        "ID": "aluminium_ingot",
         "Name": "Aluminium Ingot",
         "Sprite": "aluIngot",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
     {
+        "ID": "iron_ingot",
         "Name": "Iron Ingot",
         "Sprite": "ironIngot",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
-        {
+    {
+        "ID": "titanium_ingot",
         "Name": "Titanium Ingot",
         "Sprite": "titIngot",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
-         {
+    {
+        "ID": "uranium_ingot",
         "Name": "Uranium Ingot",
         "Sprite": "uranIngot",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
-     {
+    {
+        "ID": "obscurium_ingot",
         "Name": "Obscurium Ingot",
         "Sprite": "poniumIngot",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
-     {
+    {
+        "ID": "sand",
         "Name": "Sand",
         "Sprite": "sand",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2
     },
     {
+        "ID": "cobalt_dust",
         "Name": "Cobalt Dust",
         "Sprite": "cobaltDust",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2
     },
     {
+        "ID": "aluminium_dust",
         "Name": "Aluminium Dust",
         "Sprite": "aluDust",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2
     },
     {
+        "ID": "iron_dust",
         "Name": "Iron Dust",
         "Sprite": "ironDust",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2
     },
     {
+        "ID": "titanium_dust",
         "Name": "Titanium Dust",
         "Sprite": "titDust",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2
     },
     {
+        "ID": "uranium_dust",
         "Name": "Uranium Dust",
         "Sprite": "uraniumDust",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2
     },
     {
+        "ID": "cobalt_lens",
         "Name": "Cobalt Lens",
-        "Category" : "items",
+        "Category": "items",
         "Sprite": "cobaltLens",
         "MaxStack": 64,
         "ModelDepth": 2
     },
     {
+        "ID": "iron_lens",
         "Name": "Iron Lens",
-         "Category" : "items",
+        "Category": "items",
         "Sprite": "ironLens",
         "MaxStack": 64,
         "ModelDepth": 2
     },
     {
+        "ID": "aluminium_panels",
         "Name": "Aluminium Panels",
-        "Category" : "items",
+        "Category": "items",
         "Sprite": "aluPanels",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
     {
+        "ID": "iron_panels",
         "Name": "Iron Panels",
-        "Category" : "items",
+        "Category": "items",
         "Sprite": "ironPanels",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
     {
+        "ID": "titanium_panels",
         "Name": "Titanium Panels",
-        "Category" : "items",
+        "Category": "items",
         "Sprite": "titPanels",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
     {
+        "ID": "med_kit",
         "Name": "Med Kit",
         "Sprite": "health3",
         "Type": "consumable",
-        "Category" : "consumables",
-        "Sound" : "heal",
+        "Category": "consumables",
+        "Sound": "heal",
         "HealAmount": 50,
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
-   {
+    {
+        "ID": "cobalt_crystal",
         "Name": "Cobalt Crystal",
         "Sprite": "cobaltDiamond",
-        "Category" : "items",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 1.5
     },
     {
+        "ID": "ice_shard",
         "Name": "Ice Shard",
         "Sprite": "ice",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 1.5
     },
     {
+        "ID": "glass",
         "Name": "Glass",
         "Sprite": "glass",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 1.5
     },
     {
+        "ID": "paint",
         "Name": "Paint",
         "Sprite": "paint",
-       
+        "Category": "items",
         "MaxStack": 1,
         "ModelDepth": 3.0
     },
-
-     {
+    {
+        "ID": "uranium_rods",
         "Name": "Uranium Rods",
-        "Category" : "items",
+        "Category": "items",
         "Sprite": "uranRods",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
     {
+        "ID": "water",
         "Name": "Water",
         "Sprite": "water1",
+        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
     {
+        "ID": "liquid_hydrogen",
         "Name": "Liquid Hydrogen",
-        "Category" : "items",
+        "Category": "items",
         "Sprite": "hydrogen",
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
-     {
+    {
+        "ID": "compressed_oxygen",
         "Name": "Compressed Oxygen",
-        "Category" : "consumables",
+        "Category": "consumables",
         "Sprite": "oxygen",
-        
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
     {
+        "ID": "power",
         "Name": "Power",
         "Sprite": "power",
         "Type": "consumable",
-         "Category" : "consumables",
-        "Sound" : "use",
+        "Category": "consumables",
+        "Sound": "use",
         "PowerAmount": 100,
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
     {
+        "ID": "beer",
         "Name": "Beer",
         "Sprite": "beer",
         "Type": "consumable",
-
-        "Sound" : "beer",
+        "Category": "consumables",
+        "Sound": "beer",
         "HealAmount": 10,
         "MaxStack": 20,
         "ModelDepth": 3.0
     },
     {
+        "ID": "energy_cell",
         "Name": "Energy Cell",
-        "Category" : "items",
+        "Category": "items",
         "Sprite": "energyCells",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
     {
+        "ID": "microchip",
         "Name": "Microchip",
-        "Category" : "items",
+        "Category": "items",
         "Sprite": "microchip",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
     {
+        "ID": "dna_sample",
         "Name": "DNA Sample",
-        "Category" : "items",
+        "Category": "items",
         "Sprite": "dna",
         "MaxStack": 8,
         "ModelDepth": 2.0
     },
     {
+        "ID": "vhs",
         "Name": "VHS",
-        "Category" : "items",
+        "Category": "items",
         "Sprite": "vhs",
         "MaxStack": 8,
         "ModelDepth": 2.0
     },
     {
+        "ID": "cable",
         "Name": "Cable",
-        "Category" : "items",
+        "Category": "items",
         "Sprite": "cable",
         "MaxStack": 8,
         "ModelDepth": 2.0
     },
     {
+        "ID": "bottle",
         "Name": "Bottle",
-        "Category" : "items",
+        "Category": "items",
         "Sprite": "bottle",
         "MaxStack": 64,
         "ModelDepth": 2.0

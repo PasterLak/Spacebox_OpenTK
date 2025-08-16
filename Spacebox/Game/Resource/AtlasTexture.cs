@@ -14,8 +14,10 @@ namespace Spacebox.Game.Resource
 
         private string firsttextureName = "";
 
-        public int BlockSizePixels { get; set; }
-        public int SizeBlocks { get; set; }
+        public int BlockSizePixels { get; private  set; }
+        public int SizeBlocks { get; private set; }
+
+      
 
         public Vector2[] GetUVByName(string name)
         {
@@ -41,8 +43,34 @@ namespace Spacebox.Game.Resource
         }
         public Texture2D CreateTexture(string path, int blockSizePixels, bool populateFromTopToBottom)
         {
+            return CreateTexture(path, null, blockSizePixels, populateFromTopToBottom);
+        }
+
+        public Texture2D CreateTexture(string path, TextureData[]? additional, int blockSizePixels, bool populateFromTopToBottom)
+        {
 
             var textures = CollectAllTextures(path);
+
+            if (additional != null)
+            {
+                var additionalTextures = new List<TextureData>(textures);
+                foreach (var tex in additional)
+                {
+                    if (additionalTextures.Contains(tex)) continue;
+                    if (textures.Contains(tex)) continue;
+
+                    additionalTextures.Add(tex);
+
+                }
+
+                textures = textures
+                    .Concat(additional)
+                    .Distinct()
+                    .ToArray();
+
+
+            }
+
             BlockSizePixels = blockSizePixels;
             foreach (var tex in textures)
             {
@@ -343,6 +371,68 @@ namespace Spacebox.Game.Resource
 
         }
 
+        public TextureData[] GetTextureDatas(Texture2D atlasTexture)
+        {
+            List<TextureData> textureDatas = new List<TextureData>();
+            foreach (var tex in ReadyTextures)
+            {
+                textureDatas.Add(new TextureData()
+                {
+                    Name = tex.Key,
+                    Texture = GetTextureByName(tex.Key, atlasTexture)
+                });
+
+
+            }
+            return textureDatas.ToArray();
+
+        }
+
+        private Texture2D GetTextureByName(string name, Texture2D atlasTexture)
+        {
+            name = name.ToLower();
+            if (!ReadyTextures.ContainsKey(name))
+            {
+                return null;
+            }
+
+            var textureInfo = ReadyTextures[name];
+            var uv = textureInfo.UV;
+
+            int atlasWidth = atlasTexture.Width;
+            int atlasHeight = atlasTexture.Height;
+
+            int startX = (int)(uv[0].X * atlasWidth);
+            int startY = (int)(uv[0].Y * atlasHeight);
+            int endX = (int)(uv[2].X * atlasWidth);
+            int endY = (int)(uv[2].Y * atlasHeight);
+
+            int textureWidth = endX - startX;
+            int textureHeight = endY - startY;
+
+            if (textureWidth <= 0 || textureHeight <= 0)
+            {
+                return null;
+            }
+
+            Color4[,] atlasPixels = atlasTexture.GetPixelData();
+            Color4[,] extractedPixels = new Color4[textureWidth, textureHeight];
+
+            for (int y = 0; y < textureHeight; y++)
+            {
+                for (int x = 0; x < textureWidth; x++)
+                {
+                    extractedPixels[x, y] = atlasPixels[startX + x, startY + y];
+                }
+            }
+
+            Texture2D newTexture = new Texture2D(textureWidth, textureHeight);
+            newTexture.SetPixelsData(extractedPixels);
+            newTexture.UpdateTexture();
+
+            return newTexture;
+        }
+
         public void Dispose()
         {
             if (Textures == null) return;
@@ -353,7 +443,7 @@ namespace Spacebox.Game.Resource
             }
         }
 
-        private struct TextureData
+        public struct TextureData
         {
             public string Name { get; set; }
             public Texture2D Texture { get; set; }

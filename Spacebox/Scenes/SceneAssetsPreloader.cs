@@ -20,13 +20,50 @@ namespace Spacebox.Scenes
             GameAssets.AtlasBlocks = new AtlasTexture();
             GameAssets.AtlasItems = new AtlasTexture();
             var texture = GameAssets.AtlasBlocks.CreateTexture(blocksPath, blockSizePixels, false);
+
+            //var blockIcons = GameAssets.AtlasBlocks.GetTextureDatas(texture);
+
+            /*for (int i = 0; i < blockIcons.Length; i++)
+            {
+               
+                blockIcons[i].Name = blockIcons[i].Name + "_block";
+            }*/
+
+           // Debug.Error("count : " + blockIcons.Length);
+
             var items = GameAssets.AtlasItems.CreateTexture(itemsPath, blockSizePixels, false);
             var emissions = GameAssets.AtlasBlocks.CreateEmission(emissionPath);
             GameAssets.BlocksTexture = texture;
             GameAssets.ItemsTexture = items;
             GameAssets.LightAtlas = emissions;
 
+            
+
             GameSetLoader.Load(modId, isMultiplayer, isMultiplayer ? serverName : "");
+
+
+           /* var blockIcons = new List<AtlasTexture.TextureData>();
+
+            foreach (var item in GameAssets.Items.Values)
+            {
+                if (item.Is<BlockItem>())
+                {
+                    blockIcons.Add(new AtlasTexture.TextureData()
+                    {
+                        Name = item.Name + "_block",
+                        Texture = GameAssets.ItemIcons[item.Id],
+                    });
+                }
+            }
+
+
+            items.Dispose();
+            GameAssets.AtlasItems.Dispose();
+            GameAssets.AtlasItems = new AtlasTexture();
+            var items2 = GameAssets.AtlasItems.CreateTexture(itemsPath, blockIcons.ToArray(), blockSizePixels, false);
+            GameAssets.ItemsTexture = items2;
+            items2.SaveToPng("items.png");*/
+
             GameAssets.IsInitialized = true;
         }
 
