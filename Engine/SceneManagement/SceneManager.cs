@@ -126,11 +126,9 @@ namespace Engine.SceneManagement
        
                 var name = _current.Name;
                 Debug.Log("[SceneManager] Unloading scene: " + name, Color4.White);
-                DisposablesUnloader.Dispose();
 
                 _current.Destroy();
                 _current.UnloadContent();
-                _current.Dispose();
                 LightSystem.Clear();
                 InputManager.RemoveAllActions(true);
                 EventBus.Clear();

@@ -45,6 +45,8 @@ namespace Spacebox.Game
         public WindowMode WindowMode { get; set; } = WindowMode.Fullscreen;
 
         [JsonPropertyName("vsync")] public bool VSync { get; set; } = true;
+        [JsonPropertyName("ambient_occlusion")] public bool AO { get; set; } = true;
+        [JsonPropertyName("voxel_lighting")] public bool VoxelLighting { get; set; } = true;
         [JsonPropertyName("post_processing")] public bool PostProcessing { get; set; } = true;
         [JsonPropertyName("shadows")] public bool Shadows { get; set; } = true;
         [JsonPropertyName("effects_enabled")] public bool EffectsEnabled { get; set; } = true;

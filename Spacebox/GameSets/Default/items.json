@@ -426,7 +426,6 @@
         "Name": "Beer",
         "Sprite": "beer",
         "Type": "consumable",
-        "Category": "consumables",
         "Sound": "beer",
         "HealAmount": 10,
         "MaxStack": 20,

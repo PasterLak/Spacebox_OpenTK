@@ -106,7 +106,9 @@ namespace Spacebox.Game.GUI.Menu
                 () => { menu.Click1.Play(); menu.SetStateToOptions();
                     SettingsService.Save( Settings.AsGameSettings());
                 },
-                () => { menu.Click1.Play(); menu.SetStateToOptions(); }
+                () => { menu.Click1.Play(); menu.SetStateToOptions();
+                    SettingsService.Save(Settings.AsGameSettings());
+                }
             );
 
             settings.Master = _master;

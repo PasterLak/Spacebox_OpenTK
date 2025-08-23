@@ -3,11 +3,10 @@ using Engine.Physics;
 
 namespace Engine.SceneManagement
 {
-    public abstract class Scene : Node3D, IDisposable
+    public abstract class Scene : Node3D
     {
 
-        public List<IDisposable> Disposables { get; private set; } = new List<IDisposable>();
-
+      
         protected Scene()
         {
 
@@ -63,25 +62,6 @@ namespace Engine.SceneManagement
             }
            
         }
-
-        public virtual void Dispose()
-        {
-           
-               
-            if (Disposables.Count > 0)
-            {
-                foreach(IDisposable disposable in Disposables)
-                {
-                    disposable.Dispose();
-                }
-
-                Disposables = null;
-            }
-
-            
-            
-        }
-
       
     }
 }

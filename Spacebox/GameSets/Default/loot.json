@@ -2,31 +2,31 @@
   "lootTables": {
     "spacer": [
       {
-        "itemId": "Med Kit",
+        "itemId": "med_kit",
         "probability": 100,
         "minCount": 1,
         "maxCount": 1
       },
       {
-        "itemId": "Water",
+        "itemId": "water",
         "probability": 50,
         "minCount": 1,
         "maxCount": 3
       },
        {
-        "itemId": "Cobalt Crystal",
+        "itemId": "cobalt_crystal",
         "probability": 30,
         "minCount": 1,
         "maxCount": 3
       },
       {
-        "itemId": "Energy Cell",
+        "itemId": "energy_cell",
         "probability": 10,
         "minCount": 1,
         "maxCount": 3
       },
       {
-        "itemId": "Pistol",
+        "itemId": "pistol",
         "probability": 100,
         "minCount": 1,
         "maxCount": 1

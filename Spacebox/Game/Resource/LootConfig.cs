@@ -1,5 +1,4 @@
 ﻿using Engine;
-using Spacebox.Game;
 using System.Text.Json.Serialization;
 
 namespace Spacebox.Game.Resource

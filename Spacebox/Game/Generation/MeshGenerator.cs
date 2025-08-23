@@ -10,8 +10,8 @@ namespace Spacebox.Game.Generation
 {
     public class MeshGenerator
     {
-        private bool _EnableAO = true;
-        public bool EnableAO { get => _EnableAO; set { _EnableAO = value; } }
+        private static bool _EnableAO = true;
+        public static bool EnableAO { get => _EnableAO; set { _EnableAO = value; } }
 
         private const byte Size = Chunk.Size;
         private readonly Chunk _chunk;

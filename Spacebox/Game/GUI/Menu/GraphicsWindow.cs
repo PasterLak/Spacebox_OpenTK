@@ -1,6 +1,7 @@
 ﻿using Engine;
 using Engine.Light;
 using ImGuiNET;
+using Spacebox.Game.Generation;
 using System.Numerics;
 using static Spacebox.Game.GUI.Menu.ControlsWindow;
 
@@ -11,6 +12,8 @@ namespace Spacebox.Game.GUI.Menu
         private GameMenu menu;
 
         private bool _vsync = true;
+        private bool _ao = true;
+        private bool _voxelLighting = true;
         private bool _postProcessing = true;
         private bool _shadows = true;
         private bool _enableEffects = false;
@@ -29,6 +32,8 @@ namespace Spacebox.Game.GUI.Menu
         {
 
             _vsync =Settings.Graphics.VSync;
+            _ao = Settings.Graphics.AO;
+            _voxelLighting = Settings.Graphics.VoxelLighting;
             _postProcessing = Settings.Graphics.PostProcessing;
             _shadows =Settings.Graphics.Shadows;
             _enableEffects = Settings.Graphics.EffectsEnabled;
@@ -65,6 +70,27 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.Dummy(dummyOffset); ImGui.SameLine();
                     ImGui.Checkbox("##vsync", ref _vsync);
                     UIHelper.ShowTooltip("Synchronizes frame rate with monitor refresh rate to reduce screen tearing");
+
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+
+                    ImGui.Text("Ambient Occlusion");
+
+                    ImGui.TableNextColumn();
+                    ImGui.Dummy(dummyOffset); ImGui.SameLine();
+                    ImGui.Checkbox("##ao", ref _ao);
+                    UIHelper.ShowTooltip("Darkening the corners between blocks");
+
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+
+                    ImGui.Text("Voxel Lighting");
+
+                    ImGui.TableNextColumn();
+                    ImGui.Dummy(dummyOffset); ImGui.SameLine();
+                    ImGui.Checkbox("##voxel_lighting", ref _voxelLighting);
+                    UIHelper.ShowTooltip("Calculate lighting for glowing blocks");
+
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
@@ -115,10 +141,16 @@ namespace Spacebox.Game.GUI.Menu
 
 
                 },
-                () => { menu.Click1.Play(); menu.SetStateToOptions(); }
+                () => { menu.Click1.Play(); menu.SetStateToOptions();
+                    SettingsService.Save(Settings.AsGameSettings());
+                }
             );
 
             Settings.Graphics.VSync = _vsync;
+            Settings.Graphics.AO = _ao;
+            MeshGenerator.EnableAO = _ao;
+            Settings.Graphics.VoxelLighting = _voxelLighting;
+            LightManager.EnableLighting = _voxelLighting;
             Settings.Graphics.PostProcessing = _postProcessing;
             Settings.Graphics.Shadows = _shadows;
             Settings.Graphics.EffectsEnabled = _enableEffects;
