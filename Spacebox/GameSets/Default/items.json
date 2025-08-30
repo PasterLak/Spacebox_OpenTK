@@ -3,11 +3,12 @@
         "Info": "Tags:  Name, Type<Drill,Weapone,Item>, Sprite, MaxStack, ModelDepth",
         "ID": "aluminium_drill",
         "Name": "Aluminium Drill",
+        "Description": "A basic drill. Can mine only soft blocks.",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill1",
         "MaxStack": 1,
-        "ModelDepth": 1.5,
+        "ModelDepth": 2,
         "Power": 1,
         "DrillColor": {
             "r": 118,
@@ -18,6 +19,7 @@
     {
         "ID": "cobalt_drill",
         "Name": "Cobalt Drill",
+        "Description": "A sturdy drill. Can mine soft blocks.",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill2",
@@ -33,6 +35,7 @@
     {
         "ID": "iron_drill",
         "Name": "Iron Drill",
+        "Description": "A strong drill. Can mine medium blocks.",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill3",
@@ -48,6 +51,7 @@
     {
         "ID": "triple_iron_drill",
         "Name": "Triple Iron Drill",
+        "Description": "A powerful drill with three drill bits. Can mine hard blocks.",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill4",
@@ -63,6 +67,7 @@
     {
         "ID": "titanium_drill",
         "Name": "Titanium Drill",
+        "Description": "A high-end drill",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill5",
@@ -78,6 +83,7 @@
     {
         "ID": "obscurium_drill",
         "Name": "Obscurium Drill",
+        "Description": "The ultimate drill. Can mine anything.",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill6",
@@ -93,15 +99,16 @@
     {
         "ID": "pistol",
         "Name": "Pistol",
+        "Description": "A basic sidearm.",
         "Type": "weapon",
         "Category": "weapons",
         "Sprite": "weapon1",
         "MaxStack": 1,
         "ModelDepth": 1.5,
-        "Damage": 5,
         "ReloadTime": 10,
-        "Spread": 0,
+        "Spread": 50,
         "Pushback": 18,
+        "PlayerPushbackForce": 30,
         "AnimationSpeed": 0.5,
         "PowerUsage": 3,
         "Projectile": "pistoleProjectile",
@@ -110,15 +117,16 @@
     {
         "ID": "smg",
         "Name": "SMG",
+        "Description": "A rapid-fire submachine gun.",
         "Type": "weapon",
         "Category": "weapons",
         "Sprite": "weapon2",
         "MaxStack": 1,
         "ModelDepth": 2,
-        "Damage": 6,
         "ReloadTime": 7,
-        "Spread": 0,
+        "Spread": 35,
         "Pushback": 20,
+        "PlayerPushbackForce": 30,
         "AnimationSpeed": 0.5,
         "PowerUsage": 5,
         "Projectile": "smgProjectile",
@@ -127,15 +135,16 @@
     {
         "ID": "assault_rifle",
         "Name": "Assault Rifle",
+        "Description": "A versatile automatic rifle.",
         "Type": "weapon",
         "Category": "weapons",
         "Sprite": "weapon3",
         "MaxStack": 1,
         "ModelDepth": 2,
-        "Damage": 10,
         "ReloadTime": 5,
-        "Spread": 0,
+        "Spread": 30,
         "Pushback": 15,
+        "PlayerPushbackForce": 30,
         "AnimationSpeed": 0.6,
         "PowerUsage": 4,
         "Projectile": "assaultProjectile",
@@ -149,10 +158,10 @@
         "Sprite": "sniper",
         "MaxStack": 1,
         "ModelDepth": 2,
-        "Damage": 20,
         "ReloadTime": 25,
         "Spread": 0,
         "Pushback": 15,
+        "PlayerPushbackForce": 30,
         "AnimationSpeed": 0.6,
         "PowerUsage": 15,
         "Projectile": "sniperProjectile",
@@ -161,15 +170,16 @@
     {
         "ID": "impulse_rifle",
         "Name": "Impulse Rifle",
+        "Description": "A high-powered energy rifle.",
         "Type": "weapon",
         "Category": "weapons",
         "Sprite": "weapon4",
         "MaxStack": 1,
         "ModelDepth": 3,
-        "Damage": 30,
         "ReloadTime": 40,
-        "Spread": 0,
+        "Spread": 5,
         "Pushback": 30,
+        "PlayerPushbackForce": 30,
         "AnimationSpeed": 0.25,
         "PowerUsage": 35,
         "Projectile": "arProjectile",
@@ -178,6 +188,7 @@
     {
         "ID": "aluminium_drill_bit",
         "Name": "Aluminium Drill Bit",
+       
         "Sprite": "aluDrillBit",
         "Category": "items",
         "MaxStack": 64,
@@ -203,7 +214,6 @@
         "ID": "cobalt_ingot",
         "Name": "Cobalt Ingot",
         "Sprite": "cobaltIngot",
-        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
@@ -211,7 +221,6 @@
         "ID": "aluminium_ingot",
         "Name": "Aluminium Ingot",
         "Sprite": "aluIngot",
-        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
@@ -219,7 +228,6 @@
         "ID": "iron_ingot",
         "Name": "Iron Ingot",
         "Sprite": "ironIngot",
-        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
@@ -227,7 +235,6 @@
         "ID": "titanium_ingot",
         "Name": "Titanium Ingot",
         "Sprite": "titIngot",
-        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
@@ -235,7 +242,6 @@
         "ID": "uranium_ingot",
         "Name": "Uranium Ingot",
         "Sprite": "uranIngot",
-        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
@@ -243,7 +249,6 @@
         "ID": "obscurium_ingot",
         "Name": "Obscurium Ingot",
         "Sprite": "poniumIngot",
-        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 1.0
     },
@@ -251,7 +256,6 @@
         "ID": "sand",
         "Name": "Sand",
         "Sprite": "sand",
-        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2
     },
@@ -259,7 +263,6 @@
         "ID": "cobalt_dust",
         "Name": "Cobalt Dust",
         "Sprite": "cobaltDust",
-        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2
     },
@@ -267,7 +270,6 @@
         "ID": "aluminium_dust",
         "Name": "Aluminium Dust",
         "Sprite": "aluDust",
-        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2
     },
@@ -275,7 +277,6 @@
         "ID": "iron_dust",
         "Name": "Iron Dust",
         "Sprite": "ironDust",
-        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2
     },
@@ -283,7 +284,6 @@
         "ID": "titanium_dust",
         "Name": "Titanium Dust",
         "Sprite": "titDust",
-        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2
     },
@@ -291,7 +291,6 @@
         "ID": "uranium_dust",
         "Name": "Uranium Dust",
         "Sprite": "uraniumDust",
-        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2
     },
@@ -338,6 +337,7 @@
     {
         "ID": "med_kit",
         "Name": "Med Kit",
+        "Description": "A basic medical kit. Restores 50 health.",
         "Sprite": "health3",
         "Type": "consumable",
         "Category": "consumables",
@@ -358,15 +358,14 @@
         "ID": "ice_shard",
         "Name": "Ice Shard",
         "Sprite": "ice",
-        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 1.5
     },
     {
         "ID": "glass",
         "Name": "Glass",
+       
         "Sprite": "glass",
-        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 1.5
     },
@@ -374,7 +373,6 @@
         "ID": "paint",
         "Name": "Paint",
         "Sprite": "paint",
-        "Category": "items",
         "MaxStack": 1,
         "ModelDepth": 3.0
     },
@@ -390,13 +388,13 @@
         "ID": "water",
         "Name": "Water",
         "Sprite": "water1",
-        "Category": "items",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
     {
         "ID": "liquid_hydrogen",
         "Name": "Liquid Hydrogen",
+        "Description": "Highly flammable fuel.",
         "Category": "items",
         "Sprite": "hydrogen",
         "MaxStack": 64,
@@ -405,6 +403,7 @@
     {
         "ID": "compressed_oxygen",
         "Name": "Compressed Oxygen",
+        "Description": "Oxygen for breathing in space.",
         "Category": "consumables",
         "Sprite": "oxygen",
         "MaxStack": 64,
@@ -434,6 +433,7 @@
     {
         "ID": "energy_cell",
         "Name": "Energy Cell",
+        "Description": "A cell that stores energy for various devices.",
         "Category": "items",
         "Sprite": "energyCells",
         "MaxStack": 64,
@@ -442,6 +442,7 @@
     {
         "ID": "microchip",
         "Name": "Microchip",
+        "Description": "A small electronic component used in various devices.",
         "Category": "items",
         "Sprite": "microchip",
         "MaxStack": 64,
@@ -450,6 +451,7 @@
     {
         "ID": "dna_sample",
         "Name": "DNA Sample",
+        "Description": "A sample of DNA to revive an organism.",
         "Category": "items",
         "Sprite": "dna",
         "MaxStack": 8,

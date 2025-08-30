@@ -13,7 +13,9 @@ namespace Spacebox.Game.Player
         public Color3Byte Color { get; set; } = new Color3Byte(0,0,255);
 
 
+        public int Mass { get; set; } = 1;
         public int Damage { get; set; } = 0;
+        public int DamageBlocks { get; set; } = 0;
         public float RicochetAngle { get; set; } = 0;
         public int PossibleRicochets { get; set; } = 0;
     }

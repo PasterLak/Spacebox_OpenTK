@@ -5,7 +5,6 @@ using Engine;
 using Spacebox.Game.Player;
 using System.Numerics;
 using Spacebox.Game.GUI.Menu;
-using System.Runtime.CompilerServices;
 using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.GUI
@@ -310,7 +309,6 @@ namespace Spacebox.Game.GUI
             {
                 if (processingBlock.TryStartTask(out var task))
                 {
-                    // status = "Status: Working...";
                     TickTaskManager.AddTask(task);
                 }
                 else
@@ -394,13 +392,13 @@ namespace Spacebox.Game.GUI
 
             ImGui.SetCursorPos(new Vector2(space, space * 2));
             InventoryUIHelper.DrawSlot(InputStorage.GetSlot(0, 0), "InputStorage", MoveItems, inputIcon, false);
-            InventoryUIHelper.ShowTooltip(InputStorage.GetSlot(0, 0), true);
+            InventoryUIHelper.ShowTooltip(InputStorage.GetSlot(0, 0), false);
             ImGui.SetCursorPos(new Vector2(space, windowHeight - slotSize - space));
             InventoryUIHelper.DrawSlot(FuelStorage.GetSlot(0, 0), "FuelStorage", MoveItems, batteryIcon, false);
-            InventoryUIHelper.ShowTooltip(FuelStorage.GetSlot(0, 0), true);
+            InventoryUIHelper.ShowTooltip(FuelStorage.GetSlot(0, 0), false);
             ImGui.SetCursorPos(new Vector2(windowWidth - slotSize - space, slotSize + space));
             InventoryUIHelper.DrawSlot(OutputStorage.GetSlot(0, 0), "OutputStorage", MoveItems, outputIcon, false);
-            InventoryUIHelper.ShowTooltip(OutputStorage.GetSlot(0, 0), true);
+            InventoryUIHelper.ShowTooltip(OutputStorage.GetSlot(0, 0), false);
 
 
             ImGui.PopStyleColor(6);

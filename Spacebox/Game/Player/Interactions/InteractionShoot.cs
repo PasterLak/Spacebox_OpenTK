@@ -70,16 +70,12 @@ public class InteractionShoot : InteractionMode
             weapon = weapone;
             startPos = model.Position;
 
-
             if (shotSound == null)
             {
                 var v = GameAssets.Sounds;
-                //Debug.Error(v.ContainsKey(weapone.ShotSound) + " HAS SOUND? IS NULL " + (v[weapone.ShotSound] == null));
                 shotSound = new AudioSource(v[weapone.ShotSound]); // 
                 shotSound.Volume = 1f;
             }
-
-
 
         }
 
@@ -92,8 +88,6 @@ public class InteractionShoot : InteractionMode
         light.IsActive = false;*/
     }
 
-    bool renderSphere = false;
-    Vector3 dir = Vector3.Zero;
     public void UpdateItemSlot(ItemSlot itemslot)
     {
         selectedItemSlot = itemslot;
@@ -129,9 +123,7 @@ public class InteractionShoot : InteractionMode
 
     private void SetSphere(Projectile p)
     {
-
         p.OnDespawn -= SetSphere;
-
 
         despawnPos = p.Position;
 
@@ -142,17 +134,11 @@ public class InteractionShoot : InteractionMode
 
     private Vector3 despawnPos = Vector3.Zero;
 
-    float alpha = 1;
     float lightTime = 0;
     public override void Update(Astronaut player)
     {
         if (lightTime > 0)
         {
-            if (light.Range > 1)
-            {
-                //light.Range = light.Range - Time.Delta * 2;
-            }
-            //light.Position += dir * Time.Delta * projectileParameters.Speed;
             lightTime -= Time.Delta;
         }
         else
@@ -190,14 +176,13 @@ public class InteractionShoot : InteractionMode
 
         if (!player.CanMove)
         {
-            //model?.SetAnimation(false);
             return;
         }
 
-        Ray ray2 = new Ray(player.Position, player.Front, InteractiveBlock.InteractionDistance);
+        Ray rayNormal = new Ray(player.Position, player.Front, InteractiveBlock.InteractionDistance);
         HitInfo hit;
 
-        if (World.CurrentSector.Raycast(ray2, out hit))
+        if (World.CurrentSector.Raycast(rayNormal, out hit))
         {
             if (hit.block.Is<InteractiveBlock>(out var b))
             {
@@ -206,19 +191,9 @@ public class InteractionShoot : InteractionMode
 
                 if (hit.block.Is<StorageBlock>(out var storageBlock))
                 {
-                    //Debug.Log("Placed: " + ((Vector3i)(hit.blockPositionEntity )));
                     storageBlock.SetPositionInChunk(hit.blockPositionIndex);
                 }
             }
-            else
-            {
-                //CenteredText.Hide();
-
-            }
-        }
-        else
-        {
-            //CenteredText.Hide();
         }
 
         if (canShoot && Input.IsMouseButton(0))
@@ -229,81 +204,49 @@ public class InteractionShoot : InteractionMode
             player.PowerBar.StatsData.Decrement(weapon.PowerUsage);
             lineRenderer.ClearPoints();
 
-
-            //lineRenderer.AddPoint(player.Position + player.Front);
             int count = 10;
             int count1 = 0;
-            Ray ray = new Ray(player.Position, player.Front, 1000);
-
-
+           
             var projectile = ProjectilesPool.Take();
 
             if (weapon.ProjectileID == 3)
                 projectile.OnDespawn += SetSphere;
 
-            //if (projectileParameters == null) return;
-
-
             //light.Ambient = projectileParameters.Color3;
             light.Enabled = false;
             lightTime = 1f;
-            dir = player.Front;
             light.Position = player.Position;
             light.Range = 4;
-            projectile.Initialize(new Ray(Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.05f, player.Front, 1f),
+
+            var projectileSpawnPos = Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.05f;
+            var shotDir = WeaponItem.CalculateSpreadCone(weapon, player.Front);
+            var shotRay = new Ray(projectileSpawnPos, shotDir, 1f);
+
+            projectile.Initialize(shotRay,
                 projectileParameters);
-            alpha = 0.3f;
+
+            ApplyRecoilWithMass(player, weapon, shotRay.Direction, projectileParameters);
 
             _time = 0;
 
-            /*if (World.CurrentSector.Raycast(ray, out var hit))
-            {
-
-                lineRenderer.AddPoint(hit.position);
-            
-                while (count > 0)
-                {
-                    ray = ray.CalculateRicochetRay(hit, 1000);
-
-                    if (World.CurrentSector.Raycast(ray, out  hit))
-                    {
-                        lineRenderer.AddPoint(hit.position);
-                        count--;
-                        count1++;
-                    }
-                    else
-                    {
-                        lineRenderer.AddPoint(ray.GetPoint(1000));
-                        count = 0;
-                        count1++;
-                    }
-                }
-            }
-            else
-            {
-                lineRenderer.AddPoint(ray.GetPoint(1000));
-                // Debug.Log($"Not gun hit!");
-            }*/
-
-            // Debug.Log($"hits "+ count1);
-
-        }
-        if (Input.IsMouseButtonUp(0))
-        {
-            //model?.SetAnimation(false);
-            // model.Animator.AddAnimation(new MoveAnimation(startPos, model.Position - new Vector3(0.001f * weapon.Pushback, 0, 0), weapon.AnimationSpeed, false));
         }
 
     }
 
-
-
-    private void DestroyBlock(HitInfo hit)
+    public void ApplyRecoilWithMass(Astronaut player, WeaponItem weapon, Vector3 shootDirection, ProjectileParameters projectileParams)
     {
+        if (weapon.Pushback <= 0) return;
 
-        hit.block.Durability = 0;
-        hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
+        float projectileMass = projectileParams.Mass * 0.1f;
+        float projectileSpeed = projectileParams.Speed;
 
+        float recoilForce = (weapon.Pushback / 255f) * (projectileMass * projectileParameters.Damage * projectileSpeed) * 0.01f;
+
+        Vector3 recoilDirection = -shootDirection;
+        Vector3 recoilImpulse = recoilDirection * recoilForce;
+
+        player.InertiaController.ApplyInput(recoilImpulse);
+        player.InertiaController.Velocity += recoilImpulse;
     }
 
 }

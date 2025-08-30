@@ -15,6 +15,7 @@ namespace Spacebox.Game.Player
 
         public Vector3 Color3 => new Vector3(Color.R, Color.G, Color.B);
         public byte Damage { get; private set; }
+        public byte DamageBlocks { get; private set; }
         public float RicochetAngle { get; private set; }
         public int PossibleRicochets { get; private set; }
 
@@ -36,7 +37,9 @@ namespace Spacebox.Game.Player
             Thickness = p.Thickness;
             Color = p.Color.ToColor4();
 
+            Mass = (byte)p.Mass;
             Damage = (byte)p.Damage;
+            DamageBlocks = (byte)p.DamageBlocks;
             RicochetAngle = p.RicochetAngle;
             PossibleRicochets = p.PossibleRicochets;
 
@@ -54,7 +57,9 @@ namespace Spacebox.Game.Player
             p.Thickness = 0.1f;
             p.Color = Color4.Blue;
 
+            p.Mass = 2;
             p.Damage = 5;
+            p.DamageBlocks = 5;
             p.RicochetAngle = 30;
             p.PossibleRicochets = 5;
 
@@ -77,9 +82,11 @@ namespace Spacebox.Game.Player
             p.MaxTravelDistance = 100;
             p.Length = 1f;
             p.Thickness = 0.1f;
+            p.Mass = 1;
             p.Color = Color4.Pink;
 
             p.Damage = 0;
+            p.DamageBlocks = 0;
             p.RicochetAngle = 0;
             p.PossibleRicochets = 0;
         }

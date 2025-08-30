@@ -5,6 +5,7 @@ using Spacebox.Game.Player;
 using Engine;
 using Spacebox.Scenes;
 using Engine.Light;
+using OpenTK.Mathematics;
 
 
 namespace Spacebox.Game.Resource
@@ -249,6 +250,8 @@ namespace Spacebox.Game.Resource
 
                     };
 
+                    blockData.Description = block.Description;
+
                     if (block.Durability <= 0) block.Durability = 1;
                     if (block.Mass <= 0) block.Mass = 1;
                     if (block.PowerToDrill <= 0) block.PowerToDrill = 1;
@@ -345,6 +348,8 @@ namespace Spacebox.Game.Resource
                     }
 
                     if (proj.Damage > byte.MaxValue) proj.Damage = byte.MaxValue;
+                    if (proj.DamageBlocks > byte.MaxValue) proj.DamageBlocks = byte.MaxValue;
+                    if (proj.Mass > byte.MaxValue) proj.Mass = byte.MaxValue;
 
                     var newProj = new ProjectileParameters(id++, proj);
 
@@ -382,33 +387,41 @@ namespace Spacebox.Game.Resource
                     {
                         type = typeElement.GetString().ToLower();
                     }
-
+                    Item registeredItem = null;
                     switch (type)
                     {
                         case "weapon":
                             var weaponData = itemElement.Deserialize<WeaponItemData>();
                             if (weaponData == null) continue;
-                            RegisterWeaponItem(weaponData);
+                            registeredItem = RegisterWeaponItem(weaponData);
                             break;
 
                         case "drill":
                             var drillData = itemElement.Deserialize<DrillItemData>();
                             if (drillData == null) continue;
-                            RegisterDrillItem(drillData);
+                            registeredItem = RegisterDrillItem(drillData);
                             break;
 
                         case "consumable":
                             var consumableData = itemElement.Deserialize<ConsumableItemData>();
                             if (consumableData == null) continue;
-                            RegisterConsumableItem(consumableData);
+                            registeredItem = RegisterConsumableItem(consumableData);
                             break;
 
                         case "item":
                         default:
                             var itemData = itemElement.Deserialize<ItemData>();
                             if (itemData == null) continue;
-                            RegisterItem(itemData);
+                            registeredItem = RegisterItem(itemData);
                             break;
+                    }
+
+                    if(registeredItem != null)
+                    {
+                       if(itemElement.TryGetProperty("Description", out var v))
+                        {
+                            registeredItem.Description = v.GetString();
+                        }
                     }
                 }
 
@@ -649,7 +662,7 @@ namespace Spacebox.Game.Resource
 
         }
 
-        private static void RegisterWeaponItem(WeaponItemData data)
+        private static Item RegisterWeaponItem(WeaponItemData data)
         {
             data.MaxStack = 1;
 
@@ -671,13 +684,14 @@ namespace Spacebox.Game.Resource
 
                 data.ModelDepth)
             {
-                Damage = data.Damage,
                 Category = data.Category,
             };
             weaponItem.ProjectileID = projectileID;
             weaponItem.ReloadTime = data.ReloadTime;
             weaponItem.AnimationSpeed = data.AnimationSpeed;
             weaponItem.Pushback = data.Pushback;
+            weaponItem.Spread = data.Spread;
+
             if (GameAssets.Sounds.ContainsKey(data.ShotSound))
             {
                 weaponItem.ShotSound = data.ShotSound;
@@ -691,11 +705,13 @@ namespace Spacebox.Game.Resource
             weaponItem.PowerUsage = data.PowerUsage;
 
             GameAssetsRegister.RegisterItem(weaponItem, data.Sprite);
+
+            return weaponItem;
         }
 
 
 
-        private static void RegisterDrillItem(DrillItemData data)
+        private static Item RegisterDrillItem(DrillItemData data)
         {
             data.MaxStack = 1;
             var drillItem = new DrillItem(
@@ -706,9 +722,12 @@ namespace Spacebox.Game.Resource
             {
                 Power = data.Power,
                 Category = data.Category,
+                
                 DrillColor = data.DrillColor,
             };
             GameAssetsRegister.RegisterItem(drillItem, data.Sprite);
+
+            return drillItem;
         }
 
         private static void RegisterEraserItem()
@@ -737,7 +756,7 @@ namespace Spacebox.Game.Resource
         }
 
 
-        private static void RegisterConsumableItem(ConsumableItemData data)
+        private static Item RegisterConsumableItem(ConsumableItemData data)
         {
             data.ValidateMaxStack();
             var consumableItem = new ConsumableItem(
@@ -753,18 +772,22 @@ namespace Spacebox.Game.Resource
                 Category = data.Category,
             };
             GameAssetsRegister.RegisterItem(consumableItem, data.Sprite);
+
+            return consumableItem;
         }
 
-        private static void RegisterItem(ItemData data)
+        private static Item RegisterItem(ItemData data)
         {
             data.ValidateMaxStack();
             var item = new Item(
                 (byte)data.MaxStack,
                 data.Name,
-
+               
                 data.ModelDepth);
             item.Category = data.Category;
             GameAssetsRegister.RegisterItem(item, data.Sprite);
+
+            return item;
         }
 
         private static void LoadSettings(string modPath)

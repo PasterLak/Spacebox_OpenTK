@@ -54,7 +54,7 @@ namespace Spacebox.Game.Player
             ray.Length = 1f;
             this.Parameters = parameters;
             IsActive = true;
-            currentDamage = parameters.Damage;
+            currentDamage = parameters.DamageBlocks;
             canRicochet = parameters.RicochetAngle > 0;
             SpawnPosition = ray.Origin;
             Position = ray.Origin;

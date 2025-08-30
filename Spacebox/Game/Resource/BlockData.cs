@@ -8,6 +8,7 @@ namespace Spacebox.Game.Resource
     {
         public short Id;
         public string Name;
+        public string Description;
         public string Type;
         public string Category;
         public byte Mass = 1;  // 1 is minimum

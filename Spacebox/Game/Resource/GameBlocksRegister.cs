@@ -41,6 +41,7 @@ namespace Spacebox.Game
             item.Mass = blockData.Mass;
             item.Category = blockData.Category;
             blockData.Item = item;
+            item.Description = blockData.Description;
             GameAssets.IncrementItemId(blockData.Item);
             GameAssets.Items.Add(item.Id, item);
             CacheIcon(blockData);

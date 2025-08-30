@@ -307,6 +307,7 @@ namespace Spacebox.Game.Generation
 
         public void DamageBlock(Vector3Byte blockPos, Vector3SByte normal, byte damage)
         {
+            if(damage == 0) return;
             if (!IsInRange(blockPos.X, blockPos.Y, blockPos.Z))
                 return;
 

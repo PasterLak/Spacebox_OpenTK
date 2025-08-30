@@ -5,6 +5,7 @@ namespace Spacebox.Game.Resource
     public class ItemData
     {
         public string Info { get; set; } = "";
+        public string Description { get; set; } = "";
         public string Name { get; set; } = "NoName";
         public string Type { get; set; } = "item";
         public string Category { get; set; } = "";

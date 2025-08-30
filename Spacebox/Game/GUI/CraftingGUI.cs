@@ -472,59 +472,101 @@ namespace Spacebox.Game.GUI
         static int hovered = -1;
         private static void OnHovered(CraftingCategory.Data itemData, ImGuiNET.ImDrawListPtr list, Vector2 buttonPos, Vector2 offset, float width, float height, int slotId)
         {
-            if (itemData == null) return;
-            if (Inventory == null) return;
+            if (itemData?.item == null || Inventory == null || !ImGui.IsItemHovered()) return;
 
-            if (ImGui.IsItemHovered())
+            HandleHoverAudio(slotId);
+            DrawHoverImage(list, itemData, buttonPos, offset, width, height);
+            ShowTooltip(itemData, height);
+        }
+
+        private static void HandleHoverAudio(int slotId)
+        {
+            if (hovered == slotId) return;
+
+            hovered = slotId;
+            if (scrollAudio.IsPlaying) scrollAudio.Stop();
+            scrollAudio.Play();
+        }
+
+        private static void DrawHoverImage(ImGuiNET.ImDrawListPtr list, CraftingCategory.Data itemData, Vector2 buttonPos, Vector2 offset, float width, float height)
+        {
+            var startPos = buttonPos + offset;
+            var endPos = buttonPos + new Vector2(width, height) - offset;
+            list.AddImage(itemData.item.IconTextureId, startPos, endPos);
+        }
+
+        private static void ShowTooltip(CraftingCategory.Data itemData, float height)
+        {
+            ImGui.BeginTooltip();
+
+            if (itemData.blueprint == null)
             {
-                if (hovered != slotId)
-                {
-                    hovered = slotId;
-                    if (scrollAudio.IsPlaying) scrollAudio.Stop();
-                    scrollAudio.Play();
-                }
-
-
-                list.AddImage(itemData.item.IconTextureId, buttonPos + offset, buttonPos + new Vector2(width, height) - offset);
-                ImGui.BeginTooltip();
-
-                if (itemData.blueprint == null)
-                {
-                    ImGui.Text(itemData.item.Name);
-                    ImGui.TextColored(new Vector4(1, 0, 0, 1), "Not craftable");
-                }
-                else
-                {
-                    if (itemData.blueprint.Product != null && itemData.blueprint.Ingredients != null)
-                    {
-                        var count = itemData.blueprint.Product.Quantity;
-                        ImGui.Text(count > 1 ? $"{itemData.item.Name}({count})" : itemData.item.Name);
-                        //ImGui.Text("Requared:");
-                        foreach (var ing in itemData.blueprint.Ingredients)
-                        {
-
-                            var c = Inventory.GetTotalCountOf(ing.Item) + Panel.GetTotalCountOf(ing.Item);
-
-                            if (c >= ing.Quantity)
-                            {
-                                ImGui.TextColored(new Vector4(0, 1, 0, 1), ing.ToString());
-                            }
-                            else
-                            {
-                                ImGui.TextColored(new Vector4(1, 0, 0, 1), ing.ToString());
-                            }
-                        }
-                    }
-                    else ImGui.Text(itemData.item.Name);
-                }
-
-
-                // ImGui.TextColored(new Vector4(0,1,0,1), "x2 Iron Ingot" );
-                //ImGui.TextColored(new Vector4(1, 0, 0, 1), "x3 Components");
-                ImGui.EndTooltip();
+                ShowNonCraftableItem(itemData);
+            }
+            else
+            {
+                ShowCraftableItem(itemData, height);
             }
 
+            ImGui.EndTooltip();
         }
+
+        private static void ShowNonCraftableItem(CraftingCategory.Data itemData)
+        {
+            ImGui.Text(itemData.item.Name ); ImGui.Spacing();
+            var desc = itemData.item.Description;
+            if(!string.IsNullOrWhiteSpace(desc))
+            {
+               InventoryUIHelper. DrawWrappedText(desc, 50, false);
+            }
+            ImGui.TextColored(new Vector4(1, 0, 0, 1), "Not craftable");
+        }
+
+        private static void ShowCraftableItem(CraftingCategory.Data itemData, float height)
+        {
+            if (itemData.blueprint.Product == null || itemData.blueprint.Ingredients == null)
+            {
+                ImGui.Text(itemData.item.Name); ImGui.Spacing();
+
+                return;
+            }
+
+            ShowProductName(itemData);
+            ShowIngredients(itemData.blueprint.Ingredients, height);
+        }
+
+        private static void ShowProductName(CraftingCategory.Data itemData)
+        {
+            var count = itemData.blueprint.Product.Quantity;
+            var name = count > 1 ? $"{itemData.item.Name}({count})" : itemData.item.Name;
+            ImGui.Text(name); ImGui.Spacing();
+            var desc = itemData.item.Description;
+         
+            if (!string.IsNullOrWhiteSpace(desc))
+            {
+               
+               InventoryUIHelper. DrawWrappedText(desc, 50, false);
+              
+            }
+        }
+
+        private static void ShowIngredients(Ingredient[] ingredients, float height)
+        {
+            foreach (var ingredient in ingredients)
+            {
+                var availableCount = Inventory.GetTotalCountOf(ingredient.Item) + Panel.GetTotalCountOf(ingredient.Item);
+                var iconSize = new Vector2(1, 1) * (height / 2.8f);
+                var textColor = availableCount >= ingredient.Quantity
+                    ? new Vector4(0, 1, 0, 1)
+                    : new Vector4(1, 0, 0, 1);
+
+                ImGui.Image(ingredient.Item.IconTextureId, iconSize);
+                ImGui.SameLine();
+                ImGui.TextColored(textColor, ingredient.ToString());
+            }
+        }
+
+        
 
 
         private static ImFontPtr LoadFont()

@@ -5,6 +5,7 @@ namespace Spacebox.Game.Resource
     public class ModBlockData
     {
         public string Name { get; set; } = "NoName";
+        public string Description { get; set; } = "";
         public string Type { get; set; } = "block";
         public string Category { get; set; } = "";
         public int PowerToDrill { get; set; } = 1;

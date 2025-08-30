@@ -304,7 +304,7 @@ namespace Spacebox.Game.GUI
                         {
                             //if (ImGui.Button(" " + (slot.Item.Category), new Vector2(SlotSize, SlotSize))) OnSlotClicked(slot);
                         }
-                        InventoryUIHelper.ShowTooltip(slot, true);
+                        InventoryUIHelper.ShowTooltip(slot, true, true);
                     }
                 }
                 ImGui.EndTable();

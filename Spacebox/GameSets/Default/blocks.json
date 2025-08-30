@@ -36,6 +36,7 @@
     {
         "ID": "ice_rock",
         "Name": "Ice Rock",
+        "Description" : "Contains ice pieces",
         "Sides": "ice",
         "PowerToDrill": 1,
         "Mass": 1,
@@ -76,6 +77,7 @@
     {
         "ID": "obscurium_ore",
         "Name": "Obscurium Ore",
+        "Description" : "An extremely rare ore with unusual properties",
         "Sides": "pinkOre",
         "PowerToDrill": 5,
         "Mass": 10,
@@ -219,6 +221,7 @@
     {
         "ID": "crafting_table",
         "Name": "Crafting Table",
+        "Description" : "Used for crafting items and blocks",
         "Category": "resources",
         "Type": "craftingtable",
         "Sides": "craftSide",
@@ -230,6 +233,7 @@
     {
         "ID": "furnace",
         "Name": "Furnace",
+        "Description" : "Used for smelting ores",
         "Type": "furnace",
         "Category": "resources",
         "Sides": "furnace",
@@ -251,6 +255,7 @@
     {
         "ID": "crusher",
         "Name": "Crusher",
+        "Description" : "Сrushes ores to extract more resources",
         "Type": "crusher",
         "Category": "resources",
         "Sides": "crusherSide",
@@ -499,6 +504,7 @@
     {
         "ID": "gravity_generator",
         "Name": "Gravity Generator",
+        "Description" : "Сan create artificial gravity",
         "Category": "resources",
         "Sides": "gravitySide",
         "Top": "gravityTop",
@@ -551,6 +557,7 @@
     {
         "ID": "dna_reconstructor",
         "Name": "DNA Reconstructor",
+        "Description" : "Used to revive the player or other creatures.",
         "Category": "other",
         "Top": "spawnerTop",
         "Bottom": "bottom",

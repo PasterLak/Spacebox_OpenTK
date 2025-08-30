@@ -1,10 +1,11 @@
-﻿using System.Numerics;
-using System.Runtime.InteropServices;
+﻿using Engine;
 using ImGuiNET;
+using NVorbis.Contracts;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Engine;
 using Spacebox.Game;
 using Spacebox.Game.Resource;
+using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace Spacebox.Game.GUI
 {
@@ -236,7 +237,7 @@ namespace Spacebox.Game.GUI
 
         }
 
-        public static void ShowTooltip(ItemSlot slot, bool showStackSize = false)
+        public static void ShowTooltip(ItemSlot slot, bool showStackSize = false, bool showDescription = false)
         {
             if (IsDragging) return;
 
@@ -244,6 +245,7 @@ namespace Spacebox.Game.GUI
             {
                 ImGui.BeginTooltip();
                 ImGui.Text(slot.Name);
+                
                 ImGui.EndTooltip();
             }
             if (ImGui.IsItemHovered() && slot.HasItem)
@@ -251,11 +253,20 @@ namespace Spacebox.Game.GUI
                 var text = "";
                 var type = slot.Item.GetType();
 
+                if (showDescription)
+                {
+                    var desc = slot.Item.Description;
+                    if (!string.IsNullOrWhiteSpace(desc))
+                    {
+                        text += desc;
+                    }
+                }
+
                 if (showStackSize)
                 {
                     if (slot.Item.StackSize > 1)
                     {
-                        text += "Stack: " + slot.Item.StackSize;
+                        text += "\nStack: " + slot.Item.StackSize;
                     }
                 }
 
@@ -270,7 +281,7 @@ namespace Spacebox.Game.GUI
 
                     var pj = GameAssets.Projectiles[itemType.ProjectileID];
 
-                    text += "\nDamage: " + pj.Damage;
+                    text += "\nDamage: " + $"{+pj.Damage}/{+pj.DamageBlocks}";
                     text += "\nProjectile speed: " + pj.Speed;
                     text += "\nReload time: " + itemType.ReloadTime;
                     text += "\nPower usage: " + itemType.PowerUsage;
@@ -290,8 +301,10 @@ namespace Spacebox.Game.GUI
                 else if (type == typeof(ConsumableItem))
                 {
                     var itemType = slot.Item as ConsumableItem;
-                    text = "Healing: +" + itemType.HealAmount;
-
+                    if(itemType.HealAmount > 0)
+                    text += "\nHealing: +" + itemType.HealAmount;
+                    if (itemType.PowerAmount > 0)
+                        text += "\nPower: +" + itemType.PowerAmount;
 
                 }
 
@@ -405,6 +418,88 @@ namespace Spacebox.Game.GUI
             ImGui.PopStyleColor();
 
             ImGui.End();
+        }
+
+        public static void DrawWrappedText(string text, int maxCharacters = 40, bool breakWords = false)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return;
+
+            if (breakWords)
+            {
+                DrawTextWithCharacterWrap(text, maxCharacters);
+            }
+            else
+            {
+                DrawTextWithWordWrap(text, maxCharacters);
+            }
+        }
+
+
+        private static void DrawTextWithCharacterWrap(string text, int maxCharacters)
+        {
+            var lines = WrapTextByCharacters(text, maxCharacters);
+            foreach (var line in lines)
+            {
+                ImGui.Text(line);
+            }
+        }
+
+        private static void DrawTextWithWordWrap(string text, int maxCharacters)
+        {
+            var lines = WrapTextByWords(text, maxCharacters);
+            foreach (var line in lines)
+            {
+                ImGui.Text(line);
+            }
+        }
+
+        private static List<string> WrapTextByCharacters(string text, int maxCharacters)
+        {
+            var lines = new List<string>();
+
+            for (int i = 0; i < text.Length; i += maxCharacters)
+            {
+                var length = Math.Min(maxCharacters, text.Length - i);
+                var line = text.Substring(i, length);
+
+                if (i + maxCharacters < text.Length && !char.IsWhiteSpace(text[i + maxCharacters]))
+                {
+                    line += "-";
+                }
+
+                lines.Add(line);
+            }
+
+            return lines;
+        }
+
+        private static List<string> WrapTextByWords(string text, int maxCharacters)
+        {
+            var lines = new List<string>();
+            var words = text.Split(' ');
+            var currentLine = "";
+
+            foreach (var word in words)
+            {
+                var testLine = string.IsNullOrEmpty(currentLine) ? word : $"{currentLine} {word}";
+
+                if (testLine.Length > maxCharacters && !string.IsNullOrEmpty(currentLine))
+                {
+                    lines.Add(currentLine);
+                    currentLine = word;
+                }
+                else
+                {
+                    currentLine = testLine;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(currentLine))
+            {
+                lines.Add(currentLine);
+            }
+
+            return lines;
         }
     }
 }
