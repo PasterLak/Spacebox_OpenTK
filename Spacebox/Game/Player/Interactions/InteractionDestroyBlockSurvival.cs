@@ -7,7 +7,6 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
-using Spacebox.GUI;
 using Engine.Light;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation.Blocks;
@@ -122,7 +121,6 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         if (hit.block.Durability <= 0)
         {
             DestroyBlock(hit);
-            Debug.Log("Block destroyed " + drill.Power);
             astronaut.PowerBar.StatsData.Decrement(drill.PowerUsage);
         }
 
@@ -177,13 +175,17 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
                 
                 var blockData = GameAssets.GetBlockDataById(hit.block.BlockId);
                 BlockMiningEffect.Enabled = true;
-                BlockMiningEffect.ParticleSystem.Position = hit.position + new Vector3(hit.normal.X, hit.normal.Y, hit.normal.Z) * 0.05f;
+
+                var effectPosition = hit.position + new Vector3(hit.normal.X, hit.normal.Y, hit.normal.Z) * 0.05f;
+                var toPlayer = Vector3.Normalize(player.Position - effectPosition);
+
+                BlockMiningEffect.ParticleSystem.Position = effectPosition;
 
                 var cone = BlockMiningEffect.ParticleSystem.Emitter as ConeEmitter;
 
                 if (cone != null)
                 {
-                    cone.Direction = hit.normal.ToVector3();
+                    cone.Direction = toPlayer;
                 }
 
                 BlockMiningEffect.Update();
@@ -216,7 +218,6 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
                 InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
                 if (hit.block.Is<StorageBlock>(out var storageBlock))
                 {
-                    //Debug.Log("Placed: " + ((Vector3i)(hit.blockPositionEntity )));
                     storageBlock.SetPositionInChunk(hit.blockPositionIndex);
                 }
             }

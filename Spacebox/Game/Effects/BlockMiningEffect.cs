@@ -17,7 +17,6 @@ namespace Spacebox.Game.Effects
         private float elapsedTime = 0f;
         private const float duration = 2f;
 
-        private Vector3 color = Vector3.One;
         public bool Enabled = false;
 
         public bool IsFinished => elapsedTime >= duration && ParticleSystem.ParticlesCount == 0;
@@ -27,7 +26,6 @@ namespace Spacebox.Game.Effects
             this.camera = camera;
 
             Initialize(position, texture, shader);
-            this.color = color;
 
         }
 

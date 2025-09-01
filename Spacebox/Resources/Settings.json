@@ -16,7 +16,7 @@
     "vsync": true,
     "post_processing": true,
     "shadows": true,
-    "effects_enabled": false,
+    "effects_enabled": true,
     "fov": 90,
     "resolution_scale_percent": 100
   },

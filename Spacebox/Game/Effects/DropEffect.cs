@@ -2,7 +2,6 @@
 using Engine;
 using Spacebox.Game.Player;
 using Spacebox.Game.Generation.Blocks;
-using Engine.Light;
 
 namespace Spacebox.Game.Effects
 {

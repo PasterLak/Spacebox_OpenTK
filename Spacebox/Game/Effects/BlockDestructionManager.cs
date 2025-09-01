@@ -9,25 +9,20 @@ namespace Spacebox.Game.Effects
     public class BlockDestructionManager : IDisposable
     {
         private List<BlockDestructionEffect> activeEffects = new List<BlockDestructionEffect>();
-        private Camera camera;
-        Texture2D texture;
-        Shader shader;
-        public BlockDestructionManager(Camera camera)
-        {
-            this.camera = camera;
 
-
-            shader = Resources.Load<Shader>("Shaders/particle");
+        public BlockDestructionManager()
+        { 
+           
         }
 
 
-        public void DestroyBlock(Vector3 position, Color3Byte color, Block block)
+        public void DestroyBlock(Vector3 worldPosition, Color3Byte color, Block block)
         {
 
-            texture = GameAssets.BlockDusts[block.BlockId];
+            var texture = GameAssets.BlockDusts[block.BlockId];
 
-            var destructionEffect = new BlockDestructionEffect(camera, position +
-                new Vector3(0.5f, 0.5f, 0.5f), color, texture, shader);
+            var destructionEffect = new BlockDestructionEffect(worldPosition +
+                new Vector3(0.5f, 0.5f, 0.5f), color, new ParticleMaterial(texture));
             activeEffects.Add(destructionEffect);
         }
 

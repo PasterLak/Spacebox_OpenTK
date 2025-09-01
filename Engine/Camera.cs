@@ -102,8 +102,12 @@ namespace Engine
 
         public override void Update()
         {
-            RenderSpace.UpdateOrigin();
-            Frustum.UpdateFrustum(this);
+            if(IsMain)
+            {
+                RenderSpace.UpdateOrigin();
+                Frustum.UpdateFrustum(this);
+            }
+               
             base.Update();
         }
 

@@ -60,7 +60,7 @@ namespace Spacebox.Game.Generation
 
 
             DropEffectManager = new DropEffectManager(player);
-            DestructionManager = new BlockDestructionManager(player);
+            DestructionManager = new BlockDestructionManager();
 
 
             Overlay.AddElement(new WorldOverlayElement(this));

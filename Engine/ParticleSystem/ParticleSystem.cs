@@ -29,7 +29,22 @@ namespace Engine
                 }
             }
         }
-        public float Rate = 50f;
+
+        public float Rate
+        {
+            get => _rate;
+            set
+            {
+                _rate = value;
+                if (_rate <= 0f)
+                {
+                    _rate = 0;
+                    _acc = 0f;
+                }
+                    
+            }
+        }
+        private float _rate = 50f;
         public float SimulationSpeed = 1f;
         public float Duration = float.PositiveInfinity;
         public bool Loop = false;
@@ -75,30 +90,35 @@ namespace Engine
                 }
                 else return;
             }
-            _acc += Rate * dtSim;
-            while (_acc >= 1f && _active.Count < Max)
+
+            if (Rate > 0f)
             {
-                Particle p;
-                if (_pool.Count > 0) p = _pool.Dequeue();
-                else p = new Particle(Vector3.Zero, Vector3.Zero, 1f, Vector4.Zero, Vector4.Zero, 1f, 1f);
-                var tmp = Emitter.Create();
-                p.Position = tmp.Position;
-                p.Velocity = tmp.Velocity;
-                p.Life = tmp.Life;
-                p.Age = 0f;
-                p.ColorStart = tmp.ColorStart;
-                p.ColorEnd = tmp.ColorEnd;
-                p.Color = tmp.ColorStart;
-                p.StartSize = tmp.StartSize;
-                p.EndSize = tmp.EndSize;
-                p.AccStart = tmp.AccStart;
-                p.AccEnd = tmp.AccEnd;
-                p.Rotation = 0f;
-                p.RotationSpeed = tmp.RotationSpeed;
-                if (Space == SimulationSpace.World) p.Position = LocalToWorld(p.Position);
-                _active.Add(p);
-                _acc -= 1f;
+                _acc += Rate * dtSim;
+                while (_acc >= 1f && _active.Count < Max)
+                {
+                    Particle p;
+                    if (_pool.Count > 0) p = _pool.Dequeue();
+                    else p = new Particle(Vector3.Zero, Vector3.Zero, 1f, Vector4.Zero, Vector4.Zero, 1f, 1f);
+                    var tmp = Emitter.Create();
+                    p.Position = tmp.Position;
+                    p.Velocity = tmp.Velocity;
+                    p.Life = tmp.Life;
+                    p.Age = 0f;
+                    p.ColorStart = tmp.ColorStart;
+                    p.ColorEnd = tmp.ColorEnd;
+                    p.Color = tmp.ColorStart;
+                    p.StartSize = tmp.StartSize;
+                    p.EndSize = tmp.EndSize;
+                    p.AccStart = tmp.AccStart;
+                    p.AccEnd = tmp.AccEnd;
+                    p.Rotation = 0f;
+                    p.RotationSpeed = tmp.RotationSpeed;
+                    if (Space == SimulationSpace.World) p.Position = LocalToWorld(p.Position);
+                    _active.Add(p);
+                    _acc -= 1f;
+                }
             }
+
             for (int i = _active.Count - 1; i >= 0; i--)
             {
                 var p = _active[i];
@@ -139,6 +159,8 @@ namespace Engine
 
         public void Prewarm(float seconds)
         {
+            if (Rate <= 0f) return;
+
             float elapsed = 0f;
             bool oldLoop = Loop;
             Loop = false;

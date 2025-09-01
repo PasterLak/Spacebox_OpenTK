@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Components;
 using Engine.GUI;
 using Engine.Light;
 using Engine.SceneManagement;
@@ -9,12 +10,12 @@ using Spacebox.Game;
 using Spacebox.Game.Commands;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
-using Spacebox.Game.Player;
-using Spacebox.Game.Resource;
 using Spacebox.Game.GUI;
-using Spacebox.GUI;
+using Spacebox.Game.Player;
 using Spacebox.Game.Player.Interactions;
-using Engine.Components;
+using Spacebox.Game.Resource;
+using Spacebox.GUI;
+
 
 namespace Spacebox.Scenes
 {
@@ -51,7 +52,7 @@ namespace Spacebox.Scenes
         protected PointLight pLight;
         private SpheresPool SpheresPool;
         private FreeCamera freeCamera;
-
+        private World world;
         public void Initialize(SpaceSceneArgs param)
         {
             SceneArgs = param;
@@ -112,7 +113,8 @@ namespace Spacebox.Scenes
 
             World.LoadWorldInfo(SceneArgs.worldName);
             blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.LightAtlas, localPlayer);
-            var world = AttachComponent(new World(localPlayer, blockMaterial));
+             world = new World(localPlayer, blockMaterial);
+            AttachComponent(world);
             world.Load();
             PlayerSaveLoadManager.LoadPlayer(localPlayer, World.Data.WorldFolderPath);
             //CollisionManager.Add(localPlayer);
@@ -136,7 +138,7 @@ namespace Spacebox.Scenes
             PointLightsPool.Instance = new PointLightsPool( 1);
 
 
-            blockDestructionManager = new BlockDestructionManager(localPlayer);
+            blockDestructionManager = new BlockDestructionManager();
 
             if (Settings.Graphics.EffectsEnabled == true)
             localPlayer.AddChild(DustSpawner.CreateDust());
@@ -227,7 +229,10 @@ namespace Spacebox.Scenes
         {
             Time.HandleTicks();
 
+           // localPlayer.Update();
+            
             base.Update();
+           // world.OnUpdate();
 
             blockDestructionManager.Update();
             MainThreadDispatcher.Instance.ExecutePending();
@@ -303,6 +308,9 @@ namespace Spacebox.Scenes
         public override void Render()
         {
             base.Render();
+
+            //localPlayer.Render();
+            //world.OnRender();
             DisposalManager.ProcessDisposals();
 
             PointLightsPool.Instance.Render();

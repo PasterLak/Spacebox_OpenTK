@@ -27,8 +27,12 @@ namespace Engine.SceneManagement
             base.Start();
         }
 
-        public virtual void Update()
+        public override void Update()
         {
+            if(Camera.Main != null)
+            {
+              //  Camera.Main.Update();
+            }
             base.Update();
         }
 

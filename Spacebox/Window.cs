@@ -339,7 +339,7 @@ namespace Spacebox
 
                 base.OnUpdateFrame(e);
                 RenderSpace.BeginFrame();
-                GlobalUniforms.Push();
+               
                 Time.StartUpdate();
                 Time.Update(e);
                 _controller.Update(this, (float)e.Time);
@@ -357,6 +357,7 @@ namespace Spacebox
 
                     SceneManager.Update();
                 }
+                GlobalUniforms.Push();
 
                 Time.EndUpdate();
                 AudioDevice.Instance.Update();
