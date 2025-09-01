@@ -117,7 +117,6 @@ namespace Spacebox.Scenes
             AttachComponent(world);
             world.Load();
             PlayerSaveLoadManager.LoadPlayer(localPlayer, World.Data.WorldFolderPath);
-            //CollisionManager.Add(localPlayer);
 
             AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/spaceBackground.ogg")).Audio.Volume = 0.05f;
 
@@ -180,6 +179,8 @@ namespace Spacebox.Scenes
 
 
             AddChild(new DirectionalLight());
+
+            GameTime.Init();
         }
 
         public override void Start()
@@ -357,7 +358,7 @@ namespace Spacebox.Scenes
             ItemControlsUI.OnGUI();
             WelcomeUI.OnGUI();
             PauseUI.OnGUI();
-
+            
             if (VisualDebug.Enabled)
             {
                 WorldTextDebug.OnGUI();
@@ -391,6 +392,8 @@ namespace Spacebox.Scenes
             SpheresPool.Dispose();
             InteractionPlaceBlock.lineRenderer = null;
             InteractionDestroyBlockSurvival.BlockMiningEffect = null;
+
+            GameTime.Dispose();
         }
 
 
