@@ -106,6 +106,7 @@ namespace Spacebox.Game.Player
                 }
 
                 player.Position = new Vector3(data.PositionX, data.PositionY, data.PositionZ);
+                player.SpawnPosition = player.Position;
                 Quaternion loadedRotation = new Quaternion(data.RotationX, data.RotationY, data.RotationZ, data.RotationW);
 
                 player.SetRotation(loadedRotation);

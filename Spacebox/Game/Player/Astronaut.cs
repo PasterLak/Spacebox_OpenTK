@@ -1,25 +1,21 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
-using Engine.Audio;
 using Engine.Physics;
 
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Engine;
 using Spacebox.GUI;
-using System.Xml.Linq;
 using Engine.Components;
-using Engine.Utils;
 using Spacebox.Game.Player.Interactions;
-using Engine.Light;
 
 
 namespace Spacebox.Game.Player
 {
     public class Astronaut : Camera360Base
     {
-        
+
         public Inventory Inventory { get; private set; }
         public Storage Panel { get; private set; }
 
@@ -50,13 +46,14 @@ namespace Spacebox.Game.Player
         public Flashlight Flashlight { get; private set; }
 
         public HitImage HitImage { get; private set; }
-
-        private AudioSource useConsumableAudio;
+        public DeathScreen DeathScreen { get; private set; } = new DeathScreen();
         public HealthBar HealthBar { get; private set; }
         public PowerBar PowerBar { get; private set; }
         private GameModeBase _gameModeBase;
         private GameMode _gameMode => _gameModeBase.GetGameMode();
         public InteractionMode CurrentInteraction => _gameModeBase.InteractionHandler.Interaction;
+
+        public Vector3 SpawnPosition { get;  set; }
 
         public GameMode GameMode
         {
@@ -78,13 +75,13 @@ namespace Spacebox.Game.Player
             : base(position)
         {
             FOV = Settings.Graphics.Fov;
-            
+            SpawnPosition = position;
             Name = "Player";
             DepthNear = 0.01f;
             DepthFar = Settings.ViewDistance;
             base.Name = Name;
             Layer = CollisionLayer.Player;
-         
+
             HealthBar = new HealthBar();
             PowerBar = new PowerBar();
 
@@ -94,7 +91,7 @@ namespace Spacebox.Game.Player
             Flashlight = new Flashlight();
 
             AddChild(Flashlight);
-            Flashlight.Position = new Vector3(0,0,-0.3f);
+            Flashlight.Position = new Vector3(0, 0, -0.3f);
             Flashlight.Rotation = Vector3.Zero;
 
 
@@ -104,18 +101,18 @@ namespace Spacebox.Game.Player
             toggle = ToggleManager.Register("player");
             toggle.OnStateChanged += state =>
             {
-              
+
                 needResetNextFrame = state;
                 _canMove = state;
             };
 
-             itemInHand = AddChild(new ItemWorldModel("Resources/Textures/Old/drill6.png", 0.1f));
+            itemInHand = AddChild(new ItemWorldModel("Resources/Textures/Old/drill6.png", 0.1f));
             itemInHand.Rotate(new Vector3(10, 90, -10));
             itemInHand.SetScale(0.6f);
             itemInHand.Position = new Vector3(0.35f, -0.47f, -0.25f);
 
-            Flashlight.CutOff = 15;
-            Flashlight.OuterCutOff = 20;
+            Flashlight.CutOff = 25;
+            Flashlight.OuterCutOff = 45;
 
 
             /*var point = AddChild(new PointLight());
@@ -123,6 +120,8 @@ namespace Spacebox.Game.Player
             point.Diffuse = new Vector3(56, 204, 209);
             point.Intensity = 0.25f;
             point.Range = 5;*/
+
+            DeathScreen.OnRespawn += Revive;
 
         }
 
@@ -138,7 +137,7 @@ namespace Spacebox.Game.Player
         private void SetData()
         {
 
-            Inventory = new Inventory(8, 4);
+            Inventory = new Inventory(8, 3);
             Panel = new Storage(1, 10);
             BoundingVolume = new BoundingSphere(Position, 0.4f);
             Inventory.Name = "Inventory";
@@ -161,10 +160,10 @@ namespace Spacebox.Game.Player
             node.AttachComponent(new SphereCollider());
         
             AddChild(node);*/
-          
+
 
         }
-        Node3D node; 
+        Node3D node;
         private void SetGameMode(GameMode mode)
         {
             if (_gameModeBase != null)
@@ -183,7 +182,7 @@ namespace Spacebox.Game.Player
                     _gameModeBase = new SpectatorMode(this);
                     break;
             }
-          
+
             _gameModeBase.OnEnable();
             PanelUI.ResetLastSelected();
             PanelUI.SetSelectedSlot(0);
@@ -202,7 +201,7 @@ namespace Spacebox.Game.Player
                 tex = Resources.Load<Texture2D>(texturePath);
                 tex.FlipY();
                 tex.FilterMode = FilterMode.Nearest;
-             
+
                 astronautTextures[color] = tex;
             }
             return tex;
@@ -216,7 +215,7 @@ namespace Spacebox.Game.Player
             int index = Math.Abs(id) % colors.Length;
             var selectedColor = colors[index];
             Texture2D tex = GetAstronautTexture(selectedColor);
-            var mat = new TextureMaterial( tex);
+            var mat = new TextureMaterial(tex);
 
             var mesh1 = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Body_Fly.obj");
             var mesh2 = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Helmet_Closed.obj");
@@ -236,7 +235,7 @@ namespace Spacebox.Game.Player
 
             itemInHand.Enabled = !IsMain;
 
-          
+
             base.Update();
 
 
@@ -260,17 +259,24 @@ namespace Spacebox.Game.Player
                 VisualDebug.ViewMatrix = GetViewMatrix();
             }
 
+            if (Input.IsKeyDown(Keys.Z))
+            {
+                if (!DeathScreen.IsVisible)
+                    DeathScreen.Show();
+                else DeathScreen.Hide();
+            }
 
 
             _gameModeBase.UpdateInteraction(this);
             _gameModeBase.Update(this);
 
             HitImage.Update();
+            DeathScreen.Update();
 
             if (!IsMain) return;
             _gameModeBase.HandleInput(this);
 
-            
+
             if (!CanMove) return;
 
             if (Input.IsMouseButton(MouseButton.Middle))
@@ -326,7 +332,7 @@ namespace Spacebox.Game.Player
 
         public static Vector3 QuaternionToEulerDegrees(Quaternion q)
         {
-          
+
             Vector3 eulerRad = q.ToEulerAngles();
 
             float xDegrees = eulerRad.X * (180f / (float)Math.PI);
@@ -362,7 +368,47 @@ namespace Spacebox.Game.Player
             }
         }
 
-   
+        public void TakeDamage(int damage)
+        {
+
+            var health = HealthBar.StatsData;
+            health.Decrement(damage);
+            if(health.Count > 0)
+            {
+                HealthColorOverlay.SetActive(new System.Numerics.Vector3(1, 0, 0), 0.1f + 1 / (10 - Math.Min(damage, 6)));
+                HitImage.Show();
+            }
+            else
+            {
+                _canMove = false;
+                PanelUI.IsVisible = false;
+                PanelUI.IsItemModelVisible = false;
+                Input.ShowCursor();
+                Flashlight.Enabled = false;
+                HealthBar.StatsGUI.IsVisible = false;
+                PowerBar.StatsGUI.IsVisible = false;
+                DeathScreen.Show();
+            }
+        }
+
+        public void Revive()
+        {
+            var health = HealthBar.StatsData;
+            var power = PowerBar.StatsData;
+            health.Count = health.MaxCount;
+            power.Count = power.MaxCount;
+            PanelUI.IsVisible = true;
+            PanelUI.IsItemModelVisible = true;
+            Input.HideCursor();
+            Flashlight.Enabled = true;
+            ResetMousePosition();
+            HealthBar.StatsGUI.IsVisible = true;
+            PowerBar.StatsGUI.IsVisible = true;
+            Position = SpawnPosition;
+            _canMove = true;
+          
+        }
+
         public void SetInteraction(InteractionMode mode)
         {
             if (_gameModeBase == null) return;
@@ -372,7 +418,7 @@ namespace Spacebox.Game.Player
 
         public override void Render()
         {
-          
+
             base.Render();
 
             if (VisualDebug.Enabled)
@@ -385,13 +431,17 @@ namespace Spacebox.Game.Player
             {
                 _gameModeBase.Render(this);
             }
+
+
         }
 
-         public void OnGUI()
+        public void OnGUI()
         {
             PowerBar.OnGUI();
             HealthBar.OnGUI();
             HitImage.Draw();
+
+            DeathScreen.Render();
 
         }
     }

@@ -298,8 +298,6 @@ public class MovementMode : GameModeBase
         }
     }
 
-    const byte damageMultiplayer = 5;
-
     private bool ApplyVelocityDamage(float speed, Astronaut player, CollideInfo collideInfo)
     {
         /*if (collideInfo.normal != Vector3SByte.Zero)
@@ -329,15 +327,13 @@ public class MovementMode : GameModeBase
             wallhitAudio.Volume = MathHelper.Min(wallhitAudio.Volume + speed * 0.07f, 1);
             wallhitAudio.Play();
         }
-        else if (speed > 9)
+        else if (speed > 8)
         {
             wallhitAudio2.Volume = MathHelper.Min(0 + speed * 0.1f, 1);
             wallhitAudio2.Play();
 
             int damage = (int)(Math.Abs(speed) - 10f);
             if (damage == 0) { damage = 1; }
-            //if(GetGameMode() != GameMode.Spectator)
-
 
             if (damage >= 3)
             {
@@ -358,22 +354,10 @@ public class MovementMode : GameModeBase
                 }
             }
 
-            player.HealthBar.StatsData.Decrement(damage * damageMultiplayer);
-            HealthColorOverlay.SetActive(new System.Numerics.Vector3(1, 0, 0), 0.1f + 1 / (10 - damage));
-            player.HitImage.Show();
 
-            if (damage > 5)
-            {
-              /*  BaseSpaceScene.DeathOn = false;
-                flySpeedUpAudio.Stop();
-                BlackScreenOverlay.IsEnabled = true;
-                ToggleManager.SetState("player", false);
-                Settings.ShowInterface = false;
-
-                OldSpaceScene.Death.Play();
-                OldSpaceScene.DeathOn = true;*/
-            }
-
+            int dmg = (int)(MathF.Max((MathF.Pow(speed - 8, 2.2f) * 0.5f), 1));
+           
+            player.TakeDamage(dmg) ;
 
         }
 

@@ -16,7 +16,12 @@ namespace Spacebox.Game
         public override string ToString()
         {
             if(Item == null) return string.Empty;
-            return "x"+ Quantity + " " + Item.Name;
+            var name = Item.Name;
+
+            var prefix = (name != "$health" ? "x" : "");
+
+            if (name == "$health") name = "Health";
+            return prefix + Quantity + " " + name;
         }
     }
     public class Product

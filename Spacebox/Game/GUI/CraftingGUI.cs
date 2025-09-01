@@ -36,9 +36,7 @@ namespace Spacebox.Game.GUI
                 _isVisible = value;
                 if (_isVisible)
                 {
-
-
-                    openSound?.Play();
+                     openSound?.Play();
 
                 }
                 else
@@ -65,15 +63,16 @@ namespace Spacebox.Game.GUI
         private static AudioSource closeSound;
 
         private static int ColumnsOfItems;
-
+        private static Astronaut currentPlayer;
 
         public static void Toggle(Astronaut player)
         {
             var v = !IsVisible;
-            ToggleManager.DisableAllWindows();
+            ToggleManager.DisableAllWindows(); 
 
             if (v)
             {
+                currentPlayer = player;
                 ToggleManager.SetState("crafting", true);
                 ToggleManager.SetState("mouse", true);
                 ToggleManager.SetState("player", false);
@@ -83,6 +82,7 @@ namespace Spacebox.Game.GUI
             }
             else
             {
+                currentPlayer = null;
                 ToggleManager.SetState("mouse", false);
                 ToggleManager.SetState("player", true);
             }
@@ -296,7 +296,6 @@ namespace Spacebox.Game.GUI
                 else
                 {
                     Panel.TryAddItem(blueprint.Product.Item, rest);
-                    // Debug.Log("Error try add item");
                 }
             }
             else
@@ -309,17 +308,62 @@ namespace Spacebox.Game.GUI
         {
             foreach (var ing in blueprint.Ingredients)
             {
-                int totalAvailable = s1.GetTotalCountOf(ing.Item) + s2.GetTotalCountOf(ing.Item);
+                int totalAvailable = 0;
+                if(ing.Item.Name == "$health")
+                {
+                    if (currentPlayer != null)
+                    {
+                        if(currentPlayer.HealthBar.StatsData.Count > ing.Quantity)
+                        {
+                            continue;
+                        }
+                        else return false;
+                    }
+                    else
+                    {
+                        Debug.Error("[Craft] Current player is null!");
+                        return false;
+                    }
+                }
+                else
+                {
+                    totalAvailable = s1.GetTotalCountOf(ing.Item) + s2.GetTotalCountOf(ing.Item);
+                }
                 if (totalAvailable < ing.Quantity)
                     return false;
             }
             foreach (var ing in blueprint.Ingredients)
             {
                 int required = ing.Quantity;
-                int availableS1 = s1.GetTotalCountOf(ing.Item);
+                int availableS1 = 0;
+
+                if(ing.Item.Name == "$health")
+                {
+                    if (currentPlayer != null)
+                    {
+                        var hp = currentPlayer.HealthBar.StatsData.Count;
+                        if (hp > required)
+                        {
+    
+                            currentPlayer.TakeDamage(required);
+                            continue;
+                        }
+                        else return false;
+                    }
+                    else
+                    {
+                        Debug.Error("[Craft] Current player is null!");
+                        return false;
+                    }
+                }
+
+                    availableS1 = s1.GetTotalCountOf(ing.Item);
+                
+
                 if (availableS1 >= required)
                 {
-                    s1.RemoveItem(ing.Item, (byte)required);
+                    
+                        s1.RemoveItem(ing.Item, (byte)required);
                     continue;
                 }
                 else
@@ -364,13 +408,6 @@ namespace Spacebox.Game.GUI
             //ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(1, 0, 0, 0));
             ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1, 0, 0, 0));
 
-            //drawList.AddRectFilled(buttonPos - offset, buttonPos + new Vector2(width, height) + offset, borderColor);
-            //drawList.AddRectFilled(buttonPos, buttonPos + new Vector2(width, height) + offset, lightColor);
-
-            //drawList.AddRectFilled(buttonPos, buttonPos + new Vector2(width, height) , lightColor);
-            //drawList.AddImage(SlotTexture, buttonPos, buttonPos + new Vector2(width, height) );
-
-
             var itemData = category[selectedButton].Items[slotId];
 
             label = itemData.item.Name;
@@ -394,7 +431,19 @@ namespace Spacebox.Game.GUI
             {
                 foreach (var ing in itemData.blueprint.Ingredients)
                 {
-                    if (Inventory.HasItem(ing.Item, ing.Quantity))
+                    if(ing.Item.Name == "$health")
+                    {
+                       if(currentPlayer != null && currentPlayer.HealthBar.StatsData.Count > ing.Quantity)
+                        {
+                            
+                        }
+                        else
+                        {
+                            canCraft = false;
+                            break;
+                        }
+                    }
+                    else if (Inventory.HasItem(ing.Item, ing.Quantity))
                     {
 
                     }
@@ -437,10 +486,6 @@ namespace Spacebox.Game.GUI
 
 
                 }
-                // drawList.AddRectFilled( buttonPos + offset, buttonPos + new Vector2(width, height) - offset, ImGui.GetColorU32(new Vector4(0f, 0.7f, 0f, 0.1f)));
-                // else
-                //    drawList.AddRectFilled(buttonPos + offset, buttonPos + new Vector2(width, height) - offset, ImGui.GetColorU32(new Vector4(0.7f, 0f, 0f, 0.1f)));
-
 
             }
 
@@ -461,7 +506,23 @@ namespace Spacebox.Game.GUI
 
             for (int i = 0; i < r.Length; i++)
             {
-                r[i] = Inventory.GetTotalCountOf(blueprint.Ingredients[i].Item) + Panel.GetTotalCountOf(blueprint.Ingredients[i].Item);
+                r[i] = 0;
+
+                if(blueprint.Ingredients[i].Item.Name == "$health")
+                {
+                    if (currentPlayer != null)
+                        r[i] = currentPlayer.HealthBar.StatsData.Count;
+                    else
+                    {
+                        Debug.Error("[Craft] Current player is null!");
+                        r[i] = 0;
+                    }
+                       
+                }
+                else
+                {
+                    r[i] = Inventory.GetTotalCountOf(blueprint.Ingredients[i].Item) + Panel.GetTotalCountOf(blueprint.Ingredients[i].Item);
+                }
                 r[i] = r[i] / blueprint.Ingredients[i].Quantity;
 
                 if (r[i] < min) min = r[i];
@@ -490,6 +551,7 @@ namespace Spacebox.Game.GUI
 
         private static void DrawHoverImage(ImGuiNET.ImDrawListPtr list, CraftingCategory.Data itemData, Vector2 buttonPos, Vector2 offset, float width, float height)
         {
+           
             var startPos = buttonPos + offset;
             var endPos = buttonPos + new Vector2(width, height) - offset;
             list.AddImage(itemData.item.IconTextureId, startPos, endPos);
@@ -545,7 +607,8 @@ namespace Spacebox.Game.GUI
             if (!string.IsNullOrWhiteSpace(desc))
             {
                
-               InventoryUIHelper. DrawWrappedText(desc, 50, false);
+               InventoryUIHelper.DrawWrappedText(desc, 50, false);
+                ImGui.NewLine();
               
             }
         }
@@ -554,14 +617,32 @@ namespace Spacebox.Game.GUI
         {
             foreach (var ingredient in ingredients)
             {
-                var availableCount = Inventory.GetTotalCountOf(ingredient.Item) + Panel.GetTotalCountOf(ingredient.Item);
+                int availableCount;
+
+                if(ingredient.Item.Name == "$health")
+                {
+                    if (currentPlayer != null)
+                        availableCount = currentPlayer.HealthBar.StatsData.Count;
+                    else
+                        availableCount = 0;
+                }
+                else
+                {
+                    availableCount = Inventory.GetTotalCountOf(ingredient.Item) + Panel.GetTotalCountOf(ingredient.Item);
+                }
+
+
                 var iconSize = new Vector2(1, 1) * (height / 2.8f);
                 var textColor = availableCount >= ingredient.Quantity
                     ? new Vector4(0, 1, 0, 1)
                     : new Vector4(1, 0, 0, 1);
 
-                ImGui.Image(ingredient.Item.IconTextureId, iconSize);
-                ImGui.SameLine();
+                if(ingredient.Item.IconTextureId != IntPtr.Zero)
+                {
+                    ImGui.Image(ingredient.Item.IconTextureId, iconSize);
+                    ImGui.SameLine();
+                }
+                
                 ImGui.TextColored(textColor, ingredient.ToString());
             }
         }

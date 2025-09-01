@@ -13,23 +13,47 @@ namespace Engine
         private int _count;
         public ParticleMaterial Material;
         private int _maxParticles;
+        private bool _flipX;
+        private bool _flipY;
+
         public ParticleRenderer(ParticleMaterial material, int maxParticles)
         {
             Material = material;
             _quad = new MeshBuffer(new[] { new BufferAttribute("aPos", 3), new BufferAttribute("aUV", 2) });
-            float[] v = {
-        -0.5f, -0.5f, 0, 0, 0,
-         0.5f, -0.5f, 0, 1, 0,
-         0.5f,  0.5f, 0, 1, 1,
-        -0.5f,  0.5f, 0, 0, 1
-    };
-            uint[] i = { 0, 1, 2, 2, 3, 0 };
-            _quad.BindBuffer(ref v, ref i);
-            _quad.SetAttributes();
+            UpdateQuadUV();
             _instVbo = GL.GenBuffer();
             GL.BindVertexArray(_quad.VAO);
             Rebuild(maxParticles);
             GL.BindVertexArray(0);
+        }
+
+        private void UpdateQuadUV()
+        {
+            float u0 = _flipX ? 1f : 0f;
+            float u1 = _flipX ? 0f : 1f;
+            float v0 = _flipY ? 1f : 0f;
+            float v1 = _flipY ? 0f : 1f;
+
+            float[] v = {
+                -0.5f, -0.5f, 0, u0, v0,
+                 0.5f, -0.5f, 0, u1, v0,
+                 0.5f,  0.5f, 0, u1, v1,
+                -0.5f,  0.5f, 0, u0, v1
+            };
+
+            uint[] i = { 0, 1, 2, 2, 3, 0 };
+            _quad.BindBuffer(ref v, ref i);
+            _quad.SetAttributes();
+        }
+
+        public void SetFlip(bool flipX, bool flipY)
+        {
+            if (_flipX != flipX || _flipY != flipY)
+            {
+                _flipX = flipX;
+                _flipY = flipY;
+                UpdateQuadUV();
+            }
         }
 
         public void Rebuild(int maxParticles)

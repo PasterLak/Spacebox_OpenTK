@@ -10,7 +10,7 @@ namespace Spacebox.Game.Player
 {
     public class Flashlight : SpotLight
     {
-  
+
         private AudioSource audio;
         private Toggi toggle;
         public Flashlight()
@@ -18,7 +18,7 @@ namespace Spacebox.Game.Player
             GetDirectionFromNode = true;
             Direction = -Vector3.UnitZ;
             Name = "Flashlight";
-            Specular = new Vector3 (0.5f);
+            Specular = new Vector3(0.5f);
             var clip = Engine.Resources.Load<AudioClip>("Resources/Audio/flashlight.ogg");
             audio = new AudioSource(clip);
             audio.Volume = 0.5f;
@@ -34,10 +34,13 @@ namespace Spacebox.Game.Player
 
 
             toggle = ToggleManager.Register("flashlight");
-            toggle.OnStateChanged += state => 
+            toggle.OnStateChanged += state =>
             {
-                Enabled = state; 
+                Enabled = state;
             };
+
+            this.Diffuse = new Color3Byte(255,245,128).ToVector3();
+            this.Specular = new Color3Byte(0,0,0).ToVector3();
 
             // use:
             //ToggleManager.SetState("flashlight", true);

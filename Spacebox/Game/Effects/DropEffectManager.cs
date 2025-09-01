@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿
 using OpenTK.Mathematics;
 using Engine;
 using Engine.Audio;
@@ -99,17 +99,12 @@ namespace Spacebox.Game.Effects
 
             SortEffectsByDistanceDescending();
 
-            //GL.Enable(EnableCap.Blend);
-           // GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-           // GL.DepthMask(false);
 
             foreach (var effect in activeEffects)
             {
                 effect.Render();
             }
 
-          //  GL.DepthMask(true);
-           // GL.Disable(EnableCap.Blend);
         }
 
         private void SortEffectsByDistanceDescending()

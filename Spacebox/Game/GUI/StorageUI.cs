@@ -1,14 +1,14 @@
-﻿using System.Numerics;
-using System.Text;
+﻿using Engine;
+using Engine.Audio;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Engine;
-using Engine.Audio;
-
-using Spacebox.Game.Player;
-using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.GUI.Menu;
+using Spacebox.Game.Player;
+using Spacebox.Game.Resource;
 using Spacebox.GUI;
+using System.Numerics;
+using System.Text;
 
 namespace Spacebox.Game.GUI
 {
@@ -166,17 +166,28 @@ namespace Spacebox.Game.GUI
                 {
                     StartNameEdit();
                 }
+
+                if(ImGui.IsItemHovered())
+                {
+                    ImGui.BeginTooltip();
+
+                    ImGui.Text("Rename");
+
+                    ImGui.EndTooltip();
+                }
+               
             }
             else
             {
                 float buttonWidth = ImGui.CalcTextSize("Save").X + style.FramePadding.X * 2;
-                ImGui.SetNextItemWidth(windowWidth - buttonWidth - padding * 3);
+                ImGui.SetNextItemWidth(windowWidth - buttonWidth - windowWidth/2f);
                 bool enterPressed = ImGui.InputText("##storageName", buffer, (uint)buffer.Length, ImGuiInputTextFlags.EnterReturnsTrue);
                 ImGui.SameLine();
                 if (ImGui.SmallButton("Save") || enterPressed)
                 {
                     SaveName();
                 }
+                
             }
             ImGui.SameLine();
             InventoryUIHelper.SortStorageButtons(windowWidth, padding, Storage);

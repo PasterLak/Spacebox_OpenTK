@@ -40,6 +40,8 @@ namespace Engine
         public int ParticlesCount => _active.Count;
         private readonly ParticleRenderer _renderer;
 
+        public ParticleRenderer Renderer => _renderer;
+
         public ParticleMaterial Material
         {
             get => _renderer.Material;
@@ -47,8 +49,6 @@ namespace Engine
             {
                 _renderer.Material = value;
             }
-        
-           
         }
 
         public ParticleSystem(ParticleMaterial material, EmitterBase emitter)

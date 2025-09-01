@@ -43,6 +43,7 @@ public abstract class InteractionDestroyBlock : InteractionMode
         var x = hit.chunk.PositionIndex * Chunk.Size;
         var localPos = new Vector3(x.X + hit.blockPositionIndex.X, x.Y + hit.blockPositionIndex.Y, x.Z + hit.blockPositionIndex.Z);
         ClientNetwork.Instance?.SendBlockDestroyed((short)localPos.X, (short)localPos.Y, (short)localPos.Z);
+       
         if (blockDestroy != null)
         {
             PickDestroySound(hit.block.BlockId);

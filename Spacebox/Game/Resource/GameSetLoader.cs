@@ -416,9 +416,9 @@ namespace Spacebox.Game.Resource
                             break;
                     }
 
-                    if(registeredItem != null)
+                    if (registeredItem != null)
                     {
-                       if(itemElement.TryGetProperty("Description", out var v))
+                        if (itemElement.TryGetProperty("Description", out var v))
                         {
                             registeredItem.Description = v.GetString();
                         }
@@ -613,19 +613,34 @@ namespace Spacebox.Game.Resource
                 Product product;
                 Blueprint blueprint = new Blueprint();
 
-                var item = GameAssets.GetItemByName(e.Product.Item);
+                Item? item = null;
+
+                item = GameAssets.GetItemByName(e.Product.Item);
 
                 if (item == null)
                 {
                     Debug.Error($"[GameSetLoader] [Blueprints]: Product was not found - {e.Product.Item} . This Blueprint was skipped");
                     continue;
+
                 }
                 product = new Product(item, (byte)e.Product.Quantity);
 
                 bool craftItself = false;
                 foreach (var ing in e.Ingredients)
                 {
-                    var item2 = GameAssets.GetItemByName(ing.Item);
+                    Item? item2 = null;
+
+                    if (ing.Item.ToLower() == "$health".ToLower())
+                    {
+                        item2 = new Item(255, "$health", 0.5f);
+                        item2.IconTextureId = IntPtr.Zero;
+                       
+                    }
+                    else
+                    {
+                        item2 = GameAssets.GetItemByName(ing.Item);
+                    }
+
                     if (item2 == null)
                     {
                         Debug.Error($"[GameSetLoader] [Blueprints]: Ingredient was not found - {ing.Item} . This Ingredient was skipped");
@@ -721,8 +736,9 @@ namespace Spacebox.Game.Resource
                 data.ModelDepth)
             {
                 Power = data.Power,
+                PowerUsage = (byte)data.PowerUsage,
                 Category = data.Category,
-                
+
                 DrillColor = data.DrillColor,
             };
             GameAssetsRegister.RegisterItem(drillItem, data.Sprite);
@@ -782,7 +798,7 @@ namespace Spacebox.Game.Resource
             var item = new Item(
                 (byte)data.MaxStack,
                 data.Name,
-               
+
                 data.ModelDepth);
             item.Category = data.Category;
             GameAssetsRegister.RegisterItem(item, data.Sprite);
@@ -819,7 +835,7 @@ namespace Spacebox.Game.Resource
                     if (Path.GetFileNameWithoutExtension(file).Equals("lighting", StringComparison.OrdinalIgnoreCase))
                     {
                         LoadLighting(optionalPath);
-                        
+
                     }
                 }
             }

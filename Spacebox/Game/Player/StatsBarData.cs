@@ -9,6 +9,8 @@ namespace Spacebox.Game.Player
         public string Name { get; set; } = "Default";
 
         public event Action DataChanged;
+        public event Action OnDecrement;
+        public event Action OnIncrement;
         public event Action OnEqualZero;
 
         public bool IsMaxReached => Count >= MaxCount;
@@ -22,6 +24,7 @@ namespace Spacebox.Game.Player
 
             Count = Math.Min(Count + amount, MaxCount);
             DataChanged?.Invoke();
+            OnIncrement?.Invoke();
         }
 
         public void Decrement(int amount)
@@ -36,6 +39,7 @@ namespace Spacebox.Game.Player
             }
 
             DataChanged?.Invoke();
+            OnDecrement?.Invoke();
         }
     }
 }

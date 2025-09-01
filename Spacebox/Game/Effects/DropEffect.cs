@@ -2,6 +2,7 @@
 using Engine;
 using Spacebox.Game.Player;
 using Spacebox.Game.Generation.Blocks;
+using Engine.Light;
 
 namespace Spacebox.Game.Effects
 {
@@ -66,13 +67,11 @@ namespace Spacebox.Game.Effects
                 StartSizeMax = 0.2f,
                 EndSizeMin = 0.2f,
                 EndSizeMax = 0.2f,
-                ColorStart = new Vector4(1f, 1f, 1f, 1f),
-                ColorEnd = new Vector4(1f, 1f, 1f, 1f),
-            
+                ColorStart = new Vector4(1f),
+                ColorEnd = new Vector4( 1f),
+
                 SpeedMin = 0,
                 SpeedMax = 0,
-                
-
             };
 
 
@@ -86,6 +85,7 @@ namespace Spacebox.Game.Effects
             ParticleSystem.Max = 1;
             ParticleSystem.Space = SimulationSpace.Local;
 
+            ParticleSystem.Renderer.SetFlip(false,true);
         }
 
         public void Update()

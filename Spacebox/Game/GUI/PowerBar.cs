@@ -10,7 +10,7 @@ namespace Spacebox.GUI
     public class PowerBar
     {
         public StatsBarData StatsData { get; private set; }
-        private StatsGUI _statsGUI;
+        public StatsGUI StatsGUI { get; set; }
 
         private float timeToDecrement = 1f;
         private float time;
@@ -23,7 +23,7 @@ namespace Spacebox.GUI
                 Name = "Power"
             };
 
-            _statsGUI = new StatsGUI(StatsData)
+            StatsGUI = new StatsGUI(StatsData)
             {
                 FillColor = new Vector4(0.0f, 0.0f, 1.0f, 1.0f),
                 BackgroundColor = new Vector4(0.2f, 0.2f, 0.2f, 1.0f),
@@ -33,9 +33,9 @@ namespace Spacebox.GUI
                 Anchor = Anchor.Bottom,
                 WindowName = "PowerBar"
             };
-            _statsGUI.ShowText = true;
+            StatsGUI.ShowText = true;
             time = timeToDecrement * 0.5f;
-            _statsGUI.OnResized(Window.Instance.Size);
+            StatsGUI.OnResized(Window.Instance.Size);
         }
 
         bool isRunning = false;
@@ -79,7 +79,7 @@ namespace Spacebox.GUI
 
         public void OnGUI()
         {
-            _statsGUI.OnGUI();
+            StatsGUI.OnGUI();
         }
     }
 

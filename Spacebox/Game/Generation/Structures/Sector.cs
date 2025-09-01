@@ -198,6 +198,7 @@ namespace Spacebox.Game.Generation
             if (Entities.Count == 0) return;
 
             PlacePlayerRandomInSector(player, random);
+            player.SpawnPosition = player.Position;
             return;
 
             var asteroidID = random.Next(0, Entities.Count);

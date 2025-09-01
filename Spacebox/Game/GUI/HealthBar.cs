@@ -8,7 +8,7 @@ namespace Spacebox.GUI
     public class HealthBar
     {
         public StatsBarData StatsData { get; private set; }
-        private StatsGUI _statsGUI;
+        public StatsGUI StatsGUI { get; set; }
         private float timeToDecrement = 20f;
         private float _time;
         public HealthBar()
@@ -20,7 +20,7 @@ namespace Spacebox.GUI
                 Name = "Health"
             };
 
-            _statsGUI = new StatsGUI(StatsData)
+            StatsGUI = new StatsGUI(StatsData)
             {
                 FillColor = new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
                 BackgroundColor = new Vector4(0.2f, 0.2f, 0.2f, 1.0f),
@@ -30,8 +30,8 @@ namespace Spacebox.GUI
                 Anchor = Anchor.Bottom,
                 WindowName = "HealthBar"
                 
-            }; _statsGUI.ShowText = true;
-            _statsGUI.OnResized(Window.Instance.Size);
+            }; StatsGUI.ShowText = true;
+            StatsGUI.OnResized(Window.Instance.Size);
         }
 
 
@@ -52,7 +52,7 @@ namespace Spacebox.GUI
 
         public void OnGUI()
         {
-            _statsGUI.OnGUI();
+            StatsGUI.OnGUI();
         }
     }
 }

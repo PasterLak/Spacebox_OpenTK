@@ -8,6 +8,7 @@
         "Category": "drills",
         "Sprite": "drill1",
         "MaxStack": 1,
+        "PowerUsage": 5,
         "ModelDepth": 2,
         "Power": 1,
         "DrillColor": {
@@ -24,6 +25,7 @@
         "Category": "drills",
         "Sprite": "drill2",
         "MaxStack": 1,
+        "PowerUsage": 5,
         "ModelDepth": 2,
         "Power": 2,
         "DrillColor": {
@@ -40,6 +42,7 @@
         "Category": "drills",
         "Sprite": "drill3",
         "MaxStack": 1,
+        "PowerUsage": 6,
         "ModelDepth": 2,
         "Power": 3,
         "DrillColor": {
@@ -56,6 +59,7 @@
         "Category": "drills",
         "Sprite": "drill4",
         "MaxStack": 1,
+        "PowerUsage": 8,
         "ModelDepth": 4,
         "Power": 4,
         "DrillColor": {
@@ -72,6 +76,7 @@
         "Category": "drills",
         "Sprite": "drill5",
         "MaxStack": 1,
+        "PowerUsage": 4,
         "ModelDepth": 3,
         "Power": 5,
         "DrillColor": {
@@ -88,6 +93,7 @@
         "Category": "drills",
         "Sprite": "drill6",
         "MaxStack": 1,
+        "PowerUsage": 0,
         "ModelDepth": 3,
         "Power": 6,
         "DrillColor": {
@@ -176,12 +182,12 @@
         "Sprite": "weapon4",
         "MaxStack": 1,
         "ModelDepth": 3,
-        "ReloadTime": 40,
-        "Spread": 5,
+        "ReloadTime": 45,
+        "Spread": 7,
         "Pushback": 30,
         "PlayerPushbackForce": 30,
         "AnimationSpeed": 0.25,
-        "PowerUsage": 35,
+        "PowerUsage": 30,
         "Projectile": "arProjectile",
         "ShotSound": "ar"
     },

@@ -105,7 +105,7 @@ namespace Spacebox.Game.GUI
 
             if (!ImGui.IsItemActive() && ImGui.IsItemHovered())
             {
-                // Debug.Log("Right released!");
+                IsDragging = false;
             }
 
 
@@ -258,7 +258,7 @@ namespace Spacebox.Game.GUI
                     var desc = slot.Item.Description;
                     if (!string.IsNullOrWhiteSpace(desc))
                     {
-                        text += desc;
+                        text += "\n" + desc + "\n";
                     }
                 }
 
@@ -266,6 +266,7 @@ namespace Spacebox.Game.GUI
                 {
                     if (slot.Item.StackSize > 1)
                     {
+                        text += "\nID: " + slot.Item.Id;
                         text += "\nStack: " + slot.Item.StackSize;
                     }
                 }
@@ -274,6 +275,7 @@ namespace Spacebox.Game.GUI
                 {
                     var itemType = slot.Item as DrillItem;
                     text += "\nPower: " + itemType.Power;
+                    text += "\nPower usage: " + itemType.PowerUsage;
                 }
                 else if (type == typeof(WeaponItem))
                 {
@@ -283,9 +285,12 @@ namespace Spacebox.Game.GUI
 
                     text += "\nDamage: " + $"{+pj.Damage}/{+pj.DamageBlocks}";
                     text += "\nProjectile speed: " + pj.Speed;
-                    text += "\nReload time: " + itemType.ReloadTime;
+                    text += $"\nReload time: {itemType.ReloadTime / 20f:0.0}s.";
+                    text += "\nSpread: " + itemType.Spread;
                     text += "\nPower usage: " + itemType.PowerUsage;
-                    text += "\nDPM: " + pj.Damage * (1200/itemType.ReloadTime);
+
+                    var shotsMin = (1200 / itemType.ReloadTime);
+                    text += "\nDPM: " + $"{pj.Damage * shotsMin}/{pj.DamageBlocks * shotsMin}";
                 }
                 else if (type == typeof(BlockItem))
                 {

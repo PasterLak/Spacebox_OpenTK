@@ -25,6 +25,7 @@ namespace Spacebox.Game.GUI
     }
     public class StatsGUI
     {
+        public bool IsVisible { get; set; } = true;
         public StatsBarData StatsData { get; set; }
         private Vector2 _size { get; set; } = new Vector2(200, 50);
         private Vector2 _position { get; set; } = new Vector2(0, 0);
@@ -64,6 +65,7 @@ namespace Spacebox.Game.GUI
         
         public void OnGUI()
         {
+            if(!IsVisible) return;
             if (!Settings.ShowInterface) return;
 
           
@@ -116,8 +118,11 @@ namespace Spacebox.Game.GUI
             ImGui.SetNextWindowSize(_size, ImGuiCond.Always);
 
             ImGui.Begin(WindowName, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
-                                         ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoFocusOnAppearing |
+                                         ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoBringToFrontOnFocus 
+                                         | ImGuiWindowFlags.NoFocusOnAppearing |
                                          ImGuiWindowFlags.NoInputs);
+
+            
 
             float fillPercent = (float)StatsData.Count / StatsData.MaxCount;
             fillPercent = Math.Clamp(fillPercent, 0f, 1f);
@@ -128,11 +133,15 @@ namespace Spacebox.Game.GUI
                 ImGui.ColorConvertFloat4ToU32(BackgroundColor)
             );
 
+            
+
             ImGui.GetWindowDrawList().AddRectFilled(
                 basePosition,
                 new Vector2(basePosition.X + _size.X * fillPercent, basePosition.Y + _size.Y),
                 ImGui.ColorConvertFloat4ToU32(FillColor)
             );
+
+            
 
             string text = $"{StatsData.Count}/{StatsData.MaxCount}";
             Vector2 textSize = ImGui.CalcTextSize(text);
@@ -145,6 +154,8 @@ namespace Spacebox.Game.GUI
                 ImGui.ColorConvertFloat4ToU32(TextColor),
                 text
             );
+
+                
             }
             
 

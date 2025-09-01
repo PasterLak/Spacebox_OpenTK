@@ -272,7 +272,8 @@
             "Ingredients": [
                 {"Item": "Med Kit", "Quantity": 1},
                 {"Item": "Water", "Quantity": 1},
-                {"Item": "Glass", "Quantity": 1}
+                {"Item": "Glass", "Quantity": 1},
+                {"Item": "$health", "Quantity": 15 }
             ]
         },
         {
