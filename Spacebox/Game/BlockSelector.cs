@@ -18,33 +18,23 @@ namespace Spacebox.Game
         private Texture2D selectorTexture;
 
         public SimpleBlock SimpleBlock { get; private set; }
-        private CubeRenderer CubeRenderer { get; }
-
-        private Texture2D currentTexture;
 
         private Direction blockDirection = Direction.Up;
-        private Astronaut astronaut;
-        public BlockSelector(Astronaut astronaut) 
+   
+        public BlockSelector()
         {
             Instance = this;
-            this.astronaut = astronaut;
             selectorTexture = Resources.Load<Texture2D>("Resources/Textures/selector.png");
 
             selectorTexture.FilterMode = FilterMode.Nearest;
 
-
-            SimpleBlock = new SimpleBlock(new TextureMaterial(selectorTexture), Vector3.Zero);
+            var material = new TextureMaterial(selectorTexture, Resources.Load<Shader>("Shaders/blockPreview"));
+            //material.RenderMode = RenderMode.Transparent;
+            material.Color = new Color4(1f, 1f, 1f, 1f);
+            SimpleBlock = new SimpleBlock(material, Vector3.Zero);
             SimpleBlock.Scale = new Vector3(1.05f, 1.05f, 1.05f);
 
-            CubeRenderer = new CubeRenderer(Vector3.Zero, TextureMaterial.GetMeshBuffer());
-            CubeRenderer.Material = new TextureMaterial(selectorTexture);
-          
-            CubeRenderer.Scale = new Vector3(1.05f, 1.05f, 1.05f);
-            CubeRenderer.Color = Color4.White;
-
-            currentTexture = selectorTexture;
             PanelUI.OnSlotChanged += OnSelectedSlotWasChanged;
-            //block.ChangeUV(UVAtlas.GetUVs(3,3));
 
             OnSelectedSlotWasChanged(PanelUI.SelectedSlotId);
         }
@@ -52,31 +42,27 @@ namespace Spacebox.Game
         public void OnSelectedSlotWasChanged(short slot)
         {
 
-            if(PanelUI.IsHolding< DrillItem>())
+            if (PanelUI.IsHolding<DrillItem>())
             {
-              
+
                 if (!SimpleBlock.IsUsingDefaultUV)
                 {
                     SimpleBlock.Material.MainTexture = selectorTexture;
                     SimpleBlock.Scale = new Vector3(1.05f, 1.05f, 1.05f);
                     SimpleBlock.ResetUV();
                 }
-                
-            }
 
-            else if (PanelUI.IsHolding< BlockItem>())
+            }
+            else if (PanelUI.IsHolding<BlockItem>())
             {
-               
+
                 //if (block.IsUsingDefaultUV)   // to do block was changed
                 //{
-                    SimpleBlock.Material.MainTexture = GameAssets.BlocksTexture;
-                SimpleBlock.Scale = new Vector3(1,1,1);
+                SimpleBlock.Material.MainTexture = GameAssets.BlocksTexture;
+                SimpleBlock.Scale = new Vector3(1, 1, 1);
                 UpdateUV();
                 // }
-
-
             }
-           
 
         }
 
@@ -95,11 +81,11 @@ namespace Spacebox.Game
 
         public void UpdatePosition(Vector3 position, Direction direction)
         {
-            if(SimpleBlock.Position == position) return;
+            if (SimpleBlock.Position == position) return;
 
             position += Vector3.One * 0.5f;
 
-           
+
             if (!SimpleBlock.IsUsingDefaultUV)
             {
                 if (blockDirection != direction)
@@ -109,36 +95,26 @@ namespace Spacebox.Game
                     UpdateUV();
                 }
             }
-            
-
 
             SimpleBlock.Position = position;
-            CubeRenderer.Position = position;
+
         }
 
 
         public void Render()
         {
-          
-            if(!IsVisible) return;
-            if(!Settings.ShowInterface) return;
 
+            if (!IsVisible) return;
+            if (!Settings.ShowInterface) return;
 
-           // CubeRenderer.Render();
-
-            //GL.Enable(EnableCap.DepthTest);
-            //blockModel.Draw(camera);
-            SimpleBlock.Render(astronaut);
-
-            //GL.Disable(EnableCap.DepthTest);
-
+            SimpleBlock.Render();
 
         }
 
         public void Dispose()
         {
             SimpleBlock.Dispose();
-            CubeRenderer.Dispose();
+
             Instance = null;
         }
     }

@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Game.Player;
+using Spacebox.Game.Player.GameModes;
 
 namespace Spacebox.Scenes
 {

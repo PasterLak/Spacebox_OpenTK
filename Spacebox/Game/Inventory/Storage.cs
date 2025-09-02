@@ -297,28 +297,25 @@ namespace Spacebox.Game
             }
         }
 
-        public void SortByStackCountGrouped()
+
+        public void SortByStackCount()
         {
-            var data = new List<(Item item, byte count)>();
-            var stacks = new Dictionary<string, int>();
+            var items = new List<(Item item, byte count)>();
 
             for (int x = 0; x < SizeX; x++)
                 for (int y = 0; y < SizeY; y++)
                 {
-                    var s = _slots[x, y];
-                    if (!s.HasItem) continue;
-
-                    data.Add((s.Item, s.Count));
-
-                    if (stacks.TryGetValue(s.Item.Name, out var c))
-                        stacks[s.Item.Name] = c + 1;
-                    else
-                        stacks[s.Item.Name] = 1;
+                    var slot = _slots[x, y];
+                    if (slot.HasItem)
+                    {
+                        items.Add((slot.Item, slot.Count));
+                    }
                 }
 
-            var sorted = data
-                .OrderByDescending(e => stacks[e.item.Name])
-                .ThenBy(e => e.item.Name, StringComparer.Ordinal)
+            var sorted = items
+                .OrderByDescending(item => item.count)
+                .ThenBy(item => GetItemTypePriority(item.item))
+                .ThenBy(item => item.item.Name)
                 .ToList();
 
             int idx = 0;
@@ -327,9 +324,9 @@ namespace Spacebox.Game
                 {
                     if (idx < sorted.Count)
                     {
-                        var (it, cnt) = sorted[idx++];
-                        _slots[x, y].Item = it;
-                        _slots[x, y].Count = cnt;
+                        var (item, count) = sorted[idx++];
+                        _slots[x, y].Item = item;
+                        _slots[x, y].Count = count;
                     }
                     else
                     {
@@ -338,6 +335,15 @@ namespace Spacebox.Game
                 }
 
             OnDataWasChanged?.Invoke(this);
+        }
+
+        private int GetItemTypePriority(Item item)
+        {
+            if (item.Is<BlockItem>()) return 0;
+            if (item.Is<DrillItem>()) return 1;
+            if (item.Is<WeaponItem>()) return 2;
+            if (item.Is<ConsumableItem>()) return 3;
+            return 4;
         }
 
         public void CombineStacks()

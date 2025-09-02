@@ -126,7 +126,7 @@ namespace Spacebox
             }
         }
 
-        public void Render(Astronaut camera)
+        public void Render()
         {
             if (_isDisposed)
                 return;

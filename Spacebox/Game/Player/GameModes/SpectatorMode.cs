@@ -1,16 +1,16 @@
-﻿using OpenTK.Mathematics;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-
 using Engine;
 using Spacebox.Game.Player.Interactions;
-namespace Spacebox.Game.Player;
 
-public class CameraMode : GameModeBase
+namespace Spacebox.Game.Player.GameModes;
+
+public class SpectatorMode : GameModeBase
 {
     private const float _cameraSpeed = 50f;
     private const float _shiftSpeed = 150f;
 
-    public CameraMode(Astronaut player) : base(player, new InteractionHandler(GameMode.Spectator))
+    public SpectatorMode(Astronaut player) : base(player, new InteractionHandler(GameMode.Spectator))
     {
         player.CollisionEnabled = false;
         player.EnableCameraSway(false);
@@ -18,15 +18,15 @@ public class CameraMode : GameModeBase
 
         player.SetCameraSpeed(_cameraSpeed, _shiftSpeed);
     }
-
+    
     public override GameMode GetGameMode()
     {
         return GameMode.Spectator;
     }
-
+    
     public override void OnEnable()
     {
-
+        
     }
 
     public override void OnDisable()

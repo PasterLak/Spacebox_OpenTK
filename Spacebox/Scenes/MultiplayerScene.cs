@@ -7,6 +7,7 @@ using Spacebox.Game.Commands;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Player;
+using Spacebox.Game.Player.GameModes;
 
 
 namespace Spacebox.Scenes

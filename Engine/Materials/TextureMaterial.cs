@@ -4,7 +4,20 @@ namespace Engine
 {
     public class TextureMaterial : MaterialBase
     {
-        public Texture2D? MainTexture { get; set; }
+        private Texture2D? _mainTexture;
+
+        public Texture2D? MainTexture
+        {
+            get => _mainTexture;
+            set
+            {
+                _mainTexture = value;
+                if (_mainTexture != null)
+                {
+                    ReplaceTexture("texture0", _mainTexture);
+                }
+            }
+        }
 
         public TextureMaterial(Texture2D texture) : base(Resources.Load<Shader>("Shaders/textured"))
         {

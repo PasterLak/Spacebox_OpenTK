@@ -39,7 +39,7 @@ namespace Spacebox.Game.Player
                 Enabled = state;
             };
 
-            this.Diffuse = new Color3Byte(255,245,128).ToVector3();
+            this.Diffuse = new Color3Byte(245, 222, 171).ToVector3();
             this.Specular = new Color3Byte(0,0,0).ToVector3();
 
             // use:

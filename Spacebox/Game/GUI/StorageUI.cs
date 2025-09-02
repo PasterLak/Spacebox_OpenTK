@@ -5,6 +5,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player;
+using Spacebox.Game.Player.GameModes;
 using Spacebox.Game.Resource;
 using Spacebox.GUI;
 using System.Numerics;

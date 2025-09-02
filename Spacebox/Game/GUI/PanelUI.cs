@@ -6,6 +6,7 @@ using Engine.Audio;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Player.Interactions;
+using Spacebox.Game.Player.GameModes;
 
 
 namespace Spacebox.Game.GUI

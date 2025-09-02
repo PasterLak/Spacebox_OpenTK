@@ -5,9 +5,9 @@ using Engine.Audio;
 using Engine.Physics;
 using Engine;
 using Spacebox.Game.Generation;
-using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player.Interactions;
+using Spacebox.Game.Player.GameModes;
 
 
 namespace Spacebox.Game.Player;
@@ -70,9 +70,9 @@ public class MovementMode : GameModeBase
         blockDestroy = new AudioSource(clip);
     }
 
-    public override GameMode GetGameMode()
+    public override GameModes.GameMode GetGameMode()
     {
-        return GameMode.Spectator;
+        return GameModes.GameMode.Spectator;
     }
 
     public override void OnEnable()

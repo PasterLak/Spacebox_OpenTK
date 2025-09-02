@@ -164,7 +164,7 @@ namespace Spacebox.Scenes
             InventoryUI.Player = localPlayer;
             CreativeWindowUI.SetDefaultIcon(slotTex.Handle, localPlayer);
 
-            blockSelector = new BlockSelector(localPlayer);
+            blockSelector = new BlockSelector();
 
             AddChild(new Spacer(localPlayer.Position + new Vector3(5, 5, 7)));
             freeCamera = AddChild(new FreeCamera(localPlayer.Position));

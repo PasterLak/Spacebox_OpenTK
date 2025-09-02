@@ -27,7 +27,7 @@ float fogFac(vec3 p, float k, float density)
 void main()
 {
     vec4 posWorld = vec4(vertexPosition, 1.0) * model;
-    gl_Position   = posWorld * view * projection;
+    gl_Position   = posWorld * VIEW * PROJECTION;
     worldPosition = posWorld.xyz;
     worldNormal   = mat3(transpose(inverse(model))) * vertexNormal;
     texCoords     = vertexTexCoords;
@@ -60,13 +60,8 @@ void main()
     vec3 V = normalize(CAMERA_POS - worldPosition);
     vec3 baseColor = textureColor.rgb;
    
-    vec3 lighting =
-          AMBIENT +
-          accumulateDirLights (N, V, baseColor) +
-          accumulatePointLights(N, V, worldPosition, baseColor) +
-          accumulateSpotLights(N, V, worldPosition, baseColor);
-
-    vec4 shaded = vec4(baseColor * color.rgb * lighting, textureColor.a);
+    
+    vec4 shaded = vec4(baseColor * color.rgb , textureColor.a * color.a);
 
     shaded = fogMix(shaded, fogFactor, FOG);
     

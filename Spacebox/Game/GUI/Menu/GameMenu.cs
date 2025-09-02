@@ -4,11 +4,11 @@ using ImGuiNET;
 using Engine;
 using Engine.Audio;
 using Engine.SceneManagement;
-using Spacebox.Game.Player;
 using Spacebox.Scenes;
 using static Spacebox.Game.Resource.GameSetLoader;
 using Spacebox.Game.Resource;
 using Spacebox.GUI;
+using Spacebox.Game.Player.GameModes;
 
 namespace Spacebox.Game.GUI.Menu
 {

@@ -10,6 +10,7 @@ using Spacebox.GUI;
 using Engine.Components;
 using Spacebox.Game.Player.Interactions;
 using Spacebox.Game.Effects;
+using Spacebox.Game.Player.GameModes;
 
 
 namespace Spacebox.Game.Player
@@ -266,14 +267,6 @@ namespace Spacebox.Game.Player
                 VisualDebug.ViewMatrix = GetViewMatrix();
             }
 
-            if (Input.IsKeyDown(Keys.Z))
-            {
-                if (!DeathScreen.IsVisible)
-                    DeathScreen.Show();
-                else DeathScreen.Hide();
-            }
-
-
             _gameModeBase.UpdateInteraction(this);
             _gameModeBase.Update(this);
 
@@ -446,11 +439,6 @@ namespace Spacebox.Game.Player
             if (_gameModeBase != null)
             {
                 _gameModeBase.Render(this);
-            }
-
-            if(Input.IsKeyDown(Keys.T))
-            {
-                TakeDamage(1);
             }
 
         }

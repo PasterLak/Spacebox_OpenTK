@@ -6,6 +6,7 @@ using Engine;
 using Spacebox.Scenes;
 using Engine.Light;
 using OpenTK.Mathematics;
+using Spacebox.Game.Player.GameModes;
 
 
 namespace Spacebox.Game.Resource

@@ -2,7 +2,7 @@ using OpenTK.Mathematics;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player.Interactions;
 
-namespace Spacebox.Game.Player;
+namespace Spacebox.Game.Player.GameModes;
 
 public class CreativeMode : MovementMode
 {

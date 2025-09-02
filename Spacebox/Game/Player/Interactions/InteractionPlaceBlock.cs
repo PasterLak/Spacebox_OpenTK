@@ -49,7 +49,6 @@ public class InteractionPlaceBlock : InteractionMode
 
     private Vector3 UpdateBlockPreview(HitInfo hit)
     {
-        //Debug.Log("normal " + hit.normal);
         BlockSelector.IsVisible = true;
         var selectorPositionWorld = new Vector3(hit.blockPositionIndex.X + hit.normal.X,
             hit.blockPositionIndex.Y + hit.normal.Y,

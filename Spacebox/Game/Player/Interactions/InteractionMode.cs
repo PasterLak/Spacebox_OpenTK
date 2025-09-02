@@ -1,5 +1,7 @@
 namespace Spacebox.Game.Player.Interactions;
 using Engine;
+using Spacebox.Game.Player.GameModes;
+
 public abstract class InteractionMode
 {
     public GameMode GameMode { get; set; } = GameMode.Spectator;

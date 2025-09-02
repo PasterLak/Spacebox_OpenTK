@@ -331,7 +331,7 @@ namespace Spacebox.Game.GUI
             if (ImGui.SmallButton(text))
             {
                 storage.CombineStacks();
-                storage.SortByStackCountGrouped();
+                storage.SortByStackCount();
             }
 
             if (ImGui.IsItemHovered())

@@ -1,4 +1,4 @@
-namespace Spacebox.Game.Player;
+namespace Spacebox.Game.Player.GameModes;
 using Engine;
 using Spacebox.Game.Player.Interactions;
 
