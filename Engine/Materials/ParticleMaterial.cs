@@ -4,24 +4,38 @@ namespace Engine
 {
     public class ParticleMaterial : MaterialBase
     {
-        public Texture2D? MainTexture { get; set; }
+        private Texture2D? _mainTexture;
+
+        public Texture2D? MainTexture
+        {
+            get => _mainTexture;
+            set
+            {
+                _mainTexture = value;
+                if (_mainTexture != null)
+                {
+                    ReplaceTexture("particleTexture", _mainTexture);
+                }
+            }
+        }
 
         public ParticleMaterial(Texture2D texture) : base(Resources.Load<Shader>("Shaders/particle"))
         {
-            MainTexture = texture;
+           
             RenderFace = RenderFace.Both;
             RenderMode = RenderMode.Fade;
 
-            AddTexture("particleTexture", MainTexture);
+            MainTexture = texture;
         }
 
         public ParticleMaterial(Texture2D texture, Shader shader) :
             base(shader)
         {
-            MainTexture = texture;
+            
             RenderFace = RenderFace.Both;
             RenderMode = RenderMode.Fade;
-            AddTexture("particleTexture", MainTexture);
+
+            MainTexture = texture;
         }
 
 

@@ -1,0 +1,262 @@
+
+|------------------------------------------------------------------------------------------------------------------------------
+	version 0.1.2
+|------------------------------------------------------------------------------------------------------------------------------
+
+New
+- PerlinNoise+
+- Worms/Ores generator
+- refactoring
+- post processing
+- common resources manager
+- parallel loading of resources
+- detected memory leaks (audio clip/source, skybox, spacetexture, mesh, shader thread)
+- build with powershell 
+- world preview image (simple)
+- the volume of hits, ricochets and explosions depends on the distance from the player
+- storage block with save/load 
+- rename storage, preview storage name if hovered
+- storage in spacer
+- new world generation
+- loot generator
+- spacer has loot
+- different drill color (point light)
+- sort items button in inventory and storage
+- better creative UI + categories there
+
+
+Small
+- double click to open a world
+
+Fixes
+- lock cursor if hidden
+- esc in inventory
+- screenshot white borders
+- OpenAL32.dll missing
+- transparent blocks between chunks -> culling
+
+Engine
+- Materials
+- remake SceneGraph
+- Components
+- BVH - Frustum Culling
+- LightSystem
+- GlobalUniforms for shaders
+- procedural skybox
+- better scene manager, scene args
+- new particle system
+- multi threading - workers
+- dev gui
+- billboards
+- profiling, console only in debug
+
+|------------------------------------------------------------------------------------------------------------------------------
+	version 0.1.1
+|------------------------------------------------------------------------------------------------------------------------------
+
+Done:
+- fix sides between chunks
+- fix ao between chunks
+- fix light between chunks
+- fix centered damage image
+- open block sound
+- fix destroy from another chunk
+- fix place from another chunk
+- open blocks with a weapon in the hand
+- disassembler more recipes
+- fix drill model moving if drop taken 
+- fix drill light if drop taken
+- fix weapon sphere dissepeare if switch item
+- fix ticks count for recipes
+- fix error if delete block in near chunk near another chunk
+
+- items textures can have subfolders
+- blocks textures can have subfolders
+- emissions textures can have subfolders
+- write ""type"" {list of recipes} 
+
+- center of mass of chunks and entities
+- place/destroy outside the chunk
+- gravity radius
+- create new space entities
+- tag font size depends on distance
+- star effect for asteroids
+- breaking through windows when crashing at high speed 
+- Line Renderer
+- CreativeTools: Fill, Delete blocks
+- sound effects open blocks, place blocks glass
+- better collision detection
+- recochets
+- working weapons
+- Color3Byte
+- OGG Audio format support
+- subfolders for textures in mods
+- SphereRenderer/Cube
+- Creative Tools: Eraser, camera point
+- engine and game separated
+- test multiplayer demo project with lidgren
+- new items
+- controls text for items
+
+|------------------------------------------------------------------------------------------------------------------------------
+	version 0.1.0
+|------------------------------------------------------------------------------------------------------------------------------
+
++ fix furnace light if turned on
++ menu links to groups
++ fix croll in pause/welcome/radar
++ fix radar close with tab
++ better furnace texture
++ fix inventory, panel ui
+
+- place blocks
+- mass of asteroids
+- delete chunks, entities
+- spawn player around asteroid or random without collision with space entities
+- no render for sides between glass blocks
+- the object in the hand does not pass through walls
+- TickTaskManager and TickTask
+- select gamemode, save/load gamemode
+- camera frustum fix for camera relative render
+- block destroying effect in survival mode
+- power to drill working, slow block destroying
+- interactive blocks working again
+- crusher, furnace UI and logic
+- loading recipes from mode
+- crafting system
+- blueprints
+- new items and blocks
+- save player items by name
+- new save system based on NBT
+- destroy blocks in creative faster with holding button
+- save resource processing blocks
+- zoom 
+- sound for blocks in mod
+- pause
+- fix and better item model/shader
+- bug fixes
+- buffer class
+- better UI
+|------------------------------------------------------------------------------------------------------------------------------
+version 0.0.9
+|------------------------------------------------------------------------------------------------------------------------------
+- camera relative render
+- refactoring
+- threads for sectors
+- flashlight class
+- camera relative render for visual debug
+- Awake() was removed
+- physics move to a own namespace, refactoring
+- auto save last console log
+- version converter
+- vector3sbyte
+- AO Effect
+- Unit tests
+- default items on start
+- fix emmision in shader
+- fog for light sources at long distances
+- scene graph
+- rotate child objects, get world pos
+- WorldToLocal, LocalToWorld
+- benchmarks
+- better project structure
+- better project xml file- 
+- DisposalManager for multi threading
+- better Overlay with Elements
+- ioc container
+- TPS
+- chunk geometry bounding box
+- many chunks, no sides for blocks between chunks
+- fast random
+- better tags
+- game mode
+- InteractionHandler
+|------------------------------------------------------------------------------------------------------------------------------
+version 0.0.8
+|------------------------------------------------------------------------------------------------------------------------------
+- game menu
+- list of worlds, having different worlds
+- worlds work with mods 
+- scene args
+- better UI
+- automatic blocks,items and emissions atlas creation (block -75% of size, items -94%, emission -75%)  -81%
+- drag and drop
+- items adding power
+- non-cross-platform libraries replaced and removed
+- macOS support
+- scanner UI
+- new sound effects
+- damage, heal, charge overlay
+- consumable items can have a sound effect
+- crusher UI demo
+
+? versions converter
+
+|------------------------------------------------------------------------------------------------------------------------------
+version 0.0.7
+|------------------------------------------------------------------------------------------------------------------------------
+- fix for block destruction effect and texture
+- rotation for effect uvs
+- new icon
+- Improved shading for block icons
+- flashlight 
+- consumable items
+- collision detection
+- damage by hitting wall
+- Improved player controller and inertia
+- Input Manager
+- Improved Sound Manager
+- new sound effects (scroll, block place/destroy, death, wall hit)
+- health and power bar
+- drop from blocks, drop manager and drop effect
+- hit overlay
+- drop pickup sound
+|------------------------------------------------------------------------------------------------------------------------------
+version 0.0.6
+|------------------------------------------------------------------------------------------------------------------------------
+- item count shadow
+- creative window (blocks picker)
+- drop items
+- generation of models for game items with greedy meshing
+- shader and light/ssao effect for the model
+- selected item name under the items panel
+- dust texture generation from block texture
+- selector and block preview
+- rotate blocks
+- save blocks direction
+- save player inventory
+- mods support
+- framebuffer capture
+- screenshots
+
+|------------------------------------------------------------------------------------------------------------------------------
+version 0.0.5
+|------------------------------------------------------------------------------------------------------------------------------
+- wareframe mode
+- shader manager
+- texture manager
+- resources optimization
+- inventory, items code
+- tags
+- Camera Frustum
+- WorldToScreenPoint
+- hide interface
+- Octree
+- Block painting test
+- exe icon
+- window icon
+- fullscreen mode
+- inventory, panel UI
+- inventory shift items
+- isometric icon generator
+- input help (keys)
+
+
+
+|------------------------------------------------------------------------------------------------------------------------------
+version 0.0.4
+|------------------------------------------------------------------------------------------------------------------------------
+- inertia
+|------------------------------------------------------------------------------------------------------------------------------
+version 0.0.3
+|------------------------------------------------------------------------------------------------------------------------------

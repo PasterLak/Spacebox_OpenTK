@@ -9,6 +9,7 @@ using Engine;
 using Spacebox.GUI;
 using Engine.Components;
 using Spacebox.Game.Player.Interactions;
+using Spacebox.Game.Effects;
 
 
 namespace Spacebox.Game.Player
@@ -52,7 +53,7 @@ namespace Spacebox.Game.Player
         private GameModeBase _gameModeBase;
         private GameMode _gameMode => _gameModeBase.GetGameMode();
         public InteractionMode CurrentInteraction => _gameModeBase.InteractionHandler.Interaction;
-
+        public PlayerEffect damageEffect;
         public Vector3 SpawnPosition { get;  set; }
 
         public GameMode GameMode
@@ -120,6 +121,12 @@ namespace Spacebox.Game.Player
             point.Diffuse = new Vector3(56, 204, 209);
             point.Intensity = 0.25f;
             point.Range = 5;*/
+
+            var damageTexture = Resources.Load<Texture2D>("Resources/Textures/damageEffect.png");
+            damageTexture.FilterMode = FilterMode.Nearest;
+            damageEffect = new PlayerEffect(damageTexture);
+
+            AddChild(damageEffect);
 
             DeathScreen.OnRespawn += Revive;
 
@@ -373,7 +380,10 @@ namespace Spacebox.Game.Player
 
             var health = HealthBar.StatsData;
             health.Decrement(damage);
-            if(health.Count > 0)
+
+            if(damage > 12)
+            damageEffect.OnDamage(new Vector3(1,0,0));
+            if (health.Count > 0)
             {
                 HealthColorOverlay.SetActive(new System.Numerics.Vector3(1, 0, 0), 0.1f + 1 / (10 - Math.Min(damage, 6)));
                 HitImage.Show();
@@ -381,6 +391,10 @@ namespace Spacebox.Game.Player
             else
             {
                 _canMove = false;
+                InertiaController.Reset();
+                FOV = 110;
+                HitImage.Hide();
+                Settings.ShowInterface = false;
                 PanelUI.IsVisible = false;
                 PanelUI.IsItemModelVisible = false;
                 Input.ShowCursor();
@@ -393,6 +407,8 @@ namespace Spacebox.Game.Player
 
         public void Revive()
         {
+            FOV = Settings.Graphics.Fov;
+            Settings.ShowInterface = true;
             var health = HealthBar.StatsData;
             var power = PowerBar.StatsData;
             health.Count = health.MaxCount;
@@ -432,6 +448,10 @@ namespace Spacebox.Game.Player
                 _gameModeBase.Render(this);
             }
 
+            if(Input.IsKeyDown(Keys.T))
+            {
+                TakeDamage(1);
+            }
 
         }
 

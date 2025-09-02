@@ -69,10 +69,11 @@ namespace Engine
         public ParticleSystem(ParticleMaterial material, EmitterBase emitter)
         {
             Emitter = emitter;
+            if(Emitter!=null)
             Emitter.ParticleSystem = this;
             _renderer = new ParticleRenderer(material, Max);
-
-            Name = "ParticleSystem_"+ emitter.GetType().Name;
+            if (Emitter != null)
+                Name = "ParticleSystem_"+ emitter.GetType().Name;
         }
 
         public override void Update()
@@ -155,6 +156,8 @@ namespace Engine
             if (copyCommonParams) newEmitter.CopyFrom(Emitter);
             Emitter = newEmitter;
             Emitter.ParticleSystem = this;
+           
+            Name = "ParticleSystem_" + Emitter.GetType().Name;
         }
 
         public void Prewarm(float seconds)

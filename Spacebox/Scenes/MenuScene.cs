@@ -1,20 +1,17 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Engine;
-using Spacebox.Game.Effects;
 using Engine.Audio;
 using Spacebox.Game.GUI;
 using Spacebox.Game;
 using Spacebox.Game.GUI.Menu;
-using ImGuiNET;
 using Spacebox.Game.Generation;
 using Engine.SceneManagement;
 using Engine.UI;
 using Engine.Light;
 using Spacebox.GUI;
 using Engine.Components;
-using Engine.Multithreading;
+using ImGuiNET;
 
 
 namespace Spacebox.Scenes
@@ -25,6 +22,8 @@ namespace Spacebox.Scenes
         private GameMenu menu;
 
         private Canvas canvas;
+
+        private DevLogWindow devLogWindow = new DevLogWindow();
 
         public override void LoadContent()
         {
@@ -70,7 +69,10 @@ namespace Spacebox.Scenes
 
             InputManager.AddAction("inputOverlay", Keys.F6);
             InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
-        
+
+            devLogWindow.AddLogFromFile("Resources/devlog.txt");
+
+
         }
 
         private void SetDustSpawner()
@@ -101,6 +103,7 @@ namespace Spacebox.Scenes
             };
 
             var dust = Resources.Load<Texture2D>("Resources/Textures/dust.png");
+            dust.FilterMode = FilterMode.Linear;
             var system = new ParticleSystem(new ParticleMaterial(dust), emitter);
             system.Max = 500;
             system.Rate = 70f;
@@ -167,8 +170,9 @@ namespace Spacebox.Scenes
             HealthColorOverlay.OnGUI();
             VerticalLinks.Draw();
             menu.Render();
+            devLogWindow.Render();
             //canvas.Draw();
-           // ImGui.PopFont();
+            // ImGui.PopFont();
         }
 
         public override void UnloadContent()
@@ -180,12 +184,13 @@ namespace Spacebox.Scenes
         {
             base.Update();
             CenteredImageMenu.Update();
-
+            devLogWindow.Update();
             if (Input.IsAnyKeyDown())
             {
                 CenteredImageMenu.ShowText = false;
                 GameMenu.IsVisible = true;
                 VerticalLinks.IsVisible = true;
+               // devLogWindow.sho = true;
             }
 
             if (Input.IsKeyDown(Keys.T))

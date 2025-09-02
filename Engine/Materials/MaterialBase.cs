@@ -37,6 +37,21 @@ namespace Engine
                 _slots[uniform] = (TextureUnit.Texture0 + n, tex);
             }
         }
+        public void ReplaceTexture(string uniform, Texture2D newTexture)
+        {
+            if (newTexture == null || string.IsNullOrEmpty(uniform)) return;
+
+            if (_slots.ContainsKey(uniform))
+            {
+                var currentUnit = _slots[uniform].unit;
+                _slots[uniform] = (currentUnit, newTexture);
+            }
+            else
+            {
+                AddTexture(uniform, newTexture);
+            }
+        }
+
 
         //public void Set<T>(string uniform, T value) => _parameters[uniform] = value!;
 

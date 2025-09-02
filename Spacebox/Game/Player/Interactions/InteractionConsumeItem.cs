@@ -74,6 +74,11 @@ public class InteractionConsumeItem : InteractionMode
 
                 if (consumable.PowerAmount > 0)
                     HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 1), 0.15f);
+
+                var texture = Resources.Load<Texture2D>("Resources/Textures/healEffect.png");
+                texture.FilterMode = FilterMode.Nearest;
+                player.damageEffect.Renderer.Material.MainTexture = texture; 
+                player.damageEffect.OnDamage(new OpenTK.Mathematics.Vector3(0,1f,0));
             }
             else
             {

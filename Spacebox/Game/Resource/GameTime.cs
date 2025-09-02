@@ -28,7 +28,7 @@ namespace Spacebox.Game.Resource
 
         private static void OnTick()
         {
-            DayTick+= 20;
+            DayTick++;
 
             Hour = (DayTick / 1000 + 6) % 24;
             Minute = (int)((DayTick % 1000) * 60 / 1000);
