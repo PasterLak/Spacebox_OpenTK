@@ -368,7 +368,7 @@ namespace Spacebox.Game.Player
             }
         }
 
-        public void TakeDamage(int damage)
+        public void TakeDamage(int damage, DeathCase? deathCase = null)
         {
 
             var health = HealthBar.StatsData;
@@ -394,7 +394,14 @@ namespace Spacebox.Game.Player
                 Flashlight.Enabled = false;
                 HealthBar.StatsGUI.IsVisible = false;
                 PowerBar.StatsGUI.IsVisible = false;
-                DeathScreen.Show();
+
+                if (deathCase != null)
+                    DeathScreen.Show(deathCase);
+                else
+
+                    DeathScreen.Show(new DeathCase(""));
+
+
             }
         }
 

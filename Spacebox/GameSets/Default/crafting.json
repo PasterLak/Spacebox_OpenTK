@@ -237,6 +237,15 @@
 
             ]
         },
+         {
+            "Product": {"Item": "DNA Reconstructor", "Quantity": 1},
+            "Ingredients": [
+                {"Item": "Microchip", "Quantity": 4},
+                {"Item": "Aluminium Panels", "Quantity": 8},
+                {"Item": "Med Kit", "Quantity": 2}
+
+            ]
+        },
         
 
         {

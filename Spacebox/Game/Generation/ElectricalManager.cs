@@ -1,5 +1,4 @@
-﻿using Engine;
-using Spacebox.Game.Generation.Blocks;
+﻿using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.Generation
 {
@@ -13,6 +12,7 @@ namespace Spacebox.Game.Generation
 
         int nextNetworkId = 1;
 
+     
         private bool GetOldNetworkActiveState((int x, int y, int z) pos, out int neignborns)
         {
 

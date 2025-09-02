@@ -1,13 +1,17 @@
-﻿using OpenTK.Mathematics;
+﻿using Engine;
 
-using Engine;
 namespace Spacebox.Game
 {
     public class ItemSlot
     {
         private static short MaxSlotID = 0;
+
         public short SlotId;
         public Item? Item;
+        public string Name = "";
+        public Storage Storage;
+        public Vector2Byte Position { get; private set; }
+
         private byte _count;
         public byte Count
         {
@@ -22,9 +26,6 @@ namespace Spacebox.Game
             }
         }
 
-        public string Name = "";
-        public Storage Storage;
-        public Vector2Byte Position { get; private set; }
 
         public ItemSlot(Storage storage, Vector2Byte position)
         {
@@ -111,9 +112,6 @@ namespace Spacebox.Game
                     Count = (byte)rest;
                 }
             }
-
-            // Storage.OnDataWasChanged?.Invoke(Storage);
-            // slotToSwapWith.Storage.OnDataWasChanged?.Invoke(slotToSwapWith.Storage);
         }
 
         public bool HasItem => Item != null && Count > 0;
@@ -131,14 +129,10 @@ namespace Spacebox.Game
 
             if (Storage.TryAddItem(Item, split2, out var rest))
             {
-                //Item = item;
-                // Storage.OnDataWasChanged?.Invoke(Storage);
-
                 Count = split1;
             }
             else
             {
-
 
                 Debug.Error("Failed to split items to " + Storage.Name);
                 Debug.Error("Item name: " + Item.Name);
@@ -171,16 +165,8 @@ namespace Spacebox.Game
 
                 Clear();
 
-                if (target.TryAddItem(Item, count, out var rest))
+                if (!target.TryAddItem(Item, count, out var rest))
                 {
-
-                }
-                else
-                {
-
-                    //  Debug.Error("Failed to add item to " + target.Name + " by moving from " + Storage.Name);
-                    //  Debug.Error("Item name was: " + Item.Name);
-
                     Count = count;
                 }
             }
@@ -206,9 +192,6 @@ namespace Spacebox.Game
                 }
                 else
                 {
-
-
-
                     Count = rest;
                     return false;
                 }

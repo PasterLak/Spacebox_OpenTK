@@ -161,6 +161,7 @@ namespace Spacebox.Scenes
             InventoryUI.Initialize(slotTex.Handle);
             StorageUI.Initialize(slotTex.Handle);
             PanelUI.Initialize(localPlayer, slotTex.Handle, selectedSlotTex.Handle);
+            GeneratorUI.Initialize();
             InventoryUI.Player = localPlayer;
             CreativeWindowUI.SetDefaultIcon(slotTex.Handle, localPlayer);
 
@@ -358,7 +359,9 @@ namespace Spacebox.Scenes
             ItemControlsUI.OnGUI();
             WelcomeUI.OnGUI();
             PauseUI.OnGUI();
-            
+            GeneratorUI.OnGUI();
+
+
             if (VisualDebug.Enabled)
             {
                 WorldTextDebug.OnGUI();

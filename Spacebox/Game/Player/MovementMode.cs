@@ -356,8 +356,15 @@ public class MovementMode : GameModeBase
 
 
             int dmg = (int)(MathF.Max((MathF.Pow(speed - 8, 2.2f) * 0.5f), 1));
-           
-            player.TakeDamage(dmg) ;
+
+            if (dmg < 50)
+            {
+                player.TakeDamage(dmg, new DeathCase("Wall checking complete"));
+            }
+            else
+            {
+                player.TakeDamage(dmg, new DeathCase("Met an unfriendly asteroid"));
+            }
 
         }
 

@@ -1,6 +1,7 @@
 ﻿using Engine;
 using Engine.Audio;
 using ImGuiNET;
+using Spacebox.Game.Player;
 using System.Numerics;
 
 namespace Spacebox.Game.GUI
@@ -16,10 +17,12 @@ namespace Spacebox.Game.GUI
         private Vector4 overlayColor = new Vector4(0.8f, 0.1f, 0.1f, 1f);
 
         private string deathMessage = "YOU DIED";
-        private string respawnButtonText = "RESPAWN";
+        private string deathCause = "";
+        private string respawnButtonText = "Respawn";
 
         private AudioSource deathSound;
         private bool soundPlayed = false;
+        private float parallaxIntensity = 0.02f;
 
         public float TransitionDuration
         {
@@ -45,6 +48,12 @@ namespace Spacebox.Game.GUI
             set => deathMessage = value;
         }
 
+        public string DeathCause
+        {
+            get => deathCause;
+            set => deathCause = value;
+        }
+
         public event Action OnRespawn;
 
         public DeathScreen()
@@ -52,11 +61,12 @@ namespace Spacebox.Game.GUI
             deathSound = new AudioSource(Resources.Get<AudioClip>("Resources/Audio/death.ogg"));
         }
 
-        public void Show()
+        public void Show(DeathCase deathCase)
         {
             IsVisible = true;
             currentTime = 0f;
             soundPlayed = false;
+            deathCause = deathCase.CauseOfDeath;
         }
 
         public void Hide()
@@ -64,6 +74,7 @@ namespace Spacebox.Game.GUI
             IsVisible = false;
             currentTime = 0f;
             soundPlayed = false;
+            deathCause = "";
         }
 
         public void Update()
@@ -122,6 +133,11 @@ namespace Spacebox.Game.GUI
                 float scale = Math.Min(displaySize.X / 1920f, displaySize.Y / 1080f);
                 RenderDeathMessage(displaySize, scale);
 
+                if (!string.IsNullOrEmpty(deathCause))
+                {
+                    RenderDeathCause(displaySize, scale);
+                }
+
                 if (progress >= 1f)
                 {
                     RenderRespawnButton(displaySize, scale);
@@ -142,8 +158,11 @@ namespace Spacebox.Game.GUI
 
             Vector2 textSize = ImGui.CalcTextSize(deathMessage);
 
-            float textX = (displaySize.X - textSize.X) * 0.5f;
-            float textY = displaySize.Y * 0.25f;
+            Vector2 mousePosition = Input.Mouse.Position.ToSystemVector2();
+            Vector2 offset = (mousePosition - displaySize / 2f) * parallaxIntensity;
+
+            float textX = (displaySize.X - textSize.X) * 0.5f + offset.X;
+            float textY = displaySize.Y * 0.25f + offset.Y;
 
             Vector4 textColor = new Vector4(1f, 0.2f, 0.2f, 1f);
             Vector4 shadowColor = new Vector4(0f, 0f, 0f, 0.8f);
@@ -155,6 +174,35 @@ namespace Spacebox.Game.GUI
 
             ImGui.SetCursorPos(new Vector2(textX, textY));
             ImGui.TextColored(textColor, deathMessage);
+
+            ImGui.SetWindowFontScale(1f);
+        }
+
+        private void RenderDeathCause(Vector2 displaySize, float scale)
+        {
+            float baseFontSize = 32f;
+            float scaledFontSize = baseFontSize * scale;
+
+            ImGui.SetWindowFontScale(scaledFontSize / ImGui.GetFontSize());
+
+            Vector2 textSize = ImGui.CalcTextSize(deathCause);
+
+            Vector2 mousePosition = Input.Mouse.Position.ToSystemVector2();
+             Vector2 offset = (mousePosition - displaySize / 2f) * parallaxIntensity * 0.8f;
+
+            float textX = (displaySize.X - textSize.X) * 0.5f + offset.X;
+            float textY = displaySize.Y * 0.35f + offset.Y;
+
+            Vector4 textColor = new Vector4(0.9f, 0.9f, 0.9f, 0.8f);
+            Vector4 shadowColor = new Vector4(0f, 0f, 0f, 0.6f);
+
+            float shadowOffset = 2f * scale;
+
+            ImGui.SetCursorPos(new Vector2(textX + shadowOffset, textY + shadowOffset));
+            ImGui.TextColored(shadowColor, deathCause);
+
+            ImGui.SetCursorPos(new Vector2(textX, textY));
+            ImGui.TextColored(textColor, deathCause);
 
             ImGui.SetWindowFontScale(1f);
         }
@@ -201,5 +249,9 @@ namespace Spacebox.Game.GUI
             EndAlpha = endAlpha;
         }
 
+        public void SetParallaxIntensity(float intensity)
+        {
+            parallaxIntensity = intensity;
+        }
     }
 }
