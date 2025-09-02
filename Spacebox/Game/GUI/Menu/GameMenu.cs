@@ -87,8 +87,18 @@ namespace Spacebox.Game.GUI.Menu
             return null;
         }
 
+         
+
         public void Render()
         {
+            if (currentWindowType == typeof(ControlsWindow) && windows.TryGetValue(currentWindowType, out var wnd1))
+
+            {
+                var v = (ControlsWindow)wnd1;
+                if(v!= null)
+                v.Update();
+            }
+
             if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.RightAlt))
             {
                 foreach (var w in worlds)

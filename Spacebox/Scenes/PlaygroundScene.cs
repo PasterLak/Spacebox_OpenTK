@@ -149,8 +149,8 @@ namespace Spacebox.Scenes
 
 
 
-            InputManager.AddAction("inputOverlay", Keys.F6);
-            InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
+            InputManager0.AddAction("inputOverlay", Keys.F6);
+            InputManager0.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
 
 
             Texture2D waterTexture = Resources.Load<Engine.Texture2D>("Resources/Textures/Space/noise.jpg");

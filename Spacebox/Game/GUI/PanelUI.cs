@@ -135,7 +135,7 @@ namespace Spacebox.Game.GUI
                     SelectedSlotId = (short)(Storage.SizeY - 1);
                 SetSelectedSlot(SelectedSlotId);
             }
-            if (Input.IsKeyDown(Keys.G))
+            if (Input.IsActionDown("dropItem"))
             {
                 if (SelectedSlot != null)
                     SelectedSlot.DropOne();

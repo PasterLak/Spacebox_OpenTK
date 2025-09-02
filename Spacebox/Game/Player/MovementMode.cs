@@ -115,37 +115,37 @@ public class MovementMode : GameModeBase
         if (player.CanMove)
         {
 
-            if (Input.IsKey(Keys.W))
+            if (Input.IsAction("forward"))
             {
                 acceleration += player.Front;
                 isMoving = true;
             }
 
-            if (Input.IsKey(Keys.S))
+            if (Input.IsAction("backward"))
             {
                 acceleration -= player.Front;
                 isMoving = true;
             }
 
-            if (Input.IsKey(Keys.A))
+            if (Input.IsAction("left"))
             {
                 acceleration -= player.Right;
                 isMoving = true;
             }
 
-            if (Input.IsKey(Keys.D))
+            if (Input.IsAction("right"))
             {
                 acceleration += player.Right;
                 isMoving = true;
             }
 
-            if (Input.IsKey(Keys.Space))
+            if (Input.IsAction("up"))
             {
                 acceleration += player.Up;
                 isMoving = true;
             }
 
-            if (Input.IsKey(Keys.LeftControl))
+            if (Input.IsAction("down"))
             {
                 acceleration -= player.Up;
                 isMoving = true;
@@ -153,19 +153,19 @@ public class MovementMode : GameModeBase
 
             float roll = 1000f * Time.Delta;
 
-            if (Input.IsKey(Keys.Q))
+            if (Input.IsAction("rollLeft"))
             {
                 player.Roll(-roll);
             }
 
-            if (Input.IsKey(Keys.E))
+            if (Input.IsAction("rollRight"))
             {
                 player.Roll(roll);
             }
 
 
 
-            isRunning = Input.IsKey(Keys.LeftShift);
+            isRunning = Input.IsAction("sprint");
         }
 
         if (!isMoving) isRunning = false;

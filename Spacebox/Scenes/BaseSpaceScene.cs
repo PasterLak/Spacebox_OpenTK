@@ -1,6 +1,7 @@
 ﻿using Engine;
 using Engine.Components;
 using Engine.GUI;
+using Engine.InputPro;
 using Engine.Light;
 using Engine.SceneManagement;
 using OpenTK.Mathematics;
@@ -83,11 +84,16 @@ namespace Spacebox.Scenes
                 }
             };
 
-            InputManager.AddAction("inputOverlay", Keys.F6);
-            InputManager.RegisterCallback("inputOverlay", () =>
+           // InputManager0.AddAction("inputOverlay", Keys.F6);
+           /* InputManager0.RegisterCallback("inputOverlay", () =>
             {
                 InputOverlay.IsVisible = !InputOverlay.IsVisible;
-            });
+            });*/
+
+            
+
+
+
         }
 
         public override void LoadContent()
@@ -215,7 +221,7 @@ namespace Spacebox.Scenes
             ToggleManager.SetState("mouse", state);
             ToggleManager.SetState("player", !state);
             ToggleManager.SetState("panel", !state);
-            InputManager.Enabled = !state;
+            InputManager0.Enabled = !state;
             ToggleManager.DisableAllWindows();
             ToggleManager.SetState("radar", false);
             ToggleManager.SetState("inventory", false);
@@ -258,7 +264,7 @@ namespace Spacebox.Scenes
             }
 
 
-            if (Input.IsKeyDown(Keys.Escape))
+            if (Input.IsActionDown("pause"))
             {
                 if (Chat.IsVisible && Chat.FocusInput)
                 {

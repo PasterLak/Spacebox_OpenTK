@@ -2,13 +2,13 @@
 
 namespace Engine
 {
-    public static class InputManager
+    public static class InputManager0
     {
         public static bool Enabled { get;  set; } = true;
-        private static Dictionary<string, InputAction> actions = new Dictionary<string, InputAction>();
+        private static Dictionary<string, InputAction0> actions = new Dictionary<string, InputAction0>();
 
 
-        public static InputAction AddAction(InputAction action)
+        public static InputAction0 AddAction(InputAction0 action)
         {
             if (!actions.ContainsKey(action.Name))
             {
@@ -22,31 +22,31 @@ namespace Engine
         }
 
 
-        public static InputAction AddAction(string name, Keys key, bool isGlobal = false)
+        public static InputAction0 AddAction(string name, Keys key, bool isGlobal = false)
         {
             if (!actions.ContainsKey(name))
             {
-                actions[name] = new InputAction(name, key, isGlobal);
+                actions[name] = new InputAction0(name, key, isGlobal);
 
                 return actions[name];
             }
 
             Debug.Error($"[InputManager] Action with name <{name}> was already added!");
-            return new InputAction(name + "2", key, isGlobal);
+            return new InputAction0(name + "2", key, isGlobal);
         }
 
-        public static InputAction AddAction(string name, MouseButton button, bool isGlobal = false)
+        public static InputAction0 AddAction(string name, MouseButton button, bool isGlobal = false)
         {
             if (!actions.ContainsKey(name))
             {
-                actions[name] = new InputAction(name, button, isGlobal);
+                actions[name] = new InputAction0(name, button, isGlobal);
 
                 return actions[name];
             }
     
             Debug.Error($"[InputManager] Action with name <{name}> was already added!");
 
-            return new InputAction(name + "2", button, isGlobal);
+            return new InputAction0(name + "2", button, isGlobal);
         }
 
         public static void RemoveAction(string name)
@@ -102,7 +102,7 @@ namespace Engine
             }
         }
 
-        public static InputAction RegisterCallback(string name, Action callback)
+        public static InputAction0 RegisterCallback(string name, Action callback)
         {
             if (actions.ContainsKey(name))
             {

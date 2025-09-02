@@ -5,3 +5,97 @@
 + item model
 + one color for all particles
 + game logo can be moved away
+
+
+
+
+var jump = input.AddAction("Jump", Keys.Space, "Jump action");
+        jump.Subscribe(InputEventType.Pressed, () => Console.WriteLine("Jumped!"));
+        jump.Subscribe(InputEventType.Released, () => Console.WriteLine("Landed!"));
+
+        var fire = input.AddAction("Fire", MouseButton.Left, "Fire weapon");
+        fire.Subscribe(InputEventType.Pressed, OnFire);
+        fire.Subscribe(InputEventType.Held, (float value) => Console.WriteLine($"Holding fire: {value}"));
+
+        var sprint = input.AddAction("Sprint", "Hold to sprint");
+        sprint.AddBinding(new KeyBinding(Keys.LeftShift));
+        sprint.AddBinding(new KeyBinding(Keys.RightShift));
+        sprint.Subscribe(InputEventType.Pressed, () => Console.WriteLine("Started sprinting"));
+        sprint.Subscribe(InputEventType.Released, () => Console.WriteLine("Stopped sprinting"));
+
+        var specialMove = input.AddAction("SpecialMove", "Special combination move");
+        specialMove.AddBinding(new CompositeBinding(true, 
+            new KeyBinding(Keys.LeftControl),
+            new KeyBinding(Keys.Space)
+        ));
+        specialMove.Subscribe(InputEventType.Pressed, () => Console.WriteLine("Special move activated!"));
+
+        input.AddAction("MoveForward", Keys.W);
+        input.AddAction("MoveBackward", Keys.S);
+        input.AddAction("MoveLeft", Keys.A);
+        input.AddAction("MoveRight", Keys.D);
+
+        input.AddAxis("Horizontal", "MoveRight", "MoveLeft");
+        input.AddAxis("Vertical", "MoveForward", "MoveBackward");
+
+        var horizontalAxis = input.GetAxis("Horizontal");
+        horizontalAxis.Sensitivity = 5.0f;
+        horizontalAxis.Gravity = 3.0f;
+        horizontalAxis.Snap = true;
+
+        input.SaveConfiguration("game_input.json");
+    }
+
+    private void OnFire()
+    {
+        Console.WriteLine("Fire!");
+    }
+
+    protected override void OnUpdateFrame(FrameEventArgs args)
+    {
+        base.OnUpdateFrame(args);
+        
+        input.Update((float)args.Time);
+
+        var horizontal = input.GetAxisValue("Horizontal");
+        var vertical = input.GetAxisValue("Vertical");
+        
+        if (Math.Abs(horizontal) > 0.01f || Math.Abs(vertical) > 0.01f)
+        {
+            var movement = new Vector2(horizontal, vertical);
+            Console.WriteLine($"Movement: {movement}");
+        }
+
+        if (input.IsActionHeld("Sprint"))
+        {
+            Console.WriteLine("Currently sprinting...");
+        }
+
+        var mouseDelta = input.GetMouseDelta();
+        if (mouseDelta.LengthSquared > 0.01f)
+        {
+            Console.WriteLine($"Mouse moved: {mouseDelta}");
+        }
+
+        if (KeyboardState.IsKeyDown(Keys.Escape))
+        {
+            Close();
+        }
+    }
+
+    protected override void OnLoad()
+    {
+        base.OnLoad();
+        
+        input.LoadConfiguration("game_input.json");
+        
+        input.SetCursorState(CursorState.Grabbed);
+    }
+
+    protected override void OnUnload()
+    {
+        base.OnUnload();
+        
+        input.SaveConfiguration("game_input.json");
+    }
+}

@@ -2,6 +2,7 @@
 using Engine.Audio;
 using Engine.Graphics;
 using Engine.GUI;
+using Engine.InputPro;
 using Engine.Light;
 using Engine.Multithreading;
 using Engine.PostProcessing;
@@ -41,6 +42,8 @@ namespace Spacebox
         private SceneRenderer SceneRenderer;
         private bool DoScreenshot = false;
 
+        private InputManager InputManager;
+
         public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
         {
@@ -49,7 +52,8 @@ namespace Spacebox
 
             GPUDebug.Initialize(true);
 
-
+            InputManager = InputManager.Instance;
+            InputManager.Initialize(this);
         }
 
         public static unsafe void LoadStarPixelFont(float fontSize = 16.0f)
@@ -113,20 +117,20 @@ namespace Spacebox
             else
                 debugKey = Keys.GraveAccent;
 
-            InputManager.AddAction("overlay", Keys.F3, true);
-            InputManager.RegisterCallback("overlay", () => { Overlay.IsVisible = !Overlay.IsVisible; });
-            InputManager.AddAction("polygodMode", Keys.F10, true);
-            InputManager.RegisterCallback("polygodMode", () => { TogglePolygonMode(); });
-            InputManager.AddAction("fullscreen", Keys.F11, true);
-            InputManager.RegisterCallback("fullscreen", () => { ToggleFullScreen(); });
-            InputManager.AddAction("visualDebug", Keys.F4, true);
-            InputManager.RegisterCallback("visualDebug", () => { VisualDebug.Enabled = !VisualDebug.Enabled; });
-            InputManager.AddAction("frameLimiter", Keys.F7, true);
-            InputManager.RegisterCallback("frameLimiter", () => { ToggleFrameLimiter(); });
-            InputManager.AddAction("debugUI", Keys.F9, true);
-            InputManager.RegisterCallback("debugUI", () => { _debugUI = !_debugUI; });
-            InputManager.AddAction("screenshot", Keys.F12, true);
-            InputManager.RegisterCallback("screenshot", () => { DoScreenshot = true; });
+            InputManager0.AddAction("overlay", Keys.F3, true);
+            InputManager0.RegisterCallback("overlay", () => { Overlay.IsVisible = !Overlay.IsVisible; });
+            InputManager0.AddAction("polygodMode", Keys.F10, true);
+            InputManager0.RegisterCallback("polygodMode", () => { TogglePolygonMode(); });
+            InputManager0.AddAction("fullscreen", Keys.F11, true);
+            InputManager0.RegisterCallback("fullscreen", () => { ToggleFullScreen(); });
+            InputManager0.AddAction("visualDebug", Keys.F4, true);
+            InputManager0.RegisterCallback("visualDebug", () => { VisualDebug.Enabled = !VisualDebug.Enabled; });
+            InputManager0.AddAction("frameLimiter", Keys.F7, true);
+            InputManager0.RegisterCallback("frameLimiter", () => { ToggleFrameLimiter(); });
+            InputManager0.AddAction("debugUI", Keys.F9, true);
+            InputManager0.RegisterCallback("debugUI", () => { _debugUI = !_debugUI; });
+            InputManager0.AddAction("screenshot", Keys.F12, true);
+            InputManager0.RegisterCallback("screenshot", () => { DoScreenshot = true; });
 
             screenShotAudio = new AudioSource(Resources.Load<AudioClip>("screenshot", true));
             CenterWindow();
@@ -344,6 +348,7 @@ namespace Spacebox
                 Time.Update(e);
                 _controller.Update(this, (float)e.Time);
                 InputManager.Update();
+                InputManager0.Update();
 
                 while (_mainThreadActions.TryDequeue(out var action))
                 {

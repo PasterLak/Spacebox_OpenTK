@@ -5,6 +5,7 @@ using Engine.Audio;
 using Engine.Light;
 using Engine;
 using OpenTK.Mathematics;
+using Engine.InputPro;
 
 namespace Spacebox.Game.Player
 {
@@ -13,6 +14,8 @@ namespace Spacebox.Game.Player
 
         private AudioSource audio;
         private Toggi toggle;
+
+        Engine.InputPro.InputAction action;
         public Flashlight()
         {
             GetDirectionFromNode = true;
@@ -23,20 +26,29 @@ namespace Spacebox.Game.Player
             audio = new AudioSource(clip);
             audio.Volume = 0.5f;
 
-            InputManager.AddAction("flashlight", Keys.F);
+            /*InputManager0.AddAction("flashlight", Keys.F);
 
-            InputManager.RegisterCallback("flashlight", () =>
+            InputManager0.RegisterCallback("flashlight", () =>
             {
                 audio.Play();
 
                 Enabled = !Enabled;
-            });
+            });*/
 
+
+             action = InputManager.Instance.GetAction("flashlight");
+            action.Subscribe(InputEventType.Pressed, () =>
+            {
+                audio.Play();
+                Enabled = !Enabled;
+               
+            });
 
             toggle = ToggleManager.Register("flashlight");
             toggle.OnStateChanged += state =>
             {
                 Enabled = state;
+                action.Enabled = state;
             };
 
             this.Diffuse = new Color3Byte(245, 222, 171).ToVector3();

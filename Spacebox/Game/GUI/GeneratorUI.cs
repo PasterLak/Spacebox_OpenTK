@@ -59,7 +59,7 @@ namespace Spacebox.Game.GUI
         {
             if (!IsVisible || generatorBlock == null) return;
 
-            if (Input.IsKeyDown(Keys.Tab) || Input.IsKeyDown(Keys.Escape))
+            if (Input.IsActionDown("inventory") || Input.IsKeyDown(Keys.Escape))
             {
                 Close();
                 return;

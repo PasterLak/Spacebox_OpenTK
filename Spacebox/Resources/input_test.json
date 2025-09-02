@@ -1,0 +1,585 @@
+{
+    "Default": {
+        "Name": "Default",
+        "Actions": {
+            "QuickSave": {
+                "Name": "QuickSave",
+                "Description": "Quick save game",
+                "Bindings": [
+                    {
+                        "Type": "Composite",
+                        "RequireAll": true,
+                        "Bindings": [
+                            {
+                                "Type": "Key",
+                                "Key": "LeftControl"
+                            },
+                            {
+                                "Type": "Key",
+                                "Key": "S"
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "Key",
+                        "Key": "F5"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "QuickLoad": {
+                "Name": "QuickLoad",
+                "Description": "Quick load game",
+                "Bindings": [
+                    {
+                        "Type": "Composite",
+                        "RequireAll": true,
+                        "Bindings": [
+                            {
+                                "Type": "Key",
+                                "Key": "LeftControl"
+                            },
+                            {
+                                "Type": "Key",
+                                "Key": "L"
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "Key",
+                        "Key": "F9"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "SpecialAbility1": {
+                "Name": "SpecialAbility1",
+                "Description": "Ultimate ability",
+                "Bindings": [
+                    {
+                        "Type": "Composite",
+                        "RequireAll": true,
+                        "Bindings": [
+                            {
+                                "Type": "Key",
+                                "Key": "LeftShift"
+                            },
+                            {
+                                "Type": "MouseButton",
+                                "Button": "Left"
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "Key",
+                        "Key": "Q"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "ComboAttack": {
+                "Name": "ComboAttack",
+                "Description": "Heavy combo attack",
+                "Bindings": [
+                    {
+                        "Type": "Composite",
+                        "RequireAll": true,
+                        "Bindings": [
+                            {
+                                "Type": "Key",
+                                "Key": "LeftControl"
+                            },
+                            {
+                                "Type": "Key",
+                                "Key": "LeftShift"
+                            },
+                            {
+                                "Type": "MouseButton",
+                                "Button": "Left"
+                            }
+                        ]
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "Screenshot": {
+                "Name": "Screenshot",
+                "Description": "Take screenshot",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "F12"
+                    },
+                    {
+                        "Type": "Composite",
+                        "RequireAll": true,
+                        "Bindings": [
+                            {
+                                "Type": "Key",
+                                "Key": "LeftAlt"
+                            },
+                            {
+                                "Type": "Key",
+                                "Key": "PrintScreen"
+                            }
+                        ]
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "ToggleFullscreen": {
+                "Name": "ToggleFullscreen",
+                "Description": "Toggle fullscreen mode",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "F11"
+                    },
+                    {
+                        "Type": "Composite",
+                        "RequireAll": true,
+                        "Bindings": [
+                            {
+                                "Type": "Key",
+                                "Key": "LeftAlt"
+                            },
+                            {
+                                "Type": "Key",
+                                "Key": "Enter"
+                            }
+                        ]
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "OpenConsole": {
+                "Name": "OpenConsole",
+                "Description": "Open developer console",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "GraveAccent"
+                    },
+                    {
+                        "Type": "Composite",
+                        "RequireAll": true,
+                        "Bindings": [
+                            {
+                                "Type": "Key",
+                                "Key": "LeftControl"
+                            },
+                            {
+                                "Type": "Key",
+                                "Key": "LeftShift"
+                            },
+                            {
+                                "Type": "Key",
+                                "Key": "C"
+                            }
+                        ]
+                    }
+                ],
+                "Enabled": false,
+                "DeadZone": 0.1
+            },
+            "AlternativeMovement": {
+                "Name": "AlternativeMovement",
+                "Description": "Alternative movement scheme",
+                "Bindings": [
+                    {
+                        "Type": "Composite",
+                        "RequireAll": false,
+                        "Bindings": [
+                            {
+                                "Type": "Key",
+                                "Key": "Up"
+                            },
+                            {
+                                "Type": "Key",
+                                "Key": "KeyPad8"
+                            }
+                        ]
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "ContextAction": {
+                "Name": "ContextAction",
+                "Description": "Context sensitive action",
+                "Bindings": [
+                    {
+                        "Type": "MouseButton",
+                        "Button": "Middle"
+                    },
+                    {
+                        "Type": "Key",
+                        "Key": "E"
+                    },
+                    {
+                        "Type": "Composite",
+                        "RequireAll": true,
+                        "Bindings": [
+                            {
+                                "Type": "Key",
+                                "Key": "LeftControl"
+                            },
+                            {
+                                "Type": "MouseButton",
+                                "Button": "Right"
+                            }
+                        ]
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.15
+            }
+        },
+        "Axes": {
+            "Horizontal": {
+                "Name": "Horizontal",
+                "PositiveAction": "MoveRight",
+                "NegativeAction": "MoveLeft",
+                "Sensitivity": 8.0,
+                "Gravity": 5.0,
+                "DeadZone": 0.15,
+                "Snap": true
+            },
+            "Vertical": {
+                "Name": "Vertical",
+                "PositiveAction": "MoveForward",
+                "NegativeAction": "MoveBackward",
+                "Sensitivity": 8.0,
+                "Gravity": 5.0,
+                "DeadZone": 0.15,
+                "Snap": true
+            },
+            "LookHorizontal": {
+                "Name": "LookHorizontal",
+                "PositiveAction": "LookRight",
+                "NegativeAction": "LookLeft",
+                "Sensitivity": 2.5,
+                "Gravity": 10.0,
+                "DeadZone": 0.05,
+                "Snap": false
+            },
+            "LookVertical": {
+                "Name": "LookVertical",
+                "PositiveAction": "LookUp",
+                "NegativeAction": "LookDown",
+                "Sensitivity": 2.5,
+                "Gravity": 10.0,
+                "DeadZone": 0.05,
+                "Snap": false
+            }
+        }
+    },
+    "Racing": {
+        "Name": "Racing",
+        "Actions": {
+            "Accelerate": {
+                "Name": "Accelerate",
+                "Description": "Accelerate vehicle",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "W"
+                    },
+                    {
+                        "Type": "Key",
+                        "Key": "Up"
+                    },
+                    {
+                        "Type": "MouseButton",
+                        "Button": "Right"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.05
+            },
+            "Brake": {
+                "Name": "Brake",
+                "Description": "Brake/Reverse",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "S"
+                    },
+                    {
+                        "Type": "Key",
+                        "Key": "Down"
+                    },
+                    {
+                        "Type": "MouseButton",
+                        "Button": "Left"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.05
+            },
+            "SteerLeft": {
+                "Name": "SteerLeft",
+                "Description": "Steer left",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "A"
+                    },
+                    {
+                        "Type": "Key",
+                        "Key": "Left"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.02
+            },
+            "SteerRight": {
+                "Name": "SteerRight",
+                "Description": "Steer right",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "D"
+                    },
+                    {
+                        "Type": "Key",
+                        "Key": "Right"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.02
+            },
+            "Handbrake": {
+                "Name": "Handbrake",
+                "Description": "Handbrake for drifting",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "Space"
+                    },
+                    {
+                        "Type": "MouseButton",
+                        "Button": "Middle"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "NitroBoost": {
+                "Name": "NitroBoost",
+                "Description": "Activate nitro boost",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "LeftShift"
+                    },
+                    {
+                        "Type": "Composite",
+                        "RequireAll": true,
+                        "Bindings": [
+                            {
+                                "Type": "Key",
+                                "Key": "W"
+                            },
+                            {
+                                "Type": "Key",
+                                "Key": "LeftShift"
+                            }
+                        ]
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            }
+        },
+        "Axes": {
+            "Steering": {
+                "Name": "Steering",
+                "PositiveAction": "SteerRight",
+                "NegativeAction": "SteerLeft",
+                "Sensitivity": 3.0,
+                "Gravity": 6.0,
+                "DeadZone": 0.02,
+                "Snap": false
+            },
+            "Throttle": {
+                "Name": "Throttle",
+                "PositiveAction": "Accelerate",
+                "NegativeAction": "Brake",
+                "Sensitivity": 4.0,
+                "Gravity": 8.0,
+                "DeadZone": 0.05,
+                "Snap": false
+            }
+        }
+    },
+    "FlightSim": {
+        "Name": "FlightSim",
+        "Actions": {
+            "PitchUp": {
+                "Name": "PitchUp",
+                "Description": "Pitch aircraft up",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "S"
+                    },
+                    {
+                        "Type": "Key",
+                        "Key": "Down"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.01
+            },
+            "PitchDown": {
+                "Name": "PitchDown",
+                "Description": "Pitch aircraft down",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "W"
+                    },
+                    {
+                        "Type": "Key",
+                        "Key": "Up"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.01
+            },
+            "RollLeft": {
+                "Name": "RollLeft",
+                "Description": "Roll aircraft left",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "A"
+                    },
+                    {
+                        "Type": "Key",
+                        "Key": "Left"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.01
+            },
+            "RollRight": {
+                "Name": "RollRight",
+                "Description": "Roll aircraft right",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "D"
+                    },
+                    {
+                        "Type": "Key",
+                        "Key": "Right"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.01
+            },
+            "YawLeft": {
+                "Name": "YawLeft",
+                "Description": "Yaw aircraft left",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "Q"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.01
+            },
+            "YawRight": {
+                "Name": "YawRight",
+                "Description": "Yaw aircraft right",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "E"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.01
+            },
+            "ThrottleUp": {
+                "Name": "ThrottleUp",
+                "Description": "Increase throttle",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "LeftShift"
+                    },
+                    {
+                        "Type": "MouseButton",
+                        "Button": "Button4"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.05
+            },
+            "ThrottleDown": {
+                "Name": "ThrottleDown",
+                "Description": "Decrease throttle",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "LeftControl"
+                    },
+                    {
+                        "Type": "MouseButton",
+                        "Button": "Button5"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.05
+            }
+        },
+        "Axes": {
+            "Pitch": {
+                "Name": "Pitch",
+                "PositiveAction": "PitchUp",
+                "NegativeAction": "PitchDown",
+                "Sensitivity": 2.0,
+                "Gravity": 4.0,
+                "DeadZone": 0.01,
+                "Snap": false
+            },
+            "Roll": {
+                "Name": "Roll",
+                "PositiveAction": "RollRight",
+                "NegativeAction": "RollLeft",
+                "Sensitivity": 2.5,
+                "Gravity": 4.0,
+                "DeadZone": 0.01,
+                "Snap": false
+            },
+            "Yaw": {
+                "Name": "Yaw",
+                "PositiveAction": "YawRight",
+                "NegativeAction": "YawLeft",
+                "Sensitivity": 1.5,
+                "Gravity": 3.0,
+                "DeadZone": 0.01,
+                "Snap": false
+            },
+            "Throttle": {
+                "Name": "Throttle",
+                "PositiveAction": "ThrottleUp",
+                "NegativeAction": "ThrottleDown",
+                "Sensitivity": 1.0,
+                "Gravity": 0.5,
+                "DeadZone": 0.05,
+                "Snap": false
+            }
+        }
+    }
+}

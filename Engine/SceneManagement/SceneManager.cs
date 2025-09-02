@@ -130,7 +130,7 @@ namespace Engine.SceneManagement
                 _current.Destroy();
                 _current.UnloadContent();
                 LightSystem.Clear();
-                InputManager.RemoveAllActions(true);
+                InputManager0.RemoveAllActions(true);
                 EventBus.Clear();
                 Camera.Main = null;
                 Resources.UnloadAll();

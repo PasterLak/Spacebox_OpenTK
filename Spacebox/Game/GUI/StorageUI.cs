@@ -120,7 +120,7 @@ namespace Spacebox.Game.GUI
         {
             if (!IsVisible || Storage == null) return;
 
-            if (Input.IsKeyDown(Keys.Tab) || Input.IsKeyDown(Keys.Escape))
+            if (Input.IsActionDown("inventory") || Input.IsKeyDown(Keys.Escape))
             {
                 CloseStorage();
                 return;

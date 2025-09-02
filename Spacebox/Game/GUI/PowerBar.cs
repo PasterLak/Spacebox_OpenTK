@@ -43,8 +43,8 @@ namespace Spacebox.GUI
 
         public void Update()
         {
-            if(Input.IsKeyDown(Keys.LeftShift)) isRunning = true;
-            if (Input.IsKeyUp(Keys.LeftShift)) isRunning = false;
+            if(Input.IsActionDown("sprint")) isRunning = true;
+            if (Input.IsActionUp("sprint")) isRunning = false;
 
             if (isRunning) return;
             if (StatsData.IsMaxReached) return;

@@ -40,7 +40,7 @@ namespace Spacebox.Game.GUI
         }
         private static void HandleInput()
         {
-            if (Input.IsKeyDown(Keys.Tab) && !Debug.IsVisible)
+            if (Input.IsActionDown("inventory") && !Debug.IsVisible)
             {
                 if (ToggleManager.IsActiveAndExists("pause")) return;
                 var v = IsVisible;
@@ -125,7 +125,7 @@ namespace Spacebox.Game.GUI
 
             ImGui.SetCursorPos(paddingV + new Vector2(0, padding * 4));
             InventoryUIHelper.RenderStorage(storage, OnSlotClicked, storage.SizeX);
-
+            
             ImGui.End();
         }
 

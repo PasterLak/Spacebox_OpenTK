@@ -1,7 +1,9 @@
-﻿using OpenTK.Mathematics;
+﻿using Engine.InputPro;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using System.Xml.Linq;
 
 namespace Engine
 {
@@ -10,6 +12,7 @@ namespace Engine
         private static Input _instance;
         private static GameWindow _gameWindow;
         private static KeyboardState _lastState;
+        public static KeyboardState Keyboard => _gameWindow.KeyboardState;
         public static MouseState Mouse => _gameWindow.MouseState;
 
 
@@ -25,7 +28,7 @@ namespace Engine
             }
             else
             {
-                Console.WriteLine("There are already an Input Object!");
+                Debug.Error("There are already an Input Object!");
             }
 
         }
@@ -36,6 +39,12 @@ namespace Engine
             return _lastState.IsKeyDown(key);
 
         }
+        public static bool IsAction(string name)
+        {
+
+            return InputManager.Instance.IsActionHeld(name);
+           
+        }
         public static bool IsKeyUp(Keys key)
         {
 
@@ -43,10 +52,24 @@ namespace Engine
 
         }
 
+        public static bool IsActionUp(string name)
+        {
+
+            return InputManager.Instance.IsActionReleased(name);
+
+        }
+
         public static bool IsKeyDown(Keys key)
         {
 
             return _lastState.IsKeyPressed(key);
+
+        }
+
+        public static bool IsActionDown(string name)
+        {
+
+            return InputManager.Instance.IsActionPressed(name);
 
         }
 

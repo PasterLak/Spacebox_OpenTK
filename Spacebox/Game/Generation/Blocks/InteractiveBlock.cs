@@ -4,6 +4,7 @@ using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 using Engine;
 using Spacebox.GUI;
+using Engine.InputPro;
 namespace Spacebox.Game.Generation.Blocks
 {
 
@@ -23,12 +24,36 @@ namespace Spacebox.Game.Generation.Blocks
         public Vector3 colorIfActive = new Vector3(0.7f, 0.4f, 0.2f) / 4f;
         public virtual void Use(Astronaut player)
         {
+
             SetText();
             OnUse?.Invoke(player);
         }
 
         private void SetText()
         {
+            var action = InputManager.Instance.GetAction("use");
+
+            string keyName = "button";
+
+            if ((action != null) && action.Bindings.Count > 0)
+            {
+                var key = action.Bindings[0];
+                keyName = key.GetDisplayName();
+
+                if(key is MouseButtonBinding)
+                {
+                    if(((MouseButtonBinding)key).Button == MouseButton.Right)
+                    {
+                        keyName = "RMB";
+                    }
+                    else if (((MouseButtonBinding)key).Button == MouseButton.Left)
+                    {
+                        keyName = "LMB";
+                    }
+                }
+            }
+
+            HoverText = "Press " + keyName + " to use\n";
             if (EFlags == ElectricalFlags.None)
             {
                 CenteredText.SetText( 
@@ -63,7 +88,7 @@ namespace Spacebox.Game.Generation.Blocks
                 block.OnHovered();
                 if (ToggleManager.OpenedWindowsCount == 0)
                 {
-                    if (Input.IsMouseButtonDown(MouseButton.Right))
+                    if (Input.IsActionDown("use"))
                     {
                         block.chunk = chunk;
                         block.Use(player);

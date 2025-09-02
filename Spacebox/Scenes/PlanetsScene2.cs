@@ -99,8 +99,8 @@ namespace Spacebox.Scenes
 
             //music.Play();
 
-            InputManager.AddAction("inputOverlay", Keys.F6);
-            InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
+            InputManager0.AddAction("inputOverlay", Keys.F6);
+            InputManager0.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
 
             var matEarth = new PlanetMaterial(Resources.Load<Texture2D>("Resources/Textures/planet2"));
             matEarth.GlowColor = new Vector3(0.9f, 1, 1);

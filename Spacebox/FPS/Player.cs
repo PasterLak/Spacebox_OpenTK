@@ -54,7 +54,7 @@ namespace Spacebox.FPS
         {
             if (Input.IsKeyDown(Keys.F))
             {
-                spotLight.Enabled = !spotLight.Enabled;
+               // spotLight.Enabled = !spotLight.Enabled;
                 //audio.Play();
             }
 

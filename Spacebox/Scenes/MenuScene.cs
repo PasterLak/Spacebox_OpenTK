@@ -1,17 +1,18 @@
-﻿using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using Engine;
+﻿using Engine;
 using Engine.Audio;
-using Spacebox.Game.GUI;
-using Spacebox.Game;
-using Spacebox.Game.GUI.Menu;
-using Spacebox.Game.Generation;
+using Engine.Components;
+using Engine.InputPro;
+using Engine.Light;
 using Engine.SceneManagement;
 using Engine.UI;
-using Engine.Light;
-using Spacebox.GUI;
-using Engine.Components;
 using ImGuiNET;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using Spacebox.Game;
+using Spacebox.Game.Generation;
+using Spacebox.Game.GUI;
+using Spacebox.Game.GUI.Menu;
+using Spacebox.GUI;
 
 
 namespace Spacebox.Scenes
@@ -27,8 +28,10 @@ namespace Spacebox.Scenes
 
         public override void LoadContent()
         {
-         
+
             //Theme.ApplySpaceboxTheme();
+
+            InputManager.Instance.LoadConfiguration("Resources/default_input.json");
 
             var player = new CameraStatic(new Vector3(0, 0, 0));
             AddChild(player);
@@ -67,10 +70,19 @@ namespace Spacebox.Scenes
                 music.Audio.Stop();
             }
 
-            InputManager.AddAction("inputOverlay", Keys.F6);
-            InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
+            /*var jump = InputManager.Instance.AddAction("inputOverlay", "Jump action");
+
+            jump.AddBinding(new CompositeBinding(true,
+                new KeyBinding(Keys.G),
+                new KeyBinding(Keys.B)
+            ));*/
+
+ 
+            var jump = InputManager.Instance.GetAction("inputOverlay");
+            jump.Subscribe(InputEventType.Pressed, () => InputOverlay.IsVisible = !InputOverlay.IsVisible);
 
             devLogWindow.AddLogFromFile("Resources/devlog.txt");
+
 
 
         }

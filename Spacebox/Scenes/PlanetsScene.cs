@@ -93,8 +93,8 @@ namespace Spacebox.Scenes
 
             //music.Play();
 
-            InputManager.AddAction("inputOverlay", Keys.F6);
-            InputManager.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
+            InputManager0.AddAction("inputOverlay", Keys.F6);
+            InputManager0.RegisterCallback("inputOverlay", () => { InputOverlay.IsVisible = !InputOverlay.IsVisible; });
 
             cube = new CubeParent();
             //cube.Position = new Vector3(0, 0, 50000);
