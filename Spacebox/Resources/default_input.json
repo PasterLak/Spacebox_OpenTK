@@ -151,16 +151,6 @@
                         "Key": "G"
                     }
                 ]
-            },
-            "pause": {
-                "Name": "Pause",
-                "Description": "Pause the game",
-                "Bindings": [
-                    {
-                        "Type": "Key",
-                        "Key": "Escape"
-                    }
-                ]
             }
         },
         "Axes": {}

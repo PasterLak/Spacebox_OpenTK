@@ -264,7 +264,7 @@ namespace Spacebox.Scenes
             }
 
 
-            if (Input.IsActionDown("pause"))
+            if (Input.IsKeyDown(Keys.Escape))
             {
                 if (Chat.IsVisible && Chat.FocusInput)
                 {

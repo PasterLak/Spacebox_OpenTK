@@ -262,6 +262,38 @@ public class MovementMode : GameModeBase
 
     float timeInWall = 0;
 
+    private struct CollisionState
+    {
+        public bool hitX;
+        public bool hitY;
+        public bool hitZ;
+        public float totalImpactSpeed;
+        public CollideInfo collideInfo;
+    }
+
+    private float CalculateEffectiveImpactSpeed(Vector3 velocityBefore, CollisionState collision, int hitCount)
+    {
+        float speed = velocityBefore.Length;
+
+        if (hitCount == 1)
+        {
+            if (collision.hitX) return MathF.Abs(velocityBefore.X);
+            if (collision.hitY) return MathF.Abs(velocityBefore.Y);
+            if (collision.hitZ) return MathF.Abs(velocityBefore.Z);
+        }
+        else if (hitCount == 2)
+        {
+            if (collision.hitX && collision.hitY)
+                return MathF.Sqrt(velocityBefore.X * velocityBefore.X + velocityBefore.Y * velocityBefore.Y);
+            if (collision.hitX && collision.hitZ)
+                return MathF.Sqrt(velocityBefore.X * velocityBefore.X + velocityBefore.Z * velocityBefore.Z);
+            if (collision.hitY && collision.hitZ)
+                return MathF.Sqrt(velocityBefore.Y * velocityBefore.Y + velocityBefore.Z * velocityBefore.Z);
+        }
+
+        return speed;
+    }
+
     public void MoveAndCollide(Vector3 movement, Astronaut player)
     {
         Vector3 position = player.Position;
@@ -272,42 +304,66 @@ public class MovementMode : GameModeBase
 
             if (world == null) return;
 
+            CollisionState collision = new CollisionState();
+            Vector3 velocityBefore = player.InertiaController.Velocity;
+            float speedBefore = velocityBefore.Length;
 
-                position.X += movement.X;
+            position.X += movement.X;
             UpdateBoundingAt(position, player);
 
-            CollideInfo collideInfo;
-
-
-            if (world.IsColliding(player.Position, player.BoundingVolume, out collideInfo))
+            if (world.IsColliding(player.Position, player.BoundingVolume, out collision.collideInfo))
             {
                 position.X -= movement.X;
-
-
-                var save = ApplyVelocityDamage(player.InertiaController.Velocity.Length, player, collideInfo);
-                player.InertiaController.Velocity =
-                    new Vector3(save ? player.InertiaController.Velocity.X * 0.8f : 0, player.InertiaController.Velocity.Y, player.InertiaController.Velocity.Z);
+                collision.hitX = true;
             }
-
 
             position.Y += movement.Y;
             UpdateBoundingAt(position, player);
-            if (world.IsColliding(player.Position, player.BoundingVolume, out collideInfo))
+            if (world.IsColliding(player.Position, player.BoundingVolume, out var collideInfoY))
             {
                 position.Y -= movement.Y;
-                var save = ApplyVelocityDamage(player.InertiaController.Velocity.Length, player, collideInfo);
-                player.InertiaController.Velocity =
-                    new Vector3(player.InertiaController.Velocity.X, save ? player.InertiaController.Velocity.Y * 0.8f : 0, player.InertiaController.Velocity.Z);
+                collision.hitY = true;
+                if (!collision.hitX) collision.collideInfo = collideInfoY;
             }
 
             position.Z += movement.Z;
             UpdateBoundingAt(position, player);
-            if (world.IsColliding(player.Position, player.BoundingVolume, out collideInfo))
+            if (world.IsColliding(player.Position, player.BoundingVolume, out var collideInfoZ))
             {
                 position.Z -= movement.Z;
-                var save = ApplyVelocityDamage(player.InertiaController.Velocity.Length, player, collideInfo);
-                player.InertiaController.Velocity =
-                    new Vector3(player.InertiaController.Velocity.X, player.InertiaController.Velocity.Y, save ? player.InertiaController.Velocity.Z * 0.8f : 0);
+                collision.hitZ = true;
+                if (!collision.hitX && !collision.hitY) collision.collideInfo = collideInfoZ;
+            }
+
+            int hitCount = (collision.hitX ? 1 : 0) + (collision.hitY ? 1 : 0) + (collision.hitZ ? 1 : 0);
+
+            if (hitCount > 0)
+            {
+                float effectiveSpeed = CalculateEffectiveImpactSpeed(velocityBefore, collision, hitCount);
+
+                if (effectiveSpeed > 4f)
+                {
+                    var saveSpeed = ApplyVelocityDamage(effectiveSpeed, player, collision.collideInfo);
+
+                    if (saveSpeed)
+                    {
+                        player.InertiaController.Velocity = velocityBefore * 0.7f;
+                    }
+                    else
+                    {
+                        if (collision.hitX) velocityBefore.X = 0;
+                        if (collision.hitY) velocityBefore.Y = 0;
+                        if (collision.hitZ) velocityBefore.Z = 0;
+                        player.InertiaController.Velocity = velocityBefore;
+                    }
+                }
+                else if (speedBefore > 2f)
+                {
+                    if (collision.hitX) velocityBefore.X *= 0.95f;
+                    if (collision.hitY) velocityBefore.Y *= 0.95f;
+                    if (collision.hitZ) velocityBefore.Z *= 0.95f;
+                    player.InertiaController.Velocity = velocityBefore;
+                }
             }
 
             player.Position = position;
@@ -320,49 +376,26 @@ public class MovementMode : GameModeBase
 
     private bool ApplyVelocityDamage(float speed, Astronaut player, CollideInfo collideInfo)
     {
-        /*if (collideInfo.normal != Vector3SByte.Zero)
-        {
-            Vector3 normal = (Vector3)collideInfo.normal;
-            Vector3 velocityDir = player.InertiaController.Velocity;
-            float vLen = speed;
-            if (vLen > 0.0001f)
-            {
-                velocityDir.Normalize();
-                float dot = MathF.Abs(Vector3.Dot(velocityDir, normal));
-                const float SLIDE_THRESHOLD = 0.1f;
-                if (dot < SLIDE_THRESHOLD)
-                {
-                    Debug.Log($"N:{collideInfo.normal} V:{velocityDir} T: { SLIDE_THRESHOLD} ");
-                    return true;
-                }
-            }
-        }*/
-
         bool saveSpeed = false;
+
         if (speed > 4 && speed <= 9)
         {
             if (wallhitAudio.IsPlaying) wallhitAudio.Stop();
 
-            wallhitAudio.Volume = 0;
-            wallhitAudio.Volume = MathHelper.Min(wallhitAudio.Volume + speed * 0.07f, 1);
+            wallhitAudio.Volume = MathHelper.Clamp(speed * 0.07f, 0, 1);
             wallhitAudio.Play();
         }
-        else if (speed > 8)
+        else if (speed > 9)
         {
-            wallhitAudio2.Volume = MathHelper.Min(0 + speed * 0.1f, 1);
+            wallhitAudio2.Volume = MathHelper.Clamp(speed * 0.1f, 0, 1);
             wallhitAudio2.Play();
 
-            int damage = (int)(Math.Abs(speed) - 10f);
-            if (damage == 0) { damage = 1; }
-
-            if (damage >= 3)
+            if (collideInfo.block.IsTransparent)
             {
                 Chunk ch = collideInfo.chunk;
-
                 if (ch != null)
                 {
-                    if (collideInfo.block.IsTransparent)
-                        ch.RemoveBlock(collideInfo.blockPositionIndex, new Vector3SByte(0, 0, 0));
+                    ch.RemoveBlock(collideInfo.blockPositionIndex, new Vector3SByte(0, 0, 0));
                     if (blockDestroy != null)
                     {
                         PickDestroySound(collideInfo.block.BlockId);
@@ -370,25 +403,36 @@ public class MovementMode : GameModeBase
                             blockDestroy.Play();
                     }
                     saveSpeed = true;
-                    damage--;
+                    speed *= 0.7f;
                 }
             }
 
+            int dmg = CalculateDamage(speed);
 
-            int dmg = (int)(MathF.Max((MathF.Pow(speed - 8, 2.2f) * 0.5f), 1));
-
-            if (dmg < 50)
+            if (dmg > 0)
             {
-                player.TakeDamage(dmg, new DeathCase("Wall checking complete"));
+                if (dmg < 50)
+                {
+                    player.TakeDamage(dmg, new DeathCase("Wall checking complete"));
+                }
+                else
+                {
+                    player.TakeDamage(dmg, new DeathCase("Met an unfriendly asteroid"));
+                }
             }
-            else
-            {
-                player.TakeDamage(dmg, new DeathCase("Met an unfriendly asteroid"));
-            }
-
         }
 
         return saveSpeed;
+    }
+
+    private int CalculateDamage(float impactSpeed)
+    {
+        if (impactSpeed <= 9f)
+            return 0;
+        float baseDamage = impactSpeed - 8f;
+        int damage = (int)MathF.Max(MathF.Pow(baseDamage, 2.5f) * 0.5f, 1);
+        // Speed: 9=0, 10=1, 11=5, 12=11, 13=20, 14=33, 15=50, 16=72, 17=99, 18=132, 19=171, 20=217
+        return damage;
     }
 
     private void UpdateBoundingAt(Vector3 position, Astronaut player)
