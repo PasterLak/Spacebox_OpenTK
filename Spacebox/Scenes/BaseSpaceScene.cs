@@ -395,7 +395,9 @@ namespace Spacebox.Scenes
 
             TagManager.ClearTags();
             Window.OnResized -= TagManager.OnResized;
-
+            PauseUI.Dispose();
+            CraftingGUI.Dispose();
+            WelcomeUI.Dispose();
             ToggleManager.Dispose();
             Debug.OnVisibilityWasChanged -= OnDebugStateChanged;
             SpheresPool.Dispose();

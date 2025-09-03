@@ -26,7 +26,7 @@ namespace Spacebox.Game.GUI
                 Settings.ShowInterface = !_isVisible;
 
 
-              
+
             }
         }
 
@@ -139,6 +139,15 @@ namespace Spacebox.Game.GUI
                 info.ShowWelcomeWindow = false;
                 WorldInfoSaver.Save(info);
             }
+
+        }
+
+        public static void Dispose()
+        {
+            clickAudio?.Dispose();
+            clickAudio = null;
+            bannerTextureId = IntPtr.Zero;
+            _isVisible = false;
 
         }
     }

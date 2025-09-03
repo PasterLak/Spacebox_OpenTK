@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
+﻿
 using System.Runtime.InteropServices;
 using OpenTK.Audio.OpenAL;
+using OpenTK.Mathematics;
 
 namespace Engine.Audio
 {
@@ -13,17 +13,17 @@ namespace Engine.Audio
             {
                 string signature = new string(reader.ReadChars(4));
                 if (signature != "RIFF")
-                    throw new NotSupportedException("File is not a valid WAV file.");
+                    throw new NotSupportedException("[SoundLoader] File is not a valid WAV file.");
 
                 int riffChunkSize = reader.ReadInt32();
 
                 string format = new string(reader.ReadChars(4));
                 if (format != "WAVE")
-                    throw new NotSupportedException("File is not a valid WAVE file.");
+                    throw new NotSupportedException("[SoundLoader] File is not a valid WAVE file.");
 
                 string fmtSignature = new string(reader.ReadChars(4));
                 if (fmtSignature != "fmt ")
-                    throw new NotSupportedException("WAV file format not supported: missing fmt subchunk.");
+                    throw new NotSupportedException("[SoundLoader] WAV file format not supported: missing fmt subchunk.");
 
                 int fmtChunkSize = reader.ReadInt32();
                 int audioFormat = reader.ReadInt16();
@@ -40,7 +40,7 @@ namespace Engine.Audio
 
                 string dataSignature = new string(reader.ReadChars(4));
                 if (dataSignature != "data")
-                    throw new NotSupportedException("WAV file format not supported: missing data subchunk.");
+                    throw new NotSupportedException("[SoundLoader] WAV file format not supported: missing data subchunk.");
 
                 int dataChunkSize = reader.ReadInt32();
 
@@ -58,7 +58,7 @@ namespace Engine.Audio
                 (1, 16) => ALFormat.Mono16,
                 (2, 8) => ALFormat.Stereo8,
                 (2, 16) => ALFormat.Stereo16,
-                _ => throw new NotSupportedException("WAV file has an unsupported format.")
+                _ => throw new NotSupportedException("[SoundLoader] WAV file has an unsupported format.")
             };
         }
 
@@ -80,6 +80,14 @@ namespace Engine.Audio
                 AL.BufferData(buffer, format, dataPtr, data.Length, sampleRate);
 
             }
+            catch (Exception ex)
+            {
+                handle.Free();
+                AL.DeleteBuffer(buffer);
+                Debug.Error($"[SoundLoader] Failed to load sound {path}: {ex.Message}");
+                //throw new InvalidOperationException($"[SoundLoader] Failed to load sound {path}: {ex.Message}");
+                
+            }
             finally
             {
                 handle.Free();
@@ -88,7 +96,24 @@ namespace Engine.Audio
 
             CheckALError($"Loading sound {path}");
 
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            Debug.Log($"[Audio][{buffer}] Loaded! - {TrimToRelativePath(path, baseDirectory)}", Color4.Turquoise);
+
             return buffer;
+        }
+
+        public static string TrimToRelativePath(string fullPath, string baseDirectory)
+        {
+            if (string.IsNullOrEmpty(fullPath)) return fullPath;
+            if (string.IsNullOrEmpty(baseDirectory)) return Path.GetFileName(fullPath);
+
+            string normalizedFullPath = Path.GetFullPath(fullPath);
+            string normalizedBaseDir = Path.GetFullPath(baseDirectory);
+
+            if (!normalizedFullPath.StartsWith(normalizedBaseDir))
+                return Path.GetFileName(fullPath);
+
+            return normalizedFullPath.Substring(normalizedBaseDir.Length).TrimStart(Path.DirectorySeparatorChar);
         }
 
         private static void CheckALError(string operation)
@@ -96,7 +121,7 @@ namespace Engine.Audio
             ALError error = AL.GetError();
             if (error != ALError.NoError)
             {
-                throw new InvalidOperationException($"OpenAL error during {operation}: {AL.GetErrorString(error)}");
+                throw new InvalidOperationException($"[SoundLoader] OpenAL error during {operation}: {AL.GetErrorString(error)}");
             }
         }
     }

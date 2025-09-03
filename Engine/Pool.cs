@@ -105,7 +105,7 @@ namespace Engine
 
             if (AutoExpand)
             {
-                Debug.Log("Expanding pool: new count " + (TotalObjects + 1));
+                //Debug.Log("[Pool] Expanding: New count " + (TotalObjects + 1));
                 return CreateObject(true);
             }
 

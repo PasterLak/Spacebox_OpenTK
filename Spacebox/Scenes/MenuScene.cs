@@ -58,6 +58,7 @@ namespace Spacebox.Scenes
             if(Settings.Graphics.EffectsEnabled)
             SetDustSpawner();
 
+
             var music = AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/music.ogg"));
             music.PlayOnStart = false;
             if (Settings.Audio.MenuMusic)

@@ -46,23 +46,26 @@ namespace Engine.Audio
         public AudioSource(AudioClip clip)
         {
             if (clip == null)
-                Debug.Error("[AudioSource] clip was null!");
+                Debug.Error("[AudioSource] AudioClip was null!");
 
             this.Clip = clip;
             clip.AudioSource = this;
+           // Debug.Log("[AudioSource] Created AudioSource for clip: " + clip.Name);
             handle = AL.GenSource();
-
+            //Debug.Log("[AudioSource] Generated OpenAL source with handle: " + handle);
             if (!clip.IsStreaming)
             {
                 AL.Source(handle, ALSourcei.Buffer, clip.Buffer);
                 AL.Source(handle, ALSourcef.Gain, _volume);
                 AL.Source(handle, ALSource3f.Position, Position.X, Position.Y, Position.Z);
+                //Debug.Error("[AudioSource] Bound buffer " + clip.Buffer + " to source " + handle);
                 CheckALError("Initializing AudioSource");
             }
             else
             {
                 AL.Source(handle, ALSourcef.Gain, _volume);
                 AL.Source(handle, ALSource3f.Position, Position.X, Position.Y, Position.Z);
+                //Debug.Error("[AudioSource] Prepared streaming AudioSource with handle: " + handle);
                 CheckALError("Initializing streaming AudioSource");
             }
         }
@@ -131,7 +134,7 @@ namespace Engine.Audio
                 }
                 catch (InvalidOperationException ex)
                 {
-                    Debug.Error("Error stopping AudioSource (ignored): " + ex.Message);
+                    Debug.Error("[AudioSource] Error stopping AudioSource (ignored): " + ex.Message);
                 }
                 isPlaying = false;
                 isPaused = false;
@@ -219,7 +222,7 @@ namespace Engine.Audio
             ALError error = AL.GetError();
             if (error != ALError.NoError)
             {
-                throw new InvalidOperationException($"OpenAL error during {operation}: {AL.GetErrorString(error)}");
+                throw new InvalidOperationException($"[AudioSource] OpenAL error during {operation}: {AL.GetErrorString(error)}");
             }
         }
     }

@@ -22,7 +22,7 @@ namespace Spacebox.Game.GUI
 
             if (name != null)
                 Items = GetItems(name);
-            Debug.Log("" + name.Name + " " + Items[0].Name + " "+ Items[0].Id);
+          
 
             if (Items.Count > 0)
             {

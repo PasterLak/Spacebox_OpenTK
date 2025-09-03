@@ -699,5 +699,42 @@ namespace Spacebox.Game.GUI
 
             ImGui.PopStyleColor(4);
         }
+
+        public static void Dispose()
+        {
+            if (scrollAudio != null)
+            {
+                scrollAudio.Dispose();
+                scrollAudio = null;
+            }
+            if (clickAudio != null)
+            {
+                clickAudio.Dispose();
+                clickAudio = null;
+            }
+            if (openSound != null)
+            {
+                openSound.Dispose();
+                openSound = null;
+            }
+            if (closeSound != null)
+            {
+                closeSound.Dispose();
+                closeSound = null;
+            }
+            Inventory = null;
+            Panel = null;
+            currentPlayer = null;
+            category = null;
+            hovered = -1;
+            IsVisible = false;
+           
+            SlotTexture = IntPtr.Zero;
+            usedSlots = 0;
+            totalSlots = 0;
+            selectedButton = -1;
+            showGrid = false;
+
+        }
     }
 }

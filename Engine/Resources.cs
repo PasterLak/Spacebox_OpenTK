@@ -199,7 +199,7 @@ namespace Engine
                         return (T)existingEntry.Resource;
                 }
             }
-
+            Debug.Warning($"[Resources][Get] Resource not found: {typeof(T).Name} {pathOrName}. Loading it now.");
             return Load<T>(pathOrName);
         }
 

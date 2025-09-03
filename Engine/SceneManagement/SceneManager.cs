@@ -1,6 +1,6 @@
-﻿using OpenTK.Windowing.Desktop;
+﻿using Engine.Light;
 using OpenTK.Mathematics;
-using Engine.Light;
+using System.Xml.Linq;
 
 namespace Engine.SceneManagement
 {
@@ -39,6 +39,7 @@ namespace Engine.SceneManagement
             if (_nextFactory != null)
                 _history.Push(_nextFactory);
 
+           
             _nextFactory = () =>
             {
                 var s = (Scene)Activator.CreateInstance(sceneType)!;
@@ -46,7 +47,7 @@ namespace Engine.SceneManagement
                 return s;
             };
             _lastFactory = _nextFactory;
-            Switch();
+            Switch(sceneType.Name);
         }
 
         public static void Load<TScene>() where TScene : Scene, new()
@@ -60,8 +61,7 @@ namespace Engine.SceneManagement
             }
             if (_nextFactory != null)
                 _history.Push(_nextFactory);
-
-            Debug.Log("[SceneManager] Loading scene ", Color4.White);
+            
             _nextFactory = () =>
             {
                 var s = new TScene();
@@ -70,7 +70,7 @@ namespace Engine.SceneManagement
             };
             _lastFactory = _nextFactory;
 
-            Switch();
+            Switch(typeof(TScene).Name);
         }
 
         public static void Load<TScene, TParam>(TParam param)
@@ -85,8 +85,7 @@ namespace Engine.SceneManagement
 
             if (_nextFactory != null)
                 _history.Push(_nextFactory);
-
-            Debug.Log("[SceneManager] Loading scene ", Color4.White);
+          
             _nextFactory = () =>
             {
                 var s = new TScene();
@@ -96,17 +95,15 @@ namespace Engine.SceneManagement
             };
             _lastFactory = _nextFactory;
 
-            Switch();
+            Switch(typeof(TScene).Name);
         }
 
         public static void Reload()
         {
             if (_history.Count == 0) return;
             _nextFactory = _lastFactory;
-            Switch();
+            Switch(_current.GetType().Name);
         }
-
-
 
         public static void Register<TScene>() where TScene : Scene, new()
         {
@@ -117,9 +114,9 @@ namespace Engine.SceneManagement
         {
             if (_history.Count == 0) return;
             _nextFactory = _history.Pop();
-            Switch();
+            Switch("Previous");
         }
-        private static void Switch()
+        private static void Switch(string newSceneName)
         {
             if (_current != null)
             {
@@ -136,14 +133,23 @@ namespace Engine.SceneManagement
                 Resources.UnloadAll();
                 VisualDebug.Clear();
                 _current = null;
-                Debug.Log("[SceneManager] Scene was unloaded: " + name, Color4.White);
+                
 
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
+
+                Debug.Log("[SceneManager] Scene was unloaded: " + name, Color4.White);
             }
+           
+            Debug.Log("------------------------------------------------------------------", Color4.White);
+            Debug.Log("     [SceneManager] Loading scene: " + newSceneName  +" >>>", Color4.Yellow);
+            Debug.Log("------------------------------------------------------------------", Color4.White);
+            Debug.Log("[SceneManager] Constructor", Color4.Yellow);
             _current = _nextFactory();
+            Debug.Log("[SceneManager] Loading content", Color4.Yellow);
             _current.LoadContent();
+            Debug.Log("[SceneManager] Loaded: " + newSceneName, Color4.Yellow);
             _current.Start();
         }
 

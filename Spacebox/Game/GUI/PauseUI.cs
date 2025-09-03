@@ -168,5 +168,13 @@ namespace Spacebox.Game.GUI
         {
             parallaxIntensity = intensity;
         }
+
+        public static void Dispose()
+        {
+            click1?.Dispose();
+            click1 = null;
+            _isVisible = false;
+
+        }
     }
 }

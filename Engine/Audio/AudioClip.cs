@@ -31,7 +31,7 @@ namespace Engine.Audio
             string resolvedPath = AudioPathResolver.ResolvePath(filename, AppDomain.CurrentDomain.BaseDirectory, AllowedExtensions);
             if (resolvedPath == null)
             {
-                throw new FileNotFoundException($"Audio file for '{filename}' not found.");
+                throw new FileNotFoundException($"[AudioClip] Audio file for '{filename}' not found.");
             }
             FileFullPath = resolvedPath;
             Name = Path.GetFileNameWithoutExtension(resolvedPath);
@@ -145,7 +145,7 @@ namespace Engine.Audio
 
             if (error != ALError.NoError)
             {
-                throw new InvalidOperationException($"OpenAL error during {operation}: {AL.GetErrorString(error)}");
+                throw new InvalidOperationException($"[AudioClip] OpenAL error during {operation}: {AL.GetErrorString(error)}");
             }
         }
 

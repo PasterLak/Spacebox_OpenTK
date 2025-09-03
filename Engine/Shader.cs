@@ -125,18 +125,18 @@ namespace Engine
             Handle = newHandle;
             _uniformLocations = newUniforms;
             GPUDebug.LabelProgram(Handle, _shaderPath);
-            Debug.Log($"[Shader] Compiled! Handle:{Handle} - {Path.GetFileName(_shaderPath)}", Color4.BlueViolet);
+            Debug.Log($"[Shader][{Handle}] Compiled! - {Path.GetFileName(_shaderPath)}", Color4.BlueViolet);
         }
 
         public void ReloadShader()
         {
-            Debug.Log("Reloading shader...");
+            Debug.Log("[Shader] Reloading shader...");
             _isReloadingShader = true;
-            try { Load(); Debug.Log("Shader reloaded successfully."); }
+            try { Load(); Debug.Log("[Shader] Shader reloaded successfully."); }
             catch (Exception ex)
             {
-                Debug.Error("Shader reload failed: " + ex.Message);
-                Debug.Log("Using previous working shader.");
+                Debug.Error("[Shader] Shader reload failed: " + ex.Message);
+                Debug.Log("[Shader] Using previous working shader.");
                 if (Handle != _previousHandle)
                 {
                     if (Handle != 0) GL.DeleteProgram(Handle);
@@ -158,7 +158,7 @@ namespace Engine
             if (code != (int)All.True)
             {
                 string infoLog = GL.GetShaderInfoLog(shader);
-                throw new Exception($"Error compiling shader ({type}): {infoLog}");
+                throw new Exception($"[Shader] Error compiling shader ({type}): {infoLog}");
             }
             return shader;
         }
@@ -172,7 +172,7 @@ namespace Engine
             if (code != (int)All.True)
             {
                 string infoLog = GL.GetProgramInfoLog(program);
-                throw new Exception($"Error linking program ({program}): {infoLog}");
+                throw new Exception($"[Shader] Error linking program ({program}): {infoLog}");
             }
         }
 

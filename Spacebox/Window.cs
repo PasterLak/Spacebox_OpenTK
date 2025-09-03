@@ -317,7 +317,7 @@ namespace Spacebox
 
             if (ProfDumpTimer.TimeSinceLastDump() >= 1.0)
             {
-                Prof.DumpToConsole();
+               // Prof.DumpToConsole();
                 ProfDumpTimer.ResetDumpTimer();
             }
 

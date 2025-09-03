@@ -77,7 +77,7 @@ namespace Engine
             try { LoadTextureFromFile(path, flipY); }
             catch (Exception ex)
             {
-                Debug.Error($"Failed to load texture from {path}: {ex.Message}");
+                Debug.Error($"[Texture2D] Failed to load texture from {path}: {ex.Message}");
                 CreatePinkTexture();
             }
             _filterMode = pixelated ? FilterMode.Nearest : FilterMode.Linear;
@@ -96,7 +96,7 @@ namespace Engine
         private void LoadTextureFromFile(string path, bool flipY)
         {
             if (!File.Exists(path))
-                throw new FileNotFoundException($"Texture file not found: {path}");
+                throw new FileNotFoundException($"[Texture2D] Texture file not found: {path}");
 
             using var input = File.OpenRead(path);
             using var codec = SKCodec.Create(input);
@@ -126,7 +126,7 @@ namespace Engine
             LoadTextureFromPixels();
 
             if (AllowDebug)
-                Debug.Log("[Texture2D] Loaded from: " + path, Color4.Coral);
+                Debug.Log($"[Texture2D][{Handle}] Loaded! - {path}", Color4.Coral);
         }
 
         private void LoadTextureFromPixels()
@@ -217,7 +217,7 @@ namespace Engine
         public void SetPixelsData(Color4[,] newPixels)
         {
             if (newPixels.GetLength(0) != Width || newPixels.GetLength(1) != Height)
-                throw new ArgumentException("Pixel data does not match texture size.");
+                throw new ArgumentException("[Texture2D]^Pixel data does not match texture size.");
             pixels = newPixels;
         }
         public void SetPixelsData(Vector3[,] newPixels)
@@ -226,7 +226,7 @@ namespace Engine
             int height = newPixels.GetLength(1);
 
             if (width != Width || height != Height)
-                throw new ArgumentException("Pixel data does not match texture size.");
+                throw new ArgumentException("[Texture2D] Pixel data does not match texture size.");
 
             var newColorPixels = new Color4[width, height];
 
@@ -311,7 +311,7 @@ namespace Engine
             using var stream = File.OpenWrite(path);
             data.SaveTo(stream);
 
-            Debug.Success($"JPEG image saved to: {Path.GetFullPath(path)} , Size X:{Width} Y:{Height}");
+            Debug.Success($"[Texture2D] JPEG image saved to: {Path.GetFullPath(path)} , Size X:{Width} Y:{Height}");
         }
 
         private void SaveImage(string path, bool flipY = false)
@@ -339,7 +339,7 @@ namespace Engine
             using var stream = File.OpenWrite(path);
             data.SaveTo(stream);
 
-            Debug.Success($"PNG image saved to: {Path.GetFullPath(path)} , Size X:{Width} Y:{Height}");
+            Debug.Success($"[Texture2D] PNG image saved to: {Path.GetFullPath(path)} , Size X:{Width} Y:{Height}");
         }
         public static void SavePixelsToPng(string path, Color4[,] pixels, bool flipY = false)
         {
@@ -369,7 +369,7 @@ namespace Engine
             using var stream = File.OpenWrite(path);
             data.SaveTo(stream);
 
-            Debug.Success($"Image saved to: {Path.GetFullPath(path)}");
+            Debug.Success($"[Texture2D] Image saved to: {Path.GetFullPath(path)}");
         }
 
 
@@ -397,7 +397,7 @@ namespace Engine
         public static async Task<PixelData> LoadAsync(string path, bool flipY = true)
         {
             if (!File.Exists(path))
-                throw new FileNotFoundException($"Texture file not found: {path}");
+                throw new FileNotFoundException($"[Texture2D] Texture file not found: {path}");
 
             return await Task.Run(() =>
             {
