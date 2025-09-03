@@ -1,5 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using Engine;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
@@ -78,14 +77,6 @@ namespace Spacebox.Game
                 var cam = Camera.Main as Astronaut;
 
                 Material.Apply(model);
-                /*material.Action = () =>
-                {
-                    material.Shader.Use();
-                    material.Shader.SetMatrix4("model", model);
-                    material.Shader.SetMatrix4("view", cam.GetViewMatrix());
-                    material.Shader.SetMatrix4("projection", cam.GetProjectionMatrix());
-                };*/
-
                
             }
 
@@ -160,8 +151,11 @@ namespace Spacebox.Game
         }
         public void Dispose()
         {
+            Material = null;
+            itemCamera = null;
             Mesh?.Dispose();
-            //Texture?.Dispose();
+            Destroy();
+
         }
     }
 }

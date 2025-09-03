@@ -5,7 +5,6 @@ using Spacebox.Game.Player;
 using Engine;
 using Spacebox.Scenes;
 using Engine.Light;
-using OpenTK.Mathematics;
 using Spacebox.Game.Player.GameModes;
 
 
@@ -178,16 +177,22 @@ namespace Spacebox.Game.Resource
 
         public static string[] GetFilesRecursive(string rootPath, string[] extensionsWithDot)
         {
-
             var files = new List<string>();
-
             foreach (var ext in extensionsWithDot)
             {
                 var ex = "*" + ext;
                 var pattern = ex.StartsWith("*.") ? ex : $"*.{ex.TrimStart('.')}";
-                files.AddRange(Directory.GetFiles(rootPath, pattern, SearchOption.AllDirectories));
-            }
+                var allFiles = Directory.GetFiles(rootPath, pattern, SearchOption.AllDirectories);
 
+                var filteredFiles = allFiles.Where(file =>
+                {
+                    var directory = Path.GetDirectoryName(file);
+                    var pathParts = directory.Replace(rootPath, "").Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+                    return !pathParts.Any(part => part.StartsWith("_"));
+                });
+
+                files.AddRange(filteredFiles);
+            }
             return files.ToArray();
         }
 

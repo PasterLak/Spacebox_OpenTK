@@ -250,6 +250,8 @@ namespace Spacebox.Game
             Projectiles.Clear();
             Blocks.Clear();
             Items.Clear();
+            foreach (var itemModel in ItemModels.Values)
+                itemModel.Dispose();
             ItemModels.Clear();
             ItemIcons.Clear();
             BlockDusts.Clear();

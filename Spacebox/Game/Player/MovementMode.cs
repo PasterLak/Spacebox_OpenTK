@@ -1,13 +1,12 @@
-﻿using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-
+﻿using Engine;
 using Engine.Audio;
 using Engine.Physics;
-using Engine;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
-using Spacebox.Game.Player.Interactions;
 using Spacebox.Game.Player.GameModes;
+using Spacebox.Game.Player.Interactions;
 
 
 namespace Spacebox.Game.Player;
@@ -103,9 +102,6 @@ public class MovementMode : GameModeBase
 
     public override void HandleInput(Astronaut player)
     {
-
-
-
 
         Vector3 acceleration = Vector3.Zero;
         bool isMoving = false;
@@ -236,12 +232,35 @@ public class MovementMode : GameModeBase
             player.CameraSway.Update(movement.Length / Time.Delta);
         }
 
+        
+
+        var oldPos = player.Position;
         if (movement != Vector3.Zero)
         {
             MoveAndCollide(movement, player);
             player.OnMoved?.Invoke(player);
         }
+
+        if(player.CanMove && player.Position == oldPos)
+        {
+            var world = World.Instance;
+
+            if (world == null) return;
+
+            if (world.IsColliding(player.Position, player.BoundingVolume, out var col))
+            {
+                timeInWall += Time.Delta;
+
+                if(timeInWall > 1f)
+                {
+                    player.TakeDamage(5, new DeathCase("Suffocated in a wall"));
+                    timeInWall = 0;
+                }
+            }
+        }
     }
+
+    float timeInWall = 0;
 
     public void MoveAndCollide(Vector3 movement, Astronaut player)
     {
@@ -253,7 +272,8 @@ public class MovementMode : GameModeBase
 
             if (world == null) return;
 
-            position.X += movement.X;
+
+                position.X += movement.X;
             UpdateBoundingAt(position, player);
 
             CollideInfo collideInfo;
