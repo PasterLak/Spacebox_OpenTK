@@ -21,9 +21,9 @@ public class InputBindingConverter : JsonConverter<InputBinding>
             {
                 Key = Enum.Parse<Keys>(root.GetProperty("Key").GetString())
             },
-            "MouseButton" => new MouseButtonBinding
+            "MouseKey" => new MouseKeyBinding
             {
-                Button = Enum.Parse<MouseButton>(root.GetProperty("Button").GetString())
+                Key = Enum.Parse<MouseButton>(root.GetProperty("Key").GetString())
             },
             "Composite" => new CompositeBinding
             {
@@ -51,9 +51,9 @@ public class InputBindingConverter : JsonConverter<InputBinding>
                 writer.WriteString("Type", "Key");
                 writer.WriteString("Key", kb.Key.ToString());
                 break;
-            case MouseButtonBinding mb:
-                writer.WriteString("Type", "MouseButton");
-                writer.WriteString("Button", mb.Button.ToString());
+            case MouseKeyBinding mb:
+                writer.WriteString("Type", "MouseKey");
+                writer.WriteString("Key", mb.Key.ToString());
                 break;
             case CompositeBinding cb:
                 writer.WriteString("Type", "Composite");

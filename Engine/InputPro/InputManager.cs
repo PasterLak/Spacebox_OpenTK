@@ -73,8 +73,8 @@ public class InputManager
         var action = new InputAction(name, description);
         activeProfile.Actions[name] = action;
 
-        if (!activeProfile.ActionOrder.Contains(name))
-            activeProfile.ActionOrder.Add(name);
+        if (!activeProfile.ActionOrder.Contains(action))
+            activeProfile.ActionOrder.Add(action);
 
         return action;
     }
@@ -89,7 +89,7 @@ public class InputManager
     public InputAction AddAction(string name, MouseButton button, string description = "")
     {
         var action = AddAction(name, description);
-        action.AddBinding(new MouseButtonBinding(button));
+        action.AddBinding(new MouseKeyBinding(button));
         return action;
     }
 
@@ -103,7 +103,8 @@ public class InputManager
     public void RemoveAction(string name)
     {
         activeProfile.Actions.Remove(name);
-        activeProfile.ActionOrder.Remove(name);
+        if (activeProfile.Actions.TryGetValue(name, out InputAction? value))
+            activeProfile.ActionOrder.Remove(value);
     }
 
     public void RemoveAxis(string name)
@@ -113,12 +114,12 @@ public class InputManager
 
     public InputAction GetAction(string id)
     {
-        if(activeProfile.Actions.TryGetValue(id, out var action))
+        if (activeProfile.Actions.TryGetValue(id, out var action))
         {
             return action;
         }
         else
-        {            
+        {
             Debug.Error($"[InputManager] Action '{id}' not found in profile '{activeProfile.Name}'");
             return AddAction(id);
         }
@@ -167,13 +168,6 @@ public class InputManager
     {
         try
         {
-            foreach (var profile in profiles.Values)
-            {
-                if (profile.ActionOrder.Count == 0)
-                {
-                    profile.ActionOrder = profile.Actions.Keys.ToList();
-                }
-            }
 
             var options = new JsonSerializerOptions
             {
@@ -200,26 +194,28 @@ public class InputManager
             Debug.Error($"[InputManager] Input configuration file not found: {path}");
             return;
         }
-
+        bool success = true;
         try
         {
             var json = File.ReadAllText(path);
             var jsonDocument = JsonDocument.Parse(json);
-
             profiles = new Dictionary<string, InputProfile>();
+            var profileActionOrders = new Dictionary<string, List<string>>();
 
             foreach (var profileElement in jsonDocument.RootElement.EnumerateObject())
             {
                 var profile = new InputProfile { Name = profileElement.Name };
+                var actionOrder = new List<string>();
 
                 if (profileElement.Value.TryGetProperty("Actions", out var actionsElement))
                 {
                     foreach (var actionElement in actionsElement.EnumerateObject())
                     {
-                        profile.ActionOrder.Add(actionElement.Name);
+                        actionOrder.Add(actionElement.Name);
                     }
                 }
 
+                profileActionOrders[profileElement.Name] = actionOrder;
                 profiles[profileElement.Name] = profile;
             }
 
@@ -235,6 +231,17 @@ public class InputManager
                 {
                     profiles[kvp.Key].Actions = kvp.Value.Actions;
                     profiles[kvp.Key].Axes = kvp.Value.Axes;
+
+                    if (profileActionOrders.TryGetValue(kvp.Key, out var actionIds))
+                    {
+                        foreach (var actionId in actionIds)
+                        {
+                            if (profiles[kvp.Key].Actions.TryGetValue(actionId, out var action))
+                            {
+                                profiles[kvp.Key].ActionOrder.Add(action);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -243,12 +250,13 @@ public class InputManager
         }
         catch (Exception ex)
         {
+            success = false;
             Debug.Error($"[InputManager] Failed to load input configuration: {ex.Message}");
         }
-        finally
-        {
+
+        if (success)
             Debug.Success($"[InputManager] Input configuration loaded from {path} (profiles: {profiles.Count})");
-        }
+
     }
 
     public void CreateProfile(string name)
@@ -292,18 +300,21 @@ public class InputManager
             return new List<(string, InputAction)>();
 
         var orderedActions = new List<(string, InputAction)>();
+        var addedActions = new HashSet<InputAction>();
 
-        foreach (var actionId in activeProfile.ActionOrder)
+        foreach (var action in activeProfile.ActionOrder)
         {
-            if (activeProfile.Actions.TryGetValue(actionId, out var action))
+            var kvp = activeProfile.Actions.FirstOrDefault(a => a.Value == action);
+            if (!kvp.Equals(default(KeyValuePair<string, InputAction>)))
             {
-                orderedActions.Add((actionId, action));
+                orderedActions.Add((kvp.Key, action));
+                addedActions.Add(action);
             }
         }
 
         foreach (var kvp in activeProfile.Actions)
         {
-            if (!activeProfile.ActionOrder.Contains(kvp.Key))
+            if (!addedActions.Contains(kvp.Value))
             {
                 orderedActions.Add((kvp.Key, kvp.Value));
             }

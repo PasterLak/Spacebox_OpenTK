@@ -8,6 +8,6 @@ public class InputProfile
     public string Name { get; set; } = "Default";
     public Dictionary<string, InputAction> Actions { get; set; } = new();
     [JsonIgnore]
-    public List<string> ActionOrder { get; set; } = new();
+    public List<InputAction> ActionOrder { get; set; } = new();
     public Dictionary<string, InputAxis> Axes { get; set; } = new();
 }

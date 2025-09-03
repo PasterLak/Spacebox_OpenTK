@@ -279,18 +279,19 @@ namespace Spacebox.Game.Player
 
             if (!CanMove) return;
 
-            if (Input.IsMouseButton(MouseButton.Middle))
+            if (Input.IsAction("zoom"))
             {
                 if (PanelUI.IsHolding<CreativeToolItem>()) return;
 
                 if (FOV != 50)
                     FOV = 50;
             }
-            if (Input.IsMouseButtonUp(MouseButton.Middle))
+            if (Input.IsActionUp("zoom"))
             {
                 FOV = 90;
             }
 
+#if DEBUG
             if (Input.IsKeyDown(Keys.R))
             {
                 //CameraRelativeRender = !CameraRelativeRender;
@@ -301,6 +302,8 @@ namespace Spacebox.Game.Player
                 CollisionEnabled = !CollisionEnabled;
                 Debug.Log($"Collision Enabled: {CollisionEnabled}");
             }
+
+#endif
 
             HandleMouse();
             UpdateBounding();

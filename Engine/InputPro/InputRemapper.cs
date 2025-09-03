@@ -70,7 +70,7 @@ public class InputRemapper
         if (action != null)
         {
             action.Bindings.Clear();
-            action.AddBinding(new MouseButtonBinding(button));
+            action.AddBinding(new MouseKeyBinding(button));
            
         }
         isRemapping = false;

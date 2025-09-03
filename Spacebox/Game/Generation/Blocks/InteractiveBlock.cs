@@ -40,13 +40,13 @@ namespace Spacebox.Game.Generation.Blocks
                 var key = action.Bindings[0];
                 keyName = key.GetDisplayName();
 
-                if(key is MouseButtonBinding)
+                if(key is MouseKeyBinding)
                 {
-                    if(((MouseButtonBinding)key).Button == MouseButton.Right)
+                    if(((MouseKeyBinding)key).Key == MouseButton.Right)
                     {
                         keyName = "RMB";
                     }
-                    else if (((MouseButtonBinding)key).Button == MouseButton.Left)
+                    else if (((MouseKeyBinding)key).Key == MouseButton.Left)
                     {
                         keyName = "LMB";
                     }
