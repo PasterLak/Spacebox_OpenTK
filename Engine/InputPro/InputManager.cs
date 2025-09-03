@@ -72,6 +72,10 @@ public class InputManager
     {
         var action = new InputAction(name, description);
         activeProfile.Actions[name] = action;
+
+        if (!activeProfile.ActionOrder.Contains(name))
+            activeProfile.ActionOrder.Add(name);
+
         return action;
     }
 
@@ -99,6 +103,7 @@ public class InputManager
     public void RemoveAction(string name)
     {
         activeProfile.Actions.Remove(name);
+        activeProfile.ActionOrder.Remove(name);
     }
 
     public void RemoveAxis(string name)
@@ -160,9 +165,16 @@ public class InputManager
 
     public void SaveConfiguration(string path)
     {
-
         try
         {
+            foreach (var profile in profiles.Values)
+            {
+                if (profile.ActionOrder.Count == 0)
+                {
+                    profile.ActionOrder = profile.Actions.Keys.ToList();
+                }
+            }
+
             var options = new JsonSerializerOptions
             {
                 WriteIndented = true,
@@ -183,21 +195,48 @@ public class InputManager
 
     public void LoadConfiguration(string path)
     {
-   
         if (!File.Exists(path))
         {
             Debug.Error($"[InputManager] Input configuration file not found: {path}");
             return;
         }
-        
+
         try
         {
             var json = File.ReadAllText(path);
+            var jsonDocument = JsonDocument.Parse(json);
+
+            profiles = new Dictionary<string, InputProfile>();
+
+            foreach (var profileElement in jsonDocument.RootElement.EnumerateObject())
+            {
+                var profile = new InputProfile { Name = profileElement.Name };
+
+                if (profileElement.Value.TryGetProperty("Actions", out var actionsElement))
+                {
+                    foreach (var actionElement in actionsElement.EnumerateObject())
+                    {
+                        profile.ActionOrder.Add(actionElement.Name);
+                    }
+                }
+
+                profiles[profileElement.Name] = profile;
+            }
+
             var options = new JsonSerializerOptions
             {
                 Converters = { new InputBindingConverter() }
             };
-            profiles = JsonSerializer.Deserialize<Dictionary<string, InputProfile>>(json, options) ?? new();
+            var tempProfiles = JsonSerializer.Deserialize<Dictionary<string, InputProfile>>(json, options) ?? new();
+
+            foreach (var kvp in tempProfiles)
+            {
+                if (profiles.ContainsKey(kvp.Key))
+                {
+                    profiles[kvp.Key].Actions = kvp.Value.Actions;
+                    profiles[kvp.Key].Axes = kvp.Value.Axes;
+                }
+            }
 
             if (profiles.ContainsKey("Default"))
                 activeProfile = profiles["Default"];
@@ -205,7 +244,8 @@ public class InputManager
         catch (Exception ex)
         {
             Debug.Error($"[InputManager] Failed to load input configuration: {ex.Message}");
-        }finally
+        }
+        finally
         {
             Debug.Success($"[InputManager] Input configuration loaded from {path} (profiles: {profiles.Count})");
         }
@@ -245,20 +285,36 @@ public class InputManager
         if (window != null)
             window.MousePosition = new Vector2(window.Size.X / 2f, window.Size.Y / 2f);
     }
-}
 
-public static class InputManagerExtensions
-{
-    public static Dictionary<string, InputAction> GetAllActions(this InputManager manager)
+    public List<(string id, InputAction action)> GetAllActions()
     {
-        var profile = manager.GetActiveProfile();
-        return profile?.Actions ?? new Dictionary<string, InputAction>();
+        if (activeProfile == null)
+            return new List<(string, InputAction)>();
+
+        var orderedActions = new List<(string, InputAction)>();
+
+        foreach (var actionId in activeProfile.ActionOrder)
+        {
+            if (activeProfile.Actions.TryGetValue(actionId, out var action))
+            {
+                orderedActions.Add((actionId, action));
+            }
+        }
+
+        foreach (var kvp in activeProfile.Actions)
+        {
+            if (!activeProfile.ActionOrder.Contains(kvp.Key))
+            {
+                orderedActions.Add((kvp.Key, kvp.Value));
+            }
+        }
+
+        return orderedActions;
     }
 
-    public static InputProfile GetActiveProfile(this InputManager manager)
+    public InputProfile GetActiveProfile()
     {
-        var profileField = typeof(InputManager).GetField("activeProfile",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        return profileField?.GetValue(manager) as InputProfile;
+        return activeProfile;
     }
 }
+

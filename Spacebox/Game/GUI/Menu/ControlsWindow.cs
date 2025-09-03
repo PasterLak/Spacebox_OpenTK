@@ -62,31 +62,31 @@ public class ControlsWindow : MenuWindow
         ImGui.TableHeadersRow();
 
         var actions = InputManager.Instance.GetAllActions();
-        foreach (var action in actions.OrderBy(a => a.Value.Name))
+        foreach (var action in actions)
         {
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.Text(action.Value.Name);
+            ImGui.Text(action.action.Name);
 
             ImGui.TableNextColumn();
-            ImGui.TextWrapped(action.Value.Description);
+            ImGui.TextWrapped(action.action.Description);
 
             ImGui.TableNextColumn();
-            string bindingText = GetBindingDisplayText(action.Value);
+            string bindingText = GetBindingDisplayText(action.action);
             ImGui.Text(bindingText);
 
             ImGui.TableNextColumn();
-            if (isRemapping && remappingAction == action.Key)
+            if (isRemapping && remappingAction == action.id)
             {
                 ImGui.TextColored(new Vector4(1, 1, 0, 1), "Listening...");
             }
             else
             {
                 ImGui.Dummy(new Vector2(rowH, rowH/2f));ImGui.SameLine();
-                if (ImGui.Button($"Change##{action.Value.Name} "))
+                if (ImGui.Button($"Change##{action.action.Name} "))
                 {
-                    StartRemapping(action.Key);
+                    StartRemapping(action.id);
                 }
             }
         }

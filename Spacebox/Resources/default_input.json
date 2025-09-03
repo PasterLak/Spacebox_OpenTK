@@ -1,188 +1,188 @@
 ﻿{
-  "Default": {
-    "Name": "Default",
-    "Actions": {
-      "inputOverlay": {
-        "Name": "Input Overlay",
-        "Description": "Input Overlay",
-        "Bindings": [
-          {
-            "Type": "Key",
-            "Key": "F6"
-          }
-        ],
-        "Enabled": true,
-        "DeadZone": 0.1
-      },
-      "forward": {
-        "Name": "Forward",
-        "Description": "",
-        "Bindings": [
-          {
-            "Type": "Key",
-            "Key": "W"
-          }
-        ],
-        "Enabled": true,
-        "DeadZone": 0.1
-      },
-      "backward": {
-        "Name": "Backward",
-        "Description": "",
-        "Bindings": [
-          {
-            "Type": "Key",
-            "Key": "S"
-          }
-        ],
-        "Enabled": true,
-        "DeadZone": 0.1
-      },
-      "left": {
-        "Name": "Left",
-        "Description": "",
-        "Bindings": [
-          {
-            "Type": "Key",
-            "Key": "A"
-          }
-        ],
-        "Enabled": true,
-        "DeadZone": 0.1
-      },
-      "right": {
-        "Name": "Right",
-        "Description": "",
-        "Bindings": [
-          {
-            "Type": "Key",
-            "Key": "D"
-          }
-        ],
-        "Enabled": true,
-        "DeadZone": 0.1
-      },
-      "up": {
-        "Name": "Up",
-        "Description": "",
-        "Bindings": [
-          {
-            "Type": "Key",
-            "Key": "Space"
-          }
-        ],
-        "Enabled": true,
-        "DeadZone": 0.1
-      },
-      "down": {
-        "Name": "Down",
-        "Description": "",
-        "Bindings": [
-          {
-            "Type": "Key",
-            "Key": "LeftControl"
-          }
-        ],
-        "Enabled": true,
-        "DeadZone": 0.1
-      },
-      "rollLeft": {
-        "Name": "Roll Left",
-        "Description": "",
-        "Bindings": [
-          {
-            "Type": "Key",
-            "Key": "Q"
-          }
-        ],
-        "Enabled": true,
-        "DeadZone": 0.1
-      },
-      "rollRight": {
-        "Name": "Roll Right",
-        "Description": "",
-        "Bindings": [
-          {
-            "Type": "Key",
-            "Key": "E"
-          }
-        ],
-        "Enabled": true,
-        "DeadZone": 0.1
-      },
-      "sprint": {
-        "Name": "Sprint",
-        "Description": "Move faster",
-        "Bindings": [
-          {
-            "Type": "Key",
-            "Key": "LeftShift"
-          }
-        ],
-        "Enabled": true,
-        "DeadZone": 0.1
-      },
-      "use": {
-        "Name": "Use",
-        "Description": "Interaction with blocks",
-        "Bindings": [
-          {
-            "Type": "Key",
-            "Key": "G"
-          }
-        ],
-        "Enabled": true,
-        "DeadZone": 0.1
-      },
-      "flashlight": {
-        "Name": "Flashlight",
-        "Description": "Turn on/off",
-        "Bindings": [
-          {
-            "Type": "Key",
-            "Key": "F"
-          }
-        ],
-        "Enabled": true,
-        "DeadZone": 0.1
-      },
-      "inventory": {
-        "Name": "Inventory",
-        "Description": "Open/close inventory",
-        "Bindings": [
-          {
-            "Type": "Key",
-            "Key": "Tab"
-          }
-        ],
-        "Enabled": true,
-        "DeadZone": 0.1
-      },
-      "dropItem": {
-        "Name": "Drop Item",
-        "Description": "(from hand)",
-        "Bindings": [
-          {
-            "Type": "Key",
-            "Key": "G"
-          }
-        ],
-        "Enabled": true,
-        "DeadZone": 0.1
-      },
-      "pause": {
-        "Name": "Pause",
-        "Description": "Pause the game",
-        "Bindings": [
-          {
-            "Type": "Key",
-            "Key": "Escape"
-          }
-        ],
-        "Enabled": true,
-        "DeadZone": 0.1
-      }
-    },
-    "Axes": {}
-  }
+    "Default": {
+        "Name": "Default",
+        "Actions": {
+            "inputOverlay": {
+                "Name": "Input Overlay",
+                "Description": "Input Overlay",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "F6"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "forward": {
+                "Name": "Forward",
+                "Description": "",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "W"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "backward": {
+                "Name": "Backward",
+                "Description": "",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "S"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "left": {
+                "Name": "Left",
+                "Description": "",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "A"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "right": {
+                "Name": "Right",
+                "Description": "",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "D"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "up": {
+                "Name": "Up",
+                "Description": "",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "Space"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "down": {
+                "Name": "Down",
+                "Description": "",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "LeftControl"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "rollLeft": {
+                "Name": "Roll Left",
+                "Description": "",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "Q"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "rollRight": {
+                "Name": "Roll Right",
+                "Description": "",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "E"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "sprint": {
+                "Name": "Sprint",
+                "Description": "Move faster",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "LeftShift"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "use": {
+                "Name": "Use",
+                "Description": "Interaction with blocks",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "G"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "flashlight": {
+                "Name": "Flashlight",
+                "Description": "Turn on/off",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "F"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "inventory": {
+                "Name": "Inventory",
+                "Description": "Open/close inventory",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "Tab"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "dropItem": {
+                "Name": "Drop Item",
+                "Description": "(from hand)",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "G"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            },
+            "pause": {
+                "Name": "Pause",
+                "Description": "Pause the game",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "Escape"
+                    }
+                ],
+                "Enabled": true,
+                "DeadZone": 0.1
+            }
+        },
+        "Axes": {}
+    }
 }
