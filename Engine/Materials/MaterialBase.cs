@@ -23,6 +23,7 @@ namespace Engine
         readonly int _maxUnits = GL.GetInteger(GetPName.MaxCombinedTextureImageUnits);
 
 
+
         public MaterialBase(Shader shader)
             => Shader = shader ?? throw new ArgumentNullException(nameof(shader));
 
@@ -51,9 +52,6 @@ namespace Engine
                 AddTexture(uniform, newTexture);
             }
         }
-
-
-        //public void Set<T>(string uniform, T value) => _parameters[uniform] = value!;
 
         public void Apply(Node3D node) => Apply(node.GetRenderModelMatrix());
 
@@ -84,23 +82,6 @@ namespace Engine
         private void _setFixed()  // basic variables for materials
         {
             Shader.SetVector4("color", Color);
-        }
-
-        private void _setUser()
-        {
-            foreach (var (name, val) in _parameters)
-            {
-                switch (val)
-                {
-                    case int i: Shader.SetInt(name, i); break;
-                    case float f: Shader.SetFloat(name, f); break;
-                    case Vector2 v2: Shader.SetVector2(name, v2); break;
-                    case Vector3 v3: Shader.SetVector3(name, v3); break;
-                    case Vector4 v4: Shader.SetVector4(name, v4); break;
-                    case Matrix4 m4: Shader.SetMatrix4(name, m4, false); break;
-                    default: throw new NotSupportedException(val.GetType().Name);
-                }
-            }
         }
 
         private void _setMVP(Matrix4 model)
@@ -151,21 +132,7 @@ namespace Engine
                 GL.Disable(EnableCap.Blend);
             }
         }
-        private void _applyState()
-        {
-            if (RenderFace == RenderFace.Both) GL.Disable(EnableCap.CullFace);
-            else { GL.Enable(EnableCap.CullFace); GL.CullFace(RenderFace == RenderFace.Front ? CullFaceMode.Back : CullFaceMode.Front); }
-
-            bool depthTest = RenderMode != RenderMode.Transparent;
-            bool depthWrite = RenderMode == RenderMode.Opaque || RenderMode == RenderMode.Cutout;
-            bool blend = RenderMode == RenderMode.Fade || RenderMode == RenderMode.Transparent;
-
-            if (depthTest) GL.Enable(EnableCap.DepthTest); else GL.Disable(EnableCap.DepthTest);
-            GL.DepthMask(depthWrite);
-
-            if (blend) { GL.Enable(EnableCap.Blend); GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha); }
-            else GL.Disable(EnableCap.Blend);
-        }
+        
 
     }
 }

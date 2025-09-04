@@ -2,7 +2,6 @@
 using Engine.Audio;
 using Engine.Physics;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player.GameModes;

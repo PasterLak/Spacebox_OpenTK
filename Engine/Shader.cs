@@ -1,7 +1,6 @@
 ﻿using Engine.Graphics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using SkiaSharp;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -9,6 +8,8 @@ namespace Engine
 {
     public class Shader : IResource
     {
+        private static int ACTIVE_SHADER = 0;
+
         public int Handle { get; private set; }
         private Dictionary<string, int> _uniformLocations;
         private const string ShaderFormat = ".glsl";
@@ -132,6 +133,7 @@ namespace Engine
         {
             Debug.Log("[Shader] Reloading shader...");
             _isReloadingShader = true;
+            ACTIVE_SHADER = 0;
             try { Load(); Debug.Log("[Shader] Shader reloaded successfully."); }
             catch (Exception ex)
             {
@@ -192,8 +194,13 @@ namespace Engine
         public void Use()
         {
             if (_isReloadingShader || Handle == 0) return;
-            GL.UseProgram(Handle);
-           
+
+            if(ACTIVE_SHADER != Handle)
+            {
+                GL.UseProgram(Handle);
+                ACTIVE_SHADER = Handle;
+            }
+
         }
 
         public int GetAttribLocation(string attribName) => GL.GetAttribLocation(Handle, attribName);
@@ -202,62 +209,68 @@ namespace Engine
         {
             if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
                 return;
-            GL.UseProgram(Handle);
+            Use();
             GL.Uniform1(_uniformLocations[name], data ? 1 : 0);
         }
         public void SetInt(string name, int data)
         {
             if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
                 return;
-            GL.UseProgram(Handle);
+            Use();
             GL.Uniform1(_uniformLocations[name], data);
         }
         public void SetFloat(string name, float data)
         {
             if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
                 return;
-            GL.UseProgram(Handle);
+            Use();
             GL.Uniform1(_uniformLocations[name], data);
         }
         public void SetMatrix4(string name, Matrix4 data, bool transpose = true)
         {
             if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
                 return;
-            GL.UseProgram(Handle);
+            Use();
             GL.UniformMatrix4(_uniformLocations[name], transpose, ref data);
         }
         public void SetVector2(string name, Vector2 data)
         {
             if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
                 return;
-            GL.UseProgram(Handle);
+            Use();
             GL.Uniform2(_uniformLocations[name], data);
         }
         public void SetVector3(string name, Vector3 data)
         {
             if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
                 return;
-            GL.UseProgram(Handle);
+            Use();
             GL.Uniform3(_uniformLocations[name], data);
         }
         public void SetVector4(string name, Vector4 data)
         {
             if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
                 return;
-            GL.UseProgram(Handle);
+            Use();
             GL.Uniform4(_uniformLocations[name], data);
         }
         public void SetVector4(string name, Color4 data)
         {
             if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
                 return;
-            GL.UseProgram(Handle);
+            Use();
             GL.Uniform4(_uniformLocations[name], data);
         }
         public void Dispose()
         {
             if (Handle != 0)
                 GL.DeleteProgram(Handle);
+
+            if(ACTIVE_SHADER == Handle)
+            {
+                GL.UseProgram(0);
+                ACTIVE_SHADER = 0;
+            }
             _watcher?.Dispose();
             _hotReloader?.Dispose();
             _hotReloader = null;

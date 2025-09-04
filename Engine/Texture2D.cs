@@ -19,6 +19,9 @@ namespace Engine
 
     public class Texture2D : IResource
     {
+        private static int[] _boundTextures = new int[32]; 
+        private static int _activeUnit = 0; 
+
         public int Handle { get; private set; }
         public int Width { get; private set; }
         public int Height { get; private set; }
@@ -210,8 +213,19 @@ namespace Engine
         }
         public void Use(TextureUnit unit = TextureUnit.Texture0)
         {
-            GL.ActiveTexture(unit);
-            GL.BindTexture(TextureTarget.Texture2D, Handle);
+            int unitIndex = (int)(unit - TextureUnit.Texture0);
+
+            if (_activeUnit != unitIndex)
+            {
+                GL.ActiveTexture(unit);
+                _activeUnit = unitIndex;
+            }
+
+            if (_boundTextures[unitIndex] != Handle)
+            {
+                GL.BindTexture(TextureTarget.Texture2D, Handle);
+                _boundTextures[unitIndex] = Handle;
+            }
         }
         public Color4[,] GetPixelData() => pixels;
         public void SetPixelsData(Color4[,] newPixels)
@@ -373,7 +387,21 @@ namespace Engine
         }
 
 
-        public void Dispose() => GL.DeleteTexture(Handle);
+        public void Dispose()
+        {
+            if (Handle != 0)
+            {
+                GL.DeleteTexture(Handle);
+
+                for (int i = 0; i < _boundTextures.Length; i++)
+                {
+                    if (_boundTextures[i] == Handle)
+                        _boundTextures[i] = 0;
+                }
+            }
+
+            
+        }
 
         public IResource Load(string path)
         {
