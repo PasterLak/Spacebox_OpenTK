@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Engine.Physics;
+using Engine.Graphics;
 
 namespace Engine
 {
@@ -394,9 +395,10 @@ namespace Engine
             _shader.SetMatrix4("model", Matrix4.Identity * Matrix4.CreateTranslation(-RenderSpace.Origin));
             _shader.SetMatrix4("view", ViewMatrix);
             _shader.SetMatrix4("projection", ProjectionMatrix);
+     
 
-            GL.Enable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.CullFace);
+            GLState.DepthTest(true);
+            GLState.CullFace(false);
 
             if (_points.Count > 0)
             {
@@ -430,7 +432,7 @@ namespace Engine
             }
 
             GL.BindVertexArray(0);
-            GL.Disable(EnableCap.CullFace);
+            GLState.CullFace(false);
         }
 
         public static void SetLineWidth(float width)

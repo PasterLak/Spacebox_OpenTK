@@ -1,4 +1,5 @@
 ﻿
+using Engine.Graphics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
@@ -19,10 +20,10 @@ namespace Engine
         {
             base.ApplyRenderSettings();
 
-            GL.Disable(EnableCap.DepthTest); // никакого depth-test’а
-            GL.DepthMask(false);             // и записи глубины
-            GL.Disable(EnableCap.Blend);     // без смешения
-           
+            GLState.DepthTest(false);
+            GLState.DepthMask(false);
+            GLState.Blend(false);
+
         }
 
         protected override void UpdateDynamicUniforms()

@@ -15,7 +15,6 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.FPS.Scenes;
 using Spacebox.Game.GUI;
 using Spacebox.Scenes;
 
@@ -276,8 +275,9 @@ namespace Spacebox
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                 GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-                GL.Disable(EnableCap.DepthTest);
-                GL.Disable(EnableCap.CullFace);
+
+                GLState.DepthTest(false);
+                GLState.CullFace(false);
 
 
                 using (GPUDebug.Group("POST PROCESSING"))

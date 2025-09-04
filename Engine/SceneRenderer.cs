@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
 namespace Engine
@@ -76,7 +77,7 @@ namespace Engine
              
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, Fbo);
                 GL.Viewport(0, 0, width, height);
-                GL.DepthMask(true);
+                GLState.DepthMask(true);
                 GL.ClearColor(0f, 0f, 0f, 1f);
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
                 GPUDebug.Marker("START");

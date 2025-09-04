@@ -1,4 +1,5 @@
 ﻿
+using Engine.Graphics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
@@ -88,8 +89,10 @@ namespace Engine
             if (cam == null) return;
 
             _count = 0;
-            GL.Disable(EnableCap.DepthTest);
-            GL.DepthMask(false);
+
+            GLState.DepthTest(false);
+            GLState.DepthMask(false);
+
             Material.Apply(Matrix4.Identity);
             Material.Shader.SetMatrix4("view", cam.GetViewMatrix(), false);
             Material.Shader.SetMatrix4("projection", cam.GetProjectionMatrix(), false);
@@ -122,8 +125,10 @@ namespace Engine
             GL.BindVertexArray(_quad.VAO);
             GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, _count);
             GL.BindVertexArray(0);
-            GL.DepthMask(true);
-            GL.Enable(EnableCap.DepthTest);
+
+            GLState.DepthMask(true);
+            GLState.DepthTest(true);
+            
         }
 
         public void Dispose()

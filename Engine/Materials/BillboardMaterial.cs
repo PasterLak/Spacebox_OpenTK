@@ -5,7 +5,20 @@ namespace Engine
 {
     public class BillboardMaterial : MaterialBase
     {
-        public Texture2D MainTexture { get; set; }
+        private Texture2D? _mainTexture;
+
+        public Texture2D? MainTexture
+        {
+            get => _mainTexture;
+            set
+            {
+                _mainTexture = value;
+                if (_mainTexture != null)
+                {
+                    ReplaceTexture("tex", _mainTexture);
+                }
+            }
+        }
         public Vector2 Size { get; set; }
 
         public BillboardMaterial(Texture2D texture, Vector2 size)

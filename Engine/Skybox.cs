@@ -1,7 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Utils;
 using OpenTK.Mathematics;
-using Engine.Utils;
-using Engine.Light;
 
 namespace Engine
 {
@@ -39,18 +37,18 @@ namespace Engine
             
             Position = cam.Position;
 
-           
 
-            GL.Disable(EnableCap.DepthTest);
-            GL.DepthMask(false);
-            GL.Disable(EnableCap.Blend);
+            /*
+            GLState.DepthTest(false);
+            GLState.DepthMask(false);
+            GLState.Blend(false); */
 
             Material.Apply(GetRenderModelMatrix());
 
 
             Mesh.Render();
-            GL.DepthMask(true);
-            GL.Enable(EnableCap.DepthTest);
+            //GLState.DepthTest(true);
+            //GLState.DepthMask(true);
 
             base.Render();
            

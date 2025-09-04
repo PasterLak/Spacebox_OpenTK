@@ -1,4 +1,5 @@
 ﻿
+using Engine.Graphics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
@@ -104,12 +105,12 @@ namespace Engine
         {
             if (face == RenderFace.Both)
             {
-                GL.Disable(EnableCap.CullFace);
+                GLState.CullFace(false);
                 return;
             }
 
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(face == RenderFace.Front ? CullFaceMode.Back : CullFaceMode.Front);
+            GLState.CullFace(true);
+            GLState.CullMode(face == RenderFace.Front ? CullFaceMode.Back : CullFaceMode.Front);
         }
         private void SetRenderMode(RenderMode mode)
         {
@@ -117,20 +118,17 @@ namespace Engine
             bool enableBlending     = mode == RenderMode.Fade || mode == RenderMode.Transparent;
             bool depthWrite         = mode == RenderMode.Opaque || mode == RenderMode.Cutout;
 
-            if (depthTest)  GL.Enable(EnableCap.DepthTest);
-            else            GL.Disable(EnableCap.DepthTest);
-           
-            GL.DepthMask(depthWrite);
+            if (depthTest) GLState.DepthTest(true); 
+            else GLState.DepthTest(false);
+
+            GLState.DepthMask(depthWrite);
+            GLState.Blend(enableBlending);
 
             if (enableBlending)
             {
-                GL.Enable(EnableCap.Blend);
                 GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             }
-            else
-            {
-                GL.Disable(EnableCap.Blend);
-            }
+           
         }
         
 

@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Engine;
+using Engine.Graphics;
 
 namespace Engine.GUI
 {
@@ -63,8 +64,8 @@ namespace Engine.GUI
             _vbo = GL.GenBuffer();
             _ebo = GL.GenBuffer();
 
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GLState.Blend(true);
+            GLState.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GL.BindVertexArray(_vao);
 

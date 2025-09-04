@@ -24,10 +24,6 @@ namespace Engine
         {
             base.ApplyRenderSettings();
 
-
-            // GL.Enable(EnableCap.DepthTest); 
-            //  GL.DepthMask(true);          
-            // GL.Enable(EnableCap.Blend);   
         }
 
         public Vector3 RotToNorm(Vector3 v)

@@ -44,7 +44,7 @@ namespace Spacebox.Scenes
             float winY = Window.Instance.Size.Y;
 
             //sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
-            //GL.Enable(EnableCap.DepthTest);
+      
 
             Resources.LoadAllAsync<Texture2D>(
                new[]

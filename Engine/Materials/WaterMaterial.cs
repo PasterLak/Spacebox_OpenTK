@@ -5,7 +5,20 @@ namespace Engine
 {
     public class WaterMaterial : MaterialBase
     {
-        public Texture2D Noise { get; }
+        private Texture2D? _noise;
+
+        public Texture2D? Noise
+        {
+            get => _noise;
+            set
+            {
+                _noise = value;
+                if (_noise != null)
+                {
+                    ReplaceTexture("noiseMap", _noise);
+                }
+            }
+        }
         public float Shininess { get; set; } = 48f;
 
         public WaterMaterial(Texture2D noise) : base(Resources.Load<Shader>("Shaders/water"))
@@ -21,9 +34,6 @@ namespace Engine
             base.ApplyRenderSettings();
 
 
-           // GL.Enable(EnableCap.DepthTest); 
-          //  GL.DepthMask(true);          
-          // GL.Enable(EnableCap.Blend);   
         }
         protected override void UpdateDynamicUniforms()
         {

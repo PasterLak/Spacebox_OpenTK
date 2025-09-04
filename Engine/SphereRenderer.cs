@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
 
@@ -96,14 +97,15 @@ namespace Engine
             if (Camera.Main == null) return;
             var cam = Camera.Main;
 
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            GL.Enable(EnableCap.DepthTest);
+           /* GLState.Blend(true);
+            GLState.DepthTest(true);
+            GLState.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GLState.DepthTest(true);
 
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Front);
+            GLState.CullFace(true);
+            GLState.CullMode(CullFaceMode.Front);
+           */
 
-           
             var matModel = GetRenderModelMatrix();
 
             Material.Color = _color;
@@ -113,8 +115,8 @@ namespace Engine
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
 
-            GL.CullFace(CullFaceMode.Back);
-            GL.Disable(EnableCap.CullFace);
+           // GLState.CullMode(CullFaceMode.Back);
+           // GLState.CullFace(false);
         }
 
         public void Dispose()

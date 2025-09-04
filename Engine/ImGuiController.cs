@@ -1,9 +1,10 @@
-﻿using ImGuiNET;
-using System.Runtime.CompilerServices;
+﻿using Engine.Graphics;
+using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using System.Runtime.CompilerServices;
 using ErrorCode = OpenTK.Graphics.OpenGL4.ErrorCode;
 
 namespace Engine
@@ -405,12 +406,22 @@ void main()
 
             draw_data.ScaleClipRects(io.DisplayFramebufferScale);
 
-            GL.Enable(EnableCap.Blend);
+            //GL.Enable(EnableCap.Blend);
             GL.Enable(EnableCap.ScissorTest);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            GL.Disable(EnableCap.CullFace);
-            GL.Disable(EnableCap.DepthTest);
+            //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+           // GL.Disable(EnableCap.CullFace);
+           // GL.Disable(EnableCap.DepthTest);
+
+
+
+            GLState.Blend(true);
+            GLState.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GLState.CullFace(false);
+
+            GLState.DepthTest(false);
+
+
 
             // Render command lists
             for (int n = 0; n < draw_data.CmdListsCount; n++)
@@ -454,7 +465,8 @@ void main()
                 }
             }
 
-            GL.Disable(EnableCap.Blend);
+            //GL.Disable(EnableCap.Blend);
+            GLState.Blend(false);
             GL.Disable(EnableCap.ScissorTest);
 
             // Reset state
@@ -470,9 +482,9 @@ void main()
                 (BlendingFactorDest)prevBlendFuncDstRgb,
                 (BlendingFactorSrc)prevBlendFuncSrcAlpha,
                 (BlendingFactorDest)prevBlendFuncDstAlpha);
-            if (prevBlendEnabled) GL.Enable(EnableCap.Blend); else GL.Disable(EnableCap.Blend);
-            if (prevDepthTestEnabled) GL.Enable(EnableCap.DepthTest); else GL.Disable(EnableCap.DepthTest);
-            if (prevCullFaceEnabled) GL.Enable(EnableCap.CullFace); else GL.Disable(EnableCap.CullFace);
+            GLState.Blend(prevBlendEnabled);
+            GLState.DepthTest(prevDepthTestEnabled);
+            GLState.CullFace(prevCullFaceEnabled);
             if (prevScissorTestEnabled) GL.Enable(EnableCap.ScissorTest); else GL.Disable(EnableCap.ScissorTest);
             if (GLVersion <= 310 || CompatibilityProfile)
             {
