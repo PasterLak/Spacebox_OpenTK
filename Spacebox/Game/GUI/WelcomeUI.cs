@@ -17,12 +17,12 @@ namespace Spacebox.Game.GUI
             set
             {
                 _isVisible = value;
-                //Input.MoveCursorToCenter();
+            
                 ToggleManager.DisableAllWindows();
                 ToggleManager.SetState("mouse", _isVisible);
                 ToggleManager.SetState("player", !_isVisible);
                 ToggleManager.SetState("panel", !_isVisible);
-                Input.MoveCursorToCenter();
+                
                 Settings.ShowInterface = !_isVisible;
 
 

@@ -70,17 +70,15 @@ namespace Spacebox.Scenes
             {
                 if (s)
                 {
-                    if (localPlayer != null)
-                        localPlayer.ResetMousePosition();
-                    Input.MoveCursorToCenter();
+
                     Input.ShowCursor();
+
                 }
                 else
                 {
-                    if (localPlayer != null)
-                        localPlayer.ResetMousePosition();
-                    Input.MoveCursorToCenter();
+
                     Input.HideCursor();
+
                 }
             };
 
@@ -225,8 +223,7 @@ namespace Spacebox.Scenes
             ToggleManager.DisableAllWindows();
             ToggleManager.SetState("radar", false);
             ToggleManager.SetState("inventory", false);
-            Input.MoveCursorToCenter();
-
+          
             if (Chat.IsVisible)
             {
                 Chat.IsVisible = false;

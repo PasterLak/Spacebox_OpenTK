@@ -19,7 +19,7 @@ public class InputRemapper
         isRemapping = true;
     }
 
-    public bool Update(KeyboardState keyboard, MouseState mouse)
+    public bool Update()
     {
         if (!isRemapping) return false;
 
@@ -27,7 +27,7 @@ public class InputRemapper
         {
             if (key == Keys.Unknown) continue;
 
-            if (keyboard.IsKeyPressed(key))
+            if (Input.IsKeyDown(key))
             {
                 if (key == Keys.Escape)
                 {
@@ -42,7 +42,7 @@ public class InputRemapper
 
         foreach (MouseButton button in Enum.GetValues<MouseButton>())
         {
-            if (mouse.IsButtonPressed(button))
+            if (Input.Mouse.IsButtonPressed(button))
             {
                 RemapToMouseButton(button);
                 return true;

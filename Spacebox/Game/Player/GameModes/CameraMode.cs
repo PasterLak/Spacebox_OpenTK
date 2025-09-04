@@ -16,7 +16,6 @@ public class CameraMode : GameModeBase
         player.EnableCameraSway(false);
         player.InertiaController.EnableInertia(false);
 
-        player.SetCameraSpeed(_cameraSpeed, _shiftSpeed);
     }
 
     public override GameMode GetGameMode()

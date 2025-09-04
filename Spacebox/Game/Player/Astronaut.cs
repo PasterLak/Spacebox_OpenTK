@@ -1,16 +1,15 @@
-﻿using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-
+﻿using Engine;
+using Engine.Components;
 using Engine.Physics;
-
+using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
-using Engine;
-using Spacebox.GUI;
-using Engine.Components;
-using Spacebox.Game.Player.Interactions;
-using Spacebox.Game.Effects;
 using Spacebox.Game.Player.GameModes;
+using Spacebox.Game.Player.Interactions;
+using Spacebox.GUI;
 
 
 namespace Spacebox.Game.Player
@@ -23,14 +22,6 @@ namespace Spacebox.Game.Player
 
         private Axes _axes;
 
-        public void SetCameraSpeed(float speed, float shiftSpeed)
-        {
-
-        }
-
-        private bool _firstMove = true;
-        private Vector2 _lastMousePosition;
-        bool needResetNextFrame = false;
         public bool CameraActive = true;
 
         public Action<Astronaut> OnMoved { get; set; }
@@ -55,7 +46,7 @@ namespace Spacebox.Game.Player
         private GameMode _gameMode => _gameModeBase.GetGameMode();
         public InteractionMode CurrentInteraction => _gameModeBase.InteractionHandler.Interaction;
         public PlayerEffect damageEffect;
-        public Vector3 SpawnPosition { get;  set; }
+        public Vector3 SpawnPosition { get; set; }
 
         public GameMode GameMode
         {
@@ -104,8 +95,8 @@ namespace Spacebox.Game.Player
             toggle.OnStateChanged += state =>
             {
 
-                needResetNextFrame = state;
                 _canMove = state;
+
             };
 
             itemInHand = AddChild(new ItemWorldModel("Resources/Textures/Old/drill6.png", 0.1f));
@@ -130,14 +121,6 @@ namespace Spacebox.Game.Player
             AddChild(damageEffect);
 
             DeathScreen.OnRespawn += Revive;
-
-        }
-
-        public void ResetMousePosition()
-        {
-            _firstMove = true;
-            Input.MoveCursorToCenter();
-            _lastMousePosition = Input.Mouse.Position;
 
         }
 
@@ -196,10 +179,7 @@ namespace Spacebox.Game.Player
             PanelUI.SetSelectedSlot(0);
         }
 
-        public void Save()
-        {
-            PlayerSaveLoadManager.SavePlayer(this, World.Data.WorldFolderPath);
-        }
+
         private static Dictionary<string, Texture2D> astronautTextures = new Dictionary<string, Texture2D>();
         private static Texture2D GetAstronautTexture(string color)
         {
@@ -246,13 +226,6 @@ namespace Spacebox.Game.Player
 
             base.Update();
 
-
-            if (needResetNextFrame)
-            {
-                ResetMousePosition();
-
-                needResetNextFrame = false;
-            }
 
             Matrix4 viewMatrix = GetViewMatrix();
             Matrix4 projectionMatrix = GetProjectionMatrix();
@@ -348,26 +321,9 @@ namespace Spacebox.Game.Player
 
         private void HandleMouse()
         {
-
-
-            var mouse = Input.Mouse;
-
-            if (_firstMove)
+            if (CameraActive)
             {
-                _lastMousePosition = new Vector2(mouse.Position.X, mouse.Position.Y);
-                // _lastMousePosition = Input.Mouse.Delta;
-                _firstMove = false;
-            }
-            else
-            {
-                if (CameraActive)
-                {
-                    var deltaX = mouse.Position.X - _lastMousePosition.X;
-                    var deltaY = mouse.Position.Y - _lastMousePosition.Y;
-                    _lastMousePosition = new Vector2(mouse.Position.X, mouse.Position.Y);
-
-                    Rotate(deltaX, deltaY);
-                }
+                Rotate();
             }
         }
 
@@ -377,8 +333,8 @@ namespace Spacebox.Game.Player
             var health = HealthBar.StatsData;
             health.Decrement(damage);
 
-            if(damage > 12)
-            damageEffect.OnDamage(new Vector3(1,0,0));
+            if (damage > 12)
+                damageEffect.OnDamage(new Vector3(1, 0, 0));
             if (health.Count > 0)
             {
                 HealthColorOverlay.SetActive(new System.Numerics.Vector3(1, 0, 0), 0.1f + 1 / (10 - Math.Min(damage, 6)));
@@ -420,12 +376,12 @@ namespace Spacebox.Game.Player
             PanelUI.IsItemModelVisible = true;
             Input.HideCursor();
             Flashlight.Enabled = true;
-            ResetMousePosition();
+
             HealthBar.StatsGUI.IsVisible = true;
             PowerBar.StatsGUI.IsVisible = true;
             Position = SpawnPosition;
             _canMove = true;
-          
+
         }
 
         public void SetInteraction(InteractionMode mode)

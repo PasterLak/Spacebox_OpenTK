@@ -40,8 +40,8 @@ namespace Engine
         {
             if (!CanMove) return;
 
-            var mouse = Input.Mouse;
-            var pos = mouse.Position;
+           
+            var pos = Input.Mouse.Position;
 
             if (Input.IsMouseButton(RotateButton))
             {
@@ -78,7 +78,7 @@ namespace Engine
 
             _pitch = MathHelper.Clamp(_pitch, -89f, 89f);
 
-            var scroll = mouse.ScrollDelta.Y;
+            var scroll = Input.Mouse.ScrollDelta.Y;
             if (scroll != 0f)
                 HandleZoom(scroll);
 

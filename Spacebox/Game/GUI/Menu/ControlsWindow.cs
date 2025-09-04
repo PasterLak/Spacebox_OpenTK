@@ -276,7 +276,7 @@ public class ControlsWindow : MenuWindow
                 return;
             }
 
-            if (remapper.Update(Input.Keyboard, Input.Mouse))
+            if (remapper.Update())
             {
                 isRemapping = false;
                 remappingAction = null;

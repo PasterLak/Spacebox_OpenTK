@@ -137,8 +137,8 @@ namespace Spacebox.Scenes
             GameMenu.IsVisible = false;
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
             VerticalLinks.Init();
-
-           // _ = WorkerPoolTest.RunTest();
+            Input.ShowCursor();
+            // _ = WorkerPoolTest.RunTest();
 
             var colors = new Color4[]
             {
@@ -178,7 +178,7 @@ namespace Spacebox.Scenes
             // ImFontPtr myFont = ImGui.GetIO().Fonts.Fonts[1];
             // ImGui.PushFont(myFont);
             BlackScreenOverlay.OnGUI();
-            Input.ShowCursor();
+            
             CenteredImageMenu.Draw();
             HealthColorOverlay.OnGUI();
             VerticalLinks.Draw();

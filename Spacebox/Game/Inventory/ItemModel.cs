@@ -60,11 +60,10 @@ namespace Spacebox.Game
             {
                 return;
             }
-           
 
             if (debug)
                 PlaceModelDebug();
-            VisualDebug.DrawPosition(Position, Color4.Red);
+
            
             if (UseMainCamera && Camera.Main != null)
             {
@@ -79,7 +78,6 @@ namespace Spacebox.Game
                 Material.Apply(model);
                
             }
-
             else
             {
                 model = itemCamera.GetRenderModelMatrix();

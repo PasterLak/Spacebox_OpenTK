@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using System.Xml.Linq;
+
 
 namespace Engine
 {
@@ -13,9 +13,21 @@ namespace Engine
         private static GameWindow _gameWindow;
         private static KeyboardState _lastState;
         public static KeyboardState Keyboard => _gameWindow.KeyboardState;
-        public static MouseState Mouse => _gameWindow.MouseState;
+        private static MouseState MouseState => _gameWindow.MouseState;
 
+        private static Vector2 _delta = Vector2.Zero;
+        public static class Mouse
+        {
+            public static Vector2 Position => MouseState.Position;
+            public static Vector2 ScrollDelta => MouseState.ScrollDelta;
+            public static bool IsButtonDown(MouseButton button) => MouseState.IsButtonDown(button);
+            public static bool IsButtonReleased(MouseButton button) => MouseState.IsButtonReleased(button);
+            public static bool IsButtonPressed(MouseButton button) => MouseState.IsButtonPressed(button);
+            public static bool IsAnyButtonDown => MouseState.IsAnyButtonDown;
+            public static Vector2 Delta => _delta;
+            public static MouseState State => MouseState;
 
+        }
         public Input() { }
 
         public static void Initialize(GameWindow gameWindow)
@@ -29,6 +41,20 @@ namespace Engine
             else
             {
                 Debug.Error("There are already an Input Object!");
+            }
+
+        }
+        private static bool _ignoreNextDelta = false;
+        public static void Update()
+        {
+            if (_ignoreNextDelta)
+            {
+                _delta = Vector2.Zero;
+                _ignoreNextDelta = false;
+            }
+            else
+            {
+                _delta = MouseState.Delta;
             }
 
         }
@@ -105,18 +131,17 @@ namespace Engine
         {
             _gameWindow.CursorState = state;
 
-            // MoveCursorToCenter();
-
         }
         public static void HideCursor()
         {
             SetCursorState(CursorState.Grabbed);
-            MoveCursorToCenter();
         }
 
-        public static void MoveCursorToCenter()
+        
+        private static void MoveCursorToCenter()
         {
             _gameWindow.MousePosition = GetCenter(_gameWindow);
+            _ignoreNextDelta = true;
         }
 
         public static Vector2 GetCenter(GameWindow window)
@@ -133,8 +158,9 @@ namespace Engine
 
         public static void ShowCursor()
         {
+           
             SetCursorState(CursorState.Normal);
-
+            _delta = Vector2.Zero;
         }
 
         public static CursorState GetCursorState()

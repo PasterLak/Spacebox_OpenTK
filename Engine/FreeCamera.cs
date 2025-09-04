@@ -58,7 +58,7 @@ namespace Engine
 
         public override void Update()
         {
-            float dt = Time.Delta;
+           
             //flashlight.Direction = Front;
             //VisualDebug.DrawAxes(Position + Forward * 3f);
             if (IsMain)
@@ -73,7 +73,7 @@ namespace Engine
                 if (Input.IsKey(Keys.D)) dir += _right;
                 if (Input.IsKey(Keys.Space)) dir += Vector3.UnitY;
                 if (Input.IsKey(Keys.LeftControl)) dir -= Vector3.UnitY;
-                if (dir != Vector3.Zero) Position += dir.Normalized() * _moveSpeed * speedShift * dt;
+                if (dir != Vector3.Zero) Position += dir.Normalized() * _moveSpeed * speedShift * Time.Delta;
 
                 Vector2 md = Input.Mouse.Delta;
                 _yaw += md.X * _mouseSensitivity;

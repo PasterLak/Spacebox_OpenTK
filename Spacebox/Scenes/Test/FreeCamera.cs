@@ -36,7 +36,7 @@ namespace Spacebox.Game.Player
 
         private void HandleInput()
         {
-            var mouse = Input.Mouse;
+          
             float currentSpeed = Input.IsKey(Keys.LeftShift) ? _shiftSpeed : _cameraSpeed;
             Vector3 movement = Vector3.Zero;
             movement += Vector3.Transform(-Vector3.UnitZ, _orientation) * currentSpeed * (float)Time.Delta * (Input.IsKey(Keys.W) ? 1 : 0);
@@ -49,20 +49,19 @@ namespace Spacebox.Game.Player
 
             if (_firstMouseMove)
             {
-                _lastMousePosition = new Vector2(mouse.X, mouse.Y);
+                _lastMousePosition = Input.Mouse.Position;
                 _firstMouseMove = false;
             }
             else if (CameraActive)
             {
-                float deltaX = mouse.X - _lastMousePosition.X;
-                float deltaY = mouse.Y - _lastMousePosition.Y;
-                _lastMousePosition = new Vector2(mouse.X, mouse.Y);
+                
+                _lastMousePosition = Input.Mouse.Position;
 
                 Vector3 localUp = Vector3.Transform(Vector3.UnitY, _orientation);
                 Vector3 localRight = Vector3.Transform(Vector3.UnitX, _orientation);
 
-                Quaternion qYaw = Quaternion.FromAxisAngle(localUp, -deltaX * _sensitivity);
-                Quaternion qPitch = Quaternion.FromAxisAngle(localRight, -deltaY * _sensitivity);
+                Quaternion qYaw = Quaternion.FromAxisAngle(localUp, -Input.Mouse.Delta.X * _sensitivity);
+                Quaternion qPitch = Quaternion.FromAxisAngle(localRight, -Input.Mouse.Delta.Y * _sensitivity);
                 _orientation = qYaw * qPitch * _orientation;
                 _orientation = Quaternion.Normalize(_orientation);
                 UpdateVectors();

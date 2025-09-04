@@ -343,7 +343,7 @@ namespace Spacebox
 
                 base.OnUpdateFrame(e);
                 RenderSpace.BeginFrame();
-               
+                Input.Update();
                 Time.StartUpdate();
                 Time.Update(e);
                 _controller.Update(this, (float)e.Time);

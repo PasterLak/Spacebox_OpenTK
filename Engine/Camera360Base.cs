@@ -24,15 +24,15 @@ namespace Engine
         }
 
 
-        public void Rotate(float deltaX, float deltaY)
+        public void Rotate()
         {
             const float sensitivity = 0.002f;
 
             Vector3 localUp = _up;
-            Vector3 localRight = _right;
+            Vector3 localRight = _right; 
 
-            Quaternion rotationYaw = Quaternion.FromAxisAngle(localUp, -deltaX * sensitivity);
-            Quaternion rotationPitch = Quaternion.FromAxisAngle(localRight, -deltaY * sensitivity);
+            Quaternion rotationYaw = Quaternion.FromAxisAngle(localUp, -Input.Mouse.Delta.X * sensitivity);
+            Quaternion rotationPitch = Quaternion.FromAxisAngle(localRight, -Input.Mouse.Delta.Y * sensitivity);
 
             _rotation = rotationYaw * _rotation;
             _rotation = rotationPitch * _rotation;

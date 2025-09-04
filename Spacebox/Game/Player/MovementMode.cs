@@ -28,7 +28,6 @@ public class MovementMode : GameModeBase
         player.EnableCameraSway(true);
         player.InertiaController.EnableInertia(true);
 
-        player.SetCameraSpeed(_cameraSpeed, _shiftSpeed);
         SetInertia(player.InertiaController);
         SetCameraSway(player.CameraSway);
 

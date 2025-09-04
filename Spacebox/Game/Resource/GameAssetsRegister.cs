@@ -128,6 +128,9 @@ namespace Spacebox.Game
                 Debug.Error("[GameBlocksRegistrar] AtlasTexture is not created!");
                 return;
             }
+            if(blockData.Id == 0){ 
+                return;
+            }
             blockData.WallsUV = GameAssets.AtlasBlocks.GetUVByName(blockData.Sides);
             blockData.TopUV = GameAssets.AtlasBlocks.GetUVByName(blockData.Top);
             blockData.BottomUV = GameAssets.AtlasBlocks.GetUVByName(blockData.Bottom);

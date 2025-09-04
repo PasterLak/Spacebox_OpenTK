@@ -74,7 +74,8 @@ namespace Spacebox.Game.Generation
                 PanelUI.HideItemModel();
                 return;
             }*/
-            Player.Save();
+          
+            PlayerSaveLoadManager.SavePlayer(Player, Data.WorldFolderPath);
             WorldSaveLoad.SaveWorld(Data.WorldFolderPath);
             Data.Info.GameMode = Player.GameMode;
             WorldInfoSaver.Save(Data.Info);

@@ -69,7 +69,7 @@ namespace Spacebox.Game.GUI
             if (_inputBuffer.Length > 0) return;
             
 
-                Input.MoveCursorToCenter();
+              
             ToggleManager.SetState("player", false);
             PanelUI.AllowScroll = false;
             InputManager0.Enabled = false;

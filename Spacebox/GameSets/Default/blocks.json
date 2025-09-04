@@ -56,7 +56,7 @@
         "Sides": "ironOre",
         "PowerToDrill": 2,
         "Mass": 2,
-        "Durability": 7
+        "Durability": 8
     },
     {
         "ID": "titanium_ore",
@@ -64,7 +64,7 @@
         "Sides": "titaniumOre",
         "PowerToDrill": 4,
         "Mass": 4,
-        "Durability": 15
+        "Durability": 20
     },
     {
         "ID": "thulium_ore",
@@ -72,7 +72,7 @@
         "Sides": "yellowOre",
         "PowerToDrill": 3,
         "Mass": 4,
-        "Durability": 7
+        "Durability": 12
     },
     {
         "ID": "obscurium_ore",
@@ -89,7 +89,7 @@
         "Sides": "greenOre",
         "PowerToDrill": 3,
         "Mass": 1,
-        "Durability": 12
+        "Durability": 14
     },
     {
         "ID": "aluminium_block_light",
@@ -204,7 +204,7 @@
         "Category": "resources",
         "Sides": "basicMachine",
         "Mass": 2,
-        "Durability": 2,
+        "Durability": 5,
         "IsTransparent": false
     },
     {
@@ -240,6 +240,7 @@
         "Sides": "furnace",
         "Top": "bottom",
         "Bottom": "bottom",
+        "Mass": 2,
         "Durability" : 7,
         "Efficiency": 1
     },
@@ -251,6 +252,7 @@
         "Sides": "furnace2",
         "Top": "bottom",
         "Bottom": "bottom",
+        "Mass": 2,
         "Durability" : 10,
         "Efficiency": 1.3,
         "PowerToDrill": 3

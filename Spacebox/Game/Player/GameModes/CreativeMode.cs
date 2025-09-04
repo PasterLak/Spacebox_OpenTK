@@ -28,8 +28,6 @@ public class CreativeMode : MovementMode
         player.CollisionEnabled = true;
         player.EnableCameraSway(true);
         player.InertiaController.EnableInertia(true);
-
-        player.SetCameraSpeed(_cameraSpeed, _shiftSpeed);
        
     }
 

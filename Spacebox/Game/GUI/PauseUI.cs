@@ -23,7 +23,7 @@ namespace Spacebox.Game.GUI
 
                 ToggleManager.SetState("mouse", _isVisible);
                 ToggleManager.SetState("player", !_isVisible);
-                Input.MoveCursorToCenter();
+                
                 Settings.ShowInterface = !_isVisible;
 
                 if (_isVisible)
