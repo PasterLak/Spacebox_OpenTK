@@ -5,7 +5,7 @@ namespace Spacebox.Game.Player
 {
     public class ProjectileJSON
     {
-        public string Name { get;  set; } = "projectiledefault";
+        public string ID { get;  set; } = "projectiledefault";
         public float Speed { get; set; } = 5;
         public int MaxTravelDistance { get; set; } = 100;
         public float Length { get; set; } = 1f;

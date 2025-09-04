@@ -22,6 +22,10 @@ namespace Spacebox.Game
         public static LootConfig LootConfig { get; set; }
 
         public static Dictionary<short, BlockData> Blocks = new Dictionary<short, BlockData>();
+
+        public static Dictionary<string, BlockData> BlocksStr { get; private set; } = new Dictionary<string, BlockData>();
+        public static Dictionary<string, Item> ItemsStr { get; private set; } = new Dictionary<string, Item>();
+
         public static Dictionary<short, Item> Items = new Dictionary<short, Item>();
         public static Dictionary<short, ItemModel> ItemModels = new Dictionary<short, ItemModel>();
 
@@ -29,7 +33,7 @@ namespace Spacebox.Game
         public static Dictionary<short, Texture2D> BlockDusts = new Dictionary<short, Texture2D>();
         public static Dictionary<short, AudioClip> ItemSounds = new Dictionary<short, AudioClip>();
         public static Dictionary<string, AudioClip> Sounds = new Dictionary<string, AudioClip>();
-        
+
         public static Dictionary<string, Dictionary<short, Recipe>> Recipes = new Dictionary<string, Dictionary<short, Recipe>>();
         public static Dictionary<string, CraftingCategory> CraftingCategories = new Dictionary<string, CraftingCategory>();
         public static Dictionary<short, Blueprint> Blueprints = new Dictionary<short, Blueprint>();
@@ -54,7 +58,7 @@ namespace Spacebox.Game
                 }
                 return false;
             }
-            
+
             return false;
         }
 
@@ -80,19 +84,30 @@ namespace Spacebox.Game
             return null;
         }
 
-        public static bool TryGetItemByName(string name, out Item item)
+        public static bool HasItem(string fullId)
+        {
+            return ItemsStr.ContainsKey(fullId);
+        }
+
+        public static Item? GetItemByFullID(string idFull)
+        {
+            if (ItemsStr.ContainsKey(idFull))
+                return ItemsStr[idFull];
+            Debug.Error("GetItemByFullID error: Wrong string id - " + idFull);
+            return null;
+        }
+
+        public static bool TryGetItemByFullID(string idFull, out Item item)
         {
             item = null;
-            foreach (var it in Items.Values)
+            if (ItemsStr.ContainsKey(idFull))
             {
-                if (it.Name.ToLower() == name.ToLower())
-                {
-                    item = it;
-                    return true;
-                }
+                item = ItemsStr[idFull];
+                return true;
             }
             return false;
         }
+
 
         public static BlockData GetBlockDataById(short id)
         {
@@ -231,6 +246,15 @@ namespace Spacebox.Game
             return false;
         }
 
+        public static void AddBlockString(string fullId, BlockData blockData)
+        {
+            BlocksStr[fullId] = blockData;
+        }
+        public static void AddItemString(string fullId, Item item)
+        {
+            ItemsStr[fullId] = item;
+        }
+
         public static void DisposeAll()
         {
             BlocksTexture?.Dispose();
@@ -263,6 +287,7 @@ namespace Spacebox.Game
             MaxBlockId = -1;
             MaxItemId = -1;
             ModId = "";
+
             IsInitialized = false;
         }
 

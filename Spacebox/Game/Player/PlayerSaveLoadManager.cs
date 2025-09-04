@@ -42,7 +42,7 @@ namespace Spacebox.Game.Player
                     {
                         data.InventorySlots.Add(new SavedItemSlot
                         {
-                            ItemName = slot.Item.Name,
+                            ItemID = slot.Item.Id_string,
                             Count = slot.Count,
                             SlotX = (byte)slot.Position.X,
                             SlotY = (byte)slot.Position.Y
@@ -56,7 +56,7 @@ namespace Spacebox.Game.Player
                     {
                         data.PanelSlots.Add(new SavedItemSlot
                         {
-                            ItemName = slot.Item.Name,
+                            ItemID = slot.Item.Id_string,
                             Count = slot.Count,
                             SlotX = (byte)slot.Position.X,
                             SlotY = (byte)slot.Position.Y
@@ -74,7 +74,7 @@ namespace Spacebox.Game.Player
             }
             catch (Exception ex)
             {
-                Debug.Error($"Error saving player data: {ex.Message}");
+                Debug.Error($"[PlayerSaveLoadManager] Error saving player data: {ex.Message}");
             }
         }
 
@@ -87,10 +87,10 @@ namespace Spacebox.Game.Player
 
                 if (!File.Exists(saveFilePath))
                 {
-                    Debug.Log("Player save file does not exist.");
+                    Debug.Log("[PlayerSaveLoadManager] Player save file does not exist.");
 
                     World.CurrentSector.SpawnPlayerNearAsteroid(player, new Random(World.Seed));
-                    GameSetLoader.GiveStartItems(player, GameAssets.Items);
+                    GameSetLoader.GiveStartItems(player, GameAssets.ItemsStr);
                     player.Flashlight.Enabled = true;
 
                     return;
@@ -101,7 +101,7 @@ namespace Spacebox.Game.Player
 
                 if (data == null)
                 {
-                    Debug.Error("Failed to deserialize player data.");
+                    Debug.Error("[PlayerSaveLoadManager] Failed to deserialize player data.");
                     return;
                 }
 
@@ -119,7 +119,7 @@ namespace Spacebox.Game.Player
 
                 foreach (var savedSlot in data.InventorySlots)
                 {
-                    if (GameAssets.TryGetItemByName(savedSlot.ItemName, out var item))
+                    if (GameAssets.TryGetItemByFullID(savedSlot.ItemID, out var item))
                     {
                         var slot = player.Inventory.GetSlot(savedSlot.SlotX, savedSlot.SlotY);
                         if (slot != null)
@@ -129,18 +129,18 @@ namespace Spacebox.Game.Player
                         }
                         else
                         {
-                            Debug.Error($"Invalid slot coordinates ({savedSlot.SlotX}, {savedSlot.SlotY}) in Inventory.");
+                            Debug.Error($"[PlayerSaveLoadManager] Invalid slot coordinates ({savedSlot.SlotX}, {savedSlot.SlotY}) in Inventory.");
                         }
                     }
                     else
                     {
-                        Debug.Error($"Item ID {savedSlot.ItemName} not found. Skipping loading into Inventory.");
+                        Debug.Error($"[PlayerSaveLoadManager] Item ID {savedSlot.ItemID} not found. Skipping loading into Inventory.");
                     }
                 }
 
                 foreach (var savedSlot in data.PanelSlots)
                 {
-                    if (GameAssets.TryGetItemByName(savedSlot.ItemName, out var item))
+                    if (GameAssets.TryGetItemByFullID(savedSlot.ItemID, out var item))
                     {
                         var slot = player.Panel.GetSlot(savedSlot.SlotX, savedSlot.SlotY);
                         if (slot != null)
@@ -158,13 +158,13 @@ namespace Spacebox.Game.Player
                             }
                             else
                             {
-                                Debug.Error($"Was not enough free space in the Inventory!");
+                                Debug.Error($"[PlayerSaveLoadManager] Was not enough free space in the Inventory!");
                             }
                         }
                     }
                     else
                     {
-                        Debug.Error($"Item ID {savedSlot.ItemName} not found. Skipping loading into Panel.");
+                        Debug.Error($"[PlayerSaveLoadManager] Item ID {savedSlot.ItemID} not found. Skipping loading into Panel.");
                     }
                 }
 
@@ -173,7 +173,7 @@ namespace Spacebox.Game.Player
             }
             catch (Exception ex)
             {
-                Debug.Error($"Error loading player data: {ex.Message}");
+                Debug.Error($"[PlayerSaveLoadManager] Error loading player data: {ex.Message}");
             }
         }
 
@@ -195,7 +195,7 @@ namespace Spacebox.Game.Player
 
         private class SavedItemSlot
         {
-            public string ItemName { get; set; }
+            public string ItemID { get; set; }
             public byte Count { get; set; }
             public byte SlotX { get; set; }
             public byte SlotY { get; set; }

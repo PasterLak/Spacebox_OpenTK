@@ -184,7 +184,7 @@ namespace Engine.Multithreading
                 int totalPending = highQueue.Count + medQueue.Count + lowQueue.Count;
                 int workerCount = workers.Count;
                 int delay = totalPending > workerCount ? MIN_DELAY_MS : MAX_DELAY_MS;
-
+                // System.OperationCanceledException: 'The operation was canceled.'
                 if (highQueue.TryTake(out item, highQueue.Count > workerCount ? 1 : MIN_DELAY_MS, cts.Token) ||
                     medQueue.TryTake(out item, delay, cts.Token) ||
                     lowQueue.TryTake(out item, delay, cts.Token))

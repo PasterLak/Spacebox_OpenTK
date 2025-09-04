@@ -23,7 +23,7 @@ namespace Spacebox.Game.Resource
             if (!Directory.Exists(modsDirectory))
             {
                 Directory.CreateDirectory(modsDirectory);
-                Debug.Error("Mods directory created. Please add mods and try again.");
+                Debug.Error("[GameSetLoader] Mods directory created. Please add mods and try again.");
                 return;
             }
 
@@ -31,7 +31,7 @@ namespace Spacebox.Game.Resource
 
             if (string.IsNullOrEmpty(modPath))
             {
-                Debug.Error($"Mod with ID '{modId}' not found in Mods directory.");
+                Debug.Error($"[GameSetLoader] Mod with ID '{modId}' not found in Mods directory.");
                 return;
             }
 
@@ -39,19 +39,17 @@ namespace Spacebox.Game.Resource
 
             if (!File.Exists(configFile))
             {
-                Debug.Error($"Config file not found for mod '{modId}'.");
+                Debug.Error($"[GameSetLoader] Config file not found for mod '{modId}'.");
                 return;
             }
 
             ModInfo = LoadConfig(configFile);
             if (ModInfo == null)
             {
-                Debug.Error($"Failed to load config for mod '{modId}'.");
+                Debug.Error($"[GameSetLoader] Failed to load config for mod '{modId}'.");
                 return;
             }
 
-
-            LoadTextures(modPath, defaultModPath, ModInfo.Textures);
             LoadSounds(modPath);
             LoadBlocks(modPath, defaultModPath);
             LoadProjectiles(modPath, defaultModPath);
@@ -62,7 +60,7 @@ namespace Spacebox.Game.Resource
             LoadSettings(modPath);
             LoadOptionalFiles(modPath);
 
-            Debug.Success($"Mod '{modId}' loaded successfully.");
+            Debug.Success($"[GameSetLoader] Mod '{modId}' loaded successfully.");
         }
 
         private static string FindModPath(string modsDirectory, string modId)
@@ -84,7 +82,7 @@ namespace Spacebox.Game.Resource
                 }
                 catch (Exception ex)
                 {
-                    Debug.Error($"Error reading config from '{directory}': {ex.Message}");
+                    Debug.Error($"[GameSetLoader] Error reading config from '{directory}': {ex.Message}");
                 }
             }
             return string.Empty;
@@ -99,53 +97,8 @@ namespace Spacebox.Game.Resource
             }
             catch (Exception ex)
             {
-                Debug.Error($"Error loading config: {ex.Message}");
+                Debug.Error($"[GameSetLoader] Error loading config: {ex.Message}");
                 return null;
-            }
-        }
-
-        private static void LoadTextures(string modPath, string defaultModPath, List<TextureConfig> textures)
-        {
-            return;
-
-            foreach (var texture in textures)
-            {
-                string texturePath = Path.Combine(modPath, texture.Path);
-                string fallbackPath = Path.Combine(defaultModPath, texture.Path);
-
-                if (!File.Exists(texturePath))
-                {
-                    if (File.Exists(fallbackPath))
-                    {
-                        texturePath = fallbackPath;
-                        Debug.Log($"Texture '{texture.Name}' not found in mod. Using default texture.");
-                    }
-                    else
-                    {
-                        Debug.Error($"Texture '{texture.Name}' not found in mod and default mod.");
-                        continue;
-                    }
-                }
-
-                Texture2D loadedTexture = new Texture2D(texturePath, true);
-                switch (texture.Type.ToLower())
-                {
-                    case "blocks":
-                        //loadedTexture.SaveToPng("blocks.png");
-                        break;
-                    case "items":
-                        //GameBlocks.ItemsTexture = loadedTexture;
-                        break;
-                    case "lightatlas":
-                        //GameBlocks.LightAtlas = loadedTexture;
-                        break;
-                    case "dust":
-                        GameAssets.DustTexture = loadedTexture;
-                        break;
-                    default:
-                        Debug.Error($"Unknown texture type '{texture.Type}' for texture '{texture.Name}'.");
-                        break;
-                }
             }
         }
 
@@ -169,7 +122,7 @@ namespace Spacebox.Game.Resource
             }
             catch (Exception ex)
             {
-                Debug.Error($"Error loading sounds: {ex.Message}");
+                Debug.Error($"[GameSetLoader] Error loading sounds: {ex.Message}");
             }
 
 
@@ -208,9 +161,20 @@ namespace Spacebox.Game.Resource
             }
         }
 
+        private static void AddAirBlock()
+        {
+            var air = new BlockData("Air", "block", new Vector2Byte(0, 0));
+            air.Mass = 0;
+            air.Category = "";
+            air.Sides = "sand";
+            air.Id_string = "default:air";
 
+            GameAssetsRegister.RegisterBlock(air);
+        }
         private static void LoadBlocks(string modPath, string defaultModPath)
         {
+            AddAirBlock();
+
             string blocksFile = GetFilePath(modPath, defaultModPath, "blocks.json");
             if (blocksFile == null) return;
 
@@ -219,16 +183,6 @@ namespace Spacebox.Game.Resource
                 string json = File.ReadAllText(blocksFile);
 
                 List<ModBlockData> blocks = JsonSerializer.Deserialize<List<ModBlockData>>(json);
-
-
-
-                var air = new BlockData("Air", "block", new Vector2Byte(0, 0));
-                air.Mass = 0;
-                air.Category = "";
-                air.Sides = "sand";
-
-
-                GameAssetsRegister.RegisterBlock(air);
 
                 foreach (var block in blocks)
                 {
@@ -239,8 +193,8 @@ namespace Spacebox.Game.Resource
 
                     if (!BlockFactory.ValidateBlockType(block.Type))
                     {
-                        Debug.Error($"Block '{block.Name}' has an invalid type and was skipped");
-                        Debug.Error($"Valid types are: {string.Join(", ", BlockFactory.GetBlockTypes())}");
+                        Debug.Error($"[GameSetLoader] Block '{block.ID}' has an invalid type and was skipped");
+                        Debug.Error($"[GameSetLoader] Valid types are: {string.Join(", ", BlockFactory.GetBlockTypes())}");
                         continue;
                     }
 
@@ -248,13 +202,18 @@ namespace Spacebox.Game.Resource
                     bool hasLightColor = block.LightColor != Color3Byte.Black;
                     var blockColor = hasLightColor ? block.LightColor.ToVector3() : Color3Byte.Black.ToVector3();
 
+
+                    var blockId = ValidateIdString(ModInfo.ModId, block.ID);
+                    blockId = CombineId(ModInfo.ModId, blockId);
+
                     BlockData blockData = new BlockData(block.Name, block.Type, new Vector2Byte(0, 0), block.IsTransparent, blockColor)
                     {
                         AllSidesAreSame = sameSides,
                         TopUVIndex = new Vector2Byte(),
                         BottomUVIndex = new Vector2Byte(),
-
                     };
+
+                    blockData.Id_string = blockId;
 
                     blockData.Description = block.Description;
 
@@ -305,6 +264,120 @@ namespace Spacebox.Game.Resource
             }
         }
 
+        private static string ValidateIdString(string @namespace, string idString)
+        {
+            if (string.IsNullOrEmpty(idString))
+            {
+                Debug.Error("ID cannot be null or empty, using fallback 'unknown_item'");
+                idString = "unknown_item";
+            }
+
+            string cleanId = "";
+            for (int i = 0; i < idString.Length; i++)
+            {
+                char c = idString[i];
+                if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_')
+                {
+                    cleanId += c;
+                }
+                else if (c >= 'A' && c <= 'Z')
+                {
+                    cleanId += char.ToLower(c);
+                }
+                else if (c == ' ' || c == '-')
+                {
+                    cleanId += '_';
+                }
+            }
+
+            if (cleanId != idString)
+            {
+                Debug.Error($"ID '{idString}' contained invalid characters, cleaned to '{cleanId}'");
+                idString = cleanId;
+            }
+
+            if (string.IsNullOrEmpty(idString))
+            {
+                Debug.Error("ID became empty after cleaning, using fallback 'item'");
+                idString = "item";
+            }
+
+            if (char.IsDigit(idString[0]) || idString[0] == '_')
+            {
+                Debug.Error($"ID '{idString}' starts with invalid character, adding 'item_' prefix");
+                idString = "item_" + idString;
+            }
+
+            while (idString.EndsWith("_"))
+            {
+                idString = idString.Substring(0, idString.Length - 1);
+                Debug.Error($"ID ended with underscore, trimmed to '{idString}'");
+            }
+
+            while (idString.Contains("__"))
+            {
+                idString = idString.Replace("__", "_");
+                Debug.Error($"ID contained double underscores, fixed to '{idString}'");
+            }
+
+            if (idString.Length < 2)
+            {
+                Debug.Error($"ID '{idString}' too short, using 'item'");
+                idString = "item";
+            }
+
+            if (idString.Length > 64)
+            {
+                idString = idString.Substring(0, 64);
+                Debug.Error($"ID too long, truncated to '{idString}'");
+            }
+
+            string originalId = idString;
+            string fullId = $"{@namespace}:{idString}";
+            int counter = 1;
+
+            while (GameAssets.HasItem(fullId))
+            {
+                idString = $"{originalId}_{counter}";
+                fullId = $"{@namespace}:{idString}";
+                counter++;
+
+                if (counter == 1000)
+                {
+                    Debug.Error($"Too many duplicate IDs for '{originalId}', using random suffix");
+                    idString = $"{originalId}_{System.DateTime.Now.Ticks % 10000}";
+                    break;
+                }
+            }
+
+            if (idString != originalId)
+            {
+                Debug.Error($"ID '{@namespace}:{originalId}' already exists, using '{@namespace}:{idString}' instead");
+            }
+
+            return idString;
+        }
+
+        public static string CombineId(string modId, string itemId)
+        {
+            return $"{modId}:{itemId}";
+        }
+
+        public static (string modId, string itemId) SplitId(string fullId)
+        {
+            int colonIndex = fullId.IndexOf(':');
+            if (colonIndex == -1)
+            {
+                Debug.Error($"Invalid ID format: '{fullId}'. Expected format 'modId:itemId'");
+                return ("unknown", fullId);
+            }
+
+            string modId = fullId.Substring(0, colonIndex);
+            string itemId = fullId.Substring(colonIndex + 1);
+
+            return (modId, itemId);
+        }
+
         private static void GiveBlockSounds(BlockData blockData, ModBlockData modBlockData)
         {
             if (!GameAssets.Sounds.ContainsKey(modBlockData.SoundPlace))
@@ -327,8 +400,6 @@ namespace Spacebox.Game.Resource
             }
         }
 
-
-
         private static void LoadProjectiles(string modPath, string defaultModPath)
         {
             string projectilesFile = GetFilePath(modPath, defaultModPath, "projectiles.json");
@@ -345,11 +416,11 @@ namespace Spacebox.Game.Resource
 
                 foreach (var proj in projectiles)
                 {
-                    proj.Name = proj.Name.ToLower();
+                    proj.ID = proj.ID.ToLower();
 
                     if (GameAssets.Projectiles.ContainsKey(id))
                     {
-                        Debug.Error($"[GamesetLoader] Error loading projectiles: projectile with the name {proj.Name} is already registered and was skpped! Use a different name!");
+                        Debug.Error($"[GamesetLoader] Error loading projectiles: projectile with the name {proj.ID} is already registered and was skpped! Use a different name!");
                         continue;
                     }
 
@@ -387,38 +458,57 @@ namespace Spacebox.Game.Resource
                 foreach (JsonElement itemElement in root.EnumerateArray())
                 {
                     string type = "item";
-
+                    string idString = "";
 
                     if (itemElement.TryGetProperty("Type", out JsonElement typeElement))
                     {
                         type = typeElement.GetString().ToLower();
                     }
+
+                    if(itemElement.TryGetProperty("ID", out JsonElement idElement))
+                    {
+                        idString = idElement.GetString();
+                        idString = ValidateIdString(ModInfo.ModId, idString);
+                        idString = CombineId(ModInfo.ModId, idString);
+                        if (GameAssets.HasItem(idString))
+                        {
+                            Debug.Error($"[GameSetLoader] Item with ID '{idString}' already exists. Skipping duplicate.");
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        Debug.Error($"[GameSetLoader] Item is missing an ID. Skipping item.");
+                        continue;
+                    }
+
+
                     Item registeredItem = null;
                     switch (type)
                     {
                         case "weapon":
                             var weaponData = itemElement.Deserialize<WeaponItemData>();
                             if (weaponData == null) continue;
-                            registeredItem = RegisterWeaponItem(weaponData);
+                            registeredItem = RegisterWeaponItem(weaponData, idString);
                             break;
 
                         case "drill":
                             var drillData = itemElement.Deserialize<DrillItemData>();
                             if (drillData == null) continue;
-                            registeredItem = RegisterDrillItem(drillData);
+                            registeredItem = RegisterDrillItem(drillData, idString);
                             break;
 
                         case "consumable":
                             var consumableData = itemElement.Deserialize<ConsumableItemData>();
                             if (consumableData == null) continue;
-                            registeredItem = RegisterConsumableItem(consumableData);
+                            registeredItem = RegisterConsumableItem(consumableData, idString);
                             break;
 
                         case "item":
                         default:
                             var itemData = itemElement.Deserialize<ItemData>();
                             if (itemData == null) continue;
-                            registeredItem = RegisterItem(itemData);
+                            registeredItem = RegisterItem(itemData, idString);
                             break;
                     }
 
@@ -428,6 +518,7 @@ namespace Spacebox.Game.Resource
                         {
                             registeredItem.Description = v.GetString();
                         }
+                       
                     }
                 }
 
@@ -439,7 +530,6 @@ namespace Spacebox.Game.Resource
                 Debug.Error($"[GamesetLoader] Error loading items: {ex.Message}");
             }
         }
-
 
 
         private static void LoadRecipes(string modPath, string defaultModPath)
@@ -462,19 +552,26 @@ namespace Spacebox.Game.Resource
                     {
                         if (r == null) continue;
 
-                        var item = GameAssets.GetItemByName(r.Ingredient.Item);
-                        var item2 = GameAssets.GetItemByName(r.Product.Item);
+                        var ingredientFullId = CombineId(ModInfo.ModId, r.Ingredient.Item);
+                        var productFullId = CombineId(ModInfo.ModId, r.Product.Item);
+
+                        var item = GameAssets.GetItemByFullID(ingredientFullId);
+                        var item2 = GameAssets.GetItemByFullID(productFullId);
 
                         if (item == null)
                         {
                             Debug.Error($"[GameSetLoader] Recipes: ingredient was not found - {r.Ingredient.Item} . This recipe was skipped");
                             continue;
                         }
-                        if (item2 == null) continue;
-
-                        if (item.Id == item2.Id)
+                        if (item2 == null)
                         {
-                            Debug.Error($"[GameSetLoader] Recipes: product was not found - {r.Ingredient.Item} . This recipe was skipped");
+                            Debug.Error($"[GameSetLoader] Recipes: product was not found - {r.Product.Item} . This recipe was skipped");
+                            continue;
+                        }
+
+                        if (item == item2)
+                        {
+                            Debug.Error($"[GameSetLoader] Recipes: item <{item.Name}> needs itself for crafting! This recipe was skipped");
                             continue;
                         }
 
@@ -516,7 +613,7 @@ namespace Spacebox.Game.Resource
 
                             if (category.Name != "")
                             {
-                                var item = GameAssets.GetItemByName(category.Icon);
+                                var item = GameAssets.GetItemByFullID(CombineId(ModInfo.ModId, category.Icon));
 
                                 if (item != null)
                                 {
@@ -603,8 +700,6 @@ namespace Spacebox.Game.Resource
 
                 GameAssets.CraftingCategories[category].Items.Add(d);
 
-
-
             }
         }
 
@@ -621,7 +716,8 @@ namespace Spacebox.Game.Resource
 
                 Item? item = null;
 
-                item = GameAssets.GetItemByName(e.Product.Item);
+                var productFullID = CombineId(ModInfo.ModId, e.Product.Item);
+                item = GameAssets.GetItemByFullID(productFullID);
 
                 if (item == null)
                 {
@@ -640,11 +736,12 @@ namespace Spacebox.Game.Resource
                     {
                         item2 = new Item(255, "$health", 0.5f);
                         item2.IconTextureId = IntPtr.Zero;
-                       
+
                     }
                     else
                     {
-                        item2 = GameAssets.GetItemByName(ing.Item);
+                        var ingredientFullID = CombineId(ModInfo.ModId, ing.Item);
+                        item2 = GameAssets.GetItemByFullID(ingredientFullID);
                     }
 
                     if (item2 == null)
@@ -675,7 +772,6 @@ namespace Spacebox.Game.Resource
                 if (!GameAssets.Blueprints.ContainsKey(productID))
                 {
                     GameAssets.Blueprints.Add(productID, blueprint);
-                    //Debug.Log("Blueprint loaded: product id " + productID);
                 }
 
 
@@ -683,7 +779,7 @@ namespace Spacebox.Game.Resource
 
         }
 
-        private static Item RegisterWeaponItem(WeaponItemData data)
+        private static Item RegisterWeaponItem(WeaponItemData data, string id)
         {
             data.MaxStack = 1;
 
@@ -712,7 +808,7 @@ namespace Spacebox.Game.Resource
             weaponItem.AnimationSpeed = data.AnimationSpeed;
             weaponItem.Pushback = data.Pushback;
             weaponItem.Spread = data.Spread;
-
+            weaponItem.Id_string = id;
             if (GameAssets.Sounds.ContainsKey(data.ShotSound))
             {
                 weaponItem.ShotSound = data.ShotSound;
@@ -732,7 +828,7 @@ namespace Spacebox.Game.Resource
 
 
 
-        private static Item RegisterDrillItem(DrillItemData data)
+        private static Item RegisterDrillItem(DrillItemData data, string id)
         {
             data.MaxStack = 1;
             var drillItem = new DrillItem(
@@ -744,7 +840,7 @@ namespace Spacebox.Game.Resource
                 Power = data.Power,
                 PowerUsage = (byte)data.PowerUsage,
                 Category = data.Category,
-
+                Id_string = id,
                 DrillColor = data.DrillColor,
             };
             GameAssetsRegister.RegisterItem(drillItem, data.Sprite);
@@ -761,6 +857,7 @@ namespace Spacebox.Game.Resource
             {
 
             };
+            eraser.Id_string = "default:eraser_tool";
             eraser.Description = "LMB - select block 1\nRMB - select block 2\nMMB - reset\nEnter - confirm";
             GameAssetsRegister.RegisterItem(eraser, "eraser");
         }
@@ -773,12 +870,13 @@ namespace Spacebox.Game.Resource
             {
 
             };
+            eraser.Id_string = "default:camera_point";
             eraser.Description = "LMB - remove last point\nMMB - remove all points\nRMB - add point\nEnter - start\nAlt+Scroll - set speed";
             GameAssetsRegister.RegisterItem(eraser, "cameraPoint");
         }
 
 
-        private static Item RegisterConsumableItem(ConsumableItemData data)
+        private static Item RegisterConsumableItem(ConsumableItemData data, string id)
         {
             data.ValidateMaxStack();
             var consumableItem = new ConsumableItem(
@@ -787,7 +885,7 @@ namespace Spacebox.Game.Resource
 
                 data.ModelDepth)
             {
-
+                Id_string = id,
                 HealAmount = data.HealAmount,
                 PowerAmount = data.PowerAmount,
                 UseSound = data.Sound,
@@ -798,15 +896,16 @@ namespace Spacebox.Game.Resource
             return consumableItem;
         }
 
-        private static Item RegisterItem(ItemData data)
+        private static Item RegisterItem(ItemData data, string id)
         {
             data.ValidateMaxStack();
             var item = new Item(
                 (byte)data.MaxStack,
                 data.Name,
-
+                
                 data.ModelDepth);
             item.Category = data.Category;
+            item.Id_string = id;
             GameAssetsRegister.RegisterItem(item, data.Sprite);
 
             return item;
@@ -821,11 +920,11 @@ namespace Spacebox.Game.Resource
                 {
                     string json = File.ReadAllText(settingsFile);
                     ModSettings settings = JsonSerializer.Deserialize<ModSettings>(json);
-                    ApplySettings(settings);
+
                 }
                 catch (Exception ex)
                 {
-                    Debug.Error($"Error loading settings: {ex.Message}");
+                    Debug.Error($"[GameSetLoader] Error loading settings: {ex.Message}");
                 }
             }
         }
@@ -874,11 +973,6 @@ namespace Spacebox.Game.Resource
             }
         }
 
-        private static void ApplySettings(ModSettings settings)
-        {
-
-        }
-
         private static string GetFilePath(string modPath, string defaultModPath, string fileName)
         {
             string filePath = Path.Combine(modPath, fileName);
@@ -887,10 +981,10 @@ namespace Spacebox.Game.Resource
             if (!File.Exists(filePath))
             {
                 filePath = defaultFilePath;
-                Debug.Error($"{fileName} not found in mod. Using default.");
+                Debug.Error($"[GameSetLoader] {fileName} not found in mod. Using default.");
                 if (!File.Exists(filePath))
                 {
-                    Debug.Error($"Default {fileName} not found.");
+                    Debug.Error($"[GameSetLoader] Default {fileName} not found.");
                     return null;
                 }
             }
@@ -926,62 +1020,37 @@ namespace Spacebox.Game.Resource
 
         public class DefaultItem
         {
-            public string Name { get; set; } = "unknown";
+            public string ID { get; set; } = "unknown";
             public byte Count { get; set; } = 0;
 
         }
 
-        public static void GiveStartItems(Astronaut player, Dictionary<short, Item> items)
+        public static void GiveStartItems(Astronaut player, Dictionary<string, Item> allGameItems)
         {
-            if (player == null) return;
-
-            if (ModInfo == null)
-            {
-                Debug.Error("No ModInfo found.");
+            if (player?.GameMode == GameMode.Spectator ||
+                ModInfo?.ItemsOnStart?.Count == 0 ||
+                allGameItems?.Count == 0)
                 return;
-            }
-
-            if (items == null)
-            {
-                Debug.Error("No Items found.");
-                return;
-            }
-
-            if (items.Count == 0) return;
-            if (ModInfo.ItemsOnStart == null) return;
-            if (ModInfo.ItemsOnStart.Count == 0) return;
-
-            if (player.GameMode == GameMode.Spectator)
-            {
-                return;
-            }
 
             foreach (var itemData in ModInfo.ItemsOnStart)
             {
-                if (itemData.Count < 1) continue;
-                if (itemData.Name == string.Empty) continue;
+                if (itemData.Count < 1 || string.IsNullOrEmpty(itemData.ID))
+                    continue;
 
-                Item item = null;
+                if(ModInfo.ModId == "") Debug.Error("[GameSetLoader][GiveStartItems] ModId is empty! Cannot give start items!");
 
-                foreach (var i in items)
+                string fullId = CombineId(ModInfo.ModId, itemData.ID);
+
+                if (GameAssets.TryGetItemByFullID(fullId, out Item item))
                 {
-                    if (i.Value.Name.ToLower() == itemData.Name.ToLower())
+                    if (!player.Panel.TryAddItem(item, itemData.Count))
                     {
-                        item = i.Value;
-                        break;
+                        Debug.Error($"[GameSetLoader][GiveStartItems] Failed to add start item: {itemData.ID} [{itemData.Count}]");
                     }
                 }
-
-                if (item != null)
+                else
                 {
-                    if (player.Panel.TryAddItem(item, itemData.Count))
-                    {
-
-                    }
-                    else
-                    {
-                        Debug.Error($"[GameSetLoader][GiveStartItems] Unknow error by adding a default item on start: {itemData.Name} [{itemData.Count}]");
-                    }
+                    Debug.Error($"[GameSetLoader][GiveStartItems] Start item not found: {fullId}");
                 }
             }
         }

@@ -17,7 +17,7 @@ namespace Spacebox.Game.Resource
     }
     public class LootConfig
     {
-        [JsonPropertyName("lootTables")]
+        [JsonPropertyName("LootTables")]
         public Dictionary<string, List<LootEntry>> LootTables { get; set; }
 
 
@@ -37,7 +37,7 @@ namespace Spacebox.Game.Resource
                     if (entry.MinCount < 0)
                         entry.MinCount = 0;
 
-                    if (!GameAssets.TryGetItemByName(entry.ItemId, out var proto))
+                    if (!GameAssets.TryGetItemByFullID(entry.ItemIdStr, out var proto))
                     {
 
                         list.RemoveAt(i);
@@ -73,7 +73,7 @@ namespace Spacebox.Game.Resource
                     : rng.Next(entry.MinCount, entry.MaxCount + 1);
 
                 if (count <= 0) continue;
-                if (!GameAssets.TryGetItemByName(entry.ItemId, out var proto)) continue;
+                if (!GameAssets.TryGetItemByFullID(entry.ItemIdStr, out var proto)) continue;
 
                 if (total + count > maxItems)
                     count = maxItems - total;
@@ -91,7 +91,7 @@ namespace Spacebox.Game.Resource
             {
                 foreach (var ent in entry)
                 {
-                    Debug.Log($"{ent.ItemId} prob {ent.Probability} Count {ent.MinCount} - {ent.MaxCount}");
+                    Debug.Log($"{ent.ItemIdStr} prob {ent.Probability} Count {ent.MinCount} - {ent.MaxCount}");
                 }
             }
         }
@@ -99,17 +99,17 @@ namespace Spacebox.Game.Resource
 
     public class LootEntry
     {
-        [JsonPropertyName("itemId")]
-        public string ItemId { get; set; } = "";
+        [JsonPropertyName("ID")]
+        public string ItemIdStr { get; set; } = "";
 
         // 0–100
-        [JsonPropertyName("probability")]
+        [JsonPropertyName("Probability")]
         public int Probability { get; set; } = 100;
 
-        [JsonPropertyName("minCount")]
+        [JsonPropertyName("MinCount")]
         public int MinCount { get; set; } = 1;
 
-        [JsonPropertyName("maxCount")]
+        [JsonPropertyName("MaxCount")]
         public int MaxCount { get; set; } = 1;
     }
 

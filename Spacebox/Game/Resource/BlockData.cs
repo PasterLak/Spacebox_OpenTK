@@ -7,6 +7,7 @@ namespace Spacebox.Game.Resource
     public class BlockData
     {
         public short Id;
+        public string Id_string;
         public string Name;
         public string Description;
         public string Type;

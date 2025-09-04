@@ -1,6 +1,6 @@
 [
     {
-        "Name": "pistoleProjectile",
+        "ID": "pistoleProjectile",
         "Speed": 16,
         "Mass" : 1,
         "MaxTravelDistance": 50,
@@ -13,7 +13,7 @@
         "PossibleRicochets": 3
     },
     {
-        "Name": "smgProjectile",
+        "ID": "smgProjectile",
         "Speed": 19,
         "Mass" : 55,
         "MaxTravelDistance": 80,
@@ -26,7 +26,7 @@
         "PossibleRicochets": 3
     },
     {
-        "Name": "assaultProjectile",
+        "ID": "assaultProjectile",
         "Speed": 25,
         "Mass" : 15,
         "MaxTravelDistance": 100,
@@ -39,7 +39,7 @@
         "PossibleRicochets": 2
     },
     {
-        "Name": "arProjectile",
+        "ID": "arProjectile",
         "Speed": 22,
         "Mass" : 255,
         "MaxTravelDistance": 70,
@@ -52,7 +52,7 @@
         "PossibleRicochets": 5
     },
     {
-        "Name": "sniperProjectile",
+        "ID": "sniperProjectile",
         "Speed": 40,
         "Mass" : 10,
         "MaxTravelDistance": 110,

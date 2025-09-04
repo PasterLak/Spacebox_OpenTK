@@ -6,6 +6,7 @@ namespace Spacebox.Game.Resource
     {
         public string Info { get; set; } = "";
         public string Description { get; set; } = "";
+        public string ID { get; set; } = "no_id";
         public string Name { get; set; } = "NoName";
         public string Type { get; set; } = "item";
         public string Category { get; set; } = "";

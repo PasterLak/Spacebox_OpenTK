@@ -30,7 +30,7 @@ namespace Spacebox.Game.Player
             var p = projectileJSON;
 
             ID = id;
-            Name = p.Name;
+            Name = p.ID;
             Speed = p.Speed;
             MaxTravelDistance = p.MaxTravelDistance;
             Length = p.Length;

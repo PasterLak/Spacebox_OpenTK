@@ -5,6 +5,7 @@ namespace Spacebox.Game
     public class Item
     {
         public short Id;
+        public string Id_string;
         public byte StackSize;
         public string Name;
         public string Category { get; set; } = "";
@@ -69,6 +70,34 @@ namespace Spacebox.Game
             item.IconTextureId = IconTextureId;
 
             return item;
+        }
+
+        public static bool operator ==(Item item1, Item item2)
+        {
+            if (ReferenceEquals(item1, item2))
+                return true;
+
+            if (item1 is null || item2 is null)
+                return false;
+
+            return item1.Id == item2.Id;
+        }
+
+        public static bool operator !=(Item item1, Item item2)
+        {
+            return !(item1 == item2);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Item other)
+                return this == other;
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
         }
     }
 }

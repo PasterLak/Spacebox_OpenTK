@@ -12,6 +12,7 @@ namespace Spacebox.Game
         {
             GameAssets.IncrementBlockId(blockData);
             GameAssets.Blocks.Add(blockData.Id, blockData);
+            GameAssets.AddBlockString(blockData.Id_string, blockData);
             CacheBlockUVs(blockData);
             blockData.CacheUVsByDirection();
             RegisterItem(blockData);
@@ -36,32 +37,49 @@ namespace Spacebox.Game
 
         public static void RegisterItem(BlockData blockData)
         {
-           
-            BlockItem item = new BlockItem(blockData.Id, 0, 64, blockData.Name, blockData.Mass, blockData.Durability);
-            item.Mass = blockData.Mass;
-            item.Category = blockData.Category;
-            blockData.Item = item;
-            item.Description = blockData.Description;
-            GameAssets.IncrementItemId(blockData.Item);
-            GameAssets.Items.Add(item.Id, item);
-            CacheIcon(blockData);
+            try
+            {
+                BlockItem item = new BlockItem(blockData.Id, 0, 64, blockData.Name, blockData.Mass, blockData.Durability);
+                item.Mass = blockData.Mass;
+                item.Category = blockData.Category;
+                blockData.Item = item;
+                item.Description = blockData.Description;
+                item.Id_string = blockData.Id_string;
+                GameAssets.IncrementItemId(blockData.Item);
+                GameAssets.Items.Add(item.Id, item);
+                GameAssets.AddItemString(blockData.Id_string, item);
+                CacheIcon(blockData);
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"[GameAssetsRegister] Error registering block item {blockData.Name}: {ex.Message}");
+            }
         }
 
         public static void RegisterItem(Item item, string spriteName)
         {
-            GameAssets.IncrementItemId(item);
-            GameAssets.Items.Add(item.Id, item);
-            var uvIndex = GameAssets.AtlasItems.GetUVIndexByName(spriteName.ToLower());
-            byte coordX = uvIndex.X;
-            byte coordY = uvIndex.Y;
-            item.TextureCoord = new Vector2i(coordX, coordY);
-            CacheIcon(item, coordX, coordY);
-            GenerateItemModel(coordX, coordY, item);
-            if (item is ConsumableItem consumable)
+            try
             {
-                if (!GameAssets.ItemSounds.ContainsKey(consumable.Id) && GameAssets.Sounds.ContainsKey(consumable.UseSound))
-                    GameAssets.ItemSounds.Add(consumable.Id, GameAssets.Sounds[consumable.UseSound]);
+                GameAssets.IncrementItemId(item);
+                GameAssets.Items.Add(item.Id, item);
+                GameAssets.AddItemString(item.Id_string, item);
+                var uvIndex = GameAssets.AtlasItems.GetUVIndexByName(spriteName.ToLower());
+                byte coordX = uvIndex.X;
+                byte coordY = uvIndex.Y;
+                item.TextureCoord = new Vector2i(coordX, coordY);
+                CacheIcon(item, coordX, coordY);
+                GenerateItemModel(coordX, coordY, item);
+                if (item is ConsumableItem consumable)
+                {
+                    if (!GameAssets.ItemSounds.ContainsKey(consumable.Id) && GameAssets.Sounds.ContainsKey(consumable.UseSound))
+                        GameAssets.ItemSounds.Add(consumable.Id, GameAssets.Sounds[consumable.UseSound]);
+                }
             }
+            catch (Exception ex)
+            {
+                Debug.Error($"[GameAssetsRegister] Error registering item {item.Name}: {ex.Message}");
+            }
+
         }
 
         private static void GenerateItemModel(byte coordX, byte coordY, Item item)
