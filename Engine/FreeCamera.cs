@@ -17,7 +17,7 @@ namespace Engine
         SpotLight flashlight;
         public FreeCamera(Vector3 position, bool isMain = true) : base(position, isMain) 
         {
-            Input.HideCursor();
+            
             Name = "FreeCamera";
             
            var c = AttachComponent(new SphereCollider());

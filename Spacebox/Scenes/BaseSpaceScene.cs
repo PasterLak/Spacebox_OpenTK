@@ -182,7 +182,7 @@ namespace Spacebox.Scenes
             PauseUI.Init();
             SpheresPool = new SpheresPool();
 
-
+            AddChild(new ProjectileHitEffectsManager());
             AddChild(new DirectionalLight());
 
             GameTime.Init();

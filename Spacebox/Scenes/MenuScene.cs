@@ -137,7 +137,7 @@ namespace Spacebox.Scenes
             GameMenu.IsVisible = false;
             HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
             VerticalLinks.Init();
-            Input.ShowCursor();
+          
             // _ = WorkerPoolTest.RunTest();
 
             var colors = new Color4[]
@@ -160,7 +160,7 @@ namespace Spacebox.Scenes
             TextureFile.Save("Resources/Textures/test2na.txt", colors, false, TextureFile.SaveMode.Binary, TextureFile.PaletteMode.Auto);
             TextureFile.Save("Resources/Textures/test3na.txt", colors, false, TextureFile.SaveMode.Compressed, TextureFile.PaletteMode.Auto);
             TextureFile.Save("Resources/Textures/test4na.txt", colors, false, TextureFile.SaveMode.All, TextureFile.PaletteMode.Auto);
-
+            Input.ShowCursor();
         }
 
 

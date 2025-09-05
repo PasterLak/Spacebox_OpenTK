@@ -56,7 +56,7 @@ namespace Spacebox.Scenes
             SceneManager.Load<MenuScene>();
             //SceneManager.LoadScene(typeof(TestScene));
 
-            Input.HideCursor(); //audio.Play();
+            //Input.HideCursor(); //audio.Play();
 
             Debug.Log(GL.GetString(StringName.Renderer));
             Debug.Log(GL.GetString(StringName.Vendor));

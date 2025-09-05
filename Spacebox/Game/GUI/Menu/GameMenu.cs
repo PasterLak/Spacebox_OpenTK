@@ -391,7 +391,7 @@ namespace Spacebox.Game.GUI.Menu
                 modfolderName = modInfo?.FolderName ?? ""
             };
 
-            Input.HideCursor();
+            //Input.HideCursor();
 
             if (multiplayer)
                 SceneManager.Load<MultiplayerScene, SpaceSceneArgs>(arg);

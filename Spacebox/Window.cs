@@ -123,7 +123,11 @@ namespace Spacebox
             InputManager0.AddAction("fullscreen", Keys.F11, true);
             InputManager0.RegisterCallback("fullscreen", () => { ToggleFullScreen(); });
             InputManager0.AddAction("visualDebug", Keys.F4, true);
-            InputManager0.RegisterCallback("visualDebug", () => { VisualDebug.Enabled = !VisualDebug.Enabled; });
+            InputManager0.RegisterCallback("visualDebug", () => 
+            { 
+                if(!Input.IsKey(Keys.LeftAlt))
+                    VisualDebug.Enabled = !VisualDebug.Enabled; 
+            });
             InputManager0.AddAction("frameLimiter", Keys.F7, true);
             InputManager0.RegisterCallback("frameLimiter", () => { ToggleFrameLimiter(); });
             InputManager0.AddAction("debugUI", Keys.F9, true);

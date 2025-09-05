@@ -4,6 +4,7 @@ using Engine.Physics;
 using Engine.Light;
 using Spacebox.Game.Generation;
 using Engine;
+using Spacebox.Game.Effects;
 
 
 namespace Spacebox.Game.Player
@@ -167,6 +168,7 @@ namespace Spacebox.Game.Player
                
                 hitSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 100);
                 hitSound.Play();
+                ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.position + hit.normal.ToVector3() * 0.1f, Parameters.ID);
 
                 if (currentDamage > hit.block.Durability)
                 {
