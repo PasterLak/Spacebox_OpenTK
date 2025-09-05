@@ -57,7 +57,7 @@ namespace Spacebox.Game.Player
             var uvIndex = GameAssets.AtlasItems.GetUVIndexByName("drill1");
             itemModel = ItemModelGenerator.GenerateModelFromAtlas(GameAssets.ItemsTexture, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
             itemModel.UseMainCamera = true;
-            itemModel.offset = Vector3.Zero;
+           // itemModel.offset = Vector3.Zero;
             spotLight = new SpotLight();
             //spotLight.spec = false;
             spotLight.Enabled = true;

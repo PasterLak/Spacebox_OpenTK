@@ -105,15 +105,37 @@ namespace Spacebox.Game.GUI
 
         public static void ShowItemModel()
         {
+
+            bool hadModel = ItemModel != null;
+            var lastModel = ItemModel;
             if (SelectedSlot?.HasItem == true && !(SelectedSlot.Item is BlockItem))
+            {
                 ItemModel = GameAssets.ItemModels[SelectedSlot.Item.Id];
+
+                if (!hadModel) ItemModel.PlayDrawAnimation();
+                else
+                {
+                    if (lastModel != ItemModel)
+                    {
+                        ItemModel.PlayDrawAnimation();
+                    }
+                }
+            }
+              
+            
         }
 
-        public static void HideItemModel()
+        private static void HideItemModel()
         {
             if (SelectedSlot == null) return;
             if (!SelectedSlot.HasItem || SelectedSlot.Item is BlockItem)
+            {
+                if(ItemModel != null)
+                    ItemModel.ResetToEnd();
+
                 ItemModel = null;
+            }
+                
         }
 
         private static void UpdateInput()
@@ -158,8 +180,23 @@ namespace Spacebox.Game.GUI
         {
             if (_time > 0)
                 _time -= Time.Delta;
+
+            if (ItemModel != null && EnableRenderForCurrentItem)
+            {
+                if (ItemModel.Enabled)
+                {
+                    ItemModel.EnableSway = Player.CanMove;
+                    ItemModel.Update();
+
+                }
+                    
+            }
+
             if (InventoryUI.IsVisible) return;
             UpdateInput();
+
+            
+               
         }
 
         private static void UpdatePlayerInteraction(Astronaut player)
@@ -220,9 +257,13 @@ namespace Spacebox.Game.GUI
             {
                 SelectedSlot = Storage.GetSlot(0, slot);
 
+                var hadModel = ItemModel != null;
 
                 ShowItemModel();
                 HideItemModel();
+
+
+
                 if (_lastSelectedSlotId != slot ||
                     _lastSelectedItem != SelectedSlot.Item ||
                     _lastSelectedCount != SelectedSlot.Count)

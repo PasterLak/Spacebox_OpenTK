@@ -87,7 +87,7 @@ public class InteractionShoot : InteractionMode
     {
         _time = 0;
         model?.SetAnimation(true);
-
+        //model?.PlayDrawAnimation();
        // light.Enabled = true;
     }
 
@@ -99,13 +99,13 @@ public class InteractionShoot : InteractionMode
         model.Animator.Clear();
         // model?.SetAnimation(false);
         model.Position = startPos;
-    
+        //model?.ResetToEnd();
         //  sphereRenderer.Enabled = false;
 
         // sphereRenderer.Dispose();
         //  sphereRenderer = null;
-       // if (PointLightsPool.Instance != null)
-       //     PointLightsPool.Instance.PutBack(light);
+        // if (PointLightsPool.Instance != null)
+        //     PointLightsPool.Instance.PutBack(light);
     }
     private Vector3 startPos;
 
