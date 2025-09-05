@@ -117,7 +117,7 @@
         "PlayerPushbackForce": 30,
         "AnimationSpeed": 0.5,
         "PowerUsage": 3,
-        "Projectile": "pistoleProjectile",
+        "Projectile": "p_pistole",
         "ShotSound": "pistole2"
     },
     {
@@ -135,7 +135,7 @@
         "PlayerPushbackForce": 30,
         "AnimationSpeed": 0.5,
         "PowerUsage": 5,
-        "Projectile": "smgProjectile",
+        "Projectile": "p_smg",
         "ShotSound": "pistole2"
     },
     {
@@ -153,7 +153,7 @@
         "PlayerPushbackForce": 30,
         "AnimationSpeed": 0.6,
         "PowerUsage": 4,
-        "Projectile": "assaultProjectile",
+        "Projectile": "p_assault",
         "ShotSound": "pistole2"
     },
     {
@@ -170,7 +170,7 @@
         "PlayerPushbackForce": 30,
         "AnimationSpeed": 0.6,
         "PowerUsage": 15,
-        "Projectile": "sniperProjectile",
+        "Projectile": "p_sniper",
         "ShotSound": "pistole2"
     },
     {
@@ -188,7 +188,7 @@
         "PlayerPushbackForce": 30,
         "AnimationSpeed": 0.25,
         "PowerUsage": 30,
-        "Projectile": "arProjectile",
+        "Projectile": "p_ar",
         "ShotSound": "ar"
     },
     {

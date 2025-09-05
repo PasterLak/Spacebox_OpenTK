@@ -173,7 +173,7 @@ namespace Spacebox.Game.Player
                 if (currentDamage > hit.block.Durability)
                 {
 
-                    hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage);
+                    hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage, Parameters.DropBlock);
 
                     IsActive = false;
                     if (currentDamage >= 50)
@@ -186,7 +186,7 @@ namespace Spacebox.Game.Player
                 }
                 else
                 {
-                    hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage);
+                    hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage, Parameters.DropBlock);
 
                     IsActive = false;
                     OnDespawn?.Invoke(this);

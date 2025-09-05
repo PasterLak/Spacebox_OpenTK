@@ -18,5 +18,7 @@ namespace Spacebox.Game.Player
         public int DamageBlocks { get; set; } = 0;
         public float RicochetAngle { get; set; } = 0;
         public int PossibleRicochets { get; set; } = 0;
+
+        public bool DropBlock { get; set; } = false;
     }
 }

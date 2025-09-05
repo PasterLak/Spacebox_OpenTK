@@ -19,6 +19,7 @@ namespace Spacebox.Game.Player
         public float RicochetAngle { get; private set; }
         public int PossibleRicochets { get; private set; }
 
+        public bool DropBlock { get; private set; } = false;
 
         public ProjectileParameters()
         {
@@ -36,7 +37,7 @@ namespace Spacebox.Game.Player
             Length = p.Length;
             Thickness = p.Thickness;
             Color = p.Color.ToColor4();
-
+            DropBlock = p.DropBlock;
             Mass = (byte)p.Mass;
             Damage = (byte)p.Damage;
             DamageBlocks = (byte)p.DamageBlocks;

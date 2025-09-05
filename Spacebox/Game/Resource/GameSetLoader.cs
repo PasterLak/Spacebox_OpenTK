@@ -182,7 +182,7 @@ namespace Spacebox.Game.Resource
             {
                 string json = File.ReadAllText(blocksFile);
 
-                List<ModBlockData> blocks = JsonSerializer.Deserialize<List<ModBlockData>>(json);
+                List<BlockDataJSON> blocks = JsonSerializer.Deserialize<List<BlockDataJSON>>(json);
 
                 foreach (var block in blocks)
                 {
@@ -378,7 +378,7 @@ namespace Spacebox.Game.Resource
             return (modId, itemId);
         }
 
-        private static void GiveBlockSounds(BlockData blockData, ModBlockData modBlockData)
+        private static void GiveBlockSounds(BlockData blockData, BlockDataJSON modBlockData)
         {
             if (!GameAssets.Sounds.ContainsKey(modBlockData.SoundPlace))
             {

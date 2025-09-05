@@ -1,8 +1,8 @@
-﻿
-using Engine;
+﻿using Engine;
+
 namespace Spacebox.Game.Resource
 {
-    public class ModBlockData
+    public class BlockDataJSON
     {
         public string ID { get; set; } = "no_id";
         public string Name { get; set; } = "NoName";
@@ -25,13 +25,13 @@ namespace Spacebox.Game.Resource
         public Color3Byte LightColor { get; set; } = Color3Byte.Black;
     }
 
-    public class InteractiveBlockData : ModBlockData
+    public class InteractiveBlockDataJSON : BlockDataJSON
     {
 
 
     }
 
-    public class LightBlockData : ModBlockData
+    public class LightBlockDataJSON : BlockDataJSON
     {
 
 
