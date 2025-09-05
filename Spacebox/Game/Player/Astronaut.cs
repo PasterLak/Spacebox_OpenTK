@@ -416,7 +416,6 @@ namespace Spacebox.Game.Player
             HitImage.Draw();
 
             DeathScreen.Render();
-
         }
     }
 }

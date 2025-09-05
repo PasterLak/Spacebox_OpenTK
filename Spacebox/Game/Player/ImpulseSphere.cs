@@ -3,7 +3,7 @@ using Engine;
 
 namespace Spacebox.Game.Player
 {
-    public class ImpulseSphere : IPoolable<ImpulseSphere>
+    public class ImpulseSphere 
     {
         private SphereRenderer _sphereRenderer;
         private float _alpha;
@@ -26,28 +26,30 @@ namespace Spacebox.Game.Player
             texture.UpdateTexture(true);
             _sphereRenderer.Material = new TransparentMaterial(texture);
             _sphereRenderer.Scale = new Vector3(1, 1, 1);
-            _sphereRenderer.Enabled = false;
-            _alpha = 1f;
             _isActive = false;
+            _sphereRenderer.Enabled = _isActive;
+            _alpha = 1f;
+            
         }
 
         public void Activate(Vector3 position)
         {
             _sphereRenderer.Position = position;
             _sphereRenderer.Scale = new Vector3(1, 1, 1);
-            _sphereRenderer.Enabled = true;
-            _alpha = 0.3f;
             _isActive = true;
+            _sphereRenderer.Enabled = _isActive;
+            _alpha = 0.3f;
+            
         }
 
-        public void Update(float deltaTime)
+        public void Update()
         {
             if (!_isActive)
                 return;
 
-            Vector3 expansion = new Vector3(EXPANSION_SPEED, EXPANSION_SPEED, EXPANSION_SPEED) * deltaTime;
+            Vector3 expansion = new Vector3(EXPANSION_SPEED, EXPANSION_SPEED, EXPANSION_SPEED) * Time.Delta;
             _sphereRenderer.Scale += expansion;
-            _alpha -= deltaTime * FADE_SPEED;
+            _alpha -= Time.Delta * FADE_SPEED;
             if (_alpha < 0)
                 _alpha = 0;
             _sphereRenderer.Color = new Color4(1, 1, 1, _alpha);
@@ -55,7 +57,7 @@ namespace Spacebox.Game.Player
             if (_sphereRenderer.Scale.X > MAX_SCALE || _alpha == 0)
             {
                 _isActive = false;
-                _sphereRenderer.Enabled = false;
+                _sphereRenderer.Enabled = _isActive;
                 _alpha = 1f;
                 _sphereRenderer.Scale = new Vector3(1, 1, 1);
             }
@@ -67,16 +69,12 @@ namespace Spacebox.Game.Player
                 _sphereRenderer.Render();
         }
 
-        public ImpulseSphere CreateFromPool()
-        {
-            return new ImpulseSphere();
-        }
-
         public void Reset()
         {
             _isActive = false;
-            _sphereRenderer.Enabled = false;
-            _alpha = 0;
+            _sphereRenderer.Enabled = _isActive;
+            _alpha = 1f;  
+            _sphereRenderer.Scale = new Vector3(1, 1, 1);
         }
     }
 }

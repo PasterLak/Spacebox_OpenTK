@@ -5,11 +5,6 @@ using Engine;
 namespace Spacebox.Game.Player
 {
 
-    /* public interface IPoolController <T> where T : IPoolable<T>
-     {
-         IPoolable<T> Take();
-         void PutBack(T item);
-     }*/
     public class ProjectilesPool : IDisposable
     {
 
@@ -18,14 +13,20 @@ namespace Spacebox.Game.Player
 
         public ProjectilesPool(int initCount)
         {
-            pool = new Pool<Projectile>(initCount, true);
+            pool = new Pool<Projectile>(initCount,
+                 obj => obj,
+                 obj => { obj.OnDespawn += PutBack; },
+                 obj => { obj.OnDespawn -= PutBack; obj.Reset(); },
+                 obj => obj.IsActive,
+                 (obj, active) => obj.IsActive = active);
+
             Projectiles = new List<Projectile>();
         }
 
         public Projectile Take()
         {
             var e = pool.Take();
-            e.OnDespawn += PutBack;
+          
             Projectiles.Add(e);
             return e;
         }
@@ -35,17 +36,15 @@ namespace Spacebox.Game.Player
             if (projectile != null)
             {
                 Projectiles.Remove(projectile);
-                projectile.OnDespawn -= PutBack;
+                
                 pool.Release(projectile);
             }
         }
 
         public void Update()
         {
-            for (int i = 0; i < Projectiles.Count; i++)
-            {
+            for (int i = Projectiles.Count - 1; i >= 0; i--)
                 Projectiles[i].Update();
-            }
         }
 
         public void Render()

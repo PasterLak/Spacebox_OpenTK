@@ -1,9 +1,7 @@
-﻿using OpenTK.Mathematics;
-using System;
-
+﻿
 namespace Engine.Light
 {
-    public sealed class PointLight : LightBase, IPoolable<PointLight>
+    public sealed class PointLight : LightBase
     {
         internal override LightKind Kind => LightKind.Point;
 
@@ -22,8 +20,6 @@ namespace Engine.Light
         public float Constant { get; set; } = 1.0f;
         public float Linear { get; set; } = 0.09f;
         public float Quadratic { get; set; } = 0.032f;
-        private bool _isActive = false;
-        public bool IsActive { get => _isActive; set => _isActive = value; }
 
         public PointLight()
         {
@@ -32,15 +28,6 @@ namespace Engine.Light
             Range = 10f;
             Name = nameof(PointLight);
         }
-        public PointLight CreateFromPool()
-        {
-            return new PointLight();
-        }
-
-
-        public void Reset()
-        {
-
-        }
+ 
     }
 }

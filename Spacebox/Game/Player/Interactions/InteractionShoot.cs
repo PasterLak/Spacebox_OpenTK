@@ -14,7 +14,7 @@ using Engine;
 using Spacebox.Game;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Player;
-using System.Linq;
+
 
 public class InteractionShoot : InteractionMode
 {
@@ -26,7 +26,7 @@ public class InteractionShoot : InteractionMode
     private AnimatedItemModel model;
     public static BlockMiningEffect BlockMiningEffect;// needs dispose
 
-    public static LineRenderer lineRenderer;// needs dispose
+    
 
     public static ProjectilesPool ProjectilesPool;  // needs dispose
     private ProjectileParameters projectileParameters;
@@ -35,7 +35,6 @@ public class InteractionShoot : InteractionMode
     private float _time = 0;
     private bool canShoot = false;
 
-    private PointLight light;
     public InteractionShoot(ItemSlot itemslot)
     {
         Instance = this;
@@ -53,10 +52,6 @@ public class InteractionShoot : InteractionMode
 
         UpdateItemSlot(itemslot);
 
-        lineRenderer = new LineRenderer();
-        lineRenderer.Thickness = 0.02f;
-        lineRenderer.Color = Color4.Blue;
-        lineRenderer.Enabled = true;
 
         if (ProjectilesPool == null)
         {
@@ -79,13 +74,6 @@ public class InteractionShoot : InteractionMode
 
         }
 
-        light = PointLightsPool.Instance.Take();
-
-        light.Range = 4;
-       /* light.Ambient = new Color3Byte(100, 116, 255).ToVector3();
-        light.Diffuse = new Color3Byte(100, 116, 255).ToVector3();
-        light.Specular = new Color3Byte(0, 0, 0).ToVector3();
-        light.IsActive = false;*/
     }
 
     public void UpdateItemSlot(ItemSlot itemslot)
@@ -100,7 +88,7 @@ public class InteractionShoot : InteractionMode
         _time = 0;
         model?.SetAnimation(true);
 
-        light.IsActive = false;
+       // light.Enabled = true;
     }
 
     public override void OnDisable()
@@ -111,13 +99,13 @@ public class InteractionShoot : InteractionMode
         model.Animator.Clear();
         // model?.SetAnimation(false);
         model.Position = startPos;
-        lineRenderer.ClearPoints();
+    
         //  sphereRenderer.Enabled = false;
 
         // sphereRenderer.Dispose();
         //  sphereRenderer = null;
-        if (PointLightsPool.Instance != null)
-            PointLightsPool.Instance.PutBack(light);
+       // if (PointLightsPool.Instance != null)
+       //     PointLightsPool.Instance.PutBack(light);
     }
     private Vector3 startPos;
 
@@ -134,19 +122,8 @@ public class InteractionShoot : InteractionMode
 
     private Vector3 despawnPos = Vector3.Zero;
 
-    float lightTime = 0;
     public override void Update(Astronaut player)
     {
-        if (lightTime > 0)
-        {
-            lightTime -= Time.Delta;
-        }
-        else
-        {
-            lightTime = 0;
-            light.IsActive = false;
-        }
-
 
         if (_time < weapon.ReloadTime * 0.05f)
         {
@@ -202,8 +179,7 @@ public class InteractionShoot : InteractionMode
             canShoot = false;
 
             player.PowerBar.StatsData.Decrement(weapon.PowerUsage);
-            lineRenderer.ClearPoints();
-
+      
             int count = 10;
             int count1 = 0;
            
@@ -211,12 +187,6 @@ public class InteractionShoot : InteractionMode
 
             if (weapon.ProjectileID == 3)
                 projectile.OnDespawn += SetSphere;
-
-            //light.Ambient = projectileParameters.Color3;
-            light.Enabled = false;
-            lightTime = 1f;
-            light.Position = player.Position;
-            light.Range = 4;
 
             var projectileSpawnPos = Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.05f;
             var shotDir = WeaponItem.CalculateSpreadCone(weapon, player.Front);

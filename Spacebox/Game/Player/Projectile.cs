@@ -8,7 +8,7 @@ using Engine;
 
 namespace Spacebox.Game.Player
 {
-    public class Projectile : Node3D, IPoolable<Projectile>
+    public class Projectile : Node3D
     {
 
         private float distanceTraveled = 0;
@@ -202,11 +202,6 @@ namespace Spacebox.Game.Player
         {
             if (!_isActive) return;
             lineRenderer.Render();
-        }
-
-        public Projectile CreateFromPool()
-        {
-            return new Projectile();
         }
 
         public void Reset()

@@ -318,17 +318,11 @@ namespace Spacebox.Scenes
             //world.OnRender();
             DisposalManager.ProcessDisposals();
 
-            PointLightsPool.Instance.Render();
-
-
             if (InteractionShoot.ProjectilesPool != null)
                 InteractionShoot.ProjectilesPool.Render();
 
             if (InteractionPlaceBlock.lineRenderer != null && Settings.ShowInterface)
                 InteractionPlaceBlock.lineRenderer.Render();
-
-            if (InteractionShoot.lineRenderer != null)
-                InteractionShoot.lineRenderer.Render();
 
             blockDestructionManager.Render();
 

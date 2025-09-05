@@ -14,7 +14,13 @@ namespace Spacebox.Game.Player
         public SpheresPool()
         {
             Instance = this;
-                 pool = new Pool<ImpulseSphere>(3, true);
+            pool = new Pool<ImpulseSphere>(3,
+                    obj => obj,
+                 obj => { },
+                 obj => { obj.Reset();  },
+                 obj => obj.IsActive,
+                 (obj, active) => obj.IsActive = active);
+
             spheres = new List<ImpulseSphere>();
             spheresToPutBack = new List<ImpulseSphere>();
         }
@@ -35,34 +41,22 @@ namespace Spacebox.Game.Player
             }
         }
 
-      
+
         public void Update()
         {
-            if(spheresToPutBack.Count > 0)
+            for (int i = spheres.Count - 1; i >= 0; i--)
             {
-                foreach(var sphere in spheresToPutBack)
+                spheres[i].Update();
+                if (!spheres[i].IsActive)
                 {
-                    PutBack(sphere);
-                }
-
-                spheresToPutBack.Clear();
-            }
-
-            for (int i = 0; i < spheres.Count; i++)
-            {
-                spheres[i].Update(Time.Delta);
-                
-                if(!spheres[i].IsActive)
-                {
-                    spheresToPutBack.Add(spheres[i]);
+                    PutBack(spheres[i]);
                 }
             }
-               
         }
 
         public void Render()
         {
-            return;
+           
             for (int i = 0; i < spheres.Count; i++)
                 spheres[i].Render();
         }
