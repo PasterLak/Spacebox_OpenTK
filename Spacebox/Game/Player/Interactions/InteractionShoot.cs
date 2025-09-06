@@ -100,12 +100,7 @@ public class InteractionShoot : InteractionMode
         // model?.SetAnimation(false);
         model.Position = startPos;
         //model?.ResetToEnd();
-        //  sphereRenderer.Enabled = false;
 
-        // sphereRenderer.Dispose();
-        //  sphereRenderer = null;
-        // if (PointLightsPool.Instance != null)
-        //     PointLightsPool.Instance.PutBack(light);
     }
     private Vector3 startPos;
 
@@ -124,7 +119,11 @@ public class InteractionShoot : InteractionMode
 
     public override void Update(Astronaut player)
     {
-
+        if(player.IsAlive == false) 
+        {
+            canShoot = false;
+            return;
+        }
         if (_time < weapon.ReloadTime * 0.05f)
         {
             _time += Time.Delta;

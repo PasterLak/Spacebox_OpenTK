@@ -98,6 +98,7 @@ namespace Spacebox.Game.GUI
 
                 _inputBuffer = "";
 
+            
             ToggleManager.SetState("player", true);
             PanelUI.AllowScroll = true;
             InputManager0.Enabled = true;

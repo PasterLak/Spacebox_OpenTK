@@ -43,6 +43,9 @@ namespace Spacebox.Game.GUI
             if (Input.IsActionDown("inventory") && !Debug.IsVisible)
             {
                 if (ToggleManager.IsActiveAndExists("pause")) return;
+                if(Player.IsAlive == false) return;
+
+
                 var v = IsVisible;
 
                 bool count = ToggleManager.IsActiveAndExists("radar");

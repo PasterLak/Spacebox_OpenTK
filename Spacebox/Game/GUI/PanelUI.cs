@@ -143,6 +143,8 @@ namespace Spacebox.Game.GUI
             if (Debug.IsVisible) return;
             if (InventoryUI.IsVisible) return;
             if (!AllowScroll) return;
+            if(Player.CanMove == false) return;
+
             if (Input.MouseScrollDelta.Y < 0)
             {
                 SelectedSlotId++;
@@ -159,8 +161,7 @@ namespace Spacebox.Game.GUI
             }
             if (Input.IsActionDown("dropItem"))
             {
-                if (SelectedSlot != null)
-                    SelectedSlot.DropOne();
+                DropItem(SelectedSlot);
             }
             if (Input.IsKeyDown(Keys.D0))
             {
@@ -174,6 +175,18 @@ namespace Spacebox.Game.GUI
                     break;
                 }
             }
+        }
+
+        private static void DropItem(ItemSlot slot)
+        {
+            if (slot == null) return;
+            if (!slot.HasItem) return;
+            if (Player == null) return;
+            if (Player.GameMode == GameMode.Spectator) return;
+
+            var dropPosition = Player.Position + Player.Front * 0.5f;
+     
+            slot.DropOne();
         }
 
         public static void Update()

@@ -10,6 +10,7 @@ using Spacebox.Game.GUI;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Game.Player.Interactions;
 using Spacebox.GUI;
+using SpaceNetwork;
 
 
 namespace Spacebox.Game.Player
@@ -33,7 +34,17 @@ namespace Spacebox.Game.Player
             get => _canMove;
 
         }
-
+        private bool _isAlive = true;
+        public bool IsAlive
+        {
+            get => _isAlive;
+            private set
+            {
+                _isAlive = value;
+                _canMove = _isAlive;
+            }
+        }
+        public Action OnDeath { get; set; }
         public InertiaController InertiaController { get; private set; } = new InertiaController();
         public CameraSway CameraSway { get; private set; } = new CameraSway();
         public Flashlight Flashlight { get; private set; }
@@ -45,7 +56,8 @@ namespace Spacebox.Game.Player
         private GameModeBase _gameModeBase;
         private GameMode _gameMode => _gameModeBase.GetGameMode();
         public InteractionMode CurrentInteraction => _gameModeBase.InteractionHandler.Interaction;
-        public PlayerEffect damageEffect;
+  
+        public PlayerEffects Effects { get; private set; } = new PlayerEffects();
         public Vector3 SpawnPosition { get; set; }
 
         public GameMode GameMode
@@ -81,7 +93,7 @@ namespace Spacebox.Game.Player
             SetData();
             SetRenderSpace(true);
             HitImage = new HitImage();
-            Flashlight = new Flashlight();
+            Flashlight = new Flashlight(this);
 
             AddChild(Flashlight);
             Flashlight.Position = new Vector3(0, 0, -0.3f);
@@ -94,7 +106,7 @@ namespace Spacebox.Game.Player
             toggle = ToggleManager.Register("player");
             toggle.OnStateChanged += state =>
             {
-
+                if(IsAlive)
                 _canMove = state;
 
             };
@@ -116,9 +128,8 @@ namespace Spacebox.Game.Player
 
             var damageTexture = Resources.Load<Texture2D>("Resources/Textures/damageEffect.png");
             damageTexture.FilterMode = FilterMode.Nearest;
-            damageEffect = new PlayerEffect(damageTexture);
-
-            AddChild(damageEffect);
+        
+            AddChild(Effects);
 
             DeathScreen.OnRespawn += Revive;
 
@@ -327,6 +338,14 @@ namespace Spacebox.Game.Player
             }
         }
 
+        public void Teleport(Vector3 position)
+        {
+            Position = position;
+            InertiaController.Reset();
+            Effects.PlayEffect(PlayerEffectType.Teleport);
+            OnMoved?.Invoke(this);
+        }
+
         public void TakeDamage(int damage, DeathCase? deathCase = null)
         {
 
@@ -334,7 +353,7 @@ namespace Spacebox.Game.Player
             health.Decrement(damage);
 
             if (damage > 12)
-                damageEffect.OnDamage(new Vector3(1, 0, 0));
+                Effects.PlayEffect(PlayerEffectType.Damage);
             if (health.Count > 0)
             {
                 HealthColorOverlay.SetActive(new System.Numerics.Vector3(1, 0, 0), 0.1f + 1 / (10 - Math.Min(damage, 6)));
@@ -342,30 +361,36 @@ namespace Spacebox.Game.Player
             }
             else
             {
-                _canMove = false;
-                InertiaController.Reset();
-                FOV = 110;
-                HitImage.Hide();
-                Settings.ShowInterface = false;
-                PanelUI.IsVisible = false;
-                PanelUI.IsItemModelVisible = false;
-                Input.ShowCursor();
-                Flashlight.Enabled = false;
-                HealthBar.StatsGUI.IsVisible = false;
-                PowerBar.StatsGUI.IsVisible = false;
-
-                if (deathCase != null)
-                    DeathScreen.Show(deathCase);
-                else
-
-                    DeathScreen.Show(new DeathCase(""));
-
+                Death(deathCase);
 
             }
         }
 
+        private void Death(DeathCase? deathCase = null)
+        {
+            IsAlive = false;
+            InertiaController.Reset();
+            FOV = 110;
+            HitImage.Hide();
+            Settings.ShowInterface = false;
+            PanelUI.IsVisible = false;
+            PanelUI.IsItemModelVisible = false;
+            Input.ShowCursor();
+            Flashlight.Enabled = false;
+            HealthBar.StatsGUI.IsVisible = false;
+            PowerBar.StatsGUI.IsVisible = false;
+            CurrentInteraction?.OnDisable();
+            if (deathCase != null)
+                DeathScreen.Show(deathCase);
+            else
+
+                DeathScreen.Show(new DeathCase(""));
+            OnDeath?.Invoke();
+        }
+
         public void Revive()
         {
+            IsAlive = true;
             FOV = Settings.Graphics.Fov;
             Settings.ShowInterface = true;
             var health = HealthBar.StatsData;
@@ -376,11 +401,11 @@ namespace Spacebox.Game.Player
             PanelUI.IsItemModelVisible = true;
             Input.HideCursor();
             Flashlight.Enabled = true;
-
+            //PanelUI.ResetLastSelected();
             HealthBar.StatsGUI.IsVisible = true;
             PowerBar.StatsGUI.IsVisible = true;
             Position = SpawnPosition;
-            _canMove = true;
+            Effects.PlayEffect(PlayerEffectType.Heal);
 
         }
 

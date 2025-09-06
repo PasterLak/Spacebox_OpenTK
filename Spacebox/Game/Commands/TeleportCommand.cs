@@ -35,7 +35,7 @@ namespace Spacebox.Game.Commands
 
             if (TryParseArguments(args, out float x, out float y, out float z))
             {
-                Astronaut.Position = new OpenTK.Mathematics.Vector3(x, y, z);
+                Astronaut.Teleport(new OpenTK.Mathematics.Vector3(x, y, z)); 
                 Debug.Log($"Teleported to: ({x}, {y}, {z})", new Vector4(1f, 1f, 0f, 1f));
             }
             else

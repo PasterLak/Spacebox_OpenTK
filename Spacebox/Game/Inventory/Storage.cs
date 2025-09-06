@@ -69,7 +69,7 @@ namespace Spacebox.Game
             OnDataWasChanged?.Invoke(this);
         }
 
-        private void OnSlotSuccessfullyUpdated()
+        private void OnSlotSuccessFullyUpdated()
         {
 
             OnDataWasChanged?.Invoke(this);
@@ -91,7 +91,7 @@ namespace Spacebox.Game
                 if (slot.Count + count <= item.StackSize)
                 {
                     slot.Count += count;
-                    OnSlotSuccessfullyUpdated();
+                    OnSlotSuccessFullyUpdated();
                     return true;
                 }
                 else
@@ -124,7 +124,7 @@ namespace Spacebox.Game
                         slot2.Item = item;
                         slot2.Count = count;
 
-                        OnSlotSuccessfullyUpdated();
+                        OnSlotSuccessFullyUpdated();
                         return true;
                     }
                     else
@@ -174,7 +174,7 @@ namespace Spacebox.Game
 
                         if (quantity == 0)
                         {
-                            OnSlotSuccessfullyUpdated();
+                            OnSlotSuccessFullyUpdated();
                             return;
                         }
                     }

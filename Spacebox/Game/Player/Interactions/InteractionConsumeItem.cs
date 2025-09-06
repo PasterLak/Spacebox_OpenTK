@@ -1,8 +1,8 @@
-using OpenTK.Windowing.GraphicsLibraryFramework;
-
-using Engine.Audio;
-using Spacebox.Game.GUI;
 using Engine;
+using Engine.Audio;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using Spacebox.Game.Effects;
+using Spacebox.Game.GUI;
 
 namespace Spacebox.Game.Player.Interactions;
 
@@ -70,15 +70,22 @@ public class InteractionConsumeItem : InteractionMode
                 useConsumableAudio.Play();
 
                 if (consumable.HealAmount > 0)
+                {
                     HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 1, 0), 0.2f);
+                    player.Effects.PlayEffect(PlayerEffectType.Heal);
+                }
+                    
 
                 if (consumable.PowerAmount > 0)
+                {
                     HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 1), 0.15f);
+                    player.Effects.PlayEffect(PlayerEffectType.Charge);
+                }
+                   
 
                 var texture = Resources.Load<Texture2D>("Resources/Textures/healEffect.png");
                 texture.FilterMode = FilterMode.Nearest;
-                player.damageEffect.Renderer.Material.MainTexture = texture; 
-                player.damageEffect.OnDamage(new OpenTK.Mathematics.Vector3(0,1f,0));
+                
             }
             else
             {

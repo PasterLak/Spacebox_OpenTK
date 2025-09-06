@@ -6,6 +6,7 @@ using Engine.Light;
 using Engine;
 using OpenTK.Mathematics;
 using Engine.InputPro;
+using Spacebox.Game.GUI;
 
 namespace Spacebox.Game.Player
 {
@@ -16,7 +17,7 @@ namespace Spacebox.Game.Player
         private Toggi toggle;
 
         Engine.InputPro.InputAction action;
-        public Flashlight()
+        public Flashlight(Astronaut astronaut)
         {
             GetDirectionFromNode = true;
             Direction = -Vector3.UnitZ;
@@ -26,36 +27,30 @@ namespace Spacebox.Game.Player
             audio = new AudioSource(clip);
             audio.Volume = 0.5f;
 
-            /*InputManager0.AddAction("flashlight", Keys.F);
-
-            InputManager0.RegisterCallback("flashlight", () =>
-            {
-                audio.Play();
-
-                Enabled = !Enabled;
-            });*/
-
-
-             action = InputManager.Instance.GetAction("flashlight");
+            action = InputManager.Instance.GetAction("flashlight");
             action.Subscribe(InputEventType.Pressed, () =>
             {
+                if (astronaut.IsAlive == false) return;
+                if (ToggleManager.OpenedWindowsCount > 0) return;
+                if (Debug.IsVisible) return;
+                if (Chat.IsVisible) return;
+
                 audio.Play();
                 Enabled = !Enabled;
-               
+
             });
 
             toggle = ToggleManager.Register("flashlight");
             toggle.OnStateChanged += state =>
             {
+                if (astronaut.IsAlive == false) return;
                 Enabled = state;
                 action.Enabled = state;
             };
 
             this.Diffuse = new Color3Byte(245, 222, 171).ToVector3();
-            this.Specular = new Color3Byte(0,0,0).ToVector3();
+            this.Specular = new Color3Byte(0, 0, 0).ToVector3();
 
-            // use:
-            //ToggleManager.SetState("flashlight", true);
         }
 
         public override void Update()
@@ -63,10 +58,7 @@ namespace Spacebox.Game.Player
             base.Update();
             Direction = Parent.ForwardLocal;
         }
-        private void OnToggle(bool state)
-        {
-            Enabled = state;
-        }
+ 
 
     }
 }
