@@ -198,24 +198,12 @@ namespace Spacebox.Scenes
             base.Update();
             CenteredImageMenu.Update();
             devLogWindow.Update();
+
             if (Input.IsAnyKeyDown())
             {
                 CenteredImageMenu.ShowText = false;
                 GameMenu.IsVisible = true;
                 VerticalLinks.IsVisible = true;
-               // devLogWindow.sho = true;
-            }
-
-            if (Input.IsKeyDown(Keys.T))
-            {
-               
-                SceneManager.Reload();
-            }
-
-            if (Input.IsKeyDown(Keys.P))
-            {
-               // BlackScreenOverlay.IsEnabled = true;
-                //SceneManager.Load<ParticleSystemEditor>();
             }
 
         }

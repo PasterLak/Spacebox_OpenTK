@@ -1,11 +1,11 @@
-﻿using System.Text.Json;
-
+﻿using Engine;
 using Engine.Audio;
-using Spacebox.Game.Player;
-using Engine;
-using Spacebox.Scenes;
 using Engine.Light;
+using Engine.Utils;
+using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
+using Spacebox.Scenes;
+using System.Text.Json;
 
 
 namespace Spacebox.Game.Resource
@@ -73,8 +73,8 @@ namespace Spacebox.Game.Resource
 
                 try
                 {
-                    string json = File.ReadAllText(configPath);
-                    ModConfig config = JsonSerializer.Deserialize<ModConfig>(json);
+                    
+                    ModConfig config = JsonFixer.LoadJsonSafe < ModConfig >(configPath);
                     if (config != null && config.ModId.ToLower() == modId)
                     {
                         return directory;
@@ -92,8 +92,9 @@ namespace Spacebox.Game.Resource
         {
             try
             {
-                string json = File.ReadAllText(configFile);
-                return JsonSerializer.Deserialize<ModConfig>(json);
+             
+                return JsonFixer.LoadJsonSafe<ModConfig>(configFile);
+            
             }
             catch (Exception ex)
             {
@@ -180,9 +181,8 @@ namespace Spacebox.Game.Resource
 
             try
             {
-                string json = File.ReadAllText(blocksFile);
 
-                List<BlockDataJSON> blocks = JsonSerializer.Deserialize<List<BlockDataJSON>>(json);
+                List<BlockDataJSON> blocks = JsonFixer.LoadJsonSafe < List <BlockDataJSON>>(blocksFile);
 
                 foreach (var block in blocks)
                 {
@@ -407,10 +407,9 @@ namespace Spacebox.Game.Resource
 
             try
             {
-                string json = File.ReadAllText(projectilesFile);
-
-
-                List<ProjectileJSON> projectiles = JsonSerializer.Deserialize<List<ProjectileJSON>>(json);
+                
+         
+                List<ProjectileJSON> projectiles = JsonFixer.LoadJsonSafe<List<ProjectileJSON>>(projectilesFile);
 
                 short id = 0;
 
@@ -539,9 +538,8 @@ namespace Spacebox.Game.Resource
 
             try
             {
-                string json = File.ReadAllText(itemsFile);
-
-                RecipesJSON t = JsonSerializer.Deserialize<RecipesJSON>(json);
+               
+                RecipesJSON t = JsonFixer.LoadJsonSafe<RecipesJSON>(itemsFile);
 
 
                 foreach (var typ in t.RecipeCatalog)
@@ -595,9 +593,8 @@ namespace Spacebox.Game.Resource
 
             try
             {
-                string json = File.ReadAllText(file);
-
-                CraftingData crafting = JsonSerializer.Deserialize<CraftingData>(json);
+         
+                CraftingData crafting = JsonFixer.LoadJsonSafe<CraftingData>(file);
 
                 if (crafting == null)
                 {
@@ -918,8 +915,8 @@ namespace Spacebox.Game.Resource
             {
                 try
                 {
-                    string json = File.ReadAllText(settingsFile);
-                    ModSettings settings = JsonSerializer.Deserialize<ModSettings>(json);
+                  
+                    ModSettings settings = JsonFixer.LoadJsonSafe<ModSettings>(settingsFile);
 
                 }
                 catch (Exception ex)
@@ -953,8 +950,8 @@ namespace Spacebox.Game.Resource
             {
                 try
                 {
-                    string json = File.ReadAllText(file);
-                    Modlighting settings = JsonSerializer.Deserialize<Modlighting>(json);
+                   
+                    Modlighting settings = JsonFixer.LoadJsonSafe<Modlighting>(file);
 
                     if (settings != null)
                     {

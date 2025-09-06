@@ -26,7 +26,7 @@ namespace Spacebox.Game.Commands
 
             if (Astronaut == null)
             {
-                Debug.AddMessage("Astronaut reference is null.", Color4.Red);
+                Debug.Error("Astronaut reference is null.");
                 return;
             }
 
@@ -52,7 +52,7 @@ namespace Spacebox.Game.Commands
                     if (id >= 0 && id <= 2)
                     {
                         Astronaut.GameMode = gm;
-                        Debug.AddMessage("Gamemod changed to " + gm.ToString() , Color4.Green);
+                        Debug.Success("Gamemod changed to " + gm.ToString());
                     }
                     else
                     {

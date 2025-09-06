@@ -31,19 +31,19 @@ namespace Spacebox.Game.Commands
         {
             if (args.Length < 1)
             {
-                Debug.AddMessage($"Usage: {Name} [playerID]", new Vector4(1f, 0f, 0f, 1f));
+                Debug.Error($"Usage: {Name} [playerID]");
                 return;
             }
 
             if (Astronaut == null)
             {
-                Debug.AddMessage("Astronaut reference is null.", new Vector4(1f, 0f, 0f, 1f));
+                Debug.Error("Astronaut reference is null.");
                 return;
             }
 
             if (!IsNumber(args[0]))
             {
-                Debug.AddMessage("Enter the player ID! ", new Vector4(1f, 0f, 0f, 1f));
+                Debug.Error("Enter the player ID! ");
                 return;
             }
             var id = int.Parse(args[0]);
@@ -65,16 +65,16 @@ namespace Spacebox.Game.Commands
                 if (player != null)
                 {
                     Astronaut.Position = player.RemotePlayer.Position;
-                    Debug.AddMessage("Teleported to " + player.NetworkPlayer.Name, new Vector4(0f, 1f, 0f, 1f));
+                    Debug.Log("Teleported to " + player.NetworkPlayer.Name, new Vector4(0f, 1f, 0f, 1f));
                 }
                 else
                 {
-                    Debug.AddMessage("There are no player with ID: " + id, new Vector4(1f, 0f, 0f, 1f));
+                    Debug.Error("There are no player with ID: " + id);
                 }
             }
             else
             {
-                Debug.AddMessage("There are no ClientNetwork.Instance ", new Vector4(1f, 0f, 0f, 1f));
+                Debug.Error("There are no ClientNetwork.Instance ");
             }
         }
 

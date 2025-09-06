@@ -26,7 +26,7 @@ namespace Spacebox.Game.Commands
 
             if (Astronaut == null)
             {
-                Debug.AddMessage("Astronaut reference is null.", Color4.Red);
+                Debug.Error("Astronaut reference is null.");
                 return;
             }
 
@@ -35,7 +35,7 @@ namespace Spacebox.Game.Commands
                 if(args.Length == 2)
                 {
                     TagManager.UnregisterTagByText(args[1]);
-                    Debug.AddMessage("Tag deleted!: " + args[1], Color4.Green);
+                    Debug.Success("Tag deleted!: " + args[1]);
                 }
             }
 
@@ -44,7 +44,7 @@ namespace Spacebox.Game.Commands
                 if(args.Length == 2)
                 {
                     TagManager.RegisterTag(new Tag(args[1], Astronaut.Position, Color4.Yellow, true));
-                    Debug.AddMessage("Tag added!: " + args[1], Color4.Green);
+                    Debug.Success("Tag added!: " + args[1]);
                 }
 
                 if (args.Length == 5)
@@ -56,7 +56,7 @@ namespace Spacebox.Game.Commands
                     
                     TagManager.RegisterTag(new Tag(args[1], Astronaut.Position, new Color4(r,g,b,1), true));
 
-                    Debug.AddMessage("Tag added!: " + args[1], Color4.Green);
+                    Debug.Success("Tag added!: " + args[1]);
                 }
             }
             else

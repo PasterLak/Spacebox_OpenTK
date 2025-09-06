@@ -9,10 +9,10 @@ namespace Engine.Commands
 
         public void Execute(string[] args)
         {
-            Debug.AddMessage("Available commands:", new Vector4(0.5f, 0.5f, 1f, 1f));
+            Debug.Log("Available commands:", new Vector4(0.5f, 0.5f, 1f, 1f));
             foreach (var command in CommandManager.GetCommands())
             {
-                Debug.AddMessage($"- {command.Name}: {command.Description}", new Vector4(0.5f, 0.5f, 1f, 1f));
+                Debug.Log($"- {command.Name}: {command.Description}", new Vector4(0.5f, 0.5f, 1f, 1f));
             }
         }
     }

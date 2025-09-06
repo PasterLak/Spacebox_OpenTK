@@ -10,7 +10,7 @@ namespace Engine.Commands
         public void Execute(string[] args)
         {
             Debug.ClearMessages();
-            Debug.AddMessage("Console cleared.", new Vector4(1f, 1f, 0f, 1f));
+           
         }
     }
 }

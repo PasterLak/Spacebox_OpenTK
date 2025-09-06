@@ -2,11 +2,15 @@
     {
         "ID": "p_pistole",
         "Speed": 16,
-        "Mass" : 1,
+        "Mass": 1,
         "MaxTravelDistance": 50,
         "Length": 0.4,
         "Thickness": 0.05,
-        "Color": {"r": 0,"g": 255,"b": 255},
+        "Color": {
+            "r": 0,
+            "g": 255,
+            "b": 255
+        }
         "Damage": 2,
         "DamageBlocks": 0,
         "RicochetAngle": 30,
@@ -15,11 +19,15 @@
     {
         "ID": "p_smg",
         "Speed": 19,
-        "Mass" : 55,
+        "Mass": 55,
         "MaxTravelDistance": 75,
         "Length": 0.75,
         "Thickness": 0.05,
-        "Color": {"r": 0,"g": 255,"b": 255},
+        "Color": {
+            "r": 0,
+            "g": 255,
+            "b": 255
+        },
         "Damage": 5,
         "DamageBlocks": 4,
         "RicochetAngle": 25,
@@ -28,44 +36,56 @@
     {
         "ID": "p_assault",
         "Speed": 25,
-        "Mass" : 15,
+        "Mass": 15,
         "MaxTravelDistance": 100,
         "Length": 0.65,
         "Thickness": 0.05,
-        "Color": {"r": 0,"g": 255,"b": 0},
+        "Color": {
+            "r": 0,
+            "g": 255,
+            "b": 0
+        },
         "Damage": 4,
         "DamageBlocks": 2,
         "RicochetAngle": 20,
         "PossibleRicochets": 2,
-        "DropBlock" : false
+        "DropBlock": false
     },
     {
         "ID": "p_ar",
         "Speed": 22,
-        "Mass" : 255,
+        "Mass": 255,
         "MaxTravelDistance": 70,
         "Length": 0.5,
         "Thickness": 0.2,
-        "Color": {"r": 178,"g": 0,"b": 255},
+        "Color": {
+            "r": 178,
+            "g": 0,
+            "b": 255
+        },
         "Damage": 80,
-        "DamageBlocks" : 60,
+        "DamageBlocks": 60,
         "RicochetAngle": 70,
         "PossibleRicochets": 5,
-        "DropBlock" : false
+        "DropBlock": false
     },
     {
         "ID": "p_sniper",
         "Speed": 40,
-        "Mass" : 10,
+        "Mass": 10,
         "MaxTravelDistance": 110,
         "Length": 0.66,
         "Thickness": 0.05,
-        "Color": {"r": 0,"g": 0,"b": 255},
+        "Color": {
+            "r": 0,
+            "g": 0,
+            "b": 255
+        },
         "Damage": 25,
-        "DamageBlocks" : 10,
+        "DamageBlocks": 10,
         "RicochetAngle": 15,
         "PossibleRicochets": 2,
-        "DropBlock" : false
+        "DropBlock": false
     }
 
 ]

@@ -23,24 +23,24 @@ namespace Spacebox.Game.Commands
         {
             if (args.Length < 3)
             {
-                Debug.AddMessage($"Usage: {Name} [x] [y] [z]", new Vector4(1f, 0f, 0f, 1f));
+                Debug.Error($"Usage: {Name} [x] [y] [z]");
                 return;
             }
 
             if (Astronaut == null)
             {
-                Debug.AddMessage("Astronaut reference is null.", new Vector4(1f, 0f, 0f, 1f));
+                Debug.Error("Astronaut reference is null.");
                 return;
             }
 
             if (TryParseArguments(args, out float x, out float y, out float z))
             {
                 Astronaut.Position = new OpenTK.Mathematics.Vector3(x, y, z);
-                Debug.AddMessage($"Teleported to: ({x}, {y}, {z})", new Vector4(1f, 1f, 0f, 1f));
+                Debug.Log($"Teleported to: ({x}, {y}, {z})", new Vector4(1f, 1f, 0f, 1f));
             }
             else
             {
-                Debug.AddMessage("Invalid arguments. Please enter valid numbers for x, y, and z.", new Vector4(1f, 0f, 0f, 1f));
+                Debug.Error("Invalid arguments. Please enter valid numbers for x, y, and z.");
             }
         }
 

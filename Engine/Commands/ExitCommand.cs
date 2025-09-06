@@ -10,7 +10,7 @@ namespace Engine.Commands
         public void Execute(string[] args)
         {
             Debug.ToggleVisibility();
-            Debug.AddMessage("Console closed.", new Vector4(1f, 1f, 1f, 1f));
+            Debug.Log("Console closed.");
         }
     }
 }

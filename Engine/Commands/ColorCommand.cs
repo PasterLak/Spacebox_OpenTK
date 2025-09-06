@@ -12,7 +12,7 @@ namespace Engine.Commands
         {
             if (args.Length < 2)
             {
-                Debug.AddMessage("Usage: color [color_name] [message]", new Vector4(1f, 0f, 0f, 1f));
+                Debug.Log("Usage: color [color_name] [message]", new Vector4(1f, 0f, 0f, 1f));
                 return;
             }
 
@@ -22,11 +22,11 @@ namespace Engine.Commands
 
             if (color == Vector4.Zero)
             {
-                Debug.AddMessage($"Unknown color: {colorName}", new Vector4(1f, 0f, 0f, 1f));
+                Debug.Error($"Unknown color: {colorName}");
                 return;
             }
 
-            Debug.AddMessage(message, color);
+            Debug.Log(message, color);
         }
 
         private Vector4 GetColorByName(string colorName)

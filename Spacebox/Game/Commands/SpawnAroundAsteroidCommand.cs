@@ -26,7 +26,7 @@ namespace Spacebox.Game.Commands
 
             if (Astronaut == null)
             {
-                Debug.AddMessage("Astronaut reference is null.", Color4.Red);
+                Debug.Error("Astronaut reference is null.");
                 return;
             }
 

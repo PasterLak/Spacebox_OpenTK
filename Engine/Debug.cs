@@ -9,10 +9,18 @@ namespace Engine
     public static class Debug
     {
         
+        enum MessageType : byte
+        {
+            Info,
+            Warning,
+            Error,
+            Success
+        }
         private struct ConsoleMessage
         {
             public string Text;
             public Vector4 Color;
+            public MessageType Type = MessageType.Info;
 
             public ConsoleMessage(string text, Vector4 color)
             {
@@ -31,6 +39,20 @@ namespace Engine
 
         public static Action<bool> OnVisibilityWasChanged;
 
+        private static long messageCount = 0;
+        private static long warningCount = 0;
+        private static long errorCount = 0;
+        private static long successCount = 0;
+
+        private static Vector4 errorColor = new Vector4(1,0,0,1);
+        private static Vector4 waringColor = new Vector4(1,0.45f,0,1);
+        private static Vector4 infoColor = new Vector4(1,1,1,1);
+        private static Vector4 successColor = new Vector4(0,1,0,1);
+
+        private static Vector4 buttonColor = new Vector4(0.3f, 0.3f, 0.3f,0.5f);
+        private static Vector4 buttonSelectedColor = new Vector4(0.4f, 0.4f, 0.4f, 0.7f);
+
+        private static MessageType showType = MessageType.Info;
 
         private static readonly string HistoryFilePath = "command_history.txt";
         private static int _autoCompleteIndex = 0;
@@ -78,14 +100,50 @@ namespace Engine
 
         public static bool IsVisible => _isVisible;
 
-        public static void AddMessage(string message, Vector4? color = null)
+        private static void AddMessage(string message, Vector4? color = null)
         {
-            _messages.Add(new ConsoleMessage(message, color ?? new Vector4(1f, 1f, 1f, 1f)));
+            var msg = new ConsoleMessage(message, color ?? infoColor);
+            
+            switch(color)
+            {
+                case var c when c == errorColor:
+                    msg.Type = MessageType.Error;
+                    break;
+                case var c when c == waringColor:
+                    msg.Type = MessageType.Warning;
+                    break;
+                case var c when c == successColor:
+                    msg.Type = MessageType.Success;
+                    break;
+                default:
+                 
+                    break;
+            }
+            _messages.Add(msg);
+            messageCount++;
         }
 
-        public static void AddMessage(string message, OpenTK.Mathematics.Color4 color)
+        private static void AddMessage(string message, OpenTK.Mathematics.Color4 color)
         {
-            _messages.Add(new ConsoleMessage(message, new Vector4(color.R, color.G, color.B, color.A)));
+            var msg = new ConsoleMessage(message, new Vector4(color.R, color.G, color.B, color.A));
+
+            switch (color)
+            {
+                case var c when c == errorColor.ToOpenTKColor4():
+                    msg.Type = MessageType.Error;
+                    break;
+                case var c when c == waringColor.ToOpenTKColor4():
+                    msg.Type = MessageType.Warning;
+                    break;
+                case var c when c == successColor.ToOpenTKColor4():
+                    msg.Type = MessageType.Success;
+                    break;
+                default:
+
+                    break;
+            }
+            _messages.Add(msg);
+            messageCount++;
         }
 
         public static void WriteLine(string message)
@@ -131,7 +189,8 @@ namespace Engine
 
         public static void Success(object sender, string message)
         {
-            AddMessage($"[Success][{sender.GetType().Name}] {message}", new Vector4(0, 1, 0, 1));
+            AddMessage($"[Success][{sender.GetType().Name}] {message}", successColor);
+            successCount++;
 #if DEBUG
             Console.WriteLine($"[Success][{sender.GetType().Name}] {message}");
 #endif
@@ -139,7 +198,8 @@ namespace Engine
 
         public static void Success(string message)
         {
-            AddMessage($"[Success] {message}", new Vector4(0, 1, 0, 1));
+            AddMessage($"[Success] {message}", successColor);
+            successCount++;
 #if DEBUG
             Console.WriteLine($"[Success] {message}");
 #endif
@@ -147,7 +207,8 @@ namespace Engine
 
         public static void Warning(string message)
         {
-            AddMessage($"[Warning] {message}", new Vector4(1, 0.45f, 0, 1));
+            AddMessage($"[Warning] {message}", waringColor);
+            warningCount++;
 #if DEBUG
             Console.WriteLine($"[Warning] {message}");
 #endif
@@ -164,7 +225,7 @@ namespace Engine
         public static void Log(object message)
         {
             //AddMessage($"[DEBUG] {message}", new Vector4(0.2f, 0.7f, 1f, 1f));
-            AddMessage($"{message.ToString()}", new Vector4(1, 1, 1f, 1f));
+            AddMessage($"{message.ToString()}", infoColor);
 #if DEBUG
             Console.WriteLine($"{message.ToString()}");
 #endif
@@ -172,7 +233,7 @@ namespace Engine
         public static void Log(string message)
         {
             //AddMessage($"[DEBUG] {message}", new Vector4(0.2f, 0.7f, 1f, 1f));
-            AddMessage($"{message}", new Vector4(1, 1, 1f, 1f));
+            AddMessage($"{message}", infoColor);
 #if DEBUG
             Console.WriteLine($"{message}");
 #endif
@@ -180,7 +241,8 @@ namespace Engine
 
         public static void Error(string message)
         {
-            AddMessage($"[ERROR] {message}", new Vector4(1f, 0f, 0f, 1f));
+            AddMessage($"[ERROR] {message}", errorColor);
+            errorCount++;
 #if DEBUG
             Console.WriteLine($"[ERROR] {message}");
 #endif
@@ -189,7 +251,10 @@ namespace Engine
         public static void ClearMessages()
         {
             _messages.Clear();
-            //Log("Console messages cleared.");
+            messageCount = 0;
+            warningCount = 0;
+            errorCount = 0;
+            successCount = 0;
         }
 
         public static void Render(Vector2 windowSize)
@@ -205,7 +270,66 @@ namespace Engine
             ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0f, 0f, 0f, 0.8f));
             ImGui.Begin("Console", ref _isVisible, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
 
-            ImGui.Text("Console");
+            ImGui.Text("CONSOLE   ");
+            ImGui.PushStyleColor(ImGuiCol.Button, buttonColor);
+            if (messageCount > 0)
+            {
+                ImGui.SameLine();
+
+                
+                if(showType == MessageType.Info)
+                    ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
+
+                ImGui.PushStyleColor(ImGuiCol.Text, infoColor);
+                if(ImGui.Button(" Messages: " + messageCount))
+                {
+                    showType = MessageType.Info;
+                }
+                ImGui.PopStyleColor(showType == MessageType.Info ? 2 : 1);
+            }
+            if (successCount > 0)
+            {
+                ImGui.SameLine();
+
+                if (showType == MessageType.Success)
+                    ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
+
+                ImGui.PushStyleColor(ImGuiCol.Text, successColor);
+                if (ImGui.Button(" Success: " + successCount))
+                {
+                   showType = MessageType.Success;
+                }
+                ImGui.PopStyleColor(showType == MessageType.Success ? 2 : 1);
+            }
+            if (warningCount > 0)
+            {
+                ImGui.SameLine();
+
+                if (showType == MessageType.Warning)
+                    ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
+
+                ImGui.PushStyleColor(ImGuiCol.Text, waringColor);
+                if (ImGui.Button(" Warning: " + warningCount))
+                {
+                    showType = MessageType.Warning;
+                }
+                ImGui.PopStyleColor(showType == MessageType.Warning ? 2 : 1);
+            }
+            if (errorCount > 0)
+            {
+                ImGui.SameLine();
+
+                if (showType == MessageType.Error)
+                    ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
+
+                ImGui.PushStyleColor(ImGuiCol.Text, errorColor);
+                if (ImGui.Button(" Error: " + errorCount))
+                {
+                    showType = MessageType.Error;
+                }
+                ImGui.PopStyleColor(showType == MessageType.Error ? 2 : 1);
+            }
+            ImGui.PopStyleColor();
             ImGui.Separator();
 
             float childHeight = ImGui.GetContentRegionAvail().Y - ImGui.GetFrameHeightWithSpacing() - 40f;
@@ -215,6 +339,12 @@ namespace Engine
             ImGui.BeginChild("ScrollingRegion", new Vector2(0, childHeight), ImGuiChildFlags.AlwaysAutoResize);
             foreach (var msg in _messages)
             {
+                if (showType != MessageType.Info)
+                {
+                    if(msg.Type != showType)
+                        continue;
+                }
+              
                 ImGui.PushStyleColor(ImGuiCol.Text, msg.Color);
                 ImGui.TextWrapped(msg.Text);
                 ImGui.PopStyleColor();
@@ -382,13 +512,13 @@ namespace Engine
                 }
                 catch (Exception ex)
                 {
-                    AddMessage($"Error executing command '{cmdName}': {ex.Message}", new Vector4(1f, 0f, 0f, 1f));
+                    Error($"Error executing command '{cmdName}': {ex.Message}");
                     Error($"Error executing command '{cmdName}': {ex}");
                 }
             }
             else
             {
-                AddMessage($"Unknown command: {cmdName}", new Vector4(1f, 0f, 0f, 1f));
+                Error($"Unknown command: {cmdName}");
 
             }
         }

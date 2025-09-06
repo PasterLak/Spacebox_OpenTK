@@ -25,7 +25,7 @@ namespace Spacebox.Game.Commands
 
             if (Astronaut == null)
             {
-                Debug.AddMessage("Astronaut reference is null.", Color4.Red);
+                Debug.Error("Astronaut reference is null.");
                 return;
             }
 
@@ -34,7 +34,7 @@ namespace Spacebox.Game.Commands
                 Astronaut.Panel.Clear();
                 Astronaut.Inventory.Clear();
 
-                Debug.AddMessage("Inventory cleared!", Color4.Green);
+                Debug.Success("Inventory cleared!");
             }
 
 
