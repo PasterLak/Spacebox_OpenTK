@@ -5,8 +5,14 @@ using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.Effects
 {
+
     public class DropEffect : IDisposable
     {
+        public struct DropInfo
+        {
+            public Item item;
+            public byte quantity;
+        }
         public ParticleSystem ParticleSystem { get; private set; }
 
         private Texture2D dustTexture;
@@ -18,7 +24,7 @@ namespace Spacebox.Game.Effects
         private Color3Byte color = Color3Byte.White;
 
         public bool IsFinished => elapsedTime >= duration && ParticleSystem.ParticlesCount == 0;
-        public Block Block { get; set; }
+        public DropInfo Drop { get; set; }
 
         private Vector3 _position;
         public Vector3 Position
@@ -36,12 +42,12 @@ namespace Spacebox.Game.Effects
         public Vector3 Velocity { get; set; }
 
 
-        public void Initialize(Astronaut player, Vector3 position, Color3Byte color, Texture2D texture, Block block)
+        public void Initialize(Astronaut player, Vector3 position, Color3Byte color, Texture2D texture, Item item, byte quantity)
         {
             camera = player;
             Position = position;
             this.color = color;
-            Block = block;
+            Drop = new DropInfo() { item = item, quantity = quantity };
             Velocity = Vector3.Zero;
             elapsedTime = 0f;
             dustTexture = texture;
@@ -67,7 +73,7 @@ namespace Spacebox.Game.Effects
                 EndSizeMin = 0.2f,
                 EndSizeMax = 0.2f,
                 ColorStart = new Vector4(1f),
-                ColorEnd = new Vector4( 1f),
+                ColorEnd = new Vector4(1f),
 
                 SpeedMin = 0,
                 SpeedMax = 0,
@@ -84,7 +90,7 @@ namespace Spacebox.Game.Effects
             ParticleSystem.Max = 1;
             ParticleSystem.Space = SimulationSpace.Local;
 
-            ParticleSystem.Renderer.SetFlip(false,true);
+            ParticleSystem.Renderer.SetFlip(false, true);
         }
 
         public void Update()
@@ -104,14 +110,14 @@ namespace Spacebox.Game.Effects
         public void Render()
         {
 
-             ParticleSystem.Render();
+            ParticleSystem.Render();
         }
 
         public void Reset()
         {
             elapsedTime = 0f;
             color = Color3Byte.White;
-            Block = null;
+           
             Position = Vector3.Zero;
             Velocity = Vector3.Zero;
             camera = null;

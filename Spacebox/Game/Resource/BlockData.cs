@@ -30,7 +30,12 @@ namespace Spacebox.Game.Resource
         public bool IsTransparent { get; set; } = false;
         public Vector3 LightColor { get; set; } = new Vector3(0, 0, 0);
 
-        public BlockItem Item;
+        public BlockItem AsItem;
+        public Item Drop;
+
+        public string DropIDFull { get; set; } = "$self";
+        public short DropID { get; set; } = 0;
+        public byte DropQuantity { get; set; } = 1;
 
         public string SoundPlace { get; set; } = "blockPlaceDefault";
         public string SoundDestroy { get; set; } = "blockDestroyDefault";

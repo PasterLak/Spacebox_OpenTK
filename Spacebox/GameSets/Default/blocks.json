@@ -6,7 +6,10 @@
         "PowerToDrill": 1,
         "Mass": 2,
         "Durability": 5,
-        "SoundPlace": "blockPlaceLight"
+        "SoundPlace": "blockPlaceLight",
+
+        "Drop" : "$self",
+        "DropQuantity": 1
     },
     {
         "ID": "medium_rock",
@@ -14,7 +17,10 @@
         "Sides": "mediumRock",
         "PowerToDrill": 3,
         "Mass": 4,
-        "Durability": 10
+        "Durability": 10,
+
+        "Drop" : "medium_rock",
+        "DropQuantity": 1
     },
     {
         "ID": "heavy_rock",

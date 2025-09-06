@@ -44,7 +44,11 @@ namespace Spacebox.Game.Effects
 
         public void DestroyBlock(Vector3 position, Color3Byte color, Block block)
         {
-            var texture = GameAssets.ItemIcons[(short)block.BlockId];
+            var blockData = GameAssets.GetBlockDataById(block.BlockId);
+
+            if(blockData.Id == 0 || blockData.DropQuantity <= 0 ) return;
+
+            var texture = GameAssets.ItemIcons[(short)blockData.DropID];
             var dropEffect = GetOrCreateDropEffect();
 
             dropEffect.Initialize(
@@ -52,7 +56,8 @@ namespace Spacebox.Game.Effects
                 position + Vector3.One * 0.5f,
                 color,
                 texture,
-                block
+                blockData.Drop,
+                blockData.DropQuantity
             );
 
             activeEffects.Add(dropEffect);
@@ -126,7 +131,7 @@ namespace Spacebox.Game.Effects
 
         private void ProcessPickup(DropEffect effect)
         {
-            player.Panel.TryAddBlock(effect.Block, 1);
+            player.Panel.TryAddItem(effect.Drop.item, effect.Drop.quantity);
             PlayPickupSound();
         }
 

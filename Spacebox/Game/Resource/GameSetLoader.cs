@@ -54,6 +54,7 @@ namespace Spacebox.Game.Resource
             LoadBlocks(modPath, defaultModPath);
             LoadProjectiles(modPath, defaultModPath);
             LoadItems(modPath, defaultModPath);
+            SetBlocksDrop();
             LoadRecipes(modPath, defaultModPath);
             LoadCrafting(modPath, defaultModPath);
             LoadLoot(modPath, defaultModPath);
@@ -182,7 +183,7 @@ namespace Spacebox.Game.Resource
             try
             {
 
-                List<BlockDataJSON> blocks = JsonFixer.LoadJsonSafe < List <BlockDataJSON>>(blocksFile);
+                List<BlockDataJSON> blocks = JsonFixer.LoadJsonSafe<List<BlockDataJSON>>(blocksFile);
 
                 foreach (var block in blocks)
                 {
@@ -213,6 +214,8 @@ namespace Spacebox.Game.Resource
                         BottomUVIndex = new Vector2Byte(),
                     };
 
+                    blockData.DropIDFull = block.Drop;
+                    blockData.DropQuantity = (byte)Math.Clamp(block.DropQuantity, 0, byte.MaxValue);
                     blockData.Id_string = blockId;
 
                     blockData.Description = block.Description;
@@ -530,6 +533,46 @@ namespace Spacebox.Game.Resource
             }
         }
 
+        private static void SetBlocksDrop()
+        {
+            foreach (var block in GameAssets.Blocks.Values)
+            {
+                if (block.DropIDFull == "$self")
+                {
+                    block.DropIDFull = block.Id_string;
+                    block.Drop = block.AsItem;
+                    block.DropID = block.Id;
+                }
+                else
+                {
+
+                    var fullID = CombineId(ModInfo.ModId, block.DropIDFull);
+
+                    if(fullID == block.Id_string)
+                    {
+                        block.Drop = block.AsItem;
+                        block.DropIDFull = block.Id_string;
+                        block.DropID = block.Id;
+                        continue;
+                    }
+
+                    if (GameAssets.TryGetItemByFullID(fullID, out var item))
+                    {
+                        block.Drop = item;
+                        block.DropIDFull = fullID;
+                        block.DropID = item.Id;
+                    }
+                    else
+                    {
+                        block.DropIDFull = block.Id_string;
+                        block.Drop = block.AsItem;
+                        block.DropID = block.Id;
+                        Debug.Error($"[GameSetLoader] Block <{block.Name}> has a wrong drop item! - {block.DropIDFull}. Selected itself as a drop");
+                    }
+
+                }
+            }
+        }
 
         private static void LoadRecipes(string modPath, string defaultModPath)
         {

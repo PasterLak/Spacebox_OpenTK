@@ -42,10 +42,10 @@ namespace Spacebox.Game
                 BlockItem item = new BlockItem(blockData.Id, 0, 64, blockData.Name, blockData.Mass, blockData.Durability);
                 item.Mass = blockData.Mass;
                 item.Category = blockData.Category;
-                blockData.Item = item;
+                blockData.AsItem = item;
                 item.Description = blockData.Description;
                 item.Id_string = blockData.Id_string;
-                GameAssets.IncrementItemId(blockData.Item);
+                GameAssets.IncrementItemId(blockData.AsItem);
                 GameAssets.Items.Add(item.Id, item);
                 GameAssets.AddItemString(blockData.Id_string, item);
                 CacheIcon(blockData);
@@ -103,8 +103,8 @@ namespace Spacebox.Game
                 UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.TopUVIndex, GameAssets.AtlasBlocks.SizeBlocks));
 
             texture.FilterMode = FilterMode.Nearest;
-            blockData.Item.IconTextureId = texture.Handle;
-            GameAssets.ItemIcons.Add(blockData.Item.Id, texture);
+            blockData.AsItem.IconTextureId = texture.Handle;
+            GameAssets.ItemIcons.Add(blockData.AsItem.Id, texture);
         }
 
         private static void CacheIcon(Item item, byte x, byte y)

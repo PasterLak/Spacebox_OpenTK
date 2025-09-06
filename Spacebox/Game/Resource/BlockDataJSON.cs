@@ -18,6 +18,9 @@ namespace Spacebox.Game.Resource
         public string Top { get; set; } = "";
         public string Bottom { get; set; } = "";
 
+        public string Drop { get; set; } = "$self";
+        public int DropQuantity { get; set; } = 1;
+
         public string SoundPlace { get; set; } = "blockPlaceDefault";
         public string SoundDestroy { get; set; } = "blockDestroyDefault";
 

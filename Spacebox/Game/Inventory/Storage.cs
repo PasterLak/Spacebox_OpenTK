@@ -75,17 +75,6 @@ namespace Spacebox.Game
             OnDataWasChanged?.Invoke(this);
         }
 
-        public bool TryAddBlock(Block block, byte count)
-        {
-
-            if (GameAssets.TryGetItemByBlockID(block.BlockId, out var item))
-            {
-                return TryAddItem(item, count, out var rest);
-            }
-
-            return false;
-
-        }
         public bool TryAddItem(Item item, byte count)
         {
             return TryAddItem(item, count, out var rest);
