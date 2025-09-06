@@ -203,13 +203,7 @@ namespace Spacebox.Game.Player
                 }
             }
         }
-        
-        public static float GetImpulseMagnitude(float speed, float mass) =>
-            mass * speed;
-
-        public static Vector3 GetImpulseVector(Vector3 direction, float speed, float mass) =>
-            direction.Normalized() * (mass * speed);
-
+   
         public void Render()
         {
             if (!_isActive) return;
@@ -224,9 +218,7 @@ namespace Spacebox.Game.Player
                     PointLightsPool.Instance.PutBack(light);
             }
 
-
             IsActive = false;
-            //Position = Vector3.Zero;
             Rotation = Vector3.Zero;
             distanceTraveled = 0;
             currentRicochets = 0;

@@ -19,7 +19,16 @@ namespace Engine
             var life = Range(LifeMin, LifeMax);
             var startSize = Range(StartSizeMin, StartSizeMax);
             var endSize = Range(EndSizeMin, EndSizeMax);
-            var p = new Particle(pos, vel, life, ColorStart, ColorEnd, startSize, endSize);
+            //var p = new Particle(pos, vel, life, ColorStart, ColorEnd, startSize, endSize);
+
+            var p = ParticleSystem.CreateParticle();
+            p.Position = pos;
+            p.Velocity = vel;
+            p.Life = life;
+            p.StartSize = startSize;
+            p.EndSize = endSize;
+            p.ColorStart = ColorStart;
+            p.ColorEnd = ColorEnd;
             p.AccStart = AccelerationStart;
             p.AccEnd = AccelerationEnd;
             p.RotationSpeed = Range(RotationSpeedMin, RotationSpeedMax);

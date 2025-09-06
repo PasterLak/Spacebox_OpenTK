@@ -21,6 +21,10 @@ namespace Engine
         public float Size;
         public bool Alive => Age < Life;
 
+        public Particle()
+        {
+
+        }
         public Particle(
             Vector3 pos,
             Vector3 vel,
@@ -29,6 +33,18 @@ namespace Engine
             Vector4 c1,
             float startSize,
             float endSize)
+        {
+            Init(pos, vel, life, c0, c1, startSize, endSize);
+        }
+
+        public Particle Init(
+             Vector3 pos,
+             Vector3 vel,
+             float life,
+             Vector4 c0,
+             Vector4 c1,
+             float startSize,
+             float endSize)
         {
             Position = pos;
             Velocity = vel;
@@ -44,7 +60,11 @@ namespace Engine
             StartSize = startSize;
             EndSize = endSize;
             Size = startSize;
+
+            return this;
         }
+
+
 
         public void Update()
         {
@@ -57,6 +77,24 @@ namespace Engine
             Rotation += RotationSpeed * dt;
             Color = Vector4.Lerp(ColorStart, ColorEnd, t);
             Size = MathHelper.Lerp(StartSize, EndSize, t);
+        }
+
+        public void Reset()
+        {
+            Age = 0f;
+            Position = Vector3.Zero;
+            Velocity = Vector3.Zero;
+            AccStart = Vector3.Zero;
+            AccEnd = Vector3.Zero;
+            Rotation = 0f;
+            RotationSpeed = 0f;
+            Life = 1f;
+            ColorStart = Vector4.Zero;
+            ColorEnd = Vector4.Zero;
+            Color = Vector4.Zero;
+            StartSize = 1f;
+            EndSize = 1f;
+            Size = 1f;
         }
     }
 }

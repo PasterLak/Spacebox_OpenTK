@@ -8,7 +8,7 @@ namespace Spacebox.Game.Effects
     {
         public ParticleSystem ParticleSystem { get; private set; }
         private ProjectileParameters _parameters;
-
+        private SphereEmitter emitter;
         public ProjectileHitEffect(ProjectileParameters parameters)
         {
             _parameters = parameters;
@@ -19,7 +19,7 @@ namespace Spacebox.Game.Effects
         {
             var thickness = parameters.Thickness;
 
-            var emitter = new SphereEmitter
+             emitter = new SphereEmitter
             {
                 SpeedMin = 5f,
                 SpeedMax = 15f,
@@ -29,8 +29,6 @@ namespace Spacebox.Game.Effects
                 StartSizeMax = 0.05f + thickness,
                 EndSizeMin =  0.001f,
                 EndSizeMax = 0.005f + thickness,
-                //AccelerationStart = new Vector3(0f, -5f, 0f),
-                //AccelerationEnd = new Vector3(0f, -10f, 0f),
                 RotationSpeedMin = -360f,
                 RotationSpeedMax = 360f,
                 ColorStart = new Vector4(parameters.Color3, 1f),
@@ -58,9 +56,9 @@ namespace Spacebox.Game.Effects
 
             for (int i = 0; i < burstCount; i++)
             {
-                var particleData = (ParticleSystem.Emitter as SphereEmitter).Create();
-                particleData.Position = position + particleData.Position;
-                ParticleSystem.PushParticle(particleData);
+                var particle = emitter.Create();
+                particle.Position = position + particle.Position;
+                ParticleSystem.PushParticle(particle);
             }
         }
 

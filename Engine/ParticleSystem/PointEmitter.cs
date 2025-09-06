@@ -11,7 +11,7 @@ namespace Engine
         {
             Vector3 dir;
 
-            if (Direction.LengthSquared < 1e-6f)          
+            if (Direction.LengthSquared < 1e-6f)
             {
                 float z = NextFloat() * 2f - 1f;
                 float phi = NextFloat() * MathF.Tau;
@@ -20,7 +20,7 @@ namespace Engine
             }
             else
             {
-                dir = Vector3.Normalize(Direction);       
+                dir = Vector3.Normalize(Direction);
             }
 
             var vel = dir * Range(SpeedMin, SpeedMax);
@@ -28,12 +28,12 @@ namespace Engine
             var startSize = Range(StartSizeMin, StartSizeMax);
             var endSize = Range(EndSizeMin, EndSizeMax);
 
-            var p = new Particle(Position, vel, life, ColorStart, ColorEnd, startSize, endSize)
-            {
-                AccStart = AccelerationStart,
-                AccEnd = AccelerationEnd,
-                RotationSpeed = Range(RotationSpeedMin, RotationSpeedMax)
-            };
+            var p = ParticleSystem.CreateParticle().Init(Position, vel, life, ColorStart, ColorEnd, startSize, endSize);
+
+            p.AccStart = AccelerationStart;
+            p.AccEnd = AccelerationEnd;
+            p.RotationSpeed = Range(RotationSpeedMin, RotationSpeedMax);
+
 
             return p;
         }

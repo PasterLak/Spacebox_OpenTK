@@ -1,5 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Engine;
 using Spacebox.Game.Effects;
@@ -145,29 +144,10 @@ namespace Spacebox.Scenes
 
         private void SetDustSpawner()
         {
-            spawner = new DustSpawner(player);
+            spawner = new DustSpawner();
 
 
-            spawner.ParticleSystem.Max = 1000;
-            spawner.ParticleSystem.Rate = 200;
-            spawner.Position = new Vector3(0, 0, 0);
-
-
-            var emitter = new EmitterOld(spawner.ParticleSystem)
-            {
-                SpeedMin = 0f,
-                SpeedMax = 0f,
-                LifetimeMin = 100f,
-                LifetimeMax = 1000f,
-                SizeMin = 0.01f,
-                SizeMax = 0.1f,
-                StartColorMin = new Vector4(1f, 1f, 1f, 1f),
-                StartColorMax = new Vector4(1f, 1f, 1f, 1f),
-                EndColorMin = new Vector4(1f, 1f, 1f, 0f),
-                EndColorMax = new Vector4(0.9f, 0.9f, 0.9f, 0f),
-                SpawnRadius = 100f,
-                EmitterDirection = new Vector3(0, 0, 0),
-            };
+           
            // spawner.ParticleSystem.UseLocalCoordinates = false;
            // spawner.ParticleSystem.Emitter = emitter;
         }
@@ -183,12 +163,11 @@ namespace Spacebox.Scenes
 
         public override void Render()
         {
-            // GL.Clear(ClearBufferMask.ColorBufferBit);
 
             sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
             //player
             skybox.DrawTransparent(player);
-            spawner.Render();
+           
             //axes.Render(player);
            
             cube.Render();
@@ -209,7 +188,6 @@ namespace Spacebox.Scenes
             if(VisualDebug.Enabled)
             axes.Dispose();
 
-            spawner.Dispose();
             music.Dispose();
             sprite.Dispose();
             cube.Dispose();

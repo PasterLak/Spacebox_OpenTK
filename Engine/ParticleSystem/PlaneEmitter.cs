@@ -1,5 +1,4 @@
-﻿// PlaneEmitter.cs
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 
 namespace Engine
 {
@@ -23,7 +22,7 @@ namespace Engine
             var life = Range(LifeMin, LifeMax);
             var startSize = Range(StartSizeMin, StartSizeMax);
             var endSize = Range(EndSizeMin, EndSizeMax);
-            var p = new Particle(pos, vel, life, ColorStart, ColorEnd, startSize, endSize);
+            var p = ParticleSystem.CreateParticle().Init(pos, vel, life, ColorStart, ColorEnd, startSize, endSize);
             p.AccStart = AccelerationStart;
             p.AccEnd = AccelerationEnd;
             p.RotationSpeed = Range(RotationSpeedMin, RotationSpeedMax);

@@ -1,5 +1,4 @@
-﻿using System;
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 
 namespace Engine
 {
@@ -39,7 +38,7 @@ namespace Engine
         public float RotationSpeedMin = 0f;
         public float RotationSpeedMax = 0f;
 
-        public Node3D ParticleSystem { get; set; }
+        public ParticleSystem ParticleSystem { get; set; }
 
         public void CopyFrom(EmitterBase o)
         {

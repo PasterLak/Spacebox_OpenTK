@@ -56,12 +56,14 @@ namespace Engine
             float sz0 = Range(StartSizeMin, StartSizeMax);
             float sz1 = Range(EndSizeMin, EndSizeMax);
 
-            return new Particle(pos, vel, life, ColorStart, ColorEnd, sz0, sz1)
-            {
-                AccStart = AccelerationStart,
-                AccEnd = AccelerationEnd,
-                RotationSpeed = Range(RotationSpeedMin, RotationSpeedMax)
-            };
+            var p = ParticleSystem.CreateParticle();
+
+            p.Init(pos, vel, life, ColorStart, ColorEnd, sz0, sz1);
+            p.AccStart = AccelerationStart;
+            p.AccEnd = AccelerationEnd;
+            p.RotationSpeed = Range(RotationSpeedMin, RotationSpeedMax);
+
+            return p;
         }
 
         public override void Debug()

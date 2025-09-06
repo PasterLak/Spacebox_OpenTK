@@ -1,5 +1,4 @@
-﻿
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 
 namespace Engine
 {
@@ -8,12 +7,15 @@ namespace Engine
         Local,
         World
     }
+
     public class ParticleSystem : Node3D
     {
+        private readonly HashSet<Particle> _pooledParticles = new();
         private readonly List<Particle> _active = new();
-        private readonly Queue<Particle> _pool = new();
+        private readonly Pool<Particle> _particlePool;
         public EmitterBase Emitter { get; private set; }
         private int _max = 500;
+
         public int Max
         {
             get => _max;
@@ -25,7 +27,7 @@ namespace Engine
                 {
                     var p = _active[^1];
                     _active.RemoveAt(_active.Count - 1);
-                    _pool.Enqueue(p);
+                    _particlePool.Release(p);
                 }
             }
         }
@@ -41,9 +43,9 @@ namespace Engine
                     _rate = 0;
                     _acc = 0f;
                 }
-                    
             }
         }
+
         private float _rate = 50f;
         public float SimulationSpeed = 1f;
         public float Duration = float.PositiveInfinity;
@@ -60,28 +62,37 @@ namespace Engine
         public ParticleMaterial Material
         {
             get => _renderer.Material;
-            set
-            {
-                _renderer.Material = value;
-            }
+            set => _renderer.Material = value;
         }
 
         public ParticleSystem(ParticleMaterial material, EmitterBase emitter)
         {
             Emitter = emitter;
-            if(Emitter!=null)
-            Emitter.ParticleSystem = this;
+            if (Emitter != null)
+                Emitter.ParticleSystem = this;
+
+            _particlePool = new Pool<Particle>(
+                initialCount: _max,
+                initializeFunc: particle => particle,
+                onTakeFunc: particle => _pooledParticles.Add(particle),
+                resetFunc: particle => particle.Reset(),
+                isActiveFunc: particle => particle.Alive,
+                setActiveFunc: (particle, active) => { }
+            );
+
             _renderer = new ParticleRenderer(material, Max);
             if (Emitter != null)
-                Name = "ParticleSystem_"+ emitter.GetType().Name;
+                Name = "ParticleSystem_" + emitter.GetType().Name;
         }
 
         public override void Update()
         {
             base.Update();
             if (UseManually) return;
+
             float dtSim = Time.Delta * SimulationSpeed;
             _time += dtSim;
+
             if (_time > Duration)
             {
                 if (Loop)
@@ -97,10 +108,9 @@ namespace Engine
                 _acc += Rate * dtSim;
                 while (_acc >= 1f && _active.Count < Max)
                 {
-                    Particle p;
-                    if (_pool.Count > 0) p = _pool.Dequeue();
-                    else p = new Particle(Vector3.Zero, Vector3.Zero, 1f, Vector4.Zero, Vector4.Zero, 1f, 1f);
+                    var p = _particlePool.Take();
                     var tmp = Emitter.Create();
+
                     p.Position = tmp.Position;
                     p.Velocity = tmp.Velocity;
                     p.Life = tmp.Life;
@@ -114,8 +124,8 @@ namespace Engine
                     p.AccEnd = tmp.AccEnd;
                     p.Rotation = 0f;
                     p.RotationSpeed = tmp.RotationSpeed;
-                    if (Space == SimulationSpace.World) p.Position = LocalToWorld(p.Position);
-                    _active.Add(p);
+
+                    PushParticle(p);
                     _acc -= 1f;
                 }
             }
@@ -127,7 +137,11 @@ namespace Engine
                 if (!p.Alive)
                 {
                     _active.RemoveAt(i);
-                    _pool.Enqueue(p);
+                    if (_pooledParticles.Contains(p))
+                    {
+                        _particlePool.Release(p);
+                        _pooledParticles.Remove(p);
+                    }
                 }
             }
         }
@@ -144,10 +158,27 @@ namespace Engine
             _renderer.End();
         }
 
+        public Particle CreateParticle()
+        {
+            var particle = _particlePool.Take();
+            return particle;
+        }
+
+        public Particle CreateParticle(Vector3 position, Vector3 velocity, float life)
+        {
+            var particle = CreateParticle();
+            particle.Position = position;
+            particle.Velocity = velocity;
+            particle.Life = life;
+            particle.Age = 0f;
+            return particle;
+        }
+
         public void PushParticle(Particle particle)
         {
             if (_active.Count >= Max) return;
-            if (Space == SimulationSpace.World) particle.Position = LocalToWorld(particle.Position);
+            if (Space == SimulationSpace.World)
+                particle.Position = LocalToWorld(particle.Position);
             _active.Add(particle);
         }
 
@@ -156,7 +187,6 @@ namespace Engine
             if (copyCommonParams) newEmitter.CopyFrom(Emitter);
             Emitter = newEmitter;
             Emitter.ParticleSystem = this;
-           
             Name = "ParticleSystem_" + Emitter.GetType().Name;
         }
 
@@ -168,15 +198,18 @@ namespace Engine
             bool oldLoop = Loop;
             Loop = false;
             const float step = 0.02f;
+
             while (elapsed < seconds)
             {
                 float dt = Math.Min(step, seconds - elapsed);
                 elapsed += dt;
                 _acc += Rate * dt;
+
                 while (_acc >= 1f && _active.Count < Max)
                 {
-                    Particle p = _pool.Count > 0 ? _pool.Dequeue() : new Particle(Vector3.Zero, Vector3.Zero, 1f, Vector4.Zero, Vector4.Zero, 1f, 1f);
+                    var p = _particlePool.Take();
                     var tmp = Emitter.Create();
+
                     p.Position = tmp.Position;
                     p.Velocity = tmp.Velocity;
                     p.Life = tmp.Life;
@@ -190,10 +223,14 @@ namespace Engine
                     p.AccEnd = tmp.AccEnd;
                     p.Rotation = 0f;
                     p.RotationSpeed = tmp.RotationSpeed;
-                    if (Space == SimulationSpace.World) p.Position = LocalToWorld(p.Position);
+
+                    if (Space == SimulationSpace.World)
+                        p.Position = LocalToWorld(p.Position);
+
                     _active.Add(p);
                     _acc -= 1f;
                 }
+
                 float simDt = dt * SimulationSpeed;
                 for (int i = _active.Count - 1; i >= 0; i--)
                 {
@@ -208,7 +245,7 @@ namespace Engine
                     if (!p.Alive)
                     {
                         _active.RemoveAt(i);
-                        _pool.Enqueue(p);
+                        _particlePool.Release(p);
                     }
                 }
             }
@@ -225,7 +262,14 @@ namespace Engine
 
         public void ClearParticles()
         {
-            foreach (var p in _active) _pool.Enqueue(p);
+            foreach (var p in _active)
+            {
+                if (_pooledParticles.Contains(p))
+                {
+                    _pooledParticles.Remove(p);
+                    _particlePool.Release(p);
+                }
+            }
             _active.Clear();
             _acc = 0f;
         }
