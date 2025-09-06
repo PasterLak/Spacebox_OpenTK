@@ -124,7 +124,7 @@ namespace Spacebox.Game.GUI
 
             
 
-            float fillPercent = (float)StatsData.Count / StatsData.MaxCount;
+            float fillPercent = (float)StatsData.Value / StatsData.MaxValue;
             fillPercent = Math.Clamp(fillPercent, 0f, 1f);
 
             ImGui.GetWindowDrawList().AddRectFilled(
@@ -143,7 +143,7 @@ namespace Spacebox.Game.GUI
 
             
 
-            string text = $"{StatsData.Count}/{StatsData.MaxCount}";
+            string text = $"{StatsData.Value}/{StatsData.MaxValue}";
             Vector2 textSize = ImGui.CalcTextSize(text);
             Vector2 textPos = basePosition + (_size - textSize) / 2;
 

@@ -137,7 +137,7 @@ namespace Spacebox.Game.Player
 
             if (World.CurrentSector.Raycast(ray, out var hit))
             {
-
+                const int maxDamage = 100;
                 if (canRicochet && currentRicochets < Parameters.PossibleRicochets)
                 {
 
@@ -147,6 +147,11 @@ namespace Spacebox.Game.Player
                     {
                         ray = ray.CalculateRicochetRay(hit.position, hit.normal, ray.Length);
                         ricochetSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 100);
+
+                        
+                        var dmg0 = MathF.Min(Parameters.DamageBlocks, maxDamage);
+                        ricochetSound.SetPitchByValue(maxDamage - dmg0, 0, maxDamage, 0.5f, 1f);
+
                         ricochetSound.Play();
                         lineRenderer.ClearPoints();
                         lineRenderer.AddPoint(Vector3.Zero);
@@ -167,6 +172,11 @@ namespace Spacebox.Game.Player
                 OnHit?.Invoke(this);
                
                 hitSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 100);
+
+            
+                var dmg = MathF.Min(Parameters.DamageBlocks, maxDamage);
+                hitSound.SetPitchByValue(maxDamage - dmg, 0, maxDamage, 0.5f, 1f);
+              
                 hitSound.Play();
                 ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.position + hit.normal.ToVector3() * 0.1f, Parameters.ID);
 

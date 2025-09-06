@@ -10,6 +10,8 @@ public class InputAction
     public bool Enabled { get; set; } = true;
     public float DeadZone { get; set; } = 0.1f;
 
+    public bool HasBindings => Bindings.Count > 0;
+
     [JsonIgnore]
     private readonly Dictionary<InputEventType, List<Action>> callbacks = new();
     [JsonIgnore]

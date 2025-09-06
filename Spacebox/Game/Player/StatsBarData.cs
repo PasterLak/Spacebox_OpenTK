@@ -4,8 +4,8 @@ namespace Spacebox.Game.Player
 {
     public class StatsBarData
     {
-        public int Count { get; set; } = 0;
-        public int MaxCount { get; set; } = 100;
+        public int Value { get; set; } = 0;
+        public int MaxValue { get; set; } = 100;
         public string Name { get; set; } = "Default";
 
         public event Action DataChanged;
@@ -13,16 +13,16 @@ namespace Spacebox.Game.Player
         public event Action OnIncrement;
         public event Action OnEqualZero;
 
-        public bool IsMaxReached => Count >= MaxCount;
-        public bool IsMinReached => Count <= 0;
+        public bool IsMaxReached => Value >= MaxValue;
+        public bool IsMinReached => Value <= 0;
 
         public void Increment(int amount)
         {
-            if (Count >= MaxCount) return;
+            if (IsMaxReached) return;
 
             amount = MathHelper.Abs(amount);
 
-            Count = Math.Min(Count + amount, MaxCount);
+            Value = Math.Min(Value + amount, MaxValue);
             DataChanged?.Invoke();
             OnIncrement?.Invoke();
         }
@@ -31,9 +31,9 @@ namespace Spacebox.Game.Player
         {
             amount = MathHelper.Abs(amount);
 
-            Count = Math.Max(Count - amount, 0);
+            Value = Math.Max(Value - amount, 0);
 
-            if (Count == 0)
+            if (IsMinReached)
             {
                 OnEqualZero?.Invoke();
             }

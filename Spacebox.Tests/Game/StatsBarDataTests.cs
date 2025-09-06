@@ -16,8 +16,8 @@ namespace Spacebox.Tests
             var statsBar = new StatsBarData();
 
             // Assert
-            Assert.Equal(0, statsBar.Count);
-            Assert.Equal(100, statsBar.MaxCount);
+            Assert.Equal(0, statsBar.Value);
+            Assert.Equal(100, statsBar.MaxValue);
             Assert.Equal("Default", statsBar.Name);
             Assert.False(statsBar.IsMaxReached);
             Assert.True(statsBar.IsMinReached);
@@ -29,14 +29,14 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 50,
-                MaxCount = 200,
+                Value = 50,
+                MaxValue = 200,
                 Name = "HealthBar"
             };
 
             // Act & Assert
-            Assert.Equal(50, statsBar.Count);
-            Assert.Equal(200, statsBar.MaxCount);
+            Assert.Equal(50, statsBar.Value);
+            Assert.Equal(200, statsBar.MaxValue);
             Assert.Equal("HealthBar", statsBar.Name);
             Assert.False(statsBar.IsMaxReached);
             Assert.False(statsBar.IsMinReached);
@@ -58,7 +58,7 @@ namespace Spacebox.Tests
             statsBar.Increment(30);
 
             // Assert
-            Assert.Equal(30, statsBar.Count);
+            Assert.Equal(30, statsBar.Value);
             Assert.False(statsBar.IsMaxReached);
             Assert.False(statsBar.IsMinReached);
             Assert.True(eventFired);
@@ -70,7 +70,7 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 50
+                Value = 50
             };
             bool eventFired = false;
             statsBar.DataChanged += () => eventFired = true;
@@ -79,7 +79,7 @@ namespace Spacebox.Tests
             statsBar.Increment(-20);
 
             // Assert
-            Assert.Equal(70, statsBar.Count);
+            Assert.Equal(70, statsBar.Value);
             Assert.False(statsBar.IsMaxReached);
             Assert.False(statsBar.IsMinReached);
             Assert.True(eventFired);
@@ -91,7 +91,7 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 50
+                Value = 50
             };
             bool eventFired = false;
             statsBar.DataChanged += () => eventFired = true;
@@ -100,7 +100,7 @@ namespace Spacebox.Tests
             statsBar.Increment(0);
 
             // Assert
-            Assert.Equal(50, statsBar.Count);
+            Assert.Equal(50, statsBar.Value);
             Assert.False(statsBar.IsMaxReached);
             Assert.False(statsBar.IsMinReached);
             Assert.True(eventFired); // DataChanged is still fired even if Count doesn't change
@@ -112,8 +112,8 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 90,
-                MaxCount = 100
+                Value = 90,
+                MaxValue = 100
             };
             bool eventFired = false;
             statsBar.DataChanged += () => eventFired = true;
@@ -122,7 +122,7 @@ namespace Spacebox.Tests
             statsBar.Increment(10);
 
             // Assert
-            Assert.Equal(100, statsBar.Count);
+            Assert.Equal(100, statsBar.Value);
             Assert.True(statsBar.IsMaxReached);
             Assert.False(statsBar.IsMinReached);
             Assert.True(eventFired);
@@ -134,8 +134,8 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 95,
-                MaxCount = 100
+                Value = 95,
+                MaxValue = 100
             };
             bool eventFired = false;
             statsBar.DataChanged += () => eventFired = true;
@@ -144,7 +144,7 @@ namespace Spacebox.Tests
             statsBar.Increment(10);
 
             // Assert
-            Assert.Equal(100, statsBar.Count);
+            Assert.Equal(100, statsBar.Value);
             Assert.True(statsBar.IsMaxReached);
             Assert.False(statsBar.IsMinReached);
             Assert.True(eventFired);
@@ -156,8 +156,8 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 100,
-                MaxCount = 100
+                Value = 100,
+                MaxValue = 100
             };
             bool eventFired = false;
             statsBar.DataChanged += () => eventFired = true;
@@ -166,7 +166,7 @@ namespace Spacebox.Tests
             statsBar.Increment(10);
 
             // Assert
-            Assert.Equal(100, statsBar.Count);
+            Assert.Equal(100, statsBar.Value);
             Assert.True(statsBar.IsMaxReached);
             Assert.False(statsBar.IsMinReached);
             Assert.False(eventFired); // No change, event not fired
@@ -182,7 +182,7 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 50
+                Value = 50
             };
             bool dataChangedFired = false;
             bool onEqualZeroFired = false;
@@ -193,7 +193,7 @@ namespace Spacebox.Tests
             statsBar.Decrement(20);
 
             // Assert
-            Assert.Equal(30, statsBar.Count);
+            Assert.Equal(30, statsBar.Value);
             Assert.False(statsBar.IsMaxReached);
             Assert.False(statsBar.IsMinReached);
             Assert.True(dataChangedFired);
@@ -206,7 +206,7 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 50
+                Value = 50
             };
             bool dataChangedFired = false;
             bool onEqualZeroFired = false;
@@ -217,7 +217,7 @@ namespace Spacebox.Tests
             statsBar.Decrement(-20);
 
             // Assert
-            Assert.Equal(30, statsBar.Count);
+            Assert.Equal(30, statsBar.Value);
             Assert.False(statsBar.IsMaxReached);
             Assert.False(statsBar.IsMinReached);
             Assert.True(dataChangedFired);
@@ -230,7 +230,7 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 50
+                Value = 50
             };
             bool dataChangedFired = false;
             bool onEqualZeroFired = false;
@@ -241,7 +241,7 @@ namespace Spacebox.Tests
             statsBar.Decrement(0);
 
             // Assert
-            Assert.Equal(50, statsBar.Count);
+            Assert.Equal(50, statsBar.Value);
             Assert.False(statsBar.IsMaxReached);
             Assert.False(statsBar.IsMinReached);
             Assert.True(dataChangedFired); // DataChanged is still fired even if Count doesn't change
@@ -254,7 +254,7 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 10
+                Value = 10
             };
             bool dataChangedFired = false;
             bool onEqualZeroFired = false;
@@ -265,7 +265,7 @@ namespace Spacebox.Tests
             statsBar.Decrement(10);
 
             // Assert
-            Assert.Equal(0, statsBar.Count);
+            Assert.Equal(0, statsBar.Value);
             Assert.False(statsBar.IsMaxReached);
             Assert.True(statsBar.IsMinReached);
             Assert.True(dataChangedFired);
@@ -278,7 +278,7 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 5
+                Value = 5
             };
             bool dataChangedFired = false;
             bool onEqualZeroFired = false;
@@ -289,7 +289,7 @@ namespace Spacebox.Tests
             statsBar.Decrement(10);
 
             // Assert
-            Assert.Equal(0, statsBar.Count);
+            Assert.Equal(0, statsBar.Value);
             Assert.False(statsBar.IsMaxReached);
             Assert.True(statsBar.IsMinReached);
             Assert.True(dataChangedFired);
@@ -302,7 +302,7 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 0
+                Value = 0
             };
             bool dataChangedFired = false;
             bool onEqualZeroFired = false;
@@ -313,7 +313,7 @@ namespace Spacebox.Tests
             statsBar.Decrement(10);
 
             // Assert
-            Assert.Equal(0, statsBar.Count);
+            Assert.Equal(0, statsBar.Value);
             Assert.False(statsBar.IsMaxReached);
             Assert.True(statsBar.IsMinReached);
             Assert.False(dataChangedFired);
@@ -330,8 +330,8 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 100,
-                MaxCount = 100
+                Value = 100,
+                MaxValue = 100
             };
 
             // Act & Assert
@@ -344,8 +344,8 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 50,
-                MaxCount = 100
+                Value = 50,
+                MaxValue = 100
             };
 
             // Act & Assert
@@ -358,7 +358,7 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 0
+                Value = 0
             };
 
             // Act & Assert
@@ -371,7 +371,7 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 10
+                Value = 10
             };
 
             // Act & Assert
@@ -403,8 +403,8 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 100,
-                MaxCount = 100
+                Value = 100,
+                MaxValue = 100
             };
             bool eventFired = false;
             statsBar.DataChanged += () => eventFired = true;
@@ -422,7 +422,7 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 50
+                Value = 50
             };
             bool eventFired = false;
             statsBar.DataChanged += () => eventFired = true;
@@ -440,7 +440,7 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 10
+                Value = 10
             };
             bool onEqualZeroFired = false;
             statsBar.OnEqualZero += () => onEqualZeroFired = true;
@@ -458,7 +458,7 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 20
+                Value = 20
             };
             bool onEqualZeroFired = false;
             statsBar.OnEqualZero += () => onEqualZeroFired = true;
@@ -476,7 +476,7 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 20
+                Value = 20
             };
             bool onEqualZeroFired = false;
             statsBar.OnEqualZero += () => onEqualZeroFired = true;
@@ -494,7 +494,7 @@ namespace Spacebox.Tests
             // Arrange
             var statsBar = new StatsBarData
             {
-                Count = 0
+                Value = 0
             };
             bool onEqualZeroFired = false;
             statsBar.OnEqualZero += () => onEqualZeroFired = true;

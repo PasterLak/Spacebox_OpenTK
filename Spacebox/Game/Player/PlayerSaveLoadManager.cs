@@ -29,8 +29,8 @@ namespace Spacebox.Game.Player
                     RotationY = player.GetRotation().Y,
                     RotationZ = player.GetRotation().Z,
                     RotationW = player.GetRotation().W,
-                    Health = player.HealthBar.StatsData.Count,
-                    Power = player.PowerBar.StatsData.Count,
+                    Health = player.HealthBar.StatsData.Value,
+                    Power = player.PowerBar.StatsData.Value,
                     IsFlashlightOn = player.Flashlight.Enabled,
                     InventorySlots = new List<SavedItemSlot>(),
                     PanelSlots = new List<SavedItemSlot>()
@@ -110,8 +110,8 @@ namespace Spacebox.Game.Player
                 Quaternion loadedRotation = new Quaternion(data.RotationX, data.RotationY, data.RotationZ, data.RotationW);
 
                 player.SetRotation(loadedRotation);
-                player.HealthBar.StatsData.Count = data.Health;
-                player.PowerBar.StatsData.Count = data.Power;
+                player.HealthBar.StatsData.Value = data.Health;
+                player.PowerBar.StatsData.Value = data.Power;
 
                 player.Inventory.Clear();
                 player.Panel.Clear();

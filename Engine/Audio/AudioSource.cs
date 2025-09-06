@@ -43,6 +43,33 @@ namespace Engine.Audio
             }
         }
 
+        private float _pitch = 1.0f;
+        public float Pitch
+        {
+            get => _pitch;
+            set
+            {
+                _pitch = MathHelper.Clamp(value, 0.5f, 2.0f);
+                AL.Source(handle, ALSourcef.Pitch, _pitch);
+                CheckALError("Setting pitch");
+            }
+        }
+
+        public void SetPitchByValue(float value, float minValue, float maxValue, float minPitch = 0.5f, float maxPitch = 2.0f)
+        {
+            if (minValue == maxValue) return;
+            if (minValue > maxValue)
+            {
+                var m = maxValue;
+                maxValue = minValue; 
+                minValue = m;
+            }
+
+                float normalizedValue = MathHelper.Clamp((value - minValue) / (maxValue - minValue), 0f, 1f);
+            float targetPitch = MathHelper.Lerp(minPitch, maxPitch, normalizedValue);
+            Pitch = targetPitch;
+        }
+
         public AudioSource(AudioClip clip)
         {
             if (clip == null)

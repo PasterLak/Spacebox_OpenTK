@@ -354,7 +354,7 @@ namespace Spacebox.Game.Player
 
             if (damage > 12)
                 Effects.PlayEffect(PlayerEffectType.Damage);
-            if (health.Count > 0)
+            if (health.Value > 0)
             {
                 HealthColorOverlay.SetActive(new System.Numerics.Vector3(1, 0, 0), 0.1f + 1 / (10 - Math.Min(damage, 6)));
                 HitImage.Show();
@@ -395,8 +395,8 @@ namespace Spacebox.Game.Player
             Settings.ShowInterface = true;
             var health = HealthBar.StatsData;
             var power = PowerBar.StatsData;
-            health.Count = health.MaxCount;
-            power.Count = power.MaxCount;
+            health.Value = health.MaxValue;
+            power.Value = power.MaxValue;
             PanelUI.IsVisible = true;
             PanelUI.IsItemModelVisible = true;
             Input.HideCursor();

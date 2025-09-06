@@ -33,8 +33,8 @@ namespace Spacebox.Game
             spacerTex.UpdateTexture(true);
             Name = nameof(Spacer);
             Health = new StatsBarData();
-            Health.MaxCount = 100;
-            Health.Count = 100;
+            Health.MaxValue = 100;
+            Health.Value = 100;
             Health.DataChanged += OnHit;
             Health.OnEqualZero += OnKilled;
             Storage = new Storage(3, 3);

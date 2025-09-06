@@ -130,7 +130,7 @@ public class InteractionShoot : InteractionMode
         }
         else
         {
-            if (player.PowerBar.StatsData.Count < weapon.PowerUsage) return;
+            if (player.PowerBar.StatsData.Value < weapon.PowerUsage) return;
 
             if (canShoot == false && Input.IsMouseButton(0) && ToggleManager.OpenedWindowsCount < 1 && !Debug.IsVisible)
             {
@@ -145,6 +145,9 @@ public class InteractionShoot : InteractionMode
                 model.Animator.speed = weapon.AnimationSpeed;
                 //model?.SetAnimation(true);
 
+                Random random = new Random();
+              
+                    shotSound.Pitch = random.Next(95, 105) * 0.01f;
                 shotSound.Play();
             }
         }
@@ -174,7 +177,7 @@ public class InteractionShoot : InteractionMode
 
         if (canShoot && Input.IsMouseButton(0))
         {
-            if (player.PowerBar.StatsData.Count < weapon.PowerUsage) return;
+            if (player.PowerBar.StatsData.Value < weapon.PowerUsage) return;
             canShoot = false;
 
             player.PowerBar.StatsData.Decrement(weapon.PowerUsage);

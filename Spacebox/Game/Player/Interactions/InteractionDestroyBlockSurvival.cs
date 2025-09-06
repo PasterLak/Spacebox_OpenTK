@@ -158,7 +158,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         Ray ray = new Ray(player.Position, player.Front, MaxDestroyDistance);
         var drill = selectedItemSlot.Item as DrillItem;
 
-        if(drill.PowerUsage > player.PowerBar.StatsData.Count)
+        if(drill.PowerUsage > player.PowerBar.StatsData.Value)
         {
             BlockSelector.IsVisible = false;
             StopDrill();
@@ -204,7 +204,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             }
             if (Input.IsMouseButtonDown(MouseButton.Left))
             {
-                if (drill.PowerUsage > player.PowerBar.StatsData.Count) return;
+                if (drill.PowerUsage > player.PowerBar.StatsData.Value) return;
 
                 model.SetAnimation(true);
                 BlockMiningEffect.Enabled = true;

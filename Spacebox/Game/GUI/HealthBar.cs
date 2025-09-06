@@ -15,8 +15,8 @@ namespace Spacebox.GUI
         {
             StatsData = new StatsBarData
             {
-                Count = 100,
-                MaxCount = 100,
+                Value = 100,
+                MaxValue = 100,
                 Name = "Health"
             };
 

@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using OpenTK.Mathematics;
 using Engine;
+using Engine.InputPro;
 namespace Spacebox.Game.GUI
 {
     public class InputOverlay
@@ -29,9 +30,6 @@ namespace Spacebox.Game.GUI
             ImGui.Begin("InputOverlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove);
 
 
-
-            //ImGui.Separator();
-
             ImGui.Text($"Press F6 to hide/show");
             ImGui.Separator();
             ImGui.Text($"[Debug]");
@@ -46,28 +44,15 @@ namespace Spacebox.Game.GUI
             ImGui.Text($"[F11] Fullscreen");
             ImGui.Text($"[F12] Screenshot");
             ImGui.Text($"");
-            ImGui.Text($"[Player]");
-            ImGui.Text($"");
-            ImGui.Text($"[W,S,A,D] Move");
-            ImGui.Text($"[Space] Up");
-            ImGui.Text($"[Ctrl] Down");
-            ImGui.Text($"[Shift] Speed-up");
-            ImGui.Text($"[Q,E] Camera roll");
-            ImGui.Text($"[Tab] Inventory");
-            ImGui.Text($"[G] Drop item");
-            ImGui.Text($"[F] Flashlight");
-
-
-            ImGui.Text($"");
-            ImGui.Text($"[Inventory]");
-            ImGui.Text($"");
-            ImGui.Text($"[X+Click] Delete slot item");
-            ImGui.Text($"[Shift+Click] Move item to another storage");
+            ImGui.Text($"[Game]");
             ImGui.Text($"");
 
-            ImGui.Text($"[Building]");
-            ImGui.Text($"");
-            ImGui.Text($"[P] Save the world");
+            if(InputManager.Instance != null)
+            foreach ((_ ,var action) in InputManager.Instance.GetAllActions())
+            {
+                if(action.HasBindings) 
+                ImGui.Text($"[{action.Bindings[0].GetDisplayName()}] {action.Name}");
+            }
 
             ImGui.Text($"");
             ImGui.Text($"[Alt+F4] Close the game");

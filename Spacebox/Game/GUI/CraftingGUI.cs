@@ -314,7 +314,7 @@ namespace Spacebox.Game.GUI
                 {
                     if (currentPlayer != null)
                     {
-                        if(currentPlayer.HealthBar.StatsData.Count > ing.Quantity)
+                        if(currentPlayer.HealthBar.StatsData.Value > ing.Quantity)
                         {
                             continue;
                         }
@@ -342,7 +342,7 @@ namespace Spacebox.Game.GUI
                 {
                     if (currentPlayer != null)
                     {
-                        var hp = currentPlayer.HealthBar.StatsData.Count;
+                        var hp = currentPlayer.HealthBar.StatsData.Value;
                         if (hp > required)
                         {
     
@@ -434,7 +434,7 @@ namespace Spacebox.Game.GUI
                 {
                     if(ing.Item.Name == "$health")
                     {
-                       if(currentPlayer != null && currentPlayer.HealthBar.StatsData.Count > ing.Quantity)
+                       if(currentPlayer != null && currentPlayer.HealthBar.StatsData.Value > ing.Quantity)
                         {
                             
                         }
@@ -512,7 +512,7 @@ namespace Spacebox.Game.GUI
                 if(blueprint.Ingredients[i].Item.Name == "$health")
                 {
                     if (currentPlayer != null)
-                        r[i] = currentPlayer.HealthBar.StatsData.Count;
+                        r[i] = currentPlayer.HealthBar.StatsData.Value;
                     else
                     {
                         Debug.Error("[Craft] Current player is null!");
@@ -623,7 +623,7 @@ namespace Spacebox.Game.GUI
                 if(ingredient.Item.Name == "$health")
                 {
                     if (currentPlayer != null)
-                        availableCount = currentPlayer.HealthBar.StatsData.Count;
+                        availableCount = currentPlayer.HealthBar.StatsData.Value;
                     else
                         availableCount = 0;
                 }
