@@ -52,6 +52,26 @@ namespace Spacebox.Game.Generation.Blocks
 
         public Block() { }
 
+        public Rotation Rotation
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => (Rotation)((data >> 35) & 0b11);
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set
+            {
+                long v = ((long)value & 0b11) << 35;
+                data = (data & ~(0b11L << 35)) | v;
+            }
+        }
+        public void SetRotation(Rotation rot) => Rotation = rot;
+
+        private Direction baseFrontDirection = Direction.Up;
+        public Direction BaseFrontDirection
+        {
+            get => baseFrontDirection;
+            set => baseFrontDirection = value;
+        }
+
         public Block(short blockId, Direction dir, byte mass, byte durability,
                      bool isTransparent, bool isAir, bool isLight, bool enableEmission)
         {

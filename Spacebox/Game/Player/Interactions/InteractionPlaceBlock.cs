@@ -29,6 +29,8 @@ public class InteractionPlaceBlock : InteractionMode
 
         if (BlockSelector.Instance != null)
             BlockSelector.Instance.SimpleBlock.Material.Shader.SetVector4("color", new Vector4(1, 1, 1, 0.5f));
+
+        
         BlockSelector.IsVisible = false;
 
         if (lineRenderer == null)
@@ -44,6 +46,7 @@ public class InteractionPlaceBlock : InteractionMode
     public override void OnDisable()
     {
         BlockSelector.IsVisible = false;
+  
         lineRenderer.Enabled = false;
     }
 
@@ -140,6 +143,8 @@ public class InteractionPlaceBlock : InteractionMode
                     // int z = hit.blockPositionIndex.Z + hit.normal.Z;
 
                     //chunk.PlaceBlock(x, y, z, newBlock);
+
+                    newBlock.Rotation = BlockSelector.Instance.Rotation;
 
                     if (chunk.SpaceEntity.TryPlaceBlock(selectorPos, newBlock))
                     {
@@ -272,6 +277,8 @@ public class InteractionPlaceBlock : InteractionMode
                     if (!hasSameSides)
                         newBlock.Direction = direction;
 
+
+                    newBlock.Rotation = BlockSelector.Instance.Rotation;
 
                     if (entity.TryPlaceBlock(selectorPosition, newBlock))
                     {

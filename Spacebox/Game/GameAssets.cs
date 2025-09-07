@@ -139,11 +139,9 @@ namespace Spacebox.Game
         {
             if (!Blocks.ContainsKey(id))
                 return new Vector2[] { new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(0f, 1f) };
-            if (face == Face.Up)
-                return Blocks[id].UpUV;
-            else if (face == Face.Down)
-                return Blocks[id].DownUV;
-            return Blocks[id].WallsUV;
+   
+            return Blocks[id].GetFaceUV(face);
+
         }
 
         public static Vector2[] GetBlockUVsByIdAndDirection(short id, Face face, Direction direction)

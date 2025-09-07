@@ -94,12 +94,7 @@ namespace Spacebox.Game.Resource
             if (AllSidesAreSame)
                 return WallsUV;
 
-            byte remappedFace = BlockRotationTable.GetDirectionFaceRemap(direction, face);
-            byte rotation = BlockRotationTable.GetDirectionUVRotation(direction, face);
-
-            Vector2[] baseUV = _uvFaceCache[remappedFace];
-
-            return ApplyRotation(baseUV, rotation);
+            return _uvFaceCache != null ? _uvFaceCache[(byte)face] : GetFaceUVDirect(face);
         }
 
         public Vector2[] GetFaceUV(Face face)

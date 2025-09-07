@@ -17,7 +17,7 @@ namespace Spacebox.Game
         public SimpleBlock SimpleBlock { get; private set; }
 
         private Direction blockDirection = Direction.Up;
-        private Rotation rotation = Rotation.None;
+        public Rotation Rotation = Rotation.None;
         private BlockData currentBlockData;
 
         public BlockSelector()
@@ -38,6 +38,7 @@ namespace Spacebox.Game
 
         public void OnSelectedSlotWasChanged(short slot)
         {
+            Rotation = Rotation.None;
             if (PanelUI.IsHolding<DrillItem>())
             {
                 if (!SimpleBlock.IsUsingDefaultUV)
@@ -77,10 +78,10 @@ namespace Spacebox.Game
 
         private Vector2[] CalculateUVForFace(Face worldFace)
         {
-            Face blockFace = BlockRotationTable.GetBlockFaceForWorld(worldFace, blockDirection, rotation);
+            Face blockFace = BlockRotationTable.GetBlockFaceForWorld(worldFace, blockDirection, Rotation);
             Vector2[] baseUV = currentBlockData.GetFaceUV(blockFace);
             
-            byte uvRotation = BlockRotationTable.GetCombinedUVRotation(worldFace, blockDirection, rotation);
+            byte uvRotation = BlockRotationTable.GetCombinedUVRotation(worldFace, blockDirection, Rotation);
 
             return uvRotation switch
             {
@@ -114,8 +115,8 @@ namespace Spacebox.Game
 
             if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.R))
             {
-                rotation = (Rotation)(((byte)rotation + 1) % 4);
-                Debug.Log(rotation);
+                Rotation = (Rotation)(((byte)Rotation + 1) % 4);
+                Debug.Log(Rotation);
                 UpdateUV();
             }
 
@@ -123,7 +124,7 @@ namespace Spacebox.Game
         }
 
         public Direction GetDirection() => blockDirection;
-        public Rotation GetRotation() => rotation;
+        public Rotation GetRotation() => Rotation;
 
         public void Dispose()
         {

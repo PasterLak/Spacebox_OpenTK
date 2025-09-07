@@ -90,145 +90,15 @@ namespace Spacebox.Game.Generation
                         if (z > zMax) zMax = z;
                         sumPosMass += new Vector3(x, y, z) * m;
 
+                        var transformedVectors = BlockRotationHelper.GetTransformedFaceVectors(
+                            block.BaseFrontDirection,
+                            block.Direction,
+                            block.Rotation
+                        );
+
                         for (byte fIndex = 0; fIndex < faces.Length; fIndex++)
                         {
-                            Face face = faces[fIndex];
-                            Vector3SByte normal = faceNormals[fIndex];
-                            sbyte nx = (sbyte)(x + normal.X);
-                            sbyte ny = (sbyte)(y + normal.Y);
-                            sbyte nz = (sbyte)(z + normal.Z);
-
-                            if (block.IsTransparent && IsInRange(nx, ny, nz))
-                            {
-                                var nb = _blocks[nx, ny, nz];
-                                if (nb != null && nb.IsTransparent) continue;
-                            }
-
-                            if (IsTransparentBlock(nx, ny, nz, normal,block.IsTransparent))
-                            {
-                                var faceVertices = CubeMeshData.GetFaceVertices(face);
-                                var faceUVs = GameAssets.GetBlockUVsByIdAndDirection(block.BlockId, face, block.Direction);
-                                var currentLightLevel = block.LightLevel / 15f;
-                                var currentLightColor = block.LightColor;
-                                float neighborLightLevel = 0f;
-                                Color3Byte neighborLightColor = Color3Byte.Zero;
-                                var neighborBlock = GetBlockFromThisOrNeighborChunk(nx, ny, nz);
-                                if (neighborBlock != null)
-                                {
-                                    neighborLightLevel = neighborBlock.LightLevel / 15f;
-                                    neighborLightColor = neighborBlock.LightColor;
-                                }
-                               // float averageLightLevel = (currentLightLevel + neighborLightLevel) * 0.5f;
-                                var averageLightColor = (currentLightColor.ToVector3() * currentLightLevel + neighborLightColor.ToVector3() * neighborLightLevel)
-                                                        / (currentLightLevel + neighborLightLevel + 0.001f);
-                                Vector3 ambient = new Vector3(0.2f, 0.2f, 0.2f);
-                                var vertexColor = Vector3.Clamp(block.Color * (averageLightColor + ambient), Vector3.Zero, Vector3.One);
-
-                                bool flip = false;
-                                int vStart = vertexCount / BuffersData.FloatsPerVertexBlock;
-                                float[] AO = new float[4];
-                                byte newMask = CreateMask(face, new Vector3SByte(x, y, z), normal);
-                                bool isLightOrTransparent = block.IsTransparent || block.IsLight;
-                                var shading = isLightOrTransparent ? AOVoxels.GetLightedPoints : AOShading.GetAO(newMask);
-                                bool same3 = false;
-                                bool diagonal = false;
-                                byte another = 0;
-                                byte s = 0;
-
-                                if (!isLightOrTransparent)
-                                {
-                                    for (byte i = 0; i < shading.Length; i++)
-                                    {
-                                        if (shading[i] == 0.5f)
-                                        {
-                                            s++;
-                                            continue;
-                                        }
-                                        else another = i;
-                                    }
-                                    if (s == 3) same3 = true;
-                                    if (same3)
-                                    {
-                                        if (another == 0 || another == 2)
-                                        {
-                                            diagonal = true;
-                                        }
-                                    }
-                                }
-
-                                for (byte i = 0; i < 4; i++)
-                                {
-                                    var vertex = faceVertices[i];
-                                    vertices[vertexCount++] = vertex.X + x;
-                                    vertices[vertexCount++] = vertex.Y + y;
-                                    vertices[vertexCount++] = vertex.Z + z;
-                                    vertices[vertexCount++] = faceUVs[i].X;
-                                    vertices[vertexCount++] = faceUVs[i].Y;
-                                    vertices[vertexCount++] = vertexColor.X;
-                                    vertices[vertexCount++] = vertexColor.Y;
-                                    vertices[vertexCount++] = vertexColor.Z;
-                                    vertices[vertexCount++] = normal.X;
-                                    vertices[vertexCount++] = normal.Y;
-                                    vertices[vertexCount++] = normal.Z;
-
-                                    if (_EnableAO)
-                                    {
-                                        AO[i] = shading[i];
-                                        vertices[vertexCount++] = AO[i];
-                                        if (i == 0 || i == 2)
-                                        {
-                                            if (AO[i] < 0.5f) AO[i] -= 0.5f;
-                                            if (same3)
-                                            {
-                                                if (!diagonal) AO[i] += 0.5f;
-                                                else AO[i] -= 0.5f;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (AO[i] < 0.5f) AO[i] -= 0.5f;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        vertices[vertexCount++] = 1f;
-                                    }
-
-                                    vertices[vertexCount++] = block.EnableEmission ? 1f : 0f;
-                                }
-
-                                if (_EnableAO)
-                                {
-                                    if (AO[0] + AO[2] < AO[1] + AO[3]) flip = true;
-                                    if (flip)
-                                    {
-                                        indices[indexCount++] = (uint)(vStart + 1);
-                                        indices[indexCount++] = (uint)(vStart + 2);
-                                        indices[indexCount++] = (uint)(vStart + 3);
-                                        indices[indexCount++] = (uint)(vStart + 3);
-                                        indices[indexCount++] = (uint)(vStart + 0);
-                                        indices[indexCount++] = (uint)(vStart + 1);
-                                    }
-                                    else
-                                    {
-                                        indices[indexCount++] = (uint)(vStart + 0);
-                                        indices[indexCount++] = (uint)(vStart + 1);
-                                        indices[indexCount++] = (uint)(vStart + 2);
-                                        indices[indexCount++] = (uint)(vStart + 2);
-                                        indices[indexCount++] = (uint)(vStart + 3);
-                                        indices[indexCount++] = (uint)(vStart + 0);
-                                    }
-                                }
-                                else
-                                {
-                                    indices[indexCount++] = (uint)(vStart + 0);
-                                    indices[indexCount++] = (uint)(vStart + 1);
-                                    indices[indexCount++] = (uint)(vStart + 2);
-                                    indices[indexCount++] = (uint)(vStart + 2);
-                                    indices[indexCount++] = (uint)(vStart + 3);
-                                    indices[indexCount++] = (uint)(vStart + 0);
-                                }
-                            }
+                            AddRotatedFace(block, faces[fIndex], fIndex, x, y, z, transformedVectors);
                         }
                     }
                 }
@@ -250,14 +120,197 @@ namespace Spacebox.Game.Generation
                 new Vector3(xMax + 1, yMax + 1, zMax + 1));
             _chunk.Mass = mass;
             _chunk.SumPosMass = sumPosMass;
+
+            Debug.Log("Generated: " + _chunk.PositionIndex);
             return mesh;
         }
 
-        private byte CreateMask(Face face, Vector3SByte blockPos, Vector3SByte normal)
+        private void AddRotatedFace(Block block, Face face, byte fIndex, sbyte x, sbyte y, sbyte z,
+    Dictionary<Direction, Vector3> transformedVectors)
+        {
+            Direction faceDir = (Direction)face;
+            Vector3 transformedNormal = transformedVectors[faceDir];
+            Vector3SByte normal = new Vector3SByte(
+                (sbyte)Math.Round(transformedNormal.X),
+                (sbyte)Math.Round(transformedNormal.Y),
+                (sbyte)Math.Round(transformedNormal.Z)
+            );
+
+            sbyte nx = (sbyte)(x + normal.X);
+            sbyte ny = (sbyte)(y + normal.Y);
+            sbyte nz = (sbyte)(z + normal.Z);
+
+            if (block.IsTransparent && IsInRange(nx, ny, nz))
+            {
+                var nb = _blocks[nx, ny, nz];
+                if (nb != null && nb.IsTransparent) return;
+            }
+
+            if (!IsTransparentBlock(nx, ny, nz, normal, block.IsTransparent)) return;
+
+            Vector3 up = BlockRotationHelper.GetFaceUp(transformedVectors, faceDir);
+            Vector3 right = BlockRotationHelper.GetFaceRight(transformedVectors, faceDir);
+
+            Vector3 blockCenter = new Vector3(0.5f, 0.5f, 0.5f);
+            Vector3 faceCenter = blockCenter + transformedNormal * 0.5f;
+            Vector3 upVector = up * 0.5f;
+            Vector3 rightVector = right * 0.5f;
+
+            Vector3[] faceVertices = new Vector3[4];
+            faceVertices[0] = faceCenter - upVector - rightVector;
+            faceVertices[1] = faceCenter - upVector + rightVector;
+            faceVertices[2] = faceCenter + upVector + rightVector;
+            faceVertices[3] = faceCenter + upVector - rightVector;
+
+            var faceUVs = GameAssets.GetBlockUVsById(block.BlockId, face);
+
+            var currentLightLevel = block.LightLevel / 15f;
+            var currentLightColor = block.LightColor;
+            float neighborLightLevel = 0f;
+            Color3Byte neighborLightColor = Color3Byte.Zero;
+            var neighborBlock = GetBlockFromThisOrNeighborChunk(nx, ny, nz);
+            if (neighborBlock != null)
+            {
+                neighborLightLevel = neighborBlock.LightLevel / 15f;
+                neighborLightColor = neighborBlock.LightColor;
+            }
+            var averageLightColor = (currentLightColor.ToVector3() * currentLightLevel + neighborLightColor.ToVector3() * neighborLightLevel)
+                                    / (currentLightLevel + neighborLightLevel + 0.001f);
+            Vector3 ambient = new Vector3(0.2f, 0.2f, 0.2f);
+            var vertexColor = Vector3.Clamp(block.Color * (averageLightColor + ambient), Vector3.Zero, Vector3.One);
+
+            int vStart = vertexCount / BuffersData.FloatsPerVertexBlock;
+            float[] AO = new float[4];
+            byte newMask = CreateMask(face, new Vector3SByte(x, y, z), faceNormals[fIndex]);
+            bool isLightOrTransparent = block.IsTransparent || block.IsLight;
+            var shading = isLightOrTransparent ? AOVoxels.GetLightedPoints : AOShading.GetAO(newMask);
+            bool same3 = false;
+            bool diagonal = false;
+            byte another = 0;
+            byte s = 0;
+
+            if (!isLightOrTransparent)
+            {
+                for (byte i = 0; i < shading.Length; i++)
+                {
+                    if (shading[i] == 0.5f)
+                    {
+                        s++;
+                        continue;
+                    }
+                    else another = i;
+                }
+                if (s == 3) same3 = true;
+                if (same3)
+                {
+                    if (another == 0 || another == 2)
+                    {
+                        diagonal = true;
+                    }
+                }
+            }
+
+            for (byte i = 0; i < 4; i++)
+            {
+                vertices[vertexCount++] = faceVertices[i].X + x;
+                vertices[vertexCount++] = faceVertices[i].Y + y;
+                vertices[vertexCount++] = faceVertices[i].Z + z;
+                vertices[vertexCount++] = faceUVs[i].X;
+                vertices[vertexCount++] = faceUVs[i].Y;
+                vertices[vertexCount++] = vertexColor.X;
+                vertices[vertexCount++] = vertexColor.Y;
+                vertices[vertexCount++] = vertexColor.Z;
+                vertices[vertexCount++] = normal.X;
+                vertices[vertexCount++] = normal.Y;
+                vertices[vertexCount++] = normal.Z;
+
+                if (_EnableAO)
+                {
+                    AO[i] = shading[i];
+                    vertices[vertexCount++] = AO[i];
+                    if (i == 0 || i == 2)
+                    {
+                        if (AO[i] < 0.5f) AO[i] -= 0.5f;
+                        if (same3)
+                        {
+                            if (!diagonal) AO[i] += 0.5f;
+                            else AO[i] -= 0.5f;
+                        }
+                    }
+                    else
+                    {
+                        if (AO[i] < 0.5f) AO[i] -= 0.5f;
+                    }
+                }
+                else
+                {
+                    vertices[vertexCount++] = 1f;
+                }
+
+                vertices[vertexCount++] = block.EnableEmission ? 1f : 0f;
+            }
+
+            if (_EnableAO)
+            {
+                bool flip = false;
+                if (AO[0] + AO[2] < AO[1] + AO[3]) flip = true;
+                if (flip)
+                {
+                    indices[indexCount++] = (uint)(vStart + 1);
+                    indices[indexCount++] = (uint)(vStart + 2);
+                    indices[indexCount++] = (uint)(vStart + 3);
+                    indices[indexCount++] = (uint)(vStart + 3);
+                    indices[indexCount++] = (uint)(vStart + 0);
+                    indices[indexCount++] = (uint)(vStart + 1);
+                }
+                else
+                {
+                    indices[indexCount++] = (uint)(vStart + 0);
+                    indices[indexCount++] = (uint)(vStart + 1);
+                    indices[indexCount++] = (uint)(vStart + 2);
+                    indices[indexCount++] = (uint)(vStart + 2);
+                    indices[indexCount++] = (uint)(vStart + 3);
+                    indices[indexCount++] = (uint)(vStart + 0);
+                }
+            }
+            else
+            {
+                indices[indexCount++] = (uint)(vStart + 0);
+                indices[indexCount++] = (uint)(vStart + 1);
+                indices[indexCount++] = (uint)(vStart + 2);
+                indices[indexCount++] = (uint)(vStart + 2);
+                indices[indexCount++] = (uint)(vStart + 3);
+                indices[indexCount++] = (uint)(vStart + 0);
+            }
+
+           
+        }
+        private byte CreateMask(Face originalFace, Vector3SByte blockPos, Vector3SByte transformedNormal, Dictionary<Direction, Vector3> transformedVectors = null)
         {
             byte mask = 0;
-            Vector3SByte[] nbs = AOVoxels.FaceNeighborOffsets[face];
-            blockPos = blockPos + normal;
+
+           
+            if (transformedVectors == null)
+            {
+                Vector3SByte[] nbs2 = AOVoxels.FaceNeighborOffsets[originalFace];
+                blockPos = blockPos + transformedNormal;
+
+                for (byte bit = 0; bit < 8; bit++)
+                {
+                    Vector3SByte offset = nbs2[bit];
+                    int nx = blockPos.X + offset.X;
+                    int ny = blockPos.Y + offset.Y;
+                    int nz = blockPos.Z + offset.Z;
+                    if (NeedsAO((sbyte)nx, (sbyte)ny, (sbyte)nz, transformedNormal))
+                        mask |= (byte)(1 << bit);
+                }
+                return mask;
+            }
+
+       
+            Face actualFace = GetFaceFromTransformedNormal(transformedNormal);
+            Vector3SByte[] nbs = AOVoxels.FaceNeighborOffsets[actualFace];
+            blockPos = blockPos + transformedNormal;
 
             for (byte bit = 0; bit < 8; bit++)
             {
@@ -265,10 +318,21 @@ namespace Spacebox.Game.Generation
                 int nx = blockPos.X + offset.X;
                 int ny = blockPos.Y + offset.Y;
                 int nz = blockPos.Z + offset.Z;
-                if (NeedsAO((sbyte)nx, (sbyte)ny, (sbyte)nz, CubeMeshData.GetNormal(face)))
+                if (NeedsAO((sbyte)nx, (sbyte)ny, (sbyte)nz, transformedNormal))
                     mask |= (byte)(1 << bit);
             }
             return mask;
+        }
+
+        private Face GetFaceFromTransformedNormal(Vector3SByte normal)
+        {
+            if (normal.X == 1) return Face.Right;
+            if (normal.X == -1) return Face.Left;
+            if (normal.Y == 1) return Face.Up;
+            if (normal.Y == -1) return Face.Down;
+            if (normal.Z == 1) return Face.Forward;
+            if (normal.Z == -1) return Face.Back;
+            return Face.Forward; 
         }
 
         private bool NeedsAO(sbyte x, sbyte y, sbyte z, Vector3SByte norm)
@@ -351,7 +415,6 @@ namespace Spacebox.Game.Generation
             var bl = _blocks[x, y, z];
             return currentTransparent ? bl.IsAir : (bl.IsAir || bl.IsTransparent);
         }
-
 
         public static Vector3SByte WrapBlockCoordinate(int x, int y, int z, byte Size)
         {

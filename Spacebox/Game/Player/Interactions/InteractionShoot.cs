@@ -191,6 +191,7 @@ public class InteractionShoot : InteractionMode
                 projectile.OnDespawn += SetSphere;
 
             var projectileSpawnPos = Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.05f;
+
             var shotDir = WeaponItem.CalculateSpreadCone(weapon, player.Front);
             var shotRay = new Ray(projectileSpawnPos, shotDir, 1f);
 
