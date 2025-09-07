@@ -135,13 +135,6 @@ namespace Spacebox.Game
             return false;
         }
 
-        public static Vector2[] GetBlockUVsById(short id)
-        {
-            if (!Blocks.ContainsKey(id))
-                return new Vector2[] { new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(0f, 1f) };
-            return GetBlockUVsById(id, Face.Left);
-        }
-
         public static Vector2[] GetBlockUVsById(short id, Face face)
         {
             if (!Blocks.ContainsKey(id))

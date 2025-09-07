@@ -256,8 +256,7 @@ namespace Spacebox.Game.Generation
         private byte CreateMask(Face face, Vector3SByte blockPos, Vector3SByte normal)
         {
             byte mask = 0;
-            byte faceIndex = (byte)face;
-            Vector3SByte[] nbs = AOVoxels.FaceNeighborOffsets[faceIndex];
+            Vector3SByte[] nbs = AOVoxels.FaceNeighborOffsets[face];
             blockPos = blockPos + normal;
 
             for (byte bit = 0; bit < 8; bit++)

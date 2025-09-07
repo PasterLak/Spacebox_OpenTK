@@ -5,10 +5,11 @@ namespace Spacebox.Game.Generation.Tools
 {
     public enum Face : byte
     {
-        Left = 0,
-        Right = 1,
-        Down = 2,
-        Up = 3,
+        
+        Down = 0,
+        Up = 1,
+        Left = 2,
+        Right = 3,
         Back = 4,
         Forward = 5
     }

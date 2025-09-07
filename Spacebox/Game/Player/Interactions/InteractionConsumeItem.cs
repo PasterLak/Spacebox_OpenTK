@@ -31,7 +31,7 @@ public class InteractionConsumeItem : InteractionMode
     public override void Update(Astronaut player)
     {
         if (!player.CanMove) return;
-        if (!Input.IsMouseButtonDown(MouseButton.Right)) return;
+        if (!Input.IsActionDown("use")) return;
 
         if (_itemSlot == null) return;
         if (_itemSlot.Item == null) return;
@@ -81,11 +81,7 @@ public class InteractionConsumeItem : InteractionMode
                     HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 1), 0.15f);
                     player.Effects.PlayEffect(PlayerEffectType.Charge);
                 }
-                   
-
-                var texture = Resources.Load<Texture2D>("Resources/Textures/healEffect.png");
-                texture.FilterMode = FilterMode.Nearest;
-                
+                 
             }
             else
             {

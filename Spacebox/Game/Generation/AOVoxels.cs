@@ -16,9 +16,11 @@ public class AOVoxels
 
     private static Dictionary<Face, FaceData> CachedSidesToCheck = new Dictionary<Face, FaceData>();
 
-    public static readonly Vector3SByte[][] FaceNeighborOffsets = new Vector3SByte[6][]
+    public static readonly Dictionary<Face, Vector3SByte[]> FaceNeighborOffsets = new Dictionary<Face, Vector3SByte[]>()
         {
-            // Face.Left
+
+        {
+            Face.Left,
             new Vector3SByte[]
             {
                 new Vector3SByte( 0, -1, 0), // Bit 0: Bottom
@@ -29,9 +31,11 @@ public class AOVoxels
                 new Vector3SByte( 0,  1, 1), // Bit 5: Upper Right
                 new Vector3SByte( 0, 0, 1), // Bit 6: Right
                 new Vector3SByte( 0, -1, 1)  // Bit 7: Bottom Right
-            },
-            // Face.Right
-            new Vector3SByte[]
+            }
+        },
+        {
+            Face.Right,
+             new Vector3SByte[]
             {
                 new Vector3SByte( 0, -1, 0), // Bit 0: Bottom
                 new Vector3SByte(0,  -1, 1), // Bit 1: Bottom Left
@@ -41,8 +45,10 @@ public class AOVoxels
                 new Vector3SByte( 0,  1, -1), // Bit 5: Upper Right
                 new Vector3SByte( 0, 0, -1), // Bit 6: Right
                 new Vector3SByte( 0, -1, -1)  // Bit 7: Bottom Right
-            },
-            // Face.Bottom
+            }
+        },
+        {
+            Face.Down,
             new Vector3SByte[]
             {
                 new Vector3SByte(0,0,-1), // Bit 0: Bottom
@@ -53,8 +59,10 @@ public class AOVoxels
                 new Vector3SByte(1,0,1), // Bit 5: Upper Right
                 new Vector3SByte(1,0,0), // Bit 6: Right
                 new Vector3SByte(1,0,-1)  // Bit 7: Bottom Right
-            },
-            // Face.Top
+            }
+        },
+        {
+            Face.Up,
             new Vector3SByte[]
             {
                 new Vector3SByte(0,0,1),   // Bit 0: Bottom
@@ -65,9 +73,11 @@ public class AOVoxels
                 new Vector3SByte(1,0,-1),  // Bit 5: Upper Right
                 new Vector3SByte(1,0,0),  // Bit 6: Right
                 new Vector3SByte(1,0,1)    // Bit 7: Bottom Right
-            },
-            // Face.Back
-            new Vector3SByte[]
+            }
+        },
+        {
+            Face.Back,
+             new Vector3SByte[]
             {
                new Vector3SByte( 0, -1, 0), // Bit 0: Bottom
                 new Vector3SByte(1,  -1, 0), // Bit 1: Bottom Left
@@ -77,8 +87,10 @@ public class AOVoxels
                 new Vector3SByte( -1,  1, 0), // Bit 5: Upper Right
                 new Vector3SByte( -1, 0, 0), // Bit 6: Right
                 new Vector3SByte( -1, -1, 0)  // Bit 7: Bottom Right
-            },
-            // Face.Front
+            }
+        },
+        {
+            Face.Forward,
             new Vector3SByte[]
             {
                 new Vector3SByte(0,-1,0), // Bit 0: Bottom
@@ -90,6 +102,7 @@ public class AOVoxels
                 new Vector3SByte(1,0,0),  // Bit 6: Right
                 new Vector3SByte(1, -1, 0)   // Bit 7: Bottom Right
             }
+        }
         };
 
     public static readonly float[] GetLightedPoints = { 1f, 1f, 1f, 1f };
@@ -107,8 +120,8 @@ public class AOVoxels
     {
         if (isPrecalculated) return;
 
-       //CalculateMasks();
-       // CalculateSideBlockPositions();
+        //CalculateMasks();
+        // CalculateSideBlockPositions();
 
         isPrecalculated = true;
 

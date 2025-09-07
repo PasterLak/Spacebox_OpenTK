@@ -1,5 +1,4 @@
-﻿
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using OpenTK.Mathematics;
 using Engine;
 using Spacebox.Game.Resource;
@@ -8,8 +7,9 @@ namespace Spacebox.Game.Generation.Blocks
 {
     public enum Direction : byte
     {
-        Up = 0,
-        Down = 1,
+        
+        Down = 0,
+        Up = 1,
         Left = 2,
         Right = 3,
         Back = 4,
