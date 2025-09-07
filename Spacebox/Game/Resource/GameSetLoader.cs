@@ -51,7 +51,7 @@ namespace Spacebox.Game.Resource
             }
 
             LoadSounds(modPath);
-            LoadBlocks(modPath, defaultModPath);
+            BlocksLoader.LoadBlocks(modPath, defaultModPath);
             LoadProjectiles(modPath, defaultModPath);
             LoadItems(modPath, defaultModPath);
             SetBlocksDrop();
@@ -163,111 +163,9 @@ namespace Spacebox.Game.Resource
             }
         }
 
-        private static void AddAirBlock()
-        {
-            var air = new BlockData("Air", "block", new Vector2Byte(0, 0));
-            air.Mass = 0;
-            air.Category = "";
-            air.Sides = "sand";
-            air.Id_string = "default:air";
+                
 
-            GameAssetsRegister.RegisterBlock(air);
-        }
-        private static void LoadBlocks(string modPath, string defaultModPath)
-        {
-            AddAirBlock();
-
-            string blocksFile = GetFilePath(modPath, defaultModPath, "blocks.json");
-            if (blocksFile == null) return;
-
-            try
-            {
-
-                List<BlockDataJSON> blocks = JsonFixer.LoadJsonSafe<List<BlockDataJSON>>(blocksFile);
-
-                foreach (var block in blocks)
-                {
-                    block.Type = block.Type.ToLower();
-                    block.Sides = block.Sides.ToLower();
-                    block.Top = block.Top.ToLower();
-                    block.Bottom = block.Bottom.ToLower();
-
-                    if (!BlockFactory.ValidateBlockType(block.Type))
-                    {
-                        Debug.Error($"[GameSetLoader] Block '{block.ID}' has an invalid type and was skipped");
-                        Debug.Error($"[GameSetLoader] Valid types are: {string.Join(", ", BlockFactory.GetBlockTypes())}");
-                        continue;
-                    }
-
-                    bool sameSides = block.Top == "" || block.Top == "" || block.Sides == block.Top && block.Sides == block.Top;
-                    bool hasLightColor = block.LightColor != Color3Byte.Black;
-                    var blockColor = hasLightColor ? block.LightColor.ToVector3() : Color3Byte.Black.ToVector3();
-
-
-                    var blockId = ValidateIdString(ModInfo.ModId, block.ID);
-                    blockId = CombineId(ModInfo.ModId, blockId);
-
-                    BlockData blockData = new BlockData(block.Name, block.Type, new Vector2Byte(0, 0), block.IsTransparent, blockColor)
-                    {
-                        AllSidesAreSame = sameSides,
-                        TopUVIndex = new Vector2Byte(),
-                        BottomUVIndex = new Vector2Byte(),
-                    };
-
-                    blockData.DropIDFull = block.Drop;
-                    blockData.DropQuantity = (byte)Math.Clamp(block.DropQuantity, 0, byte.MaxValue);
-                    blockData.Id_string = blockId;
-
-                    blockData.Description = block.Description;
-
-                    if (block.Durability <= 0) block.Durability = 1;
-                    if (block.Mass <= 0) block.Mass = 1;
-                    if (block.PowerToDrill <= 0) block.PowerToDrill = 1;
-
-                    if (block.Mass <= byte.MaxValue)
-                    {
-                        blockData.Mass = (byte)block.Mass;
-                    }
-                    else
-                    {
-                        blockData.Mass = byte.MaxValue;
-                    }
-
-                    if (block.Durability <= byte.MaxValue)
-                    {
-                        blockData.Durability = (byte)block.Durability;
-                    }
-                    else
-                    {
-                        blockData.Durability = byte.MaxValue;
-                    }
-
-                    if (block.PowerToDrill <= byte.MaxValue)
-                    {
-                        blockData.PowerToDrill = (byte)block.PowerToDrill;
-                    }
-                    else
-                    {
-                        blockData.PowerToDrill = byte.MaxValue;
-                    }
-                    blockData.Efficiency = block.Efficiency;
-                    blockData.Category = block.Category;
-                    blockData.Sides = block.Sides;
-                    blockData.Top = sameSides ? block.Sides : block.Top;
-                    blockData.Bottom = sameSides ? block.Sides : block.Bottom;
-
-                    GiveBlockSounds(blockData, block);
-
-                    GameAssetsRegister.RegisterBlock(blockData);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.Error($"[GamesetLoader] Error loading blocks: {ex.Message}");
-            }
-        }
-
-        private static string ValidateIdString(string @namespace, string idString)
+        public static string ValidateIdString(string @namespace, string idString)
         {
             if (string.IsNullOrEmpty(idString))
             {
@@ -381,27 +279,7 @@ namespace Spacebox.Game.Resource
             return (modId, itemId);
         }
 
-        private static void GiveBlockSounds(BlockData blockData, BlockDataJSON modBlockData)
-        {
-            if (!GameAssets.Sounds.ContainsKey(modBlockData.SoundPlace))
-            {
-                blockData.SetDefaultPlaceSound();
-                Debug.Error($"[GamesetLoader] Block <{modBlockData.Name}> has a wrong place sound! - {modBlockData.SoundPlace}. Selected a default one");
-            }
-            else
-            {
-                blockData.SoundPlace = modBlockData.SoundPlace;
-            }
-            if (!GameAssets.Sounds.ContainsKey(modBlockData.SoundDestroy))
-            {
-                blockData.SetDefaultDestroySound();
-                Debug.Error($"[GamesetLoader] Block <{modBlockData.Name}> has a wrong destroy sound! - {modBlockData.SoundDestroy}. Selected a default one");
-            }
-            else
-            {
-                blockData.SoundDestroy = modBlockData.SoundDestroy;
-            }
-        }
+        
 
         private static void LoadProjectiles(string modPath, string defaultModPath)
         {
@@ -1013,7 +891,7 @@ namespace Spacebox.Game.Resource
             }
         }
 
-        private static string GetFilePath(string modPath, string defaultModPath, string fileName)
+        public static string GetFilePath(string modPath, string defaultModPath, string fileName)
         {
             string filePath = Path.Combine(modPath, fileName);
             string defaultFilePath = Path.Combine(defaultModPath, fileName);

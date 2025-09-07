@@ -99,8 +99,9 @@ namespace Spacebox.Game
         private static void CacheIcon(BlockData blockData)
         {
             Texture2D texture = IsometricIcon.Create(
-                UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.WallsUVIndex, GameAssets.AtlasBlocks.SizeBlocks),
-                UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.TopUVIndex, GameAssets.AtlasBlocks.SizeBlocks));
+                UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.LeftUVIndex, GameAssets.AtlasBlocks.SizeBlocks),
+                UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.ForwardUVIndex, GameAssets.AtlasBlocks.SizeBlocks),
+                UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.UpUVIndex, GameAssets.AtlasBlocks.SizeBlocks));
 
             texture.FilterMode = FilterMode.Nearest;
             blockData.AsItem.IconTextureId = texture.Handle;
@@ -128,15 +129,47 @@ namespace Spacebox.Game
                 Debug.Error("[GameBlocksRegistrar] AtlasTexture is not created!");
                 return;
             }
-            if(blockData.Id == 0){ 
+            if (blockData.Id == 0)
+            {
                 return;
             }
+
             blockData.WallsUV = GameAssets.AtlasBlocks.GetUVByName(blockData.Sides);
-            blockData.TopUV = GameAssets.AtlasBlocks.GetUVByName(blockData.Top);
-            blockData.BottomUV = GameAssets.AtlasBlocks.GetUVByName(blockData.Bottom);
             blockData.WallsUVIndex = GameAssets.AtlasBlocks.GetUVIndexByName(blockData.Sides);
-            blockData.TopUVIndex = GameAssets.AtlasBlocks.GetUVIndexByName(blockData.Top);
-            blockData.BottomUVIndex = GameAssets.AtlasBlocks.GetUVIndexByName(blockData.Bottom);
+
+            blockData.UpUV = GameAssets.AtlasBlocks.GetUVByName(blockData.Up);
+            blockData.UpUVIndex = GameAssets.AtlasBlocks.GetUVIndexByName(blockData.Up);
+
+            blockData.DownUV = GameAssets.AtlasBlocks.GetUVByName(blockData.Down);
+            blockData.DownUVIndex = GameAssets.AtlasBlocks.GetUVIndexByName(blockData.Down);
+
+            blockData.LeftUV = GameAssets.AtlasBlocks.GetUVByName(blockData.Left);
+            blockData.LeftUVIndex = GameAssets.AtlasBlocks.GetUVIndexByName(blockData.Left);
+
+            blockData.RightUV = GameAssets.AtlasBlocks.GetUVByName(blockData.Right);
+            blockData.RightUVIndex = GameAssets.AtlasBlocks.GetUVIndexByName(blockData.Right);
+
+            blockData.ForwardUV = GameAssets.AtlasBlocks.GetUVByName(blockData.Forward);
+            blockData.ForwardUVIndex = GameAssets.AtlasBlocks.GetUVIndexByName(blockData.Forward);
+
+            blockData.BackUV = GameAssets.AtlasBlocks.GetUVByName(blockData.Back);
+            blockData.BackUVIndex = GameAssets.AtlasBlocks.GetUVIndexByName(blockData.Back);
+
+            if (blockData.Left == blockData.Sides &&
+                blockData.Right == blockData.Sides &&
+                blockData.Forward == blockData.Sides &&
+                blockData.Back == blockData.Sides)
+            {
+                blockData.LeftUV = blockData.WallsUV;
+                blockData.RightUV = blockData.WallsUV;
+                blockData.ForwardUV = blockData.WallsUV;
+                blockData.BackUV = blockData.WallsUV;
+
+                blockData.LeftUVIndex = blockData.WallsUVIndex;
+                blockData.RightUVIndex = blockData.WallsUVIndex;
+                blockData.ForwardUVIndex = blockData.WallsUVIndex;
+                blockData.BackUVIndex = blockData.WallsUVIndex;
+            }
         }
 
         private static void CreateDust(BlockData block)

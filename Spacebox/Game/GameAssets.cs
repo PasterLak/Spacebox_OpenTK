@@ -80,7 +80,7 @@ namespace Spacebox.Game
                 if (item.Name.ToLower() == name.ToLower())
                     return item;
             }
-            Debug.Error("GetItemByName error: Wrong name - " + name);
+            Debug.Error("[GameAssets] GetItemByName error: Wrong name - " + name);
             return null;
         }
 
@@ -93,7 +93,7 @@ namespace Spacebox.Game
         {
             if (ItemsStr.ContainsKey(idFull))
                 return ItemsStr[idFull];
-            Debug.Error("GetItemByFullID error: Wrong string id - " + idFull);
+            Debug.Error("[GameAssets] GetItemByFullID error: Wrong string id - " + idFull);
             return null;
         }
 
@@ -146,10 +146,10 @@ namespace Spacebox.Game
         {
             if (!Blocks.ContainsKey(id))
                 return new Vector2[] { new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(0f, 1f) };
-            if (face == Face.Top)
-                return Blocks[id].TopUV;
-            else if (face == Face.Bottom)
-                return Blocks[id].BottomUV;
+            if (face == Face.Up)
+                return Blocks[id].UpUV;
+            else if (face == Face.Down)
+                return Blocks[id].DownUV;
             return Blocks[id].WallsUV;
         }
 

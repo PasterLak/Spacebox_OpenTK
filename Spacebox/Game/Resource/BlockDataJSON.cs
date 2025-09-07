@@ -15,8 +15,13 @@ namespace Spacebox.Game.Resource
         public float Efficiency { get; set; } = 1f;
 
         public string Sides { get; set; } = "";
-        public string Top { get; set; } = "";
-        public string Bottom { get; set; } = "";
+        public string Up { get; set; } = "";
+        public string Down { get; set; } = "";
+
+        public string Left { get; set; }
+        public string Right { get; set; }
+        public string Forward { get; set; }
+        public string Back { get; set; }
 
         public string Drop { get; set; } = "$self";
         public int DropQuantity { get; set; } = 1;
@@ -28,15 +33,4 @@ namespace Spacebox.Game.Resource
         public Color3Byte LightColor { get; set; } = Color3Byte.Black;
     }
 
-    public class InteractiveBlockDataJSON : BlockDataJSON
-    {
-
-
-    }
-
-    public class LightBlockDataJSON : BlockDataJSON
-    {
-
-
-    }
 }

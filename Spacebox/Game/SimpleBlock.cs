@@ -108,7 +108,7 @@ namespace Spacebox
         {
             switch (face)
             {
-                case Face.Front:
+                case Face.Forward:
                     return new Vector3(0f, 0f, 1f);
                 case Face.Back:
                     return new Vector3(0f, 0f, -1f);
@@ -116,9 +116,9 @@ namespace Spacebox
                     return new Vector3(-1f, 0f, 0f);
                 case Face.Right:
                     return new Vector3(1f, 0f, 0f);
-                case Face.Top:
+                case Face.Up:
                     return new Vector3(0f, 1f, 0f);
-                case Face.Bottom:
+                case Face.Down:
                     return new Vector3(0f, -1f, 0f);
                 default:
                     Debug.Error("False face!");

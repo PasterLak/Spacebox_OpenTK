@@ -10,24 +10,25 @@ namespace Spacebox.GUI
         private const float LightIntensity = 0.1f; // 0.03, left side
 
        
-        public static Texture2D Create(Texture2D walls,  Texture2D topSide)
+        public static Texture2D Create(Texture2D leftSide, Texture2D forwardSide, Texture2D topSide)
         {
-            if (!ValidateTextures(walls,topSide))
+            if (!ValidateTextures(leftSide, forwardSide,topSide))
             {
                 return new Texture2D(32, 32, pixelated: true);
             }
 
-            int originalSize = walls.Width;
+            int originalSize = leftSide.Width;
             int size = originalSize * 2;
             Texture2D isometricTexture = new Texture2D(size, size, pixelated: true);
 
-            Color4[,] origLeftPixels = walls.GetPixelData();
-          
+            Color4[,] origLeftPixels = leftSide.GetPixelData();
+            Color4[,] origRightPixels = forwardSide.GetPixelData();
+
             Color4[,] origTopPixels = topSide.GetPixelData();
 
             Color4[,] isometricPixels = InitializePixels(size);
 
-            ApplyRightSide(size, origLeftPixels, isometricPixels, ShadowIntensityRightSide);
+            ApplyRightSide(size, origRightPixels, isometricPixels, ShadowIntensityRightSide);
             ApplyLeftSide(size, origLeftPixels, isometricPixels, ShadowIntensityLeftSide);
             ApplyTop(size, origTopPixels, isometricPixels, LightIntensity);
 
@@ -40,20 +41,25 @@ namespace Spacebox.GUI
             isometricTexture.UpdateTexture();
 
 
-           
-            walls.Dispose();
+
+            leftSide.Dispose();
 
             return isometricTexture;
         }
 
-        private static bool ValidateTextures(Texture2D leftSide, Texture2D topSide)
+        private static bool ValidateTextures(Texture2D leftSide, Texture2D right, Texture2D topSide)
         {
             if (leftSide.Width != leftSide.Height)
             {
                 Debug.Log("Invalid Texture Width and Height! Should be the same.");
                 return false;
             }
-           
+            if (right.Width != right.Height)
+            {
+                Debug.Log("Invalid Texture Width and Height! Should be the same.");
+                return false;
+            }
+
             if (topSide.Width != topSide.Height)
             {
                 Debug.Log("Invalid Texture Width and Height! Should be the same.");

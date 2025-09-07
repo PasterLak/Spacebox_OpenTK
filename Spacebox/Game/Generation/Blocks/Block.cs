@@ -16,6 +16,14 @@ namespace Spacebox.Game.Generation.Blocks
         Forward = 5
     }
 
+    public enum Rotation : byte
+    {
+        Up = 0,
+        Down = 2,
+        Left = 3,
+        Right = 1
+    }
+
     [Flags]
     public enum BlockFlags : byte
     {
@@ -53,7 +61,7 @@ namespace Spacebox.Game.Generation.Blocks
             SetTransparent(isTransparent);
             SetAir(isAir);
             SetLight(isLight);
-            SetEnableEmission(enableEmission);
+            SetEnableEmission(enableEmission); 
         }
 
         public Block(BlockData blockData)

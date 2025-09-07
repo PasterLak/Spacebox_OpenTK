@@ -148,7 +148,7 @@ namespace Spacebox.Tests
         {
             // Arrange
             AOVoxels.Init(); 
-            var face = Face.Front; 
+            var face = Face.Forward; 
             var vertex = new Vector3SByte(1, 0, 1); 
 
             // Act

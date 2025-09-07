@@ -7,10 +7,10 @@ namespace Spacebox.Game.Generation.Tools
     {
         Left = 0,
         Right = 1,
-        Bottom = 2,
-        Top = 3,
+        Down = 2,
+        Up = 3,
         Back = 4,
-        Front = 5
+        Forward = 5
     }
 
     public static class CubeMeshData
@@ -21,10 +21,10 @@ namespace Spacebox.Game.Generation.Tools
             {
                 Face.Left => new Vector3SByte(-1, 0, 0),
                 Face.Right => new Vector3SByte(1, 0, 0),
-                Face.Bottom => new Vector3SByte(0, -1, 0),
-                Face.Top => new Vector3SByte(0, 1, 0),
+                Face.Down => new Vector3SByte(0, -1, 0),
+                Face.Up => new Vector3SByte(0, 1, 0),
                 Face.Back => new Vector3SByte(0, 0, -1),
-                Face.Front => new Vector3SByte(0, 0, 1),
+                Face.Forward => new Vector3SByte(0, 0, 1),
                 _ => Vector3SByte.Zero,
             };
         }
@@ -42,7 +42,7 @@ namespace Spacebox.Game.Generation.Tools
         {
             switch (face)
             {
-                case Face.Front:
+                case Face.Forward:
                     return new Vector3[]
                     {
                         new Vector3(0, 0, 1),
@@ -75,7 +75,7 @@ namespace Spacebox.Game.Generation.Tools
                         new Vector3(1, 1, 0),
                         new Vector3(1, 1, 1)
                     };
-                case Face.Top:
+                case Face.Up:
                     return new Vector3[]
                     {
                         new Vector3(0, 1, 1),
@@ -83,7 +83,7 @@ namespace Spacebox.Game.Generation.Tools
                         new Vector3(1, 1, 0),
                         new Vector3(0, 1, 0)
                     };
-                case Face.Bottom:
+                case Face.Down:
                     return new Vector3[]
                     {
                         new Vector3(0, 0, 0),

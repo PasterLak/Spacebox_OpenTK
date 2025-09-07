@@ -71,9 +71,9 @@ namespace Spacebox.Game
             SimpleBlock.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Left, blockDirection), Face.Left, false);
             SimpleBlock.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Right, blockDirection), Face.Right, false);
             SimpleBlock.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Back, blockDirection), Face.Back, false);
-            SimpleBlock.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Front, blockDirection), Face.Front, false);
-            SimpleBlock.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Top, blockDirection), Face.Top, false);
-            SimpleBlock.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Bottom, blockDirection), Face.Bottom, false);
+            SimpleBlock.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Forward, blockDirection), Face.Forward, false);
+            SimpleBlock.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Up, blockDirection), Face.Up, false);
+            SimpleBlock.ChangeUV(PanelUI.GetSelectedBlockUV(Face.Down, blockDirection), Face.Down, false);
 
 
             SimpleBlock.RegenerateMesh();
