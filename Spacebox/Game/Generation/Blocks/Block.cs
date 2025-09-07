@@ -18,10 +18,11 @@ namespace Spacebox.Game.Generation.Blocks
 
     public enum Rotation : byte
     {
-        Up = 0,
-        Down = 2,
-        Left = 3,
-        Right = 1
+        None = 0,
+        Right = 1,
+        Half = 2,
+        Left = 3
+        
     }
 
     [Flags]

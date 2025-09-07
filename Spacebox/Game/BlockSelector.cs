@@ -17,7 +17,7 @@ namespace Spacebox.Game
         public SimpleBlock SimpleBlock { get; private set; }
 
         private Direction blockDirection = Direction.Up;
-        private Rotation rotation = Rotation.Up;
+        private Rotation rotation = Rotation.None;
         private BlockData currentBlockData;
 
         public BlockSelector()

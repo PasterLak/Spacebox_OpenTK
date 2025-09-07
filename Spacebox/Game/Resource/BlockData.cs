@@ -140,7 +140,7 @@ namespace Spacebox.Game.Resource
             return rot switch
             {
                 Rotation.Right => RotateUV90Right(uvs),
-                Rotation.Down => RotateUV180(uvs),
+                Rotation.Half => RotateUV180(uvs),
                 Rotation.Left => RotateUV90Left(uvs),
                 _ => uvs
             };
