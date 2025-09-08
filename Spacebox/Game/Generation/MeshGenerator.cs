@@ -124,7 +124,6 @@ namespace Spacebox.Game.Generation
             Debug.Log("Generated: " + _chunk.PositionIndex);
             return mesh;
         }
-
         private void AddRotatedFace(Block block, Face face, byte fIndex, sbyte x, sbyte y, sbyte z,
     Dictionary<Direction, Vector3> transformedVectors)
         {
@@ -181,33 +180,21 @@ namespace Spacebox.Game.Generation
 
             int vStart = vertexCount / BuffersData.FloatsPerVertexBlock;
             float[] AO = new float[4];
-            byte newMask = CreateMask(face, new Vector3SByte(x, y, z), faceNormals[fIndex]);
-            bool isLightOrTransparent = block.IsTransparent || block.IsLight;
-            var shading = isLightOrTransparent ? AOVoxels.GetLightedPoints : AOShading.GetAO(newMask);
-            bool same3 = false;
-            bool diagonal = false;
-            byte another = 0;
-            byte s = 0;
 
-            if (!isLightOrTransparent)
+            bool isLightOrTransparent = block.IsTransparent || block.IsLight;
+
+            if (!isLightOrTransparent && _EnableAO)
             {
-                for (byte i = 0; i < shading.Length; i++)
-                {
-                    if (shading[i] == 0.5f)
-                    {
-                        s++;
-                        continue;
-                    }
-                    else another = i;
-                }
-                if (s == 3) same3 = true;
-                if (same3)
-                {
-                    if (another == 0 || another == 2)
-                    {
-                        diagonal = true;
-                    }
-                }
+                byte aoMask = CalculateFaceAOMask(new Vector3SByte(x, y, z), normal, up, right);
+                var shading = AOShading.GetAO(aoMask);
+                AO[0] = shading[0];
+                AO[1] = shading[1];
+                AO[2] = shading[2];
+                AO[3] = shading[3];
+            }
+            else
+            {
+                AO[0] = AO[1] = AO[2] = AO[3] = 1f;
             }
 
             for (byte i = 0; i < 4; i++)
@@ -223,37 +210,13 @@ namespace Spacebox.Game.Generation
                 vertices[vertexCount++] = normal.X;
                 vertices[vertexCount++] = normal.Y;
                 vertices[vertexCount++] = normal.Z;
-
-                if (_EnableAO)
-                {
-                    AO[i] = shading[i];
-                    vertices[vertexCount++] = AO[i];
-                    if (i == 0 || i == 2)
-                    {
-                        if (AO[i] < 0.5f) AO[i] -= 0.5f;
-                        if (same3)
-                        {
-                            if (!diagonal) AO[i] += 0.5f;
-                            else AO[i] -= 0.5f;
-                        }
-                    }
-                    else
-                    {
-                        if (AO[i] < 0.5f) AO[i] -= 0.5f;
-                    }
-                }
-                else
-                {
-                    vertices[vertexCount++] = 1f;
-                }
-
+                vertices[vertexCount++] = AO[i];
                 vertices[vertexCount++] = block.EnableEmission ? 1f : 0f;
             }
 
-            if (_EnableAO)
+            if (_EnableAO && !isLightOrTransparent)
             {
-                bool flip = false;
-                if (AO[0] + AO[2] < AO[1] + AO[3]) flip = true;
+                bool flip = (AO[0] + AO[2]) < (AO[1] + AO[3]);
                 if (flip)
                 {
                     indices[indexCount++] = (uint)(vStart + 1);
@@ -282,35 +245,72 @@ namespace Spacebox.Game.Generation
                 indices[indexCount++] = (uint)(vStart + 3);
                 indices[indexCount++] = (uint)(vStart + 0);
             }
-
-           
         }
-        private byte CreateMask(Face originalFace, Vector3SByte blockPos, Vector3SByte transformedNormal, Dictionary<Direction, Vector3> transformedVectors = null)
+
+        private byte CalculateFaceAOMask(Vector3SByte blockPos, Vector3SByte normal, Vector3 up, Vector3 right)
         {
             byte mask = 0;
+            Vector3SByte facePos = blockPos + normal;
 
-           
-            if (transformedVectors == null)
+            Vector3SByte[] offsets = new Vector3SByte[8];
+            offsets[0] = RoundToSByte(-up);
+            offsets[1] = RoundToSByte(-up - right);
+            offsets[2] = RoundToSByte(-right);
+            offsets[3] = RoundToSByte(up - right);
+            offsets[4] = RoundToSByte(up);
+            offsets[5] = RoundToSByte(up + right);
+            offsets[6] = RoundToSByte(right);
+            offsets[7] = RoundToSByte(-up + right);
+
+            for (byte i = 0; i < 8; i++)
             {
-                Vector3SByte[] nbs2 = AOVoxels.FaceNeighborOffsets[originalFace];
-                blockPos = blockPos + transformedNormal;
+                sbyte checkX = (sbyte)(facePos.X + offsets[i].X);
+                sbyte checkY = (sbyte)(facePos.Y + offsets[i].Y);
+                sbyte checkZ = (sbyte)(facePos.Z + offsets[i].Z);
 
-                for (byte bit = 0; bit < 8; bit++)
+                if (IsOccluder(checkX, checkY, checkZ))
                 {
-                    Vector3SByte offset = nbs2[bit];
-                    int nx = blockPos.X + offset.X;
-                    int ny = blockPos.Y + offset.Y;
-                    int nz = blockPos.Z + offset.Z;
-                    if (NeedsAO((sbyte)nx, (sbyte)ny, (sbyte)nz, transformedNormal))
-                        mask |= (byte)(1 << bit);
+                    mask |= (byte)(1 << i);
                 }
-                return mask;
             }
 
-       
-            Face actualFace = GetFaceFromTransformedNormal(transformedNormal);
-            Vector3SByte[] nbs = AOVoxels.FaceNeighborOffsets[actualFace];
-            blockPos = blockPos + transformedNormal;
+            return mask;
+        }
+
+        private Vector3SByte RoundToSByte(Vector3 v)
+        {
+            return new Vector3SByte(
+                (sbyte)Math.Round(v.X),
+                (sbyte)Math.Round(v.Y),
+                (sbyte)Math.Round(v.Z)
+            );
+        }
+
+        private bool IsOccluder(sbyte x, sbyte y, sbyte z)
+        {
+            if (IsInRange(x, y, z))
+            {
+                var b = _blocks[x, y, z];
+                if (b == null || b.IsAir || b.IsTransparent) return false;
+                return true;
+            }
+            else
+            {
+                GetNeighborChunkIndexAndLocalCoords(x, y, z, Size, out var offset, out var local);
+                if (_neighbors.TryGetValue(offset, out var chunk) && chunk != null)
+                {
+                    var b = chunk.GetBlock(local);
+                    if (b != null && !b.IsAir && !b.IsTransparent)
+                        return true;
+                }
+                return false;
+            }
+        }
+        private byte CreateMask(Face face, Vector3SByte blockPos, Vector3SByte normal)
+        {
+            byte mask = 0;
+            Vector3SByte[] nbs = AOVoxels.FaceNeighborOffsets[face];
+            blockPos = blockPos + normal;
 
             for (byte bit = 0; bit < 8; bit++)
             {
@@ -318,21 +318,10 @@ namespace Spacebox.Game.Generation
                 int nx = blockPos.X + offset.X;
                 int ny = blockPos.Y + offset.Y;
                 int nz = blockPos.Z + offset.Z;
-                if (NeedsAO((sbyte)nx, (sbyte)ny, (sbyte)nz, transformedNormal))
+                if (NeedsAO((sbyte)nx, (sbyte)ny, (sbyte)nz, CubeMeshData.GetNormal(face)))
                     mask |= (byte)(1 << bit);
             }
             return mask;
-        }
-
-        private Face GetFaceFromTransformedNormal(Vector3SByte normal)
-        {
-            if (normal.X == 1) return Face.Right;
-            if (normal.X == -1) return Face.Left;
-            if (normal.Y == 1) return Face.Up;
-            if (normal.Y == -1) return Face.Down;
-            if (normal.Z == 1) return Face.Forward;
-            if (normal.Z == -1) return Face.Back;
-            return Face.Forward; 
         }
 
         private bool NeedsAO(sbyte x, sbyte y, sbyte z, Vector3SByte norm)

@@ -2,8 +2,8 @@
     {
         "ID": "light_rock",
         "Name": "Light Rock",
-        "Sides": "white1",
-        "Left": "white2",
+        "Sides": "lightRock",
+       
         "PowerToDrill": 1,
         "Mass": 2,
         "Durability": 5,
