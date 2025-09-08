@@ -1,7 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using Engine;
 using Spacebox.Game.GUI;
-using Spacebox.Game.Player;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Resource;
@@ -39,14 +38,13 @@ namespace Spacebox.Game
         public void OnSelectedSlotWasChanged(short slot)
         {
             Rotation = Rotation.None;
+            SimpleBlock.ResetBlockTransform();
+
             if (PanelUI.IsHolding<DrillItem>())
             {
-                if (!SimpleBlock.IsUsingDefaultUV)
-                {
-                    SimpleBlock.Material.MainTexture = selectorTexture;
-                    SimpleBlock.Scale = new Vector3(1.05f, 1.05f, 1.05f);
-                    SimpleBlock.ResetUV();
-                }
+                SimpleBlock.Material.MainTexture = selectorTexture;
+                SimpleBlock.Scale = new Vector3(1.05f, 1.05f, 1.05f);
+                SimpleBlock.ResetUV();
                 currentBlockData = null;
             }
             else if (PanelUI.IsHolding<BlockItem>())
@@ -57,83 +55,69 @@ namespace Spacebox.Game
                     currentBlockData = GameAssets.GetBlockDataById(blockItem.Id);
                     SimpleBlock.Material.MainTexture = GameAssets.BlocksTexture;
                     SimpleBlock.Scale = new Vector3(1f, 1f, 1f);
-                    UpdateUV();
+                    SetupBlockMesh();
+                    UpdateBlockRotation();
                 }
             }
         }
 
-        private void UpdateUV()
+        private void SetupBlockMesh()
         {
             if (currentBlockData == null) return;
 
             for (byte i = 0; i < 6; i++)
             {
-                Face worldFace = (Face)i;
-                Vector2[] uv = CalculateUVForFace(worldFace);
-                SimpleBlock.ChangeUV(uv, worldFace, false);
+                Face face = (Face)i;
+                Vector2[] uv = currentBlockData.GetFaceUV(face);
+                SimpleBlock.ChangeUV(uv, face, false);
             }
 
             SimpleBlock.RegenerateMesh();
         }
 
-        private Vector2[] CalculateUVForFace(Face worldFace)
+        private void UpdateBlockRotation()
         {
-            Face blockFace = BlockRotationTable.GetBlockFaceForWorld(worldFace, blockDirection, Rotation);
-            Vector2[] baseUV = currentBlockData.GetFaceUV(blockFace);
-            
-            byte uvRotation = BlockRotationTable.GetCombinedUVRotation(worldFace, blockDirection, Rotation);
+            if (currentBlockData == null) return;
 
-            return uvRotation switch
-            {
-                1 => RotateUV90Right(baseUV),
-                2 => RotateUV180(baseUV),
-                3 => RotateUV90Left(baseUV),
-                _ => baseUV
-            };
-        }
+            var transformMatrix = BlockRotationHelper.CalculateTransformMatrix(
+                currentBlockData.BaseFrontDirection,
+                blockDirection,
+                Rotation
+            );
 
-
-        public static Vector2[] RotateUV90Right(Vector2[] uvs)
-        {
-            return uvs.Length == 4 ? new[] { uvs[3], uvs[0], uvs[1], uvs[2] } : uvs;
-        }
-
-        public static Vector2[] RotateUV90Left(Vector2[] uvs)
-        {
-            return uvs.Length == 4 ? new[] { uvs[1], uvs[2], uvs[3], uvs[0] } : uvs;
-        }
-
-        public static Vector2[] RotateUV180(Vector2[] uvs)
-        {
-            return uvs.Length == 4 ? new[] { uvs[2], uvs[3], uvs[0], uvs[1] } : uvs;
+            SimpleBlock.SetBlockTransform(transformMatrix);
         }
 
         public void UpdatePosition(Vector3 position, Direction direction)
         {
-            if (SimpleBlock.Position == position && blockDirection == direction)
+            Vector3 newPosition = position + Vector3.One * 0.5f;
+
+            if (SimpleBlock.Position == newPosition && blockDirection == direction)
                 return;
 
-            position += Vector3.One * 0.5f;
-            SimpleBlock.Position = position;
+            SimpleBlock.Position = newPosition;
 
-            if (!SimpleBlock.IsUsingDefaultUV && blockDirection != direction)
+            if (blockDirection != direction)
             {
                 blockDirection = direction;
-                UpdateUV();
+                if (currentBlockData != null)
+                {
+                    UpdateBlockRotation();
+                }
             }
         }
-    
 
         public void Render()
         {
-            if (!IsVisible) return;
-            if (!Settings.ShowInterface) return;
+            if (!IsVisible || !Settings.ShowInterface) return;
 
             if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.R))
             {
                 Rotation = (Rotation)(((byte)Rotation + 1) % 4);
-                Debug.Log(Rotation);
-                UpdateUV();
+                if (currentBlockData != null)
+                {
+                    UpdateBlockRotation();
+                }
             }
 
             SimpleBlock.Render();

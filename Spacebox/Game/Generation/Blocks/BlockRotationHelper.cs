@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 
 namespace Spacebox.Game.Generation.Blocks
 {
