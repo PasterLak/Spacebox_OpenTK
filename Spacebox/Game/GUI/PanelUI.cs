@@ -58,13 +58,6 @@ namespace Spacebox.Game.GUI
             _lastSelectedCount = 0;
         }
 
-        public static OpenTK.Mathematics.Vector2[] GetSelectedBlockUV(Face face, Direction direction)
-        {
-            if (SelectedSlot == null) return CubeMeshData.GetBasicUVs();
-            var blockItem = SelectedSlot.Item as BlockItem;
-            if (blockItem == null) return CubeMeshData.GetBasicUVs();
-            return GameAssets.GetBlockUVsByIdAndDirection(blockItem.BlockId, face, direction);
-        }
 
         private static void OnStorageDataWasChanged(Storage storage)
         {

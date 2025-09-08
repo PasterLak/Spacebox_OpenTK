@@ -4,6 +4,11 @@ using Spacebox.Game.Generation.Tools;
 
 namespace Spacebox.Game.Resource
 {
+    public struct ID
+    {
+        public short intern; 
+        public string str;
+    }
     public class BlockData
     {
         public short Id;
@@ -17,29 +22,9 @@ namespace Spacebox.Game.Resource
         public byte Durability = 0;
         public float Efficiency = 1f;
 
-        public string Sides { get; set; } = "";
-        public string Up { get; set; } = "";
-        public string Down { get; set; } = "";
-        public string Left { get; set; } = "";
-        public string Right { get; set; } = "";
-        public string Forward { get; set; } = "";
-        public string Back { get; set; } = "";
-
-        public Vector2Byte WallsUVIndex = new Vector2Byte(0, 1);
-        public Vector2Byte UpUVIndex = new Vector2Byte(0, 0);
-        public Vector2Byte DownUVIndex = new Vector2Byte(0, 0);
-        public Vector2Byte LeftUVIndex = new Vector2Byte(0, 0);
-        public Vector2Byte RightUVIndex = new Vector2Byte(0, 0);
-        public Vector2Byte ForwardUVIndex = new Vector2Byte(0, 0);
-        public Vector2Byte BackUVIndex = new Vector2Byte(0, 0);
-
-        public Vector2[] WallsUV;
-        public Vector2[] UpUV;
-        public Vector2[] DownUV;
-        public Vector2[] LeftUV;
-        public Vector2[] RightUV;
-        public Vector2[] ForwardUV;
-        public Vector2[] BackUV;
+        private readonly string[] _faceTextures = new string[7];
+        private readonly Vector2Byte[] _faceUVIndices = new Vector2Byte[7];
+        private readonly Vector2[][] _faceUVs = new Vector2[7][];
 
         public bool IsTransparent { get; set; } = false;
         public Vector3 LightColor { get; set; } = Vector3.Zero;
@@ -53,48 +38,110 @@ namespace Spacebox.Game.Resource
         public string SoundPlace { get; set; } = "blockPlaceDefault";
         public string SoundDestroy { get; set; } = "blockDestroyDefault";
 
-        public bool AllSidesAreSame = false;
-        private Vector2[][] _uvFaceCache;
+        public bool AllSidesAreSame { get; private set; } = true;
+
+        public string GetFaceTexture(Direction direction) => _faceTextures[(int)direction];
+        public void SetFaceTexture(Direction direction, string texture) => _faceTextures[(int)direction] = texture;
+
+        public string Sides
+        {
+            get => _faceTextures[6];
+            set => _faceTextures[6] = value;
+        }
+
+        public Vector2Byte GetFaceUVIndex(Direction direction) => _faceUVIndices[(int)direction];
+        public void SetFaceUVIndex(Direction direction, Vector2Byte uvIndex) => _faceUVIndices[(int)direction] = uvIndex;
+
+        public Vector2Byte WallsUVIndex
+        {
+            get => _faceUVIndices[6];
+            set => _faceUVIndices[6] = value;
+        }
+
+        public Vector2[] GetFaceUVDirect(Direction direction) => _faceUVs[(int)direction];
+        public void SetFaceUV(Direction direction, Vector2[] uv) => _faceUVs[(int)direction] = uv;
+
+        public Vector2[] WallsUV
+        {
+            get => _faceUVs[6];
+            set => _faceUVs[6] = value;
+        }
 
         public BlockData()
         {
+            for (int i = 0; i < 7; i++)
+            {
+                _faceTextures[i] = "";
+                _faceUVIndices[i] = new Vector2Byte(0, 1);
+            }
         }
 
         public BlockData(string name, string type, Vector2Byte textureCoords, bool isTransparent = false, Vector3? lightColor = null)
         {
             Name = name;
             Type = type;
-            WallsUVIndex = textureCoords;
-            UpUVIndex = textureCoords;
-            DownUVIndex = textureCoords;
-            LeftUVIndex = textureCoords;
-            RightUVIndex = textureCoords;
-            ForwardUVIndex = textureCoords;
-            BackUVIndex = textureCoords;
             IsTransparent = isTransparent;
             if (lightColor.HasValue) LightColor = lightColor.Value;
+
+            for (int i = 0; i < 7; i++)
+            {
+                _faceUVIndices[i] = textureCoords;
+            }
+
             AllSidesAreSame = true;
         }
 
-        public void CacheUVsByDirection()
+        public static void CacheUvs(BlockData b)
         {
-            if (AllSidesAreSame) return;
+            b.WallsUV = GameAssets.AtlasBlocks.GetUVByName(b.Sides);
+            b.WallsUVIndex = GameAssets.AtlasBlocks.GetUVIndexByName(b.Sides);
 
-            _uvFaceCache = new Vector2[6][];
-            _uvFaceCache[0] = DownUV ?? WallsUV;
-            _uvFaceCache[1] = UpUV ?? WallsUV;
-            _uvFaceCache[2] = LeftUV ?? WallsUV;
-            _uvFaceCache[3] = RightUV ?? WallsUV;
-            _uvFaceCache[4] = BackUV ?? WallsUV;
-            _uvFaceCache[5] = ForwardUV ?? WallsUV;
-        }
+            for (int i = 0; i < 6; i++)
+            {
+                var direction = (Direction)i;
+                var textureName = b.GetFaceTexture(direction);
 
-        public Vector2[] GetUvsByFaceAndDirection(Face face, Direction direction)
-        {
-            if (AllSidesAreSame)
-                return WallsUV;
+                b.SetFaceUV(direction, GameAssets.AtlasBlocks.GetUVByName(textureName));
+                b.SetFaceUVIndex(direction, GameAssets.AtlasBlocks.GetUVIndexByName(textureName));
+            }
 
-            return _uvFaceCache != null ? _uvFaceCache[(byte)face] : GetFaceUVDirect(face);
+            bool allWallsSame = true;
+            for (int i = 2; i < 6; i++)
+            {
+                if (b.GetFaceTexture((Direction)i) != b.Sides)
+                {
+                    allWallsSame = false;
+                    break;
+                }
+            }
+
+            if (allWallsSame)
+            {
+                for (int i = 2; i < 6; i++)
+                {
+                    var direction = (Direction)i;
+                    b.SetFaceUV(direction, b.WallsUV);
+                    b.SetFaceUVIndex(direction, b.WallsUVIndex);
+                }
+            }
+
+            if (b.GetFaceTexture(Direction.Up) == b.GetFaceTexture(Direction.Down))
+            {
+                b.SetFaceUV(Direction.Down, b.GetFaceUVDirect(Direction.Up));
+                b.SetFaceUVIndex(Direction.Down, b.GetFaceUVIndex(Direction.Up));
+            }
+
+            bool allSameTexture = true;
+            for (int i = 0; i < 6; i++)
+            {
+                if (b.GetFaceTexture((Direction)i) != b.Sides)
+                {
+                    allSameTexture = false;
+                    break;
+                }
+            }
+
+            b.AllSidesAreSame = allSameTexture;
         }
 
         public Vector2[] GetFaceUV(Face face)
@@ -102,58 +149,22 @@ namespace Spacebox.Game.Resource
             if (AllSidesAreSame)
                 return WallsUV;
 
-            return _uvFaceCache != null ? _uvFaceCache[(byte)face] : GetFaceUVDirect(face);
+            var direction = FaceToDirection(face);
+            return GetFaceUVDirect(direction) ?? WallsUV;
         }
 
-        private Vector2[] GetFaceUVDirect(Face face)
+        private static Direction FaceToDirection(Face face)
         {
             return face switch
             {
-                Face.Down => DownUV ?? WallsUV,
-                Face.Up => UpUV ?? WallsUV,
-                Face.Left => LeftUV ?? WallsUV,
-                Face.Right => RightUV ?? WallsUV,
-                Face.Back => BackUV ?? WallsUV,
-                Face.Forward => ForwardUV ?? WallsUV,
-                _ => WallsUV
+                Face.Down => Direction.Down,
+                Face.Up => Direction.Up,
+                Face.Left => Direction.Left,
+                Face.Right => Direction.Right,
+                Face.Back => Direction.Back,
+                Face.Forward => Direction.Forward,
+                _ => Direction.Up
             };
-        }
-
-        private static Vector2[] ApplyRotation(Vector2[] uv, byte rotation)
-        {
-            return rotation switch
-            {
-                1 => RotateUV90Right(uv),
-                2 => RotateUV180(uv),
-                3 => RotateUV90Left(uv),
-                _ => uv
-            };
-        }
-
-        public static Vector2[] RotateByRotation(Vector2[] uvs, Rotation rot)
-        {
-            return rot switch
-            {
-                Rotation.Right => RotateUV90Right(uvs),
-                Rotation.Half => RotateUV180(uvs),
-                Rotation.Left => RotateUV90Left(uvs),
-                _ => uvs
-            };
-        }
-
-        public static Vector2[] RotateUV90Right(Vector2[] uvs)
-        {
-            return uvs.Length == 4 ? new[] { uvs[3], uvs[0], uvs[1], uvs[2] } : uvs;
-        }
-
-        public static Vector2[] RotateUV90Left(Vector2[] uvs)
-        {
-            return uvs.Length == 4 ? new[] { uvs[1], uvs[2], uvs[3], uvs[0] } : uvs;
-        }
-
-        public static Vector2[] RotateUV180(Vector2[] uvs)
-        {
-            return uvs.Length == 4 ? new[] { uvs[2], uvs[3], uvs[0], uvs[1] } : uvs;
         }
 
         public void SetDefaultPlaceSound() => SoundPlace = "blockPlaceDefault";

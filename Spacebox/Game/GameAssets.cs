@@ -144,12 +144,6 @@ namespace Spacebox.Game
 
         }
 
-        public static Vector2[] GetBlockUVsByIdAndDirection(short id, Face face, Direction direction)
-        {
-            if (!Blocks.ContainsKey(id))
-                return new Vector2[] { new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(0f, 1f) };
-            return Blocks[id].GetUvsByFaceAndDirection(face, direction);
-        }
 
         public static AudioClip GetBlockAudioClipFromItemID(Item item, BlockInteractionType type)
         {

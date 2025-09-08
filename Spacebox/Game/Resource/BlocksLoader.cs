@@ -1,6 +1,7 @@
 ﻿using Engine;
 using Engine.Utils;
 using OpenTK.Mathematics;
+using Spacebox.Game.Generation.Blocks;
 
 
 namespace Spacebox.Game.Resource
@@ -162,16 +163,14 @@ namespace Spacebox.Game.Resource
 
         private static BlockData CreateBlockData(BlockDataJSON block, string blockId)
         {
-            bool sameSides = string.IsNullOrEmpty(block.Up) && string.IsNullOrEmpty(block.Down) &&
-                             string.IsNullOrEmpty(block.Left) && string.IsNullOrEmpty(block.Right) &&
-                             string.IsNullOrEmpty(block.Forward) && string.IsNullOrEmpty(block.Back);
+           
 
             bool hasLightColor = block.LightColor != Color3Byte.Black;
             var blockColor = hasLightColor ? block.LightColor.ToVector3() : Vector3.Zero;
 
             var blockData = new BlockData(block.Name, block.Type, new Vector2Byte(0, 0), block.IsTransparent, blockColor)
             {
-                AllSidesAreSame = sameSides,
+               
                 Id_string = blockId,
                 Description = block.Description,
                 Mass = (byte)Math.Clamp(block.Mass, 1, byte.MaxValue),
@@ -181,14 +180,15 @@ namespace Spacebox.Game.Resource
                 Category = block.Category,
                 DropIDFull = string.IsNullOrWhiteSpace(block.Drop) ? "$self" : block.Drop,
                 DropQuantity = (byte)Math.Clamp(block.DropQuantity, 1, byte.MaxValue),
-                Sides = block.Sides,
-                Up = string.IsNullOrEmpty(block.Up) ? block.Sides : block.Up,
-                Down = string.IsNullOrEmpty(block.Down) ? block.Sides : block.Down,
-                Left = string.IsNullOrEmpty(block.Left) ? block.Sides : block.Left,
-                Right = string.IsNullOrEmpty(block.Right) ? block.Sides : block.Right,
-                Forward = string.IsNullOrEmpty(block.Forward) ? block.Sides : block.Forward,
-                Back = string.IsNullOrEmpty(block.Back) ? block.Sides : block.Back
+                Sides = block.Sides
             };
+
+            blockData.SetFaceTexture(Direction.Up, string.IsNullOrEmpty(block.Up) ? block.Sides : block.Up);
+            blockData.SetFaceTexture(Direction.Down, string.IsNullOrEmpty(block.Down) ? block.Sides : block.Down);
+            blockData.SetFaceTexture(Direction.Left, string.IsNullOrEmpty(block.Left) ? block.Sides : block.Left);
+            blockData.SetFaceTexture(Direction.Right, string.IsNullOrEmpty(block.Right) ? block.Sides : block.Right);
+            blockData.SetFaceTexture(Direction.Forward, string.IsNullOrEmpty(block.Forward) ? block.Sides : block.Forward);
+            blockData.SetFaceTexture(Direction.Back, string.IsNullOrEmpty(block.Back) ? block.Sides : block.Back);
 
             GiveBlockSounds(blockData, block);
             return blockData;

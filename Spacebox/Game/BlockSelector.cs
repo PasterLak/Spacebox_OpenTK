@@ -85,11 +85,27 @@ namespace Spacebox.Game
 
             return uvRotation switch
             {
-                1 => BlockData.RotateUV90Right(baseUV),
-                2 => BlockData.RotateUV180(baseUV),
-                3 => BlockData.RotateUV90Left(baseUV),
+                1 => RotateUV90Right(baseUV),
+                2 => RotateUV180(baseUV),
+                3 => RotateUV90Left(baseUV),
                 _ => baseUV
             };
+        }
+
+
+        public static Vector2[] RotateUV90Right(Vector2[] uvs)
+        {
+            return uvs.Length == 4 ? new[] { uvs[3], uvs[0], uvs[1], uvs[2] } : uvs;
+        }
+
+        public static Vector2[] RotateUV90Left(Vector2[] uvs)
+        {
+            return uvs.Length == 4 ? new[] { uvs[1], uvs[2], uvs[3], uvs[0] } : uvs;
+        }
+
+        public static Vector2[] RotateUV180(Vector2[] uvs)
+        {
+            return uvs.Length == 4 ? new[] { uvs[2], uvs[3], uvs[0], uvs[1] } : uvs;
         }
 
         public void UpdatePosition(Vector3 position, Direction direction)
