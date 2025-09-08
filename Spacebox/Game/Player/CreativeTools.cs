@@ -191,7 +191,7 @@ namespace Spacebox.Game.Player
 
         public BlockPointer(HitInfo hitInfo)
         {
-            this.block = hitInfo.block.BlockId;
+            this.block = hitInfo.block.Id;
             this.chunk = hitInfo.chunk;
             this.localBlockIndex = hitInfo.blockPositionIndex;
             this.spaceEntity = chunk.SpaceEntity;

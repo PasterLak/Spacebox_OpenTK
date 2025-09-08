@@ -46,7 +46,7 @@ public abstract class InteractionDestroyBlock : InteractionMode
        
         if (blockDestroy != null)
         {
-            PickDestroySound(hit.block.BlockId);
+            PickDestroySound(hit.block.Id);
             blockDestroy.Play();
         }
         else Debug.Error("blockDestroy was null!");

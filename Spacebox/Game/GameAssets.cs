@@ -144,6 +144,13 @@ namespace Spacebox.Game
 
         }
 
+        public static Direction GetBaseFrontDirection(short id)
+        {
+            if (!Blocks.ContainsKey(id)) return Direction.Up;
+
+            return Blocks[id].BaseFrontDirection;
+        }
+
 
         public static AudioClip GetBlockAudioClipFromItemID(Item item, BlockInteractionType type)
         {

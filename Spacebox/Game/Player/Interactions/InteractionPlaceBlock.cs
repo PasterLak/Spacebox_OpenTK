@@ -151,13 +151,13 @@ public class InteractionPlaceBlock : InteractionMode
                         if (ClientNetwork.Instance != null)
                         {
                             var loc = chunk.SpaceEntity.WorldPositionToLocal(selectorPos);
-                            ClientNetwork.Instance.SendBlockPlaced(newBlock.BlockId, (byte)newBlock.Direction, (short)loc.X, (short)loc.Y, (short)loc.Z);
+                            ClientNetwork.Instance.SendBlockPlaced(newBlock.Id, (byte)newBlock.Direction, (short)loc.X, (short)loc.Y, (short)loc.Z);
                         }
                     }
 
                     if (blockPlace != null)
                     {
-                        PickPlaceSound(newBlock.BlockId);
+                        PickPlaceSound(newBlock.Id);
                         blockPlace.Play();
                     }
                 }
@@ -285,7 +285,7 @@ public class InteractionPlaceBlock : InteractionMode
                         if (ClientNetwork.Instance != null)
                         {
                             var loc = entity.WorldPositionToLocal(selectorPosition);
-                            ClientNetwork.Instance.SendBlockPlaced(newBlock.BlockId, (byte)newBlock.Direction, (short)loc.X, (short)loc.Y, (short)loc.Z);
+                            ClientNetwork.Instance.SendBlockPlaced(newBlock.Id, (byte)newBlock.Direction, (short)loc.X, (short)loc.Y, (short)loc.Z);
                         }
                     }
                     else
@@ -298,7 +298,7 @@ public class InteractionPlaceBlock : InteractionMode
 
                     if (blockPlace != null)
                     {
-                        PickPlaceSound(newBlock.BlockId);
+                        PickPlaceSound(newBlock.Id);
                         blockPlace.Play();
                     }
                 }

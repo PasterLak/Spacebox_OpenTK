@@ -106,7 +106,7 @@ namespace Spacebox.Game.Generation
                 for (int y = 0; y < Size; y++)
                     for (int z = 0; z < Size; z++)
                     {
-                        short id = _blocks[x, y, z].BlockId;
+                        short id = _blocks[x, y, z].Id;
                         float noise = (Noise3D(x, y, z, noiseSeed) + 1f) / 2f;
                         if (id == 1)
                         {
@@ -149,7 +149,7 @@ namespace Spacebox.Game.Generation
             {
                 if (currentX < 0 || currentX >= Size || currentY < 0 || currentY >= Size || currentZ < 0 || currentZ >= Size)
                     break;
-                short currentId = _blocks[currentX, currentY, currentZ].BlockId;
+                short currentId = _blocks[currentX, currentY, currentZ].Id;
                 if (currentId == 1 || currentId == 2 || currentId == 3 || currentId == resourceId)
                     _blocks[currentX, currentY, currentZ] = GameAssets.CreateBlockFromId(resourceId);
                 int dx = fastRandom.Next(0, 3) - 1;

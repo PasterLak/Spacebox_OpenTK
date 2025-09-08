@@ -396,7 +396,7 @@ public class MovementMode : GameModeBase
                     ch.RemoveBlock(collideInfo.blockPositionIndex, new Vector3SByte(0, 0, 0));
                     if (blockDestroy != null)
                     {
-                        PickDestroySound(collideInfo.block.BlockId);
+                        PickDestroySound(collideInfo.block.Id);
                         if (!blockDestroy.IsPlaying)
                             blockDestroy.Play();
                     }

@@ -415,37 +415,39 @@ namespace Spacebox.Game.Resource
         {
             foreach (var block in GameAssets.Blocks.Values)
             {
-                if (block.DropIDFull == "$self")
+                if(block == null) continue;
+                if (block.Id == 0) continue;
+
+                var drop = block.Drop;
+                var dropIdStr = drop.Item.Id_string;
+
+                if (dropIdStr == "$self")
                 {
-                    block.DropIDFull = block.Id_string;
-                    block.Drop = block.AsItem;
-                    block.DropID = block.Id;
+                     block.Drop.Item = block.AsItem;
+                   
                 }
                 else
                 {
 
-                    var fullID = CombineId(ModInfo.ModId, block.DropIDFull);
+                    var fullID = CombineId(ModInfo.ModId, dropIdStr);
 
                     if(fullID == block.Id_string)
                     {
-                        block.Drop = block.AsItem;
-                        block.DropIDFull = block.Id_string;
-                        block.DropID = block.Id;
+                        block.Drop.Item = block.AsItem;
+                                         
                         continue;
                     }
 
                     if (GameAssets.TryGetItemByFullID(fullID, out var item))
                     {
-                        block.Drop = item;
-                        block.DropIDFull = fullID;
-                        block.DropID = item.Id;
+                        block.Drop.Item = item;
+                       
                     }
                     else
                     {
-                        block.DropIDFull = block.Id_string;
-                        block.Drop = block.AsItem;
-                        block.DropID = block.Id;
-                        Debug.Error($"[GameSetLoader] Block <{block.Name}> has a wrong drop item! - {block.DropIDFull}. Selected itself as a drop");
+                        block.Drop.Item = block.AsItem;
+                       
+                        Debug.Error($"[GameSetLoader] Block <{block.Name}> has a wrong drop item! - {dropIdStr}. Selected itself as a drop");
                     }
 
                 }

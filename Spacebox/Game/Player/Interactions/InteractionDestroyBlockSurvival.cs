@@ -173,7 +173,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             if (Input.IsMouseButton(MouseButton.Left))
             {
                 
-                var blockData = GameAssets.GetBlockDataById(hit.block.BlockId);
+                var blockData = GameAssets.GetBlockDataById(hit.block.Id);
                 BlockMiningEffect.Enabled = true;
 
                 var effectPosition = hit.position + new Vector3(hit.normal.X, hit.normal.Y, hit.normal.Z) * 0.05f;

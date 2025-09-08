@@ -204,7 +204,7 @@ namespace Spacebox.Game.Generation
             else
             {
                 Mass = 0;
-                Debug.Error("SpaceEntity mass was negative!");
+                Debug.Error($"[SpaceEntity] Mass was negative! Id: {EntityID}");
             }
 
             sumPosCenterOfMass = Vector3.Zero;
@@ -342,7 +342,7 @@ namespace Spacebox.Game.Generation
 
         public bool TryPlaceBlockLocal(Vector3 localBlockPosition, Block block)
         {
-            if (block.BlockId == 0)
+            if (block.Id == 0)
                 return true;
             Vector3 worldBlockPos = PositionWorld + localBlockPosition;
             if (!IsPositionWithinEntitySize(worldBlockPos))
@@ -352,7 +352,7 @@ namespace Spacebox.Game.Generation
 
         public bool TryPlaceBlock(Vector3 worldPosition, Block block)
         {
-            if (block.BlockId == 0)
+            if (block.Id == 0)
                 return true;
             if (!IsPositionWithinEntitySize(worldPosition) || !IsPositionWithinGravityRadius(worldPosition))
                 return false;

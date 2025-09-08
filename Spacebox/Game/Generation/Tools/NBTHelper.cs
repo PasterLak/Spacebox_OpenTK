@@ -199,13 +199,13 @@ namespace Spacebox.Game.Generation.Tools
 
                         //var flatIndex = GetArrayIndex(x, y, z, SIZE);
 
-                        if (palette.TryGetValue(block.BlockId, out var paletteKey))
+                        if (palette.TryGetValue(block.Id, out var paletteKey))
                         {
                             listBlocks[indexIn1D] = paletteKey;
                         }
                         else
                         {
-                            palette.Add(block.BlockId, id);
+                            palette.Add(block.Id, id);
                             listBlocks[indexIn1D] = id;
                             id++;
                         }

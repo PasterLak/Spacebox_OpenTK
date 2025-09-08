@@ -26,14 +26,13 @@ namespace Spacebox.Game.Resource
         private readonly Vector2Byte[] _faceUVIndices = new Vector2Byte[7];
         private readonly Vector2[][] _faceUVs = new Vector2[7][];
 
-        public bool IsTransparent { get; set; } = false;
-        public Vector3 LightColor { get; set; } = Vector3.Zero;
+        public bool IsTransparent { get; private set; } = false;
+        public Vector3 LightColor { get; private set; } = Vector3.Zero;
+        public Direction BaseFrontDirection { get; private set; } = Direction.Up;
+       
 
         public BlockItem AsItem;
-        public Item Drop;
-        public string DropIDFull { get; set; } = "$self";
-        public short DropID { get; set; } = 0;
-        public byte DropQuantity { get; set; } = 1;
+        public ItemSlot Drop;
 
         public string SoundPlace { get; set; } = "blockPlaceDefault";
         public string SoundDestroy { get; set; } = "blockDestroyDefault";
@@ -67,17 +66,10 @@ namespace Spacebox.Game.Resource
             set => _faceUVs[6] = value;
         }
 
-        public BlockData()
-        {
-            for (int i = 0; i < 7; i++)
-            {
-                _faceTextures[i] = "";
-                _faceUVIndices[i] = new Vector2Byte(0, 1);
-            }
-        }
-
         public BlockData(string name, string type, Vector2Byte textureCoords, bool isTransparent = false, Vector3? lightColor = null)
         {
+            Drop = new ItemSlot(null, 0, 0);
+            Drop.Count = 0;
             Name = name;
             Type = type;
             IsTransparent = isTransparent;

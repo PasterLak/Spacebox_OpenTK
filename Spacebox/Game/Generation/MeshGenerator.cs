@@ -91,7 +91,7 @@ namespace Spacebox.Game.Generation
                         sumPosMass += new Vector3(x, y, z) * m;
 
                         var transformedVectors = BlockRotationHelper.GetTransformedFaceVectors(
-                            block.BaseFrontDirection,
+                            GameAssets.GetBaseFrontDirection(block.Id),
                             block.Direction,
                             block.Rotation
                         );
@@ -162,7 +162,7 @@ namespace Spacebox.Game.Generation
             faceVertices[2] = faceCenter + upVector + rightVector;
             faceVertices[3] = faceCenter + upVector - rightVector;
 
-            var faceUVs = GameAssets.GetBlockUVsById(block.BlockId, face);
+            var faceUVs = GameAssets.GetBlockUVsById(block.Id, face);
 
             var currentLightLevel = block.LightLevel / 15f;
             var currentLightColor = block.LightColor;

@@ -178,10 +178,12 @@ namespace Spacebox.Game.Resource
                 PowerToDrill = (byte)Math.Clamp(block.PowerToDrill, 0, byte.MaxValue),
                 Efficiency = Math.Max(0.1f, block.Efficiency),
                 Category = block.Category,
-                DropIDFull = string.IsNullOrWhiteSpace(block.Drop) ? "$self" : block.Drop,
-                DropQuantity = (byte)Math.Clamp(block.DropQuantity, 1, byte.MaxValue),
+               
                 Sides = block.Sides
             };
+
+            blockData.Drop.Item.Id_string = string.IsNullOrWhiteSpace(block.Drop) ? "$self" : block.Drop;
+            blockData.Drop.Count = (byte)Math.Clamp(block.DropQuantity, 1, byte.MaxValue);
 
             blockData.SetFaceTexture(Direction.Up, string.IsNullOrEmpty(block.Up) ? block.Sides : block.Up);
             blockData.SetFaceTexture(Direction.Down, string.IsNullOrEmpty(block.Down) ? block.Sides : block.Down);

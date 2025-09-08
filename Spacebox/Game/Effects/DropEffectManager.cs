@@ -44,11 +44,11 @@ namespace Spacebox.Game.Effects
 
         public void DestroyBlock(Vector3 position, Color3Byte color, Block block)
         {
-            var blockData = GameAssets.GetBlockDataById(block.BlockId);
+            var blockData = GameAssets.GetBlockDataById(block.Id);
 
-            if(blockData.Id == 0 || blockData.DropQuantity <= 0 ) return;
+            if(blockData.Id == 0 || blockData.Drop.Count <= 0 ) return;
 
-            var texture = GameAssets.ItemIcons[(short)blockData.DropID];
+            var texture = GameAssets.ItemIcons[(short)blockData.Drop.Item.Id];
             var dropEffect = GetOrCreateDropEffect();
 
             dropEffect.Initialize(
@@ -56,8 +56,8 @@ namespace Spacebox.Game.Effects
                 position + Vector3.One * 0.5f,
                 color,
                 texture,
-                blockData.Drop,
-                blockData.DropQuantity
+                blockData.Drop.Item,
+                blockData.Drop.Count
             );
 
             activeEffects.Add(dropEffect);
