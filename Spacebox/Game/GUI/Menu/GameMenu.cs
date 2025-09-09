@@ -87,10 +87,11 @@ namespace Spacebox.Game.GUI.Menu
             return null;
         }
 
-         
 
+        bool hide = false;
         public void Render()
         {
+            if(hide) return;
             if (currentWindowType == typeof(ControlsWindow) && windows.TryGetValue(currentWindowType, out var wnd1))
 
             {
@@ -391,12 +392,22 @@ namespace Spacebox.Game.GUI.Menu
                 modfolderName = modInfo?.FolderName ?? ""
             };
 
-            //Input.HideCursor();
+            Input.HideCursor();
+            hide = true;
+            IsVisible = false;
+            CenteredImageMenu.Hide();
+            CenteredText.SetText("Loading...");
+            CenteredText.Show();
+            
+            ColorOverlay.StartFade(FadeMode.FadeIn, new Vector3(0,0,0),  0.5f,0,1,0, () => {
 
-            if (multiplayer)
-                SceneManager.Load<MultiplayerScene, SpaceSceneArgs>(arg);
-            else
-                SceneManager.Load<LocalSpaceScene, SpaceSceneArgs>(arg);
+                if (multiplayer)
+                    SceneManager.Load<MultiplayerScene, SpaceSceneArgs>(arg);
+                else
+                    SceneManager.Load<LocalSpaceScene, SpaceSceneArgs>(arg);
+            });
+
+           
         }
 
         public void DeleteWorld(WorldInfo world)

@@ -197,14 +197,14 @@ namespace Spacebox.Scenes
 
         public override void Start()
         {
-            HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 0), 1);
+            ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 0, 0), 1);
             PrintHierarchy();
 
         }
 
         public override void OnGUI()
         {
-            HealthColorOverlay.OnGUI();
+            ColorOverlay.OnGUI();
         }
 
         public override void UnloadContent()

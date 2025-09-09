@@ -85,17 +85,23 @@ vec3 baseCol, vec3 ambientFinal)
             L.specular * spec) * atten * I;
 }
 
-vec3 accumulatePointLights(vec3 N, vec3 V, vec3 P, vec3 baseCol)
+vec3 accumulatePointLightsWithAmbient(vec3 N, vec3 V, vec3 P, vec3 baseCol, vec3 ambient)
 {
     vec3 sum = vec3(0.0);
     int count = lightsCount.point;
     if(count==0) return vec3(0);
 
-    vec3 ambientFinal = AMBIENT * baseCol ;
+    vec3 ambientFinal = ambient * baseCol ;
 
     for(int i = 0; i < count; ++i)
         sum += calcPointLight(pointLights[i], N, V, P, baseCol,ambientFinal);
     return sum;
+}
+
+vec3 accumulatePointLights(vec3 N, vec3 V, vec3 P, vec3 baseCol)
+{
+  
+    return accumulatePointLightsWithAmbient(N,V,P,baseCol, AMBIENT);
 }
 
 vec3 calcSpotLight(SpotLight L, vec3 N, vec3 V, vec3 P, vec3 baseCol, vec3 ambientFinal)
@@ -123,13 +129,13 @@ vec3 calcSpotLight(SpotLight L, vec3 N, vec3 V, vec3 P, vec3 baseCol, vec3 ambie
             L.specular * spec) * atten * spot * I;
 }
 
-vec3 accumulateSpotLights(vec3 N, vec3 V, vec3 P, vec3 baseCol)
+vec3 accumulateSpotLightsWithAmbient(vec3 N, vec3 V, vec3 P, vec3 baseCol, vec3 ambient)
 {
     vec3 sum = vec3(0.0);
      int count = lightsCount.spot;
      if(count==0) return vec3(0);
 
-     vec3 ambientFinal = AMBIENT * baseCol;
+     vec3 ambientFinal = ambient * baseCol;
     for(int i = 0; i < count; ++i){
 
         if(spotLights[i].intensity == 0.0) continue;
@@ -138,4 +144,9 @@ vec3 accumulateSpotLights(vec3 N, vec3 V, vec3 P, vec3 baseCol)
     }
         
     return sum;
+}
+
+vec3 accumulateSpotLights(vec3 N, vec3 V, vec3 P, vec3 baseCol)
+{
+    return accumulateSpotLightsWithAmbient(N,V,P,baseCol, AMBIENT);
 }

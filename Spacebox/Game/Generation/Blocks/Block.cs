@@ -39,12 +39,13 @@ namespace Spacebox.Game.Generation.Blocks
     {
         private long data;
 
-        // [0..11]   = BlockId (12 bit, short)
+        // [0..11]   = BlockId (12 bit) (max 4096 blocks)
         // [12..14]  = Direction (3 bit)
         // [15..22]  = Mass (8 bit)
         // [23..30]  = Durability (8 bit)
         // [31..34]  = Flags (4 bit)
-        //           = 35 bit
+        // [35..36]  = Rotation (2 bit)
+        //           = 37 bit
 
         public Vector3 Color { get; set; } = Vector3.One;
         public Color3Byte LightColor { get; set; } = Color3Byte.Black;

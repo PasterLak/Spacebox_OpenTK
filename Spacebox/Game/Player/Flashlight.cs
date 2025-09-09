@@ -33,7 +33,7 @@ namespace Spacebox.Game.Player
                 if (astronaut.IsAlive == false) return;
                 if (ToggleManager.OpenedWindowsCount > 0) return;
                 if (Debug.IsVisible) return;
-                if (Chat.IsVisible) return;
+                if (Chat.FocusInput) return;
 
                 audio.Play();
                 Enabled = !Enabled;

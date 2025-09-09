@@ -15,56 +15,68 @@ uniform mat4 model;
 out vec3 Normal;
 out vec3 FragPos;
 out vec2 TexCoords;
-
+out vec3 vPos;
 
 void main()
 {
-    gl_Position = vec4(aPosition, 1.0) * model * view * projection;
+    vec4 wp=vec4(aPosition,1.0)*model;
+    gl_Position = wp * view * projection;
     FragPos = vec3(vec4(aPosition, 1.0) * model);
 
     Normal =  aNormal;
     TexCoords = aTexCoord;
-   
+    vPos = wp.xyz;
 }
 
 --Frag
 
 
 #version 330 core
+#include "includes/lighting.fs"
 
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
+in vec3 vPos;
 
 layout(location = 0) out vec4 gColor;   
 layout(location = 1) out vec4 gNormal; 
 
 uniform sampler2D texture0;
+uniform float pointLightStrength = 0.5;
+uniform float spotLightStrength = 1.0;
 
 const vec3 lightDir = vec3(1,1,1);
-const vec3 lightColor = vec3(1,1,1); 
-const vec3 objectColor = vec3(1,1,1);
-
-const float shadows = 0.1;
+const vec3 lightColor = vec3(1,1,1);
+const float shadows = 0.2;
 
 void main()
 {
-    vec4 texColor = texture(texture0, TexCoords);
-    if(texColor.a < 0.1)
-        discard;
+   vec4 texColor = texture(texture0, TexCoords);
+   if(texColor.a < 0.1)
+       discard;
 
-    vec3 norm = normalize(Normal);
+   vec3 norm = normalize(Normal);
+   vec3 V = normalize(CAMERA_POS - vPos);
+   vec3 base = texColor.rgb;
 
-    vec3 lightDirection = normalize(lightDir);
-        float diff = max(dot(norm, lightDirection), shadows);
-        vec3 diffuse = diff * lightColor;
-        vec3 ambient = 0.1 * lightColor;
-        vec3  result = (ambient + diffuse) * objectColor * vec3(texColor);
-
-
-     //    gColor  =  vec4(vec3(gl_FragCoord.z), 1.0);
-    gColor = vec4(result, texColor.a);
-
-             
-    gNormal = vec4(norm * 0.5 + 0.5, 1.0); 
+   vec3 lightDirection = normalize(lightDir);
+   float diff = max(dot(norm, lightDirection), shadows);
+   vec3 shading = diff * lightColor;
+   
+   vec3 ambientBase = base * clamp(0.3 + AMBIENT * 0.6, 0.6, 1);
+   
+   vec3 directionalLight = shading * ambientBase;
+   
+   vec3 pointLight = accumulatePointLightsWithAmbient(norm, V, vPos, base, vec3(0.1)) * pointLightStrength;
+   vec3 spotLight = accumulateSpotLightsWithAmbient(norm, V, vPos, base, vec3(0.1)) * spotLightStrength;
+   
+   float shadowFactor = smoothstep(shadows, 1.0, diff);
+   pointLight *= shadowFactor;
+   spotLight *= shadowFactor;
+   
+   vec3 final = directionalLight + pointLight + spotLight;
+   
+   gColor = vec4(final, texColor.a);
+   gNormal = vec4(norm * 0.5 + 0.5, 1.0);
 }

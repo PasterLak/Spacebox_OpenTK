@@ -31,7 +31,7 @@ namespace Spacebox.Game.GUI
                     Time.TimeSize = 0;
                     saveButtonText = "Save";
 
-                    HealthColorOverlay.SetActive(new Vector3(0, 0, 0), 0.7f);
+                    ColorOverlay.FadeOut(new Vector3(0, 0, 0), 0.7f);
                 }
                 else
                 {

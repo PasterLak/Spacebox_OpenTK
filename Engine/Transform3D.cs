@@ -11,8 +11,8 @@ namespace Engine
         private Matrix4 _cached;
 
         protected Node3D? Owner { get; set; }
-        
-      
+
+
         public virtual Vector3 Position
         {
             get => _position;
@@ -58,7 +58,7 @@ namespace Engine
                    ? local * Owner.Parent.GetModelMatrix()
                    : local;
         }
- 
+
         public void ResetTransform()
         {
             _position = Vector3.Zero;
@@ -76,6 +76,14 @@ namespace Engine
                 Owner.Children[i].MarkDirty();
         }
 
+        public Quaternion RotationQuaternions() // ?
+        {
+            return Quaternion.FromEulerAngles(
+                MathHelper.DegreesToRadians(_rotation.X),
+                MathHelper.DegreesToRadians(_rotation.Y),
+                MathHelper.DegreesToRadians(_rotation.Z));
+        }
+
         private Matrix4 BuildLocalMatrix()
         {
             if (!_dirty) return _cached;
@@ -83,7 +91,7 @@ namespace Engine
             var translation = Matrix4.CreateTranslation(_position);
             var rotX = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(_rotation.X));
             var rotY = Matrix4.CreateRotationY(MathHelper.DegreesToRadians(_rotation.Y));
-            var rotZ = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(_rotation.Z));
+            var rotZ = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(_rotation.Z)); 
             var rotation = rotZ * rotY * rotX;
             var scale = Owner?.Resizable == false ? Matrix4.Identity : Matrix4.CreateScale(_scale);
 

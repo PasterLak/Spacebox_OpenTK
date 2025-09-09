@@ -52,6 +52,8 @@ namespace Spacebox.Game
             itemCamera.DepthFar = 100f;
             animatedOffset = EndPosition;
 
+
+
             Window.OnResized += Resize;
         }
         ~ItemModel()
@@ -149,12 +151,11 @@ namespace Spacebox.Game
 
             if (UseMainCamera && Camera.Main != null)
             {
-               
+                Position = Camera.Main.PositionWorld;
                 model =
                      Matrix4.CreateTranslation(animatedOffset) *  swayMatrix *
-                     Matrix4.CreateTranslation(RenderSpace.ToRender(Position)) *
-                     Matrix4.CreateRotationY(additionalRotationAngle) *
-                      Matrix4.CreateTranslation(Camera.Main.Position);
+                     Matrix4.CreateTranslation(Camera.Main.CameraRelativeRender ?  RenderSpace.ToRender(Position) : Position) *
+                     Matrix4.CreateRotationY(additionalRotationAngle );
                 var cam = Camera.Main as Astronaut;
 
                 Material.Apply(model);

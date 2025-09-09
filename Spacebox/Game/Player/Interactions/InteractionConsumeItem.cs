@@ -71,14 +71,14 @@ public class InteractionConsumeItem : InteractionMode
 
                 if (consumable.HealAmount > 0)
                 {
-                    HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 1, 0), 0.2f);
+                    ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 1, 0), 0.2f);
                     player.Effects.PlayEffect(PlayerEffectType.Heal);
                 }
                     
 
                 if (consumable.PowerAmount > 0)
                 {
-                    HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 1), 0.15f);
+                    ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 0, 1), 0.15f);
                     player.Effects.PlayEffect(PlayerEffectType.Charge);
                 }
                  

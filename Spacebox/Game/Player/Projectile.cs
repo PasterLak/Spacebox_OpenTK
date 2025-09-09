@@ -68,8 +68,10 @@ namespace Spacebox.Game.Player
             lineRenderer.AddPoint(Vector3.Zero);
             lineRenderer.AddPoint(ray.Direction * parameters.Length);
 
+
             camera = Camera.Main;
 
+          
             if (ricochetSound == null)
             {
 

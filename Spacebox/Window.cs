@@ -192,7 +192,7 @@ namespace Spacebox
         {
             FramebufferCapture.SaveScreenshot(this);
             screenShotAudio.Play();
-            HealthColorOverlay.SetActive(new System.Numerics.Vector3(1, 1, 1), 0.2f);
+            ColorOverlay.FadeOut(new System.Numerics.Vector3(1, 1, 1), 0.2f);
         }
 
         static readonly Prof.Token T_VisualDebug = Prof.RegisterTimer("Visual Debug");

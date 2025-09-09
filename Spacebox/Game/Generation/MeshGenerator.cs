@@ -121,7 +121,7 @@ namespace Spacebox.Game.Generation
             _chunk.Mass = mass;
             _chunk.SumPosMass = sumPosMass;
 
-            Debug.Log("Generated: " + _chunk.PositionIndex);
+          
             return mesh;
         }
         private void AddRotatedFace(Block block, Face face, byte fIndex, sbyte x, sbyte y, sbyte z,

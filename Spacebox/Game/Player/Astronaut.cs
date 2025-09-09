@@ -96,7 +96,7 @@ namespace Spacebox.Game.Player
             Flashlight = new Flashlight(this);
 
             AddChild(Flashlight);
-            Flashlight.Position = new Vector3(0, 0, -0.3f);
+            Flashlight.Position = new Vector3(0, 0, 0f); // -0.3
             Flashlight.Rotation = Vector3.Zero;
 
 
@@ -116,8 +116,8 @@ namespace Spacebox.Game.Player
             itemInHand.SetScale(0.6f);
             itemInHand.Position = new Vector3(0.35f, -0.47f, -0.25f);
 
-            Flashlight.CutOff = 25;
-            Flashlight.OuterCutOff = 45;
+            Flashlight.CutOff = 20;
+            Flashlight.OuterCutOff = 35;
 
 
             /*var point = AddChild(new PointLight());
@@ -356,7 +356,7 @@ namespace Spacebox.Game.Player
                 Effects.PlayEffect(PlayerEffectType.Damage);
             if (health.Value > 0)
             {
-                HealthColorOverlay.SetActive(new System.Numerics.Vector3(1, 0, 0), 0.1f + 1 / (10 - Math.Min(damage, 6)));
+                ColorOverlay.FadeOut(new System.Numerics.Vector3(1, 0, 0), 0.1f + 1 / (10 - Math.Min(damage, 6)));
                 HitImage.Show();
             }
             else

@@ -60,7 +60,7 @@ namespace Spacebox.Scenes
 
             SceneAssetsPreloader.Preload(param, this, localPlayer);
 
-            HealthColorOverlay.SetActive(new System.Numerics.Vector3(0, 0, 0), 1);
+            ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 0, 0), 1);
 
             BlackScreenOverlay.IsEnabled = true;
             BlackScreenOverlay.OnGUI();
@@ -341,7 +341,7 @@ namespace Spacebox.Scenes
         public override void OnGUI()
         {
         
-            HealthColorOverlay.OnGUI();
+            ColorOverlay.OnGUI();
             CenteredText.OnGUI();
 
             radarWindow.OnGUI();

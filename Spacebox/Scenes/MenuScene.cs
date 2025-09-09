@@ -135,7 +135,7 @@ namespace Spacebox.Scenes
             base.Start();
             CenteredImageMenu.ShowText = true;
             GameMenu.IsVisible = false;
-            HealthColorOverlay.SetActive(new System.Numerics.Vector3(0,0,0), 1);
+            ColorOverlay.FadeOut(new System.Numerics.Vector3(0,0,0), 1);
             VerticalLinks.Init();
           
             // _ = WorkerPoolTest.RunTest();
@@ -180,12 +180,13 @@ namespace Spacebox.Scenes
             BlackScreenOverlay.OnGUI();
             
             CenteredImageMenu.Draw();
-            HealthColorOverlay.OnGUI();
+           
             VerticalLinks.Draw();
             menu.Render();
             devLogWindow.Render();
             //canvas.Draw();
             // ImGui.PopFont();
+            ColorOverlay.OnGUI();
         }
 
         public override void UnloadContent()

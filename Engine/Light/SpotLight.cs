@@ -20,8 +20,8 @@ namespace Engine.Light
 
         private float _cutOff = MathF.Cos(MathHelper.DegreesToRadians(12.5f));
         private float _outerCutOff = MathF.Cos(MathHelper.DegreesToRadians(17.5f));
-        public float CutOff { get => _cutOff; set => MathF.Cos(MathHelper.DegreesToRadians(value)); }
-        public float OuterCutOff { get => _outerCutOff; set => MathF.Cos(MathHelper.DegreesToRadians(value)); }
+        public float CutOff { get => _cutOff; set => _cutOff = MathF.Cos(MathHelper.DegreesToRadians(value)); }
+        public float OuterCutOff { get => _outerCutOff; set => _outerCutOff = MathF.Cos(MathHelper.DegreesToRadians(value)); }
 
         public float Constant { get; set; } = 1.0f;
         public float Linear { get; set; } = 0.09f;
