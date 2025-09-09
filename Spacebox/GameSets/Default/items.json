@@ -189,7 +189,13 @@
         "AnimationSpeed": 0.25,
         "PowerUsage": 30,
         "Projectile": "p_ar",
-        "ShotSound": "ar"
+        "ShotSound": "ar",
+         "GlowColor": {
+            "r": 163,
+            "g": 84,
+            "b": 211
+        }
+        
     },
     {
         "ID": "aluminium_drill_bit",
@@ -249,7 +255,12 @@
         "Name": "Uranium Ingot",
         "Sprite": "uranIngot",
         "MaxStack": 64,
-        "ModelDepth": 1.0
+        "ModelDepth": 1.0,
+         "GlowColor": {
+            "r": 50,
+            "g": 255,
+            "b": 50
+        }
     },
     {
         "ID": "obscurium_ingot",
@@ -298,7 +309,13 @@
         "Name": "Uranium Dust",
         "Sprite": "uraniumDust",
         "MaxStack": 64,
-        "ModelDepth": 2
+        "ModelDepth": 2,
+        
+        "GlowColor": {
+            "r": 50,
+            "g": 255,
+            "b": 50
+        }
     },
     {
         "ID": "cobalt_lens",
@@ -388,7 +405,12 @@
         "Category": "items",
         "Sprite": "uranRods",
         "MaxStack": 64,
-        "ModelDepth": 2.0
+        "ModelDepth": 2.0,
+         "GlowColor": {
+            "r": 50,
+            "g": 255,
+            "b": 50
+        }
     },
     {
         "ID": "water",

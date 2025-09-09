@@ -104,7 +104,7 @@ namespace Spacebox.Game.GUI
             if (SelectedSlot?.HasItem == true && !(SelectedSlot.Item is BlockItem))
             {
                 ItemModel = GameAssets.ItemModels[SelectedSlot.Item.Id];
-
+           
                 if (!hadModel) ItemModel.PlayDrawAnimation();
                 else
                 {
@@ -279,6 +279,8 @@ namespace Spacebox.Game.GUI
                     _lastSelectedItem = SelectedSlot.Item;
                     _lastSelectedCount = SelectedSlot.Count;
                 }
+
+                Player.SetItemLight(SelectedSlot.Item);
 
                 if (SelectedSlot.HasItem)
                 {

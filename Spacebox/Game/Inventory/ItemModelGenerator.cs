@@ -12,6 +12,7 @@ namespace Spacebox.Game
 
         public static ItemModel GenerateModelFromAtlas(
             Texture2D atlasTexture,
+            Texture2D emission,
             int cellX,
             int cellY,
             float modelSize = 1f,
@@ -21,12 +22,16 @@ namespace Spacebox.Game
         {
             CellSize = 32;
             var cellTexture = UVAtlas.GetBlockTexture(atlasTexture, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
+            var cellTexture2 = UVAtlas.GetBlockTexture(emission, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
+
+            cellTexture2.FlipX();
             var mesh = BuildItemModel(cellTexture, modelSize, modelDepth, drawOnlyVisibleSides);
-            return ItemModelFromMesh(cellTexture, mesh, isAnimated);
+            return ItemModelFromMesh(cellTexture, cellTexture2, mesh, isAnimated);
         }
 
         public static ItemModel GenerateModelFromTexture(
             Texture2D texture,
+            Texture2D emission,
             float modelSize = 1f,
             float modelDepth = 0.2f,
             bool isAnimated = false,
@@ -34,11 +39,12 @@ namespace Spacebox.Game
         {
             CellSize = 1;
             var mesh = BuildItemModel(texture, modelSize, modelDepth, drawOnlyVisibleSides);
-            return ItemModelFromMesh(texture, mesh, isAnimated);
+            return ItemModelFromMesh(texture, emission, mesh, isAnimated);
         }
 
         public static Mesh GenerateMeshFromTexture(
             Texture2D texture,
+          
             float modelDepth = 0.2f,
             bool drawOnlyVisibleSides = false)
         {
@@ -46,18 +52,20 @@ namespace Spacebox.Game
             return BuildItemModel(texture, 1f / texture.Width, modelDepth, drawOnlyVisibleSides);
         }
 
-        private static ItemModel ItemModelFromMesh(Texture2D cellTexture, Mesh mesh, bool isAnimated)
+        private static ItemModel ItemModelFromMesh(Texture2D cellTexture,Texture2D emission, Mesh mesh, bool isAnimated)
         {
-            return isAnimated ? new AnimatedItemModel(mesh, cellTexture) : new ItemModel(mesh, cellTexture);
+            return isAnimated ? new AnimatedItemModel(mesh, cellTexture, emission) : new ItemModel(mesh, cellTexture, emission);
         }
 
         private static Mesh BuildItemModel(
             Texture2D cellTexture,
+          
             float modelSize,
             float modelDepth,
             bool drawOnlyVisibleSides)
         {
             cellTexture.FlipX();
+          
             CellSize = cellTexture.Width;
 
             var pixels = cellTexture.GetPixelData();

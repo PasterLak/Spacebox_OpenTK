@@ -89,6 +89,7 @@ namespace Spacebox.Game
             bool isAnimated = item is DrillItem || item is WeaponItem;
             ItemModel model = ItemModelGenerator.GenerateModelFromAtlas(
                 GameAssets.ItemsTexture,
+                 GameAssets.EmissionItems,
                 coordX,
                 coordY,
                 0.004f,

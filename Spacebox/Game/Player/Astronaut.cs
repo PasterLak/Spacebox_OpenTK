@@ -1,5 +1,6 @@
 ﻿using Engine;
 using Engine.Components;
+using Engine.Light;
 using Engine.Physics;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -60,6 +61,8 @@ namespace Spacebox.Game.Player
         public PlayerEffects Effects { get; private set; } = new PlayerEffects();
         public Vector3 SpawnPosition { get; set; }
 
+        
+
         public GameMode GameMode
         {
             get { return _gameMode; }
@@ -73,6 +76,8 @@ namespace Spacebox.Game.Player
             get => _collisionEnabled;
             set => _collisionEnabled = value;
         }
+
+        public PointLight ItemLight { get; private set; }
 
         private Toggi toggle;
         ItemWorldModel itemInHand;
@@ -99,6 +104,15 @@ namespace Spacebox.Game.Player
             Flashlight.Position = new Vector3(0, 0, 0f); // -0.3
             Flashlight.Rotation = Vector3.Zero;
 
+             ItemLight = new PointLight();
+            ItemLight.Diffuse = new Vector3(0.2f, 1, 0.2f);
+            ItemLight.Specular = new Vector3(0f);
+            ItemLight.Intensity = 1;
+            ItemLight.Range = 5f;
+            ItemLight.Position = new Vector3(0, 0, -0.2f);
+            ItemLight.Enabled = false;
+
+            AddChild(ItemLight);
 
             CreateModel(0);
             GameMode = GameMode.Creative;
@@ -188,6 +202,20 @@ namespace Spacebox.Game.Player
             _gameModeBase.OnEnable();
             PanelUI.ResetLastSelected();
             PanelUI.SetSelectedSlot(0);
+        }
+
+        public void SetItemLight(Item? item)
+        {
+           
+            if (item != null && item.IsLuminous)
+            {
+                ItemLight.Diffuse = item.Color.ToVector3();
+                ItemLight.Enabled = true;
+            }
+            else
+            {
+                ItemLight.Enabled = false;
+            }
         }
 
 

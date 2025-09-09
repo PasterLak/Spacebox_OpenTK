@@ -116,7 +116,7 @@ namespace Spacebox.Scenes
 
 
             World.LoadWorldInfo(SceneArgs.worldName);
-            blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.LightAtlas, localPlayer);
+            blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.EmissionBlocks, localPlayer);
              world = new World(localPlayer, blockMaterial);
             AttachComponent(world);
             world.Load();

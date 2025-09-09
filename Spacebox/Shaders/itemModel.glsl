@@ -43,6 +43,7 @@ layout(location = 0) out vec4 gColor;
 layout(location = 1) out vec4 gNormal; 
 
 uniform sampler2D texture0;
+uniform sampler2D texture1;
 uniform float pointLightStrength = 0.5;
 uniform float spotLightStrength = 1.0;
 
@@ -64,7 +65,7 @@ void main()
    float diff = max(dot(norm, lightDirection), shadows);
    vec3 shading = diff * lightColor;
    
-   vec3 ambientBase = base * clamp(0.3 + AMBIENT * 0.6, 0.6, 1);
+   vec3 ambientBase = base * clamp(0.3 + AMBIENT * 0.6, 0.5, 1);
    
    vec3 directionalLight = shading * ambientBase;
    
@@ -74,8 +75,15 @@ void main()
    float shadowFactor = smoothstep(shadows, 1.0, diff);
    pointLight *= shadowFactor;
    spotLight *= shadowFactor;
+
    
-   vec3 final = directionalLight + pointLight + spotLight;
+   
+   vec3 combined = directionalLight + pointLight + spotLight;
+
+   vec4 emission = texture(texture1, TexCoords);
+    vec3 final = mix(combined, base, emission.a);
+
+
    
    gColor = vec4(final, texColor.a);
    gNormal = vec4(norm * 0.5 + 0.5, 1.0);

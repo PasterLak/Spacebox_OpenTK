@@ -7,17 +7,17 @@ namespace Spacebox.Game.Resource
     {
         private Astronaut player;
 
-        private Texture2D? _mainTexture;
+        private Texture2D? _emission;
 
         public Texture2D? EmissionTexture
         {
-            get => _mainTexture;
+            get => _emission;
             set
             {
-                _mainTexture = value;
-                if (_mainTexture != null)
+                _emission = value;
+                if (_emission != null)
                 {
-                    ReplaceTexture("textureAtlas", _mainTexture);
+                    ReplaceTexture("textureAtlas", _emission);
                 }
             }
         }
@@ -28,13 +28,6 @@ namespace Spacebox.Game.Resource
             RenderMode = RenderMode.Cutout;
             EmissionTexture = emissionAtlas;
             this.player = player;
-
-            AddTexture("textureAtlas", EmissionTexture);
-            Shader.Use();
-            Shader.SetInt("texture0", 0);
-            Shader.SetInt("textureAtlas", 1);
-
-       
 
             
         }

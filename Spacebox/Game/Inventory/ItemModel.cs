@@ -1,5 +1,6 @@
-﻿using OpenTK.Mathematics;
-using Engine;
+﻿using Engine;
+using Engine.Light;
+using OpenTK.Mathematics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 
@@ -26,6 +27,7 @@ namespace Spacebox.Game
         private Matrix4 model;
 
         public ItemMaterial Material { get; private set; }
+
         private Camera itemCamera;
         public bool UseMainCamera { get; set; } = false;
 
@@ -37,13 +39,13 @@ namespace Spacebox.Game
 
         private Vector3 currentSwayRotation = Vector3.Zero;
 
-        public ItemModel(Mesh mesh, Texture2D texture)
+        public ItemModel(Mesh mesh, Texture2D texture, Texture2D emission)
         {
             Mesh = mesh;
          
             texture.FilterMode = FilterMode.Nearest;
 
-            Material = new ItemMaterial(texture);
+            Material = new ItemMaterial(texture, emission);
 
             itemCamera = new Camera360Base(Vector3.Zero, false);
             itemCamera.AspectRatio = Window.Instance.GetAspectRatio();
@@ -52,8 +54,7 @@ namespace Spacebox.Game
             itemCamera.DepthFar = 100f;
             animatedOffset = EndPosition;
 
-
-
+          
             Window.OnResized += Resize;
         }
         ~ItemModel()

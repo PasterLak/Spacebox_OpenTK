@@ -339,13 +339,27 @@ namespace Spacebox.Game.Resource
                 {
                     string type = "item";
                     string idString = "";
-
+                    Color3Byte color = new Color3Byte();
                     if (itemElement.TryGetProperty("Type", out JsonElement typeElement))
                     {
                         type = typeElement.GetString().ToLower();
                     }
 
-                    if(itemElement.TryGetProperty("ID", out JsonElement idElement))
+                    try
+                    {
+                        if (itemElement.TryGetProperty("GlowColor", out JsonElement t))
+                        {
+                            color = t.Deserialize<Color3Byte>();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Error($"[GameSetLoader] Item GlowColor: " + ex);
+                        color = Color3Byte.Zero;
+                    }
+                    
+
+                    if (itemElement.TryGetProperty("ID", out JsonElement idElement))
                     {
                         idString = idElement.GetString();
                         idString = ValidateIdString(ModInfo.ModId, idString);
@@ -398,7 +412,8 @@ namespace Spacebox.Game.Resource
                         {
                             registeredItem.Description = v.GetString();
                         }
-                       
+
+                        registeredItem.Color = color;
                     }
                 }
 

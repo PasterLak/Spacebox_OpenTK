@@ -28,9 +28,9 @@ namespace Spacebox.Game.Commands
             {
                 GameAssets.ItemsTexture.SaveToPng("Debug/items.png", true);
             }
-            if (GameAssets.LightAtlas != null)
+            if (GameAssets.EmissionBlocks != null)
             {
-                GameAssets.LightAtlas.SaveToPng("Debug/emissions.png", true);
+                GameAssets.EmissionBlocks.SaveToPng("Debug/emissions.png", true);
             }
 
         }

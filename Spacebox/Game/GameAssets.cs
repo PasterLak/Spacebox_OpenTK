@@ -16,7 +16,8 @@ namespace Spacebox.Game
 
         public static Texture2D BlocksTexture { get; set; }
         public static Texture2D ItemsTexture { get; set; }
-        public static Texture2D LightAtlas { get; set; }
+        public static Texture2D EmissionBlocks { get; set; }
+        public static Texture2D EmissionItems { get; set; }
         public static Texture2D DustTexture { get; set; }
 
         public static LootConfig LootConfig { get; set; }
@@ -251,7 +252,7 @@ namespace Spacebox.Game
         {
             BlocksTexture?.Dispose();
             ItemsTexture?.Dispose();
-            LightAtlas?.Dispose();
+            EmissionBlocks?.Dispose();
             DustTexture?.Dispose();
             foreach (var texture in ItemIcons.Values)
                 texture.Dispose();

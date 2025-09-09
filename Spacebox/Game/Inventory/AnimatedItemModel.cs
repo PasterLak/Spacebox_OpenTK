@@ -9,7 +9,7 @@ namespace Spacebox.Game
     {
 
         public Animator Animator { get; private set; }
-        public AnimatedItemModel(Mesh mesh, Texture2D texture) : base(mesh, texture)
+        public AnimatedItemModel(Mesh mesh, Texture2D texture, Texture2D emission) : base(mesh, texture, emission)
         {
             Animator = new Animator(this);
 
