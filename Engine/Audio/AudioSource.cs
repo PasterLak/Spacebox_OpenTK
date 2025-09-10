@@ -14,7 +14,20 @@ namespace Engine.Audio
         private Thread playbackThread;
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-        public Vector3 Position = new Vector3(0, 0, 0);
+        private Vector3 _position = Vector3.Zero;
+        public Vector3 Position
+        {
+            get => _position;
+            set
+            {
+                _position = value;
+                if (!isDisposed)
+                {
+                    AL.Source(handle, ALSource3f.Position, value.X, value.Y, value.Z);
+                    CheckALError("Setting position");
+                }
+            }
+        }
         public bool IsPlaying => isPlaying;
 
         public bool IsLooped
@@ -55,6 +68,29 @@ namespace Engine.Audio
             }
         }
 
+    
+        public void Setup3D(float referenceDistance = 1.0f, float maxDistance = 100.0f, float rolloffFactor = 1.0f)
+        {
+            if (isDisposed) return;
+
+            if (Clip.IsStereo())
+            {
+                Debug.Error("[AudioSource] The sound has 2 channels (stereo). It is recommended to use 1 channel (mono) for 3D sound! File:" + Clip.FileFullPath);
+            }
+
+           
+            AL.Source(handle, ALSourceb.SourceRelative, false); 
+            AL.Source(handle, ALSourcef.ReferenceDistance, referenceDistance);
+            AL.Source(handle, ALSourcef.MaxDistance, maxDistance);
+            AL.Source(handle, ALSourcef.RolloffFactor, rolloffFactor);
+          
+
+            CheckALError("Setting up 3D audio");
+
+
+        }
+
+  
         public void SetPitchByValue(float value, float minValue, float maxValue, float minPitch = 0.5f, float maxPitch = 2.0f)
         {
             if (minValue == maxValue) return;
@@ -77,22 +113,22 @@ namespace Engine.Audio
 
             this.Clip = clip;
             clip.AudioSource = this;
-           // Debug.Log("[AudioSource] Created AudioSource for clip: " + clip.Name);
+     
             handle = AL.GenSource();
-            //Debug.Log("[AudioSource] Generated OpenAL source with handle: " + handle);
+ 
             if (!clip.IsStreaming)
             {
                 AL.Source(handle, ALSourcei.Buffer, clip.Buffer);
                 AL.Source(handle, ALSourcef.Gain, _volume);
                 AL.Source(handle, ALSource3f.Position, Position.X, Position.Y, Position.Z);
-                //Debug.Error("[AudioSource] Bound buffer " + clip.Buffer + " to source " + handle);
+            
                 CheckALError("Initializing AudioSource");
             }
             else
             {
                 AL.Source(handle, ALSourcef.Gain, _volume);
                 AL.Source(handle, ALSource3f.Position, Position.X, Position.Y, Position.Z);
-                //Debug.Error("[AudioSource] Prepared streaming AudioSource with handle: " + handle);
+          
                 CheckALError("Initializing streaming AudioSource");
             }
         }
@@ -170,6 +206,7 @@ namespace Engine.Audio
 
         public void SetVolumeByDistance(float currentDistance, float maxDistance)
         {
+            return;
             if (currentDistance <= 0)
             {
                 Volume = 1f;

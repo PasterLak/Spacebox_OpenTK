@@ -23,6 +23,8 @@ namespace Engine.Audio
             }
             byte[] data = new byte[shortList.Count * 2];
             Buffer.BlockCopy(shortList.ToArray(), 0, data, 0, data.Length);
+
+          
             return (data, vorbis.Channels, 16, vorbis.SampleRate);
         }
     }

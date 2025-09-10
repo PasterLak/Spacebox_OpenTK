@@ -42,6 +42,8 @@ namespace Engine.Audio
 
                 Buffer = SoundLoader.LoadSound(FileFullPath, out sampleRate);
 
+               
+
             }
             else
             {
@@ -49,6 +51,29 @@ namespace Engine.Audio
             }
 
 
+        }
+
+        public bool IsStereo()
+        {
+            try
+            {
+                AL.GetBuffer(Buffer, ALGetBufferi.Channels, out int channels);
+                AL.GetBuffer(Buffer, ALGetBufferi.Frequency, out int frequency);
+
+                if (channels > 1)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Error("[AudioClip] Error getting channels and frequency: " + FileFullPath);
+            }
+            return false;
         }
 
 

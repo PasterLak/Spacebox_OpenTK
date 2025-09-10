@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Audio;
 using Engine.Components;
 using Engine.Light;
 using Engine.Physics;
@@ -139,8 +140,20 @@ namespace Spacebox.Game.Player
             var damageTexture = Resources.Load<Texture2D>("Resources/Textures/damageEffect.png");
             damageTexture.FilterMode = FilterMode.Nearest;
         
+
             AddChild(Effects);
 
+            var audioListener = AttachComponent(new AudioListener());
+            audioListener.DistanceModel = DistanceModel.ExponentDistanceClamped;
+            audioListener.DopplerFactor = 3;
+            audioListener.SpeedOfSound = 1000f;
+            audioListener.Gain = 0.9f;
+
+            OnMoved += (a) =>
+            {
+                audioListener.Velocity = InertiaController.Velocity;
+            };
+            
             DeathScreen.OnRespawn += Revive;
 
             Flashlight.OnEnabledChanged += (b) => { PanelUI.SetFlashlight(this); };
