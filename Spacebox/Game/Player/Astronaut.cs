@@ -105,7 +105,7 @@ namespace Spacebox.Game.Player
             ItemLight.Specular = new Vector3(0f);
             ItemLight.Intensity = 1;
             ItemLight.Range = 5f;
-            ItemLight.Position = new Vector3(0, 0, -0.2f);
+            ItemLight.Position = new Vector3(0, 0, 0);
             ItemLight.Enabled = false;
 
             AddChild(ItemLight);
@@ -202,10 +202,10 @@ namespace Spacebox.Game.Player
             PanelUI.SetSelectedSlot(0);
         }
 
-        public void SetItemLight(Item? item)
+        public void SetItemLight(ItemSlot? slot)
         {
-           
-            if (item != null && item.IsLuminous)
+            var item = slot.Item;
+            if (slot != null && item != null && slot.Count > 0 && item.IsLuminous)
             {
                 ItemLight.Diffuse = item.Color.ToVector3();
                 ItemLight.Enabled = true;
@@ -304,7 +304,7 @@ namespace Spacebox.Game.Player
 #if DEBUG
             if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.R))
             {
-                //CameraRelativeRender = !CameraRelativeRender;
+               
             }
 
             if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.U))
@@ -394,6 +394,8 @@ namespace Spacebox.Game.Player
 
         private void Death(DeathCase? deathCase = null)
         {
+            if (!IsAlive) return;
+
             IsAlive = false;
             InertiaController.Reset();
             FOV = 110;
@@ -409,6 +411,7 @@ namespace Spacebox.Game.Player
             CurrentInteraction?.OnDisable();
             if (deathCase != null)
                 DeathScreen.Show(deathCase);
+
             else
 
                 DeathScreen.Show(new DeathCase(""));

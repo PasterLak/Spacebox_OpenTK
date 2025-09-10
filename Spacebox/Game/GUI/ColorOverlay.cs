@@ -24,6 +24,7 @@ namespace Spacebox.Game.GUI
         private static Vector3 _color = Vector3.One;
         private static FadeMode _fadeMode = FadeMode.None;
         private static Action _onComplete;
+        private static Action<float> _onUpdate;
         private static float _holdDuration = 0f;
         private static float _holdElapsed = 0f;
         private static bool _isHolding = false;
@@ -32,7 +33,7 @@ namespace Spacebox.Game.GUI
         public static bool IsActive => _isActive;
 
         public static void StartFade(FadeMode mode, Vector3 color, float duration = 1f,
-            float startAlpha = 0f, float endAlpha = 1f, float holdDuration = 0f, Action onComplete = null)
+            float startAlpha = 0f, float endAlpha = 1f, float holdDuration = 0f, Action onComplete = null, Action<float> onUpdate = null)
         {
             if (mode == FadeMode.None) return;
 
@@ -41,6 +42,7 @@ namespace Spacebox.Game.GUI
             _duration = duration;
             _holdDuration = holdDuration;
             _onComplete = onComplete;
+            _onUpdate = onUpdate;
             _elapsedTime = 0f;
             _holdElapsed = 0f;
             _isHolding = false;
@@ -67,19 +69,19 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void FadeOut(Vector3 color, float fromAlpha = 1f, float duration = 1f, Action onComplete = null)
+        public static void FadeOut(Vector3 color, float fromAlpha = 1f, float duration = 1f, Action onComplete = null, Action<float> onUpdate = null)
         {
-            StartFade(FadeMode.FadeOut, color, duration, 0f, fromAlpha, 0f, onComplete);
+            StartFade(FadeMode.FadeOut, color, duration, 0f, fromAlpha, 0f, onComplete, onUpdate);
         }
 
-        public static void FadeIn(Vector3 color, float toAlpha = 1f, float duration = 1f, Action onComplete = null)
+        public static void FadeIn(Vector3 color, float toAlpha = 1f, float duration = 1f, Action onComplete = null, Action<float> onUpdate = null)
         {
-            StartFade(FadeMode.FadeIn, color, duration, 0f, toAlpha, 0f, onComplete);
+            StartFade(FadeMode.FadeIn, color, duration, 0f, toAlpha, 0f, onComplete, onUpdate);
         }
         public static void StartFade(FadeMode mode, OpenTK.Mathematics.Vector3 color, float duration = 1f,
-            float startAlpha = 0f, float endAlpha = 1f, float holdDuration = 0f, Action onComplete = null)
+            float startAlpha = 0f, float endAlpha = 1f, float holdDuration = 0f, Action onComplete = null, Action<float> onUpdate = null)
         {
-            StartFade(mode, color.ToSystemVector3(), duration, startAlpha, endAlpha, holdDuration, onComplete);
+            StartFade(mode, color.ToSystemVector3(), duration, startAlpha, endAlpha, holdDuration, onComplete, onUpdate);
         }
 
         public static void Stop()
@@ -90,12 +92,14 @@ namespace Spacebox.Game.GUI
             var callback = _onComplete;
             _onComplete = null;
             callback?.Invoke();
+            _onUpdate = null;
         }
 
         public static void OnGUI()
         {
             if (!_isEnabled || !_isActive) return;
 
+           
             UpdateFade();
 
             ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
@@ -121,6 +125,7 @@ namespace Spacebox.Game.GUI
 
         private static void UpdateFade()
         {
+            
             if (_isHolding)
             {
                 _holdElapsed += Time.Delta;
@@ -140,7 +145,7 @@ namespace Spacebox.Game.GUI
 
             _elapsedTime += Time.Delta;
             float progress = Math.Min(_elapsedTime / _duration, 1f);
-
+            _onUpdate?.Invoke(progress);
             switch (_fadeMode)
             {
                 case FadeMode.FadeIn:

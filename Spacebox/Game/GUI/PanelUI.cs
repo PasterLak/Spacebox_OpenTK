@@ -58,6 +58,7 @@ namespace Spacebox.Game.GUI
             _lastSelectedCount = 0;
         }
 
+         
 
         private static void OnStorageDataWasChanged(Storage storage)
         {
@@ -291,11 +292,14 @@ namespace Spacebox.Game.GUI
                     _lastSelectedCount = SelectedSlot.Count;
                 }
 
+                Player.SetItemLight(SelectedSlot);
+                
 
-                if (SelectedSlot.HasItem)
+
+                if (SelectedSlot.HasItem && SelectedSlot.Item != null)
                 {
                     _time = TimeToHideItemName;
-                    Player.SetItemLight(SelectedSlot.Item);
+                    
 
                     if (SelectedSlot.Item.Description != "")
                     {

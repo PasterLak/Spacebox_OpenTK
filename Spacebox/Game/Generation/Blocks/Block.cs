@@ -60,6 +60,7 @@ namespace Spacebox.Game.Generation.Blocks
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
+               
                 long v = ((long)value & 0b11) << 35;
                 data = (data & ~(0b11L << 35)) | v;
             }
@@ -124,6 +125,7 @@ namespace Spacebox.Game.Generation.Blocks
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
+               
                 long v = ((long)value & 0b111) << 12;
                 data = data & ~(0b111L << 12) | v;
             }

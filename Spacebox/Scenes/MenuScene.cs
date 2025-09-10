@@ -137,10 +137,11 @@ namespace Spacebox.Scenes
             GameMenu.IsVisible = false;
             ColorOverlay.FadeOut(new System.Numerics.Vector3(0,0,0), 1);
             VerticalLinks.Init();
-          
-            // _ = WorkerPoolTest.RunTest();
+            VerticalLinks.IsVisible = true;
+            CenteredImageMenu.Show();
+              // _ = WorkerPoolTest.RunTest();
 
-            var colors = new Color4[]
+              var colors = new Color4[]
             {
                 Color4.Red, Color4.Green, Color4.Blue, Color4.Yellow,
                 Color4.Magenta, Color4.Cyan, Color4.Orange, Color4.Purple,
@@ -187,24 +188,29 @@ namespace Spacebox.Scenes
             //canvas.Draw();
             // ImGui.PopFont();
             ColorOverlay.OnGUI();
+            CenteredText.OnGUI();
         }
 
         public override void UnloadContent()
         {
             menu.Dispose();
+            DevLogWindow.Instance = null;
         }
 
+        bool showed = false;
         public override void Update()
         {
             base.Update();
             CenteredImageMenu.Update();
-            devLogWindow.Update();
+           
 
-            if (Input.IsAnyKeyDown())
+            if (Input.IsAnyKeyDown() && !showed)
             {
                 CenteredImageMenu.ShowText = false;
                 GameMenu.IsVisible = true;
                 VerticalLinks.IsVisible = true;
+                devLogWindow.IsVisible = true;
+                showed = true;
             }
 
         }

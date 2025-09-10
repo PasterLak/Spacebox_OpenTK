@@ -6,19 +6,17 @@ namespace Spacebox.Game.GUI.Menu
 {
     public class DevLogWindow
     {
+
+        public static DevLogWindow Instance { get;  set; }
         private bool _isVisible = false;
         private bool isMinimized = false;
         private string logText = "Development Log\n\n";
         private Vector2 scrollPosition = Vector2.Zero;
         private float lastWindowHeight = 0;
 
-        public void Update()
+        public DevLogWindow()
         {
-            if (Input.IsAnyKeyDown() && !_isVisible)
-            {
-                _isVisible = true;
-                isMinimized = false;
-            }
+            Instance = this;
         }
 
         public void Render()

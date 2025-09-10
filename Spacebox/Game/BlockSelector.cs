@@ -16,6 +16,7 @@ namespace Spacebox.Game
         public SimpleBlock SimpleBlock { get; private set; }
 
         private Direction blockDirection = Direction.Up;
+
         public Rotation Rotation = Rotation.None;
         private BlockData currentBlockData;
 
@@ -37,7 +38,8 @@ namespace Spacebox.Game
 
         public void OnSelectedSlotWasChanged(short slot)
         {
-            Rotation = Rotation.None;
+            
+            
             SimpleBlock.ResetBlockTransform();
 
             if (PanelUI.IsHolding<DrillItem>())
@@ -58,6 +60,9 @@ namespace Spacebox.Game
                     SetupBlockMesh();
                     UpdateBlockRotation();
                 }
+            }else
+            {
+                Rotation = Rotation.None;
             }
         }
 

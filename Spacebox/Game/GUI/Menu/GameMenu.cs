@@ -396,15 +396,25 @@ namespace Spacebox.Game.GUI.Menu
             hide = true;
             IsVisible = false;
             CenteredImageMenu.Hide();
-            CenteredText.SetText("Loading...");
-            CenteredText.Show();
             
-            ColorOverlay.StartFade(FadeMode.FadeIn, new Vector3(0,0,0),  0.5f,0,1,0, () => {
+            VerticalLinks.IsVisible = false;
+            DevLogWindow.Instance.IsVisible = false;
+
+            ColorOverlay.StartFade(FadeMode.FadeIn, new Vector3(0,0,0),  1f,0,1,0, () => {
 
                 if (multiplayer)
                     SceneManager.Load<MultiplayerScene, SpaceSceneArgs>(arg);
                 else
                     SceneManager.Load<LocalSpaceScene, SpaceSceneArgs>(arg);
+            }, (t) =>
+            {
+               
+               if(t < 0.3f) CenteredText.SetText("Loading");
+               else if (t < 0.5f) CenteredText.SetText("Loading.");
+               else if (t < 0.7f) CenteredText.SetText("Loading..");
+               else CenteredText.SetText("Loading...");
+
+                CenteredText.Show();
             });
 
            
