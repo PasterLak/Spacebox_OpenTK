@@ -33,7 +33,9 @@ namespace Engine
         public List<Component> Components { get; } = new();
         public bool HasComponents => Components.Count > 0;
 
-        public bool Enabled { get; set; } = true;
+        private bool _enabled = true;
+        public bool Enabled { get => _enabled; set { _enabled = value; OnEnabledChanged?.Invoke(_enabled); } }
+        public Action<bool> OnEnabledChanged { get; set; }
 
         public Node3D()
         {

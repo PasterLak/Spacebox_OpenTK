@@ -13,6 +13,8 @@ namespace Spacebox.Game.Player
     public class Flashlight : SpotLight
     {
 
+        
+
         private AudioSource audio;
         private Toggi toggle;
 
@@ -46,6 +48,9 @@ namespace Spacebox.Game.Player
                 if (astronaut.IsAlive == false) return;
                 Enabled = state;
                 action.Enabled = state;
+                
+
+                
             };
 
             this.Diffuse = new Color3Byte(245, 222, 171).ToVector3();

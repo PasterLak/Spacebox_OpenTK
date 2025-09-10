@@ -3,15 +3,11 @@ using Engine.Components;
 using Engine.Light;
 using Engine.Physics;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Effects;
-using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Game.Player.Interactions;
 using Spacebox.GUI;
-using SpaceNetwork;
 
 
 namespace Spacebox.Game.Player
@@ -146,6 +142,8 @@ namespace Spacebox.Game.Player
             AddChild(Effects);
 
             DeathScreen.OnRespawn += Revive;
+
+            Flashlight.OnEnabledChanged += (b) => { PanelUI.SetFlashlight(this); };
 
         }
 
@@ -304,12 +302,12 @@ namespace Spacebox.Game.Player
             }
 
 #if DEBUG
-            if (Input.IsKeyDown(Keys.R))
+            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.R))
             {
                 //CameraRelativeRender = !CameraRelativeRender;
             }
 
-            if (Input.IsKeyDown(Keys.U))
+            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.U))
             {
                 CollisionEnabled = !CollisionEnabled;
                 Debug.Log($"Collision Enabled: {CollisionEnabled}");
@@ -404,6 +402,7 @@ namespace Spacebox.Game.Player
             PanelUI.IsVisible = false;
             PanelUI.IsItemModelVisible = false;
             Input.ShowCursor();
+          
             Flashlight.Enabled = false;
             HealthBar.StatsGUI.IsVisible = false;
             PowerBar.StatsGUI.IsVisible = false;

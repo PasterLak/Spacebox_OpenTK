@@ -31,7 +31,7 @@ namespace Spacebox.Game.GUI
             set { _selectedSlotId = value; }
         }
         public static Action<short> OnSlotChanged;
-   
+
         private static float TimeToHideItemName = 2f;
         private static float _time = 0;
         private static bool wasPlayerOnes = false;
@@ -47,7 +47,7 @@ namespace Spacebox.Game.GUI
             SlotTexture = slotTexture;
             SelectedTexture = selectedTexture;
             scrollAudio = new AudioSource(Resources.Load<AudioClip>("scroll"));
-         
+
             InventoryUIHelper.SetDefaultIcon(slotTexture, selectedTexture);
             SetSelectedSlot(0);
             Storage.OnDataWasChanged += OnStorageDataWasChanged;
@@ -73,7 +73,7 @@ namespace Spacebox.Game.GUI
 
         public static void DrawItemModel()
         {
-            if(!IsItemModelVisible) return;
+            if (!IsItemModelVisible) return;
             if (ItemModel == null) return;
             ItemModel.Render();
         }
@@ -104,7 +104,7 @@ namespace Spacebox.Game.GUI
             if (SelectedSlot?.HasItem == true && !(SelectedSlot.Item is BlockItem))
             {
                 ItemModel = GameAssets.ItemModels[SelectedSlot.Item.Id];
-           
+
                 if (!hadModel) ItemModel.PlayDrawAnimation();
                 else
                 {
@@ -114,8 +114,8 @@ namespace Spacebox.Game.GUI
                     }
                 }
             }
-              
-            
+
+
         }
 
         private static void HideItemModel()
@@ -123,12 +123,12 @@ namespace Spacebox.Game.GUI
             if (SelectedSlot == null) return;
             if (!SelectedSlot.HasItem || SelectedSlot.Item is BlockItem)
             {
-                if(ItemModel != null)
+                if (ItemModel != null)
                     ItemModel.ResetToEnd();
 
                 ItemModel = null;
             }
-                
+
         }
 
         private static void UpdateInput()
@@ -136,7 +136,7 @@ namespace Spacebox.Game.GUI
             if (Debug.IsVisible) return;
             if (InventoryUI.IsVisible) return;
             if (!AllowScroll) return;
-            if(Player.CanMove == false) return;
+            if (Player.CanMove == false) return;
 
             if (Input.MouseScrollDelta.Y < 0)
             {
@@ -178,7 +178,7 @@ namespace Spacebox.Game.GUI
             if (Player.GameMode == GameMode.Spectator) return;
 
             var dropPosition = Player.Position + Player.Front * 0.5f;
-     
+
             slot.DropOne();
         }
 
@@ -195,32 +195,32 @@ namespace Spacebox.Game.GUI
                     ItemModel.Update();
 
                 }
-                    
+
             }
 
             if (InventoryUI.IsVisible) return;
             UpdateInput();
 
-            
-               
+
+
         }
 
         private static void UpdatePlayerInteraction(Astronaut player)
         {
-            if(player == null) return;
+            if (player == null) return;
             if (player.GameMode == GameMode.Spectator) return;
-            if (IsHolding< BlockItem>())
+            if (IsHolding<BlockItem>())
                 player.SetInteraction(new InteractionPlaceBlock());
-            else if (IsHolding< WeaponItem>())
+            else if (IsHolding<WeaponItem>())
                 player.SetInteraction(new InteractionShoot(SelectedSlot));
-            else if (IsHolding< DrillItem>())
+            else if (IsHolding<DrillItem>())
             {
                 if (player.GameMode == GameMode.Creative)
                     player.SetInteraction(new InteractionDestroyBlockCreative(SelectedSlot));
                 else
                     player.SetInteraction(new InteractionDestroyBlockSurvival(SelectedSlot));
             }
-            else if (IsHolding< ConsumableItem>())
+            else if (IsHolding<ConsumableItem>())
                 player.SetInteraction(new InteractionConsumeItem(SelectedSlot));
             else if (IsHolding<EraserToolItem>())
                 player.SetInteraction(new InteractionEraser());
@@ -238,22 +238,33 @@ namespace Spacebox.Game.GUI
         }
         public static void SetSelectedSlot(short id)
         {
-           // if (!AllowScroll) return;
+            // if (!AllowScroll) return;
             SelectedSlotId = id;
             SelectSlot(SelectedSlotId);
             if (wasPlayerOnes)
             {
-                if(scrollAudio != null)
+                if (scrollAudio != null)
                 {
                     if (scrollAudio.IsPlaying)
                         scrollAudio.Stop();
                     scrollAudio.Play();
                 }
-               
+
             }
             else
             {
                 wasPlayerOnes = true;
+            }
+        }
+
+        public static void SetFlashlight(Astronaut ast)
+        {
+            if(ast != null)
+            {
+                if(ItemModel != null)
+                {
+                    ItemModel.Material.SetFlashlight(ast.Flashlight);
+                }
             }
         }
 
@@ -280,11 +291,11 @@ namespace Spacebox.Game.GUI
                     _lastSelectedCount = SelectedSlot.Count;
                 }
 
-                Player.SetItemLight(SelectedSlot.Item);
 
                 if (SelectedSlot.HasItem)
                 {
                     _time = TimeToHideItemName;
+                    Player.SetItemLight(SelectedSlot.Item);
 
                     if (SelectedSlot.Item.Description != "")
                     {
@@ -310,12 +321,12 @@ namespace Spacebox.Game.GUI
         {
             PanelRenderer.Render(Storage, SlotSize, SlotTexture, SelectedTexture, SelectedSlotId, _time);
 
-            if(Settings.ShowInterface)
+            if (Settings.ShowInterface)
             {
                 if (SelectedSlot != null && SelectedSlot.HasItem && _time > 0)
                     PanelRenderer.DrawItemName(SelectedSlot.Item.Name);
             }
-          
+
         }
 
         public static ItemSlot CurrentSlot() => SelectedSlot;
@@ -341,5 +352,5 @@ namespace Spacebox.Game.GUI
         }
     }
 
- 
+
 }

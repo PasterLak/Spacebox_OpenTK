@@ -1,4 +1,6 @@
 ﻿using Engine;
+using OpenTK.Mathematics;
+using Spacebox.Game.Player;
 
 namespace Spacebox.Game.Resource
 {
@@ -27,6 +29,21 @@ namespace Spacebox.Game.Resource
             //RenderFace = RenderFace.Both;
             Emission = emission;
            
+        }
+
+        public void SetFlashlight(Flashlight flashlighgt)
+        {
+            if (flashlighgt != null)
+            {
+                if (flashlighgt.Enabled)
+                {
+                    Shader.SetVector3("flashlightColor", flashlighgt.Diffuse);
+                }
+                else
+                {
+                    Shader.SetVector3("flashlightColor", Vector3.Zero);
+                }
+            }
         }
 
         public Action Action;
