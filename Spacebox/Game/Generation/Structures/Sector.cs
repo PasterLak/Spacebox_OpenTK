@@ -422,11 +422,6 @@ namespace Spacebox.Game.Generation
                             continue;
                         }
 
-
-                        if (!entity.Tag.Enabled)
-                        {
-                            // entity.Tag.Enabled = true;
-                        }
                         entity.Render(cam, shader);
 
                         if (entity.StarsEffect.Enabled)
@@ -439,10 +434,7 @@ namespace Spacebox.Game.Generation
                         if (!entity.StarsEffect.Enabled)
                             entity.StarsEffect.Enabled = true;
 
-                        if (entity.Tag.Enabled)
-                        {
-                            // entity.Tag.Enabled = false;
-                        }
+                      
 
                         entity.RenderEffect(disSqr);
                     }

@@ -1,7 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using ImGuiNET;
 using Engine;
-using Spacebox.Game;
+
 
 namespace Spacebox.Game.GUI
 {
@@ -75,7 +75,8 @@ namespace Spacebox.Game.GUI
                         var textSize = ImGui.CalcTextSize(tag.Text);
                         ImGui.SetCursorPos(tag.GetTextPosition(screenPos.ToSystemVector2(), textSize));
                         var drawList = ImGui.GetWindowDrawList();
-                        float distance = (camera.PositionWorld - tag.WorldPosition).Length;
+               
+                        float distance = Vector3.DistanceSquared(camera.Position , tag.WorldPosition);
                         float newFontSize = Tag.CalculateFontSize(distance);
                         drawList.AddText(LoadFont(), newFontSize, ImGui.GetCursorPos(), tag.ColorUint, tag.Text);
                     }

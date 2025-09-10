@@ -1,13 +1,13 @@
-﻿using OpenTK.Mathematics;
-
+﻿using Engine;
 using Engine.Physics;
-using Spacebox.Game.GUI;
-using Spacebox.Game.Physics;
+using OpenTK.Mathematics;
 using Spacebox.Game.Effects;
-using Engine;
-using Spacebox.Game.Resource;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Structures;
+using Spacebox.Game.GUI;
+using Spacebox.Game.Physics;
+using Spacebox.Game.Resource;
+using System.Text;
 
 namespace Spacebox.Game.Generation
 {
@@ -35,13 +35,13 @@ namespace Spacebox.Game.Generation
 
         private Tag tag;
 
-        public Tag Tag => tag;
         private string _entityMassString = "0 tn";
         public BoundingBox GeometryBoundingBox { get; private set; }
         public ElectricNetworkManager ElectricManager { get; private set; }
         public Particle StarParticle;
         public StarsEffect StarsEffect { get; private set; }
 
+        StringBuilder StringBuilder = new StringBuilder();
 
         public SpaceEntity(ulong id, Vector3 positionWorld, Sector sector)
         {
@@ -54,11 +54,12 @@ namespace Spacebox.Game.Generation
             Octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
 
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
-
+           
             ElectricManager = new ElectricNetworkManager();
 
             // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
             tag = CreateTag(positionWorld);
+            CalculateCenterOfMass();
             CreateStar();
         }
 
@@ -74,9 +75,10 @@ namespace Spacebox.Game.Generation
 
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
 
-
+           
             // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
             tag = CreateTag(positionWorld);
+            CalculateCenterOfMass();
             CreateStar();
         }
         private void CreateStar()
@@ -249,9 +251,9 @@ namespace Spacebox.Game.Generation
         private Tag CreateTag(Vector3 worldPos)
         {
             var tag = new Tag("", worldPos, Color4.DarkGreen);
-            tag.TextAlignment = Tag.Alignment.Right;
+            tag.TextAlignment = GUI.Tag.Alignment.Right;
             TagManager.RegisterTag(tag);
-
+            Debug.Log($"Tag registered: id {EntityID} pos " + worldPos);
             return tag;
         }
 
@@ -439,22 +441,37 @@ namespace Spacebox.Game.Generation
             {
                 var dis = (int)Vector3.Distance(CenterOfMass, camera.Position);
 
-                Tag.CalculateFontSize(dis);
-
+               
                 if (VisualDebug.Enabled)
                 {
-
                     bool isAsteroid = this as Asteroid != null;
-                    tag.Text = $"{Name}{EntityID} isAsteroid: {isAsteroid}\n" +
-                        $"Wpos: {Block.RoundVector3(PositionWorld)}\n" +
-                        $"{dis} m\n" +
-                           $"{_entityMassString} tn, gR: {(int)GravityRadius} m";
+                    StringBuilder.Append(Name)
+                      .Append(EntityID)
+                      .Append(" isAsteroid: ")
+                      .Append(isAsteroid)
+                      .Append("\nWpos: ")
+                      .Append(Block.RoundVector3(PositionWorld))
+                      .Append("\n")
+                      .Append(dis)
+                      .Append(" m\n")
+                      .Append(_entityMassString)
+                      .Append(" tn, gR: ")
+                      .Append((int)GravityRadius)
+                      .Append(" m");
                 }
                 else
                 {
-                    tag.Text = $"{dis} m\n" +
-                           $"{_entityMassString} tn";
+                    StringBuilder.Append(dis).Append(" m");
+                    if (Mass > 0)
+                    {
+                        StringBuilder.Append("\n")
+                          .Append(_entityMassString)
+                          .Append(" tn");
+                    }
                 }
+
+                tag.Text = StringBuilder.ToString();
+                StringBuilder.Clear();
 
                 //StarsEffect.Update();
 
@@ -694,15 +711,17 @@ namespace Spacebox.Game.Generation
         {
             if (Mass == 0)
             {
-                CenterOfMass = GeometryBoundingBox.Center;
+                CenterOfMass = BoundingBox.Center;
                 tag.WorldPosition = CenterOfMass;
+           
                 return;
             }
 
             CenterOfMass = sumPosCenterOfMass / Mass;
             tag.WorldPosition = CenterOfMass;
+         
 
-           // StarParticle.Position = CenterOfMass;
+            // StarParticle.Position = CenterOfMass;
         }
 
         public static List<Chunk> RemoveBlocksInLocalBox(SpaceEntity entity, BoundingBox localBox)
