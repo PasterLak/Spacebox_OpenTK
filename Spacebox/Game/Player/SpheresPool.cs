@@ -7,7 +7,6 @@ namespace Spacebox.Game.Player
     {
         public static SpheresPool Instance;
         private List<ImpulseSphere> spheres;
-        private List<ImpulseSphere> spheresToPutBack;
         private Pool<ImpulseSphere> pool;
 
 
@@ -22,7 +21,7 @@ namespace Spacebox.Game.Player
                  (obj, active) => obj.IsActive = active);
 
             spheres = new List<ImpulseSphere>();
-            spheresToPutBack = new List<ImpulseSphere>();
+           
         }
 
         public ImpulseSphere Take()

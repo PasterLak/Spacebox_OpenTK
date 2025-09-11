@@ -1,17 +1,16 @@
 ﻿namespace Spacebox.Game.Player.Interactions;
 
+using Client;
 using Engine;
-
 using Engine.Audio;
-
+using global::Client;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
+using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
-using Client;
-using global::Client;
-using Spacebox.Game.Generation.Blocks;
+using SpaceNetwork;
 
 public abstract class InteractionDestroyBlock : InteractionMode
 {
@@ -19,7 +18,7 @@ public abstract class InteractionDestroyBlock : InteractionMode
     protected static AudioSource blockDestroy;
     protected ItemSlot selectedItemSlot;
     protected AnimatedItemModel model;
-
+    Random r = new Random();
     protected InteractionDestroyBlock(ItemSlot itemSlot)
     {
         AllowReload = true;
@@ -36,17 +35,20 @@ public abstract class InteractionDestroyBlock : InteractionMode
         blockDestroy = new AudioSource(clip);
     }
 
-    protected void DestroyBlock(HitInfo hit)
+    protected void DestroyBlock(HitInfo hit, Astronaut player)
     {
         hit.block.Durability = 0;
         hit.chunk.SpaceEntity.RemoveBlockAtLocal(hit.blockPositionEntity, hit.normal);
         var x = hit.chunk.PositionIndex * Chunk.Size;
         var localPos = new Vector3(x.X + hit.blockPositionIndex.X, x.Y + hit.blockPositionIndex.Y, x.Z + hit.blockPositionIndex.Z);
         ClientNetwork.Instance?.SendBlockDestroyed((short)localPos.X, (short)localPos.Y, (short)localPos.Z);
-       
+        player.PlayerStatistics.BlocksDestroyed++;
+        
         if (blockDestroy != null)
         {
             PickDestroySound(hit.block.Id);
+           
+            blockDestroy.Pitch = r.Next(9, 12)  * 0.1f; 
             blockDestroy.Play();
         }
         else Debug.Error("blockDestroy was null!");

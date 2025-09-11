@@ -17,14 +17,21 @@ namespace Engine.Audio
                 for (int i = 0; i < samplesRead; i++)
                 {
                     float f = floatBuffer[i];
-                    short s = (short)Math.Clamp((int)(f * 32767f), -32768, 32767);
+                   // short s = (short)Math.Clamp((int)(f * 32767f), -32768, 32767);
+                    short s = (short)Math.Clamp((int)(f * 32767.0f + 0.5f), -32768, 32767);
                     shortList.Add(s);
                 }
             }
             byte[] data = new byte[shortList.Count * 2];
             Buffer.BlockCopy(shortList.ToArray(), 0, data, 0, data.Length);
 
-          
+            Debug.Log($"[OggLoader] {filename}: Channels={vorbis.Channels}, SampleRate={vorbis.SampleRate}, Samples={shortList.Count}");
+
+            if (shortList.Count == 0)
+            {
+                Debug.Error($"[OggLoader] No audio data loaded from {filename}");
+            }
+
             return (data, vorbis.Channels, 16, vorbis.SampleRate);
         }
     }

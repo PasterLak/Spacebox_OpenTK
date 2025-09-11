@@ -83,6 +83,7 @@ namespace Spacebox.Game
         private void UpdateBlockRotation()
         {
             if (currentBlockData == null) return;
+            if(currentBlockData.AllSidesAreSame) return;
 
             var transformMatrix = BlockRotationHelper.CalculateTransformMatrix(
                 currentBlockData.BaseFrontDirection,

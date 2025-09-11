@@ -149,6 +149,7 @@ public class InteractionShoot : InteractionMode
               
                     shotSound.Pitch = random.Next(95, 105) * 0.01f;
                 shotSound.Play();
+                player.PlayerStatistics.ShotsFired++;
             }
         }
 
@@ -196,7 +197,7 @@ public class InteractionShoot : InteractionMode
             var shotRay = new Ray(projectileSpawnPos, shotDir, 1f);
 
             projectile.Initialize(shotRay,
-                projectileParameters);
+                projectileParameters, player);
 
             ApplyRecoilWithMass(player, weapon, shotRay.Direction, projectileParameters);
 

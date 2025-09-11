@@ -1,5 +1,6 @@
-﻿using System.Runtime.InteropServices;
-using OpenTK.Audio.OpenAL;
+﻿using OpenTK.Audio.OpenAL;
+using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
 
 namespace Engine.Audio
 {
@@ -173,6 +174,8 @@ namespace Engine.Audio
                 throw new InvalidOperationException($"[AudioClip] OpenAL error during {operation}: {AL.GetErrorString(error)}");
             }
         }
+
+        public int GetHandle() { return Buffer; }
 
         public IResource Load(string path)
         {

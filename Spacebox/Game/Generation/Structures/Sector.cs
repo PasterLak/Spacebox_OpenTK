@@ -145,10 +145,10 @@ namespace Spacebox.Game.Generation
 
             if (TryGetNearestEntity(GetCenter(), out var entity))
             {
-                player.Position = GetRandomPositionNearAsteroid(random, entity);
+                player.SetPosition( GetRandomPositionNearAsteroid(random, entity));
             }
             else
-                player.Position = GetRandomPositionWithCollisionCheck(random, 0.2f);
+                player.SetPosition(GetRandomPositionWithCollisionCheck(random, 0.2f));
 
         }
 

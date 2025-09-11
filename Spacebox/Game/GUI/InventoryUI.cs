@@ -7,6 +7,7 @@ using Engine.Audio;
 using Spacebox.Game.Player;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player.GameModes;
+using Engine.InputPro;
 
 namespace Spacebox.Game.GUI
 {
@@ -64,9 +65,20 @@ namespace Spacebox.Game.GUI
                         ToggleManager.SetState("creative", true);
 
                     ToggleManager.SetState("inventory", true);
+
+                    ItemControlsUI.IsVisible = true;
+
+                    var shift = InputManager.Instance.GetAction("storage_item_quick_transfer");
+                    var delete = InputManager.Instance.GetAction("storage_item_delete");
+
+                    var text = shift.Bindings[0].GetDisplayName() + " - " + shift.Description;
+                    text += "\n" + delete.Bindings[0].GetDisplayName() + " - " + delete.Description;
+
+                    ItemControlsUI.Text = text;
                 }
                 else
                 {
+                    ItemControlsUI.IsVisible = false;
                     ToggleManager.SetState("mouse", false);
                     ToggleManager.SetState("player", true);
                     ToggleManager.SetState("inventory", false);
@@ -138,13 +150,13 @@ namespace Spacebox.Game.GUI
 
             if (slot.HasItem)
             {
-                if (Input.IsKey(Keys.LeftShift))
+                if (Input.IsAction("storage_item_quick_transfer"))
                 {
 
                     slot.MoveItemToConnectedStorage();
 
                 }
-                if (Input.IsKey(Keys.X))
+                if (Input.IsAction("storage_item_delete"))
                 {
 
                     slot.Clear();

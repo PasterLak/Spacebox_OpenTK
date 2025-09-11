@@ -96,11 +96,10 @@ namespace Spacebox.Scenes
 
         public override void LoadContent()
         {
-
+            GameTime.Init();
             var texture = new SpaceTexture(512, 512, World.Seed);
 
-            var mesh = Resources.Load<Engine.Mesh>("Resources/Models/cube.obj");
-            var skybox = new Skybox(mesh, texture);
+            var skybox = new Skybox( texture);
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
 
             Lighting.Skybox = skybox;
@@ -185,7 +184,7 @@ namespace Spacebox.Scenes
             AddChild(new ProjectileHitEffectsManager());
             AddChild(new DirectionalLight());
 
-            GameTime.Init();
+           
         }
 
         public override void Start()

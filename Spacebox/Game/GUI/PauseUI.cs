@@ -1,11 +1,12 @@
-﻿using ImGuiNET;
+﻿using Engine;
 using Engine.Audio;
 using Engine.SceneManagement;
-using Engine;
+using ImGuiNET;
 using Spacebox.Game.Generation;
+using Spacebox.Game.GUI.Menu;
+using Spacebox.Game.Player;
 using Spacebox.Scenes;
 using System.Numerics;
-using Spacebox.Game.GUI.Menu;
 
 namespace Spacebox.Game.GUI
 {
@@ -35,6 +36,7 @@ namespace Spacebox.Game.GUI
                 }
                 else
                 {
+                    StatisticsUI.IsVisible = false;
                     Time.TimeSize = 1;
                     saveButtonText = "Save";
                 }
@@ -63,6 +65,7 @@ namespace Spacebox.Game.GUI
            
             RenderPause(); 
             RenderPauseTitle();
+            StatisticsUI.OnGUI();
         }
 
         private static void RenderPauseTitle()
@@ -126,7 +129,7 @@ namespace Spacebox.Game.GUI
             float buttonWidth = windowWidth * 0.9f;
             float buttonHeight = windowHeight * 0.12f;
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y, 0.005f);
-            int buttonCount = 4;
+            const int buttonCount = 5;
             float spacing = (windowHeight - (buttonCount * buttonHeight)) / (buttonCount + 1);
             float currentY = spacing;
             ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
@@ -144,6 +147,19 @@ namespace Spacebox.Game.GUI
                 if (World.Instance != null)
                     World.Instance.Save();
                 saveButtonText = "Saved!";
+            });
+            currentY += buttonHeight + spacing;
+            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
+            GameMenu.CenterButtonWithBackground("Statistics", buttonWidth, buttonHeight, () =>
+            {
+                click1?.Play();
+
+                var player = SceneManager.Current.FindNode<Astronaut>();
+                if (player!= null && player.PlayerStatistics != null)
+                {
+                    StatisticsUI.Show(player.PlayerStatistics);
+                }
+
             });
             currentY += buttonHeight + spacing;
             ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));

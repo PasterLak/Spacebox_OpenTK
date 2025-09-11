@@ -1,8 +1,9 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
+﻿using Engine.Graphics;
 using Engine.Physics;
 using Engine.Utils;
-using Engine.Graphics;
+using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
+using System.Reflection.Metadata;
 
 
 namespace Engine
@@ -137,7 +138,7 @@ namespace Engine
             return new Mesh(path);
         }
 
-
+        public int GetHandle() { return buffer.VBO; }
         public void Dispose()
         {
             buffer.Dispose();

@@ -30,17 +30,33 @@ namespace Spacebox.Game.Resource
         {
             DayTick++;
 
-            Hour = (DayTick / 1000 + 6) % 24;
-            Minute = (int)((DayTick % 1000) * 60 / 1000);
+            CalculateHourAndMinute();
 
             OnTimeChanged?.Invoke();
 
             if (DayTick >= TicksPerDay)
             {
                 DayTick = 0;
-                Day++;
-                OnDayChanged?.Invoke();
+                SetDay(Day++);
             }
+        }
+
+        public static void SetDay(int day)
+        {
+            Day = day;
+            OnDayChanged?.Invoke();
+        }
+        public static  void SetTick(int tick)
+        {
+            DayTick = tick;
+            CalculateHourAndMinute();
+            OnTimeChanged?.Invoke();
+        }
+
+        private static void CalculateHourAndMinute()
+        {
+            Hour = (DayTick / 1000 + 6) % 24;
+            Minute = (int)((DayTick % 1000) * 60 / 1000);
         }
 
         public static void Dispose()

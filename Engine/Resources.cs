@@ -9,6 +9,7 @@ namespace Engine
     public interface IResource : IDisposable
     {
         IResource Load(string path);
+        int GetHandle();
 
     }
     public static class Resources
@@ -32,11 +33,24 @@ namespace Engine
 
         private static void LoadError()
         {
-            _error.Add(typeof(Texture2D), Texture2D.CreateTexture(1, 1, Color4.Pink, FilterMode.Nearest));
-            _error.Add(typeof(Shader), new Shader("Shaders/colored"));
-            _error.Add(typeof(AudioClip), new AudioClip("Resources/Audio/error.ogg"));
-            _error.Add(typeof(Mesh), new Mesh("Resources/Models/cube.obj"));
+            var texture = Texture2D.CreateTexture(1, 1, Color4.Pink, FilterMode.Nearest);
+            AddResource("error_pink", texture, true);
+            _error.Add(typeof(Texture2D), texture);
+
+            var shader = new Shader("Shaders/colored");
+            AddResource("error_shader", shader, true);
+            _error.Add(typeof(Shader), shader);
+
+            var clip = new AudioClip("Resources/Audio/error.ogg");
+            AddResource("Resources/Audio/error.ogg", clip, true);
+            _error.Add(typeof(AudioClip), clip);
+
+            var mesh = GenMesh.CreateCube();
+            AddResource("error_mesh", mesh, true);
+            _error.Add(typeof(Mesh), mesh);
+
         }
+
         public static T Load<T>(string pathOrName, bool global = false) where T : IResource, new()
         {
             string canonicalKey = NormalizeKey(pathOrName);
@@ -298,16 +312,24 @@ namespace Engine
             if (sum == 0) return;
 
             Debug.Log(">------------------------------------<" , Color4.Yellow);
-            foreach (var kvp in _resourcesByType)
+            foreach (KeyValuePair<Type, Dictionary<string, ResourceEntry>> kvp in _resourcesByType)
             {
                 var type = kvp.Key;
-                var dict = kvp.Value;
+                var dict = kvp.Value; 
 
                 if (dict.Count == 0) continue;
 
-                Debug.Log($"- [{type.Name}] count: {dict.Count}");
-                foreach (var key in dict.Keys)
-                    Debug.Log($"  > {key}");
+            
+                Debug.Log($"- [{type.Name}] count: {dict.Count}", Color4.Yellow);
+                foreach (string key in dict.Keys)
+                {
+                    var text = dict[key].Global ? "[G]" : "   ";
+
+                    text +=  $"[{dict[key].Resource.GetHandle()}]";
+
+                    Debug.Log($"  > {text}{key}");
+                }
+                   
             }
             Debug.Log(">------------------------------------<", Color4.Yellow);
 

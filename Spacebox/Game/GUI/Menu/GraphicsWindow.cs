@@ -42,7 +42,7 @@ namespace Spacebox.Game.GUI.Menu
             _modeIndex = (int)Settings.Graphics.WindowMode;
          
 
-            SettingsUI.Render("Graphics", "Graphics", menu, 5,
+            SettingsUI.Render("Graphics", "Graphics",  5,
                 (listSize, rowH) =>
                 {
                     ImGui.BeginTable("table##graphics", 2, ImGuiTableFlags.NoBordersInBody);

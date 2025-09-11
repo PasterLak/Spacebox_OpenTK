@@ -19,6 +19,7 @@ namespace Spacebox.Game.Player
                 {
                     Directory.CreateDirectory(worldFolder);
                 }
+                player.PlayerStatistics.EndSession();
 
                 PlayerData data = new PlayerData
                 {
@@ -33,7 +34,8 @@ namespace Spacebox.Game.Player
                     Power = player.PowerBar.StatsData.Value,
                     IsFlashlightOn = player.Flashlight.Enabled,
                     InventorySlots = new List<SavedItemSlot>(),
-                    PanelSlots = new List<SavedItemSlot>()
+                    PanelSlots = new List<SavedItemSlot>(),
+                    Statistics = player.PlayerStatistics
                 };
 
                 foreach (var slot in player.Inventory.GetAllSlots())
@@ -92,6 +94,7 @@ namespace Spacebox.Game.Player
                     World.CurrentSector.SpawnPlayerNearAsteroid(player, new Random(World.Seed));
                     GameSetLoader.GiveStartItems(player, GameAssets.ItemsStr);
                     player.Flashlight.Enabled = true;
+                    player.PlayerStatistics.FirstPlayedUtc = DateTime.UtcNow;
 
                     return;
                 }
@@ -105,7 +108,7 @@ namespace Spacebox.Game.Player
                     return;
                 }
 
-                player.Position = new Vector3(data.PositionX, data.PositionY, data.PositionZ);
+                player.SetPosition( new Vector3(data.PositionX, data.PositionY, data.PositionZ));
                 player.SpawnPosition = player.Position;
                 Quaternion loadedRotation = new Quaternion(data.RotationX, data.RotationY, data.RotationZ, data.RotationW);
 
@@ -116,6 +119,9 @@ namespace Spacebox.Game.Player
                 player.Inventory.Clear();
                 player.Panel.Clear();
                 player.Flashlight.Enabled = data.IsFlashlightOn;
+                player.PlayerStatistics = data.Statistics;
+
+                player.PlayerStatistics.StartSession();
 
                 foreach (var savedSlot in data.InventorySlots)
                 {
@@ -191,6 +197,8 @@ namespace Spacebox.Game.Player
             public bool IsFlashlightOn { get; set; } = false;
             public List<SavedItemSlot> InventorySlots { get; set; }
             public List<SavedItemSlot> PanelSlots { get; set; }
+
+            public PlayerStatistics Statistics { get; set; } = new PlayerStatistics();
         }
 
         private class SavedItemSlot

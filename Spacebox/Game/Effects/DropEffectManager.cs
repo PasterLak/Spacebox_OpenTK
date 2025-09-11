@@ -1,8 +1,9 @@
-﻿using OpenTK.Mathematics;
-using Engine;
+﻿using Engine;
 using Engine.Audio;
-using Spacebox.Game.Player;
+using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Player;
+using SpaceNetwork;
 
 namespace Spacebox.Game.Effects
 {
@@ -132,6 +133,7 @@ namespace Spacebox.Game.Effects
         private void ProcessPickup(DropEffect effect)
         {
             player.Panel.TryAddItem(effect.Drop.item, effect.Drop.quantity);
+            player.PlayerStatistics.ItemsPickedUp += effect.Drop.quantity;
             PlayPickupSound();
         }
 

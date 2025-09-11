@@ -324,7 +324,7 @@ namespace Spacebox.Game.GUI
             {
                 if (player != null)
                 {
-                    if (Input.IsKey(Keys.LeftShift))
+                    if (Input.IsAction("storage_item_quick_transfer"))
                     {
                         player.Panel.TryAddItem(slot.Item, slot.Item.StackSize);
                     }

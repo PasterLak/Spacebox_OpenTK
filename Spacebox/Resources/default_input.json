@@ -151,6 +151,26 @@
                         "Key": "G"
                     }
                 ]
+            },
+            "storage_item_quick_transfer": {
+                "Name": "Item transfer",
+                "Description": "Quick transfer of items between storages",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "LeftShift"
+                    }
+                ]
+            },
+            "storage_item_delete": {
+                "Name": "Item delete",
+                "Description": "Delete an item from storage",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "X"
+                    }
+                ]
             }
         },
         "Axes": {}

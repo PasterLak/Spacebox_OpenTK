@@ -9,8 +9,8 @@ namespace Spacebox.Game.Player
         public string Name { get; set; } = "Default";
 
         public event Action DataChanged;
-        public event Action OnDecrement;
-        public event Action OnIncrement;
+        public event Action<int> OnDecrement;
+        public event Action<int> OnIncrement;
         public event Action OnEqualZero;
 
         public bool IsMaxReached => Value >= MaxValue;
@@ -22,24 +22,25 @@ namespace Spacebox.Game.Player
 
             amount = MathHelper.Abs(amount);
 
+            int oldValue = Value;
             Value = Math.Min(Value + amount, MaxValue);
+            int actualIncrement = Value - oldValue;
             DataChanged?.Invoke();
-            OnIncrement?.Invoke();
+            OnIncrement?.Invoke(actualIncrement);
         }
 
         public void Decrement(int amount)
         {
             amount = MathHelper.Abs(amount);
-
+            int oldValue = Value;
             Value = Math.Max(Value - amount, 0);
-
+            int actualDecrement = oldValue - Value;
             if (IsMinReached)
             {
                 OnEqualZero?.Invoke();
             }
-
             DataChanged?.Invoke();
-            OnDecrement?.Invoke();
+            OnDecrement?.Invoke(actualDecrement);
         }
     }
 }

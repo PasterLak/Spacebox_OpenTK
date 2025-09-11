@@ -1,7 +1,8 @@
-﻿using System;
-using OpenTK.Mathematics;
+﻿using Engine;
 using OpenTK.Graphics.OpenGL4;
-using Engine;
+using OpenTK.Mathematics;
+using SkiaSharp;
+using System;
 
 namespace Engine
 {
@@ -73,16 +74,16 @@ namespace Engine
         {
             base.Render();
 
-            Render(Camera.Main);
+            Render2();
         }
 
-        public void Render(Camera camera)
-        {
-            Render(camera.GetViewMatrix(), camera.GetProjectionMatrix());
-        }
 
-        public void Render(Matrix4 view, Matrix4 projection)
+        public void Render2()
         {
+            Camera cam = Camera.Main;
+
+            if (cam == null) return;
+
             _shader.Use();
             Matrix4 model = GetRenderModelMatrix();
 
@@ -90,9 +91,11 @@ namespace Engine
             int viewLocation = GL.GetUniformLocation(_shader.Handle, "view");
             int projectionLocation = GL.GetUniformLocation(_shader.Handle, "projection");
 
-            GL.UniformMatrix4(modelLocation, false, ref model);
-            GL.UniformMatrix4(viewLocation, false, ref view);
-            GL.UniformMatrix4(projectionLocation, false, ref projection);
+            _shader.SetMatrix4("model", model);
+            _shader.SetMatrix4("view", cam.GetViewMatrix());
+            _shader.SetMatrix4("projection", cam.GetProjectionMatrix());
+
+           
 
             GL.BindVertexArray(_buffer.VAO);
             GL.DrawElements(PrimitiveType.Lines, indices.Length, DrawElementsType.UnsignedInt, 0);

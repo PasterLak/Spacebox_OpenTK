@@ -24,7 +24,7 @@ namespace Spacebox.Game.GUI.Menu
             _drawDistance = Settings.Gameplay.DrawDistance;
             _languageIndex = Settings.Gameplay.Language == "English" ? 0 : 0; // Currently only English is supported
 
-            SettingsUI.Render("Game", "Game", menu, 5,
+            SettingsUI.Render("Game", "Game",  5,
                 (listSize, rowH) =>
                 {
                     ImGui.BeginTable("table##game", 2, ImGuiTableFlags.NoBordersInBody);

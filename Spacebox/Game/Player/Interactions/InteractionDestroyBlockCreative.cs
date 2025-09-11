@@ -56,7 +56,9 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
             {
                 _time = MinBlockDestroyTime;
                 model.SetAnimation(true);
-                DestroyBlock(hit);
+                player.PlayerStatistics.BlockDamageDealt += hit.block.Durability;
+                DestroyBlock(hit, player);
+                
             }
             if (Input.IsMouseButton(MouseButton.Left))
             {
@@ -64,7 +66,8 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
                 if (_time <= 0)
                 {
                     _time = MinBlockDestroyTime;
-                    DestroyBlock(hit);
+                    player.PlayerStatistics.BlockDamageDealt += hit.block.Durability;
+                    DestroyBlock(hit, player);
                 }
             }
             if (hit.block.Is<InteractiveBlock>(out var b))

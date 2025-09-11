@@ -12,6 +12,7 @@ namespace Engine
         private static int ACTIVE_SHADER = 0;
 
         public int Handle { get; private set; }
+        public int GetHandle() { return Handle; }
         private Dictionary<string, int> _uniformLocations;
         private const string ShaderFormat = ".glsl";
         private const string VertexShaderKey = "--Vert";
@@ -28,6 +29,8 @@ namespace Engine
         private Dictionary<string, int> _previousUniformLocations;
 
         private HotReloader _hotReloader;
+
+
 
         public Shader()
         {

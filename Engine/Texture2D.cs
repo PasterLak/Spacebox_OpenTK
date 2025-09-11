@@ -417,6 +417,8 @@ namespace Engine
             return this;
         }
 
+        public int GetHandle() { return Handle; }
+
     }
 
 

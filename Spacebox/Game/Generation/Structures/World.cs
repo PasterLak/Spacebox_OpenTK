@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Audio;
 using Engine.Components;
 using Engine.GUI;
 using Engine.Multithreading;
@@ -48,6 +49,8 @@ namespace Spacebox.Game.Generation
         private readonly Dictionary<Vector3i, Sector> Sectors = new Dictionary<Vector3i, Sector>();
         BlockMaterial material;
 
+        AudioSource audio;
+
         public World(Astronaut player, BlockMaterial material)
         {
             Instance = this;
@@ -65,6 +68,10 @@ namespace Spacebox.Game.Generation
 
             Overlay.AddElement(new WorldOverlayElement(this));
 
+            audio = new AudioSource(Resources.Load<AudioClip>("Resources/Audio/spaceEffect1"));
+            audio.Volume = 0.5f;
+            audio.Setup3D(30, 1000,0.3f);
+
         }
         bool saveWasPressed = false;
         public void Save()
@@ -76,8 +83,10 @@ namespace Spacebox.Game.Generation
             }*/
           
             PlayerSaveLoadManager.SavePlayer(Player, Data.WorldFolderPath);
-            WorldSaveLoad.SaveWorld(Data.WorldFolderPath);
+            //WorldSaveLoad.SaveWorld(Data.WorldFolderPath);
             Data.Info.GameMode = Player.GameMode;
+            Data.Info.Day = GameTime.Day;
+            Data.Info.Ticks = GameTime.DayTick;
             WorldInfoSaver.Save(Data.Info);
 
             var screenSize = Window.Instance.ClientSize;
@@ -99,6 +108,7 @@ namespace Spacebox.Game.Generation
             CurrentSector.SpawnPlayerNearAsteroid(Player, new Random(Seed));
             if (CurrentSector == null) Debug.Error("No current sector");
 
+           
 
         }
 
@@ -106,6 +116,10 @@ namespace Spacebox.Game.Generation
         {
             Data = WorldLoader.LoadWorldByName(worldName);
             Seed = int.Parse(Data.Info.Seed);
+
+            GameTime.SetDay(Data.Info.Day);
+            GameTime.SetTick(Data.Info.Ticks);
+
 
         }
 
@@ -130,8 +144,36 @@ namespace Spacebox.Game.Generation
                 sector.Value.Update();
             }
 
+            if(Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.K))
+            {
+                audio.Position = GetRandomPointAroundPosition(Player.Position, 100,700);
+                audio.Play();
+            }
             
 
+        }
+
+        public static Vector3 GetRandomPointAroundPosition(Vector3 center, float minDistance, float maxDistance)
+        {
+            if (minDistance > maxDistance)
+            {
+                var temp = minDistance;
+                minDistance = maxDistance;
+                maxDistance = temp;
+            }
+
+            Random random = new Random();
+
+            float distance = minDistance + (float)random.NextDouble() * (maxDistance - minDistance);
+
+            float theta = (float)random.NextDouble() * MathF.PI * 2f;
+            float phi = MathF.Acos(1f - 2f * (float)random.NextDouble());
+
+            float x = distance * MathF.Sin(phi) * MathF.Cos(theta);
+            float y = distance * MathF.Sin(phi) * MathF.Sin(theta);
+            float z = distance * MathF.Cos(phi);
+
+            return center + new Vector3(x, y, z);
         }
 
         private readonly HashSet<Vector3i> loadingSectors = new HashSet<Vector3i>();

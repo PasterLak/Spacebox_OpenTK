@@ -34,7 +34,7 @@ namespace Spacebox.Game.GUI.Menu
             _menuMusic = settings.MenuMusic;
 
 
-            SettingsUI.Render("Audio", "Audio", menu, 5,
+            SettingsUI.Render("Audio", "Audio",  5,
                 (listSize, rowH) =>
                 {
                     ImGui.BeginTable("table##audio", 2, ImGuiTableFlags.NoBordersInBody);

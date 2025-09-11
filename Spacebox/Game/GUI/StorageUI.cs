@@ -228,11 +228,11 @@ namespace Spacebox.Game.GUI
         {
             if (!slot.HasItem) return;
 
-            if (Input.IsKey(Keys.LeftShift))
+            if (Input.IsAction("storage_item_quick_transfer"))
             {
                 slot.MoveItemToConnectedStorage();
             }
-            else if (Input.IsKey(Keys.X))
+            else if (Input.IsAction("storage_item_delete"))
             {
                 slot.Clear();
             }

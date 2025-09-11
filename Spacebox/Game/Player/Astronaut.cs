@@ -9,6 +9,7 @@ using Spacebox.Game.GUI;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Game.Player.Interactions;
 using Spacebox.GUI;
+using SpaceNetwork;
 
 
 namespace Spacebox.Game.Player
@@ -54,11 +55,16 @@ namespace Spacebox.Game.Player
         private GameModeBase _gameModeBase;
         private GameMode _gameMode => _gameModeBase.GetGameMode();
         public InteractionMode CurrentInteraction => _gameModeBase.InteractionHandler.Interaction;
-  
+        public PlayerStatistics PlayerStatistics { get; set; } = new PlayerStatistics();
         public PlayerEffects Effects { get; private set; } = new PlayerEffects();
         public Vector3 SpawnPosition { get; set; }
+        private Vector3 _lastStatPosition;
 
-        
+        public void SetPosition(Vector3 position)
+        {
+            _lastStatPosition = position;
+            Position = position;
+        }
 
         public GameMode GameMode
         {
@@ -83,6 +89,7 @@ namespace Spacebox.Game.Player
         {
             FOV = Settings.Graphics.Fov;
             SpawnPosition = position;
+            _lastStatPosition = position;
             Name = "Player";
             DepthNear = 0.01f;
             DepthFar = Settings.ViewDistance;
@@ -101,7 +108,7 @@ namespace Spacebox.Game.Player
             Flashlight.Position = new Vector3(0, 0, 0f); // -0.3
             Flashlight.Rotation = Vector3.Zero;
 
-             ItemLight = new PointLight();
+            ItemLight = new PointLight();
             ItemLight.Diffuse = new Vector3(0.2f, 1, 0.2f);
             ItemLight.Specular = new Vector3(0f);
             ItemLight.Intensity = 1;
@@ -117,8 +124,8 @@ namespace Spacebox.Game.Player
             toggle = ToggleManager.Register("player");
             toggle.OnStateChanged += state =>
             {
-                if(IsAlive)
-                _canMove = state;
+                if (IsAlive)
+                    _canMove = state;
 
             };
 
@@ -139,7 +146,7 @@ namespace Spacebox.Game.Player
 
             var damageTexture = Resources.Load<Texture2D>("Resources/Textures/damageEffect.png");
             damageTexture.FilterMode = FilterMode.Nearest;
-        
+
 
             AddChild(Effects);
 
@@ -152,13 +159,33 @@ namespace Spacebox.Game.Player
             OnMoved += (a) =>
             {
                 audioListener.Velocity = InertiaController.Velocity;
+
+                timeToSavePosToStat -= Time.Delta;
+
+                if (timeToSavePosToStat < 0)
+                {
+                    timeToSavePosToStat = 5;
+                    if (GameMode != null && GameMode != GameMode.Spectator)
+                        PlayerStatistics.UpdateDistance(_lastStatPosition, Position);
+
+                    _lastStatPosition = Position;
+                }
+
+
             };
-            
+
+            HealthBar.StatsData.OnIncrement += (v) =>
+                {
+                    PlayerStatistics.HealthHealed += v;
+                };
+
             DeathScreen.OnRespawn += Revive;
 
             Flashlight.OnEnabledChanged += (b) => { PanelUI.SetFlashlight(this); };
 
         }
+
+        float timeToSavePosToStat = 5;
 
         ModelRendererComponent spot;
         private void SetData()
@@ -312,6 +339,7 @@ namespace Spacebox.Game.Player
             if (Input.IsActionUp("zoom"))
             {
                 FOV = 90;
+                PlayerStatistics.Print();
             }
 
 #if DEBUG
@@ -380,15 +408,20 @@ namespace Spacebox.Game.Player
         public void Teleport(Vector3 position)
         {
             Position = position;
+            _lastStatPosition = Position;
             InertiaController.Reset();
             Effects.PlayEffect(PlayerEffectType.Teleport);
+            PlayerStatistics.TeleportsUsed++;
             OnMoved?.Invoke(this);
         }
 
         public void TakeDamage(int damage, DeathCase? deathCase = null)
         {
 
+
             var health = HealthBar.StatsData;
+            damage = Math.Min(damage, health.MaxValue);
+            PlayerStatistics.DamageTaken += damage;
             health.Decrement(damage);
 
             if (damage > 12)
@@ -408,6 +441,7 @@ namespace Spacebox.Game.Player
         private void Death(DeathCase? deathCase = null)
         {
             if (!IsAlive) return;
+            PlayerStatistics.DeathsTotal++;
 
             IsAlive = false;
             InertiaController.Reset();
@@ -417,7 +451,7 @@ namespace Spacebox.Game.Player
             PanelUI.IsVisible = false;
             PanelUI.IsItemModelVisible = false;
             Input.ShowCursor();
-          
+
             Flashlight.Enabled = false;
             HealthBar.StatsGUI.IsVisible = false;
             PowerBar.StatsGUI.IsVisible = false;
@@ -434,6 +468,7 @@ namespace Spacebox.Game.Player
         public void Revive()
         {
             IsAlive = true;
+          
             FOV = Settings.Graphics.Fov;
             Settings.ShowInterface = true;
             var health = HealthBar.StatsData;
@@ -447,7 +482,7 @@ namespace Spacebox.Game.Player
             //PanelUI.ResetLastSelected();
             HealthBar.StatsGUI.IsVisible = true;
             PowerBar.StatsGUI.IsVisible = true;
-            Position = SpawnPosition;
+            SetPosition( SpawnPosition);
             Effects.PlayEffect(PlayerEffectType.Heal);
 
         }
@@ -467,7 +502,7 @@ namespace Spacebox.Game.Player
             if (VisualDebug.Enabled)
             {
                 _axes.Position = Position + Front * 0.1f;
-                _axes.Render(this);
+                _axes.Render2();
             }
 
             if (_gameModeBase != null)

@@ -292,11 +292,12 @@ namespace Spacebox.Game.GUI
             {
                 if (Inventory.TryAddItem(blueprint.Product.Item, blueprint.Product.Quantity, out var rest))
                 {
-
+                    currentPlayer.PlayerStatistics.ItemsCrafted += blueprint.Product.Quantity;
                 }
                 else
                 {
                     Panel.TryAddItem(blueprint.Product.Item, rest);
+                    currentPlayer.PlayerStatistics.ItemsCrafted += rest;
                 }
             }
             else

@@ -224,7 +224,6 @@ namespace Engine
 
         public static void Log(object message)
         {
-            //AddMessage($"[DEBUG] {message}", new Vector4(0.2f, 0.7f, 1f, 1f));
             AddMessage($"{message.ToString()}", infoColor);
 #if DEBUG
             Console.WriteLine($"{message.ToString()}");
@@ -232,7 +231,6 @@ namespace Engine
         }
         public static void Log(string message)
         {
-            //AddMessage($"[DEBUG] {message}", new Vector4(0.2f, 0.7f, 1f, 1f));
             AddMessage($"{message}", infoColor);
 #if DEBUG
             Console.WriteLine($"{message}");
@@ -337,7 +335,8 @@ namespace Engine
                 childHeight = 100f;
 
             ImGui.BeginChild("ScrollingRegion", new Vector2(0, childHeight), ImGuiChildFlags.AlwaysAutoResize);
-            foreach (var msg in _messages)
+            foreach (var msg in _messages) // : 'Collection was modified; enumeration operation may not execute.'
+
             {
                 if (showType != MessageType.Info)
                 {

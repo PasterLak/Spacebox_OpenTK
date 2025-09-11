@@ -3,9 +3,9 @@ using Engine.Audio;
 using Engine.Light;
 using Engine.Physics;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.Common.Input;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
+using SpaceNetwork;
 
 
 namespace Spacebox.Game.Player
@@ -40,6 +40,7 @@ namespace Spacebox.Game.Player
 
         private PointLight light;
         private bool useLight = true;
+        private Astronaut? astronaut;
         public Projectile()
         {
             lineRenderer = new LineRenderer();
@@ -49,7 +50,7 @@ namespace Spacebox.Game.Player
 
         }
 
-        public Projectile Initialize(Ray ray, ProjectileParameters parameters, bool useLight = true)
+        public Projectile Initialize(Ray ray, ProjectileParameters parameters, Astronaut? owner, bool useLight = true)
         {
             this.useLight = useLight;
             this.ray = ray;
@@ -62,6 +63,7 @@ namespace Spacebox.Game.Player
             Position = ray.Origin;
             Rotation = Vector3.Zero;
             Scale = Vector3.One;
+            astronaut = owner;
 
             lineRenderer.Thickness = parameters.Thickness;
             lineRenderer.Color = parameters.Color;
@@ -72,7 +74,7 @@ namespace Spacebox.Game.Player
 
             camera = Camera.Main;
 
-          
+
             if (ricochetSound == null)
             {
 
@@ -108,7 +110,7 @@ namespace Spacebox.Game.Player
 
                 light.Range = 4;
                 light.Diffuse = parameters.Color3;
-                
+
                 light.Specular = Vector3.Zero;
                 light.Enabled = true;
             }
@@ -139,8 +141,15 @@ namespace Spacebox.Game.Player
                 if (currentDamage >= 50)
                 {
                     explosionSound.Position = Position;
+
+                    explosionSound.SetPitchByValue(Parameters.MaxTravelDistance + 5 - distanceTraveled, 0, Parameters.MaxTravelDistance, 0.8f, 1f);
                     explosionSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 200);
                     explosionSound.Play();
+
+                    if (astronaut != null)
+                    {
+                        astronaut.PlayerStatistics.ExplosionsCaused++;
+                    }
                 }
                 OnDespawn?.Invoke(this);
                 return;
@@ -160,12 +169,17 @@ namespace Spacebox.Game.Player
                         ricochetSound.Position = hit.position;
                         ricochetSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 100);
 
-                        
+
                         var dmg0 = MathF.Min(Parameters.DamageBlocks, maxDamage);
                         ricochetSound.SetPitchByValue(maxDamage - dmg0, 0, maxDamage, 0.5f, 1f);
 
                         ricochetSound.Position = hit.position;
                         ricochetSound.Play();
+                        if (astronaut != null)
+                        {
+                            astronaut.PlayerStatistics.ProjectilesRicocheted++;
+                        }
+
                         lineRenderer.ClearPoints();
                         lineRenderer.AddPoint(Vector3.Zero);
                         lineRenderer.AddPoint(ray.Direction * Parameters.Length);
@@ -176,6 +190,10 @@ namespace Spacebox.Game.Player
                             explosionSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 200);
                             explosionSound.Position = hit.position;
                             explosionSound.Play();
+                            if (astronaut != null)
+                            {
+                                astronaut.PlayerStatistics.ExplosionsCaused++;
+                            }
                         }
                         return;
                     }
@@ -184,30 +202,42 @@ namespace Spacebox.Game.Player
 
 
                 OnHit?.Invoke(this);
-               
+
                 hitSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 100);
 
-            
+
                 var dmg = MathF.Min(Parameters.DamageBlocks, maxDamage);
                 hitSound.Position = hit.position;
                 hitSound.SetPitchByValue(maxDamage - dmg, 0, maxDamage, 0.5f, 1f);
 
                 hitSound.Position = hit.position;
-           
+
                 hitSound.Play();
+                if (astronaut != null)
+                {
+                    astronaut.PlayerStatistics.ShotsHit++;
+                }
                 ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.position + hit.normal.ToVector3() * 0.1f, Parameters.ID);
 
                 if (currentDamage > hit.block.Durability)
                 {
-
+                    
                     hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage, Parameters.DropBlock);
-
+                    if (astronaut != null)
+                    {
+                        astronaut.PlayerStatistics.BlockDamageDealt += currentDamage;
+                        astronaut.PlayerStatistics.BlocksDestroyed++;
+                    }
                     IsActive = false;
                     if (currentDamage >= 50)
                     {
                         explosionSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 200);
                         explosionSound.Position = hit.position;
                         explosionSound.Play();
+                        if (astronaut != null)
+                        {
+                            astronaut.PlayerStatistics.ExplosionsCaused++;
+                        }
                     }
                     OnDespawn?.Invoke(this);
 
@@ -215,13 +245,19 @@ namespace Spacebox.Game.Player
                 else
                 {
                     hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage, Parameters.DropBlock);
+                    if (astronaut != null)
+                    {
+                        astronaut.PlayerStatistics.BlockDamageDealt += currentDamage;
+                        
+                    }
 
                     IsActive = false;
                     OnDespawn?.Invoke(this);
                 }
             }
         }
-   
+
+
         public void Render()
         {
             if (!_isActive) return;

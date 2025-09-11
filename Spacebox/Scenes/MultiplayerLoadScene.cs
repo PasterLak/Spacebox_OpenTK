@@ -54,8 +54,7 @@ namespace Spacebox.Scenes
         {
             player = new CameraStatic(new Vector3(0, 0, 0));
 
-            var mesh = Resources.Load<Engine.Mesh>("Resources/Models/cube.obj");
-            skybox = new Skybox(mesh,
+            skybox = new Skybox(
                 new SpaceTexture(512, 512, World.Seed));
            
             Debug.Warning("Trying to connect to server...");

@@ -15,6 +15,8 @@ namespace Spacebox.Game.Generation.Blocks
         public float Efficiency = 1f;
         private float TestingCoefficient = 1f;
 
+        public int ProcessedItems { get;  set; } = 0;
+
         public Action<ResourceProcessingBlock> OnCrafted;
         private bool _isRunning = false;
         public bool IsRunning
@@ -83,6 +85,8 @@ namespace Spacebox.Game.Generation.Blocks
             InputStorage.OnDataWasChanged += OnAnySlotWasChanged;
             FuelStorage.OnDataWasChanged += OnAnySlotWasChanged;
             OutputStorage.OnDataWasChanged += OnAnySlotWasChanged;
+
+
         }
 
         private void OnAnySlotWasChanged(Storage s)
@@ -274,10 +278,14 @@ namespace Spacebox.Game.Generation.Blocks
             if (outSlot.HasItem)
             {
                 outSlot.Count += Recipe.Product.Quantity;
+                ProcessedItems += Recipe.Product.Quantity; 
             }
             else
             {
-                OutputStorage.TryAddItem(Recipe.Product.Item, Recipe.Product.Quantity);
+                if(OutputStorage.TryAddItem(Recipe.Product.Item, Recipe.Product.Quantity))
+                {
+                    ProcessedItems+= Recipe.Product.Quantity;
+                }
             }
             OnCrafted?.Invoke(this);
             if (!HasInput())

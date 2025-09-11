@@ -1,11 +1,11 @@
-﻿using ImGuiNET;
-
+﻿using Engine;
 using Engine.Audio;
-using Engine;
-using Spacebox.Game.Player;
-using System.Numerics;
-using Spacebox.Game.GUI.Menu;
+using ImGuiNET;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.GUI.Menu;
+using Spacebox.Game.Player;
+using SpaceNetwork;
+using System.Numerics;
 
 namespace Spacebox.Game.GUI
 {
@@ -239,6 +239,8 @@ namespace Spacebox.Game.GUI
 
             processingBlock = block;
 
+         
+
             if (InputStorage != null)
             {
                 InputStorage.OnDataWasChanged -= OnInputItemWasChanged;
@@ -409,12 +411,18 @@ namespace Spacebox.Game.GUI
         {
             if (!slot.HasItem) return;
 
-            if (Input.IsKey(OpenTK.Windowing.GraphicsLibraryFramework.Keys.LeftShift))
+            if (Input.IsAction("storage_item_quick_transfer"))
             {
                 if (slot.Storage.ConnectedStorage != null)
                 {
                     if (slot.TryMoveItemToConnectedStorage(out var rest))
                     {
+                        if(slot.Storage == OutputStorage)
+                        {
+                            if(Player != null)
+                            Player.PlayerStatistics.ItemsProcessed += processingBlock.ProcessedItems;
+                            processingBlock.ProcessedItems = 0;
+                        }
                         if (pickupSound.IsPlaying)
                         {
                             pickupSound.Stop();

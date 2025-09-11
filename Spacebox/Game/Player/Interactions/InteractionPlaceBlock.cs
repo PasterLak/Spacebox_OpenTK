@@ -1,17 +1,16 @@
 
-using OpenTK.Mathematics;
+using Client;
 using Engine;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-
 using Engine.Audio;
 using Engine.Physics;
-
+using OpenTK.Mathematics;
+using OpenTK.Windowing.Common.Input;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation;
+using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
-using Client;
-using OpenTK.Windowing.Common.Input;
-using Spacebox.Game.Generation.Blocks;
+using SpaceNetwork;
 
 namespace Spacebox.Game.Player.Interactions;
 
@@ -22,6 +21,7 @@ public class InteractionPlaceBlock : InteractionMode
     private static AudioSource blockPlace;
     private string lastBlockPlaceSound = "blockPlaceDefault";
     public static LineRenderer lineRenderer;
+    Random r = new Random();
     public override void OnEnable()
     {
         if (blockPlace == null)
@@ -91,15 +91,19 @@ public class InteractionPlaceBlock : InteractionMode
                 BlockPointer p = new BlockPointer(hit);
 
                 CreativeTools.AddBlock(p);
+
+                player.PlayerStatistics.BlocksPlaced++;
             }
 
             if (Input.IsKeyDown(Keys.KeyPad3))
             {
                 CreativeTools.DeleteBlocks();
+
+                player.PlayerStatistics.BlocksDestroyed++;
             }
 
             if (disSqrt > MinDistanceToBlock)
-                OnEntityFound(hit);
+                OnEntityFound(hit, player);
             else
             {
                 BlockSelector.IsVisible = false;
@@ -112,7 +116,7 @@ public class InteractionPlaceBlock : InteractionMode
         }
     }
 
-    private void OnEntityFound(HitInfo hit)
+    private void OnEntityFound(HitInfo hit, Astronaut player)
     {
         var selectorPos = UpdateBlockPreview(hit);
 
@@ -152,12 +156,15 @@ public class InteractionPlaceBlock : InteractionMode
                         {
                             var loc = chunk.SpaceEntity.WorldPositionToLocal(selectorPos);
                             ClientNetwork.Instance.SendBlockPlaced(newBlock.Id, (byte)newBlock.Direction, (short)loc.X, (short)loc.Y, (short)loc.Z);
+                            
                         }
+                        player.PlayerStatistics.BlocksPlaced++;
                     }
 
                     if (blockPlace != null)
                     {
                         PickPlaceSound(newBlock.Id);
+                        blockPlace.Pitch = r.Next(9, 12) * 0.1f;
                         blockPlace.Play();
                     }
                 }
@@ -248,11 +255,13 @@ public class InteractionPlaceBlock : InteractionMode
                 BlockPointer p = new BlockPointer(id, entity, entity.WorldPositionToLocal(selectorPosition));
 
                 CreativeTools.AddBlock(p);
+                player.PlayerStatistics.BlocksPlaced++;
             }
 
             if (Input.IsKeyDown(Keys.KeyPad3))
             {
                 CreativeTools.DeleteBlocks();
+                player.PlayerStatistics.BlocksDestroyed++;
             }
         }
         //VisualDebug.DrawBoundingBox(
@@ -286,19 +295,23 @@ public class InteractionPlaceBlock : InteractionMode
                         {
                             var loc = entity.WorldPositionToLocal(selectorPosition);
                             ClientNetwork.Instance.SendBlockPlaced(newBlock.Id, (byte)newBlock.Direction, (short)loc.X, (short)loc.Y, (short)loc.Z);
+                           
                         }
+                        player.PlayerStatistics.BlocksPlaced++;
                     }
                     else
                     {
                         var newEntity = World.CurrentSector.CreateEntity(selectorPosition);
 
                         newEntity.CreateFirstBlock(newBlock);
+                        player.PlayerStatistics.BlocksPlaced++;
                     }
 
 
                     if (blockPlace != null)
                     {
                         PickPlaceSound(newBlock.Id);
+                        blockPlace.Pitch = r.Next(9, 12) * 0.1f;
                         blockPlace.Play();
                     }
                 }

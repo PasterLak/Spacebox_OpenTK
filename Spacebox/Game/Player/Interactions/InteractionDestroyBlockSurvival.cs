@@ -98,7 +98,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         if (hit.block == null) return;
         if (hit.block.Durability == 0)
         {
-            DestroyBlock(hit);
+            DestroyBlock(hit, astronaut);
             return;
         }
         BlockMiningEffect.SetEmitter(true);
@@ -114,13 +114,14 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         }
     }
 
-    private void DamageBlock(HitInfo hit, Astronaut astronaut, DrillItem drill,byte damage = 1)
+    private void DamageBlock(HitInfo hit, Astronaut astronaut, DrillItem drill, byte damage = 1)
     {
         int dam = hit.block.Durability - damage;
         hit.block.Durability = (byte)(dam < 0 ? 0 : dam);
+        astronaut.PlayerStatistics.BlockDamageDealt += damage;
         if (hit.block.Durability <= 0)
         {
-            DestroyBlock(hit);
+            DestroyBlock(hit, astronaut);
             astronaut.PowerBar.StatsData.Decrement(drill.PowerUsage);
         }
 
@@ -142,7 +143,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
     {
         if (Input.IsMouseButtonUp(MouseButton.Left))
         {
-            
+
             StopDrill();
         }
 
@@ -158,7 +159,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         Ray ray = new Ray(player.Position, player.Front, MaxDestroyDistance);
         var drill = selectedItemSlot.Item as DrillItem;
 
-        if(drill.PowerUsage > player.PowerBar.StatsData.Value)
+        if (drill.PowerUsage > player.PowerBar.StatsData.Value)
         {
             BlockSelector.IsVisible = false;
             StopDrill();
@@ -172,7 +173,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
                 lastBlock = hit.block;
             if (Input.IsMouseButton(MouseButton.Left))
             {
-                
+
                 var blockData = GameAssets.GetBlockDataById(hit.block.Id);
                 BlockMiningEffect.Enabled = true;
 

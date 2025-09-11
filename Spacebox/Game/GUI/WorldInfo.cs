@@ -12,6 +12,8 @@ public class WorldInfo
     public string ModId { get; set; }
     public string GameVersion { get; set; }
     public string LastEditDate { get; set; }
+    public int Ticks { get; set; } = 0;
+    public int Day { get; set; } = 0;
     public string FolderName { get; set; } = "";
     public bool ShowWelcomeWindow { get; set; } = true;
 

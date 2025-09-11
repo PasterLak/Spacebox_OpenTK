@@ -328,6 +328,69 @@ namespace Engine
         public Vector3 Up => Vector3.Normalize(Vector3.Cross(Right, ForwardLocal));
 
 
+        public T FindNode<T>() where T : Node3D
+        {
+            if (this is T result) return result;
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                var found = Children[i].FindNode<T>();
+                if (found != null) return found;
+            }
+
+            return null;
+        }
+
+        public List<T> FindAllNodesOfType<T>() where T : Node3D
+        {
+            var results = new List<T>();
+            FindAllNodesOfTypeRecursive(results);
+            return results;
+        }
+
+        private void FindAllNodesOfTypeRecursive<T>(List<T> results) where T : Node3D
+        {
+            if (this is T match) results.Add(match);
+
+            for (int i = 0; i < Children.Count; i++)
+                Children[i].FindAllNodesOfTypeRecursive(results);
+        }
+
+        public T FindComponent<T>() where T : Component
+        {
+            for (int i = 0; i < Components.Count; i++)
+            {
+                if (Components[i] is T component) return component;
+            }
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                var found = Children[i].FindComponent<T>();
+                if (found != null) return found;
+            }
+
+            return null;
+        }
+
+        public List<T> FindAllComponents<T>() where T : Component
+        {
+            var results = new List<T>();
+            FindAllComponentsRecursive(results);
+            return results;
+        }
+
+        private void FindAllComponentsRecursive<T>(List<T> results) where T : Component
+        {
+            for (int i = 0; i < Components.Count; i++)
+            {
+                if (Components[i] is T component) results.Add(component);
+            }
+
+            for (int i = 0; i < Children.Count; i++)
+                Children[i].FindAllComponentsRecursive(results);
+        }
+
+
         protected void PrintHierarchy()
         {
             Debug.Log("------------------- SceneGraph -------------------");

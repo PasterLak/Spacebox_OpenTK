@@ -37,6 +37,7 @@ namespace Spacebox.Game.Player
                 if (Debug.IsVisible) return;
                 if (Chat.FocusInput) return;
 
+                astronaut.PlayerStatistics.FlashlightToggles++;
                 audio.Play();
                 Enabled = !Enabled;
 

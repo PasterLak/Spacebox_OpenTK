@@ -305,11 +305,11 @@ namespace Spacebox.Game.Generation
             NeedsToRegenerateMesh = true;
         }
 
-        public void DamageBlock(Vector3Byte blockPos, Vector3SByte normal, byte damage, bool spawnDrop)
+        public bool DamageBlock(Vector3Byte blockPos, Vector3SByte normal, byte damage, bool spawnDrop)
         {
-            if(damage == 0) return;
+            if(damage == 0) return false;
             if (!IsInRange(blockPos.X, blockPos.Y, blockPos.Z))
-                return;
+                return false;
 
             var block = Blocks[blockPos.X, blockPos.Y, blockPos.Z];
 
@@ -321,7 +321,9 @@ namespace Spacebox.Game.Generation
             {
                 block.Durability = 0;
                 RemoveBlock(blockPos.X, blockPos.Y, blockPos.Z, normal.X, normal.Y, normal.Z, spawnDrop);
+                return true;
             }
+            return false;
         }
         public void RemoveBlock(Vector3Byte blockPos, Vector3SByte normal)
         {

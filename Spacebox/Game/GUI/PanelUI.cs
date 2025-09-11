@@ -52,7 +52,14 @@ namespace Spacebox.Game.GUI
             SetSelectedSlot(0);
             Storage.OnDataWasChanged += OnStorageDataWasChanged;
             var inventory = ToggleManager.Register("panel");
-            inventory.OnStateChanged += s => { AllowScroll = s; };
+            inventory.OnStateChanged += s => { 
+                AllowScroll = s; 
+
+                if(s)
+                {
+                    ShowItemDescription();
+                }
+            };
             _lastSelectedItem = null;
             _lastSelectedSlotId = -1;
             _lastSelectedCount = 0;
@@ -292,14 +299,27 @@ namespace Spacebox.Game.GUI
                     _lastSelectedCount = SelectedSlot.Count;
                 }
 
+                if(Player != null && SelectedSlot != null)
                 Player.SetItemLight(SelectedSlot);
-                
 
+
+                ShowItemDescription();
+
+
+
+                    OnSlotChanged?.Invoke(slot);
+            }
+        }
+
+        private static void ShowItemDescription()
+        {
+            if (!ToggleManager.IsActiveAndExists("inventory"))
+            {
 
                 if (SelectedSlot.HasItem && SelectedSlot.Item != null)
                 {
                     _time = TimeToHideItemName;
-                    
+
 
                     if (SelectedSlot.Item.Description != "")
                     {
@@ -316,8 +336,6 @@ namespace Spacebox.Game.GUI
                 {
                     ItemControlsUI.IsVisible = false;
                 }
-
-                OnSlotChanged?.Invoke(slot);
             }
         }
 
@@ -342,11 +360,11 @@ namespace Spacebox.Game.GUI
             }
             if (slot.HasItem)
             {
-                if (Input.IsKey(Keys.LeftShift))
+                if (Input.IsAction("storage_item_quick_transfer"))
                     slot.MoveItemToConnectedStorage();
                 if (Input.IsKey(Keys.LeftAlt))
                     slot.Split();
-                if (Input.IsKey(Keys.X))
+                if (Input.IsAction("storage_item_delete"))
                     slot.Clear();
                 if (Input.IsMouseButton(MouseButton.Left))
                 {

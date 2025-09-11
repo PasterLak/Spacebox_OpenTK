@@ -46,10 +46,8 @@ namespace Spacebox.Scenes
             
 
             var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
-
-            var mesh = Resources.Load<Mesh>("Resources/Models/cube.obj");
       
-            Lighting.Skybox = new Skybox(mesh, skyboxTexture);
+            Lighting.Skybox = new Skybox( skyboxTexture);
             CenteredImageMenu.LoadImage("Resources/Textures/spaceboxLogo.png", true);
 
             Resources.Load<AudioClip>("Resources/Audio/UI/click1.ogg");

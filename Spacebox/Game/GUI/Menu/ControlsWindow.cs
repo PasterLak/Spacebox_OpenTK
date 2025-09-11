@@ -25,7 +25,7 @@ public class ControlsWindow : MenuWindow
 
     public override void Render()
     {
-        SettingsUI.Render("Controls", "Controls", menu, 5,
+        SettingsUI.Render("Controls", "Controls",  5,
             (listSize, rowH) =>
             {
                 RenderControlsTable(listSize, rowH);
@@ -294,7 +294,7 @@ public class ControlsWindow : MenuWindow
 
 public static class SettingsUI
 {
-    public static void Render(string windowId, string header, GameMenu menu, int buttonCount,
+    public static void Render(string windowId, string header,  int buttonCount,
         Action<Vector2, float> drawContent, Action onSave, Action onBack)
     {
         var io = ImGui.GetIO();
@@ -330,11 +330,33 @@ public static class SettingsUI
         ImGui.EndChild();
 
         ImGui.SetCursorPos(new Vector2((ww - btnW) / 2f, wh - btnH - spacing));
-        menu.ButtonWithBackground("Save", new Vector2(listSize.X / 2f - spacing, btnH),
+      
+        if(onSave != null)
+        ButtonWithBackground("Save", new Vector2(listSize.X / 2f - spacing, btnH),
             new Vector2((ww - btnW) / 2f, wh - btnH - spacing), onSave);
-        menu.ButtonWithBackground("Back", new Vector2(listSize.X / 2f - spacing, btnH),
+
+        if (onBack != null)
+            ButtonWithBackground("Back", new Vector2(listSize.X / 2f - spacing, btnH),
             new Vector2((ww - btnW) / 2f + listSize.X / 2f + spacing, wh - btnH - spacing), onBack);
 
         ImGui.End();
+    }
+
+    public static void ButtonWithBackground(string label, Vector2 size, Vector2 cursorPos, Action onClick)
+    {
+        ImGui.SetCursorPos(cursorPos);
+        Vector2 buttonPos = ImGui.GetCursorScreenPos();
+        float offsetValue = size.Y * 0.1f;
+        Vector2 offset = new Vector2(offsetValue, offsetValue);
+        uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
+        uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
+        var drawList = ImGui.GetWindowDrawList();
+        drawList.AddRectFilled(buttonPos - offset, buttonPos + size + offset, borderColor);
+        drawList.AddRectFilled(buttonPos, buttonPos + size + offset, lightColor);
+        if (ImGui.Button(label, size))
+        {
+            
+            onClick?.Invoke();
+        }
     }
 }

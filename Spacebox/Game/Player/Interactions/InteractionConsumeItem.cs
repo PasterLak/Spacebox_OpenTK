@@ -1,4 +1,4 @@
-using Engine;
+﻿using Engine;
 using Engine.Audio;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Effects;
@@ -68,11 +68,13 @@ public class InteractionConsumeItem : InteractionMode
                 useConsumableAudio = new AudioSource(clip);
                 useConsumableAudio.Volume = 0.3f;
                 useConsumableAudio.Play();
+                player.PlayerStatistics.ItemsСonsumed++;
 
                 if (consumable.HealAmount > 0)
                 {
                     ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 1, 0), 0.2f);
                     player.Effects.PlayEffect(PlayerEffectType.Heal);
+                    
                 }
                     
 
