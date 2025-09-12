@@ -34,6 +34,8 @@ namespace Spacebox.Game.Generation.Blocks
 
         private readonly string blockType;
 
+        public string BlockType => blockType;
+
         public Storage[] GetAllStorages()
         {
             return new Storage[3] { InputStorage, OutputStorage, FuelStorage };
@@ -164,6 +166,11 @@ namespace Spacebox.Game.Generation.Blocks
 
         }
 
+        public int GetTicksWithEfficiency(int basicTicks)
+        {
+            return (int)(basicTicks * TestingCoefficient / Efficiency);
+        }
+
         public bool TryStartTask(out ProcessResourceTask task)
         {
             task = null;
@@ -194,7 +201,7 @@ namespace Spacebox.Game.Generation.Blocks
 
             IsRunning = true;
 
-            var ticksRequared = (int)(Recipe.RequiredTicks * TestingCoefficient / Efficiency);
+            var ticksRequared = GetTicksWithEfficiency(Recipe.RequiredTicks);
             craftTicks = (short)ticksRequared;
             currentTick = 0;
 

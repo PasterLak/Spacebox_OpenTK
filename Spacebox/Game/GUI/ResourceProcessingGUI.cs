@@ -356,17 +356,12 @@ namespace Spacebox.Game.GUI
 
             Vector2 displaySize = ImGui.GetIO().DisplaySize;
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
-            float windowWidth = displaySize.Y * 0.4f;
+            float windowWidth = displaySize.Y * 0.5f;
             float windowHeight = displaySize.Y * 0.25f;
             var windowPos = GameMenu.CenterNextWindow3(windowWidth, windowHeight);
 
-
             ImGui.Begin(WindowName, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove
                 | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
-
-            float buttonWidth = windowWidth * 0.9f;
-            float buttonHeight = windowHeight * 0.12f;
-            float spacing = windowHeight * 0.03f;
 
             if (processingBlock != null)
             {
@@ -378,33 +373,141 @@ namespace Spacebox.Game.GUI
 
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y, 0.005f);
 
-            var space = windowHeight * 0.1f;
+            float leftPanelWidth = windowWidth * 0.68f;
+            float rightPanelWidth = windowWidth * 0.3f;
+            float spacing = windowHeight * 0.03f;
             var slotSize = InventoryUIHelper.SlotSize;
 
-            var textSize = ImGui.CalcTextSize(WindowName);
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0, 0, 0, 0));
+            ImGui.BeginChild("LeftPanel", new Vector2(leftPanelWidth, windowHeight), ImGuiChildFlags.None);
 
-            ImGui.SetCursorPos(new Vector2(windowWidth * 0.505f - textSize.X * 0.5f, textSize.Y));
+            var textSize = ImGui.CalcTextSize(WindowName);
+            ImGui.SetCursorPos(new Vector2(leftPanelWidth * 0.505f - textSize.X * 0.5f, textSize.Y));
             ImGui.TextColored(new Vector4(0.1f, 0.1f, 0.1f, 0.1f), WindowName);
-            ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize.X * 0.5f, textSize.Y));
+            ImGui.SetCursorPos(new Vector2(leftPanelWidth * 0.5f - textSize.X * 0.5f, textSize.Y));
             ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 0.9f), WindowName);
 
             var textSize2 = ImGui.CalcTextSize(status);
-            ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize2.X * 0.5f, textSize.Y * 2.2f));
+            ImGui.SetCursorPos(new Vector2(leftPanelWidth * 0.5f - textSize2.X * 0.5f, textSize.Y * 2.2f));
             ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 0.9f), status);
 
-            ImGui.SetCursorPos(new Vector2(space, space * 2));
+            float centerX = leftPanelWidth * 0.5f;
+            float centerY = windowHeight * 0.5f;
+            float slotSpacing = slotSize * 1.5f;
+
+            ImGui.SetCursorPos(new Vector2(centerX - slotSpacing, centerY - slotSize * 0.7f));
             InventoryUIHelper.DrawSlot(InputStorage.GetSlot(0, 0), "InputStorage", MoveItems, inputIcon, false);
             InventoryUIHelper.ShowTooltip(InputStorage.GetSlot(0, 0), false);
-            ImGui.SetCursorPos(new Vector2(space, windowHeight - slotSize - space));
+
+            ImGui.SetCursorPos(new Vector2(centerX - slotSpacing, centerY + slotSpacing * 0.5f));
             InventoryUIHelper.DrawSlot(FuelStorage.GetSlot(0, 0), "FuelStorage", MoveItems, batteryIcon, false);
             InventoryUIHelper.ShowTooltip(FuelStorage.GetSlot(0, 0), false);
-            ImGui.SetCursorPos(new Vector2(windowWidth - slotSize - space, slotSize + space));
+
+            ImGui.SetCursorPos(new Vector2(centerX + slotSpacing * 0.5f, centerY - slotSize * 0.7f));
             InventoryUIHelper.DrawSlot(OutputStorage.GetSlot(0, 0), "OutputStorage", MoveItems, outputIcon, false);
             InventoryUIHelper.ShowTooltip(OutputStorage.GetSlot(0, 0), false);
 
+            ImGui.EndChild();
+            ImGui.PopStyleColor();
+
+            ImGui.SameLine();
+            ImGui.GetWindowDrawList().AddLine(
+                new Vector2(ImGui.GetCursorScreenPos().X, windowPos.Y + spacing),
+                new Vector2(ImGui.GetCursorScreenPos().X, windowPos.Y + windowHeight - spacing),
+                ImGui.GetColorU32(new Vector4(0.7f, 0.7f, 0.7f, 0.9f)));
+            ImGui.SameLine();
+
+            float scrollBarWidth = spacing;
+            float listContentWidth = rightPanelWidth - spacing - scrollBarWidth;
+
+            
+            var size = new Vector2(rightPanelWidth - spacing * 2 , windowHeight - spacing*5);
+            ImGui.SetCursorPos(new Vector2(windowWidth, windowHeight - spacing * 4) - size);
+            ImGui.Text("  Recipes");
+            ImGui.SetCursorPos(new Vector2(windowWidth - spacing, windowHeight - spacing  ) - size);
+
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, Theme.Colors.Deep);
+            ImGui.BeginChild("RecipeList", size, ImGuiChildFlags.None   );
+
+            DrawRecipeList(listContentWidth, displaySize.Y);
+
+            ImGui.EndChild();
 
             ImGui.PopStyleColor(6);
             ImGui.End();
+        }
+
+        private static void DrawRecipeList(float listWidth, float displayHeight)
+        {
+            if(processingBlock == null) { return; }
+
+            float scaleFactor = displayHeight / 1080f;
+            float fixedItemHeight = 45f * scaleFactor;
+            float imageSize = 40f * scaleFactor;
+            float numberSize = ImGui.GetTextLineHeight();
+
+            var s = GameAssets.Recipes[processingBlock.BlockType].Values.ToList();
+           
+            for (int i = 0; i < s.Count; i++)
+            {
+               
+                float startY = ImGui.GetCursorPosY();
+
+                var recipe = s[i];
+
+                if(recipe == null || recipe.Ingredient.Item == null || recipe.Ingredient.Item.IconTextureId == IntPtr.Zero)
+                {
+                    
+                    continue;
+                }
+
+                var inQ = recipe.Ingredient.Quantity > 1 ? recipe.Ingredient.Quantity.ToString()  : "";
+                var inItem = recipe.Ingredient.Item;
+                var inImg = inItem.IconTextureId;
+
+                var prQ = recipe.Product.Quantity > 1 ? recipe.Product.Quantity.ToString() : "";
+                var prItem = recipe.Product.Item;
+                var prImg = prItem.IconTextureId;
+
+                var imageVector = new Vector2(imageSize, imageSize);
+
+                var offsetX = new Vector2(imageSize * 0.3f, startY);
+
+                ImGui.SetCursorPos(offsetX);
+                ImGui.Image(inImg, imageVector);
+                UIHelper.ShowTooltip(inItem.Name);
+                if (i % 2 == 0)
+                {
+                    var pos = new Vector2(imageSize - ImGui.CalcTextSize(inQ).X - 2 + offsetX.X , startY + imageSize - numberSize);
+                    pos = pos  + imageVector * 0.1f;
+                    ImGui.SetCursorPos(pos);
+                    ImGui.TextColored(new Vector4(0f, 0f, 0f, 1), inQ);
+                    ImGui.SetCursorPos(pos + imageVector * 0.04f);
+                    ImGui.TextColored(new Vector4(1), inQ);
+                    
+                }
+
+                var arrowSize = ImGui.CalcTextSize("->");
+
+                ImGui.SetCursorPos(new Vector2(listWidth * 0.5f - ImGui.CalcTextSize("->").X * 0.4f, startY + imageSize * 0.5f - ImGui.GetTextLineHeight() * 0.5f));
+                ImGui.Text("->");
+
+                ImGui.SetCursorPos(new Vector2(listWidth - imageSize * 1.4f, startY));
+              
+                ImGui.Image(prImg, imageVector);
+                UIHelper.ShowTooltip(prItem.Name + "\n" + "Time: " + (processingBlock.GetTicksWithEfficiency(recipe.RequiredTicks) / 20f).ToString("#.#") + "s.");
+                if (i % 3 == 0)
+                {
+                    var pos = new Vector2(listWidth * 0.94f - ImGui.CalcTextSize(prQ).X - 2 , startY + imageSize - numberSize) ;
+                  
+                    ImGui.SetCursorPos(pos  );
+                    ImGui.TextColored(new Vector4(0f, 0f, 0f, 1), prQ);
+                    ImGui.SetCursorPos(pos + imageVector * 0.05f);
+                    ImGui.TextColored(new Vector4(1), prQ);
+                }
+
+                ImGui.SetCursorPosY(startY + fixedItemHeight);
+            }   
         }
 
         private static void MoveItems(ItemSlot slot)

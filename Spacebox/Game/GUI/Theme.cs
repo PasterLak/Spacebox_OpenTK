@@ -22,7 +22,6 @@ namespace Spacebox.Game.GUI
             public static uint BorderLightUint => ImGui.GetColorU32(BorderLight);
             public static uint BorderDarkUint => ImGui.GetColorU32(BorderDark);
 
-            public static uint RedUint => ImGui.GetColorU32(new Vector4(1f, 0f, 0f, 1f));
 
 
         }
