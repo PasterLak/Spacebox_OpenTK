@@ -1,5 +1,4 @@
-﻿
-using NVorbis;
+﻿using NVorbis;
 
 namespace Engine.Audio
 {
@@ -24,8 +23,6 @@ namespace Engine.Audio
             }
             byte[] data = new byte[shortList.Count * 2];
             Buffer.BlockCopy(shortList.ToArray(), 0, data, 0, data.Length);
-
-            Debug.Log($"[OggLoader] {filename}: Channels={vorbis.Channels}, SampleRate={vorbis.SampleRate}, Samples={shortList.Count}");
 
             if (shortList.Count == 0)
             {

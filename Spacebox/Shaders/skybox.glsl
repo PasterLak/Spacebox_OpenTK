@@ -31,11 +31,8 @@ void main()
 
 #version 330 core
 
-
 in vec2 TexCoords;
-
 out vec4 FragColor;
-
 uniform sampler2D mainTexture;
 
 void main()
@@ -43,8 +40,7 @@ void main()
     vec4 texColor = texture(mainTexture, TexCoords);
     
     vec3 color = texColor.rgb;
-  
-    //color = clamp(color, 0, 1);
+
     FragColor = vec4(color, texColor.a);
 }
 

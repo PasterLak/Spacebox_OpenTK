@@ -64,7 +64,6 @@
 		<None Remove="GameSets\Default\UI\settings.json" />
 		<None Remove="gamesets\loots.json" />
 		<None Remove="shaders\atmosphere.glsl" />
-		<None Remove="Shaders\basic.vs" />
 		<None Remove="shaders\billboard.glsl" />
 		<None Remove="shaders\colorReplace.glsl" />
 		<None Remove="shaders\fade.glsl" />

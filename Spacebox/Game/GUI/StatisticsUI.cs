@@ -54,14 +54,14 @@ public static class StatisticsUI
         DrawCategoryHeader("Building", listSize.X, categoryColor);
         DrawStatRow("Blocks Placed", ValueToString(_statistics.BlocksPlaced), labelWidth);
         DrawStatRow("Blocks Destroyed", ValueToString(_statistics.BlocksDestroyed), labelWidth);
-        DrawStatRow("Damage to blocks", ValueToString(_statistics.BlockDamageDealt), labelWidth);
+        DrawStatRow("Damage To Blocks", ValueToString(_statistics.BlockDamageDealt), labelWidth);
 
         ImGui.Spacing();
         DrawCategoryHeader("Items", listSize.X, categoryColor);
-        DrawStatRow("Items Picked Up", ValueToString(_statistics.ItemsPickedUp), labelWidth);
-        DrawStatRow("Items Crafted", ValueToString(_statistics.ItemsCrafted), labelWidth);
-        DrawStatRow("Items Processed", ValueToString(_statistics.ItemsProcessed), labelWidth);
-        DrawStatRow("Items Consumed", ValueToString(_statistics.ItemsСonsumed), labelWidth);
+        DrawStatRow("Picked Up", ValueToString(_statistics.ItemsPickedUp), labelWidth);
+        DrawStatRow("Crafted", ValueToString(_statistics.ItemsCrafted), labelWidth);
+        DrawStatRow("Processed", ValueToString(_statistics.ItemsProcessed), labelWidth);
+        DrawStatRow("Consumed", ValueToString(_statistics.ItemsСonsumed), labelWidth);
 
         ImGui.Spacing();
         DrawCategoryHeader("Health", listSize.X, categoryColor);
@@ -71,21 +71,18 @@ public static class StatisticsUI
 
         ImGui.Spacing();
         DrawCategoryHeader("Combat", listSize.X, categoryColor);
-        DrawStatRow("Shots Fired", ValueToString(_statistics.ShotsFired), labelWidth);
+        DrawStatRow("Shots", ValueToString(_statistics.ShotsFired), labelWidth);
+        DrawStatRow("Hits", ValueToString(_statistics.ShotsHit), labelWidth);
         DrawStatRow("Accuracy", $"{_statistics.GetAccuracy():F1}%", labelWidth);
         DrawStatRow("Ricochets", ValueToString(_statistics.ProjectilesRicocheted), labelWidth);
         DrawStatRow("Explosions", ValueToString(_statistics.ExplosionsCaused), labelWidth);
         DrawStatRow("Damage dealt", ValueToString(_statistics.EntityDamageDealt), labelWidth);
 
-        
-
-       
-
         ImGui.Spacing();
         DrawCategoryHeader("Exploration", listSize.X, categoryColor);
         DrawStatRow("Distance Traveled", ValueToString(_statistics.DistanceTraveled) + " m.", labelWidth);
-        DrawStatRow("Max Speed", $"{_statistics.MaxSpeedReached}", labelWidth);
-        DrawStatRow("Asteroids Found", _statistics.AsteroidsDiscovered.ToString(), labelWidth);
+        //DrawStatRow("Max Speed", $"{_statistics.MaxSpeedReached}", labelWidth);
+        //DrawStatRow("Asteroids Found", _statistics.AsteroidsDiscovered.ToString(), labelWidth);
     }
 
     

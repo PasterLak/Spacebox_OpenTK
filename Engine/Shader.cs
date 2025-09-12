@@ -1,5 +1,5 @@
-﻿
-using Engine.Graphics;
+﻿using Engine.Graphics;
+using Engine.Utils;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System.Text;
@@ -28,9 +28,7 @@ namespace Engine
         private int _previousHandle;
         private Dictionary<string, int> _previousUniformLocations;
 
-        private HotReloader _hotReloader;
-
-
+        private ShaderHotReloader _hotReloader;
 
         public Shader()
         {
@@ -40,9 +38,19 @@ namespace Engine
         {
             _shaderPath = shaderPath;
 
-            Load();
-            _hotReloader = new HotReloader(_shaderPath, OnShaderFileChanged);
+            var r = LoadFromPath(_shaderPath);
+            Load(ref r.vertexSrc, ref r.fragmentSrc, ref r.geometrySrc);
+            _hotReloader = new ShaderHotReloader(_shaderPath, OnShaderFileChanged);
         }
+
+        public Shader(string[] code)
+        {
+            _shaderPath = "";
+
+            var r = LoadFromCode(code);
+            Load(ref r.vertexSrc, ref r.fragmentSrc, ref r.geometrySrc); 
+        }
+
 
         private void OnShaderFileChanged(object sender, FileSystemEventArgs e)
         {
@@ -88,14 +96,24 @@ namespace Engine
             }
         }
 
-
-        private void Load()
+        private (string vertexSrc, string fragmentSrc, string geometrySrc) LoadFromPath(string path)
         {
             if (!File.Exists(_shaderPath + ShaderFormat))
                 throw new ArgumentException("Invalid shader path: " + _shaderPath);
 
-            var (vertexSrc, fragmentSrc, geometrySrc) = ShaderParser.ParseShaders(_shaderPath);
+            return ShaderParser.ParseShadersFromPath(_shaderPath);
 
+        }
+
+        private (string vertexSrc, string fragmentSrc, string geometrySrc) LoadFromCode(string[] code)
+        {
+            return ShaderParser.ParseShadersFromLines(code);
+
+        }
+
+        private void Load(ref string vertexSrc, ref string fragmentSrc, ref string geometrySrc)
+        {
+           
             int vertexShader = CompileShader(ShaderType.VertexShader, vertexSrc);
             int fragmentShader = CompileShader(ShaderType.FragmentShader, fragmentSrc);
             int geometryShader = 0;
@@ -135,10 +153,14 @@ namespace Engine
 
         public void ReloadShader()
         {
+            if (String.IsNullOrEmpty(_shaderPath)) return;
+
             Debug.Log("[Shader] Reloading shader...");
             _isReloadingShader = true;
             ACTIVE_SHADER = 0;
-            try { Load(); Debug.Log("[Shader] Shader reloaded successfully."); }
+            try {
+                var r = LoadFromPath(_shaderPath);
+                Load(ref r.vertexSrc, ref r.fragmentSrc,ref r.geometrySrc); Debug.Log("[Shader] Shader reloaded successfully."); }
             catch (Exception ex)
             {
                 Debug.Error("[Shader] Shader reload failed: " + ex.Message);
@@ -282,7 +304,6 @@ namespace Engine
 
         public IResource Load(string path)
         {
-
             return new Shader(path);
         }
 
@@ -311,11 +332,22 @@ namespace Engine
         }
 
         public static (string vertexShaderSource, string fragmentShaderSource, string geometryShaderSource)
-                ParseShaders(string filePath)
+                ParseShadersFromPath(string filePath)
         {
-
             var lines = File.ReadAllLines(filePath + ".glsl");
+            return ParseShadersFromLines(lines, filePath);
+        }
 
+
+        public static (string vertexShaderSource, string fragmentShaderSource, string geometryShaderSource)
+                ParseShadersFromLines(string[] lines)
+        {
+            return ParseShadersFromLines(lines, "Shaders");
+        }
+
+        private static (string vertexShaderSource, string fragmentShaderSource, string geometryShaderSource)
+                ParseShadersFromLines(string[] lines, string filePath)
+        {
 
             bool inVert = false, inFrag = false, inGeom = false;
             var v = new StringBuilder();
@@ -403,29 +435,5 @@ namespace Engine
 
     }
 
-    public class HotReloader : IDisposable
-    {
-        private FileSystemWatcher _watcher;
-        public HotReloader(string shaderPath, FileSystemEventHandler onChanged)
-        {
-            _watcher = new FileSystemWatcher(Path.GetDirectoryName(shaderPath), Path.GetFileName(shaderPath) + ".glsl")
-            {
-                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size,
-                EnableRaisingEvents = true
-            };
-            _watcher.Changed += onChanged;
-        }
-        public void Disable()
-        {
-            if (_watcher != null)
-                _watcher.EnableRaisingEvents = false;
-        }
-        public void Enable()
-        {
-            if (_watcher != null)
-                _watcher.EnableRaisingEvents = true;
-        }
-        public void Dispose() => _watcher?.Dispose();
-    }
 
 }

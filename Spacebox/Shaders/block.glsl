@@ -18,8 +18,6 @@ out float vAO;
 out float vAtlasFlag;
 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
 
 #define FOG_LN2 1.44269504
 

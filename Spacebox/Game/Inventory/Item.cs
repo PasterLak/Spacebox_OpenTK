@@ -17,6 +17,7 @@ namespace Spacebox.Game
 
         public Color3Byte Color { get; set; } = new Color3Byte(0);
         public bool IsLuminous => Color != Color3Byte.Zero;
+        public bool IsStackable => StackSize > 1;
         public Item(byte stackSize, string name)
         {
            

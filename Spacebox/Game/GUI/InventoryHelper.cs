@@ -264,7 +264,7 @@ namespace Spacebox.Game.GUI
 
                 if (showStackSize)
                 {
-                    if (slot.Item.StackSize > 1)
+                    if (slot.Item.IsStackable)
                     {
                         text += "\nID: " + slot.Item.Id;
                         text += "\nStack: " + slot.Item.StackSize;

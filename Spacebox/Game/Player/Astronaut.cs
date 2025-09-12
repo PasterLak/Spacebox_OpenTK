@@ -202,6 +202,7 @@ namespace Spacebox.Game.Player
 
             _axes = new Axes(Position, 0.01f);
 
+            
             /* node = new Node3D();
 
             var mat = new SpotMaterial(Flashlight);
@@ -502,7 +503,7 @@ namespace Spacebox.Game.Player
             if (VisualDebug.Enabled)
             {
                 _axes.Position = Position + Front * 0.1f;
-                _axes.Render2();
+                _axes.Render();
             }
 
             if (_gameModeBase != null)
