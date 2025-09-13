@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.UI;
 
 namespace Spacebox.Game
 {
@@ -120,37 +121,30 @@ namespace Spacebox.Game
         {
             if (Count < 2) return;
 
-            byte count = Count;
+            byte originalCount = Count;
+            byte split1 = (byte)(originalCount / 2);
+            byte split2 = (byte)(originalCount - split1);
+
 
             Count = Item.StackSize;
 
-            byte split1 = (byte)(count / 2);
-            byte split2 = (byte)(split1 + (count % 2));
+            Storage.TryAddItem(Item, split2, out var rest);
 
-            if (Storage.TryAddItem(Item, split2, out var rest))
+            if (rest == 0)
             {
                 Count = split1;
+
             }
             else
             {
-
-                Debug.Error("Failed to split items to " + Storage.Name);
-                Debug.Error("Item name: " + Item.Name);
-
-                Count = count;
-
                 if (Storage.ConnectedStorage != null)
                 {
-                    if (Storage.ConnectedStorage.TryAddItem(Item, split2, out var rest2))
-                    {
-                        Count = (byte)(split1 + rest2);
-                    }
-                    else
-                    {
-                        Count = count;
-                    }
+                    Storage.ConnectedStorage.TryAddItem(Item, rest, out rest);
                 }
+
+                Count = (byte)(split1 + rest);
             }
+            
         }
         public void MoveItemToConnectedStorage()
         {
