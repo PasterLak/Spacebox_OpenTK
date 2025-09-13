@@ -21,8 +21,12 @@ namespace Spacebox.Game.GUI
                     ImGui.Text($"Speed: {formatted}");
                
                 ImGui.Text($"Gamemode: {ast.GameMode}");
-                
-                if(ast.CurrentInteraction != null)
+                var mood = ast.Mood;
+                var trend = mood.CalculateMoodTrend();
+                var time = mood.CalculateTimeToTarget(trend > 0 ? 100 : 0).ToString("F1");
+                ImGui.Text($"Mood: {mood.MoodData.Value} Trend: {trend.ToString("F1")} ({time}s.) ");
+
+                if (ast.CurrentInteraction != null)
                 ImGui.Text($"Interaction: {ast.CurrentInteraction.GetType().Name}");
             }
         }

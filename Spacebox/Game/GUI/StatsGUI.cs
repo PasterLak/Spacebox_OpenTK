@@ -26,7 +26,7 @@ namespace Spacebox.Game.GUI
     public class StatsGUI
     {
         public bool IsVisible { get; set; } = true;
-        public StatsBarData StatsData { get; set; }
+        public StatsData StatsData { get; set; }
         private Vector2 _size { get; set; } = new Vector2(200, 50);
         private Vector2 _position { get; set; } = new Vector2(0, 0);
         public Vector2 Position { get; set; } = new Vector2(0, 0);
@@ -38,7 +38,7 @@ namespace Spacebox.Game.GUI
         public string WindowName { get; set; } = "StatsBar";
         public bool ShowText = true;
         public Vector2 Size { get; set; } = new Vector2(200, 50);
-        public StatsGUI(StatsBarData statsData)
+        public StatsGUI(StatsData statsData)
         {
             StatsData = statsData;
             WindowName = $"{statsData.Name}Bar";

@@ -51,6 +51,7 @@ namespace Spacebox.Game.Player
         public HitImage HitImage { get; private set; }
         public DeathScreen DeathScreen { get; private set; } = new DeathScreen();
         public HealthBar HealthBar { get; private set; }
+        public Mood Mood { get; private set; }
         public PowerBar PowerBar { get; private set; }
         private GameModeBase _gameModeBase;
         private GameMode _gameMode => _gameModeBase.GetGameMode();
@@ -58,11 +59,11 @@ namespace Spacebox.Game.Player
         public PlayerStatistics PlayerStatistics { get; set; } = new PlayerStatistics();
         public PlayerEffects Effects { get; private set; } = new PlayerEffects();
         public Vector3 SpawnPosition { get; set; }
-        private Vector3 _lastStatPosition;
+        public Vector3 LastStatPosition { get; private set; }
 
         public void SetPosition(Vector3 position)
         {
-            _lastStatPosition = position;
+            LastStatPosition = position;
             Position = position;
         }
 
@@ -89,7 +90,7 @@ namespace Spacebox.Game.Player
         {
             FOV = Settings.Graphics.Fov;
             SpawnPosition = position;
-            _lastStatPosition = position;
+            LastStatPosition = position;
             Name = "Player";
             DepthNear = 0.01f;
             DepthFar = Settings.ViewDistance;
@@ -98,7 +99,8 @@ namespace Spacebox.Game.Player
 
             HealthBar = new HealthBar();
             PowerBar = new PowerBar();
-
+          
+            Mood = AttachComponent(new Mood(this));
             SetData();
             SetRenderSpace(true);
             HitImage = new HitImage();
@@ -166,9 +168,9 @@ namespace Spacebox.Game.Player
                 {
                     timeToSavePosToStat = 5;
                     if (GameMode != null && GameMode != GameMode.Spectator)
-                        PlayerStatistics.UpdateDistance(_lastStatPosition, Position);
+                        PlayerStatistics.UpdateDistance(LastStatPosition, Position);
 
-                    _lastStatPosition = Position;
+                    LastStatPosition = Position;
                 }
 
 
@@ -409,10 +411,11 @@ namespace Spacebox.Game.Player
         public void Teleport(Vector3 position)
         {
             Position = position;
-            _lastStatPosition = Position;
+            LastStatPosition = Position;
             InertiaController.Reset();
             Effects.PlayEffect(PlayerEffectType.Teleport);
             PlayerStatistics.TeleportsUsed++;
+            Mood.RemoveMood(5);
             OnMoved?.Invoke(this);
         }
 
@@ -424,6 +427,7 @@ namespace Spacebox.Game.Player
             damage = Math.Min(damage, health.MaxValue);
             PlayerStatistics.DamageTaken += damage;
             health.Decrement(damage);
+            Mood.AddMood(1);
 
             if (damage > 12)
                 Effects.PlayEffect(PlayerEffectType.Damage);
@@ -443,7 +447,7 @@ namespace Spacebox.Game.Player
         {
             if (!IsAlive) return;
             PlayerStatistics.DeathsTotal++;
-
+          
             IsAlive = false;
             InertiaController.Reset();
             FOV = 110;
@@ -452,11 +456,11 @@ namespace Spacebox.Game.Player
             PanelUI.IsVisible = false;
             PanelUI.IsItemModelVisible = false;
             Input.ShowCursor();
-
+            Mood.AddMoodRandom(1,10);
             Flashlight.Enabled = false;
             HealthBar.StatsGUI.IsVisible = false;
             PowerBar.StatsGUI.IsVisible = false;
-            CurrentInteraction?.OnDisable();
+        
             if (deathCase != null)
                 DeathScreen.Show(deathCase);
 

@@ -88,6 +88,7 @@ public class MovementMode : GameModeBase
     }
     public override void UpdateInteraction(Astronaut player)
     {
+        
         InteractionHandler.Update(player);
     }
     public override void Update(Astronaut player)

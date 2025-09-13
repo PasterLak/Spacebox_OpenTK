@@ -9,14 +9,14 @@ namespace Spacebox.GUI
 {
     public class PowerBar
     {
-        public StatsBarData StatsData { get; private set; }
+        public StatsData StatsData { get; private set; }
         public StatsGUI StatsGUI { get; set; }
 
         private float timeToDecrement = 1f;
         private float time;
         public PowerBar()
         {
-            StatsData = new StatsBarData
+            StatsData = new StatsData
             {
                 Value = 100,
                 MaxValue = 100,

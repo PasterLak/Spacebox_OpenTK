@@ -7,18 +7,19 @@ namespace Spacebox.GUI
 {
     public class HealthBar
     {
-        public StatsBarData StatsData { get; private set; }
+        public StatsData StatsData { get; private set; }
         public StatsGUI StatsGUI { get; set; }
         private float timeToDecrement = 20f;
         private float _time;
         public HealthBar()
         {
-            StatsData = new StatsBarData
+            StatsData = new StatsData
             {
-                Value = 100,
+               
                 MaxValue = 100,
                 Name = "Health"
             };
+            StatsData.Fill();
 
             StatsGUI = new StatsGUI(StatsData)
             {

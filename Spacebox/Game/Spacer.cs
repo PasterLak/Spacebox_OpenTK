@@ -18,7 +18,7 @@ namespace Spacebox.Game
     public class Spacer : Node3D
     {
         protected Animator animator;
-        private StatsBarData Health { get; set; }
+        private StatsData Health { get; set; }
         public ColliderComponent OBB => obb;
         private ColliderComponent obb;
         public Storage Storage { get; private set; }
@@ -32,10 +32,10 @@ namespace Spacebox.Game
             spacerTex.FlipY();
             spacerTex.UpdateTexture(true);
             Name = nameof(Spacer);
-            Health = new StatsBarData();
+            Health = new StatsData();
             Health.MaxValue = 100;
             Health.Value = 100;
-            Health.DataChanged += OnHit;
+            Health.OnValueChanged += OnHit;
             Health.OnEqualZero += OnKilled;
             Storage = new Storage(3, 3);
             Storage.Name = Name;

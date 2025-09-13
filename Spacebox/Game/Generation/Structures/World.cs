@@ -49,7 +49,6 @@ namespace Spacebox.Game.Generation
         private readonly Dictionary<Vector3i, Sector> Sectors = new Dictionary<Vector3i, Sector>();
         BlockMaterial material;
 
-        AudioSource audio;
 
         public World(Astronaut player, BlockMaterial material)
         {
@@ -68,9 +67,7 @@ namespace Spacebox.Game.Generation
 
             Overlay.AddElement(new WorldOverlayElement(this));
 
-            audio = new AudioSource(Resources.Load<AudioClip>("Resources/Audio/spaceEffect1"));
-            audio.Volume = 0.5f;
-            audio.Setup3D(30, 1000,0.3f);
+           
 
         }
         bool saveWasPressed = false;
@@ -144,11 +141,7 @@ namespace Spacebox.Game.Generation
                 sector.Value.Update();
             }
 
-            if(Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.K))
-            {
-                audio.Position = GetRandomPointAroundPosition(Player.Position, 100,700);
-                audio.Play();
-            }
+          
             
 
         }

@@ -60,6 +60,7 @@ public class InteractionHandler
 
     public void Update(Astronaut player)
     {
+        
         Interaction.Update(player);
     }
 

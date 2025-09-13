@@ -13,7 +13,7 @@ namespace Spacebox.Tests
         public void DefaultInitialization_SetsDefaultValues()
         {
             // Arrange & Act
-            var statsBar = new StatsBarData();
+            var statsBar = new StatsData();
 
             // Assert
             Assert.Equal(0, statsBar.Value);
@@ -27,7 +27,7 @@ namespace Spacebox.Tests
         public void CustomInitialization_SetsCustomValues()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 50,
                 MaxValue = 200,
@@ -50,9 +50,9 @@ namespace Spacebox.Tests
         public void Increment_WithPositiveAmount_IncreasesCount()
         {
             // Arrange
-            var statsBar = new StatsBarData();
+            var statsBar = new StatsData();
             bool eventFired = false;
-            statsBar.DataChanged += () => eventFired = true;
+            statsBar.OnValueChanged += () => eventFired = true;
 
             // Act
             statsBar.Increment(30);
@@ -68,12 +68,12 @@ namespace Spacebox.Tests
         public void Increment_WithNegativeAmount_IncreasesCountByAbsAmount()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 50
             };
             bool eventFired = false;
-            statsBar.DataChanged += () => eventFired = true;
+            statsBar.OnValueChanged += () => eventFired = true;
 
             // Act
             statsBar.Increment(-20);
@@ -89,12 +89,12 @@ namespace Spacebox.Tests
         public void Increment_WithZeroAmount_DoesNotChangeCount_ButFiresDataChanged()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 50
             };
             bool eventFired = false;
-            statsBar.DataChanged += () => eventFired = true;
+            statsBar.OnValueChanged += () => eventFired = true;
 
             // Act
             statsBar.Increment(0);
@@ -110,13 +110,13 @@ namespace Spacebox.Tests
         public void Increment_ToMaxCount_SetsIsMaxReached()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 90,
                 MaxValue = 100
             };
             bool eventFired = false;
-            statsBar.DataChanged += () => eventFired = true;
+            statsBar.OnValueChanged += () => eventFired = true;
 
             // Act
             statsBar.Increment(10);
@@ -132,13 +132,13 @@ namespace Spacebox.Tests
         public void Increment_BeyondMaxCount_SetsCountToMax()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 95,
                 MaxValue = 100
             };
             bool eventFired = false;
-            statsBar.DataChanged += () => eventFired = true;
+            statsBar.OnValueChanged += () => eventFired = true;
 
             // Act
             statsBar.Increment(10);
@@ -154,13 +154,13 @@ namespace Spacebox.Tests
         public void Increment_WhenCountAtMax_DoesNotChange()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 100,
                 MaxValue = 100
             };
             bool eventFired = false;
-            statsBar.DataChanged += () => eventFired = true;
+            statsBar.OnValueChanged += () => eventFired = true;
 
             // Act
             statsBar.Increment(10);
@@ -180,13 +180,13 @@ namespace Spacebox.Tests
         public void Decrement_WithPositiveAmount_DecreasesCount()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 50
             };
             bool dataChangedFired = false;
             bool onEqualZeroFired = false;
-            statsBar.DataChanged += () => dataChangedFired = true;
+            statsBar.OnValueChanged += () => dataChangedFired = true;
             statsBar.OnEqualZero += () => onEqualZeroFired = true;
 
             // Act
@@ -204,13 +204,13 @@ namespace Spacebox.Tests
         public void Decrement_WithNegativeAmount_DecreasesCountByAbsAmount()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 50
             };
             bool dataChangedFired = false;
             bool onEqualZeroFired = false;
-            statsBar.DataChanged += () => dataChangedFired = true;
+            statsBar.OnValueChanged += () => dataChangedFired = true;
             statsBar.OnEqualZero += () => onEqualZeroFired = true;
 
             // Act
@@ -228,13 +228,13 @@ namespace Spacebox.Tests
         public void Decrement_WithZeroAmount_DoesNotChangeCount_ButFiresDataChanged()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 50
             };
             bool dataChangedFired = false;
             bool onEqualZeroFired = false;
-            statsBar.DataChanged += () => dataChangedFired = true;
+            statsBar.OnValueChanged += () => dataChangedFired = true;
             statsBar.OnEqualZero += () => onEqualZeroFired = true;
 
             // Act
@@ -252,13 +252,13 @@ namespace Spacebox.Tests
         public void Decrement_ToZero_SetsIsMinReached_AndFiresOnEqualZero()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 10
             };
             bool dataChangedFired = false;
             bool onEqualZeroFired = false;
-            statsBar.DataChanged += () => dataChangedFired = true;
+            statsBar.OnValueChanged += () => dataChangedFired = true;
             statsBar.OnEqualZero += () => onEqualZeroFired = true;
 
             // Act
@@ -276,13 +276,13 @@ namespace Spacebox.Tests
         public void Decrement_BelowZero_SetsCountToZero_AndFiresOnEqualZero()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 5
             };
             bool dataChangedFired = false;
             bool onEqualZeroFired = false;
-            statsBar.DataChanged += () => dataChangedFired = true;
+            statsBar.OnValueChanged += () => dataChangedFired = true;
             statsBar.OnEqualZero += () => onEqualZeroFired = true;
 
             // Act
@@ -300,13 +300,13 @@ namespace Spacebox.Tests
         public void Decrement_WhenCountAtZero_DoesNotChange()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 0
             };
             bool dataChangedFired = false;
             bool onEqualZeroFired = false;
-            statsBar.DataChanged += () => dataChangedFired = true;
+            statsBar.OnValueChanged += () => dataChangedFired = true;
             statsBar.OnEqualZero += () => onEqualZeroFired = true;
 
             // Act
@@ -328,7 +328,7 @@ namespace Spacebox.Tests
         public void IsMaxReached_WhenCountEqualsMax_ReturnsTrue()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 100,
                 MaxValue = 100
@@ -342,7 +342,7 @@ namespace Spacebox.Tests
         public void IsMaxReached_WhenCountLessThanMax_ReturnsFalse()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 50,
                 MaxValue = 100
@@ -356,7 +356,7 @@ namespace Spacebox.Tests
         public void IsMinReached_WhenCountEqualsZero_ReturnsTrue()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 0
             };
@@ -369,7 +369,7 @@ namespace Spacebox.Tests
         public void IsMinReached_WhenCountGreaterThanZero_ReturnsFalse()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 10
             };
@@ -386,9 +386,9 @@ namespace Spacebox.Tests
         public void Increment_FiresDataChangedEvent()
         {
             // Arrange
-            var statsBar = new StatsBarData();
+            var statsBar = new StatsData();
             bool eventFired = false;
-            statsBar.DataChanged += () => eventFired = true;
+            statsBar.OnValueChanged += () => eventFired = true;
 
             // Act
             statsBar.Increment(10);
@@ -401,13 +401,13 @@ namespace Spacebox.Tests
         public void Increment_DoesNotFireDataChangedEvent_WhenCountDoesNotChange()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 100,
                 MaxValue = 100
             };
             bool eventFired = false;
-            statsBar.DataChanged += () => eventFired = true;
+            statsBar.OnValueChanged += () => eventFired = true;
 
             // Act
             statsBar.Increment(10);
@@ -420,12 +420,12 @@ namespace Spacebox.Tests
         public void Decrement_FiresDataChangedEvent()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 50
             };
             bool eventFired = false;
-            statsBar.DataChanged += () => eventFired = true;
+            statsBar.OnValueChanged += () => eventFired = true;
 
             // Act
             statsBar.Decrement(10);
@@ -438,7 +438,7 @@ namespace Spacebox.Tests
         public void Decrement_FiresOnEqualZeroEvent_WhenCountReachesZero()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 10
             };
@@ -456,7 +456,7 @@ namespace Spacebox.Tests
         public void Decrement_DoesNotFireOnEqualZeroEvent_WhenCountDoesNotReachZero()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 20
             };
@@ -474,7 +474,7 @@ namespace Spacebox.Tests
         public void Decrement_DoesNotFireOnEqualZeroEvent_WhenAmountDoesNotReachZero()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 20
             };
@@ -492,7 +492,7 @@ namespace Spacebox.Tests
         public void Decrement_FiresOnEqualZeroEvent_WhenCountAlreadyZero_DoesNotFire()
         {
             // Arrange
-            var statsBar = new StatsBarData
+            var statsBar = new StatsData
             {
                 Value = 0
             };

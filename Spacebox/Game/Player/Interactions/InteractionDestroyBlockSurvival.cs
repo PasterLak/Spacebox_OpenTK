@@ -152,6 +152,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             //if (Input.IsKeyDown(Keys.F) && lastInteractiveBlock != null) // Press F to interact  WTF
             //    lastInteractiveBlock.Use(player);
             model.SetAnimation(false);
+            if(light != null)
             light.Enabled = false;
             return;
         }

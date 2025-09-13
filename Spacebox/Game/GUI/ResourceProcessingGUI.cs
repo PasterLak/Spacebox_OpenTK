@@ -24,7 +24,7 @@ namespace Spacebox.Game.GUI
         protected static bool _isVisible = false;
 
         private static StatsGUI statsGUI;
-        private static StatsBarData barData;
+        private static StatsData barData;
 
         private static string status = "";
         public static bool IsVisible

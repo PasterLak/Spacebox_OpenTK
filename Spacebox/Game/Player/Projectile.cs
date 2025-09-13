@@ -143,7 +143,7 @@ namespace Spacebox.Game.Player
                     explosionSound.Position = Position;
 
                     explosionSound.SetPitchByValue(Parameters.MaxTravelDistance + 5 - distanceTraveled, 0, Parameters.MaxTravelDistance, 0.8f, 1f);
-                    explosionSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 200);
+                   
                     explosionSound.Play();
 
                     if (astronaut != null)
@@ -167,8 +167,7 @@ namespace Spacebox.Game.Player
                     {
                         ray = ray.CalculateRicochetRay(hit.position, hit.normal, ray.Length);
                         ricochetSound.Position = hit.position;
-                        ricochetSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 100);
-
+                   
 
                         var dmg0 = MathF.Min(Parameters.DamageBlocks, maxDamage);
                         ricochetSound.SetPitchByValue(maxDamage - dmg0, 0, maxDamage, 0.5f, 1f);
@@ -187,7 +186,7 @@ namespace Spacebox.Game.Player
 
                         if (currentRicochets == 5)
                         {
-                            explosionSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 200);
+                          
                             explosionSound.Position = hit.position;
                             explosionSound.Play();
                             if (astronaut != null)
@@ -203,9 +202,7 @@ namespace Spacebox.Game.Player
 
                 OnHit?.Invoke(this);
 
-                hitSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 100);
-
-
+              
                 var dmg = MathF.Min(Parameters.DamageBlocks, maxDamage);
                 hitSound.Position = hit.position;
                 hitSound.SetPitchByValue(maxDamage - dmg, 0, maxDamage, 0.5f, 1f);
@@ -231,7 +228,7 @@ namespace Spacebox.Game.Player
                     IsActive = false;
                     if (currentDamage >= 50)
                     {
-                        explosionSound.SetVolumeByDistance(Vector3.Distance(camera.Position, this.Position), 200);
+                      
                         explosionSound.Position = hit.position;
                         explosionSound.Play();
                         if (astronaut != null)
