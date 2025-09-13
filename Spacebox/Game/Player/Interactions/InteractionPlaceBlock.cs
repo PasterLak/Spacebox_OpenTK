@@ -1,16 +1,13 @@
-
 using Client;
 using Engine;
 using Engine.Audio;
 using Engine.Physics;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
-using SpaceNetwork;
 
 namespace Spacebox.Game.Player.Interactions;
 
@@ -19,7 +16,7 @@ public class InteractionPlaceBlock : InteractionMode
     private const byte MaxBuildDistance = 6;
 
     private static AudioSource blockPlace;
-    private string lastBlockPlaceSound = "blockPlaceDefault";
+ 
     public static LineRenderer lineRenderer;
     Random r = new Random();
     public override void OnEnable()
@@ -81,7 +78,6 @@ public class InteractionPlaceBlock : InteractionMode
 
         if (World.CurrentSector != null && World.CurrentSector.Raycast(ray, out hit))
         {
-
 
             var pos = hit.blockPositionIndex + hit.chunk.PositionWorld + hit.normal + new Vector3(0.5f, 0.5f, 0.5f);
             var disSqrt = Vector3.DistanceSquared(pos, player.Position);
@@ -169,8 +165,6 @@ public class InteractionPlaceBlock : InteractionMode
                     }
                 }
             }
-
-
 
         }
     }

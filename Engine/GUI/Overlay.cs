@@ -1,13 +1,9 @@
 ﻿using ImGuiNET;
-using OpenTK.Mathematics;
-using Engine.Audio;
 
 using NumVector4 = System.Numerics.Vector4;
-using OpenTKVector4 = OpenTK.Mathematics.Vector4;
 
 namespace Engine.GUI
 {
-
 
     public class Overlay
     {
@@ -19,6 +15,7 @@ namespace Engine.GUI
             {
                 _isVisible = value;
                 Time.EnableProfiling = value;
+                Time.CalculateFPS = value;
             }
         }
 
@@ -29,10 +26,6 @@ namespace Engine.GUI
         public static NumVector4 Orange = new NumVector4(1f, 0.5f, 0f, 1f);
 
         private static readonly List<OverlayElement> OverlayElements = new List<OverlayElement>();
-
-        private const float MemData = 1024.0f * 1024.0f;
-        private static long memoryBytes;
-        private static double memoryMB;
 
         static Overlay()
         {

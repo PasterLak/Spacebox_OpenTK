@@ -38,9 +38,10 @@ namespace Spacebox.Game.Player
     public class Mood : Component
     {
         private StatsData _moodData;
-        private List<AudioClip> _effectClips = new List<AudioClip>();
+        private List<AudioClip> _allEffectClips = new List<AudioClip>();
+        private List<AudioClip> _availableEffects = new List<AudioClip>();
+        private List<AudioClip> _playedEffects = new List<AudioClip>();
         private AudioSource _audioSource = new AudioSource();
-        private int _lastPlayedIndex = -1;
         private List<TimedMoodEvent> _timedEvents = new List<TimedMoodEvent>();
         private Vector3 _lastPosition;
         private readonly Dictionary<MoodEvent, int> _eventValues = new Dictionary<MoodEvent, int>
@@ -56,6 +57,7 @@ namespace Spacebox.Game.Player
         public StatsData MoodData => _moodData;
         private Random _random = new Random();
         private Astronaut _astronaut;
+
         public Mood(Astronaut astronaut)
         {
             _moodData = new StatsData("Mood", 100, 0);
@@ -72,7 +74,7 @@ namespace Spacebox.Game.Player
             if (_audioSource != null)
             {
                 _audioSource.Volume = 0.8f;
-                _audioSource.Setup3D(50f, 1200f, 0.2f);
+                _audioSource.Setup3D(50f, 1000f, 0.2f);
             }
 
             _lastPosition = Owner?.Position ?? Vector3.Zero;
@@ -81,7 +83,7 @@ namespace Spacebox.Game.Player
         private void LoadMoodEffects()
         {
             string moodFolderPath = "Resources/Audio/Mood/";
-            _effectClips.Clear();
+            _allEffectClips.Clear();
 
             try
             {
@@ -105,7 +107,7 @@ namespace Spacebox.Game.Player
                         string relativePath = moodFolderPath + Path.GetFileNameWithoutExtension(filePath);
                         var clip = Resources.Load<AudioClip>(relativePath);
                         if (clip != null)
-                            _effectClips.Add(clip);
+                            _allEffectClips.Add(clip);
                     }
                     catch (Exception ex)
                     {
@@ -118,7 +120,15 @@ namespace Spacebox.Game.Player
                 Debug.Error($"[Mood] Error loading mood effects: {ex.Message}");
             }
 
-            Debug.Log($"[Mood] Loaded {_effectClips.Count} mood effects");
+            ResetEffectPool();
+            Debug.Log($"[Mood] Loaded {_allEffectClips.Count} mood effects");
+        }
+
+        private void ResetEffectPool()
+        {
+            _availableEffects.Clear();
+            _availableEffects.AddRange(_allEffectClips);
+            _playedEffects.Clear();
         }
 
         public float CalculateMoodTrend()
@@ -142,23 +152,22 @@ namespace Spacebox.Game.Player
                 }
                 catch
                 {
-                  
                 }
             }
 
-            return totalMoodChange / lcm; 
+            return totalMoodChange / lcm;
         }
 
         public float CalculateTimeToTarget(int targetMood)
         {
             float trend = CalculateMoodTrend();
-            if (Math.Abs(trend) < 0.001f) return -1f; 
+            if (Math.Abs(trend) < 0.001f) return -1f;
 
             int currentMood = _moodData.Value;
             int difference = targetMood - currentMood;
 
             if ((difference > 0 && trend <= 0) || (difference < 0 && trend >= 0))
-                return -1f; 
+                return -1f;
 
             return Math.Abs(difference / trend);
         }
@@ -253,8 +262,7 @@ namespace Spacebox.Game.Player
                 return isMoving;
             }, 0, 1);
 
-           AddTimedEvent("LowHealth", 4f, () => _astronaut.HealthBar.StatsData.Percentage < 0.25f, 1);
-           //AddTimedEvent("Healthy", 30f, () => _astronaut.HealthBar.StatsData.Percentage > 0.9f, -1);
+            AddTimedEvent("LowHealth", 4f, () => _astronaut.HealthBar.StatsData.Percentage < 0.25f, 1);
         }
 
         public void AddTimedEvent(string name, float interval, Func<bool> condition, int moodChangeOnTrue, int moodChangeOnFalse = 0)
@@ -295,25 +303,34 @@ namespace Spacebox.Game.Player
             }
 
 #if DEBUG
-    if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.K))
-    {
+            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.K))
+            {
                 AddMood(1000);
-    }
+            }
 #endif
         }
 
         private void PlayRandomEffect()
         {
             MoodData.Reset();
-            if (_effectClips.Count == 0)
+
+            if (_allEffectClips.Count == 0)
             {
                 Debug.Log("[Mood] No mood effects available to play");
                 return;
             }
 
-            int selectedIndex = GetRandomEffectIndex();
-            var selectedClip = _effectClips[selectedIndex];
-            _lastPlayedIndex = selectedIndex;
+            if (_availableEffects.Count == 0)
+            {
+                ResetEffectPool();
+                Debug.Log("[Mood] All effects played, resetting pool");
+            }
+
+            int selectedIndex = _random.Next(_availableEffects.Count);
+            var selectedClip = _availableEffects[selectedIndex];
+
+            _playedEffects.Add(selectedClip);
+            _availableEffects.RemoveAt(selectedIndex);
 
             if (_audioSource != null && Owner != null)
             {
@@ -322,23 +339,8 @@ namespace Spacebox.Game.Player
                 _audioSource.Clip = selectedClip;
                 _audioSource.Play();
 
-                Debug.Log($"[Mood] Playing mood effect {selectedIndex + 1} at distance {Vector3.Distance(Owner.Position, randomPosition):F1}");
+                Debug.Log($"[Mood] Playing mood effect '{selectedClip.Name}' at distance {Vector3.Distance(Owner.Position, randomPosition):F1}, remaining: {_availableEffects.Count}");
             }
-        }
-
-        private int GetRandomEffectIndex()
-        {
-            if (_effectClips.Count == 1)
-                return 0;
-
-            int newIndex;
-            do
-            {
-                newIndex = _random.Next(_effectClips.Count);
-            }
-            while (newIndex == _lastPlayedIndex && _effectClips.Count > 1);
-
-            return newIndex;
         }
 
         public void SetEventValue(MoodEvent moodEvent, int value)
@@ -349,7 +351,9 @@ namespace Spacebox.Game.Player
         public override void OnDetached()
         {
             _audioSource?.Dispose();
-            _effectClips.Clear();
+            _allEffectClips.Clear();
+            _availableEffects.Clear();
+            _playedEffects.Clear();
             _timedEvents.Clear();
             base.OnDetached();
         }

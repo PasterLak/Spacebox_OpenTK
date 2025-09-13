@@ -28,6 +28,7 @@ namespace Engine
         }
 
         public bool HasParent => _parent != null;
+        public bool IsRoot => !HasParent;
         public List<Node3D> Children { get; } = new();
         public bool HasChildren => Children.Count > 0;
         public List<Component> Components { get; } = new();
@@ -185,6 +186,16 @@ namespace Engine
             var list = new List<Node3D>();
             Traverse(n => { if (n.Tag == tag) list.Add(n); });
             return list;
+        }
+
+        public Node3D GetRoot()
+        {
+            if (HasParent)
+            {
+                return Parent.GetRoot();
+            }
+            else
+                return this;
         }
 
         public void Rotate(Vector3 rot) => Rotate(rot.X, rot.Y, rot.Z);

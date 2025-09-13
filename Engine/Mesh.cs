@@ -3,8 +3,6 @@ using Engine.Physics;
 using Engine.Utils;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using System.Reflection.Metadata;
-
 
 namespace Engine
 {

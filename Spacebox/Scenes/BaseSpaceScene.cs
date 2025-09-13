@@ -208,7 +208,7 @@ namespace Spacebox.Scenes
             pLight.Enabled = false;
 
             Chat.Write("Welcome to Spacebox!", Color4.Yellow);
-
+           
            // Debug.Log(World.CurrentSector.WorldToLocalPosition(Camera.Main.Position));
 
         }

@@ -7,7 +7,7 @@ using OpenTK.Mathematics;
 namespace Spacebox.Scenes.Test
 {
 
-    public class Skybox2 : SceneNode, ITransparent
+    public class Skybox2 : SceneNode
     {
         public Mesh Mesh { get; private set; }
         public MaterialBase Material { get; private set; }

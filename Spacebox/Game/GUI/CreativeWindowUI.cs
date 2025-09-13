@@ -326,15 +326,36 @@ namespace Spacebox.Game.GUI
                 {
                     if (Input.IsAction("storage_item_quick_transfer"))
                     {
-                        player.Panel.TryAddItem(slot.Item, slot.Item.StackSize);
+                        if(player.Panel.TryAddItem(slot.Item, slot.Item.StackSize))
+                        {
+
+                        }
+                        else
+                        {
+                            player.Inventory.TryAddItem(slot.Item, slot.Item.StackSize);
+                        }
                     }
                     else if (Input.IsKey(Keys.LeftControl))
                     {
-                        player.Panel.TryAddItem(slot.Item, (byte)(slot.Item.StackSize / 2));
+                        if(player.Panel.TryAddItem(slot.Item, (byte)(slot.Item.StackSize / 2)))
+                        {
+
+                        }
+                        else
+                        {
+                            player.Inventory.TryAddItem(slot.Item, (byte)(slot.Item.StackSize / 2));
+                        }
                     }
                     else
                     {
-                        player.Panel.TryAddItem(slot.Item, 1);
+                        if(player.Panel.TryAddItem(slot.Item, 1))
+                        {
+
+                        }
+                        else
+                        {
+                            player.Inventory.TryAddItem(slot.Item, 1);
+                        }
                     }
 
                 }

@@ -56,6 +56,7 @@ namespace Engine
         public static byte OnGUITimePercent = 0;
 
         public static bool EnableProfiling { get; set; } = true;
+        public static bool CalculateFPS { get; set; } = false;
 
         public static float TargetTPS
         {
@@ -78,6 +79,8 @@ namespace Engine
             Total += Time.Delta;
             if (Total > 100000f)                
                 Total -= 100000f;
+
+            if(CalculateFPS)
             UpdateFPS(frame);
         }
 

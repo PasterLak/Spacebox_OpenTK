@@ -30,8 +30,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             texture.FilterMode = FilterMode.Nearest;
             BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1), texture, Resources.Load<Shader>("Shaders/particle"));
         }
-        var pool = PointLightsPool.Instance;
-
+      
         light = new PointLight();
         light.Range = 8;
 

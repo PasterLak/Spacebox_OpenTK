@@ -2,8 +2,6 @@
 using OpenTK.Mathematics;
 using Engine.Physics;
 
-
-
 namespace Engine
 {
     public class Model : StaticBody
@@ -68,6 +66,7 @@ namespace Engine
 
         public void Render()
         {
+            base.Render();
             var cam = Camera.Main;
             
             if(cam == null) return;
