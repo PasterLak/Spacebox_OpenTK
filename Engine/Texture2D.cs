@@ -1,5 +1,6 @@
 ﻿
 using Engine.Graphics;
+using Engine.Multithreading;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SkiaSharp;
@@ -233,7 +234,7 @@ namespace Engine
         public void SetPixelsData(Color4[,] newPixels)
         {
             if (newPixels.GetLength(0) != Width || newPixels.GetLength(1) != Height)
-                throw new ArgumentException("[Texture2D]^Pixel data does not match texture size.");
+                throw new ArgumentException("[Texture2D] Pixel data does not match texture size.");
             pixels = newPixels;
         }
         public void SetPixelsData(Vector3[,] newPixels)
@@ -290,10 +291,14 @@ namespace Engine
 
             if (doAsync)
             {
-                Task.Run(() =>
+   
+                WorkerPoolManager.Enqueue((e) =>
                 {
-                    SaveImageJpg(path,90, flipY);
-                });
+                    SaveImageJpg(path, 90, flipY);
+                    Debug.Log("SCR saved: " + Time.Total);
+
+                }, WorkerPoolManager.Priority.High);
+
             }
             else
             {
@@ -385,7 +390,6 @@ namespace Engine
             using var stream = File.OpenWrite(path);
             data.SaveTo(stream);
 
-            Debug.Success($"[Texture2D] Image saved to: {Path.GetFullPath(path)}");
         }
 
 
@@ -420,9 +424,6 @@ namespace Engine
         public int GetHandle() { return Handle; }
 
     }
-
-
-
 
     public static class PixelDataLoader
     {

@@ -57,7 +57,7 @@ namespace Spacebox.Scenes
             SetDustSpawner();
 
 
-            var music = AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/music.ogg"));
+            var music = AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/menu.ogg"));
             music.PlayOnStart = false;
             if (Settings.Audio.MenuMusic)
             {

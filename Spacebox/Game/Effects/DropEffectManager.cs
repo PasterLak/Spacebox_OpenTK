@@ -1,13 +1,14 @@
 ﻿using Engine;
 using Engine.Audio;
+using Engine.Components;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Player;
-using SpaceNetwork;
+
 
 namespace Spacebox.Game.Effects
 {
-    public class DropEffectManager : IDisposable
+    public class DropEffectManager : Component
     {
         public const float DropLifeTime = 20f;
 
@@ -31,7 +32,7 @@ namespace Spacebox.Game.Effects
             moveDistanceSquared = moveDistance * moveDistance;
             pickupDistanceSquared = pickupDistance * pickupDistance;
 
-            InitializeAudioSources();
+            
         }
 
         private void InitializeAudioSources()
@@ -41,6 +42,12 @@ namespace Spacebox.Game.Effects
                 pickupSounds[i] = new AudioSource(Resources.Load<AudioClip>("pickupDefault"));
                 pickupSounds[i].Volume = 0.8f;
             }
+        }
+
+        public override void Start()
+        {
+            
+            InitializeAudioSources();
         }
 
         public void DestroyBlock(Vector3 position, Color3Byte color, Block block)
@@ -64,7 +71,7 @@ namespace Spacebox.Game.Effects
             activeEffects.Add(dropEffect);
         }
 
-        public void Update()
+        public override void OnUpdate()
         {
             if (activeEffects.Count == 0) return;
 
@@ -95,7 +102,7 @@ namespace Spacebox.Game.Effects
             }
         }
 
-        public void Render()
+        public override void OnRender()
         {
             if (activeEffects.Count == 0) return;
 
@@ -178,8 +185,9 @@ namespace Spacebox.Game.Effects
             effectPool.Push(effect);
         }
 
-        public void Dispose()
+        public override void OnDetached()
         {
+            base.OnDetached();
             DisposeActiveEffects();
             DisposePooledEffects();
             DisposeAudioSources();

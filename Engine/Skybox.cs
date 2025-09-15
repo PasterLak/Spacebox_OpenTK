@@ -59,6 +59,7 @@ namespace Engine
             base.Destroy();
 
             Mesh.Dispose();
+            
 
         }
 

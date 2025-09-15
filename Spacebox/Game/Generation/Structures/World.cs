@@ -1,5 +1,4 @@
 ﻿using Engine;
-using Engine.Audio;
 using Engine.Components;
 using Engine.GUI;
 using Engine.Multithreading;
@@ -13,7 +12,6 @@ using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
-using static Spacebox.Game.GUI.CraftingCategory;
 
 
 /*
@@ -25,12 +23,6 @@ using static Spacebox.Game.GUI.CraftingCategory;
 namespace Spacebox.Game.Generation
 {
 
-    public class WorldSaveLoader
-    {
-        private World world;
-        public WorldSaveLoader(World world) { this.world = world; }
-
-    }
     public class World : Component, ISpaceStructure
     {
         public static World Instance;
@@ -47,7 +39,7 @@ namespace Spacebox.Game.Generation
         private readonly Octree<Sector> worldOctree;
 
         private readonly Dictionary<Vector3i, Sector> Sectors = new Dictionary<Vector3i, Sector>();
-        BlockMaterial material;
+        private BlockMaterial material;
 
 
         public World(Astronaut player, BlockMaterial material)
@@ -61,14 +53,16 @@ namespace Spacebox.Game.Generation
                 Vector3.Zero, Sector.SizeBlocks, 1.0f);
 
 
-            DropEffectManager = new DropEffectManager(player);
-            DestructionManager = new BlockDestructionManager();
-
-
             Overlay.AddElement(new WorldOverlayElement(this));
 
-           
+        }
+        public override void Start()
+        {
+            DestructionManager = new BlockDestructionManager();
+            DropEffectManager = new DropEffectManager(Player);
 
+            Owner.AttachComponent(DestructionManager);
+            Owner.AttachComponent(DropEffectManager);
         }
         bool saveWasPressed = false;
         public void Save()
@@ -78,9 +72,9 @@ namespace Spacebox.Game.Generation
                 PanelUI.HideItemModel();
                 return;
             }*/
-          
+            PanelUI.EnableRenderForCurrentItem = false;
             PlayerSaveLoadManager.SavePlayer(Player, Data.WorldFolderPath);
-            //WorldSaveLoad.SaveWorld(Data.WorldFolderPath);
+            WorldSaveLoad.SaveWorld(Data.WorldFolderPath);
             Data.Info.GameMode = Player.GameMode;
             Data.Info.Day = GameTime.Day;
             Data.Info.Ticks = GameTime.DayTick;
@@ -92,7 +86,7 @@ namespace Spacebox.Game.Generation
             FramebufferCapture.SaveWorldPreview(screenSize, path);
             saveWasPressed = false;
             PanelUI.ShowItemModel();
-
+            PanelUI.EnableRenderForCurrentItem = true;
         }
 
         public void Load()
@@ -132,17 +126,12 @@ namespace Spacebox.Game.Generation
                 UpdateSectors();
             }
 
-            DropEffectManager.Update();
-            DestructionManager.Update();
-            worldOctree.DrawDebug();
+             worldOctree.DrawDebug();
 
             foreach (var sector in Sectors)
             {
                 sector.Value.Update();
             }
-
-          
-            
 
         }
 
@@ -258,8 +247,6 @@ namespace Spacebox.Game.Generation
             {
                 sector.Value.Render(material);
             }
-            DropEffectManager.Render();
-            DestructionManager.Render();
 
         }
         private void LoadSectorAsync(Vector3i sectorIndex)
@@ -363,12 +350,13 @@ namespace Spacebox.Game.Generation
             base.OnDetached();
 
             Data = null;
-            DropEffectManager.Dispose();
+          
             DropEffectManager = null;
-            DestructionManager.Dispose();
+            
             DestructionManager = null;
             CurrentSector?.Dispose();
             CurrentSector = null;
+            Instance = null;
 
             foreach (var s in Sectors.Values)
             {

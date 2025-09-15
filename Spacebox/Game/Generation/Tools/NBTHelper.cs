@@ -13,9 +13,9 @@ namespace Spacebox.Game.Generation.Tools
             var root = new CompoundTag(sector.GetType().Name);
 
 
-            root.Add(new IntTag("indexX", sector.PositionIndex.X));
-            root.Add(new IntTag("indexY", sector.PositionIndex.Y));
-            root.Add(new IntTag("indexZ", sector.PositionIndex.Z));
+            root.Add(new IntTag(NBTKey.SECTOR.index_x, sector.PositionIndex.X));
+            root.Add(new IntTag(NBTKey.SECTOR.index_y, sector.PositionIndex.Y));
+            root.Add(new IntTag(NBTKey.SECTOR.index_z, sector.PositionIndex.Z));
 
             return root;
         }
@@ -25,58 +25,32 @@ namespace Spacebox.Game.Generation.Tools
 
         }
 
-        public static CompoundTag SectorToTag(Sector sector)
-        {
-            var root = new CompoundTag(sector.GetType().Name);
-
-
-            root.Add(new IntTag("indexX", sector.PositionIndex.X));
-            root.Add(new IntTag("indexY", sector.PositionIndex.Y));
-            root.Add(new IntTag("indexZ", sector.PositionIndex.Z));
-
-            var entities = new ListTag("entities", TagType.Compound);
-
-            var entitiesList = sector.Entities;
-
-            for (int i = 0; i < entitiesList.Count; i++)
-            {
-                entities.Add(SpaceEntityToTag(entitiesList[i]));
-            }
-
-            root.Add(entities);
-
-            return root;
-        }
-
-
         public static SpaceEntity? TagToSpaceEntity(CompoundTag tag, Sector sector)
         {
 
             if (tag == null) return null;
 
-            int id = tag.Get<IntTag>("id");
-            string name = tag.Get<StringTag>("name");
-            var x = tag.Get<FloatTag>("worldX");
-            var y = tag.Get<FloatTag>("worldY");
-            var z = tag.Get<FloatTag>("worldZ");
-
-
+            int id = tag.Get<IntTag>(NBTKey.ENTITY.id);
+            string name = tag.Get<StringTag>(NBTKey.ENTITY.name);
+            var x = tag.Get<FloatTag>(NBTKey.ENTITY.world_x);
+            var y = tag.Get<FloatTag>(NBTKey.ENTITY.world_y);
+            var z = tag.Get<FloatTag>(NBTKey.ENTITY.world_z);
 
 
             SpaceEntity spaceEntity = new SpaceEntity((ulong)id, new Vector3(x, y, z), sector);
             spaceEntity.Name = name;
 
 
-            if (tag.ContainsKey("rotationX"))
+            if (tag.ContainsKey(NBTKey.ENTITY.rotation_x))
             {
-                var rx = tag.Get<FloatTag>("rotationX");
-                var ry = tag.Get<FloatTag>("rotationY");
-                var rz = tag.Get<FloatTag>("rotationZ");
-                var rw = tag.Get<FloatTag>("rotationW");
+                var rx = tag.Get<FloatTag>(NBTKey.ENTITY.rotation_x);
+                var ry = tag.Get<FloatTag>(NBTKey.ENTITY.rotation_y);
+                var rz = tag.Get<FloatTag>(NBTKey.ENTITY.rotation_z);
+                var rw = tag.Get<FloatTag>(NBTKey.ENTITY.rotation_w);
 
                 spaceEntity.Rotation = new Quaternion(rx, ry, rz, rw).ToEulerAngles();
             }
-            var chunksList = tag.Get<ListTag>("chunks");
+            var chunksList = tag.Get<ListTag>(NBTKey.ENTITY.chunks);
 
             var chunks = new List<Chunk>();
 
@@ -89,65 +63,27 @@ namespace Spacebox.Game.Generation.Tools
 
         }
 
-        public static List<CompoundTag> TagSpaceEntityToStorages(CompoundTag tag, out string[] paletteitemsString)
-        {
-
-            List<CompoundTag> list = new List<CompoundTag>();
-            paletteitemsString = new string[0];
-            if (tag == null) return list;
-
-            var chunksList = tag.Get<ListTag>("chunks");
-
-            foreach (CompoundTag chunk in chunksList)
-            {
-
-                if (chunk.TryGetValue<ListTag>("paletteItems", out var paletteItems))
-                {
-
-                    paletteitemsString = ListTagToPaletteItems(paletteItems);
-
-                }
-                if (chunk.TryGetValue<ListTag>("storages", out var storages))
-                {
-
-                    foreach (var storage in storages)
-                    {
-
-                        for (int i = 0; i < storages.Count; i++)
-                        {
-                            CompoundTag st = storages[i] as CompoundTag;
-                            list.Add(st);
-                        }
-
-                        return list;
-                    }
-                }
-            }
-
-            return list;
-        }
-
 
         public static CompoundTag SpaceEntityToTag(SpaceEntity entity)
         {
             var root = new CompoundTag(entity.GetType().Name);
 
 
-            root.Add(new IntTag("id", (int)entity.EntityID)); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!   should be ulong
-            root.Add(new StringTag("name", entity.Name));
+            root.Add(new IntTag(NBTKey.ENTITY.id, (int)entity.EntityID)); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!   should be ulong
+            root.Add(new StringTag(NBTKey.ENTITY.name, entity.Name));
 
-            root.Add(new FloatTag("worldX", entity.PositionWorld.X));
-            root.Add(new FloatTag("worldY", entity.PositionWorld.Y));
-            root.Add(new FloatTag("worldZ", entity.PositionWorld.Z));
+            root.Add(new FloatTag(NBTKey.ENTITY.world_x, entity.PositionWorld.X));
+            root.Add(new FloatTag(NBTKey.ENTITY.world_y, entity.PositionWorld.Y));
+            root.Add(new FloatTag(NBTKey.ENTITY.world_z, entity.PositionWorld.Z));
 
             Quaternion rot = Quaternion.FromEulerAngles(entity.Rotation);
 
-            root.Add(new FloatTag("rotationX", rot.X));
-            root.Add(new FloatTag("rotationY", rot.Y));
-            root.Add(new FloatTag("rotationZ", rot.Z));
-            root.Add(new FloatTag("rotationW", rot.W));
+            root.Add(new FloatTag(NBTKey.ENTITY.rotation_x, rot.X));
+            root.Add(new FloatTag(NBTKey.ENTITY.rotation_y, rot.Y));
+            root.Add(new FloatTag(NBTKey.ENTITY.rotation_z, rot.Z));
+            root.Add(new FloatTag(NBTKey.ENTITY.rotation_w, rot.W));
 
-            var chunks = new ListTag("chunks", TagType.Compound);
+            var chunks = new ListTag(NBTKey.ENTITY.chunks, TagType.Compound);
 
             var chunksList = entity.Chunks;
 
@@ -171,11 +107,11 @@ namespace Spacebox.Game.Generation.Tools
 
             var root = new CompoundTag(chunk.GetType().Name);
 
-            root.Add(new ByteTag("indexX", PackingTools.SByteToByte(index.X)));
-            root.Add(new ByteTag("indexY", PackingTools.SByteToByte(index.Y)));
-            root.Add(new ByteTag("indexZ", PackingTools.SByteToByte(index.Z)));
+            root.Add(new ByteTag(NBTKey.CHUNK.index_x, PackingTools.SByteToByte(index.X)));
+            root.Add(new ByteTag(NBTKey.CHUNK.index_y, PackingTools.SByteToByte(index.Y)));
+            root.Add(new ByteTag(NBTKey.CHUNK.index_z, PackingTools.SByteToByte(index.Z)));
 
-            var listBlocks = new IntArrayTag("blocks", SIZE * SIZE * SIZE);
+            var listBlocks = new IntArrayTag(NBTKey.CHUNK.blocks, SIZE * SIZE * SIZE);
 
             short id = 0;
             Dictionary<short, short> palette = new Dictionary<short, short>();
@@ -274,7 +210,7 @@ namespace Spacebox.Game.Generation.Tools
 
             root.Add(listBlocks);
 
-            var listPalette = new IntArrayTag("palette", palette.Count);
+            var listPalette = new IntArrayTag(NBTKey.CHUNK.palette_blocks, palette.Count);
 
             foreach (var item in palette)
             {
@@ -283,7 +219,7 @@ namespace Spacebox.Game.Generation.Tools
 
             root.Add(listPalette);
 
-            var listPaletteitems = new ListTag("paletteItems", TagType.String);
+            var listPaletteitems = new ListTag(NBTKey.CHUNK.palette_items, TagType.String);
 
             var paletteItemsArray = new string[paletteItems.Count];
             foreach (var item in paletteItems)
@@ -298,7 +234,7 @@ namespace Spacebox.Game.Generation.Tools
 
             root.Add(listPaletteitems);
 
-            var listRotations = new IntArrayTag("rotations", blockWithDirIDs.Count);
+            var listRotations = new IntArrayTag(NBTKey.CHUNK.rotations, blockWithDirIDs.Count);
 
             for (int x = 0; x < blockWithDirIDs.Count; x++)
             {
@@ -308,7 +244,7 @@ namespace Spacebox.Game.Generation.Tools
             root.Add(listRotations);
 
 
-            var listResourceProcessingBlocks = new IntArrayTag("resourceProcessingBlocks", resourceProcessingBlockData.Count);
+            var listResourceProcessingBlocks = new IntArrayTag(NBTKey.CHUNK.processing_blocks, resourceProcessingBlockData.Count);
 
             for (int x = 0; x < resourceProcessingBlockData.Count; x++)
             {
@@ -319,7 +255,7 @@ namespace Spacebox.Game.Generation.Tools
 
             root.Add(listResourceProcessingBlocks);
 
-            var storagesListTag = new ListTag("storages", TagType.Compound);
+            var storagesListTag = new ListTag(NBTKey.CHUNK.storages, TagType.Compound);
 
             storagesListTag.AddRange(storagesList);
 
@@ -330,20 +266,6 @@ namespace Spacebox.Game.Generation.Tools
             return root;
         }
 
-        private static void AddAllBlockItemsToPalette(Dictionary<string, short> itemsPalette, List<ResourceProcessingBlock> blocks, ref short indexInPalette)
-        {
-
-            for (int i = 0; i < blocks.Count; i++)
-            {
-                var storages = blocks[i].GetAllStorages();
-
-                for (byte j = 0; j < storages.Length; j++)
-                {
-                    AddItemsToPalette(storages[j], itemsPalette, ref indexInPalette);
-                }
-            }
-
-        }
 
         private static void AddItemsToPalette(Storage storage, Dictionary<string, short> itemsPalette, ref short indexInPalette)
         {
@@ -412,19 +334,19 @@ namespace Spacebox.Game.Generation.Tools
 
             //
 
-            var root = new CompoundTag("storage");
+            var root = new CompoundTag(NBTKey.STORAGE.storage);
 
 
-            root.Add(new ShortTag("positionChunk", block.PositionIndex));
+            root.Add(new ShortTag(NBTKey.STORAGE.position_chunk, block.PositionIndex));
 
             if (block.NeedsToSaveName(out var name))
             {
-                root.Add(new StringTag("name", name));
+                root.Add(new StringTag(NBTKey.STORAGE.name, name));
             }
 
 
-            root.Add(new ShortTag("sizeXY", storageSizeXYPacked));
-            root.Add(new LongArrayTag("slotsData", slotsData));
+            root.Add(new ShortTag(NBTKey.STORAGE.size_xy, storageSizeXYPacked));
+            root.Add(new LongArrayTag(NBTKey.STORAGE.slots_data, slotsData));
 
 
             result = root;
@@ -476,51 +398,6 @@ namespace Spacebox.Game.Generation.Tools
 
             return true;
         }
-
-
-
-
-        public static void TagToStorageBlock(int dataIn, int dataOut, int dataFuel, ResourceProcessingBlock block, string[] paletteitems)
-        {
-            if (dataIn + dataOut + dataFuel == 0) return;
-
-            PackingTools.UnpackShorts(dataIn, out short inItem, out short inCount);
-            PackingTools.UnpackShorts(dataOut, out short outItem, out short outCount);
-            PackingTools.UnpackShorts(dataFuel, out short fuelItem, out short fuelCount);
-
-            if (inCount > 0)
-            {
-                var inItm = GameAssets.GetItemByName(paletteitems[inItem]);
-
-                if (inItm != null)
-                {
-                    block.SetStorageAfterLoadFromNBT(inItm, (byte)inCount, block.InputStorage);
-                }
-            }
-
-            if (outCount > 0)
-            {
-                var outItm = GameAssets.GetItemByName(paletteitems[outItem]);
-
-                if (outItm != null)
-                {
-                    block.SetStorageAfterLoadFromNBT(outItm, (byte)outCount, block.OutputStorage);
-                }
-            }
-            if (fuelCount > 0)
-            {
-                var fuelItm = GameAssets.GetItemByName(paletteitems[fuelItem]);
-
-                if (fuelItm != null)
-                {
-                    block.SetStorageAfterLoadFromNBT(fuelItm, (byte)fuelCount, block.FuelStorage);
-                }
-            }
-
-            block.TryStart();
-
-        }
-
 
         public static void TagToResourceProcessingBlock(int dataIn, int dataOut, int dataFuel, ResourceProcessingBlock block, string[] paletteitems)
         {
@@ -580,16 +457,13 @@ namespace Spacebox.Game.Generation.Tools
         {
             //Debug.Log(tag.PrettyPrinted());
             const byte SIZE = Chunk.Size;
-            sbyte ix = PackingTools.ByteToSByte(tag.Get<ByteTag>("indexX").Value);
-            sbyte iy = PackingTools.ByteToSByte(tag.Get<ByteTag>("indexY").Value);
-            sbyte iz = PackingTools.ByteToSByte(tag.Get<ByteTag>("indexZ").Value);
+            sbyte ix = PackingTools.ByteToSByte(tag.Get<ByteTag>(NBTKey.CHUNK.index_x).Value);
+            sbyte iy = PackingTools.ByteToSByte(tag.Get<ByteTag>(NBTKey.CHUNK.index_y).Value);
+            sbyte iz = PackingTools.ByteToSByte(tag.Get<ByteTag>(NBTKey.CHUNK.index_z).Value);
 
-            var listBlocks = tag.Get<IntArrayTag>("blocks").ToArray();
-            var listPalette = tag.Get<IntArrayTag>("palette").ToArray();
-            var listRotations = tag.Get<IntArrayTag>("rotations").ToArray();
-
-
-
+            var listBlocks = tag.Get<IntArrayTag>(NBTKey.CHUNK.blocks).ToArray();
+            var listPalette = tag.Get<IntArrayTag>(NBTKey.CHUNK.palette_blocks).ToArray();
+            var listRotations = tag.Get<IntArrayTag>(NBTKey.CHUNK.rotations).ToArray();
 
 
             short[] ids = new short[SIZE * SIZE * SIZE];
@@ -623,11 +497,11 @@ namespace Spacebox.Game.Generation.Tools
             }
 
 
-            if (tag.TryGetValue<ListTag>("paletteItems", out var paletteItems))
+            if (tag.TryGetValue<ListTag>(NBTKey.CHUNK.palette_items, out var paletteItems))
             {
                 var paletteitemsString = ListTagToPaletteItems(paletteItems);
 
-                if (tag.TryGetValue<IntArrayTag>("resourceProcessingBlocks", out var resourcePBData))
+                if (tag.TryGetValue<IntArrayTag>(NBTKey.CHUNK.processing_blocks, out var resourcePBData))
                 {
                     if (resourcePBData.Count % 4 == 0 && paletteitemsString.Length > 0)
                     {
@@ -647,35 +521,35 @@ namespace Spacebox.Game.Generation.Tools
                     }
                 }
 
-                if (tag.TryGetValue<ListTag>("storages", out var storages))
+                if (tag.TryGetValue<ListTag>(NBTKey.CHUNK.storages, out var storages))
                 {
 
                     foreach (CompoundTag storage in storages)
                     {
 
 
-                        if (storage.TryGetValue<ShortTag>("positionChunk", out var posTag))
+                        if (storage.TryGetValue<ShortTag>(NBTKey.STORAGE.position_chunk, out var posTag))
                         {
                             Vector3Byte pos = StorageBlock.PositionIndexToPositionInChunk((ushort)posTag.Value);
 
                             
 
-                            var sizeXY = storage.Get<ShortTag>("sizeXY");
+                            var sizeXY = storage.Get<ShortTag>(NBTKey.STORAGE.size_xy);
 
                             PackingTools.UnpackBytes(sizeXY, out byte sizeX, out byte sizeY);
 
                             Storage newStorage = new Storage(sizeX, sizeY);
 
-                            if (storage.TryGetValue<StringTag>("name", out var nameTag))
+                            if (storage.TryGetValue<StringTag>(NBTKey.STORAGE.name, out var nameTag))
                             {
                                 var val = nameTag.Value;
-                                Debug.Log("Loaded name: " + val);
+                              
                                 newStorage.Name = val;
-                                Debug.Log("set name: " + newStorage.Name);
+                             
                             }
                             else Debug.Log("not found name");
 
-                            foreach (var slotData in storage.Get<LongArrayTag>("slotsData"))
+                            foreach (var slotData in storage.Get<LongArrayTag>(NBTKey.STORAGE.slots_data))
                             {
                                 PackingTools.UnpackShorts(slotData, out var paletteId, out var count, out var posX, out var posY);
 
@@ -748,7 +622,6 @@ namespace Spacebox.Game.Generation.Tools
                     }
             return blocks;
         }
-
 
         public static int GetArrayIndex(byte x, byte y, byte z, byte chunkSize)
         {

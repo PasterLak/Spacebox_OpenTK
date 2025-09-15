@@ -1,7 +1,6 @@
 ﻿using Engine;
 using Engine.Components;
 using Engine.GUI;
-using Engine.InputPro;
 using Engine.Light;
 using Engine.SceneManagement;
 using OpenTK.Mathematics;
@@ -48,8 +47,6 @@ namespace Spacebox.Scenes
         protected BlockSelector blockSelector;
         protected RadarUI radarWindow;
 
-        protected BlockDestructionManager blockDestructionManager;
-
         protected PointLight pLight;
         private SpheresPool SpheresPool;
         private FreeCamera freeCamera;
@@ -82,16 +79,6 @@ namespace Spacebox.Scenes
                 }
             };
 
-           // InputManager0.AddAction("inputOverlay", Keys.F6);
-           /* InputManager0.RegisterCallback("inputOverlay", () =>
-            {
-                InputOverlay.IsVisible = !InputOverlay.IsVisible;
-            });*/
-
-            
-
-
-
         }
 
         public override void LoadContent()
@@ -99,7 +86,7 @@ namespace Spacebox.Scenes
             GameTime.Init();
             var texture = new SpaceTexture(512, 512, World.Seed);
 
-            var skybox = new Skybox( texture);
+            var skybox = new Skybox(texture);
             skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
 
             Lighting.Skybox = skybox;
@@ -116,7 +103,7 @@ namespace Spacebox.Scenes
 
             World.LoadWorldInfo(SceneArgs.worldName);
             blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.EmissionBlocks, localPlayer);
-             world = new World(localPlayer, blockMaterial);
+            world = new World(localPlayer, blockMaterial);
             AttachComponent(world);
             world.Load();
             PlayerSaveLoadManager.LoadPlayer(localPlayer, World.Data.WorldFolderPath);
@@ -137,13 +124,11 @@ namespace Spacebox.Scenes
 
             localPlayer.GameMode = World.Data.Info.GameMode;
 
-            PointLightsPool.Instance = new PointLightsPool( 1);
+            PointLightsPool.Instance = new PointLightsPool(1);
 
-
-            blockDestructionManager = new BlockDestructionManager();
 
             if (Settings.Graphics.EffectsEnabled == true)
-            localPlayer.AddChild(new DustSpawner());
+                localPlayer.AddChild(new DustSpawner());
 
             Debug.RegisterCommand(new ChatCommand());
             Debug.RegisterCommand(new DebugTexturesCommand());
@@ -175,7 +160,7 @@ namespace Spacebox.Scenes
             freeCamera.FOV = localPlayer.FOV;
             freeCamera.DepthFar = localPlayer.DepthFar;
             Camera.Main = localPlayer;
-           
+
             WelcomeUI.OnPlayerSpawned(World.Data.Info.ShowWelcomeWindow);
             WelcomeUI.Init();
             PauseUI.Init();
@@ -184,7 +169,7 @@ namespace Spacebox.Scenes
             AddChild(new ProjectileHitEffectsManager());
             AddChild(new DirectionalLight());
 
-           
+
         }
 
         public override void Start()
@@ -208,8 +193,8 @@ namespace Spacebox.Scenes
             pLight.Enabled = false;
 
             Chat.Write("Welcome to Spacebox!", Color4.Yellow);
-           
-           // Debug.Log(World.CurrentSector.WorldToLocalPosition(Camera.Main.Position));
+
+            // Debug.Log(World.CurrentSector.WorldToLocalPosition(Camera.Main.Position));
 
         }
 
@@ -222,7 +207,7 @@ namespace Spacebox.Scenes
             ToggleManager.DisableAllWindows();
             ToggleManager.SetState("radar", false);
             ToggleManager.SetState("inventory", false);
-          
+
             if (Chat.IsVisible)
             {
                 Chat.IsVisible = false;
@@ -233,19 +218,17 @@ namespace Spacebox.Scenes
         {
             Time.HandleTicks();
 
-           // localPlayer.Update();
-            
             base.Update();
-           // world.OnUpdate();
 
-            blockDestructionManager.Update();
             MainThreadDispatcher.Instance.ExecutePending();
 
+#if DEBUG
             if (Input.IsKeyDown(Keys.R))
             {
                 RenderSpace.SwitchSpace();
 
             }
+
             if (Input.IsKeyDown(Keys.C))
             {
                 if (localPlayer.IsMain)
@@ -258,8 +241,7 @@ namespace Spacebox.Scenes
                 }
 
             }
-
-
+#endif
             if (Input.IsKeyDown(Keys.Escape))
             {
                 if (Chat.IsVisible && Chat.FocusInput)
@@ -313,8 +295,6 @@ namespace Spacebox.Scenes
         {
             base.Render();
 
-            //localPlayer.Render();
-            //world.OnRender();
             DisposalManager.ProcessDisposals();
 
             if (InteractionShoot.ProjectilesPool != null)
@@ -322,8 +302,6 @@ namespace Spacebox.Scenes
 
             if (InteractionPlaceBlock.lineRenderer != null && Settings.ShowInterface)
                 InteractionPlaceBlock.lineRenderer.Render();
-
-            blockDestructionManager.Render();
 
             OnRenderCenter?.Invoke();
             if (InteractionDestroyBlockSurvival.BlockMiningEffect != null)
@@ -339,7 +317,7 @@ namespace Spacebox.Scenes
 
         public override void OnGUI()
         {
-        
+
             ColorOverlay.OnGUI();
             CenteredText.OnGUI();
 
@@ -381,8 +359,7 @@ namespace Spacebox.Scenes
             if (InteractionShoot.ProjectilesPool != null)
                 InteractionShoot.ProjectilesPool.Dispose();
             ToggleManager.DisableAllWindows();
-            blockDestructionManager.Dispose();
-
+          
             TagManager.ClearTags();
             Window.OnResized -= TagManager.OnResized;
             PauseUI.Dispose();

@@ -2,11 +2,12 @@
 
 using Engine;
 using Spacebox.Game.Generation.Blocks;
+using Engine.Components;
 
 
 namespace Spacebox.Game.Effects
 {
-    public class BlockDestructionManager : IDisposable
+    public class BlockDestructionManager : Component
     {
         private List<BlockDestructionEffect> activeEffects = new List<BlockDestructionEffect>();
 
@@ -26,8 +27,9 @@ namespace Spacebox.Game.Effects
             activeEffects.Add(destructionEffect);
         }
 
-        public void Update()
+        public override void OnUpdate()
         {
+           
             for (int i = activeEffects.Count - 1; i >= 0; i--)
             {
                 var effect = activeEffects[i];
@@ -42,17 +44,18 @@ namespace Spacebox.Game.Effects
             }
         }
 
-        public void Render()
+        public override void OnRender()
         {
-           
+          
             foreach (var effect in activeEffects)
             {
                 effect.Render();
             }
         }
 
-        public void Dispose()
+        public override void OnDetached()
         {
+           
             foreach (var effect in activeEffects)
             {
                 effect.Dispose();

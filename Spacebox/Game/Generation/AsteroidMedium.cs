@@ -17,7 +17,7 @@ namespace Spacebox.Game.Generation
         private readonly HashSet<Vector3SByte> generatingChunks = new();
         private readonly HashSet<Vector3SByte> loadedChunks = new HashSet<Vector3SByte>();
 
-        readonly Dictionary<Vector3SByte, List<Vector3i>> _worm = new Dictionary<Vector3SByte, List<Vector3i>>();
+        private readonly Dictionary<Vector3SByte, List<Vector3i>> _worm = new ();
         public AsteroidMedium(ulong id, Vector3 positionWorld, Sector sector)
             : base(id, positionWorld, sector)
         {

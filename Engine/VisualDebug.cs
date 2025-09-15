@@ -16,19 +16,19 @@ namespace Engine
         private static readonly List<float> _triangles = new();
         public static Matrix4 ProjectionMatrix { get; set; }
         public static Matrix4 ViewMatrix { get; set; }
-        public static bool Enabled = false;
-     
+        public static bool Enabled { get; set; } = false;
+
         private static float LineWidth = 1.0f;
 
         static VisualDebug()
         {
             Initialize();
-            
+
         }
 
         private static void Initialize()
         {
-            _shader = Resources.Load<Shader>("Shaders/debug", true);
+            _shader = Resources.Load<Shader>("Shaders/debug", true); 
 
             _bufferPoints = new MeshBuffer(new[]
             {
@@ -379,7 +379,7 @@ namespace Engine
 
         public static void Render()
         {
-         
+
             if (!Enabled) return;
             if (_points.Count == 0 && _lines.Count == 0 && _triangles.Count == 0) return;
 
@@ -390,12 +390,12 @@ namespace Engine
                 ViewMatrix = cam.GetViewMatrix();
             }
             else return;
-            
+
             _shader.Use();
             _shader.SetMatrix4("model", Matrix4.Identity * Matrix4.CreateTranslation(-RenderSpace.Origin));
             _shader.SetMatrix4("view", ViewMatrix);
             _shader.SetMatrix4("projection", ProjectionMatrix);
-     
+
 
             GLState.DepthTest(true);
             GLState.CullFace(false);

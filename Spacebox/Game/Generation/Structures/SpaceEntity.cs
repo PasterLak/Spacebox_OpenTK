@@ -439,7 +439,7 @@ namespace Spacebox.Game.Generation
 
             if (camera != null)
             {
-                var dis = (int)Vector3.Distance(CenterOfMass, camera.Position);
+                var dis = (int)(Vector3.Distance(CenterOfMass, camera.Position));
 
                
                 if (VisualDebug.Enabled)
@@ -452,7 +452,7 @@ namespace Spacebox.Game.Generation
                       .Append("\nWpos: ")
                       .Append(Block.RoundVector3(PositionWorld))
                       .Append("\n")
-                      .Append(dis)
+                      .Append(dis )
                       .Append(" m\n")
                       .Append(_entityMassString)
                       .Append(" tn, gR: ")
@@ -461,7 +461,7 @@ namespace Spacebox.Game.Generation
                 }
                 else
                 {
-                    StringBuilder.Append(dis).Append(" m");
+                    StringBuilder.Append(dis ).Append(" m");
                     if (Mass > 0)
                     {
                         StringBuilder.Append("\n")

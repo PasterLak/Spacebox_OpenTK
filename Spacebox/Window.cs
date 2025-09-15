@@ -190,6 +190,7 @@ namespace Spacebox
         private static AudioSource screenShotAudio;
         public void Screenshot()
         {
+          
             FramebufferCapture.SaveScreenshot(this);
             screenShotAudio.Play();
             ColorOverlay.FadeOut(new System.Numerics.Vector3(1, 1, 1), 0.2f);

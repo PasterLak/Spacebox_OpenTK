@@ -8,6 +8,7 @@ using Spacebox.Game;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
+using Spacebox.Scenes.Test;
 using static Spacebox.Game.Resource.GameSetLoader;
 
 namespace Spacebox.Scenes
@@ -27,7 +28,7 @@ namespace Spacebox.Scenes
         private ClientNetwork networkClient;
         private float timeToGoToMenu = 10f;
         private Camera player;
-        private Skybox skybox;
+  
         private Shader skyboxShader;
         private bool readyToLaunch = false;
 
@@ -54,8 +55,8 @@ namespace Spacebox.Scenes
         {
             player = new CameraStatic(new Vector3(0, 0, 0));
 
-            skybox = new Skybox(
-                new SpaceTexture(512, 512, World.Seed));
+            AddChild(new Skybox(
+                new SpaceTexture(512, 512, World.Seed)));
            
             Debug.Warning("Trying to connect to server...");
             CenteredText.SetText("Trying to connect to server...");
@@ -180,8 +181,8 @@ namespace Spacebox.Scenes
         }
         public override void Render()
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            skybox.Render();
+           
+          
         }
         public override void OnGUI()
         {
@@ -190,7 +191,8 @@ namespace Spacebox.Scenes
         public override void UnloadContent()
         {
             //CenteredText.Hide();
-           // skybox.Texture.Dispose();
+            // skybox.Texture.Dispose();
+           
             skyboxShader.Dispose();
         }
     }

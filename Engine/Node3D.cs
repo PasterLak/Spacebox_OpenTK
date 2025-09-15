@@ -83,7 +83,11 @@ namespace Engine
         public void DetachComponent(Component component)
         {
             if (component == null) return;
-            if (Components.Remove(component)) component.OnDetached();
+         
+            if (Components.Remove(component))
+            {
+                component.OnDetached();
+            }
         }
 
         public virtual void Start()
@@ -113,7 +117,6 @@ namespace Engine
                 RemoveChild(child);
                 child.Destroy();
             }
-
 
             Parent?.RemoveChild(this);
         }

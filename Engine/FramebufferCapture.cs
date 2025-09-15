@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Mathematics;
+using Engine.Multithreading;
 
 namespace Engine
 {
@@ -74,11 +75,16 @@ namespace Engine
             int width = clientSize.X;
             int height = clientSize.Y;
             byte[] pixels = new byte[width * height * 4];
+          
             GL.ReadPixels(0, 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
-            Color4[,] colorData = ConvertToColorArray(pixels, width, height);
             Texture2D texture = new Texture2D(width, height);
+
+                Color4[,] colorData = ConvertToColorArray(pixels, width, height);
+      
             texture.SetPixelsData(colorData);
+      
             texture.SaveToPng(filePath);
+          
             texture.Dispose();
         }
 

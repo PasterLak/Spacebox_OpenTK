@@ -1,10 +1,6 @@
-﻿
-using Client;
+﻿using Client;
 using Engine;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Game.GUI;
 using Spacebox.Game;
-using Spacebox.GUI;
 using Spacebox.Game.Resource;
 using Spacebox.Game.Player;
 
