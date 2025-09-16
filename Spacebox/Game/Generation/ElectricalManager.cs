@@ -1,4 +1,6 @@
-﻿using Spacebox.Game.Generation.Blocks;
+﻿using Engine;
+using OpenTK.Mathematics;
+using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.Generation
 {
@@ -10,102 +12,259 @@ namespace Spacebox.Game.Generation
         Dictionary<int, HashSet<Chunk>> networkChunks = new Dictionary<int, HashSet<Chunk>>();
         Dictionary<(int x, int y, int z), Chunk> blockToChunk = new Dictionary<(int x, int y, int z), Chunk>();
 
+        Dictionary<int, bool> networkActiveCache = new Dictionary<int, bool>();
+        HashSet<(int x, int y, int z)> tempAffectedBlocks = new HashSet<(int x, int y, int z)>();
+        Dictionary<(int x, int y, int z), bool> tempOldStates = new Dictionary<(int x, int y, int z), bool>();
+        HashSet<Chunk> tempChangedChunks = new HashSet<Chunk>();
+        Queue<(int, int, int)> floodFillQueue = new Queue<(int, int, int)>();
+
         int nextNetworkId = 1;
 
-     
-        private bool GetOldNetworkActiveState((int x, int y, int z) pos, out int neignborns)
+        
+
+        public void AddBlockFast((int x, int y, int z) globalPos, ElectricalBlock block, Chunk parentChunk)
         {
-
-            HashSet<int> adjacentNetworkIds = new HashSet<int>();
-            var neighbors = GetNeighbors(pos);
-            foreach (var neighbor in neighbors)
-            {
-
-                if (Blocks.ContainsKey(neighbor) && blockToNetwork.TryGetValue(neighbor, out int netId))
-                {
-                    adjacentNetworkIds.Add(netId);
-                }
-            }
-            neignborns = 0;
-            if (adjacentNetworkIds.Count == 0)
-                return false;
-
-            int totalGen = 0;
-            int totalCons = 0;
-
-            foreach (var netId in adjacentNetworkIds)
-            {
-                if (networks.TryGetValue(netId, out List<(int x, int y, int z)> coords))
-                {
-                    foreach (var coord in coords)
-                    {
-                        if (Blocks.TryGetValue(coord, out ElectricalBlock b))
-                        {
-                            if ((b.EFlags & ElectricalFlags.CanGenerate) != 0)
-                                totalGen += b.GenerationRate;
-                            if ((b.EFlags & ElectricalFlags.CanConsume) != 0)
-                                totalCons += b.ConsumptionRate;
-                        }
-                    }
-                    neignborns++;
-                }
-            }
-
-            return totalGen >= totalCons;
+            Blocks[globalPos] = block;
+            blockToChunk[globalPos] = parentChunk;
         }
 
-        private bool IsBlockActive((int x, int y, int z) pos)
-        {
-            if (Blocks.TryGetValue(pos, out ElectricalBlock b))
-            {
-                return b.IsActive;
-            }
-
-            return false;
-        }
-        public void AddBlockFast((int x, int y, int z) pos, ElectricalBlock block, Chunk parentChunk)
-        {
-            Blocks[pos] = block;
-            blockToChunk[pos] = parentChunk;
-           
-
-        }
-        public void AddBlock((int x, int y, int z) pos, ElectricalBlock block, Chunk parentChunk)
+        public void AddBlock((int x, int y, int z) globalPos, ElectricalBlock block, Chunk parentChunk)
         {
             if (block.EFlags == ElectricalFlags.None) return;
 
-            bool lastState = GetOldNetworkActiveState(pos, out var neignborns);
-            Blocks[pos] = block;
-            blockToChunk[pos] = parentChunk;
+            GetPotentiallyAffectedBlocks(globalPos);
+            SaveBlockStates();
+
+            Blocks[globalPos] = block;
+            blockToChunk[globalPos] = parentChunk;
+
             RebuildAllNetworks();
-
-            UpdateAllNetworks(lastState, neignborns > 1);
+            UpdateChangedChunks();
         }
 
-        public void RemoveBlock((int x, int y, int z) pos)
+        public void RemoveBlock(Chunk chunk, Vector3Byte posInChunk)
         {
-            bool lastState = IsBlockActive(pos);
-
-            if (Blocks.Remove(pos))
-            {
-                blockToChunk.Remove(pos);
-                RebuildAllNetworks();
-            }
-
-
-            UpdateAllNetworks(lastState, false);
+            var index = chunk.PositionIndex;
+            Vector3 entityLocalPos = SpaceEntity.ChunkIndexToLocal(index);
+            var globalPos = ((int)(entityLocalPos.X + posInChunk.X),
+                           (int)(entityLocalPos.Y + posInChunk.Y),
+                           (int)(entityLocalPos.Z + posInChunk.Z));
+            RemoveBlock(globalPos);
         }
 
-        public void UpdateBlock((int x, int y, int z) pos)
+        public void RemoveBlock((int x, int y, int z) globalPos)
         {
-            if (Blocks.ContainsKey(pos)) RebuildAllNetworks();
-            UpdateAllNetworks(false, false);
+            if (!Blocks.ContainsKey(globalPos)) return;
+
+            GetNetworkBlocks(globalPos);
+            SaveBlockStates();
+
+            Blocks.Remove(globalPos);
+            blockToChunk.Remove(globalPos);
+
+            RebuildAllNetworks();
+            UpdateChangedChunks();
+        }
+
+        public void UpdateBlock((int x, int y, int z) globalPos)
+        {
+            if (!Blocks.ContainsKey(globalPos)) return;
+
+            GetNetworkBlocks(globalPos);
+            SaveBlockStates();
+
+            RebuildAllNetworks();
+            UpdateChangedChunks();
         }
 
         public void Rebuild()
         {
             RebuildAllNetworks();
-            UpdateAllNetworks(false, true);
+            UpdateAllNetworksForced();
+        }
+
+        private void GetPotentiallyAffectedBlocks((int x, int y, int z) globalPos)
+        {
+            tempAffectedBlocks.Clear();
+            tempAffectedBlocks.Add(globalPos);
+
+            var n1 = (globalPos.x + 1, globalPos.y, globalPos.z);
+            var n2 = (globalPos.x - 1, globalPos.y, globalPos.z);
+            var n3 = (globalPos.x, globalPos.y + 1, globalPos.z);
+            var n4 = (globalPos.x, globalPos.y - 1, globalPos.z);
+            var n5 = (globalPos.x, globalPos.y, globalPos.z + 1);
+            var n6 = (globalPos.x, globalPos.y, globalPos.z - 1);
+
+            CheckNeighbor(n1);
+            CheckNeighbor(n2);
+            CheckNeighbor(n3);
+            CheckNeighbor(n4);
+            CheckNeighbor(n5);
+            CheckNeighbor(n6);
+        }
+
+        private void CheckNeighbor((int x, int y, int z) neighbor)
+        {
+            if (Blocks.ContainsKey(neighbor))
+            {
+                if (blockToNetwork.TryGetValue(neighbor, out int netId))
+                {
+                    if (networks.TryGetValue(netId, out var netBlocks))
+                    {
+                        foreach (var block in netBlocks)
+                            tempAffectedBlocks.Add(block);
+                    }
+                }
+                else
+                {
+                    tempAffectedBlocks.Add(neighbor);
+                }
+            }
+        }
+
+        private void GetNetworkBlocks((int x, int y, int z) globalPos)
+        {
+            tempAffectedBlocks.Clear();
+
+            if (blockToNetwork.TryGetValue(globalPos, out int netId))
+            {
+                if (networks.TryGetValue(netId, out var netBlocks))
+                {
+                    foreach (var block in netBlocks)
+                        tempAffectedBlocks.Add(block);
+                }
+            }
+            else
+            {
+                tempAffectedBlocks.Add(globalPos);
+            }
+        }
+
+        private void SaveBlockStates()
+        {
+            tempOldStates.Clear();
+            foreach (var pos in tempAffectedBlocks)
+            {
+                if (Blocks.TryGetValue(pos, out var block))
+                {
+                    tempOldStates[pos] = block.IsActive;
+                }
+            }
+        }
+
+        private void UpdateChangedChunks()
+        {
+            tempChangedChunks.Clear();
+
+            foreach (var oldState in tempOldStates)
+            {
+                var pos = oldState.Key;
+                bool oldActive = oldState.Value;
+                bool newActive = false;
+
+                if (Blocks.TryGetValue(pos, out var block))
+                {
+                    if (blockToNetwork.TryGetValue(pos, out int netId))
+                    {
+                        if (!networkActiveCache.TryGetValue(netId, out newActive))
+                        {
+                            newActive = IsNetworkActive(netId);
+                            networkActiveCache[netId] = newActive;
+                        }
+                        block.IsActive = newActive;
+                    }
+                    else
+                    {
+                        block.IsActive = false;
+                    }
+
+                    if (oldActive != block.IsActive)
+                    {
+                        if (blockToChunk.TryGetValue(pos, out Chunk chunk))
+                        {
+                            tempChangedChunks.Add(chunk);
+                        }
+                    }
+                }
+            }
+
+            foreach (var network in networks)
+            {
+                if (!networkActiveCache.TryGetValue(network.Key, out bool isActive))
+                {
+                    isActive = IsNetworkActive(network.Key);
+                    networkActiveCache[network.Key] = isActive;
+                }
+
+                foreach (var pos in network.Value)
+                {
+                    if (!tempOldStates.ContainsKey(pos) && Blocks.TryGetValue(pos, out var block))
+                    {
+                        if (block.IsActive != isActive)
+                        {
+                            block.IsActive = isActive;
+                            if (blockToChunk.TryGetValue(pos, out Chunk chunk))
+                            {
+                                tempChangedChunks.Add(chunk);
+                            }
+                        }
+                    }
+                }
+            }
+           // Debug.Log("Regen: " + tempChangedChunks.Count);
+            if (tempChangedChunks.Count > 0)
+            {
+                foreach (var c in tempChangedChunks)
+                {
+                    if (c != null)
+                        c.NeedsToRegenerateMesh = true;
+                }
+            }
+        }
+
+        private void UpdateAllNetworksForced()
+        {
+            tempChangedChunks.Clear();
+
+            foreach (var network in networks)
+            {
+                int netId = network.Key;
+                bool isActive = IsNetworkActive(netId);
+
+                foreach (var blockPos in network.Value)
+                {
+                    if (Blocks.TryGetValue(blockPos, out ElectricalBlock block))
+                    {
+                        block.IsActive = isActive;
+                        if (blockToChunk.TryGetValue(blockPos, out Chunk chunk))
+                        {
+                            tempChangedChunks.Add(chunk);
+                        }
+                    }
+                }
+            }
+
+            foreach (var kv in Blocks)
+            {
+                if (!blockToNetwork.ContainsKey(kv.Key))
+                {
+                    kv.Value.IsActive = false;
+                    if (blockToChunk.TryGetValue(kv.Key, out Chunk chunk))
+                    {
+                        tempChangedChunks.Add(chunk);
+                    }
+                }
+            }
+           // Debug.Log("Regen: " + tempChangedChunks.Count);
+            if (tempChangedChunks.Count > 0)
+            {
+
+                foreach (var c in tempChangedChunks)
+                {
+                    if (c != null)
+                        c.NeedsToRegenerateMesh = true;
+                }
+            }
         }
 
         private bool IsNetworkActive(int id)
@@ -114,134 +273,200 @@ namespace Spacebox.Game.Generation
             {
                 int totalGen = 0;
                 int totalCons = 0;
-                for (int i = 0; i < network.Count; i++)
+
+                int count = network.Count;
+                for (int i = 0; i < count; i++)
                 {
                     if (Blocks.TryGetValue(network[i], out ElectricalBlock b))
                     {
-                        if ((b.EFlags & ElectricalFlags.CanGenerate) != 0)
+                        var flags = b.EFlags;
+                        if ((flags & ElectricalFlags.CanGenerate) != 0)
                             totalGen += b.GenerationRate;
-                        if ((b.EFlags & ElectricalFlags.CanConsume) != 0)
+                        if ((flags & ElectricalFlags.CanConsume) != 0)
                             totalCons += b.ConsumptionRate;
                     }
                 }
+
                 return totalGen >= totalCons;
             }
             return false;
         }
 
-
-        public void UpdateAllNetworks(bool lastState, bool forseUpdate)
-        {
-           // Debug.Log("COunt nets: " + networks.Count);
-
-            foreach (var pair in networks)
-            {
-                int netId = pair.Key;
-                List<(int x, int y, int z)> coords = pair.Value;
-                if (!networkChunks.TryGetValue(netId, out HashSet<Chunk> chunks)) continue;
-
-                bool newActive = IsNetworkActive(netId);
-                bool changed;
-
-                SetActiveState(coords, newActive);
-
-                changed = forseUpdate ? true : lastState != newActive;
-
-               // Debug.Log($"old state {lastState}  new {newActive} changed {changed} chunks {chunks.Count}");
-               if(forseUpdate)
-                {
-                    Regenerate(chunks);
-                    return;
-                }
-                if (changed && chunks.Count > 1) Regenerate(chunks);
-            }
-        }
-
-        private bool SetActiveState(List<(int x, int y, int z)> coords, bool active)
-        {
-            bool changed = false;
-            for (int i = 0; i < coords.Count; i++)
-            {
-                if (!Blocks.TryGetValue(coords[i], out ElectricalBlock block)) continue;
-                bool old = block.IsActive;
-                block.IsActive = active;
-                if (block.IsActive != old) changed = true;
-            }
-            return changed;
-        }
-
         public void RebuildAllNetworks()
         {
             networks.Clear();
-
             networkChunks.Clear();
             blockToNetwork.Clear();
+            networkActiveCache.Clear();
+            nextNetworkId = 1;
+
             foreach (var kv in Blocks)
             {
                 var coord = kv.Key;
                 if (!blockToNetwork.ContainsKey(coord))
                 {
-                    int netId = CreateNetwork();
+                    int netId = nextNetworkId++;
+                    networks[netId] = new List<(int, int, int)>();
+                    networkChunks[netId] = new HashSet<Chunk>();
                     FloodFill(coord, netId);
                 }
             }
-
         }
 
         private void FloodFill((int x, int y, int z) start, int netId)
         {
-            Queue<(int, int, int)> queue = new Queue<(int, int, int)>();
-            queue.Enqueue(start);
-            if (!networkChunks.ContainsKey(netId))
-                networkChunks[netId] = new HashSet<Chunk>();
-            while (queue.Count > 0)
+            floodFillQueue.Clear();
+            floodFillQueue.Enqueue(start);
+
+            var netList = networks[netId];
+            var netChunks = networkChunks[netId];
+
+            while (floodFillQueue.Count > 0)
             {
-                var c = queue.Dequeue();
-                if (blockToNetwork.ContainsKey(c)) continue;
-                if (!Blocks.ContainsKey(c)) continue;
-                blockToNetwork[c] = netId;
-                if (!networks.ContainsKey(netId))
-                    networks[netId] = new List<(int, int, int)>();
-                networks[netId].Add(c);
-                if (blockToChunk.TryGetValue(c, out Chunk ch))
-                    networkChunks[netId].Add(ch);
-                var neighbors = GetNeighbors(c);
-                for (int i = 0; i < neighbors.Length; i++)
-                {
-                    var n = neighbors[i];
-                    if (Blocks.ContainsKey(n) && !blockToNetwork.ContainsKey(n))
-                        queue.Enqueue(n);
-                }
+                var (x,y,z) = floodFillQueue.Dequeue();
+
+                if (blockToNetwork.ContainsKey((x, y, z))) continue;
+                if (!Blocks.ContainsKey((x, y, z))) continue;
+
+                blockToNetwork[(x, y, z)] = netId;
+                netList.Add((x, y, z));
+
+                if (blockToChunk.TryGetValue((x, y, z), out Chunk ch))
+                    netChunks.Add(ch);
+
+                var n1 = (x + 1, y, z);
+                var n2 = (x - 1, y, z);
+                var n3 = (x, y + 1, z);
+                var n4 = (x, y - 1, z);
+                var n5 = (x, y, z + 1);
+                var n6 = (x, y, z - 1);
+
+                if (Blocks.ContainsKey(n1) && !blockToNetwork.ContainsKey(n1)) floodFillQueue.Enqueue(n1);
+                if (Blocks.ContainsKey(n2) && !blockToNetwork.ContainsKey(n2)) floodFillQueue.Enqueue(n2);
+                if (Blocks.ContainsKey(n3) && !blockToNetwork.ContainsKey(n3)) floodFillQueue.Enqueue(n3);
+                if (Blocks.ContainsKey(n4) && !blockToNetwork.ContainsKey(n4)) floodFillQueue.Enqueue(n4);
+                if (Blocks.ContainsKey(n5) && !blockToNetwork.ContainsKey(n5)) floodFillQueue.Enqueue(n5);
+                if (Blocks.ContainsKey(n6) && !blockToNetwork.ContainsKey(n6)) floodFillQueue.Enqueue(n6);
             }
         }
 
-        private int CreateNetwork()
-        {
-            int id = nextNetworkId++;
-            networks[id] = new List<(int, int, int)>();
-            networkChunks[id] = new HashSet<Chunk>();
 
-           
-            return id;
-        }
-
-        private (int x, int y, int z)[] GetNeighbors((int x, int y, int z) p)
+        public int GetNetworkCurrentPower(int networkId)
         {
-            return new (int, int, int)[]
+            if (!networks.TryGetValue(networkId, out var networkBlocks))
+                return 0;
+
+            int totalPower = 0;
+            int count = networkBlocks.Count;
+
+            for (int i = 0; i < count; i++)
             {
-                (p.x+1, p.y, p.z),
-                (p.x-1, p.y, p.z),
-                (p.x, p.y+1, p.z),
-                (p.x, p.y-1, p.z),
-                (p.x, p.y, p.z+1),
-                (p.x, p.y, p.z-1)
-            };
+                if (Blocks.TryGetValue(networkBlocks[i], out ElectricalBlock block))
+                {
+                    totalPower += block.CurrentPower;
+                }
+            }
+
+            return totalPower;
         }
 
-        private void Regenerate(HashSet<Chunk> chunks)
+        public int GetNetworkId((int x, int y, int z) blockPos)
         {
-            foreach (var c in chunks) c.NeedsToRegenerateMesh = true;
-           // Debug.Log("regen: " + chunks.Count);
+            if (!blockToNetwork.TryGetValue(blockPos, out int networkId))
+            {
+
+                return 0;
+            }
+            return networkId;
+        }
+        public int GetNetworkCurrentPowerByBlock((int x, int y, int z) blockPos)
+        {
+            if (!blockToNetwork.TryGetValue(blockPos, out int networkId))
+            {
+               
+                return 0;
+            }
+                
+
+            return GetNetworkCurrentPower(networkId);
+        }
+
+        public (int current, int max) GetNetworkPowerCapacity(int networkId)
+        {
+            if (!networks.TryGetValue(networkId, out var networkBlocks))
+                return (0, 0);
+
+            int currentPower = 0;
+            int maxPower = 0;
+            int count = networkBlocks.Count;
+
+            for (int i = 0; i < count; i++)
+            {
+                if (Blocks.TryGetValue(networkBlocks[i], out ElectricalBlock block))
+                {
+                    currentPower += block.CurrentPower;
+                    maxPower += block.MaxPower;
+                }
+            }
+
+            return (currentPower, maxPower);
+        }
+
+        public (int generation, int consumption) GetNetworkPowerFlow(int networkId)
+        {
+            if (!networks.TryGetValue(networkId, out var networkBlocks))
+                return (0, 0);
+
+            int totalGen = 0;
+            int totalCons = 0;
+            int count = networkBlocks.Count;
+
+            for (int i = 0; i < count; i++)
+            {
+                if (Blocks.TryGetValue(networkBlocks[i], out ElectricalBlock block))
+                {
+                    var flags = block.EFlags;
+                    if ((flags & ElectricalFlags.CanGenerate) != 0)
+                        totalGen += block.GenerationRate;
+                    if ((flags & ElectricalFlags.CanConsume) != 0)
+                        totalCons += block.ConsumptionRate;
+                }
+            }
+
+            return (totalGen, totalCons);
+        }
+
+        public Dictionary<int, (int current, int max, int generation, int consumption)> GetAllNetworksInfo()
+        {
+            var result = new Dictionary<int, (int, int, int, int)>();
+
+            foreach (var network in networks)
+            {
+                int networkId = network.Key;
+                int currentPower = 0;
+                int maxPower = 0;
+                int totalGen = 0;
+                int totalCons = 0;
+
+                foreach (var blockPos in network.Value)
+                {
+                    if (Blocks.TryGetValue(blockPos, out ElectricalBlock block))
+                    {
+                        currentPower += block.CurrentPower;
+                        maxPower += block.MaxPower;
+
+                        var flags = block.EFlags;
+                        if ((flags & ElectricalFlags.CanGenerate) != 0)
+                            totalGen += block.GenerationRate;
+                        if ((flags & ElectricalFlags.CanConsume) != 0)
+                            totalCons += block.ConsumptionRate;
+                    }
+                }
+
+                result[networkId] = (currentPower, maxPower, totalGen, totalCons);
+            }
+
+            return result;
         }
     }
 }

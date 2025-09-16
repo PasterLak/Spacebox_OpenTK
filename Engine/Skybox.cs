@@ -38,17 +38,9 @@ namespace Engine
             Position = cam.Position;
 
 
-            /*
-            GLState.DepthTest(false);
-            GLState.DepthMask(false);
-            GLState.Blend(false); */
-
             Material.Apply(GetRenderModelMatrix());
 
-
             Mesh.Render();
-            //GLState.DepthTest(true);
-            //GLState.DepthMask(true);
 
             base.Render();
            

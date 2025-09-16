@@ -31,7 +31,7 @@ namespace Spacebox.Game.Player
         {
             if (tagg != null)
             {
-                TagManager.UnregisterTag(tagg);
+                TagManager.Instance.UnregisterTag(tagg);
             }
         }
 
@@ -52,7 +52,7 @@ namespace Spacebox.Game.Player
             tagg = new GUI.Tag($"[{playerData.ID}]{playerData.Name}", LatestPosition, new Color4(playerData.Color.X, playerData.Color.Y, playerData.Color.Z, 1));
             tagg.TextAlignment = GUI.Tag.Alignment.Center;
             GUI.Tag.CalculateFontSize(100);
-            TagManager.RegisterTag(tagg);
+            TagManager.Instance.RegisterTag(tagg);
           
             var uvIndex = GameAssets.AtlasItems.GetUVIndexByName("drill1");
             itemModel = ItemModelGenerator.GenerateModelFromAtlas(GameAssets.ItemsTexture, GameAssets.EmissionItems,uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);

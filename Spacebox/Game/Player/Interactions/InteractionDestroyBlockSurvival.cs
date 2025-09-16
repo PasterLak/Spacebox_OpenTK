@@ -212,11 +212,12 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
                 if (!light.Enabled)
                     light.Enabled = true;
             }
+
             lastInteractiveBlock = hit.block as InteractiveBlock;
             if (lastInteractiveBlock != null)
 
             {
-                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
+                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player,  ref hit);
                 if (hit.block.Is<StorageBlock>(out var storageBlock))
                 {
                     storageBlock.SetPositionInChunk(hit.blockPositionIndex);

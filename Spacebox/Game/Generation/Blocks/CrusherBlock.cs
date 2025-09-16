@@ -1,4 +1,5 @@
 ﻿using Spacebox.Game.GUI;
+using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 
@@ -14,10 +15,10 @@ namespace Spacebox.Game.Generation.Blocks
             SetEmissionWithoutRedrawChunk(false);
         }
 
-        public override void Use(Astronaut player)
+        public override void Use(Astronaut player, ref HitInfo hit)
         {
 
-            base.Use(player);
+            base.Use(player, ref hit);
             ResourceProcessingGUI.Activate(this, player);
         }
 

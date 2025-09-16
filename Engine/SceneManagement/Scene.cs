@@ -53,8 +53,6 @@ namespace Engine.SceneManagement
     
         }
 
-        public abstract void OnGUI();
-
         public override void Destroy()
         {
             base.Destroy();

@@ -330,8 +330,8 @@ namespace Spacebox.Game.GUI
             ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep);
             if (ImGui.SmallButton(text))
             {
-                storage.CombineStacks();
-                storage.SortByStackCount();
+                Storage.CombineStacks(storage);
+                Storage.SortByStackCount(storage);
             }
 
             if (ImGui.IsItemHovered())
@@ -348,7 +348,7 @@ namespace Spacebox.Game.GUI
             ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep);
             if (ImGui.SmallButton(text2))
             {
-                storage.CombineStacks();
+                Storage.CombineStacks(storage);
             }
 
             if (ImGui.IsItemHovered())

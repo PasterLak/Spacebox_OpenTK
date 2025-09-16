@@ -36,7 +36,7 @@ public class InteractionDefault : InteractionMode
 
             if (hit.block.Is<InteractiveBlock>(out var interactiveBlock))
             {
-                InteractiveBlock.UpdateInteractive(interactiveBlock, player, hit.chunk, hit.position);
+                InteractiveBlock.UpdateInteractive(interactiveBlock, player,  ref hit);
 
                 if (hit.block.Is<StorageBlock>(out var storageBlock))
                 {

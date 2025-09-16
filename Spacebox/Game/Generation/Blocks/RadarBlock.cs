@@ -1,4 +1,5 @@
 ﻿using Spacebox.Game.GUI;
+using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 
@@ -19,12 +20,12 @@ namespace Spacebox.Game.Generation.Blocks
             CurrentPower = 0;
         }
 
-        public override void Use(Astronaut player)
+        public override void Use(Astronaut player, ref HitInfo hit)
         {
 
             if (!IsActive) return;
 
-            base.Use(player);
+            base.Use(player, ref hit);
         }
 
         public override void TickElectric()

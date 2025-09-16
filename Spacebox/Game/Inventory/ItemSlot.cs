@@ -46,10 +46,6 @@ namespace Spacebox.Game
             _count = 0;
         }
 
-        public void SetCount(byte count)
-        {
-            Count = count;
-        }
 
         public void TakeOne()
         {
@@ -76,7 +72,6 @@ namespace Spacebox.Game
         {
             TakeOne();
         }
-
 
         public void Clear()
         {
@@ -133,18 +128,17 @@ namespace Spacebox.Game
             if (rest == 0)
             {
                 Count = split1;
-
+                return;
             }
-            else
+
+            if (Storage.ConnectedStorage != null)
             {
-                if (Storage.ConnectedStorage != null)
-                {
-                    Storage.ConnectedStorage.TryAddItem(Item, rest, out rest);
-                }
-
-                Count = (byte)(split1 + rest);
+                Storage.ConnectedStorage.TryAddItem(Item, rest, out rest);
             }
-            
+
+            Count = (byte)(split1 + rest);
+
+
         }
         public void MoveItemToConnectedStorage()
         {

@@ -83,7 +83,8 @@ namespace Engine
         public void DetachComponent(Component component)
         {
             if (component == null) return;
-         
+
+          
             if (Components.Remove(component))
             {
                 component.OnDetached();
@@ -154,6 +155,26 @@ namespace Engine
             }
         }
 
+        public virtual void OnGUI()
+        {
+            if (!Enabled) return;
+
+            
+            for (var i = 0; i < Components.Count; i++)
+            {
+                var cmp = Components[i];
+                if (cmp.Enabled)
+                {
+                    cmp.OnGUI();
+                }
+            }
+            for (int i = 0; i < Children.Count; i++)
+            {
+                 if (Children[i].Enabled)
+                     Children[i].OnGUI();
+            }
+        }
+
         public void Traverse(Action<Node3D>? action)
         {
             if (action == null) return;
@@ -176,6 +197,7 @@ namespace Engine
         }
 
         public Node3D? FindChildByName(string name) => FindChild(n => n.Name == name);
+        public Node3D? FindChildByTag(string tag) => FindChild(n => n.Tag == tag);
 
         public List<Node3D> FindAllChildrenByName(string name)
         {
@@ -193,12 +215,7 @@ namespace Engine
 
         public Node3D GetRoot()
         {
-            if (HasParent)
-            {
-                return Parent.GetRoot();
-            }
-            else
-                return this;
+            return HasParent ? Parent.GetRoot() : this;
         }
 
         public void Rotate(Vector3 rot) => Rotate(rot.X, rot.Y, rot.Z);
@@ -342,7 +359,7 @@ namespace Engine
         public Vector3 Up => Vector3.Normalize(Vector3.Cross(Right, ForwardLocal));
 
 
-        public T FindNode<T>() where T : Node3D
+        public T? FindNode<T>() where T : Node3D
         {
             if (this is T result) return result;
 
@@ -353,6 +370,12 @@ namespace Engine
             }
 
             return null;
+        }
+
+        public bool TryFindNode<T>(out Node3D? node) where T : Node3D
+        {
+            node = FindNode<T>();
+            return node != null;
         }
 
         public List<T> FindAllNodesOfType<T>() where T : Node3D
@@ -370,7 +393,7 @@ namespace Engine
                 Children[i].FindAllNodesOfTypeRecursive(results);
         }
 
-        public T FindComponent<T>() where T : Component
+        public T? FindComponent<T>() where T : Component
         {
             for (int i = 0; i < Components.Count; i++)
             {
@@ -384,6 +407,12 @@ namespace Engine
             }
 
             return null;
+        }
+
+        public bool TryFindComponent<T>(out Component? component) where T : Component
+        {
+            component = FindComponent<T>();
+            return component != null;
         }
 
         public List<T> FindAllComponents<T>() where T : Component

@@ -103,6 +103,8 @@ namespace Spacebox.Game.Generation
             chunk.PlaceBlock(new Vector3Byte(0, 0, 0), block);
             AddChunk(chunk, false);
             chunk.GenerateMesh();
+            
+
 
         }
 
@@ -252,7 +254,7 @@ namespace Spacebox.Game.Generation
         {
             var tag = new Tag("", worldPos, Color4.DarkGreen);
             tag.TextAlignment = GUI.Tag.Alignment.Right;
-            TagManager.RegisterTag(tag);
+            TagManager.Instance.RegisterTag(tag);
             Debug.Log($"Tag registered: id {EntityID} pos " + worldPos);
             return tag;
         }
@@ -358,7 +360,8 @@ namespace Spacebox.Game.Generation
                 return true;
             if (!IsPositionWithinEntitySize(worldPosition) || !IsPositionWithinGravityRadius(worldPosition))
                 return false;
-            Vector3 localPos = worldPosition - PositionWorld;
+         
+            Vector3 localPos = WorldPositionToLocal(worldPosition);
             return PlaceBlockInternal(localPos, block);
         }
 
@@ -540,10 +543,7 @@ namespace Spacebox.Game.Generation
 
                 var block = chunk.GetBlock((byte)blockX, (byte)blockY, (byte)blockZ);
 
-                if (block is ElectricalBlock)
-                {
-                    ElectricManager.RemoveBlock(((int)localBlockPosition.X, (int)localBlockPosition.Y, (int)localBlockPosition.Z));
-                }
+                
 
                 chunk.RemoveBlock((byte)blockX, (byte)blockY, (byte)blockZ,
                                  removalNormal.X, removalNormal.Y, removalNormal.Z, true);

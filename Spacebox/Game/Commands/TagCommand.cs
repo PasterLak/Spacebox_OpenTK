@@ -34,7 +34,8 @@ namespace Spacebox.Game.Commands
             {
                 if(args.Length == 2)
                 {
-                    TagManager.UnregisterTagByText(args[1]);
+                    
+                    TagManager.Instance.UnregisterTagByText(args[1]);
                     Debug.Success("Tag deleted!: " + args[1]);
                 }
             }
@@ -43,7 +44,7 @@ namespace Spacebox.Game.Commands
             {
                 if(args.Length == 2)
                 {
-                    TagManager.RegisterTag(new Tag(args[1], Astronaut.Position, Color4.Yellow, true));
+                    TagManager.Instance.RegisterTag(new Tag(args[1], Astronaut.Position, Color4.Yellow, true));
                     Debug.Success("Tag added!: " + args[1]);
                 }
 
@@ -53,8 +54,8 @@ namespace Spacebox.Game.Commands
                     var g = int.Parse(args[2]);
                     var b = int.Parse(args[3]);
 
-                    
-                    TagManager.RegisterTag(new Tag(args[1], Astronaut.Position, new Color4(r,g,b,1), true));
+
+                    TagManager.Instance.RegisterTag(new Tag(args[1], Astronaut.Position, new Color4(r,g,b,1), true));
 
                     Debug.Success("Tag added!: " + args[1]);
                 }

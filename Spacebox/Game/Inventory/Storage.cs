@@ -287,14 +287,14 @@ namespace Spacebox.Game
         }
 
 
-        public void SortByStackCount()
+        public static void SortByStackCount(Storage storage)
         {
             var items = new List<(Item item, byte count)>();
 
-            for (int x = 0; x < SizeX; x++)
-                for (int y = 0; y < SizeY; y++)
+            for (int x = 0; x < storage.SizeX; x++)
+                for (int y = 0; y < storage.SizeY; y++)
                 {
-                    var slot = _slots[x, y];
+                    var slot = storage.GetSlot(x, y);
                     if (slot.HasItem)
                     {
                         items.Add((slot.Item, slot.Count));
@@ -303,27 +303,27 @@ namespace Spacebox.Game
 
             var sorted = items
                 .OrderByDescending(item => item.count)
-                .ThenBy(item => GetItemTypePriority(item.item))
+                .ThenBy(item => storage.GetItemTypePriority(item.item))
                 .ThenBy(item => item.item.Name)
                 .ToList();
 
             int idx = 0;
-            for (int x = 0; x < SizeX; x++)
-                for (int y = 0; y < SizeY; y++)
+            for (int x = 0; x < storage.SizeX; x++)
+                for (int y = 0; y < storage.SizeY; y++)
                 {
                     if (idx < sorted.Count)
                     {
                         var (item, count) = sorted[idx++];
-                        _slots[x, y].Item = item;
-                        _slots[x, y].Count = count;
+                        storage.GetSlot(x, y).Item = item;
+                        storage.GetSlot(x, y).Count = count;
                     }
                     else
                     {
-                        _slots[x, y].Count = 0;
+                        storage.GetSlot(x, y).Count = 0;
                     }
                 }
 
-            OnDataWasChanged?.Invoke(this);
+            storage.OnDataWasChanged?.Invoke(storage);
         }
 
         private int GetItemTypePriority(Item item)
@@ -335,11 +335,11 @@ namespace Spacebox.Game
             return 4;
         }
 
-        public void CombineStacks()
+        public static void CombineStacks(Storage storage)
         {
             var groups = new Dictionary<short, List<ItemSlot>>();
 
-            foreach (var s in GetAllSlots())
+            foreach (var s in storage.GetAllSlots())
                 if (s.HasItem)
                 {
                     if (!groups.TryGetValue(s.Item.Id, out var list))
@@ -368,7 +368,7 @@ namespace Spacebox.Game
                     slots[i].Count = 0;
             }
 
-            OnDataWasChanged?.Invoke(this);
+            storage.OnDataWasChanged?.Invoke(storage);
         }
 
 

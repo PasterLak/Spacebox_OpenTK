@@ -1,9 +1,10 @@
 ﻿using Engine;
+using Engine.Components;
 
 
 namespace Spacebox.Game.Player
 {
-    public class SpheresPool : IDisposable
+    public class SpheresPool : Component
     {
         public static SpheresPool Instance;
         private List<ImpulseSphere> spheres;
@@ -13,15 +14,23 @@ namespace Spacebox.Game.Player
         public SpheresPool()
         {
             Instance = this;
+           
+           
+        }
+
+        public override void OnAttached(Node3D onOwner)
+        {
+            base.OnAttached(onOwner);
+
             pool = new Pool<ImpulseSphere>(3,
-                    obj => obj,
-                 obj => { },
-                 obj => { obj.Reset();  },
-                 obj => obj.IsActive,
-                 (obj, active) => obj.IsActive = active);
+                   obj => obj,
+                obj => { },
+                obj => { obj.Reset(); },
+                obj => obj.IsActive,
+                (obj, active) => obj.IsActive = active);
 
             spheres = new List<ImpulseSphere>();
-           
+
         }
 
         public ImpulseSphere Take()
@@ -41,7 +50,7 @@ namespace Spacebox.Game.Player
         }
 
 
-        public void Update()
+        public override void OnUpdate()
         {
             for (int i = spheres.Count - 1; i >= 0; i--)
             {
@@ -53,14 +62,14 @@ namespace Spacebox.Game.Player
             }
         }
 
-        public void Render()
+        public override void OnRender()
         {
            
             for (int i = 0; i < spheres.Count; i++)
                 spheres[i].Render();
         }
 
-        public void Dispose()
+        public override void OnDetached()
         {
             foreach (var s in spheres.ToArray())
                 PutBack(s);

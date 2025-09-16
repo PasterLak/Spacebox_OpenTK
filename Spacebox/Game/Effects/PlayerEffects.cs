@@ -84,8 +84,10 @@ namespace Spacebox.Game.Effects
                 Rate = 0,
                 Max = 40,
                 Space = SimulationSpace.Local,
-                Position = Vector3.Zero - Vector3.UnitZ / 10f
+                Position = Vector3.Zero - Vector3.UnitZ / 10f,
+                
             };
+            
 
             return system;
         }

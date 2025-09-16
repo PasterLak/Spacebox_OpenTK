@@ -1,15 +1,25 @@
 ﻿using OpenTK.Mathematics;
 using ImGuiNET;
 using Engine;
-
+using Engine.Components;
 
 namespace Spacebox.Game.GUI
 {
-    public static class TagManager
+    public class TagManager : Component
     {
-        private static HashSet<Tag> _tags = new HashSet<Tag>();
+        public static TagManager Instance { get; private set; }
 
-        public static void RegisterTag(Tag tag)
+        private HashSet<Tag> _tags = new HashSet<Tag>();
+
+        private Vector2 screenSize = new Vector2(512,256);
+
+        public TagManager()
+        {
+            Instance = this;
+            screenSize = Window.Instance.ClientSize;
+        }
+
+        public void RegisterTag(Tag tag)
         {
             if (!_tags.Contains(tag))
             {
@@ -21,7 +31,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void UnregisterTag(Tag tag)
+        public void UnregisterTag(Tag tag)
         {
             if (_tags.Contains(tag))
             {
@@ -29,7 +39,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void UnregisterTagByText(string text)
+        public void UnregisterTagByText(string text)
         {
             foreach (Tag tag in _tags)
             {
@@ -41,20 +51,34 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void ClearTags()
+        public void ClearTags()
         {
             _tags.Clear();
         }
 
-        public static void DrawTags(int screenWidth, int screenHeight)
+        public override void OnAttached(Node3D onOwner)
         {
-          
+            base.OnAttached(onOwner);
+
+            Window.OnResized += OnResized;
+        }
+        public override void OnDetached()
+        {
+            base.OnDetached();
+            ClearTags();
+            Window.OnResized -= OnResized;
+        }
+
+        public override void OnGUI()
+        {
+            
             var camera = Camera.Main;
 
             if (camera == null) return;
             if (_tags.Count == 0) return;
             if (!Settings.ShowInterface) return;
 
+           
             ImGui.SetNextWindowPos(System.Numerics.Vector2.Zero, ImGuiCond.Always);
             ImGui.SetNextWindowSize(ImGui.GetIO().DisplaySize);
 
@@ -65,12 +89,12 @@ namespace Spacebox.Game.GUI
 
             foreach (var tag in _tags)
             {
-                Vector2? screenPosNullable = camera.WorldToScreenPoint(tag.WorldPosition, screenWidth, screenHeight);
+                Vector2? screenPosNullable = camera.WorldToScreenPoint(tag.WorldPosition, (int)screenSize.X, (int)screenSize.Y);
                 if (screenPosNullable.HasValue)
                 {
                     Vector2 screenPos = screenPosNullable.Value;
-                    if (screenPos.X > 0 && screenPos.X <= screenWidth &&
-                        screenPos.Y > 0 && screenPos.Y <= screenHeight)
+                    if (screenPos.X > 0 && screenPos.X <= (int)screenSize.X &&
+                        screenPos.Y > 0 && screenPos.Y <= (int)screenSize.Y)
                     {
                         var textSize = ImGui.CalcTextSize(tag.Text);
                         ImGui.SetCursorPos(tag.GetTextPosition(screenPos.ToSystemVector2(), textSize));
@@ -86,8 +110,9 @@ namespace Spacebox.Game.GUI
             ImGui.End();
         }
 
-        public static void OnResized(Vector2 screenSize)
+        public void OnResized(Vector2 screenSize)
         {
+            this.screenSize = screenSize;
             Tag.SetFontSizes(screenSize);
         }
 

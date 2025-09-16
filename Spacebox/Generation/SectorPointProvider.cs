@@ -5,16 +5,26 @@ namespace Engine.Generation
 {
     public struct GeneratorSettings
     {
-     
+
         public int Count;
         public int RejectionSamples;
         public int Seed;
-
+        public bool Round;
     }
 
     public interface IPointGenerator
     {
         List<Vector3> Generate(in GeneratorSettings settings, Vector3 sectorIndex);
+
+        public static float RoundFloat(float x)
+        {
+            return (float)Math.Round(x, MidpointRounding.ToEven);
+        }
+
+        public static Vector3 RoundVector3(Vector3 v)
+        {
+            return new Vector3(RoundFloat(v.X), RoundFloat(v.Y), RoundFloat(v.Z));
+        }
     }
 
     public class FarthestPointGenerator : IPointGenerator
@@ -22,9 +32,10 @@ namespace Engine.Generation
         public List<Vector3> Generate(in GeneratorSettings settings, Vector3 sectorIndex)
         {
             var size = new Vector3(Sector.SizeBlocks);
-            var rng = new Random((int)settings.Seed);
+            var rng = new Random(settings.Seed);
             var points = new List<Vector3>(settings.Count);
-            points.Add(sectorIndex+RandomPoint(rng, size));
+
+            points.Add(sectorIndex + (settings.Round ? IPointGenerator.RoundVector3(RandomPoint(rng, size)) : RandomPoint(rng, size)));
             while (points.Count < settings.Count)
             {
                 Vector3 best = default;
@@ -32,6 +43,12 @@ namespace Engine.Generation
                 for (int i = 0; i < settings.RejectionSamples; i++)
                 {
                     var cand = RandomPoint(rng, size);
+
+                    if (settings.Round)
+                    {
+                        cand = IPointGenerator.RoundVector3(cand);
+                    }
+
                     float dmin = float.MaxValue;
                     foreach (var p in points)
                     {
@@ -44,7 +61,7 @@ namespace Engine.Generation
                         best = cand;
                     }
                 }
-                points.Add(sectorIndex +best);
+                points.Add(sectorIndex + best);
             }
             return points;
         }
@@ -70,19 +87,24 @@ namespace Engine.Generation
         public List<Vector3> Generate(in GeneratorSettings settings, Vector3 sectorIndex)
         {
             var size = new Vector3(Sector.SizeBlocks);
-            var rng = new Random((int)settings.Seed);
+            var rng = new Random(settings.Seed);
             var points = new List<Vector3>();
             float minDist = radius;
             float minDist2 = minDist * minDist;
-   
-            points.Add(sectorIndex + RandomPoint(rng, size));
-    
+
+            points.Add(sectorIndex + (settings.Round ? IPointGenerator.RoundVector3(RandomPoint(rng, size)) : RandomPoint(rng, size)));
+
             while (points.Count < settings.Count)
             {
                 bool placed = false;
                 for (int i = 0; i < settings.RejectionSamples; i++)
                 {
                     var cand = RandomPoint(rng, size);
+
+                    if (settings.Round)
+                    {
+                        cand = IPointGenerator.RoundVector3(cand);
+                    }
                     bool ok = true;
                     foreach (var p in points)
                     {

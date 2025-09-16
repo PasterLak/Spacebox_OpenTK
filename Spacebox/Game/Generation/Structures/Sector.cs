@@ -4,6 +4,7 @@ using Engine.Generation;
 using Engine.Physics;
 using Engine.Utils;
 using OpenTK.Mathematics;
+using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Physics;
@@ -37,11 +38,8 @@ namespace Spacebox.Game.Generation
 
         // ------------------ Properties --------------------------------------------
 
-        //public static bool IsPlayerSpawned = false;
-
         public List<SpaceEntity> Entities { get; private set; }
         private Dictionary<ulong, NotGeneratedEntity> EntitiesGeneratedData { get; set; }
-
 
         // ------------------ Private --------------------------------------------
         private readonly PointOctree<SpaceEntity> sectorOctree;
@@ -90,7 +88,7 @@ namespace Spacebox.Game.Generation
 
         private void PopulateSector()
         {
-            var points = GenerateAsteroidPositions(400, 500);
+            var points = GenerateAsteroidPositions(4000, 5000, true);
 
             GenerateDataForPoints(points);
 
@@ -128,7 +126,7 @@ namespace Spacebox.Game.Generation
         }
 
 
-        private Vector3[] GenerateAsteroidPositions(int minCount, int maxCount)
+        private Vector3[] GenerateAsteroidPositions(int minCount, int maxCount, bool round)
         {
             var seed = SeedHelper.ToIntSeed(Seed);
             Random random = new Random(seed);
@@ -136,6 +134,7 @@ namespace Spacebox.Game.Generation
             settings.RejectionSamples = 5;
             settings.Seed = seed;
             settings.Count = random.Next(minCount, maxCount);
+            settings.Round = round;
 
             return SectorPointProvider.CreatePoints(new SimplePoissonDiscGenerator(128), settings, PositionWorld).ToArray();
         }
@@ -145,7 +144,7 @@ namespace Spacebox.Game.Generation
 
             if (TryGetNearestEntity(GetCenter(), out var entity))
             {
-                player.SetPosition( GetRandomPositionNearAsteroid(random, entity));
+                player.SetPosition(GetRandomPositionNearAsteroid(random, entity));
             }
             else
                 player.SetPosition(GetRandomPositionWithCollisionCheck(random, 0.2f));
@@ -434,7 +433,7 @@ namespace Spacebox.Game.Generation
                         if (!entity.StarsEffect.Enabled)
                             entity.StarsEffect.Enabled = true;
 
-                      
+
 
                         entity.RenderEffect(disSqr);
                     }

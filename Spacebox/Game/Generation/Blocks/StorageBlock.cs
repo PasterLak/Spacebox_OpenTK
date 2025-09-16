@@ -1,5 +1,6 @@
 ﻿using Engine;
 using Spacebox.Game.GUI;
+using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 
@@ -88,7 +89,7 @@ namespace Spacebox.Game.Generation.Blocks
             }
         }
 
-        public override void Use(Astronaut player)
+        public override void Use(Astronaut player, ref HitInfo hit)
         {
 
             if (Storage == null)
@@ -96,7 +97,7 @@ namespace Spacebox.Game.Generation.Blocks
                 Storage = new Storage(8, 3);
             }
 
-            base.Use(player);
+            base.Use(player, ref hit);
 
             StorageUI.OpenStorage(this, player);
 

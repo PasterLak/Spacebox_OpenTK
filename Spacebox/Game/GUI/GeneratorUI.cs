@@ -1,9 +1,13 @@
 ﻿using Engine;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI.Menu;
+using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
+using Spacebox.GUI;
+using System.Drawing;
 using System.Numerics;
 
 namespace Spacebox.Game.GUI
@@ -13,6 +17,9 @@ namespace Spacebox.Game.GUI
         private static GeneratorBlock generatorBlock;
         public static bool IsVisible { get; set; } = false;
 
+        static int power;
+        static int consum;
+        static string blockName = "Generator";
         public static void Initialize()
         {
             var inventory = ToggleManager.Register("generator");
@@ -20,9 +27,17 @@ namespace Spacebox.Game.GUI
             inventory.OnStateChanged += s => IsVisible = s;
         }
 
-        public static void Open(GeneratorBlock block, Astronaut astronaut)
+        public static void Open(GeneratorBlock block, Astronaut astronaut, ref HitInfo hit)
         {
             generatorBlock = block;
+
+            var pos = hit.blockPositionEntity;
+             var id = hit.chunk.SpaceEntity.ElectricManager.GetNetworkId((pos.X, pos.Y, pos.Z));
+            (power, consum) = hit.chunk.SpaceEntity.ElectricManager.GetNetworkPowerFlow(id);
+
+
+
+            blockName = GameAssets.GetBlockDataById(block.Id).Name;
 
             if (ToggleManager.IsActiveAndExists("pause")) return;
             var v = IsVisible;
@@ -53,6 +68,7 @@ namespace Spacebox.Game.GUI
             IsVisible = false;
             ToggleManager.SetState("mouse", false);
             ToggleManager.SetState("player", true);
+            
         }
 
         public static void OnGUI()
@@ -68,14 +84,14 @@ namespace Spacebox.Game.GUI
             var io = ImGui.GetIO();
             var displaySize = io.DisplaySize;
 
-            float windowWidth = displaySize.X * 0.15f;
-            float windowHeight = displaySize.Y * 0.2f;
+            float windowWidth = displaySize.X * 0.2f;
+            float windowHeight = displaySize.Y * 0.25f;
 
             Vector2 windowPos = new Vector2(
                 (displaySize.X - windowWidth) * 0.5f,
                 (displaySize.Y - windowHeight) * 0.5f);
 
-            var padding = windowHeight/10f;
+            var padding = windowHeight/15f;
             var paddingV = new Vector2(padding, padding);
 
             ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
@@ -91,27 +107,69 @@ namespace Spacebox.Game.GUI
                 GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y);
 
                 ImGui.SetCursorPos(paddingV);
-                ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), "Generator Block");
+                ImGui.TextColored(new Vector4(1, 1, 0, 1), blockName);
 
                 ImGui.SetCursorPos(paddingV + new Vector2(0, padding * 1.5f));
 
                 if (ImGui.BeginChild("Content", new Vector2(windowWidth - padding * 2, windowHeight - padding * 5), ImGuiChildFlags.None))
                 {
                     ImGui.Separator();
-                    ImGui.Text($"Generation Rate: {generatorBlock.GenerationRate} EU");
+                    ImGui.Text($"Generating: +{generatorBlock.GenerationRate} EU");
+                    ImGui.Text($"");
+                    ImGui.TextColored(new Vector4(1,1,0,1), "Network");
 
-                   
+                    ImGui.Separator();
 
-                    var progressBarWidth = windowWidth - padding * 4;
+                    ImGui.Text($"Power: {power} EU");
+                    ImGui.Text($"Consumption: {consum} EU");        
+
+                    var progressBarWidth = windowWidth * 0.9f;
                     var powerRatio = generatorBlock.MaxPower > 0 ? (float)generatorBlock.CurrentPower / generatorBlock.MaxPower : 0f;
 
-                   // ImGui.Text("Power Level:");
-                   // ImGui.ProgressBar(powerRatio, new Vector2(progressBarWidth, 20f),
-                   //     $"{generatorBlock.CurrentPower}/{generatorBlock.MaxPower}");
+                    Vector4 progressColor = ConsumptionToColor();
+                    ImGui.PushStyleColor(ImGuiCol.PlotHistogram, progressColor);
+                    var v = consum / (float)power;
+                    if (v > 0.99f) v = 0.99f;
+                    ImGui.ProgressBar(1 - v, new Vector2(progressBarWidth, windowHeight / 40f), "");
+                    ImGui.PopStyleColor();
+                   
+                    //ImGui.SameLine(); consum = 45;
+                    //ImGui.TextColored(ConsumptionToColor(), consum.ToString()); ImGui.SameLine();
+                   // ImGui.Text($"EU");
+
+                  
+
+               
+
                 }
                 ImGui.EndChild();
             }
             ImGui.End();
+        }
+
+        private static Vector4 ConsumptionToColor()
+        {
+            if (power == 0) return new Vector4(1, 1, 1, 1); 
+
+            var consumptionPercentage = (consum / (float)power) * 100;
+            var remainingPercentage = 100 - consumptionPercentage;
+
+            if (remainingPercentage < 33)
+            {
+                return new Vector4(1, 0, 0, 1); 
+            }
+            else if (remainingPercentage < 50)
+            {
+                return new Vector4(1, 0.5f, 0, 1); 
+            }
+            else if (remainingPercentage < 70)
+            {
+                return new Vector4(1, 1, 0, 1);
+            }
+            else
+            {
+                return new Vector4(0, 1, 0, 1); 
+            }
         }
     }
 }

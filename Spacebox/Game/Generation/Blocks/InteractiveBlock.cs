@@ -5,6 +5,7 @@ using Spacebox.Game.Resource;
 using Engine;
 using Spacebox.GUI;
 using Engine.InputPro;
+using Spacebox.Game.Physics;
 namespace Spacebox.Game.Generation.Blocks
 {
 
@@ -22,12 +23,13 @@ namespace Spacebox.Game.Generation.Blocks
         private bool lasState;
 
         public Vector3 colorIfActive = new Vector3(0.7f, 0.4f, 0.2f) / 4f;
-        public virtual void Use(Astronaut player)
+        public virtual void Use(Astronaut player, ref HitInfo hit)
         {
 
             SetText();
             OnUse?.Invoke(player);
         }
+
 
         private void SetText()
         {
@@ -75,9 +77,9 @@ namespace Spacebox.Game.Generation.Blocks
             //CenteredText.Hide();
         }
 
-        public static void UpdateInteractive(InteractiveBlock block, Astronaut player, Chunk chunk, Vector3 hitPos)
+        public static void UpdateInteractive(InteractiveBlock block, Astronaut player, ref HitInfo hit)
         {
-            var disSq = Vector3.DistanceSquared(player.Position, hitPos);
+            var disSq = Vector3.DistanceSquared(player.Position, hit.position);
 
             if (disSq > InteractionDistanceSquared)
             {
@@ -90,8 +92,8 @@ namespace Spacebox.Game.Generation.Blocks
                 {
                     if (Input.IsActionDown("use"))
                     {
-                        block.chunk = chunk;
-                        block.Use(player);
+                        block.chunk = hit.chunk;
+                        block.Use(player, ref  hit);
 
                     }
                 }

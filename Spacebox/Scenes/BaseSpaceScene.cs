@@ -47,10 +47,8 @@ namespace Spacebox.Scenes
         protected BlockSelector blockSelector;
         protected RadarUI radarWindow;
 
-        protected PointLight pLight;
-        private SpheresPool SpheresPool;
         private FreeCamera freeCamera;
-        private World world;
+    
         public void Initialize(SpaceSceneArgs param)
         {
             SceneArgs = param;
@@ -103,7 +101,7 @@ namespace Spacebox.Scenes
 
             World.LoadWorldInfo(SceneArgs.worldName);
             blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.EmissionBlocks, localPlayer);
-            world = new World(localPlayer, blockMaterial);
+            var world = new World(localPlayer, blockMaterial);
             AttachComponent(world);
             world.Load();
             PlayerSaveLoadManager.LoadPlayer(localPlayer, World.Data.WorldFolderPath);
@@ -164,11 +162,11 @@ namespace Spacebox.Scenes
             WelcomeUI.OnPlayerSpawned(World.Data.Info.ShowWelcomeWindow);
             WelcomeUI.Init();
             PauseUI.Init();
-            SpheresPool = new SpheresPool();
+            AttachComponent( new SpheresPool());
 
             AddChild(new ProjectileHitEffectsManager());
             AddChild(new DirectionalLight());
-
+            AttachComponent(new TagManager());
 
         }
 
@@ -186,11 +184,6 @@ namespace Spacebox.Scenes
             CraftingGUI.Init();
 
             Debug.OnVisibilityWasChanged += OnDebugStateChanged;
-            Window.OnResized += TagManager.OnResized;
-
-
-            pLight = PointLightsPool.Instance.Take();
-            pLight.Enabled = false;
 
             Chat.Write("Welcome to Spacebox!", Color4.Yellow);
 
@@ -268,11 +261,9 @@ namespace Spacebox.Scenes
                 }
             }
 
-            pLight.Position = localPlayer.Position;
-
             if (InteractionShoot.ProjectilesPool != null)
                 InteractionShoot.ProjectilesPool.Update();
-            SpheresPool.Update();
+        
             if (!Debug.IsVisible)
             {
                 if (Input.IsKeyDown(Keys.KeyPadEnter))
@@ -310,14 +301,13 @@ namespace Spacebox.Scenes
 
             blockSelector.Render();
 
-            SpheresPool.Render();
 
             PanelUI.DrawItemModel();
         }
 
         public override void OnGUI()
         {
-
+            base.OnGUI();
             ColorOverlay.OnGUI();
             CenteredText.OnGUI();
 
@@ -341,7 +331,6 @@ namespace Spacebox.Scenes
                 WorldTextDebug.OnGUI();
             }
 
-            TagManager.DrawTags(Window.Instance.Size.X, Window.Instance.Size.Y);
             BlackScreenOverlay.OnGUI();
             CenteredText.Hide();
 
@@ -360,14 +349,12 @@ namespace Spacebox.Scenes
                 InteractionShoot.ProjectilesPool.Dispose();
             ToggleManager.DisableAllWindows();
           
-            TagManager.ClearTags();
-            Window.OnResized -= TagManager.OnResized;
             PauseUI.Dispose();
             CraftingGUI.Dispose();
             WelcomeUI.Dispose();
             ToggleManager.Dispose();
             Debug.OnVisibilityWasChanged -= OnDebugStateChanged;
-            SpheresPool.Dispose();
+         
             InteractionPlaceBlock.lineRenderer = null;
             InteractionDestroyBlockSurvival.BlockMiningEffect = null;
 

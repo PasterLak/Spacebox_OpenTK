@@ -337,34 +337,41 @@ namespace Spacebox.Game.Generation
         {
             if (!IsInRange(x, y, z))
                 return;
-            if (Blocks[x, y, z].Id == 0) return;
+
+            var block = Blocks[x, y, z];
+            if (block.Id == 0) return;
 
             Vector3 worldBlockPosition = new Vector3(x, y, z) + PositionWorld;
 
-            if (Blocks[x, y, z].IsTransparent)
+            if (block.IsTransparent)
             {
-                World.DestructionManager.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
+                World.DestructionManager.DestroyBlock(worldBlockPosition, block.LightColor, block);
                 if (spawnDrop)
-                    World.DropEffectManager.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor, Blocks[x, y, z]);
+                    World.DropEffectManager.DestroyBlock(worldBlockPosition, block.LightColor, block);
             }
             else
             {
                 if (IsInRange(x + xNormal, y + yNormal, z + zNormal))
                 {
                     World.DestructionManager.DestroyBlock(worldBlockPosition,
-                        Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
+                        Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, block);
                     if (spawnDrop)
                         World.DropEffectManager.DestroyBlock(worldBlockPosition,
-                            Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, Blocks[x, y, z]);
+                            Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, block);
                 }
                 else
                 {
-                    World.DestructionManager.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor,
-                        Blocks[x, y, z]);
+                    World.DestructionManager.DestroyBlock(worldBlockPosition, block.LightColor,
+                        block);
                     if (spawnDrop)
-                        World.DropEffectManager.DestroyBlock(worldBlockPosition, Blocks[x, y, z].LightColor,
-                        Blocks[x, y, z]);
+                        World.DropEffectManager.DestroyBlock(worldBlockPosition, block.LightColor,
+                       block);
                 }
+            }
+
+            if (block is ElectricalBlock)
+            {
+                SpaceEntity.ElectricManager.RemoveBlock(this, new Vector3Byte(x, y, z));
             }
 
 

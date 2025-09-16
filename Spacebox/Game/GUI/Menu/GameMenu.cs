@@ -314,8 +314,7 @@ namespace Spacebox.Game.GUI.Menu
             string worldJsonPath = Path.Combine(newWorldDirectory, "world.json");
             string jsonContent = JsonSerializer.Serialize(newWorld, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(worldJsonPath, jsonContent);
-            string chunksDirectory = Path.Combine(newWorldDirectory, "Chunks");
-            if (!Directory.Exists(chunksDirectory)) Directory.CreateDirectory(chunksDirectory);
+          
             worlds.Add(newWorld);
             selectedWorld = newWorld;
         }

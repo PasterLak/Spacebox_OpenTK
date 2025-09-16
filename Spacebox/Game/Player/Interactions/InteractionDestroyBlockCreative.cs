@@ -73,7 +73,7 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
             if (hit.block.Is<InteractiveBlock>(out var b))
             {
                 lastInteractiveBlock = b;
-                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, hit.chunk, hit.position);
+                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, ref hit);
 
                 if (hit.block.Is<StorageBlock>(out var storageBlock))
                 {
