@@ -32,8 +32,7 @@ namespace Engine.GUI
                 timer = 0f;
             }
 
-            ImGui.Text("[THREADS]");
-
+            ImGui.SeparatorText("[THREADS]");
             var colActive = cachedActive == 0 ? White : Green;
             var colQueued = cachedQueued == 0 ? White : Yellow;
             var colCompleted = cachedCompleted == 0 ? White : Green;
@@ -46,6 +45,7 @@ namespace Engine.GUI
            
             ImGui.TextColored(colPending, $"Pending: {cachedPending}");  ImGui.SameLine();
             ImGui.TextColored(colFailed, $" | Failed: {cachedFailed}");
+           
         }
     }
 }

@@ -262,7 +262,7 @@ namespace Engine
 
             ImGui.SetNextWindowPos(new Vector2(0, 0), ImGuiCond.Always);
             ImGui.SetNextWindowSize(new Vector2(windowSize.X * 0.4f, windowSize.Y), ImGuiCond.Always);
-            ImGui.SetNextWindowSizeConstraints(new Vector2(300, 200), new Vector2(float.MaxValue, float.MaxValue));
+            //ImGui.SetNextWindowSizeConstraints(new Vector2(300, 200), new Vector2(float.MaxValue, float.MaxValue));
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(10, 10));
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0f, 0f, 0f, 0.8f));
             ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0f, 0f, 0f, 0.8f));
@@ -354,7 +354,7 @@ namespace Engine
 
             ImGui.Separator();
 
-            float buttonWidth = 120f;
+            float buttonWidth = windowSize.X  * 0.06f;
             float inputWidth = ImGui.GetContentRegionAvail().X - buttonWidth - ImGui.GetStyle().ItemSpacing.X;
 
             if (ImGui.IsWindowFocused(ImGuiFocusedFlags.AnyWindow))
@@ -378,14 +378,15 @@ namespace Engine
                 }
             }
 
-
-            if (ImGui.Button("Send", new Vector2(buttonWidth, 0)))
+            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.7f, 0.5f,0,1));
+            if (ImGui.Button("SEND", new Vector2(buttonWidth, 0)))
             {
 
                 ProcessCommand(_inputBuffer);
                 _inputBuffer = "";
                 _focusInput = true;
             }
+            ImGui.PopStyleColor();
 
             ImGui.SameLine();
 
@@ -407,8 +408,8 @@ namespace Engine
                 _inputBuffer = "";
                 _focusInput = true;
             }
-
-            ImGui.End();
+           
+            ImGui.End();    
             ImGui.PopStyleColor();
             ImGui.PopStyleVar();
         }

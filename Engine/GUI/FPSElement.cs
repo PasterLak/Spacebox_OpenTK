@@ -38,7 +38,18 @@ namespace Engine.GUI
             string t = tps > 0 ? $", TPS: {tps}" : $"";
 
             ImGui.TextColored(fpsColor, $"FPS: {fps}" + t);
-            
+            ImGui.Text($"Limit FPS:");
+            ImGui.SameLine();
+            if (FrameLimiter.TargetFPS == 120)
+            {
+                ImGui.TextColored(new System.Numerics.Vector4(0, 1, 0, 1), "True");
+            }
+            else
+            {
+                ImGui.TextColored(new System.Numerics.Vector4(1, 0, 0, 1), "False");
+            }
+          
+
         }
     }
 }

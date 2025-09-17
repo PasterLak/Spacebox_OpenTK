@@ -1,12 +1,9 @@
 ﻿using Engine;
-using Engine.Components;
 using Engine.Generation;
 using Engine.Physics;
 using Engine.Utils;
 using OpenTK.Mathematics;
-using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Structures;
-using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;

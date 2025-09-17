@@ -17,17 +17,23 @@ namespace Spacebox.Game.GUI
 
                 if (ast == null) return;
 
-                    string formatted = ast.InertiaController.Velocity.Length.ToString("0.0");
-                    ImGui.Text($"Speed: {formatted}");
-               
-                ImGui.Text($"Gamemode: {ast.GameMode}");
+                ImGui.SeparatorText("[PLAYER]");
+                string formatted = ast.InertiaController.Velocity.Length.ToString("0.0");
+                    ImGui.Text($"Speed: {formatted} Gamemode: {ast.GameMode}");
+
+                if (ast.CurrentInteraction != null)
+                    ImGui.Text($"Interaction: {ast.CurrentInteraction.GetType().Name}");
+
+                var size = ImGui.CalcTextSize("M");
                 var mood = ast.Mood;
                 var trend = mood.CalculateMoodTrend();
                 var time = mood.CalculateTimeToTarget(trend > 0 ? 100 : 0).ToString("F1");
-                ImGui.Text($"Mood: {mood.MoodData.Value} Trend: {trend.ToString("F1")} ({time}s.) ");
+                ImGui.Text("Mood: "); ImGui.SameLine();
+                ImGui.ProgressBar(mood.MoodData.Value / 100f, new System.Numerics.Vector2(size.Y * 5, size.Y), $"{mood.MoodData.Value}/{100}");
+                ImGui.SameLine();
+                ImGui.Text($"Trend: {trend.ToString("F1")} ({time}s.) ");
 
-                if (ast.CurrentInteraction != null)
-                ImGui.Text($"Interaction: {ast.CurrentInteraction.GetType().Name}");
+                
             }
         }
 

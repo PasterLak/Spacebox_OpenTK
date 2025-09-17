@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿#if PROFILING
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
+#endif
 
 namespace Engine
 {

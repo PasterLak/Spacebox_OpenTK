@@ -23,8 +23,8 @@ namespace Spacebox.Game.GUI
             if(world == null) { return; }
             if (World.CurrentSector == null) { return; }
 
-            ImGui.Text($" ");
-            ImGui.Text($"Sector. Pos: {World.CurrentSector.PositionWorld} Index: {World.CurrentSector.PositionIndex}");
+            ImGui.SeparatorText("[WORLD]");
+            ImGui.Text($"Sector: Pos: {World.CurrentSector.PositionWorld} Index: {World.CurrentSector.PositionIndex}");
 
             var cam = Camera.Main;
 
@@ -33,21 +33,23 @@ namespace Spacebox.Game.GUI
                 var pos = cam.Position;
 
                 var p = World.CurrentSector.WorldToLocalPosition(pos);
-                ImGui.Text($"Pos in sector: "+ Vector3Int(p));
+                ImGui.Text("Position in:");
+                ImGui.Text($"Sector: "+ Vector3Int(p));
 
                 if(World.CurrentSector.IsPointInEntity(pos, out var entity))
                 {
                     var p1 = entity.WorldPositionToLocal(pos);
-                    ImGui.Text($"Pos in entity: " + Vector3Int(p1));
+                    ImGui.Text($"Entity: " + Vector3Int(p1));
 
                     if(entity.IsPositionInChunk(pos, out var chunk))
                     {
-                        ImGui.Text($"Pos in chunk: {entity.WorldPositionToBlockInChunk(pos)} ");
+                        ImGui.Text($"Chunk: {entity.WorldPositionToBlockInChunk(pos)} ");
                     }
                 }
                
             }
-            
+           
+
         }
     }
 }

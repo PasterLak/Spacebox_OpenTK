@@ -50,7 +50,10 @@ namespace Engine.GUI
 
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new NumVector4(0, 0, 0, 0.8f));
             ImGui.Begin("Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar);
-            ImGui.SetWindowPos(new System.Numerics.Vector2(20, 40), ImGuiCond.Always);
+
+            var screen = ImGui.GetIO().DisplaySize;
+            
+            ImGui.SetWindowPos(new System.Numerics.Vector2(screen.Y/100f, screen.Y / 100f), ImGuiCond.Always);
 
 
             foreach (var e in OverlayElements)

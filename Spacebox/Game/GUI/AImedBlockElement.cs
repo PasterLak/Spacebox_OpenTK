@@ -12,10 +12,10 @@ namespace Spacebox.Game.GUI
         {
             if (AimedBlock != null)
             {
-                ImGui.Text($" ");
-                ImGui.Text($"Block");
-                ImGui.Text(AimedBlock.ToString());
 
+                ImGui.SeparatorText("[BLOCK]");
+                ImGui.Text(AimedBlock.ToString());
+              
                 //if(AimedBlock.Is<St>)
 
                 AimedBlock = null;

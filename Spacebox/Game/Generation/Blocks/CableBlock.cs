@@ -9,7 +9,7 @@ namespace Spacebox.Game.Generation.Blocks
         {
             EFlags = ElectricalFlags.CanTransfer | ElectricalFlags.CanConsume;
             MaxPower = 200;
-            ConsumptionRate = 2;
+            ConsumptionRate = 1;
         }
 
         public override void TickElectric()

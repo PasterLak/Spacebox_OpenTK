@@ -127,6 +127,7 @@ namespace Spacebox.Game.GUI
             ImGui.SetCursorPos(new Vector2(padding, padding));
             ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), "Creative");
 
+
             ImGui.SetCursorPos(new Vector2(padding, scrollY));
 
             ImGui.BeginChild("CreativeScroll2", new Vector2(scrollWidth, scrollHeight), ImGuiChildFlags.None, ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoDecoration);

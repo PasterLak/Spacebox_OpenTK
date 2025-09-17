@@ -384,7 +384,7 @@ namespace Spacebox.Game
             }
             return false;
         }
-        public ItemSlot GetSlot(int x, int y)
+        public ItemSlot? GetSlot(int x, int y)
         {
             if (x >= 0 && x < SizeX && y >= 0 && y < SizeY)
             {

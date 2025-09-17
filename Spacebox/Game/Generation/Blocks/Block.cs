@@ -285,7 +285,7 @@ namespace Spacebox.Game.Generation.Blocks
 
         public override string ToString()
         {
-            return $"ID={Id}, Dir={Direction}, Mass={Mass}, Dur={Durability}, \nFlags=[T={IsTransparent}, A={IsAir}, L={IsLight}, E={EnableEmission}], " +
+            return $"ID={Id}, Dir={Direction}, Rot={Rotation}, Mass={Mass}, Dur={Durability}, \nFlags=[T={IsTransparent}, A={IsAir}, L={IsLight}, E={EnableEmission}], " +
                    $"\nCol={RoundVector3(Color)}, LCol={LightColor}, LLvl={RoundFloat(LightLevel)}";
         }
 

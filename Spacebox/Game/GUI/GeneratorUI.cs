@@ -1,13 +1,10 @@
 ﻿using Engine;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
-using Spacebox.GUI;
-using System.Drawing;
 using System.Numerics;
 
 namespace Spacebox.Game.GUI
@@ -34,8 +31,6 @@ namespace Spacebox.Game.GUI
             var pos = hit.blockPositionEntity;
              var id = hit.chunk.SpaceEntity.ElectricManager.GetNetworkId((pos.X, pos.Y, pos.Z));
             (power, consum) = hit.chunk.SpaceEntity.ElectricManager.GetNetworkPowerFlow(id);
-
-
 
             blockName = GameAssets.GetBlockDataById(block.Id).Name;
 
@@ -133,14 +128,6 @@ namespace Spacebox.Game.GUI
                     ImGui.ProgressBar(1 - v, new Vector2(progressBarWidth, windowHeight / 40f), "");
                     ImGui.PopStyleColor();
                    
-                    //ImGui.SameLine(); consum = 45;
-                    //ImGui.TextColored(ConsumptionToColor(), consum.ToString()); ImGui.SameLine();
-                   // ImGui.Text($"EU");
-
-                  
-
-               
-
                 }
                 ImGui.EndChild();
             }
