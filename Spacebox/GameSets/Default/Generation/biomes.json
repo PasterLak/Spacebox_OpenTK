@@ -1,0 +1,20 @@
+[
+    {
+        "Id": "asteroid_field",
+        "Name": "Asteroid Field",
+        "Description": "Common rocky asteroids with basic minerals",
+        "SpawnChance": 60,
+        "MinDistanceFromCenter": 50,
+        "MaxDistanceFromCenter": 300,
+        "AsteroidIds": [ "asteroid_small" ]
+    },
+    {
+        "Id": "dense_cluster",
+        "Name": "Dense Cluster",
+        "Description": "Tightly packed asteroids rich in ores",
+        "SpawnChance": 30,
+        "MinDistanceFromCenter": 200,
+        "MaxDistanceFromCenter": 600,
+        "AsteroidIds": [ "asteroid_small", "asteroid_medium" ]
+    }
+]

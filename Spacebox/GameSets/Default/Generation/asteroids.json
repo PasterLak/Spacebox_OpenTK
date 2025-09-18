@@ -1,0 +1,70 @@
+[
+    {
+        "Id": "asteroid_small",
+        "Name": "Small asteroid",
+        "SizeInChunks": 2,
+        "DensityThreshold": 45,
+        "NoiseOctaves": 2,
+        "NoiseScale": 0.8,
+        "HasCavities": false,
+        "HasOreDeposits": true,
+        "UsePerlinWorms": false,
+        "Layers": [
+            {
+                "Name": "Stone",
+                "FillBlockID": "light_rock",
+                "Ratio": 100,
+                "Veins": [
+                    {
+                        "BlockId": "iron_ore",
+                        "SpawnChance": 15,
+                        "MinVeinSize": 2,
+                        "MaxVeinSize": 4,
+                        "CanSpawnNearVoid": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "Id": "asteroid_medium",
+        "Name": "Small asteroid",
+        "SizeInChunks": 2,
+        "DensityThreshold": 35,
+        "NoiseOctaves": 4,
+        "NoiseScale": 1.2,
+        "HasCavities": true,
+        "HasOreDeposits": true,
+        "UsePerlinWorms": true,
+        "WormSettings": {
+            "Count": 2,
+            "DiameterInBlocks": 4,
+            "MaxTunnelLength": 15,
+            "PathDeviation": 0.8,
+            "StepSize": 1.5
+        },
+        "Layers": [
+            {
+                "Name": "Core",
+                "FillBlockID": "light_rock",
+                "Ratio": 100,
+                "Veins": [
+                    {
+                        "BlockId": "iron_ore",
+                        "SpawnChance": 8,
+                        "MinVeinSize": 1,
+                        "MaxVeinSize": 3,
+                        "CanSpawnNearVoid": false
+                    },
+                    {
+                        "BlockId": "titanium_ore",
+                        "SpawnChance": 20,
+                        "MinVeinSize": 3,
+                        "MaxVeinSize": 6,
+                        "CanSpawnNearVoid": true
+                    }
+                ]
+            }
+        ]
+    }
+]

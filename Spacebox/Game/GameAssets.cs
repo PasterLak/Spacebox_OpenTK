@@ -6,6 +6,7 @@ using Engine;
 using Engine.Audio;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Tools;
+using Spacebox.Game.Generation.Structures;
 
 namespace Spacebox.Game
 {
@@ -20,6 +21,7 @@ namespace Spacebox.Game
         public static Texture2D EmissionItems { get; set; }
         public static Texture2D DustTexture { get; set; }
 
+        
         public static LootConfig LootConfig { get; set; }
 
         public static Dictionary<short, BlockData> Blocks = new Dictionary<short, BlockData>();

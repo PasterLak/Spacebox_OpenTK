@@ -1,0 +1,9 @@
+{
+    "Version": "1",
+    "NoiseModifier": 1.0,
+    "MinAsteroidsInSector" : 250,
+    "MaxAsteroidsInSector" : 500,
+    "RejectionSamples" : 5,
+    "MinDistanceBetweenAsteroids" : 128,
+    "Biomes": [ "asteroid_field", "dense_cluster" ]
+}

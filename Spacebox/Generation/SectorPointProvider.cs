@@ -89,8 +89,7 @@ namespace Engine.Generation
             var size = new Vector3(Sector.SizeBlocks);
             var rng = new Random(settings.Seed);
             var points = new List<Vector3>();
-            float minDist = radius;
-            float minDist2 = minDist * minDist;
+            float minDist2 = radius * radius;
 
             points.Add(sectorIndex + (settings.Round ? IPointGenerator.RoundVector3(RandomPoint(rng, size)) : RandomPoint(rng, size)));
 
@@ -139,7 +138,7 @@ namespace Engine.Generation
 
     public static class SectorPointProvider
     {
-        public static List<Vector3> CreatePoints(IPointGenerator generator, GeneratorSettings settings, Vector3 sectorWorldPos
+        public static List<Vector3> CreatePoints(IPointGenerator generator, ref GeneratorSettings settings, Vector3 sectorWorldPos
             )
         {
             return generator.Generate(in settings, sectorWorldPos);

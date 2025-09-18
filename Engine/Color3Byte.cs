@@ -70,8 +70,8 @@ namespace Engine
         public static Color3Byte Gray => new Color3Byte(128, 128, 128);
         public static Color3Byte Transparent => new Color3Byte(0, 0, 0);
 
-       // public static Vector3 operator *(Color3Byte c, float s)
-       //     => new Vector3(c.R / 255f, c.G / 255f, c.B / 255f) * s;
+        // public static Vector3 operator *(Color3Byte c, float s)
+        //     => new Vector3(c.R / 255f, c.G / 255f, c.B / 255f) * s;
 
 
         public static Color3Byte operator +(Color3Byte c1, Color3Byte c2)
@@ -134,6 +134,11 @@ namespace Engine
         public Vector4 ToVector4(float alpha)
         {
             return new Vector4(R / 255f, G / 255f, B / 255f, alpha);
+        }
+
+        public System.Numerics.Vector4 ToSystemVector4()
+        {
+            return new System.Numerics.Vector4(R / 255f, G / 255f, B / 255f, 1.0f);
         }
 
         public int ToInt()

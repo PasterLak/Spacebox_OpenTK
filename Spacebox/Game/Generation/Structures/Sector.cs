@@ -14,6 +14,7 @@ namespace Spacebox.Game.Generation
     {
         public ulong Id;
         public EntityType entityType;
+        public Biome biome;
         public Vector3 positionInSector;
         public Vector3 positionWorld;
         public Vector3 rotation;
@@ -85,7 +86,10 @@ namespace Spacebox.Game.Generation
 
         private void PopulateSector()
         {
-            var points = GenerateAsteroidPositions(4000, 5000, true);
+            var points = GenerateAsteroidPositions(World.Generator.MinAsteroidsInSector, 
+                World.Generator.MaxAsteroidsInSector,
+                World.Generator.RejectionSamples,
+                World.Generator.MinDistanceBetweenAsteroids, true);
 
             GenerateDataForPoints(points);
 
@@ -123,17 +127,17 @@ namespace Spacebox.Game.Generation
         }
 
 
-        private Vector3[] GenerateAsteroidPositions(int minCount, int maxCount, bool round)
+        private Vector3[] GenerateAsteroidPositions(int minCount, int maxCount, int rejectionSamples, int radius, bool round)
         {
             var seed = SeedHelper.ToIntSeed(Seed);
             Random random = new Random(seed);
             var settings = new GeneratorSettings();
-            settings.RejectionSamples = 5;
+            settings.RejectionSamples = rejectionSamples;
             settings.Seed = seed;
             settings.Count = random.Next(minCount, maxCount);
             settings.Round = round;
 
-            return SectorPointProvider.CreatePoints(new SimplePoissonDiscGenerator(128), settings, PositionWorld).ToArray();
+            return SectorPointProvider.CreatePoints(new SimplePoissonDiscGenerator(radius), ref settings, PositionWorld).ToArray();
         }
 
         public void PlacePlayerRandomInSector(Astronaut player, Random random)

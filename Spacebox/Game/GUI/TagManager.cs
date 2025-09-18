@@ -61,6 +61,7 @@ namespace Spacebox.Game.GUI
             base.OnAttached(onOwner);
 
             Window.OnResized += OnResized;
+            OnResized(Window.Instance.ClientSize);
         }
         public override void OnDetached()
         {
@@ -100,8 +101,8 @@ namespace Spacebox.Game.GUI
                         ImGui.SetCursorPos(tag.GetTextPosition(screenPos.ToSystemVector2(), textSize));
                         var drawList = ImGui.GetWindowDrawList();
                
-                        float distance = Vector3.DistanceSquared(camera.Position , tag.WorldPosition);
-                        float newFontSize = Tag.CalculateFontSize(distance);
+                        float distanceSquared = Vector3.DistanceSquared(camera.Position , tag.WorldPosition);
+                        float newFontSize = Tag.CalculateFontSize(distanceSquared);
                         drawList.AddText(LoadFont(), newFontSize, ImGui.GetCursorPos(), tag.ColorUint, tag.Text);
                     }
                 }

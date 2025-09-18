@@ -29,7 +29,7 @@ namespace Spacebox.Game.Generation
 
         public const int SizeSectors = 8192;
         public Astronaut Player { get; private set; }
-
+        public static Generator Generator { get; set; }
         public static WorldLoader.LoadedWorld Data { get; private set; }
         public static DropEffectManager DropEffectManager;
         public static BlockDestructionManager DestructionManager;
@@ -224,7 +224,7 @@ namespace Spacebox.Game.Generation
                 var sector = kv.Value;
 
                 if (!sector.BoundingBox.Contains(cameraPosition)
-                    && DistanceToBox(cameraPosition, sector.BoundingBox) > Settings.SECTOR_UNLOAD_DISTANCE)
+                    && DistanceToBox(cameraPosition, sector.BoundingBox) > Settings.SECTOR_UNLOAD_DISTANCE_SQUARED)
                 {
                     toRemove.Add(idx);
                 }
@@ -331,7 +331,7 @@ namespace Spacebox.Game.Generation
             dy = Math.Max(dy, point.Y - box.Max.Y);
             float dz = Math.Max(box.Min.Z - point.Z, 0f);
             dz = Math.Max(dz, point.Z - box.Max.Z);
-            return MathF.Sqrt(dx * dx + dy * dy + dz * dz);
+            return dx * dx + dy * dy + dz * dz;
         }
 
         private static float DistanceToEdge(Vector3 local, float sectorSize, Vector3i dir)
@@ -350,7 +350,8 @@ namespace Spacebox.Game.Generation
             base.OnDetached();
 
             Data = null;
-          
+            Generator = null;
+
             DropEffectManager = null;
             
             DestructionManager = null;

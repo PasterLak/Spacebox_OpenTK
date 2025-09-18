@@ -35,6 +35,9 @@ namespace Spacebox.Game
         public const int ENTITY_SEARCH_RADIUS = 1200;
         public const int VIEW_DISTANCE_TO_NEXT_SECTOR = ENTITY_SEARCH_RADIUS;
         public const int SECTOR_UNLOAD_DISTANCE = 1500;
+        public const int SECTOR_UNLOAD_DISTANCE_SQUARED = SECTOR_UNLOAD_DISTANCE* SECTOR_UNLOAD_DISTANCE;
+
+  
 
         public static bool ShowInterface = true;
 

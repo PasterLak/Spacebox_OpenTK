@@ -8,7 +8,7 @@ namespace Spacebox.Game.GUI
     {
         public Guid Id { get; set; }
         public string Text { get; set; }
-        public float FontSize { get; set; }
+      
         public Vector3 WorldPosition { get; set; }
         public Color4 Color { get; set; }
         public bool IsStatic { get; set; }
@@ -29,23 +29,23 @@ namespace Spacebox.Game.GUI
             IsStatic = isStatic;
             ColorUint = ImGui.GetColorU32(new System.Numerics.Vector4(Color.R, Color.G, Color.B, Color.A));
 
-            FontSize = CalculateFontSize(100);
+           
         }
 
         public static void SetFontSizes(Vector2 displaySize)
         {
             MinFontSize = displaySize.Y * 0.01f;
-            MaxFontSize = displaySize.Y * 0.02f;
+            MaxFontSize = displaySize.Y * 0.016f;
         }
 
-        public static float CalculateFontSize(float distance)
+        public static float CalculateFontSize(float distanceSquared)
         {
-
-            if (distance <= 0f)
+            const int maxDis = 1000 * 1000;
+            if (distanceSquared <= 0f)
                 return MaxFontSize;
-            if (distance >= 18000f)
+            if (distanceSquared >= maxDis)
                 return MinFontSize;
-            float size = MaxFontSize - (MaxFontSize - MinFontSize) * (distance / 18000f);
+            float size = MaxFontSize - (MaxFontSize - MinFontSize) * (distanceSquared / maxDis);
             return MathHelper.Clamp(size, MinFontSize, MaxFontSize);
         }
 
