@@ -37,6 +37,7 @@ namespace Spacebox.Game.Generation
         // ------------------ Properties --------------------------------------------
 
         public List<SpaceEntity> Entities { get; private set; }
+        public BiomesMap BiomesMap { get; private set; }
         private Dictionary<ulong, NotGeneratedEntity> EntitiesGeneratedData { get; set; }
 
         // ------------------ Private --------------------------------------------
@@ -60,6 +61,8 @@ namespace Spacebox.Game.Generation
             EntitiesGeneratedData = new Dictionary<ulong, NotGeneratedEntity>();
 
             Entities = new List<SpaceEntity>();
+
+
 
 
             /*if (WorldSaveLoad.CanLoadSectorHere(PositionIndex, out var sectorFolderPath))
@@ -86,6 +89,8 @@ namespace Spacebox.Game.Generation
 
         private void PopulateSector()
         {
+            BiomesMap = new BiomesMap(PositionIndex, World.BiomeGenerator);
+
             var points = GenerateAsteroidPositions(World.Generator.MinAsteroidsInSector, 
                 World.Generator.MaxAsteroidsInSector,
                 World.Generator.RejectionSamples,

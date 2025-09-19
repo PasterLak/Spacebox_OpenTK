@@ -11,10 +11,25 @@ public class Generator
     public int MaxAsteroidsInSector { get; set; } = 200;
     public int RejectionSamples { get; set; } = 5;
     public int MinDistanceBetweenAsteroids { get; set; } = 128;
+    public float BiomesMapNoiseFrequency { get; set; } = 0.02f;
     public Biome[] Biomes { get; set; } = new Biome[] { };
+    public byte[] BiomeProbabilityRanges { get; private set; } = new byte[] { };
+
 
     public Dictionary<string, AsteroidData> loadedAsteroids = new Dictionary<string, AsteroidData>();
     public Dictionary<string, Biome> loadedBiomes = new Dictionary<string, Biome>();
+
+    public Biome GetBiomeByRandomValue(byte randomValue)
+    {
+        for (int i = 0; i < BiomeProbabilityRanges.Length; i++)
+        {
+            if (randomValue < BiomeProbabilityRanges[i])
+            {
+                return Biomes[i];
+            }
+        }
+        return Biomes[Biomes.Length - 1];
+    }
 
     public Biome? GetBiome(string id)
     {
@@ -24,6 +39,43 @@ public class Generator
     public AsteroidData? GetAsteroid(string id)
     {
         return loadedAsteroids.TryGetValue(id, out AsteroidData asteroid) ? asteroid : null;
+    }
+
+    public void CalculateBiomeProbabilities()
+    {
+        BiomeProbabilityRanges = CalculateBiomeProbabilityRanges();
+    }
+
+    private byte[] CalculateBiomeProbabilityRanges()
+    {
+        if (Biomes.Length == 0) return new byte[0];
+
+        int totalChance = 0;
+        foreach (var biome in Biomes)
+        {
+            totalChance += biome.SpawnChance;
+        }
+
+        if (totalChance == 0) return new byte[0];
+
+        byte[] ranges = new byte[Biomes.Length];
+        byte currentRange = 0;
+
+        for (int i = 0; i < Biomes.Length; i++)
+        {
+            float normalizedChance = (float)Biomes[i].SpawnChance / totalChance;
+            byte rangeSize = (byte)(normalizedChance * 255);
+
+            if (i == Biomes.Length - 1)
+            {
+                rangeSize = (byte)(255 - currentRange);
+            }
+
+            currentRange += rangeSize;
+            ranges[i] = currentRange;
+        }
+
+        return ranges;
     }
 
     public void DebugPrint()
@@ -104,12 +156,12 @@ public class Biome
         Asteroids = new AsteroidData[biomeJSON.AsteroidIds.Length];
        
     }
-    public string IdString { get; set; } = "default_biome";
-    public string Name { get; set; } = "Default Biome";
-    public string Description { get; set; } = "A basic asteroid field";
-    public byte SpawnChance { get; set; } = 100;
-    public int MinDistanceFromCenter { get; set; } = 100;
-    public int MaxDistanceFromCenter { get; set; } = 500;
+    public string IdString { get; private set; } = "default_biome";
+    public string Name { get; private set; } = "Default Biome";
+    public string Description { get; private set; } = "A basic asteroid field";
+    public byte SpawnChance { get; private set; } = 100;
+    public int MinDistanceFromCenter { get; private set; } = 100;
+    public int MaxDistanceFromCenter { get; private set; } = 500;
     public AsteroidData[] Asteroids { get; set; }
 }
 

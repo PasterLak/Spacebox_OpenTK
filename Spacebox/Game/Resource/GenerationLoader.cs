@@ -33,6 +33,8 @@ public class GenerationLoader
             Debug.Error("[GenerationLoader] Failed to load generator configuration");
         }
 
+        generator.CalculateBiomeProbabilities();
+
         return generator;
     }
 

@@ -35,7 +35,7 @@ namespace Spacebox.Game.Generation
         public static BlockDestructionManager DestructionManager;
         public static int Seed { get; private set; }
         public static Sector? CurrentSector { get; private set; }
-
+        public static BiomeGenerator BiomeGenerator { get; private set; }
         private readonly Octree<Sector> worldOctree;
 
         private readonly Dictionary<Vector3i, Sector> Sectors = new Dictionary<Vector3i, Sector>();
@@ -55,6 +55,7 @@ namespace Spacebox.Game.Generation
 
             Overlay.AddElement(new WorldOverlayElement(this));
 
+            BiomeGenerator = new BiomeGenerator(World.Seed, Generator);
         }
         public override void Start()
         {
@@ -253,7 +254,7 @@ namespace Spacebox.Game.Generation
         {
 
             loadingSectors.Add(sectorIndex);
-            Debug.Log($"Sector loading....");
+            
             int worldSeed = Seed;
             Vector3 worldPos = GetSectorPosition(sectorIndex);
 
@@ -351,7 +352,7 @@ namespace Spacebox.Game.Generation
 
             Data = null;
             Generator = null;
-
+            BiomeGenerator = null;
             DropEffectManager = null;
             
             DestructionManager = null;

@@ -6,6 +6,22 @@
         "SpawnChance": 60,
         "MinDistanceFromCenter": 50,
         "MaxDistanceFromCenter": 300,
+        "DebugColor": {
+            "r": 120,
+            "g": 115,
+            "b": 110
+        },
+        "AmbientColor": {
+            "r": 120,
+            "g": 115,
+            "b": 110
+        },
+        "FogColor": {
+            "r": 7,
+            "g": 7,
+            "b": 7
+        },
+        "FogDensity": 10,
         "AsteroidIds": [ "asteroid_small" ]
     },
     {
@@ -15,6 +31,11 @@
         "SpawnChance": 30,
         "MinDistanceFromCenter": 200,
         "MaxDistanceFromCenter": 600,
+        "DebugColor": {
+            "r": 1,
+            "g": 115,
+            "b": 110
+        },
         "AsteroidIds": [ "asteroid_small", "asteroid_medium" ]
     }
 ]
