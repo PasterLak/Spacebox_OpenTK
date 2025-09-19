@@ -2,6 +2,7 @@
 using Engine;
 using Engine.GUI;
 using Spacebox.Game.Player;
+using Spacebox.Game.Generation;
 
 namespace Spacebox.Game.GUI
 {
@@ -23,6 +24,18 @@ namespace Spacebox.Game.GUI
 
                 if (ast.CurrentInteraction != null)
                     ImGui.Text($"Interaction: {ast.CurrentInteraction.GetType().Name}");
+
+                if (World.CurrentSector != null && World.CurrentSector.BiomesMap != null)
+                {
+                    var pos = World.CurrentSector.WorldToLocalPosition(ast.PositionWorld);
+
+                    var biom = World.CurrentSector.BiomesMap.GetFromSectorLocalCoord(pos);
+
+                    ImGui.Text($"Biome: Id - {biom.IdString} Name - {biom.Name}");
+
+                }
+                    
+
 
                 var size = ImGui.CalcTextSize("M");
                 var mood = ast.Mood;

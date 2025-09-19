@@ -7,9 +7,9 @@
         "MinDistanceFromCenter": 50,
         "MaxDistanceFromCenter": 300,
         "DebugColor": {
-            "r": 120,
-            "g": 115,
-            "b": 110
+            "r": 255,
+            "g": 0,
+            "b": 0
         },
         "AmbientColor": {
             "r": 120,
@@ -32,10 +32,10 @@
         "MinDistanceFromCenter": 200,
         "MaxDistanceFromCenter": 600,
         "DebugColor": {
-            "r": 1,
-            "g": 115,
-            "b": 110
+            "r": 0,
+            "g": 255,
+            "b": 0
         },
-        "AsteroidIds": [ "asteroid_small", "asteroid_medium" ]
+        "AsteroidIds": [ "asteroid_medium" ]
     }
 ]

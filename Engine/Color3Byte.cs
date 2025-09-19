@@ -67,6 +67,7 @@ namespace Engine
         public static Color3Byte Magenta => new Color3Byte(255, 0, 255);
         public static Color3Byte Orange => new Color3Byte(255, 165, 0);
         public static Color3Byte Purple => new Color3Byte(128, 0, 128);
+        public static Color3Byte Pink => new Color3Byte(255, 0, 255);
         public static Color3Byte Gray => new Color3Byte(128, 128, 128);
         public static Color3Byte Transparent => new Color3Byte(0, 0, 0);
 

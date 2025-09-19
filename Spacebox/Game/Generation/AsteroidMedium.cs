@@ -3,6 +3,7 @@ using Engine.Multithreading;
 using Engine.Physics;
 using Engine.Utils;
 using OpenTK.Mathematics;
+using Spacebox.Game.Generation.Structures;
 using Spacebox.Generation;
 
 namespace Spacebox.Game.Generation;
@@ -18,16 +19,23 @@ public class AsteroidMedium : Asteroid
     private readonly HashSet<Vector3SByte> loadedChunks = new HashSet<Vector3SByte>();
 
     private readonly Dictionary<Vector3SByte, List<Vector3i>> _worm = new ();
-    public AsteroidMedium(ulong id, Vector3 positionWorld, Sector sector)
-        : base(id, positionWorld, sector)
+    private readonly bool useWorms = false;
+    private readonly AsteroidData asteroidData;
+    public AsteroidMedium(NotGeneratedEntity data, Sector sector)
+        : base(data.Id, data.positionWorld, sector)
     {
         Vector3 diameter = new Vector3(ChunkCount * ChunkSize);
-        voxelGen = new AsteroidVoxelDataGenerator(
+
+        asteroidData = data.biome.Asteroids[0];
+
+        var ast = asteroidData;
+
+        voxelGen = new AsteroidVoxelDataGenerator( // 1 33 4 1 seed
             asteroidDimensions: diameter,
             blockSize: 1f,
-            threshold: 33,
-            noiseOctaves: 4,
-            noiseScale: 1f,
+            threshold: ast.DensityThreshold,
+            noiseOctaves: ast.NoiseOctaves,
+            noiseScale: ast.NoiseScale,
             seed: (int)Seed,
             type: AsteroidType.Medium
         );
@@ -35,15 +43,26 @@ public class AsteroidMedium : Asteroid
 
 
         int worldVox = Chunk.Size * AsteroidMedium.ChunkCount;
-                                                                        // asteroid 7 max
-        var wormParams = new WormParameters(3 * ChunkCount, 4, 0.5f, (byte)(MathHelper.Min(ChunkCount*Chunk.Size, 255)), ComputeStep(4, 1), (int)Seed);
 
-       // var tunnelMap = new Dictionary<Vector3SByte, List<Vector3i>>(128);
-        foreach (var (c, v) in PerlinWorms.Voxels(wormParams, ChunkCount, Chunk.Size))
+        useWorms = ast.UsePerlinWorms;
+        if (useWorms)
         {
-            if (!_worm.TryGetValue(c, out var lst)) 
-                _worm[c] = lst = new List<Vector3i>(32);
-            lst.Add(v);
+
+            // asteroid 7 max
+            var wormParams = new WormParameters(3 * ChunkCount,
+                ast.WormSettings.Count,
+                ast.WormSettings.PathDeviation,
+                (byte)(MathHelper.Min(ChunkCount * Chunk.Size, 255)), 
+                ComputeStep(ast.WormSettings.DiameterInBlocks, ast.WormSettings.StepSize), (int)Seed);
+            // 4 worms 0.5 deviation  4 diameter 1 overlapK(step size)
+            // var tunnelMap = new Dictionary<Vector3SByte, List<Vector3i>>(128);
+            foreach (var (c, v) in PerlinWorms.Voxels(wormParams, ChunkCount, Chunk.Size))
+            {
+                if (!_worm.TryGetValue(c, out var lst))
+                    _worm[c] = lst = new List<Vector3i>(32);
+                lst.Add(v);
+            }
+
         }
      
        // _worm = tunnelMap;
@@ -147,7 +166,7 @@ public class AsteroidMedium : Asteroid
 
         var chunkSeed = SeedHelper.GetChunkIdInt(EntityID, idx);
 
-        if (_worm != null && _worm.TryGetValue(idx, out var list))
+        if (useWorms && _worm != null && _worm.TryGetValue(idx, out var list))
             foreach (var v in list) data[v.X, v.Y, v.Z] = 0;
 
 

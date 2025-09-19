@@ -175,6 +175,12 @@ namespace Engine
                 throw new ArgumentOutOfRangeException();
             return pixels[x, y];
         }
+        public void SetPixel(int x, int y, Color3Byte color)
+        {
+            if (x < 0 || x >= Width || y < 0 || y >= Height)
+                throw new ArgumentOutOfRangeException();
+            pixels[x, y] = new Color4(color.R/255f, color.G/255f, color.B/255f, 1) ;
+        }
         public void SetPixel(int x, int y, Color4 color)
         {
             if (x < 0 || x >= Width || y < 0 || y >= Height)

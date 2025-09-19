@@ -30,6 +30,7 @@ public class BiomeGenerator
         noise.SetCellularDistanceFunction(FastNoiseLite.CellularDistanceFunction.EuclideanSq);
         noise.SetCellularReturnType(FastNoiseLite.CellularReturnType.CellValue);
         noise.SetFrequency(generator.BiomesMapNoiseFrequency);
+       
 
         int sectorSize = Sector.SizeBlocks;
         Vector3 sectorOffset = new Vector3(

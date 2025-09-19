@@ -134,15 +134,6 @@ public class Biome
 
     public static void Reset() { MaxId = 0; }
 
-    public Biome(string idString, string name, string description)
-    {
-        Id = MaxId++;
-        IdString = idString;
-        Name = name;
-        Description = description;
-
-    }
-
     public Biome(BiomeJSON biomeJSON)
     {
         Id = MaxId++;
@@ -152,13 +143,14 @@ public class Biome
         SpawnChance = biomeJSON.SpawnChance;
         MinDistanceFromCenter = biomeJSON.MinDistanceFromCenter;
         MaxDistanceFromCenter = biomeJSON.MaxDistanceFromCenter;
-
+        DebugColor = biomeJSON.DebugColor;
         Asteroids = new AsteroidData[biomeJSON.AsteroidIds.Length];
        
     }
     public string IdString { get; private set; } = "default_biome";
     public string Name { get; private set; } = "Default Biome";
     public string Description { get; private set; } = "A basic asteroid field";
+    public Color3Byte DebugColor { get; private set; } = Color3Byte.Pink;
     public byte SpawnChance { get; private set; } = 100;
     public int MinDistanceFromCenter { get; private set; } = 100;
     public int MaxDistanceFromCenter { get; private set; } = 500;
@@ -167,11 +159,13 @@ public class Biome
 
 public class AsteroidData
 {
-    public string IdString { get; set; } = "default";
-
     private static byte MaxId = 0;
     public byte Id { get; private set; }
 
+    public string IdString { get; set; } = "default";
+
+    
+    
     public static void Reset() { MaxId = 0; }
 
     public AsteroidData(string idString, string name)
@@ -191,7 +185,7 @@ public class AsteroidData
     public bool HasOreDeposits { get; set; } = false;
     public bool UsePerlinWorms { get; set; } = false;
 
-    public WormSettingsJSON? WormSettings { get; set; }
+    public WormSettingsJSON WormSettings { get; set; } = new WormSettingsJSON();
 
     public AsteroidLayer[] Layers { get; set; } = new AsteroidLayer[0];
 

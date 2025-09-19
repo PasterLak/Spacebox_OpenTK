@@ -1,4 +1,6 @@
-﻿namespace Spacebox.Game.Generation.Structures;
+﻿using Engine;
+
+namespace Spacebox.Game.Generation.Structures;
 
 
 public class GeneratorJSON
@@ -9,6 +11,7 @@ public class GeneratorJSON
     public int MaxAsteroidsInSector { get; set; } = 200;
     public int RejectionSamples { get; set; } = 5;
     public int MinDistanceBetweenAsteroids { get; set; } = 128;
+    public float BiomesMapNoiseFrequency { get; set; } = 0.02f;
     public string[] Biomes { get; set; } = new string[] { };
 }
 
@@ -18,6 +21,7 @@ public class BiomeJSON
     public string Name { get; set; } = "Default Biome";
     public string Description { get; set; } = "A basic asteroid field";
     public byte SpawnChance { get; set; } = 100;
+    public Color3Byte DebugColor { get; set; } = Color3Byte.Pink;
     public int MinDistanceFromCenter { get; set; } = 100;
     public int MaxDistanceFromCenter { get; set; } = 500;
     public string[] AsteroidIds { get; set; } = { };

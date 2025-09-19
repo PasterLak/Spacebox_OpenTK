@@ -5,7 +5,7 @@
     "MaxAsteroidsInSector" : 500,
     "RejectionSamples" : 5,
     "MinDistanceBetweenAsteroids" : 128,
-    "BiomesMapResolution" : 256,
-    "BiomesMapNoiseFrequency" : 0.02,
+    "BiomesMapResolution" : 128,
+    "BiomesMapNoiseFrequency" : 0.001,
     "Biomes": [ "asteroid_field", "dense_cluster" ]
 }

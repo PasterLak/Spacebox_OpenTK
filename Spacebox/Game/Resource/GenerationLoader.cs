@@ -63,6 +63,7 @@ public class GenerationLoader
             generator.Biomes = new Biome[generatorJson.Biomes.Length];
             generator.RejectionSamples = generatorJson.RejectionSamples;
             generator.MinDistanceBetweenAsteroids  = generatorJson.MinDistanceBetweenAsteroids;
+            generator.BiomesMapNoiseFrequency = generatorJson.BiomesMapNoiseFrequency;
 
             for (int i = 0; i < generatorJson.Biomes.Length; i++)
             {

@@ -13,7 +13,7 @@ namespace Spacebox.Game.Generation
     public class NotGeneratedEntity
     {
         public ulong Id;
-        public EntityType entityType;
+
         public Biome biome;
         public Vector3 positionInSector;
         public Vector3 positionWorld;
@@ -91,7 +91,7 @@ namespace Spacebox.Game.Generation
         {
             BiomesMap = new BiomesMap(PositionIndex, World.BiomeGenerator);
 
-            var points = GenerateAsteroidPositions(World.Generator.MinAsteroidsInSector, 
+            var points = GenerateAsteroidPositions(World.Generator.MinAsteroidsInSector,
                 World.Generator.MaxAsteroidsInSector,
                 World.Generator.RejectionSamples,
                 World.Generator.MinDistanceBetweenAsteroids, true);
@@ -110,20 +110,7 @@ namespace Spacebox.Game.Generation
                 data.positionWorld = LocalToWorld(point);
                 data.Id = SeedHelper.GetAsteroidId(Seed, point);
 
-                var type = random.Next(0, 3);
-
-                switch (type)
-                {
-                    case 0:
-                        data.entityType = EntityType.AsteroidLight;
-                        break;
-                    case 1:
-                        data.entityType = EntityType.AsteroidMedium;
-                        break;
-                    default:
-                        data.entityType = EntityType.AsteroidHeavy;
-                        break;
-                }
+                data.biome = BiomesMap.GetFromSectorLocalCoord(point);
                 data.rotation = Vector3.Zero;
 
                 EntitiesGeneratedData.Add(data.Id, data);
@@ -260,25 +247,8 @@ namespace Spacebox.Game.Generation
         private void GenerateAsteroidFromPoint(NotGeneratedEntity data)
         {
 
-            Asteroid entity;
-
-
-            switch (data.entityType)
-            {
-                /* case EntityType.AsteroidHeavy:
-                     entity = new AsteroidHeavy(data.Id, data.positionWorld, this);
-                     entity.Name = "HA";
-                     break;*/
-                /*case EntityType.AsteroidMedium:
-                    entity = new AsteroidMedium(data.Id, data.positionWorld, this);
-                    entity.Name = "MA";
-                    break;*/
-                case EntityType.AsteroidMedium:
-                default:
-                    entity = new AsteroidMedium(data.Id, data.positionWorld, this);
-                    entity.Name = "LA";
-                    break;
-            }
+            Asteroid entity = new AsteroidMedium(data, this);
+            entity.Name = "LA";
 
 
             Entities.Add(entity);
