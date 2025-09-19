@@ -57,12 +57,15 @@ namespace Spacebox.Generation
         {
             foreach (var vein in layer.Veins)
             {
-                if (rng.Next(100) < vein.SpawnChance)
+                if (rng.Next(1_000_000) < vein.SpawnChance)
                 {
                     if (!vein.CanSpawnNearVoid && HasVoidNeighbor(voxelData, x, y, z))
                         continue;
 
                     int veinSize = rng.Next(vein.MinVeinSize, vein.MaxVeinSize + 1);
+
+                    if(veinSize == 0) continue;
+
                     StartVein(ref voxelData, x, y, z, layer.FillBlockID, vein.BlockId, veinSize);
                     break;
                 }

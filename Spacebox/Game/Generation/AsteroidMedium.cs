@@ -27,7 +27,6 @@ public class AsteroidMedium : Asteroid
         ChunkCount = asteroidData.SizeInChunks;
         Vector3 diameter = new Vector3(ChunkCount * Chunk.Size);
 
- 
 
         voxelGen = new AsteroidVoxelDataGenerator( // 1 33 4 1 seed
             asteroidDimensions: diameter,

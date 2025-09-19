@@ -89,49 +89,70 @@ public class GenerationLoader
 
     private static void LoadAsteroids(string modPath, string defaultModPath, Generator generator)
     {
-        var path = GameSetLoader.GetFilePath(modPath, defaultModPath, "asteroids.json");
-        if (path == null)
+        string asteroidPath = Path.Combine(modPath, "Asteroids");
+        string defaultAsteroidPath = Path.Combine(defaultModPath, "Asteroids");
+
+        if (Directory.Exists(modPath))
         {
-            Debug.Error("[GenerationLoader] asteroids.json not found");
+            Debug.Log($"[GenerationLoader] Asteroid directory not found: {modPath}");
+            LoadAsteroidsFromDirectory(asteroidPath, generator);
+        } else 
+        LoadAsteroidsFromDirectory(defaultAsteroidPath, generator);
+
+        Debug.Success($"[GenerationLoader] Loaded {generator.loadedAsteroids.Count} asteroids");
+    }
+
+    private static void LoadAsteroidsFromDirectory(string directoryPath, Generator generator)
+    {
+        if (!Directory.Exists(directoryPath))
+        {
+            Debug.Log($"[GenerationLoader] Asteroid directory not found: {directoryPath}");
             return;
         }
 
         try
         {
-            List<AsteroidJSON> asteroidsJson = JsonFixer.LoadJsonSafe<List<AsteroidJSON>>(path);
-            if (asteroidsJson == null)
+            var jsonFiles = Directory.GetFiles(directoryPath, "*.json");
+
+            foreach (var filePath in jsonFiles)
             {
-                Debug.Error("[GenerationLoader] Failed to parse asteroids.json");
-                return;
+                try
+                {
+                    AsteroidJSON asteroidJson = JsonFixer.LoadJsonSafe<AsteroidJSON>(filePath);
+                    if (asteroidJson == null)
+                    {
+                        Debug.Error($"[GenerationLoader] Failed to parse asteroid file: {Path.GetFileName(filePath)}");
+                        continue;
+                    }
+
+                    if (string.IsNullOrEmpty(asteroidJson.Id))
+                    {
+                        Debug.Error($"[GenerationLoader] Asteroid missing ID in file: {Path.GetFileName(filePath)}");
+                        continue;
+                    }
+
+                    if (generator.loadedAsteroids.ContainsKey(asteroidJson.Id))
+                    {
+                        Debug.Log($"[GenerationLoader] Asteroid {asteroidJson.Id} already loaded, skipping duplicate");
+                        continue;
+                    }
+
+                    AsteroidData asteroid = ConvertAsteroid(asteroidJson);
+                    if (asteroid != null)
+                    {
+                        generator.loadedAsteroids[asteroidJson.Id] = asteroid;
+                        Debug.Log($"[GenerationLoader] Loaded asteroid: {asteroidJson.Id} from {Path.GetFileName(filePath)}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.Error($"[GenerationLoader] Error loading asteroid file {Path.GetFileName(filePath)}: {ex.Message}");
+                }
             }
-
-            foreach (var asteroidJson in asteroidsJson)
-            {
-                if (string.IsNullOrEmpty(asteroidJson.Id))
-                {
-                    Debug.Error("[GenerationLoader] Asteroid missing ID, skipping");
-                    continue;
-                }
-
-                if (generator.loadedAsteroids.ContainsKey(asteroidJson.Id))
-                {
-                    Debug.Error($"[GenerationLoader] Duplicate asteroid ID: {asteroidJson.Id}");
-                    continue;
-                }
-
-                AsteroidData asteroid = ConvertAsteroid(asteroidJson);
-                if (asteroid != null)
-                {
-                    generator.loadedAsteroids[asteroidJson.Id] = asteroid;
-                    Debug.Log($"[GenerationLoader] Loaded asteroid: {asteroidJson.Id}");
-                }
-            }
-
-            Debug.Success($"[GenerationLoader] Loaded {generator.loadedAsteroids.Count} asteroids");
         }
         catch (Exception ex)
         {
-            Debug.Error($"[GenerationLoader] Error loading asteroids: {ex.Message}");
+            Debug.Error($"[GenerationLoader] Error reading asteroid directory {directoryPath}: {ex.Message}");
         }
     }
 

@@ -233,7 +233,7 @@ public class AsteroidLayer
 public class AsteroidVein
 {
     public short BlockId { get; set; } = 0;
-    public byte SpawnChance { get; set; } = 100;
+    public int SpawnChance { get; set; } = 100000;
     public byte MinVeinSize { get; set; } = 1;
     public byte MaxVeinSize { get; set; } = 5;
     public bool CanSpawnNearVoid { get; set; } = true;
