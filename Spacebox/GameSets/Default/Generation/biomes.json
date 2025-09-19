@@ -7,8 +7,8 @@
         "MinDistanceFromCenter": 50,
         "MaxDistanceFromCenter": 300,
         "DebugColor": {
-            "r": 255,
-            "g": 0,
+            "r": 0,
+            "g": 255,
             "b": 0
         },
         "AmbientColor": {
@@ -22,7 +22,10 @@
             "b": 7
         },
         "FogDensity": 10,
-        "AsteroidIds": [ "asteroid_small" ]
+        "Asteroids": {
+            "asteroid_icy" : 10,
+            "asteroid_medium" : 100
+        }
     },
     {
         "Id": "dense_cluster",
@@ -32,10 +35,14 @@
         "MinDistanceFromCenter": 200,
         "MaxDistanceFromCenter": 600,
         "DebugColor": {
-            "r": 0,
-            "g": 255,
+            "r": 255,
+            "g": 0,
             "b": 0
         },
-        "AsteroidIds": [ "asteroid_medium" ]
+        "Asteroids":
+        {
+            "asteroid_medium" : 100
+        }
+  
     }
 ]

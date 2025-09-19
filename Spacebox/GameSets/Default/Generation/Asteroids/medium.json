@@ -1,14 +1,22 @@
 {
         "Id": "asteroid_medium",
         "Name": "Medium asteroid",
-        "SpawnChance" : 100,
+       
         "SizeInChunks": 2,
         "DensityThreshold": 33,
         "NoiseOctaves": 3,
         "NoiseScale": 1,
-        "HasCavities": false,
+        "HasCavities": true,
         "HasOreDeposits": true,
-        "UsePerlinWorms": false,
+        "UsePerlinWorms": true,
+        "WormSettings": {
+            "MinCount": 4,
+            "MaxCount": 20,
+            "DiameterInBlocks": 4,
+            "MaxTunnelLength": 64,
+            "PathDeviation": 0.5,
+            "StepSize": 1
+        },
         "Layers": [
             {
                 "Name": "Stone",

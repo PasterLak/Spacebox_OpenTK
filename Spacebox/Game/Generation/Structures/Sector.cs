@@ -112,12 +112,12 @@ namespace Spacebox.Game.Generation
                
 
                 data.biome = BiomesMap.GetFromSectorLocalCoord(point);
-                if (data.biome.Asteroids.Length == 0) continue;
+                if (data.biome.AsteroidChances.Count == 0) continue;
 
-                var asteroidIndex = Biome.SelectAsteroidBySpawnChance(data.biome.Asteroids, random);
+                var asteroidData = Biome.SelectAsteroidBySpawnChance(data.biome.AsteroidChances, random);
 
                 
-                data.asteroid = data.biome.Asteroids[asteroidIndex];
+                data.asteroid = asteroidData;
                 data.rotation = Vector3.Zero;
 
                 EntitiesGeneratedData.Add(data.Id, data);
@@ -254,7 +254,7 @@ namespace Spacebox.Game.Generation
         private void GenerateAsteroidFromPoint(NotGeneratedEntity data)
         {
 
-            Asteroid entity = new AsteroidMedium(data, this);
+            Asteroid entity = new Asteroid(data, this);
             entity.Name = "LA";
 
 

@@ -99,7 +99,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="GameSets\Default\Generation\Asteroids\" />
 		<Folder Include="GameSets\Default\Generation\Structures\" />
 		<Folder Include="Game\Components\" />
 	</ItemGroup>

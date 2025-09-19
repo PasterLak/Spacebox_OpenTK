@@ -92,10 +92,10 @@ public class Generator
         {
             Debug.Log($"  [{biome.Id}] {biome.IdString} - {biome.Name}");
             Debug.Log($"    Chance: {biome.SpawnChance}%, Distance: {biome.MinDistanceFromCenter}-{biome.MaxDistanceFromCenter}");
-            Debug.Log($"    Asteroids: {biome.Asteroids?.Length ?? 0}");
-            if (biome.Asteroids != null)
+            Debug.Log($"    Asteroids: {biome.AsteroidChances.Keys?.Count ?? 0}");
+            if (biome.AsteroidChances.Keys != null)
             {
-                foreach (var asteroid in biome.Asteroids)
+                foreach (var asteroid in biome.AsteroidChances.Keys)
                 {
                     if (asteroid != null)
                         Debug.Log($"      - {asteroid.IdString}");
@@ -115,7 +115,7 @@ public class Generator
             if (asteroid.WormSettings != null)
             {
                 var w = asteroid.WormSettings;
-                Debug.Log($"    Worms: Count={w.Count}, Diameter={w.DiameterInBlocks}, Length={w.MaxTunnelLength}");
+                Debug.Log($"    Worms: MinCount={w.MinCount},MaxCount={w.MaxCount}, Diameter={w.DiameterInBlocks}, Length={w.MaxTunnelLength}");
             }
             Debug.Log($"    Layers: {asteroid.Layers.Length}");
             foreach (var layer in asteroid.Layers)
@@ -144,7 +144,12 @@ public class Biome
         MinDistanceFromCenter = biomeJSON.MinDistanceFromCenter;
         MaxDistanceFromCenter = biomeJSON.MaxDistanceFromCenter;
         DebugColor = biomeJSON.DebugColor;
-        Asteroids = new AsteroidData[biomeJSON.AsteroidIds.Length];
+
+        if (DebugColor == Color3Byte.Pink)
+        {
+            DebugColor = Color3Byte.RandomColor(100,255);
+        }
+     
        
     }
     public string IdString { get; private set; } = "default_biome";
@@ -154,36 +159,36 @@ public class Biome
     public byte SpawnChance { get; private set; } = 100;
     public int MinDistanceFromCenter { get; private set; } = 100;
     public int MaxDistanceFromCenter { get; private set; } = 500;
-    public AsteroidData[] Asteroids { get; set; }
+    public Dictionary<AsteroidData, byte> AsteroidChances { get; private set; } = new Dictionary<AsteroidData, byte>();
 
 
-    public static int SelectAsteroidBySpawnChance(AsteroidData[] asteroids, Random random)
+    public static AsteroidData SelectAsteroidBySpawnChance(Dictionary<AsteroidData, byte> asteroidChances, Random random)
     {
-        if (asteroids == null || asteroids.Length == 0)
-            return -1;
+        if (asteroidChances == null || asteroidChances.Count == 0) return null;
 
         int totalChance = 0;
-        foreach (var asteroid in asteroids)
+        foreach (var chance in asteroidChances.Values)
         {
-            totalChance += asteroid.SpawnChance;
+            totalChance += chance;
         }
 
         if (totalChance == 0)
-            return random.Next(asteroids.Length);
+        {
+            var asteroids = asteroidChances.Keys.ToArray();
+            return asteroids[random.Next(asteroids.Length)];
+        }
 
         int randomValue = random.Next(totalChance);
         int currentSum = 0;
 
-        for (int i = 0; i < asteroids.Length; i++)
+        foreach (var kvp in asteroidChances)
         {
-            currentSum += asteroids[i].SpawnChance;
+            currentSum += kvp.Value;
             if (randomValue < currentSum)
-            {
-                return i;
-            }
+                return kvp.Key;
         }
 
-        return asteroids.Length - 1;
+        return asteroidChances.Keys.Last();
     }
 }
 

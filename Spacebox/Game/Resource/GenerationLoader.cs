@@ -230,7 +230,7 @@ public class GenerationLoader
         {
             var asteroid = new AsteroidData(json.Id, json.Name)
             {
-                SpawnChance = json.SpawnChance,
+                
                 SizeInChunks = json.SizeInChunks,
                 DensityThreshold = json.DensityThreshold,
                 NoiseOctaves = json.NoiseOctaves,
@@ -241,6 +241,19 @@ public class GenerationLoader
                 WormSettings = json.WormSettings,
                 Layers = new AsteroidLayer[json.Layers.Length]
             };
+
+            if (asteroid.UsePerlinWorms)
+            {
+                if (asteroid.WormSettings.MinCount > asteroid.WormSettings.MaxCount)
+                {
+                    var max = asteroid.WormSettings.MinCount;
+
+                    asteroid.WormSettings.MinCount = asteroid.WormSettings.MaxCount;
+                    asteroid.WormSettings.MaxCount = max;
+
+                    Debug.Error("[GenerationLoader] asteroid.WormSettings.MinCount > asteroid.WormSettings.MaxCount");
+                }
+            }
 
             for (int i = 0; i < json.Layers.Length; i++)
             {
@@ -320,18 +333,16 @@ public class GenerationLoader
     {
         try
         {
-            var biome = new Biome(json)
-            {
-                Asteroids = new AsteroidData[json.AsteroidIds.Length]
-            };
+            var biome = new Biome(json);
 
-
-            for (int i = 0; i < json.AsteroidIds.Length; i++)
+            foreach (var asteroidChance in json.Asteroids)
             {
-                string asteroidId = json.AsteroidIds[i];
+                string asteroidId = asteroidChance.Key;
+                byte chance = asteroidChance.Value;
+
                 if (generator.loadedAsteroids.TryGetValue(asteroidId, out AsteroidData asteroid))
                 {
-                    biome.Asteroids[i] = asteroid;
+                    biome.AsteroidChances[asteroid] = chance;
                 }
                 else
                 {
@@ -339,9 +350,7 @@ public class GenerationLoader
                 }
             }
 
-            biome.Asteroids = biome.Asteroids.Where(a => a != null).ToArray();
-
-            if (biome.Asteroids.Length == 0)
+            if (biome.AsteroidChances.Count == 0)
             {
                 Debug.Error($"[GenerationLoader] Biome {json.Id} has no valid asteroids");
             }

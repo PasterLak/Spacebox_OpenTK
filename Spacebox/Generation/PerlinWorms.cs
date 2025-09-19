@@ -6,15 +6,18 @@ using Engine;
 public struct WormParameters
 {
     public byte WormCount;
+    public byte MinCount;
+    public byte MaxCount;
     public byte WormDiameter;
     public float Deviation; // 0 strenght line, 1 360 grad
     public byte MaxDistance;
     public float StepSize;
     public int Seed;
 
-    public WormParameters(byte wormCount, byte wormDiameter, float deviation, byte maxDistance, float stepSize, int seed)
+    public WormParameters(byte minCount, byte maxCount, byte wormDiameter, float deviation, byte maxDistance, float stepSize, int seed)
     {
-        WormCount = wormCount;
+        MinCount = minCount;
+        MaxCount = maxCount;
         WormDiameter = wormDiameter;
         Deviation = deviation;
         MaxDistance = maxDistance;
@@ -46,6 +49,8 @@ public class PerlinWorms
         var rng = new Random(p.Seed);
         var noise = new FastNoiseLite(p.Seed);
         noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
+
+        p.WormCount = (byte)rng.Next(p.MinCount, p.MaxCount);
 
         float step = MathF.Max(1f, p.StepSize);
         int maxSteps = (int)(p.MaxDistance / step);

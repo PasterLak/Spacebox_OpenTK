@@ -24,14 +24,15 @@ public class BiomeJSON
     public Color3Byte DebugColor { get; set; } = Color3Byte.Pink;
     public int MinDistanceFromCenter { get; set; } = 100;
     public int MaxDistanceFromCenter { get; set; } = 500;
-    public string[] AsteroidIds { get; set; } = { };
+   
+    public Dictionary<string, byte> Asteroids { get; set; } = new Dictionary<string, byte>();
 }
 
 public class AsteroidJSON
 {
     public string Id { get; set; } = "default";
     public string Name { get; set; } = "Default Asteroid";
-    public byte SpawnChance { get; set; } = 100;
+   
     public byte SizeInChunks { get; set; } = 2;
     public int DensityThreshold { get; set; } = 33;
     public byte NoiseOctaves { get; set; } = 3;
@@ -49,11 +50,12 @@ public class AsteroidJSON
 
 public class WormSettingsJSON  
 {
-    public byte Count { get; set; } = 3;
+    public byte MinCount { get; set; } = 1;
+    public byte MaxCount { get; set; } = 3;
     public byte DiameterInBlocks { get; set; } = 3;
     public byte MaxTunnelLength { get; set; } = 3; 
-    public float PathDeviation { get; set; } = 1f;
-    public float StepSize { get; set; } = 1f;
+    public float PathDeviation { get; set; } = 1f; // 0 strenght line, 1 360 grad
+    public float StepSize { get; set; } = 1f; // // 1=  fast, big steps| 0 = slow, smooth steps
 }
 
 public class AsteroidLayerJSON

@@ -31,7 +31,8 @@ namespace Spacebox.Game.GUI
 
                     var biom = World.CurrentSector.BiomesMap.GetFromSectorLocalCoord(pos);
 
-                    ImGui.Text($"Biome: Id - {biom.IdString} Name - {biom.Name}");
+                    ImGui.Text("Biome:"); ImGui.SameLine();
+                    ImGui.TextColored(biom.DebugColor.ToSystemVector4(), $"{biom.Name}");
 
                 }
                     
