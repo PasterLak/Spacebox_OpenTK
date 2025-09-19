@@ -8,20 +8,20 @@ namespace Spacebox.Game
 {
     public static class GameAssetsRegister
     {
-        public static void RegisterBlock(BlockData blockData)
+        public static void RegisterBlock(BlockJSON blockData)
         {
             GameAssets.IncrementBlockId(blockData);
             GameAssets.Blocks.Add(blockData.Id, blockData);
             GameAssets.AddBlockString(blockData.Id_string, blockData);
 
             if(blockData.Id != 0)
-                BlockData.CacheUvs(blockData);
+                BlockJSON.CacheUvs(blockData);
            
             RegisterItem(blockData);
             CreateDust(blockData);
         }
 
-        public static void RegisterRecipe(RecipeData recipeData, Item item, Item item2)
+        public static void RegisterRecipe(RecipeJSON recipeData, Item item, Item item2)
         {
             recipeData.Type = recipeData.Type.ToLower();
             if (!GameAssets.Recipes.ContainsKey(recipeData.Type))
@@ -37,7 +37,7 @@ namespace Spacebox.Game
             }
         }
 
-        public static void RegisterItem(BlockData blockData)
+        public static void RegisterItem(BlockJSON blockData)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace Spacebox.Game
             GameAssets.ItemModels.Add(item.Id, model);
         }
 
-        private static void CacheIcon(BlockData blockData)
+        private static void CacheIcon(BlockJSON blockData)
         {
             Texture2D texture = IsometricIcon.Create(
                 UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.GetFaceUVIndex(Generation.Blocks.Direction.Left), GameAssets.AtlasBlocks.SizeBlocks),
@@ -120,7 +120,7 @@ namespace Spacebox.Game
             GameAssets.ItemIcons.Add(item.Id, texture);
         }
 
-        private static void CreateDust(BlockData block)
+        private static void CreateDust(BlockJSON block)
         {
             Texture2D texture = BlockDestructionTexture.Generate(block.WallsUVIndex);
             GameAssets.BlockDusts.Add(block.Id, texture);

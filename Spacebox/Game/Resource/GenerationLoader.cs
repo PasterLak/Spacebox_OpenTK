@@ -208,6 +208,11 @@ public class GenerationLoader
                     continue;
                 }
 
+                if(biomeJson.MinDistanceFromCenter == 0 && biomeJson.MinDistanceFromCenter  ==  biomeJson.MaxDistanceFromCenter)
+                {
+                    biomeJson.MaxDistanceFromCenter = int.MaxValue;
+                }
+
                 Biome biome = ConvertBiome(biomeJson, generator);
                 if (biome != null)
                 {
@@ -231,7 +236,8 @@ public class GenerationLoader
             var asteroid = new AsteroidData(json.Id, json.Name)
             {
                 
-                SizeInChunks = json.SizeInChunks,
+                MinRadius = json.MinRadius,
+                MaxRadius = json.MaxRadius,
                 DensityThreshold = json.DensityThreshold,
                 NoiseOctaves = json.NoiseOctaves,
                 NoiseScale = json.NoiseScale,

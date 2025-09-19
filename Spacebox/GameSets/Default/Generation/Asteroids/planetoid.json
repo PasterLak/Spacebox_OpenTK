@@ -1,18 +1,17 @@
 {
-        "Id": "asteroid_medium",
-        "Name": "Medium asteroid",
+        "Id": "planetoid",
+        "Name": "Planetoid",
        
-        "MinRadius": 22,
-        "MaxRadius": 32,
+        "SizeInChunks": 4,
         "DensityThreshold": 33,
-        "NoiseOctaves": 3,
+        "NoiseOctaves": 4,
         "NoiseScale": 1,
         "HasCavities": true,
         "HasOreDeposits": true,
         "UsePerlinWorms": true,
         "WormSettings": {
-            "MinCount": 4,
-            "MaxCount": 20,
+            "MinCount": 6,
+            "MaxCount": 10,
             "DiameterInBlocks": 4,
             "MaxTunnelLength": 64,
             "PathDeviation": 0.5,
@@ -61,14 +60,14 @@
                 "Veins": [
                     {
                         "BlockId": "titanium_ore",
-                        "SpawnChance": 13000,
+                        "SpawnChance": 15000,
                         "MinVeinSize": 2,
                         "MaxVeinSize": 6,
                         "CanSpawnNearVoid": true
                     },
                     {
                         "BlockId": "thulium_ore",
-                        "SpawnChance": 8000,
+                        "SpawnChance": 9000,
                         "MinVeinSize": 2,
                         "MaxVeinSize": 6,
                         "CanSpawnNearVoid": true

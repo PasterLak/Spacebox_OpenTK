@@ -5,7 +5,7 @@ namespace Spacebox.Game.Generation.Blocks
     public class ConsumerBlock : ElectricalBlock
     {
 
-        public ConsumerBlock(BlockData blockData) : base(blockData)
+        public ConsumerBlock(BlockJSON blockData) : base(blockData)
         {
             EFlags = ElectricalFlags.CanConsume;
             MaxPower = 300;

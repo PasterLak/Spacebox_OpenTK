@@ -13,6 +13,7 @@ namespace Spacebox.Game.Generation
     public class NotGeneratedEntity
     {
         public ulong Id;
+        public int radiusBlocks = 32;
         public AsteroidData asteroid;
         public Biome biome;
         public Vector3 positionInSector;
@@ -116,7 +117,7 @@ namespace Spacebox.Game.Generation
 
                 var asteroidData = Biome.SelectAsteroidBySpawnChance(data.biome.AsteroidChances, random);
 
-                
+                data.radiusBlocks = random.Next(asteroidData.MinRadius, asteroidData.MaxRadius+1);
                 data.asteroid = asteroidData;
                 data.rotation = Vector3.Zero;
 

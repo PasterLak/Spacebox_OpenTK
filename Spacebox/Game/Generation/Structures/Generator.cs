@@ -109,7 +109,7 @@ public class Generator
         {
             var asteroid = kvp.Value;
             Debug.Log($"  [{asteroid.Id}] {asteroid.IdString} - {asteroid.Name}");
-            Debug.Log($"    Size: {asteroid.SizeInChunks} chunks, Threshold: {asteroid.DensityThreshold}");
+            Debug.Log($"    Radius: {asteroid.MinRadius}-{asteroid.MaxRadius} block, Threshold: {asteroid.DensityThreshold}");
             Debug.Log($"    Noise: {asteroid.NoiseOctaves} octaves, Scale: {asteroid.NoiseScale}");
             Debug.Log($"    Features: Cavities={asteroid.HasCavities}, Ores={asteroid.HasOreDeposits}, Worms={asteroid.UsePerlinWorms}");
             if (asteroid.WormSettings != null)
@@ -211,7 +211,8 @@ public class AsteroidData
     }
 
     public string Name { get; set; } = "Default Asteroid";
-    public byte SizeInChunks { get; set; } = 2;
+    public int MinRadius { get; set; } = 2;
+    public int MaxRadius { get; set; } = 2;
     public int DensityThreshold { get; set; } = 33;
     public byte NoiseOctaves { get; set; } = 3;
     public float NoiseScale { get; set; } = 1f;

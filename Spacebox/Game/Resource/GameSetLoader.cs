@@ -386,26 +386,26 @@ namespace Spacebox.Game.Resource
                     switch (type)
                     {
                         case "weapon":
-                            var weaponData = itemElement.Deserialize<WeaponItemData>();
+                            var weaponData = itemElement.Deserialize<WeaponItemJSON>();
                             if (weaponData == null) continue;
                             registeredItem = RegisterWeaponItem(weaponData, idString);
                             break;
 
                         case "drill":
-                            var drillData = itemElement.Deserialize<DrillItemData>();
+                            var drillData = itemElement.Deserialize<DrillItemJSON>();
                             if (drillData == null) continue;
                             registeredItem = RegisterDrillItem(drillData, idString);
                             break;
 
                         case "consumable":
-                            var consumableData = itemElement.Deserialize<ConsumableItemData>();
+                            var consumableData = itemElement.Deserialize<ConsumableItemJSON>();
                             if (consumableData == null) continue;
                             registeredItem = RegisterConsumableItem(consumableData, idString);
                             break;
 
                         case "item":
                         default:
-                            var itemData = itemElement.Deserialize<ItemData>();
+                            var itemData = itemElement.Deserialize<ItemJSON>();
                             if (itemData == null) continue;
                             registeredItem = RegisterItem(itemData, idString);
                             break;
@@ -537,7 +537,7 @@ namespace Spacebox.Game.Resource
             try
             {
          
-                CraftingData crafting = JsonFixer.LoadJsonSafe<CraftingData>(file);
+                CraftingJSON crafting = JsonFixer.LoadJsonSafe<CraftingJSON>(file);
 
                 if (crafting == null)
                 {
@@ -643,7 +643,7 @@ namespace Spacebox.Game.Resource
             }
         }
 
-        private static void LoadBlueprints(CraftingData data)
+        private static void LoadBlueprints(CraftingJSON data)
         {
             short id = 0;
             if (data == null) return;
@@ -719,7 +719,7 @@ namespace Spacebox.Game.Resource
 
         }
 
-        private static Item RegisterWeaponItem(WeaponItemData data, string id)
+        private static Item RegisterWeaponItem(WeaponItemJSON data, string id)
         {
             data.MaxStack = 1;
 
@@ -768,7 +768,7 @@ namespace Spacebox.Game.Resource
 
 
 
-        private static Item RegisterDrillItem(DrillItemData data, string id)
+        private static Item RegisterDrillItem(DrillItemJSON data, string id)
         {
             data.MaxStack = 1;
             var drillItem = new DrillItem(
@@ -816,7 +816,7 @@ namespace Spacebox.Game.Resource
         }
 
 
-        private static Item RegisterConsumableItem(ConsumableItemData data, string id)
+        private static Item RegisterConsumableItem(ConsumableItemJSON data, string id)
         {
             data.ValidateMaxStack();
             var consumableItem = new ConsumableItem(
@@ -836,7 +836,7 @@ namespace Spacebox.Game.Resource
             return consumableItem;
         }
 
-        private static Item RegisterItem(ItemData data, string id)
+        private static Item RegisterItem(ItemJSON data, string id)
         {
             data.ValidateMaxStack();
             var item = new Item(

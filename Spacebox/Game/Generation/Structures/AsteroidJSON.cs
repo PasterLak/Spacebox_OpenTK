@@ -22,8 +22,8 @@ public class BiomeJSON
     public string Description { get; set; } = "A basic asteroid field";
     public byte SpawnChance { get; set; } = 100;
     public Color3Byte DebugColor { get; set; } = Color3Byte.Pink;
-    public int MinDistanceFromCenter { get; set; } = 100;
-    public int MaxDistanceFromCenter { get; set; } = 500;
+    public int MinDistanceFromCenter { get; set; } = 0;
+    public int MaxDistanceFromCenter { get; set; } = 0;
    
     public Dictionary<string, byte> Asteroids { get; set; } = new Dictionary<string, byte>();
 }
@@ -33,7 +33,8 @@ public class AsteroidJSON
     public string Id { get; set; } = "default";
     public string Name { get; set; } = "Default Asteroid";
    
-    public byte SizeInChunks { get; set; } = 2;
+    public int MinRadius { get; set; } = 32;
+    public int MaxRadius { get; set; } = 32;
     public int DensityThreshold { get; set; } = 33;
     public byte NoiseOctaves { get; set; } = 3;
     public float NoiseScale { get; set; } = 1f;

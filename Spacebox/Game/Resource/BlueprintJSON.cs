@@ -1,7 +1,7 @@
 ﻿namespace Spacebox.Game.Resource
 {
 
-    public class BlueprintData
+    public class BlueprintJSON
     {
         public ingridient[] Ingredients { get; set; }
         public product Product { get; set; }

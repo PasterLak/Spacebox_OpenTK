@@ -81,7 +81,7 @@ namespace Spacebox.Game.Generation.Blocks
             SetEnableEmission(enableEmission); 
         }
 
-        public Block(BlockData blockData)
+        public Block(BlockJSON blockData)
         {
             Id = blockData.Id;
             LightColor = new Color3Byte(blockData.LightColor);

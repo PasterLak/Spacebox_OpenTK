@@ -44,8 +44,8 @@ namespace Spacebox.Game.Generation.Blocks
                 chunk.IsModified = true;
             }
         }
-        private BlockData _blockData;
-        public StorageBlock(BlockData blockData) : base(blockData)
+        private BlockJSON _blockData;
+        public StorageBlock(BlockJSON blockData) : base(blockData)
         {
             _blockData = blockData;
            

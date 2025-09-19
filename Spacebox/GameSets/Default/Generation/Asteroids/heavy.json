@@ -2,7 +2,8 @@
         "Id": "asteroid_heavy",
         "Name": "Heavy asteroid",
       
-        "SizeInChunks": 2,
+        "MinRadius": 38,
+        "MaxRadius": 64,
         "DensityThreshold": 33,
         "NoiseOctaves": 3,
         "NoiseScale": 1,
@@ -12,9 +13,9 @@
         "WormSettings": {
             "MinCount": 10,
             "MaxCount": 30,
-            "DiameterInBlocks": 4,
+            "DiameterInBlocks": 5,
             "MaxTunnelLength": 64,
-            "PathDeviation": 0.5,
+            "PathDeviation": 0.7,
             "StepSize": 1
         },
         "Layers": [
@@ -39,16 +40,16 @@
                     },
                     {
                         "BlockId": "aluminium_ore",
-                        "SpawnChance": 20000,
+                        "SpawnChance": 15000,
                         "MinVeinSize": 2,
-                        "MaxVeinSize": 8,
+                        "MaxVeinSize": 6,
                         "CanSpawnNearVoid": false
                     },
                     {
                         "BlockId": "iron_ore",
                         "SpawnChance": 15000,
                         "MinVeinSize": 2,
-                        "MaxVeinSize": 6,
+                        "MaxVeinSize": 4,
                         "CanSpawnNearVoid": false
                     }
                 ]

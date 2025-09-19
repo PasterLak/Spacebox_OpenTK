@@ -18,7 +18,7 @@ namespace Spacebox.Game
         private Direction blockDirection = Direction.Up;
 
         public Rotation Rotation = Rotation.None;
-        private BlockData currentBlockData;
+        private BlockJSON currentBlockData;
 
         public BlockSelector()
         {

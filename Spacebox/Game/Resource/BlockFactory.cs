@@ -8,8 +8,8 @@ namespace Spacebox.Game.Resource
 {
     internal static class BlockFactory
     {
-        private static readonly Dictionary<string, Func<BlockData, Block>> BlockCreators =
-            new Dictionary<string, Func<BlockData, Block>>(StringComparer.OrdinalIgnoreCase)
+        private static readonly Dictionary<string, Func<BlockJSON, Block>> BlockCreators =
+            new Dictionary<string, Func<BlockJSON, Block>>(StringComparer.OrdinalIgnoreCase)
         {
             { "interactive", data => new InteractiveBlock(data) },
             { "crusher", data => new CrusherBlock(data) },
@@ -29,14 +29,14 @@ namespace Spacebox.Game.Resource
             if (!GameAssets.Blocks.ContainsKey(id))
                 return new Block();
 
-            BlockData data = GameAssets.Blocks[id];
+            BlockJSON data = GameAssets.Blocks[id];
             return CreateBlock(data);
         }
 
-        public static Block CreateBlock(BlockData data)
+        public static Block CreateBlock(BlockJSON data)
         {
             data.Type = data.Type.ToLower();
-            if (BlockCreators.TryGetValue(data.Type, out Func<BlockData, Block> creator))
+            if (BlockCreators.TryGetValue(data.Type, out Func<BlockJSON, Block> creator))
                 return creator(data);
 
             return new Block(data);
@@ -53,7 +53,7 @@ namespace Spacebox.Game.Resource
             return BlockCreators.Keys.ToArray();
         }
 
-        public static void RegisterBlockType(string type, Func<BlockData, Block> creator)
+        public static void RegisterBlockType(string type, Func<BlockJSON, Block> creator)
         {
             //if (string.IsNullOrWhiteSpace(type))
 

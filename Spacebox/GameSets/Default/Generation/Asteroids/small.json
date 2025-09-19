@@ -1,10 +1,11 @@
 {
-        "Id": "asteroid_small",
+        "Id": "asteroid_light",
         "Name": "Small asteroid",
      
-        "SizeInChunks": 2,
+        "MinRadius": 4,
+        "MaxRadius": 16,
         "DensityThreshold": 33,
-        "NoiseOctaves": 3,
+        "NoiseOctaves": 2,
         "NoiseScale": 1,
         "HasCavities": false,
         "HasOreDeposits": true,
@@ -14,7 +15,7 @@
             "MinCount": 1,
             "MaxCount": 5,
             "DiameterInBlocks": 4,
-            "MaxTunnelLength": 32,
+            "MaxTunnelLength": 8,
             "PathDeviation": 0.5,
             "StepSize": 1
         },
@@ -28,28 +29,28 @@
                         "BlockId": "cobaltite_rock",
                         "SpawnChance": 25000,
                         "MinVeinSize": 4,
-                        "MaxVeinSize": 10,
+                        "MaxVeinSize": 8,
                         "CanSpawnNearVoid": true
                     },
                     {
                         "BlockId": "ice_rock",
                         "SpawnChance": 25000,
                         "MinVeinSize": 4,
-                        "MaxVeinSize": 10,
+                        "MaxVeinSize": 8,
                         "CanSpawnNearVoid": true
                     },
                     {
                         "BlockId": "aluminium_ore",
                         "SpawnChance": 20000,
                         "MinVeinSize": 2,
-                        "MaxVeinSize": 8,
+                        "MaxVeinSize": 4,
                         "CanSpawnNearVoid": true
                     },
                     {
                         "BlockId": "iron_ore",
                         "SpawnChance": 15000,
                         "MinVeinSize": 2,
-                        "MaxVeinSize": 6,
+                        "MaxVeinSize": 4,
                         "CanSpawnNearVoid": true
                     }
                 ]
@@ -62,22 +63,22 @@
                     {
                         "BlockId": "titanium_ore",
                         "SpawnChance": 10000,
-                        "MinVeinSize": 2,
-                        "MaxVeinSize": 6,
+                        "MinVeinSize": 1,
+                        "MaxVeinSize": 2,
                         "CanSpawnNearVoid": true
                     },
                     {
                         "BlockId": "thulium_ore",
-                        "SpawnChance": 8000,
-                        "MinVeinSize": 2,
-                        "MaxVeinSize": 6,
+                        "SpawnChance": 4000,
+                        "MinVeinSize": 1,
+                        "MaxVeinSize": 2,
                         "CanSpawnNearVoid": true
                     },
                     {
                         "BlockId": "uranium_ore",
                         "SpawnChance": 3000,
                         "MinVeinSize": 1,
-                        "MaxVeinSize": 4,
+                        "MaxVeinSize": 1,
                         "CanSpawnNearVoid": true
                     }
                 ]

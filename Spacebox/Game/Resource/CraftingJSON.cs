@@ -2,9 +2,9 @@
 
 namespace Spacebox.Game.Resource
 {
-    public class CraftingData
+    public class CraftingJSON
     {
         public CraftingCategory[] Categories { get; set; }
-        public BlueprintData[] Blueprints { get; set; }
+        public BlueprintJSON[] Blueprints { get; set; }
     }
 }

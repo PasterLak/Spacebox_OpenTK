@@ -8,7 +8,7 @@ namespace Spacebox.Game.Generation.Blocks
     public class CrusherBlock : ResourceProcessingBlock
     {
 
-        public CrusherBlock(BlockData blockData) : base(blockData)
+        public CrusherBlock(BlockJSON blockData) : base(blockData)
         {
             OnUse += ResourceProcessingGUI.Toggle;
 

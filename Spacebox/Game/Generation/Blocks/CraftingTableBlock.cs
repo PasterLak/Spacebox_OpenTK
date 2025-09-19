@@ -7,7 +7,7 @@ namespace Spacebox.Game.Generation.Blocks
 {
     public class CraftingTableBlock : InteractiveBlock
     {
-        public CraftingTableBlock(BlockData blockData) : base(blockData)
+        public CraftingTableBlock(BlockJSON blockData) : base(blockData)
         {
             OnUse += CraftingGUI.Toggle;
 

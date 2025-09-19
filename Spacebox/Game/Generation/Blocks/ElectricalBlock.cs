@@ -19,7 +19,7 @@ namespace Spacebox.Game.Generation.Blocks
         private int eData2;
 
 
-        public ElectricalBlock(BlockData blockData) : base(blockData)
+        public ElectricalBlock(BlockJSON blockData) : base(blockData)
         {
             CurrentPower = 0;
             EnableEmission = false;

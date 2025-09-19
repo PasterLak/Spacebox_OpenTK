@@ -39,11 +39,11 @@ namespace Spacebox.Game.GUI
                 if(World.CurrentSector.IsPointInEntity(pos, out var entity))
                 {
                     var p1 = entity.WorldPositionToLocal(pos);
-                    ImGui.Text($"Entity: " + Vector3Int(p1));
+                    ImGui.Text($"Entity: {Vector3Int(p1)} Index: {entity.PositionIndex}" );
 
                     if(entity.IsPositionInChunk(pos, out var chunk))
                     {
-                        ImGui.Text($"Chunk: {entity.WorldPositionToBlockInChunk(pos)} ");
+                        ImGui.Text($"Chunk: {entity.WorldPositionToBlockInChunk(pos)} Index: {chunk.PositionIndex}");
                     }
                 }
                

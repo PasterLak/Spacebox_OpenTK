@@ -101,7 +101,7 @@ namespace Spacebox.Game.Generation.Blocks
         }
 
 
-        public InteractiveBlock(BlockData blockData) : base(blockData)
+        public InteractiveBlock(BlockJSON blockData) : base(blockData)
         {
             EFlags = ElectricalFlags.None;
             MaxPower = 300;

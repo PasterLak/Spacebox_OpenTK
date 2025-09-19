@@ -4,8 +4,8 @@
         "Name": "Asteroid Field",
         "Description": "Common rocky asteroids with basic minerals",
         "SpawnChance": 60,
-        "MinDistanceFromCenter": 50,
-        "MaxDistanceFromCenter": 300,
+        "MinDistanceFromCenter": 0,
+        "MaxDistanceFromCenter": 0,
         "DebugColor": {
             "r": 0,
             "g": 255,
@@ -23,8 +23,10 @@
         },
         "FogDensity": 10,
         "Asteroids": {
-            "asteroid_icy" : 10,
-            "asteroid_medium" : 100
+           
+            "asteroid_light" : 50,
+            "asteroid_medium" : 70,
+            "asteroid_heavy" : 25
         }
     },
     {
@@ -41,6 +43,7 @@
         },
         "Asteroids":
         {
+             "asteroid_icy" : 10,
             "asteroid_medium" : 100
         }
   

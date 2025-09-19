@@ -5,7 +5,7 @@ namespace Spacebox.Game.Generation.Blocks
     public class CableBlock : ElectricalBlock
     {
 
-        public CableBlock(BlockData blockData) : base(blockData)
+        public CableBlock(BlockJSON blockData) : base(blockData)
         {
             EFlags = ElectricalFlags.CanTransfer | ElectricalFlags.CanConsume;
             MaxPower = 200;

@@ -73,7 +73,7 @@ namespace Spacebox.Game.Generation.Blocks
             }
         }
 
-        public ResourceProcessingBlock(BlockData blockData) : base(blockData)
+        public ResourceProcessingBlock(BlockJSON blockData) : base(blockData)
         {
             Efficiency = blockData.Efficiency;
             blockType = blockData.Type;

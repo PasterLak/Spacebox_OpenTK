@@ -2,7 +2,8 @@
         "Id": "asteroid_icy",
         "Name": "Icy asteroid",
        
-        "SizeInChunks": 2,
+        "MinRadius": 8,
+        "MaxRadius": 32,
         "DensityThreshold": 45,
         "NoiseOctaves": 3,
         "NoiseScale": 1,
@@ -32,7 +33,7 @@
                     },
                     {
                         "BlockId": "aluminium_ore",
-                        "SpawnChance": 5000,
+                        "SpawnChance": 3000,
                         "MinVeinSize": 2,
                         "MaxVeinSize": 8,
                         "CanSpawnNearVoid": false

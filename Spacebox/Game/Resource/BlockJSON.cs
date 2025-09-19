@@ -9,7 +9,7 @@ namespace Spacebox.Game.Resource
         public short intern; 
         public string str;
     }
-    public class BlockData
+    public class BlockJSON
     {
         public short Id;
         public string Id_string;
@@ -66,7 +66,7 @@ namespace Spacebox.Game.Resource
             set => _faceUVs[6] = value;
         }
 
-        public BlockData(string name, string type, Vector2Byte textureCoords, bool isTransparent = false, Vector3? lightColor = null)
+        public BlockJSON(string name, string type, Vector2Byte textureCoords, bool isTransparent = false, Vector3? lightColor = null)
         {
             Drop = new ItemSlot(null, 0, 0);
             Drop.Count = 0;
@@ -83,7 +83,7 @@ namespace Spacebox.Game.Resource
             AllSidesAreSame = true;
         }
 
-        public static void CacheUvs(BlockData b)
+        public static void CacheUvs(BlockJSON b)
         {
             b.WallsUV = GameAssets.AtlasBlocks.GetUVByName(b.Sides);
             b.WallsUVIndex = GameAssets.AtlasBlocks.GetUVIndexByName(b.Sides);

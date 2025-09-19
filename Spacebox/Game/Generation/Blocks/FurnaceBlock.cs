@@ -8,7 +8,7 @@ namespace Spacebox.Game.Generation.Blocks
     public class FurnaceBlock : ResourceProcessingBlock
     {
 
-        public FurnaceBlock(BlockData blockData) : base(blockData)
+        public FurnaceBlock(BlockJSON blockData) : base(blockData)
         {
             OnUse += ResourceProcessingGUI.Toggle;
 

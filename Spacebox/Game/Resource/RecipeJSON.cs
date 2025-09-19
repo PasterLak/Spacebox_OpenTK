@@ -11,9 +11,9 @@ namespace Spacebox.Game.Resource
     public class RecipejSONType
     {
         public string Type { get; set; } = "unknown";
-        public RecipeData[] Recipes { get; set; }
+        public RecipeJSON[] Recipes { get; set; }
     }
-    public class RecipeData
+    public class RecipeJSON
     {
         public string Type { get; set; } = "unknown";
         public int RequiredTicks { get; set; } = 20;

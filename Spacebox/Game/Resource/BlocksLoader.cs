@@ -10,7 +10,7 @@ namespace Spacebox.Game.Resource
     {
         private static void AddAirBlock()
         {
-            var air = new BlockData("Air", "block", new Vector2Byte(0, 0));
+            var air = new BlockJSON("Air", "block", new Vector2Byte(0, 0));
             air.Mass = 0;
             air.Category = "";
             air.Sides = "sand";
@@ -161,14 +161,14 @@ namespace Spacebox.Game.Resource
             return isValid;
         }
 
-        private static BlockData CreateBlockData(BlockDataJSON block, string blockId)
+        private static BlockJSON CreateBlockData(BlockDataJSON block, string blockId)
         {
            
 
             bool hasLightColor = block.LightColor != Color3Byte.Black;
             var blockColor = hasLightColor ? block.LightColor.ToVector3() : Vector3.Zero;
 
-            var blockData = new BlockData(block.Name, block.Type, new Vector2Byte(0, 0), block.IsTransparent, blockColor)
+            var blockData = new BlockJSON(block.Name, block.Type, new Vector2Byte(0, 0), block.IsTransparent, blockColor)
             {
                
                 Id_string = blockId,
@@ -196,7 +196,7 @@ namespace Spacebox.Game.Resource
             return blockData;
         }
 
-        private static void GiveBlockSounds(BlockData blockData, BlockDataJSON modBlockData)
+        private static void GiveBlockSounds(BlockJSON blockData, BlockDataJSON modBlockData)
         {
             if (!GameAssets.Sounds.ContainsKey(modBlockData.SoundPlace))
             {

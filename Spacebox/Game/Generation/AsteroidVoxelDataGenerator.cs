@@ -84,11 +84,8 @@ namespace Spacebox.Game.Generation
                 noiseGenerator.Masks.sphericalGradient = true;
             }
 
-            gridSize = (int)MathF.Ceiling(asteroidDimensions.X / blockSize);
-            if (gridSize % 2 == 0) gridSize++;
-
+            gridSize = (int)asteroidDimensions.X;
             Vector3 regionSize = asteroidDimensions;
-            Vector3 noiseOffset = regionSize * 0.5f;
             float radius = asteroidDimensions.X * 0.5f;
 
             var chunkData = new int[chunkSize, chunkSize, chunkSize];
@@ -102,7 +99,7 @@ namespace Spacebox.Game.Generation
                         int gz = chunkIdx.Z * chunkSize + z;
 
                         Vector3 pos = new Vector3(gx, gy, gz) * blockSize;
-                        Vector3 samplePos = (pos + noiseOffset) * noiseScale;
+                        Vector3 samplePos = (pos + regionSize * 0.5f) * noiseScale;
 
                         byte noiseValue = noiseGenerator.PerlinNoise3DWithMask(
                             samplePos,
@@ -131,38 +128,33 @@ namespace Spacebox.Game.Generation
             noiseGenerator = new NoiseGenerator(seed);
             noiseGenerator.Masks.sphericalFalloffDistance = asteroidDimensions.X * 0.5f;
             noiseGenerator.Masks.sphericalGradient = true;
-            gridSize = (int)MathF.Ceiling(asteroidDimensions.X / blockSize);
-            if (gridSize % 2 == 0) gridSize++;
-            int half = gridSize / 2;
+            gridSize = (int)asteroidDimensions.X;
+
             voxelData = new int[gridSize, gridSize, gridSize];
             Vector3 regionSize = asteroidDimensions;
-            Vector3 noiseOffset = regionSize * 0.5f;
             float radius = asteroidDimensions.X * 0.5f;
+            float halfSize = gridSize * 0.5f;
 
-            for (int x = -half; x <= half; x++)
+            for (int x = 0; x < gridSize; x++)
             {
-                for (int y = -half; y <= half; y++)
+                for (int y = 0; y < gridSize; y++)
                 {
-                    for (int z = -half; z <= half; z++)
+                    for (int z = 0; z < gridSize; z++)
                     {
-                        Vector3 pos = new Vector3(x, y, z) * blockSize;
-                        Vector3 samplePos = (pos + noiseOffset) * noiseScale;
+                        Vector3 pos = new Vector3(x - halfSize, y - halfSize, z - halfSize) * blockSize;
+                        Vector3 samplePos = (pos + regionSize * 0.5f) * noiseScale;
                         byte noiseValue = noiseGenerator.PerlinNoise3DWithMask(samplePos, ref regionSize, noiseOctaves, noiseGenerator.Masks.SphericalMaskFunction);
-
-                        int ix = x + half;
-                        int iy = y + half;
-                        int iz = z + half;
 
                         if (noiseValue > threshold)
                         {
                             float distance = pos.Length;
                             float normalized = 1.0f - (distance / radius);
                             normalized = MathF.Max(0f, MathF.Min(1f, normalized));
-                            voxelData[ix, iy, iz] = GetBlockIdFromDistance(normalized);
+                            voxelData[x, y, z] = GetBlockIdFromDistance(normalized);
                         }
                         else
                         {
-                            voxelData[ix, iy, iz] = 0;
+                            voxelData[x, y, z] = 0;
                         }
                     }
                 }

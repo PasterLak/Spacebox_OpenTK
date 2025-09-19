@@ -2,7 +2,7 @@
 using Engine;
 namespace Spacebox.Game.Resource
 {
-    public class ItemData
+    public class ItemJSON
     {
         public string Info { get; set; } = "";
         public string Description { get; set; } = "";
@@ -21,21 +21,21 @@ namespace Spacebox.Game.Resource
         }
     }
 
-    public class DrillItemData : ItemData
+    public class DrillItemJSON : ItemJSON
     {
         public byte Power { get; set; } = 0;
         public byte PowerUsage { get; set; } = 0;
         public Color3Byte DrillColor { get; set; } = new Color3Byte(100, 116, 255);
     }
 
-    public class ConsumableItemData : ItemData
+    public class ConsumableItemJSON : ItemJSON
     {
         public byte HealAmount { get; set; } = 0;
         public byte PowerAmount { get; set; } = 0;
         public string Sound { get; set; } = "default";
     }
 
-    public class WeaponItemData : ItemData
+    public class WeaponItemJSON : ItemJSON
     {
         public byte Damage { get; set; } = 0;
         public int ReloadTime { get; set; } = 500;
