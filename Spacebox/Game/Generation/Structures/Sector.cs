@@ -13,7 +13,7 @@ namespace Spacebox.Game.Generation
     public class NotGeneratedEntity
     {
         public ulong Id;
-
+        public AsteroidData asteroid;
         public Biome biome;
         public Vector3 positionInSector;
         public Vector3 positionWorld;
@@ -109,8 +109,15 @@ namespace Spacebox.Game.Generation
                 data.positionInSector = point;
                 data.positionWorld = LocalToWorld(point);
                 data.Id = SeedHelper.GetAsteroidId(Seed, point);
+               
 
                 data.biome = BiomesMap.GetFromSectorLocalCoord(point);
+                if (data.biome.Asteroids.Length == 0) continue;
+
+                var asteroidIndex = Biome.SelectAsteroidBySpawnChance(data.biome.Asteroids, random);
+
+                
+                data.asteroid = data.biome.Asteroids[asteroidIndex];
                 data.rotation = Vector3.Zero;
 
                 EntitiesGeneratedData.Add(data.Id, data);

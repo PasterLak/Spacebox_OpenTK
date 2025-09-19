@@ -209,6 +209,7 @@ public class GenerationLoader
         {
             var asteroid = new AsteroidData(json.Id, json.Name)
             {
+                SpawnChance = json.SpawnChance,
                 SizeInChunks = json.SizeInChunks,
                 DensityThreshold = json.DensityThreshold,
                 NoiseOctaves = json.NoiseOctaves,

@@ -155,6 +155,36 @@ public class Biome
     public int MinDistanceFromCenter { get; private set; } = 100;
     public int MaxDistanceFromCenter { get; private set; } = 500;
     public AsteroidData[] Asteroids { get; set; }
+
+
+    public static int SelectAsteroidBySpawnChance(AsteroidData[] asteroids, Random random)
+    {
+        if (asteroids == null || asteroids.Length == 0)
+            return -1;
+
+        int totalChance = 0;
+        foreach (var asteroid in asteroids)
+        {
+            totalChance += asteroid.SpawnChance;
+        }
+
+        if (totalChance == 0)
+            return random.Next(asteroids.Length);
+
+        int randomValue = random.Next(totalChance);
+        int currentSum = 0;
+
+        for (int i = 0; i < asteroids.Length; i++)
+        {
+            currentSum += asteroids[i].SpawnChance;
+            if (randomValue < currentSum)
+            {
+                return i;
+            }
+        }
+
+        return asteroids.Length - 1;
+    }
 }
 
 public class AsteroidData
@@ -163,9 +193,9 @@ public class AsteroidData
     public byte Id { get; private set; }
 
     public string IdString { get; set; } = "default";
+    public byte SpawnChance { get; set; } = 100;
 
-    
-    
+
     public static void Reset() { MaxId = 0; }
 
     public AsteroidData(string idString, string name)

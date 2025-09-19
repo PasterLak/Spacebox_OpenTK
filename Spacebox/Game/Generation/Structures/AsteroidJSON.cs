@@ -31,6 +31,7 @@ public class AsteroidJSON
 {
     public string Id { get; set; } = "default";
     public string Name { get; set; } = "Default Asteroid";
+    public byte SpawnChance { get; set; } = 100;
     public byte SizeInChunks { get; set; } = 2;
     public int DensityThreshold { get; set; } = 33;
     public byte NoiseOctaves { get; set; } = 3;
