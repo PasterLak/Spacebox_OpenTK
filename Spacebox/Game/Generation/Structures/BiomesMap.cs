@@ -1,7 +1,6 @@
 ﻿
 using Engine;
 using OpenTK.Mathematics;
-using static Engine.Input;
 
 namespace Spacebox.Game.Generation.Structures;
 

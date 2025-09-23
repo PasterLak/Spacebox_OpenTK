@@ -166,9 +166,7 @@ namespace Spacebox
 
             Texture2D ssaoNoiseTex = SsaoNoise.GenerateRotationNoise(4, 1234);
 
-            ssaoNoiseTex.SaveToPng("ssao_noise.png");
-
-
+            
             var ssao = Resources.Load<Shader>("Shaders/PostProcessing/ssao", true);
            // _processManager.AddEffect(new SSAOEffect(ssao, SceneRenderer, ssaoNoiseTex));
 

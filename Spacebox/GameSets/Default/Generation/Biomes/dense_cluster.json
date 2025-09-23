@@ -1,0 +1,19 @@
+ {
+        "Id": "dense_cluster",
+        "Name": "Dense Cluster",
+        "Description": "Tightly packed asteroids rich in ores",
+        "SpawnChance": 30,
+        "MinDistanceFromCenter": 200,
+        "MaxDistanceFromCenter": 600,
+        "DebugColor": {
+            "r": 255,
+            "g": 0,
+            "b": 0
+        },
+        "Asteroids":
+        {
+             "asteroid_icy" : 10,
+            "asteroid_medium" : 100
+        }
+  
+    }

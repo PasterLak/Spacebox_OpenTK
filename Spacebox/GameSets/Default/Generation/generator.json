@@ -1,11 +1,12 @@
 {
     "Version": "1",
     "NoiseModifier": 1.0,
-    "MinAsteroidsInSector" : 250,
-    "MaxAsteroidsInSector" : 500,
+    "MinAsteroidsInSector" : 1250,
+    "MaxAsteroidsInSector" : 2500,
     "RejectionSamples" : 5,
     "MinDistanceBetweenAsteroids" : 128,
-    "BiomesMapResolution" : 128,
+   
     "BiomesMapNoiseFrequency" : 0.001,
-    "Biomes": [ "asteroid_field", "dense_cluster" ]
+    "Biomes": [ "asteroid_field", "dense_cluster" ],
+    "Structures": [  ]
 }

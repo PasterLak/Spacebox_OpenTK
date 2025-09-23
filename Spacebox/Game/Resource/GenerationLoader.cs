@@ -26,7 +26,7 @@ public class GenerationLoader
         if (generator != null)
         {
 
-            Debug.Success("[GenerationLoader] Generation data loaded successfully");
+           // Debug.Success("[GenerationLoader] Generation data loaded successfully");
         }
         else
         {
@@ -79,7 +79,7 @@ public class GenerationLoader
                 }
             }
 
-            Debug.Success($"[GenerationLoader] Loaded generator v{generator.Version} with {generator.Biomes.Length} biomes");
+            //Debug.Success($"[GenerationLoader] Loaded generator v{generator.Version} with {generator.Biomes.Length} biomes");
         }
         catch (Exception ex)
         {
@@ -99,7 +99,7 @@ public class GenerationLoader
         } else 
         LoadAsteroidsFromDirectory(defaultAsteroidPath, generator);
 
-        Debug.Success($"[GenerationLoader] Loaded {generator.loadedAsteroids.Count} asteroids");
+        //Debug.Success($"[GenerationLoader] Loaded {generator.loadedAsteroids.Count} asteroids");
     }
 
     private static void LoadAsteroidsFromDirectory(string directoryPath, Generator generator)
@@ -141,7 +141,7 @@ public class GenerationLoader
                     if (asteroid != null)
                     {
                         generator.loadedAsteroids[asteroidJson.Id] = asteroid;
-                        Debug.Log($"[GenerationLoader] Loaded asteroid: {asteroidJson.Id} from {Path.GetFileName(filePath)}");
+                       // Debug.Log($"[GenerationLoader] Loaded asteroid: {asteroidJson.Id} from {Path.GetFileName(filePath)}");
                     }
                 }
                 catch (Exception ex)
@@ -178,54 +178,69 @@ public class GenerationLoader
 
     private static void LoadBiomes(string modPath, string defaultModPath, Generator generator)
     {
-        var path = GameSetLoader.GetFilePath(modPath, defaultModPath, "biomes.json");
-        if (path == null)
+        string biomePath = Path.Combine(modPath, "Biomes");
+        string defaultBiomePath = Path.Combine(defaultModPath, "Biomes");
+
+        LoadBiomesFromDirectory(biomePath, generator);
+        LoadBiomesFromDirectory(defaultBiomePath, generator);
+    }
+
+    private static void LoadBiomesFromDirectory(string directoryPath, Generator generator)
+    {
+        if (!Directory.Exists(directoryPath))
         {
-            Debug.Error("[GenerationLoader] biomes.json not found");
+            Debug.Log($"[GenerationLoader] Biome directory not found: {directoryPath}");
             return;
         }
 
         try
         {
-            List<BiomeJSON> biomesJson = JsonFixer.LoadJsonSafe<List<BiomeJSON>>(path);
-            if (biomesJson == null)
+            var jsonFiles = Directory.GetFiles(directoryPath, "*.json");
+
+            foreach (var filePath in jsonFiles)
             {
-                Debug.Error("[GenerationLoader] Failed to parse biomes.json");
-                return;
+                try
+                {
+                    BiomeJSON biomeJson = JsonFixer.LoadJsonSafe<BiomeJSON>(filePath);
+                    if (biomeJson == null)
+                    {
+                        Debug.Error($"[GenerationLoader] Failed to parse biome file: {Path.GetFileName(filePath)}");
+                        continue;
+                    }
+
+                    if (string.IsNullOrEmpty(biomeJson.Id))
+                    {
+                        Debug.Error($"[GenerationLoader] Biome missing ID in file: {Path.GetFileName(filePath)}");
+                        continue;
+                    }
+
+                    if (generator.loadedBiomes.ContainsKey(biomeJson.Id))
+                    {
+                        Debug.Log($"[GenerationLoader] Biome {biomeJson.Id} already loaded, skipping duplicate");
+                        continue;
+                    }
+
+                    if (biomeJson.MinDistanceFromCenter == 0 && biomeJson.MinDistanceFromCenter == biomeJson.MaxDistanceFromCenter)
+                    {
+                        biomeJson.MaxDistanceFromCenter = int.MaxValue;
+                    }
+
+                    Biome biome = ConvertBiome(biomeJson, generator);
+                    if (biome != null)
+                    {
+                        generator.loadedBiomes[biomeJson.Id] = biome;
+                        Debug.Log($"[GenerationLoader] Loaded biome: {biomeJson.Id} from {Path.GetFileName(filePath)}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.Error($"[GenerationLoader] Error loading biome file {Path.GetFileName(filePath)}: {ex.Message}");
+                }
             }
-
-            foreach (var biomeJson in biomesJson)
-            {
-                if (string.IsNullOrEmpty(biomeJson.Id))
-                {
-                    Debug.Error("[GenerationLoader] Biome missing ID, skipping");
-                    continue;
-                }
-
-                if (generator.loadedBiomes.ContainsKey(biomeJson.Id))
-                {
-                    Debug.Error($"[GenerationLoader] Duplicate biome ID: {biomeJson.Id}");
-                    continue;
-                }
-
-                if(biomeJson.MinDistanceFromCenter == 0 && biomeJson.MinDistanceFromCenter  ==  biomeJson.MaxDistanceFromCenter)
-                {
-                    biomeJson.MaxDistanceFromCenter = int.MaxValue;
-                }
-
-                Biome biome = ConvertBiome(biomeJson, generator);
-                if (biome != null)
-                {
-                    generator.loadedBiomes[biomeJson.Id] = biome;
-                    Debug.Log($"[GenerationLoader] Loaded biome: {biomeJson.Id}");
-                }
-            }
-
-            Debug.Success($"[GenerationLoader] Loaded {generator.loadedBiomes.Count} biomes");
         }
         catch (Exception ex)
         {
-            Debug.Error($"[GenerationLoader] Error loading biomes: {ex.Message}");
+            Debug.Error($"[GenerationLoader] Error reading biome directory {directoryPath}: {ex.Message}");
         }
     }
 

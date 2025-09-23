@@ -25,16 +25,7 @@ namespace Spacebox.Game.GUI
                 if (ast.CurrentInteraction != null)
                     ImGui.Text($"Interaction: {ast.CurrentInteraction.GetType().Name}");
 
-                if (World.CurrentSector != null && World.CurrentSector.BiomesMap != null)
-                {
-                    var pos = World.CurrentSector.WorldToLocalPosition(ast.PositionWorld);
-
-                    var biom = World.CurrentSector.BiomesMap.GetFromSectorLocalCoord(pos);
-
-                    ImGui.Text("Biome:"); ImGui.SameLine();
-                    ImGui.TextColored(biom.DebugColor.ToSystemVector4(), $"{biom.Name}");
-
-                }
+                
                     
 
 

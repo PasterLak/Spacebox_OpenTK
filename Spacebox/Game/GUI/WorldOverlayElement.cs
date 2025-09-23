@@ -3,6 +3,7 @@ using Engine.GUI;
 using Spacebox.Game.Generation;
 using Engine;
 using OpenTK.Mathematics;
+using Spacebox.Game.Player;
 
 namespace Spacebox.Game.GUI
 {
@@ -31,6 +32,19 @@ namespace Spacebox.Game.GUI
             if(cam != null) {
 
                 var pos = cam.Position;
+
+                if (World.CurrentSector != null && World.CurrentSector.BiomesMap != null)
+                {
+                    
+
+                    var pos2 = World.CurrentSector.WorldToLocalPosition(cam.PositionWorld);
+
+                    var biom = World.CurrentSector.BiomesMap.GetFromSectorLocalCoord(pos2);
+
+                    ImGui.Text("Biome:"); ImGui.SameLine();
+                    ImGui.TextColored(biom.DebugColor.ToSystemVector4(), $"{biom.Name}");
+
+                }
 
                 var p = World.CurrentSector.WorldToLocalPosition(pos);
                 ImGui.Text("Position in:");
