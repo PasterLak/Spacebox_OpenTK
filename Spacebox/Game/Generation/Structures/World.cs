@@ -85,6 +85,8 @@ namespace Spacebox.Game.Generation
             string path = Path.Combine(Data.WorldFolderPath, "preview.jpg");
 
             FramebufferCapture.SaveWorldPreview(screenSize, path);
+            TagManager.SaveTags(Data.WorldFolderPath);
+
             saveWasPressed = false;
             PanelUI.ShowItemModel();
             PanelUI.EnableRenderForCurrentItem = true;
@@ -100,8 +102,8 @@ namespace Spacebox.Game.Generation
             CurrentSector.SpawnPlayerNearAsteroid(Player, new Random(Seed));
             if (CurrentSector == null) Debug.Error("No current sector");
 
-           
 
+           
         }
 
         public static void LoadWorldInfo(string worldName)

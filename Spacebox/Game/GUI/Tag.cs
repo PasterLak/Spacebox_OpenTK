@@ -22,14 +22,12 @@ namespace Spacebox.Game.GUI
 
         public Tag(string text, Vector3 worldPosition, Color4 color, bool isStatic = false)
         {
-            Id = Guid.NewGuid();
+            Id = Guid.NewGuid(); 
             Text = text;
             WorldPosition = worldPosition;
             Color = color;
             IsStatic = isStatic;
             ColorUint = ImGui.GetColorU32(new System.Numerics.Vector4(Color.R, Color.G, Color.B, Color.A));
-
-           
         }
 
         public static void SetFontSizes(Vector2 displaySize)

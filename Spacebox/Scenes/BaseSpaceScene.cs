@@ -15,6 +15,7 @@ using Spacebox.Game.Player;
 using Spacebox.Game.Player.Interactions;
 using Spacebox.Game.Resource;
 using Spacebox.GUI;
+using static Spacebox.Game.GUI.CraftingCategory;
 
 
 namespace Spacebox.Scenes
@@ -167,6 +168,8 @@ namespace Spacebox.Scenes
             AddChild(new ProjectileHitEffectsManager());
             AddChild(new DirectionalLight());
             AttachComponent(new TagManager());
+
+            TagManager.LoadTags(World.Data.WorldFolderPath);
 
         }
 

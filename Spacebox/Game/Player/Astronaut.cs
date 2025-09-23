@@ -342,7 +342,7 @@ namespace Spacebox.Game.Player
             if (Input.IsActionUp("zoom"))
             {
                 FOV = 90;
-                PlayerStatistics.Print();
+              
             }
 
 #if DEBUG

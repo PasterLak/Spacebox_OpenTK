@@ -63,24 +63,6 @@ namespace Spacebox.Game.Generation
             CreateStar();
         }
 
-        public SpaceEntity(Vector3 positionWorld, Sector sector)
-        {
-            EntityID = 0;
-            Position = positionWorld;
-            PositionWorld = positionWorld;
-            Sector = sector;
-            BoundingBox = new BoundingBox(positionWorld, new Vector3(SizeBlocks, SizeBlocks, SizeBlocks));
-            sumPosCenterOfMass = positionWorld;
-            Octree = new Octree<Chunk>(SizeBlocks, Vector3.Zero, Chunk.Size, 1.0f);
-
-            GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
-
-           
-            // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
-            tag = CreateTag(positionWorld);
-            CalculateCenterOfMass();
-            CreateStar();
-        }
         private void CreateStar()
         {
 
@@ -453,7 +435,7 @@ namespace Spacebox.Game.Generation
                       .Append(" isAsteroid: ")
                       .Append(isAsteroid)
                       .Append("\nWpos: ")
-                      .Append(Block.RoundVector3(PositionWorld))
+                      .Append(Block.RoundVector3(CenterOfMass))
                       .Append("\n")
                       .Append(dis )
                       .Append(" m\n")
