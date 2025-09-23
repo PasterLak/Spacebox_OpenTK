@@ -161,7 +161,7 @@ namespace Spacebox.Game.GUI
                         var tag = tagJson.CreateTag();
                         TagManager.Instance.RegisterTag(tag);
                         loadedCount++;
-                        Debug.Success($"[TagLoader] Loaded tag '{tagJson.Text}' ");
+                      
                     }
                     catch (Exception ex)
                     {
@@ -196,7 +196,6 @@ namespace Spacebox.Game.GUI
                 Debug.Error("[TagLoader] path is null or TagManager instance is null");
                 return false;
             }
-              
 
             try
             {

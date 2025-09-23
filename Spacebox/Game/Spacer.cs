@@ -87,10 +87,11 @@ namespace Spacebox.Game
         private void AddItems(Storage storage)
         {
             var items = GameAssets.LootConfig.GenerateLoot("spacer", SeedHelper.ToIntSeed(World.CurrentSector.Seed), storage.SlotsCount);
-
+         
             foreach (var item in items)
             {
                 storage.TryAddItem(item.Item, (byte)item.Quantity);
+              
             }
 
 

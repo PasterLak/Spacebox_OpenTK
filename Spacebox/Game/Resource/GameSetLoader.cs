@@ -605,7 +605,7 @@ namespace Spacebox.Game.Resource
                     return;
                 }
 
-                loot.Validate();
+                loot.Validate(ModInfo.ModId);
                 GameAssets.LootConfig = loot;
 
             }

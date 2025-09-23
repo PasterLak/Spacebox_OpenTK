@@ -21,7 +21,7 @@ namespace Spacebox.Game.Resource
         public Dictionary<string, List<LootEntry>> LootTables { get; set; }
 
 
-        public void Validate()
+        public void Validate(string modID)
         {
 
             if (LootTables.ContainsKey(""))
@@ -37,9 +37,11 @@ namespace Spacebox.Game.Resource
                     if (entry.MinCount < 0)
                         entry.MinCount = 0;
 
+                    entry.ItemIdStr = GameSetLoader.CombineId(modID, entry.ItemIdStr);
+
                     if (!GameAssets.TryGetItemByFullID(entry.ItemIdStr, out var proto))
                     {
-
+                        Debug.Error("[LootConfig] Validate TryGetItemByFullID error: " + entry.ItemIdStr );
                         list.RemoveAt(i);
                     }
                     else if (entry.MaxCount > proto.StackSize)
@@ -57,7 +59,11 @@ namespace Spacebox.Game.Resource
         public LootResult[] GenerateLoot(string lootName, int seed, int maxItems = 255)
         {
             if (!LootTables.TryGetValue(lootName, out var entries))
+            {
+                Debug.Error("[LootConfig] Loot name was not found");
                 return Array.Empty<LootResult>();
+            }
+               
 
             var rng = new Random(seed);
             var results = new List<LootResult>();
@@ -73,7 +79,11 @@ namespace Spacebox.Game.Resource
                     : rng.Next(entry.MinCount, entry.MaxCount + 1);
 
                 if (count <= 0) continue;
-                if (!GameAssets.TryGetItemByFullID(entry.ItemIdStr, out var proto)) continue;
+                if (!GameAssets.TryGetItemByFullID(entry.ItemIdStr, out var proto))
+                {
+                    Debug.Error("[LootConfig] TryGetItemByFullID was false. ItemID: " + entry.ItemIdStr);
+                    continue;
+                }
 
                 if (total + count > maxItems)
                     count = maxItems - total;

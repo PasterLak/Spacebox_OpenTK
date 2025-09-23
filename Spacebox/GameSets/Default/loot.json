@@ -34,14 +34,8 @@
    ],
    "chestLoot2": [
      {
-       "ID": "diamond",
+       "ID": "water",
        "Probability": 5,
-       "MinCount": 1,
-       "MaxCount": 1
-     },
-     {
-       "ID": "magic_scroll",
-       "Probability": 25,
        "MinCount": 1,
        "MaxCount": 1
      }
