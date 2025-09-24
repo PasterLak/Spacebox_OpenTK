@@ -399,6 +399,74 @@ namespace Spacebox.Game
             OnDataWasChanged?.Invoke(this);
         }
 
+        public static Storage CombineStorages(List<Storage> storages, byte sizeX = 10, byte sizeY = 10)
+        {
+            if (storages == null || storages.Count == 0)
+                return new Storage(sizeX, sizeY);
+
+            var combinedStorage = new Storage(sizeX, sizeY);
+            var itemGroups = new Dictionary<short, int>();
+
+            foreach (var storage in storages)
+            {
+                if (storage == null) continue;
+
+                foreach (var slot in storage.GetAllSlots())
+                {
+                    if (slot.HasItem && slot.Item != null)
+                    {
+                        if (!itemGroups.TryGetValue(slot.Item.Id, out var count))
+                            itemGroups[slot.Item.Id] = 0;
+
+                        itemGroups[slot.Item.Id] += slot.Count;
+                    }
+                }
+            }
+
+            foreach (var kvp in itemGroups)
+            {
+                var itemId = kvp.Key;
+                var totalQuantity = kvp.Value;
+
+                var item = GetItemFromStorages(storages, itemId);
+                if (item == null) continue;
+
+                var remainingQuantity = totalQuantity;
+                while (remainingQuantity > 0)
+                {
+                    var amountToAdd = Math.Min(remainingQuantity, 255);
+                    if (!combinedStorage.TryAddItem(item, (byte)amountToAdd, out var rest))
+                    {
+                        break;
+                    }
+                    remainingQuantity -= amountToAdd;
+                    if (rest > 0)
+                    {
+                        remainingQuantity = rest;
+                        break;
+                    }
+                }
+            }
+
+            return combinedStorage;
+        }
+
+        private static Item GetItemFromStorages(List<Storage> storages, short itemId)
+        {
+            foreach (var storage in storages)
+            {
+                if (storage == null) continue;
+
+                foreach (var slot in storage.GetAllSlots())
+                {
+                    if (slot.HasItem && slot.Item != null && slot.Item.Id == itemId)
+                    {
+                        return slot.Item;
+                    }
+                }
+            }
+            return null;
+        }
 
     }
 }

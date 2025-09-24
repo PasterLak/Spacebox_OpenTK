@@ -517,8 +517,10 @@ namespace Spacebox.Game.Player
 
         }
 
-        public void OnGUI()
+        public override void OnGUI()
         {
+            base.OnGUI();
+
             PowerBar.OnGUI();
             HealthBar.OnGUI();
             HitImage.Draw();

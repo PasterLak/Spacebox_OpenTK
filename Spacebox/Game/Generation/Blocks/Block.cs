@@ -2,6 +2,7 @@
 using OpenTK.Mathematics;
 using Engine;
 using Spacebox.Game.Resource;
+using Spacebox.Game.Physics;
 
 namespace Spacebox.Game.Generation.Blocks
 {
@@ -50,6 +51,8 @@ namespace Spacebox.Game.Generation.Blocks
         public Vector3 Color { get; set; } = Vector3.One;
         public Color3Byte LightColor { get; set; } = Color3Byte.Black;
         public float LightLevel { get; set; }
+
+        public Action<HitInfo> OnDestroy { get; set; }
 
         public Block() { }
 

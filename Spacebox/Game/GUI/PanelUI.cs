@@ -7,6 +7,7 @@ using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Player.Interactions;
 using Spacebox.Game.Player.GameModes;
+using Spacebox.Game.Generation;
 
 
 namespace Spacebox.Game.GUI
@@ -187,7 +188,10 @@ namespace Spacebox.Game.GUI
 
             var dropPosition = Player.Position + Player.Front * 0.5f;
 
+
+            World.DropEffectManager.DropItem(dropPosition, Player.Front, 5f, slot.Item, 1);
             slot.DropOne();
+
         }
 
         public static void Update()

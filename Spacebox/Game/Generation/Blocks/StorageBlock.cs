@@ -48,7 +48,17 @@ namespace Spacebox.Game.Generation.Blocks
         public StorageBlock(BlockJSON blockData) : base(blockData)
         {
             _blockData = blockData;
-           
+
+            OnDestroy += OnStorageDestroy;
+
+        }
+
+        private void OnStorageDestroy(HitInfo info)
+        {
+            if (_storage != null && info.block != null)
+            {
+                World.DropEffectManager.DropStorage(_storage, info.blockPositionWorld, 2, 0.1f,2,4);
+            }
         }
 
         public bool NeedsToSaveName(out string name)

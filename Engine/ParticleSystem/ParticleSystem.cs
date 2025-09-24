@@ -164,6 +164,19 @@ namespace Engine
             return particle;
         }
 
+        public void RemoveParticle(Particle particle)
+        {
+            if (_active.Contains(particle))
+            {
+                _active.Remove(particle);
+                if (_pooledParticles.Contains(particle))
+                {
+                    _pooledParticles.Remove(particle);
+                    _particlePool.Release(particle);
+                }
+            }
+        }
+
         public Particle CreateParticle(Vector3 position, Vector3 velocity, float life)
         {
             var particle = CreateParticle();
@@ -272,6 +285,11 @@ namespace Engine
             }
             _active.Clear();
             _acc = 0f;
+        }
+
+        public List<Particle> GetActiveParticles()
+        {
+            return _active;
         }
 
         public override void Destroy()

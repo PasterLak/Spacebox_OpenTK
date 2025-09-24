@@ -165,14 +165,14 @@ namespace Spacebox.Game.Player
 
                     if (angle <= Parameters.RicochetAngle)
                     {
-                        ray = ray.CalculateRicochetRay(hit.position, hit.normal, ray.Length);
-                        ricochetSound.Position = hit.position;
+                        ray = ray.CalculateRicochetRay(hit.hitPosition, hit.normal, ray.Length);
+                        ricochetSound.Position = hit.hitPosition;
                    
 
                         var dmg0 = MathF.Min(Parameters.DamageBlocks, maxDamage);
                         ricochetSound.SetPitchByValue(maxDamage - dmg0, 0, maxDamage, 0.5f, 1f);
 
-                        ricochetSound.Position = hit.position;
+                        ricochetSound.Position = hit.hitPosition;
                         ricochetSound.Play();
                         if (astronaut != null)
                         {
@@ -187,7 +187,7 @@ namespace Spacebox.Game.Player
                         if (currentRicochets == 5)
                         {
                           
-                            explosionSound.Position = hit.position;
+                            explosionSound.Position = hit.hitPosition;
                             explosionSound.Play();
                             if (astronaut != null)
                             {
@@ -204,17 +204,17 @@ namespace Spacebox.Game.Player
 
               
                 var dmg = MathF.Min(Parameters.DamageBlocks, maxDamage);
-                hitSound.Position = hit.position;
+                hitSound.Position = hit.hitPosition;
                 hitSound.SetPitchByValue(maxDamage - dmg, 0, maxDamage, 0.5f, 1f);
 
-                hitSound.Position = hit.position;
+                hitSound.Position = hit.hitPosition;
 
                 hitSound.Play();
                 if (astronaut != null)
                 {
                     astronaut.PlayerStatistics.ShotsHit++;
                 }
-                ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.position + hit.normal.ToVector3() * 0.1f, Parameters.ID);
+                ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.hitPosition + hit.normal.ToVector3() * 0.1f, Parameters.ID);
 
                 if (currentDamage > hit.block.Durability)
                 {
@@ -229,7 +229,7 @@ namespace Spacebox.Game.Player
                     if (currentDamage >= 50)
                     {
                       
-                        explosionSound.Position = hit.position;
+                        explosionSound.Position = hit.hitPosition;
                         explosionSound.Play();
                         if (astronaut != null)
                         {

@@ -8,7 +8,8 @@ namespace Spacebox.Game.Physics
 {
     public struct HitInfo
     {
-        public Vector3 position;
+        public Vector3 hitPosition;
+        public Vector3 blockPositionWorld;
         public Vector3Byte blockPositionIndex;
         public Vector3i blockPositionEntity;
         public Vector3SByte normal;

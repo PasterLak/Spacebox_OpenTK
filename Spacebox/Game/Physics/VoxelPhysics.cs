@@ -167,7 +167,8 @@ namespace Spacebox.Game.Physics
         {
             Block[,,] blocks = chunk.Blocks;
 
-            hitInfo.position = Vector3.Zero;
+            hitInfo.hitPosition = Vector3.Zero;
+            hitInfo.blockPositionWorld = Vector3.Zero;
             hitInfo.blockPositionIndex = new Vector3Byte(0, 0, 0); // or -1 ????
             hitInfo.blockPositionEntity = new Vector3i(0) ;    
             hitInfo.normal = Vector3SByte.Zero;
@@ -206,7 +207,7 @@ namespace Spacebox.Game.Physics
                     if (!block.IsAir)
                     {
                         hitInfo.blockPositionIndex = new Vector3Byte(x, y, z);
-                        hitInfo.position = ray.Origin + ray.Direction * distanceTraveled;
+                        hitInfo.hitPosition = ray.Origin + ray.Direction * distanceTraveled;
 
                         switch (side)
                         {
@@ -232,6 +233,7 @@ namespace Spacebox.Game.Physics
                               chunk.PositionIndex.Z * Chunk.Size + hitInfo.blockPositionIndex.Z);
 
                         hitInfo.block = block;
+                        hitInfo.blockPositionWorld = chunkPosWorld + new Vector3(x,y,z) + Vector3.One * 0.5f;
                         return true;
                     }
                 }

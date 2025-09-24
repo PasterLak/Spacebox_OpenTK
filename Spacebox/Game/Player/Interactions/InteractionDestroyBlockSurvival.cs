@@ -177,7 +177,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
                 var blockData = GameAssets.GetBlockDataById(hit.block.Id);
                 BlockMiningEffect.Enabled = true;
 
-                var effectPosition = hit.position + new Vector3(hit.normal.X, hit.normal.Y, hit.normal.Z) * 0.05f;
+                var effectPosition = hit.hitPosition + new Vector3(hit.normal.X, hit.normal.Y, hit.normal.Z) * 0.05f;
                 var toPlayer = Vector3.Normalize(player.Position - effectPosition);
 
                 BlockMiningEffect.ParticleSystem.Position = effectPosition;

@@ -79,7 +79,7 @@ namespace Spacebox.Game.Generation.Blocks
 
         public static void UpdateInteractive(InteractiveBlock block, Astronaut player, ref HitInfo hit)
         {
-            var disSq = Vector3.DistanceSquared(player.Position, hit.position);
+            var disSq = Vector3.DistanceSquared(player.Position, hit.hitPosition);
 
             if (disSq > InteractionDistanceSquared)
             {

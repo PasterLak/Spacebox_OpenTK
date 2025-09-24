@@ -1,6 +1,7 @@
 ﻿
 using Spacebox.Game.Resource;
 using Engine;
+using Spacebox.Game.Physics;
 namespace Spacebox.Game.Generation.Blocks
 {
     public class ResourceProcessingBlock : InteractiveBlock
@@ -88,7 +89,19 @@ namespace Spacebox.Game.Generation.Blocks
             FuelStorage.OnDataWasChanged += OnAnySlotWasChanged;
             OutputStorage.OnDataWasChanged += OnAnySlotWasChanged;
 
+            OnDestroy += OnDropItems;
+        }
 
+        private void OnDropItems(HitInfo info)
+        {
+            var storageList = new List<Storage> { InputStorage, FuelStorage, OutputStorage };
+            var combinedStorage = Storage.CombineStorages(storageList, 5, 5);
+
+            InputStorage.Clear();
+            FuelStorage.Clear();
+            OutputStorage.Clear();
+
+            World.DropEffectManager.DropStorage(combinedStorage, info.blockPositionWorld);
         }
 
         private void OnAnySlotWasChanged(Storage s)

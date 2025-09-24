@@ -37,6 +37,7 @@ public abstract class InteractionDestroyBlock : InteractionMode
 
     protected void DestroyBlock(HitInfo hit, Astronaut player)
     {
+        hit.block.OnDestroy?.Invoke(hit);
         hit.block.Durability = 0;
         hit.chunk.SpaceEntity.RemoveBlockAtLocal(hit.blockPositionEntity, hit.normal);
         var x = hit.chunk.PositionIndex * Chunk.Size;
