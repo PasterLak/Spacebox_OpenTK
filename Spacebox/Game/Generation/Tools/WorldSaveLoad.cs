@@ -31,11 +31,11 @@ namespace Spacebox.Game.Generation.Tools
 
         public static bool CanLoadSectorHere(Vector3i sectorIndex, out string sectorFolderPath)
         {
-            if (World.Data == null)
+            if (World.WorldData == null)
             {
                 Debug.Error("NULLL World.Data inCanLoadSectorHere");
             }
-            sectorFolderPath = GetSectorFolderPath(World.Data.WorldFolderPath, sectorIndex);
+            sectorFolderPath = GetSectorFolderPath(World.WorldData.WorldFolderPath, sectorIndex);
             //Debug.Success("Sector folder path:" + sectorFolderPath);
             return Directory.Exists(sectorFolderPath);
 
@@ -63,7 +63,7 @@ namespace Spacebox.Game.Generation.Tools
 
         public static SpaceEntity[] LoadSpaceEntities(Sector sector)
         {
-            string sectorFolderPath = GetSectorFolderPath(World.Data.WorldFolderPath, sector.PositionIndex);
+            string sectorFolderPath = GetSectorFolderPath(World.WorldData.WorldFolderPath, sector.PositionIndex);
 
             return LoadSpaceEntities(sectorFolderPath, sector);
         }

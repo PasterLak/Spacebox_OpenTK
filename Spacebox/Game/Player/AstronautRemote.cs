@@ -31,7 +31,7 @@ namespace Spacebox.Game.Player
         {
             if (tagg != null)
             {
-                TagManager.Instance.UnregisterTag(tagg);
+               // TagManager.Instance.UnregisterTag(tagg);
             }
         }
 
@@ -49,10 +49,11 @@ namespace Spacebox.Game.Player
             tex.FlipY();
             tex.FilterMode = FilterMode.Nearest;
             spacer = new Model(Resources.Load<Engine.Mesh>("Resources/Models/astronaut2.obj"), new TextureMaterial(playerShader, tex));
-            tagg = new GUI.Tag($"[{playerData.ID}]{playerData.Name}", LatestPosition, new Color4(playerData.Color.X, playerData.Color.Y, playerData.Color.Z, 1));
-            tagg.TextAlignment = GUI.Tag.Alignment.Center;
+
+            //tagg = new GUI.Tag($"[{playerData.ID}]{playerData.Name}", LatestPosition, new Color4(playerData.Color.X, playerData.Color.Y, playerData.Color.Z, 1));
+            //tagg.TextAlignment = GUI.Tag.Alignment.Center;
             GUI.Tag.CalculateFontSize(100);
-            TagManager.Instance.RegisterTag(tagg);
+            //TagManager.Instance.RegisterTag(tagg);
           
             var uvIndex = GameAssets.AtlasItems.GetUVIndexByName("drill1");
             itemModel = ItemModelGenerator.GenerateModelFromAtlas(GameAssets.ItemsTexture, GameAssets.EmissionItems,uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);

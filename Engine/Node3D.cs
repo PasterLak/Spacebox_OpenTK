@@ -343,7 +343,7 @@ namespace Engine
                 0f);
         }
 
-        public Vector3 ForwardLocal
+        public Vector3 ForwardLocal 
         {
             get
             {

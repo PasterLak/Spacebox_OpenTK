@@ -145,7 +145,7 @@ namespace Engine
         protected abstract void UpdateVectors();
 
 
-        public Vector2 WorldToScreenPoint(Vector3 worldPosition, int screenWidth, int screenHeight)
+        public Vector2 WorldToScreenPoint(Vector3 worldPosition)
         {
             worldPosition = RenderSpace.ToRender(worldPosition);
 
@@ -163,8 +163,8 @@ namespace Engine
                 return Vector2.Zero;
 
             return new Vector2(
-                (ndc.X + 1f) * 0.5f * screenWidth,
-                (1f - ndc.Y) * 0.5f * screenHeight
+                (ndc.X + 1f) * 0.5f * EngineWindow.Instance.ClientSize.X,
+                (1f - ndc.Y) * 0.5f * EngineWindow.Instance.ClientSize.Y
             );
         }
 

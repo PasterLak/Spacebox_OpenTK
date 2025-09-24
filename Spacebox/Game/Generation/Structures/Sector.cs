@@ -92,10 +92,10 @@ namespace Spacebox.Game.Generation
         {
             BiomesMap = new BiomesMap(PositionIndex, World.BiomeGenerator);
 
-            var points = GenerateAsteroidPositions(World.Generator.MinAsteroidsInSector,
-                World.Generator.MaxAsteroidsInSector,
-                World.Generator.RejectionSamples,
-                World.Generator.MinDistanceBetweenAsteroids, true);
+            var points = GenerateAsteroidPositions(World.WorldGenerator.MinAsteroidsInSector,
+                World.WorldGenerator.MaxAsteroidsInSector,
+                World.WorldGenerator.RejectionSamples,
+                World.WorldGenerator.MinDistanceBetweenAsteroids, true);
 
             GenerateDataForPoints(points);
 
@@ -110,14 +110,14 @@ namespace Spacebox.Game.Generation
                 data.positionInSector = point;
                 data.positionWorld = LocalToWorld(point);
                 data.Id = SeedHelper.GetAsteroidId(Seed, point);
-               
+
 
                 data.biome = BiomesMap.GetFromSectorLocalCoord(point);
                 if (data.biome.AsteroidChances.Count == 0) continue;
 
                 var asteroidData = Biome.SelectAsteroidBySpawnChance(data.biome.AsteroidChances, random);
 
-                data.radiusBlocks = random.Next(asteroidData.MinRadius, asteroidData.MaxRadius+1);
+                data.radiusBlocks = random.Next(asteroidData.MinRadius, asteroidData.MaxRadius + 1);
                 data.asteroid = asteroidData;
                 data.rotation = Vector3.Zero;
 
@@ -347,6 +347,20 @@ namespace Spacebox.Game.Generation
             return entity;
         }
 
+        public bool GetNotGeneratedEntitiesNearby(Vector3 pos, List<NotGeneratedEntity> nearby)
+        {
+           
+            return
+               octreeNotGenerated.GetNearbyNonAlloc(pos, Settings.ENTITY_SEARCH_RADIUS, nearby);
+        }
+
+        public bool GetGeneratedEntitiesNearby(Vector3 pos, List<SpaceEntity> nearby)
+        {
+
+            return
+               sectorOctree.GetNearbyNonAlloc(pos, Settings.ENTITY_SEARCH_RADIUS, nearby);
+        }
+
         public override void Update()
         {
             base.Update();
@@ -354,7 +368,7 @@ namespace Spacebox.Game.Generation
             var camera = Camera.Main;
             if (camera == null) return;
             List<NotGeneratedEntity> nearby = new List<NotGeneratedEntity>();
-            if (octreeNotGenerated.GetNearbyNonAlloc(camera.PositionWorld, Settings.ENTITY_SEARCH_RADIUS, nearby))
+            if (GetNotGeneratedEntitiesNearby(camera.PositionWorld, nearby))
             {
                 foreach (var entity in nearby)
                 {
@@ -385,6 +399,7 @@ namespace Spacebox.Game.Generation
             {
 
                 var entity = Entities[i];
+
 
                 if (cam.Frustum.IsInFrustum(entity.GeometryBoundingBox))
                 {
@@ -417,17 +432,14 @@ namespace Spacebox.Game.Generation
                         if (!entity.StarsEffect.Enabled)
                             entity.StarsEffect.Enabled = true;
 
-
+                        
 
                         entity.RenderEffect(disSqr);
                     }
 
 
                 }
-                else
-                {
-
-                }
+               
             }
 
         }

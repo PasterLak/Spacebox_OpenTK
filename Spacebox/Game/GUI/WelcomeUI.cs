@@ -135,7 +135,7 @@ namespace Spacebox.Game.GUI
         {
             if (World.Instance != null)
             {
-                var info = World.Data.Info;
+                var info = World.WorldData.Info;
                 info.ShowWelcomeWindow = false;
                 WorldInfoSaver.Save(info);
             }

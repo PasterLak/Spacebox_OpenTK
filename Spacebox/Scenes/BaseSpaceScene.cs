@@ -105,7 +105,7 @@ namespace Spacebox.Scenes
             var world = new World(localPlayer, blockMaterial);
             AttachComponent(world);
             world.Load();
-            PlayerSaveLoadManager.LoadPlayer(localPlayer, World.Data.WorldFolderPath);
+            PlayerSaveLoadManager.LoadPlayer(localPlayer, World.WorldData.WorldFolderPath);
 
             AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/spaceBackground.ogg")).Audio.Volume = 0.05f;
 
@@ -121,7 +121,7 @@ namespace Spacebox.Scenes
 
 
 
-            localPlayer.GameMode = World.Data.Info.GameMode;
+            localPlayer.GameMode = World.WorldData.Info.GameMode;
 
             PointLightsPool.Instance = new PointLightsPool(1);
 
@@ -160,7 +160,7 @@ namespace Spacebox.Scenes
             freeCamera.DepthFar = localPlayer.DepthFar;
             Camera.Main = localPlayer;
 
-            WelcomeUI.OnPlayerSpawned(World.Data.Info.ShowWelcomeWindow);
+            WelcomeUI.OnPlayerSpawned(World.WorldData.Info.ShowWelcomeWindow);
             WelcomeUI.Init();
             PauseUI.Init();
             AttachComponent( new SpheresPool());
@@ -169,7 +169,7 @@ namespace Spacebox.Scenes
             AddChild(new DirectionalLight());
             AttachComponent(new TagManager());
 
-            TagManager.LoadTags(World.Data.WorldFolderPath);
+            TagsSaveLoader.LoadTags(World.WorldData.WorldFolderPath);
 
         }
 

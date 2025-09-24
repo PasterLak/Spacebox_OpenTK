@@ -27,7 +27,7 @@ namespace Spacebox.Game.GUI
         {
             var worldPos = new Vector3(X, Y, Z);
             var color = Color.ToColor4();
-            return new Tag(Text, worldPos, color, isStatic: true);
+            return TagManager.Instance.CreateTag(Text, worldPos, color, isStatic: true);
         }
     }
 }

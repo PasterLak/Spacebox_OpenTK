@@ -62,7 +62,7 @@ namespace Spacebox.Game.Resource
             LoadOptionalFiles(modPath);
 
             var generator = GenerationLoader.Load(modPath, defaultModPath);
-            Generation.World.Generator = generator;
+            Generation.World.WorldGenerator = generator;
 
             Debug.Success($"[GameSetLoader] Mod '{modId}' loaded successfully.");
 

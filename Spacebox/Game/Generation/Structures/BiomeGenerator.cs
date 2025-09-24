@@ -50,7 +50,7 @@ public class BiomeGenerator
                     float worldZ = sectorOffset.Z + (z * BiomesMap.SmallestPoint);
 
                     var n = FloatToByte(noise.GetNoise(worldX, worldY, worldZ));
-                    map[x, y, z] = World.Generator.GetBiomeByRandomValue(n);
+                    map[x, y, z] = World.WorldGenerator.GetBiomeByRandomValue(n);
                 }
             }
         }

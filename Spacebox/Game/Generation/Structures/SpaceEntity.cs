@@ -234,11 +234,8 @@ namespace Spacebox.Game.Generation
 
         private Tag CreateTag(Vector3 worldPos)
         {
-            var tag = new Tag("", worldPos, Color4.DarkGreen);
-            tag.TextAlignment = GUI.Tag.Alignment.Right;
-            TagManager.Instance.RegisterTag(tag);
-            Debug.Log($"Tag registered: id {EntityID} pos " + worldPos);
-            return tag;
+
+            return TagManager.Instance.CreateTag("", worldPos, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
         }
 
         private void RecalculateGeometryBoundingBox()
@@ -542,6 +539,8 @@ namespace Spacebox.Game.Generation
 
         public void RenderEffect(float disSqr)
         {
+           
+
             return;
             var disMin = 300f * 300f;
             var disMax = 3000f * 3000f;

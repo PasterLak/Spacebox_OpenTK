@@ -29,8 +29,8 @@ namespace Spacebox.Game.Generation
 
         public const int SizeSectors = 8192;
         public Astronaut Player { get; private set; }
-        public static WorldGenerator Generator { get; set; }
-        public static WorldLoader.LoadedWorld Data { get; private set; }
+        public static WorldGenerator WorldGenerator { get; set; }
+        public static WorldLoader.LoadedWorld WorldData { get; private set; }
         public static DropEffectManager DropEffectManager;
         public static BlockDestructionManager DestructionManager;
         public static int Seed { get; private set; }
@@ -55,7 +55,7 @@ namespace Spacebox.Game.Generation
 
             Overlay.AddElement(new WorldOverlayElement(this));
 
-            BiomeGenerator = new BiomeGenerator(World.Seed, Generator);
+            BiomeGenerator = new BiomeGenerator(World.Seed, WorldGenerator);
         }
         public override void Start()
         {
@@ -74,18 +74,18 @@ namespace Spacebox.Game.Generation
                 return;
             }*/
             PanelUI.EnableRenderForCurrentItem = false;
-            PlayerSaveLoadManager.SavePlayer(Player, Data.WorldFolderPath);
-            WorldSaveLoad.SaveWorld(Data.WorldFolderPath);
-            Data.Info.GameMode = Player.GameMode;
-            Data.Info.Day = GameTime.Day;
-            Data.Info.Ticks = GameTime.DayTick;
-            WorldInfoSaver.Save(Data.Info);
+            PlayerSaveLoadManager.SavePlayer(Player, WorldData.WorldFolderPath);
+            WorldSaveLoad.SaveWorld(WorldData.WorldFolderPath);
+            WorldData.Info.GameMode = Player.GameMode;
+            WorldData.Info.Day = GameTime.Day;
+            WorldData.Info.Ticks = GameTime.DayTick;
+            WorldInfoSaver.Save(WorldData.Info);
 
             var screenSize = SpaceboxWindow.Instance.ClientSize;
-            string path = Path.Combine(Data.WorldFolderPath, "preview.jpg");
+            string path = Path.Combine(WorldData.WorldFolderPath, "preview.jpg");
 
             FramebufferCapture.SaveWorldPreview(screenSize, path);
-            TagManager.SaveTags(Data.WorldFolderPath);
+            TagsSaveLoader.SaveTags(WorldData.WorldFolderPath);
 
             saveWasPressed = false;
             PanelUI.ShowItemModel();
@@ -108,11 +108,11 @@ namespace Spacebox.Game.Generation
 
         public static void LoadWorldInfo(string worldName)
         {
-            Data = WorldLoader.LoadWorldByName(worldName);
-            Seed = int.Parse(Data.Info.Seed);
+            WorldData = WorldLoader.LoadWorldByName(worldName);
+            Seed = int.Parse(WorldData.Info.Seed);
 
-            GameTime.SetDay(Data.Info.Day);
-            GameTime.SetTick(Data.Info.Ticks);
+            GameTime.SetDay(WorldData.Info.Day);
+            GameTime.SetTick(WorldData.Info.Ticks);
 
 
         }
@@ -243,6 +243,7 @@ namespace Spacebox.Game.Generation
             }
         }
 
+ 
         public override void OnRender()
         {
 
@@ -352,8 +353,8 @@ namespace Spacebox.Game.Generation
         {
             base.OnDetached();
 
-            Data = null;
-            Generator = null;
+            WorldData = null;
+            WorldGenerator = null;
             BiomeGenerator = null;
             DropEffectManager = null;
             

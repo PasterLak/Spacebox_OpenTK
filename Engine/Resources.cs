@@ -45,9 +45,9 @@ namespace Engine
             AddResource("error_shader", shader, true);
             _error.Add(typeof(Shader), shader);
 
-           // var clip = new AudioClip("Resources/Audio/error.ogg");
-           // AddResource("Resources/Audio/error.ogg", clip, true);
-           // _error.Add(typeof(AudioClip), clip);
+            var clip = new AudioClip("Resources/Audio/error.ogg");
+            AddResource("Resources/Audio/error.ogg", clip, true);
+            _error.Add(typeof(AudioClip), clip);
 
             var mesh = GenMesh.CreateCube();
             AddResource("error_mesh", mesh, true);

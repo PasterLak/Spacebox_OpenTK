@@ -11,6 +11,15 @@ namespace Engine
         public const string Author = "PasterLak";
         public const string EngineVersion = "1.5";
 
+
+        public static string BaseDirectory
+        {
+            get
+            {
+                return AppDomain.CurrentDomain.BaseDirectory;
+            }
+        }
+
         public static PlatformName Platform => CheckPlatform();
         private static PlatformName CheckPlatform()
         {

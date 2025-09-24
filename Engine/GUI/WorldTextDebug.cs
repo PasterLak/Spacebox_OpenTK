@@ -1,4 +1,5 @@
-﻿using ImGuiNET;
+﻿using Engine.UI;
+using ImGuiNET;
 using System.Numerics;
 
 namespace Engine.GUI
@@ -59,21 +60,15 @@ namespace Engine.GUI
 
 
 
-            Vector2 posCenter = Camera.Main.WorldToScreenPoint(Vector3.Zero.ToOpenTKVector3(),
-                (int)ImGui.GetIO().DisplaySize.X,
-               (int)ImGui.GetIO().DisplaySize.Y).ToSystemVector2();
+            Vector2 posCenter = Camera.Main.WorldToScreenPoint(Vector3.Zero.ToOpenTKVector3()).ToSystemVector2(); 
 
-            Vector2 posX = Camera.Main.WorldToScreenPoint(new Vector3(10, 0, 0).ToOpenTKVector3(),
-               (int)ImGui.GetIO().DisplaySize.X,
-              (int)ImGui.GetIO().DisplaySize.Y).ToSystemVector2();
+            Vector2 posX = Camera.Main.WorldToScreenPoint(new Vector3(10, 0, 0).ToOpenTKVector3()).ToSystemVector2();
 
-            Vector2 posY = Camera.Main.WorldToScreenPoint(new Vector3(0, 10, 0).ToOpenTKVector3(),
-               (int)ImGui.GetIO().DisplaySize.X,
-              (int)ImGui.GetIO().DisplaySize.Y).ToSystemVector2();
+            Vector2 posY = Camera.Main.WorldToScreenPoint(new Vector3(0, 10, 0).ToOpenTKVector3()
+             ).ToSystemVector2();
 
-            Vector2 posZ = Camera.Main.WorldToScreenPoint(new Vector3(0, 0, 10).ToOpenTKVector3(),
-               (int)ImGui.GetIO().DisplaySize.X,
-              (int)ImGui.GetIO().DisplaySize.Y).ToSystemVector2();
+            Vector2 posZ = Camera.Main.WorldToScreenPoint(new Vector3(0, 0, 10).ToOpenTKVector3()
+             ).ToSystemVector2();
 
 
             //float posX = (ImGui.GetWindowWidth() - textSize.X) * 0.5f;

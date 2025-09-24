@@ -1,5 +1,4 @@
-﻿using System;
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using Engine.Physics;
 
 namespace Engine
@@ -57,13 +56,22 @@ namespace Engine
             return corners;
         }
 
+        public static bool IsBehindCameraDot(Vector3 position, Vector3 cameraPos, Vector3 cameraForward)
+        {
+            Vector3 diff = position - cameraPos;
+       
+            return (diff.X * cameraForward.X +
+                    diff.Y * cameraForward.Y +
+                    diff.Z * cameraForward.Z) < 0f;  
+        }
+
         public bool IsInFrustum(BoundingVolume volume) => IsInFrustum(volume, Camera.Main);
         public bool IsPointVisible(Vector3 point) => IsPointVisible(point, Camera.Main);
 
 
         public bool IsInFrustum(BoundingVolume volume, Camera camera)
         {
-             var offset = RenderSpace.Origin;
+            var offset = RenderSpace.Origin;
             return volume switch
             {
                 BoundingBox box => BoxInFrustum(box, offset),
@@ -75,7 +83,8 @@ namespace Engine
 
         public bool IsPointVisible(Vector3 point, Camera camera)
         {
-            return PointInFrustum( RenderSpace.ToRender(point));
+           
+            return PointInFrustum(RenderSpace.ToRender(point));
         }
 
         private bool BoxInFrustum(BoundingBox box, Vector3 offset)
