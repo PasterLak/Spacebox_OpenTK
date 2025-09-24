@@ -56,35 +56,6 @@
 		</Content>
 	</ItemGroup>
 
-	<ItemGroup>
-		<None Remove="gamesets\default\crafting.json" />
-		<None Remove="gamesets\default\generation.json" />
-		<None Remove="gamesets\default\projectiles.json" />
-		<None Remove="gamesets\default\recipes.json" />
-		<None Remove="GameSets\Default\UI\settings.json" />
-		<None Remove="gamesets\loots.json" />
-		<None Remove="Resources\Shaders\atmosphere.glsl" />
-		<None Remove="Resources\Shaders\billboard.glsl" />
-		<None Remove="Resources\Shaders\colorReplace.glsl" />
-		<None Remove="Resources\Shaders\fade.glsl" />
-		<None Remove="Resources\Shaders\includes\core.fs" />
-		<None Remove="Resources\Shaders\includes\fog.glsl" />
-		<None Remove="Resources\Shaders\includes\lighting.fs" />
-		<None Remove="Resources\Shaders\outline.glsl" />
-		<None Remove="Resources\Shaders\passthrough.glsl" />
-		<None Remove="Resources\Shaders\planet.glsl" />
-		<None Remove="Resources\Shaders\PostProcessing\blackWhite.glsl" />
-		<None Remove="Resources\Shaders\postprocessing\depthView.glsl" />
-		<None Remove="Resources\Shaders\PostProcessing\edgeDetection.glsl" />
-		<None Remove="Resources\Shaders\postprocessing\normalView.glsl" />
-		<None Remove="Resources\Shaders\PostProcessing\vignette.glsl" />
-		<None Remove="Resources\Shaders\procedural_skybox.glsl" />
-		<None Remove="Resources\Shaders\sphere.glsl" />
-		<None Remove="Resources\Shaders\spot.glsl" />
-		<None Remove="Resources\Shaders\sun.glsl" />
-		<None Remove="Resources\Shaders\transparent.glsl" />
-		<None Remove="Resources\Shaders\water.glsl" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Engine\Engine.csproj" />
