@@ -69,20 +69,20 @@ namespace Spacebox
 
         protected override void OnSetupPostProcessing(PostProcessManager processManager)
         {
-            var blackWhiteShader = Resources.Load<Shader>("Shaders/PostProcessing/blackWhite", true);
+            var blackWhiteShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/blackWhite", true);
 
-            var vignetteShader = Resources.Load<Shader>("Shaders/PostProcessing/vignette", true);
+            var vignetteShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/vignette", true);
             var vignetteEffect = new VignetteEffect(vignetteShader);
             vignetteEffect.Enabled = false;
             processManager.AddEffect(vignetteEffect);
 
-            var edgeDetectionShader = Resources.Load<Shader>("Shaders/PostProcessing/edgeDetection", true);
+            var edgeDetectionShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/edgeDetection", true);
 
-            var normalShader = Resources.Load<Shader>("Shaders/PostProcessing/normalView", true);
-            var depthShader = Resources.Load<Shader>("Shaders/PostProcessing/depthView", true);
+            var normalShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/normalView", true);
+            var depthShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/depthView", true);
 
             Texture2D ssaoNoiseTex = SsaoNoise.GenerateRotationNoise(4, 1234);
-            var ssaoShader = Resources.Load<Shader>("Shaders/PostProcessing/ssao", true);
+            var ssaoShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/ssao", true);
         }
 
         protected override void OnPostRender()

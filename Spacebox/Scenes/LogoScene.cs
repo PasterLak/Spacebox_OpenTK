@@ -35,7 +35,7 @@ namespace Spacebox.Scenes
 
                });
 
-            Resources.Load<Shader>("Shaders/sprite");
+            Resources.Load<Shader>("Resources/Shaders/sprite");
             // Resources.Load<AudioClip>("Resources/Audio/scroll.ogg");
 
             var texture = Resources.Get<Texture2D>("Resources/Textures/Space/planet2.png");

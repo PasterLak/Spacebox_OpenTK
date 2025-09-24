@@ -7,7 +7,7 @@ public class SunMaterial : TextureMaterial
     public Vector3 GlowColor { get; set; } = new Vector3(1f, 0.8f, 0);
     public float GlowIntensity { get; set; } = 1f;
     public SunMaterial(Texture2D texture) : base(texture,
-        Resources.Load<Shader>("Shaders/sun"))
+        Resources.Load<Shader>("Resources/Shaders/sun"))
     {
         RenderMode = RenderMode.Fade;
         RenderFace = RenderFace.Front;

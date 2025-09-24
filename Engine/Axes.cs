@@ -16,7 +16,7 @@ namespace Engine
             Position = position;
             Length = length;
             Rotation = Vector3.Zero;
-            _shader = Resources.Get<Shader>("Shaders/axes");
+            _shader = Resources.Get<Shader>("Resources/Shaders/axes");
             UpdateVertices();
             SetupBuffer();
         }
@@ -26,7 +26,7 @@ namespace Engine
             Position = position;
             Length = length;
             Rotation = rotation;
-            _shader = Resources.Get<Shader>("Shaders/axes");
+            _shader = Resources.Get<Shader>("Resources/Shaders/axes");
             UpdateVertices();
             SetupBuffer();
         }

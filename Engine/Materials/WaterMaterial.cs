@@ -21,7 +21,7 @@ namespace Engine
         }
         public float Shininess { get; set; } = 48f;
 
-        public WaterMaterial(Texture2D noise) : base(Resources.Load<Shader>("Shaders/water"))
+        public WaterMaterial(Texture2D noise) : base(Resources.Load<Shader>("Resources/Shaders/water"))
         {
             Noise = noise;
             RenderMode = RenderMode.Opaque;

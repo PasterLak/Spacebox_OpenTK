@@ -29,7 +29,7 @@ namespace Spacebox.Game.Effects
 
             dustTexture.FilterMode = FilterMode.Nearest;
          
-            particleShader = Resources.Load<Shader>("Shaders/particle");
+            particleShader = Resources.Load<Shader>("Resources/Shaders/particle");
 
             ParticleSystem = new ParticleSystem(new ParticleMaterial(dustTexture),new SphereEmitter());
 

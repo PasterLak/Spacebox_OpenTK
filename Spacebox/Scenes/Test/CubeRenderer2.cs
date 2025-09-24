@@ -90,7 +90,7 @@ public class CubeRenderer2 : SceneNode, IDisposable, IGameComponent
         {
             _position = position;
             Position = position;
-            _shader = Resources.Load<Shader>("Shaders/colored");
+            _shader = Resources.Load<Shader>("Resources/Shaders/colored");
             var attrs = new BufferAttribute[]
             {
                 new BufferAttribute { Name = "aPos",    Size = 3 },

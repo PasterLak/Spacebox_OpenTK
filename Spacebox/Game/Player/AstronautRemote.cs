@@ -43,7 +43,7 @@ namespace Spacebox.Game.Player
             cube.Enabled = true;
             var texold = Engine.Resources.Get<Texture2D>("Resources/Textures/spacer.png");
             texold.UpdateTexture(true);
-            playerShader = Resources.Load<Shader>("Shaders/textured");
+            playerShader = Resources.Load<Shader>("Resources/Shaders/textured");
             spacerOld = new Model(Resources.Load<Engine.Mesh>("Resources/Models/spacer.obj"), new TextureMaterial(playerShader, texold));
             var tex = Resources.Load<Texture2D>("Resources/Textures/astronaut2.jpg");
             tex.FlipY();

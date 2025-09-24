@@ -9,7 +9,7 @@ namespace Engine
     {
         Vector3 _sunDir = new(-0.8f, 0.15f, -0.3f);
         public SkyboxProceduralMaterial()
-            : base(Resources.Load<Shader>("Shaders/procedural_skybox"))
+            : base(Resources.Load<Shader>("Resources/Shaders/procedural_skybox"))
         {
             RenderFace = RenderFace.Back;
             RenderMode = RenderMode.Opaque;

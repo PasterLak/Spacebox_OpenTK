@@ -47,7 +47,7 @@ public class InteractionShoot : InteractionMode
             texture.FilterMode = FilterMode.Nearest;
             // texture
             BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1),
-                texture, Resources.Load<Shader>("Shaders/particle"));
+                texture, Resources.Load<Shader>("Resources/Shaders/particle"));
         }
 
         UpdateItemSlot(itemslot);

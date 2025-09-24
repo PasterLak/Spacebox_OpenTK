@@ -10,7 +10,7 @@ namespace Engine
         public SpotLight Light { get; }
         public float Shininess { get; set; } = 48f;
 
-        public SpotMaterial(SpotLight light) : base(Resources.Load<Shader>("Shaders/spot"))
+        public SpotMaterial(SpotLight light) : base(Resources.Load<Shader>("Resources/Shaders/spot"))
         {
             Light = light;
             RenderMode = RenderMode.Transparent;

@@ -89,7 +89,7 @@ namespace Engine
 
             MinimumSize = new Vector2i(640, 360);
             _fullscreenRenderer = new FullscreenRenderer();
-            _passthroughShader = Resources.Load<Shader>("Shaders/PostProcessing/passthrough", true);
+            _passthroughShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/passthrough", true);
 
             OnGameLoad();
         }
@@ -121,7 +121,7 @@ namespace Engine
 
         private void SetupDefaultPostProcessing()
         {
-            var passthroughShader = Resources.Load<Shader>("Shaders/PostProcessing/passthrough", true);
+            var passthroughShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/passthrough", true);
             _processManager.AddEffect(new DefaultEffect(passthroughShader));
         }
 

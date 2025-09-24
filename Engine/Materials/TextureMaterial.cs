@@ -19,7 +19,7 @@ namespace Engine
             }
         }
 
-        public TextureMaterial(Texture2D texture) : base(Resources.Load<Shader>("Shaders/textured"))
+        public TextureMaterial(Texture2D texture) : base(Resources.Load<Shader>("Resources/Shaders/textured"))
         {
             Init(texture);
         }

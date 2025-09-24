@@ -36,7 +36,7 @@ namespace Engine.GUI
            // _windowWidth = Window.Instance.Size.X;
            // _windowHeight = Window.Instance.Size.Y;
 
-            _shader = shader ?? Resources.Load<Shader>("Shaders/sprite");
+            _shader = shader ?? Resources.Load<Shader>("Resources/Shaders/sprite");
 
             Initialize();
         }
@@ -50,7 +50,7 @@ namespace Engine.GUI
             // _windowWidth = Window.Instance.Size.X;
             // _windowHeight = Window.Instance.Size.Y;
 
-            _shader = shader ?? Resources.Load<Shader>("Shaders/sprite");
+            _shader = shader ?? Resources.Load<Shader>("Resources/Shaders/sprite");
 
             Initialize();
         }

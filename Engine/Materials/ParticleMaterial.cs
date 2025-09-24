@@ -19,7 +19,7 @@ namespace Engine
             }
         }
 
-        public ParticleMaterial(Texture2D texture) : base(Resources.Load<Shader>("Shaders/particle"))
+        public ParticleMaterial(Texture2D texture) : base(Resources.Load<Shader>("Resources/Shaders/particle"))
         {
            
             RenderFace = RenderFace.Both;

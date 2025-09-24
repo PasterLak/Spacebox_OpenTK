@@ -7,7 +7,7 @@ public class PlanetMaterial : TextureMaterial
     public Vector3 GlowColor { get; set; } = new Vector3(1f, 0.8f, 0);
     public float GlowIntensity { get; set; } = 1f;
     public PlanetMaterial(Texture2D texture) : base(texture,
-        Resources.Load<Shader>("Shaders/planet"))
+        Resources.Load<Shader>("Resources/Shaders/planet"))
     {
         RenderMode = RenderMode.Fade;
             

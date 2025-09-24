@@ -48,7 +48,7 @@
 		<Content Include="Resources\**\*.*">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-		<Content Include="Shaders\**\*.*">
+		<Content Include="Resources\Shaders\**\*.*">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 		<Content Include="GameSets\**\*.*">
@@ -63,27 +63,27 @@
 		<None Remove="gamesets\default\recipes.json" />
 		<None Remove="GameSets\Default\UI\settings.json" />
 		<None Remove="gamesets\loots.json" />
-		<None Remove="shaders\atmosphere.glsl" />
-		<None Remove="shaders\billboard.glsl" />
-		<None Remove="shaders\colorReplace.glsl" />
-		<None Remove="shaders\fade.glsl" />
-		<None Remove="Shaders\includes\core.fs" />
-		<None Remove="Shaders\includes\fog.glsl" />
-		<None Remove="Shaders\includes\lighting.fs" />
-		<None Remove="Shaders\outline.glsl" />
-		<None Remove="shaders\passthrough.glsl" />
-		<None Remove="shaders\planet.glsl" />
-		<None Remove="Shaders\PostProcessing\blackWhite.glsl" />
-		<None Remove="shaders\postprocessing\depthView.glsl" />
-		<None Remove="Shaders\PostProcessing\edgeDetection.glsl" />
-		<None Remove="shaders\postprocessing\normalView.glsl" />
-		<None Remove="Shaders\PostProcessing\vignette.glsl" />
-		<None Remove="Shaders\procedural_skybox.glsl" />
-		<None Remove="shaders\sphere.glsl" />
-		<None Remove="shaders\spot.glsl" />
-		<None Remove="shaders\sun.glsl" />
-		<None Remove="shaders\transparent.glsl" />
-		<None Remove="shaders\water.glsl" />
+		<None Remove="Resources\Shaders\atmosphere.glsl" />
+		<None Remove="Resources\Shaders\billboard.glsl" />
+		<None Remove="Resources\Shaders\colorReplace.glsl" />
+		<None Remove="Resources\Shaders\fade.glsl" />
+		<None Remove="Resources\Shaders\includes\core.fs" />
+		<None Remove="Resources\Shaders\includes\fog.glsl" />
+		<None Remove="Resources\Shaders\includes\lighting.fs" />
+		<None Remove="Resources\Shaders\outline.glsl" />
+		<None Remove="Resources\Shaders\passthrough.glsl" />
+		<None Remove="Resources\Shaders\planet.glsl" />
+		<None Remove="Resources\Shaders\PostProcessing\blackWhite.glsl" />
+		<None Remove="Resources\Shaders\postprocessing\depthView.glsl" />
+		<None Remove="Resources\Shaders\PostProcessing\edgeDetection.glsl" />
+		<None Remove="Resources\Shaders\postprocessing\normalView.glsl" />
+		<None Remove="Resources\Shaders\PostProcessing\vignette.glsl" />
+		<None Remove="Resources\Shaders\procedural_skybox.glsl" />
+		<None Remove="Resources\Shaders\sphere.glsl" />
+		<None Remove="Resources\Shaders\spot.glsl" />
+		<None Remove="Resources\Shaders\sun.glsl" />
+		<None Remove="Resources\Shaders\transparent.glsl" />
+		<None Remove="Resources\Shaders\water.glsl" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -22,7 +22,7 @@ namespace Engine
         public Vector2 Size { get; set; }
 
         public BillboardMaterial(Texture2D texture, Vector2 size)
-            : base(Resources.Load<Shader>("Shaders/billboard"))
+            : base(Resources.Load<Shader>("Resources/Shaders/billboard"))
         {
             MainTexture = texture;
             Size = size;

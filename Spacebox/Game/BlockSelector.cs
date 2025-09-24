@@ -26,7 +26,7 @@ namespace Spacebox.Game
             selectorTexture = Resources.Load<Texture2D>("Resources/Textures/selector.png");
             selectorTexture.FilterMode = FilterMode.Nearest;
 
-            var material = new TextureMaterial(selectorTexture, Resources.Load<Shader>("Shaders/blockPreview"));
+            var material = new TextureMaterial(selectorTexture, Resources.Load<Shader>("Resources/Shaders/blockPreview"));
             material.Color = new Color4(1f, 1f, 1f, 1f);
 
             SimpleBlock = new SimpleBlock(material, Vector3.Zero);

@@ -22,7 +22,7 @@ namespace Spacebox.Game.Resource
         }
 
         public ItemMaterial(Texture2D texture, Texture2D emission) :
-            base(texture, Resources.Load<Shader>("Shaders/itemModel"))
+            base(texture, Resources.Load<Shader>("Resources/Shaders/itemModel"))
         {
             RenderMode = RenderMode.Opaque;
 
