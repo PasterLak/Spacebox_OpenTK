@@ -18,7 +18,7 @@ namespace Engine.SceneManagement
 
         public override void Start()
         {
-            Console.Error.WriteLine("Error Scene!");
+            
         }
 
 

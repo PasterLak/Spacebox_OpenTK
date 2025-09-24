@@ -175,7 +175,7 @@ namespace Spacebox.Game.GUI
             GameMenu.CenterButtonWithBackground("Exit", buttonWidth, buttonHeight, () =>
             {
                 click1?.Play();
-                Window.Instance.Quit();
+                SpaceboxWindow.Instance.Quit();
             });
             ImGui.End();
         }

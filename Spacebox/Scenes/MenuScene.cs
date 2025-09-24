@@ -37,7 +37,7 @@ namespace Spacebox.Scenes
             AddChild(player);
             player.FOV = 100;
 
-            canvas = new Canvas(new Vector2i(1280,720), Window.Instance);
+            canvas = new Canvas(new Vector2i(1280,720), SpaceboxWindow.Instance);
 
             var rect = new Rect(new Vector2(0, 0), new Vector2(1280/2f,720/2f));
             rect.Anchor = Engine.UI.Anchor.Center;

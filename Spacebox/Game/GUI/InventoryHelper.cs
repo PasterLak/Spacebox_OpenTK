@@ -22,9 +22,9 @@ namespace Spacebox.Game.GUI
             SelectedTexture = selectedTextureId;
             ItemTexture = new Texture2D("Resources/Textures/UI/trash.png", true, false).Handle;
 
-            Window.OnResized += OnResize;
+            SpaceboxWindow.OnResized += OnResize;
 
-            OnResize(Window.Instance.Size);
+            OnResize(SpaceboxWindow.Instance.Size);
         }
 
         private static void OnResize(OpenTK.Mathematics.Vector2 w)

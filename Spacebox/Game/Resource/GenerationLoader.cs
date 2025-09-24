@@ -8,12 +8,12 @@ public class GenerationLoader
 {
 
 
-    public static Generator Load(string modPath, string defaultModPath)
+    public static WorldGenerator Load(string modPath, string defaultModPath)
     {
         string generationPath = Path.Combine(modPath, "Generation");
         string defaultGenerationPath = Path.Combine(defaultModPath, "Generation");
 
-        Generator generator = new Generator();
+        WorldGenerator generator = new WorldGenerator();
 
         Biome.Reset();
         AsteroidData.Reset();
@@ -38,7 +38,7 @@ public class GenerationLoader
         return generator;
     }
 
-    private static void LoadGenerator(string modPath, string defaultModPath, Generator generator)
+    private static void LoadGenerator(string modPath, string defaultModPath, WorldGenerator generator)
     {
         var path = GameSetLoader.GetFilePath(modPath, defaultModPath, "generator.json");
         if (path == null)
@@ -87,7 +87,7 @@ public class GenerationLoader
         }
     }
 
-    private static void LoadAsteroids(string modPath, string defaultModPath, Generator generator)
+    private static void LoadAsteroids(string modPath, string defaultModPath, WorldGenerator generator)
     {
         string asteroidPath = Path.Combine(modPath, "Asteroids");
         string defaultAsteroidPath = Path.Combine(defaultModPath, "Asteroids");
@@ -102,7 +102,7 @@ public class GenerationLoader
         //Debug.Success($"[GenerationLoader] Loaded {generator.loadedAsteroids.Count} asteroids");
     }
 
-    private static void LoadAsteroidsFromDirectory(string directoryPath, Generator generator)
+    private static void LoadAsteroidsFromDirectory(string directoryPath, WorldGenerator generator)
     {
         if (!Directory.Exists(directoryPath))
         {
@@ -176,7 +176,7 @@ public class GenerationLoader
         }
     }
 
-    private static void LoadBiomes(string modPath, string defaultModPath, Generator generator)
+    private static void LoadBiomes(string modPath, string defaultModPath, WorldGenerator generator)
     {
         string biomePath = Path.Combine(modPath, "Biomes");
         string defaultBiomePath = Path.Combine(defaultModPath, "Biomes");
@@ -185,7 +185,7 @@ public class GenerationLoader
         LoadBiomesFromDirectory(defaultBiomePath, generator);
     }
 
-    private static void LoadBiomesFromDirectory(string directoryPath, Generator generator)
+    private static void LoadBiomesFromDirectory(string directoryPath, WorldGenerator generator)
     {
         if (!Directory.Exists(directoryPath))
         {
@@ -350,7 +350,7 @@ public class GenerationLoader
         return vein;
     }
 
-    private static Biome ConvertBiome(BiomeJSON json, Generator generator)
+    private static Biome ConvertBiome(BiomeJSON json, WorldGenerator generator)
     {
         try
         {

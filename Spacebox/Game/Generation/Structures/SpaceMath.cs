@@ -1,7 +1,6 @@
 ﻿
 
 using OpenTK.Mathematics;
-using System.Drawing;
 
 namespace Spacebox.Game.Generation.Structures
 {

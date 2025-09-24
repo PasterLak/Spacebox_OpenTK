@@ -57,7 +57,7 @@ public class MainMenuWindow : MenuWindow
         GameMenu.CenterButtonWithBackground("Exit", buttonWidth, buttonHeight, () =>
         {
             menu.Click1.Play();
-            Window.Instance.Quit();
+            SpaceboxWindow.Instance.Quit();
         });
         ImGui.End();
     }

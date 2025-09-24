@@ -14,8 +14,10 @@ namespace Spacebox
         private static void Main()
         {
 
+           
             var monitor = Monitors.GetPrimaryMonitor();
-            var _audioManager = AudioDevice.Instance;
+            var _audioManager = AudioDevice.Instance; // move!!!!
+
             // string path = "Resources/WindowPosition.txt";
             // var (x, y) = NumberStorage.LoadNumbers(path);
 
@@ -38,9 +40,10 @@ namespace Spacebox
             SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
 
 
-            using (var window = new Window(GameWindowSettings.Default, nativeWindowSettings))
+            using (var window = new SpaceboxWindow(GameWindowSettings.Default, nativeWindowSettings))
             {
-               // window.UpdateFrequency = 999;
+                // window.UpdateFrequency = 999;
+                AppDomain.CurrentDomain.ProcessExit += SpaceboxWindow.Shutdown;
                 window.Run();
             }
 

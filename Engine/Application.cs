@@ -3,9 +3,9 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 
 
-namespace Spacebox
+namespace Engine
 {
-    internal class Application
+    public class Application
     {
         public const string Version = "0.1.2";
         public const string Author = "PasterLak";
@@ -72,6 +72,11 @@ namespace Spacebox
             {
                 Engine.Debug.Error($"Failed to open URL: {ex.Message}");
             }
+        }
+
+        public static void Quit()
+        {
+            EngineWindow.Instance.Quit();
         }
 
         public enum PlatformName : byte

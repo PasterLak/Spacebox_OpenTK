@@ -32,7 +32,7 @@ namespace Spacebox.GUI
                 WindowName = "HealthBar"
                 
             }; StatsGUI.ShowText = true;
-            StatsGUI.OnResized(Window.Instance.Size);
+            StatsGUI.OnResized(SpaceboxWindow.Instance.Size);
         }
 
 

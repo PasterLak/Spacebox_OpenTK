@@ -8,9 +8,9 @@ namespace Spacebox.Game.Generation.Structures;
 public class BiomeGenerator
 {
     private FastNoiseLite noise;
-    private Generator generator;
+    private WorldGenerator generator;
 
-    public BiomeGenerator(int seed, Generator generator)
+    public BiomeGenerator(int seed, WorldGenerator generator)
     {
         noise = new FastNoiseLite(seed);
         this.generator = generator;

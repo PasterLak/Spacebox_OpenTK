@@ -29,7 +29,7 @@ namespace Spacebox.Game.Generation
 
         public const int SizeSectors = 8192;
         public Astronaut Player { get; private set; }
-        public static Generator Generator { get; set; }
+        public static WorldGenerator Generator { get; set; }
         public static WorldLoader.LoadedWorld Data { get; private set; }
         public static DropEffectManager DropEffectManager;
         public static BlockDestructionManager DestructionManager;
@@ -81,7 +81,7 @@ namespace Spacebox.Game.Generation
             Data.Info.Ticks = GameTime.DayTick;
             WorldInfoSaver.Save(Data.Info);
 
-            var screenSize = Window.Instance.ClientSize;
+            var screenSize = SpaceboxWindow.Instance.ClientSize;
             string path = Path.Combine(Data.WorldFolderPath, "preview.jpg");
 
             FramebufferCapture.SaveWorldPreview(screenSize, path);

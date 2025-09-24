@@ -45,8 +45,8 @@ namespace Spacebox.Scenes
             //GL.ClearColor(0.1f, 0.1f, 0.1f, 1f);
             //Theme.ApplySpaceboxTheme();
 
-            float winX = Window.Instance.Size.X;
-            float winY = Window.Instance.Size.Y;
+            float winX = SpaceboxWindow.Instance.Size.X;
+            float winY = SpaceboxWindow.Instance.Size.Y;
 
             //sprite = new Sprite(iso, new Vector2(0, 0), new Vector2(500, 500));
             //GL.Enable(EnableCap.DepthTest);
@@ -80,7 +80,7 @@ namespace Spacebox.Scenes
           
 
             sprite = new Sprite(Resources.Load<Texture2D>("Resources/Textures/planet2"), new Vector2(0, 0),
-                 new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
+                 new Vector2(SpaceboxWindow.Instance.Size.X, SpaceboxWindow.Instance.Size.Y));
 
             Texture2D skyboxTexture = new SpaceTexture(512, 512, World.Seed);
             skyboxTexture = Resources.Load<Texture2D>("Resources/Textures/space");

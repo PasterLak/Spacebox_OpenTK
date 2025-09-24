@@ -18,7 +18,7 @@ namespace Spacebox.Game.GUI
         public TagManager()
         {
             Instance = this;
-            screenSize = Window.Instance.ClientSize;
+            screenSize = SpaceboxWindow.Instance.ClientSize;
         }
 
         public void RegisterTag(Tag tag)
@@ -62,14 +62,14 @@ namespace Spacebox.Game.GUI
         {
             base.OnAttached(onOwner);
 
-            Window.OnResized += OnResized;
-            OnResized(Window.Instance.ClientSize);
+            SpaceboxWindow.OnResized += OnResized;
+            OnResized(SpaceboxWindow.Instance.ClientSize);
         }
         public override void OnDetached()
         {
             base.OnDetached();
             ClearTags();
-            Window.OnResized -= OnResized;
+            SpaceboxWindow.OnResized -= OnResized;
         }
 
         public override void OnGUI()

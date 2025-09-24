@@ -95,8 +95,9 @@ namespace Engine
             UpdateVectors();
 
 
-            var gizmoCam = Resources.Load<Texture2D>("Resources/Textures/Gizmos/camera.png");
-            gizmo = AttachComponent(new GizmoIconComponent(gizmoCam, 1f,1f));
+           
+            //var gizmoCam = Resources.Load<Texture2D>("Resources/Textures/Gizmos/camera.png");
+           // gizmo = AttachComponent(new GizmoIconComponent(gizmoCam, 1f,1f));
 
         }
 

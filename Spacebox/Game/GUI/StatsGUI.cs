@@ -46,14 +46,14 @@ namespace Spacebox.Game.GUI
             //_size = CalculateSize(Size,Window.Instance.Size);
             //_position = CalculateSize(Position, Window.Instance.Size);
 
-            Window.OnResized += OnResized;
+            SpaceboxWindow.OnResized += OnResized;
 
-            OnResized(Window.Instance.Size);
+            OnResized(SpaceboxWindow.Instance.Size);
         }
 
         ~StatsGUI()
         {
-            Window.OnResized -= OnResized;
+            SpaceboxWindow.OnResized -= OnResized;
         }
 
         public void OnResized(OpenTK.Mathematics.Vector2 w)

@@ -17,8 +17,8 @@ namespace Spacebox.Game.GUI
 
             var io = ImGui.GetIO();
 
-            var x = Window.Instance.Size.X;
-            var y = Window.Instance.Size.Y;
+            var x = SpaceboxWindow.Instance.Size.X;
+            var y = SpaceboxWindow.Instance.Size.Y;
 
             Vector2 windowSize = new Vector2(x * 0.2f, y * 0.98f);
             Vector2 windowPos = new Vector2(io.DisplaySize.X - windowSize.X - 20, y * 0.01f);

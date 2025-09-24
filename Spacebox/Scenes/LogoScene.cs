@@ -90,8 +90,8 @@ namespace Spacebox.Scenes
         public override void Update()
         {
 
-            sprite.UpdateWindowSize(Window.Instance.ClientSize);
-            sprite.UpdateSize(Window.Instance.Size);
+            sprite.UpdateWindowSize(SpaceboxWindow.Instance.ClientSize);
+            sprite.UpdateSize(SpaceboxWindow.Instance.Size);
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
            // SceneSwitcher.Update(typeof(AScene));
           

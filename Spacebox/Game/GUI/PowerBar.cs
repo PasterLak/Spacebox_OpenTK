@@ -35,7 +35,7 @@ namespace Spacebox.GUI
             };
             StatsGUI.ShowText = true;
             time = timeToDecrement * 0.5f;
-            StatsGUI.OnResized(Window.Instance.Size);
+            StatsGUI.OnResized(SpaceboxWindow.Instance.Size);
         }
 
         bool isRunning = false;

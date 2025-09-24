@@ -3,7 +3,7 @@
 namespace Spacebox.Game.Generation.Structures;
 
 
-public class Generator
+public class WorldGenerator
 {
     public string Version { get; set; } = "1";
     public float NoiseModifier { get; set; } = 1;

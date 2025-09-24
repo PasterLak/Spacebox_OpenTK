@@ -48,18 +48,18 @@ namespace Spacebox.Game
             Material = new ItemMaterial(texture, emission);
 
             itemCamera = new Camera360Base(Vector3.Zero, false);
-            itemCamera.AspectRatio = Window.Instance.GetAspectRatio();
+            itemCamera.AspectRatio = SpaceboxWindow.Instance.GetAspectRatio();
             itemCamera.FOV = 80;
             itemCamera.DepthNear = 0.01f;
             itemCamera.DepthFar = 100f;
             animatedOffset = EndPosition;
 
           
-            Window.OnResized += Resize;
+            SpaceboxWindow.OnResized += Resize;
         }
         ~ItemModel()
         {
-            Window.OnResized -= Resize;
+            SpaceboxWindow.OnResized -= Resize;
         }
         public void Resize(Vector2 size)
         {
