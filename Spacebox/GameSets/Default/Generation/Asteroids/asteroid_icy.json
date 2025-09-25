@@ -22,7 +22,7 @@
             {
                 "Name": "Stone",
                 "FillBlockID": "ice_rock",
-                "Ratio": 100,
+                "Ratio": 70,
                 "Veins": [
                     {
                         "BlockId": "cobaltite_rock",
@@ -49,9 +49,16 @@
             },
             {
                 "Name": "Stone",
-                "FillBlockID": "light_rock",
+                "FillBlockID": "dense_ice_rock",
                 "Ratio": 50,
                 "Veins": [
+                    {
+                        "BlockId": "light_rock",
+                        "SpawnChance": 15000,
+                        "MinVeinSize": 2,
+                        "MaxVeinSize": 6,
+                        "CanSpawnNearVoid": true
+                    },
                     {
                         "BlockId": "aluminium_ore",
                         "SpawnChance": 15000,
@@ -73,6 +80,14 @@
                         "MaxVeinSize": 4,
                         "CanSpawnNearVoid": true
                     }
+                ]
+            },
+             {
+                "Name": "Stone",
+                "FillBlockID": "air",
+                "Ratio": 20,
+                "Veins": [
+                    
                 ]
             }
         ]

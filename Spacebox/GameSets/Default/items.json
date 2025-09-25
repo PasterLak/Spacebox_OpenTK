@@ -157,23 +157,6 @@
         "ShotSound": "pistole2"
     },
     {
-        "ID": "sniper",
-        "Name": "Sniper",
-        "Type": "weapon",
-        "Category": "weapons",
-        "Sprite": "sniper",
-        "MaxStack": 1,
-        "ModelDepth": 2,
-        "ReloadTime": 25,
-        "Spread": 0,
-        "Pushback": 15,
-        "PlayerPushbackForce": 30,
-        "AnimationSpeed": 0.6,
-        "PowerUsage": 15,
-        "Projectile": "p_sniper",
-        "ShotSound": "pistole2"
-    },
-    {
         "ID": "impulse_rifle",
         "Name": "Impulse Rifle",
         "Description": "A high-powered energy rifle.",
@@ -385,6 +368,13 @@
         "ModelDepth": 1.5
     },
     {
+        "ID": "methane_ice_shard",
+        "Name": "Methane Ice",
+        "Sprite": "methane_ice",
+        "MaxStack": 64,
+        "ModelDepth": 1.5
+    },
+    {
         "ID": "glass",
         "Name": "Glass",
        
@@ -437,6 +427,35 @@
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
+     {
+        "ID": "compressed_methane",
+        "Name": "Compressed Methane",
+        "Description": "Highly flammable fuel.",
+        "Category": "items",
+        "Sprite": "methane",
+        "MaxStack": 64,
+        "ModelDepth": 3.0
+    },
+        {
+        "ID": "polymer_pellets",
+        "Name": "Polymer Pellets",
+        "Description": "Useful polymer",
+        "Category": "items",
+        "Sprite": "polymer_pellets",
+        "MaxStack": 64,
+        "ModelDepth": 3.0
+    },
+    
+      {
+        "ID": "plastic",
+        "Name": "Plastic",
+        "Description": "Useful polymer",
+     
+        "Sprite": "plastic",
+        "MaxStack": 64,
+        "ModelDepth": 3.0
+    },
+    
     {
         "ID": "power",
         "Name": "Power",
@@ -483,30 +502,6 @@
         "Category": "items",
         "Sprite": "dna",
         "MaxStack": 8,
-        "ModelDepth": 2.0
-    },
-    {
-        "ID": "vhs",
-        "Name": "VHS",
-        "Category": "items",
-        "Sprite": "vhs",
-        "MaxStack": 8,
-        "ModelDepth": 2.0
-    },
-    {
-        "ID": "cable",
-        "Name": "Cable",
-        "Category": "items",
-        "Sprite": "cable",
-        "MaxStack": 8,
-        "ModelDepth": 2.0
-    },
-    {
-        "ID": "bottle",
-        "Name": "Bottle",
-        "Category": "items",
-        "Sprite": "bottle",
-        "MaxStack": 64,
         "ModelDepth": 2.0
     }
 ]

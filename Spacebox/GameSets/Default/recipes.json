@@ -10,6 +10,12 @@
           "Product": { "Item": "ice_shard", "Quantity": 3 }
         },
         {
+          "RequiredTicks": 120,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "dense_ice_rock", "Quantity": 1 },
+          "Product": { "Item": "methane_ice_shard", "Quantity": 3 }
+        },
+        {
           "RequiredTicks": 150,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "light_rock", "Quantity": 1 },
@@ -104,7 +110,13 @@
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "titanium_panels", "Quantity": 3 },
           "Product": { "Item": "titanium_dust", "Quantity": 1 }
-        }
+        },
+          {
+          "RequiredTicks": 300,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "plastic", "Quantity": 1 },
+          "Product": { "Item": "polymer_pellets", "Quantity": 4 }
+        } 
       ]
     },
     {
@@ -199,6 +211,19 @@
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "water", "Quantity": 1 },
           "Product": { "Item": "liquid_hydrogen", "Quantity": 2 }
+        } 
+        ,
+        {
+          "RequiredTicks": 400,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "polymer_pellets", "Quantity": 4 },
+          "Product": { "Item": "plastic", "Quantity": 1 }
+        } 
+        ,{
+          "RequiredTicks": 250,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "methane_ice_shard", "Quantity": 1 },
+          "Product": { "Item": "compressed_methane", "Quantity": 1 }
         }
       ]
     },

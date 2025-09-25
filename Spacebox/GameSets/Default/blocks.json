@@ -50,6 +50,15 @@
         "Durability": 3
     },
     {
+        "ID": "dense_ice_rock",
+        "Name": "Dense Ice Rock",
+        "Description" : "Source of methane",
+        "Sides": "iceBlock2",
+        "PowerToDrill": 2,
+        "Mass": 2,
+        "Durability": 6
+    },
+    {
         "ID": "aluminium_ore",
         "Name": "Aluminium Ore",
         "Sides": "aluOre",
@@ -338,13 +347,7 @@
         "Category": "blocks",
         "IsTransparent": false
     },
-    {
-        "ID": "cable_pro",
-        "Name": "Cable Pro",
-        "Sides": "wirePro",
-        "Category": "blocks",
-        "IsTransparent": true
-    },
+    
     {
         "ID": "light_white",
         "Name": "Light White",
@@ -449,35 +452,11 @@
         "SoundDestroy": "blockDestroyGlass",
         "SoundPlace": "placeMetal2"
     },
-    {
-        "ID": "ai_core",
-        "Name": "AI Core",
-        "Category": "other",
-        "Sides": "core",
-        "Mass": 50,
-        "PowerToDrill": 3,
-        "Durability": 50,
-        "IsTransparent": true,
-        "SoundPlace": "blockPlaceHeavy"
-    },
-    {
-        "ID": "just_block",
-        "Name": "Just Block",
-       
-        "Sides": "block",
-        "Up" :"up",
-        "Down" :"down",
-        "Left" : "left",
-        "Right" :"right",
-        "Forward" :"forward",
-        "Back" :"back",
-
-        "IsTransparent": false
-    },
+   
     {
         "ID": "moritz",
         "Name": "Moritz",
-        "Category": "blocks",
+      
         "Sides": "moritz",
         "PowerToDrill": 5,
         "Mass": 1,
@@ -519,18 +498,7 @@
         "SoundPlace": "blockPlaceHeavy",
         "SoundDestroy": "blockPlaceHeavy"
     },
-    {
-        "ID": "aim_block",
-        "Name": "Aim Block",
-        "Category": "other",
-        "Sides": "aim",
-        "PowerToDrill": 1,
-        "Mass": 1,
-        "Durability": 5,
-        "IsTransparent": true,
-        "SoundPlace": "blockPlaceLight",
-        "SoundDestroy": "blockPlaceLight"
-    },
+  
     {
         "ID": "gravity_generator",
         "Name": "Gravity Generator",
@@ -546,21 +514,10 @@
         "SoundPlace": "blockPlaceHeavy",
         "SoundDestroy": "blockPlaceHeavy"
     },
+  
     {
-        "ID": "console",
-        "Name": "Console",
-        "Category": "resources",
-        "Sides": "gravityTop",
-        "Up": "display",
-        "Down": "gravityTop",
-        "PowerToDrill": 1,
-        "Mass": 1,
-        "Durability": 5,
-        "IsTransparent": false
-    },
-    {
-        "ID": "aluminium_crate",
-        "Name": "Aluminium Crate",
+        "ID": "basic_aluminium_crate",
+        "Name": "Basic Aluminium Crate",
         "Type": "storage",
         "Category": "other",
         "Sides": "aluChestSide",
@@ -571,6 +528,50 @@
         "PowerToDrill": 1,
         "Mass": 4,
         "Durability": 10,
+        "IsTransparent": false
+     },
+     {
+        "ID": "basic_iron_crate",
+        "Name": "Basic Iron Crate",
+        "Type": "storage",
+        "Category": "other",
+        "Sides": "aluChestSide",
+        "Up": "aluChestTop",
+        "Down": "aluChestTop",
+        "SizeX": 4,
+        "SizeY": 3,
+        "PowerToDrill": 2,
+        "Mass": 8,
+        "Durability": 20,
+        "IsTransparent": false
+      },
+      {
+        "ID": "basic_titanium_crate",
+        "Name": "Basic Titanium Crate",
+        "Type": "storage",
+        "Category": "other",
+        "Sides": "aluChestSide",
+        "Up": "aluChestTop",
+        "Down": "aluChestTop",
+        "SizeX": 4,
+        "SizeY": 3,
+        "PowerToDrill": 3,
+        "Mass": 6,
+        "Durability": 30,
+        "IsTransparent": false
+     },
+     {
+        "ID": "strongbox",
+        "Name": "Strongbox",
+        "Type": "storage",
+        "Category": "other",
+        "Sides": "strongbox_side",
+        "Forward": "strongbox_face",
+        "SizeX": 3,
+        "SizeY": 3,
+        "PowerToDrill": 5,
+        "Mass": 50,
+        "Durability": 200,
         "IsTransparent": false
     },
     {

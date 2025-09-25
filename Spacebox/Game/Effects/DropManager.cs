@@ -363,7 +363,10 @@ namespace Spacebox.Game.Effects
                 return;
             }
 
-            _octree.Add(drop, drop.Position);
+            if (!_octree.GetAll().Contains(drop))
+            {
+                _octree.Add(drop, drop.Position);
+            }
             drop.IsThrown = false;
         }
 
@@ -374,7 +377,9 @@ namespace Spacebox.Game.Effects
 
             foreach (var nearbyDrop in _nearbyDrops)
             {
-                if (nearbyDrop.Info.item.Id == stoppedDrop.Info.item.Id && !nearbyDrop.IsMovingToPlayer)
+                if (nearbyDrop.Info.item.Id == stoppedDrop.Info.item.Id &&
+                    !nearbyDrop.IsMovingToPlayer &&
+                    nearbyDrop != stoppedDrop)
                 {
                     var distanceSquared = (nearbyDrop.Position - stoppedDrop.Position).LengthSquared;
                     if (distanceSquared <= _mergeDistanceSquared)
@@ -411,11 +416,6 @@ namespace Spacebox.Game.Effects
 
                 drop.PickupDelay = 3f;
                 drop.ResetPickupTimer();
-
-                if (TryMergeStoppedDrop(drop))
-                {
-                    return;
-                }
 
                 _octree.Add(drop, drop.Position);
             }

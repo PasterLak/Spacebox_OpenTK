@@ -189,7 +189,7 @@ namespace Spacebox.Game.GUI
             var dropPosition = Player.Position + Player.Front * 0.5f;
 
 
-            World.DropEffectManager.DropItem(dropPosition, Player.Front, 5f, slot.Item, 1,2);
+            World.DropEffectManager.DropItem(dropPosition, Player.Front, 6f, slot.Item, 1,2,4);
             slot.DropOne();
 
         }

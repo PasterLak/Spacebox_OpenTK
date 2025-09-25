@@ -23,7 +23,7 @@
         {
             "Id": "other",
             "Name": "Other",
-            "Icon": "aluminium_crate"
+            "Icon": "basic_aluminium_crate"
         },
         {
             "Id": "drills",
@@ -102,9 +102,21 @@
             ]
         },
         {
-            "Product": {"Item": "aluminium_crate", "Quantity": 1},
+            "Product": {"Item": "basic_aluminium_crate", "Quantity": 1},
             "Ingredients": [
                 {"Item": "aluminium_panels", "Quantity": 3}
+            ]
+        },
+         {
+            "Product": {"Item": "basic_iron_crate", "Quantity": 1},
+            "Ingredients": [
+                {"Item": "iron_panels", "Quantity": 3}
+            ]
+        },
+          {
+            "Product": {"Item": "basic_titanium_crate", "Quantity": 1},
+            "Ingredients": [
+                {"Item": "titanium_panels", "Quantity": 3}
             ]
         },
         {
@@ -294,6 +306,13 @@
             "Ingredients": [
                 {"Item": "compressed_oxygen", "Quantity": 1},
                 {"Item": "water", "Quantity": 1}
+            ]
+        },
+        {
+            "Product": {"Item": "polymer_pellets", "Quantity": 8},
+            "Ingredients": [
+                {"Item": "compressed_methane", "Quantity": 1},
+                {"Item": "water", "Quantity": 2}
             ]
         },
         {
