@@ -31,7 +31,7 @@ namespace Spacebox.Game.Generation
         public Astronaut Player { get; private set; }
         public static WorldGenerator WorldGenerator { get; set; }
         public static WorldLoader.LoadedWorld WorldData { get; private set; }
-        public static DropEffectManager DropEffectManager;
+        public static DropManager DropEffectManager;
         public static BlockDestructionManager DestructionManager;
         public static int Seed { get; private set; }
         public static Sector? CurrentSector { get; private set; }
@@ -56,11 +56,13 @@ namespace Spacebox.Game.Generation
             Overlay.AddElement(new WorldOverlayElement(this));
 
             BiomeGenerator = new BiomeGenerator(World.Seed, WorldGenerator);
+
+            DropEffectManager = new DropManager(player);
         }
         public override void Start()
         {
             DestructionManager = new BlockDestructionManager();
-            DropEffectManager = new DropEffectManager(Player);
+          
 
             Owner.AttachComponent(DestructionManager);
             Owner.AttachComponent(DropEffectManager);
@@ -87,6 +89,8 @@ namespace Spacebox.Game.Generation
             FramebufferCapture.SaveWorldPreview(screenSize, path);
             TagsSaveLoader.SaveTags(WorldData.WorldFolderPath);
 
+            DropEffectManager.SaveDrops(Path.Combine(WorldData.WorldFolderPath, "drop.json"));
+
             saveWasPressed = false;
             PanelUI.ShowItemModel();
             PanelUI.EnableRenderForCurrentItem = true;
@@ -102,7 +106,7 @@ namespace Spacebox.Game.Generation
             CurrentSector.SpawnPlayerNearAsteroid(Player, new Random(Seed));
             if (CurrentSector == null) Debug.Error("No current sector");
 
-
+            DropEffectManager.LoadDrops(Path.Combine(WorldData.WorldFolderPath, "drop.json"));
            
         }
 

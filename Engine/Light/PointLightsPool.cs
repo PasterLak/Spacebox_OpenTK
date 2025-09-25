@@ -1,22 +1,12 @@
 ﻿namespace Engine.Light
 {
-    public class PointLightsPool : IDisposable
+    public class PointLightsPool
     {
-
-        public static PointLightsPool? Instance;
 
         private Pool<PointLight> pool;
 
         public PointLightsPool( int initSize)
         {
-            if (Instance == null)
-                Instance = this;
-            else
-            {
-                Instance = this;
-                Debug.Error("[PointLightsPool] Instance already exists!");
-            }
-
 
             pool = new Pool<PointLight>(initSize,
             obj => obj,
@@ -44,11 +34,6 @@
             }
            
             pool.Release(light);
-        }
-
-        public void Dispose()
-        {
-            Instance = null;
         }
 
 

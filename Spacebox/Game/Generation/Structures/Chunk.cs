@@ -347,7 +347,7 @@ namespace Spacebox.Game.Generation
             {
                 World.DestructionManager.DestroyBlock(worldBlockPosition, block.LightColor, block);
                 if (spawnDrop)
-                    World.DropEffectManager.DropBlock(worldBlockPosition, block.LightColor, block);
+                    World.DropEffectManager.DropBlock(worldBlockPosition, block.LightColor, block, SpaceEntity);
             }
             else
             {
@@ -357,7 +357,7 @@ namespace Spacebox.Game.Generation
                         Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, block);
                     if (spawnDrop)
                         World.DropEffectManager.DropBlock(worldBlockPosition,
-                            Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, block);
+                            Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, block, SpaceEntity);
                 }
                 else
                 {
@@ -365,7 +365,7 @@ namespace Spacebox.Game.Generation
                         block);
                     if (spawnDrop)
                         World.DropEffectManager.DropBlock(worldBlockPosition, block.LightColor,
-                       block);
+                       block, SpaceEntity);
                 }
             }
 

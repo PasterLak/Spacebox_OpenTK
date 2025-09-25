@@ -1,14 +1,16 @@
 ﻿using Engine;
 using Engine.Audio;
 using Engine.Components;
+using Engine.Light;
 using OpenTK.Mathematics;
+using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Effects
 {
-    public class DropEffectManager : Component
+    public class DropManager : Component
     {
         private readonly Pool<Drop> _dropPool;
         private readonly HashSet<Drop> _activeDrops = new HashSet<Drop>();
@@ -18,6 +20,7 @@ namespace Spacebox.Game.Effects
         private readonly Dictionary<short, ParticleSystem> _particleSystems = new Dictionary<short, ParticleSystem>();
         private readonly AudioSource[] _pickupSounds = new AudioSource[3];
         private readonly Dictionary<Drop, Particle> _dropToParticle = new Dictionary<Drop, Particle>();
+        private readonly Dictionary<Drop, PointLight> _dropToLight = new Dictionary<Drop, PointLight>();
         private readonly Astronaut _player;
         private readonly float _maxSpeed;
         private readonly float _moveDistanceSquared;
@@ -25,14 +28,17 @@ namespace Spacebox.Game.Effects
         private readonly float _mergeDistanceSquared;
         private readonly float _mergeDistance;
 
+        public const int DropLifeTime = 60;
+        private PointLightsPool _lightPool;
+
         private PointOctree<Drop> _octree;
         private Random random = new Random();
-        public DropEffectManager(
+        public DropManager(
             Astronaut player,
             float maxSpeed = 20f,
             float moveDistance = 2f,
             float pickupDistance = 0.3f,
-            float mergeDistance = 1f)
+            float mergeDistance = 0.75f)
         {
             _player = player;
             _maxSpeed = maxSpeed;
@@ -41,6 +47,7 @@ namespace Spacebox.Game.Effects
             _mergeDistanceSquared = mergeDistance * mergeDistance;
             this._mergeDistance = mergeDistance;
             _octree = new PointOctree<Drop>(8192, Vector3.Zero, 1);
+            _lightPool = new PointLightsPool(8);
 
             _dropPool = new Pool<Drop>(
                 initialCount: 256,
@@ -67,13 +74,16 @@ namespace Spacebox.Game.Effects
             }
         }
 
-        public void DropItem(Vector3 position, Vector3 direction, float speed, Item item, int quantity, float pickupDelay = 0.5f, float deceleration = 5f)
+        public void DropItem(Vector3 position, Vector3 direction, float speed, Item item, int quantity, float pickupDelay = 0.5f, float deceleration = 5f, SpaceEntity sourceEntity = null)
         {
             var drop = _dropPool.Take();
-            drop.Initialize(position, item, quantity, 60,  pickupDelay);
-            drop.Velocity = direction.Normalized() * speed;
+            drop.Initialize(position, item, quantity, DropLifeTime, pickupDelay, sourceEntity);
+
+            var initialVelocity = direction.Normalized() * speed;
+            drop.Velocity = initialVelocity;
+            drop._initialVelocity = initialVelocity;
             drop.IsMovingToPlayer = false;
-            drop.IsThrown = true; 
+            drop.IsThrown = true;
             drop.Deceleration = deceleration;
 
             _activeDrops.Add(drop);
@@ -83,7 +93,7 @@ namespace Spacebox.Game.Effects
             CreateParticle(position, item.Id, drop);
         }
 
-        public void DropStorage(Storage storage, Vector3 position, float speed = 2f, float spreadRadius = 0.1f, float pickupDelay = 2f, float deceleration = 4f)
+        public void DropStorage(Storage storage, Vector3 position, float speed = 2f, float spreadRadius = 0.1f, float pickupDelay = 2f, float deceleration = 4f, SpaceEntity sourceEntity = null)
         {
             if (storage == null || !storage.HasAnyItems()) return;
 
@@ -97,8 +107,6 @@ namespace Spacebox.Game.Effects
                     itemGroups[slot.Item.Id] += slot.Count;
                 }
             }
-
-         
 
             foreach (var kvp in itemGroups)
             {
@@ -115,11 +123,11 @@ namespace Spacebox.Game.Effects
 
                 var direction = new Vector3(
                     (float)(random.NextDouble() * 2.0 - 1.0),
-                    (float)(random.NextDouble() * 2.0 - 1.0), 
-                    (float)(random.NextDouble() * 2.0 - 1.0)  
+                    (float)(random.NextDouble() * 2.0 - 1.0),
+                    (float)(random.NextDouble() * 2.0 - 1.0)
                 ).Normalized();
 
-                DropItem(dropPosition, direction, speed, item, totalQuantity, pickupDelay, deceleration);
+                DropItem(dropPosition, direction, speed, item, totalQuantity, pickupDelay, deceleration, sourceEntity);
             }
 
             storage.Clear();
@@ -137,7 +145,7 @@ namespace Spacebox.Game.Effects
             return null;
         }
 
-        public void DropBlock(Vector3 position, Color3Byte color, Block block, float pickupDelay = 0f)
+        public void DropBlock(Vector3 position, Color3Byte color, Block block, SpaceEntity entity, float pickupDelay = 0f)
         {
             var blockData = GameAssets.GetBlockDataById(block.Id);
             if (blockData.Id == 0 || blockData.Drop.Count <= 0) return;
@@ -150,15 +158,13 @@ namespace Spacebox.Game.Effects
                 return;
 
             var drop = _dropPool.Take();
-            drop.Initialize(dropPosition, item, quantity, 30, pickupDelay);
+            drop.Initialize(dropPosition, item, quantity, DropLifeTime, pickupDelay, entity);
 
             _activeDrops.Add(drop);
             _octree.Add(drop, dropPosition);
 
             EnsureParticleSystem(item.Id, blockData, color);
             CreateParticle(dropPosition, item.Id, drop);
-
-          
         }
 
         private bool TryMergeWithNearbyDrop(Vector3 position, Item item, int quantity)
@@ -175,11 +181,16 @@ namespace Spacebox.Game.Effects
                     {
                         var midPoint = (nearbyDrop.Position + position) * 0.5f;
                         nearbyDrop.Position = midPoint;
-                        nearbyDrop.AddQuantity(quantity, 60);
+                        nearbyDrop.AddQuantity(quantity, DropLifeTime);
 
                         if (_dropToParticle.TryGetValue(nearbyDrop, out var particle))
                         {
                             particle.Position = midPoint;
+                        }
+
+                        if (_dropToLight.TryGetValue(nearbyDrop, out var light))
+                        {
+                            light.Position = midPoint;
                         }
 
                         return true;
@@ -261,6 +272,22 @@ namespace Spacebox.Game.Effects
             particleSystem.PushParticle(particle);
 
             _dropToParticle[drop] = particle;
+
+            if (drop.Info.item.IsLuminous)
+            {
+                var light = _lightPool.Take();
+                light.Position = position;
+                light.Range = 3f;
+                light.Diffuse = new Vector3(
+                    drop.Info.item.Color.R / 255f,
+                    drop.Info.item.Color.G / 255f,
+                    drop.Info.item.Color.B / 255f
+                );
+                light.Specular = Vector3.Zero;
+                light.Enabled = true;
+
+                _dropToLight[drop] = light;
+            }
         }
 
         public override void OnUpdate()
@@ -361,6 +388,11 @@ namespace Spacebox.Game.Effects
                             particle.Position = midPoint;
                         }
 
+                        if (_dropToLight.TryGetValue(nearbyDrop, out var light))
+                        {
+                            light.Position = midPoint;
+                        }
+
                         return true;
                     }
                 }
@@ -426,6 +458,11 @@ namespace Spacebox.Game.Effects
             if (_dropToParticle.TryGetValue(drop, out var particle))
             {
                 particle.Position = drop.Position;
+            }
+
+            if (_dropToLight.TryGetValue(drop, out var light))
+            {
+                light.Position = drop.Position;
             }
         }
 
@@ -519,6 +556,12 @@ namespace Spacebox.Game.Effects
                 _dropToParticle.Remove(drop);
             }
 
+            if (_dropToLight.TryGetValue(drop, out var light))
+            {
+                _lightPool.PutBack(light);
+                _dropToLight.Remove(drop);
+            }
+
             _dropPool.Release(drop);
         }
         private void RemoveParticleFromSystem(Particle particle, short itemId)
@@ -536,11 +579,16 @@ namespace Spacebox.Game.Effects
 
             foreach (var drop in _activeDrops)
             {
+                if (_dropToLight.TryGetValue(drop, out var light))
+                {
+                    _lightPool.PutBack(light);
+                }
                 _dropPool.Release(drop);
             }
             _activeDrops.Clear();
             _movingDrops.Clear();
             _dropToParticle.Clear();
+            _dropToLight.Clear();
 
             foreach (var particleSystem in _particleSystems.Values)
             {
@@ -551,6 +599,40 @@ namespace Spacebox.Game.Effects
             foreach (var sound in _pickupSounds)
             {
                 sound?.Dispose();
+            }
+        }
+
+        private void CreateLoadedDrop(string itemIdString, int quantity, Vector3 position)
+        {
+            var item = GameAssets.GetItemByFullID(itemIdString);
+            if (item == null)
+            {
+                Debug.Error($"[DropManager.CreateLoadedDrop] Item {itemIdString} not found and skipped");
+                return;
+            }
+
+            var drop = _dropPool.Take();
+            drop.Initialize(position, item, quantity, DropLifeTime);
+
+            _activeDrops.Add(drop);
+            _octree.Add(drop, position);
+
+            EnsureParticleSystemForItem(item.Id);
+            CreateParticle(position, item.Id, drop);
+        }
+
+        public void SaveDrops(string filePath)
+        {
+            var dropData = DropSaveManager.SerializeDrops(_activeDrops);
+            DropSaveManager.SaveToFile(dropData, filePath);
+        }
+
+        public void LoadDrops(string filePath)
+        {
+            var dropData = DropSaveManager.LoadFromFile(filePath);
+            foreach (var data in dropData)
+            {
+                CreateLoadedDrop(data.ItemId, data.Quantity, data.Position);
             }
         }
 

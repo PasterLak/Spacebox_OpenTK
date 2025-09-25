@@ -41,12 +41,19 @@ namespace Spacebox.Game.Player
         private PointLight light;
         private bool useLight = true;
         private Astronaut? astronaut;
+
+        public static PointLightsPool PointLightsPool;
         public Projectile()
         {
             lineRenderer = new LineRenderer();
             lineRenderer.Color = Color4.Blue;
             lineRenderer.Thickness = 0.2f;
             AddChild(lineRenderer);
+
+            if(PointLightsPool == null)
+            {
+                PointLightsPool = new PointLightsPool(8);
+            }
 
         }
 
@@ -106,7 +113,7 @@ namespace Spacebox.Game.Player
 
             if (useLight)
             {
-                light = PointLightsPool.Instance.Take();
+                light = PointLightsPool.Take();
 
                 light.Range = 4;
                 light.Diffuse = parameters.Color3;
@@ -265,8 +272,8 @@ namespace Spacebox.Game.Player
         {
             if (useLight)
             {
-                if (PointLightsPool.Instance != null)
-                    PointLightsPool.Instance.PutBack(light);
+                if (PointLightsPool != null)
+                    PointLightsPool.PutBack(light);
             }
 
             IsActive = false;

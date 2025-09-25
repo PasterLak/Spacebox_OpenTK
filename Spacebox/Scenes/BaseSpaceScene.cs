@@ -123,8 +123,6 @@ namespace Spacebox.Scenes
 
             localPlayer.GameMode = World.WorldData.Info.GameMode;
 
-            PointLightsPool.Instance = new PointLightsPool(1);
-
 
             if (Settings.Graphics.EffectsEnabled == true)
                 localPlayer.AddChild(new DustSpawner());
@@ -346,7 +344,7 @@ namespace Spacebox.Scenes
             blockSelector.Dispose();
             TickTaskManager.Dispose();
 
-            PointLightsPool.Instance.Dispose();
+            Projectile.PointLightsPool = null;
             Chat.Clear();
             if (InteractionShoot.ProjectilesPool != null)
                 InteractionShoot.ProjectilesPool.Dispose();

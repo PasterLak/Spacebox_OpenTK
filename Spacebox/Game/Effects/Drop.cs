@@ -1,4 +1,6 @@
-﻿using OpenTK.Mathematics;
+﻿using Engine.Physics;
+using OpenTK.Mathematics;
+using Spacebox.Game.Generation;
 
 namespace Spacebox.Game.Effects;
 
@@ -21,12 +23,15 @@ public class Drop : IDisposable
     public bool IsThrown;
 
     private float _age;
+    public Vector3 _initialVelocity;
+    private float _throwTime;
+    public SpaceEntity SourceEntity;
 
     public bool IsExpired => TimeRemaining <= 0f;
     public bool CanBePickedUp => _age >= PickupDelay;
     public bool IsStopped => Velocity.LengthSquared < 0.01f;
 
-    public void Initialize(Vector3 position, Item item, int quantity, float lifetime, float pickupDelay = 0f)
+    public void Initialize(Vector3 position, Item item, int quantity, float lifetime, float pickupDelay = 0f, SpaceEntity sourceEntity = null)
     {
         Position = position;
         Velocity = Vector3.Zero;
@@ -36,8 +41,11 @@ public class Drop : IDisposable
         Deceleration = 0f;
         IsMovingToPlayer = false;
         IsActive = true;
-        IsThrown = false;  
+        IsThrown = false;
+        SourceEntity = sourceEntity;
         _age = 0f;
+        _initialVelocity = Vector3.Zero;
+        _throwTime = 0f;
     }
 
     public void AddQuantity(int amount, float lifetime)
@@ -55,18 +63,45 @@ public class Drop : IDisposable
 
         if (Velocity.LengthSquared > 0.01f)
         {
-            Position += Velocity * deltaTime;
+            var movement = Velocity * deltaTime;
+            var newPosition = Position + movement;
 
-            if (Deceleration > 0f && !IsMovingToPlayer)
+            if (IsThrown && !IsMovingToPlayer)
             {
-                var currentSpeed = Velocity.Length;
-                var newSpeed = Math.Max(0f, currentSpeed - Deceleration * deltaTime);
+                var ray = new Ray(Position, Velocity.Normalized(), movement.Length);
+                bool hasHit = false;
 
-                if (newSpeed > 0f)
+                if (SourceEntity != null)
                 {
-                    Velocity = Velocity.Normalized() * newSpeed;
+                    hasHit = SourceEntity.Raycast(ray, out var entityHit);
+                    if (hasHit)
+                    {
+                        HandleCollision(entityHit.hitPosition, entityHit.normal.ToVector3());
+                        return;
+                    }
                 }
                 else
+                {
+                    hasHit = World.CurrentSector.Raycast(ray, out var worldHit);
+                    if (hasHit)
+                    {
+                        HandleCollision(worldHit.hitPosition, worldHit.normal.ToVector3());
+                        return;
+                    }
+                }
+            }
+
+            Position = newPosition;
+
+            if (Deceleration > 0f && !IsMovingToPlayer && IsThrown)
+            {
+                _throwTime += deltaTime;
+                float decayFactor = MathHelper.Clamp(1f - (_throwTime * Deceleration * 0.2f), 0f, 1f);
+                decayFactor = decayFactor * decayFactor;
+
+                Velocity = _initialVelocity * decayFactor;
+
+                if (Velocity.LengthSquared < 0.01f)
                 {
                     Velocity = Vector3.Zero;
                 }
@@ -77,6 +112,23 @@ public class Drop : IDisposable
     public void ResetPickupTimer()
     {
         _age = 0f;
+    }
+
+    private void HandleCollision(Vector3 hitPosition, Vector3 normal)
+    {
+        Position = hitPosition + normal * 0.05f;
+
+        var reflectedVelocity = Velocity - 2f * Vector3.Dot(Velocity, normal) * normal;
+        reflectedVelocity *= 0.8f;
+
+        Velocity = reflectedVelocity;
+        _initialVelocity = reflectedVelocity;
+        _throwTime = 0f;
+
+        if (Velocity.LengthSquared < 1f)
+        {
+            Velocity = Vector3.Zero;
+        }
     }
 
     public void Reset()
@@ -90,7 +142,10 @@ public class Drop : IDisposable
         IsMovingToPlayer = false;
         IsActive = false;
         IsThrown = false;
-        ResetPickupTimer();
+        SourceEntity = null;
+        _age = 0f;
+        _initialVelocity = Vector3.Zero;
+        _throwTime = 0f;
     }
 
     public void Dispose()
