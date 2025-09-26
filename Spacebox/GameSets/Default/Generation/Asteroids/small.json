@@ -2,7 +2,7 @@
         "Id": "asteroid_light",
         "Name": "Small asteroid",
      
-        "MinRadius": 4,
+        "MinRadius": 8,
         "MaxRadius": 16,
         "DensityThreshold": 33,
         "NoiseOctaves": 2,

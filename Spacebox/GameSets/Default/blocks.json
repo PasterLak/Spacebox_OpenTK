@@ -521,8 +521,8 @@
         "Type": "storage",
         "Category": "other",
         "Sides": "aluChestSide",
+        "Forward": "aluChestFront",
         "Up": "aluChestTop",
-        "Down": "aluChestTop",
         "SizeX": 4,
         "SizeY": 3,
         "PowerToDrill": 1,
@@ -530,21 +530,21 @@
         "Durability": 10,
         "IsTransparent": false
      },
-     {
+    {
         "ID": "basic_iron_crate",
         "Name": "Basic Iron Crate",
         "Type": "storage",
         "Category": "other",
-        "Sides": "aluChestSide",
-        "Up": "aluChestTop",
-        "Down": "aluChestTop",
+        "Sides": "ironChestSide",
+        "Forward": "ironChestFront",
+        "Up": "ironChestTop",
         "SizeX": 4,
         "SizeY": 3,
         "PowerToDrill": 2,
         "Mass": 8,
         "Durability": 20,
         "IsTransparent": false
-      },
+     },
       {
         "ID": "basic_titanium_crate",
         "Name": "Basic Titanium Crate",
@@ -561,12 +561,12 @@
         "IsTransparent": false
      },
      {
-        "ID": "strongbox",
-        "Name": "Strongbox",
+        "ID": "safe",
+        "Name": "Armored Safe",
         "Type": "storage",
         "Category": "other",
-        "Sides": "strongbox_side",
-        "Forward": "strongbox_face",
+        "Sides": "safe_side",
+        "Forward": "safe_face",
         "SizeX": 3,
         "SizeY": 3,
         "PowerToDrill": 5,

@@ -113,10 +113,18 @@
                 {"Item": "iron_panels", "Quantity": 3}
             ]
         },
-          {
+         {
             "Product": {"Item": "basic_titanium_crate", "Quantity": 1},
             "Ingredients": [
                 {"Item": "titanium_panels", "Quantity": 3}
+            ]
+        },
+         {
+            "Product": {"Item": "safe", "Quantity": 1},
+            "Ingredients": [
+                {"Item": "titanium_panels", "Quantity": 6},
+                 {"Item": "plastic", "Quantity": 4},
+                 {"Item": "obscurium_ingot", "Quantity": 1}
             ]
         },
         {

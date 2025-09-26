@@ -3,8 +3,6 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Engine;
 using Spacebox.Game.Player;
 using Engine.Audio;
-using Spacebox.Game.Generation.Blocks;
-using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Player.Interactions;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Game.Generation;
@@ -25,6 +23,7 @@ namespace Spacebox.Game.GUI
         private static ItemModel ItemModel;
         private static ItemSlot SelectedSlot;
         private static AudioSource scrollAudio;
+        private static AudioSource dropAudio;
         private static short _selectedSlotId = 0;
         public static short SelectedSlotId
         {
@@ -48,6 +47,7 @@ namespace Spacebox.Game.GUI
             SlotTexture = slotTexture;
             SelectedTexture = selectedTexture;
             scrollAudio = new AudioSource(Resources.Load<AudioClip>("scroll"));
+            dropAudio = new AudioSource(Resources.Load<AudioClip>("Resources/Audio/dropped.ogg"));
 
             InventoryUIHelper.SetDefaultIcon(slotTexture, selectedTexture);
             SetSelectedSlot(0);
@@ -191,6 +191,11 @@ namespace Spacebox.Game.GUI
 
             World.DropEffectManager.DropItem(dropPosition, Player.Front, 6f, slot.Item, 1,2,4);
             slot.DropOne();
+
+            if (dropAudio != null)
+            {
+                dropAudio.Play();
+            }
 
         }
 

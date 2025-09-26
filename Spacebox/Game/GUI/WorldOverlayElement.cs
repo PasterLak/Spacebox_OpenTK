@@ -4,6 +4,7 @@ using Spacebox.Game.Generation;
 using Engine;
 using OpenTK.Mathematics;
 using Spacebox.Game.Player;
+using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.GUI
 {
@@ -25,6 +26,7 @@ namespace Spacebox.Game.GUI
             if (World.CurrentSector == null) { return; }
 
             ImGui.SeparatorText("[WORLD]");
+            ImGui.Text($"Time: {GameTime.ToString()} TicK: {GameTime.DayTick} ");
             ImGui.Text($"Sector: Pos: {World.CurrentSector.PositionWorld} Index: {World.CurrentSector.PositionIndex}");
 
             var cam = Camera.Main;
