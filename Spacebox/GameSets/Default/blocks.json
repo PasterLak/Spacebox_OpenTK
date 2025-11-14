@@ -42,12 +42,12 @@
     },
     {
         "ID": "ice_rock",
-        "Name": "Ice Rock",
+        "Name": "Icy Rock",
         "Description" : "Contains ice pieces",
         "Sides": "iceBlock",
         "PowerToDrill": 1,
         "Mass": 1,
-        "Durability": 3
+        "Durability": 4
     },
     {
         "ID": "dense_ice_rock",

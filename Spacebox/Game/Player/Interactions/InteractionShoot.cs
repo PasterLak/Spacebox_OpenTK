@@ -9,13 +9,13 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
 
-namespace Spacebox.Game.Player.Interactions;
 using Engine;
 using Spacebox.Game;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Player;
 
 
+namespace Spacebox.Game.Player.Interactions;
 public class InteractionShoot : InteractionMode
 {
 

@@ -2,7 +2,6 @@
 using Engine.Animation;
 using Engine.Components;
 using Engine.Components.Debug;
-using Engine.Light;
 using Engine.Physics;
 using Engine.Utils;
 using OpenTK.Mathematics;

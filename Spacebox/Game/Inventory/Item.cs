@@ -25,6 +25,7 @@ namespace Spacebox.Game
             Name = name;
         }
 
+
         public Item(short id, byte stackSize, string name)
         {
             Id = id;

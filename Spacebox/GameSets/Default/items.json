@@ -445,6 +445,24 @@
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
+         { 
+        "ID": "polymer_fiber",
+        "Name": "Polymer Fiber",
+        "Description": "For clothes and equipment",
+        "Category": "items",
+        "Sprite": "polymer_fiber",
+        "MaxStack": 64,
+        "ModelDepth": 3.0
+    },
+          {
+        "ID": "aluminium_helmet",
+        "Name": "Aluminium Helmet",
+        "Description": "Fancy but unwearable",
+        "Category": "items",
+        "Sprite": "aluminium_helmet",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
     
       {
         "ID": "plastic",
@@ -458,7 +476,7 @@
     
     {
         "ID": "power",
-        "Name": "Power",
+        "Name": "Power Overcharge",
         "Sprite": "power",
         "Type": "consumable",
         "Category": "consumables",

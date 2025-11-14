@@ -324,6 +324,21 @@
             ]
         },
         {
+            "Product": {"Item": "polymer_fiber", "Quantity": 1},
+            "Ingredients": [
+                {"Item": "polymer_pellets", "Quantity": 4}
+              
+            ]
+        },
+        {
+            "Product": {"Item": "aluminium_helmet", "Quantity": 1},
+            "Ingredients": [
+                 {"Item": "aluminium_ingot", "Quantity": 4},
+                {"Item": "polymer_fiber", "Quantity": 2}
+              
+            ]
+        },
+        {
             "Product": {"Item": "power", "Quantity": 1},
             "Ingredients": [
                 {"Item": "energy_cell", "Quantity": 1},
