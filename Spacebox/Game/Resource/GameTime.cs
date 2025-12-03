@@ -7,8 +7,8 @@ namespace Spacebox.Game.Resource
         public static int DayTick { get; private set; } = 0;
         public static int Hour { get; private set; } = 0;
         public static int Minute { get; private set; } = 0;
-        public static Action OnTimeChanged;
-        public static Action OnDayChanged;
+        public static Action? OnTimeChanged;
+        public static Action? OnDayChanged;
         private const int TicksPerDay = 24000;
         private const int TicksPerHour = TicksPerDay / 24;
 

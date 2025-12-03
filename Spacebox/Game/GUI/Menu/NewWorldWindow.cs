@@ -71,17 +71,46 @@ namespace Spacebox.Game.GUI.Menu
             ImGui.Text(comboLabel2);
             ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(ImGui.GetStyle().FramePadding.X, (inputHeight - labelHeight) / 2));
             ImGui.SetNextItemWidth(inputWidth);
-            ImGui.SetCursorPosX((windowWidth - inputWidth) / 2);
-            if (ImGui.BeginCombo("##GameSet", menu.GameSets[menu.SelectedGameSetIndex].ModName))
+
+            string comboPreview = menu.GameSets[menu.SelectedGameSetIndex].ModName;
+            var selectedIcon = menu.GameSets[menu.SelectedGameSetIndex].Icon;
+
+            if (selectedIcon != null && selectedIcon.Handle != IntPtr.Zero)
             {
+                comboPreview = $"  {comboPreview}";
+            }
+            
+
+            ImGui.SetCursorPosX((windowWidth - inputWidth) / 2);
+            
+            if (ImGui.BeginCombo("##GameSet", comboPreview))
+            {
+
                 for (int i = 0; i < menu.GameSets.Count; i++)
                 {
                     bool isSelected = i == menu.SelectedGameSetIndex;
-                    if (ImGui.Selectable(menu.GameSets[i].ModName, isSelected))
+
+                    var icon = menu.GameSets[i].Icon;
+
+                   
+                    if (icon != null && icon.Handle != IntPtr.Zero)
+                    {
+                      
+                        ImGui.Image(icon.Handle, new System.Numerics.Vector2(labelSize2.Y, labelSize2.Y));
+                        ImGui.SameLine();
+                    }
+                    else
+                    {
+                      
+                        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + labelSize2.Y);
+                    }
+
+                    if (ImGui.Selectable(" " + menu.GameSets[i].ModName, isSelected))
                     {
                         menu.Click1.Play();
                         menu.SelectedGameSetIndex = i;
                     }
+
                     if (isSelected)
                     {
                         ImGui.SetItemDefaultFocus();
@@ -89,6 +118,7 @@ namespace Spacebox.Game.GUI.Menu
                 }
                 ImGui.EndCombo();
             }
+           
             ImGui.PopStyleVar();
             float totalButtonWidth = buttonWidth * 2 + spacing;
             float bottomMargin = windowHeight * 0.05f;

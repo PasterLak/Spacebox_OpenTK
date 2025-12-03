@@ -18,6 +18,7 @@ namespace Spacebox.Game
         public Color3Byte Color { get; set; } = new Color3Byte(0);
         public bool IsLuminous => Color != Color3Byte.Zero;
         public bool IsStackable => StackSize > 1;
+
         public Item(byte stackSize, string name)
         {
            
@@ -31,14 +32,6 @@ namespace Spacebox.Game
             Id = id;
             StackSize = stackSize;
             Name = name;
-        }
-
-        public Item(byte stackSize, string name, byte x, byte y)
-        {
-           
-            StackSize = stackSize;
-            Name = name;
-            TextureCoord = new Vector2i(x,y);
         }
 
         public Item(byte stackSize, string name, float modelDepth)

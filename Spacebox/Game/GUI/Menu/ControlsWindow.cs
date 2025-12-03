@@ -15,6 +15,7 @@ public class ControlsWindow : MenuWindow
     private bool isRemapping = false;
     private float remapTimeout = 0f;
     private const float MAX_REMAP_TIME = 10f;
+    private List<string> sameKeys = new List<string>();
 
     public ControlsWindow(GameMenu menu)
     {
@@ -50,6 +51,11 @@ public class ControlsWindow : MenuWindow
         }
     }
 
+    public override void OnWindowChanged()
+    {
+        sameKeys = ValidateSameBindings();
+    }
+
     private void RenderControlsTable(Vector2 listSize, float rowH)
     {
         ImGui.BeginTable("table##controls", 4, ImGuiTableFlags.NoBordersInBody | ImGuiTableFlags.ScrollY | ImGuiTableFlags.BordersInnerV );
@@ -74,9 +80,14 @@ public class ControlsWindow : MenuWindow
 
             ImGui.TableNextColumn();
             string bindingText = GetBindingDisplayText(action.action);
-            ImGui.Text(bindingText);
+
+            if(sameKeys.Contains(bindingText))
+            ImGui.TextColored(new Vector4(1,0.5f,0,1), bindingText);
+            else
+                ImGui.Text(bindingText);
 
             ImGui.TableNextColumn();
+
             if (isRemapping && remappingAction == action.id)
             {
                 ImGui.TextColored(new Vector4(1, 1, 0, 1), "Listening...");
@@ -100,6 +111,33 @@ public class ControlsWindow : MenuWindow
 
         var displayNames = action.Bindings.Select(b => b.GetDisplayName());
         return string.Join(" / ", displayNames);
+    }
+
+    private List<string> ValidateSameBindings()
+    {
+        var actions = InputManager.Instance.GetAllActions();
+
+        var same = new List<string>();
+        var checkedBindings = new List<string>();
+
+        foreach (var action in actions)
+        {
+
+            string bindingText = GetBindingDisplayText(action.action);
+
+            if (checkedBindings.Contains(bindingText))
+            {
+                same.Add(bindingText);
+            }
+            else
+            {
+                checkedBindings.Add(bindingText);
+            }
+        }
+
+        Debug.Log("Same found: " + same.Count);
+
+        return same;
     }
 
     private void StartRemapping(string actionID)
@@ -280,6 +318,7 @@ public class ControlsWindow : MenuWindow
             {
                 isRemapping = false;
                 remappingAction = null;
+                sameKeys = ValidateSameBindings();
             }
         }
     }
@@ -289,6 +328,8 @@ public class ControlsWindow : MenuWindow
         remapper.CancelRemapping();
         isRemapping = false;
         remappingAction = null;
+
+        sameKeys = ValidateSameBindings();
     }
 }
 

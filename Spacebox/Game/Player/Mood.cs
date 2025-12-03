@@ -6,24 +6,16 @@ using Spacebox.Game.Generation;
 
 namespace Spacebox.Game.Player
 {
-    public enum MoodEvent
-    {
-        Discovery,
-        Combat,
-        Building,
-        Exploration,
-        Survival,
-        Achievement
-    }
 
     public class TimedMoodEvent
     {
+        public string Name { get; set; }
         public float Interval { get; set; }
         public Func<bool> Condition { get; set; }
         public int MoodChangeOnTrue { get; set; }
         public int MoodChangeOnFalse { get; set; }
         public float Timer { get; set; } = 0f;
-        public string Name { get; set; }
+        
 
         public TimedMoodEvent(string name, float interval, Func<bool> condition, int moodChangeOnTrue, int moodChangeOnFalse = 0)
         {
@@ -44,15 +36,6 @@ namespace Spacebox.Game.Player
         private AudioSource _audioSource = new AudioSource();
         private List<TimedMoodEvent> _timedEvents = new List<TimedMoodEvent>();
         private Vector3 _lastPosition;
-        private readonly Dictionary<MoodEvent, int> _eventValues = new Dictionary<MoodEvent, int>
-        {
-            { MoodEvent.Discovery, 1 },
-            { MoodEvent.Combat, 10 },
-            { MoodEvent.Building, 8 },
-            { MoodEvent.Exploration, 12 },
-            { MoodEvent.Survival, 20 },
-            { MoodEvent.Achievement, 25 }
-        };
 
         public StatsData MoodData => _moodData;
         private Random _random = new Random();
@@ -205,14 +188,6 @@ namespace Spacebox.Game.Player
             _timedEvents.RemoveAll(e => e.Name == name);
         }
 
-        public void TriggerMoodEvent(MoodEvent moodEvent)
-        {
-            if (_eventValues.TryGetValue(moodEvent, out int value))
-            {
-                _moodData.Increment(value);
-            }
-        }
-
         public void AddMood(int points)
         {
             if (points > 0)
@@ -341,11 +316,6 @@ namespace Spacebox.Game.Player
 
                 Debug.Log($"[Mood] Playing mood effect '{selectedClip.Name}' at distance {Vector3.Distance(Owner.Position, randomPosition):F1}, remaining: {_availableEffects.Count}");
             }
-        }
-
-        public void SetEventValue(MoodEvent moodEvent, int value)
-        {
-            _eventValues[moodEvent] = Math.Max(0, value);
         }
 
         public override void OnDetached()

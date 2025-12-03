@@ -192,14 +192,13 @@ namespace Spacebox.Game.Generation
                 Mass = 0;
                 Debug.Error($"[SpaceEntity] Mass was negative! Id: {EntityID}");
             }
-
+            
             sumPosCenterOfMass = Vector3.Zero;
 
-            for (int i = 0; i < Chunks.Count; i++) // opt
+            for (int i = 0; i < Chunks.Count; i++) // opt 
             {
-                var chunkMass = Chunks[i].Mass;
 
-                sumPosCenterOfMass += Chunks[i].GetCenterOfMass() * chunkMass;
+                sumPosCenterOfMass += Chunks[i].GetCenterOfMass() * Chunks[i].Mass;
             }
 
             CalculateCenterOfMass();

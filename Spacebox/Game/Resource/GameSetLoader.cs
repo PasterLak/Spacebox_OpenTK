@@ -6,6 +6,7 @@ using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Scenes;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 
 namespace Spacebox.Game.Resource
@@ -49,6 +50,8 @@ namespace Spacebox.Game.Resource
                 Debug.Error($"[GameSetLoader] Failed to load config for mod '{modId}'.");
                 return;
             }
+           
+         
 
             LoadSounds(modPath);
             BlocksLoader.LoadBlocks(modPath, defaultModPath);
@@ -93,6 +96,8 @@ namespace Spacebox.Game.Resource
             }
             return string.Empty;
         }
+
+      
 
         private static ModConfig LoadConfig(string configFile)
         {
@@ -940,6 +945,8 @@ namespace Spacebox.Game.Resource
             public string Version { get; set; } = "0";
             public int BlockSize { get; set; } = 32;
             public string FolderName { get; set; } = "";
+            
+            public Texture2D? Icon { get; set; } = null;
             public List<TextureConfig> Textures { get; set; } = new List<TextureConfig>();
             public List<DefaultItem> ItemsOnStart { get; set; } = new List<DefaultItem>();
         }

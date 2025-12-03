@@ -163,6 +163,8 @@ namespace Spacebox.Scenes
 
             ResetImGuiFont();
 
+            Settings.ShowInterface = false; // for hide + CenteredText, todo rewrite
+
 
         }
 
@@ -213,10 +215,12 @@ namespace Spacebox.Scenes
            
             VerticalLinks.Draw();
             menu.Render();
-            devLogWindow.Render();
+            //devLogWindow.Render();
             //canvas.Draw();
             // ImGui.PopFont();
             ColorOverlay.OnGUI();
+
+            //CenteredText.Hide();
             CenteredText.OnGUI();
         }
 

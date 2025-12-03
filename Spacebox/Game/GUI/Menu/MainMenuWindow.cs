@@ -7,6 +7,10 @@ using System.Numerics;
 public abstract class MenuWindow
 {
     public abstract void Render();
+    public virtual void OnWindowChanged()
+    {
+
+    }
 }
 
 public class MainMenuWindow : MenuWindow
@@ -16,6 +20,9 @@ public class MainMenuWindow : MenuWindow
     {
         this.menu = menu;
     }
+
+   
+
     public override void Render()
     {
         Vector2 windowSize = ImGui.GetIO().DisplaySize;

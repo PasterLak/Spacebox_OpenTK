@@ -78,7 +78,13 @@ namespace Spacebox.Game.GUI.Menu
         public void Open<T>() where T : MenuWindow
         {
             var t = typeof(T);
-            if (windows.ContainsKey(t)) currentWindowType = t;
+            if (windows.ContainsKey(t))
+            {
+                currentWindowType = t;
+                windows[t].OnWindowChanged();
+
+            }
+
         }
 
         public T Get<T>() where T : MenuWindow
@@ -288,10 +294,31 @@ namespace Spacebox.Game.GUI.Menu
                     if (gameSetInfo != null)
                     {
                         gameSetInfo.FolderName = Path.GetFileName(modFolder);
+
+                        gameSetInfo.Icon = LoadIcon(modFolder);
+                        gameSetInfo.Icon.FlipY();
+                        gameSetInfo.Icon.FilterMode = FilterMode.Nearest;
+
                         gameSets.Add(gameSetInfo);
                     }
                 }
             }
+        }
+
+        private static Texture2D? LoadIcon(string modPath)
+        {
+          
+
+            var iconPath = Path.Combine(modPath, "icon.png");
+            if (File.Exists(iconPath))
+            {
+              
+                return Resources.Load<Texture2D>(iconPath);
+            }
+
+            Debug.Error("No icon.png for mod " + ModInfo.ModName + " found! Path: " + iconPath);
+
+            return null;
         }
 
         public void CreateNewWorld()
