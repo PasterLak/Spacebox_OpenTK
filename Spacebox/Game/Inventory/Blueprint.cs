@@ -64,6 +64,58 @@ namespace Spacebox.Game
         {
         }
 
+        public Blueprint Clone()
+        {
+            Blueprint copy = new Blueprint();
+
+            copy.Id = this.Id;
+            copy.RequiredTicks = this.RequiredTicks;
+            copy.PowerPerTickRequared = this.PowerPerTickRequared;
+
+            if (this.Product != null)
+            {
+                copy.Product = new Product(this.Product.Item, this.Product.Quantity);
+            }
+
+            if (this.Ingredients != null)
+            {
+
+                copy.Ingredients = new Ingredient[this.Ingredients.Length];
+
+                for (int i = 0; i < this.Ingredients.Length; i++)
+                {
+                    var original = this.Ingredients[i];
+                    if (original != null)
+                    {
+                        copy.Ingredients[i] = new Ingredient(original.Item, original.Quantity);
+                    }
+                }
+            }
+
+            return copy;
+        }
+
+        public static void ScaleBlueprint(Blueprint blueprint, int multiplier)
+        {
+            if (blueprint == null) return;
+
+            if (blueprint.Product != null)
+            {
+                blueprint.Product.Quantity = (byte)(blueprint.Product.Quantity * multiplier);
+            }
+
+            if (blueprint.Ingredients != null)
+            {
+                foreach (var ingredient in blueprint.Ingredients)
+                {
+                    if (ingredient != null)
+                    {
+                        ingredient.Quantity = (byte)(ingredient.Quantity * multiplier);
+                    }
+                }
+            }
+        }
+
         public override string ToString()
         {
             string s = "";

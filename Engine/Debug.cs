@@ -172,9 +172,24 @@ namespace Engine
 #endif
         }
 
+        public static void Log(string sender, string message, OpenTK.Mathematics.Color4 color)
+        {
+            AddMessage($"[{sender}] {message}", color);
+#if DEBUG
+            Console.WriteLine($"[{sender.GetType().Name}] {message}");
+#endif
+        }
+
         public static void Log(object sender, string message, OpenTK.Mathematics.Color4 color)
         {
             AddMessage($"[{sender.GetType().Name}] {message}", color);
+#if DEBUG
+            Console.WriteLine($"[{sender.GetType().Name}] {message}");
+#endif
+        }
+        public static void Log(string sender, string message)
+        {
+            AddMessage($"[{sender}] {message}", Color.White);
 #if DEBUG
             Console.WriteLine($"[{sender.GetType().Name}] {message}");
 #endif

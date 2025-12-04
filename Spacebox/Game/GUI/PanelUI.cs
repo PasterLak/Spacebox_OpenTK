@@ -53,10 +53,11 @@ namespace Spacebox.Game.GUI
             SetSelectedSlot(0);
             Storage.OnDataWasChanged += OnStorageDataWasChanged;
             var inventory = ToggleManager.Register("panel");
-            inventory.OnStateChanged += s => { 
-                AllowScroll = s; 
+            inventory.OnStateChanged += s =>
+            {
+                AllowScroll = s;
 
-                if(s)
+                if (s)
                 {
                     ShowItemDescription();
                 }
@@ -66,7 +67,7 @@ namespace Spacebox.Game.GUI
             _lastSelectedCount = 0;
         }
 
-         
+
 
         private static void OnStorageDataWasChanged(Storage storage)
         {
@@ -163,7 +164,15 @@ namespace Spacebox.Game.GUI
             }
             if (Input.IsActionDown("dropItem"))
             {
-                DropItem(SelectedSlot);
+                if (Input.IsKey(Keys.LeftShift))
+                {
+                    DropItem(SelectedSlot, true);
+                }
+                else
+                {
+                    DropItem(SelectedSlot, false);
+                }
+
             }
             if (Input.IsKeyDown(Keys.D0))
             {
@@ -179,7 +188,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        private static void DropItem(ItemSlot slot)
+        private static void DropItem(ItemSlot slot, bool dropAll)
         {
             if (slot == null) return;
             if (!slot.HasItem) return;
@@ -188,9 +197,17 @@ namespace Spacebox.Game.GUI
 
             var dropPosition = Player.Position + Player.Front * 0.5f;
 
+            if (!dropAll)
+            {
+                World.DropEffectManager.DropItem(dropPosition, Player.Front, 6f, slot.Item, 1, 2, 4);
+                slot.DropOne();
+            }
+            else
+            {
+                World.DropEffectManager.DropItem(dropPosition, Player.Front, 6f, slot.Item, slot.Count, 2, 4);
+                slot.Clear();
+            }
 
-            World.DropEffectManager.DropItem(dropPosition, Player.Front, 6f, slot.Item, 1,2,4);
-            slot.DropOne();
 
             if (dropAudio != null)
             {
@@ -276,9 +293,9 @@ namespace Spacebox.Game.GUI
 
         public static void SetFlashlight(Astronaut ast)
         {
-            if(ast != null)
+            if (ast != null)
             {
-                if(ItemModel != null)
+                if (ItemModel != null)
                 {
                     ItemModel.Material.SetFlashlight(ast.Flashlight);
                 }
@@ -308,15 +325,15 @@ namespace Spacebox.Game.GUI
                     _lastSelectedCount = SelectedSlot.Count;
                 }
 
-                if(Player != null && SelectedSlot != null)
-                Player.SetItemLight(SelectedSlot);
+                if (Player != null && SelectedSlot != null)
+                    Player.SetItemLight(SelectedSlot);
 
 
                 ShowItemDescription();
 
 
 
-                    OnSlotChanged?.Invoke(slot);
+                OnSlotChanged?.Invoke(slot);
             }
         }
 
