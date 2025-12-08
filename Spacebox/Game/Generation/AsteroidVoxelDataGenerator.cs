@@ -7,14 +7,14 @@ namespace Spacebox.Game.Generation
 {
     public class AsteroidVoxelDataGenerator
     {
-        public int[,,] voxelData;
-        public int gridSize;
-        public float blockSize;
-        public Vector3 asteroidDimensions;
-        public int threshold;
-        public byte noiseOctaves;
-        public float noiseScale;
-        public int seed;
+        private int[,,] voxelData;
+        private int gridSize;
+        private float blockSize;
+        private Vector3 asteroidDimensions;
+        private int threshold;
+        private byte noiseOctaves;
+        private float noiseScale;
+        private int seed;
         private NoiseGenerator noiseGenerator;
         private AsteroidData asteroidData;
         private float[] layerThresholds;

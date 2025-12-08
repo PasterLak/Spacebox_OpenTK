@@ -5,7 +5,7 @@ namespace Spacebox.Game
 {
     public class ItemSlot
     {
-        private static short MaxSlotID = 0;
+        private static short MaxSlotID = 0; // reset?
 
         public short SlotId;
         public Item? Item;
@@ -45,6 +45,7 @@ namespace Spacebox.Game
             Item = new Item(1, "");
             _count = 0;
         }
+
 
 
         public void TakeOne()

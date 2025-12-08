@@ -11,9 +11,9 @@ namespace Spacebox.Game.Effects
         private Shader particleShader;
         private Texture2D dustTexture;
         private Camera camera;
-        ParticleSystem ParticleSystem2;
-        ConeEmitter emitter1;
-        PlaneEmitter emitter2; 
+        private ParticleSystem ParticleSystem2;
+        private ConeEmitter emitter1;
+        private PlaneEmitter emitter2; 
         private float elapsedTime = 0f;
         private const float duration = 2f;
 

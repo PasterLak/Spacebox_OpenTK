@@ -340,6 +340,7 @@ namespace Engine
             Debug.SaveMessagesToFile(true);
             Close();
             WorkerPoolManager.Shutdown();
+            ServiceLocator.Reset();
         }
 
         public static void Shutdown(object sender, EventArgs e)

@@ -1,96 +1,103 @@
 {
-        "Id": "asteroid_icy",
-        "Name": "Icy asteroid",
-       
-        "MinRadius": 12,
-        "MaxRadius": 32,
-        "DensityThreshold": 42,
-        "NoiseOctaves": 3,
-        "NoiseScale": 1,
-        "HasCavities": true,
-        "HasOreDeposits": true,
-        "UsePerlinWorms": true,
-        "WormSettings": {
-            "MinCount": 4,
-            "MaxCount": 8,
-            "DiameterInBlocks": 6,
-            "MaxTunnelLength": 32,
-            "PathDeviation": 0.8,
-            "StepSize": 1
-        },
-        "Layers": [
-            {
-                "Name": "Stone",
-                "FillBlockID": "ice_rock",
-                "Ratio": 70,
-                "Veins": [
-                     {
-                        "BlockId": "light_rock",
-                        "SpawnChance": 15000,
-                        "MinVeinSize": 2,
-                        "MaxVeinSize": 6,
-                        "CanSpawnNearVoid": true
-                    },
-                    {
-                        "BlockId": "cobaltite_rock",
-                        "SpawnChance": 6000,
-                        "MinVeinSize": 2,
-                        "MaxVeinSize": 6,
-                        "CanSpawnNearVoid": true
-                    },
-                    {
-                        "BlockId": "aluminium_ore",
-                        "SpawnChance": 3000,
-                        "MinVeinSize": 1,
-                        "MaxVeinSize": 6,
-                        "CanSpawnNearVoid": false
-                    }
-                ]
-            },
-            {
-                "Name": "Stone",
-                "FillBlockID": "dense_ice_rock",
-                "Ratio": 50,
-                "Veins": [
-                    {
-                        "BlockId": "light_rock",
-                        "SpawnChance": 15000,
-                        "MinVeinSize": 2,
-                        "MaxVeinSize": 6,
-                        "CanSpawnNearVoid": true
-                    },
-               
-                    {
-                        "BlockId": "iron_ore",
-                        "SpawnChance": 2000,
-                        "MinVeinSize": 2,
-                        "MaxVeinSize": 6,
-                        "CanSpawnNearVoid": true
-                    },
-                    {
-                        "BlockId": "cobaltite_rock",
-                        "SpawnChance": 1000,
-                        "MinVeinSize": 1,
-                        "MaxVeinSize": 4,
-                        "CanSpawnNearVoid": true
-                    }
-                    ,{
-                        "BlockId": "air",
-                        "SpawnChance": 1000,
-                        "MinVeinSize": 8,
-                        "MaxVeinSize": 16,
-                        "CanSpawnNearVoid": true
-                    }
+    "Id": "asteroid_icy",
+    "Name": "Icy asteroid",
 
-                ]
-            },
-             {
-                "Name": "Stone",
-                "FillBlockID": "air",
-                "Ratio": 20,
-                "Veins": [
-                    
-                ]
-            }
-        ]
-    }
+    "MinRadius": 12,
+    "MaxRadius": 32,
+    "DensityThreshold": 42,
+    "NoiseOctaves": 3,
+    "NoiseScale": 1,
+    "HasCavities": true,
+    "HasOreDeposits": true,
+    "UsePerlinWorms": true,
+    "WormSettings": {
+        "MinCount": 4,
+        "MaxCount": 8,
+        "DiameterInBlocks": 6,
+        "MaxTunnelLength": 32,
+        "PathDeviation": 0.8,
+        "StepSize": 1
+    },
+    "Layers": [
+        {
+            "Name": "Stone",
+            "FillBlockID": "ice_rock",
+            "Ratio": 70,
+            "Veins": [
+                {
+                    "BlockId": "light_rock",
+                    "SpawnChance": 15000,
+                    "MinVeinSize": 2,
+                    "MaxVeinSize": 6,
+                    "CanSpawnNearVoid": true
+                },
+                {
+                    "BlockId": "cobaltite_rock",
+                    "SpawnChance": 6000,
+                    "MinVeinSize": 2,
+                    "MaxVeinSize": 6,
+                    "CanSpawnNearVoid": true
+                },
+                {
+                    "BlockId": "aluminium_ore",
+                    "SpawnChance": 3000,
+                    "MinVeinSize": 1,
+                    "MaxVeinSize": 6,
+                    "CanSpawnNearVoid": false
+                },
+                {
+                    "BlockId": "iron_ore",
+                    "SpawnChance": 2500,
+                    "MinVeinSize": 1,
+                    "MaxVeinSize": 4,
+                    "CanSpawnNearVoid": false
+                }
+            ]
+        },
+        {
+            "Name": "Stone",
+            "FillBlockID": "dense_ice_rock",
+            "Ratio": 50,
+            "Veins": [
+                {
+                    "BlockId": "light_rock",
+                    "SpawnChance": 15000,
+                    "MinVeinSize": 2,
+                    "MaxVeinSize": 6,
+                    "CanSpawnNearVoid": true
+                },
+
+                {
+                    "BlockId": "iron_ore",
+                    "SpawnChance": 2000,
+                    "MinVeinSize": 2,
+                    "MaxVeinSize": 6,
+                    "CanSpawnNearVoid": true
+                },
+                {
+                    "BlockId": "cobaltite_rock",
+                    "SpawnChance": 1000,
+                    "MinVeinSize": 1,
+                    "MaxVeinSize": 4,
+                    "CanSpawnNearVoid": true
+                },
+                {
+                    "BlockId": "air",
+                    "SpawnChance": 1000,
+                    "MinVeinSize": 8,
+                    "MaxVeinSize": 16,
+                    "CanSpawnNearVoid": true
+                }
+
+            ]
+        },
+        {
+            "Name": "Stone",
+            "FillBlockID": "air",
+            "Ratio": 20,
+            "Veins": [
+
+            ]
+        }
+    ]
+}

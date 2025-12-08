@@ -162,7 +162,7 @@ namespace Spacebox.Game.GUI
                     SelectedSlotId = (short)(Storage.SizeY - 1);
                 SetSelectedSlot(SelectedSlotId);
             }
-            if (Input.IsActionDown("dropItem"))
+            if (Input.IsActionDown("drop_item"))
             {
                 if (Input.IsKey(Keys.LeftShift))
                 {

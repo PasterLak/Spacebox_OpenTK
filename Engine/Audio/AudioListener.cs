@@ -74,7 +74,7 @@ namespace Engine.Audio
             UpdateListener();
 
             Debug.Log($"OpenAL Version: {AL.Get(ALGetString.Version)}");
-            Debug.Log($"OpenAL Extensions: {AL.Get(ALGetString.Extensions)}");
+            //Debug.Log($"OpenAL Extensions: {AL.Get(ALGetString.Extensions)}");
         }
 
         public override void OnUpdate()

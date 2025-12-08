@@ -142,7 +142,7 @@
                     }
                 ]
             },
-            "dropItem": {
+            "drop_item": {
                 "Name": "Drop Item",
                 "Description": "(from hand)",
                 "Bindings": [

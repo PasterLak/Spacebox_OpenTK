@@ -65,6 +65,13 @@ namespace Engine
             return _lastState.IsKeyDown(key);
 
         }
+
+        public static InputPro.InputAction GetAction(string name)
+        {
+
+            return InputManager.Instance.GetAction(name);
+
+        }
         public static bool IsAction(string name)
         {
 

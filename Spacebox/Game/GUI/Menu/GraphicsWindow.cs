@@ -134,7 +134,12 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.SetNextItemWidth(totalW * 0.28f);
                     ImGui.SliderInt("##resolution", ref _resolution, 10, 100);
 
+
+
+
                     ImGui.EndTable();
+
+                   
                 },
                 () => { menu.Click1.Play(); menu.SetStateToOptions();
                     SettingsService.Save(Settings.AsGameSettings());

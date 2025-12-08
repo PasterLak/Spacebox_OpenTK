@@ -18,9 +18,9 @@ namespace Spacebox.Game.Generation
         HashSet<Chunk> tempChangedChunks = new HashSet<Chunk>();
         Queue<(int, int, int)> floodFillQueue = new Queue<(int, int, int)>();
 
-        int nextNetworkId = 1;
+        private int nextNetworkId = 1;
 
-        
+
 
         public void AddBlockFast((int x, int y, int z) globalPos, ElectricalBlock block, Chunk parentChunk)
         {
@@ -211,7 +211,7 @@ namespace Spacebox.Game.Generation
                     }
                 }
             }
-           // Debug.Log("Regen: " + tempChangedChunks.Count);
+            // Debug.Log("Regen: " + tempChangedChunks.Count);
             if (tempChangedChunks.Count > 0)
             {
                 foreach (var c in tempChangedChunks)
@@ -255,7 +255,7 @@ namespace Spacebox.Game.Generation
                     }
                 }
             }
-           // Debug.Log("Regen: " + tempChangedChunks.Count);
+            // Debug.Log("Regen: " + tempChangedChunks.Count);
             if (tempChangedChunks.Count > 0)
             {
 
@@ -323,7 +323,7 @@ namespace Spacebox.Game.Generation
 
             while (floodFillQueue.Count > 0)
             {
-                var (x,y,z) = floodFillQueue.Dequeue();
+                var (x, y, z) = floodFillQueue.Dequeue();
 
                 if (blockToNetwork.ContainsKey((x, y, z))) continue;
                 if (!Blocks.ContainsKey((x, y, z))) continue;
@@ -383,10 +383,10 @@ namespace Spacebox.Game.Generation
         {
             if (!blockToNetwork.TryGetValue(blockPos, out int networkId))
             {
-               
+
                 return 0;
             }
-                
+
 
             return GetNetworkCurrentPower(networkId);
         }

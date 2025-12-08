@@ -1,20 +1,19 @@
 {
-        "Id": "asteroid_field",
-        "Name": "Asteroid Field",
+        "Id": "debug_biome",
+        "Name": "Debug biome",
         "Description": "Common rocky asteroids with basic minerals",
-        "SpawnChance": 60,
+        "SpawnChance": 100,
         "MinDistanceFromCenter": 0,
         "MaxDistanceFromCenter": 0,
         "DebugColor": {
             "r": 0,
             "g": 255,
-            "b": 0
+            "b": 255
         },
         "Asteroids": {
            
-            "asteroid_icy" : 10,
-            "light" : 50,
-            "medium" : 70,
-            "heavy" : 25
+            "asteroid_icy" : 50,
+            "asteroid_icy" : 70,
+            "asteroid_icy" : 25
         }
     }

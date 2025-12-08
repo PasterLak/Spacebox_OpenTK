@@ -1,5 +1,5 @@
 {
-        "Id": "asteroid_light",
+        "Id": "light",
         "Name": "Small asteroid",
      
         "MinRadius": 8,

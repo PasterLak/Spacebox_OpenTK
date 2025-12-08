@@ -9,6 +9,7 @@ namespace Spacebox.Game
 {
     public class BlockSelector : IDisposable
     {
+
         public static BlockSelector Instance;
         public static bool IsVisible = false;
 

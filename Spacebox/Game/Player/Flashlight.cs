@@ -1,5 +1,4 @@
-﻿using OpenTK.Windowing.GraphicsLibraryFramework;
-
+﻿
 using Engine.Audio;
 
 using Engine.Light;
@@ -12,9 +11,7 @@ namespace Spacebox.Game.Player
 {
     public class Flashlight : SpotLight
     {
-
-        
-
+ 
         private AudioSource audio;
         private Toggi toggle;
 
@@ -29,7 +26,7 @@ namespace Spacebox.Game.Player
             audio = new AudioSource(clip);
             audio.Volume = 0.5f;
 
-            action = InputManager.Instance.GetAction("flashlight");
+            action = Input.GetAction("flashlight");
             action.Subscribe(InputEventType.Pressed, () =>
             {
                 if (astronaut.IsAlive == false) return;
