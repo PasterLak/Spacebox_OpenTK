@@ -23,7 +23,7 @@ namespace Spacebox.Game.Player
 
         public ProjectileParameters()
         {
-            SetErrorParams(this);
+            SetErrorParams(ref this);
         }
 
         public ProjectileParameters(short id, ProjectileJSON projectileJSON)
@@ -70,12 +70,12 @@ namespace Spacebox.Game.Player
         {
             var p = new ProjectileParameters();
 
-            SetErrorParams(p);
+            SetErrorParams(ref p);
 
             return p;
         }
 
-        private static void SetErrorParams(ProjectileParameters p)
+        private static void SetErrorParams(ref ProjectileParameters p)
         {
             p.ID = short.MaxValue;
             p.Name = "projectileerror";

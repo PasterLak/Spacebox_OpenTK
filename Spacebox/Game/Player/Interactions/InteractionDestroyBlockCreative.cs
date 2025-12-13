@@ -1,4 +1,4 @@
-﻿namespace Spacebox.Game.Player.Interactions;
+﻿
 using Engine;
 using Engine.Animation;
 using Engine.Audio;
@@ -10,8 +10,8 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
-using Spacebox.GUI;
 
+namespace Spacebox.Game.Player.Interactions;
 
 public class InteractionDestroyBlockCreative : InteractionDestroyBlock
 {

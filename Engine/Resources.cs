@@ -82,7 +82,7 @@ namespace Engine
                     return (T)_error[typeof(T)];
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // resource = (T)resource.Default();
                 // return resource;
@@ -97,7 +97,7 @@ namespace Engine
 
         public static void LoadAll<T>(string[] paths) where T : IResource, new()
         {
-            foreach(var path in paths)
+            foreach (var path in paths)
             {
                 Load<T>(path);
             }
@@ -171,7 +171,7 @@ namespace Engine
                     Debug.Error($"Error loading mesh '{paths[i]}': {ex.Message}");
                 }
             }
-          
+
             return meshes;
         }
         private static List<Texture2D> LoadAllTextures(string[] paths, FilterMode filterMode = FilterMode.Linear, bool flipY = true)
@@ -198,7 +198,7 @@ namespace Engine
                     Debug.Error($"Error loading texture '{paths[i]}': {ex.Message}");
                 }
             }
-         
+
             return textures;
         }
 
@@ -263,7 +263,7 @@ namespace Engine
             }
         }
 
-    
+
         private static void DisposeAllResources()
         {
             foreach (var resource in _loadedResources)
@@ -315,25 +315,25 @@ namespace Engine
 
             if (sum == 0) return;
 
-            Debug.Log(">------------------------------------<" , Color4.Yellow);
+            Debug.Log(">------------------------------------<", Color4.Yellow);
             foreach (KeyValuePair<Type, Dictionary<string, ResourceEntry>> kvp in _resourcesByType)
             {
                 var type = kvp.Key;
-                var dict = kvp.Value; 
+                var dict = kvp.Value;
 
                 if (dict.Count == 0) continue;
 
-            
+
                 Debug.Log($"- [{type.Name}] count: {dict.Count}", Color4.Yellow);
                 foreach (string key in dict.Keys)
                 {
                     var text = dict[key].Global ? "[G]" : "   ";
 
-                    text +=  $"[{dict[key].Resource.GetHandle()}]";
+                    text += $"[{dict[key].Resource.GetHandle()}]";
 
                     Debug.Log($"  > {text}{key}");
                 }
-                   
+
             }
             Debug.Log(">------------------------------------<", Color4.Yellow);
 

@@ -22,19 +22,24 @@ namespace Spacebox.Game.Commands
         }
         public void Execute(string[] args)
         {
-            
+
 
             if (Astronaut == null)
             {
                 Debug.Error("Astronaut reference is null.");
                 return;
             }
+            if (args.Length == 0)
+            {
+                Debug.Error("Wrong arguments! Usage: " + Description);
+                return;
+            }
 
             if (args[0] == "delete")
             {
-                if(args.Length == 2)
+                if (args.Length == 2)
                 {
-                    
+
                     TagManager.Instance.ReleaseTagByText(args[1]);
                     Debug.Success("Tag deleted!: " + args[1]);
                 }
@@ -42,7 +47,7 @@ namespace Spacebox.Game.Commands
 
             else if (args[0] == "create")
             {
-                if(args.Length == 2)
+                if (args.Length == 2)
                 {
                     TagManager.Instance.CreateTag(args[1], Astronaut.Position, Color4.Yellow, true);
                     Debug.Success("Tag added!: " + args[1]);
@@ -55,7 +60,7 @@ namespace Spacebox.Game.Commands
                     var b = int.Parse(args[3]);
 
 
-                    TagManager.Instance.CreateTag(args[1], Astronaut.Position, new Color4(r,g,b,1), true);
+                    TagManager.Instance.CreateTag(args[1], Astronaut.Position, new Color4(r, g, b, 1), true);
 
                     Debug.Success("Tag added!: " + args[1]);
                 }
@@ -65,9 +70,9 @@ namespace Spacebox.Game.Commands
 
             }
 
-           
+
         }
 
-     
+
     }
 }

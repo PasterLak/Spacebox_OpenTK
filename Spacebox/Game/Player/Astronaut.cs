@@ -99,7 +99,7 @@ namespace Spacebox.Game.Player
 
             HealthBar = new HealthBar();
             PowerBar = new PowerBar();
-          
+
             Mood = AttachComponent(new Mood(this));
             SetData();
             SetRenderSpace(true);
@@ -204,7 +204,7 @@ namespace Spacebox.Game.Player
 
             _axes = new Axes(Position, 0.01f);
 
-            
+
             /* node = new Node3D();
 
             var mat = new SpotMaterial(Flashlight);
@@ -342,14 +342,11 @@ namespace Spacebox.Game.Player
             if (Input.IsActionUp("zoom"))
             {
                 FOV = 90;
-              
+
             }
 
 #if DEBUG
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.R))
-            {
-               
-            }
+
 
             if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.U))
             {
@@ -422,7 +419,6 @@ namespace Spacebox.Game.Player
         public void TakeDamage(int damage, DeathCase? deathCase = null)
         {
 
-
             var health = HealthBar.StatsData;
             damage = Math.Min(damage, health.MaxValue);
             PlayerStatistics.DamageTaken += damage;
@@ -439,7 +435,6 @@ namespace Spacebox.Game.Player
             else
             {
                 Death(deathCase);
-
             }
         }
 
@@ -447,7 +442,7 @@ namespace Spacebox.Game.Player
         {
             if (!IsAlive) return;
             PlayerStatistics.DeathsTotal++;
-          
+
             IsAlive = false;
             InertiaController.Reset();
             FOV = 110;
@@ -456,11 +451,11 @@ namespace Spacebox.Game.Player
             PanelUI.IsVisible = false;
             PanelUI.IsItemModelVisible = false;
             Input.ShowCursor();
-            Mood.AddMoodRandom(1,10);
+            Mood.AddMoodRandom(1, 10);
             Flashlight.Enabled = false;
             HealthBar.StatsGUI.IsVisible = false;
             PowerBar.StatsGUI.IsVisible = false;
-        
+
             if (deathCase != null)
                 DeathScreen.Show(deathCase);
 
@@ -473,7 +468,7 @@ namespace Spacebox.Game.Player
         public void Revive()
         {
             IsAlive = true;
-          
+
             FOV = Settings.Graphics.Fov;
             Settings.ShowInterface = true;
             var health = HealthBar.StatsData;
@@ -487,7 +482,7 @@ namespace Spacebox.Game.Player
             //PanelUI.ResetLastSelected();
             HealthBar.StatsGUI.IsVisible = true;
             PowerBar.StatsGUI.IsVisible = true;
-            SetPosition( SpawnPosition);
+            SetPosition(SpawnPosition);
             Effects.PlayEffect(PlayerEffectType.Heal);
 
         }

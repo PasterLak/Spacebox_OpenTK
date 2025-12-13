@@ -82,7 +82,7 @@ namespace Spacebox.Game.Generation.Blocks
             SetAir(isAir);
             SetLight(isLight);
             SetEnableEmission(enableEmission); 
-        }
+        } 
 
         public Block(BlockJSON blockData)
         {

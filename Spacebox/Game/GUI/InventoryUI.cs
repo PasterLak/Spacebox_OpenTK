@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 using ImGuiNET;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using Engine;
 using Engine.Audio;
 

@@ -17,8 +17,8 @@ namespace Spacebox.Game.Player
                  obj => obj,
                  obj => { obj.OnDespawn += PutBack; },
                  obj => { obj.OnDespawn -= PutBack; obj.Reset(); },
-                 obj => obj.IsActive,
-                 (obj, active) => obj.IsActive = active);
+                 obj => obj.Enabled,
+                 (obj, active) => obj.Enabled = active);
 
             Projectiles = new List<Projectile>();
         }
@@ -26,7 +26,7 @@ namespace Spacebox.Game.Player
         public Projectile Take()
         {
             var e = pool.Take();
-          
+
             Projectiles.Add(e);
             return e;
         }
@@ -36,7 +36,7 @@ namespace Spacebox.Game.Player
             if (projectile != null)
             {
                 Projectiles.Remove(projectile);
-                
+
                 pool.Release(projectile);
             }
         }
@@ -60,7 +60,7 @@ namespace Spacebox.Game.Player
             var p = Projectiles.ToArray();
             foreach (var e in p)
             {
-                e.IsActive = false;
+                e.Enabled = false;
                 PutBack(e);
             }
         }

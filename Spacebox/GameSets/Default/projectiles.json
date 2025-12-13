@@ -7,9 +7,9 @@
         "Length": 0.4,
         "Thickness": 0.05,
         "Color": {
-            "r": 0,
-            "g": 255,
-            "b": 255
+            "r": 130,
+            "g": 200,
+            "b": 190
         },
         "Damage": 2,
         "DamageBlocks": 0,
@@ -23,10 +23,10 @@
         "MaxTravelDistance": 75,
         "Length": 0.75,
         "Thickness": 0.05,
-        "Color": {
-            "r": 0,
-            "g": 255,
-            "b": 255
+         "Color": {
+            "r": 130,
+            "g": 200,
+            "b": 190
         },
         "Damage": 5,
         "DamageBlocks": 4,

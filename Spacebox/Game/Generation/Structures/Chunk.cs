@@ -15,6 +15,11 @@ namespace Spacebox.Game.Generation
 
         public const byte Size = 32; // 32700+ blocks
         public const byte SizeHalf = Size / 2;
+
+        public static bool ShowChunkBounds { get; set; } = true;
+        public static bool MeasureGenerationTime { get; set; } = true;
+
+
         public int Mass { get; set; } = 0; // 255x32700 = 8,338,500 (max 4,294,967,295 in uint)
 
         public Vector3 SumPosMass { get; set; } = Vector3.Zero;
@@ -24,8 +29,7 @@ namespace Spacebox.Game.Generation
         
         public Block[,,] Blocks { get; private set; }
         public bool NeedsToRegenerateMesh { get; set; }
-        public bool ShowChunkBounds { get; set; } = true;
-        public bool MeasureGenerationTime { get; set; } = true;
+
         private bool _isModified = false;
         public bool IsModified
         {

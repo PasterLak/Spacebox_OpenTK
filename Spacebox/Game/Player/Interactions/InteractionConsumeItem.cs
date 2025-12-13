@@ -1,6 +1,6 @@
 ﻿using Engine;
 using Engine.Audio;
-using OpenTK.Windowing.GraphicsLibraryFramework;
+
 using Spacebox.Game.Effects;
 using Spacebox.Game.GUI;
 

@@ -199,7 +199,7 @@ namespace Spacebox.Game.Generation
             }
             UnloadSectors(cam.PositionWorld);
 
-            float sectorSize = Sector.SizeBlocks;
+            var sectorSize = Sector.SizeBlocks;
             Vector3 local = CurrentSector.WorldToLocalPosition(cam.PositionWorld);
 
             var baseIdx = CurrentSector.PositionIndex;
@@ -342,7 +342,7 @@ namespace Spacebox.Game.Generation
             return dx * dx + dy * dy + dz * dz;
         }
 
-        private static float DistanceToEdge(Vector3 local, float sectorSize, Vector3i dir)
+        private static float DistanceToEdge(Vector3 local, int sectorSize, Vector3i dir)
         {
             if (dir.X < 0) return local.X;
             if (dir.X > 0) return sectorSize - local.X;

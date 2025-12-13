@@ -197,7 +197,7 @@ public class InteractionShoot : InteractionMode
             var shotRay = new Ray(projectileSpawnPos, shotDir, 1f);
 
             projectile.Initialize(shotRay,
-                projectileParameters, player);
+                ref projectileParameters, player);
 
             ApplyRecoilWithMass(player, weapon, shotRay.Direction, projectileParameters);
 

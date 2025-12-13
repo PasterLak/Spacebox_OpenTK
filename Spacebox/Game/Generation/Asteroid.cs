@@ -18,7 +18,7 @@ public class Asteroid : SpaceEntity
     private readonly HashSet<Vector3SByte> loadedChunks = new HashSet<Vector3SByte>();
 
     private readonly Dictionary<Vector3SByte, List<Vector3i>> _worm = new();
-    private readonly bool useWorms = false;
+
     private readonly AsteroidData asteroidData;
     protected readonly int Seed;
 
@@ -36,8 +36,8 @@ public class Asteroid : SpaceEntity
             seed: (int)Seed
         );
 
-        useWorms = asteroidData.UsePerlinWorms;
-        if (useWorms)
+      
+        if (asteroidData.UsePerlinWorms)
         {
             int chunkCount = (int)MathF.Ceiling((float)diameterBlocks / (float)Chunk.Size);
 
@@ -59,7 +59,7 @@ public class Asteroid : SpaceEntity
         }
     }
 
-    static float ComputeStep(byte wormDiameter, float overlapK = 0.75f)
+    private static float ComputeStep(byte wormDiameter, float overlapK = 0.75f)
     {
         float step = (wormDiameter * 0.5f) * overlapK;
         return step < 1f ? 1f : step;
@@ -160,7 +160,7 @@ public class Asteroid : SpaceEntity
 
         var chunkSeed = SeedHelper.GetChunkIdInt(EntityID, idx);
 
-        if (useWorms && _worm != null && _worm.TryGetValue(idx, out var list))
+        if (asteroidData.UsePerlinWorms && _worm != null && _worm.TryGetValue(idx, out var list))
             foreach (var v in list) data[v.X, v.Y, v.Z] = 0;
 
         var oreGen = new AsteroidOreGenerator(asteroidData, chunkSeed);

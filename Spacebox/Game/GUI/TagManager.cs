@@ -91,6 +91,7 @@ namespace Spacebox.Game.GUI
             ClearAllTags();
             _tagPool = null;
             SpaceboxWindow.OnResized -= OnResized;
+            Instance = null;
         }
 
         public override void OnGUI()

@@ -1,7 +1,6 @@
 ﻿using Spacebox.Game.GUI;
 using System.Numerics;
 
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Player;
 using Engine;
 

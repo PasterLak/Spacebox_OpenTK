@@ -5,28 +5,13 @@ using Engine.Physics;
 using OpenTK.Mathematics;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
-using SpaceNetwork;
-
 
 namespace Spacebox.Game.Player
 {
     public class Projectile : Node3D
     {
 
-        private float distanceTraveled = 0;
-
-
-        private byte currentRicochets = 0;
-        private byte currentDamage = 0;
-        private bool canRicochet = false;
-
-        public ProjectileParameters Parameters { get; set; }
-        private Ray ray;
-        private bool _isActive = false;
-        public bool IsActive { get => _isActive; set => _isActive = value; }
-
-        private LineRenderer lineRenderer;
-        private Camera camera;
+        public ProjectileParameters Parameters { get; private set; }
 
         public Vector3 SpawnPosition { get; private set; }
 
@@ -34,15 +19,25 @@ namespace Spacebox.Game.Player
         public Action<Projectile> OnHit;
         public Action<Projectile> OnDespawn;
 
-        public static AudioSource ricochetSound;
-        public AudioSource hitSound;
-        public static AudioSource explosionSound;
+        public static PointLightsPool PointLightsPool;
+
+        private float distanceTraveled = 0;
+        private byte currentRicochets = 0;
+        private byte currentDamage = 0;
+        private bool canRicochet = false;
+
+        private LineRenderer lineRenderer;
+        private Ray ray;
+
+        private AudioSource ricochetSound;
+        private AudioSource hitSound;
+        private AudioSource explosionSound;
 
         private PointLight light;
         private bool useLight = true;
         private Astronaut? astronaut;
 
-        public static PointLightsPool PointLightsPool;
+
         public Projectile()
         {
             lineRenderer = new LineRenderer();
@@ -50,20 +45,21 @@ namespace Spacebox.Game.Player
             lineRenderer.Thickness = 0.2f;
             AddChild(lineRenderer);
 
-            if(PointLightsPool == null)
+            if (PointLightsPool == null)
             {
                 PointLightsPool = new PointLightsPool(8);
             }
 
         }
 
-        public Projectile Initialize(Ray ray, ProjectileParameters parameters, Astronaut? owner, bool useLight = true)
+        public Projectile Initialize(Ray ray, ref ProjectileParameters parameters, Astronaut? owner, bool useLight = true)
         {
             this.useLight = useLight;
             this.ray = ray;
             ray.Length = 1f;
             this.Parameters = parameters;
-            IsActive = true;
+
+            Enabled = true;
             currentDamage = parameters.DamageBlocks;
             canRicochet = parameters.RicochetAngle > 0;
             SpawnPosition = ray.Origin;
@@ -72,16 +68,30 @@ namespace Spacebox.Game.Player
             Scale = Vector3.One;
             astronaut = owner;
 
+            SetLineRenderer(lineRenderer, ray, ref parameters);
+            SetSounds();
+
+            if (useLight)
+            {
+                light = SetLight(PointLightsPool.Take(), ref parameters);
+            }
+
+
+            OnSpawn?.Invoke(this);
+
+            return this;
+        }
+        private static void SetLineRenderer(LineRenderer lineRenderer, Ray ray, ref ProjectileParameters parameters)
+        {
             lineRenderer.Thickness = parameters.Thickness;
             lineRenderer.Color = parameters.Color;
             lineRenderer.ClearPoints();
             lineRenderer.AddPoint(Vector3.Zero);
             lineRenderer.AddPoint(ray.Direction * parameters.Length);
+        }
 
-
-            camera = Camera.Main;
-
-
+        private void SetSounds()
+        {
             if (ricochetSound == null)
             {
 
@@ -110,27 +120,24 @@ namespace Spacebox.Game.Player
                 explosionSound.Setup3D(20.0f, 800.0f, 0.5f);
                 explosionSound.Position = Position;
             }
-
-            if (useLight)
-            {
-                light = PointLightsPool.Take();
-
-                light.Range = 4;
-                light.Diffuse = parameters.Color3;
-
-                light.Specular = Vector3.Zero;
-                light.Enabled = true;
-            }
-
-
-            OnSpawn?.Invoke(this);
-
-            return this;
         }
 
-        public void Update()
+        private static PointLight SetLight(PointLight light, ref ProjectileParameters parameters)
         {
-            if (!_isActive) return;
+
+            light.Range = 4;
+            light.Diffuse = parameters.Color3;
+            light.Specular = Vector3.Zero;
+            light.Enabled = true;
+
+            return light;
+        }
+
+        public override void Update()
+        {
+            if (!Enabled) return;
+
+            base.Update();
 
             Vector3 movement = ray.Direction * Parameters.Speed * Time.Delta;
             Position += movement;
@@ -143,14 +150,14 @@ namespace Spacebox.Game.Player
 
             if (distanceTraveled >= Parameters.MaxTravelDistance)
             {
-                IsActive = false;
+                Enabled = false;
 
                 if (currentDamage >= 50)
                 {
                     explosionSound.Position = Position;
 
                     explosionSound.SetPitchByValue(Parameters.MaxTravelDistance + 5 - distanceTraveled, 0, Parameters.MaxTravelDistance, 0.8f, 1f);
-                   
+
                     explosionSound.Play();
 
                     if (astronaut != null)
@@ -174,7 +181,7 @@ namespace Spacebox.Game.Player
                     {
                         ray = ray.CalculateRicochetRay(hit.hitPosition, hit.normal, ray.Length);
                         ricochetSound.Position = hit.hitPosition;
-                   
+
 
                         var dmg0 = MathF.Min(Parameters.DamageBlocks, maxDamage);
                         ricochetSound.SetPitchByValue(maxDamage - dmg0, 0, maxDamage, 0.5f, 1f);
@@ -193,7 +200,7 @@ namespace Spacebox.Game.Player
 
                         if (currentRicochets == 5)
                         {
-                          
+
                             explosionSound.Position = hit.hitPosition;
                             explosionSound.Play();
                             if (astronaut != null)
@@ -209,7 +216,7 @@ namespace Spacebox.Game.Player
 
                 OnHit?.Invoke(this);
 
-              
+
                 var dmg = MathF.Min(Parameters.DamageBlocks, maxDamage);
                 hitSound.Position = hit.hitPosition;
                 hitSound.SetPitchByValue(maxDamage - dmg, 0, maxDamage, 0.5f, 1f);
@@ -225,17 +232,17 @@ namespace Spacebox.Game.Player
 
                 if (currentDamage > hit.block.Durability)
                 {
-                    
+
                     hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage, Parameters.DropBlock);
                     if (astronaut != null)
                     {
                         astronaut.PlayerStatistics.BlockDamageDealt += currentDamage;
                         astronaut.PlayerStatistics.BlocksDestroyed++;
                     }
-                    IsActive = false;
+                    Enabled = false;
                     if (currentDamage >= 50)
                     {
-                      
+
                         explosionSound.Position = hit.hitPosition;
                         explosionSound.Play();
                         if (astronaut != null)
@@ -252,19 +259,21 @@ namespace Spacebox.Game.Player
                     if (astronaut != null)
                     {
                         astronaut.PlayerStatistics.BlockDamageDealt += currentDamage;
-                        
+
                     }
 
-                    IsActive = false;
+                    Enabled = false;
                     OnDespawn?.Invoke(this);
                 }
             }
         }
 
 
-        public void Render()
+        public override void Render()
         {
-            if (!_isActive) return;
+            if (!Enabled) return;
+
+            base.Render();
             lineRenderer.Render();
         }
 
@@ -276,7 +285,7 @@ namespace Spacebox.Game.Player
                     PointLightsPool.PutBack(light);
             }
 
-            IsActive = false;
+            Enabled = false;
             Rotation = Vector3.Zero;
             distanceTraveled = 0;
             currentRicochets = 0;

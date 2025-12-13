@@ -32,7 +32,15 @@
        "MaxCount": 1
      }
    ],
-   "chestLoot2": [
+   "chest-loot": [
+     {
+       "ID": "water",
+       "Probability": 5,
+       "MinCount": 1,
+       "MaxCount": 1
+     }
+   ],
+   "alien-chest": [
      {
        "ID": "water",
        "Probability": 5,
