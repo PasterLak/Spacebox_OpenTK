@@ -274,8 +274,9 @@ namespace Spacebox.Game.GUI
                 if (type == typeof(DrillItem))
                 {
                     var itemType = slot.Item as DrillItem;
-                    text += "\nPower: " + itemType.Power;
+                    text += "\nTier: " + itemType.Tier;
                     text += "\nPower usage: " + itemType.PowerUsage;
+                    text += "\nRange: " + itemType.Range;
                 }
                 else if (type == typeof(WeaponItem))
                 {

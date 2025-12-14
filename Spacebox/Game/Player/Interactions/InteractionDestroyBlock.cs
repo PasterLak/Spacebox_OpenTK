@@ -14,15 +14,17 @@ using SpaceNetwork;
 
 public abstract class InteractionDestroyBlock : InteractionMode
 {
-    protected const byte MaxDestroyDistance = 6;
+   
     protected static AudioSource blockDestroy;
     protected ItemSlot selectedItemSlot;
+    protected DrillItem drillItem;
     protected AnimatedItemModel model;
     Random r = new Random();
     protected InteractionDestroyBlock(ItemSlot itemSlot)
     {
         AllowReload = true;
         selectedItemSlot = itemSlot;
+        drillItem = itemSlot.Item as DrillItem;
         model = GameAssets.ItemModels[itemSlot.Item.Id] as AnimatedItemModel;
     }
 

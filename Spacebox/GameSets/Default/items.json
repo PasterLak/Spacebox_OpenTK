@@ -10,7 +10,8 @@
         "MaxStack": 1,
         "PowerUsage": 5,
         "ModelDepth": 2,
-        "Power": 1,
+        "Range": 2,
+        "Tier": 1,
         "DrillColor": {
             "r": 118,
             "g": 135,
@@ -27,7 +28,8 @@
         "MaxStack": 1,
         "PowerUsage": 5,
         "ModelDepth": 2,
-        "Power": 2,
+        "Range": 2.5,
+        "Tier": 2,
         "DrillColor": {
             "r": 38,
             "g": 212,
@@ -44,7 +46,8 @@
         "MaxStack": 1,
         "PowerUsage": 6,
         "ModelDepth": 2,
-        "Power": 3,
+        "Range": 3,
+        "Tier": 3,
         "DrillColor": {
             "r": 38,
             "g": 192,
@@ -61,7 +64,8 @@
         "MaxStack": 1,
         "PowerUsage": 8,
         "ModelDepth": 4,
-        "Power": 4,
+        "Range": 4,
+        "Tier": 4,
         "DrillColor": {
             "r": 38,
             "g": 180,
@@ -78,7 +82,8 @@
         "MaxStack": 1,
         "PowerUsage": 4,
         "ModelDepth": 3,
-        "Power": 5,
+        "Tier": 5,
+        "Range": 6,
         "DrillColor": {
             "r": 57,
             "g": 76,
@@ -95,7 +100,8 @@
         "MaxStack": 1,
         "PowerUsage": 0,
         "ModelDepth": 3,
-        "Power": 6,
+        "Range": 5,
+        "Tier": 6,
         "DrillColor": {
             "r": 201,
             "g": 48,

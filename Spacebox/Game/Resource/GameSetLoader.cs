@@ -782,8 +782,9 @@ namespace Spacebox.Game.Resource
 
                 data.ModelDepth)
             {
-                Power = data.Power,
+                Tier = data.Tier,
                 PowerUsage = (byte)data.PowerUsage,
+                Range = data.Range,
                 Category = data.Category,
                 Id_string = id,
                 DrillColor = data.DrillColor,

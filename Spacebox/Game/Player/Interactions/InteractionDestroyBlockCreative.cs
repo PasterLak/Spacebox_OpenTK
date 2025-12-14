@@ -48,7 +48,7 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
             model.SetAnimation(false);
             return;
         }
-        Ray ray = new Ray(player.Position, player.Front, MaxDestroyDistance);
+        Ray ray = new Ray(player.Position, player.Front, drillItem.Range);
         if (World.CurrentSector.Raycast(ray, out HitInfo hit))
         {
             UpdateBlockSelector(hit);

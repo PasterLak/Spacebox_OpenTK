@@ -156,10 +156,10 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             return;
         }
 
-        Ray ray = new Ray(player.Position, player.Front, MaxDestroyDistance);
-        var drill = selectedItemSlot.Item as DrillItem;
+        Ray ray = new Ray(player.Position, player.Front, drillItem.Range);
+     
 
-        if (drill.PowerUsage > player.PowerBar.StatsData.Value)
+        if (drillItem.PowerUsage > player.PowerBar.StatsData.Value)
         {
             BlockSelector.IsVisible = false;
             StopDrill();
@@ -195,17 +195,17 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
                 if (!light.Enabled)
                     light.Enabled = true;
                 light.Position = player.Position;
-                if (drill != null)
+                if (drillItem != null)
                 {
-                    if (drill.Power >= blockData.PowerToDrill)
-                        ProcessDestroying(hit, drill.Power, player, drill);
+                    if (drillItem.Tier >= blockData.PowerToDrill)
+                        ProcessDestroying(hit, drillItem.Tier, player, drillItem);
                     else
                         BlockMiningEffect.SetEmitter(false);
                 }
             }
             if (Input.IsMouseButtonDown(MouseButton.Left))
             {
-                if (drill.PowerUsage > player.PowerBar.StatsData.Value) return;
+                if (drillItem.PowerUsage > player.PowerBar.StatsData.Value) return;
 
                 model.SetAnimation(true);
                 BlockMiningEffect.Enabled = true;
