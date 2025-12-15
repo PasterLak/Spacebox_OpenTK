@@ -8,7 +8,7 @@ namespace Spacebox.Game.Generation.Blocks
 {
     public enum Direction : byte
     {
-        
+
         Down = 0,
         Up = 1,
         Left = 2,
@@ -23,7 +23,7 @@ namespace Spacebox.Game.Generation.Blocks
         Right = 1,
         Half = 2,
         Left = 3
-        
+
     }
 
     [Flags]
@@ -63,14 +63,14 @@ namespace Spacebox.Game.Generation.Blocks
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
-               
+
                 long v = ((long)value & 0b11) << 35;
                 data = (data & ~(0b11L << 35)) | v;
             }
         }
         public void SetRotation(Rotation rot) => Rotation = rot;
 
-        
+
         public Block(short blockId, Direction dir, byte mass, byte durability,
                      bool isTransparent, bool isAir, bool isLight, bool enableEmission)
         {
@@ -81,10 +81,10 @@ namespace Spacebox.Game.Generation.Blocks
             SetTransparent(isTransparent);
             SetAir(isAir);
             SetLight(isLight);
-            SetEnableEmission(enableEmission); 
-        } 
+            SetEnableEmission(enableEmission);
+        }
 
-        public Block(BlockJSON blockData)
+        public Block(BlockData blockData)
         {
             Id = blockData.Id;
             LightColor = new Color3Byte(blockData.LightColor);
@@ -93,7 +93,7 @@ namespace Spacebox.Game.Generation.Blocks
             SetMass(blockData.Mass);
             SetDurability(blockData.Durability);
             SetTransparent(blockData.IsTransparent);
-            SetAir(blockData.Id == 0);
+            SetAir(blockData.Id <= 1);
 
             SetEnableEmission(true);
 
@@ -128,7 +128,7 @@ namespace Spacebox.Game.Generation.Blocks
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
-               
+
                 long v = ((long)value & 0b111) << 12;
                 data = data & ~(0b111L << 12) | v;
             }
@@ -173,6 +173,8 @@ namespace Spacebox.Game.Generation.Blocks
             }
         }
 
+       
+
         public bool IsTransparent
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -190,7 +192,7 @@ namespace Spacebox.Game.Generation.Blocks
         public bool IsAir
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (Flags & BlockFlags.Air) != 0;
+            get => (Flags & BlockFlags.Air) != 0 ;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
@@ -200,6 +202,11 @@ namespace Spacebox.Game.Generation.Blocks
             }
         }
         public void SetAir(bool val) => IsAir = val;
+
+        public bool IsVoid()
+        {
+            return Id == 0;
+        }
 
         public bool IsLight
         {
@@ -285,6 +292,7 @@ namespace Spacebox.Game.Generation.Blocks
             res = this as T;
             return res != null;
         }
+
 
         public override string ToString()
         {

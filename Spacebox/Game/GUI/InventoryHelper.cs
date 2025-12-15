@@ -299,7 +299,7 @@ namespace Spacebox.Game.GUI
                     text += "\nMass: " + itemType.Mass;
                     text += "\nDurability: " + itemType.Health;
 
-                    BlockJSON d = GameAssets.GetBlockDataById(itemType.BlockId);
+                    BlockData d = GameAssets.GetBlockDataById(itemType.BlockId);
                     if (d != null)
                         text += "\nPower to drill: " + d.PowerToDrill;
 

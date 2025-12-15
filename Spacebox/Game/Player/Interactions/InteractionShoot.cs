@@ -18,11 +18,9 @@ public class InteractionShoot : InteractionMode
     public static InteractionShoot Instance;
     private AudioSource shotSound;
     private InteractiveBlock lastInteractiveBlock;
-    private ItemSlot selectedItemSlot;
+
     private AnimatedItemModel model;
     public static BlockMiningEffect BlockMiningEffect;// needs dispose
-
-    
 
     public static ProjectilesPool ProjectilesPool;  // needs dispose
     private ProjectileParameters projectileParameters;
@@ -34,14 +32,14 @@ public class InteractionShoot : InteractionMode
     public InteractionShoot(ItemSlot itemslot)
     {
         Instance = this;
-        selectedItemSlot = itemslot;
+
         AllowReload = true;
         if (BlockMiningEffect == null)
         {
 
             var texture = Resources.Load<Texture2D>("Resources/Textures/blockHit.png");
             texture.FilterMode = FilterMode.Nearest;
-            // texture
+
             BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1),
                 texture, Resources.Load<Shader>("Resources/Shaders/particle"));
         }
@@ -74,7 +72,7 @@ public class InteractionShoot : InteractionMode
 
     public void UpdateItemSlot(ItemSlot itemslot)
     {
-        selectedItemSlot = itemslot;
+
         var mod = GameAssets.ItemModels[itemslot.Item.Id];
         model = mod as AnimatedItemModel;
 
@@ -84,13 +82,13 @@ public class InteractionShoot : InteractionMode
         _time = 0;
         model?.SetAnimation(true);
         //model?.PlayDrawAnimation();
-       // light.Enabled = true;
+        // light.Enabled = true;
     }
 
     public override void OnDisable()
     {
-       // CenteredText.Hide();
-        selectedItemSlot = null;
+        // CenteredText.Hide();
+
         //BlockMiningEffect.Enabled = false;
         model.Animator.Clear();
         // model?.SetAnimation(false);
@@ -115,7 +113,7 @@ public class InteractionShoot : InteractionMode
 
     public override void Update(Astronaut player)
     {
-        if(player.IsAlive == false) 
+        if (player.IsAlive == false)
         {
             canShoot = false;
             return;
@@ -142,8 +140,8 @@ public class InteractionShoot : InteractionMode
                 //model?.SetAnimation(true);
 
                 Random random = new Random();
-              
-                    shotSound.Pitch = random.Next(95, 105) * 0.01f;
+
+                shotSound.Pitch = random.Next(95, 105) * 0.01f;
                 shotSound.Play();
                 player.PlayerStatistics.ShotsFired++;
             }
@@ -178,10 +176,10 @@ public class InteractionShoot : InteractionMode
             canShoot = false;
 
             player.PowerBar.StatsData.Decrement(weapon.PowerUsage);
-      
+
             int count = 10;
             int count1 = 0;
-           
+
             var projectile = ProjectilesPool.Take();
 
             if (weapon.ProjectileID == 3)

@@ -19,7 +19,7 @@ public class BlockSelector : IDisposable
     private Direction blockDirection = Direction.Up;
 
     public Rotation Rotation = Rotation.None;
-    private BlockJSON currentBlockData;
+    private BlockData currentBlockData;
 
     public BlockSelector()
     {

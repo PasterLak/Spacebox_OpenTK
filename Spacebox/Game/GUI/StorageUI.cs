@@ -7,7 +7,7 @@ using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Game.Resource;
-using Spacebox.GUI;
+
 using System.Numerics;
 using System.Text;
 
@@ -16,8 +16,7 @@ namespace Spacebox.Game.GUI
     public static class StorageUI
     {
         private static float SlotSize = 64.0f;
-        private static nint SlotTexture = nint.Zero;
-        private static nint ItemTexture = nint.Zero;
+
         private static nint PencilTexture = nint.Zero;
         private static Storage? Storage;
         private static StorageBlock? StorageBlock;
@@ -33,11 +32,11 @@ namespace Spacebox.Game.GUI
 
         public static void Initialize(nint textureId)
         {
-            SlotTexture = textureId;
+
             var itemTexture = Resources.Load<Texture2D>("Resources/Textures/UI/trash.png");
             itemTexture.FilterMode = FilterMode.Nearest;
             itemTexture.FlipY();
-            ItemTexture = itemTexture.Handle;
+
 
             var pencil = Resources.Load<Texture2D>("Resources/Textures/UI/pencil.png");
             pencil.FilterMode = FilterMode.Nearest;
@@ -152,46 +151,58 @@ namespace Spacebox.Game.GUI
 
             ImGui.Begin("Storage", windowFlags);
 
-            
+
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV, displaySize.Y);
 
-            ImGui.SetCursorPos(paddingV);
-           
-          
-            if (!editingName)
+
+            if (Storage.SizeX >= 2)
             {
-                var stb = StorageBlock;
-                ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), stb?.Name ?? Storage.Name);
-                ImGui.SameLine();
-                if (stb != null && ImGui.ImageButton("##edit", PencilTexture, paddingV * 4))
+                ImGui.SetCursorPos(paddingV);
+
+
+                if (!editingName)
                 {
-                    StartNameEdit();
+                    var stb = StorageBlock;
+                    ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), stb?.Name ?? Storage.Name);
+                    ImGui.SameLine();
+                    if (stb != null && ImGui.ImageButton("##edit", PencilTexture, paddingV * 4))
+                    {
+                        StartNameEdit();
+                    }
+
+                    if (ImGui.IsItemHovered())
+                    {
+                        ImGui.BeginTooltip();
+
+                        ImGui.Text("Rename");
+
+                        ImGui.EndTooltip();
+                    }
+
+                }
+                else
+                {
+                    float buttonWidth = ImGui.CalcTextSize("Save").X + style.FramePadding.X * 2;
+                    ImGui.SetNextItemWidth(windowWidth - buttonWidth - windowWidth / 2f);
+                    bool enterPressed = ImGui.InputText("##storageName", buffer, (uint)buffer.Length, ImGuiInputTextFlags.EnterReturnsTrue);
+                    ImGui.SameLine();
+                    if (ImGui.SmallButton("Save") || enterPressed)
+                    {
+                        SaveName();
+                    }
+
                 }
 
-                if(ImGui.IsItemHovered())
-                {
-                    ImGui.BeginTooltip();
-
-                    ImGui.Text("Rename");
-
-                    ImGui.EndTooltip();
-                }
-               
             }
-            else
+
+            if (Storage.SizeX >= 3)
             {
-                float buttonWidth = ImGui.CalcTextSize("Save").X + style.FramePadding.X * 2;
-                ImGui.SetNextItemWidth(windowWidth - buttonWidth - windowWidth/2f);
-                bool enterPressed = ImGui.InputText("##storageName", buffer, (uint)buffer.Length, ImGuiInputTextFlags.EnterReturnsTrue);
                 ImGui.SameLine();
-                if (ImGui.SmallButton("Save") || enterPressed)
-                {
-                    SaveName();
-                }
-                
+                InventoryUIHelper.SortStorageButtons(windowWidth, padding, Storage);
             }
-            ImGui.SameLine();
-            InventoryUIHelper.SortStorageButtons(windowWidth, padding, Storage);
+
+
+
             ImGui.SetCursorPos(paddingV + new Vector2(0, padding * 4));
             InventoryUIHelper.RenderStorage(Storage, OnSlotClicked, Storage.SizeX);
 

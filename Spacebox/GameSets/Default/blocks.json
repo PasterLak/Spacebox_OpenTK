@@ -539,6 +539,11 @@
         "Up": "aluChestTop",
         "SizeX": 4,
         "SizeY": 3,
+        "StorageSize": {
+            "x": 1,
+            "y": 2
+           
+        },
         "PowerToDrill": 1,
         "Mass": 4,
         "Durability": 10,
@@ -554,6 +559,11 @@
         "Up": "ironChestTop",
         "SizeX": 4,
         "SizeY": 3,
+         "StorageSize": {
+            "x": 3,
+            "y": 2
+           
+        },
         "PowerToDrill": 2,
         "Mass": 8,
         "Durability": 20,
@@ -569,6 +579,11 @@
         "Down": "aluChestTop",
         "SizeX": 4,
         "SizeY": 3,
+         "StorageSize": {
+            "x": 8,
+            "y": 4
+           
+        },
         "PowerToDrill": 3,
         "Mass": 6,
         "Durability": 30,

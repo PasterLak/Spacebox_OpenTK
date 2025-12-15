@@ -18,7 +18,7 @@ namespace Spacebox.Game.Player
         private GUI.Tag tagg;
         private ItemModel itemModel;
         private Quaternion currentRotation = Quaternion.Identity;
-        
+
         static bool wasFlipped = false;
         private Shader playerShader;
         private SpotLight spotLight;
@@ -26,12 +26,12 @@ namespace Spacebox.Game.Player
         private Model astHelmet;
         private Model astTank;
         private static Dictionary<string, Texture2D> astronautTextures = new Dictionary<string, Texture2D>();
-        
+
         public void OnDisconnect()
         {
             if (tagg != null)
             {
-               // TagManager.Instance.UnregisterTag(tagg);
+                // TagManager.Instance.UnregisterTag(tagg);
             }
         }
 
@@ -54,11 +54,11 @@ namespace Spacebox.Game.Player
             //tagg.TextAlignment = GUI.Tag.Alignment.Center;
             GUI.Tag.CalculateFontSize(100);
             //TagManager.Instance.RegisterTag(tagg);
-          
+
             var uvIndex = GameAssets.AtlasItems.GetUVIndexByName("drill1");
-            itemModel = ItemModelGenerator.GenerateModelFromAtlas(GameAssets.ItemsTexture, GameAssets.EmissionItems,uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
+            itemModel = ItemModelGenerator.GenerateModelFromAtlas(GameAssets.ItemsTexture, GameAssets.EmissionItems, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
             itemModel.UseMainCamera = true;
-           // itemModel.offset = Vector3.Zero;
+            // itemModel.offset = Vector3.Zero;
             spotLight = new SpotLight();
             //spotLight.spec = false;
             spotLight.Enabled = true;
@@ -73,7 +73,7 @@ namespace Spacebox.Game.Player
                 tex = Resources.Load<Texture2D>(texturePath);
                 tex.FlipY();
                 tex.FilterMode = FilterMode.Nearest;
-             
+
                 astronautTextures[color] = tex;
             }
             return tex;
@@ -117,7 +117,7 @@ namespace Spacebox.Game.Player
             }
             else
             {
-             
+
                 astBody.Rotation = Rotation;
                 astBody.Position = Position;
                 astHelmet.Rotation = Rotation;

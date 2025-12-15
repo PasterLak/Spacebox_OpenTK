@@ -2,15 +2,27 @@
 using Engine.Utils;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
+using System.Drawing;
 
 
 namespace Spacebox.Game.Resource
 {
     public static class BlocksLoader
     {
+        private static void AddVoidBlock()
+        {
+            var _void = new BlockData("Void", "block", new Vector2Byte(0, 0));
+            _void.Mass = 0;
+            _void.Category = "";
+            _void.Sides = "sand";
+            _void.Id_string = "default:void";
+
+            GameAssetsRegister.RegisterBlock(_void);
+        }
+
         private static void AddAirBlock()
         {
-            var air = new BlockJSON("Air", "block", new Vector2Byte(0, 0));
+            var air = new BlockData("Air", "block", new Vector2Byte(0, 0));
             air.Mass = 0;
             air.Category = "";
             air.Sides = "sand";
@@ -21,14 +33,15 @@ namespace Spacebox.Game.Resource
 
         public static void LoadBlocks(string modPath, string defaultModPath)
         {
+            AddVoidBlock();
             AddAirBlock();
             string blocksFile = GameSetLoader.GetFilePath(modPath, defaultModPath, "blocks.json");
             if (blocksFile == null) return;
 
             try
             {
-               
-                List<BlockDataJSON> blocks = JsonFixer.LoadJsonSafe<List<BlockDataJSON>>(blocksFile);
+
+                List<BlockJSON> blocks = JsonFixer.LoadJsonSafe<List<BlockJSON>>(blocksFile);
 
                 if (blocks == null)
                 {
@@ -48,29 +61,29 @@ namespace Spacebox.Game.Resource
             }
         }
 
-        private static bool ProcessBlock(BlockDataJSON block)
+        private static bool ProcessBlock(BlockJSON blockJson)
         {
-            if (string.IsNullOrWhiteSpace(block.ID))
+            if (string.IsNullOrWhiteSpace(blockJson.ID))
             {
                 Debug.Error("[GameSetLoader] Block has empty ID and was skipped");
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(block.Name))
+            if (string.IsNullOrWhiteSpace(blockJson.Name))
             {
-                Debug.Error($"[GameSetLoader] Block '{block.ID}' has empty name and was skipped");
+                Debug.Error($"[GameSetLoader] Block '{blockJson.ID}' has empty name and was skipped");
                 return false;
             }
 
-            NormalizeBlockStrings(block);
+            NormalizeBlockStrings(blockJson);
 
-            if (!ValidateBlockType(block))
+            if (!ValidateBlockType(blockJson))
                 return false;
 
-            if (!ValidateBlockValues(block))
+            if (!ValidateBlockValues(blockJson))
                 return false;
 
-            var blockId = GameSetLoader.ValidateIdString(GameSetLoader.ModInfo.ModId, block.ID);
+            var blockId = GameSetLoader.ValidateIdString(GameSetLoader.ModInfo.ModId, blockJson.ID);
             blockId = GameSetLoader.CombineId(GameSetLoader.ModInfo.ModId, blockId);
 
             if (GameAssets.HasItem(blockId))
@@ -81,18 +94,30 @@ namespace Spacebox.Game.Resource
 
             try
             {
-                var blockData = CreateBlockData(block, blockId);
+                BlockData blockData = CreateBlockData(blockJson, blockId);
+
+                if (blockData.Type == "storage")
+                {
+                    var Size = blockJson.StorageSize;
+                    if (Size.X < 1) Size = new Vector2Byte((byte)1, Size.Y);
+                    if (Size.Y < 1) Size = new Vector2Byte(Size.X, (byte)1);
+
+                    blockData = new StorageBlockData(blockData, Size);
+
+
+                }
+
                 GameAssetsRegister.RegisterBlock(blockData);
                 return true;
             }
             catch (Exception ex)
             {
-                Debug.Error($"[GameSetLoader] Failed to create block '{block.ID}': {ex.Message}");
+                Debug.Error($"[GameSetLoader] Failed to create block '{blockJson.ID}': {ex.Message}");
                 return false;
             }
         }
 
-        private static void NormalizeBlockStrings(BlockDataJSON block)
+        private static void NormalizeBlockStrings(BlockJSON block)
         {
             block.Type = block.Type?.ToLower() ?? "block";
             block.Sides = block.Sides?.ToLower() ?? "";
@@ -108,7 +133,7 @@ namespace Spacebox.Game.Resource
             block.SoundDestroy = block.SoundDestroy ?? "blockDestroyDefault";
         }
 
-        private static bool ValidateBlockType(BlockDataJSON block)
+        private static bool ValidateBlockType(BlockJSON block)
         {
             if (!BlockFactory.ValidateBlockType(block.Type))
             {
@@ -119,7 +144,7 @@ namespace Spacebox.Game.Resource
             return true;
         }
 
-        private static bool ValidateBlockValues(BlockDataJSON block)
+        private static bool ValidateBlockValues(BlockJSON block)
         {
             bool isValid = true;
 
@@ -161,16 +186,16 @@ namespace Spacebox.Game.Resource
             return isValid;
         }
 
-        private static BlockJSON CreateBlockData(BlockDataJSON block, string blockId)
+        private static BlockData CreateBlockData(BlockJSON block, string blockId)
         {
-           
+
 
             bool hasLightColor = block.LightColor != Color3Byte.Black;
             var blockColor = hasLightColor ? block.LightColor.ToVector3() : Vector3.Zero;
 
-            var blockData = new BlockJSON(block.Name, block.Type, new Vector2Byte(0, 0), block.IsTransparent, blockColor)
+            var blockData = new BlockData(block.Name, block.Type, new Vector2Byte(0, 0), block.IsTransparent, blockColor)
             {
-               
+
                 Id_string = blockId,
                 Description = block.Description,
                 Mass = (byte)Math.Clamp(block.Mass, 1, byte.MaxValue),
@@ -178,7 +203,7 @@ namespace Spacebox.Game.Resource
                 PowerToDrill = (byte)Math.Clamp(block.PowerToDrill, 0, byte.MaxValue),
                 Efficiency = Math.Max(0.1f, block.Efficiency),
                 Category = block.Category,
-               
+
                 Sides = block.Sides
             };
 
@@ -196,7 +221,7 @@ namespace Spacebox.Game.Resource
             return blockData;
         }
 
-        private static void GiveBlockSounds(BlockJSON blockData, BlockDataJSON modBlockData)
+        private static void GiveBlockSounds(BlockData blockData, BlockJSON modBlockData)
         {
             if (!GameAssets.Sounds.ContainsKey(modBlockData.SoundPlace))
             {

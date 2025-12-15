@@ -82,7 +82,7 @@
                     "CanSpawnNearVoid": true
                 },
                 {
-                    "BlockId": "air",
+                    "BlockId": "void",
                     "SpawnChance": 1000,
                     "MinVeinSize": 8,
                     "MaxVeinSize": 16,
@@ -93,7 +93,7 @@
         },
         {
             "Name": "Stone",
-            "FillBlockID": "air",
+            "FillBlockID": "void",
             "Ratio": 20,
             "Veins": [
 

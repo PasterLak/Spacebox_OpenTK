@@ -8,14 +8,14 @@ namespace Spacebox.Game
 {
     public static class GameAssetsRegister
     {
-        public static void RegisterBlock(BlockJSON blockData)
+        public static void RegisterBlock(BlockData blockData)
         {
             GameAssets.IncrementBlockId(blockData);
             GameAssets.Blocks.Add(blockData.Id, blockData);
             GameAssets.AddBlockString(blockData.Id_string, blockData);
 
-            if(blockData.Id != 0)
-                BlockJSON.CacheUvs(blockData);
+            if(blockData.Id > 1 )
+                BlockData.CacheUvs(blockData);
            
             RegisterItem(blockData);
             CreateDust(blockData);
@@ -37,7 +37,7 @@ namespace Spacebox.Game
             }
         }
 
-        public static void RegisterItem(BlockJSON blockData)
+        public static void RegisterItem(BlockData blockData)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace Spacebox.Game
             GameAssets.ItemModels.Add(item.Id, model);
         }
 
-        private static void CacheIcon(BlockJSON blockData)
+        private static void CacheIcon(BlockData blockData)
         {
             Texture2D texture = IsometricIcon.Create(
                 UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.GetFaceUVIndex(Generation.Blocks.Direction.Left), GameAssets.AtlasBlocks.SizeBlocks),
@@ -120,7 +120,7 @@ namespace Spacebox.Game
             GameAssets.ItemIcons.Add(item.Id, texture);
         }
 
-        private static void CreateDust(BlockJSON block)
+        private static void CreateDust(BlockData block)
         {
             Texture2D texture = BlockDestructionTexture.Generate(block.WallsUVIndex);
             GameAssets.BlockDusts.Add(block.Id, texture);

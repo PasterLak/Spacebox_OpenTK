@@ -102,7 +102,7 @@ public class InteractiveBlock : ElectricalBlock
     }
 
 
-    public InteractiveBlock(BlockJSON blockData) : base(blockData)
+    public InteractiveBlock(BlockData blockData) : base(blockData)
     {
         EFlags = ElectricalFlags.None;
         MaxPower = 300;

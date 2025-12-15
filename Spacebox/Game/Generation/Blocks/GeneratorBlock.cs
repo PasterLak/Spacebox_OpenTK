@@ -7,7 +7,7 @@ namespace Spacebox.Game.Generation.Blocks
 {
     public class GeneratorBlock : InteractiveBlock
     {
-        public GeneratorBlock(BlockJSON blockData) : base(blockData)
+        public GeneratorBlock(BlockData blockData) : base(blockData)
         {
             EFlags = ElectricalFlags.CanGenerate | ElectricalFlags.CanTransfer;
             MaxPower = 500;

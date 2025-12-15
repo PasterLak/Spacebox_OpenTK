@@ -36,7 +36,7 @@ public class CreativeWindowCategory
             .Where(i =>
                 (categoryType == typeof(CreativeToolItem) && i is CreativeToolItem) ||
                 (categoryType != typeof(CreativeToolItem) && i.GetType() == categoryType))
-            .Where(x => x.Id > 0)
+            .Where(x => x.Id > 1)
             .OrderBy(i => i.Id)
             .ToList();
     }

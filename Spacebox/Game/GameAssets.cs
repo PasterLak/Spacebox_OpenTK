@@ -24,9 +24,9 @@ namespace Spacebox.Game
         
         public static LootConfig LootConfig { get; set; }
 
-        public static Dictionary<short, BlockJSON> Blocks = new Dictionary<short, BlockJSON>();
+        public static Dictionary<short, BlockData> Blocks = new Dictionary<short, BlockData>();
 
-        public static Dictionary<string, BlockJSON> BlocksStr { get; private set; } = new Dictionary<string, BlockJSON>();
+        public static Dictionary<string, BlockData> BlocksStr { get; private set; } = new Dictionary<string, BlockData>();
         public static Dictionary<string, Item> ItemsStr { get; private set; } = new Dictionary<string, Item>();
 
         public static Dictionary<short, Item> Items = new Dictionary<short, Item>();
@@ -112,7 +112,7 @@ namespace Spacebox.Game
         }
 
 
-        public static BlockJSON GetBlockDataById(short id)
+        public static BlockData GetBlockDataById(short id)
         {
             if (!Blocks.ContainsKey(id))
                 return Blocks[0];
@@ -123,7 +123,8 @@ namespace Spacebox.Game
         {
             if (!Blocks.ContainsKey(id))
                 return new Block();
-            BlockJSON data = Blocks[id];
+
+            BlockData data = Blocks[id];
             return BlockFactory.CreateBlock(data);
         }
 
@@ -169,7 +170,7 @@ namespace Spacebox.Game
         }
         public static Storage CreateCreativeStorage(byte sizeX, List<Item> items)
         {
-            List<Item> filtered = items.Where(i => i.Id != 0).ToList();
+            List<Item> filtered = items.Where(i => i.Id > 1).ToList();
             byte sizeY = (byte)((filtered.Count + sizeX - 1) / sizeX);
 
             Storage storage = new Storage(sizeX, sizeY);
@@ -241,7 +242,7 @@ namespace Spacebox.Game
             return false;
         }
 
-        public static void AddBlockString(string fullId, BlockJSON blockData)
+        public static void AddBlockString(string fullId, BlockData blockData)
         {
             BlocksStr[fullId] = blockData;
         }
@@ -286,7 +287,7 @@ namespace Spacebox.Game
             IsInitialized = false;
         }
 
-        public static void IncrementBlockId(BlockJSON blockData)
+        public static void IncrementBlockId(BlockData blockData)
         {
             MaxBlockId++;
             blockData.Id = MaxBlockId;

@@ -200,7 +200,7 @@ namespace Spacebox.Game.Effects
 
             return false;
         }
-        private void EnsureParticleSystem(short itemId, BlockJSON blockData, Color3Byte color)
+        private void EnsureParticleSystem(short itemId, BlockData blockData, Color3Byte color)
         {
             if (_particleSystems.ContainsKey(itemId)) return;
 

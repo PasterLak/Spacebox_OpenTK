@@ -26,6 +26,7 @@ namespace Spacebox.Game
         public bool MoveItemsToConnectedStorage = false;
 
 
+        public Storage(Vector2Byte size) : this(size.X, size.Y) { }
         public Storage(byte sizeX, byte sizeY)
         {
             SizeX = sizeX;

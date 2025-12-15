@@ -101,7 +101,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
 
         World.LoadWorldInfo(SceneArgs.worldName);
-        blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.EmissionBlocks, localPlayer);
+        blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.EmissionBlocks);
         var world = new World(localPlayer, blockMaterial);
         AttachComponent(world);
         world.Load();

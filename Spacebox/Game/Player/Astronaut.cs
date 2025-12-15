@@ -11,7 +11,6 @@ using Spacebox.Game.Player.Interactions;
 using Spacebox.GUI;
 
 
-
 namespace Spacebox.Game.Player
 {
     public class Astronaut : Camera360Base

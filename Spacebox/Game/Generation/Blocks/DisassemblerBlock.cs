@@ -9,7 +9,7 @@ namespace Spacebox.Game.Generation.Blocks
     public class DisassemblerBlock : ResourceProcessingBlock
     {
 
-        public DisassemblerBlock(BlockJSON blockData) : base(blockData)
+        public DisassemblerBlock(BlockData blockData) : base(blockData)
         {
             OnUse += ResourceProcessingGUI.Toggle;
 

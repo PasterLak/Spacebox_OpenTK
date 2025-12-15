@@ -460,7 +460,7 @@ public static class GameSetLoader
         foreach (var block in GameAssets.Blocks.Values)
         {
             if (block == null) continue;
-            if (block.Id == 0) continue;
+            if (block.Id <= 1) continue;
 
             var drop = block.Drop;
             var dropIdStr = drop.Item.Id_string;

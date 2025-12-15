@@ -7,7 +7,7 @@ namespace Spacebox.Game.Generation.Blocks
 {
     public class RadarBlock : InteractiveBlock
     {
-        public RadarBlock(BlockJSON blockData) : base(blockData)
+        public RadarBlock(BlockData blockData) : base(blockData)
         {
 
             if (RadarUI.Instance != null)
