@@ -397,15 +397,15 @@ namespace Spacebox.Game.GUI
 
             ImGui.SetCursorPos(new Vector2(centerX - slotSpacing, centerY - slotSize * 0.7f));
             InventoryUIHelper.DrawSlot(InputStorage.GetSlot(0, 0), "InputStorage", MoveItems, inputIcon, false);
-            InventoryUIHelper.ShowTooltip(InputStorage.GetSlot(0, 0), false);
+            InventoryUIHelper.ShowTooltip(InputStorage.GetSlot(0, 0), false, true);
 
             ImGui.SetCursorPos(new Vector2(centerX - slotSpacing, centerY + slotSpacing * 0.5f));
             InventoryUIHelper.DrawSlot(FuelStorage.GetSlot(0, 0), "FuelStorage", MoveItems, batteryIcon, false);
-            InventoryUIHelper.ShowTooltip(FuelStorage.GetSlot(0, 0), false);
+            InventoryUIHelper.ShowTooltip(FuelStorage.GetSlot(0, 0), false,true);
 
             ImGui.SetCursorPos(new Vector2(centerX + slotSpacing * 0.5f, centerY - slotSize * 0.7f));
             InventoryUIHelper.DrawSlot(OutputStorage.GetSlot(0, 0), "OutputStorage", MoveItems, outputIcon, false);
-            InventoryUIHelper.ShowTooltip(OutputStorage.GetSlot(0, 0), false);
+            InventoryUIHelper.ShowTooltip(OutputStorage.GetSlot(0, 0), false,true);
 
             ImGui.EndChild();
             ImGui.PopStyleColor();

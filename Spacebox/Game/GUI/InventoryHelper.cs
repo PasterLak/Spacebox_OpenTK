@@ -56,7 +56,7 @@ namespace Spacebox.Game.GUI
                         string id = $"slot_{x}_{y}";
                         bool isSelected = isPanel && x == 0 && y == selectedSlotId;
                         DrawSlot(slot, id, onSlotClicked, isSelected);
-                        ShowTooltip(slot);
+                        ShowTooltip(slot, false, true);
                     }
                 }
                 ImGui.EndTable();
@@ -237,7 +237,7 @@ namespace Spacebox.Game.GUI
 
         }
 
-        public static void ShowTooltip(ItemSlot slot, bool showStackSize = false, bool showDescription = false)
+        public static void ShowTooltip(ItemSlot slot, bool showStackSize, bool showDescription )
         {
             if (IsDragging) return;
 

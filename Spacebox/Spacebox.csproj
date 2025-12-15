@@ -73,6 +73,11 @@
 		</None>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="GameSets\Default\Generation\Loot\" />
+	  <Folder Include="GameSets\Default\Projectiles\" />
+	</ItemGroup>
+
 
 
 </Project>

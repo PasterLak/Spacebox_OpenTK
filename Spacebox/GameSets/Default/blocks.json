@@ -2,6 +2,7 @@
     {
         "ID": "light_rock",
         "Name": "Light Rock",
+        "Description": "Easily mined rock",
         "Sides": "lightRock",
        
         "PowerToDrill": 1,
@@ -15,6 +16,7 @@
     {
         "ID": "medium_rock",
         "Name": "Medium Rock",
+        "Description": "Standard rock found in many big asteroids",
         "Sides": "mediumRock",
         "PowerToDrill": 3,
         "Mass": 4,
@@ -26,6 +28,7 @@
     {
         "ID": "heavy_rock",
         "Name": "Heavy Rock",
+        "Description": "Dense rock that requires powerful tools to mine",
         "Sides": "heavyRock",
         "PowerToDrill": 5,
         "Mass": 10,
@@ -35,6 +38,7 @@
     {
         "ID": "cobaltite_rock",
         "Name": "Cobaltite Rock",
+        "Description": "Source of cobalt crystals",
         "Sides": "cobaltite",
         "PowerToDrill": 1,
         "Mass": 1,
@@ -61,6 +65,7 @@
     {
         "ID": "aluminium_ore",
         "Name": "Aluminium Ore",
+        "Description": "Lightweight ore used in various fields",
         "Sides": "aluOre",
         "PowerToDrill": 1,
         "Mass": 1,
@@ -69,6 +74,7 @@
     {
         "ID": "iron_ore",
         "Name": "Iron Ore",
+        "Description": "A common ore used in construction",
         "Sides": "ironOre",
         "PowerToDrill": 2,
         "Mass": 2,
@@ -77,6 +83,7 @@
     {
         "ID": "titanium_ore",
         "Name": "Titanium Ore",
+        "Description": "A strong and lightweight ore",
         "Sides": "titaniumOre",
         "PowerToDrill": 4,
         "Mass": 4,
@@ -85,6 +92,7 @@
     {
         "ID": "thulium_ore",
         "Name": "Thulium Ore",
+        "Description": "A rare ore used in advanced technologies",
         "Sides": "yellowOre",
         "PowerToDrill": 3,
         "Mass": 4,
@@ -102,6 +110,7 @@
     {
         "ID": "uranium_ore",
         "Name": "Uranium Ore",
+        "Description": "A radioactive ore used for advanced power generation",
         "Sides": "greenOre",
         "PowerToDrill": 3,
         "Mass": 1,
@@ -206,6 +215,7 @@
     {
         "ID": "window",
         "Name": "Window",
+        "Description": "Allows light to pass through",
         "Category": "windows",
         "Sides": "window",
         "Mass": 1,
@@ -226,6 +236,7 @@
     {
         "ID": "reinforced_window",
         "Name": "Reinforced Window",
+        "Description": "Stronger than regular windows",
         "Category": "windows",
         "Sides": "window2",
         "Mass": 2,
@@ -308,6 +319,7 @@
     {
         "ID": "analyzer",
         "Name": "Analyzer",
+        
         "Type": "interactive",
         "Category": "resources",
         "Sides": "bottom",
@@ -319,6 +331,7 @@
     {
         "ID": "radar",
         "Name": "Radar",
+        "Description": "Scans surroundings",
         "Type": "radar",
         "Category": "resources",
         "Sides": "bottom",
@@ -330,6 +343,7 @@
     {
         "ID": "disassembler",
         "Name": "Disassembler",
+        "Description": "Disassembles items into basic components",
         "Type": "disassembler",
         "Category": "resources",
         "Sides": "disassemblerSide",
@@ -563,6 +577,7 @@
      {
         "ID": "safe",
         "Name": "Armored Safe",
+        "Description": "Provides high security for valuable items",
         "Type": "storage",
         "Category": "other",
         "Sides": "safe_side",
@@ -588,7 +603,7 @@
     {
         "ID": "dna_reconstructor",
         "Name": "DNA Reconstructor",
-        "Description" : "Used to revive the player or other creatures.",
+        "Description" : "Used to revive the player or other creatures",
         "Category": "other",
         "Up": "spawnerTop",
         "Down": "bottom",

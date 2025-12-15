@@ -26,14 +26,14 @@ namespace Spacebox.Game.GUI
         static float _hideTimer;
         static string _inputBuffer = "";
         public static bool FocusInput { get; set; }
-        static bool _prevFocusInput;
+
         static readonly List<ChatMessage> _messages = new();
 
         public static void SetAlwaysVisible(bool value) => _alwaysVisible = value;
         public static void SetPlaceOnLeft(bool value) => _placeOnLeft = value;
         public static void SetHideDelay(float seconds) => _hideDelay = seconds;
 
-        static void AddMessage(string text, Color4 c)
+        private static void AddMessage(string text, Color4 c)
         {
             _messages.Add(new ChatMessage(text, new Vector4(c.R, c.G, c.B, c.A)));
             IsVisible = true;
@@ -52,30 +52,30 @@ namespace Spacebox.Game.GUI
             FocusInput = false;
         }
 
-        public static void Say(string text, string name)
+        public static void Say(string sender, string text)
         {
             if (ClientNetwork.Instance != null)
                 ClientNetwork.Instance.SendMessage(text);
-            AddMessage(name + text, Color4.White);
+            AddMessage(sender + text, Color4.White);
         }
 
         public static void Say(string text)
         {
-            Say(text, "");
+            Say("", text);
         }
 
         private static void StartInput()
         {
             if (_inputBuffer.Length > 0) return;
-            
 
-              
+
+
             ToggleManager.SetState("player", false);
             PanelUI.AllowScroll = false;
             InputManager0.Enabled = false;
             if (!IsVisible)
             {
-              
+
                 FocusInput = true;
                 _hideTimer = _hideDelay;
             }
@@ -96,13 +96,13 @@ namespace Spacebox.Game.GUI
             //if (!FocusInput) return;
             if (!IsVisible) return;
 
-                _inputBuffer = "";
+            _inputBuffer = "";
 
-            
+
             ToggleManager.SetState("player", true);
             PanelUI.AllowScroll = true;
             InputManager0.Enabled = true;
-            _prevFocusInput = false;
+
             FocusInput = false;
             _hideTimer = _hideDelay;
             isStopped = true;
@@ -111,7 +111,7 @@ namespace Spacebox.Game.GUI
 
         private static void UpdateHide()
         {
-            if(!IsVisible) return;
+            if (!IsVisible) return;
             if (_alwaysVisible) return;
 
             if (FocusInput || _inputBuffer.Length > 0)
@@ -136,22 +136,22 @@ namespace Spacebox.Game.GUI
             {
                 if (Input.IsKeyDown(Keys.Escape))
                 {
-                  
+
                 }
                 return;
             }
-           
-           
+
+
             if (Input.IsKeyDown(Keys.Escape))
             {
-              
+
                 StopInput();
-               
+
             }
 
             if (Input.IsKeyDown(Keys.T))
             {
-              
+
                 StartInput();
             }
 

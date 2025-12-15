@@ -1,0 +1,18 @@
+{
+   
+    "Speed": 22,
+    "Mass": 255,
+    "MaxTravelDistance": 70,
+    "Length": 0.5,
+    "Thickness": 0.2,
+    "Color": {
+        "r": 178,
+        "g": 0,
+        "b": 255
+    },
+    "Damage": 80,
+    "DamageBlocks": 60,
+    "RicochetAngle": 70,
+    "PossibleRicochets": 5,
+    "DropBlock": false
+}

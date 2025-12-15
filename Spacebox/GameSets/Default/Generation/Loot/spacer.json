@@ -1,0 +1,32 @@
+[
+  {
+    "ID": "med_kit",
+    "Probability": 100,
+    "MinCount": 1,
+    "MaxCount": 1
+  },
+  {
+    "ID": "water",
+    "Probability": 50,
+    "MinCount": 1,
+    "MaxCount": 3
+  },
+  {
+    "ID": "cobalt_crystal",
+    "Probability": 30,
+    "MinCount": 1,
+    "MaxCount": 3
+  },
+  {
+    "ID": "energy_cell",
+    "Probability": 10,
+    "MinCount": 1,
+    "MaxCount": 3
+  },
+  {
+    "ID": "pistol",
+    "Probability": 100,
+    "MinCount": 1,
+    "MaxCount": 1
+  }
+]

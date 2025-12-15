@@ -1,0 +1,16 @@
+{
+    "Speed": 16,
+    "Mass": 1,
+    "MaxTravelDistance": 50,
+    "Length": 0.4,
+    "Thickness": 0.05,
+    "Color": {
+        "r": 130,
+        "g": 200,
+        "b": 190
+    },
+    "Damage": 2,
+    "DamageBlocks": 0,
+    "RicochetAngle": 30,
+    "PossibleRicochets": 3
+}

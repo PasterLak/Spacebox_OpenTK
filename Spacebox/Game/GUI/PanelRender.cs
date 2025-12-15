@@ -66,7 +66,7 @@ namespace Spacebox.Game.GUI
                         string id = $"slot_{row}_{col}";
                         bool selected = (row == 0 && col == selectedSlotId);
                         InventoryUIHelper.DrawSlot(slot, id, PanelUI.OnSlotClicked, selected);
-                        InventoryUIHelper.ShowTooltip(slot);
+                        InventoryUIHelper.ShowTooltip(slot, false,true);
                     }
                 }
 

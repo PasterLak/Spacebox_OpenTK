@@ -1,0 +1,8 @@
+[
+  {
+    "ID": "med_kit",
+    "Probability": 100,
+    "MinCount": 1,
+    "MaxCount": 1
+  }
+]

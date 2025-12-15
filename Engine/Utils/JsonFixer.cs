@@ -142,10 +142,16 @@ namespace Engine.Utils
         public static T LoadJsonSafe<T>(string path) where T : class
         {
             string json = "";
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                ReadCommentHandling = JsonCommentHandling.Skip
+            };
+
             try
             {
                 json = File.ReadAllText(path);
-                return JsonSerializer.Deserialize<T>(json);
+                return JsonSerializer.Deserialize<T>(json, options);
             }
             catch (JsonException)
             {
@@ -153,7 +159,7 @@ namespace Engine.Utils
                 {
                     Debug.Error("[JsonFixer] JSON syntax errors found and fixed - " + path);
                     string fixedJson = FixJson(json);
-                    return JsonSerializer.Deserialize<T>(fixedJson);
+                    return JsonSerializer.Deserialize<T>(fixedJson, options);
                 }
                 catch (Exception ex)
                 {

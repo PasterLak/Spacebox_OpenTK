@@ -4,223 +4,222 @@
       "Type": "crusher",
       "Recipes": [
         {
-          "RequiredTicks": 100,
+          "Duration": 5.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "ice_rock", "Quantity": 1 },
           "Product": { "Item": "ice_shard", "Quantity": 3 }
         },
         {
-          "RequiredTicks": 120,
+          "Duration": 6.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "dense_ice_rock", "Quantity": 1 },
           "Product": { "Item": "methane_ice_shard", "Quantity": 3 }
         },
         {
-          "RequiredTicks": 150,
+          "Duration": 7.5,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "light_rock", "Quantity": 1 },
           "Product": { "Item": "sand", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 200,
+          "Duration": 10.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "medium_rock", "Quantity": 1 },
           "Product": { "Item": "sand", "Quantity": 4 }
         },
         {
-          "RequiredTicks": 300,
+          "Duration": 15.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "heavy_rock", "Quantity": 1 },
           "Product": { "Item": "sand", "Quantity": 6 }
         },
         {
-          "RequiredTicks": 200,
+          "Duration": 10.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "cobaltite_rock", "Quantity": 1 },
           "Product": { "Item": "cobalt_dust", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 200,
+          "Duration": 10.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "cobalt_ingot", "Quantity": 1 },
           "Product": { "Item": "cobalt_dust", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 250,
+          "Duration": 12.5,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "iron_ore", "Quantity": 1 },
           "Product": { "Item": "iron_dust", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 250,
+          "Duration": 12.5,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "iron_ingot", "Quantity": 1 },
           "Product": { "Item": "iron_dust", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 200,
+          "Duration": 10.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "aluminium_ore", "Quantity": 1 },
           "Product": { "Item": "aluminium_dust", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 220,
+          "Duration": 11.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "aluminium_ingot", "Quantity": 1 },
           "Product": { "Item": "aluminium_dust", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 320,
+          "Duration": 16.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "titanium_ingot", "Quantity": 1 },
           "Product": { "Item": "titanium_dust", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 320,
+          "Duration": 16.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "titanium_ore", "Quantity": 1 },
           "Product": { "Item": "titanium_dust", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 350,
+          "Duration": 17.5,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "uranium_ore", "Quantity": 1 },
           "Product": { "Item": "uranium_dust", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 350,
+          "Duration": 17.5,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "uranium_ingot", "Quantity": 1 },
           "Product": { "Item": "uranium_dust", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 200,
+          "Duration": 10.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "aluminium_panels", "Quantity": 3 },
           "Product": { "Item": "aluminium_dust", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 240,
+          "Duration": 12.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "iron_panels", "Quantity": 3 },
           "Product": { "Item": "iron_dust", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 380,
+          "Duration": 19.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "titanium_panels", "Quantity": 3 },
           "Product": { "Item": "titanium_dust", "Quantity": 1 }
         },
-          {
-          "RequiredTicks": 300,
+        {
+          "Duration": 15.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "plastic", "Quantity": 1 },
           "Product": { "Item": "polymer_pellets", "Quantity": 4 }
-        } 
+        }
       ]
     },
     {
       "Type": "furnace",
       "Recipes": [
         {
-          "RequiredTicks": 160,
+          "Duration": 8.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "ice_shard", "Quantity": 2 },
           "Product": { "Item": "water", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 180,
+          "Duration": 9.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "sand", "Quantity": 1 },
           "Product": { "Item": "glass", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 250,
+          "Duration": 12.5,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "ice_rock", "Quantity": 1 },
           "Product": { "Item": "water", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 200,
+          "Duration": 10.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "cobalt_dust", "Quantity": 1 },
           "Product": { "Item": "cobalt_ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 200,
+          "Duration": 10.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "aluminium_dust", "Quantity": 1 },
           "Product": { "Item": "aluminium_ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 200,
+          "Duration": 10.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "iron_dust", "Quantity": 1 },
           "Product": { "Item": "iron_ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 250,
+          "Duration": 12.5,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "titanium_dust", "Quantity": 1 },
           "Product": { "Item": "titanium_ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 250,
+          "Duration": 12.5,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "uranium_dust", "Quantity": 1 },
           "Product": { "Item": "uranium_ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 250,
+          "Duration": 12.5,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "cobaltite_rock", "Quantity": 1 },
           "Product": { "Item": "cobalt_ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 300,
+          "Duration": 15.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "aluminium_ore", "Quantity": 1 },
           "Product": { "Item": "aluminium_ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 330,
+          "Duration": 16.5,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "iron_ore", "Quantity": 1 },
           "Product": { "Item": "iron_ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 400,
+          "Duration": 20.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "titanium_ore", "Quantity": 1 },
           "Product": { "Item": "titanium_ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 600,
+          "Duration": 30.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "uranium_ore", "Quantity": 1 },
           "Product": { "Item": "uranium_ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 1200,
+          "Duration": 60.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "obscurium_ore", "Quantity": 1 },
           "Product": { "Item": "obscurium_ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 200,
+          "Duration": 10.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "water", "Quantity": 1 },
           "Product": { "Item": "liquid_hydrogen", "Quantity": 2 }
-        } 
-        ,
+        },
         {
-          "RequiredTicks": 400,
+          "Duration": 20.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "polymer_pellets", "Quantity": 4 },
           "Product": { "Item": "plastic", "Quantity": 1 }
-        } 
-        ,{
-          "RequiredTicks": 250,
+        },
+        {
+          "Duration": 12.5,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "methane_ice_shard", "Quantity": 1 },
           "Product": { "Item": "compressed_methane", "Quantity": 1 }
@@ -231,121 +230,121 @@
       "Type": "disassembler",
       "Recipes": [
         {
-          "RequiredTicks": 500,
+          "Duration": 25.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "iron_block_light", "Quantity": 1 },
           "Product": { "Item": "iron_panels", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 500,
+          "Duration": 25.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "iron_block_medium", "Quantity": 1 },
           "Product": { "Item": "iron_panels", "Quantity": 3 }
         },
         {
-          "RequiredTicks": 500,
+          "Duration": 25.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "iron_block_heavy", "Quantity": 1 },
           "Product": { "Item": "iron_panels", "Quantity": 4 }
         },
         {
-          "RequiredTicks": 500,
+          "Duration": 25.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "aluminium_block_light", "Quantity": 1 },
           "Product": { "Item": "aluminium_panels", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 500,
+          "Duration": 25.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "aluminium_block_medium", "Quantity": 1 },
           "Product": { "Item": "aluminium_panels", "Quantity": 3 }
         },
         {
-          "RequiredTicks": 500,
+          "Duration": 25.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "aluminium_block_heavy", "Quantity": 1 },
           "Product": { "Item": "aluminium_panels", "Quantity": 4 }
         },
         {
-          "RequiredTicks": 500,
+          "Duration": 25.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "titanium_block_light", "Quantity": 1 },
           "Product": { "Item": "titanium_panels", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 500,
+          "Duration": 25.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "titanium_block_medium", "Quantity": 1 },
           "Product": { "Item": "titanium_panels", "Quantity": 3 }
         },
         {
-          "RequiredTicks": 500,
+          "Duration": 25.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "titanium_block_heavy", "Quantity": 1 },
           "Product": { "Item": "titanium_panels", "Quantity": 4 }
         },
         {
-          "RequiredTicks": 1000,
+          "Duration": 50.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "aluminium_drill", "Quantity": 1 },
           "Product": { "Item": "aluminium_ingot", "Quantity": 1 }
         },
         {
-          "RequiredTicks": 1000,
+          "Duration": 50.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "cobalt_drill", "Quantity": 1 },
           "Product": { "Item": "cobalt_ingot", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 1000,
+          "Duration": 50.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "iron_drill", "Quantity": 1 },
           "Product": { "Item": "iron_ingot", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 1000,
+          "Duration": 50.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "triple_iron_drill", "Quantity": 1 },
           "Product": { "Item": "iron_ingot", "Quantity": 5 }
         },
         {
-          "RequiredTicks": 1000,
+          "Duration": 50.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "titanium_drill", "Quantity": 1 },
           "Product": { "Item": "titanium_ingot", "Quantity": 5 }
         },
         {
-          "RequiredTicks": 2000,
+          "Duration": 100.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "obscurium_drill", "Quantity": 1 },
           "Product": { "Item": "obscurium_ingot", "Quantity": 3 }
         },
         {
-          "RequiredTicks": 500,
+          "Duration": 25.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "window", "Quantity": 1 },
           "Product": { "Item": "glass", "Quantity": 6 }
         },
         {
-          "RequiredTicks": 800,
+          "Duration": 40.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "pistol", "Quantity": 1 },
           "Product": { "Item": "iron_ingot", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 1200,
+          "Duration": 60.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "smg", "Quantity": 1 },
           "Product": { "Item": "iron_ingot", "Quantity": 4 }
         },
         {
-          "RequiredTicks": 1300,
+          "Duration": 65.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "assault_rifle", "Quantity": 1 },
           "Product": { "Item": "titanium_ingot", "Quantity": 2 }
         },
         {
-          "RequiredTicks": 1500,
+          "Duration": 75.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "impulse_rifle", "Quantity": 1 },
           "Product": { "Item": "obscurium_ingot", "Quantity": 3 }

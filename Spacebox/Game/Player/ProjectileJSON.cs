@@ -1,10 +1,12 @@
 ﻿using Engine;
+using System.Text.Json.Serialization;
 
 
 namespace Spacebox.Game.Player
 {
     public class ProjectileJSON
     {
+        [JsonIgnore]
         public string ID { get;  set; } = "projectiledefault";
         public float Speed { get; set; } = 5;
         public int MaxTravelDistance { get; set; } = 100;
@@ -16,7 +18,7 @@ namespace Spacebox.Game.Player
         public int Mass { get; set; } = 1;
         public int Damage { get; set; } = 0;
         public int DamageBlocks { get; set; } = 0;
-        public float RicochetAngle { get; set; } = 0;
+        public int RicochetAngle { get; set; } = 0;
         public int PossibleRicochets { get; set; } = 0;
 
         public bool DropBlock { get; set; } = false;

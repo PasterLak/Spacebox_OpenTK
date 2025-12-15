@@ -316,7 +316,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         ResourceProcessingGUI.OnGUI();
         CraftingGUI.OnGUI();
         PanelUI.Render();
-        localPlayer.OnGUI();
+    
         InventoryUI.OnGUI(localPlayer.Inventory);
         StorageUI.OnGUI();
         CreativeWindowUI.OnGUI();

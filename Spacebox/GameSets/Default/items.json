@@ -3,7 +3,7 @@
         "Info": "Tags:  Name, Type<Drill,Weapone,Item>, Sprite, MaxStack, ModelDepth",
         "ID": "aluminium_drill",
         "Name": "Aluminium Drill",
-        "Description": "A basic drill. Can mine only soft blocks.",
+        "Description": "Can mine only soft blocks",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill1",
@@ -21,7 +21,7 @@
     {
         "ID": "cobalt_drill",
         "Name": "Cobalt Drill",
-        "Description": "A sturdy drill. Can mine soft blocks.",
+        "Description": "A sturdy drill. Can mine soft blocks",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill2",
@@ -39,7 +39,7 @@
     {
         "ID": "iron_drill",
         "Name": "Iron Drill",
-        "Description": "A strong drill. Can mine medium blocks.",
+        "Description": "A strong drill. Can mine medium blocks",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill3",
@@ -57,7 +57,7 @@
     {
         "ID": "triple_iron_drill",
         "Name": "Triple Iron Drill",
-        "Description": "A powerful drill with three drill bits. Can mine hard blocks.",
+        "Description": "A powerful drill with three drill bits. Can mine hard blocks",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill4",
@@ -93,7 +93,7 @@
     {
         "ID": "obscurium_drill",
         "Name": "Obscurium Drill",
-        "Description": "The ultimate drill. Can mine anything.",
+        "Description": "The ultimate drill. Can mine anything",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill6",
@@ -111,7 +111,7 @@
     {
         "ID": "pistol",
         "Name": "Pistol",
-        "Description": "A basic sidearm.",
+        "Description": "A basic sidearm",
         "Type": "weapon",
         "Category": "weapons",
         "Sprite": "weapon1",
@@ -129,7 +129,7 @@
     {
         "ID": "smg",
         "Name": "SMG",
-        "Description": "A rapid-fire submachine gun.",
+        "Description": "A rapid-fire submachine gun",
         "Type": "weapon",
         "Category": "weapons",
         "Sprite": "weapon2",
@@ -147,7 +147,7 @@
     {
         "ID": "assault_rifle",
         "Name": "Assault Rifle",
-        "Description": "A versatile automatic rifle.",
+        "Description": "A versatile automatic rifle",
         "Type": "weapon",
         "Category": "weapons",
         "Sprite": "weapon3",
@@ -165,7 +165,7 @@
     {
         "ID": "impulse_rifle",
         "Name": "Impulse Rifle",
-        "Description": "A high-powered energy rifle.",
+        "Description": "A high-powered energy rifle",
         "Type": "weapon",
         "Category": "weapons",
         "Sprite": "weapon4",
@@ -189,7 +189,7 @@
     {
         "ID": "aluminium_drill_bit",
         "Name": "Aluminium Drill Bit",
-       
+     
         "Sprite": "aluDrillBit",
         "Category": "items",
         "MaxStack": 64,
@@ -242,6 +242,7 @@
     {
         "ID": "uranium_ingot",
         "Name": "Uranium Ingot",
+        "Description": "Radioactive material",
         "Sprite": "uranIngot",
         "MaxStack": 64,
         "ModelDepth": 1.0,
@@ -254,6 +255,7 @@
     {
         "ID": "obscurium_ingot",
         "Name": "Obscurium Ingot",
+        "Description": "Mysterious and powerful material",
         "Sprite": "poniumIngot",
         "MaxStack": 64,
         "ModelDepth": 1.0
@@ -309,6 +311,7 @@
     {
         "ID": "cobalt_lens",
         "Name": "Cobalt Lens",
+        "Description": "A lens made of cobalt glass",
         "Category": "items",
         "Sprite": "cobaltLens",
         "MaxStack": 64,
@@ -349,7 +352,7 @@
     {
         "ID": "med_kit",
         "Name": "Med Kit",
-        "Description": "A basic medical kit. Restores 50 health.",
+        "Description": "A basic medical kit. Restores 50 health",
         "Sprite": "health3",
         "Type": "consumable",
         "Category": "consumables",
@@ -361,6 +364,7 @@
     {
         "ID": "cobalt_crystal",
         "Name": "Cobalt Crystal",
+        "Description": "A shiny cobalt crystal",
         "Sprite": "cobaltDiamond",
         "Category": "items",
         "MaxStack": 64,
@@ -376,6 +380,7 @@
     {
         "ID": "methane_ice_shard",
         "Name": "Methane Ice",
+        "Description": "Frozen methane ice shard",
         "Sprite": "methane_ice",
         "MaxStack": 64,
         "ModelDepth": 1.5
@@ -383,7 +388,7 @@
     {
         "ID": "glass",
         "Name": "Glass",
-       
+        "Description": "Transparent material",
         "Sprite": "glass",
         "MaxStack": 64,
         "ModelDepth": 1.5
@@ -398,6 +403,7 @@
     {
         "ID": "uranium_rods",
         "Name": "Uranium Rods",
+        "Description": "Radioactive fuel rods",
         "Category": "items",
         "Sprite": "uranRods",
         "MaxStack": 64,
@@ -411,6 +417,7 @@
     {
         "ID": "water",
         "Name": "Water",
+        "Description": "Essential for life",
         "Sprite": "water1",
         "MaxStack": 64,
         "ModelDepth": 2.0
@@ -418,7 +425,7 @@
     {
         "ID": "liquid_hydrogen",
         "Name": "Liquid Hydrogen",
-        "Description": "Highly flammable fuel.",
+        "Description": "Highly flammable fuel",
         "Category": "items",
         "Sprite": "hydrogen",
         "MaxStack": 64,
@@ -427,7 +434,7 @@
     {
         "ID": "compressed_oxygen",
         "Name": "Compressed Oxygen",
-        "Description": "Oxygen for breathing in space.",
+        "Description": "Oxygen for breathing in space",
         "Category": "consumables",
         "Sprite": "oxygen",
         "MaxStack": 64,
@@ -436,8 +443,8 @@
      {
         "ID": "compressed_methane",
         "Name": "Compressed Methane",
-        "Description": "Highly flammable fuel.",
-        "Category": "items",
+        "Description": "Highly flammable fuel",
+       
         "Sprite": "methane",
         "MaxStack": 64,
         "ModelDepth": 3.0
@@ -483,6 +490,7 @@
     {
         "ID": "power",
         "Name": "Power Overcharge",
+        "Description": "Restores 100 power",
         "Sprite": "power",
         "Type": "consumable",
         "Category": "consumables",
@@ -494,6 +502,7 @@
     {
         "ID": "beer",
         "Name": "Beer",
+        "Description": "Was added accidentally",
         "Sprite": "beer",
         "Type": "consumable",
         "Sound": "beer",
@@ -504,7 +513,7 @@
     {
         "ID": "energy_cell",
         "Name": "Energy Cell",
-        "Description": "A cell that stores energy for various devices.",
+        "Description": "A cell that stores energy for various devices",
         "Category": "items",
         "Sprite": "energyCells",
         "MaxStack": 64,
@@ -513,7 +522,7 @@
     {
         "ID": "microchip",
         "Name": "Microchip",
-        "Description": "A small electronic component used in various devices.",
+        "Description": "A small electronic component used in various devices",
         "Category": "items",
         "Sprite": "microchip",
         "MaxStack": 64,
@@ -522,7 +531,7 @@
     {
         "ID": "dna_sample",
         "Name": "DNA Sample",
-        "Description": "A sample of DNA to revive an organism.",
+        "Description": "A sample of DNA to revive an organism",
         "Category": "items",
         "Sprite": "dna",
         "MaxStack": 8,
