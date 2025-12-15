@@ -2,17 +2,13 @@
 
 using Engine.Audio;
 using Engine.Physics;
-using Engine.Light;
 using Spacebox.Game.Animations;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
-using Spacebox.GUI;
 
 using Engine;
-using Spacebox.Game;
 using Spacebox.Game.Generation.Blocks;
-using Spacebox.Game.Player;
 
 
 namespace Spacebox.Game.Player.Interactions;
@@ -141,7 +137,7 @@ public class InteractionShoot : InteractionMode
                 model.Animator.Clear();
                 if (model != null)
                     //model.Animator.speed =  1f ;
-                    model.Animator.AddAnimation(new ShootAnimation(startPos, model.Position - new Vector3(0.001f * weapon.Pushback, 0, 0), 0.05f));
+                    model.Animator.AddAnimation(new ShootAnimation(startPos, model.Position - new Vector3(0.001f * weapon.AnimationPushback, 0, 0), 0.05f));
                 model.Animator.speed = weapon.AnimationSpeed;
                 //model?.SetAnimation(true);
 
@@ -199,7 +195,7 @@ public class InteractionShoot : InteractionMode
             projectile.Initialize(shotRay,
                 ref projectileParameters, player);
 
-            ApplyRecoilWithMass(player, weapon, shotRay.Direction, projectileParameters);
+            ApplyRecoil(player, weapon, shotRay.Direction, projectileParameters);
 
             _time = 0;
 
@@ -207,14 +203,13 @@ public class InteractionShoot : InteractionMode
 
     }
 
-    public void ApplyRecoilWithMass(Astronaut player, WeaponItem weapon, Vector3 shootDirection, ProjectileParameters projectileParams)
+    public static void ApplyRecoil(Astronaut player, WeaponItem weapon, Vector3 shootDirection, ProjectileParameters projectileParams)
     {
-        if (weapon.Pushback <= 0) return;
+        if (weapon.Recoil <= 0) return;
 
-        float projectileMass = projectileParams.Mass * 0.1f;
-        float projectileSpeed = projectileParams.Speed;
+        const float recoilMultiplier = 0.1f;
 
-        float recoilForce = (weapon.Pushback / 255f) * (projectileMass * projectileParameters.Damage * projectileSpeed) * 0.01f;
+        float recoilForce = weapon.Recoil * recoilMultiplier;
 
         Vector3 recoilDirection = -shootDirection;
         Vector3 recoilImpulse = recoilDirection * recoilForce;

@@ -14,5 +14,6 @@
     "DamageBlocks": 60,
     "RicochetAngle": 70,
     "PossibleRicochets": 5,
+    "MaximumBlocksCanDestroy" : 1,
     "DropBlock": false
 }

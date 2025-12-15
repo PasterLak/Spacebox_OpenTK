@@ -790,7 +790,8 @@ public static class GameSetLoader
         weaponItem.ProjectileID = projectileID;
         weaponItem.ReloadTime = data.ReloadTime;
         weaponItem.AnimationSpeed = data.AnimationSpeed;
-        weaponItem.Pushback = data.Pushback;
+        weaponItem.AnimationPushback = data.AnimationPushback;
+        weaponItem.Recoil = data.Recoil;
         weaponItem.Spread = data.Spread;
         weaponItem.Id_string = id;
 

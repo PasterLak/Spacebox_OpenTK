@@ -119,12 +119,12 @@
         "ModelDepth": 1.5,
         "ReloadTime": 10,
         "Spread": 50,
-        "Pushback": 18,
-        "PlayerPushbackForce": 30,
+        "AnimationPushback": 18,
+        "Recoil": 1,
         "AnimationSpeed": 0.5,
         "PowerUsage": 3,
         "Projectile": "p_pistole",
-        "ShotSound": "pistole2"
+        "ShotSound": "pistole3"
     },
     {
         "ID": "smg",
@@ -137,12 +137,12 @@
         "ModelDepth": 2,
         "ReloadTime": 7,
         "Spread": 35,
-        "Pushback": 20,
-        "PlayerPushbackForce": 30,
+        "AnimationPushback": 20,
+        "Recoil": 7,
         "AnimationSpeed": 0.5,
         "PowerUsage": 5,
         "Projectile": "p_smg",
-        "ShotSound": "pistole2"
+        "ShotSound": "pistole3"
     },
     {
         "ID": "assault_rifle",
@@ -155,8 +155,8 @@
         "ModelDepth": 2,
         "ReloadTime": 5,
         "Spread": 30,
-        "Pushback": 15,
-        "PlayerPushbackForce": 30,
+        "AnimationPushback": 15,
+        "Recoil": 5,
         "AnimationSpeed": 0.6,
         "PowerUsage": 4,
         "Projectile": "p_assault",
@@ -173,8 +173,8 @@
         "ModelDepth": 3,
         "ReloadTime": 45,
         "Spread": 7,
-        "Pushback": 30,
-        "PlayerPushbackForce": 30,
+        "AnimationPushback": 30,
+        "Recoil": 200,
         "AnimationSpeed": 0.25,
         "PowerUsage": 30,
         "Projectile": "p_ar",
