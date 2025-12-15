@@ -1,8 +1,6 @@
-﻿
-using System.Numerics;
+﻿using System.Numerics;
 using Engine;
 using ImGuiNET;
-
 
 namespace Spacebox.Game.GUI.Menu
 {
@@ -54,16 +52,11 @@ namespace Spacebox.Game.GUI.Menu
                         menu.LoadWorld(world);
                     }
                 }
-
-               
             }
-
 
             ImGui.EndChild();
 
-
             DrawWorldPreview(windowPos, horizontalMargin, contentWidth, verticalSpacing, listHeight);
-
 
             ImGui.Dummy(new Vector2(0, verticalSpacing));
             ImGui.SetCursorPosX(horizontalMargin);
@@ -74,13 +67,12 @@ namespace Spacebox.Game.GUI.Menu
                 ImGui.Text(" Name: " + menu.selectedWorld.Name);
                 ImGui.Text(" Author: " + menu.selectedWorld.Author + " Game mode: " + menu.selectedWorld.GameMode);
 
-                var mod =  menu.GetModById(menu.selectedWorld.ModId);
+                var mod = menu.GetModById(menu.selectedWorld.ModId);
                 string version = "uknown version";
                 string name = menu.selectedWorld.ModId;
                 if (mod != null)
                 {
                     version = mod.Version;
-                   
                 }
 
                 ImGui.Text(" Mod: " + name + $"({version})");
@@ -121,7 +113,14 @@ namespace Spacebox.Game.GUI.Menu
                     () =>
                     {
                         menu.Click1.Play();
-                      
+                        menu.newWorldName = menu.selectedWorld.Name;
+                        menu.newWorldAuthor = menu.selectedWorld.Author;
+                        menu.newWorldSeed = menu.selectedWorld.Seed;
+
+                        menu.SelectedGameModeIndex = (int)menu.selectedWorld.GameMode;
+
+                        menu.IsEditMode = true;
+                        menu.SetStateToNewWorld();
                     });
                 menu.ButtonWithBackgroundAndIcon("", new Vector2(buttonHeight, buttonHeight),
                     new Vector2(buttonStartX + buttonWidth + buttonSpacing + buttonWidth - buttonHeight, buttonY + windowHeight * 0.02f),
@@ -145,6 +144,7 @@ namespace Spacebox.Game.GUI.Menu
                 {
                     menu.Click1.Play();
                     menu.GenerateRandomSeedAndName();
+                    menu.IsEditMode = false;
                     menu.SetStateToNewWorld();
                 });
             menu.ButtonWithBackground("Back", new Vector2(bottomButtonWidth, bottomButtonHeight),
@@ -158,7 +158,7 @@ namespace Spacebox.Game.GUI.Menu
         }
 
 
-        private void DrawWorldPreview(Vector2 windowPos,float horizontalMargin,float contentWidth, float verticalSpacing, float listHeight)
+        private void DrawWorldPreview(Vector2 windowPos, float horizontalMargin, float contentWidth, float verticalSpacing, float listHeight)
         {
             var drawList = ImGui.GetWindowDrawList();
             var a = new Vector2(windowPos.X + horizontalMargin + contentWidth * 0.6f,
@@ -181,27 +181,18 @@ namespace Spacebox.Game.GUI.Menu
                 else
                 {
                     ImFontPtr font = ImGui.GetFont();
-
                     float fontSize = areaSize.Y * 0.1f;
-
                     float fontScale = fontSize / ImGui.GetFontSize();
-
                     string text = "This world has no\npreview image yet :(";
                     var lines = text.Split('\n');
-
                     float lineHeight = fontSize;
-
                     float totalH = lines.Length * lineHeight;
-
                     float startY = a.Y + (areaSize.Y - totalH) * 0.5f;
 
                     foreach (var line in lines)
                     {
-
                         Vector2 baseSize = ImGui.CalcTextSize(line);
-
                         Vector2 textSize = baseSize * fontScale;
-
                         float x = a.X + (areaSize.X - textSize.X) * 0.5f;
                         drawList.AddText(font, fontSize,
                                          new Vector2(x, startY),
@@ -211,11 +202,6 @@ namespace Spacebox.Game.GUI.Menu
                     }
                 }
             }
-
         }
-
     }
-
-
-
 }

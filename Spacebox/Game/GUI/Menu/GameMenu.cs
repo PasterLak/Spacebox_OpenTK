@@ -35,6 +35,7 @@ namespace Spacebox.Game.GUI.Menu
         public AudioSource Click1;
         public bool showDeleteWindow = false;
         public bool showVersionConvertWindow = false;
+        public bool IsEditMode = false;
 
 
         private DeleteWindow deleteWindow;
@@ -97,13 +98,13 @@ namespace Spacebox.Game.GUI.Menu
         bool hide = false;
         public void Render()
         {
-            if(hide) return;
+            if (hide) return;
             if (currentWindowType == typeof(ControlsWindow) && windows.TryGetValue(currentWindowType, out var wnd1))
 
             {
                 var v = (ControlsWindow)wnd1;
-                if(v!= null)
-                v.Update();
+                if (v != null)
+                    v.Update();
             }
 
             if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.RightAlt))
@@ -200,7 +201,7 @@ namespace Spacebox.Game.GUI.Menu
 
         public List<WorldInfo> Worlds => worlds;
         public List<ModConfig> GameSets => gameSets;
-        public string[] Gamemodes => gamemodes;
+
         public string NewWorldName { get => newWorldName; set => newWorldName = value; }
         public string NewWorldAuthor { get => newWorldAuthor; set => newWorldAuthor = value; }
         public string NewWorldSeed { get => newWorldSeed; set => newWorldSeed = value; }
@@ -236,6 +237,9 @@ namespace Spacebox.Game.GUI.Menu
         {
             foreach (var w in worlds)
             {
+                if (IsEditMode && selectedWorld != null && w == selectedWorld && w.Name == name)
+                    return true;
+
                 if (w.Name == name) return false;
             }
             return true;
@@ -276,7 +280,7 @@ namespace Spacebox.Game.GUI.Menu
             ImGui.PopStyleVar();
         }
 
-        
+
 
         private void LoadGameSets()
         {
@@ -307,12 +311,12 @@ namespace Spacebox.Game.GUI.Menu
 
         private static Texture2D? LoadIcon(string modPath)
         {
-          
+
 
             var iconPath = Path.Combine(modPath, "icon.png");
             if (File.Exists(iconPath))
             {
-              
+
                 return Resources.Load<Texture2D>(iconPath);
             }
 
@@ -335,15 +339,66 @@ namespace Spacebox.Game.GUI.Menu
                 FolderName = newWorldName,
                 ShowWelcomeWindow = true
             };
-            string worldsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Worlds");
-            string newWorldDirectory = Path.Combine(worldsDirectory, newWorldName);
-            if (!Directory.Exists(newWorldDirectory)) Directory.CreateDirectory(newWorldDirectory);
-            string worldJsonPath = Path.Combine(newWorldDirectory, "world.json");
-            string jsonContent = JsonSerializer.Serialize(newWorld, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(worldJsonPath, jsonContent);
-          
+
+            SaveNewWorld(newWorld);
+
+
             worlds.Add(newWorld);
             selectedWorld = newWorld;
+        }
+
+        private static void SaveNewWorld(WorldInfo info)
+        {
+            string worldsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Worlds");
+            string newWorldDirectory = Path.Combine(worldsDirectory, info.FolderName);
+            if (!Directory.Exists(newWorldDirectory)) Directory.CreateDirectory(newWorldDirectory);
+            string worldJsonPath = Path.Combine(newWorldDirectory, "world.json");
+            string jsonContent = JsonSerializer.Serialize(info, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(worldJsonPath, jsonContent);
+        }
+
+        public void SaveEditedWorld()
+        {
+            if (selectedWorld == null) return;
+
+            string oldFolderName = selectedWorld.FolderName;
+            if (string.IsNullOrEmpty(oldFolderName)) oldFolderName = selectedWorld.Name;
+
+            string newName = newWorldName;
+            string worldsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Worlds");
+            string oldPath = Path.Combine(worldsDirectory, oldFolderName);
+            string newPath = Path.Combine(worldsDirectory, newName);
+
+            if (oldFolderName != newName)
+            {
+                if (Directory.Exists(oldPath))
+                {
+                    if (!Directory.Exists(newPath))
+                    {
+                        try
+                        {
+                            Directory.Move(oldPath, newPath);
+                            selectedWorld.FolderName = newName;
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.Error($"Failed to rename folder: {ex.Message}");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        Debug.Error($"Folder {newName} already exists!");
+                        return;
+                    }
+                }
+            }
+
+            selectedWorld.Name = newName;
+            selectedWorld.GameMode = (GameMode)selectedGameModeIndex;
+            selectedWorld.LastEditDate = WorldInfo.GetCurrentDate();
+
+            SaveNewWorld(selectedWorld);
         }
 
         public void ButtonWithBackground(string label, Vector2 size, Vector2 cursorPos, Action onClick)
@@ -422,11 +477,12 @@ namespace Spacebox.Game.GUI.Menu
             hide = true;
             IsVisible = false;
             CenteredImageMenu.Hide();
-            
+
             VerticalLinks.IsVisible = false;
             DevLogWindow.Instance.IsVisible = false;
 
-            ColorOverlay.StartFade(FadeMode.FadeIn, new Vector3(0,0,0),  1f,0,1,0, () => {
+            ColorOverlay.StartFade(FadeMode.FadeIn, new Vector3(0, 0, 0), 1f, 0, 1, 0, () =>
+            {
 
                 if (multiplayer)
                     SceneManager.Load<MultiplayerScene, SpaceSceneArgs>(arg);
@@ -434,16 +490,16 @@ namespace Spacebox.Game.GUI.Menu
                     SceneManager.Load<LocalSpaceScene, SpaceSceneArgs>(arg);
             }, (t) =>
             {
-               
-               if(t < 0.3f) CenteredText.SetText("Loading");
-               else if (t < 0.5f) CenteredText.SetText("Loading.");
-               else if (t < 0.7f) CenteredText.SetText("Loading..");
-               else CenteredText.SetText("Loading...");
+
+                if (t < 0.3f) CenteredText.SetText("Loading");
+                else if (t < 0.5f) CenteredText.SetText("Loading.");
+                else if (t < 0.7f) CenteredText.SetText("Loading..");
+                else CenteredText.SetText("Loading...");
 
                 CenteredText.Show();
             });
 
-           
+
         }
 
         public void DeleteWorld(WorldInfo world)
