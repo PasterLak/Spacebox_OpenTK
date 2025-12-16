@@ -91,7 +91,7 @@ namespace Spacebox.Game.Player
                 {
                     Debug.Log("[PlayerSaveLoadManager] Player save file does not exist.");
 
-                    World.CurrentSector.SpawnPlayerNearAsteroid(player, new Random(World.Seed));
+                    World.CurrentSector.SpawnPlayerNearRandomAsteroid(player, new Random(World.Seed));
                     GameSetLoader.GiveStartItems(player, GameAssets.ItemsStr);
                     player.Flashlight.Enabled = true;
                     player.PlayerStatistics.FirstPlayedUtc = DateTime.UtcNow;

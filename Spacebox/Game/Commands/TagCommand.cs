@@ -7,11 +7,11 @@ using Engine.Commands;
 
 namespace Spacebox.Game.Commands
 {
-    internal class TagCommand : ICommand
+    internal class TagCommand : CommandBase
     {
-        public string Name => "tag";
+        public override string Name => "tag";
 
-        public string Description => "tag <create/delete> <name>";
+        public override string Description => "Tag <create/delete> <name>";
 
         public Astronaut Astronaut { get; set; }
 
@@ -20,7 +20,7 @@ namespace Spacebox.Game.Commands
         {
             this.Astronaut = astronaut;
         }
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
 
 

@@ -56,7 +56,7 @@ namespace Engine
 
         private static readonly string HistoryFilePath = "command_history.txt";
         private static int _autoCompleteIndex = 0;
-        private static List<ICommand> _autoCompleteMatches = new List<ICommand>();
+        private static List<CommandBase> _autoCompleteMatches = new List<CommandBase>();
 
         static Debug()
         {
@@ -72,7 +72,7 @@ namespace Engine
 
         }
 
-        public static void RegisterCommand(ICommand command)
+        public static void RegisterCommand(CommandBase command)
         {
             CommandManager.RegisterCommand(command);
         }
@@ -481,7 +481,7 @@ namespace Engine
                 return;
 
             string lastToken = tokens[^1];
-            List<ICommand> matches = CommandManager.FindCommandsStartingWith(lastToken).ToList();
+            List<CommandBase> matches = CommandManager.FindCommandsStartingWith(lastToken).ToList();
 
 
             if (matches.Count == 1)

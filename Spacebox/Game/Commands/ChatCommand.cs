@@ -5,18 +5,18 @@ using Client;
 
 namespace Spacebox.Game.Commands
 {
-    internal class ChatCommand : ICommand
+    internal class ChatCommand : CommandBase
     {
-        public string Name => "say";
+        public override string Name => "say";
 
-        public string Description => "say to all";
+        public override string Description => "Say to all";
 
 
         public ChatCommand()
         {
            
         }
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
             return;
             if (args.Length > 0)

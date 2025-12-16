@@ -343,6 +343,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         blockSelector.Dispose();
         TickTaskManager.Dispose();
+        RadarUI.Instance.Dispose();
 
         Projectile.PointLightsPool = null;
         Chat.Clear();

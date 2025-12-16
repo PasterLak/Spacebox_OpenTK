@@ -1,14 +1,14 @@
-﻿using System;
+﻿
 using System.Numerics;
 
 namespace Engine.Commands
 {
-    public class ColorCommand : ICommand
+    public class ColorCommand : CommandBase
     {
-        public string Name => "color";
-        public string Description => "Changes the color of the console text. Usage: color [color_name] [message]";
+        public override string Name => "color";
+        public override string Description => "Changes the color of the console text. Usage: color [color_name] [message]";
 
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
             if (args.Length < 2)
             {

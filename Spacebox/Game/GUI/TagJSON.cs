@@ -6,11 +6,11 @@ namespace Spacebox.Game.GUI
 {
     public class TagJSON
     {
-        public string Text { get; set; } = "";
+        public string Text { get; set; } = "TagJSON_Uninitialized";
         public float X { get; set; }
         public float Y { get; set; }
         public float Z { get; set; }
-        public Color4Byte Color { get; set; } = Color4Byte.White;
+        public Color4Byte Color { get; set; } = Color4Byte.Pink;
 
         public TagJSON() { }
 

@@ -7,11 +7,11 @@ using System.Numerics;
 
 namespace Spacebox.Game.Commands
 {
-    internal class TeleportCommand : ICommand
+    internal class TeleportCommand : CommandBase
     {
-        public string Name => "tp";
+        public override string Name => "tp";
 
-        public string Description => "teleport the player";
+        public override string Description => "Teleport the player. Usage: tp x y z";
 
         public Astronaut Astronaut { get; set; }
 
@@ -19,7 +19,7 @@ namespace Spacebox.Game.Commands
         public TeleportCommand(Astronaut astronaut) {
             this.Astronaut = astronaut;
         }
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
             if (args.Length < 3)
             {

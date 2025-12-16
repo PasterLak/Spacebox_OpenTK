@@ -1,4 +1,3 @@
-using OpenTK.Mathematics;
 
 using Engine.Commands;
 using Spacebox.Game.Player;
@@ -7,11 +6,11 @@ using Spacebox.Game.Player.GameModes;
 
 namespace Spacebox.Game.Commands
 {
-    internal class GameModCommand : ICommand
+    internal class GameModCommand : CommandBase
     {
-        public string Name => "gm";
+        public override string Name => "gm";
 
-        public string Description => "gamemod <0,1,2>";
+        public override string Description => "Change gamemode. Usage: gm <0,1,2>";
 
         public Astronaut Astronaut { get; set; }
 
@@ -20,7 +19,7 @@ namespace Spacebox.Game.Commands
         {
             this.Astronaut = astronaut;
         }
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
 
 
@@ -33,7 +32,7 @@ namespace Spacebox.Game.Commands
             if (args.Length == 1)
             {
 
-                if (int.TryParse(args[0], out int id))
+                if (TryParse<int>(args[0], out var id))
                 {
                     GameMode gm = GameMode.Spectator;
                     if (id == 0)
@@ -58,12 +57,12 @@ namespace Spacebox.Game.Commands
                     {
                         Debug.Error("Wrong game mode id!");
                     }
-                    
+
                 }
 
-                
+
             }
-           
+
 
         }
 

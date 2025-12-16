@@ -3,18 +3,18 @@ using Engine.Commands;
 
 namespace Spacebox.Game.Commands
 {
-    internal class DebugTexturesCommand : ICommand
+    internal class DebugTexturesCommand : CommandBase
     {
-        public string Name => "save_atlas";
+        public override string Name => "save_atlas";
 
-        public string Description => "say to all";
+        public override string Description => "Save atlas textures to Debug folder";
 
 
         public DebugTexturesCommand()
         {
 
         }
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
             if (!Directory.Exists("Debug"))
             {

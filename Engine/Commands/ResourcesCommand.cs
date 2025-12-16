@@ -1,11 +1,11 @@
 ﻿namespace Engine.Commands
 {
-    public class ResourcesCommand : ICommand
+    public class ResourcesCommand : CommandBase
     {
-        public string Name => "resources";
-        public string Description => "";
+        public override string Name => "resources";
+        public override string Description => "List of currently used game assets";
 
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
           
             //Debug.AddMessage($"[Shaders cached: {ShaderManager.Count}]", new Vector4(1f, 1f, 0f, 1f));

@@ -1,11 +1,12 @@
-﻿using System.Numerics;
+﻿using Engine;
+using Engine.Audio;
 using ImGuiNET;
+using NVorbis.Contracts;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Engine;
-
-using Spacebox.Game.Player;
 using Spacebox.Game.GUI.Menu;
-using System.Drawing;
+using Spacebox.Game.Player;
+using System.Numerics;
+
 
 namespace Spacebox.Game.GUI;
 
@@ -15,6 +16,8 @@ public class CreativeWindowCategory
     public Type Name;
     public List<Item> Items = new List<Item>();
     public Storage Storage;
+
+    public int ItemsCount { get; private set; }
 
     public CreativeWindowCategory(Type name)
     {
@@ -27,7 +30,10 @@ public class CreativeWindowCategory
         if (Items.Count > 0)
         {
             Storage = GameAssets.CreateCreativeStorage(5, Items);
+            
         }
+        
+        ItemsCount = Items.Count;
     }
 
     private static List<Item> GetItems(Type categoryType)
@@ -58,6 +64,7 @@ public static class CreativeWindowUI
 
     private static CreativeWindowCategory[] categories;
 
+    private static AudioSource scrollAudio;
 
     private static Storage selectedStorage;
 
@@ -73,18 +80,29 @@ public static class CreativeWindowUI
         {
             IsVisible = s;
         };
-        //Type[] cat = GetCategories0();
-
-        // categories = new CreativeWindowCategory[cat.Length];
 
         categories = GetCategories0()
          .Select(t => new CreativeWindowCategory(t))
          .OrderByDescending(c => c.Items.Count)
          .ToArray();
 
-
-
         selectedStorage = storageAll;
+
+        scrollAudio = null;
+        scrollAudio = new AudioSource(Resources.Get<AudioClip>("scroll"));
+    }
+
+    static int hovered = -1;
+    private static void HandleHoverAudio(int slotId)
+    {
+        if ( !ImGui.IsItemHovered()) return;
+        if (hovered == slotId) return;
+
+        hovered = slotId;
+        if (scrollAudio.IsPlaying) scrollAudio.Stop();
+        scrollAudio.Play();
+
+        Debug.Log($"Hover sound for slot {slotId}");
     }
 
     private static Type[] GetCategories0()
@@ -165,7 +183,15 @@ public static class CreativeWindowUI
             if (ImGui.IsItemHovered())
             {
                 ImGui.BeginTooltip();
-                ImGui.Text("Show all items");
+
+                var total = 0;
+
+                foreach (var cat in categories)
+                {
+                    total += cat.ItemsCount;
+                }
+
+                ImGui.Text("Show all items" + $" ({total})");
                 ImGui.EndTooltip();
             }
 
@@ -236,7 +262,7 @@ public static class CreativeWindowUI
                         if (ImGui.IsItemHovered())
                         {
                             ImGui.BeginTooltip();
-                            ImGui.Text("Show " + v.Name.Name);
+                            ImGui.Text("Show " + v.Name.Name + $" ({v.ItemsCount})");
                             ImGui.EndTooltip();
                         }
 
@@ -309,6 +335,8 @@ public static class CreativeWindowUI
                     {
                         //if (ImGui.Button(" " + (slot.Item.Category), new Vector2(SlotSize, SlotSize))) OnSlotClicked(slot);
                     }
+
+                    HandleHoverAudio(slot.SlotId);
                     InventoryUIHelper.ShowTooltip(slot, true, true);
                 }
             }

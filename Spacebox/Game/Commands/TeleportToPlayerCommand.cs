@@ -8,11 +8,11 @@ using Client;
 
 namespace Spacebox.Game.Commands
 {
-    internal class TeleportToPlayerCommand : ICommand
+    internal class TeleportToPlayerCommand : CommandBase
     {
-        public string Name => "tpp";
+        public override string Name => "tpp";
 
-        public string Description => "teleport to a player";
+        public override string Description => "Teleport to a player. Usage: tpp <id>";
 
         public Astronaut Astronaut { get; set; }
 
@@ -22,12 +22,7 @@ namespace Spacebox.Game.Commands
             this.Astronaut = astronaut;
         }
 
-        public bool IsNumber(string text)
-        {
-            return int.TryParse(text, out _);
-        }
-
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
             if (args.Length < 1)
             {
@@ -41,7 +36,7 @@ namespace Spacebox.Game.Commands
                 return;
             }
 
-            if (!IsNumber(args[0]))
+            if (!Is<int>(args[0]))
             {
                 Debug.Error("Enter the player ID! ");
                 return;

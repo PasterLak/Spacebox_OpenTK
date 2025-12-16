@@ -2,15 +2,15 @@
 
 namespace Engine.Commands
 {
-    public class ExitCommand : ICommand
+    public class ExitCommand : CommandBase
     {
-        public string Name => "exit";
-        public string Description => "Closes the console.";
+        public override string Name => "exit";
+        public override string Description => "Closes the console";
 
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
             Debug.ToggleVisibility();
-            Debug.Log("Console closed.");
+          
         }
     }
 }

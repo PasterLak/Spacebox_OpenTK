@@ -8,7 +8,7 @@
         "Category": "drills",
         "Sprite": "drill1",
         "MaxStack": 1,
-        "PowerUsage": 5,
+        "PowerUsage": 7,
         "ModelDepth": 2,
         "Range": 2,
         "Tier": 1,
@@ -26,7 +26,7 @@
         "Category": "drills",
         "Sprite": "drill2",
         "MaxStack": 1,
-        "PowerUsage": 5,
+        "PowerUsage": 8,
         "ModelDepth": 2,
         "Range": 2.5,
         "Tier": 2,
@@ -44,7 +44,7 @@
         "Category": "drills",
         "Sprite": "drill3",
         "MaxStack": 1,
-        "PowerUsage": 6,
+        "PowerUsage": 9,
         "ModelDepth": 2,
         "Range": 3,
         "Tier": 3,
@@ -62,8 +62,8 @@
         "Category": "drills",
         "Sprite": "drill4",
         "MaxStack": 1,
-        "PowerUsage": 8,
-        "ModelDepth": 4,
+        "PowerUsage": 12,
+        "ModelDepth": 5,
         "Range": 4,
         "Tier": 4,
         "DrillColor": {
@@ -80,7 +80,7 @@
         "Category": "drills",
         "Sprite": "drill5",
         "MaxStack": 1,
-        "PowerUsage": 4,
+        "PowerUsage": 3,
         "ModelDepth": 3,
         "Tier": 5,
         "Range": 6,
@@ -98,7 +98,7 @@
         "Category": "drills",
         "Sprite": "drill6",
         "MaxStack": 1,
-        "PowerUsage": 0,
+        "PowerUsage": 4,
         "ModelDepth": 3,
         "Range": 5,
         "Tier": 6,
@@ -138,7 +138,7 @@
         "ReloadTime": 7,
         "Spread": 35,
         "AnimationPushback": 20,
-        "Recoil": 7,
+        "Recoil": 5,
         "AnimationSpeed": 0.5,
         "PowerUsage": 5,
         "Projectile": "p_smg",
@@ -156,7 +156,7 @@
         "ReloadTime": 5,
         "Spread": 30,
         "AnimationPushback": 15,
-        "Recoil": 5,
+        "Recoil": 4,
         "AnimationSpeed": 0.6,
         "PowerUsage": 4,
         "Projectile": "p_assault",
@@ -179,17 +179,17 @@
         "PowerUsage": 30,
         "Projectile": "p_ar",
         "ShotSound": "ar",
-         "GlowColor": {
+        "GlowColor": {
             "r": 163,
             "g": 84,
             "b": 211
         }
-        
+
     },
     {
         "ID": "aluminium_drill_bit",
         "Name": "Aluminium Drill Bit",
-     
+
         "Sprite": "aluDrillBit",
         "Category": "items",
         "MaxStack": 64,
@@ -246,7 +246,7 @@
         "Sprite": "uranIngot",
         "MaxStack": 64,
         "ModelDepth": 1.0,
-         "GlowColor": {
+        "GlowColor": {
             "r": 50,
             "g": 255,
             "b": 50
@@ -301,7 +301,7 @@
         "Sprite": "uraniumDust",
         "MaxStack": 64,
         "ModelDepth": 2,
-        
+
         "GlowColor": {
             "r": 50,
             "g": 255,
@@ -352,7 +352,7 @@
     {
         "ID": "med_kit",
         "Name": "Med Kit",
-        "Description": "A basic medical kit. Restores 50 health",
+        "Description": "Heals the player",
         "Sprite": "health3",
         "Type": "consumable",
         "Category": "consumables",
@@ -408,7 +408,7 @@
         "Sprite": "uranRods",
         "MaxStack": 64,
         "ModelDepth": 2.0,
-         "GlowColor": {
+        "GlowColor": {
             "r": 50,
             "g": 255,
             "b": 50
@@ -440,16 +440,16 @@
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
-     {
+    {
         "ID": "compressed_methane",
         "Name": "Compressed Methane",
         "Description": "Highly flammable fuel",
-       
+
         "Sprite": "methane",
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
-        {
+    {
         "ID": "polymer_pellets",
         "Name": "Polymer Pellets",
         "Description": "Useful polymer",
@@ -458,7 +458,7 @@
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
-         { 
+    {
         "ID": "polymer_fiber",
         "Name": "Polymer Fiber",
         "Description": "For clothes and equipment",
@@ -467,30 +467,21 @@
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
-          {
-        "ID": "aluminium_helmet",
-        "Name": "Aluminium Helmet",
-        "Description": "Fancy but unwearable",
-        "Category": "items",
-        "Sprite": "aluminium_helmet",
-        "MaxStack": 1,
-        "ModelDepth": 3.0
-    },
-    
-      {
+   
+    {
         "ID": "plastic",
         "Name": "Plastic",
         "Description": "Useful polymer",
-     
+
         "Sprite": "plastic",
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
-    
+
     {
         "ID": "power",
-        "Name": "Power Overcharge",
-        "Description": "Restores 100 power",
+        "Name": "Cobalt Power Overcharge",
+        "Description": "Restores power",
         "Sprite": "power",
         "Type": "consumable",
         "Category": "consumables",
@@ -536,5 +527,52 @@
         "Sprite": "dna",
         "MaxStack": 8,
         "ModelDepth": 2.0
+    },
+
+
+     {
+        "ID": "cobalt_flashlight",
+        "Name": "Cobalt Flashlight",
+        "Description": "",
+        
+        "Sprite": "flashlight1",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+     {
+        "ID": "aluminium_helmet",
+        "Name": "Aluminium Helmet",
+        "Description": "Fancy but unwearable",
+        "Category": "items",
+        "Sprite": "aluminium_helmet",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "aluminium_chest",
+        "Name": "Aluminium Chest Armor",
+        "Description": "Fancy but unwearable",
+        "Category": "items",
+        "Sprite": "aluminium_chest",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "aluminium_legs",
+        "Name": "Aluminium Legs Armor",
+        "Description": "Fancy but unwearable",
+        "Category": "items",
+        "Sprite": "aluminium_legs",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "aluminium_boots",
+        "Name": "Aluminium Boots",
+        "Description": "Fancy but unwearable",
+        "Category": "items",
+        "Sprite": "aluminium_boots",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
     }
 ]

@@ -419,7 +419,7 @@ public class CraftingGUI
     }
 
 
-    static int hovered = -1;
+    
     private static void OnHovered(CraftingCategory.Data itemData, ImGuiNET.ImDrawListPtr list, Vector2 buttonPos, Vector2 offset, float width, float height, int slotId)
     {
         if (itemData?.item == null || Inventory == null || !ImGui.IsItemHovered()) return;
@@ -428,7 +428,7 @@ public class CraftingGUI
         DrawHoverImage(list, itemData, buttonPos, offset, width, height);
         ShowTooltip(itemData, height);
     }
-
+    static int hovered = -1;
     private static void HandleHoverAudio(int slotId)
     {
         if (hovered == slotId) return;

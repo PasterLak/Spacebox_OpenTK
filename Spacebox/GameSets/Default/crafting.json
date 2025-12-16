@@ -339,6 +339,30 @@
             ]
         },
         {
+            "Product": {"Item": "aluminium_chest", "Quantity": 1},
+            "Ingredients": [
+                 {"Item": "aluminium_ingot", "Quantity": 12},
+                {"Item": "polymer_fiber", "Quantity": 4}
+              
+            ]
+        },
+         {
+            "Product": {"Item": "aluminium_legs", "Quantity": 1},
+            "Ingredients": [
+                 {"Item": "aluminium_ingot", "Quantity": 8},
+                {"Item": "polymer_fiber", "Quantity": 2}
+              
+            ]
+        },
+          {
+            "Product": {"Item": "aluminium_boots", "Quantity": 1},
+            "Ingredients": [
+                 {"Item": "aluminium_ingot", "Quantity": 3},
+                {"Item": "polymer_fiber", "Quantity": 3}
+              
+            ]
+        },
+        {
             "Product": {"Item": "power", "Quantity": 1},
             "Ingredients": [
                 {"Item": "energy_cell", "Quantity": 1},

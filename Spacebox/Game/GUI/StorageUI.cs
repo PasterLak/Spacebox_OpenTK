@@ -27,6 +27,7 @@ namespace Spacebox.Game.GUI
         private static AudioSource closeSound;
         private static AudioSource splitAudio;
 
+
         private static bool editingName = false;
         private static byte[] buffer = new byte[32];
 
@@ -52,6 +53,7 @@ namespace Spacebox.Game.GUI
             splitAudio = new AudioSource(Resources.Load<AudioClip>("splitStack"));
             openSound = new AudioSource(Resources.Get<AudioClip>("openStorage"));
             closeSound = new AudioSource(Resources.Get<AudioClip>("closeStorage"));
+          
         }
 
         public static void OpenStorage(StorageBlock storageBlock, Astronaut astronaut)

@@ -192,7 +192,7 @@ namespace Spacebox.Game.Generation
         }
 
 
-        public void SpawnPlayerNearAsteroid(Astronaut player, Random random)
+        public void SpawnPlayerNearRandomAsteroid(Astronaut player, Random random)
         {
 
             if (Entities.Count == 0) return;

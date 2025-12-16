@@ -62,7 +62,7 @@ namespace Spacebox.Game.Generation
         public override void Start()
         {
             DestructionManager = new BlockDestructionManager();
-          
+
 
             Owner.AttachComponent(DestructionManager);
             Owner.AttachComponent(DropEffectManager);
@@ -99,15 +99,14 @@ namespace Spacebox.Game.Generation
         public void Load()
         {
 
-            Vector3i initialSectorIndex = GetSectorIndex(Player.Position);
+            CurrentSector = LoadSectorNow(GetSectorIndex(Player.Position));
 
-            CurrentSector = LoadSector(initialSectorIndex);
+            CurrentSector.SpawnPlayerNearRandomAsteroid(Player, new Random(Seed));
 
-            CurrentSector.SpawnPlayerNearAsteroid(Player, new Random(Seed));
             if (CurrentSector == null) Debug.Error("No current sector");
 
             DropEffectManager.LoadDrops(Path.Combine(WorldData.WorldFolderPath, "drop.json"));
-           
+
         }
 
         public static void LoadWorldInfo(string worldName)
@@ -133,7 +132,7 @@ namespace Spacebox.Game.Generation
                 UpdateSectors();
             }
 
-             worldOctree.DrawDebug();
+            worldOctree.DrawDebug();
 
             foreach (var sector in Sectors)
             {
@@ -193,7 +192,7 @@ namespace Spacebox.Game.Generation
                 else
                 {
                     Debug.Error("Loading a sector in the main thread! Index: " + index);
-                    LoadSector(index);
+                    LoadSectorNow(index);
 
                 }
             }
@@ -203,7 +202,7 @@ namespace Spacebox.Game.Generation
             Vector3 local = CurrentSector.WorldToLocalPosition(cam.PositionWorld);
 
             var baseIdx = CurrentSector.PositionIndex;
-    
+
             foreach (var dir in NeighborDirs)
             {
                 float dist = DistanceToEdge(local, sectorSize, dir);
@@ -247,7 +246,7 @@ namespace Spacebox.Game.Generation
             }
         }
 
- 
+
         public override void OnRender()
         {
 
@@ -261,7 +260,7 @@ namespace Spacebox.Game.Generation
         {
 
             loadingSectors.Add(sectorIndex);
-            
+
             int worldSeed = Seed;
             Vector3 worldPos = GetSectorPosition(sectorIndex);
 
@@ -290,8 +289,7 @@ namespace Spacebox.Game.Generation
         }
 
 
-
-        private Sector LoadSector(Vector3i sectorIndex)
+        private Sector LoadSectorNow(Vector3i sectorIndex)
         {
             Sector newSector = null;
 
@@ -304,11 +302,11 @@ namespace Spacebox.Game.Generation
             return newSector;
         }
 
-        public static Vector3i GetSectorIndex(Vector3 position)
+        public static Vector3i GetSectorIndex(Vector3 worldPosition)
         {
-            int x = (int)Math.Floor(position.X / Sector.SizeBlocks);
-            int y = (int)Math.Floor(position.Y / Sector.SizeBlocks);
-            int z = (int)Math.Floor(position.Z / Sector.SizeBlocks);
+            int x = (int)Math.Floor(worldPosition.X / Sector.SizeBlocks);
+            int y = (int)Math.Floor(worldPosition.Y / Sector.SizeBlocks);
+            int z = (int)Math.Floor(worldPosition.Z / Sector.SizeBlocks);
             return new Vector3i(x, y, z);
         }
 
@@ -361,7 +359,7 @@ namespace Spacebox.Game.Generation
             WorldGenerator = null;
             BiomeGenerator = null;
             DropEffectManager = null;
-            
+
             DestructionManager = null;
             CurrentSector?.Dispose();
             CurrentSector = null;

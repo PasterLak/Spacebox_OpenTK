@@ -6,11 +6,11 @@ using Engine;
 
 namespace Spacebox.Game.Commands
 {
-    internal class ClearInventoryCommand : ICommand
+    internal class ClearInventoryCommand : CommandBase
     {
-        public string Name => "clear_inventory";
+        public override string Name => "clear_inventory";
 
-        public string Description => "tag <create/delete> <name>";
+        public override string Description => "Delete all items from the inventory";
 
         public Astronaut Astronaut { get; set; }
 
@@ -19,7 +19,7 @@ namespace Spacebox.Game.Commands
         {
             this.Astronaut = astronaut;
         }
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
 
 
