@@ -5,7 +5,6 @@ using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Resource;
-using System.Collections.Concurrent;
 
 
 namespace Spacebox.Game.Generation
@@ -26,7 +25,7 @@ namespace Spacebox.Game.Generation
 
         public Vector3 PositionWorld { get; private set; }
         public Vector3SByte PositionIndex { get; private set; }
-        
+
         public Block[,,] Blocks { get; private set; }
         public bool NeedsToRegenerateMesh { get; set; }
 
@@ -59,7 +58,7 @@ namespace Spacebox.Game.Generation
         public enum LOD : short
         {
             None = 0, L0 = Settings.LOD0, L1 = Settings.LOD1, L2 = Settings.LOD2, L3 = Settings.LOD3
-           
+
         }
 
         public Chunk(Vector3SByte positionIndex, SpaceEntity spaceEntity, bool emptyChunk = false)
@@ -141,17 +140,7 @@ namespace Spacebox.Game.Generation
             SpaceEntity.ElectricManager.Rebuild();
         }
 
-        public static Vector3SByte GetChunkIndex(Vector3 worldPosition, Vector3 entityWorldPosition)
-        {
-            Vector3 relativePosition = worldPosition - entityWorldPosition;
-
-            int indexX = (int)MathF.Floor(relativePosition.X / Chunk.Size);
-            int indexY = (int)MathF.Floor(relativePosition.Y / Chunk.Size);
-            int indexZ = (int)MathF.Floor(relativePosition.Z / Chunk.Size);
-
-            return new Vector3SByte((sbyte)indexX, (sbyte)indexY, (sbyte)indexZ);
-        }
-
+        
         public static Vector3 GetChunkWorldPosition(Vector3SByte chunkIndex, Vector3 spaceEntityPosition)
         {
             return new Vector3(
@@ -186,7 +175,7 @@ namespace Spacebox.Game.Generation
 
         public void GenerateMesh(bool doLight)
         {
-            
+
             if (!_isLoadedOrGenerated) return;
             NeedsToRegenerateMesh = false;
             // Debug.Log("Regen " + PositionIndex);
@@ -236,7 +225,7 @@ namespace Spacebox.Game.Generation
 
         public void Render(BlockMaterial material)
         {
-           
+
             if (!_isLoadedOrGenerated) return;
 
             if (NeedsToRegenerateMesh)
@@ -311,7 +300,7 @@ namespace Spacebox.Game.Generation
 
         public bool DamageBlock(Vector3Byte blockPos, Vector3SByte normal, byte damage, bool spawnDrop)
         {
-            if(damage == 0) return false;
+            if (damage == 0) return false;
             if (!IsInRange(blockPos.X, blockPos.Y, blockPos.Z))
                 return false;
 
@@ -390,7 +379,7 @@ namespace Spacebox.Game.Generation
 
         private void CreateLOD(LOD lod)
         {
-            
+
             int downscale;
             Vector2[] uv;
             switch (lod)
@@ -435,8 +424,8 @@ namespace Spacebox.Game.Generation
 
             if (Lod != LOD.L3)
             {
-             //   Lod = LOD.L3;
-              //  CreateLOD(Lod);
+                //   Lod = LOD.L3;
+                //  CreateLOD(Lod);
             }
             //return;
             if (distanceSquared <= lod0Threshold)
@@ -503,55 +492,25 @@ namespace Spacebox.Game.Generation
 
         private void CheckNeigborBlocks(Vector3Byte pos)
         {
-            if (pos.X == 0)
-            {
-                if (HasNeighbor(new Vector3SByte(-1, 0, 0), out Chunk neighbor))
-                {
-                    neighbor.GenerateMesh();
-                }
-            }
+            int maxIndex = Size - 1;
 
-            if (pos.X == Size - 1)
-            {
-                if (HasNeighbor(new Vector3SByte(1, 0, 0), out Chunk neighbor))
-                {
-                    neighbor.GenerateMesh();
-                }
-            }
+            if (pos.X == 0) TryUpdateNeighbor(new Vector3SByte(-1, 0, 0));
+            else if (pos.X == maxIndex) TryUpdateNeighbor(new Vector3SByte(1, 0, 0));
 
-            if (pos.Y == 0)
-            {
-                if (HasNeighbor(new Vector3SByte(0, -1, 0), out Chunk neighbor))
-                {
-                    neighbor.GenerateMesh();
-                }
-            }
+            if (pos.Y == 0) TryUpdateNeighbor(new Vector3SByte(0, -1, 0));
+            else if (pos.Y == maxIndex) TryUpdateNeighbor(new Vector3SByte(0, 1, 0));
 
-            if (pos.Y == Size - 1)
-            {
-                if (HasNeighbor(new Vector3SByte(0, 1, 0), out Chunk neighbor))
-                {
-                    neighbor.GenerateMesh();
-                }
-            }
-
-            if (pos.Z == 0)
-            {
-                if (HasNeighbor(new Vector3SByte(0, 0, -1), out Chunk neighbor))
-                {
-                    neighbor.GenerateMesh();
-                }
-            }
-
-            if (pos.Z == Size - 1)
-            {
-                if (HasNeighbor(new Vector3SByte(0, 0, 1), out Chunk neighbor))
-                {
-                    neighbor.GenerateMesh();
-                }
-            }
+            if (pos.Z == 0) TryUpdateNeighbor(new Vector3SByte(0, 0, -1));
+            else if (pos.Z == maxIndex) TryUpdateNeighbor(new Vector3SByte(0, 0, 1));
         }
 
+        private void TryUpdateNeighbor(Vector3SByte offset)
+        {
+            if (HasNeighbor(offset, out Chunk neighbor))
+            {
+                neighbor.GenerateMesh();
+            }
+        }
         private bool HasNeighbor(Vector3SByte pos, out Chunk neighbor)
         {
             if (Neighbors.TryGetValue(pos, out neighbor))
@@ -612,19 +571,6 @@ namespace Spacebox.Game.Generation
 
     }
 
-
-
-    public class MainThreadDispatcher
-    {
-        private static MainThreadDispatcher _instance;
-        public static MainThreadDispatcher Instance => _instance ?? (_instance = new MainThreadDispatcher());
-        private ConcurrentQueue<Action> _queue = new ConcurrentQueue<Action>();
-        public void Enqueue(Action action) => _queue.Enqueue(action);
-        public void ExecutePending()
-        {
-            while (_queue.TryDequeue(out var action))
-                action();
-        }
-    }
+    
 
 }

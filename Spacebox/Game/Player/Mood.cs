@@ -2,6 +2,7 @@
 using Engine.Audio;
 using Engine.Components;
 using OpenTK.Mathematics;
+using Spacebox.Game.GameMath;
 using Spacebox.Game.Generation;
 
 namespace Spacebox.Game.Player
@@ -15,7 +16,7 @@ namespace Spacebox.Game.Player
         public int MoodChangeOnTrue { get; set; }
         public int MoodChangeOnFalse { get; set; }
         public float Timer { get; set; } = 0f;
-        
+
 
         public TimedMoodEvent(string name, float interval, Func<bool> condition, int moodChangeOnTrue, int moodChangeOnFalse = 0)
         {
@@ -309,7 +310,7 @@ namespace Spacebox.Game.Player
 
             if (_audioSource != null && Owner != null)
             {
-                var randomPosition = World.GetRandomPointAroundPosition(Owner.Position, 150f, 800f);
+                var randomPosition = SpaceMath.World.GetRandomPointAroundPosition(Owner.Position, 150f, 800f);
                 _audioSource.Position = randomPosition;
                 _audioSource.Clip = selectedClip;
                 _audioSource.Play();

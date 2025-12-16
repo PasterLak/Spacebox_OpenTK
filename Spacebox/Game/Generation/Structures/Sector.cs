@@ -1,8 +1,8 @@
 ﻿using Engine;
-using Engine.Generation;
 using Engine.Physics;
 using Engine.Utils;
 using OpenTK.Mathematics;
+using Spacebox.Game.GameMath;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
@@ -63,9 +63,6 @@ namespace Spacebox.Game.Generation
 
             Entities = new List<SpaceEntity>();
 
-
-
-
             /*if (WorldSaveLoad.CanLoadSectorHere(PositionIndex, out var sectorFolderPath))
             {
 
@@ -92,7 +89,7 @@ namespace Spacebox.Game.Generation
         {
             BiomesMap = new BiomesMap(PositionIndex, World.BiomeGenerator);
 
-            var points = GenerateAsteroidPositions(World.WorldGenerator.MinAsteroidsInSector,
+            var points = SpaceMath.Sector.GenerateAsteroidPositions(Seed, PositionWorld, World.WorldGenerator.MinAsteroidsInSector,
                 World.WorldGenerator.MaxAsteroidsInSector,
                 World.WorldGenerator.RejectionSamples,
                 World.WorldGenerator.MinDistanceBetweenAsteroids, true);
@@ -127,23 +124,10 @@ namespace Spacebox.Game.Generation
         }
 
 
-        private Vector3[] GenerateAsteroidPositions(int minCount, int maxCount, int rejectionSamples, int radius, bool round)
-        {
-            var seed = SeedHelper.ToIntSeed(Seed);
-            Random random = new Random(seed);
-            var settings = new GeneratorSettings();
-            settings.RejectionSamples = rejectionSamples;
-            settings.Seed = seed;
-            settings.Count = random.Next(minCount, maxCount);
-            settings.Round = round;
-
-            return SectorPointProvider.CreatePoints(new SimplePoissonDiscGenerator(radius), ref settings, PositionWorld).ToArray();
-        }
-
         public void PlacePlayerRandomInSector(Astronaut player, Random random)
         {
 
-            if (TryGetNearestEntity(GetCenter(), out var entity))
+            if (TryGetNearestEntity(SpaceMath.Sector.GetCenter(this), out var entity))
             {
                 player.SetPosition(GetRandomPositionNearAsteroid(random, entity));
             }
@@ -154,12 +138,12 @@ namespace Spacebox.Game.Generation
 
         public Vector3 GetRandomPositionWithCollisionCheck(Random random, float margin01)
         {
-            var pos = GetRandomPosition(PositionWorld, margin01, random);
+            var pos = SpaceMath.Sector.GetRandomPositionInside(this, margin01, random);
             var near = IsPointInEntity(pos, out var nearest3);
 
             while (near == true)
             {
-                pos = GetRandomPosition(PositionWorld, margin01, random);
+                pos = SpaceMath.Sector.GetRandomPositionInside(this, margin01, random);
                 near = IsPointInEntity(pos, out var nearest4);
             }
 
@@ -173,23 +157,19 @@ namespace Spacebox.Game.Generation
             var radius = (geometryBox.Max.Length -
                           geometryBox.Min.Length) / 2 + 100;
 
-            var pos = GetRandomPointOnSphere(geometryBox.Center, random, radius);
+            var pos = SpaceMath.Sector.GetRandomPointOnSphere(geometryBox.Center, random, radius);
 
             var near = IsPointInEntity(pos, out var nearest3);
 
             while (near == true)
             {
-                pos = GetRandomPointOnSphere(geometryBox.Center, random, radius);
+                pos = SpaceMath.Sector.GetRandomPointOnSphere(geometryBox.Center, random, radius);
                 near = IsPointInEntity(pos, out var nearest4);
             }
 
             return pos;
         }
 
-        public Vector3 GetCenter()
-        {
-            return PositionWorld + new Vector3(SizeBlocksHalf, SizeBlocksHalf, SizeBlocksHalf);
-        }
 
 
         public void SpawnPlayerNearRandomAsteroid(Astronaut player, Random random)
@@ -251,8 +231,7 @@ namespace Spacebox.Game.Generation
         }
 
 
-
-        private void GenerateAsteroidFromPoint(NotGeneratedEntity data)
+        private void GenerateAsteroidFromData(NotGeneratedEntity data)
         {
 
             Asteroid entity = new Asteroid(data, this);
@@ -265,15 +244,6 @@ namespace Spacebox.Game.Generation
 
         }
 
-        private static Vector3 GetRandomPointOnSphere(Vector3 center, Random _random, float radius)
-        {
-            double theta = _random.NextDouble() * Math.PI * 2;
-            double phi = Math.Acos(2 * _random.NextDouble() - 1);
-            float x = center.X + (float)(radius * Math.Sin(phi) * Math.Cos(theta));
-            float y = center.Y + (float)(radius * Math.Sin(phi) * Math.Sin(theta));
-            float z = center.Z + (float)(radius * Math.Cos(phi));
-            return new Vector3(x, y, z);
-        }
 
         public bool IsPointInEntity(Vector3 point, out SpaceEntity entity)
         {
@@ -305,42 +275,9 @@ namespace Spacebox.Game.Generation
             sectorOctree.Remove(entity, entity.Position);
         }
 
-
-        public static Vector3 GetRandomPosition(Vector3 positionWorld, float margin01, Random _random)
-        {
-            float margin = SizeBlocks * margin01;
-
-            float minX = positionWorld.X + margin;
-            float maxX = positionWorld.X + SizeBlocks - margin;
-
-            float minY = positionWorld.Y + margin;
-            float maxY = positionWorld.Y + SizeBlocks - margin;
-
-            float minZ = positionWorld.Z + margin;
-            float maxZ = positionWorld.Z + SizeBlocks - margin;
-
-            float x = (float)(_random.NextDouble() * (maxX - minX) + minX);
-            float y = (float)(_random.NextDouble() * (maxY - minY) + minY);
-            float z = (float)(_random.NextDouble() * (maxZ - minZ) + minZ);
-
-            return new Vector3(x, y, z);
-        }
-
-        private bool IsPositionValid(Vector3 position)
-        {
-            float minDistance = SizeBlocks * 0.1f;
-            BoundingBox innerBounds = new BoundingBox(
-                BoundingBox.Center,
-                BoundingBox.Size - new Vector3(minDistance * 2)
-            );
-
-            return innerBounds.Contains(position);
-        }
-
         public SpaceEntity CreateEntity(Vector3 positionWorld)
         {
             SpaceEntity entity = new SpaceEntity(0, positionWorld, this);
-            // entity.Name = "NewEntity" + MaxEntityID++;
 
             AddEntity(entity, positionWorld);
 
@@ -349,7 +286,7 @@ namespace Spacebox.Game.Generation
 
         public bool GetNotGeneratedEntitiesNearby(Vector3 pos, List<NotGeneratedEntity> nearby)
         {
-           
+
             return
                octreeNotGenerated.GetNearbyNonAlloc(pos, Settings.ENTITY_SEARCH_RADIUS, nearby);
         }
@@ -361,6 +298,12 @@ namespace Spacebox.Game.Generation
                sectorOctree.GetNearbyNonAlloc(pos, Settings.ENTITY_SEARCH_RADIUS, nearby);
         }
 
+        private bool NeedsToBeUnloaded(SpaceEntity entity)
+        {
+
+            return false;
+        }
+
         public override void Update()
         {
             base.Update();
@@ -368,80 +311,71 @@ namespace Spacebox.Game.Generation
             var camera = Camera.Main;
             if (camera == null) return;
             List<NotGeneratedEntity> nearby = new List<NotGeneratedEntity>();
+
             if (GetNotGeneratedEntitiesNearby(camera.PositionWorld, nearby))
             {
-                foreach (var entity in nearby)
+                foreach (NotGeneratedEntity entity in nearby)
                 {
 
-                    GenerateAsteroidFromPoint(entity);
+                    GenerateAsteroidFromData(entity);
                 }
             }
             for (int i = 0; i < Entities.Count; i++)
             {
+                var entity = Entities[i];
+
+                NeedsToBeUnloaded(entity);
+
                 Entities[i].Update();
 
-                if (VisualDebug.Enabled)
-                {
-                    VisualDebug.DrawSphere(Entities[i].CenterOfMass, Entities[i].GravityRadius, 8, Color4.Blue);
-                }
+                VisualDebug.DrawSphere(Entities[i].CenterOfMass, Entities[i].GravityRadius, 8, Color4.Blue);
+
             }
         }
 
         public void Render(BlockMaterial shader)
         {
-
             VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 20, 100));
 
             var cam = Camera.Main;
 
+            const float visibleRadiusSqr = Settings.ENTITY_VISIBLE_RADIUS * Settings.ENTITY_VISIBLE_RADIUS;
 
             for (int i = 0; i < Entities.Count; i++)
             {
-
                 var entity = Entities[i];
 
+                if (!cam.Frustum.IsInFrustum(entity.GeometryBoundingBox))
+                    continue;
 
-                if (cam.Frustum.IsInFrustum(entity.GeometryBoundingBox))
+                float distSqr = Vector3.DistanceSquared(entity.GeometryBoundingBox.Center, cam.Position);
+                bool isWithinRenderDistance = distSqr < visibleRadiusSqr;
+
+                if (isWithinRenderDistance)
                 {
 
-                    var disSqr = Vector3.DistanceSquared(entity.GeometryBoundingBox.Center, cam.Position);
-
-                    if (disSqr < Settings.ENTITY_VISIBLE_RADIUS * Settings.ENTITY_VISIBLE_RADIUS)
+                    if (!entity.IsGenerated)
                     {
-                        if (!entity.IsGenerated)
+                        if (entity is Asteroid asteroid)
                         {
-                            var e = entity as Asteroid;
-
-                            if (e != null)
-                            {
-                                e.OnGenerate();
-                            }
-
-                            continue;
+                            asteroid.OnGenerate();
                         }
-
-                        entity.Render(cam, shader);
-
-                        if (entity.StarsEffect.Enabled)
-                            entity.StarsEffect.Enabled = false;
-
-
-                    }
-                    else
-                    {
-                        if (!entity.StarsEffect.Enabled)
-                            entity.StarsEffect.Enabled = true;
-
-                        
-
-                        entity.RenderEffect(disSqr);
+                        continue;
                     }
 
+                    entity.Render(cam, shader);
 
+                    if (entity.StarsEffect.Enabled)
+                        entity.StarsEffect.Enabled = false;
                 }
-               
-            }
+                else
+                {
+                    if (!entity.StarsEffect.Enabled)
+                        entity.StarsEffect.Enabled = true;
 
+                    entity.RenderEffect(distSqr);
+                }
+            }
         }
 
         public void Dispose()
@@ -458,7 +392,6 @@ namespace Spacebox.Game.Generation
 
             Entities = null;
             EntitiesGeneratedData.Clear();
-
 
         }
 
@@ -479,15 +412,7 @@ namespace Spacebox.Game.Generation
 
         public static string IndexToFolderName(Vector3i index)
         {
-            int x = index.X;
-            int y = index.Y;
-            int z = index.Z;
-
-            string xStr = x >= 0 ? "+" + x : "-" + x;
-            string yStr = y >= 0 ? "+" + y : "-" + y;
-            string zStr = z >= 0 ? "+" + z : "-" + z;
-
-            return "Sector" + xStr + yStr + zStr;
+            return SpaceMath.Sector.IndexToFolderName(index);
         }
     }
 }

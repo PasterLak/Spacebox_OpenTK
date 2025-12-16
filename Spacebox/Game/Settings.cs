@@ -23,18 +23,19 @@ namespace Spacebox.Game
             return newSettings;
         }
 
-        public static int ViewDistance = 800;
+        public static int ViewDistance = 2200; // change?
 
         public const int LOD0 = 150;
-        public const int LOD1 = 200;
-        public const int LOD2 = 256;
-        public const int LOD3 = 512;
+        public const int LOD1 = 256;
+        public const int LOD2 = 512;
+        public const int LOD3 = CHUNK_VISIBLE_RADIUS; // = CHUNK_VISIBLE_RADIUS ?  512 old
 
         public const int CHUNK_VISIBLE_RADIUS = 900;
         public const int ENTITY_VISIBLE_RADIUS = 1000;
         public const int ENTITY_SEARCH_RADIUS = 1200;
+        public const int ENTITY_UNLOAD_DISTANCE = 1500;
         public const int VIEW_DISTANCE_TO_NEXT_SECTOR = ENTITY_SEARCH_RADIUS;
-        public const int SECTOR_UNLOAD_DISTANCE = 1500;
+        public const int SECTOR_UNLOAD_DISTANCE = 2000;
         public const int SECTOR_UNLOAD_DISTANCE_SQUARED = SECTOR_UNLOAD_DISTANCE* SECTOR_UNLOAD_DISTANCE;
 
   

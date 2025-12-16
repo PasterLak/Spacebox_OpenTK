@@ -1,5 +1,6 @@
 ﻿using Engine;
 using OpenTK.Mathematics;
+using Spacebox.Game.GameMath;
 using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.Generation
@@ -45,7 +46,7 @@ namespace Spacebox.Game.Generation
         public void RemoveBlock(Chunk chunk, Vector3Byte posInChunk)
         {
             var index = chunk.PositionIndex;
-            Vector3 entityLocalPos = SpaceEntity.ChunkIndexToLocal(index);
+            Vector3 entityLocalPos = SpaceMath.Entity.ChunkIndexToLocal(index);
             var globalPos = ((int)(entityLocalPos.X + posInChunk.X),
                            (int)(entityLocalPos.Y + posInChunk.Y),
                            (int)(entityLocalPos.Z + posInChunk.Z));

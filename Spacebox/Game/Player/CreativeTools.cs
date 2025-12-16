@@ -5,6 +5,7 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Engine;
+using Spacebox.Game.GameMath;
 namespace Spacebox.Game.Player
 {
     public class CreativeTools
@@ -122,7 +123,7 @@ namespace Spacebox.Game.Player
 
             if(PanelUI.IsHolding<EraserToolItem>())
             {
-                chunks = SpaceEntity.RemoveBlocksInLocalBox(Block1.spaceEntity, deleteBounding);
+                chunks = SpaceMath.Entity.RemoveBlocksInLocalBox(Block1.spaceEntity, deleteBounding);
             }
             else if(PanelUI.IsHolding< BlockItem>())
             {
@@ -130,7 +131,7 @@ namespace Spacebox.Game.Player
 
                 if(slot.HasItem)
                 {
-                    chunks = SpaceEntity.FillBlocksInLocalBox(Block1.spaceEntity, deleteBounding, slot.Item.Id);
+                    chunks = SpaceMath.Entity.FillBlocksInLocalBox(Block1.spaceEntity, deleteBounding, slot.Item.Id);
                 }
                 
             }

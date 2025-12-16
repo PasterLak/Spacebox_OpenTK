@@ -5,6 +5,7 @@ using Engine;
 using OpenTK.Mathematics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
+using Spacebox.Game.GameMath;
 
 namespace Spacebox.Game.GUI
 {
@@ -59,7 +60,8 @@ namespace Spacebox.Game.GUI
 
                     if(entity.IsPositionInChunk(pos, out var chunk))
                     {
-                        ImGui.Text($"Chunk: {entity.WorldPositionToBlockInChunk(pos)} Index: {chunk.PositionIndex}");
+                        
+                        ImGui.Text($"Chunk: {SpaceMath.Entity.WorldPositionToBlockInChunk(entity, pos)} Index: {chunk.PositionIndex}");
                     }
                 }
                

@@ -8,7 +8,7 @@ namespace Engine
 {
     public static class Debug
     {
-        
+
         enum MessageType : byte
         {
             Info,
@@ -19,6 +19,7 @@ namespace Engine
         private struct ConsoleMessage
         {
             public string Text;
+            public int Count = 0;
             public Vector4 Color;
             public MessageType Type = MessageType.Info;
 
@@ -28,11 +29,12 @@ namespace Engine
                 Color = color;
             }
         }
-        
+
         private static bool _isVisible = false;
         private static CursorState _previousCursorState;
         private static string _inputBuffer = "";
         private static List<ConsoleMessage> _messages = new List<ConsoleMessage>();
+       
         private static List<string> _commandHistory = new List<string>();
         private static int _historyPos = -1;
         private static bool _focusInput = false;
@@ -44,12 +46,12 @@ namespace Engine
         private static long errorCount = 0;
         private static long successCount = 0;
 
-        private static Vector4 errorColor = new Vector4(1,0,0,1);
-        private static Vector4 waringColor = new Vector4(1,0.45f,0,1);
-        private static Vector4 infoColor = new Vector4(1,1,1,1);
-        private static Vector4 successColor = new Vector4(0,1,0,1);
+        private static Vector4 errorColor = new Vector4(1, 0, 0, 1);
+        private static Vector4 waringColor = new Vector4(1, 0.45f, 0, 1);
+        private static Vector4 infoColor = new Vector4(1, 1, 1, 1);
+        private static Vector4 successColor = new Vector4(0, 1, 0, 1);
 
-        private static Vector4 buttonColor = new Vector4(0.3f, 0.3f, 0.3f,0.5f);
+        private static Vector4 buttonColor = new Vector4(0.3f, 0.3f, 0.3f, 0.5f);
         private static Vector4 buttonSelectedColor = new Vector4(0.4f, 0.4f, 0.4f, 0.7f);
 
         private static MessageType showType = MessageType.Info;
@@ -61,6 +63,12 @@ namespace Engine
         static Debug()
         {
             LoadHistory();
+            RegisterDefaultCommands();
+
+        }
+
+        private static void RegisterDefaultCommands()
+        {
             RegisterCommand(new ClearCommand());
             RegisterCommand(new CameraRelativeRenderingCommand());
             RegisterCommand(new VersionCommand());
@@ -69,7 +77,6 @@ namespace Engine
             RegisterCommand(new ExitCommand());
             RegisterCommand(new ResourcesCommand());
             RegisterCommand(new SaveMessagesCommand());
-
         }
 
         public static void RegisterCommand(CommandBase command)
@@ -80,7 +87,7 @@ namespace Engine
         public static void ToggleVisibility()
         {
             _isVisible = !_isVisible;
-            
+
             if (_isVisible)
             {
                 _previousCursorState = Input.GetCursorState();
@@ -103,8 +110,8 @@ namespace Engine
         private static void AddMessage(string message, Vector4? color = null)
         {
             var msg = new ConsoleMessage(message, color ?? infoColor);
-            
-            switch(color)
+
+            switch (color)
             {
                 case var c when c == errorColor:
                     msg.Type = MessageType.Error;
@@ -116,7 +123,7 @@ namespace Engine
                     msg.Type = MessageType.Success;
                     break;
                 default:
-                 
+
                     break;
             }
             _messages.Add(msg);
@@ -270,6 +277,27 @@ namespace Engine
             successCount = 0;
         }
 
+        private static void DrawFilterButton(string label, long count, MessageType type, Vector4 textColor)
+        {
+
+            if (count <= 0) return;
+
+            ImGui.SameLine();
+
+            bool isSelected = showType == type;
+
+            if (isSelected)
+                ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
+
+            ImGui.PushStyleColor(ImGuiCol.Text, textColor);
+
+            if (ImGui.Button($" {label}: {count} "))
+            {
+                showType = type;
+            }
+
+            ImGui.PopStyleColor(isSelected ? 2 : 1);
+        }
         public static void Render(Vector2 windowSize)
         {
             if (!_isVisible)
@@ -285,63 +313,12 @@ namespace Engine
 
             ImGui.Text("CONSOLE   ");
             ImGui.PushStyleColor(ImGuiCol.Button, buttonColor);
-            if (messageCount > 0)
-            {
-                ImGui.SameLine();
 
-                
-                if(showType == MessageType.Info)
-                    ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
+            DrawFilterButton("Messages", messageCount, MessageType.Info, infoColor);
+            DrawFilterButton("Success", successCount, MessageType.Success, successColor);
+            DrawFilterButton("Warning", warningCount, MessageType.Warning, waringColor);
+            DrawFilterButton("Error", errorCount, MessageType.Error, errorColor);
 
-                ImGui.PushStyleColor(ImGuiCol.Text, infoColor);
-                if(ImGui.Button(" Messages: " + messageCount))
-                {
-                    showType = MessageType.Info;
-                }
-                ImGui.PopStyleColor(showType == MessageType.Info ? 2 : 1);
-            }
-            if (successCount > 0)
-            {
-                ImGui.SameLine();
-
-                if (showType == MessageType.Success)
-                    ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
-
-                ImGui.PushStyleColor(ImGuiCol.Text, successColor);
-                if (ImGui.Button(" Success: " + successCount))
-                {
-                   showType = MessageType.Success;
-                }
-                ImGui.PopStyleColor(showType == MessageType.Success ? 2 : 1);
-            }
-            if (warningCount > 0)
-            {
-                ImGui.SameLine();
-
-                if (showType == MessageType.Warning)
-                    ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
-
-                ImGui.PushStyleColor(ImGuiCol.Text, waringColor);
-                if (ImGui.Button(" Warning: " + warningCount))
-                {
-                    showType = MessageType.Warning;
-                }
-                ImGui.PopStyleColor(showType == MessageType.Warning ? 2 : 1);
-            }
-            if (errorCount > 0)
-            {
-                ImGui.SameLine();
-
-                if (showType == MessageType.Error)
-                    ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
-
-                ImGui.PushStyleColor(ImGuiCol.Text, errorColor);
-                if (ImGui.Button(" Error: " + errorCount))
-                {
-                    showType = MessageType.Error;
-                }
-                ImGui.PopStyleColor(showType == MessageType.Error ? 2 : 1);
-            }
             ImGui.PopStyleColor();
             ImGui.Separator();
 
@@ -355,10 +332,10 @@ namespace Engine
             {
                 if (showType != MessageType.Info)
                 {
-                    if(msg.Type != showType)
+                    if (msg.Type != showType)
                         continue;
                 }
-              
+
                 ImGui.PushStyleColor(ImGuiCol.Text, msg.Color);
                 ImGui.TextWrapped(msg.Text);
                 ImGui.PopStyleColor();
@@ -369,7 +346,7 @@ namespace Engine
 
             ImGui.Separator();
 
-            float buttonWidth = windowSize.X  * 0.06f;
+            float buttonWidth = windowSize.X * 0.06f;
             float inputWidth = ImGui.GetContentRegionAvail().X - buttonWidth - ImGui.GetStyle().ItemSpacing.X;
 
             if (ImGui.IsWindowFocused(ImGuiFocusedFlags.AnyWindow))
@@ -393,7 +370,7 @@ namespace Engine
                 }
             }
 
-            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.7f, 0.5f,0,1));
+            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.7f, 0.5f, 0, 1));
             if (ImGui.Button("SEND", new Vector2(buttonWidth, 0)))
             {
 
@@ -423,8 +400,8 @@ namespace Engine
                 _inputBuffer = "";
                 _focusInput = true;
             }
-           
-            ImGui.End();    
+
+            ImGui.End();
             ImGui.PopStyleColor();
             ImGui.PopStyleVar();
         }
@@ -449,7 +426,6 @@ namespace Engine
         {
             if (_commandHistory.Count == 0)
             {
-
                 return;
             }
 
@@ -592,7 +568,7 @@ namespace Engine
         {
             File.WriteAllLines(HistoryFilePath, _commandHistory);
         }
-      
+
         public static void SaveMessagesToFile(bool useDefaultFileName = false)
         {
             const string debugFolderPath = "Debug";
@@ -604,7 +580,7 @@ namespace Engine
                 Directory.CreateDirectory(debugFolderPath);
             }
 
-            string filename = useDefaultFileName ? "last_console_log.txt": $"console_log_{GetDateTimeNow()}.txt";
+            string filename = useDefaultFileName ? "last_console_log.txt" : $"console_log_{GetDateTimeNow()}.txt";
             string filepath = Path.Combine(debugFolderPath, filename);
 
             try
