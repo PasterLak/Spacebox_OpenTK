@@ -37,7 +37,7 @@ namespace Spacebox.Game.Generation
             {
                 _isModified = value;
 
-                if (_isModified) SpaceEntity.SetModified();
+                if (_isModified) SpaceEntity.IsModified = true;
             }
         }
 
@@ -97,7 +97,6 @@ namespace Spacebox.Game.Generation
                 BlockGenerator blockGenerator = new BlockGeneratorEmptyChunk(this, PositionWorld);
                 blockGenerator.Generate();
                 IsGenerated = true;
-                IsModified = true;
             }
 
             _lightManager = new LightManager(this);

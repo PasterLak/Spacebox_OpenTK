@@ -466,6 +466,8 @@ namespace Spacebox.Game.Player
 
         public void Revive()
         {
+            if(IsAlive) return;
+
             IsAlive = true;
 
             FOV = Settings.Graphics.Fov;

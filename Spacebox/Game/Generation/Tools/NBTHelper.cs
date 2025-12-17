@@ -30,14 +30,18 @@ namespace Spacebox.Game.Generation.Tools
 
             if (tag == null) return null;
 
-            int id = tag.Get<IntTag>(NBTKey.ENTITY.id);
+            ulong id = PackingTools.LongToULong(tag.Get<LongTag>(NBTKey.ENTITY.id));
+        
             string name = tag.Get<StringTag>(NBTKey.ENTITY.name);
-            var x = tag.Get<FloatTag>(NBTKey.ENTITY.world_x);
-            var y = tag.Get<FloatTag>(NBTKey.ENTITY.world_y);
-            var z = tag.Get<FloatTag>(NBTKey.ENTITY.world_z);
+            var x = tag.Get<FloatTag>(NBTKey.ENTITY.local_x);
+            var y = tag.Get<FloatTag>(NBTKey.ENTITY.local_y);
+            var z = tag.Get<FloatTag>(NBTKey.ENTITY.local_z);
 
 
-            SpaceEntity spaceEntity = new SpaceEntity((ulong)id, new Vector3(x, y, z), sector);
+            var worldPos = sector.LocalToWorldPosition(new Vector3(x, y, z));
+
+
+            SpaceEntity spaceEntity = new SpaceEntity(id, worldPos, sector);
             spaceEntity.Name = name;
 
 
@@ -69,12 +73,14 @@ namespace Spacebox.Game.Generation.Tools
             var root = new CompoundTag(entity.GetType().Name);
 
 
-            root.Add(new IntTag(NBTKey.ENTITY.id, (int)entity.EntityID)); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!   should be ulong
+            root.Add(new LongTag(NBTKey.ENTITY.id, PackingTools.ULongToLong(entity.EntityID))); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!   should be ulong
             root.Add(new StringTag(NBTKey.ENTITY.name, entity.Name));
 
-            root.Add(new FloatTag(NBTKey.ENTITY.world_x, entity.PositionWorld.X));
-            root.Add(new FloatTag(NBTKey.ENTITY.world_y, entity.PositionWorld.Y));
-            root.Add(new FloatTag(NBTKey.ENTITY.world_z, entity.PositionWorld.Z));
+            var localPos = entity.Sector.WorldToLocalPosition(entity.PositionWorld);
+
+            root.Add(new FloatTag(NBTKey.ENTITY.local_x, localPos.X));
+            root.Add(new FloatTag(NBTKey.ENTITY.local_y, localPos.Y));
+            root.Add(new FloatTag(NBTKey.ENTITY.local_z, localPos.Z));
 
             Quaternion rot = Quaternion.FromEulerAngles(entity.Rotation);
 
@@ -532,7 +538,7 @@ namespace Spacebox.Game.Generation.Tools
                         {
                             Vector3Byte pos = StorageBlock.PositionIndexToPositionInChunk((ushort)posTag.Value);
 
-                            
+
 
                             var sizeXY = storage.Get<ShortTag>(NBTKey.STORAGE.size_xy);
 
@@ -543,9 +549,9 @@ namespace Spacebox.Game.Generation.Tools
                             if (storage.TryGetValue<StringTag>(NBTKey.STORAGE.name, out var nameTag))
                             {
                                 var val = nameTag.Value;
-                              
+
                                 newStorage.Name = val;
-                             
+
                             }
                             else Debug.Log("not found name");
 

@@ -19,13 +19,14 @@ public class Asteroid : SpaceEntity
 
     private readonly Dictionary<Vector3SByte, List<Vector3i>> _worm = new();
 
-    private readonly AsteroidData asteroidData;
+    public readonly NotGeneratedEntity NotGeneratedEntity;
     protected readonly int Seed;
 
     public Asteroid(NotGeneratedEntity data, Sector sector) : base(data.Id, data.positionWorld, sector)
     {
         Seed = SeedHelper.ToIntSeed(data.Id);
-        asteroidData = data.asteroid;
+        NotGeneratedEntity = data;
+        var asteroidData = data.asteroid;
         diameterBlocks = data.radiusBlocks + data.radiusBlocks;
         Vector3 diameter = new Vector3(diameterBlocks);
 
@@ -160,10 +161,10 @@ public class Asteroid : SpaceEntity
 
         var chunkSeed = SeedHelper.GetChunkIdInt(EntityID, idx);
 
-        if (asteroidData.UsePerlinWorms && _worm != null && _worm.TryGetValue(idx, out var list))
+        if (NotGeneratedEntity.asteroid.UsePerlinWorms && _worm != null && _worm.TryGetValue(idx, out var list))
             foreach (var v in list) data[v.X, v.Y, v.Z] = 0;
 
-        var oreGen = new AsteroidOreGenerator(asteroidData, chunkSeed);
+        var oreGen = new AsteroidOreGenerator(NotGeneratedEntity.asteroid, chunkSeed);
         oreGen.ApplyOres(ref data);
 
         for (int x = 0; x < Chunk.Size; x++)

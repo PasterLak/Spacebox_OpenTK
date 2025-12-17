@@ -14,11 +14,21 @@ namespace Spacebox.Game.Generation.Tools
         //            world.json
         //            player.json
 
-        public static void SaveWorld(string worldPath)
+        public static void SaveWorld(string worldPath, Dictionary<Vector3i, Sector> loadedSectors)
         {
-            if (!Validate(worldPath)) return;
+            if (!Validate(worldPath))
+            {
+                Debug.Error("[WorldSaveLoad] SaveWorld validation failed! Path: " + worldPath);
+                return;
+            }
 
-            SaveSector(World.CurrentSector, Path.Combine(worldPath, "Sectors"));
+            foreach (var sector in loadedSectors.Values)
+            {
+                if (!sector.IsModified) continue;
+
+                SaveSector(sector, Path.Combine(worldPath, "Sectors"));
+            }
+
 
         }
 
@@ -33,10 +43,10 @@ namespace Spacebox.Game.Generation.Tools
         {
             if (World.WorldData == null)
             {
-                Debug.Error("NULLL World.Data inCanLoadSectorHere");
+                Debug.Error("[WorldSaveLoad] NULL World.Data in CanLoadSectorHere");
             }
             sectorFolderPath = GetSectorFolderPath(World.WorldData.WorldFolderPath, sectorIndex);
-            //Debug.Success("Sector folder path:" + sectorFolderPath);
+
             return Directory.Exists(sectorFolderPath);
 
         }
@@ -89,7 +99,7 @@ namespace Spacebox.Game.Generation.Tools
                     {
                         Debug.Warning("[WorldSaveLoad] Entity name was changed because file name was changed: " + e.Name + " to " + fileName);
                         e.Name = fileName;
-                        e.SetModified();
+                        e.IsModified = true;
 
                     }
 
@@ -151,7 +161,7 @@ namespace Spacebox.Game.Generation.Tools
                 var entity = entities[i];
                 var entityTag = NBTHelper.SpaceEntityToTag(entity);
 
-                Debug.Success("Entity was saved: " + entities[i].Name + "  pos: " + entities[i].PositionWorld);
+                Debug.Success("[WorldSaveLoad] Entity was saved: " + entities[i].Name + "  pos: " + entities[i].PositionWorld);
                 NbtFile.WriteAsync(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
             }
 

@@ -84,9 +84,9 @@ public class SectorMath
         int y = index.Y;
         int z = index.Z;
 
-        string xStr = x >= 0 ? "+" + x : "-" + x;
-        string yStr = y >= 0 ? "+" + y : "-" + y;
-        string zStr = z >= 0 ? "+" + z : "-" + z;
+        string xStr = x >= 0 ? "+" + x : x.ToString();
+        string yStr = y >= 0 ? "+" + y :  y.ToString();
+        string zStr = z >= 0 ? "+" + z :  z.ToString();
 
         return "Sector" + xStr + yStr + zStr;
     }

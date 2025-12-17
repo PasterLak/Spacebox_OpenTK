@@ -127,7 +127,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         if (Settings.Graphics.EffectsEnabled == true)
             localPlayer.AddChild(new DustSpawner());
 
-        Debug.RegisterCommand(new ChatCommand());
         Debug.RegisterCommand(new DebugTexturesCommand());
         Debug.RegisterCommand(new TeleportCommand(localPlayer));
         Debug.RegisterCommand(new TagCommand(localPlayer));

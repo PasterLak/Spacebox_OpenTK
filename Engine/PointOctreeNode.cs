@@ -150,7 +150,38 @@ namespace Engine
                 }
             }
         }
+        /// <summary>
+        /// Return objects that are within <paramref name="maxDistance"/> of the specified position.
+        /// </summary>
+        public void GetNearby(ref Vector3 position, float maxDistance, HashSet<T> result)
+        {
+            float sqrMaxDistance = maxDistance * maxDistance;
 
+            // Does the node intersect with the sphere of center = position and radius = maxDistance?
+            Vector3 closestPoint = Vector3.Clamp(position, bounds.Min, bounds.Max);
+            if ((closestPoint - position).LengthSquared > sqrMaxDistance)
+            {
+                return;
+            }
+
+            // Check against any objects in this node
+            for (int i = 0; i < objects.Count; i++)
+            {
+                if ((position - objects[i].Pos).LengthSquared <= sqrMaxDistance)
+                {
+                    result.Add(objects[i].Obj);
+                }
+            }
+
+            // Check children
+            if (children != null)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    children[i].GetNearby(ref position, maxDistance, result);
+                }
+            }
+        }
         /// <summary>
         /// Return objects that are within <paramref name="maxDistance"/> of the specified position.
         /// </summary>

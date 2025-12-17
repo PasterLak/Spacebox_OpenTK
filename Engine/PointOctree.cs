@@ -132,6 +132,17 @@ namespace Engine
         /// Returns objects that are within <paramref name="maxDistance"/> of the specified position.
         /// If none, returns false. Uses supplied list for results.
         /// </summary>
+        public bool GetNearbyNonAlloc(Vector3 position, float maxDistance, HashSet<T> nearBy)
+        {
+            nearBy.Clear();
+            rootNode.GetNearby(ref position, maxDistance, nearBy);
+            return nearBy.Count > 0;
+        }
+
+        /// <summary>
+        /// Returns objects that are within <paramref name="maxDistance"/> of the specified position.
+        /// If none, returns false. Uses supplied list for results.
+        /// </summary>
         public bool GetNearbyNonAlloc(Vector3 position, float maxDistance, List<T> nearBy)
         {
             nearBy.Clear();

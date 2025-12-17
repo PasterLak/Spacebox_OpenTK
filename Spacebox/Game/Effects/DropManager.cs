@@ -309,14 +309,14 @@ namespace Spacebox.Game.Effects
                     continue;
                 }
 
-           
+
                 if (!wasStopped && drop.IsStopped && drop.IsThrown)
                 {
                     justStopped.Add(drop);
                     continue;
                 }
 
-              
+
                 if (!drop.CanBePickedUp) continue;
 
                 var distanceSquared = (drop.Position - targetPosition).LengthSquared;
@@ -329,7 +329,7 @@ namespace Spacebox.Game.Effects
                         toRemove.Add(drop);
                     }
                 }
-              
+
                 else if (drop.IsStopped && ShouldMoveTowardsPlayer(distanceSquared) && !drop.IsMovingToPlayer)
                 {
                     StartMovingToPlayer(drop, targetPosition);
@@ -623,6 +623,10 @@ namespace Spacebox.Game.Effects
 
         public void SaveDrops(string filePath)
         {
+            if (_activeDrops.Count == 0)
+            {
+                return;
+            }
             var dropData = DropSaveManager.SerializeDrops(_activeDrops);
             DropSaveManager.SaveToFile(dropData, filePath);
         }

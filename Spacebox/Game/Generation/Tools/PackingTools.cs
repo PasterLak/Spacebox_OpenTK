@@ -59,13 +59,12 @@
 
         // ------------------------- CONVERT --------------------------- // 
 
-        public static byte SByteToByte(sbyte value)
-        {
-            return unchecked((byte)value);
-        }
-        public static sbyte ByteToSByte(byte value)
-        {
-            return unchecked((sbyte)value);
-        }
+        public static byte SByteToByte(sbyte value) => unchecked((byte)value);
+
+        public static sbyte ByteToSByte(byte value) => unchecked((sbyte)value);
+
+        public static long ULongToLong(ulong value) => unchecked((long)value);
+
+        public static ulong LongToULong(long value) => unchecked((ulong)value);
     }
 }

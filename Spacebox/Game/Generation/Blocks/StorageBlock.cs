@@ -102,7 +102,6 @@ public class StorageBlock : InteractiveBlock
     {
         if (chunk != null)
         {
-            chunk.SpaceEntity.SetModified();
             chunk.IsModified = true;
         }
     }

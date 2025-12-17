@@ -39,6 +39,7 @@ namespace Engine.Commands
                 "yellow" => new Vector4(1f, 1f, 0f, 1f),
                 "cyan" => new Vector4(0f, 1f, 1f, 1f),
                 "magenta" => new Vector4(1f, 0f, 1f, 1f),
+                "pink" => new Vector4(1f, 0f, 1f, 1f),
                 "white" => new Vector4(1f, 1f, 1f, 1f),
                 _ => Vector4.Zero,
             };

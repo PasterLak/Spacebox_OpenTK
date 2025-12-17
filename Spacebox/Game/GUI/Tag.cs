@@ -12,7 +12,7 @@ public class Tag
     public bool IsStatic { get; set; }
     public Alignment TextAlignment { get; set; }
     public uint ColorUint { get; private set; }
-    public bool Enabled { get; set; }
+    public bool Visible { get; set; }
 
     private static float MinFontSize;
     private static float MaxFontSize;
@@ -30,7 +30,7 @@ public class Tag
         Color = color;
         IsStatic = isStatic;
         TextAlignment = alignment;
-        Enabled = true;
+        Visible = true;
         UpdateColorUint();
     }
 
@@ -42,7 +42,7 @@ public class Tag
         IsStatic = false;
         TextAlignment = Alignment.Center;
         ColorUint = 0;
-        Enabled = false;
+        Visible = false;
     }
 
     private void UpdateColorUint()

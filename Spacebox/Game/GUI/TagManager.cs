@@ -30,8 +30,8 @@ namespace Spacebox.Game.GUI
                 initializeFunc: tag => tag,
                 onTakeFunc: null,
                 resetFunc: tag => tag.Reset(),
-                isActiveFunc: tag => tag.Enabled,
-                setActiveFunc: (tag, active) => tag.Enabled = active,
+                isActiveFunc: tag => tag.Visible,
+                setActiveFunc: (tag, active) => tag.Visible = active,
                 autoExpand: true
             );
         }
@@ -42,6 +42,20 @@ namespace Spacebox.Game.GUI
             tag.Initialize(text, worldPosition, color, isStatic, alignment);
             _activeTags.Add(tag);
             return tag;
+        }
+
+        public bool TryGetTagByName(string text, out Tag foundTag)
+        {
+            foreach (var tag in _activeTags)
+            {
+                if (tag.Text == text)
+                {
+                    foundTag = tag;
+                    return true;
+                }
+            }
+            foundTag = null;
+            return false;
         }
 
         public bool ReleaseTag(Tag tag)
@@ -130,7 +144,7 @@ namespace Spacebox.Game.GUI
 
             foreach (var tag in _activeTags)
             {
-                if (!tag.Enabled) continue;
+                if (!tag.Visible) continue;
                 if (CameraFrustum.IsBehindCameraDot(tag.WorldPosition, camera.PositionWorld, camera.Front))
                     continue;
 

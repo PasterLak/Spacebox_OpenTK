@@ -26,9 +26,19 @@ namespace Spacebox.Game.Generation
 
         private Vector3 sumPosCenterOfMass;
         public Vector3 CenterOfMass { get; private set; }
-        public bool IsModified { get; private set; } = false;
+
+        private bool _isModified = false;
+        public bool IsModified
+        {
+            get => _isModified;
+            set
+            {
+                _isModified = value;
+                Sector.IsModified = true;
+            }
+        }
         public bool IsGenerated { get; set; } = false;
-        public void SetModified() { if (!IsModified) IsModified = true; }
+
         public Sector Sector { get; private set; }
 
         public List<Chunk> Chunks { get; private set; } = new List<Chunk>();
@@ -42,7 +52,7 @@ namespace Spacebox.Game.Generation
         public Particle StarParticle;
         public StarsEffect StarsEffect { get; private set; }
 
-        StringBuilder StringBuilder = new StringBuilder();
+        private StringBuilder StringBuilder = new StringBuilder();
 
         public SpaceEntity(ulong id, Vector3 positionWorld, Sector sector)
         {
@@ -724,6 +734,7 @@ namespace Spacebox.Game.Generation
             StarsEffect.Dispose();
             if (tag != null)
             {
+                TagManager.Instance.ReleaseTag(tag);
                 //TagManager.UnregisterTag(tag);
             }
             StarsEffect.Dispose();

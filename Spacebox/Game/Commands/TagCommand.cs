@@ -23,35 +23,45 @@ namespace Spacebox.Game.Commands
         public override void Execute(string[] args)
         {
 
+            if (ValidateArgs(args, 2) == false) return;
 
             if (Astronaut == null)
             {
                 Debug.Error("Astronaut reference is null.");
                 return;
             }
-            if (args.Length == 0)
-            {
-                Debug.Error("Wrong arguments! Usage: " + Description);
-                return;
-            }
+
 
             if (args[0] == "delete")
             {
-                if (args.Length == 2)
-                {
 
-                    TagManager.Instance.ReleaseTagByText(args[1]);
-                    Debug.Success("Tag deleted!: " + args[1]);
+                TagManager.Instance.ReleaseTagByText(args[1]);
+                Debug.Success("Tag deleted!: " + args[1]);
+
+            }
+
+            if (args[0] == "visible")
+            {
+
+
+                if (TagManager.Instance.TryGetTagByName(args[1], out var tag))
+                {
+                    tag.Visible = !tag.Visible;
+                    Debug.Success("Tag visibility changed!: " + args[1] + " to " + tag.Visible);
                 }
+                else
+                {
+                    Debug.Error("Tag not found!: " + args[1]);
+                }
+
             }
 
             else if (args[0] == "create")
             {
-                if (args.Length == 2)
-                {
-                    TagManager.Instance.CreateTag(args[1], Astronaut.Position, Color4.Yellow, true);
-                    Debug.Success("Tag added!: " + args[1]);
-                }
+
+                TagManager.Instance.CreateTag(args[1], Astronaut.Position, Color4.Yellow, true);
+                Debug.Success("Tag added!: " + args[1]);
+
 
                 if (args.Length == 5)
                 {
