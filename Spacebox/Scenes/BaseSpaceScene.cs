@@ -129,6 +129,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         Debug.RegisterCommand(new DebugTexturesCommand());
         Debug.RegisterCommand(new TeleportCommand(localPlayer));
+        Debug.RegisterCommand(new TeleportLocal(localPlayer));
         Debug.RegisterCommand(new TagCommand(localPlayer));
         Debug.RegisterCommand(new ClearInventoryCommand(localPlayer));
         Debug.RegisterCommand(new GameModCommand(localPlayer));

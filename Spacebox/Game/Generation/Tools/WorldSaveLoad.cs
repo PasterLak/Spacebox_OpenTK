@@ -97,16 +97,16 @@ namespace Spacebox.Game.Generation.Tools
 
                     if (e.Name != fileName)
                     {
-                        Debug.Warning("[WorldSaveLoad] Entity name was changed because file name was changed: " + e.Name + " to " + fileName);
+                        Debug.Warning($"[WorldSaveLoad] Entity name was changed from {e.Name} to {fileName} because the file name was modified");
+                        Debug.Warning("[WorldSaveLoad] (These changes will be applied after saving the world)");
                         e.Name = fileName;
                         e.IsModified = true;
-
                     }
 
                     if (e != null)
                     {
                         spaceEntities.Add(e);
-                        Debug.Success("[WorldSaveLoad] Entity found: " + e.Name);
+                        Debug.Success($"[WorldSaveLoad] Entity found:  id: {e.EntityID} name: {e.Name}");
                     }
                     else
                     {
@@ -161,7 +161,7 @@ namespace Spacebox.Game.Generation.Tools
                 var entity = entities[i];
                 var entityTag = NBTHelper.SpaceEntityToTag(entity);
 
-                Debug.Success("[WorldSaveLoad] Entity was saved: " + entities[i].Name + "  pos: " + entities[i].PositionWorld);
+                Debug.Success("[WorldSaveLoad] Entity was saved: " + entities[i].EntityID + "  pos: " + entities[i].PositionWorld);
                 NbtFile.WriteAsync(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
             }
 

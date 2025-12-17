@@ -102,7 +102,6 @@ public static class CreativeWindowUI
         if (scrollAudio.IsPlaying) scrollAudio.Stop();
         scrollAudio.Play();
 
-        Debug.Log($"Hover sound for slot {slotId}");
     }
 
     private static Type[] GetCategories0()

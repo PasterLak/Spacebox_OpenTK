@@ -2,6 +2,7 @@
 using SharpNBT;
 using Engine;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation.Tools
 {
@@ -31,7 +32,7 @@ namespace Spacebox.Game.Generation.Tools
             if (tag == null) return null;
 
             ulong id = PackingTools.LongToULong(tag.Get<LongTag>(NBTKey.ENTITY.id));
-        
+
             string name = tag.Get<StringTag>(NBTKey.ENTITY.name);
             var x = tag.Get<FloatTag>(NBTKey.ENTITY.local_x);
             var y = tag.Get<FloatTag>(NBTKey.ENTITY.local_y);
@@ -43,7 +44,7 @@ namespace Spacebox.Game.Generation.Tools
 
             SpaceEntity spaceEntity = new SpaceEntity(id, worldPos, sector);
             spaceEntity.Name = name;
-
+            spaceEntity.IsGenerated = true;
 
             if (tag.ContainsKey(NBTKey.ENTITY.rotation_x))
             {
@@ -538,11 +539,25 @@ namespace Spacebox.Game.Generation.Tools
                         {
                             Vector3Byte pos = StorageBlock.PositionIndexToPositionInChunk((ushort)posTag.Value);
 
+                            var blockId = blocks[pos.X, pos.Y, pos.Z].Id;
 
+                            var storageBlockData = GameAssets.GetBlockDataById(blockId) as StorageBlockData;
 
                             var sizeXY = storage.Get<ShortTag>(NBTKey.STORAGE.size_xy);
 
                             PackingTools.UnpackBytes(sizeXY, out byte sizeX, out byte sizeY);
+
+                            if (storageBlockData != null)
+                            {
+
+                                sizeX = storageBlockData.Size.X;
+                                sizeY = storageBlockData.Size.Y;
+
+                            }
+                            else
+                            {
+                                Debug.Error($"[NBTHelper] - TagToChunk: StorageBlockData is null for block id: {blockId} at pos {pos} in chunk {ix},{iy},{iz}. Using size from NBT: {sizeX},{sizeY}");
+                            }
 
                             Storage newStorage = new Storage(sizeX, sizeY);
 
@@ -553,7 +568,7 @@ namespace Spacebox.Game.Generation.Tools
                                 newStorage.Name = val;
 
                             }
-                            else Debug.Log("not found name");
+
 
                             foreach (var slotData in storage.Get<LongArrayTag>(NBTKey.STORAGE.slots_data))
                             {
@@ -568,7 +583,10 @@ namespace Spacebox.Game.Generation.Tools
                                 {
                                     var slot = newStorage.GetSlot(posX, posY);
 
-                                    slot.SetData(item, (byte)count);
+                                    if (slot != null)
+                                    {
+                                        slot.SetData(item, (byte)count);
+                                    }
                                 }
 
                             }

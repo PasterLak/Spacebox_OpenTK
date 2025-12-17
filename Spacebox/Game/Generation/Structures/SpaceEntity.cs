@@ -57,6 +57,7 @@ namespace Spacebox.Game.Generation
         public SpaceEntity(ulong id, Vector3 positionWorld, Sector sector)
         {
             EntityID = id;
+            Name = id.ToString();
             Position = positionWorld;
             PositionWorld = positionWorld;
             Sector = sector;
@@ -420,8 +421,12 @@ namespace Spacebox.Game.Generation
             if (VisualDebug.Enabled)
             {
                 bool isAsteroid = this as Asteroid != null;
-                StringBuilder.Append(Name)
+                StringBuilder.Append("Name: ")
+                   .Append(Name)
+                    .Append("\n")
+                    .Append("ID: ")
                   .Append(EntityID)
+                   .Append("\n")
                   .Append(" isAsteroid: ")
                   .Append(isAsteroid)
                   .Append("\nWpos: ")

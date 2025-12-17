@@ -60,6 +60,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         Entities = new List<SpaceEntity>();
 
+        PopulateSector();
+
         if (WorldSaveLoad.CanLoadSectorHere(PositionIndex, out var sectorFolderPath))
         {
 
@@ -68,14 +70,28 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             foreach (var e in entities)
             {
 
-                
+                if (Entities.Contains(e))
+                {
+                    Debug.Error("[Sector] Entity already exists in sector upon loading: " + e.EntityID);
+                    continue;
+                }
+
+                if(EntitiesGeneratedData.ContainsKey(e.EntityID))
+                {
+                    // remove from not generated
+                    var data = EntitiesGeneratedData[e.EntityID];
+                    octreeNotGenerated.Remove(data);
+                    EntitiesGeneratedData.Remove(e.EntityID);
+                }
+
                 AddEntity(e, e.PositionWorld);
+            
 
             }
 
         }
 
-        PopulateSector();
+        
     }
 
     private void PopulateSector()
@@ -228,7 +244,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     {
 
         Asteroid entity = new Asteroid(data, this);
-        entity.Name = "LA";
+        entity.Name = entity.EntityID.ToString();
 
 
         Entities.Add(entity);

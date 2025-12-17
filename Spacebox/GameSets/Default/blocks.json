@@ -4,13 +4,13 @@
         "Name": "Light Rock",
         "Description": "Easily mined rock",
         "Sides": "lightRock",
-       
+
         "PowerToDrill": 1,
         "Mass": 2,
         "Durability": 5,
         "SoundPlace": "blockPlaceLight",
 
-        "Drop" : "$self",
+        "Drop": "$self",
         "DropQuantity": 1
     },
     {
@@ -22,7 +22,7 @@
         "Mass": 4,
         "Durability": 10,
 
-        "Drop" : "medium_rock",
+        "Drop": "medium_rock",
         "DropQuantity": 1
     },
     {
@@ -47,7 +47,7 @@
     {
         "ID": "ice_rock",
         "Name": "Icy Rock",
-        "Description" : "Contains ice pieces",
+        "Description": "Contains ice pieces",
         "Sides": "iceBlock",
         "PowerToDrill": 1,
         "Mass": 1,
@@ -56,7 +56,7 @@
     {
         "ID": "dense_ice_rock",
         "Name": "Dense Ice Rock",
-        "Description" : "Source of methane",
+        "Description": "Source of methane",
         "Sides": "iceBlock2",
         "PowerToDrill": 2,
         "Mass": 2,
@@ -101,7 +101,7 @@
     {
         "ID": "obscurium_ore",
         "Name": "Obscurium Ore",
-        "Description" : "An extremely rare ore with unusual properties",
+        "Description": "An extremely rare ore with unusual properties",
         "Sides": "pinkOre",
         "PowerToDrill": 5,
         "Mass": 10,
@@ -248,30 +248,30 @@
     {
         "ID": "crafting_table",
         "Name": "Crafting Table",
-        "Description" : "Used for crafting items and blocks",
+        "Description": "Used for crafting items and blocks",
         "Category": "resources",
         "Type": "craftingtable",
         "Sides": "craftSide",
         "Up": "craftTop",
         "Down": "bottom",
         "Mass": 1,
-        "Durability" : 5,
+        "Durability": 5,
         "IsTransparent": false
     },
     {
         "ID": "furnace",
         "Name": "Furnace",
-        "Description" : "Used for smelting ores",
+        "Description": "Used for smelting ores",
         "Type": "furnace",
         "Category": "resources",
         "Sides": "furnace",
         "Up": "bottom",
         "Down": "bottom",
-        "Left" : "bottom",
-        "Right" : "bottom",
-        "Back" : "bottom",
+        "Left": "bottom",
+        "Right": "bottom",
+        "Back": "bottom",
         "Mass": 2,
-        "Durability" : 7,
+        "Durability": 7,
         "Efficiency": 1
     },
     {
@@ -282,24 +282,24 @@
         "Sides": "furnace2",
         "Up": "bottom",
         "Down": "bottom",
-        "Left" : "bottom",
-        "Right" : "bottom",
-        "Back" : "bottom",
+        "Left": "bottom",
+        "Right": "bottom",
+        "Back": "bottom",
         "Mass": 2,
-        "Durability" : 10,
+        "Durability": 10,
         "Efficiency": 1.3,
         "PowerToDrill": 3
     },
     {
         "ID": "crusher",
         "Name": "Crusher",
-        "Description" : "Сrushes ores to extract more resources",
+        "Description": "Сrushes ores to extract more resources",
         "Type": "crusher",
         "Category": "resources",
         "Sides": "crusherSide",
         "Up": "crusherTop",
         "Down": "bottom",
-        "Durability" : 5,
+        "Durability": 5,
         "Efficiency": 0.7,
         "IsTransparent": false
     },
@@ -311,7 +311,7 @@
         "Sides": "crusherSide2",
         "Up": "crusherTop2",
         "Down": "bottom",
-        "Durability" : 10,
+        "Durability": 10,
         "Efficiency": 1.2,
         "IsTransparent": false,
         "PowerToDrill": 3
@@ -319,13 +319,13 @@
     {
         "ID": "analyzer",
         "Name": "Analyzer",
-        
+
         "Type": "interactive",
         "Category": "resources",
         "Sides": "bottom",
         "Up": "analyzer",
         "Down": "bottom",
-        "Durability" : 5,
+        "Durability": 5,
         "IsTransparent": false
     },
     {
@@ -337,7 +337,7 @@
         "Sides": "bottom",
         "Up": "radar",
         "Down": "bottom",
-        "Durability" : 5,
+        "Durability": 5,
         "IsTransparent": false
     },
     {
@@ -349,7 +349,7 @@
         "Sides": "disassemblerSide",
         "Up": "disassemblerTop2",
         "Down": "bottom",
-        "Durability" : 5,
+        "Durability": 5,
         "Efficiency": 1,
         "IsTransparent": false
     },
@@ -361,7 +361,7 @@
         "Category": "blocks",
         "IsTransparent": false
     },
-    
+
     {
         "ID": "light_white",
         "Name": "Light White",
@@ -466,11 +466,11 @@
         "SoundDestroy": "blockDestroyGlass",
         "SoundPlace": "placeMetal2"
     },
-   
+
     {
         "ID": "moritz",
         "Name": "Moritz",
-      
+
         "Sides": "moritz",
         "PowerToDrill": 5,
         "Mass": 1,
@@ -512,11 +512,11 @@
         "SoundPlace": "blockPlaceHeavy",
         "SoundDestroy": "blockPlaceHeavy"
     },
-  
+
     {
         "ID": "gravity_generator",
         "Name": "Gravity Generator",
-        "Description" : "Сan create artificial gravity",
+        "Description": "Сan create artificial gravity",
         "Category": "resources",
         "Sides": "gravitySide",
         "Up": "gravityTop",
@@ -528,7 +528,7 @@
         "SoundPlace": "blockPlaceHeavy",
         "SoundDestroy": "blockPlaceHeavy"
     },
-  
+
     {
         "ID": "basic_aluminium_crate",
         "Name": "Basic Aluminium Crate",
@@ -537,18 +537,16 @@
         "Sides": "aluChestSide",
         "Forward": "aluChestFront",
         "Up": "aluChestTop",
-        "SizeX": 4,
-        "SizeY": 3,
         "StorageSize": {
-            "x": 1,
-            "y": 2
-           
+            "x": 8,
+            "y": 3
+
         },
         "PowerToDrill": 1,
         "Mass": 4,
         "Durability": 10,
         "IsTransparent": false
-     },
+    },
     {
         "ID": "basic_iron_crate",
         "Name": "Basic Iron Crate",
@@ -557,19 +555,17 @@
         "Sides": "ironChestSide",
         "Forward": "ironChestFront",
         "Up": "ironChestTop",
-        "SizeX": 4,
-        "SizeY": 3,
-         "StorageSize": {
-            "x": 3,
-            "y": 2
-           
+        "StorageSize": {
+            "x": 8,
+            "y": 3
+
         },
         "PowerToDrill": 2,
         "Mass": 8,
         "Durability": 20,
         "IsTransparent": false
-     },
-      {
+    },
+    {
         "ID": "basic_titanium_crate",
         "Name": "Basic Titanium Crate",
         "Type": "storage",
@@ -577,19 +573,17 @@
         "Sides": "aluChestSide",
         "Up": "aluChestTop",
         "Down": "aluChestTop",
-        "SizeX": 4,
-        "SizeY": 3,
-         "StorageSize": {
+        "StorageSize": {
             "x": 8,
-            "y": 4
-           
+            "y": 3
+
         },
         "PowerToDrill": 3,
         "Mass": 6,
         "Durability": 30,
         "IsTransparent": false
-     },
-     {
+    },
+    {
         "ID": "safe",
         "Name": "Armored Safe",
         "Description": "Provides high security for valuable items",
@@ -597,8 +591,11 @@
         "Category": "other",
         "Sides": "safe_side",
         "Forward": "safe_face",
-        "SizeX": 3,
-        "SizeY": 3,
+        "StorageSize": {
+            "x": 3,
+            "y": 3
+
+        },
         "PowerToDrill": 5,
         "Mass": 50,
         "Durability": 200,
@@ -618,7 +615,7 @@
     {
         "ID": "dna_reconstructor",
         "Name": "DNA Reconstructor",
-        "Description" : "Used to revive the player or other creatures",
+        "Description": "Used to revive the player or other creatures",
         "Category": "other",
         "Up": "spawnerTop",
         "Down": "bottom",
