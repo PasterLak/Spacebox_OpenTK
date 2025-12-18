@@ -41,7 +41,6 @@ namespace Spacebox.GUI
             isometricTexture.UpdateTexture();
 
 
-
             leftSide.Dispose();
 
             return isometricTexture;

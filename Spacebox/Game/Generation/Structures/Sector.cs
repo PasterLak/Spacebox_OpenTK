@@ -9,8 +9,6 @@ using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 
-using static Spacebox.Game.GUI.CraftingCategory;
-
 namespace Spacebox.Game.Generation;
 
 
@@ -70,56 +68,70 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
             WorldSaveLoad.LoadSectorData(this);
 
-            if (SuppressedEntities.Count > 0)
-            {
-                foreach (var suppressedIds in SuppressedEntities)
-                {
-                    if (EntitiesGeneratedData.ContainsKey(suppressedIds))
-                    {
-                        var data = EntitiesGeneratedData[suppressedIds];
-                        octreeNotGenerated.Remove(data);
-                        EntitiesGeneratedData.Remove(suppressedIds);
-                    }
-                    else
-                    {
-                        Debug.Error("[Sector] Suppressed entity not found in generated data! ID: " + suppressedIds);
-                    }
-                }
-            }
+            HandleSuppressedEntities();
 
-
-            var entities = WorldSaveLoad.LoadSpaceEntities(this);
-
-            foreach (var e in entities)
-            {
-
-                if (Entities.Contains(e))
-                {
-                    Debug.Error("[Sector] Entity already exists in sector upon loading! ID: " + e.EntityID);
-                    continue;
-                }
-
-                if (SuppressedEntities.Contains(e.EntityID))
-                {
-                    Debug.Error("[Sector] Loaded entity is marked as suppressed, skipping addition to sector. ID: " + e.EntityID);
-                    continue;
-                }
-
-                if (EntitiesGeneratedData.ContainsKey(e.EntityID))
-                {
-                    // remove from not generated
-                    var data = EntitiesGeneratedData[e.EntityID];
-                    octreeNotGenerated.Remove(data);
-                    EntitiesGeneratedData.Remove(e.EntityID);
-                }
-
-                AddEntity(e, e.PositionWorld);
-
-
-            }
+            LoadEnities();
 
         }
 
+    }
+
+    private void HandleSuppressedEntities()
+    {
+        if (SuppressedEntities.Count == 0) return;
+
+        foreach (var suppressedIds in SuppressedEntities)
+        {
+            if (RemoveGeneratedData(suppressedIds))
+            {
+
+            }
+            else
+            {
+                Debug.Error("[Sector] Suppressed entity not found in generated data! ID: " + suppressedIds);
+            }
+        }
+
+    }
+
+    private void LoadEnities()
+    {
+        var entities = WorldSaveLoad.LoadSpaceEntities(this);
+
+        foreach (var e in entities)
+        {
+
+            if (Entities.Contains(e))
+            {
+                Debug.Error("[Sector] Entity already exists in sector upon loading! ID: " + e.EntityID);
+                continue;
+            }
+
+            if (SuppressedEntities.Contains(e.EntityID))
+            {
+                Debug.Error("[Sector] Loaded entity is marked as suppressed, skipping addition to sector. ID: " + e.EntityID);
+                continue;
+            }
+
+            // remove from not generated
+            RemoveGeneratedData(e.EntityID);
+
+
+            AddEntity(e, e.PositionWorld);
+
+        }
+    }
+
+    private bool RemoveGeneratedData(ulong entityId)
+    {
+        if (EntitiesGeneratedData.TryGetValue(entityId, out NotGeneratedEntity? data))
+        {
+            octreeNotGenerated.Remove(data);
+            EntitiesGeneratedData.Remove(entityId);
+            return true;
+        }
+
+        return false;
     }
 
     private void PopulateSector()
@@ -163,14 +175,18 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     public void PlacePlayerRandomInSector(Astronaut player, Random random)
     {
+        if (Entities.Count == 0) return;
 
         if (TryGetNearestEntity(SpaceMath.Sector.GetCenter(this), out var entity))
         {
             player.SetPosition(GetRandomPositionNearAsteroid(random, entity));
         }
         else
+        {
             player.SetPosition(GetRandomPositionWithCollisionCheck(random, 0.2f));
+        }
 
+        player.SpawnPosition = player.Position;
     }
 
     public Vector3 GetRandomPositionWithCollisionCheck(Random random, float margin01)
@@ -187,6 +203,23 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         return pos;
     }
 
+    public Vector3 GetRandomPositionNearAsteroid(Random random, NotGeneratedEntity entity)
+    {
+
+        var radius = entity.radiusBlocks;
+
+        var pos = SpaceMath.Sector.GetRandomPointOnSphere(entity.positionWorld, random, radius);
+
+        var near = IsPointInEntity(pos, out var nearest3);
+
+        while (near == true)
+        {
+            pos = SpaceMath.Sector.GetRandomPointOnSphere(entity.positionWorld, random, radius);
+            near = IsPointInEntity(pos, out var nearest4);
+        }
+
+        return pos;
+    }
     public Vector3 GetRandomPositionNearAsteroid(Random random, SpaceEntity entity)
     {
         var geometryBox = entity.GeometryBoundingBox;
@@ -207,21 +240,15 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         return pos;
     }
 
-
-
-    public void SpawnPlayerNearRandomAsteroid(Astronaut player, Random random)
+    public void SpawnPlayerNearRandomAsteroidData(Astronaut player, Random random) // todo: fix 
     {
 
-        if (Entities.Count == 0) return;
+        var asteroidsDataList = EntitiesGeneratedData.Values.ToList();
 
-        PlacePlayerRandomInSector(player, random);
+        var asteroidIndex = random.Next(0, asteroidsDataList.Count);
+
+        player.SetPosition(GetRandomPositionNearAsteroid(random, asteroidsDataList[asteroidIndex]));
         player.SpawnPosition = player.Position;
-        return;
-
-        var asteroidID = random.Next(0, Entities.Count);
-
-        player.Position = GetRandomPositionNearAsteroid(random, Entities[asteroidID]);
-
 
     }
 
@@ -300,16 +327,13 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     private void AddEntity(SpaceEntity entity, Vector3 positionWorld)
     {
         Entities.Add(entity);
-        SuppressedEntities.Add(entity.EntityID);
+
         sectorOctree.Add(entity, positionWorld);
     }
 
-    public void DeleteEntity(SpaceEntity entity)
+    public void DestroyEntity(SpaceEntity entity)
     {
-        entity.Dispose();
-        Entities.Remove(entity);
-
-        sectorOctree.Remove(entity, entity.Position);
+        RemoveEntity(entity);
 
         if (!SuppressedEntities.Contains(entity.EntityID))
         {
@@ -321,6 +345,13 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         }
     }
 
+    private void RemoveEntity(SpaceEntity entity)
+    {
+        entity.Dispose();
+        Entities.Remove(entity);
+        sectorOctree.Remove(entity, entity.PositionWorld);
+    }
+
     // demo
     public void MoveEntityToSector(SpaceEntity entity, Sector newSector)
     {
@@ -328,7 +359,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         newSector.AddEntity(entity, entity.PositionWorld);
     }
 
-    public SpaceEntity CreateEntity(Vector3 positionWorld)
+    public SpaceEntity CreateNewEntity(Vector3 positionWorld)
     {
         SpaceEntity entity = new SpaceEntity(0, positionWorld, this);
 
@@ -371,8 +402,6 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             // just ignore
         }
 
-
-
         if (asteroid != null)
         {
             if (asteroid.IsGenerated)
@@ -389,8 +418,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             Debug.Success("[Sector] Unloaded spaceship " + entity.PositionWorld);
         }
 
-
-        DeleteEntity(entity); //   !!!!!!!!!!!!!!!!!!!!!! error here !!!!!!!!!!!!!!!!!!
+        RemoveEntity(entity);
 
     }
 
