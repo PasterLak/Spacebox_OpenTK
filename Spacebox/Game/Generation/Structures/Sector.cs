@@ -331,25 +331,23 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         sectorOctree.Add(entity, positionWorld);
     }
 
-    public void DestroyEntity(SpaceEntity entity)
+    public void DestroyEntity(SpaceEntity entity, bool isDestroyedPermentantly)
     {
-        RemoveEntity(entity);
+        entity.Dispose();
+        Entities.Remove(entity);
+        sectorOctree.Remove(entity, entity.PositionWorld);
+
+        if (!isDestroyedPermentantly) return;
 
         if (!SuppressedEntities.Contains(entity.EntityID))
         {
             SuppressedEntities.Add(entity.EntityID);
+            // delete the file on disk too
         }
         else
         {
             Debug.Error("[Sector] Entity already marked for removal! Id: " + entity.EntityID);
         }
-    }
-
-    private void RemoveEntity(SpaceEntity entity)
-    {
-        entity.Dispose();
-        Entities.Remove(entity);
-        sectorOctree.Remove(entity, entity.PositionWorld);
     }
 
     // demo
@@ -418,7 +416,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             Debug.Success("[Sector] Unloaded spaceship " + entity.PositionWorld);
         }
 
-        RemoveEntity(entity);
+        DestroyEntity(entity, false);
 
     }
 

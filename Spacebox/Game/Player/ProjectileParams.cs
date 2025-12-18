@@ -16,6 +16,7 @@ namespace Spacebox.Game.Player
         public Vector3 Color3 => new Vector3(Color.R, Color.G, Color.B);
         public byte Damage { get; private set; }
         public byte DamageBlocks { get; private set; }
+        public byte Penetration { get; private set; }
         public float RicochetAngle { get; private set; }
         public int PossibleRicochets { get; private set; }
 
@@ -41,6 +42,7 @@ namespace Spacebox.Game.Player
             Mass = (byte)p.Mass;
             Damage = (byte)p.Damage;
             DamageBlocks = (byte)p.DamageBlocks;
+            Penetration = (byte)p.Penetration;
             RicochetAngle = p.RicochetAngle;
             PossibleRicochets = p.PossibleRicochets;
 

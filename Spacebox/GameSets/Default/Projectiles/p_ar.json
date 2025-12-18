@@ -12,6 +12,7 @@
     },
     "Damage": 80,
     "DamageBlocks": 60,
+    "Penetration": 255,
     "RicochetAngle": 70,
     "PossibleRicochets": 5,
     "MaximumBlocksCanDestroy" : 1,

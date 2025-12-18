@@ -10,7 +10,8 @@
         "b": 190
     },
     "Damage": 2,
-    "DamageBlocks": 0,
+    "DamageBlocks": 2,
+    "Penetration": 3,
     "RicochetAngle": 30,
     "PossibleRicochets": 3
 }

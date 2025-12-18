@@ -331,6 +331,7 @@ public static class GameSetLoader
 
                     if (proj.Damage > byte.MaxValue) proj.Damage = byte.MaxValue;
                     if (proj.DamageBlocks > byte.MaxValue) proj.DamageBlocks = byte.MaxValue;
+                    if (proj.Penetration > byte.MaxValue) proj.Penetration = byte.MaxValue;
                     if (proj.Mass > byte.MaxValue) proj.Mass = byte.MaxValue;
                     if (proj.PossibleRicochets < 0) proj.PossibleRicochets = 0;
                     if (proj.PossibleRicochets > byte.MaxValue) proj.PossibleRicochets = byte.MaxValue;

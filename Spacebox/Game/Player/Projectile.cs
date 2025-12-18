@@ -230,41 +230,52 @@ namespace Spacebox.Game.Player
                 }
                 ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.hitPosition + hit.normal.ToVector3() * 0.1f, Parameters.ID);
 
-                if (currentDamage > hit.block.Durability)
+
+                if (Parameters.Penetration >= hit.block.Durability)
                 {
-
-                    hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage, Parameters.DropBlock);
-                    if (astronaut != null)
-                    {
-                        astronaut.PlayerStatistics.BlockDamageDealt += currentDamage;
-                        astronaut.PlayerStatistics.BlocksDestroyed++;
-                    }
-                    Enabled = false;
-                    if (currentDamage >= 50)
+                    if (currentDamage > hit.block.Durability)
                     {
 
-                        explosionSound.Position = hit.hitPosition;
-                        explosionSound.Play();
+                        hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage, Parameters.DropBlock);
                         if (astronaut != null)
                         {
-                            astronaut.PlayerStatistics.ExplosionsCaused++;
+                            astronaut.PlayerStatistics.BlockDamageDealt += currentDamage;
+                            astronaut.PlayerStatistics.BlocksDestroyed++;
                         }
-                    }
-                    OnDespawn?.Invoke(this);
+                        Enabled = false;
+                        if (currentDamage >= 50)
+                        {
 
+                            explosionSound.Position = hit.hitPosition;
+                            explosionSound.Play();
+                            if (astronaut != null)
+                            {
+                                astronaut.PlayerStatistics.ExplosionsCaused++;
+                            }
+                        }
+                        OnDespawn?.Invoke(this);
+
+                    }
+                    else
+                    {
+                        hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage, Parameters.DropBlock);
+                        if (astronaut != null)
+                        {
+                            astronaut.PlayerStatistics.BlockDamageDealt += currentDamage;
+
+                        }
+
+                        Enabled = false;
+                        OnDespawn?.Invoke(this);
+                    }
                 }
                 else
                 {
-                    hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage, Parameters.DropBlock);
-                    if (astronaut != null)
-                    {
-                        astronaut.PlayerStatistics.BlockDamageDealt += currentDamage;
-
-                    }
-
                     Enabled = false;
                     OnDespawn?.Invoke(this);
                 }
+
+               
             }
         }
 

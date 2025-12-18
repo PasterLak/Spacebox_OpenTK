@@ -18,6 +18,7 @@ namespace Spacebox.Game.Player
         public int Mass { get; set; } = 1;
         public int Damage { get; set; } = 0;
         public int DamageBlocks { get; set; } = 0;
+        public int Penetration { get; set; } = 255;
         public int RicochetAngle { get; set; } = 0;
         public int PossibleRicochets { get; set; } = 0;
 

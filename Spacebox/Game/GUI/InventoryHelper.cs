@@ -285,6 +285,7 @@ namespace Spacebox.Game.GUI
                     var pj = GameAssets.Projectiles[itemType.ProjectileID];
 
                     text += "\nDamage: " + $"{+pj.Damage}/{+pj.DamageBlocks}";
+                    text += "\nPenetration: " + pj.Penetration;
                     text += "\nProjectile speed: " + pj.Speed;
                     text += $"\nReload time: {itemType.ReloadTime / 20f:0.0}s.";
                     text += "\nSpread: " + itemType.Spread;

@@ -12,6 +12,7 @@
     },
     "Damage": 5,
     "DamageBlocks": 4,
+    "Penetration": 85,
     "RicochetAngle": 25,
     "PossibleRicochets": 3
 }

@@ -240,18 +240,19 @@ namespace Spacebox.Game.Generation.Tools
 
             root.Add(listBlocks);
 
-            var listPalette = new IntArrayTag(NBTKey.CHUNK.palette_blocks, palette.Count);
+            var listPaletteBlocks = new IntArrayTag(NBTKey.CHUNK.palette_blocks, palette.Count);
 
             foreach (var item in palette)
             {
-                listPalette[item.Value] = item.Key;
+                listPaletteBlocks[item.Value] = item.Key;
             }
 
-            root.Add(listPalette);
+            root.Add(listPaletteBlocks);
 
-            var listPaletteitems = new ListTag(NBTKey.CHUNK.palette_items, TagType.String);
+            var listPaletteItems = new ListTag(NBTKey.CHUNK.palette_items, TagType.String);
 
             var paletteItemsArray = new string[paletteItems.Count];
+
             foreach (var item in paletteItems)
             {
                 paletteItemsArray[item.Value] = item.Key;
@@ -259,10 +260,10 @@ namespace Spacebox.Game.Generation.Tools
 
             for (int i = 0; i < paletteItemsArray.Length; i++)
             {
-                listPaletteitems.Add(new StringTag(null, paletteItemsArray[i]));
+                listPaletteItems.Add(new StringTag(null, paletteItemsArray[i]));
             }
 
-            root.Add(listPaletteitems);
+            root.Add(listPaletteItems);
 
             var listRotations = new IntArrayTag(NBTKey.CHUNK.rotations, blockWithDirIDs.Count);
 
@@ -288,14 +289,12 @@ namespace Spacebox.Game.Generation.Tools
             var storagesListTag = new ListTag(NBTKey.CHUNK.storages, TagType.Compound);
 
             storagesListTag.AddRange(storagesList);
-
             root.Add(storagesListTag);
 
             //Debug.Log(root.PrettyPrinted());
 
             return root;
         }
-
 
         private static void AddItemsToPalette(Storage storage, Dictionary<string, short> itemsPalette, ref short indexInPalette)
         {
@@ -309,13 +308,9 @@ namespace Spacebox.Game.Generation.Tools
                 {
                     var slot = storage.GetSlot(x, y);
 
-                    if (slot.HasItem)
+                    if (slot.HasItem && itemsPalette.TryAdd(slot.Item.Id_string, indexInPalette))
                     {
-                        if (itemsPalette.TryAdd(slot.Item.Name, indexInPalette))
-                        {
-                            indexInPalette++;
-                        }
-
+                        indexInPalette++;
                     }
 
                 }
@@ -328,7 +323,7 @@ namespace Spacebox.Game.Generation.Tools
             if (itemSlot == null) return false;
             if (!itemSlot.HasItem) return false;
 
-            data = PackingTools.PackShorts(itemsPalette[itemSlot.Item.Name], itemSlot.Count, itemSlot.Position.X, itemSlot.Position.Y);
+            data = PackingTools.PackShorts(itemsPalette[itemSlot.Item.Id_string], itemSlot.Count, itemSlot.Position.X, itemSlot.Position.Y);
 
             return true;
         }
@@ -346,7 +341,6 @@ namespace Spacebox.Game.Generation.Tools
 
 
             var slotsData = new List<long>();
-
 
             short storageSizeXYPacked = PackingTools.PackBytes(storage.SizeX, storage.SizeY);
 
@@ -407,17 +401,17 @@ namespace Spacebox.Game.Generation.Tools
             if (!inSlot.HasItem) inputData = 0;
             else
             {
-                inputData = PackingTools.PackShorts(itemsPalette[inSlot.Item.Name], inSlot.Count);
+                inputData = PackingTools.PackShorts(itemsPalette[inSlot.Item.Id_string], inSlot.Count);
             }
             if (!outSlot.HasItem) outputData = 0;
             else
             {
-                outputData = PackingTools.PackShorts(itemsPalette[outSlot.Item.Name], outSlot.Count);
+                outputData = PackingTools.PackShorts(itemsPalette[outSlot.Item.Id_string], outSlot.Count);
             }
             if (!fuelSlot.HasItem) fuelData = 0;
             else
             {
-                fuelData = PackingTools.PackShorts(itemsPalette[fuelSlot.Item.Name], fuelSlot.Count);
+                fuelData = PackingTools.PackShorts(itemsPalette[fuelSlot.Item.Id_string], fuelSlot.Count);
             }
 
 
@@ -439,7 +433,7 @@ namespace Spacebox.Game.Generation.Tools
 
             if (inCount > 0)
             {
-                var inItm = GameAssets.GetItemByName(paletteitems[inItem]);
+                var inItm = GameAssets.GetItemByFullID(paletteitems[inItem]);
 
                 if (inItm != null)
                 {
@@ -449,7 +443,7 @@ namespace Spacebox.Game.Generation.Tools
 
             if (outCount > 0)
             {
-                var outItm = GameAssets.GetItemByName(paletteitems[outItem]);
+                var outItm = GameAssets.GetItemByFullID(paletteitems[outItem]);
 
                 if (outItm != null)
                 {
@@ -458,7 +452,7 @@ namespace Spacebox.Game.Generation.Tools
             }
             if (fuelCount > 0)
             {
-                var fuelItm = GameAssets.GetItemByName(paletteitems[fuelItem]);
+                var fuelItm = GameAssets.GetItemByFullID(paletteitems[fuelItem]);
 
                 if (fuelItm != null)
                 {
@@ -597,10 +591,10 @@ namespace Spacebox.Game.Generation.Tools
                             {
                                 PackingTools.UnpackShorts(slotData, out var paletteId, out var count, out var posX, out var posY);
 
-                                var itemName = paletteitemsString[paletteId];
+                                var itemIdStr = paletteitemsString[paletteId];
 
 
-                                var item = GameAssets.GetItemByName(itemName);
+                                var item = GameAssets.GetItemByFullID(itemIdStr);
 
                                 if (item != null)
                                 {
