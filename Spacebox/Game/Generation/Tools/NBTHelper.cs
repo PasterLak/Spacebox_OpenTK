@@ -342,8 +342,6 @@ namespace Spacebox.Game.Generation.Tools
 
             var slotsData = new List<long>();
 
-            short storageSizeXYPacked = PackingTools.PackBytes(storage.SizeX, storage.SizeY);
-
 
             foreach (var slot in storage.GetAllSlots())
             {
@@ -368,8 +366,6 @@ namespace Spacebox.Game.Generation.Tools
                 root.Add(new StringTag(NBTKey.STORAGE.name, name));
             }
 
-
-            root.Add(new ShortTag(NBTKey.STORAGE.size_xy, storageSizeXYPacked));
             root.Add(new LongArrayTag(NBTKey.STORAGE.slots_data, slotsData));
 
 
@@ -560,23 +556,21 @@ namespace Spacebox.Game.Generation.Tools
 
                             var storageBlockData = GameAssets.GetBlockDataById(blockId) as StorageBlockData;
 
-                            var sizeXY = storage.Get<ShortTag>(NBTKey.STORAGE.size_xy);
+                            var size = new Vector2Byte(8,3);
 
-                            PackingTools.UnpackBytes(sizeXY, out byte sizeX, out byte sizeY);
 
                             if (storageBlockData != null)
                             {
 
-                                sizeX = storageBlockData.Size.X;
-                                sizeY = storageBlockData.Size.Y;
-
+                                size = storageBlockData.Size;
                             }
                             else
                             {
-                                Debug.Error($"[NBTHelper] - TagToChunk: StorageBlockData is null for block id: {blockId} at pos {pos} in chunk {ix},{iy},{iz}. Using size from NBT: {sizeX},{sizeY}");
+                                Debug.Error($"[NBTHelper] - TagToChunk: StorageBlockData is null for block id: {blockId} at pos {pos} in chunk {ix},{iy},{iz}." +
+                                    $" Using size from NBT: {size.X},{size.Y}");
                             }
 
-                            Storage newStorage = new Storage(sizeX, sizeY);
+                            Storage newStorage = new Storage(size.X, size.Y);
 
                             if (storage.TryGetValue<StringTag>(NBTKey.STORAGE.name, out var nameTag))
                             {

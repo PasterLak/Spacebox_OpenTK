@@ -275,7 +275,6 @@ namespace Spacebox.Game.Player
                     OnDespawn?.Invoke(this);
                 }
 
-               
             }
         }
 

@@ -8,6 +8,7 @@ using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Resource;
+
 using System.Text;
 
 namespace Spacebox.Game.Generation

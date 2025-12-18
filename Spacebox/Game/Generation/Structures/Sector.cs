@@ -8,6 +8,7 @@ using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
+using System.Drawing;
 
 namespace Spacebox.Game.Generation;
 
@@ -150,15 +151,21 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     private void GenerateDataForPoints(Vector3[] positions)
     {
         Random random = new Random(SeedHelper.ToIntSeed(Seed));
+        HashSet<ulong> usedIds = new HashSet<ulong>();
+
         foreach (var point in positions)
         {
+            var id = GenerateUniqueIdForPoint(point, usedIds);
+
+            usedIds.Add(id);
+
             var data = new NotGeneratedEntity();
+            data.Id = id;
             data.positionInSector = point;
             data.positionWorld = LocalToWorld(point);
-            data.Id = SeedHelper.GetAsteroidId(Seed, point);
-
 
             data.biome = BiomesMap.GetFromSectorLocalCoord(point);
+
             if (data.biome.AsteroidChances.Count == 0) continue;
 
             var asteroidData = Biome.SelectAsteroidBySpawnChance(data.biome.AsteroidChances, random);
@@ -170,6 +177,34 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             EntitiesGeneratedData.Add(data.Id, data);
             octreeNotGenerated.Add(data, point);
         }
+    }
+
+    private ulong GenerateUniqueIdForPoint(Vector3 point, HashSet<ulong> usedIds)
+    {
+        var id = SeedHelper.GetAsteroidId(Seed, point);
+
+        if (usedIds.Contains(id))
+        {
+            Debug.Error($"[Sector] You are lucky as fuck! Duplicate asteroid ID at {point}! Regenerating...");
+
+            int collisionAttempt = 1;
+            ulong newId;
+            do
+            {
+                newId = SeedHelper.GetAsteroidId(Seed + (ulong)collisionAttempt, point);
+                collisionAttempt++;
+
+                if (collisionAttempt > 100)
+                {
+                    Debug.Error("[Sector] Failed to generate unique ID after 100 attempts! ");
+                    break;
+                }
+            } while (usedIds.Contains(newId));
+
+            id = newId;
+        }
+
+        return id;
     }
 
 

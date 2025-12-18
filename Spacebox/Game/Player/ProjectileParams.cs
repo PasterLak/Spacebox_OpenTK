@@ -59,7 +59,7 @@ namespace Spacebox.Game.Player
             p.Length = 0.75f;
             p.Thickness = 0.1f;
             p.Color = Color4.Blue;
-
+            p.Penetration = 255;
             p.Mass = 2;
             p.Damage = 5;
             p.DamageBlocks = 5;
@@ -87,7 +87,7 @@ namespace Spacebox.Game.Player
             p.Thickness = 0.1f;
             p.Mass = 1;
             p.Color = Color4.Pink;
-
+            p.Penetration = 255;
             p.Damage = 0;
             p.DamageBlocks = 0;
             p.RicochetAngle = 0;

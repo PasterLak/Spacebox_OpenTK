@@ -1,12 +1,10 @@
-﻿
-using Engine;
+﻿using Engine;
 using OpenTK.Mathematics;
 using SharpNBT;
 
 
 namespace Spacebox.Game.Generation.Tools
 {
-
 
     public class WorldSaveLoad
     {

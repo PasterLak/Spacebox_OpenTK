@@ -1,8 +1,6 @@
 ﻿using Engine;
 using ImGuiNET;
-using NVorbis.Contracts;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Game;
 using Spacebox.Game.Resource;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -381,13 +379,13 @@ namespace Spacebox.Game.GUI
 
             if (slot.HasItem)
             {
-                if (Input.IsKey(Keys.LeftShift))
+                if (Input.IsAction("storage_item_quick_transfer"))
                 {
 
-                    slot.MoveItemToConnectedStorage();
+                    slot.MoveItemToConnectedStorage(); 
 
                 }
-                if (Input.IsKey(Keys.X))
+                if (Input.IsAction("storage_item_delete")) 
                 {
 
                     slot.Clear();

@@ -513,47 +513,52 @@ namespace Spacebox.Game.GUI
         private static void MoveItems(ItemSlot slot)
         {
             if (!slot.HasItem) return;
+            if (!Input.IsAction("storage_item_quick_transfer")) return;
 
-            if (Input.IsAction("storage_item_quick_transfer"))
+            if (slot.Storage.ConnectedStorage == null)
             {
-                if (slot.Storage.ConnectedStorage != null)
-                {
-                    if (slot.TryMoveItemToConnectedStorage(out var rest))
-                    {
-                        if(slot.Storage == OutputStorage)
-                        {
-                            if(Player != null)
-                            Player.PlayerStatistics.ItemsProcessed += processingBlock.ProcessedItems;
-                            processingBlock.ProcessedItems = 0;
-                        }
-                        if (pickupSound.IsPlaying)
-                        {
-                            pickupSound.Stop();
-                            pickupSound.Play();
-                        }
-                        else
-                        {
-                            pickupSound.Play();
-                        }
-                    }
-                    else
-                    {
-                        if (Player != null && Player.Panel != null)
-                        {
-                            if (Player.Panel.TryAddItem(slot.Item, rest))
-                            {
-                                slot.Count = (byte)(slot.Count - rest);
-                            }
-                        }
-                    }
-
-
-                }
-                else
-                {
-                    Debug.Error("No connected storage");
-                }
+                Debug.Error("No connected storage");
+                return;
             }
+
+            if (slot.TryMoveItemToConnectedStorage(out var rest))
+            {
+                OnTransferSuccess(slot);
+            }
+            else
+            {
+                TryMoveToPlayerPanel(slot, rest);
+            }
+        }
+
+        private static void OnTransferSuccess(ItemSlot slot)
+        {
+            if (slot.Storage == OutputStorage && Player != null)
+            {
+                Player.PlayerStatistics.ItemsProcessed += processingBlock.ProcessedItems;
+                processingBlock.ProcessedItems = 0;
+            }
+
+            RestartPickupSound();
+        }
+
+        private static void TryMoveToPlayerPanel(ItemSlot slot, byte rest)
+        {
+            if (Player?.Panel == null) return;
+
+            if (Player.Panel.TryAddItem(slot.Item, rest))
+            {
+                slot.Count = (byte)(slot.Count - rest);
+            }
+        }
+
+        private static void RestartPickupSound()
+        {
+            if (pickupSound.IsPlaying)
+            {
+                pickupSound.Stop();
+            }
+            pickupSound.Play();
         }
     }
 }

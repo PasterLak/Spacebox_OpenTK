@@ -6,7 +6,7 @@ using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
-using Spacebox.Game.Resource;
+
 
 using System.Numerics;
 using System.Text;
@@ -69,6 +69,7 @@ namespace Spacebox.Game.GUI
             Astronaut = astronaut;
             Storage.ConnectStorage(astronaut.Inventory);
             astronaut.Inventory.ConnectStorage(Storage);
+            astronaut.Panel.ConnectStorage(Storage);
 
             openSound?.Play();
             if (ToggleManager.IsActiveAndExists("pause")) return;
@@ -111,6 +112,7 @@ namespace Spacebox.Game.GUI
             if (Astronaut is not null)
             {
                 Astronaut.Inventory.ConnectStorage(Astronaut.Panel);
+                Astronaut.Panel.ConnectStorage(Astronaut.Inventory);
                 Astronaut = null;
             }
             editingName = false;
@@ -237,13 +239,39 @@ namespace Spacebox.Game.GUI
             editingName = false;
         }
 
+        private static void TryMoveToPlayerPanel(ItemSlot slot, byte rest)
+        {
+            if (Astronaut?.Panel == null) return;
+
+            if (Astronaut.Panel.TryAddItem(slot.Item, rest))
+            {
+                slot.Count = (byte)(slot.Count - rest);
+            }
+        }
+
+        private static void RestartPickupSound()
+        {
+           /* if (pickupSound.IsPlaying)
+            {
+              //  pickupSound.Stop();
+            }
+           // pickupSound.Play();*/
+        }
+
         private static void OnSlotClicked(ItemSlot slot)
         {
             if (!slot.HasItem) return;
 
             if (Input.IsAction("storage_item_quick_transfer"))
             {
-                slot.MoveItemToConnectedStorage();
+                if (slot.TryMoveItemToConnectedStorage(out var rest))
+                {
+                   // OnTransferSuccess(slot);
+                }
+                else
+                {
+                    TryMoveToPlayerPanel(slot, rest);
+                }
             }
             else if (Input.IsAction("storage_item_delete"))
             {
