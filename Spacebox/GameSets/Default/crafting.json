@@ -53,440 +53,1096 @@
     ],
     "Blueprints": [
         {
-            "Product": {"Item": "aluminium_block_light", "Quantity": 1},
-            "Ingredients": [{"Item": "aluminium_panels", "Quantity": 2}]
-        },
-        {
-            "Product": {"Item": "aluminium_block_medium", "Quantity": 1},
-            "Ingredients": [{"Item": "aluminium_panels", "Quantity": 3}]
-        },
-        {
-            "Product": {"Item": "aluminium_block_heavy", "Quantity": 1},
-            "Ingredients": [{"Item": "aluminium_panels", "Quantity": 4}]
-        },
-        {
-            "Product": {"Item": "iron_block_light", "Quantity": 1},
-            "Ingredients": [{"Item": "iron_panels", "Quantity": 2}]
-        },
-        {
-            "Product": {"Item": "iron_block_medium", "Quantity": 1},
-            "Ingredients": [{"Item": "iron_panels", "Quantity": 3}]
-        },
-        {
-            "Product": {"Item": "iron_block_heavy", "Quantity": 1},
-            "Ingredients": [{"Item": "iron_panels", "Quantity": 4}]
-        },
-        {
-            "Product": {"Item": "titanium_block_light", "Quantity": 1},
-            "Ingredients": [{"Item": "titanium_panels", "Quantity": 2}]
-        },
-        {
-            "Product": {"Item": "titanium_block_medium", "Quantity": 1},
-            "Ingredients": [{"Item": "titanium_panels", "Quantity": 3}]
-        },
-        {
-            "Product": {"Item": "titanium_block_heavy", "Quantity": 1},
-            "Ingredients": [{"Item": "titanium_panels", "Quantity": 4}]
-        },
-        {
-            "Product": {"Item": "cable_block", "Quantity": 1},
-            "Ingredients": [{"Item": "aluminium_ingot", "Quantity": 1}]
-        },
-        {
-            "Product": {"Item": "moritz", "Quantity": 1},
+            "Product": {
+                "Item": "aluminium_block_light",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "light_yellow", "Quantity": 4},
-                {"Item": "titanium_ingot", "Quantity": 16},
-                {"Item": "titanium_drill", "Quantity": 1},
-                {"Item": "assault_rifle", "Quantity": 1}
+                {
+                    "Item": "aluminium_panels",
+                    "Quantity": 2
+                }
             ]
         },
         {
-            "Product": {"Item": "basic_aluminium_crate", "Quantity": 1},
+            "Product": {
+                "Item": "aluminium_block_medium",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "aluminium_panels", "Quantity": 3}
-            ]
-        },
-         {
-            "Product": {"Item": "basic_iron_crate", "Quantity": 1},
-            "Ingredients": [
-                {"Item": "iron_panels", "Quantity": 3}
-            ]
-        },
-         {
-            "Product": {"Item": "basic_titanium_crate", "Quantity": 1},
-            "Ingredients": [
-                {"Item": "titanium_panels", "Quantity": 3}
-            ]
-        },
-         {
-            "Product": {"Item": "safe", "Quantity": 1},
-            "Ingredients": [
-                {"Item": "titanium_panels", "Quantity": 6},
-                 {"Item": "plastic", "Quantity": 4},
-                 {"Item": "obscurium_ingot", "Quantity": 1}
+                {
+                    "Item": "aluminium_panels",
+                    "Quantity": 3
+                }
             ]
         },
         {
-            "Product": {"Item": "window", "Quantity": 1},
-            "Ingredients": [{"Item": "glass", "Quantity": 6}]
-        },
-        {
-            "Product": {"Item": "reinforced_window", "Quantity": 1},
+            "Product": {
+                "Item": "aluminium_block_heavy",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "glass", "Quantity": 6},
-                {"Item": "iron_ingot", "Quantity": 1}
+                {
+                    "Item": "aluminium_panels",
+                    "Quantity": 4
+                }
             ]
         },
         {
-            "Product": {"Item": "light_white", "Quantity": 1},
+            "Product": {
+                "Item": "iron_block_light",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "glass", "Quantity": 6},
-                {"Item": "cobalt_crystal", "Quantity": 1}
+                {
+                    "Item": "iron_panels",
+                    "Quantity": 2
+                }
             ]
         },
         {
-            "Product": {"Item": "light_blue", "Quantity": 1},
+            "Product": {
+                "Item": "iron_block_medium",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "light_white", "Quantity": 1},
-                {"Item": "titanium_dust", "Quantity": 1}
+                {
+                    "Item": "iron_panels",
+                    "Quantity": 3
+                }
             ]
         },
         {
-            "Product": {"Item": "light_red", "Quantity": 1},
+            "Product": {
+                "Item": "iron_block_heavy",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "light_white", "Quantity": 1},
-                {"Item": "iron_dust", "Quantity": 1}
+                {
+                    "Item": "iron_panels",
+                    "Quantity": 4
+                }
             ]
         },
         {
-            "Product": {"Item": "light_yellow", "Quantity": 1},
+            "Product": {
+                "Item": "titanium_block_light",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "light_white", "Quantity": 1},
-                {"Item": "titanium_dust", "Quantity": 1}
+                {
+                    "Item": "titanium_panels",
+                    "Quantity": 2
+                }
             ]
         },
         {
-            "Product": {"Item": "light_cyan", "Quantity": 1},
+            "Product": {
+                "Item": "titanium_block_medium",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "light_white", "Quantity": 1},
-                {"Item": "cobalt_dust", "Quantity": 1}
+                {
+                    "Item": "titanium_panels",
+                    "Quantity": 3
+                }
             ]
         },
         {
-            "Product": {"Item": "light_orange", "Quantity": 1},
+            "Product": {
+                "Item": "titanium_block_heavy",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "light_white", "Quantity": 1},
-                {"Item": "iron_dust", "Quantity": 1}
+                {
+                    "Item": "titanium_panels",
+                    "Quantity": 4
+                }
             ]
         },
         {
-            "Product": {"Item": "light_green", "Quantity": 1},
+            "Product": {
+                "Item": "cable_block",
+                "Quantity": 2
+            },
             "Ingredients": [
-                {"Item": "light_white", "Quantity": 1},
-                {"Item": "uranium_dust", "Quantity": 1}
+                {
+                    "Item": "aluminium_ingot",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "light_pink", "Quantity": 1},
+            "Product": {
+                "Item": "moritz",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "light_white", "Quantity": 1},
-                {"Item": "cobalt_dust", "Quantity": 1}
+                {
+                    "Item": "light_yellow",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "titanium_ingot",
+                    "Quantity": 16
+                },
+                {
+                    "Item": "titanium_drill",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "assault_rifle",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "basic_machine", "Quantity": 1},
+            "Product": {
+                "Item": "basic_aluminium_crate",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "aluminium_ingot", "Quantity": 2},
-                {"Item": "iron_ingot", "Quantity": 2}
+                {
+                    "Item": "aluminium_panels",
+                    "Quantity": 3
+                }
             ]
         },
         {
-            "Product": {"Item": "crafting_table", "Quantity": 1},
-            "Ingredients": [{"Item": "aluminium_block_light", "Quantity": 1}]
-        },
-        {
-            "Product": {"Item": "furnace", "Quantity": 1},
+            "Product": {
+                "Item": "basic_iron_crate",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "basic_machine", "Quantity": 1},
-                {"Item": "cobalt_crystal", "Quantity": 1}
+                {
+                    "Item": "iron_panels",
+                    "Quantity": 3
+                }
             ]
         },
         {
-            "Product": {"Item": "enhanced_furnace", "Quantity": 1},
+            "Product": {
+                "Item": "basic_titanium_crate",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "furnace", "Quantity": 1},
-                {"Item": "cobalt_crystal", "Quantity": 4},
-                {"Item": "iron_panels", "Quantity": 4}
+                {
+                    "Item": "titanium_panels",
+                    "Quantity": 3
+                }
             ]
         },
         {
-            "Product": {"Item": "crusher", "Quantity": 1},
+            "Product": {
+                "Item": "safe",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "basic_machine", "Quantity": 1},
-                {"Item": "cobalt_crystal", "Quantity": 2},
-                {"Item": "iron_drill_bit", "Quantity": 4}
+                {
+                    "Item": "titanium_panels",
+                    "Quantity": 6
+                },
+                {
+                    "Item": "plastic",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "obscurium_ingot",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "enhanced_crusher", "Quantity": 1},
+            "Product": {
+                "Item": "window",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "crusher", "Quantity": 1},
-                {"Item": "microchip", "Quantity": 2},
-                {"Item": "titanium_drill_bit", "Quantity": 4}
+                {
+                    "Item": "glass",
+                    "Quantity": 6
+                }
             ]
         },
         {
-            "Product": {"Item": "analyzer", "Quantity": 1},
+            "Product": {
+                "Item": "reinforced_window",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "basic_machine", "Quantity": 1},
-                {"Item": "iron_lens", "Quantity": 8},
-                {"Item": "microchip", "Quantity": 4}
+                {
+                    "Item": "glass",
+                    "Quantity": 6
+                },
+                {
+                    "Item": "iron_ingot",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "radar", "Quantity": 1},
+            "Product": {
+                "Item": "light_white",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "basic_machine", "Quantity": 1},
-                {"Item": "microchip", "Quantity": 2}
+                {
+                    "Item": "glass",
+                    "Quantity": 6
+                },
+                {
+                    "Item": "cobalt_crystal",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "disassembler", "Quantity": 1},
-            "Ingredients": [{"Item": "basic_machine", "Quantity": 1}]
-        },
-        {
-            "Product": {"Item": "cobalt_power_block", "Quantity": 1},
+            "Product": {
+                "Item": "light_blue",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "aluminium_block_light", "Quantity": 1},
-                {"Item": "energy_cell", "Quantity": 6}
+                {
+                    "Item": "light_white",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "titanium_dust",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "dna_reconstructor", "Quantity": 1},
+            "Product": {
+                "Item": "light_red",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "microchip", "Quantity": 4},
-                {"Item": "aluminium_panels", "Quantity": 8},
-                {"Item": "med_kit", "Quantity": 2}
+                {
+                    "Item": "light_white",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "iron_dust",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "aluminium_drill_bit", "Quantity": 1},
-            "Ingredients": [{"Item": "aluminium_ingot", "Quantity": 1}]
-        },
-        {
-            "Product": {"Item": "iron_drill_bit", "Quantity": 1},
+            "Product": {
+                "Item": "light_yellow",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "aluminium_drill_bit", "Quantity": 1},
-                {"Item": "iron_ingot", "Quantity": 1}
+                {
+                    "Item": "light_white",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "titanium_dust",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "titanium_drill_bit", "Quantity": 1},
+            "Product": {
+                "Item": "light_cyan",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "iron_drill_bit", "Quantity": 1},
-                {"Item": "titanium_ingot", "Quantity": 1}
+                {
+                    "Item": "light_white",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "cobalt_dust",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "aluminium_panels", "Quantity": 3},
-            "Ingredients": [{"Item": "aluminium_ingot", "Quantity": 1}]
-        },
-        {
-            "Product": {"Item": "iron_panels", "Quantity": 3},
-            "Ingredients": [{"Item": "iron_ingot", "Quantity": 1}]
-        },
-        {
-            "Product": {"Item": "titanium_panels", "Quantity": 3},
-            "Ingredients": [{"Item": "titanium_ingot", "Quantity": 1}]
-        },
-        {
-            "Product": {"Item": "dna_sample", "Quantity": 1},
+            "Product": {
+                "Item": "light_orange",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "med_kit", "Quantity": 1},
-                {"Item": "water", "Quantity": 1},
-                {"Item": "glass", "Quantity": 1},
-                {"Item": "$health", "Quantity": 15}
+                {
+                    "Item": "light_white",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "iron_dust",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "med_kit", "Quantity": 1},
+            "Product": {
+                "Item": "light_green",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "compressed_oxygen", "Quantity": 1},
-                {"Item": "water", "Quantity": 1}
+                {
+                    "Item": "light_white",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "uranium_dust",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "polymer_pellets", "Quantity": 8},
+            "Product": {
+                "Item": "light_pink",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "compressed_methane", "Quantity": 1},
-                {"Item": "water", "Quantity": 2}
+                {
+                    "Item": "light_white",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "cobalt_dust",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "polymer_fiber", "Quantity": 1},
+            "Product": {
+                "Item": "basic_machine",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "polymer_pellets", "Quantity": 4}
-              
+                {
+                    "Item": "aluminium_ingot",
+                    "Quantity": 2
+                },
+                {
+                    "Item": "iron_ingot",
+                    "Quantity": 2
+                }
             ]
         },
         {
-            "Product": {"Item": "aluminium_helmet", "Quantity": 1},
+            "Product": {
+                "Item": "crafting_table",
+                "Quantity": 1
+            },
             "Ingredients": [
-                 {"Item": "aluminium_ingot", "Quantity": 4},
-                {"Item": "polymer_fiber", "Quantity": 2}
-              
+                {
+                    "Item": "aluminium_block_light",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "aluminium_chest", "Quantity": 1},
+            "Product": {
+                "Item": "furnace",
+                "Quantity": 1
+            },
             "Ingredients": [
-                 {"Item": "aluminium_ingot", "Quantity": 12},
-                {"Item": "polymer_fiber", "Quantity": 4}
-              
-            ]
-        },
-         {
-            "Product": {"Item": "aluminium_legs", "Quantity": 1},
-            "Ingredients": [
-                 {"Item": "aluminium_ingot", "Quantity": 8},
-                {"Item": "polymer_fiber", "Quantity": 2}
-              
-            ]
-        },
-          {
-            "Product": {"Item": "aluminium_boots", "Quantity": 1},
-            "Ingredients": [
-                 {"Item": "aluminium_ingot", "Quantity": 3},
-                {"Item": "polymer_fiber", "Quantity": 3}
-              
+                {
+                    "Item": "basic_machine",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "cobalt_crystal",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "power", "Quantity": 1},
+            "Product": {
+                "Item": "enhanced_furnace",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "energy_cell", "Quantity": 1},
-                {"Item": "liquid_hydrogen", "Quantity": 1}
+                {
+                    "Item": "furnace",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "cobalt_crystal",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "iron_panels",
+                    "Quantity": 4
+                }
             ]
         },
         {
-            "Product": {"Item": "energy_cell", "Quantity": 2},
+            "Product": {
+                "Item": "crusher",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "aluminium_ingot", "Quantity": 1},
-                {"Item": "cobalt_crystal", "Quantity": 1}
+                {
+                    "Item": "basic_machine",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "cobalt_crystal",
+                    "Quantity": 2
+                },
+                {
+                    "Item": "iron_drill_bit",
+                    "Quantity": 4
+                }
             ]
         },
         {
-            "Product": {"Item": "uranium_rods", "Quantity": 2},
-            "Ingredients": [{"Item": "uranium_ingot", "Quantity": 1}]
-        },
-        {
-            "Product": {"Item": "liquid_hydrogen", "Quantity": 2},
-            "Ingredients": [{"Item": "water", "Quantity": 1}]
-        },
-        {
-            "Product": {"Item": "compressed_oxygen", "Quantity": 1},
-            "Ingredients": [{"Item": "water", "Quantity": 1}]
-        },
-        {
-            "Product": {"Item": "cobalt_crystal", "Quantity": 1},
-            "Ingredients": [{"Item": "cobalt_ingot", "Quantity": 1}]
-        },
-        {
-            "Product": {"Item": "cobalt_lens", "Quantity": 2},
-            "Ingredients": [{"Item": "cobalt_crystal", "Quantity": 1}]
-        },
-        {
-            "Product": {"Item": "iron_lens", "Quantity": 2},
-            "Ingredients": [{"Item": "iron_ingot", "Quantity": 1}]
-        },
-        {
-            "Product": {"Item": "microchip", "Quantity": 1},
+            "Product": {
+                "Item": "enhanced_crusher",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "aluminium_ingot", "Quantity": 1},
-                {"Item": "cobalt_crystal", "Quantity": 2}
+                {
+                    "Item": "crusher",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "microchip",
+                    "Quantity": 2
+                },
+                {
+                    "Item": "titanium_drill_bit",
+                    "Quantity": 4
+                }
             ]
         },
         {
-            "Product": {"Item": "aluminium_drill", "Quantity": 1},
+            "Product": {
+                "Item": "analyzer",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "aluminium_ingot", "Quantity": 1},
-                {"Item": "aluminium_drill_bit", "Quantity": 1}
+                {
+                    "Item": "basic_machine",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "iron_lens",
+                    "Quantity": 8
+                },
+                {
+                    "Item": "microchip",
+                    "Quantity": 4
+                }
             ]
         },
         {
-            "Product": {"Item": "cobalt_drill", "Quantity": 1},
+            "Product": {
+                "Item": "radar",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "aluminium_drill", "Quantity": 1},
-                {"Item": "cobalt_crystal", "Quantity": 4},
-                {"Item": "aluminium_drill_bit", "Quantity": 1}
+                {
+                    "Item": "basic_machine",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "microchip",
+                    "Quantity": 2
+                }
             ]
         },
         {
-            "Product": {"Item": "iron_drill", "Quantity": 1},
+            "Product": {
+                "Item": "disassembler",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "cobalt_drill", "Quantity": 1},
-                {"Item": "iron_ingot", "Quantity": 4},
-                {"Item": "iron_drill_bit", "Quantity": 1},
-                {"Item": "energy_cell", "Quantity": 2}
+                {
+                    "Item": "basic_machine",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "microchip",
+                    "Quantity": 2
+                }
             ]
         },
         {
-            "Product": {"Item": "triple_iron_drill", "Quantity": 1},
+            "Product": {
+                "Item": "cobalt_power_block",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "iron_drill", "Quantity": 3},
-                {"Item": "iron_drill_bit", "Quantity": 3},
-                {"Item": "energy_cell", "Quantity": 4}
+                {
+                    "Item": "aluminium_block_light",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "energy_cell",
+                    "Quantity": 6
+                }
             ]
         },
         {
-            "Product": {"Item": "titanium_drill", "Quantity": 1},
+            "Product": {
+                "Item": "dna_reconstructor",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "titanium_drill_bit", "Quantity": 4},
-                {"Item": "titanium_ingot", "Quantity": 6},
-                {"Item": "liquid_hydrogen", "Quantity": 4},
-                {"Item": "uranium_rods", "Quantity": 2}
+                {
+                    "Item": "microchip",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "aluminium_panels",
+                    "Quantity": 8
+                },
+                {
+                    "Item": "med_kit",
+                    "Quantity": 2
+                }
             ]
         },
         {
-            "Product": {"Item": "obscurium_drill", "Quantity": 1},
+            "Product": {
+                "Item": "aluminium_drill_bit",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "titanium_drill", "Quantity": 1},
-                {"Item": "uranium_rods", "Quantity": 4},
-                {"Item": "obscurium_ingot", "Quantity": 4},
-                {"Item": "liquid_hydrogen", "Quantity": 16}
+                {
+                    "Item": "aluminium_ingot",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "pistol", "Quantity": 1},
+            "Product": {
+                "Item": "iron_drill_bit",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "iron_ingot", "Quantity": 2},
-                {"Item": "energy_cell", "Quantity": 4}
+                {
+                    "Item": "aluminium_drill_bit",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "iron_ingot",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "smg", "Quantity": 1},
+            "Product": {
+                "Item": "titanium_drill_bit",
+                "Quantity": 1
+            },
             "Ingredients": [
-                {"Item": "iron_ingot", "Quantity": 4},
-                {"Item": "cobalt_lens", "Quantity": 2},
-                {"Item": "energy_cell", "Quantity": 6}
+                {
+                    "Item": "iron_drill_bit",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "titanium_ingot",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "assault_rifle", "Quantity": 1},
+            "Product": {
+                "Item": "aluminium_panels",
+                "Quantity": 3
+            },
             "Ingredients": [
-                {"Item": "iron_ingot", "Quantity": 2},
-                {"Item": "uranium_ingot", "Quantity": 3},
-                {"Item": "iron_lens", "Quantity": 4},
-                {"Item": "energy_cell", "Quantity": 8}
+                {
+                    "Item": "aluminium_ingot",
+                    "Quantity": 1
+                }
             ]
         },
         {
-            "Product": {"Item": "impulse_rifle", "Quantity": 1},
+            "Product": {
+                "Item": "iron_panels",
+                "Quantity": 3
+            },
             "Ingredients": [
-                {"Item": "obscurium_ingot", "Quantity": 4},
-                {"Item": "uranium_rods", "Quantity": 12},
-                {"Item": "microchip", "Quantity": 4}
+                {
+                    "Item": "iron_ingot",
+                    "Quantity": 1
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "titanium_panels",
+                "Quantity": 3
+            },
+            "Ingredients": [
+                {
+                    "Item": "titanium_ingot",
+                    "Quantity": 1
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "dna_sample",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "med_kit",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "water",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "glass",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "$health",
+                    "Quantity": 15
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "med_kit",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "compressed_oxygen",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "water",
+                    "Quantity": 1
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "polymer_pellets",
+                "Quantity": 6
+            },
+            "Ingredients": [
+                {
+                    "Item": "compressed_methane",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "water",
+                    "Quantity": 2
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "polymer_fiber",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "polymer_pellets",
+                    "Quantity": 4
+                }
+
+            ]
+        },
+        {
+            "Product": {
+                "Item": "aluminium_helmet",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "aluminium_ingot",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "polymer_fiber",
+                    "Quantity": 2
+                }
+
+            ]
+        },
+        {
+            "Product": {
+                "Item": "aluminium_chest",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "aluminium_ingot",
+                    "Quantity": 12
+                },
+                {
+                    "Item": "polymer_fiber",
+                    "Quantity": 6
+                }
+
+            ]
+        },
+        {
+            "Product": {
+                "Item": "aluminium_legs",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "aluminium_ingot",
+                    "Quantity": 8
+                },
+                {
+                    "Item": "polymer_fiber",
+                    "Quantity": 4
+                }
+
+            ]
+        },
+        {
+            "Product": {
+                "Item": "aluminium_boots",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "aluminium_ingot",
+                    "Quantity": 3
+                },
+                {
+                    "Item": "polymer_fiber",
+                    "Quantity": 2
+                }
+
+            ]
+        },
+        {
+            "Product": {
+                "Item": "power",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "energy_cell",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "liquid_hydrogen",
+                    "Quantity": 1
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "energy_cell",
+                "Quantity": 2
+            },
+            "Ingredients": [
+                {
+                    "Item": "aluminium_ingot",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "cobalt_crystal",
+                    "Quantity": 1
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "uranium_rods",
+                "Quantity": 2
+            },
+            "Ingredients": [
+                {
+                    "Item": "uranium_ingot",
+                    "Quantity": 1
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "liquid_hydrogen",
+                "Quantity": 2
+            },
+            "Ingredients": [
+                {
+                    "Item": "water",
+                    "Quantity": 1
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "compressed_oxygen",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "water",
+                    "Quantity": 1
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "cobalt_crystal",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "cobalt_ingot",
+                    "Quantity": 1
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "cobalt_lens",
+                "Quantity": 2
+            },
+            "Ingredients": [
+                {
+                    "Item": "cobalt_crystal",
+                    "Quantity": 1
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "iron_lens",
+                "Quantity": 2
+            },
+            "Ingredients": [
+                {
+                    "Item": "iron_ingot",
+                    "Quantity": 1
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "microchip",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "aluminium_ingot",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "cobalt_crystal",
+                    "Quantity": 2
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "aluminium_drill",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "aluminium_ingot",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "aluminium_drill_bit",
+                    "Quantity": 1
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "cobalt_drill",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "aluminium_drill",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "cobalt_crystal",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "aluminium_drill_bit",
+                    "Quantity": 1
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "iron_drill",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "cobalt_drill",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "iron_ingot",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "iron_drill_bit",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "energy_cell",
+                    "Quantity": 2
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "triple_iron_drill",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "iron_drill",
+                    "Quantity": 3
+                },
+                {
+                    "Item": "iron_drill_bit",
+                    "Quantity": 3
+                },
+                {
+                    "Item": "energy_cell",
+                    "Quantity": 4
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "titanium_drill",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "titanium_drill_bit",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "titanium_ingot",
+                    "Quantity": 6
+                },
+                {
+                    "Item": "liquid_hydrogen",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "uranium_rods",
+                    "Quantity": 2
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "obscurium_drill",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "titanium_drill",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "uranium_rods",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "obscurium_ingot",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "liquid_hydrogen",
+                    "Quantity": 16
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "pistol",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "iron_ingot",
+                    "Quantity": 2
+                },
+                {
+                    "Item": "energy_cell",
+                    "Quantity": 4
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "smg",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "iron_ingot",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "cobalt_lens",
+                    "Quantity": 2
+                },
+                {
+                    "Item": "energy_cell",
+                    "Quantity": 6
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "assault_rifle",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "iron_ingot",
+                    "Quantity": 2
+                },
+                {
+                    "Item": "uranium_ingot",
+                    "Quantity": 3
+                },
+                {
+                    "Item": "iron_lens",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "energy_cell",
+                    "Quantity": 8
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "impulse_rifle",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "obscurium_ingot",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "uranium_rods",
+                    "Quantity": 12
+                },
+                {
+                    "Item": "microchip",
+                    "Quantity": 4
+                }
             ]
         }
     ]

@@ -8,7 +8,7 @@ using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
-using System.Drawing;
+
 using static Spacebox.Game.GUI.CraftingCategory;
 
 namespace Spacebox.Game.Generation;
@@ -25,6 +25,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     // ------------------ Properties --------------------------------------------
 
     public List<SpaceEntity> Entities { get; private set; }
+
+    public HashSet<ulong> SuppressedEntities { get; private set; }
     public BiomesMap BiomesMap { get; private set; }
     private Dictionary<ulong, NotGeneratedEntity> EntitiesGeneratedData { get; set; }
 
@@ -57,6 +59,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         sectorOctree = new PointOctree<SpaceEntity>(SizeBlocks, positionWorld, 1);
         octreeNotGenerated = new PointOctree<NotGeneratedEntity>(SizeBlocks, positionWorld, 1);
         EntitiesGeneratedData = new Dictionary<ulong, NotGeneratedEntity>();
+        SuppressedEntities = new HashSet<ulong>();
 
         Entities = new List<SpaceEntity>();
 
@@ -65,6 +68,26 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         if (WorldSaveLoad.CanLoadSectorHere(PositionIndex, out var sectorFolderPath))
         {
 
+            WorldSaveLoad.LoadSectorData(this);
+
+            if (SuppressedEntities.Count > 0)
+            {
+                foreach (var suppressedIds in SuppressedEntities)
+                {
+                    if (EntitiesGeneratedData.ContainsKey(suppressedIds))
+                    {
+                        var data = EntitiesGeneratedData[suppressedIds];
+                        octreeNotGenerated.Remove(data);
+                        EntitiesGeneratedData.Remove(suppressedIds);
+                    }
+                    else
+                    {
+                        Debug.Error("[Sector] Suppressed entity not found in generated data! ID: " + suppressedIds);
+                    }
+                }
+            }
+
+
             var entities = WorldSaveLoad.LoadSpaceEntities(this);
 
             foreach (var e in entities)
@@ -72,11 +95,17 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
                 if (Entities.Contains(e))
                 {
-                    Debug.Error("[Sector] Entity already exists in sector upon loading: " + e.EntityID);
+                    Debug.Error("[Sector] Entity already exists in sector upon loading! ID: " + e.EntityID);
                     continue;
                 }
 
-                if(EntitiesGeneratedData.ContainsKey(e.EntityID))
+                if (SuppressedEntities.Contains(e.EntityID))
+                {
+                    Debug.Error("[Sector] Loaded entity is marked as suppressed, skipping addition to sector. ID: " + e.EntityID);
+                    continue;
+                }
+
+                if (EntitiesGeneratedData.ContainsKey(e.EntityID))
                 {
                     // remove from not generated
                     var data = EntitiesGeneratedData[e.EntityID];
@@ -85,13 +114,12 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                 }
 
                 AddEntity(e, e.PositionWorld);
-            
+
 
             }
 
         }
 
-        
     }
 
     private void PopulateSector()
@@ -272,16 +300,32 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     private void AddEntity(SpaceEntity entity, Vector3 positionWorld)
     {
         Entities.Add(entity);
-
+        SuppressedEntities.Add(entity.EntityID);
         sectorOctree.Add(entity, positionWorld);
     }
 
-    public void RemoveEntity(SpaceEntity entity)
+    public void DeleteEntity(SpaceEntity entity)
     {
         entity.Dispose();
         Entities.Remove(entity);
 
         sectorOctree.Remove(entity, entity.Position);
+
+        if (!SuppressedEntities.Contains(entity.EntityID))
+        {
+            SuppressedEntities.Add(entity.EntityID);
+        }
+        else
+        {
+            Debug.Error("[Sector] Entity already marked for removal! Id: " + entity.EntityID);
+        }
+    }
+
+    // demo
+    public void MoveEntityToSector(SpaceEntity entity, Sector newSector)
+    {
+        //DeleteEntity(entity);
+        newSector.AddEntity(entity, entity.PositionWorld);
     }
 
     public SpaceEntity CreateEntity(Vector3 positionWorld)
@@ -309,7 +353,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     private void UnloadEntity(SpaceEntity entity)
     {
-        if(entity == null)
+        if (entity == null)
         {
             Debug.Error("[Sector] Trying to unload null entity!");
             return;
@@ -318,7 +362,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         var asteroid = entity as Asteroid;
 
 
-        if(entity.IsModified)
+        if (entity.IsModified)
         {
             Debug.Success("[Sector] Saving modified asteroid " + entity.PositionWorld);
         }
@@ -327,11 +371,11 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             // just ignore
         }
 
-        
+
 
         if (asteroid != null)
         {
-            if(asteroid.IsGenerated)
+            if (asteroid.IsGenerated)
             {
                 var data = asteroid.NotGeneratedEntity;
 
@@ -346,7 +390,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         }
 
 
-        RemoveEntity(entity);
+        DeleteEntity(entity); //   !!!!!!!!!!!!!!!!!!!!!! error here !!!!!!!!!!!!!!!!!!
 
     }
 
@@ -418,12 +462,12 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                 if (!entity.StarsEffect.Enabled)
                     entity.StarsEffect.Enabled = true;
 
-                if(distSqr >= Settings.ENTITY_UNLOAD_DISTANCE * Settings.ENTITY_UNLOAD_DISTANCE)
+                if (distSqr >= Settings.ENTITY_UNLOAD_DISTANCE * Settings.ENTITY_UNLOAD_DISTANCE)
                 {
                     UnloadEntity(entity);
                 }
 
-                    entity.RenderEffect(distSqr);
+                entity.RenderEffect(distSqr);
             }
         }
     }
@@ -443,7 +487,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         Entities = null;
         EntitiesGeneratedData.Clear();
-
+        SuppressedEntities.Clear();
     }
 
     public Vector3 LocalToWorldPosition(Vector3 local)

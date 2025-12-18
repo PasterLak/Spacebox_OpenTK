@@ -8,6 +8,7 @@ namespace Spacebox.Game.Generation.Tools
             public const string index_x = "index_x";
             public const string index_y = "index_y";
             public const string index_z = "index_z";
+            public const string suppressed_ids = "suppressed_ids";
         }
 
         public static class ENTITY

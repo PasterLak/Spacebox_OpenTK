@@ -1,8 +1,9 @@
-﻿using OpenTK.Mathematics;
+﻿using Engine;
+using OpenTK.Mathematics;
 using SharpNBT;
-using Engine;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Resource;
+using static Spacebox.Game.GUI.CraftingCategory;
 
 namespace Spacebox.Game.Generation.Tools
 {
@@ -18,11 +19,33 @@ namespace Spacebox.Game.Generation.Tools
             root.Add(new IntTag(NBTKey.SECTOR.index_y, sector.PositionIndex.Y));
             root.Add(new IntTag(NBTKey.SECTOR.index_z, sector.PositionIndex.Z));
 
+            long[] data = new long[sector.SuppressedEntities.Count];
+
+            int i = 0;
+            foreach (var id in sector.SuppressedEntities)
+            {
+                data[i++] = PackingTools.ULongToLong(id);
+            }
+
+            root.Add(new LongArrayTag(NBTKey.SECTOR.suppressed_ids, data));
+
             return root;
         }
 
-        public static void TagToSectorData(CompoundTag tag)
+        public static void TagToSectorOnly(CompoundTag tag, Sector sector)
         {
+            if (tag == null) return;
+
+            if (tag.TryGetValue<LongArrayTag>(NBTKey.SECTOR.suppressed_ids, out var arrayTag))
+            {
+                sector.SuppressedEntities.Clear();
+
+                foreach (long packedId in arrayTag)
+                {
+                    ulong id = PackingTools.LongToULong(packedId);
+                    sector.SuppressedEntities.Add(id);
+                }
+            }
 
         }
 

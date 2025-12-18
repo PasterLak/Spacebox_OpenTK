@@ -187,7 +187,7 @@ namespace Spacebox.Game.Generation
         private void DeleteSpaceEntity()
         {
 
-            Sector.RemoveEntity(this);
+            Sector.DeleteEntity(this);
         }
 
         public void RecalculateMass(int chunkMassDifference)

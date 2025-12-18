@@ -51,12 +51,23 @@ namespace Spacebox.Game.Generation.Tools
 
         }
 
+        public static void LoadSectorData(Sector sector)
+        {
+            string folderPath = GetSectorFolderPath(World.WorldData.WorldFolderPath, sector.PositionIndex);
+            string filePath = Path.Combine(folderPath, sector.ToFolderName() + ".sector");
+
+            if (TryLoadSectorDataFile(filePath, out var tag))
+            {
+                NBTHelper.TagToSectorOnly(tag, sector);
+            }
+        }
+
         public static bool IsThereSectorFileHere(Vector3i sectorIndex)
         {
             return CanLoadSectorHere(sectorIndex, out var filePath);
         }
 
-        public static bool TryLoadSectorDataFile(string filePath, out CompoundTag tag)
+        private static bool TryLoadSectorDataFile(string filePath, out CompoundTag tag)
         {
             tag = null;
             if (File.Exists(filePath))
@@ -162,10 +173,12 @@ namespace Spacebox.Game.Generation.Tools
                 var entityTag = NBTHelper.SpaceEntityToTag(entity);
 
                 Debug.Success("[WorldSaveLoad] Entity was saved: " + entities[i].EntityID + "  pos: " + entities[i].PositionWorld);
-                NbtFile.WriteAsync(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
+                //NbtFile.WriteAsync(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
+                NbtFile.Write(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
             }
 
-            NbtFile.WriteAsync(Path.Combine(sectorFolderPath, sectorFolderName + ".sector"), NBTHelper.SectorOnlyToTag(sector), FormatOptions.Java, CompressionType.GZip);
+            //NbtFile.WriteAsync(Path.Combine(sectorFolderPath, sectorFolderName + ".sector"), NBTHelper.SectorOnlyToTag(sector), FormatOptions.Java, CompressionType.GZip);
+            NbtFile.Write(Path.Combine(sectorFolderPath, sectorFolderName + ".sector"), NBTHelper.SectorOnlyToTag(sector), FormatOptions.Java, CompressionType.GZip);
 
         }
 
