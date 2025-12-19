@@ -876,6 +876,7 @@ public static class GameSetLoader
             Id_string = id,
             HealAmount = data.HealAmount,
             PowerAmount = data.PowerAmount,
+            UseCooldown = data.UseCooldown,
             UseSound = data.Sound,
             Category = data.Category,
         };

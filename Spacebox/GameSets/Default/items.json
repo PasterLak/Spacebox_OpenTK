@@ -357,6 +357,7 @@
         "Type": "consumable",
         "Category": "consumables",
         "Sound": "heal",
+        "UseCooldown" : 1.5,
         "HealAmount": 50,
         "MaxStack": 64,
         "ModelDepth": 2.0
@@ -486,6 +487,7 @@
         "Type": "consumable",
         "Category": "consumables",
         "Sound": "use",
+        "UseCooldown" : 1,
         "PowerAmount": 100,
         "MaxStack": 64,
         "ModelDepth": 3.0
@@ -497,6 +499,7 @@
         "Sprite": "beer",
         "Type": "consumable",
         "Sound": "beer",
+        "UseCooldown" : 0.7,
         "HealAmount": 10,
         "MaxStack": 20,
         "ModelDepth": 3.0

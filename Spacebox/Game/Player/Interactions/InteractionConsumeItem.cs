@@ -1,8 +1,11 @@
 ﻿using Engine;
 using Engine.Audio;
-
+using Engine.Physics;
 using Spacebox.Game.Effects;
+using Spacebox.Game.Generation;
+using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI;
+using Spacebox.Game.Physics;
 
 namespace Spacebox.Game.Player.Interactions;
 
@@ -10,7 +13,12 @@ public class InteractionConsumeItem : InteractionMode
 {
 
     private ItemSlot _itemSlot;
-    private static AudioSource useConsumableAudio;
+    private AudioSource useConsumableAudio;
+    private InteractiveBlock lastInteractiveBlock;
+
+    private float ticks = 0;
+    private float cooldown = 0f;
+
     public InteractionConsumeItem(ItemSlot itemSlot)
     {
         _itemSlot = itemSlot;
@@ -21,16 +29,74 @@ public class InteractionConsumeItem : InteractionMode
     public override void OnEnable()
     {
 
+        var consumable = _itemSlot.Item as ConsumableItem;
+
+        if (consumable == null)
+        {
+            Debug.Error($"[InteractionConsumeItem] OnEnable: item in slot is not a consumable!");
+            return;
+        }
+        else
+        {
+            cooldown = consumable.UseCooldown;
+            ticks = cooldown / 2f;
+        }
+
+
+        if (GameAssets.TryGetItemSound(consumable.Id, out AudioClip clip))
+        {
+            useConsumableAudio = new AudioSource(clip);
+            useConsumableAudio.Volume = 0.3f;
+        }
+        else
+        {
+            Debug.Error($"[InteractionConsumeItem] OnEnable: sound for consumable item id {consumable.Id} not found!");
+        }
+
     }
 
     public override void OnDisable()
     {
-
+        if (useConsumableAudio != null)
+        {
+            useConsumableAudio.Stop();
+            useConsumableAudio = null;
+        }
     }
 
     public override void Update(Astronaut player)
     {
         if (!player.CanMove) return;
+
+        if (ticks < cooldown)
+        {
+            ticks += Time.Delta;
+        }
+        else
+        {
+            ticks = cooldown;
+        }
+
+        Ray rayNormal = new Ray(player.Position, player.Front, InteractiveBlock.InteractionDistance);
+        HitInfo hit;
+
+        if (World.CurrentSector.Raycast(rayNormal, out hit))
+        {
+            if (hit.block.Is<InteractiveBlock>(out var b))
+            {
+                lastInteractiveBlock = b;
+                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, ref hit);
+
+                if (hit.block.Is<StorageBlock>(out var storageBlock))
+                {
+                    storageBlock.SetPositionInChunk(hit.blockPositionIndex);
+                }
+            }
+
+            return;
+        }
+
+        if (ticks < cooldown) return;
         if (!Input.IsActionDown("use")) return;
 
         if (_itemSlot == null) return;
@@ -41,7 +107,10 @@ public class InteractionConsumeItem : InteractionMode
 
         if (consumable == null) return;
 
+
+
         ApplyConsumable(consumable, player);
+        ticks = 0;
 
         if (GameMode == GameModes.GameMode.Survival)
             _itemSlot.DropOne();
@@ -58,37 +127,28 @@ public class InteractionConsumeItem : InteractionMode
     {
         if (consumable != null)
         {
-            if (GameAssets.TryGetItemSound(consumable.Id, out AudioClip clip))
+            if (useConsumableAudio != null)
             {
-                if (useConsumableAudio != null)
-                {
-                    useConsumableAudio.Stop();
-                }
 
-                useConsumableAudio = new AudioSource(clip);
-                useConsumableAudio.Volume = 0.3f;
+                useConsumableAudio.Stop();
+
                 useConsumableAudio.Play();
-                player.PlayerStatistics.ItemsСonsumed++;
-
-                if (consumable.HealAmount > 0)
-                {
-                    ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 1, 0), 0.2f);
-                    player.Effects.PlayEffect(PlayerEffectType.Heal);
-                    
-                }
-                    
-
-                if (consumable.PowerAmount > 0)
-                {
-                    ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 0, 1), 0.15f);
-                    player.Effects.PlayEffect(PlayerEffectType.Charge);
-                }
-                 
             }
-            else
+            player.PlayerStatistics.ItemsСonsumed++;
+
+            if (consumable.HealAmount > 0)
             {
-                Debug.Error($"[InteractionConsumeItem] sound effect was not played because was not found!");
+                ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 1, 0), 0.2f);
+                player.Effects.PlayEffect(PlayerEffectType.Heal);
+
             }
+
+            if (consumable.PowerAmount > 0)
+            {
+                ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 0, 1), 0.15f);
+                player.Effects.PlayEffect(PlayerEffectType.Charge);
+            }
+
 
             player.HealthBar.StatsData.Increment(consumable.HealAmount);
             player.PowerBar.StatsData.Increment(consumable.PowerAmount);

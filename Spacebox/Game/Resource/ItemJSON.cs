@@ -34,6 +34,7 @@ public class ConsumableItemJSON : ItemJSON
 {
     public byte HealAmount { get; set; } = 0;
     public byte PowerAmount { get; set; } = 0;
+    public float UseCooldown { get; set; } = 0;
     public string Sound { get; set; } = "default";
 }
 
