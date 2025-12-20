@@ -190,7 +190,7 @@ public class World : Component, ISpaceStructure
             }
             else
             {
-                Debug.Error("Loading a sector in the main thread! Index: " + index);
+               // Debug.Error("Loading a sector in the main thread! Index: " + index);
                 CurrentSector = LoadSectorNow(index);
             }
         }
@@ -258,7 +258,7 @@ public class World : Component, ISpaceStructure
 
     private void LoadSectorAsync(Vector3i sectorIndex)
     {
-        loadingSectors.Add(sectorIndex);
+        //loadingSectors.Add(sectorIndex);
 
         int worldSeed = Seed;
         Vector3 worldPos = SpaceMath.Sector.GetSectorPosition(sectorIndex);
@@ -266,20 +266,29 @@ public class World : Component, ISpaceStructure
         WorkerPoolManager
             .Enqueue(token =>
             {
-                var sector = new Sector(worldPos, sectorIndex, worldSeed);
-                MainThreadDispatcher.Instance.Enqueue(() =>
+                try
                 {
-                    if (Instance == null)
+                    var sector = new Sector(worldPos, sectorIndex, worldSeed);
+                    MainThreadDispatcher.Instance.Enqueue(() =>
                     {
-                        sector.Dispose();
-                        return;
-                    }
+                        if (Instance == null)
+                        {
+                            sector.Dispose();
+                            return;
+                        }
 
-                    worldOctree.Add(sector, sector.BoundingBox);
-                    loadedSectors[sectorIndex] = sector;
-                    loadingSectors.Remove(sectorIndex);
-                    Debug.Log($"Sector loaded: {sectorIndex}");
-                });
+                        worldOctree.Add(sector, sector.BoundingBox);
+                        loadedSectors[sectorIndex] = sector;
+                        loadingSectors.Remove(sectorIndex);
+                        //Debug.Log($"Sector loaded: {sectorIndex}");
+                    });
+                }
+                catch (Exception ex)
+                {
+               
+                    Debug.Error($"[World] Crash inside Sector Constructor for {sectorIndex}: {ex.Message}\n{ex.StackTrace}");
+                    throw;
+                }
             },
             WorkerPoolManager.Priority.Low
             )
@@ -287,11 +296,16 @@ public class World : Component, ISpaceStructure
             {
                 if (t.IsFaulted)
                 {
-                    Debug.Error($"Failed to load sector {sectorIndex}: {t.Exception}");
+               
+                    var realError = t.Exception?.Flatten().InnerException;
+
+                    Debug.Error($"[World] Failed to load sector {sectorIndex}: {realError?.Message}");
+                    Debug.Error(realError?.StackTrace);
+
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
                         if (Instance != null)
-                            loadingSectors.Remove(sectorIndex);
+                            loadingSectors.Remove(sectorIndex); 
                     });
                 }
             }, TaskScheduler.Default);

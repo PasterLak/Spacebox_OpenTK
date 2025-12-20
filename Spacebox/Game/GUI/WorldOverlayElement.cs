@@ -23,22 +23,23 @@ namespace Spacebox.Game.GUI
         }
         public override void OnGUIText()
         {
-            if(world == null) { return; }
+            if (world == null) { return; }
             if (World.CurrentSector == null) { return; }
 
             ImGui.SeparatorText("[WORLD]");
-            ImGui.Text($"Time: {GameTime.ToString()} TicK: {GameTime.DayTick} ");
+            ImGui.Text($"Time: {GameTime.ToString()} Tick: {GameTime.DayTick} ");
             ImGui.Text($"Sector: Pos: {World.CurrentSector.PositionWorld} Index: {World.CurrentSector.PositionIndex}");
 
             var cam = Camera.Main;
 
-            if(cam != null) {
+            if (cam != null)
+            {
 
                 var pos = cam.Position;
 
                 if (World.CurrentSector != null && World.CurrentSector.BiomesMap != null)
                 {
-                    
+
 
                     var pos2 = World.CurrentSector.WorldToLocalPosition(cam.PositionWorld);
 
@@ -51,22 +52,22 @@ namespace Spacebox.Game.GUI
 
                 var p = World.CurrentSector.WorldToLocalPosition(pos);
                 ImGui.Text("Position in:");
-                ImGui.Text($"Sector: "+ Vector3Int(p));
+                ImGui.Text($"Sector: " + Vector3Int(p));
 
-                if(World.CurrentSector.IsPointInEntity(pos, out var entity))
+                if (World.CurrentSector.IsPointInEntity(pos, out var entity))
                 {
                     var p1 = entity.WorldPositionToLocal(pos);
-                    ImGui.Text($"Entity: {Vector3Int(p1)} Index: {entity.PositionIndex}" );
+                    ImGui.Text($"Entity: {Vector3Int(p1)} Index: {entity.PositionIndex}");
 
-                    if(entity.IsPositionInChunk(pos, out var chunk))
+                    if (entity.IsPositionInChunk(pos, out var chunk))
                     {
-                        
+
                         ImGui.Text($"Chunk: {SpaceMath.Entity.WorldPositionToBlockInChunk(entity, pos)} Index: {chunk.PositionIndex}");
                     }
                 }
-               
+
             }
-           
+
 
         }
     }

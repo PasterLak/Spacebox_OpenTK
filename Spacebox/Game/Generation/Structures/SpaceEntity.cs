@@ -51,7 +51,7 @@ namespace Spacebox.Game.Generation
         public BoundingBox GeometryBoundingBox { get; private set; }
         public ElectricNetworkManager ElectricManager { get; private set; }
         public Particle StarParticle;
-        public StarsEffect StarsEffect { get; private set; }
+       // public StarsEffect StarsEffect { get; private set; }
 
         private StringBuilder StringBuilder = new StringBuilder();
 
@@ -89,7 +89,7 @@ namespace Spacebox.Game.Generation
         private void CreateStar()
         {
 
-            StarsEffect = new StarsEffect(World.Instance.Player);
+            //StarsEffect = new StarsEffect(World.Instance.Player);
             // StarParticle = new Particle(GeometryBoundingBox.Center, Vector3.Zero, 9999999, new Vector4(1, 1, 1, 1), new Vector4(0, 0, 0, 0), 64);
             // StarsEffect.ParticleSystem.AddParticle(StarParticle);
         }
@@ -588,8 +588,8 @@ namespace Spacebox.Game.Generation
             // StarParticle.ColorEnd = new Vector4(1, 1, 1, alpha);
             // StarParticle.Size = size;
 
-            StarsEffect.Update();
-            StarsEffect.Render();
+          //  StarsEffect.Update();
+           // StarsEffect.Render();
         }
 
         HashSet<Chunk> chunks = new HashSet<Chunk>();
@@ -745,13 +745,13 @@ namespace Spacebox.Game.Generation
             {
                 ch.Dispose();
             }
-            StarsEffect.Dispose();
+           // StarsEffect.Dispose();
             if (tag != null)
             {
                 TagManager.Instance.ReleaseTag(tag);
                 //TagManager.UnregisterTag(tag);
             }
-            StarsEffect.Dispose();
+           // StarsEffect.Dispose();
         }
     }
 }

@@ -9,6 +9,7 @@ using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 using System;
+using static Spacebox.Game.GUI.CraftingCategory;
 
 
 namespace Spacebox.Game.Generation;
@@ -460,6 +461,9 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             // just ignore
         }
 
+        bool isProcedural = entity.IsProcedural();
+        Vector3 pos = entity.PositionWorld;
+
         if (asteroid != null)
         {
             if (asteroid.IsGenerated)
@@ -467,7 +471,9 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                 var data = asteroid.NotGeneratedEntity;
 
                 octreeNotGenerated.Add(data, data.positionWorld);
-                Debug.Success("[Sector] Unloaded asteroid " + data.positionWorld);
+
+                pos = data.positionWorld;
+              
             }
 
         }
@@ -475,6 +481,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         {
             Debug.Success("[Sector] Unloaded spaceship " + entity.PositionWorld);
         }
+
+        Debug.Success("[Sector] Unloaded " + (isProcedural ? "asteroid" : "spaceship") + " " + pos);
 
         DestroyEntity(entity, false);
 
@@ -540,13 +548,13 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
                 entity.Render(cam, shader);
 
-                if (entity.StarsEffect.Enabled)
-                    entity.StarsEffect.Enabled = false;
+               // if (entity.StarsEffect.Enabled)
+                 //   entity.StarsEffect.Enabled = false;
             }
             else
             {
-                if (!entity.StarsEffect.Enabled)
-                    entity.StarsEffect.Enabled = true;
+               // if (!entity.StarsEffect.Enabled)
+               //     entity.StarsEffect.Enabled = true;
 
                 if (distSqr >= Settings.ENTITY_UNLOAD_DISTANCE * Settings.ENTITY_UNLOAD_DISTANCE)
                 {
