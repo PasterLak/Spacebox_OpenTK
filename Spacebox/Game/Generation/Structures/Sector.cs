@@ -8,7 +8,8 @@ using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
-using System.Drawing;
+using System;
+
 
 namespace Spacebox.Game.Generation;
 
@@ -27,6 +28,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     public HashSet<ulong> SuppressedEntities { get; private set; }
     public BiomesMap BiomesMap { get; private set; }
+    private HashSet<ulong> PointsIds { get; set; }
     private Dictionary<ulong, NotGeneratedEntity> EntitiesGeneratedData { get; set; }
 
     private bool _isModified = false;
@@ -59,6 +61,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         octreeNotGenerated = new PointOctree<NotGeneratedEntity>(SizeBlocks, positionWorld, 1);
         EntitiesGeneratedData = new Dictionary<ulong, NotGeneratedEntity>();
         SuppressedEntities = new HashSet<ulong>();
+        PointsIds = new HashSet<ulong>();
 
         Entities = new List<SpaceEntity>();
 
@@ -132,6 +135,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             return true;
         }
 
+
         return false;
     }
 
@@ -151,32 +155,37 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     private void GenerateDataForPoints(Vector3[] positions)
     {
         Random random = new Random(SeedHelper.ToIntSeed(Seed));
-        HashSet<ulong> usedIds = new HashSet<ulong>();
 
         foreach (var point in positions)
         {
-            var id = GenerateUniqueIdForPoint(point, usedIds);
+            ulong rawId = GenerateUniqueIdForPoint(point, PointsIds);
+            ulong cleanId = rawId & 0x7FFFFFFFFFFFFFFF; // clear highest bit for generated entities, bit 64 = 0
 
-            usedIds.Add(id);
+            PointsIds.Add(cleanId);
 
-            var data = new NotGeneratedEntity();
-            data.Id = id;
-            data.positionInSector = point;
-            data.positionWorld = LocalToWorld(point);
-
-            data.biome = BiomesMap.GetFromSectorLocalCoord(point);
-
-            if (data.biome.AsteroidChances.Count == 0) continue;
-
-            var asteroidData = Biome.SelectAsteroidBySpawnChance(data.biome.AsteroidChances, random);
-
-            data.radiusBlocks = random.Next(asteroidData.MinRadius, asteroidData.MaxRadius + 1);
-            data.asteroid = asteroidData;
-            data.rotation = Vector3.Zero;
-
-            EntitiesGeneratedData.Add(data.Id, data);
-            octreeNotGenerated.Add(data, point);
+            GenerateDataForPoint(point, cleanId, random);
         }
+    }
+
+    private void GenerateDataForPoint(Vector3 point, ulong id, Random random)
+    {
+        var data = new NotGeneratedEntity();
+        data.Id = id;
+        data.positionInSector = point;
+        data.positionWorld = LocalToWorld(point);
+
+        data.biome = BiomesMap.GetFromSectorLocalCoord(point);
+
+        if (data.biome.AsteroidChances.Count == 0) return; // no asteroids in this biome
+
+        var asteroidData = Biome.SelectAsteroidBySpawnChance(data.biome.AsteroidChances, random);
+
+        data.radiusBlocks = random.Next(asteroidData.MinRadius, asteroidData.MaxRadius + 1);
+        data.asteroid = asteroidData;
+        data.rotation = Vector3.Zero;
+
+        EntitiesGeneratedData.Add(data.Id, data);
+        octreeNotGenerated.Add(data, point);
     }
 
     private ulong GenerateUniqueIdForPoint(Vector3 point, HashSet<ulong> usedIds)
@@ -207,6 +216,29 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         return id;
     }
 
+    private static readonly Random _dynamicIdRandom = new Random();
+
+    public ulong GenerateDynamicEntityId()
+    {
+        // generate 8 bit
+        byte[] buffer = new byte[8];
+        _dynamicIdRandom.NextBytes(buffer);
+
+        ulong randomId = BitConverter.ToUInt64(buffer, 0);
+
+        // bit 64 always = 1
+        ulong dynamicId = randomId | 0x8000000000000000;
+
+        // check collision
+        while (PointsIds.Contains(dynamicId) || SuppressedEntities.Contains(dynamicId))
+        {
+            _dynamicIdRandom.NextBytes(buffer);
+            randomId = BitConverter.ToUInt64(buffer, 0);
+            dynamicId = randomId | 0x8000000000000000;
+        }
+
+        return dynamicId;
+    }
 
     public void PlacePlayerRandomInSector(Astronaut player, Random random)
     {
@@ -394,7 +426,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     public SpaceEntity CreateNewEntity(Vector3 positionWorld)
     {
-        SpaceEntity entity = new SpaceEntity(0, positionWorld, this);
+        var id = GenerateDynamicEntityId();
+        SpaceEntity entity = new SpaceEntity(id, positionWorld, this);
 
         AddEntity(entity, positionWorld);
 
@@ -548,6 +581,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         Entities = null;
         EntitiesGeneratedData.Clear();
+        PointsIds.Clear();
         SuppressedEntities.Clear();
     }
 

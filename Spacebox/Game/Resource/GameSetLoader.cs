@@ -444,6 +444,8 @@ public static class GameSetLoader
                     }
 
                     registeredItem.Color = color;
+
+                    registeredItem.Namespace = ModInfo.ModId;
                 }
             }
 
@@ -846,21 +848,23 @@ public static class GameSetLoader
 
         };
         eraser.Id_string = "default:eraser_tool";
+        eraser.Namespace = "default";
         eraser.Description = "LMB - select block 1\nRMB - select block 2\nMMB - reset\nEnter - confirm";
         GameAssetsRegister.RegisterItem(eraser, "eraser");
     }
     private static void RegisterEraserItem2()
     {
 
-        var eraser = new CameraPointItem(
+        var camPoint = new CameraPointItem(
            "Camera Point",
            2f)
         {
 
         };
-        eraser.Id_string = "default:camera_point";
-        eraser.Description = "LMB - remove last point\nMMB - remove all points\nRMB - add point\nEnter - start\nAlt+Scroll - set speed";
-        GameAssetsRegister.RegisterItem(eraser, "cameraPoint");
+        camPoint.Id_string = "default:camera_point";
+        camPoint.Namespace = "default";
+        camPoint.Description = "LMB - remove last point\nMMB - remove all points\nRMB - add point\nEnter - start\nAlt+Scroll - set speed";
+        GameAssetsRegister.RegisterItem(camPoint, "cameraPoint");
     }
 
 

@@ -55,6 +55,8 @@ namespace Spacebox.Game.Generation
 
         private StringBuilder StringBuilder = new StringBuilder();
 
+        private const ulong MSB_MASK = 0x8000000000000000;
+
         public SpaceEntity(ulong id, Vector3 positionWorld, Sector sector)
         {
             EntityID = id;
@@ -74,6 +76,16 @@ namespace Spacebox.Game.Generation
             tag = CreateTag(positionWorld);
             CalculateCenterOfMass();
             CreateStar();
+        }
+
+        public bool IsDynamic()
+        {
+            return (EntityID & MSB_MASK) != 0;
+        }
+
+        public bool IsProcedural()
+        {
+            return (EntityID & MSB_MASK) == 0;
         }
 
         private void CreateStar()

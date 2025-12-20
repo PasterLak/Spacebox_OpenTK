@@ -91,7 +91,13 @@ namespace Spacebox.Game
         {
             return ItemsStr.ContainsKey(fullId);
         }
-
+        public static BlockData? GetBlockByFullID(string idFull)
+        {
+            if (BlocksStr.ContainsKey(idFull))
+                return BlocksStr[idFull];
+            Debug.Error("[GameAssets] GetBlockByFullID error: Wrong string id - " + idFull);
+            return null;
+        }
         public static Item? GetItemByFullID(string idFull)
         {
             if (ItemsStr.ContainsKey(idFull))
@@ -111,6 +117,12 @@ namespace Spacebox.Game
             return false;
         }
 
+        public static string GetBlockFullId(Block block)
+        {
+            if (!Blocks.ContainsKey(block.Id))
+                return "";
+            return Blocks[block.Id].Id_string;
+        }
 
         public static BlockData GetBlockDataById(short id)
         {

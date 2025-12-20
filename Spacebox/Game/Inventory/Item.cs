@@ -7,6 +7,7 @@ namespace Spacebox.Game
     {
         public short Id;
         public string Id_string;
+        public string Namespace;
         public byte StackSize;
         public string Name;
         public string Category { get; set; } = "";

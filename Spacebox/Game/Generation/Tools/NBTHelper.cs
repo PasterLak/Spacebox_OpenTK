@@ -144,7 +144,8 @@ namespace Spacebox.Game.Generation.Tools
             var listBlocks = new IntArrayTag(NBTKey.CHUNK.blocks, SIZE * SIZE * SIZE);
 
             short id = 0;
-            Dictionary<short, short> palette = new Dictionary<short, short>();
+            Dictionary<string, short> paletteBlocks = new Dictionary<string, short>();
+            Dictionary<string, short> namespaces = new Dictionary<string, short>(); // todo
 
             Dictionary<string, short> paletteItems = new Dictionary<string, short>();
             short indexInPalette = 0;
@@ -165,13 +166,15 @@ namespace Spacebox.Game.Generation.Tools
 
                         //var flatIndex = GetArrayIndex(x, y, z, SIZE);
 
-                        if (palette.TryGetValue(block.Id, out var paletteKey))
+                        var blockFullId = GameAssets.GetBlockFullId(block);
+
+                        if (paletteBlocks.TryGetValue(blockFullId, out var paletteKey))
                         {
                             listBlocks[indexIn1D] = paletteKey;
                         }
                         else
                         {
-                            palette.Add(block.Id, id);
+                            paletteBlocks.Add(blockFullId, id);
                             listBlocks[indexIn1D] = id;
                             id++;
                         }
@@ -240,11 +243,17 @@ namespace Spacebox.Game.Generation.Tools
 
             root.Add(listBlocks);
 
-            var listPaletteBlocks = new IntArrayTag(NBTKey.CHUNK.palette_blocks, palette.Count);
+            var listPaletteBlocks = new ListTag(NBTKey.CHUNK.palette_blocks, TagType.String);
 
-            foreach (var item in palette)
+            var paletteBlocksArray = new string[paletteBlocks.Count];
+            foreach (var block in paletteBlocks)
             {
-                listPaletteBlocks[item.Value] = item.Key;
+                paletteBlocksArray[block.Value] = block.Key;
+            }
+
+            for (int i = 0; i < paletteBlocksArray.Length; i++)
+            {
+                listPaletteBlocks.Add(new StringTag(null, paletteBlocksArray[i]));
             }
 
             root.Add(listPaletteBlocks);
@@ -371,7 +380,6 @@ namespace Spacebox.Game.Generation.Tools
 
             result = root;
 
-            // Debug.Log(root.);
             return true;
         }
         private static bool ResourceProcessingBlockToTag(ResourceProcessingBlock block, int posIn1DArray, Dictionary<string, short> itemsPalette, out int[] result) // in out fuel
@@ -475,14 +483,14 @@ namespace Spacebox.Game.Generation.Tools
 
         public static Chunk? TagToChunk(CompoundTag tag, SpaceEntity spaceEntity)
         {
-            //Debug.Log(tag.PrettyPrinted());
+
             const byte SIZE = Chunk.Size;
             sbyte ix = PackingTools.ByteToSByte(tag.Get<ByteTag>(NBTKey.CHUNK.index_x).Value);
             sbyte iy = PackingTools.ByteToSByte(tag.Get<ByteTag>(NBTKey.CHUNK.index_y).Value);
             sbyte iz = PackingTools.ByteToSByte(tag.Get<ByteTag>(NBTKey.CHUNK.index_z).Value);
 
             var listBlocks = tag.Get<IntArrayTag>(NBTKey.CHUNK.blocks).ToArray();
-            var listPalette = tag.Get<IntArrayTag>(NBTKey.CHUNK.palette_blocks).ToArray();
+            var listPaletteBlocks = tag.Get<ListTag>(NBTKey.CHUNK.palette_blocks).ToArray();
             var listRotations = tag.Get<IntArrayTag>(NBTKey.CHUNK.rotations).ToArray();
 
 
@@ -496,9 +504,21 @@ namespace Spacebox.Game.Generation.Tools
 
             for (int i = 0; i < ids.Length; i++)
             {
-                ids[i] = (short)listPalette[listBlocks[i]];
-            }
+                var stringId = listPaletteBlocks[listBlocks[i]] as StringTag;
 
+                var blockData = GameAssets.GetBlockByFullID(stringId.Value);
+
+                if(blockData != null)
+                {
+                    ids[i] = GameAssets.GetBlockByFullID(stringId.Value).Id;
+                }
+                else
+                {
+                    Debug.Error($"[NBTHelper] - TagToChunk: BlockData is null for block id string: {stringId.Value} at index {i} in chunk {ix},{iy},{iz}. Using 'void' block instead.");
+                    ids[i] = 0;   // check null   TODO
+                }
+              
+            }
 
             Block[,,] blocks = ReconstructBlocksFrom1D(ids);
 
@@ -556,7 +576,7 @@ namespace Spacebox.Game.Generation.Tools
 
                             var storageBlockData = GameAssets.GetBlockDataById(blockId) as StorageBlockData;
 
-                            var size = new Vector2Byte(8,3);
+                            var size = new Vector2Byte(8, 3);
 
 
                             if (storageBlockData != null)
