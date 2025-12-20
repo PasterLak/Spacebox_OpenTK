@@ -1,5 +1,5 @@
 {
-        "Id": "debug_biome",
+        "Id": "debug",
         "Name": "Debug biome",
         "Description": "Common rocky asteroids with basic minerals",
         "SpawnChance": 100,
@@ -12,8 +12,7 @@
         },
         "Asteroids": {
            
-            "asteroid_icy" : 50,
-            "asteroid_icy" : 70,
-            "asteroid_icy" : 25
+            "cheese" : 50
+           
         }
     }

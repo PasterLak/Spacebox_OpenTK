@@ -20,7 +20,7 @@ namespace Spacebox.Game.Generation
         public const short SizeBlocks = SizeChunks * Chunk.Size;
         public const short SizeBlocksHalf = SizeChunks * Chunk.Size / 2;
 
-        public readonly ulong EntityID;
+        public readonly long EntityID;
         public ulong Mass { get; set; } = 0;
 
         public Octree<Chunk> Octree { get; private set; } // local coords
@@ -55,9 +55,7 @@ namespace Spacebox.Game.Generation
 
         private StringBuilder StringBuilder = new StringBuilder();
 
-        private const ulong MSB_MASK = 0x8000000000000000;
-
-        public SpaceEntity(ulong id, Vector3 positionWorld, Sector sector)
+        public SpaceEntity(long id, Vector3 positionWorld, Sector sector)
         {
             EntityID = id;
             Name = id.ToString();
@@ -80,12 +78,12 @@ namespace Spacebox.Game.Generation
 
         public bool IsDynamic()
         {
-            return (EntityID & MSB_MASK) != 0;
+            return EntityID < 0;
         }
 
         public bool IsProcedural()
         {
-            return (EntityID & MSB_MASK) == 0;
+            return EntityID >= 0;
         }
 
         private void CreateStar()
@@ -432,15 +430,14 @@ namespace Spacebox.Game.Generation
 
             if (VisualDebug.Enabled)
             {
-                bool isAsteroid = this as Asteroid != null;
+
                 StringBuilder.Append("Name: ")
                    .Append(Name)
                     .Append("\n")
                     .Append("ID: ")
                   .Append(EntityID)
                    .Append("\n")
-                  .Append(" isAsteroid: ")
-                  .Append(isAsteroid)
+                  .Append(IsProcedural() ? "Asteroid" : "Spaceship")
                   .Append("\nWpos: ")
                   .Append(Block.RoundVector3(CenterOfMass))
                   .Append("\n")

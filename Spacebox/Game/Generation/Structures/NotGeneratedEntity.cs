@@ -5,7 +5,7 @@ namespace Spacebox.Game.Generation.Structures;
 
 public class NotGeneratedEntity
 {
-    public ulong Id;
+    public long Id;
     public int radiusBlocks = 32;
     public AsteroidData asteroid;
     public Biome biome;
@@ -17,7 +17,7 @@ public class NotGeneratedEntity
     {
     }
 
-    public NotGeneratedEntity(ulong id, int radiusBlocks, AsteroidData asteroid, Biome biome, Vector3 positionInSector, Vector3 positionWorld, Vector3 rotation)
+    public NotGeneratedEntity(long id, int radiusBlocks, AsteroidData asteroid, Biome biome, Vector3 positionInSector, Vector3 positionWorld, Vector3 rotation)
     {
         Id = id;
         this.radiusBlocks = radiusBlocks;

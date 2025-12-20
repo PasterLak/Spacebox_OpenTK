@@ -99,7 +99,7 @@ public class World : Component, ISpaceStructure
     public void Load()
     {
         CurrentSector = LoadSectorNow(SpaceMath.Sector.GetSectorIndex(Player.Position));
-        CurrentSector.SpawnPlayerNearRandomAsteroidData(Player, new Random(Seed));
+        //CurrentSector.SpawnPlayerNearRandomAsteroidData(Player, new Random(Seed));
 
         if (CurrentSector == null)
             Debug.Error("No current sector");

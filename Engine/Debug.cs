@@ -34,7 +34,7 @@ namespace Engine
         private static CursorState _previousCursorState;
         private static string _inputBuffer = "";
         private static List<ConsoleMessage> _messages = new List<ConsoleMessage>();
-       
+
         private static List<string> _commandHistory = new List<string>();
         private static int _historyPos = -1;
         private static bool _focusInput = false;
@@ -59,6 +59,8 @@ namespace Engine
         private static readonly string HistoryFilePath = "command_history.txt";
         private static int _autoCompleteIndex = 0;
         private static List<CommandBase> _autoCompleteMatches = new List<CommandBase>();
+
+        private static readonly object _lock = new object();
 
         static Debug()
         {
@@ -126,8 +128,11 @@ namespace Engine
 
                     break;
             }
-            _messages.Add(msg);
-            messageCount++;
+            lock (_lock)
+            {
+                _messages.Add(msg);
+                messageCount++;
+            }
         }
 
         private static void AddMessage(string message, OpenTK.Mathematics.Color4 color)
@@ -270,11 +275,14 @@ namespace Engine
 
         public static void ClearMessages()
         {
-            _messages.Clear();
-            messageCount = 0;
-            warningCount = 0;
-            errorCount = 0;
-            successCount = 0;
+            lock (_lock)
+            {
+                _messages.Clear();
+                messageCount = 0;
+                warningCount = 0;
+                errorCount = 0;
+                successCount = 0;
+            }
         }
 
         private static void DrawFilterButton(string label, long count, MessageType type, Vector4 textColor)
@@ -327,7 +335,15 @@ namespace Engine
                 childHeight = 100f;
 
             ImGui.BeginChild("ScrollingRegion", new Vector2(0, childHeight), ImGuiChildFlags.AlwaysAutoResize);
-            foreach (var msg in _messages) // : 'Collection was modified; enumeration operation may not execute.'
+
+            List<ConsoleMessage> messagesToRender;
+
+            lock (_lock)
+            {
+                messagesToRender = new List<ConsoleMessage>(_messages);
+            }
+
+            foreach (var msg in messagesToRender) // : 'Collection was modified; enumeration operation may not execute.'
 
             {
                 if (showType != MessageType.Info)
@@ -340,6 +356,7 @@ namespace Engine
                 ImGui.TextWrapped(msg.Text);
                 ImGui.PopStyleColor();
             }
+
             if (ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
                 ImGui.SetScrollHereY(1.0f);
             ImGui.EndChild();
@@ -585,7 +602,10 @@ namespace Engine
 
             try
             {
-                File.WriteAllLines(filepath, _messages.Select(m => m.Text));
+                lock (_lock)
+                {
+                    File.WriteAllLines(filepath, _messages.Select(m => m.Text));
+                }
                 Log($"Console messages saved to '{filepath}'.");
             }
             catch (Exception ex)

@@ -163,6 +163,16 @@ namespace Spacebox.Game.Generation.Tools
                 Directory.CreateDirectory(sectorFolderPath);
             }
 
+            foreach(var deleted in sector.EntitiesDestroyed)
+            {
+                string deletedEntityPath = Path.Combine(sectorFolderPath, deleted + ".entity");
+                if (File.Exists(deletedEntityPath))
+                {
+                    File.Delete(deletedEntityPath);
+                  
+                }
+            }
+
             for (int i = 0; i < entities.Count; i++)
             {
                 if (!entities[i].IsModified) continue;

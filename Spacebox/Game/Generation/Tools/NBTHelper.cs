@@ -24,7 +24,7 @@ namespace Spacebox.Game.Generation.Tools
             int i = 0;
             foreach (var id in sector.SuppressedEntities)
             {
-                data[i++] = PackingTools.ULongToLong(id);
+                data[i++] = id;
             }
 
             root.Add(new LongArrayTag(NBTKey.SECTOR.suppressed_ids, data));
@@ -42,8 +42,8 @@ namespace Spacebox.Game.Generation.Tools
 
                 foreach (long packedId in arrayTag)
                 {
-                    ulong id = PackingTools.LongToULong(packedId);
-                    sector.SuppressedEntities.Add(id);
+               
+                    sector.SuppressedEntities.Add(packedId);
                 }
             }
 
@@ -54,7 +54,7 @@ namespace Spacebox.Game.Generation.Tools
 
             if (tag == null) return null;
 
-            ulong id = PackingTools.LongToULong(tag.Get<LongTag>(NBTKey.ENTITY.id));
+            long id = tag.Get<LongTag>(NBTKey.ENTITY.id);
 
             string name = tag.Get<StringTag>(NBTKey.ENTITY.name);
             var x = tag.Get<FloatTag>(NBTKey.ENTITY.local_x);
@@ -97,7 +97,7 @@ namespace Spacebox.Game.Generation.Tools
             var root = new CompoundTag(entity.GetType().Name);
 
 
-            root.Add(new LongTag(NBTKey.ENTITY.id, PackingTools.ULongToLong(entity.EntityID))); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!   should be ulong
+            root.Add(new LongTag(NBTKey.ENTITY.id, entity.EntityID)); 
             root.Add(new StringTag(NBTKey.ENTITY.name, entity.Name));
 
             var localPos = entity.Sector.WorldToLocalPosition(entity.PositionWorld);

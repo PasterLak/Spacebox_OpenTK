@@ -1,10 +1,13 @@
-﻿
+﻿using System;
 using OpenTK.Mathematics;
 
 namespace Engine.Utils
 {
     public static class SeedHelper
     {
+        // procedural IDs are always non-negative
+        private const long PROCEDURAL_MASK = 0x7FFFFFFFFFFFFFFF;
+
         static ulong Mix(ulong x)
         {
             x ^= x >> 30;
@@ -15,44 +18,63 @@ namespace Engine.Utils
             return x;
         }
 
-        public static ulong GetSectorId(int globalSeed, Vector3i sectorIndex)
+
+        public static long GetSectorId(int globalSeed, Vector3i sectorIndex)
         {
             ulong h = (uint)globalSeed;
             h = Mix(h ^ (uint)sectorIndex.X);
             h = Mix(h ^ (uint)sectorIndex.Y);
             h = Mix(h ^ (uint)sectorIndex.Z);
-            return Mix(h);
-        }
 
-        public static ulong GetAsteroidId(ulong sectorId, Vector3 positionInSector)
+            return (long)Mix(h);
+        }
+        // always positive ID
+        public static long GetAsteroidId(long sectorId, Vector3 positionInSector)
         {
             int xi = (int)MathF.Round(positionInSector.X);
             int yi = (int)MathF.Round(positionInSector.Y);
             int zi = (int)MathF.Round(positionInSector.Z);
-            ulong h = sectorId;
+
+            ulong h = (ulong)sectorId;
+
             h = Mix(h ^ (uint)xi);
             h = Mix(h ^ (uint)yi);
             h = Mix(h ^ (uint)zi);
-            return Mix(h);
+
+            return (long)(Mix(h) & (ulong)PROCEDURAL_MASK);
         }
 
-        public static ulong GetChunkId(ulong asteroidId, Vector3SByte chunkCoord)
+        public static long GetChunkId(long asteroidId, Vector3SByte chunkCoord)
         {
-            ulong h = asteroidId;
+            ulong h = (ulong)asteroidId;
             h = Mix(h ^ (byte)chunkCoord.X);
             h = Mix(h ^ (byte)chunkCoord.Y);
             h = Mix(h ^ (byte)chunkCoord.Z);
-            return Mix(h);
+
+            return (long)(Mix(h));
         }
 
-        public static int GetChunkIdInt(ulong asteroidId, Vector3SByte chunkCoord)
+        public static int GetChunkIdInt(long asteroidId, Vector3SByte chunkCoord)
         {
             return ToIntSeed(GetChunkId(asteroidId, chunkCoord));
         }
 
-        public static int ToIntSeed(ulong id)
+        public static int ToIntSeed(long id)
         {
-            return (int)(id & 0xFFFFFFFFu);
+            return (int)id;
+        }
+
+        private static readonly Random _dynamicRandom = new Random();
+
+        // always negative dynamic entity ID
+        public static long GenerateDynamicEntityId()
+        {
+            byte[] buf = new byte[8];
+            _dynamicRandom.NextBytes(buf);
+            long val = BitConverter.ToInt64(buf, 0);
+
+            // (long.MinValue ... -1)
+            return val | unchecked((long)0x8000000000000000);
         }
     }
 }

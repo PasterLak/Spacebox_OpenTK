@@ -20,16 +20,17 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     public const short SizeBlocks = 8192; // 256 512 2048 4096 8192
     public const short SizeBlocksHalf = SizeBlocks / 2;
 
-    public readonly ulong Seed;
+    public readonly long Seed;
 
     // ------------------ Properties --------------------------------------------
 
     public List<SpaceEntity> Entities { get; private set; }
 
-    public HashSet<ulong> SuppressedEntities { get; private set; }
+    public HashSet<long> SuppressedEntities { get; private set; }
     public BiomesMap BiomesMap { get; private set; }
-    private HashSet<ulong> PointsIds { get; set; }
-    private Dictionary<ulong, NotGeneratedEntity> EntitiesGeneratedData { get; set; }
+    private HashSet<long> PointsIds { get; set; }
+    private Dictionary<long, NotGeneratedEntity> EntitiesGeneratedData { get; set; }
+    public List<string> EntitiesDestroyed { get; private set; }
 
     private bool _isModified = false;
     public bool IsModified
@@ -59,9 +60,10 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         sectorOctree = new PointOctree<SpaceEntity>(SizeBlocks, positionWorld, 1);
         octreeNotGenerated = new PointOctree<NotGeneratedEntity>(SizeBlocks, positionWorld, 1);
-        EntitiesGeneratedData = new Dictionary<ulong, NotGeneratedEntity>();
-        SuppressedEntities = new HashSet<ulong>();
-        PointsIds = new HashSet<ulong>();
+        EntitiesGeneratedData = new Dictionary<long, NotGeneratedEntity>();
+        SuppressedEntities = new HashSet<long>();
+        PointsIds = new HashSet<long>();
+        EntitiesDestroyed = new List<string>();
 
         Entities = new List<SpaceEntity>();
 
@@ -126,7 +128,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         }
     }
 
-    private bool RemoveGeneratedData(ulong entityId)
+    private bool RemoveGeneratedData(long entityId)
     {
         if (EntitiesGeneratedData.TryGetValue(entityId, out NotGeneratedEntity? data))
         {
@@ -158,8 +160,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         foreach (var point in positions)
         {
-            ulong rawId = GenerateUniqueIdForPoint(point, PointsIds);
-            ulong cleanId = rawId & 0x7FFFFFFFFFFFFFFF; // clear highest bit for generated entities, bit 64 = 0
+            long rawId = GenerateUniqueIdForPoint(point, PointsIds);
+            long cleanId = rawId & 0x7FFFFFFFFFFFFFFF; // clear highest bit for generated entities, bit 64 = 0
 
             PointsIds.Add(cleanId);
 
@@ -167,7 +169,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         }
     }
 
-    private void GenerateDataForPoint(Vector3 point, ulong id, Random random)
+    private void GenerateDataForPoint(Vector3 point, long id, Random random)
     {
         var data = new NotGeneratedEntity();
         data.Id = id;
@@ -188,7 +190,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         octreeNotGenerated.Add(data, point);
     }
 
-    private ulong GenerateUniqueIdForPoint(Vector3 point, HashSet<ulong> usedIds)
+    private long GenerateUniqueIdForPoint(Vector3 point, HashSet<long> usedIds)
     {
         var id = SeedHelper.GetAsteroidId(Seed, point);
 
@@ -197,10 +199,10 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             Debug.Error($"[Sector] You are lucky as fuck! Duplicate asteroid ID at {point}! Regenerating...");
 
             int collisionAttempt = 1;
-            ulong newId;
+            long newId;
             do
             {
-                newId = SeedHelper.GetAsteroidId(Seed + (ulong)collisionAttempt, point);
+                newId = SeedHelper.GetAsteroidId(Seed + (long)collisionAttempt, point);
                 collisionAttempt++;
 
                 if (collisionAttempt > 100)
@@ -216,28 +218,17 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         return id;
     }
 
-    private static readonly Random _dynamicIdRandom = new Random();
-
-    public ulong GenerateDynamicEntityId()
+    public long GenerateDynamicEntityId()
     {
-        // generate 8 bit
-        byte[] buffer = new byte[8];
-        _dynamicIdRandom.NextBytes(buffer);
-
-        ulong randomId = BitConverter.ToUInt64(buffer, 0);
-
-        // bit 64 always = 1
-        ulong dynamicId = randomId | 0x8000000000000000;
-
-        // check collision
-        while (PointsIds.Contains(dynamicId) || SuppressedEntities.Contains(dynamicId))
+        while (true)
         {
-            _dynamicIdRandom.NextBytes(buffer);
-            randomId = BitConverter.ToUInt64(buffer, 0);
-            dynamicId = randomId | 0x8000000000000000;
-        }
+            long id = SeedHelper.GenerateDynamicEntityId();
 
-        return dynamicId;
+            if (!SuppressedEntities.Contains(id) && !Entities.Exists(e => e.EntityID == id))
+            {
+                return id;
+            }
+        }
     }
 
     public void PlacePlayerRandomInSector(Astronaut player, Random random)
@@ -400,21 +391,21 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     public void DestroyEntity(SpaceEntity entity, bool isDestroyedPermentantly)
     {
+        var id = entity.EntityID;
+        var name = entity.Name;
         entity.Dispose();
         Entities.Remove(entity);
         sectorOctree.Remove(entity, entity.PositionWorld);
 
         if (!isDestroyedPermentantly) return;
 
-        if (!SuppressedEntities.Contains(entity.EntityID))
+        if (entity.IsProcedural() && !SuppressedEntities.Contains(id))
         {
-            SuppressedEntities.Add(entity.EntityID);
-            // delete the file on disk too
+            SuppressedEntities.Add(id);  
         }
-        else
-        {
-            Debug.Error("[Sector] Entity already marked for removal! Id: " + entity.EntityID);
-        }
+
+        EntitiesDestroyed.Add(name);
+        IsModified = true;
     }
 
     // demo
@@ -430,6 +421,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         SpaceEntity entity = new SpaceEntity(id, positionWorld, this);
 
         AddEntity(entity, positionWorld);
+        IsModified = true;
 
         return entity;
     }
@@ -583,6 +575,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         EntitiesGeneratedData.Clear();
         PointsIds.Clear();
         SuppressedEntities.Clear();
+        EntitiesDestroyed.Clear();
     }
 
     public Vector3 LocalToWorldPosition(Vector3 local)

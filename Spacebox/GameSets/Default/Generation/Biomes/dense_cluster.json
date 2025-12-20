@@ -13,7 +13,7 @@
         "Asteroids":
         {
              "asteroid_icy" : 50,
-             "asteroid_medium" : 50
+             "medium" : 50
         }
   
     }

@@ -4,7 +4,7 @@
       
         "MinRadius": 38,
         "MaxRadius": 64,
-        "DensityThreshold": 33,
+        "DensityThreshold": 38,
         "NoiseOctaves": 3,
         "NoiseScale": 1,
         "HasCavities": true,
@@ -79,6 +79,13 @@
                         "MinVeinSize": 1,
                         "MaxVeinSize": 4,
                         "CanSpawnNearVoid": true
+                    },
+                     {
+                        "BlockId": "void",
+                        "SpawnChance": 2000,
+                        "MinVeinSize": 16,
+                        "MaxVeinSize": 64,
+                        "CanSpawnNearVoid": true
                     }
                 ]
             },
@@ -93,6 +100,13 @@
                         "MinVeinSize": 1,
                         "MaxVeinSize": 2,
                         "CanSpawnNearVoid": false
+                    },
+                     {
+                        "BlockId": "void",
+                        "SpawnChance": 2000,
+                        "MinVeinSize": 16,
+                        "MaxVeinSize": 64,
+                        "CanSpawnNearVoid": true
                     }
                 ]
             }

@@ -33,7 +33,7 @@ public class SectorMath
         );
     }
 
-    public Vector3[] GenerateAsteroidPositions(ulong Seed, Vector3 sectorWorldPos, int minCount, int maxCount, int rejectionSamples, int radius, bool round)
+    public Vector3[] GenerateAsteroidPositions(long Seed, Vector3 sectorWorldPos, int minCount, int maxCount, int rejectionSamples, int radius, bool round)
     {
         var newSeed = SeedHelper.ToIntSeed(Seed);
         Random random = new Random(newSeed);
