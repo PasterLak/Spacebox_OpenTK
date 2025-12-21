@@ -9,6 +9,7 @@ public class NotGeneratedEntity
     public int radiusBlocks = 32;
     public AsteroidData asteroid;
     public Biome biome;
+    public string FileName;
     public Vector3 positionInSector;
     public Vector3 positionWorld;
     public Vector3 rotation;

@@ -81,6 +81,8 @@ public class World : Component, ISpaceStructure
         PlayerSaveLoadManager.SavePlayer(Player, WorldData.WorldFolderPath);
         WorldSaveLoad.SaveWorld(WorldData.WorldFolderPath, loadedSectors);
 
+        WorldPersistenceManager.SaveAllCacheToDiskNow(WorldData.WorldFolderPath);
+
         WorldData.Info.GameMode = Player.GameMode;
         WorldData.Info.Day = GameTime.Day;
         WorldData.Info.Ticks = GameTime.DayTick;
@@ -161,7 +163,7 @@ public class World : Component, ISpaceStructure
         BiomeGenerator = null;
         DropEffectManager = null;
         DestructionManager = null;
-
+        WorldPersistenceManager.Dispose();
         CurrentSector?.Dispose();
         CurrentSector = null;
         Instance = null;
@@ -173,6 +175,7 @@ public class World : Component, ISpaceStructure
         loadedSectors.Clear();
         loadingSectors.Clear();
         _sectorsToRemoveCache.Clear();
+
     }
 
     private void UpdateSectors()

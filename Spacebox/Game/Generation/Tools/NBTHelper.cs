@@ -2,6 +2,7 @@
 using OpenTK.Mathematics;
 using SharpNBT;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.Resource;
 using static Spacebox.Game.GUI.CraftingCategory;
 
@@ -64,8 +65,27 @@ namespace Spacebox.Game.Generation.Tools
 
             var worldPos = sector.LocalToWorldPosition(new Vector3(x, y, z));
 
+            SpaceEntity spaceEntity;
 
-            SpaceEntity spaceEntity = new SpaceEntity(id, worldPos, sector);
+
+            if (id >= 0)
+            {
+                var stubData = new NotGeneratedEntity
+                {
+                    Id = id,
+                    positionWorld = worldPos
+                };
+
+                var asteroid = new Asteroid(stubData, sector, false);
+              
+                asteroid.IsGenerated = true;
+                spaceEntity = asteroid;
+            }
+            else
+            {
+                spaceEntity = new SpaceEntity(id, worldPos, sector);
+            }
+
             spaceEntity.Name = name;
             spaceEntity.IsGenerated = true;
 

@@ -11,11 +11,12 @@ namespace Spacebox.Game.Resource
     {
         private static void AddVoidBlock()
         {
-            var _void = new BlockData("Void", "block", new Vector2Byte(0, 0));
+            var _void = new BlockData("Void", "block", new Vector2Byte(0, 0)); // for future TRANSPARENT true
             _void.Mass = 0;
             _void.Category = "";
             _void.Sides = "sand";
             _void.Id_string = "default:void";
+       
 
             GameAssetsRegister.RegisterBlock(_void);
         }

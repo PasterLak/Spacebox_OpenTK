@@ -19,13 +19,21 @@ public class Asteroid : SpaceEntity
 
     private readonly Dictionary<Vector3SByte, List<Vector3i>> _worm = new();
 
-    public readonly NotGeneratedEntity NotGeneratedEntity;
+    public  NotGeneratedEntity NotGeneratedEntity;
     protected readonly int Seed;
 
-    public Asteroid(NotGeneratedEntity data, Sector sector) : base(data.Id, data.positionWorld, sector)
+    public Asteroid(NotGeneratedEntity data, Sector sector) : this(data, sector, true)
+    {
+       
+    }
+
+    public Asteroid(NotGeneratedEntity data, Sector sector, bool generate) : base(data.Id, data.positionWorld, sector)
     {
         Seed = SeedHelper.ToIntSeed(data.Id);
         NotGeneratedEntity = data;
+
+        if (!generate) return;
+
         var asteroidData = data.asteroid;
         diameterBlocks = data.radiusBlocks + data.radiusBlocks;
         Vector3 diameter = new Vector3(diameterBlocks);

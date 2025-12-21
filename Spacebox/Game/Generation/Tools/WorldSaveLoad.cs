@@ -1,6 +1,7 @@
 ﻿using Engine;
 using OpenTK.Mathematics;
 using SharpNBT;
+using Spacebox.Game.Generation.Structures;
 
 
 namespace Spacebox.Game.Generation.Tools
@@ -11,6 +12,7 @@ namespace Spacebox.Game.Generation.Tools
         // Worlds ->  Sectors   ->  Sector+3-7+2    ->    e42.entity -> chunks data
         //            world.json
         //            player.json
+
 
         public static void SaveWorld(string worldPath, Dictionary<Vector3i, Sector> loadedSectors)
         {
@@ -144,6 +146,17 @@ namespace Spacebox.Game.Generation.Tools
 
             return null;
         }
+        public static CompoundTag? LoadSpaceEntityTagFromFile(string entityFilePath)
+        {
+            if (File.Exists(entityFilePath))
+            {
+                CompoundTag tag = NbtFile.Read(entityFilePath, FormatOptions.Java, CompressionType.GZip);
+
+                return tag;
+            }
+
+            return null;
+        }
 
 
         private static void SaveSector(Sector sector, string sectorsPath)
@@ -188,6 +201,46 @@ namespace Spacebox.Game.Generation.Tools
             //NbtFile.WriteAsync(Path.Combine(sectorFolderPath, sectorFolderName + ".sector"), NBTHelper.SectorOnlyToTag(sector), FormatOptions.Java, CompressionType.GZip);
             NbtFile.Write(Path.Combine(sectorFolderPath, sectorFolderName + ".sector"), NBTHelper.SectorOnlyToTag(sector), FormatOptions.Java, CompressionType.GZip);
 
+        }
+
+        public static List<NotGeneratedEntity> ScanCustomEntities(Vector3i sectorIndex)
+        {
+            var list = new List<NotGeneratedEntity>();
+            if (!CanLoadSectorHere(sectorIndex, out var folderPath)) return list;
+
+            var files = Directory.GetFiles(folderPath, "*.entity");
+            foreach (var file in files)
+            {
+                try
+                {
+
+                    var tag = NbtFile.Read(file, FormatOptions.Java, CompressionType.GZip);
+
+                    if (tag == null) continue;
+
+                    long id = tag.Get<LongTag>(NBTKey.ENTITY.id).Value;
+
+                    if (id >= 0) continue;
+
+                    float x = tag.Get<FloatTag>(NBTKey.ENTITY.local_x).Value;
+                    float y = tag.Get<FloatTag>(NBTKey.ENTITY.local_y).Value;
+                    float z = tag.Get<FloatTag>(NBTKey.ENTITY.local_z).Value;
+
+                    string fileNameNoExt = Path.GetFileNameWithoutExtension(file);
+
+                    var meta = new NotGeneratedEntity
+                    {
+                        Id = id,
+                        positionInSector = new Vector3(x, y, z),
+                        FileName = Path.GetFileName(file),
+
+                        radiusBlocks = 100
+                    };
+                    list.Add(meta);
+                }
+                catch {  }
+            }
+            return list;
         }
 
         private static bool Validate(string path)
