@@ -81,59 +81,7 @@ namespace Spacebox.Game.Generation.Tools
 
             return false;
         }
-
-        public static SpaceEntity[] LoadSpaceEntities(Sector sector)
-        {
-            string sectorFolderPath = GetSectorFolderPath(World.WorldData.WorldFolderPath, sector.PositionIndex);
-
-            return LoadSpaceEntities(sectorFolderPath, sector);
-        }
-
-        public static SpaceEntity[] LoadSpaceEntities(string sectorFolderPath, Sector sector)
-        {
-
-            List<SpaceEntity> spaceEntities = new List<SpaceEntity>();
-
-            if (Directory.Exists(sectorFolderPath))
-            {
-                var files = Directory.GetFiles(sectorFolderPath);
-
-                foreach (var file in files)
-                {
-                    if (Path.GetExtension(file) != ".entity") continue;
-
-                    var e = LoadSpaceEntityFromFile(file, sector);
-
-                    var fileName = Path.GetFileNameWithoutExtension(file);
-
-                    if (e.Name != fileName)
-                    {
-                        Debug.Warning($"[WorldSaveLoad] Entity name was changed from {e.Name} to {fileName} because the file name was modified");
-                        Debug.Warning("[WorldSaveLoad] (These changes will be applied after saving the world)");
-                        e.Name = fileName;
-                        e.IsModified = true;
-                    }
-
-                    if (e != null)
-                    {
-                        spaceEntities.Add(e);
-                        Debug.Success($"[WorldSaveLoad] Entity found:  id: {e.EntityID} name: {e.Name}");
-                    }
-                    else
-                    {
-                        Debug.Error("[WorldSaveLoad] Entity loaded from file was null! File path: : " + file);
-                    }
-
-                }
-            }
-            else
-            {
-                Debug.Error("[WorldSaveLoad] Wrong sector folder path: " + sectorFolderPath);
-            }
-
-            return spaceEntities.ToArray();
-        }
-
+     
 
         public static SpaceEntity? LoadSpaceEntityFromFile(string entityFilePath, Sector sector)
         {
@@ -176,13 +124,13 @@ namespace Spacebox.Game.Generation.Tools
                 Directory.CreateDirectory(sectorFolderPath);
             }
 
-            foreach(var deleted in sector.EntitiesDestroyed)
+            foreach (var deleted in sector.EntitiesDestroyed)
             {
                 string deletedEntityPath = Path.Combine(sectorFolderPath, deleted + ".entity");
                 if (File.Exists(deletedEntityPath))
                 {
                     File.Delete(deletedEntityPath);
-                  
+
                 }
             }
 
@@ -203,7 +151,7 @@ namespace Spacebox.Game.Generation.Tools
 
         }
 
-        public static List<NotGeneratedEntity> ScanCustomEntities(Vector3i sectorIndex)
+        public static List<NotGeneratedEntity> ScanAllEntities(Vector3i sectorIndex)
         {
             var list = new List<NotGeneratedEntity>();
             if (!CanLoadSectorHere(sectorIndex, out var folderPath)) return list;
@@ -220,8 +168,6 @@ namespace Spacebox.Game.Generation.Tools
 
                     long id = tag.Get<LongTag>(NBTKey.ENTITY.id).Value;
 
-                    if (id >= 0) continue;
-
                     float x = tag.Get<FloatTag>(NBTKey.ENTITY.local_x).Value;
                     float y = tag.Get<FloatTag>(NBTKey.ENTITY.local_y).Value;
                     float z = tag.Get<FloatTag>(NBTKey.ENTITY.local_z).Value;
@@ -232,13 +178,13 @@ namespace Spacebox.Game.Generation.Tools
                     {
                         Id = id,
                         positionInSector = new Vector3(x, y, z),
-                        FileName = Path.GetFileName(file),
+                        FileName = fileNameNoExt,
 
-                        radiusBlocks = 100
+                        radiusBlocks = 32
                     };
                     list.Add(meta);
                 }
-                catch {  }
+                catch { }
             }
             return list;
         }

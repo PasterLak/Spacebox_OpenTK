@@ -57,7 +57,8 @@ namespace Spacebox.Game.Generation.Tools
 
             long id = tag.Get<LongTag>(NBTKey.ENTITY.id);
 
-            string name = tag.Get<StringTag>(NBTKey.ENTITY.name);
+            string file_name = tag.Get<StringTag>(NBTKey.ENTITY.name);
+
             var x = tag.Get<FloatTag>(NBTKey.ENTITY.local_x);
             var y = tag.Get<FloatTag>(NBTKey.ENTITY.local_y);
             var z = tag.Get<FloatTag>(NBTKey.ENTITY.local_z);
@@ -86,7 +87,7 @@ namespace Spacebox.Game.Generation.Tools
                 spaceEntity = new SpaceEntity(id, worldPos, sector);
             }
 
-            spaceEntity.Name = name;
+            spaceEntity.Name = file_name;
             spaceEntity.IsGenerated = true;
 
             if (tag.ContainsKey(NBTKey.ENTITY.rotation_x))

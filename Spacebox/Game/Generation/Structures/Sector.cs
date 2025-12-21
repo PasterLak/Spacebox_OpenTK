@@ -9,8 +9,6 @@ using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
-using System;
-using static Spacebox.Game.GUI.CraftingCategory;
 
 
 namespace Spacebox.Game.Generation;
@@ -111,17 +109,20 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         {
             try
             {
-                var loadedEntity = WorldSaveLoad.LoadSpaceEntityFromFile(filePath, this); 
+                var tag = WorldSaveLoad.LoadSpaceEntityTagFromFile(filePath); 
 
-                if (loadedEntity != null)
+                var fileName = Path.GetFileNameWithoutExtension(filePath);
+
+                if (tag != null)
                 {
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
-                        if (Entities.Exists(e => e.EntityID == loadedEntity.EntityID)) return;
+                        var entity = NBTHelper.TagToSpaceEntity(tag, this);
+                        if (Entities.Exists(e => e.EntityID == entity.EntityID)) return;
 
-                        ApplyLoadedEntityFixes(loadedEntity, data, Path.GetFileName(filePath));
+                        ApplyLoadedEntityFixes(entity, data, fileName);
 
-                        AddEntity(loadedEntity, loadedEntity.PositionWorld);
+                        AddEntity(entity, entity.PositionWorld);
                         octreeNotGenerated.Remove(data);
                     });
                 }
@@ -161,14 +162,28 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     private void ScanAndRegisterCustomEntities()
     {
-        var customs = WorldSaveLoad.ScanCustomEntities(PositionIndex);
-        foreach (var custom in customs)
+      
+        var savedEntities = WorldSaveLoad.ScanAllEntities(PositionIndex);
+
+        foreach (var saved in savedEntities)
         {
-            custom.positionWorld = LocalToWorldPosition(custom.positionInSector);
-            if (!EntitiesGeneratedData.ContainsKey(custom.Id))
+            saved.positionWorld = LocalToWorldPosition(saved.positionInSector);
+
+            if (EntitiesGeneratedData.TryGetValue(saved.Id, out var existing))
             {
-                EntitiesGeneratedData.Add(custom.Id, custom);
-                octreeNotGenerated.Add(custom, custom.positionWorld);
+                existing.FileName = saved.FileName;
+
+                existing.positionWorld = saved.positionWorld;
+                existing.positionInSector = saved.positionInSector;
+
+                octreeNotGenerated.Remove(existing);
+                octreeNotGenerated.Add(existing, existing.positionWorld);
+            }
+            else
+            {
+
+                EntitiesGeneratedData.Add(saved.Id, saved);
+                octreeNotGenerated.Add(saved, saved.positionWorld);
             }
         }
     }
@@ -375,7 +390,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     private void GenerateAsteroidFromData(NotGeneratedEntity data)
     {
-        // 1. Кэш
+
         if (WorldPersistenceManager.TryGetCachedEntity(data.Id, out var cachedTag))
         {
             var entity = NBTHelper.TagToSpaceEntity(cachedTag, this);
@@ -384,12 +399,10 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             return;
         }
 
-        // 2. Диск
         string sectorPath = WorldSaveLoad.GetSectorFolderPath(World.WorldData.WorldFolderPath, PositionIndex);
 
-        // Если имя файла есть в данных сканера - берем его. Если нет - стандартное по ID.
-        string fileName = !string.IsNullOrEmpty(data.FileName) ? data.FileName : data.Id + ".entity";
-        string filePath = Path.Combine(sectorPath, fileName);
+        string fileName = !string.IsNullOrEmpty(data.FileName) ? data.FileName : data.Id.ToString();
+        string filePath = Path.Combine(sectorPath, fileName + ".entity");
 
         if (File.Exists(filePath))
         {
@@ -429,12 +442,11 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             asteroid.IsGenerated = true;
         }
 
-        string fileNameNoExt = Path.GetFileNameWithoutExtension(realFileName);
 
-        if (loadedEntity.Name != fileNameNoExt)
+        if (loadedEntity.Name != realFileName)
         {
-            Debug.Warning($"[Sector] Fixed name mismatch for {loadedEntity.EntityID}. Old: '{loadedEntity.Name}', New: '{fileNameNoExt}'");
-            loadedEntity.Name = fileNameNoExt;
+            Debug.Warning($"[Sector] Fixed name mismatch for {loadedEntity.EntityID}. Old: '{loadedEntity.Name}', New: '{realFileName}'");
+            loadedEntity.Name = realFileName;
 
             loadedEntity.IsModified = true;
         }
@@ -495,6 +507,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         SpaceEntity entity = new SpaceEntity(id, positionWorld, this);
 
         AddEntity(entity, positionWorld);
+        entity.IsGenerated = true;
         IsModified = true;
 
         return entity;

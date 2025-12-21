@@ -14,6 +14,7 @@ namespace Spacebox.Game.Generation.Tools
         public static class ENTITY
         {
             public const string id = "id";
+            public const string file_name = "file_name";
             public const string name = "name";
             public const string local_x = "local_x";
             public const string local_y = "local_y";
