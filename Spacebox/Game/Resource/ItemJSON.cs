@@ -30,6 +30,12 @@ public class DrillItemJSON : ItemJSON
     public Color3Byte DrillColor { get; set; } = new Color3Byte(100, 116, 255);
 }
 
+public class EquipmentJSON : ItemJSON
+{
+    public byte Tier { get; set; } = 0;
+
+}
+
 public class ConsumableItemJSON : ItemJSON
 {
     public byte HealAmount { get; set; } = 0;

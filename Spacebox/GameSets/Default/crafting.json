@@ -571,11 +571,27 @@
             },
             "Ingredients": [
                 {
-                    "Item": "aluminium_block_light",
-                    "Quantity": 1
+                    "Item": "aluminium_panels",
+                    "Quantity": 4
                 },
                 {
                     "Item": "energy_cell",
+                    "Quantity": 6
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "nuclear_power_block",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "iron_panels",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "uranium_rods",
                     "Quantity": 6
                 }
             ]

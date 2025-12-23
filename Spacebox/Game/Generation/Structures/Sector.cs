@@ -109,7 +109,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         {
             try
             {
-                var tag = WorldSaveLoad.LoadSpaceEntityTagFromFile(filePath); 
+                var tag = WorldSaveLoad.LoadSpaceEntityTagFromFile(filePath);
 
                 var fileName = Path.GetFileNameWithoutExtension(filePath);
 
@@ -162,7 +162,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     private void ScanAndRegisterCustomEntities()
     {
-      
+
         var savedEntities = WorldSaveLoad.ScanAllEntities(PositionIndex);
 
         foreach (var saved in savedEntities)
@@ -487,7 +487,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         if (entity.IsProcedural() && !SuppressedEntities.Contains(id))
         {
-            SuppressedEntities.Add(id);  
+            SuppressedEntities.Add(id);
         }
 
         EntitiesDestroyed.Add(name);
@@ -621,13 +621,13 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
                 entity.Render(cam, shader);
 
-               // if (entity.StarsEffect.Enabled)
-                 //   entity.StarsEffect.Enabled = false;
+                // if (entity.StarsEffect.Enabled)
+                //   entity.StarsEffect.Enabled = false;
             }
             else
             {
-               // if (!entity.StarsEffect.Enabled)
-               //     entity.StarsEffect.Enabled = true;
+                // if (!entity.StarsEffect.Enabled)
+                //     entity.StarsEffect.Enabled = true;
 
                 if (distSqr >= Settings.ENTITY_UNLOAD_DISTANCE * Settings.ENTITY_UNLOAD_DISTANCE)
                 {
@@ -647,6 +647,105 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         float distSq = Vector3.DistanceSquared(cam.Position, data.positionWorld);
         float radius = data.radiusBlocks * 1.5f;
         return distSq < radius * radius;
+    }
+
+    public void PreloadAreaBlocking(Vector3 position, float radius)
+    {
+        Debug.Log($"[Sector] Preloading area at {position} with radius {radius}...");
+
+        var nearby = new List<NotGeneratedEntity>();
+        if (!octreeNotGenerated.GetNearbyNonAlloc(position, radius, nearby))
+        {
+            return;
+        }
+
+        var tasks = new List<Task>();
+        var loadedEntities = new System.Collections.Concurrent.ConcurrentBag<SpaceEntity>();
+        var processedData = new System.Collections.Concurrent.ConcurrentBag<NotGeneratedEntity>();
+
+        string sectorPath = WorldSaveLoad.GetSectorFolderPath(World.WorldData.WorldFolderPath, PositionIndex);
+
+        foreach (var data in nearby)
+        {
+            tasks.Add(Task.Run(() =>
+            {
+                try
+                {
+                    SpaceEntity entity = null;
+
+                    if (WorldPersistenceManager.TryGetCachedEntity(data.Id, out var cachedTag))
+                    {
+                        entity = NBTHelper.TagToSpaceEntity(cachedTag, this);
+                    }
+
+                    else
+                    {
+                        string fileName = !string.IsNullOrEmpty(data.FileName) ? data.FileName : data.Id + ".entity";
+                        if (!fileName.EndsWith(".entity")) fileName += ".entity";
+                        string filePath = Path.Combine(sectorPath, fileName);
+
+                        if (File.Exists(filePath))
+                        {
+                            var loaded = WorldSaveLoad.LoadSpaceEntityFromFile(filePath, this);
+                            if (loaded != null)
+                            {
+                                ApplyLoadedEntityFixes(loaded, data, fileName);
+                                entity = loaded;
+                            }
+                        }
+                    }
+
+                    if (entity == null && data.Id >= 0)
+                    {
+                        var newEntity = new Asteroid(data, this, true);
+                        newEntity.Name = newEntity.EntityID.ToString();
+
+                        newEntity.OnGenerate();
+                        entity = newEntity;
+                    }
+
+                    if (entity != null)
+                    {
+
+                        loadedEntities.Add(entity);
+                        processedData.Add(data);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.Error($"[Sector] Preload failed for entity {data.Id}: {ex.Message}");
+                }
+            }));
+        }
+
+
+        Task.WaitAll(tasks.ToArray());
+
+        foreach (var entity in loadedEntities)
+        {
+            AddEntity(entity, entity.PositionWorld);
+        }
+
+        foreach (var data in processedData)
+        {
+            octreeNotGenerated.Remove(data);
+        }
+
+        foreach (var entity in loadedEntities)
+        {
+
+            if (entity.Chunks.Count > 0)
+            {
+                // entity.GenerateMesh();
+                foreach (var chunk in entity.Chunks)
+                {
+                    if (chunk.NeedsToRegenerateMesh || !chunk.IsGenerated)
+                        chunk.GenerateMesh();
+                }
+            }
+        }
+
+        Debug.Success($"[Sector] Preload complete. Loaded {loadedEntities.Count} entities.");
     }
 
     public void Dispose()

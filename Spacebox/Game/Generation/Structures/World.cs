@@ -103,6 +103,8 @@ public class World : Component, ISpaceStructure
         CurrentSector = LoadSectorNow(SpaceMath.Sector.GetSectorIndex(Player.Position));
         //CurrentSector.SpawnPlayerNearRandomAsteroidData(Player, new Random(Seed));
 
+        //CurrentSector.PreloadAreaBlocking(Player.Position, Settings.CHUNK_VISIBLE_RADIUS);
+
         if (CurrentSector == null)
             Debug.Error("No current sector");
 

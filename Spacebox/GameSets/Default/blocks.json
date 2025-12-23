@@ -613,6 +613,17 @@
         "IsTransparent": false
     },
     {
+        "ID": "nuclear_power_block",
+        "Name": "Standard Nuclear Power Block",
+        "Type": "generator",
+        "Category": "resources",
+        "Sides": "nuclear_generator",
+        "PowerToDrill": 2,
+        "Mass": 5,
+        "Durability": 15,
+        "IsTransparent": false
+    },
+    {
         "ID": "dna_reconstructor",
         "Name": "DNA Reconstructor",
         "Description": "Used to revive the player or other creatures",

@@ -182,8 +182,12 @@ public class InteractionShoot : InteractionMode
 
             var projectile = ProjectilesPool.Take();
 
-            if (weapon.ProjectileID == 3)
+            if (projectileParameters.Name == "p_ar")
+            {
+              
                 projectile.OnDespawn += SetSphere;
+            }
+               
 
             var projectileSpawnPos = Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.05f;
 
