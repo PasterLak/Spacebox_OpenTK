@@ -16,10 +16,9 @@ public class SpaceTexture : Texture2D
         // SaveToPng("space.png", true);
     }
 
-    private void GenerateSpaceTexture(int seed = 12345)
+    private void GenerateSpaceTexture(int seed)
     {
         Random random = new Random(seed);
-
 
         for (int y = 0; y < Height; y++)
         {

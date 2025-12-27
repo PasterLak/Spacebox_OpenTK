@@ -66,5 +66,7 @@
         public static long ULongToLong(ulong value) => unchecked((long)value);
 
         public static ulong LongToULong(long value) => unchecked((ulong)value);
+
+        
     }
 }

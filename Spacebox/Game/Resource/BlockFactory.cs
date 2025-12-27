@@ -1,6 +1,4 @@
 ﻿
-using Engine;
-using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
 
 
@@ -29,8 +27,7 @@ namespace Spacebox.Game.Resource
             if (!GameAssets.Blocks.ContainsKey(id))
                 return new Block();
 
-            BlockData data = GameAssets.Blocks[id];
-            return CreateBlock(data);
+            return CreateBlock(GameAssets.Blocks[id]);
         }
 
         public static Block CreateBlock(BlockData data)

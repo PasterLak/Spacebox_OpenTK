@@ -39,7 +39,6 @@ public class Settings
     public const int SECTOR_UNLOAD_DISTANCE_SQUARED = SECTOR_UNLOAD_DISTANCE* SECTOR_UNLOAD_DISTANCE;
 
 
-
     public static bool ShowInterface = true;
 
 
