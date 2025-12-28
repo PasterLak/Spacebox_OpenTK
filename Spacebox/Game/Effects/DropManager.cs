@@ -74,6 +74,11 @@ namespace Spacebox.Game.Effects
             }
         }
 
+        public void DropItemSlot(Vector3 position, Vector3 direction, float speed, ItemSlot itemSlot,  float pickupDelay = 0.5f, float deceleration = 5f, SpaceEntity sourceEntity = null)
+        {
+            DropItem(position, direction, speed, itemSlot.Item, itemSlot.Count, pickupDelay, deceleration, sourceEntity);
+        }
+
         public void DropItem(Vector3 position, Vector3 direction, float speed, Item item, int quantity, float pickupDelay = 0.5f, float deceleration = 5f, SpaceEntity sourceEntity = null)
         {
             var drop = _dropPool.Take();
@@ -485,6 +490,7 @@ namespace Spacebox.Game.Effects
             while (quantity > 0)
             {
                 var amountToAdd = Math.Min(quantity, 255);
+
                 if (_player.Panel.TryAddItem(drop.Info.item, (byte)amountToAdd))
                 {
                     addedQuantity += amountToAdd;

@@ -41,10 +41,10 @@ public class Storage
     }
 
 
-    public void ConnectStorage(Storage storage, bool allowMoveItems = false)
+    public void ConnectStorage(Storage storage, bool moveItemsToConnectedStorage = false)
     {
         ConnectedStorage = storage;
-        MoveItemsToConnectedStorage = allowMoveItems;
+        MoveItemsToConnectedStorage = moveItemsToConnectedStorage;
     }
     public void DisconnectStorage()
     {
@@ -467,6 +467,11 @@ public class Storage
             }
         }
         return null;
+    }
+
+    public override string ToString()
+    {
+        return $"Storage(Id={Id}, Name={Name}, Size=({SizeX},{SizeY}))";
     }
 
 }

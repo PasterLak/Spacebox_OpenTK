@@ -278,7 +278,22 @@ public class CraftingGUI
         if (Input.IsKey(OpenTK.Windowing.GraphicsLibraryFramework.Keys.LeftShift))
         {
             bp = bp.Clone();
-            Blueprint.ScaleBlueprint(bp, 5);
+
+            var possibleCount = CraftingLogic.CalculatePossibleItemCraftCount(Inventory, Panel, bp, currentPlayer);
+
+            if (possibleCount >= 5)
+            {
+                Blueprint.ScaleBlueprint(bp, 5);
+            }
+            else
+            {
+             
+                if (possibleCount > 1)
+                {
+                    Blueprint.ScaleBlueprint(bp, possibleCount);
+                }
+            }
+
         }
 
         if (CraftingLogic.TryGetResources(Inventory, Panel, bp, currentPlayer))

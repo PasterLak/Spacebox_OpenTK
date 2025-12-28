@@ -95,8 +95,6 @@ namespace Spacebox.Game.GUI
 
                 ToggleManager.DisableAllWindows();
 
-
-
             }
             else
             {
@@ -105,9 +103,6 @@ namespace Spacebox.Game.GUI
                 ToggleManager.SetState("creative", v);
 
             }
-
-
-
 
             ToggleManager.SetState("resourceProcessing", v);
 

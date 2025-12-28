@@ -199,12 +199,12 @@ namespace Spacebox.Game.GUI
 
             if (!dropAll)
             {
-                World.DropEffectManager.DropItem(dropPosition, Player.Front, 6f, slot.Item, 1, 2, 4);
+                World.DropEffectManager.DropItemSlot(dropPosition, Player.Front, 6f, slot, 2, 4);
                 slot.DropOne();
             }
             else
             {
-                World.DropEffectManager.DropItem(dropPosition, Player.Front, 6f, slot.Item, slot.Count, 2, 4);
+                World.DropEffectManager.DropItemSlot(dropPosition, Player.Front, 6f, slot, 2, 4);
                 slot.Clear();
             }
 

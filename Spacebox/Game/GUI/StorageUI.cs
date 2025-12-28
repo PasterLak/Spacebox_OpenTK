@@ -112,7 +112,7 @@ namespace Spacebox.Game.GUI
             if (Astronaut is not null)
             {
                 Astronaut.Inventory.ConnectStorage(Astronaut.Panel);
-                Astronaut.Panel.ConnectStorage(Astronaut.Inventory);
+                Astronaut.Panel.ConnectStorage(Astronaut.Inventory, true);
                 Astronaut = null;
             }
             editingName = false;

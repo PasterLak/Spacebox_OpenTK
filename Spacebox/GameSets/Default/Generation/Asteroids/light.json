@@ -76,7 +76,7 @@
                     },
                     {
                         "BlockId": "uranium_ore",
-                        "SpawnChance": 3000,
+                        "SpawnChance": 2000,
                         "MinVeinSize": 1,
                         "MaxVeinSize": 1,
                         "CanSpawnNearVoid": true

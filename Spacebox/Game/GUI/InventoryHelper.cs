@@ -1,6 +1,7 @@
 ﻿using Engine;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Spacebox.Game.Generation;
 using Spacebox.Game.Resource;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -88,10 +89,10 @@ namespace Spacebox.Game.GUI
             {
                 if (ImGui.ImageButton(id, SlotTexture, new Vector2(SlotSize, SlotSize)))
                 {
-
                     onSlotClicked?.Invoke(slot);
                 }
             }
+
             if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
             {
                 OnSlotRightClicked(slot);
@@ -101,15 +102,8 @@ namespace Spacebox.Game.GUI
                 onSlotClicked?.Invoke(slot);
             }
 
-            if (!ImGui.IsItemActive() && ImGui.IsItemHovered())
-            {
-                IsDragging = false;
-            }
-
-
             if (slot.HasItem)
             {
-
                 if (ImGui.BeginDragDropSource(ImGuiDragDropFlags.None))
                 {
                     short slotId = slot.SlotId;
@@ -124,8 +118,37 @@ namespace Spacebox.Game.GUI
 
                     ShowDragPreview(slot);
 
-
                     ImGui.EndDragDropSource();
+                }
+                else if (IsDragging && startSlot == slot && !ImGui.IsMouseDown(ImGuiMouseButton.Left))
+                {
+
+                    if (!ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow))
+                    {
+                       
+                        var cam = Camera.Main;
+
+                        if( cam != null)
+                        {
+                           
+                            var dropPosition = cam.Position + cam.Front * 0.5f;
+
+                            World.DropEffectManager.DropItemSlot(dropPosition, cam.Front, 6f, slot, 2, 4);
+
+                            slot.Clear();
+
+                        }
+
+
+                        IsDragging = false;
+                        startSlot = null;
+                        startStorage = null;
+                    }
+                    else
+                    {
+
+                        IsDragging = false;
+                    }
                 }
             }
 
@@ -135,26 +158,21 @@ namespace Spacebox.Game.GUI
                 if (payload.NativePtr != null)
                 {
 
-                    short sourceSlotId = Marshal.ReadInt16(payload.Data);
-
                     if (startStorage != null && startSlot != null)
                     {
-
                         if (startSlot != slot)
+                        {
                             startSlot.SwapWith(slot);
+                        }
 
-
+                        IsDragging = false;
+                        startSlot = null;
+                        startStorage = null;
                     }
-
                 }
-                IsDragging = false;
 
                 ImGui.EndDragDropTarget();
-
-
             }
-
-
 
             ImDrawListPtr drawList = ImGui.GetWindowDrawList();
             Vector2 pos = ImGui.GetItemRectMin();
@@ -164,8 +182,6 @@ namespace Spacebox.Game.GUI
 
             Vector2 posCenter = pos + new Vector2(SlotSize * 0.5f, SlotSize * 0.5f);
 
-            // drawList.AddRectFilled(posCenter - sizeSlot * 0.5f, posCenter + sizeSlot * 0.5f, Theme.Colors.RedUint);
-
             if (isSelected && SelectedTexture != nint.Zero)
             {
                 drawList.AddImage(SelectedTexture, posCenter - sizeSlot * 0.5f, posCenter + sizeSlot * 0.5f);
@@ -173,7 +189,8 @@ namespace Spacebox.Game.GUI
 
             if (slot.HasItem)
             {
-                drawList.AddImage(GameAssets.ItemIcons[slot.Item.Id].Handle, posCenter - sizeItem * 0.5f, posCenter + sizeItem * 0.5f);
+                if (GameAssets.ItemIcons.ContainsKey(slot.Item.Id))
+                    drawList.AddImage(GameAssets.ItemIcons[slot.Item.Id].Handle, posCenter - sizeItem * 0.5f, posCenter + sizeItem * 0.5f);
 
                 if (slot.Count > 1)
                 {
@@ -196,7 +213,6 @@ namespace Spacebox.Game.GUI
                             text);
                         drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new Vector4(1, 0.8f, 0, 1)),
                             text);
-
                     }
                 }
             }
@@ -210,7 +226,6 @@ namespace Spacebox.Game.GUI
 
             ImGui.PopStyleColor(5);
         }
-
         private static void ShowDragPreview(ItemSlot slot)
         {
 
@@ -235,7 +250,7 @@ namespace Spacebox.Game.GUI
 
         }
 
-        public static void ShowTooltip(ItemSlot slot, bool showStackSize, bool showDescription )
+        public static void ShowTooltip(ItemSlot slot, bool showStackSize, bool showDescription)
         {
             if (IsDragging) return;
 
@@ -243,7 +258,7 @@ namespace Spacebox.Game.GUI
             {
                 ImGui.BeginTooltip();
                 ImGui.Text(slot.Name);
-                
+
                 ImGui.EndTooltip();
             }
             if (ImGui.IsItemHovered() && slot.HasItem)
@@ -306,8 +321,8 @@ namespace Spacebox.Game.GUI
                 else if (type == typeof(ConsumableItem))
                 {
                     var itemType = slot.Item as ConsumableItem;
-                    if(itemType.HealAmount > 0)
-                    text += "\nHealing: +" + itemType.HealAmount;
+                    if (itemType.HealAmount > 0)
+                        text += "\nHealing: +" + itemType.HealAmount;
                     if (itemType.PowerAmount > 0)
                         text += "\nPower: +" + itemType.PowerAmount;
 
@@ -382,10 +397,10 @@ namespace Spacebox.Game.GUI
                 if (Input.IsAction("storage_item_quick_transfer"))
                 {
 
-                    slot.MoveItemToConnectedStorage(); 
+                    slot.MoveItemToConnectedStorage();
 
                 }
-                if (Input.IsAction("storage_item_delete")) 
+                if (Input.IsAction("storage_item_delete"))
                 {
 
                     slot.Clear();
