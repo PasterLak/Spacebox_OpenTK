@@ -52,7 +52,7 @@ namespace Spacebox.Game.Player
         {
             var p = new ProjectileParameters();
 
-            p.ID = short.MaxValue - 1;
+            p.ID = short.MaxValue - 2;
             p.Name = "projectiletest";
             p.Speed = 15;
             p.MaxTravelDistance = 100;
@@ -68,6 +68,28 @@ namespace Spacebox.Game.Player
 
             return p;
         }
+
+        public static ProjectileParameters GetNoPenetrationProjectile()
+        {
+            var p = new ProjectileParameters();
+
+            p.ID = short.MaxValue - 1;
+            p.Name = "projectiletest";
+            p.Speed = 15;
+            p.MaxTravelDistance = 100;
+            p.Length = 0.75f;
+            p.Thickness = 0.1f;
+            p.Color = Color4.Yellow;
+            p.Penetration = 255;
+            p.Mass = 2;
+            p.Damage = 5;
+            p.DamageBlocks = 5;
+            p.RicochetAngle = 30;
+            p.PossibleRicochets = 5;
+
+            return p;
+        }
+
         public static ProjectileParameters GetErrorProjectile()
         {
             var p = new ProjectileParameters();

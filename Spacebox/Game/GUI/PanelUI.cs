@@ -199,7 +199,7 @@ namespace Spacebox.Game.GUI
 
             if (!dropAll)
             {
-                World.DropEffectManager.DropItemSlot(dropPosition, Player.Front, 6f, slot, 2, 4);
+                World.DropEffectManager.DropItem(dropPosition, Player.Front, 6f, slot.Item,1, 2, 4);
                 slot.DropOne();
             }
             else
@@ -387,7 +387,7 @@ namespace Spacebox.Game.GUI
             if (slot.HasItem)
             {
                 if (Input.IsAction("storage_item_quick_transfer"))
-                    slot.MoveItemToConnectedStorage();
+                    slot.TryMoveItemToConnectedStorage(out var _);
                 if (Input.IsKey(Keys.LeftAlt))
                     slot.Split();
                 if (Input.IsAction("storage_item_delete"))

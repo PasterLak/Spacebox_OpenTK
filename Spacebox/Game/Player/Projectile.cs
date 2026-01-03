@@ -271,6 +271,7 @@ namespace Spacebox.Game.Player
                 }
                 else
                 {
+                    ProjectileHitEffectsManager.Instance.PlayNoPenetrationEffect(hit.hitPosition + hit.normal.ToVector3() * 0.1f);
                     Enabled = false;
                     OnDespawn?.Invoke(this);
                 }

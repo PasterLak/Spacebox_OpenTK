@@ -6,8 +6,8 @@ namespace Spacebox.Game;
 
 public class Ingredient
 {
-    public Item Item;
-    public byte Quantity;
+    public Item Item { get; private set; }
+    public byte Quantity { get;  set; }
 
     public Ingredient(Item item, byte quantity)
     {
@@ -18,11 +18,9 @@ public class Ingredient
     public override string ToString()
     {
         if(Item == null) return string.Empty;
-        //var name = Item.Name;
 
         var prefix = (CraftingLogic.IsVirtualResource(Item.Id_string) ? "" : "x");
 
-        //if (name == "$health") name = "Health";
         return prefix + Quantity + " " + Item.Name;
          
     }

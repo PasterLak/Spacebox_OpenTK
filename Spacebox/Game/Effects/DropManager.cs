@@ -94,7 +94,7 @@ namespace Spacebox.Game.Effects
             _activeDrops.Add(drop);
             _movingDrops.Add(drop);
 
-            EnsureParticleSystemForItem(item.Id);
+            EnsureParticleSystemItem(item.Id);
             CreateParticle(position, item.Id, drop);
         }
 
@@ -168,7 +168,7 @@ namespace Spacebox.Game.Effects
             _activeDrops.Add(drop);
             _octree.Add(drop, dropPosition);
 
-            EnsureParticleSystem(item.Id, blockData, color);
+            EnsureParticleSystemBlock(item.Id, blockData, color);
             CreateParticle(dropPosition, item.Id, drop);
         }
 
@@ -205,7 +205,7 @@ namespace Spacebox.Game.Effects
 
             return false;
         }
-        private void EnsureParticleSystem(short itemId, BlockData blockData, Color3Byte color)
+        private void EnsureParticleSystemBlock(short itemId, BlockData blockData, Color3Byte color)
         {
             if (_particleSystems.ContainsKey(itemId)) return;
 
@@ -214,10 +214,6 @@ namespace Spacebox.Game.Effects
             {
                 LifeMin = 20,
                 LifeMax = 20,
-                StartSizeMin = 0.2f,
-                StartSizeMax = 0.2f,
-                EndSizeMin = 0.2f,
-                EndSizeMax = 0.2f,
                 ColorStart = new Vector4(color.R / 255f, color.G / 255f, color.B / 255f, 1f),
                 ColorEnd = new Vector4(color.R / 255f, color.G / 255f, color.B / 255f, 1f),
                 SpeedMin = 0,
@@ -236,7 +232,7 @@ namespace Spacebox.Game.Effects
             _particleSystems[itemId] = particleSystem;
         }
 
-        private void EnsureParticleSystemForItem(short itemId)
+        private void EnsureParticleSystemItem(short itemId)
         {
             if (_particleSystems.ContainsKey(itemId)) return;
 
@@ -245,10 +241,6 @@ namespace Spacebox.Game.Effects
             {
                 LifeMin = 20,
                 LifeMax = 20,
-                StartSizeMin = 0.2f,
-                StartSizeMax = 0.2f,
-                EndSizeMin = 0.2f,
-                EndSizeMax = 0.2f,
                 ColorStart = new Vector4(1f),
                 ColorEnd = new Vector4(1f),
                 SpeedMin = 0,
@@ -272,7 +264,7 @@ namespace Spacebox.Game.Effects
             if (!_particleSystems.TryGetValue(itemId, out var particleSystem)) return;
 
             var particle = particleSystem.CreateParticle(position, Vector3.Zero, 20f);
-            particle.StartSize = particle.EndSize = particle.Size = 0.2f;
+            particle.StartSize = particle.EndSize = particle.Size = drop.IsBlock ? 0.2f : 0.3f;
             particle.ColorStart = particle.ColorEnd = particle.Color = new Vector4(1f);
             particleSystem.PushParticle(particle);
 
@@ -623,7 +615,7 @@ namespace Spacebox.Game.Effects
             _activeDrops.Add(drop);
             _octree.Add(drop, position);
 
-            EnsureParticleSystemForItem(item.Id);
+            EnsureParticleSystemItem(item.Id);
             CreateParticle(position, item.Id, drop);
         }
 

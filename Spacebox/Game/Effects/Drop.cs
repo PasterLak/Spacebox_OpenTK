@@ -27,6 +27,7 @@ public class Drop : IDisposable
     private float _throwTime;
     public SpaceEntity SourceEntity;
 
+    public bool IsBlock { get; private set; }
     public bool IsExpired => TimeRemaining <= 0f;
     public bool CanBePickedUp => _age >= PickupDelay;
     public bool IsStopped => Velocity.LengthSquared < 0.01f;
@@ -46,6 +47,8 @@ public class Drop : IDisposable
         _age = 0f;
         _initialVelocity = Vector3.Zero;
         _throwTime = 0f;
+
+        IsBlock = item.Is<BlockItem>();
     }
 
     public void AddQuantity(int amount, float lifetime)
@@ -108,6 +111,7 @@ public class Drop : IDisposable
             }
         }
     }
+
 
     public void ResetPickupTimer()
     {

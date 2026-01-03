@@ -37,9 +37,18 @@ public class Storage
 
         _slots = new ItemSlot[SizeX, SizeY];
 
-        FillSlots();
+        InitializeSlots();
     }
-
+    private void InitializeSlots()
+    {
+        for (byte x = 0; x < SizeX; x++)
+        {
+            for (byte y = 0; y < SizeY; y++)
+            {
+                _slots[x, y] = new ItemSlot(this, x, y);
+            }
+        }
+    }
 
     public void ConnectStorage(Storage storage, bool moveItemsToConnectedStorage = false)
     {
@@ -51,22 +60,15 @@ public class Storage
         ConnectedStorage = null;
     }
 
-    private void FillSlots()
+    public void Clear()
     {
         for (byte x = 0; x < SizeX; x++)
         {
             for (byte y = 0; y < SizeY; y++)
             {
-                _slots[x, y] = new ItemSlot(this, x, y);
+                _slots[x, y].Clear();
             }
         }
-    }
-
-    public void Clear()
-    {
-        _slots = null;
-        _slots = new ItemSlot[SizeX, SizeY];
-        FillSlots();
         OnDataWasChanged?.Invoke(this);
     }
 
@@ -332,7 +334,9 @@ public class Storage
         if (item.Is<BlockItem>()) return 0;
         if (item.Is<DrillItem>()) return 1;
         if (item.Is<WeaponItem>()) return 2;
+      
         if (item.Is<ConsumableItem>()) return 3;
+        if (item.Is<CreativeToolItem>()) return int.MaxValue;
         return 4;
     }
 
@@ -387,15 +391,21 @@ public class Storage
     }
     public ItemSlot? GetSlot(int x, int y)
     {
-        if (x >= 0 && x < SizeX && y >= 0 && y < SizeY)
+        if (SlotExists(x, y))
         {
             return _slots[x, y];
         }
         return null;
     }
+    public bool SlotExists(int x, int y)
+    {
+        return x >= 0 && x < SizeX && y >= 0 && y < SizeY;
+    }
 
     public void SetSlot(int x, int y, Item item, byte count)
     {
+        if (!SlotExists(x, y)) return;
+
         _slots[x, y].SetData(item, count);
         OnDataWasChanged?.Invoke(this);
     }

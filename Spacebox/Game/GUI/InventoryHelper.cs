@@ -397,7 +397,7 @@ namespace Spacebox.Game.GUI
                 if (Input.IsAction("storage_item_quick_transfer"))
                 {
 
-                    slot.MoveItemToConnectedStorage();
+                    slot.TryMoveItemToConnectedStorage(out var _);
 
                 }
                 if (Input.IsAction("storage_item_delete"))
