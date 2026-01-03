@@ -2,6 +2,7 @@
 using Engine.Audio;
 using Engine.Light;
 using Engine.Utils;
+using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Scenes;
@@ -719,9 +720,12 @@ public static class GameSetLoader
             {
                 Item? item2 = null;
 
-                if (ing.Item.ToLower() == "$health".ToLower())
+                var ingName = ing.Item.ToLower();
+
+                if (CraftingLogic.IsVirtualResource(ingName))
                 {
-                    item2 = new Item(255, "$health", 0.5f);
+                    item2 = new Item(255, ingName == "$health" ? "Health" : "Power", 0.5f);
+                    item2.Id_string = ingName;
                     item2.IconTextureId = IntPtr.Zero;
 
                 }

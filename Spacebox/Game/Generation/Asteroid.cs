@@ -172,6 +172,7 @@ public class Asteroid : SpaceEntity
         if (NotGeneratedEntity.asteroid.UsePerlinWorms && _worm != null && _worm.TryGetValue(idx, out var list))
             foreach (var v in list) data[v.X, v.Y, v.Z] = 0;
 
+      
         var oreGen = new AsteroidOreGenerator(NotGeneratedEntity.asteroid, chunkSeed);
         oreGen.ApplyOres(ref data);
 

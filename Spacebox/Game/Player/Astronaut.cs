@@ -108,6 +108,11 @@ namespace Spacebox.Game.Player
             AddChild(Flashlight);
             Flashlight.Position = new Vector3(0, 0, 0f); // -0.3
             Flashlight.Rotation = Vector3.Zero;
+            Flashlight.Diffuse = new Color3Byte(242, 211, 143).ToVector3(); // was 245, 222, 171
+            Flashlight.Specular = new Color3Byte(0, 0, 0).ToVector3(); // was 0
+
+            Flashlight.CutOff = 15; // was 20
+            Flashlight.OuterCutOff = 25; // was 35
 
             ItemLight = new PointLight();
             ItemLight.Diffuse = new Vector3(0.2f, 1, 0.2f);
@@ -134,9 +139,6 @@ namespace Spacebox.Game.Player
             itemInHand.Rotate(new Vector3(10, 90, -10));
             itemInHand.SetScale(0.6f);
             itemInHand.Position = new Vector3(0.35f, -0.47f, -0.25f);
-
-            Flashlight.CutOff = 20;
-            Flashlight.OuterCutOff = 35;
 
 
             /*var point = AddChild(new PointLight());

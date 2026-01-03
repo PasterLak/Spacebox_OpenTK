@@ -533,20 +533,12 @@
     },
 
 
-     {
-        "ID": "cobalt_flashlight",
-        "Name": "Cobalt Flashlight",
-        "Description": "",
-        
-        "Sprite": "flashlight1",
-        "MaxStack": 1,
-        "ModelDepth": 3.0
-    },
+     
      {
         "ID": "aluminium_helmet",
         "Name": "Aluminium Helmet",
         "Description": "Fancy but unwearable",
-        "Category": "items",
+        "Category": "equipment",
         "Sprite": "aluminium_helmet",
         "MaxStack": 1,
         "ModelDepth": 3.0
@@ -555,8 +547,26 @@
         "ID": "aluminium_chest",
         "Name": "Aluminium Chest Armor",
         "Description": "Fancy but unwearable",
-        "Category": "items",
+        "Category": "equipment",
         "Sprite": "aluminium_chest",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "aluminium_shoulders",
+        "Name": "Aluminium Shoulders Armor",
+        "Description": "Fancy but unwearable",
+        "Category": "equipment",
+        "Sprite": "aluminium_shoulders",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "aluminium_arms",
+        "Name": "Aluminium Arms Armor",
+        "Description": "Fancy but unwearable",
+        "Category": "equipment",
+        "Sprite": "aluminium_arms",
         "MaxStack": 1,
         "ModelDepth": 3.0
     },
@@ -564,7 +574,7 @@
         "ID": "aluminium_legs",
         "Name": "Aluminium Legs Armor",
         "Description": "Fancy but unwearable",
-        "Category": "items",
+        "Category": "equipment",
         "Sprite": "aluminium_legs",
         "MaxStack": 1,
         "ModelDepth": 3.0
@@ -573,8 +583,35 @@
         "ID": "aluminium_boots",
         "Name": "Aluminium Boots",
         "Description": "Fancy but unwearable",
-        "Category": "items",
+        "Category": "equipment",
         "Sprite": "aluminium_boots",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "cobalt_flashlight",
+        "Name": "Cobalt Flashlight",
+        "Description": "",
+        "Category": "equipment",
+        "Sprite": "flashlight1",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "basic_scanner",
+        "Name": "Basic Scanner",
+        "Description": "",
+        "Category": "equipment",
+        "Sprite": "scanner1",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "basic_generator",
+        "Name": "Basic Power Generator",
+        "Description": "",
+        "Category": "equipment",
+        "Sprite": "generator1",
         "MaxStack": 1,
         "ModelDepth": 3.0
     }

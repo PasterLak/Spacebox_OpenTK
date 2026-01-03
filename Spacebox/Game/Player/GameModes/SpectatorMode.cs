@@ -43,6 +43,8 @@ public class SpectatorMode : GameModeBase
 
     public override void HandleInput(Astronaut player)
     {
+        if(player.CanMove == false) return;
+
         Vector3 acceleration = Vector3.Zero;
         bool isMoving = false;
 

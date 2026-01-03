@@ -15,10 +15,10 @@
             "Name": "Windows",
             "Icon": "window"
         },
-        {
-            "Id": "doors",
-            "Name": "Doors",
-            "Icon": "titanium_block_heavy"
+         {
+            "Id": "resources",
+            "Name": "Resources",
+            "Icon": "crusher"
         },
         {
             "Id": "other",
@@ -36,9 +36,9 @@
             "Icon": "pistol"
         },
         {
-            "Id": "resources",
-            "Name": "Resources",
-            "Icon": "crusher"
+            "Id": "equipment",
+            "Name": "Equipment",
+            "Icon": "aluminium_helmet"
         },
         {
             "Id": "items",
@@ -795,6 +795,40 @@
                 {
                     "Item": "polymer_fiber",
                     "Quantity": 6
+                }
+
+            ]
+        },
+        {
+            "Product": {
+                "Item": "aluminium_shoulders",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "aluminium_ingot",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "polymer_fiber",
+                    "Quantity": 1
+                }
+
+            ]
+        },
+        {
+            "Product": {
+                "Item": "aluminium_arms",
+                "Quantity": 1
+            },
+            "Ingredients": [
+                {
+                    "Item": "aluminium_ingot",
+                    "Quantity": 3
+                },
+                {
+                    "Item": "polymer_fiber",
+                    "Quantity": 2
                 }
 
             ]

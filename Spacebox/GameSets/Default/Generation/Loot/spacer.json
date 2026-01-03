@@ -12,9 +12,9 @@
     "MaxCount": 3
   },
   {
-    "ID": "cobalt_crystal",
-    "Probability": 30,
-    "MinCount": 1,
+    "ID": "beer",
+    "Probability": 100,
+    "MinCount": 2,
     "MaxCount": 3
   },
   {

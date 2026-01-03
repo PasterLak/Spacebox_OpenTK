@@ -1,7 +1,7 @@
 ﻿using Engine;
 using Engine.Audio;
 using ImGuiNET;
-using NVorbis.Contracts;
+
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player;
@@ -138,7 +138,8 @@ public static class CreativeWindowUI
 
         ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight), ImGuiCond.Always);
-        ImGui.Begin("Creative", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar);
+        ImGui.Begin("Creative", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDecoration
+            | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
 
         GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y);
         ImGui.SetCursorPos(new Vector2(padding, padding));
@@ -157,7 +158,7 @@ public static class CreativeWindowUI
         // var notselected = Theme.Colors.Background;
 
 
-        if (ImGui.BeginTable("CreativeTable2", 1, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit, new Vector2(scrollWidth, scrollHeight)))
+        if (ImGui.BeginTable("CreativeTable2", 1, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit , new Vector2(scrollWidth, scrollHeight)))
         {
             for (int x = 0; x < 1; x++)
                 ImGui.TableSetupColumn($"##columnCreative2_{x}", ImGuiTableColumnFlags.WidthFixed, SlotSize);

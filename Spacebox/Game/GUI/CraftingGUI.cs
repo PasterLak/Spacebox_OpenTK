@@ -371,30 +371,8 @@ public class CraftingGUI
         {
             foreach (var ing in itemData.blueprint.Ingredients)
             {
-                if (ing.Item.Name == "$health")
-                {
-                    if (currentPlayer != null && currentPlayer.HealthBar.StatsData.Value > ing.Quantity)
-                    {
-
-                    }
-                    else
-                    {
-                        canCraft = false;
-                        break;
-                    }
-                }
-                else if (Inventory.HasItem(ing.Item, ing.Quantity))
-                {
-
-                }
-                else if (Panel.HasItem(ing.Item, ing.Quantity))
-                {
-
-                }
-                else if (Inventory.GetTotalCountOf(ing.Item) + Panel.GetTotalCountOf(ing.Item) >= ing.Quantity)
-                {
-
-                }
+    
+                if(CraftingLogic.IsResourceAvailable(ing, Inventory, Panel, currentPlayer)) continue;
                 else
                 {
                     canCraft = false;
@@ -521,14 +499,19 @@ public class CraftingGUI
     {
         foreach (var ingredient in ingredients)
         {
-            int availableCount;
+            int availableCount = 0;
 
-            if (ingredient.Item.Name == "$health")
+            if (ingredient.Item.Id_string == "$health")
             {
                 if (currentPlayer != null)
                     availableCount = currentPlayer.HealthBar.StatsData.Value;
-                else
-                    availableCount = 0;
+              
+            }
+            else if (ingredient.Item.Id_string == "$power")
+            {
+                if (currentPlayer != null)
+                    availableCount = currentPlayer.PowerBar.StatsData.Value;
+             
             }
             else
             {
@@ -541,11 +524,19 @@ public class CraftingGUI
                 ? new Vector4(0, 1, 0, 1)
                 : new Vector4(1, 0, 0, 1);
 
+          
+
             if (ingredient.Item.IconTextureId != IntPtr.Zero)
             {
                 ImGui.Image(ingredient.Item.IconTextureId, iconSize);
                 ImGui.SameLine();
+            }else
+            {
+                ImGui.Dummy(iconSize);
+                ImGui.SameLine();
             }
+
+
 
             ImGui.TextColored(textColor, ingredient.ToString());
         }

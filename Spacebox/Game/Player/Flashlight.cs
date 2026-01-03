@@ -51,8 +51,8 @@ namespace Spacebox.Game.Player
                 
             };
 
-            this.Diffuse = new Color3Byte(245, 222, 171).ToVector3();
-            this.Specular = new Color3Byte(0, 0, 0).ToVector3();
+            this.Diffuse = new Color3Byte(245, 222, 171).ToVector3(); // was 245, 222, 171
+            this.Specular = new Color3Byte(0, 0, 0).ToVector3(); // was 0
 
         }
 

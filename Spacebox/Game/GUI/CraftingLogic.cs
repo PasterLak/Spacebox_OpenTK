@@ -10,116 +10,160 @@ public static class CraftingLogic
     {
         foreach (var ing in blueprint.Ingredients)
         {
-            int totalAvailable = 0;
-            if (ing.Item.Name == "$health")
+            if (!IsResourceAvailable(ing, s1, s2, currentPlayer))
             {
-                if (currentPlayer != null)
-                {
-                    if (currentPlayer.HealthBar.StatsData.Value > ing.Quantity)
-                    {
-                        continue;
-                    }
-                    else return false;
-                }
-                else
-                {
-                    Debug.Error("[Craft] Current player is null!");
-                    return false;
-                }
-            }
-            else
-            {
-                totalAvailable = s1.GetTotalCountOf(ing.Item) + s2.GetTotalCountOf(ing.Item);
-            }
-            if (totalAvailable < ing.Quantity)
                 return false;
+            }
         }
+
         foreach (var ing in blueprint.Ingredients)
         {
-            int required = ing.Quantity;
-            int availableS1 = 0;
-
-            if (ing.Item.Name == "$health")
-            {
-                if (currentPlayer != null)
-                {
-                    var hp = currentPlayer.HealthBar.StatsData.Value;
-                    if (hp > required)
-                    {
-
-                        currentPlayer.TakeDamage(required);
-                        continue;
-                    }
-                    else return false;
-                }
-                else
-                {
-                    Debug.Error("[Craft] Current player is null!");
-                    return false;
-                }
-            }
-
-            availableS1 = s1.GetTotalCountOf(ing.Item);
-
-
-            if (availableS1 >= required)
-            {
-
-                s1.RemoveItem(ing.Item, (byte)required);
-                continue;
-            }
-            else
-            {
-                if (availableS1 > 0)
-                    s1.RemoveItem(ing.Item, (byte)availableS1);
-                required -= availableS1;
-                int availableS2 = s2.GetTotalCountOf(ing.Item);
-                if (availableS2 >= required)
-                    s2.RemoveItem(ing.Item, (byte)required);
-                else
-                    s2.RemoveItem(ing.Item, (byte)availableS2);
-            }
+            ConsumeResource(ing, s1, s2, currentPlayer);
         }
+
         return true;
     }
 
-
-    public static int CalculatePossibleItemCraftCount(Storage Inventory, Storage Panel, Blueprint blueprint, Astronaut currentPlayer)
+    public static bool IsResourceAvailable(Ingredient ing, Storage s1, Storage s2, Astronaut player)
     {
-        if (Inventory == null) return 0;
-        if (Panel == null) return 0;
-        if (blueprint == null) return 0;
-        if (blueprint.Ingredients.Length == 0) return 0;
-
-        int[] r = new int[blueprint.Ingredients.Length];
-
-        var min = int.MaxValue;
-
-        for (int i = 0; i < r.Length; i++)
+        if (IsVirtualResource(ing.Item.Id_string))
         {
-            r[i] = 0;
-
-            if (blueprint.Ingredients[i].Item.Name == "$health")
-            {
-                if (currentPlayer != null)
-                    r[i] = currentPlayer.HealthBar.StatsData.Value;
-                else
-                {
-                    Debug.Error("[Craft] Current player is null!");
-                    r[i] = 0;
-                }
-
-            }
-            else
-            {
-                r[i] = Inventory.GetTotalCountOf(blueprint.Ingredients[i].Item) + Panel.GetTotalCountOf(blueprint.Ingredients[i].Item);
-            }
-            r[i] = r[i] / blueprint.Ingredients[i].Quantity;
-
-            if (r[i] < min) min = r[i];
+            return CheckVirtualResource(ing.Item.Id_string, ing.Quantity, player);
         }
 
-        return min;
+        int totalAvailable = 0;
+        if (s1 != null) totalAvailable += s1.GetTotalCountOf(ing.Item);
+        if (s2 != null) totalAvailable += s2.GetTotalCountOf(ing.Item);
+
+        return totalAvailable >= ing.Quantity;
+    }
+
+
+    private static void ConsumeResource(Ingredient ing, Storage s1, Storage s2, Astronaut player)
+    {
+        if (IsVirtualResource(ing.Item.Id_string))
+        {
+            ConsumeVirtualResource(ing.Item.Id_string, ing.Quantity, player);
+            return;
+        }
+
+        int required = ing.Quantity;
+        int availableS1 = s1.GetTotalCountOf(ing.Item);
+
+        if (availableS1 >= required)
+        {
+            s1.RemoveItem(ing.Item, (byte)required);
+        }
+        else
+        {
+            if (availableS1 > 0)
+            {
+                s1.RemoveItem(ing.Item, (byte)availableS1);
+            }
+
+            required -= availableS1;
+            s2.RemoveItem(ing.Item, (byte)required);
+        }
+    }
+
+    public static bool IsVirtualResource(string itemName)
+    {
+        return itemName.StartsWith("$");
+    }
+
+
+    public static bool CheckVirtualResource(string itemStringID, int quantity, Astronaut player)
+    {
+        if (player == null)
+        {
+            Debug.Error("[Craft] Current player is null!");
+            return false;
+        }
+
+        switch (itemStringID)
+        {
+            case "$health":
+                return player.HealthBar.StatsData.Value > quantity;
+
+            case "$power":
+                return player.PowerBar.StatsData.Value >= quantity;
+
+            default:
+                Debug.Error($"[Craft] Unknown virtual resource: {itemStringID}");
+                return false;
+        }
+    }
+
+    private static void ConsumeVirtualResource(string resourceName, int quantity, Astronaut player)
+    {
+        if (player == null) return;
+
+        switch (resourceName)
+        {
+            case "$health":
+                player.TakeDamage(quantity);
+                break;
+
+            case "$power":
+                player.PowerBar.StatsData.Decrement(quantity);
+                break;
+        }
+    }
+
+
+    public static int CalculatePossibleItemCraftCount(Storage s1, Storage s2, Blueprint blueprint, Astronaut currentPlayer)
+    {
+        if (s1 == null || s2 == null || blueprint == null || blueprint.Ingredients.Length == 0) return 0;
+
+        int minCrafts = int.MaxValue;
+
+        foreach (var ing in blueprint.Ingredients)
+        {
+            int available = GetAvailableQuantity(ing, s1, s2, currentPlayer);
+
+            if (available < ing.Quantity) return 0;
+
+            int possibleForIngredient = available / ing.Quantity;
+
+            if (possibleForIngredient < minCrafts)
+            {
+                minCrafts = possibleForIngredient;
+            }
+        }
+
+        return minCrafts;
+    }
+
+    private static int GetAvailableQuantity(Ingredient ing, Storage s1, Storage s2, Astronaut player)
+    {
+        if (IsVirtualResource(ing.Item.Id_string))
+        {
+            return GetVirtualResourceValue(ing.Item.Id_string, player);
+        }
+
+        return s1.GetTotalCountOf(ing.Item) + s2.GetTotalCountOf(ing.Item);
+    }
+
+    private static int GetVirtualResourceValue(string resourceName, Astronaut player)
+    {
+        if (player == null)
+        {
+            Debug.Error("[Craft] Current player is null!");
+            return 0;
+        }
+
+        switch (resourceName)
+        {
+            case "$health":
+                return player.HealthBar.StatsData.Value;
+
+            case "$power":
+                return player.PowerBar.StatsData.Value;
+
+            default:
+                Debug.Error($"[Craft] Unknown virtual resource: {resourceName}");
+                return 0;
+        }
     }
 
 }

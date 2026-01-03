@@ -289,7 +289,7 @@ namespace Spacebox.Game.GUI
                     var itemType = slot.Item as DrillItem;
                     text += "\nTier: " + itemType.Tier;
                     text += "\nPower usage: " + itemType.PowerUsage;
-                    text += "\nRange: " + itemType.Range;
+                    text += "\nRange: " + itemType.Range + " blocks";
                 }
                 else if (type == typeof(WeaponItem))
                 {
@@ -299,8 +299,8 @@ namespace Spacebox.Game.GUI
 
                     text += "\nDamage: " + $"{+pj.Damage}/{+pj.DamageBlocks}";
                     text += "\nPenetration: " + pj.Penetration;
-                    text += "\nProjectile speed: " + pj.Speed;
-                    text += $"\nReload time: {itemType.ReloadTime / 20f:0.0}s.";
+                    text += "\nProjectile speed: " + pj.Speed + " block/s";
+                    text += $"\nReload time: {itemType.ReloadTime / 20f:0.0}s";
                     text += "\nSpread: " + itemType.Spread;
                     text += "\nPower usage: " + itemType.PowerUsage;
 
