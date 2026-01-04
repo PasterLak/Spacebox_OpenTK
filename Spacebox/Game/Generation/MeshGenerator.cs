@@ -161,7 +161,7 @@ namespace Spacebox.Game.Generation
             faceVertices[2] = faceCenter + upVector + rightVector;
             faceVertices[3] = faceCenter + upVector - rightVector;
 
-            var faceUVs = GameAssets.GetBlockUVsById(block.Id, face);
+            var faceUVs = GameAssets.GetBlockUVs(block, face);
 
             var currentLightLevel = block.LightLevel / 15f;
             var currentLightColor = block.LightColor;

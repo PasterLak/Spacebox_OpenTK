@@ -122,7 +122,7 @@ namespace Spacebox.Game
 
         private static void CreateDust(BlockData block)
         {
-            Texture2D texture = BlockDestructionTexture.Generate(block.WallsUVIndex);
+            Texture2D texture = BlockDestructionTexture.Generate(block.GetActiveWallsUVIndex());
             GameAssets.BlockDusts.Add(block.Id, texture);
         }
     }

@@ -1,14 +1,22 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Tools;
+using System.Collections.Generic;
 
 namespace Spacebox.Game.Resource
 {
+    public enum BlockState
+    {
+        Active,
+        Inactive
+    }
+
     public struct ID
     {
-        public short intern; 
+        public short intern;
         public string str;
     }
+
     public class BlockData
     {
         public short Id;
@@ -22,14 +30,9 @@ namespace Spacebox.Game.Resource
         public byte Durability = 0;
         public float Efficiency = 1f;
 
-        private readonly string[] _faceTextures = new string[7];
-        private readonly Vector2Byte[] _faceUVIndices = new Vector2Byte[7];
-        private readonly Vector2[][] _faceUVs = new Vector2[7][];
-
         public bool IsTransparent { get; private set; } = false;
         public Vector3 LightColor { get; private set; } = Vector3.Zero;
         public Direction BaseFrontDirection { get; private set; } = Direction.Up;
-       
 
         public BlockItem AsItem { get; set; }
         public ItemSlot Drop { get; private set; }
@@ -37,141 +40,163 @@ namespace Spacebox.Game.Resource
         public string SoundPlace { get; set; } = "blockPlaceDefault";
         public string SoundDestroy { get; set; } = "blockDestroyDefault";
 
-        public bool AllSidesAreSame { get; private set; } = true;
-
-        public string GetFaceTexture(Direction direction) => _faceTextures[(int)direction];
-        public void SetFaceTexture(Direction direction, string texture) => _faceTextures[(int)direction] = texture;
-
-        public string Sides
+        private class TextureState
         {
-            get => _faceTextures[6];
-            set => _faceTextures[6] = value;
+            public string[] TextureNames = new string[6];
+            public Vector2[][] UVs = new Vector2[6][];
+            public Vector2Byte[] UVIndices = new Vector2Byte[6];
+            public bool AllSidesAreSame = true;
         }
 
-        public Vector2Byte GetFaceUVIndex(Direction direction) => _faceUVIndices[(int)direction];
-        public void SetFaceUVIndex(Direction direction, Vector2Byte uvIndex) => _faceUVIndices[(int)direction] = uvIndex;
+        private readonly Dictionary<BlockState, TextureState> _texturesByState = new();
 
-        public Vector2Byte WallsUVIndex
+
+
+        public BlockData(string name, string type, bool isTransparent = false, Vector3? lightColor = null)
         {
-            get => _faceUVIndices[6];
-            set => _faceUVIndices[6] = value;
-        }
-
-        public Vector2[] GetFaceUVDirect(Direction direction) => _faceUVs[(int)direction];
-        public void SetFaceUV(Direction direction, Vector2[] uv) => _faceUVs[(int)direction] = uv;
-
-        public Vector2[] WallsUV
-        {
-            get => _faceUVs[6];
-            set => _faceUVs[6] = value;
-        }
-
-        public BlockData(string name, string type, Vector2Byte textureCoords, bool isTransparent = false, Vector3? lightColor = null)
-        {
-            Drop = new ItemSlot(null, 0, 0);
-            Drop.Count = 0;
             Name = name;
             Type = type;
             IsTransparent = isTransparent;
             if (lightColor.HasValue) LightColor = lightColor.Value;
 
-            for (int i = 0; i < 7; i++)
-            {
-                _faceUVIndices[i] = textureCoords;
-            }
+            Drop = new ItemSlot(null, 0, 0) { Count = 0 };
+            _texturesByState[BlockState.Active] = new TextureState();
+        }
 
-            AllSidesAreSame = true;
+        public Vector2Byte GetActiveWallsUVIndex()
+        {
+            return GetFaceUVIndex(Direction.Forward, BlockState.Active);
+        }
+
+        public bool AllSidesAreSame(BlockState state = BlockState.Active)
+        {
+            if (_texturesByState.TryGetValue(state, out var textureState))
+            {
+                return textureState.AllSidesAreSame;
+            }
+            return true;
         }
 
         public BlockData(BlockData baseBlock)
         {
             Id = baseBlock.Id;
-            Name = baseBlock.Name;
-            Type = baseBlock.Type;
-            IsTransparent = baseBlock.IsTransparent;
-            LightColor = baseBlock.LightColor;
-          
             Id_string = baseBlock.Id_string;
+            Name = baseBlock.Name;
             Description = baseBlock.Description;
+            Type = baseBlock.Type;
             Category = baseBlock.Category;
             Mass = baseBlock.Mass;
             PowerToDrill = baseBlock.PowerToDrill;
             Durability = baseBlock.Durability;
             Efficiency = baseBlock.Efficiency;
-            for (int i = 0; i < 7; i++)
-            {
-                SetFaceTexture((Direction)i, baseBlock.GetFaceTexture((Direction)i));
-                SetFaceUVIndex((Direction)i, baseBlock.GetFaceUVIndex((Direction)i));
-                SetFaceUV((Direction)i, baseBlock.GetFaceUVDirect((Direction)i));
-            }
+            IsTransparent = baseBlock.IsTransparent;
+            LightColor = baseBlock.LightColor;
             BaseFrontDirection = baseBlock.BaseFrontDirection;
             AsItem = baseBlock.AsItem;
             Drop = baseBlock.Drop;
             SoundPlace = baseBlock.SoundPlace;
             SoundDestroy = baseBlock.SoundDestroy;
-            AllSidesAreSame = baseBlock.AllSidesAreSame;
+
+            foreach (var state in baseBlock._texturesByState)
+            {
+                var newState = new TextureState
+                {
+                    AllSidesAreSame = state.Value.AllSidesAreSame
+                };
+                System.Array.Copy(state.Value.TextureNames, newState.TextureNames, 6);
+                System.Array.Copy(state.Value.UVs, newState.UVs, 6);
+                System.Array.Copy(state.Value.UVIndices, newState.UVIndices, 6);
+                _texturesByState[state.Key] = newState;
+            }
+        }
+
+        public void SetTexture(string textureName, Direction face = Direction.Up, BlockState state = BlockState.Active)
+        {
+            if (!_texturesByState.ContainsKey(state))
+                _texturesByState[state] = new TextureState();
+
+            var textureState = _texturesByState[state];
+            textureState.TextureNames[(int)face] = textureName;
+        }
+
+        public void SetTextureAllSides(string textureName, BlockState state = BlockState.Active)
+        {
+            if (!_texturesByState.ContainsKey(state))
+                _texturesByState[state] = new TextureState();
+
+            var textureState = _texturesByState[state];
+            for (int i = 0; i < 6; i++)
+            {
+                textureState.TextureNames[i] = textureName;
+            }
+        }
+
+        public void SetTextureSide(string textureName, BlockState state = BlockState.Active)
+        {
+            SetTexture(textureName, Direction.Left, state);
+            SetTexture(textureName, Direction.Right, state);
+            SetTexture(textureName, Direction.Forward, state);
+            SetTexture(textureName, Direction.Back, state);
         }
 
         public static void CacheUvs(BlockData b)
         {
-            b.WallsUV = GameAssets.AtlasBlocks.GetUVByName(b.Sides);
-            b.WallsUVIndex = GameAssets.AtlasBlocks.GetUVIndexByName(b.Sides);
-
-            for (int i = 0; i < 6; i++)
+            foreach (var kvp in b._texturesByState)
             {
-                var direction = (Direction)i;
-                var textureName = b.GetFaceTexture(direction);
+                var state = kvp.Value;
+                state.AllSidesAreSame = true;
+                string firstTexture = state.TextureNames[0];
 
-                b.SetFaceUV(direction, GameAssets.AtlasBlocks.GetUVByName(textureName));
-                b.SetFaceUVIndex(direction, GameAssets.AtlasBlocks.GetUVIndexByName(textureName));
-            }
-
-            bool allWallsSame = true;
-            for (int i = 2; i < 6; i++)
-            {
-                if (b.GetFaceTexture((Direction)i) != b.Sides)
+                for (int i = 0; i < 6; i++)
                 {
-                    allWallsSame = false;
-                    break;
+                    string textureName = state.TextureNames[i];
+
+                    if (string.IsNullOrEmpty(textureName))
+                    {
+                        if (kvp.Key != BlockState.Active && b._texturesByState.ContainsKey(BlockState.Active))
+                        {
+                            textureName = b._texturesByState[BlockState.Active].TextureNames[i];
+                        }
+                        else
+                        {
+                            textureName = firstTexture;
+                        }
+                    }
+
+                    if (textureName != firstTexture)
+                        state.AllSidesAreSame = false;
+
+                    state.UVs[i] = GameAssets.AtlasBlocks.GetUVByName(textureName);
+                    state.UVIndices[i] = GameAssets.AtlasBlocks.GetUVIndexByName(textureName);
                 }
             }
-
-            if (allWallsSame)
-            {
-                for (int i = 2; i < 6; i++)
-                {
-                    var direction = (Direction)i;
-                    b.SetFaceUV(direction, b.WallsUV);
-                    b.SetFaceUVIndex(direction, b.WallsUVIndex);
-                }
-            }
-
-            if (b.GetFaceTexture(Direction.Up) == b.GetFaceTexture(Direction.Down))
-            {
-                b.SetFaceUV(Direction.Down, b.GetFaceUVDirect(Direction.Up));
-                b.SetFaceUVIndex(Direction.Down, b.GetFaceUVIndex(Direction.Up));
-            }
-
-            bool allSameTexture = true;
-            for (int i = 0; i < 6; i++)
-            {
-                if (b.GetFaceTexture((Direction)i) != b.Sides)
-                {
-                    allSameTexture = false;
-                    break;
-                }
-            }
-
-            b.AllSidesAreSame = allSameTexture;
         }
 
-        public Vector2[] GetFaceUV(Face face)
+        public Vector2[] GetFaceUV(Face face, BlockState state = BlockState.Active)
         {
-            if (AllSidesAreSame)
-                return WallsUV;
+            if (!_texturesByState.TryGetValue(state, out var textureState))
+            {
+                if (state != BlockState.Active && _texturesByState.TryGetValue(BlockState.Active, out var activeState))
+                    textureState = activeState;
+                else
+                    return null;
+            }
 
-            var direction = FaceToDirection(face);
-            return GetFaceUVDirect(direction) ?? WallsUV;
+            int dirIndex = (int)FaceToDirection(face);
+
+            if (textureState.AllSidesAreSame)
+                return textureState.UVs[0];
+
+            return textureState.UVs[dirIndex];
+        }
+
+        public Vector2Byte GetFaceUVIndex(Direction direction, BlockState state = BlockState.Active)
+        {
+            if (!_texturesByState.TryGetValue(state, out var textureState))
+            {
+                textureState = _texturesByState[BlockState.Active];
+            }
+            return textureState.UVIndices[(int)direction];
         }
 
         private static Direction FaceToDirection(Face face)

@@ -159,6 +159,23 @@ namespace Spacebox.Game
             return Blocks[id].GetFaceUV(face);
 
         }
+        public static Vector2[] GetBlockUVs(Block block, Face face)
+        {
+            if (!Blocks.ContainsKey(block.Id))
+                return new Vector2[] { new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(0f, 1f) };
+
+            var electricalBlock = block as ElectricalBlock;
+
+            if(electricalBlock != null)
+            {
+                if (!electricalBlock.IsActive)
+                {
+                    return Blocks[block.Id].GetFaceUV(face, BlockState.Inactive);
+                }
+            }
+            return Blocks[block.Id].GetFaceUV(face, BlockState.Active);
+
+        }
 
         public static Direction GetBaseFrontDirection(short id)
         {

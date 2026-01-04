@@ -75,7 +75,7 @@ public class BlockSelector : IDisposable
         for (byte i = 0; i < 6; i++)
         {
             Face face = (Face)i;
-            Vector2[] uv = currentBlockData.GetFaceUV(face);
+            Vector2[] uv = currentBlockData.GetFaceUV(face, BlockState.Inactive);
             SimpleBlock.ChangeUV(uv, face, false);
         }
 
@@ -85,7 +85,7 @@ public class BlockSelector : IDisposable
     private void UpdateBlockRotation()
     {
         if (currentBlockData == null) return;
-        if (currentBlockData.AllSidesAreSame) return;
+        if (currentBlockData.AllSidesAreSame()) return;
 
         var transformMatrix = BlockRotationHelper.CalculateTransformMatrix(
             currentBlockData.BaseFrontDirection,

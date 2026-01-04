@@ -133,7 +133,7 @@ public class InteractionPlaceBlock : InteractionMode
                         storageBlock.SetPositionInChunk(hit.blockPositionIndex);
                     }
 
-                    bool hasSameSides = GameAssets.GetBlockDataById(id).AllSidesAreSame;
+                    bool hasSameSides = GameAssets.GetBlockDataById(id).AllSidesAreSame();
 
                     if (!hasSameSides)
                         newBlock.SetDirectionFromNormal(hit.normal);
@@ -275,7 +275,7 @@ public class InteractionPlaceBlock : InteractionMode
                         //storageBlock.SetPositionInEntity(entity.); 
                     }
 
-                    bool hasSameSides = GameAssets.GetBlockDataById(id).AllSidesAreSame;
+                    bool hasSameSides = GameAssets.GetBlockDataById(id).AllSidesAreSame();
 
                     if (!hasSameSides)
                         newBlock.Direction = direction;

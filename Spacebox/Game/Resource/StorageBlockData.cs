@@ -6,7 +6,7 @@ namespace Spacebox.Game.Resource
     {
         public Vector2Byte Size { get; private set; } = new Vector2Byte(3, 3);
         public StorageBlockData(string name, string type, Vector2Byte textureCoords, bool isTransparent = false,
-            Vector3? lightColor = null) : base(name, type, textureCoords, isTransparent, lightColor)
+            Vector3? lightColor = null) : base(name, type, isTransparent, lightColor)
         {
         }
 
