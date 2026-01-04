@@ -23,6 +23,17 @@ namespace Spacebox.Game.Resource
         public string Forward { get; set; }
         public string Back { get; set; }
 
+        // ---
+
+        public string SidesOff { get; set; } = "";
+        public string UpOff { get; set; } = "";
+        public string DownOff { get; set; } = "";
+
+        public string LeftOff { get; set; }
+        public string RightOff { get; set; }
+        public string ForwardOff { get; set; }
+        public string BackOff { get; set; }
+
         public string Drop { get; set; } = "$self";
         public int DropQuantity { get; set; } = 1;
 

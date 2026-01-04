@@ -17,6 +17,8 @@ namespace Spacebox.Game.GUI
         static int power;
         static int consum;
         static string blockName = "Generator";
+
+        static bool shouldClose = false;
         public static void Initialize()
         {
             var inventory = ToggleManager.Register("generator");
@@ -27,7 +29,7 @@ namespace Spacebox.Game.GUI
         public static void Open(GeneratorBlock block, Astronaut astronaut, ref HitInfo hit)
         {
             generatorBlock = block;
-
+            shouldClose = false;
             var pos = hit.blockPositionEntity;
              var id = hit.chunk.SpaceEntity.ElectricManager.GetNetworkId((pos.X, pos.Y, pos.Z));
             (power, consum) = hit.chunk.SpaceEntity.ElectricManager.GetNetworkPowerFlow(id);
@@ -51,24 +53,34 @@ namespace Spacebox.Game.GUI
             }
             else
             {
-                ToggleManager.SetState("mouse", false);
-                ToggleManager.SetState("player", true);
-                ToggleManager.DisableAllWindows();
+                Close();
             }
         }
 
         public static void Close()
         {
             generatorBlock = null;
-            IsVisible = false;
+          
+            //ToggleManager.DisableAllWindows();
             ToggleManager.SetState("mouse", false);
             ToggleManager.SetState("player", true);
             
+
+            shouldClose = true;
+            //
+
         }
 
         public static void OnGUI()
         {
             if (!IsVisible || generatorBlock == null) return;
+
+            if(shouldClose)
+            {
+                IsVisible = false;
+                shouldClose = false;
+                return;
+            }
 
             if (Input.IsActionDown("inventory") || Input.IsKeyDown(Keys.Escape))
             {

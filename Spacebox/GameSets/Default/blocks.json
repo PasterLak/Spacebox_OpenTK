@@ -336,6 +336,7 @@
         "Category": "resources",
         "Sides": "bottom",
         "Up": "radar",
+        "UpOff": "radarOff",
         "Down": "bottom",
         "Durability": 5,
         "IsTransparent": false

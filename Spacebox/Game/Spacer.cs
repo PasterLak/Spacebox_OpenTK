@@ -6,6 +6,7 @@ using Engine.Physics;
 using Engine.Utils;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
@@ -22,6 +23,8 @@ namespace Spacebox.Game
         private ColliderComponent obb;
         public Storage Storage { get; private set; }
 
+        public PlayerEffects Effects { get; private set; } = new PlayerEffects();
+
         private bool lootWasGenerated = false;
         public Spacer(Vector3 pos)
         {
@@ -32,8 +35,8 @@ namespace Spacebox.Game
             spacerTex.UpdateTexture(true);
             Name = nameof(Spacer);
             Health = new StatsData();
-            Health.MaxValue = 100;
-            Health.Value = 100;
+            Health.MaxValue = 20;
+            Health.Value = 20;
             Health.OnValueChanged += OnHit;
             Health.OnEqualZero += OnKilled;
             Storage = new Storage(3, 3);
@@ -58,11 +61,15 @@ namespace Spacebox.Game
             mo.Position = new Vector3(0.3f,-0.2f,-0.2f);
             */
 
+            //Effects.Parent = this;
+            AddChild(Effects);
+
         }
 
         public void Hit(Projectile projectile)
         {
             Health.Decrement(projectile.Parameters.Damage);
+            Effects.PlayEffect(PlayerEffectType.Damage);
         }
 
         private void OnHit()

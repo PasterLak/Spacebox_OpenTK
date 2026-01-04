@@ -152,7 +152,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         blockSelector = new BlockSelector();
 
-        AddChild(new Spacer(localPlayer.Position + new Vector3(5, 5, 7)));
+       
         freeCamera = AddChild(new FreeCamera(localPlayer.Position));
         freeCamera.FOV = localPlayer.FOV;
         freeCamera.DepthFar = localPlayer.DepthFar;
@@ -201,6 +201,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         ToggleManager.DisableAllWindows();
         ToggleManager.SetState("radar", false);
         ToggleManager.SetState("inventory", false);
+        ToggleManager.SetState("generator", false);
 
         if (Chat.IsVisible)
         {
@@ -315,6 +316,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         radarWindow.OnGUI();
         ResourceProcessingGUI.OnGUI();
         CraftingGUI.OnGUI();
+
+
         PanelUI.Render();
     
         InventoryUI.OnGUI(localPlayer.Inventory);

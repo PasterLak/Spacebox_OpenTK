@@ -43,7 +43,8 @@ namespace Spacebox.Game.GUI
             if (Input.IsActionDown("inventory") && !Debug.IsVisible)
             {
                 if (ToggleManager.IsActiveAndExists("pause")) return;
-                if(Player.IsAlive == false) return;
+                if (ToggleManager.IsActiveAndExists("generator")) return;
+                if (Player.IsAlive == false) return;
 
 
                 var v = IsVisible;

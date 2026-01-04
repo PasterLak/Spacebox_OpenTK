@@ -128,6 +128,15 @@ namespace Spacebox.Game.Resource
             block.Right = block.Right?.ToLower() ?? "";
             block.Forward = block.Forward?.ToLower() ?? "";
             block.Back = block.Back?.ToLower() ?? "";
+
+            block.SidesOff = block.Sides?.ToLower() ?? "";
+            block.UpOff = block.Up?.ToLower() ?? "";
+            block.DownOff = block.Down?.ToLower() ?? "";
+            block.LeftOff = block.Left?.ToLower() ?? "";
+            block.RightOff = block.Right?.ToLower() ?? "";
+            block.ForwardOff = block.Forward?.ToLower() ?? "";
+            block.BackOff = block.Back?.ToLower() ?? "";
+
             block.Category = block.Category?.ToLower() ?? "";
             block.Description = block.Description ?? "";
             block.SoundPlace = block.SoundPlace ?? "blockPlaceDefault";

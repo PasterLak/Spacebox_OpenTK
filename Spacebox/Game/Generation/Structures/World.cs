@@ -47,6 +47,7 @@ public class World : Component, ISpaceStructure
         new Vector3i( 0,  0, +1),
     };
 
+    private Spacer spacer;
     public World(Astronaut player, BlockMaterial material)
     {
         Instance = this;
@@ -65,6 +66,10 @@ public class World : Component, ISpaceStructure
 
         BiomeGenerator = new BiomeGenerator(World.Seed, WorldGenerator);
         DropEffectManager = new DropManager(player);
+
+
+
+
     }
 
     public override void Start()
@@ -72,7 +77,7 @@ public class World : Component, ISpaceStructure
         DestructionManager = new BlockDestructionManager();
         Owner.AttachComponent(DestructionManager);
         Owner.AttachComponent(DropEffectManager);
-
+        spacer = Owner.AddChild(new Spacer(Player.Position + new Vector3(5, 5, 7)));
     }
 
     public void Save()
@@ -146,6 +151,17 @@ public class World : Component, ISpaceStructure
         }
     }
 
+    public bool RaycastDynamicObjects(Ray ray, out float distance, List<Node3D> objects)
+    {
+
+        if (ray.Intersects(spacer.OBB, out distance))
+        {
+            objects.Add(spacer);
+            return true;
+        }
+        return false;
+    }
+
     public bool IsColliding(Vector3 pos, BoundingVolume volume, out CollideInfo collideInfo)
     {
         if (CurrentSector == null)
@@ -195,7 +211,7 @@ public class World : Component, ISpaceStructure
             }
             else
             {
-               // Debug.Error("Loading a sector in the main thread! Index: " + index);
+                // Debug.Error("Loading a sector in the main thread! Index: " + index);
                 CurrentSector = LoadSectorNow(index);
             }
         }
@@ -290,7 +306,7 @@ public class World : Component, ISpaceStructure
                 }
                 catch (Exception ex)
                 {
-               
+
                     Debug.Error($"[World] Crash inside Sector Constructor for {sectorIndex}: {ex.Message}\n{ex.StackTrace}");
                     throw;
                 }
@@ -301,7 +317,7 @@ public class World : Component, ISpaceStructure
             {
                 if (t.IsFaulted)
                 {
-               
+
                     var realError = t.Exception?.Flatten().InnerException;
 
                     Debug.Error($"[World] Failed to load sector {sectorIndex}: {realError?.Message}");
@@ -310,7 +326,7 @@ public class World : Component, ISpaceStructure
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
                         if (Instance != null)
-                            loadingSectors.Remove(sectorIndex); 
+                            loadingSectors.Remove(sectorIndex);
                     });
                 }
             }, TaskScheduler.Default);
