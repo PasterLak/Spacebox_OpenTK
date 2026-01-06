@@ -82,7 +82,7 @@ public class InteractionPlaceBlock : InteractionMode
             var pos = hit.blockPositionIndex + hit.chunk.PositionWorld + hit.normal + new Vector3(0.5f, 0.5f, 0.5f);
             var disSqrt = Vector3.DistanceSquared(pos, player.Position);
 
-            if (Input.IsKeyDown(Keys.KeyPad1))
+            /*if (Input.IsKeyDown(Keys.KeyPad1))
             {
                 BlockPointer p = new BlockPointer(hit);
 
@@ -96,7 +96,7 @@ public class InteractionPlaceBlock : InteractionMode
                 CreativeTools.DeleteBlocks();
 
                 player.PlayerStatistics.BlocksDestroyed++;
-            }
+            }*/
 
             if (disSqrt > MinDistanceToBlock)
                 OnEntityFound(hit, player);
@@ -116,12 +116,14 @@ public class InteractionPlaceBlock : InteractionMode
     {
         var selectorPos = UpdateBlockPreview(hit);
 
-        if (Input.IsMouseButtonDown(MouseButton.Right))
+        if (Input.IsActionDown("block_place"))
         {
             Chunk chunk = hit.chunk;
 
             if (chunk != null)
             {
+                var cachedBlockRotation = BlockSelector.Instance.Rotation;
+
                 if (PanelUI.TryPlaceItem(out var id, GameMode))
                 {
                     Block newBlock = GameAssets.CreateBlockFromId(id);
@@ -144,14 +146,15 @@ public class InteractionPlaceBlock : InteractionMode
 
                     //chunk.PlaceBlock(x, y, z, newBlock);
 
-                    newBlock.Rotation = BlockSelector.Instance.Rotation;
+                    newBlock.Rotation = cachedBlockRotation;
+
 
                     if (chunk.SpaceEntity.TryPlaceBlock(selectorPos, newBlock))
                     {
                         if (ClientNetwork.Instance != null)
                         {
                             var loc = chunk.SpaceEntity.WorldPositionToLocal(selectorPos);
-                            ClientNetwork.Instance.SendBlockPlaced(newBlock.Id, (byte)newBlock.Direction, (short)loc.X, (short)loc.Y, (short)loc.Z);
+                            ClientNetwork.Instance.SendBlockPlaced(newBlock, (short)loc.X, (short)loc.Y, (short)loc.Z);
                             
                         }
                         player.PlayerStatistics.BlocksPlaced++;
@@ -243,7 +246,7 @@ public class InteractionPlaceBlock : InteractionMode
                 lineRenderer.Enabled = false;
             }
 
-            if (Input.IsKeyDown(Keys.KeyPad1))
+            /*if (Input.IsKeyDown(Keys.KeyPad1))
             {
                 var id = PanelUI.CurrentSlot().Item.Id;
                 BlockPointer p = new BlockPointer(id, entity, entity.WorldPositionToLocal(selectorPosition));
@@ -256,12 +259,12 @@ public class InteractionPlaceBlock : InteractionMode
             {
                 CreativeTools.DeleteBlocks();
                 player.PlayerStatistics.BlocksDestroyed++;
-            }
+            }*/
         }
         //VisualDebug.DrawBoundingBox(
         //    new BoundingBox(selectorPosition, Vector3.One * 1.01f), Color4.Gray);
 
-        if (Input.IsMouseButtonDown(MouseButton.Right))
+        if (Input.IsActionDown("block_place"))
         {
             if (entity != null)
             {
@@ -288,7 +291,7 @@ public class InteractionPlaceBlock : InteractionMode
                         if (ClientNetwork.Instance != null)
                         {
                             var loc = entity.WorldPositionToLocal(selectorPosition);
-                            ClientNetwork.Instance.SendBlockPlaced(newBlock.Id, (byte)newBlock.Direction, (short)loc.X, (short)loc.Y, (short)loc.Z);
+                            ClientNetwork.Instance.SendBlockPlaced(newBlock, (short)loc.X, (short)loc.Y, (short)loc.Z);
                            
                         }
                         player.PlayerStatistics.BlocksPlaced++;

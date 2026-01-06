@@ -8,6 +8,7 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
+using SpaceNetwork.Messages;
 
 
 namespace Spacebox.Scenes
@@ -15,20 +16,12 @@ namespace Spacebox.Scenes
     public class MultiplayerScene : BaseSpaceScene
     {
 
-        public MultiplayerScene()
-        {
-
-        }
-        public MultiplayerScene(string[] args) 
-        {
-
-        }
-
         public override void LoadContent()
         {
             localPlayer = new AstronautMultiplayer(new Vector3(5, 5, 5));
             localPlayer.GameMode = GameMode.Creative;
-            
+          
+
 
             if (ClientNetwork.Instance == null)
             {
@@ -65,18 +58,18 @@ namespace Spacebox.Scenes
             }
         }
 
-        public void OnBlockPlaced(int playerId, short blockId, byte direction, short x, short y, short z)
+        public void OnBlockPlaced(BlockPlaceMessage message)
         {
 
-            Block block = GameAssets.CreateBlockFromId(blockId);
-            if (direction <= 6)
+            Block block = GameAssets.CreateBlockFromId(message.blockID);
+            if (message.GetDirection() <= 6)
             {
-                block.Direction = (Direction)direction;
+                block.Direction = (Direction)message.GetDirection();
             }
 
             if (World.CurrentSector.TryGetNearestEntity(Camera.Main.Position, out var entity))
             {
-                if (entity.TryPlaceBlockLocal(new Vector3(x, y, z), block))
+                if (entity.TryPlaceBlockLocal(new Vector3(message.GetX(), message.GetY(), message.GetZ()), block))
                 {
 
                 }

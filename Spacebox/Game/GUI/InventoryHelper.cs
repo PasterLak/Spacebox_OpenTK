@@ -125,12 +125,12 @@ namespace Spacebox.Game.GUI
 
                     if (!ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow))
                     {
-                       
+
                         var cam = Camera.Main;
 
-                        if( cam != null)
+                        if (cam != null)
                         {
-                           
+
                             var dropPosition = cam.Position + cam.Front * 0.5f;
 
                             World.DropEffectManager.DropItemSlot(dropPosition, cam.Front, 6f, slot, 2, 4);
@@ -250,7 +250,7 @@ namespace Spacebox.Game.GUI
 
         }
 
-        public static void ShowTooltip(ItemSlot slot, bool showStackSize, bool showDescription)
+        public static void ShowTooltip(ItemSlot slot, bool showStackSize, bool showDescription, bool showId = false)
         {
             if (IsDragging) return;
 
@@ -275,11 +275,18 @@ namespace Spacebox.Game.GUI
                     }
                 }
 
+                if (showId)
+                {
+
+                    text += "\nID: " + slot.Item.Id_string;
+
+                }
+
                 if (showStackSize)
                 {
                     if (slot.Item.IsStackable)
                     {
-                        text += "\nID: " + slot.Item.Id_string;
+
                         text += "\nStack: " + slot.Item.StackSize;
                     }
                 }
@@ -315,7 +322,14 @@ namespace Spacebox.Game.GUI
 
                     BlockData d = GameAssets.GetBlockDataById(itemType.BlockId);
                     if (d != null)
+                    {
                         text += "\nPower to drill: " + d.PowerToDrill;
+
+                        if(d is StorageBlockData storageData)
+                        {
+                            text += $"\nSize: {storageData.Size.X}x{ storageData.Size.Y} slots";
+                        }
+                    }
 
                 }
                 else if (type == typeof(ConsumableItem))

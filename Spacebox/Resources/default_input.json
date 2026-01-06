@@ -2,19 +2,12 @@
     "Default": {
         "Name": "Default",
         "Actions": {
-            "inputOverlay": {
-                "Name": "Input Overlay",
-                "Description": "Input Overlay",
-                "Bindings": [
-                    {
-                        "Type": "Key",
-                        "Key": "F6"
-                    }
-                ]
-            },
+           
             "forward": {
                 "Name": "Forward",
                 "Description": "",
+                "Category": "Movement",
+             
                 "Bindings": [
                     {
                         "Type": "Key",
@@ -25,6 +18,7 @@
             "backward": {
                 "Name": "Backward",
                 "Description": "",
+                "Category": "Movement",
                 "Bindings": [
                     {
                         "Type": "Key",
@@ -35,6 +29,7 @@
             "left": {
                 "Name": "Left",
                 "Description": "",
+                "Category": "Movement",
                 "Bindings": [
                     {
                         "Type": "Key",
@@ -45,6 +40,7 @@
             "right": {
                 "Name": "Right",
                 "Description": "",
+                "Category": "Movement",
                 "Bindings": [
                     {
                         "Type": "Key",
@@ -55,6 +51,7 @@
             "up": {
                 "Name": "Up",
                 "Description": "",
+                "Category": "Movement",
                 "Bindings": [
                     {
                         "Type": "Key",
@@ -65,6 +62,7 @@
             "down": {
                 "Name": "Down",
                 "Description": "",
+                "Category": "Movement",
                 "Bindings": [
                     {
                         "Type": "Key",
@@ -75,6 +73,7 @@
             "rollLeft": {
                 "Name": "Roll Left",
                 "Description": "",
+                "Category": "Movement",
                 "Bindings": [
                     {
                         "Type": "Key",
@@ -85,6 +84,7 @@
             "rollRight": {
                 "Name": "Roll Right",
                 "Description": "",
+                "Category": "Movement",
                 "Bindings": [
                     {
                         "Type": "Key",
@@ -95,6 +95,7 @@
             "sprint": {
                 "Name": "Sprint",
                 "Description": "Move faster",
+                "Category": "Movement",
                 "Bindings": [
                     {
                         "Type": "Key",
@@ -105,6 +106,7 @@
             "use": {
                 "Name": "Use",
                 "Description": "Interaction with blocks",
+                "Category": "Interactions",
                 "Bindings": [
                     {
                         "Type": "MouseKey",
@@ -112,9 +114,54 @@
                     }
                 ]
             },
+             "block_place": {
+                "Name": "Place block",
+                "Description": "Place selected block",
+                "Category": "Interactions",
+                "Bindings": [
+                    {
+                        "Type": "MouseKey",
+                        "Key": "Button2"
+                    }
+                ]
+            },
+             "block_destroy": {
+                "Name": "Destroy block",
+                "Description": "Destroy selected block",
+                "Category": "Interactions",
+                "Bindings": [
+                    {
+                        "Type": "MouseKey",
+                        "Key": "Button1"
+                    }
+                ]
+            },
+             "block_rotate": {
+                "Name": "Rotate block",
+                "Description": "Rotate selected block",
+                "Category": "Interactions",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "R"
+                    }
+                ]
+            },
+             "shoot": {
+                "Name": "Shoot",
+                "Description": "Shoot with weapon",
+                "Category": "Interactions",
+                "Bindings": [
+                    {
+                        "Type": "MouseKey",
+                        "Key": "Button1"
+                    }
+                ]
+            },
             "zoom": {
                 "Name": "Camera zoom",
                 "Description": "",
+                "Category": "Interactions",
                 "Bindings": [
                     {
                         "Type": "MouseKey",
@@ -125,6 +172,7 @@
             "flashlight": {
                 "Name": "Flashlight",
                 "Description": "Turn on/off",
+                "Category": "Interactions",
                 "Bindings": [
                     {
                         "Type": "Key",
@@ -135,6 +183,7 @@
             "inventory": {
                 "Name": "Inventory",
                 "Description": "Open/close inventory",
+                "Category": "Inventory",
                 "Bindings": [
                     {
                         "Type": "Key",
@@ -142,9 +191,11 @@
                     }
                 ]
             },
+
             "drop_item": {
                 "Name": "Drop Item",
                 "Description": "(from hand)",
+                "Category": "Inventory",
                 "Bindings": [
                     {
                         "Type": "Key",
@@ -155,6 +206,7 @@
             "storage_item_quick_transfer": {
                 "Name": "Item transfer",
                 "Description": "Quick transfer of items between storages",
+                "Category": "Inventory",
                 "Bindings": [
                     {
                         "Type": "Key",
@@ -165,10 +217,22 @@
             "storage_item_delete": {
                 "Name": "Item delete",
                 "Description": "Delete an item from storage",
+                "Category": "Inventory",
                 "Bindings": [
                     {
                         "Type": "Key",
                         "Key": "X"
+                    }
+                ]
+            },
+             "inputOverlay": {
+                "Name": "Input Overlay",
+                "Description": "Input Overlay",
+                "Category": "Other",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "F6"
                     }
                 ]
             }

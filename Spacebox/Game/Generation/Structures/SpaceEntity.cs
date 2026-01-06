@@ -322,12 +322,9 @@ namespace Spacebox.Game.Generation
 
         public bool TryPlaceBlockLocal(Vector3 localBlockPosition, Block block)
         {
-            if (block.Id == 0)
-                return true;
+          
             Vector3 worldBlockPos = PositionWorld + localBlockPosition;
-            if (!IsPositionWithinEntitySize(worldBlockPos))
-                return false;
-            return PlaceBlockInternal(localBlockPosition, block);
+            return TryPlaceBlock(worldBlockPos, block);
         }
 
         public bool TryPlaceBlock(Vector3 worldPosition, Block block)

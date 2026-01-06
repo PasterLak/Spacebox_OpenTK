@@ -76,7 +76,7 @@ namespace Engine
                 Owner.Children[i].MarkDirty();
         }
 
-        public Quaternion RotationQuaternions() // ?
+        public Quaternion RotationQuaternion()
         {
             return Quaternion.FromEulerAngles(
                 MathHelper.DegreesToRadians(_rotation.X),
@@ -84,18 +84,24 @@ namespace Engine
                 MathHelper.DegreesToRadians(_rotation.Z));
         }
 
+        public Matrix4 RotationToMatrix4()
+        {
+            var rotX = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(_rotation.X));
+            var rotY = Matrix4.CreateRotationY(MathHelper.DegreesToRadians(_rotation.Y));
+            var rotZ = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(_rotation.Z));
+            var rotation = rotZ * rotY * rotX;
+            return rotation;
+        }
+
         private Matrix4 BuildLocalMatrix()
         {
             if (!_dirty) return _cached;
 
             var translation = Matrix4.CreateTranslation(_position);
-            var rotX = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(_rotation.X));
-            var rotY = Matrix4.CreateRotationY(MathHelper.DegreesToRadians(_rotation.Y));
-            var rotZ = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(_rotation.Z)); 
-            var rotation = rotZ * rotY * rotX;
+
             var scale = Owner?.Resizable == false ? Matrix4.Identity : Matrix4.CreateScale(_scale);
 
-            _cached = scale * rotation * translation;
+            _cached = scale * RotationToMatrix4() * translation;
             _dirty = false;
             return _cached;
         }

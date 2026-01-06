@@ -1,9 +1,8 @@
 ﻿using Engine;
 using Engine.InputPro;
 using ImGuiNET;
-
 using System.Numerics;
-
+using System.Linq;
 
 namespace Spacebox.Game.GUI.Menu;
 
@@ -26,7 +25,7 @@ public class ControlsWindow : MenuWindow
 
     public override void Render()
     {
-        SettingsUI.Render("Controls", "Controls",  5,
+        SettingsUI.Render("Controls", "Controls", 5,
             (listSize, rowH) =>
             {
                 RenderControlsTable(listSize, rowH);
@@ -58,50 +57,79 @@ public class ControlsWindow : MenuWindow
 
     private void RenderControlsTable(Vector2 listSize, float rowH)
     {
-        ImGui.BeginTable("table##controls", 4, ImGuiTableFlags.NoBordersInBody | ImGuiTableFlags.ScrollY | ImGuiTableFlags.BordersInnerV );
         float totalW = listSize.X;
-        ImGui.TableSetupColumn("Action", ImGuiTableColumnFlags.WidthFixed , totalW * 0.22f);
-        ImGui.TableSetupColumn("Description", ImGuiTableColumnFlags.WidthFixed, totalW * 0.4f);
-        ImGui.TableSetupColumn("Key", ImGuiTableColumnFlags.WidthFixed, totalW * 0.2f);
-        ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, totalW * 0.15f);
+        float col1 = totalW * 0.22f;
+        float col2 = totalW * 0.40f;
+        float col3 = totalW * 0.20f;
+        float col4 = totalW * 0.15f;
 
-        ImGui.TableHeadersRow();
+        if (ImGui.BeginTable("header_table", 4, ImGuiTableFlags.BordersInnerV))
+        {
+            ImGui.TableSetupColumn("Action", ImGuiTableColumnFlags.WidthFixed, col1);
+            ImGui.TableSetupColumn("Description", ImGuiTableColumnFlags.WidthFixed, col2);
+            ImGui.TableSetupColumn("Key", ImGuiTableColumnFlags.WidthFixed, col3);
+            ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, col4);
+            ImGui.TableHeadersRow();
+            ImGui.EndTable();
+        }
 
         var actions = InputManager.Instance.GetAllActions();
-        foreach (var action in actions)
+        var groupedActions = actions
+            .Select(x => new { x.id, x.action })
+            .GroupBy(x => string.IsNullOrEmpty(x.action.Category) ? "General" : x.action.Category)
+            .OrderBy(g => g.Key);
+
+        foreach (var group in groupedActions)
         {
-            ImGui.TableNextRow();
+            ImGui.Dummy(new Vector2(0, 5));
+            ImGui.TextColored(new Vector4(1f, 0.8f, 0.2f, 1f), $"--- {group.Key.ToUpper()} ---");
 
-            ImGui.TableNextColumn();
-            ImGui.Text(action.action.Name);
-
-            ImGui.TableNextColumn();
-            ImGui.TextWrapped(action.action.Description);
-
-            ImGui.TableNextColumn();
-            string bindingText = GetBindingDisplayText(action.action);
-
-            if(sameKeys.Contains(bindingText))
-            ImGui.TextColored(new Vector4(1,0.5f,0,1), bindingText);
-            else
-                ImGui.Text(bindingText);
-
-            ImGui.TableNextColumn();
-
-            if (isRemapping && remappingAction == action.id)
+            if (ImGui.BeginTable("table_" + group.Key, 4, ImGuiTableFlags.BordersInnerV))
             {
-                ImGui.TextColored(new Vector4(1, 1, 0, 1), "Listening...");
-            }
-            else
-            {
-                ImGui.Dummy(new Vector2(rowH, rowH/2f));ImGui.SameLine();
-                if (ImGui.Button($"Change##{action.action.Name} "))
+                ImGui.TableSetupColumn("##c1", ImGuiTableColumnFlags.WidthFixed, col1);
+                ImGui.TableSetupColumn("##c2", ImGuiTableColumnFlags.WidthFixed, col2);
+                ImGui.TableSetupColumn("##c3", ImGuiTableColumnFlags.WidthFixed, col3);
+                ImGui.TableSetupColumn("##c4", ImGuiTableColumnFlags.WidthFixed, col4);
+
+                foreach (var item in group)
                 {
-                    StartRemapping(action.id);
+                    string id = item.id;
+                    InputAction action = item.action;
+
+                    ImGui.TableNextRow();
+
+                    ImGui.TableNextColumn();
+                    ImGui.Text(action.Name);
+
+                    ImGui.TableNextColumn();
+                    ImGui.TextWrapped(action.Description);
+
+                    ImGui.TableNextColumn();
+                    string bindingText = GetBindingDisplayText(action);
+
+                    if (sameKeys.Contains(bindingText))
+                        ImGui.TextColored(new Vector4(1, 0.5f, 0, 1), bindingText);
+                    else
+                        ImGui.Text(bindingText);
+
+                    ImGui.TableNextColumn();
+
+                    if (isRemapping && remappingAction == id)
+                    {
+                        ImGui.TextColored(new Vector4(1, 1, 0, 1), "Listening...");
+                    }
+                    else
+                    {
+                        ImGui.Dummy(new Vector2(rowH, rowH / 2f)); ImGui.SameLine();
+                        if (ImGui.Button($"Change##{action.Name} "))
+                        {
+                            StartRemapping(id);
+                        }
+                    }
                 }
+                ImGui.EndTable();
             }
         }
-        ImGui.EndTable();
     }
 
     private string GetBindingDisplayText(Engine.InputPro.InputAction action)
@@ -122,8 +150,9 @@ public class ControlsWindow : MenuWindow
 
         foreach (var action in actions)
         {
-
             string bindingText = GetBindingDisplayText(action.action);
+
+            if (bindingText == "None") continue;
 
             if (checkedBindings.Contains(bindingText))
             {
@@ -134,8 +163,6 @@ public class ControlsWindow : MenuWindow
                 checkedBindings.Add(bindingText);
             }
         }
-
-        Debug.Log("Same found: " + same.Count);
 
         return same;
     }
@@ -157,23 +184,23 @@ public class ControlsWindow : MenuWindow
         ImGui.SetNextWindowSize(displaySize);
         ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0, 0, 0, 0.7f));
         ImGui.Begin("RemapOverlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize |
-                   ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs);
+                                   ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs);
 
-  
+
         float windowWidth = displaySize.X * 0.2f;
         float windowHeight = displaySize.Y * 0.15f;
 
         var windowPos = new Vector2((displaySize.X - windowWidth) / 2f, (displaySize.Y - windowHeight) / 2f);
 
-   
+
         ImGui.SetCursorPos(windowPos);
         ImGui.BeginChild("RemapBackground", new Vector2(windowWidth, windowHeight), ImGuiChildFlags.Border);
         ImGui.EndChild();
 
-       
+
         GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y, 0.005f);
 
-    
+
         float contentPadding = windowWidth * 0.05f;
         var contentPos = windowPos + new Vector2(contentPadding, contentPadding);
         var contentSize = new Vector2(windowWidth - contentPadding * 2, windowHeight - contentPadding * 2);
@@ -181,77 +208,23 @@ public class ControlsWindow : MenuWindow
         ImGui.SetCursorPos(contentPos);
         ImGui.BeginChild("RemapContent", contentSize, ImGuiChildFlags.None);
 
-      
-        float fontSize = displaySize.Y * 0.018f; 
-        float lineHeight = contentSize.Y / 6f; 
+
+        float fontSize = displaySize.Y * 0.018f;
+        float lineHeight = contentSize.Y / 6f;
 
         var action = InputManager.Instance.GetAction(remappingAction);
-        var actionDisplayName = action?.Name ?? remappingAction;
-        var actionDescription = !string.IsNullOrEmpty(action?.Description) ? action.Description : "";
 
         float currentY = 0;
 
-       
+
         var headerText = "Press any key or mouse button";
         var headerSize = ImGui.CalcTextSize(headerText);
         ImGui.SetCursorPos(new Vector2((contentSize.X - headerSize.X) / 2f, currentY));
-        ImGui.TextColored( new Vector4(1,1,0.4f,1), headerText);
+        ImGui.TextColored(new Vector4(1, 1, 0.4f, 1), headerText);
         currentY += lineHeight;
 
-
-        /*ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1f, 1f, 0.5f, 1f));
-        var actionText = actionDisplayName;
-        var actionSize = ImGui.CalcTextSize(actionText);
-        ImGui.SetCursorPos(new Vector2((contentSize.X - actionSize.X) / 2f, currentY));
-        ImGui.Text(actionText);
-        ImGui.PopStyleColor();
-        currentY += lineHeight * 0.8f;*/
-
-
-        /*if (!string.IsNullOrEmpty(actionDescription))
-        {
-            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.8f, 0.8f, 0.8f, 0.8f));
-            var descSize = ImGui.CalcTextSize(actionDescription);
-            if (descSize.X > contentSize.X * 0.9f)
-            {
-                ImGui.SetCursorPos(new Vector2(contentSize.X * 0.05f, currentY));
-                ImGui.PushTextWrapPos(contentPos.X + contentSize.X * 0.95f);
-                ImGui.TextWrapped(actionDescription);
-                ImGui.PopTextWrapPos();
-            }
-            else
-            {
-                ImGui.SetCursorPos(new Vector2((contentSize.X - descSize.X) / 2f, currentY));
-                ImGui.Text(actionDescription);
-            }
-            ImGui.PopStyleColor();
-            currentY += lineHeight * 0.8f;
-        }*/
-
-        /*
-         var currentBinding = GetBindingDisplayText(action);
-         if (!string.IsNullOrEmpty(currentBinding) && currentBinding != "None")
-         {
-             ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.6f, 0.6f, 0.6f, 0.7f));
-             var currentText = $"Current: {currentBinding}";
-             var currentSize = ImGui.CalcTextSize(currentText);
-             ImGui.SetCursorPos(new Vector2((contentSize.X - currentSize.X) / 2f, currentY));
-             ImGui.Text(currentText);
-             ImGui.PopStyleColor();
-             currentY += lineHeight * 0.8f;
-         }
-        */
-       
         var list = ImGui.GetWindowDrawList();
 
-        /*list.AddLine(
-            new Vector2(contentPos.X + contentSize.X * 0.2f, contentPos.Y + currentY),
-            new Vector2(contentPos.X + contentSize.X * 0.8f, contentPos.Y + currentY),
-            ImGui.ColorConvertFloat4ToU32(new Vector4(0.5f, 0.5f, 0.5f, 0.3f)),
-            displaySize.Y * 0.001f 
-        );*/
-
-      
         ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.8f, 0.8f, 0.8f, 1f));
         var cancelText = "ESC to cancel";
         var cancelSize = ImGui.CalcTextSize(cancelText);
@@ -266,12 +239,12 @@ public class ControlsWindow : MenuWindow
         float timeoutBarY = contentPos.Y + contentSize.Y - lineHeight * 0.6f;
         float timeoutProgress = remapTimeout / MAX_REMAP_TIME;
 
-      
+
         list.AddRectFilled(
             new Vector2(timeoutBarX, timeoutBarY),
             new Vector2(timeoutBarX + timeoutBarWidth, timeoutBarY + timeoutBarHeight),
             ImGui.ColorConvertFloat4ToU32(new Vector4(0.2f, 0.2f, 0.2f, 0.5f)),
-            timeoutBarHeight * 0.5f 
+            timeoutBarHeight * 0.5f
         );
 
 
@@ -285,7 +258,7 @@ public class ControlsWindow : MenuWindow
                 new Vector2(timeoutBarX, timeoutBarY),
                 new Vector2(timeoutBarX + timeoutBarWidth * timeoutProgress, timeoutBarY + timeoutBarHeight),
                 ImGui.ColorConvertFloat4ToU32(barColor),
-                timeoutBarHeight * 0.5f 
+                timeoutBarHeight * 0.5f
             );
         }
 
@@ -328,76 +301,6 @@ public class ControlsWindow : MenuWindow
         remapper.CancelRemapping();
         isRemapping = false;
         remappingAction = null;
-
         sameKeys = ValidateSameBindings();
-    }
-}
-
-public static class SettingsUI
-{
-    public static void Render(string windowId, string header,  int buttonCount,
-        Action<Vector2, float> drawContent, Action onSave, Action onBack)
-    {
-        var io = ImGui.GetIO();
-        float ww = io.DisplaySize.X * 0.4f;
-        float wh = io.DisplaySize.Y * 0.5f;
-        var pos = GameMenu.CenterNextWindow2(ww, wh);
-
-        ImGui.SetNextWindowPos(pos);
-        ImGui.SetNextWindowSize(new Vector2(ww, wh));
-        ImGui.Begin(windowId, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
-            ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
-
-        GameMenu.DrawElementColors(pos, new Vector2(ww, wh), io.DisplaySize.Y, 0.005f);
-
-        float btnW = ww * 0.9f;
-        float btnH = wh * 0.08f;
-        float spacing = wh * 0.02f;
-
-        ImGui.SetCursorPos(new Vector2((ww - btnW) / 2f, spacing));
-        var textSize = ImGui.CalcTextSize(header);
-        ImGui.SetCursorPos(new Vector2((ww - textSize.X) / 2f, spacing));
-        ImGui.Text(header);
-
-        float headerBlockH = ImGui.GetTextLineHeightWithSpacing() * 1.5f;
-        var listSize = new Vector2(btnW, wh - btnH * 1.5f - spacing * 4 - headerBlockH);
-
-        ImGui.SetCursorPos(new Vector2((ww - btnW) / 2f, spacing * 2 + headerBlockH));
-        ImGui.BeginChild($"list##{windowId}", listSize);
-
-        float rowH = 30f;
-        drawContent(listSize, rowH);
-
-        ImGui.EndChild();
-
-        ImGui.SetCursorPos(new Vector2((ww - btnW) / 2f, wh - btnH - spacing));
-      
-        if(onSave != null)
-        ButtonWithBackground("Save", new Vector2(listSize.X / 2f - spacing, btnH),
-            new Vector2((ww - btnW) / 2f, wh - btnH - spacing), onSave);
-
-        if (onBack != null)
-            ButtonWithBackground("Back", new Vector2(listSize.X / 2f - spacing, btnH),
-            new Vector2((ww - btnW) / 2f + listSize.X / 2f + spacing, wh - btnH - spacing), onBack);
-
-        ImGui.End();
-    }
-
-    public static void ButtonWithBackground(string label, Vector2 size, Vector2 cursorPos, Action onClick)
-    {
-        ImGui.SetCursorPos(cursorPos);
-        Vector2 buttonPos = ImGui.GetCursorScreenPos();
-        float offsetValue = size.Y * 0.1f;
-        Vector2 offset = new Vector2(offsetValue, offsetValue);
-        uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
-        uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
-        var drawList = ImGui.GetWindowDrawList();
-        drawList.AddRectFilled(buttonPos - offset, buttonPos + size + offset, borderColor);
-        drawList.AddRectFilled(buttonPos, buttonPos + size + offset, lightColor);
-        if (ImGui.Button(label, size))
-        {
-            
-            onClick?.Invoke();
-        }
     }
 }

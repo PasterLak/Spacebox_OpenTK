@@ -5,6 +5,7 @@ using Engine.InputPro;
 using Engine.Light;
 using Engine.SceneManagement;
 using Engine.UI;
+using Engine.Utils;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -47,8 +48,8 @@ namespace Spacebox.Scenes
                     Debug.Log("Mod Loader", $"Loaded mod for game version: {mod.TargetGameVersion}", Color4.LightGreen);
                 }
             }
-          
 
+            RotationDebug.Run();
 
             InputManager.Instance.LoadConfiguration("Resources/default_input.json");
 
@@ -100,8 +101,6 @@ namespace Spacebox.Scenes
             jump.Subscribe(InputEventType.Pressed, () => InputOverlay.IsVisible = !InputOverlay.IsVisible);
 
             devLogWindow.AddLogFromFile("Resources/devlog.txt");
-
-
 
         }
 

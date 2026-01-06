@@ -126,7 +126,7 @@ public class InteractionShoot : InteractionMode
         {
             if (player.PowerBar.StatsData.Value < weapon.PowerUsage) return;
 
-            if (canShoot == false && Input.IsMouseButton(0) && ToggleManager.OpenedWindowsCount < 1 && !Debug.IsVisible)
+            if (canShoot == false && Input.IsAction("shoot") && ToggleManager.OpenedWindowsCount < 1 && !Debug.IsVisible)
             {
                 canShoot = true;
                 model?.SetAnimation(false);
@@ -170,7 +170,7 @@ public class InteractionShoot : InteractionMode
             }
         }
 
-        if (canShoot && Input.IsMouseButton(0))
+        if (canShoot && Input.IsAction("shoot"))
         {
             if (player.PowerBar.StatsData.Value < weapon.PowerUsage) return;
             canShoot = false;

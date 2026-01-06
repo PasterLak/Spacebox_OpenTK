@@ -47,6 +47,7 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
         SceneManager.Register<PlaygroundScene>();
         SceneManager.Register<LocalSpaceScene>();
         SceneManager.Register<MultiplayerScene>();
+        SceneManager.Register<MultiplayerLoadScene>();
         SceneManager.Register<LogoScene>();
         SceneManager.Register<ParticleSystemEditor>();
     }
@@ -68,7 +69,7 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
 
         var vignetteShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/vignette", true);
         var vignetteEffect = new VignetteEffect(vignetteShader);
-        vignetteEffect.Enabled = false;
+        vignetteEffect.Enabled = true;
         processManager.AddEffect(vignetteEffect);
 
         var edgeDetectionShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/edgeDetection", true);

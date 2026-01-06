@@ -6,6 +6,7 @@ using SpaceNetwork;
 using SpaceNetwork.Messages;
 using SpaceNetwork.Utilities;
 using Spacebox.Game.GUI;
+using Spacebox.Game.Generation.Blocks;
 
 namespace Client
 {
@@ -38,7 +39,7 @@ namespace Client
         public Action<ClientPlayer> OnPlayerJoined;
         public Action<ClientPlayer> OnPlayerLeft;
         public event Action<int, int, int> OnBlockDestroyed;
-        public event Action<int, short, byte, short, short, short> OnBlockPlaced;
+        public event Action<BlockPlaceMessage> OnBlockPlaced;
 
         public ClientNetwork(string appKey, string host, int port, string playerName)
         {
@@ -64,9 +65,9 @@ namespace Client
             var msg = new BlockDestroyedMessage(localPlayerId, x, y, z);
             blockDeletionQueue.Enqueue(msg);
         }
-        public void SendBlockPlaced(short blockID, byte direction, short x, short y, short z)
+        public void SendBlockPlaced(Block block, short x, short y, short z)
         {
-            var msg = new BlockPlaceMessage(localPlayerId, blockID, direction, x, y, z);
+            var msg = new BlockPlaceMessage(localPlayerId, block.Id, (byte)block.Direction, (byte)block.Rotation, x, y, z);
             blockPlaceQueue.Enqueue(msg);
         }
         private void StartChatThread()
@@ -248,7 +249,7 @@ namespace Client
             else if (baseMsg is BlockPlaceMessage bpm)
             {
                 if (bpm.senderID != localPlayerId)
-                    OnBlockPlaced?.Invoke(bpm.senderID, bpm.blockID, bpm.GetDirection(), bpm.GetX(), bpm.GetY(), bpm.GetZ());
+                    OnBlockPlaced?.Invoke(bpm);
             }
             else if (baseMsg is ZipMessage zm)
             {

@@ -13,7 +13,9 @@ namespace Spacebox.Game.Generation.Blocks
             OnUse += ResourceProcessingGUI.Toggle;
 
             //LightLevel
+
             SetEmissionWithoutRedrawChunk(false);
+
         }
 
         public override void Use(Astronaut player, ref HitInfo hit)

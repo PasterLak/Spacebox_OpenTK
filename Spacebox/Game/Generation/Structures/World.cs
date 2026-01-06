@@ -3,6 +3,7 @@ using Engine.Components;
 using Engine.GUI;
 using Engine.Multithreading;
 using Engine.Physics;
+using Engine.Utils;
 using OpenTK.Mathematics;
 using Spacebox.Game.Effects;
 using Spacebox.Game.GameMath;
@@ -119,7 +120,7 @@ public class World : Component, ISpaceStructure
     public static void LoadWorldInfo(string worldName)
     {
         WorldData = WorldLoader.LoadWorldByName(worldName);
-        Seed = int.Parse(WorldData.Info.Seed);
+        Seed = SeedHelper.ComputeSeed(WorldData.Info.Seed);
 
         GameTime.SetDay(WorldData.Info.Day);
         GameTime.SetTick(WorldData.Info.Ticks);

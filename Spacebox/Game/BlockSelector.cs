@@ -61,7 +61,7 @@ public class BlockSelector : IDisposable
                 SetupBlockMesh();
                 UpdateBlockRotation();
             }
-        }
+        } 
         else
         {
             Rotation = Rotation.None;
@@ -119,7 +119,7 @@ public class BlockSelector : IDisposable
     {
         if (!IsVisible || !Settings.ShowInterface) return;
 
-        if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.R))
+        if (Input.IsActionDown("block_rotate"))
         {
             Rotation = (Rotation)(((byte)Rotation + 1) % 4);
             if (currentBlockData != null)

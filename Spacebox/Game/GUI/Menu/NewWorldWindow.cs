@@ -1,4 +1,5 @@
-﻿using ImGuiNET;
+﻿using Engine;
+using ImGuiNET;
 using Spacebox.Game.Player.GameModes;
 using System;
 using System.Numerics;
@@ -8,9 +9,16 @@ namespace Spacebox.Game.GUI.Menu
     public class NewWorldWindow : MenuWindow
     {
         public GameMenu menu;
+
+        private Texture2D diceIcon;
         public NewWorldWindow(GameMenu menu)
         {
             this.menu = menu;
+
+            diceIcon = Resources.Load<Texture2D>("Resources/Textures/UI/dice.png");
+            diceIcon.FilterMode = FilterMode.Nearest;
+            diceIcon.FlipY();
+            Resources.AddResourceToDispose(diceIcon);
         }
         public override void Render()
         {
@@ -42,7 +50,7 @@ namespace Spacebox.Game.GUI.Menu
             if (menu.IsEditMode) ImGui.BeginDisabled();
             menu.CenterInputText("Author", ref menu.newWorldAuthor, 100, inputWidth, inputHeight);
             ImGui.Dummy(new Vector2(0, spacing));
-            menu.CenterInputText("Seed", ref menu.newWorldSeed, 100, inputWidth, inputHeight);
+            menu.CenterInputText2("Seed", ref menu.newWorldSeed, 100, inputWidth, inputHeight, diceIcon.Handle);
             if (menu.IsEditMode) ImGui.EndDisabled();
 
             ImGui.Dummy(new Vector2(0, spacing));

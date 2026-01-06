@@ -8,6 +8,35 @@ namespace Engine.Utils
         // procedural IDs are always non-negative
         private const long PROCEDURAL_MASK = 0x7FFFFFFFFFFFFFFF;
 
+
+        public static int ComputeSeed(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return new System.Random().Next();
+            }
+
+            if (int.TryParse(input, out int result))
+            {
+                return result;
+            }
+
+            return GetDeterministicHashCode(input);
+        }
+
+        private static int GetDeterministicHashCode(string str)
+        {
+            unchecked
+            {
+                int hash = 23;
+                foreach (char c in str)
+                {
+                    hash = hash * 31 + c;
+                }
+                return hash;
+            }
+        }
+
         static ulong Mix(ulong x)
         {
             x ^= x >> 30;

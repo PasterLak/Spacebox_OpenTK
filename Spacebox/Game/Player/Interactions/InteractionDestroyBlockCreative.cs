@@ -38,7 +38,7 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
 
     public override void Update(Astronaut player)
     {
-        if (Input.IsMouseButtonUp(MouseButton.Left))
+        if (Input.IsActionUp("block_destroy"))
         {
             _time = MinBlockDestroyTime;
             model.SetAnimation(false);
@@ -52,7 +52,7 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
         if (World.CurrentSector.Raycast(ray, out HitInfo hit))
         {
             UpdateBlockSelector(hit);
-            if (Input.IsMouseButtonDown(MouseButton.Left))
+            if (Input.IsActionDown("block_destroy"))
             {
                 _time = MinBlockDestroyTime;
                 model.SetAnimation(true);
@@ -60,7 +60,7 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
                 DestroyBlock(hit, player);
                 
             }
-            if (Input.IsMouseButton(MouseButton.Left))
+            if (Input.IsAction("block_destroy"))
             {
                 _time -= Time.Delta;
                 if (_time <= 0)
@@ -88,7 +88,7 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
             AImedBlockElement.AimedBlock = null;
             BlockSelector.IsVisible = false;
             //CenteredText.Hide();
-            if (Input.IsMouseButtonDown(MouseButton.Left))
+            if (Input.IsActionDown("block_destroy"))
                 model.SetAnimation(true);
         }
     }

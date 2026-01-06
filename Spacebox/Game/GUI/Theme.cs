@@ -99,6 +99,8 @@ namespace Spacebox.Game.GUI
             colors[(int)ImGuiCol.NavHighlight] = new Vector4(0.45f, 0.45f, 0.90f, 0.80f);
             colors[(int)ImGuiCol.ModalWindowDimBg] = new Vector4(0.20f, 0.20f, 0.20f, 0.35f);
             colors[(int)ImGuiCol.TableRowBgAlt] = new Vector4(0.65f, 0.65f, 0.65f, 0f);
+
+            colors[(int)ImGuiCol.TableBorderLight] = Colors.Deep;
         }
     }
 }

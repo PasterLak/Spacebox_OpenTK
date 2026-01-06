@@ -441,14 +441,14 @@ namespace Spacebox.Game.GUI
             float imageSize = 40f * scaleFactor;
             float numberSize = ImGui.GetTextLineHeight();
 
-            var s = GameAssets.Recipes[processingBlock.BlockType].Values.ToList();
+            List<Recipe> recipes = GameAssets.Recipes[processingBlock.BlockType].Values.ToList();
            
-            for (int i = 0; i < s.Count; i++)
+            for (int i = 0; i < recipes.Count; i++)
             {
                
                 float startY = ImGui.GetCursorPosY();
 
-                var recipe = s[i];
+                var recipe = recipes[i];
 
                 if(recipe == null || recipe.Ingredient.Item == null || recipe.Ingredient.Item.IconTextureId == IntPtr.Zero)
                 {
@@ -471,8 +471,7 @@ namespace Spacebox.Game.GUI
                 ImGui.SetCursorPos(offsetX);
                 ImGui.Image(inImg, imageVector);
                 UIHelper.ShowTooltip(inItem.Name);
-                if (i % 2 == 0)
-                {
+            
                     var pos = new Vector2(imageSize - ImGui.CalcTextSize(inQ).X - 2 + offsetX.X , startY + imageSize - numberSize);
                     pos = pos  + imageVector * 0.1f;
                     ImGui.SetCursorPos(pos);
@@ -480,7 +479,7 @@ namespace Spacebox.Game.GUI
                     ImGui.SetCursorPos(pos + imageVector * 0.04f);
                     ImGui.TextColored(new Vector4(1), inQ);
                     
-                }
+                
 
                 var arrowSize = ImGui.CalcTextSize("->");
 
@@ -491,15 +490,14 @@ namespace Spacebox.Game.GUI
               
                 ImGui.Image(prImg, imageVector);
                 UIHelper.ShowTooltip(prItem.Name + "\n" + "Time: " + (processingBlock.GetTicksWithEfficiency(recipe.RequiredTicks) / 20f).ToString("#.#") + "s.");
-                if (i % 3 == 0)
-                {
-                    var pos = new Vector2(listWidth * 0.94f - ImGui.CalcTextSize(prQ).X - 2 , startY + imageSize - numberSize) ;
+              
+                     pos = new Vector2(listWidth * 0.94f - ImGui.CalcTextSize(prQ).X - 2 , startY + imageSize - numberSize) ;
                   
                     ImGui.SetCursorPos(pos  );
                     ImGui.TextColored(new Vector4(0f, 0f, 0f, 1), prQ);
                     ImGui.SetCursorPos(pos + imageVector * 0.05f);
                     ImGui.TextColored(new Vector4(1), prQ);
-                }
+                
 
                 ImGui.SetCursorPosY(startY + fixedItemHeight);
             }   

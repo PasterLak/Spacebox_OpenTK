@@ -337,7 +337,7 @@ public static class CreativeWindowUI
                     }
 
                     HandleHoverAudio(slot.SlotId);
-                    InventoryUIHelper.ShowTooltip(slot, true, true);
+                    InventoryUIHelper.ShowTooltip(slot, true, true, true);
                 }
             }
             ImGui.EndTable();

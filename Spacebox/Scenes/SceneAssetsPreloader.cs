@@ -86,16 +86,6 @@ namespace Spacebox.Scenes
             {
                 InitializeGamesetData(blocksPath, itemsPath, emissionPath, modId, 32, serverName, isMultiplayer);
             }
-            if (int.TryParse(seedString, out var seed))
-            {
-                //World.Random = new Random(seed);
-            }
-            else
-            {
-                // World.Random = new Random();
-                Debug.Error("Wrong seed format! Seed: " + seedString);
-            }
-
 
         }
     }

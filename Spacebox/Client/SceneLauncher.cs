@@ -22,18 +22,20 @@ namespace Spacebox.Client
 
         public static void LaunchMultiplayerGame(WorldInfo world, ModConfig modConfig, ServerInfo serverInfo, string playerName, string appKey)
         {
-            var args = new List<string>
+     
+            SpaceSceneArgs args = new SpaceSceneArgs
             {
-                world.Name,
-                world.ModId,
-                world.Seed,
-                modConfig.FolderName,
-                appKey,
-                serverInfo.IP,
-                serverInfo.Port.ToString(),
-                playerName
+                worldName = world.Name,
+                modId = world.ModId,
+                seed = world.Seed,
+                modfolder = modConfig.FolderName,
+                key = appKey,
+                hostIp = serverInfo.IP,
+                port = serverInfo.Port,
+                nickname = playerName
             };
-            SceneManager.Load<MultiplayerLoadScene>(); // args.ToArray()
+
+            SceneManager.Load<MultiplayerLoadScene, SpaceSceneArgs>(args);
         }
     }
 }

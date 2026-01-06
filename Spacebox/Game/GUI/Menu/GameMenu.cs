@@ -280,6 +280,44 @@ namespace Spacebox.Game.GUI.Menu
             ImGui.PopStyleVar();
         }
 
+        public void CenterInputText2(string label, ref string input, uint maxLength, float totalWidth, float height, nint iconTexture)
+        {
+            float windowWidth = ImGui.GetWindowWidth();
+            Vector2 labelSize = ImGui.CalcTextSize(label);
+
+            ImGui.SetCursorPosX((windowWidth - labelSize.X) * 0.5f);
+            ImGui.Text(label);
+
+            float spacing = 5.0f;
+            float inputWidth = totalWidth - height - spacing;
+
+            float textHeight = ImGui.GetFontSize();
+            float paddingY = (height - textHeight) * 0.5f;
+
+            ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(ImGui.GetStyle().FramePadding.X, paddingY));
+
+            ImGui.SetCursorPosX((windowWidth - totalWidth) * 0.5f);
+
+            ImGui.SetNextItemWidth(inputWidth);
+            ImGui.InputText("##" + label, ref input, maxLength);
+
+            ImGui.SameLine(0, spacing);
+
+            if (ImGui.ImageButton("##rndBtn_" + label, iconTexture, new Vector2(textHeight, textHeight)))
+            {
+                input = new Random().Next().ToString();
+            }
+
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                ImGui.Text("Randomize");
+                ImGui.EndTooltip();
+            }
+
+            ImGui.PopStyleVar();
+        }
+
 
 
         private void LoadGameSets()

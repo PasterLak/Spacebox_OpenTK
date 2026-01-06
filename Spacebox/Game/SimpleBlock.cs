@@ -55,20 +55,6 @@ public class SimpleBlock : Node3D, IDisposable, IDrawable
         RegenerateMesh();
     }
 
-    public void ChangeUV(Vector2[] uv)
-    {
-        _vertices = null;
-        _indices = null;
-        IsUsingDefaultUV = false;
-
-        foreach (var face in _uvs.Keys.ToArray())
-        {
-            _uvs[face] = uv;
-        }
-
-        RegenerateMesh();
-    }
-
     public void ChangeUV(Vector2[] uv, Face face, bool regenerateMesh)
     {
         _vertices = null;

@@ -14,6 +14,11 @@ namespace Spacebox.Game.Generation.Blocks
             OnUse += ResourceProcessingGUI.Toggle;
 
             SetEmissionWithoutRedrawChunk(false);
+
+            EFlags = ElectricalFlags.CanConsume;
+      
+            ConsumptionRate = 15;
+            CurrentPower = 0;
         }
 
         public override void Use(Astronaut player, ref HitInfo hit)

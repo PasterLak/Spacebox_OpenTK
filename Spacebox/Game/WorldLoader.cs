@@ -1,4 +1,5 @@
-﻿using Spacebox.Game.GUI;
+﻿using Engine;
+using Spacebox.Game.GUI;
 using System.Text.Json;
 
 
@@ -14,7 +15,7 @@ public static class WorldLoader
         {
             if (!Directory.Exists(WorldsDirectory))
             {
-                Console.WriteLine($"[ERROR] Directory Worlds was not found!: {WorldsDirectory}");
+                Debug.Log($"[ERROR] Directory Worlds was not found!: {WorldsDirectory}");
                 return null;
             }
 
@@ -36,18 +37,18 @@ public static class WorldLoader
                             WorldFolderPath = worldFolder
                         };
 
-                        Console.WriteLine($"[SUCCESS] World '{worldName}' successfully loaded from '{worldFolder}'.");
+                        Debug.Log($"[SUCCESS] World '{worldName}' successfully loaded from '{worldFolder}'.");
                         return loadedWorld;
                     }
                 }
             }
 
-            Console.WriteLine($"[ERROR] World '{worldName}' not found in '{WorldsDirectory}'.");
+            Debug.Log($"[ERROR] World '{worldName}' not found in '{WorldsDirectory}'.");
             return null;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[ERROR] An error occurred while loading the world '{worldName}': {ex.Message}");
+            Debug.Log($"[ERROR] An error occurred while loading the world '{worldName}': {ex.Message}");
             return null;
         }
     }

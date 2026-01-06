@@ -30,10 +30,12 @@ public struct SpaceSceneArgs
     public string modfolder;
     public string modfolderName;
     public string key;
-    public string ip;
+    public string hostIp;
     public int port;
     public string nickname;
     public SpaceSceneArgs() { }
+
+    
 
 
 }
@@ -96,6 +98,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         {
             localPlayer = new Astronaut(new Vector3(5, 5, 5));
         }
+        AddChild(localPlayer);
 
         PanelUI.Player = localPlayer;
 

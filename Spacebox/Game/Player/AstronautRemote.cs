@@ -45,16 +45,13 @@ namespace Spacebox.Game.Player
             texold.UpdateTexture(true);
             playerShader = Resources.Load<Shader>("Resources/Shaders/textured");
             spacerOld = new Model(Resources.Load<Engine.Mesh>("Resources/Models/spacer.obj"), new TextureMaterial(playerShader, texold));
-            var tex = Resources.Load<Texture2D>("Resources/Textures/astronaut2.jpg");
-            tex.FlipY();
-            tex.FilterMode = FilterMode.Nearest;
-            spacer = new Model(Resources.Load<Engine.Mesh>("Resources/Models/astronaut2.obj"), new TextureMaterial(playerShader, tex));
+           
+           // spacer = new Model(Resources.Load<Engine.Mesh>("Resources/Models/astronaut2.obj"), new TextureMaterial(playerShader, tex));
 
-            //tagg = new GUI.Tag($"[{playerData.ID}]{playerData.Name}", LatestPosition, new Color4(playerData.Color.X, playerData.Color.Y, playerData.Color.Z, 1));
-            //tagg.TextAlignment = GUI.Tag.Alignment.Center;
+            tagg = TagManager.Instance.CreateTag($"[{playerData.ID}]{playerData.Name}", LatestPosition, new Color4(playerData.Color.X, playerData.Color.Y, playerData.Color.Z, 1));
+            tagg.TextAlignment = GUI.Tag.Alignment.Center;
             GUI.Tag.CalculateFontSize(100);
-            //TagManager.Instance.RegisterTag(tagg);
-
+         
             var uvIndex = GameAssets.AtlasItems.GetUVIndexByName("drill1");
             itemModel = ItemModelGenerator.GenerateModelFromAtlas(GameAssets.ItemsTexture, GameAssets.EmissionItems, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
             itemModel.UseMainCamera = true;
@@ -90,7 +87,7 @@ namespace Spacebox.Game.Player
             var mesh1 = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Body_Fly.obj");
             var mesh2 = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Helmet_Closed.obj");
             var mesh3 = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Tank_Fly.obj");
-
+          
             astBody = new Model(mesh1, mat);
             astHelmet = new Model(mesh2, mat);
             astTank = new Model(mesh3, mat);
@@ -106,9 +103,13 @@ namespace Spacebox.Game.Player
         {
             Position = Vector3.Lerp(Position, LatestPosition, Time.Delta * 5f);
             currentRotation = Quaternion.Slerp(currentRotation, LatestRotation, Time.Delta * 5f);
+
+
             Rotation = Node3D.QuaternionToEulerDegrees(currentRotation);
+            Debug.Log(Rotation);
             cube.Position = Position;
             var up = Vector3.Transform(Vector3.UnitY, currentRotation);
+
             if (playerData.Name == "alconaut")
             {
                 spacerOld.Rotation = Rotation;
@@ -126,11 +127,13 @@ namespace Spacebox.Game.Player
                 astTank.Position = Position;
                 tagg.WorldPosition = Position + up * 1f;
             }
-            itemModel.Position = Position;
+            //itemModel.Position = Position;
         }
 
-        public void Render()
+        public override void Render()
         {
+            base.Render();
+
             if (VisualDebug.Enabled)
             {
                 BoundingSphere sphere = new BoundingSphere(spacer.Position, 0.5f);
@@ -160,7 +163,7 @@ namespace Spacebox.Game.Player
                 return;
             }
             //spotLight.Render(Camera.Main);
-            itemModel.Render();
+           // itemModel.Render();
             astBody.Render();
             astHelmet.Render();
             astTank.Render();

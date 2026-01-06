@@ -264,12 +264,9 @@
         "Description": "Used for smelting ores",
         "Type": "furnace",
         "Category": "resources",
-        "Sides": "furnace",
-        "Up": "bottom",
-        "Down": "bottom",
-        "Left": "bottom",
-        "Right": "bottom",
-        "Back": "bottom",
+        "Sides": "bottom",
+        "Forward": "furnace",
+        "ForwardOff": "furnaceOff",
         "Mass": 2,
         "Durability": 7,
         "Efficiency": 1
@@ -279,12 +276,9 @@
         "Name": "Enhanced Furnace",
         "Type": "furnace",
         "Category": "resources",
-        "Sides": "furnace2",
-        "Up": "bottom",
-        "Down": "bottom",
-        "Left": "bottom",
-        "Right": "bottom",
-        "Back": "bottom",
+        "Sides": "bottom",
+       "Forward": "furnace2",
+        "ForwardOff": "furnace2Off",
         "Mass": 2,
         "Durability": 10,
         "Efficiency": 1.3,
@@ -367,7 +361,9 @@
         "Down": "wireTop",
         "DownOff": "wireTopOff",
         "Category": "blocks",
-        "IsTransparent": false
+        "IsTransparent": false,
+        "Durability": 3
+
     },
 
     {
