@@ -20,7 +20,7 @@ namespace Spacebox.Game.Generation.Blocks
             CurrentPower = 0;
         }
 
-        public override void Use(Astronaut player, ref HitInfo hit)
+        public override void Use(LocalAstronaut player, ref HitInfo hit)
         {
 
             if (!IsActive) return;

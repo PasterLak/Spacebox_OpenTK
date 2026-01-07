@@ -22,7 +22,7 @@ public class MovementMode : GameModeBase
 
     private static AudioSource blockDestroy;
 
-    public MovementMode(Astronaut player, InteractionHandler interactionHandler) : base(player, interactionHandler)
+    public MovementMode(LocalAstronaut player, InteractionHandler interactionHandler) : base(player, interactionHandler)
     {
         player.CollisionEnabled = true;
         player.EnableCameraSway(true);
@@ -86,12 +86,12 @@ public class MovementMode : GameModeBase
         InteractionHandler.Interaction.OnDisable();
 
     }
-    public override void UpdateInteraction(Astronaut player)
+    public override void UpdateInteraction(LocalAstronaut player)
     {
         
         InteractionHandler.Update(player);
     }
-    public override void Update(Astronaut player)
+    public override void Update(LocalAstronaut player)
     {
         player.PowerBar.Update();
         player.HealthBar.Update();
@@ -99,7 +99,7 @@ public class MovementMode : GameModeBase
 
    
 
-    public override void HandleInput(Astronaut player)
+    public override void HandleInput(LocalAstronaut player)
     {
 
         Vector3 acceleration = Vector3.Zero;
@@ -293,7 +293,7 @@ public class MovementMode : GameModeBase
         return speed;
     }
 
-    public void MoveAndCollide(Vector3 movement, Astronaut player)
+    public void MoveAndCollide(Vector3 movement, LocalAstronaut player)
     {
         Vector3 position = player.Position;
 
@@ -373,7 +373,7 @@ public class MovementMode : GameModeBase
         }
     }
 
-    private bool ApplyVelocityDamage(float speed, Astronaut player, CollideInfo collideInfo)
+    private bool ApplyVelocityDamage(float speed, LocalAstronaut player, CollideInfo collideInfo)
     {
         bool saveSpeed = false;
 

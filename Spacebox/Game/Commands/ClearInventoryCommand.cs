@@ -12,10 +12,10 @@ namespace Spacebox.Game.Commands
 
         public override string Description => "Delete all items from the inventory";
 
-        public Astronaut Astronaut { get; set; }
+        public LocalAstronaut Astronaut { get; set; }
 
 
-        public ClearInventoryCommand(Astronaut astronaut)
+        public ClearInventoryCommand(LocalAstronaut astronaut)
         {
             this.Astronaut = astronaut;
         }

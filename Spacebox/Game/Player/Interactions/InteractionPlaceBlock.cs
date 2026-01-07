@@ -64,7 +64,7 @@ public class InteractionPlaceBlock : InteractionMode
     }
 
     const float MinDistanceToBlock = 1.25f * 1.25f; // 1.37
-    public override void Update(Astronaut player)
+    public override void Update(LocalAstronaut player)
     {
         if (!player.CanMove)
         {
@@ -112,7 +112,7 @@ public class InteractionPlaceBlock : InteractionMode
         }
     }
 
-    private void OnEntityFound(HitInfo hit, Astronaut player)
+    private void OnEntityFound(HitInfo hit, LocalAstronaut player)
     {
         var selectorPos = UpdateBlockPreview(hit);
 
@@ -193,7 +193,7 @@ public class InteractionPlaceBlock : InteractionMode
         blockPlace = new AudioSource(clip);
     }
 
-    private void OnNoEntityFound(Ray ray, Astronaut player)
+    private void OnNoEntityFound(Ray ray, LocalAstronaut player)
     {
         AImedBlockElement.AimedBlock = null;
         BlockSelector.IsVisible = true;

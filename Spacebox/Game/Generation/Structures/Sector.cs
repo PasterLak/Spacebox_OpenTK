@@ -266,7 +266,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         }
     }
 
-    public void PlacePlayerRandomInSector(Astronaut player, Random random)
+    public void PlacePlayerRandomInSector(LocalAstronaut player, Random random)
     {
         if (Entities.Count == 0) return;
 
@@ -333,7 +333,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         return pos;
     }
 
-    public void SpawnPlayerNearRandomAsteroidData(Astronaut player, Random random) // todo: fix 
+    public void SpawnPlayerNearRandomAsteroidData(LocalAstronaut player, Random random) // todo: fix 
     {
 
         var asteroidsDataList = EntitiesGeneratedData.Values.ToList();

@@ -10,7 +10,7 @@ public class SpectatorMode : GameModeBase
     private const float _cameraSpeed = 50f;
     private const float _shiftSpeed = 150f;
 
-    public SpectatorMode(Astronaut player) : base(player, new InteractionHandler(GameMode.Spectator))
+    public SpectatorMode(LocalAstronaut player) : base(player, new InteractionHandler(GameMode.Spectator))
     {
         player.CollisionEnabled = false;
         player.EnableCameraSway(false);
@@ -32,16 +32,16 @@ public class SpectatorMode : GameModeBase
     {
         InteractionHandler.Interaction.OnDisable();
     }
-    public override void UpdateInteraction(Astronaut player)
+    public override void UpdateInteraction(LocalAstronaut player)
     {
         //return;
         //InteractionHandler.Update(player);
     }
-    public override void Update(Astronaut player)
+    public override void Update(LocalAstronaut player)
     {
     }
 
-    public override void HandleInput(Astronaut player)
+    public override void HandleInput(LocalAstronaut player)
     {
         if(player.CanMove == false) return;
 
@@ -118,7 +118,7 @@ public class SpectatorMode : GameModeBase
         }
     }
 
-    public void MoveAndCollide(Vector3 movement, Astronaut player)
+    public void MoveAndCollide(Vector3 movement, LocalAstronaut player)
     {
         player.Position += movement;
     }

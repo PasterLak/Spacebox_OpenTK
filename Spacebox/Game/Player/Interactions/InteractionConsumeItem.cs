@@ -64,7 +64,7 @@ public class InteractionConsumeItem : InteractionMode
         }
     }
 
-    public override void Update(Astronaut player)
+    public override void Update(LocalAstronaut player)
     {
         if (!player.CanMove) return;
 
@@ -123,7 +123,7 @@ public class InteractionConsumeItem : InteractionMode
 
     }
 
-    private void ApplyConsumable(ConsumableItem consumable, Astronaut player)
+    private void ApplyConsumable(ConsumableItem consumable, LocalAstronaut player)
     {
         if (consumable != null)
         {
@@ -159,7 +159,7 @@ public class InteractionConsumeItem : InteractionMode
         }
     }
 
-    public override void Render(Astronaut player)
+    public override void Render(LocalAstronaut player)
     {
 
     }

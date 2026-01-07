@@ -92,7 +92,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         light = null;
     }
 
-    private void ProcessDestroying(HitInfo hit, byte power, Astronaut astronaut, DrillItem drill)
+    private void ProcessDestroying(HitInfo hit, byte power, LocalAstronaut astronaut, DrillItem drill)
     {
         if (hit.block == null) return;
         if (hit.block.Durability == 0)
@@ -113,7 +113,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         }
     }
 
-    private void DamageBlock(HitInfo hit, Astronaut astronaut, DrillItem drill, byte damage = 1)
+    private void DamageBlock(HitInfo hit, LocalAstronaut astronaut, DrillItem drill, byte damage = 1)
     {
         int dam = hit.block.Durability - damage;
         hit.block.Durability = (byte)(dam < 0 ? 0 : dam);
@@ -138,7 +138,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         light.Enabled = false;
     }
 
-    public override void Update(Astronaut player)
+    public override void Update(LocalAstronaut player)
     {
         if (Input.IsMouseButtonUp(MouseButton.Left))
         {

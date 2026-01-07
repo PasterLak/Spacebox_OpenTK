@@ -109,7 +109,7 @@ namespace Spacebox.Game
 
             animator?.Update();
 
-            var cam = Camera.Main as Astronaut;
+            var cam = Camera.Main as LocalAstronaut;
 
             if (cam == null) return;
 

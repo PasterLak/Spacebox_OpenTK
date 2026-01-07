@@ -154,7 +154,7 @@ namespace Spacebox.Game.GUI
             {
                 click1?.Play();
 
-                var player = SceneManager.Current.FindNode<Astronaut>();
+                var player = SceneManager.Current.FindNode<LocalAstronaut>();
                 if (player!= null && player.PlayerStatistics != null)
                 {
                     StatisticsUI.Show(player.PlayerStatistics);

@@ -6,7 +6,7 @@ namespace Spacebox.Game.GUI;
 public static class CraftingLogic
 {
 
-    public static bool TryGetResources(Storage s1, Storage s2, Blueprint blueprint, Astronaut currentPlayer)
+    public static bool TryGetResources(Storage s1, Storage s2, Blueprint blueprint, LocalAstronaut currentPlayer)
     {
         foreach (var ing in blueprint.Ingredients)
         {
@@ -24,7 +24,7 @@ public static class CraftingLogic
         return true;
     }
 
-    public static bool IsResourceAvailable(Ingredient ing, Storage s1, Storage s2, Astronaut player)
+    public static bool IsResourceAvailable(Ingredient ing, Storage s1, Storage s2, LocalAstronaut player)
     {
         if (IsVirtualResource(ing.Item.Id_string))
         {
@@ -39,7 +39,7 @@ public static class CraftingLogic
     }
 
 
-    private static void ConsumeResource(Ingredient ing, Storage s1, Storage s2, Astronaut player)
+    private static void ConsumeResource(Ingredient ing, Storage s1, Storage s2, LocalAstronaut player)
     {
         if (IsVirtualResource(ing.Item.Id_string))
         {
@@ -72,7 +72,7 @@ public static class CraftingLogic
     }
 
 
-    public static bool CheckVirtualResource(string itemStringID, int quantity, Astronaut player)
+    public static bool CheckVirtualResource(string itemStringID, int quantity, LocalAstronaut player)
     {
         if (player == null)
         {
@@ -94,7 +94,7 @@ public static class CraftingLogic
         }
     }
 
-    private static void ConsumeVirtualResource(string resourceName, int quantity, Astronaut player)
+    private static void ConsumeVirtualResource(string resourceName, int quantity, LocalAstronaut player)
     {
         if (player == null) return;
 
@@ -111,7 +111,7 @@ public static class CraftingLogic
     }
 
 
-    public static int CalculatePossibleItemCraftCount(Storage s1, Storage s2, Blueprint blueprint, Astronaut currentPlayer)
+    public static int CalculatePossibleItemCraftCount(Storage s1, Storage s2, Blueprint blueprint, LocalAstronaut currentPlayer)
     {
         if (s1 == null || s2 == null || blueprint == null || blueprint.Ingredients.Length == 0) return 0;
 
@@ -134,7 +134,7 @@ public static class CraftingLogic
         return minCrafts;
     }
 
-    private static int GetAvailableQuantity(Ingredient ing, Storage s1, Storage s2, Astronaut player)
+    private static int GetAvailableQuantity(Ingredient ing, Storage s1, Storage s2, LocalAstronaut player)
     {
         if (IsVirtualResource(ing.Item.Id_string))
         {
@@ -144,7 +144,7 @@ public static class CraftingLogic
         return s1.GetTotalCountOf(ing.Item) + s2.GetTotalCountOf(ing.Item);
     }
 
-    private static int GetVirtualResourceValue(string resourceName, Astronaut player)
+    private static int GetVirtualResourceValue(string resourceName, LocalAstronaut player)
     {
         if (player == null)
         {

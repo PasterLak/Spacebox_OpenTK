@@ -22,7 +22,7 @@ public class InteractionDefault : InteractionMode
         //CenteredText.Hide();
     }
 
-    public override void Update(Astronaut player)
+    public override void Update(LocalAstronaut player)
     {
         Ray ray = new Ray(player.Position, player.Front, InteractiveBlock.InteractionDistance);
         HitInfo hit;

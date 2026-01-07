@@ -37,7 +37,7 @@ public abstract class InteractionDestroyBlock : InteractionMode
         blockDestroy = new AudioSource(clip);
     }
 
-    protected void DestroyBlock(HitInfo hit, Astronaut player)
+    protected void DestroyBlock(HitInfo hit, LocalAstronaut player)
     {
         hit.block.OnDestroy?.Invoke(hit);
         hit.block.Durability = 0;

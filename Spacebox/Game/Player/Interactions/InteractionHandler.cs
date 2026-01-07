@@ -58,13 +58,13 @@ public class InteractionHandler
         return Interaction;
     }
 
-    public void Update(Astronaut player)
+    public void Update(LocalAstronaut player)
     {
         
         Interaction.Update(player);
     }
 
-    public void Render(Astronaut player)
+    public void Render(LocalAstronaut player)
     {
         Interaction.Render(player);
     }

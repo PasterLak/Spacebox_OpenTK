@@ -14,10 +14,10 @@ namespace Spacebox.Game.Commands
 
         public override string Description => "Teleport the player in local sector coords (0-8191). Usage: tp x y z";
 
-        public Astronaut Astronaut { get; set; }
+        public LocalAstronaut Astronaut { get; set; }
 
 
-        public TeleportLocal(Astronaut astronaut)
+        public TeleportLocal(LocalAstronaut astronaut)
         {
             this.Astronaut = astronaut;
         }

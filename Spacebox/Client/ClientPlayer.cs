@@ -8,7 +8,7 @@ namespace Client
     public class ClientPlayer
     {
         public Player NetworkPlayer { get; private set; }
-        public AstronautRemote RemotePlayer { get; set; } 
+        public RemoteAstronaut RemotePlayer { get; set; } 
 
         public ClientPlayer(Player networkPlayer)
         {
@@ -31,7 +31,7 @@ namespace Client
 
             RemotePlayer.LatestPosition = NetworkPlayer.Position.ToOpenTKVector3();
             RemotePlayer.LatestRotation = new OpenTK.Mathematics.Quaternion(NetworkPlayer.Rotation.X, NetworkPlayer.Rotation.Y, NetworkPlayer.Rotation.Z, NetworkPlayer.Rotation.W);
-            RemotePlayer.UpdateRemote();
+            RemotePlayer.Update();
         }
     }
 }

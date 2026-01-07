@@ -18,7 +18,7 @@ namespace Spacebox.Game.GUI
 
         public static bool IsVisible { get; set; } = false;
 
-        public static Astronaut Player;
+        public static LocalAstronaut Player;
 
 
         public static AudioSource splitAudio;

@@ -55,8 +55,8 @@ namespace Spacebox.Game.GUI
         private static AudioSource closeSound;
 
         private static AudioSource pickupSound;
-        private static Astronaut Player;
-        public static void Toggle(Astronaut player)
+        private static LocalAstronaut Player;
+        public static void Toggle(LocalAstronaut player)
         {
             Player = player;
             if (!ToggleManager.Exists("resourceProcessing"))
@@ -222,7 +222,7 @@ namespace Spacebox.Game.GUI
 
         }
 
-        public static void Activate(ResourceProcessingBlock block, Astronaut player)
+        public static void Activate(ResourceProcessingBlock block, LocalAstronaut player)
         {
             if (!IsVisible) return;
 

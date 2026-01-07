@@ -20,7 +20,7 @@ namespace Spacebox.Game.GUI
         private static nint PencilTexture = nint.Zero;
         private static Storage? Storage;
         private static StorageBlock? StorageBlock;
-        private static Astronaut? Astronaut;
+        private static LocalAstronaut? Astronaut;
         public static bool IsVisible { get; set; } = false;
 
         private static AudioSource openSound;
@@ -56,13 +56,13 @@ namespace Spacebox.Game.GUI
           
         }
 
-        public static void OpenStorage(StorageBlock storageBlock, Astronaut astronaut)
+        public static void OpenStorage(StorageBlock storageBlock, LocalAstronaut astronaut)
         {
             StorageBlock = storageBlock;
             OpenStorage(storageBlock.Storage, astronaut);
 
         }
-        public static void OpenStorage(Storage storage, Astronaut astronaut)
+        public static void OpenStorage(Storage storage, LocalAstronaut astronaut)
         {
 
             Storage = storage;

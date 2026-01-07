@@ -42,7 +42,7 @@ public struct SpaceSceneArgs
 public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 {
 
-    protected Astronaut localPlayer;
+    protected LocalAstronaut localPlayer;
 
     protected BlockMaterial blockMaterial;
     protected SpaceSceneArgs SceneArgs;
@@ -96,7 +96,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         if (localPlayer == null)
         {
-            localPlayer = new Astronaut(new Vector3(5, 5, 5));
+            localPlayer = new LocalAstronaut(new Vector3(5, 5, 5));
         }
         AddChild(localPlayer);
 

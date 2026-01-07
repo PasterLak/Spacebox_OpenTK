@@ -33,7 +33,7 @@ namespace Spacebox.Game.Player.Interactions
             public Vector3 Pos;
         }
 
-        private Astronaut player;
+        private LocalAstronaut player;
 
         public override void OnEnable()
         {
@@ -59,7 +59,7 @@ namespace Spacebox.Game.Player.Interactions
             }
         }
 
-        public override void Update(Astronaut player)
+        public override void Update(LocalAstronaut player)
         {
             if (this.player == null)
                 this.player = player;
@@ -110,7 +110,7 @@ namespace Spacebox.Game.Player.Interactions
             }
         }
 
-        public override void Render(Astronaut player)
+        public override void Render(LocalAstronaut player)
         {
 
             if (!isFlying)
@@ -138,7 +138,7 @@ namespace Spacebox.Game.Player.Interactions
             }
         }
 
-        private void HandleEditing(Astronaut player)
+        private void HandleEditing(LocalAstronaut player)
         {
             if (IsEditing)
             {

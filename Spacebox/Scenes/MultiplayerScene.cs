@@ -18,7 +18,7 @@ namespace Spacebox.Scenes
 
         public override void LoadContent()
         {
-            localPlayer = new AstronautMultiplayer(new Vector3(5, 5, 5));
+            localPlayer = new LocalAstronaut(new Vector3(5, 5, 5));
             localPlayer.GameMode = GameMode.Creative;
           
 
@@ -129,7 +129,7 @@ namespace Spacebox.Scenes
                 return;
             if (player.RemotePlayer == null)
             {
-                var remote = new AstronautRemote(player.NetworkPlayer);
+                var remote = new RemoteAstronaut(player.NetworkPlayer);
                 remote.LatestPosition = Camera.Main.Position;
                 remote.LatestRotation = Quaternion.Identity;
                 remote.Position = Camera.Main.Position;

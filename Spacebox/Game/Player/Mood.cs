@@ -40,9 +40,9 @@ namespace Spacebox.Game.Player
 
         public StatsData MoodData => _moodData;
         private Random _random = new Random();
-        private Astronaut _astronaut;
+        private LocalAstronaut _astronaut;
 
-        public Mood(Astronaut astronaut)
+        public Mood(LocalAstronaut astronaut)
         {
             _moodData = new StatsData("Mood", 100, 0);
             _moodData.OnMaxReached += PlayRandomEffect;

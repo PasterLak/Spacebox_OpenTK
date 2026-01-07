@@ -23,7 +23,7 @@ public class CreativeMode : MovementMode
         }, GameMode.Creative);
     }
 
-    public CreativeMode(Astronaut player) : base(player, CreateInteractionHandler())
+    public CreativeMode(LocalAstronaut player) : base(player, CreateInteractionHandler())
     {
         player.CollisionEnabled = true;
         player.EnableCameraSway(true);
@@ -50,18 +50,18 @@ public class CreativeMode : MovementMode
         
     }
 
-    public override void Update(Astronaut player)
+    public override void Update(LocalAstronaut player)
     {
         player.PowerBar.Update();
         player.HealthBar.Update();
     }
 
-    public override void HandleInput(Astronaut player)
+    public override void HandleInput(LocalAstronaut player)
     {
        base.HandleInput(player);
     }
 
-    public void MoveAndCollide(Vector3 movement, Astronaut player)
+    public void MoveAndCollide(Vector3 movement, LocalAstronaut player)
     {
        base.MoveAndCollide(movement, player);
     }

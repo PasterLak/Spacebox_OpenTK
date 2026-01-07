@@ -9,7 +9,7 @@ namespace Spacebox.Game.Player
 {
     public static class PlayerSaveLoadManager
     {
-        public static void SavePlayer(Astronaut player, string worldFolder)
+        public static void SavePlayer(LocalAstronaut player, string worldFolder)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace Spacebox.Game.Player
             }
         }
 
-        public static void LoadPlayer(Astronaut player, string worldFolder)
+        public static void LoadPlayer(LocalAstronaut player, string worldFolder)
         {
 
             try

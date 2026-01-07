@@ -49,9 +49,9 @@ public class CraftingGUI
     private static AudioSource closeSound;
 
     private static int ColumnsOfItems;
-    private static Astronaut currentPlayer;
+    private static LocalAstronaut currentPlayer;
 
-    public static void Toggle(Astronaut player)
+    public static void Toggle(LocalAstronaut player)
     {
         var v = !IsVisible;
         ToggleManager.DisableAllWindows();

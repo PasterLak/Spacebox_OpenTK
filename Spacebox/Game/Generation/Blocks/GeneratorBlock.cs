@@ -23,7 +23,7 @@ namespace Spacebox.Game.Generation.Blocks
             SetEnableEmission(CurrentPower > 0);
         }
 
-        public override void Use(Astronaut player, ref HitInfo hit)
+        public override void Use(LocalAstronaut player, ref HitInfo hit)
         {
             base.Use(player, ref hit);
 

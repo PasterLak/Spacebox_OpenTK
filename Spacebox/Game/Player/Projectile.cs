@@ -33,7 +33,7 @@ public class Projectile : Node3D
 
     private PointLight light;
     private bool useLight = true;
-    private Astronaut? astronaut;
+    private LocalAstronaut? astronaut;
 
     private const int MaxDamageForSound = 100;
 
@@ -50,7 +50,7 @@ public class Projectile : Node3D
         }
     }
 
-    public Projectile Initialize(Ray ray, ref ProjectileParameters parameters, Astronaut? owner, bool useLight = true)
+    public Projectile Initialize(Ray ray, ref ProjectileParameters parameters, LocalAstronaut? owner, bool useLight = true)
     {
         this.useLight = useLight;
         this.ray = ray;

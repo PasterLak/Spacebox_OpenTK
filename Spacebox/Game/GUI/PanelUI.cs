@@ -35,12 +35,12 @@ namespace Spacebox.Game.GUI
         private static float TimeToHideItemName = 2f;
         private static float _time = 0;
         private static bool wasPlayerOnes = false;
-        public static Astronaut Player;
+        public static LocalAstronaut Player;
         private static short _lastSelectedSlotId = -1;
         private static Item _lastSelectedItem = null;
         private static byte _lastSelectedCount = 0;
 
-        public static void Initialize(Astronaut player, nint slotTexture, nint selectedTexture)
+        public static void Initialize(LocalAstronaut player, nint slotTexture, nint selectedTexture)
         {
             Player = player;
             Storage = Player.Panel;
@@ -239,7 +239,7 @@ namespace Spacebox.Game.GUI
 
         }
 
-        private static void UpdatePlayerInteraction(Astronaut player)
+        private static void UpdatePlayerInteraction(LocalAstronaut player)
         {
             if (player == null) return;
             if (player.GameMode == GameMode.Spectator) return;
@@ -291,7 +291,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void SetFlashlight(Astronaut ast)
+        public static void SetFlashlight(LocalAstronaut ast)
         {
             if (ast != null)
             {

@@ -13,10 +13,10 @@ namespace Spacebox.Game.Commands
 
         public override string Description => "Teleport the player. Usage: tp x y z";
 
-        public Astronaut Astronaut { get; set; }
+        public LocalAstronaut Astronaut { get; set; }
 
     
-        public TeleportCommand(Astronaut astronaut) {
+        public TeleportCommand(LocalAstronaut astronaut) {
             this.Astronaut = astronaut;
         }
         public override void Execute(string[] args)

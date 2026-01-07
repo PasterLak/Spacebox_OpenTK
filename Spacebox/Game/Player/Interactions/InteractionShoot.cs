@@ -111,7 +111,7 @@ public class InteractionShoot : InteractionMode
 
     private Vector3 despawnPos = Vector3.Zero;
 
-    public override void Update(Astronaut player)
+    public override void Update(LocalAstronaut player)
     {
         if (player.IsAlive == false)
         {
@@ -205,7 +205,7 @@ public class InteractionShoot : InteractionMode
 
     }
 
-    public static void ApplyRecoil(Astronaut player, WeaponItem weapon, Vector3 shootDirection, ProjectileParameters projectileParams)
+    public static void ApplyRecoil(LocalAstronaut player, WeaponItem weapon, Vector3 shootDirection, ProjectileParameters projectileParams)
     {
         if (weapon.Recoil <= 0) return;
 

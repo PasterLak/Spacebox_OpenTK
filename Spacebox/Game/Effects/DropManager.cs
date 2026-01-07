@@ -21,7 +21,7 @@ namespace Spacebox.Game.Effects
         private readonly AudioSource[] _pickupSounds = new AudioSource[3];
         private readonly Dictionary<Drop, Particle> _dropToParticle = new Dictionary<Drop, Particle>();
         private readonly Dictionary<Drop, PointLight> _dropToLight = new Dictionary<Drop, PointLight>();
-        private readonly Astronaut _player;
+        private readonly LocalAstronaut _player;
         private readonly float _maxSpeed;
         private readonly float _moveDistanceSquared;
         private readonly float _pickupDistanceSquared;
@@ -34,7 +34,7 @@ namespace Spacebox.Game.Effects
         private PointOctree<Drop> _octree;
         private Random random = new Random();
         public DropManager(
-            Astronaut player,
+            LocalAstronaut player,
             float maxSpeed = 20f,
             float moveDistance = 2f,
             float pickupDistance = 0.3f,

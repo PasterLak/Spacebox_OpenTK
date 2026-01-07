@@ -106,7 +106,7 @@ public class StorageBlock : InteractiveBlock
         }
     }
 
-    public override void Use(Astronaut player, ref HitInfo hit)
+    public override void Use(LocalAstronaut player, ref HitInfo hit)
     {
 
         if (Storage == null)

@@ -29,7 +29,7 @@ public class World : Component, ISpaceStructure
     public static Sector? CurrentSector { get; private set; }
     public static BiomeGenerator BiomeGenerator { get; private set; }
 
-    public Astronaut Player { get; private set; }
+    public LocalAstronaut Player { get; private set; }
 
     private BlockMaterial material;
     private readonly Octree<Sector> worldOctree;
@@ -49,7 +49,7 @@ public class World : Component, ISpaceStructure
     };
 
     private Spacer spacer;
-    public World(Astronaut player, BlockMaterial material)
+    public World(LocalAstronaut player, BlockMaterial material)
     {
         Instance = this;
         Player = player;

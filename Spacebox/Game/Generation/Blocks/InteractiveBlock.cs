@@ -19,12 +19,12 @@ public class InteractiveBlock : ElectricalBlock
     public string HoverTextBlockName = "";
     public string HoverText = "Press RMB to use";
     public string HoverTextDeactivated = "No power";
-    public Action<Astronaut> OnUse;
+    public Action<LocalAstronaut> OnUse;
     public Chunk chunk;
     private bool lasState;
 
     public Vector3 colorIfActive = new Vector3(0.7f, 0.4f, 0.2f) / 4f;
-    public virtual void Use(Astronaut player, ref HitInfo hit)
+    public virtual void Use(LocalAstronaut player, ref HitInfo hit)
     {
 
         SetText();
@@ -78,7 +78,7 @@ public class InteractiveBlock : ElectricalBlock
         //CenteredText.Hide();
     }
 
-    public static void UpdateInteractive(InteractiveBlock block, Astronaut player, ref HitInfo hit)
+    public static void UpdateInteractive(InteractiveBlock block, LocalAstronaut player, ref HitInfo hit)
     {
         var disSq = Vector3.DistanceSquared(player.Position, hit.hitPosition);
 

@@ -16,7 +16,7 @@ namespace Spacebox.Game.Player
         private Toggi toggle;
 
         Engine.InputPro.InputAction action;
-        public Flashlight(Astronaut astronaut)
+        public Flashlight(LocalAstronaut astronaut)
         {
             GetDirectionFromNode = true;
             Direction = -Vector3.UnitZ;

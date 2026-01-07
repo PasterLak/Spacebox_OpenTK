@@ -58,7 +58,7 @@ public static class CreativeWindowUI
     public static bool IsVisible { get; set; } = false;
     public static bool Enabled { get; set; } = false;
 
-    private static Astronaut player;
+    private static LocalAstronaut player;
 
     private static Storage storageAll;
 
@@ -68,7 +68,7 @@ public static class CreativeWindowUI
 
     private static Storage selectedStorage;
 
-    public static void SetDefaultIcon(nint textureId, Astronaut player)
+    public static void SetDefaultIcon(nint textureId, LocalAstronaut player)
     {
         SlotTexture = textureId;
         CreativeWindowUI.player = player;

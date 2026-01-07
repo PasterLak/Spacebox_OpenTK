@@ -18,7 +18,7 @@ public class SurvivalMode : MovementMode
         GameMode.Survival);
     }
 
-    public SurvivalMode(Astronaut player) : base(player, CreateInteractionHandler())
+    public SurvivalMode(LocalAstronaut player) : base(player, CreateInteractionHandler())
     {
 
     }
@@ -39,7 +39,7 @@ public class SurvivalMode : MovementMode
 
     }
 
-    public override void Update(Astronaut player)
+    public override void Update(LocalAstronaut player)
     {
         player.PowerBar.Update();
         player.HealthBar.Update();
@@ -47,7 +47,7 @@ public class SurvivalMode : MovementMode
 
 
 
-    public override void HandleInput(Astronaut player)
+    public override void HandleInput(LocalAstronaut player)
     {
         base.HandleInput(player);
     }
