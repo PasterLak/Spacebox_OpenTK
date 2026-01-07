@@ -49,8 +49,7 @@ namespace Spacebox.Scenes
                 }
             }
 
-            RotationDebug.Run();
-
+    
             InputManager.Instance.LoadConfiguration("Resources/default_input.json");
 
             var player = new CameraStatic(new Vector3(0, 0, 0));

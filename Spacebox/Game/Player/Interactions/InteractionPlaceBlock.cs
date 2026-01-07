@@ -268,6 +268,7 @@ public class InteractionPlaceBlock : InteractionMode
         {
             if (entity != null)
             {
+                var cachedBlockRotation = BlockSelector.Instance.Rotation;
 
                 if (PanelUI.TryPlaceItem(out var id, GameMode))
                 {
@@ -284,7 +285,7 @@ public class InteractionPlaceBlock : InteractionMode
                         newBlock.Direction = direction;
 
 
-                    newBlock.Rotation = BlockSelector.Instance.Rotation;
+                    newBlock.Rotation = cachedBlockRotation;
 
                     if (entity.TryPlaceBlock(selectorPosition, newBlock))
                     {

@@ -84,7 +84,7 @@ namespace Engine
         {
             if (component == null) return;
 
-          
+
             if (Components.Remove(component))
             {
                 component.OnDetached();
@@ -150,8 +150,8 @@ namespace Engine
             }
             for (int i = 0; i < Children.Count; i++)
             {
-               // if (Children[i].Enabled)
-               //     Children[i].Render();
+                // if (Children[i].Enabled)
+                //     Children[i].Render();
             }
         }
 
@@ -159,7 +159,7 @@ namespace Engine
         {
             if (!Enabled) return;
 
-            
+
             for (var i = 0; i < Components.Count; i++)
             {
                 var cmp = Components[i];
@@ -170,8 +170,8 @@ namespace Engine
             }
             for (int i = 0; i < Children.Count; i++)
             {
-                 if (Children[i].Enabled)
-                     Children[i].OnGUI();
+                if (Children[i].Enabled)
+                    Children[i].OnGUI();
             }
         }
 
@@ -264,7 +264,7 @@ namespace Engine
             direction = Vector3.TransformNormal(direction, rotationMatrix);
             Position = point + direction;
             var rot = Quaternion.FromAxisAngle(axis.Normalized(), radians);
-            Rotation = QuaternionToEulerDegrees(rot * ToQuaternion(Rotation));
+            Rotation = QuaternionToEuler(rot * ToQuaternion(Rotation));
         }
 
         public Vector3 PositionWorld => Parent == null ? Position : Parent.LocalToWorld(Position);
@@ -279,31 +279,27 @@ namespace Engine
 
         public static bool operator !=(Node3D? left, Node3D? right) => !Equals(left, right);
 
-        public static Vector3 QuaternionToEulerDegrees(Quaternion q)
+        private static Quaternion NormalizeAndCanonicalize(Quaternion q)
         {
-            var rad = QuaternionToEuler(q);
-            return new Vector3(
-                MathHelper.RadiansToDegrees(rad.X),
-                MathHelper.RadiansToDegrees(rad.Y),
-                MathHelper.RadiansToDegrees(rad.Z));
-        }
+            q = Quaternion.Normalize(q);
 
+            if (q.W < 0f)
+                q = new Quaternion(-q.X, -q.Y, -q.Z, -q.W);
+
+            return q;
+        }
 
         public static Vector3 QuaternionToEuler(Quaternion q)
         {
-            q = Quaternion.Normalize(q);
-            var sinr_cosp = 2f * (q.W * q.X + q.Y * q.Z);
-            var cosr_cosp = 1f - 2f * (q.X * q.X + q.Y * q.Y);
-            var x = MathF.Atan2(sinr_cosp, cosr_cosp);
+            q = NormalizeAndCanonicalize(q);
+            Vector3 eulerRad = q.ToEulerAngles();
 
-            var sinp = 2f * (q.W * q.Y - q.Z * q.X);
-            var y = MathF.Abs(sinp) >= 1f ? MathF.CopySign(MathF.PI / 2f, sinp) : MathF.Asin(sinp);
 
-            var siny_cosp = 2f * (q.W * q.Z + q.X * q.Y);
-            var cosy_cosp = 1f - 2f * (q.Y * q.Y + q.Z * q.Z);
-            var z = MathF.Atan2(siny_cosp, cosy_cosp);
+            float xDegrees = MathHelper.RadiansToDegrees(eulerRad.X);
+            float yDegrees = MathHelper.RadiansToDegrees(eulerRad.Y);
+            float zDegrees = MathHelper.RadiansToDegrees(eulerRad.Z);
 
-            return new Vector3(x, y, z);
+            return new Vector3(xDegrees, yDegrees, zDegrees);
         }
 
         private static Quaternion ToQuaternion(Vector3 eulerDegrees)
@@ -343,7 +339,7 @@ namespace Engine
                 0f);
         }
 
-        public Vector3 ForwardLocal 
+        public Vector3 ForwardLocal
         {
             get
             {

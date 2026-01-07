@@ -31,7 +31,7 @@ namespace Spacebox.Game.Player
         {
             if (tagg != null)
             {
-                // TagManager.Instance.UnregisterTag(tagg);
+               TagManager.Instance.ReleaseTag(tagg);
             }
         }
 
@@ -105,7 +105,7 @@ namespace Spacebox.Game.Player
             currentRotation = Quaternion.Slerp(currentRotation, LatestRotation, Time.Delta * 5f);
 
 
-            Rotation = Node3D.QuaternionToEulerDegrees(currentRotation);
+            Rotation = Node3D.QuaternionToEuler(currentRotation);
             Debug.Log(Rotation);
             cube.Position = Position;
             var up = Vector3.Transform(Vector3.UnitY, currentRotation);

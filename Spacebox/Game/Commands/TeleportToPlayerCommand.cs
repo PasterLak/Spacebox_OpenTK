@@ -2,7 +2,6 @@
 using Engine.Commands;
 using Spacebox.Game.Player;
 using Engine;
-using System.Globalization;
 using System.Numerics;
 using Client;
 
@@ -59,7 +58,8 @@ namespace Spacebox.Game.Commands
 
                 if (player != null)
                 {
-                    Astronaut.Position = player.RemotePlayer.Position;
+                 
+                    Astronaut.Teleport(player.RemotePlayer.Position);
                     Debug.Log("Teleported to " + player.NetworkPlayer.Name, new Vector4(0f, 1f, 0f, 1f));
                 }
                 else
@@ -73,13 +73,5 @@ namespace Spacebox.Game.Commands
             }
         }
 
-        private bool TryParseArguments(string[] args, out float x, out float y, out float z)
-        {
-            bool isXValid = float.TryParse(args[0], NumberStyles.Float, CultureInfo.InvariantCulture, out x);
-            bool isYValid = float.TryParse(args[1], NumberStyles.Float, CultureInfo.InvariantCulture, out y);
-            bool isZValid = float.TryParse(args[2], NumberStyles.Float, CultureInfo.InvariantCulture, out z);
-
-            return isXValid && isYValid && isZValid;
-        }
     }
 }

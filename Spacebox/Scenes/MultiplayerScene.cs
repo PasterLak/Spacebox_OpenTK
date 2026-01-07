@@ -65,6 +65,7 @@ namespace Spacebox.Scenes
             if (message.GetDirection() <= 6)
             {
                 block.Direction = (Direction)message.GetDirection();
+                block.Rotation = (Rotation)message.GetRotation();
             }
 
             if (World.CurrentSector.TryGetNearestEntity(Camera.Main.Position, out var entity))

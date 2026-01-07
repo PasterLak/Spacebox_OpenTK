@@ -306,7 +306,11 @@ namespace Spacebox.Game.Player
 
 
             base.Update();
+           // Debug.Log("Real Rotation : " + QuaternionToEuler((GetRotation())).ToString());
+           // Debug.Log("Node Rotation : " + Rotation);
 
+            //Debug.Log("Real Rotation : " + (GetRotation()).ToString());
+           // Debug.Log("Node Rotation : " + RotationQuaternion());
 
             Matrix4 viewMatrix = GetViewMatrix();
             Matrix4 projectionMatrix = GetProjectionMatrix();
@@ -375,7 +379,7 @@ namespace Spacebox.Game.Player
             Vector3 newFront = Vector3.Transform(-Vector3.UnitZ, combinedRotation);
             Vector3 newUp = Vector3.Transform(Vector3.UnitY, combinedRotation);
 
-            Rotation = QuaternionToEulerDegrees(GetRotation());
+            Rotation = QuaternionToEuler(GetRotation());
 
             if (CameraRelativeRender)
             {
@@ -383,18 +387,6 @@ namespace Spacebox.Game.Player
             }
 
             return Matrix4.LookAt(Position, Position + newFront, newUp);
-        }
-
-        public static Vector3 QuaternionToEulerDegrees(Quaternion q)
-        {
-
-            Vector3 eulerRad = q.ToEulerAngles();
-
-            float xDegrees = eulerRad.X * (180f / (float)Math.PI);
-            float yDegrees = eulerRad.Y * (180f / (float)Math.PI);
-            float zDegrees = eulerRad.Z * (180f / (float)Math.PI);
-
-            return new Vector3(xDegrees, yDegrees, zDegrees);
         }
 
 

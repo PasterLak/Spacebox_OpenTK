@@ -63,10 +63,7 @@ namespace Spacebox.Game.Resource
             _texturesByState[BlockState.Active] = new TextureState();
         }
 
-        public Vector2Byte GetActiveWallsUVIndex()
-        {
-            return GetFaceUVIndex(Direction.Forward, BlockState.Active);
-        }
+    
 
         public bool AllSidesAreSame(BlockState state = BlockState.Active)
         {
