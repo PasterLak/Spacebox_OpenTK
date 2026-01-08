@@ -6,6 +6,7 @@ using Engine.Audio;
 using Spacebox.Game.Player.Interactions;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Game.Generation;
+using Client;
 
 
 namespace Spacebox.Game.GUI
@@ -65,6 +66,7 @@ namespace Spacebox.Game.GUI
             _lastSelectedItem = null;
             _lastSelectedSlotId = -1;
             _lastSelectedCount = 0;
+
         }
 
 
@@ -199,7 +201,7 @@ namespace Spacebox.Game.GUI
 
             if (!dropAll)
             {
-                World.DropEffectManager.DropItem(dropPosition, Player.Front, 6f, slot.Item,1, 2, 4);
+                World.DropEffectManager.DropItem(dropPosition, Player.Front, 6f, slot.Item, 1, 2, 4);
                 slot.DropOne();
             }
             else
@@ -326,7 +328,21 @@ namespace Spacebox.Game.GUI
                 }
 
                 if (Player != null && SelectedSlot != null)
+                {
                     Player.SetItemLight(SelectedSlot);
+
+                    if (SelectedSlot.HasItem)
+                    {
+                        Player.ChangeItemInHand(SelectedSlot.Item);
+                    }
+                    else
+                    {
+                        Player.ChangeItemInHand(null);
+                    }
+                }
+
+                if (ClientNetwork.Instance != null)
+                    ClientNetwork.Instance.SendItemInHand(SelectedSlot.Item);
 
 
                 ShowItemDescription();

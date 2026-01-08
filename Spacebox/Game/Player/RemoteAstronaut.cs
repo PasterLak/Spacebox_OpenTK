@@ -1,50 +1,79 @@
 ﻿using System;
 using Engine;
 using Spacebox.Game.GUI;
-using Spacebox.GUI;
+
 using OpenTK.Mathematics;
+
 
 namespace Spacebox.Game.Player
 {
     public class RemoteAstronaut : Astronaut
     {
-        private SpaceNetwork.Player _playerData;
-        public Vector3 LatestPosition { get; set; }
-        public Quaternion LatestRotation { get; set; }
+        public SpaceNetwork.Player NetworkData { get; private set; }
+
+        private Vector3 _targetPosition;
+        private Quaternion _targetRotation;
+        private Quaternion _currentRotation = Quaternion.Identity;
 
         private GUI.Tag _nameTag;
-        private Quaternion _currentRotation = Quaternion.Identity;
-        private ItemModel _itemModel;
+
 
         public RemoteAstronaut(SpaceNetwork.Player player) : base(player.Position.ToOpenTKVector3(), false)
         {
-            _playerData = player;
-            LatestPosition = player.Position.ToOpenTKVector3();
-            //CameraActive = false;
+            NetworkData = player;
+            _targetPosition = player.Position.ToOpenTKVector3();
+            _targetRotation = new Quaternion(player.Rotation.X, player.Rotation.Y, player.Rotation.Z, player.Rotation.W);
 
-            CreateModel(player.ID);
+            Position = _targetPosition;
+            _currentRotation = _targetRotation;
 
-            _nameTag = TagManager.Instance.CreateTag($"[{_playerData.ID}]{_playerData.Name}", LatestPosition, new Color4(_playerData.Color.X, _playerData.Color.Y, _playerData.Color.Z, 1));
+        }
+
+        public void OnFullyLoaded()
+        {
+            CreatePlayerVisuals();
+        }
+
+        public void CreatePlayerVisuals()
+        {
+            _nameTag = TagManager.Instance.CreateTag($"[{NetworkData.ID}]{NetworkData.Name}", Position, new Color4(NetworkData.Color.X, NetworkData.Color.Y, NetworkData.Color.Z, 1));
             _nameTag.TextAlignment = GUI.Tag.Alignment.Center;
 
-            var uvIndex = GameAssets.AtlasItems.GetUVIndexByName("drill1");
-            _itemModel = ItemModelGenerator.GenerateModelFromAtlas(GameAssets.ItemsTexture, GameAssets.EmissionItems, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
-            _itemModel.UseMainCamera = true;
+            Name = $"RemoteAstronaut_{NetworkData.ID}";
 
-            Name = "RemoteAstronaut";
+            CreateModel(NetworkData.ID);
+            Flashlight.Enabled = true;
+
+            //var uvIndex = GameAssets.AtlasItems.GetUVIndexByName("drill1");
+           // _itemModel = ItemModelGenerator.GenerateModelFromAtlas(GameAssets.ItemsTexture, GameAssets.EmissionItems, uvIndex.X, uvIndex.Y, 0.1f, 300f / 500f * 2f, false, false);
+           // _itemModel.UseMainCamera = true;
+        }
+
+        public void UpdateNetworkData(SpaceNetwork.Player updatedPlayer)
+        {
+            NetworkData = updatedPlayer;
+
+            _targetPosition = updatedPlayer.Position.ToOpenTKVector3();
+            _targetRotation = new Quaternion(updatedPlayer.Rotation.X, updatedPlayer.Rotation.Y, updatedPlayer.Rotation.Z, updatedPlayer.Rotation.W);
+
+            if (_nameTag != null)
+            {
+                _nameTag.Text = $"[{NetworkData.ID}]{NetworkData.Name}";
+                _nameTag.Color = new Color4(NetworkData.Color.X, NetworkData.Color.Y, NetworkData.Color.Z, 1);
+            }
         }
 
         public override void Update()
         {
-            Position = Vector3.Lerp(Position, LatestPosition, Time.Delta * 5f);
-            _currentRotation = Quaternion.Slerp(_currentRotation, LatestRotation, Time.Delta * 5f);
-            Rotation = Node3D.QuaternionToEuler(_currentRotation);
+            Position = Vector3.Lerp(Position, _targetPosition, Time.Delta * 10f);
+            _currentRotation = Quaternion.Slerp(_currentRotation, _targetRotation, Time.Delta * 10f);
 
-            var up = Vector3.Transform(Vector3.UnitY, _currentRotation);
+            Rotation = Node3D.QuaternionToEuler(_currentRotation);
 
             if (_nameTag != null)
             {
-                _nameTag.WorldPosition = Position + up * 1f;
+                var up = Vector3.Transform(Vector3.UnitY, _currentRotation);
+                _nameTag.WorldPosition = Position + up * 1.8f;
             }
 
             base.Update();
@@ -55,6 +84,7 @@ namespace Spacebox.Game.Player
             if (_nameTag != null)
             {
                 TagManager.Instance.ReleaseTag(_nameTag);
+                _nameTag = null;
             }
         }
 

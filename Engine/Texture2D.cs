@@ -22,22 +22,26 @@ namespace Engine
 
     public class Texture2D : IResource
     {
-        private static int[] _boundTextures = new int[32]; 
-        private static int _activeUnit = 0; 
+        private static int[] _boundTextures = new int[32];
+        private static int _activeUnit = 0;
 
         public int Handle { get; private set; }
         public int Width { get; private set; }
         public int Height { get; private set; }
         private Color4[,] pixels;
         public static bool AllowDebug = true;
+
+        private bool _isDirty = true;
         private FilterMode _filterMode = FilterMode.Linear;
         public FilterMode FilterMode
         {
             get => _filterMode;
             set
             {
+                if (_filterMode == value) return;
+
                 _filterMode = value;
-                SetTextureParameters();
+                _isDirty = true;
                 UpdateTexture();
             }
         }
@@ -179,14 +183,20 @@ namespace Engine
         {
             if (x < 0 || x >= Width || y < 0 || y >= Height)
                 throw new ArgumentOutOfRangeException();
-            pixels[x, y] = new Color4(color.R/255f, color.G/255f, color.B/255f, 1) ;
+            pixels[x, y] = new Color4(color.R / 255f, color.G / 255f, color.B / 255f, 1);
+
+            _isDirty = true;
         }
         public void SetPixel(int x, int y, Color4 color)
         {
             if (x < 0 || x >= Width || y < 0 || y >= Height)
                 throw new ArgumentOutOfRangeException();
             pixels[x, y] = color;
+
+            _isDirty = true;
         }
+
+        public bool XWasFlipped { get; private set; } = false;
         public void FlipX()
         {
             for (int y = 0; y < Height; y++)
@@ -196,8 +206,12 @@ namespace Engine
                     pixels[x, y] = pixels[Width - 1 - x, y];
                     pixels[Width - 1 - x, y] = temp;
                 }
+
+            _isDirty = true;
+            XWasFlipped = !XWasFlipped;
             UpdateTexture();
         }
+        public bool YWasFlipped { get; private set; } = false;
         public void FlipY()
         {
             for (int y = 0; y < Height / 2; y++)
@@ -207,19 +221,22 @@ namespace Engine
                     pixels[x, y] = pixels[x, Height - 1 - y];
                     pixels[x, Height - 1 - y] = temp;
                 }
+
+            _isDirty = true;
+            YWasFlipped = !YWasFlipped;
             UpdateTexture();
         }
         public void UpdateTexture()
         {
+            if (!_isDirty) return;
+
             Use();
             LoadTextureFromPixels();
             SetTextureParameters();
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            _isDirty = false;
         }
-        public void UpdateTexture(bool pixelated)
-        {
-            FilterMode = pixelated ? FilterMode.Nearest : FilterMode.Linear;
-        }
+
         public void Use(TextureUnit unit = TextureUnit.Texture0)
         {
             int unitIndex = (int)(unit - TextureUnit.Texture0);
@@ -236,13 +253,15 @@ namespace Engine
                 _boundTextures[unitIndex] = Handle;
             }
         }
-        public Color4[,] GetPixelData() => pixels;
+        public Color4[,] GetPixels() => pixels;
         public void SetPixelsData(Color4[,] newPixels)
         {
             if (newPixels.GetLength(0) != Width || newPixels.GetLength(1) != Height)
                 throw new ArgumentException("[Texture2D] Pixel data does not match texture size.");
             pixels = newPixels;
+            _isDirty = true;
         }
+ 
         public void SetPixelsData(Vector3[,] newPixels)
         {
             int width = newPixels.GetLength(0);
@@ -263,6 +282,7 @@ namespace Engine
             }
 
             pixels = newColorPixels;
+            _isDirty = true;
         }
         private void EnsureCpuPixels()
         {
@@ -297,7 +317,7 @@ namespace Engine
 
             if (doAsync)
             {
-   
+
                 WorkerPoolManager.Enqueue((e) =>
                 {
                     SaveImageJpg(path, 90, flipY);
@@ -310,7 +330,7 @@ namespace Engine
             {
                 SaveImageJpg(path, 90, flipY);
             }
-           
+
         }
 
         private void SaveImageJpg(string path, int quality = 90, bool flipY = false)
@@ -412,7 +432,7 @@ namespace Engine
                 }
             }
 
-            
+
         }
 
         public IResource Load(string path)

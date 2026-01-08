@@ -43,13 +43,13 @@ namespace Spacebox.Game.Commands
             var id = int.Parse(args[0]);
             if (ClientNetwork.Instance != null)
             {
-                var players = ClientNetwork.Instance.GetClientPlayers();
+                var players = ClientNetwork.Instance.GetRemotePlayers();
 
-                ClientPlayer player = null;
+                RemoteAstronaut player = null;
 
                 foreach (var p in players)
                 {
-                    if (p.NetworkPlayer.ID == id)
+                    if (p.NetworkData.ID == id)
                     {
                         player = p;
                         break;
@@ -59,8 +59,8 @@ namespace Spacebox.Game.Commands
                 if (player != null)
                 {
                  
-                    Astronaut.Teleport(player.RemotePlayer.Position);
-                    Debug.Log("Teleported to " + player.NetworkPlayer.Name, new Vector4(0f, 1f, 0f, 1f));
+                    Astronaut.Teleport(player.Position);
+                    Debug.Log("Teleported to " + player.NetworkData.Name, new Vector4(0f, 1f, 0f, 1f));
                 }
                 else
                 {

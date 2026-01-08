@@ -21,10 +21,10 @@ namespace Spacebox.GUI
             int size = originalSize * 2;
             Texture2D isometricTexture = new Texture2D(size, size, pixelated: true);
 
-            Color4[,] origLeftPixels = leftSide.GetPixelData();
-            Color4[,] origRightPixels = forwardSide.GetPixelData();
+            Color4[,] origLeftPixels = leftSide.GetPixels();
+            Color4[,] origRightPixels = forwardSide.GetPixels();
 
-            Color4[,] origTopPixels = topSide.GetPixelData();
+            Color4[,] origTopPixels = topSide.GetPixels();
 
             Color4[,] isometricPixels = InitializePixels(size);
 

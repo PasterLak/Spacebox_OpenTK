@@ -51,7 +51,7 @@ namespace Spacebox.Game.Effects
             }
 
 
-            Color4[,] pixels = pattern.GetPixelData();
+            Color4[,] pixels = pattern.GetPixels();
 
             var patternSize = pattern.Width;
             var blockSize = blockTexture.Width;

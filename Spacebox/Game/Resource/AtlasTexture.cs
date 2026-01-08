@@ -14,8 +14,33 @@ public partial class AtlasTexture : IDisposable
 
     private string firsttextureName = "";
 
-    
 
+    public Color4[,] GetPixelsByName(string name)
+    {
+        name = name.ToLower();
+
+        if (ReadyTextures.TryGetValue(name, out var texInfo))
+        {
+            int width = texInfo.Size.X * BlockSizePixels;
+            int height = texInfo.Size.Y * BlockSizePixels;
+
+            Color4[,] pixels = new Color4[width, height];
+            Color4[,] sourceData = texInfo.Texture.GetPixels();
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    pixels[x, y] = sourceData[x, y];
+                }
+            }
+
+            return pixels;
+        }
+
+        Debug.Error($"[AtlasTexture] GetPixelsByName wrong name: {name}");
+        return new Color4[0, 0];
+    }
     public Vector2[] GetUVByName(string name)
     {
         name = name.ToLower();
@@ -85,7 +110,7 @@ public partial class AtlasTexture : IDisposable
         SizeBlocks = size.X;
         Texture2D atlas = PlaceTexturesInAtlas(size, blockSizePixels, populateFromTopToBottom);
 
-        atlas.UpdateTexture(true);
+        atlas.FilterMode = FilterMode.Nearest;
 
 
         CalculateUV(size.X, populateFromTopToBottom);
@@ -145,7 +170,7 @@ public partial class AtlasTexture : IDisposable
             var sizeX = tex.Value.Size.X * BlockSizePixels;
             var sizeY = tex.Value.Size.Y * BlockSizePixels;
 
-            Color4[,] blockPixels = emissions[tex.Key].Texture.GetPixelData();
+            Color4[,] blockPixels = emissions[tex.Key].Texture.GetPixels();
 
             for (int x = 0; x < sizeX; x++)
             {
@@ -161,7 +186,7 @@ public partial class AtlasTexture : IDisposable
 
         output.SetPixelsData(atlasPixels);
 
-        output.UpdateTexture(true);
+        output.FilterMode = FilterMode.Nearest;
 
         return output;
     }
@@ -207,7 +232,7 @@ public partial class AtlasTexture : IDisposable
 
         atlas.SetPixelsData(atlasPixels);
         atlas.FlipY();
-        atlas.UpdateTexture(true);
+        atlas.FilterMode = FilterMode.Nearest;
 
         return atlas;
     }
@@ -222,7 +247,7 @@ public partial class AtlasTexture : IDisposable
 
                 if (textureIndex < textures.Count)
                 {
-                    Color4[,] texturePixels = textures[textureIndex].GetPixelData();
+                    Color4[,] texturePixels = textures[textureIndex].GetPixels();
                     int pointerX = x * blockSizePixels;
                     int pointerY = y * blockSizePixels;
 
@@ -258,7 +283,7 @@ public partial class AtlasTexture : IDisposable
 
                 if (textureIndex < textures.Count)
                 {
-                    Color4[,] texturePixels = textures[textureIndex].GetPixelData();
+                    Color4[,] texturePixels = textures[textureIndex].GetPixels();
                     int pointerX = x * blockSizePixels;
                     int pointerY = (sideBlocks - 1 - y) * blockSizePixels;
 
@@ -412,7 +437,7 @@ public partial class AtlasTexture : IDisposable
             return null;
         }
 
-        Color4[,] atlasPixels = atlasTexture.GetPixelData();
+        Color4[,] atlasPixels = atlasTexture.GetPixels();
         Color4[,] extractedPixels = new Color4[textureWidth, textureHeight];
 
         for (int y = 0; y < textureHeight; y++)

@@ -98,6 +98,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         {
             localPlayer = new LocalAstronaut(new Vector3(5, 5, 5));
         }
+       
         AddChild(localPlayer);
 
         PanelUI.Player = localPlayer;

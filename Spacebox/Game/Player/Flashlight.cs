@@ -15,8 +15,8 @@ namespace Spacebox.Game.Player
         private AudioSource audio;
         private Toggi toggle;
 
-        Engine.InputPro.InputAction action;
-        public Flashlight(LocalAstronaut astronaut)
+        private Engine.InputPro.InputAction action;
+        public Flashlight()
         {
             GetDirectionFromNode = true;
             Direction = -Vector3.UnitZ;
@@ -26,15 +26,24 @@ namespace Spacebox.Game.Player
             audio = new AudioSource(clip);
             audio.Volume = 0.5f;
 
+            
+
+            this.Diffuse = new Color3Byte(245, 222, 171).ToVector3(); // was 245, 222, 171
+            this.Specular = new Color3Byte(0, 0, 0).ToVector3(); // was 0
+
+        }
+
+        public void AddToggleToManager(LocalAstronaut localAstronaut)
+        {
             action = Input.GetAction("flashlight");
             action.Subscribe(InputEventType.Pressed, () =>
             {
-                if (astronaut.IsAlive == false) return;
+                if (localAstronaut.IsAlive == false) return;
                 if (ToggleManager.OpenedWindowsCount > 0) return;
                 if (Debug.IsVisible) return;
                 if (Chat.FocusInput) return;
 
-                astronaut.PlayerStatistics.FlashlightToggles++;
+                localAstronaut.PlayerStatistics.FlashlightToggles++;
                 audio.Play();
                 Enabled = !Enabled;
 
@@ -43,23 +52,23 @@ namespace Spacebox.Game.Player
             toggle = ToggleManager.Register("flashlight");
             toggle.OnStateChanged += state =>
             {
-                if (astronaut.IsAlive == false) return;
+                if (localAstronaut.IsAlive == false) return;
                 Enabled = state;
                 action.Enabled = state;
-                
 
-                
             };
-
-            this.Diffuse = new Color3Byte(245, 222, 171).ToVector3(); // was 245, 222, 171
-            this.Specular = new Color3Byte(0, 0, 0).ToVector3(); // was 0
-
         }
 
         public override void Update()
         {
             base.Update();
             Direction = Parent.ForwardLocal;
+        }
+
+        public override void Destroy()
+        {
+            base.Destroy();
+           
         }
  
 

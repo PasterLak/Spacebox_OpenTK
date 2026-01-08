@@ -41,7 +41,7 @@ namespace ServerCommon
         private void ProcessStatusChanged(NetIncomingMessage msg)
         {
             var status = (NetConnectionStatus)msg.ReadByte();
-         
+
             msg.ReadString();
             if (status == NetConnectionStatus.Connected)
             {
@@ -179,6 +179,19 @@ namespace ServerCommon
             {
                 BroadcastRaw(msg);
             }
+            else if (baseMsg is FlashlightMessage)
+            {
+
+                BroadcastRaw(msg);
+
+            }
+            else if (baseMsg is ItemInHandMessage)
+            {
+
+                BroadcastRaw(msg);
+
+            }
+
         }
 
         private void BroadcastRaw(NetIncomingMessage msg)

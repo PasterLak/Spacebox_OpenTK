@@ -32,7 +32,7 @@ namespace Spacebox.Game
             Position = pos;
             Texture2D spacerTex = Resources.Get<Texture2D>("Resources/Textures/spacer.png");
             spacerTex.FlipY();
-            spacerTex.UpdateTexture(true);
+            spacerTex.FilterMode = FilterMode.Nearest;
             Name = nameof(Spacer);
             Health = new StatsData();
             Health.MaxValue = 20;

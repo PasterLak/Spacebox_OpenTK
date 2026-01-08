@@ -1,5 +1,6 @@
 ﻿using Engine;
 using Engine.Components;
+using Engine.Components.Debug;
 using Engine.Physics;
 using OpenTK.Mathematics;
 
@@ -11,6 +12,9 @@ namespace Spacebox.Game.Player
         protected ModelRendererComponent AstBody;
         protected ModelRendererComponent AstHelmet;
         protected ModelRendererComponent AstTank;
+        public Flashlight Flashlight { get; private set; }
+
+        protected ItemWorldModel _itemInHand;
 
         private static Dictionary<string, Texture2D> _astronautTextures = new Dictionary<string, Texture2D>();
 
@@ -20,11 +24,35 @@ namespace Spacebox.Game.Player
         {
             Name = "Astronaut";
             Layer = CollisionLayer.Player;
+
+            AttachComponent(new AxesDebugComponent());
         }
 
         public bool IsLocalAstronaut()
         {
             return this is LocalAstronaut;
+        }
+
+        public void ChangeItemInHand(Item? item)
+        {
+            if (_itemInHand == null)
+                return;
+            if (item is BlockItem)
+            {
+
+                _itemInHand.Enabled = false;
+                return;
+            }
+
+            if (item != null)
+            {
+                _itemInHand.ChangeModelTo(item);
+                _itemInHand.Enabled = true;
+            }
+            else
+            {
+                _itemInHand.Enabled = false;
+            }
         }
 
         protected void CreateModel(int id)
@@ -43,6 +71,27 @@ namespace Spacebox.Game.Player
             AstBody = AttachComponent(new ModelRendererComponent(new Model(meshBody, mat)));
             AstHelmet = AttachComponent(new ModelRendererComponent(new Model(meshHelmet, mat)));
             AstTank = AttachComponent(new ModelRendererComponent(new Model(meshTank, mat)));
+
+            _itemInHand = AddChild(new ItemWorldModel("default:titanium_drill", 0.1f));
+            _itemInHand.Rotate(new Vector3(10, 90, -10));
+            _itemInHand.SetScale(0.6f);
+            _itemInHand.Position = new Vector3(0.35f, -0.47f, -0.25f);
+            _itemInHand.Enabled = false;
+
+
+
+            SetupFlashlight();
+        }
+
+        private void SetupFlashlight()
+        {
+            Flashlight = new Flashlight();
+            AddChild(Flashlight);
+            Flashlight.Position = Vector3.Zero;
+            Flashlight.Diffuse = new Color3Byte(242, 211, 143).ToVector3();
+            Flashlight.Specular = Vector3.Zero;
+            Flashlight.CutOff = 15;
+            Flashlight.OuterCutOff = 25;
         }
 
         private static Texture2D GetAstronautTexture(string color)
@@ -72,5 +121,6 @@ namespace Spacebox.Game.Player
             if (AstHelmet != null) AstHelmet.Enabled = showModel;
             if (AstTank != null) AstTank.Enabled = showModel;
         }
+
     }
 }

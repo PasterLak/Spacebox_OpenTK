@@ -22,8 +22,8 @@ namespace Spacebox.Game.Player
            
             _sphereRenderer.Color = new Color4(1, 1, 1, 0.1f);
             var texture = Engine.Resources.Get<Texture2D>("Resources/Textures/arSphere.png");
-            texture.FlipY(); 
-            texture.UpdateTexture(true);
+            texture.FlipY();
+            texture.FilterMode = FilterMode.Nearest;
             _sphereRenderer.Material = new TransparentMaterial(texture);
             _sphereRenderer.Scale = new Vector3(1, 1, 1);
             _isActive = false;

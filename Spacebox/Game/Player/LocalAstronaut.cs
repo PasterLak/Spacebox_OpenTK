@@ -41,7 +41,7 @@ namespace Spacebox.Game.Player
         public Action OnDeath { get; set; }
         public InertiaController InertiaController { get; private set; } = new InertiaController();
         public CameraSway CameraSway { get; private set; } = new CameraSway();
-        public Flashlight Flashlight { get; private set; }
+       
         public HitImage HitImage { get; private set; }
         public DeathScreen DeathScreen { get; private set; } = new DeathScreen();
         public HealthBar HealthBar { get; private set; }
@@ -71,7 +71,7 @@ namespace Spacebox.Game.Player
         }
 
         private Toggi _toggle;
-        private ItemWorldModel _itemInHand;
+        
         private Axes _axes;
         private float _timeToSavePosToStat = 5;
 
@@ -91,13 +91,7 @@ namespace Spacebox.Game.Player
             SetRenderSpace(true);
 
             HitImage = new HitImage();
-            Flashlight = new Flashlight(this);
-            AddChild(Flashlight);
-            Flashlight.Position = Vector3.Zero;
-            Flashlight.Diffuse = new Color3Byte(242, 211, 143).ToVector3();
-            Flashlight.Specular = Vector3.Zero;
-            Flashlight.CutOff = 15;
-            Flashlight.OuterCutOff = 25;
+            
 
             ItemLight = new PointLight();
             ItemLight.Diffuse = new Vector3(0.2f, 1, 0.2f);
@@ -108,6 +102,8 @@ namespace Spacebox.Game.Player
             AddChild(ItemLight);
 
             CreateModel(0);
+
+            this.Flashlight.AddToggleToManager(this);
             GameMode = GameMode.Creative;
 
             _toggle = ToggleManager.Register("player");
@@ -116,10 +112,7 @@ namespace Spacebox.Game.Player
                 if (IsAlive) _canMove = state;
             };
 
-            _itemInHand = AddChild(new ItemWorldModel("Resources/Textures/Old/drill6.png", 0.1f));
-            _itemInHand.Rotate(new Vector3(10, 90, -10));
-            _itemInHand.SetScale(0.6f);
-            _itemInHand.Position = new Vector3(0.35f, -0.47f, -0.25f);
+            
 
             AddChild(Effects);
 

@@ -14,9 +14,9 @@ namespace Spacebox.Game
             GameAssets.Blocks.Add(blockData.Id, blockData);
             GameAssets.AddBlockString(blockData.Id_string, blockData);
 
-            if(blockData.Id > 1 )
+            if (blockData.Id > 1)
                 BlockData.CacheUvs(blockData);
-           
+
             RegisterItem(blockData);
             CreateDust(blockData);
         }
@@ -58,19 +58,20 @@ namespace Spacebox.Game
             }
         }
 
-        public static void RegisterItem(Item item, string spriteName)
+        public static void RegisterItem(Item item, string spriteId)
         {
             try
             {
                 GameAssets.IncrementItemId(item);
                 GameAssets.Items.Add(item.Id, item);
                 GameAssets.AddItemString(item.Id_string, item);
-                var uvIndex = GameAssets.AtlasItems.GetUVIndexByName(spriteName.ToLower());
+                var uvIndex = GameAssets.AtlasItems.GetUVIndexByName(spriteId.ToLower());
                 byte coordX = uvIndex.X;
                 byte coordY = uvIndex.Y;
                 item.TextureCoord = new Vector2i(coordX, coordY);
                 CacheIcon(item, coordX, coordY);
                 GenerateItemModel(coordX, coordY, item);
+                GenerateItemWorldModel(coordX, coordY, item);
                 if (item is ConsumableItem consumable)
                 {
                     if (!GameAssets.ItemSounds.ContainsKey(consumable.Id) && GameAssets.Sounds.ContainsKey(consumable.UseSound))
@@ -84,10 +85,23 @@ namespace Spacebox.Game
 
         }
 
+        private static void GenerateItemWorldModel(byte coordX, byte coordY, Item item)
+        {
+            Model model = ItemModelGenerator.GenerateModelFromAtlas(
+                GameAssets.ItemsTexture,
+                 GameAssets.EmissionItems,
+                coordX,
+                coordY,
+               0.1f
+                );
+            GameAssets.ItemWorldModels.Add(item.Id, model);
+        }
+
+
         private static void GenerateItemModel(byte coordX, byte coordY, Item item)
         {
             bool isAnimated = item is DrillItem || item is WeaponItem;
-            ItemModel model = ItemModelGenerator.GenerateModelFromAtlas(
+            ItemModel model = ItemModelGenerator.GenerateItemModelFromAtlas(
                 GameAssets.ItemsTexture,
                  GameAssets.EmissionItems,
                 coordX,
@@ -115,7 +129,7 @@ namespace Spacebox.Game
         {
             Texture2D texture = UVAtlas.GetBlockTexture(GameAssets.ItemsTexture, x, y, GameAssets.AtlasItems.SizeBlocks);
             texture.FlipY();
-            texture.UpdateTexture(true);
+            texture.FilterMode = FilterMode.Nearest;
             item.IconTextureId = texture.Handle;
             GameAssets.ItemIcons.Add(item.Id, texture);
         }

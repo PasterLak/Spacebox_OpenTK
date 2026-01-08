@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿
 using OpenTK.Mathematics;
 using Engine;
 using Spacebox.Game.Resource;
@@ -10,9 +10,9 @@ namespace Spacebox.Game
     {
         private static int CellSize = 32;
 
-        public static ItemModel GenerateModelFromAtlas(
+        public static ItemModel GenerateItemModelFromAtlas(
             Texture2D atlasTexture,
-            Texture2D emission,
+            Texture2D emissionAtlas,
             int cellX,
             int cellY,
             float modelSize = 1f,
@@ -22,11 +22,29 @@ namespace Spacebox.Game
         {
             CellSize = 32;
             var cellTexture = UVAtlas.GetBlockTexture(atlasTexture, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
-            var cellTexture2 = UVAtlas.GetBlockTexture(emission, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
+            var cellTexture2 = UVAtlas.GetBlockTexture(emissionAtlas, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
 
-            cellTexture2.FlipX();
-            var mesh = BuildItemModel(cellTexture, modelSize, modelDepth, drawOnlyVisibleSides);
+            //cellTexture2.FlipX();
+            var mesh = BuildItemMesh(cellTexture, modelSize, modelDepth, drawOnlyVisibleSides);
             return ItemModelFromMesh(cellTexture, cellTexture2, mesh, isAnimated);
+        }
+
+        public static Model GenerateModelFromAtlas(
+            Texture2D atlasTexture,
+            Texture2D emissionAtlas,
+            int cellX,
+            int cellY,
+          
+            float modelDepth = 0.2f
+         )
+        {
+            CellSize = 32;
+            var cellTexture = UVAtlas.GetBlockTexture(atlasTexture, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
+            //var cellTexture2 = UVAtlas.GetBlockTexture(emissionAtlas, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
+
+            //cellTexture2.FlipX();
+            var mesh = BuildItemMesh(cellTexture, 1f / cellTexture.Width, modelDepth, false);
+            return new Model(mesh, new TextureMaterial(cellTexture));
         }
 
         public static ItemModel GenerateModelFromTexture(
@@ -38,7 +56,7 @@ namespace Spacebox.Game
             bool drawOnlyVisibleSides = true)
         {
             CellSize = 1;
-            var mesh = BuildItemModel(texture, modelSize, modelDepth, drawOnlyVisibleSides);
+            var mesh = BuildItemMesh(texture, modelSize, modelDepth, drawOnlyVisibleSides);
             return ItemModelFromMesh(texture, emission, mesh, isAnimated);
         }
 
@@ -49,7 +67,7 @@ namespace Spacebox.Game
             bool drawOnlyVisibleSides = false)
         {
             CellSize = 1;
-            return BuildItemModel(texture, 1f / texture.Width, modelDepth, drawOnlyVisibleSides);
+            return BuildItemMesh(texture, 1f / texture.Width, modelDepth, drawOnlyVisibleSides);
         }
 
         private static ItemModel ItemModelFromMesh(Texture2D cellTexture,Texture2D emission, Mesh mesh, bool isAnimated)
@@ -57,18 +75,19 @@ namespace Spacebox.Game
             return isAnimated ? new AnimatedItemModel(mesh, cellTexture, emission) : new ItemModel(mesh, cellTexture, emission);
         }
 
-        private static Mesh BuildItemModel(
+        private static Mesh BuildItemMesh(
             Texture2D cellTexture,
           
             float modelSize,
             float modelDepth,
             bool drawOnlyVisibleSides)
         {
-            cellTexture.FlipX();
+            if(!cellTexture.XWasFlipped)
+                cellTexture.FlipX();
           
             CellSize = cellTexture.Width;
 
-            var pixels = cellTexture.GetPixelData();
+            var pixels = cellTexture.GetPixels();
             var quads = GreedyMesh(pixels, cellTexture.Width, cellTexture.Height);
 
             List<float> vertices = new();

@@ -31,6 +31,7 @@ namespace Spacebox.Game
 
         public static Dictionary<short, Item> Items = new Dictionary<short, Item>();
         public static Dictionary<short, ItemModel> ItemModels = new Dictionary<short, ItemModel>();
+        public static Dictionary<short, Model> ItemWorldModels = new Dictionary<short, Model>();
 
         public static Dictionary<short, Texture2D> ItemIcons = new Dictionary<short, Texture2D>();
         public static Dictionary<short, Texture2D> BlockDusts = new Dictionary<short, Texture2D>();
@@ -65,12 +66,30 @@ namespace Spacebox.Game
             return false;
         }
 
+        public static Model GetItemWorldModelById(short id)
+        {
+            if (!ItemWorldModels.ContainsKey(id))
+                return null;
+            return ItemWorldModels[id];
+        }
+
         public static bool TryGetItemSound(short id, out AudioClip clip)
         {
             clip = null;
             if (ItemSounds.ContainsKey(id))
             {
                 clip = ItemSounds[id];
+                return true;
+            }
+            return false;
+        }
+
+        public static bool TryGetItemById(short id, out Item item)
+        {
+            item = null;
+            if (Items.ContainsKey(id))
+            {
+                item = Items[id];
                 return true;
             }
             return false;
@@ -302,6 +321,9 @@ namespace Spacebox.Game
             foreach (var itemModel in ItemModels.Values)
                 itemModel.Dispose();
             ItemModels.Clear();
+            foreach (var itemModel in ItemWorldModels.Values)
+                itemModel.Destroy();
+            ItemWorldModels.Clear();
             ItemIcons.Clear();
             BlockDusts.Clear();
             AtlasBlocks.Dispose();

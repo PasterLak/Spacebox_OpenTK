@@ -38,7 +38,7 @@ namespace Spacebox.Game.GUI
             clickAudio = new AudioSource(Resources.Load<AudioClip>("click1"));
             var texture = Engine.Resources.Get<Texture2D>("Resources/Textures/UI/welcome.jpg");
             texture.FlipY();
-            texture.UpdateTexture(true);
+            texture.FilterMode = FilterMode.Nearest;
             if (texture != null)
                 bannerTextureId = texture.Handle;
         }
