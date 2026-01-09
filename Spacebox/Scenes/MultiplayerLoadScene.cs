@@ -1,178 +1,334 @@
-﻿
-using Client;
+﻿using Client;
 using Engine;
+using Engine.Light;
 using Engine.SceneManagement;
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Spacebox.Game;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.GUI;
-using Spacebox.Scenes.Test;
-using static Spacebox.Game.Resource.GameSetLoader;
 
 namespace Spacebox.Scenes
 {
     public class MultiplayerLoadScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     {
-        private bool connectionAttempted = false;
-        private bool connectionSuccessful = false;
-        private string connectionError = "kicked";
-        private float elapsedTime = 0f;
-        private const float timeout = 100f;
-        private SpaceSceneArgs sceneArgs;
-        private ClientNetwork networkClient;
-        private float timeToGoToMenu = 10f;
-        private Camera player;
+        private enum LoadState
+        {
+            Initializing,
+            Connecting,
+            WaitingForServerInfo,
+            CheckingMods,
+            DownloadingMods,
+            Finalizing,
+            Error
+        }
 
-        private bool readyToLaunch = false;
+        private SpaceSceneArgs _sceneArgs;
+        private LoadState _currentState;
+        private float _stateTimer;
+        private float _errorReturnTimer;
+        private string _errorMessage;
+        private bool _downloadRequested;
 
+        private const float ConnectionTimeout = 10.0f;
+        private const float GeneralTimeout = 100.0f;
+        private const float ErrorDisplayTime = 5.0f;
+
+        private Camera _camera;
 
         public void Initialize(SpaceSceneArgs param)
         {
-
-            this.sceneArgs = param;
-
-            WriteInfo($"Server info: host {param.hostIp} port {param.port} key {param.key} namePlayer {param.nickname}");
-            CenteredText.SetText("Loading");
+            _sceneArgs = param;
             CenteredText.Show();
+            SetState(LoadState.Initializing);
+            Debug.Log($"[MultiplayerLoad] Target: {param.hostIp}:{param.port}");
         }
 
         public override void LoadContent()
         {
-            player = new CameraStatic(new Vector3(0, 0, 0));
+            _camera = new CameraStatic(Vector3.Zero);
+            AddChild(_camera);
+            _camera.FOV = 100;
 
-            AddChild(new Skybox(
-                new SpaceTexture(512, 512, World.Seed)));
+            var skyboxTexture = new SpaceTexture(512, 512, 420);
+            Lighting.Skybox = new Skybox(skyboxTexture);
 
-            Debug.Warning("Trying to connect to server...");
-            CenteredText.SetText("Trying to connect to server...");
-            ThreadPool.QueueUserWorkItem(_ =>
+            StartConnection();
+        }
+
+        public override void Start()
+        {
+            base.Start();
+            ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 0, 0), 1);
+        }
+
+        private void StartConnection()
+        {
+            try
             {
-                try
+                if (ClientNetwork.Instance != null)
                 {
-                    networkClient = new ClientNetwork(sceneArgs.key, sceneArgs.hostIp, sceneArgs.port, sceneArgs.nickname);
-                    if (ClientNetwork.Instance == null)
-                        ClientNetwork.Instance = networkClient;
-                    networkClient.OnServerInfoReceived += () =>
-                    {
-                        WriteInfo("Server information received...\n" + networkClient.ReceivedServerInfo.ToString());
-                    };
-                    networkClient.OnZipDownloadStart += () =>
-                    {
-                        WriteInfo("Starting loading mods...");
-                    };
-                    networkClient.OnZipDownloadComplete += () =>
-                    {
-                        WriteInfo("Mods loaded.");
-                    };
-                    int attempts = 0;
-                    while (!networkClient.IsConnected && attempts < 50)
-                    {
-                        Thread.Sleep(100);
-                        attempts++;
-                    }
-                    connectionSuccessful = networkClient.IsConnected;
-                    connectionAttempted = true;
+                    ClientNetwork.Instance.Disconnect("Reconnecting");
+                    ClientNetwork.Instance = null;
                 }
-                catch (Exception ex)
-                {
-                    connectionError = ex.Message;
-                    connectionAttempted = true;
-                }
-            });
+
+                var client = new ClientNetwork(_sceneArgs.key, _sceneArgs.hostIp, _sceneArgs.port, _sceneArgs.nickname);
+                ClientNetwork.Instance = client;
+
+                client.OnServerInfoReceived += OnServerInfoReceived;
+                client.OnZipDownloadStart += OnZipDownloadStart;
+                client.OnZipDownloadComplete += OnZipDownloadComplete;
+
+                SetState(LoadState.Connecting);
+            }
+            catch (Exception ex)
+            {
+                HandleError($"Initialization failed: {ex.Message}");
+            }
         }
-        public void WriteInfo(string text)
-        {
-            CenteredText.SetText(text);
-            Debug.Success(text);
-        }
-        public void WriteError(string text)
-        {
-            CenteredText.SetText(text);
-            Debug.Error(text);
-        }
-        public override void Start() { }
-        bool error = false;
+
         public override void Update()
         {
-            if (networkClient != null)
-                networkClient.PollEvents();
-            float delta = Time.Delta;
-            elapsedTime += delta;
-            if (elapsedTime >= timeout && !connectionAttempted)
+            base.Update();
+
+            if (_currentState != LoadState.Error && _currentState != LoadState.Initializing)
             {
-                connectionAttempted = true;
-                connectionSuccessful = false;
-                connectionError = "Connection timed out.";
+                ClientNetwork.Instance?.PollEvents();
             }
-            if (connectionAttempted)
+
+            _stateTimer += Time.Delta;
+
+            switch (_currentState)
             {
-                if (connectionSuccessful)
+                case LoadState.Connecting:
+                    UpdateConnecting();
+                    break;
+                case LoadState.WaitingForServerInfo:
+                    UpdateWaitingForInfo();
+                    break;
+                case LoadState.CheckingMods:
+                    UpdateCheckingMods();
+                    break;
+                case LoadState.DownloadingMods:
+                    UpdateDownloading();
+                    break;
+                case LoadState.Finalizing:
+                    UpdateFinalizing();
+                    break;
+                case LoadState.Error:
+                    UpdateError();
+                    break;
+            }
+        }
+
+        private void UpdateConnecting()
+        {
+            if (ClientNetwork.Instance.IsConnected)
+            {
+                SetState(LoadState.WaitingForServerInfo);
+                return;
+            }
+
+            if (ClientNetwork.Instance.NameInUse)
+            {
+                HandleError("Nickname is already in use.");
+                return;
+            }
+
+            if (_stateTimer > ConnectionTimeout)
+            {
+                HandleError("Connection timed out.");
+            }
+        }
+
+        private void UpdateWaitingForInfo()
+        {
+            if (ClientNetwork.Instance.ServerInfoReceived)
+            {
+                SetState(LoadState.CheckingMods);
+                return;
+            }
+
+            if (!ClientNetwork.Instance.IsConnected)
+            {
+                HandleError("Disconnected from server.");
+                return;
+            }
+
+            if (_stateTimer > GeneralTimeout)
+            {
+                HandleError("Timed out waiting for server info.");
+            }
+        }
+
+        private void UpdateCheckingMods()
+        {
+            var info = ClientNetwork.Instance.ReceivedServerInfo;
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+
+            string globalModPath = Path.Combine(baseDir, "GameSets", info.ModFolderName);
+
+            if (Directory.Exists(globalModPath))
+            {
+                string localHash = HashHelper.CalculateFolderHash(globalModPath);
+                if (localHash == info.ModFolderHash)
                 {
-                    if (!networkClient.ServerInfoReceived)
-                    {
-                        CenteredText.SetText("Waiting for server information...");
-                        return;
-                    }
-                    if (!networkClient.ZipDownloaded)
-                    {
-                        CenteredText.SetText("Loading mods...");
-                        return;
-                    }
-                    if (!readyToLaunch)
-                    {
-                        readyToLaunch = true;
-
-                        var serverInfo = new SpaceNetwork.ServerInfo
-                        {
-                            Name = networkClient.ReceivedServerInfo.Name,
-                            Description = networkClient.ReceivedServerInfo.Description,
-                            MaxPlayers = networkClient.ReceivedServerInfo.MaxPlayers
-                        };
-
-                        sceneArgs.worldName = serverInfo.Name;
-                        var world = new WorldInfo { Name = serverInfo.Name, ModId = sceneArgs.modId, Seed = sceneArgs.seed, FolderName = sceneArgs.modfolder };
-                        var modConfig = new ModConfig { ModId = sceneArgs.modId, FolderName = sceneArgs.modfolder };
-                        WriteInfo($"Connected to: <{serverInfo.Name}> host: {sceneArgs.hostIp} port: {sceneArgs.port}");
-
-                        SceneManager.Load<MultiplayerScene, SpaceSceneArgs>(sceneArgs); 
-                    }
+                    Debug.Success($"[Mods] Found valid mod in GameSets: {globalModPath}");
+                    ClientNetwork.Instance.InvokeZipComplete();
+                    SetState(LoadState.Finalizing);
+                    return;
                 }
                 else
                 {
-                    if (!error)
-                    {
-                        WriteError("Connection error: " + connectionError);
-                        timeToGoToMenu = 3;
-                        error = true;
-                    }
-                    timeToGoToMenu -= Time.Delta;
-                    if (timeToGoToMenu < 0)
-                    {
-                        WriteError("Returning to Multiplayer Menu.");
-                        ClientNetwork.Instance = null;
-                        SceneManager.Load<MenuScene>();
-                    }
+                    Debug.Warning($"[Mods] Hash mismatch in GameSets. Local: {localHash} Server: {info.ModFolderHash}");
                 }
             }
+
+            string serverModPath = Path.Combine(baseDir, "Server", info.Name, "GameSet", info.ModFolderName);
+
+            if (Directory.Exists(serverModPath))
+            {
+                string localHash = HashHelper.CalculateFolderHash(serverModPath);
+                if (localHash == info.ModFolderHash)
+                {
+                    Debug.Success($"[Mods] Found valid mod in Server cache: {serverModPath}");
+                    _sceneArgs.SearchForGameSetInLocalFolder = false;
+                    ClientNetwork.Instance.InvokeZipComplete();
+                    SetState(LoadState.Finalizing);
+                    return;
+                }
+                else
+                {
+                    Debug.Warning($"[Mods] Hash mismatch in Server cache. Local: {localHash} Server: {info.ModFolderHash}");
+                }
+            }
+
+            Debug.Log("[Mods] No valid local mods found. Downloading...");
+            SetState(LoadState.DownloadingMods);
         }
-        public override void Render()
+
+        private void UpdateDownloading()
         {
+            if (!_downloadRequested)
+            {
+                Debug.Log("[Mods] Requesting zip from server...");
+                ClientNetwork.Instance.SendZipRequest();
+                _downloadRequested = true;
+            }
 
+            if (ClientNetwork.Instance.ZipDownloaded)
+            {
+                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                var info = ClientNetwork.Instance.ReceivedServerInfo;
+                string serverModPath = Path.Combine(baseDir, "Server", info.Name, "GameSet", info.ModFolderName);
 
+                _sceneArgs.SearchForGameSetInLocalFolder = false;
+                SetState(LoadState.Finalizing);
+                return;
+            }
+
+            if (!ClientNetwork.Instance.IsConnected)
+            {
+                HandleError("Disconnected during download.");
+                return;
+            }
         }
+
+        private void UpdateFinalizing()
+        {
+            var serverInfo = ClientNetwork.Instance.ReceivedServerInfo;
+
+            _sceneArgs.worldName = serverInfo.Name;
+            _sceneArgs.modfolderName = serverInfo.ModFolderName;
+
+            Debug.Success($"[MultiplayerLoad] Ready to launch! Server: {serverInfo.Name}");
+            SceneManager.Load<MultiplayerScene, SpaceSceneArgs>(_sceneArgs);
+        }
+
+        private void UpdateError()
+        {
+            _errorReturnTimer -= Time.Delta;
+            CenteredText.SetText($"{_errorMessage}\nReturning to menu in {_errorReturnTimer:F1}...");
+
+            if (_errorReturnTimer <= 0)
+            {
+                ClientNetwork.Instance?.Disconnect("Load failed");
+                ClientNetwork.Instance = null;
+                SceneManager.Load<MenuScene>();
+            }
+        }
+
+        private void SetState(LoadState newState)
+        {
+            _currentState = newState;
+            _stateTimer = 0f;
+            _downloadRequested = false;
+
+            switch (newState)
+            {
+                case LoadState.Initializing:
+                    CenteredText.SetText("Initializing network...");
+                    break;
+                case LoadState.Connecting:
+                    CenteredText.SetText($"Connecting to {_sceneArgs.hostIp}...");
+                    break;
+                case LoadState.WaitingForServerInfo:
+                    CenteredText.SetText("Handshaking...");
+                    break;
+                case LoadState.CheckingMods:
+                    CenteredText.SetText("Checking game files...");
+                    break;
+                case LoadState.DownloadingMods:
+                    CenteredText.SetText("Downloading server mods...");
+                    break;
+                case LoadState.Finalizing:
+                    CenteredText.SetText("Starting game...");
+                    break;
+            }
+        }
+
+        private void HandleError(string message)
+        {
+            _errorMessage = message;
+            _errorReturnTimer = ErrorDisplayTime;
+            _currentState = LoadState.Error;
+
+            Debug.Error($"[MultiplayerLoad] Error: {message}");
+        }
+
+        private void OnServerInfoReceived()
+        {
+            var info = ClientNetwork.Instance.ReceivedServerInfo;
+            Debug.Log($"Server Info: {info.Name} | Players: {info.MaxPlayers}");
+        }
+
+        private void OnZipDownloadStart()
+        {
+            if (_currentState == LoadState.DownloadingMods)
+                CenteredText.SetText("Downloading server mods (Zip)...");
+        }
+
+        private void OnZipDownloadComplete()
+        {
+            Debug.Success("Mods ready.");
+        }
+
         public override void OnGUI()
         {
-            CenteredText.OnGUI();
+            //Theme.ApplySpaceboxTheme();
+            
+          // CenteredText.OnGUI();
         }
+
         public override void UnloadContent()
         {
-            //CenteredText.Hide();
-            // skybox.Texture.Dispose();
-
+            CenteredText.Hide();
+            if (ClientNetwork.Instance != null)
+            {
+                ClientNetwork.Instance.OnServerInfoReceived -= OnServerInfoReceived;
+                ClientNetwork.Instance.OnZipDownloadStart -= OnZipDownloadStart;
+                ClientNetwork.Instance.OnZipDownloadComplete -= OnZipDownloadComplete;
+            }
         }
-
-
     }
 }

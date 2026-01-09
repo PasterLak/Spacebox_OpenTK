@@ -24,6 +24,20 @@ namespace ServerCommon
             File.WriteAllText(BanFilePath, json);
         }
 
+        public static bool RemoveBannedPlayer(string name)
+        {
+            var existing = bannedPlayers.FirstOrDefault(b => b.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+            if (existing != null)
+            {
+                bannedPlayers.Remove(existing);
+                SaveBannedPlayers();
+                return true;
+            }
+            return false;
+
+        }
+
         public static void AddBannedPlayer(PlayerBanned banned)
         {
             var existing = bannedPlayers.FirstOrDefault(b => b.Name.Equals(banned.Name, StringComparison.OrdinalIgnoreCase));
@@ -56,5 +70,10 @@ namespace ServerCommon
         {
             return bannedPlayers;
         }
+        public static IEnumerable<PlayerBanned> GetAllBanned()
+        {
+            return bannedPlayers; 
+        }
+
     }
 }

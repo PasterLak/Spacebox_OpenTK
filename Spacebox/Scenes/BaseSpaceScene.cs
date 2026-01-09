@@ -27,16 +27,23 @@ public struct SpaceSceneArgs
     public string worldName;
     public string modId;
     public string seed;
-    public string modfolder;
+  
     public string modfolderName;
     public string key;
     public string hostIp;
-    public int port;
+    public int port ;
     public string nickname;
+
+    public bool SearchForGameSetInLocalFolder = true;
     public SpaceSceneArgs() { }
 
-    
 
+    public override string ToString()
+    {
+        string s = $"WorldName: {worldName}, ModId: {modId}, Seed: {seed},ModfolderName: {modfolderName}, " +
+            $"Key: {key}, HostIp: {hostIp}, Port: {port}, Nickname: {nickname}";
+        return s;
+    }
 
 }
 public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
@@ -55,6 +62,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     public void Initialize(SpaceSceneArgs param)
     {
         SceneArgs = param;
+
+        Debug.Log("[BaseSpaceScene] Scene Ags: " + param.ToString());
 
         SceneAssetsPreloader.Preload(param, this, localPlayer);
 

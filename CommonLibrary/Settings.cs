@@ -10,7 +10,8 @@ namespace ServerCommon
         public static string Description = "My Spacebox Description";
         public static string Key = "";
         public static string Ip = " 192.168.56.1"; // "192.168.0.102"
-        public static string GameSetFolder = "Default";
+        public static string ModFolder = "Default";
+        public static string ModFolderHash = "";
         public static float PingInterval = 0.5f;
         public static float ConnectionTimeout = 2f;
         public static int TimeToCheckAfk = 10;

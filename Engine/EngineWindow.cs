@@ -232,8 +232,11 @@ namespace Engine
 
         private void RenderGUI()
         {
+            //_controller.EnsureContext();
+
             if (SceneManager.Current != null)
             {
+            
                 SceneManager.Current.OnGUI();
                 Debug.Render(new Vector2(ClientSize.X, ClientSize.Y).ToSystemVector2());
                 Overlay.OnGUI();
@@ -251,7 +254,16 @@ namespace Engine
             if (Camera.Main != null)
                 _controller.Render();
 
-            ImGuiController.CheckGLError("End of frame");
+            try
+            {
+                ImGuiController.CheckGLError("End of frame");
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"[EngineWindow] Exception during ImGui rendering: {ex}");
+            }
+
+           
         }
 
         private void UpdateDefaultInputs()

@@ -5,6 +5,7 @@ using System.Threading;
 using Lidgren.Network;
 using SpaceNetwork;
 using SpaceNetwork.Messages;
+using SpaceNetwork.Utilities;
 
 namespace ServerCommon
 {
@@ -81,7 +82,9 @@ namespace ServerCommon
                     {
                         Name = Settings.Name,
                         Description = Settings.Description,
-                        MaxPlayers = server.Configuration.MaximumConnections
+                        MaxPlayers = server.Configuration.MaximumConnections,
+                        ModFolderHash = Settings.ModFolderHash,
+                        ModFolderName = Settings.ModFolder
                     }
                 };
                 var omServerInfo = server.CreateMessage();
@@ -91,19 +94,6 @@ namespace ServerCommon
                 serverNetwork.BroadcastPlayers();
                 serverNetwork.BroadcastChat(-1, $"{newPlayer.Name}[{newPlayer.ID}] connected");
 
-                var connection = msg.SenderConnection;
-                ThreadPool.QueueUserWorkItem(_ =>
-                {
-                    Thread.Sleep(1000);
-                    if (connection != null && connection.Status == NetConnectionStatus.Connected)
-                    {
-                        SendZipToClient(connection);
-                    }
-                    else
-                    {
-                        logCallback?.Invoke("Recipient connection is null or not connected. Zip will not be sent.", LogType.Warning);
-                    }
-                });
             }
             else if (status == NetConnectionStatus.Disconnected)
             {
@@ -128,22 +118,22 @@ namespace ServerCommon
             try
             {
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                string folderToZip = System.IO.Path.Combine(baseDir, "GameSet", Settings.GameSetFolder);
+                string folderToZip = System.IO.Path.Combine(baseDir, "GameSet", Settings.ModFolder);
                 if (!System.IO.Directory.Exists(folderToZip))
                 {
                     logCallback?.Invoke("GameSet folder not found: " + folderToZip, LogType.Error);
                     return;
                 }
-                byte[] zipData = ZipManager.CreateZipFromFolder(folderToZip);
+                byte[] zipData = ZipHelper.CreateZipFromFolder(folderToZip);
                 var zipMsg = new ZipMessage
                 {
-                    ModName = Settings.GameSetFolder,
+                    ModName = Settings.ModFolder,
                     ZipData = zipData
                 };
                 var omZip = server.CreateMessage();
                 zipMsg.Write(omZip);
                 server.SendMessage(omZip, connection, NetDeliveryMethod.ReliableOrdered);
-                logCallback?.Invoke("Zip sent to client: " + connection.RemoteEndPoint, LogType.Info);
+                logCallback?.Invoke("Gameset sent to client: " + connection.RemoteEndPoint, LogType.Info);
             }
             catch (Exception ex)
             {
@@ -174,6 +164,11 @@ namespace ServerCommon
                     server.SendToAll(om, NetDeliveryMethod.ReliableOrdered);
                     logCallback?.Invoke($"> {p.Name}[{p.ID}]: {cm.Text}", LogType.Normal);
                 }
+            }
+            else if (baseMsg is RequestZipMessage)
+            {
+              
+                SendZipToClient(msg.SenderConnection);
             }
             else if (baseMsg is BlockDestroyedMessage || baseMsg is BlockPlaceMessage)
             {

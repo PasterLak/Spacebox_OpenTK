@@ -92,7 +92,7 @@ namespace Spacebox.Game
                  GameAssets.EmissionItems,
                 coordX,
                 coordY,
-               0.1f
+               1/32f * item.ModelDepth 
                 );
             GameAssets.ItemWorldModels.Add(item.Id, model);
         }

@@ -182,7 +182,6 @@ namespace Spacebox.Game.Player
         {
             base.Update();
 
-            if (_itemInHand != null) _itemInHand.Enabled = !IsMain;
 
             Matrix4 viewMatrix = GetViewMatrix();
             Matrix4 projectionMatrix = GetProjectionMatrix();

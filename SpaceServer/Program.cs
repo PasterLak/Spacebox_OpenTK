@@ -2,6 +2,7 @@
 using System.Threading;
 using ServerCommon;
 
+
 namespace SpaceServer
 {
     internal static class Program
@@ -10,9 +11,12 @@ namespace SpaceServer
         {
             Console.WriteLine("|-----------[SPACEBOX SERVER]-----------|");
 
-            ConfigManager.LoadConfig();
+            
 
             ILogger logger = new ConsoleLogger();
+
+            ServerPreparer.IsServerReady(logger);
+
             var server = new ServerNetwork(Settings.Key, Settings.Port, Settings.MaxPlayers, logger);
             var commandProcessor = new CommandProcessor(server, logger);
 

@@ -72,6 +72,10 @@ namespace Engine
 
             ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
             ImGui.SetNextWindowSize(displaySize, ImGuiCond.Always);
+
+           // Debug.Log($"ImGui.Context: {ImGui.GetCurrentContext()}, IO.NativePtr: {ImGui.GetIO()}, ThreadId: {Thread.CurrentThread.ManagedThreadId}");
+           // Resources.PrintLoadedResources();
+
             ImGui.Begin("OverlayWindow", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs |
                                          ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoScrollbar |
                                          ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoBringToFrontOnFocus);

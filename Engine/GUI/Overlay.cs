@@ -47,7 +47,7 @@ namespace Engine.GUI
         public static void OnGUI()
         {
             if (!_isVisible) return;
-
+        
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new NumVector4(0, 0, 0, 0.8f));
             ImGui.Begin("Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar);
 

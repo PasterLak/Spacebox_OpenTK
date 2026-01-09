@@ -3,6 +3,8 @@ using Engine.Components;
 using Engine.Components.Debug;
 using Engine.Physics;
 using OpenTK.Mathematics;
+using Spacebox.Game.Generation.Tools;
+using Spacebox.Game.Resource;
 
 
 namespace Spacebox.Game.Player
@@ -14,7 +16,7 @@ namespace Spacebox.Game.Player
         protected ModelRendererComponent AstTank;
         public Flashlight Flashlight { get; private set; }
 
-        protected ItemWorldModel _itemInHand;
+        protected HandItemVisualizer HandVisualizer;
 
         private static Dictionary<string, Texture2D> _astronautTextures = new Dictionary<string, Texture2D>();
 
@@ -35,23 +37,10 @@ namespace Spacebox.Game.Player
 
         public void ChangeItemInHand(Item? item)
         {
-            if (_itemInHand == null)
-                return;
-            if (item is BlockItem)
+            if (HandVisualizer != null)
             {
-
-                _itemInHand.Enabled = false;
-                return;
-            }
-
-            if (item != null)
-            {
-                _itemInHand.ChangeModelTo(item);
-                _itemInHand.Enabled = true;
-            }
-            else
-            {
-                _itemInHand.Enabled = false;
+                Debug.Log($"[Astronaut] Changing item in hand to: {(item != null ? item.Name : "None")}");
+                HandVisualizer.SetItem(item);
             }
         }
 
@@ -72,13 +61,8 @@ namespace Spacebox.Game.Player
             AstHelmet = AttachComponent(new ModelRendererComponent(new Model(meshHelmet, mat)));
             AstTank = AttachComponent(new ModelRendererComponent(new Model(meshTank, mat)));
 
-            _itemInHand = AddChild(new ItemWorldModel("default:titanium_drill", 0.1f));
-            _itemInHand.Rotate(new Vector3(10, 90, -10));
-            _itemInHand.SetScale(0.6f);
-            _itemInHand.Position = new Vector3(0.35f, -0.47f, -0.25f);
-            _itemInHand.Enabled = false;
-
-
+            HandVisualizer = new HandItemVisualizer(this);
+            AddChild(HandVisualizer);
 
             SetupFlashlight();
         }

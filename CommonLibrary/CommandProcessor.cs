@@ -1,73 +1,127 @@
-﻿using System;
-using ServerCommon;
-using SpaceNetwork;
+﻿
+using System.Reflection;
+using ServerCommon.Commands;
 
 namespace ServerCommon
 {
     public class CommandProcessor
     {
-        private readonly ServerNetwork server;
-        private readonly ILogger logger;
-        public Action OnClear;
+        private readonly ServerNetwork _server;
+        private readonly ILogger _logger;
+        private readonly PlayerManager _playerManager;
+        private readonly Dictionary<string, IServerCommand> _commands = new Dictionary<string, IServerCommand>(StringComparer.OrdinalIgnoreCase);
+
+        public Action OnClear { get; set; }
+        public Action OnStop { get; set; }
+
+        public ServerNetwork Server => _server;
 
         public CommandProcessor(ServerNetwork server, ILogger logger)
         {
-            this.server = server;
-            this.logger = logger;
+            _server = server;
+            _logger = logger;
+            _playerManager = server.PlayerManager;
+
+            RegisterCommands();
+        }
+
+        private void RegisterCommands()
+        {
+            var commandType = typeof(IServerCommand);
+            var types = Assembly.GetExecutingAssembly().GetTypes()
+                .Where(t => commandType.IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
+
+                .Where(t => t.Namespace != null && t.Namespace.StartsWith("ServerCommon.Commands"));
+
+            foreach (var type in types)
+            {
+                try
+                {
+                    IServerCommand commandInstance;
+                    var ctor = type.GetConstructor(new[] { typeof(CommandProcessor) });
+
+                    if (ctor != null)
+                    {
+                        commandInstance = (IServerCommand)ctor.Invoke(new object[] { this });
+                    }
+                    else
+                    {
+                        commandInstance = (IServerCommand)Activator.CreateInstance(type);
+                    }
+
+                    if (commandInstance != null)
+                    {
+                        Register(commandInstance);
+          
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"Failed to register command {type.Name}: {ex.Message}", LogType.Error);
+                }
+            }
+
+            int uniqueCommands = _commands.Values.Distinct().Count();
+            //_logger.Log($"Loaded {uniqueCommands} unique commands.", LogType.Info);
+        }
+
+        public void Register(IServerCommand command)
+        {
+            if (_commands.ContainsKey(command.Name))
+            {
+                _logger.Log($"Command '{command.Name}' is already registered.", LogType.Warning);
+                return;
+            }
+
+            _commands[command.Name] = command;
+            foreach (var alias in command.Aliases)
+            {
+                if (!_commands.ContainsKey(alias))
+                    _commands[alias] = command;
+            }
         }
 
         public void ProcessCommand(string input)
         {
-            if (string.IsNullOrWhiteSpace(input))
-                return;
+            if (string.IsNullOrWhiteSpace(input)) return;
 
-            if (input.Equals("clear", StringComparison.OrdinalIgnoreCase))
+            if (!input.StartsWith("/"))
             {
-                OnClear?.Invoke();
+                //_server.BroadcastChat(-1, input);
+                _logger.Log($"[Server]: {input}", LogType.Normal);
+                return;
             }
-            else if (input.StartsWith("kick ", StringComparison.OrdinalIgnoreCase))
+
+            string cleanInput = input.Substring(1);
+            string[] parts = cleanInput.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 0) return;
+
+            string commandName = parts[0];
+            string[] args = parts.Skip(1).ToArray();
+            string rawArgs = cleanInput.Length > commandName.Length ? cleanInput.Substring(commandName.Length + 1) : "";
+
+            if (_commands.TryGetValue(commandName, out var command))
             {
-                var parts = input.Split(' ');
-                if (parts.Length == 2 && int.TryParse(parts[1], out int id))
+                try
                 {
-                    bool kicked = server.KickPlayer(id);
-                    if (!kicked)
-                        logger.Log($"Player {id} not found.", LogType.Warning);
-                    else
-                        logger.Log($"Player {id} kicked.", LogType.Info);
+                    var context = new CommandContext(_server, _logger, args, rawArgs);
+                    command.Execute(context);
                 }
-                else
+                catch (Exception ex)
                 {
-                    logger.Log("[Server]: Invalid kick command format.", LogType.Error);
+                    _logger.Log($"Error executing command '{commandName}': {ex.Message}", LogType.Error);
                 }
-            }
-            else if (input.StartsWith("ban ", StringComparison.OrdinalIgnoreCase))
-            {
-                var parts = input.Split(' ', 3, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length >= 2 && int.TryParse(parts[1], out int id))
-                {
-                    string reason = parts.Length == 3 ? parts[2] : "No reason provided";
-                    bool banned = server.BanPlayer(id, reason);
-                    if (!banned)
-                        logger.Log($"Player {id} not found.", LogType.Warning);
-                    else
-                        logger.Log($"Player {id} banned. Reason: {reason}", LogType.Info);
-                }
-                else
-                {
-                    logger.Log("[Server]: Invalid ban command format.", LogType.Error);
-                }
-            }
-            else if (input.Equals("restart", StringComparison.OrdinalIgnoreCase))
-            {
-                server.Restart();
-                logger.Log("[Server]: Server restarted.", LogType.Success);
             }
             else
             {
-                server.BroadcastChat(-1, input);
-                logger.Log($"[Server]: {input}", LogType.Normal);
+                _logger.Log($"Unknown command: {commandName}. Type /help for a list of commands.", LogType.Warning);
             }
+        }
+
+        public IEnumerable<IServerCommand> GetAllCommands()
+        {
+            return _commands.Values.Distinct();
         }
     }
 }

@@ -93,10 +93,19 @@ namespace ServerCommon
             }
         }
 
+        public string GetPlayerIp(int playerId)
+        {
+
+            var connection = connectionPlayers.FirstOrDefault(x => x.Value.ID == playerId).Key;
+            return connection?.RemoteEndPoint?.Address?.ToString() ?? "Unknown";
+        }
+
+
         public void Stop()
         {
             _shouldStop = true;
             server.Shutdown("Server stopped");
+            logger.Log("Server stopped.", LogType.Success);
         }
 
         public void Restart()
@@ -125,7 +134,7 @@ namespace ServerCommon
             {
                 if ((Environment.TickCount - player.LastTimeWasActive) > Settings.TimeCanBeAfkSec * 1000)
                 {
-                    KickPlayer(player.ID, true);
+                    KickPlayer(player.ID, "AFK Timeout");
                     time = 0;
                     return;
                 }
@@ -133,24 +142,35 @@ namespace ServerCommon
             time = 0;
         }
 
-        public bool KickPlayer(int playerId, bool wasAFK = false)
+        public string KickPlayer(int playerId, string reason = "Kicked by server")
         {
-            var target = GetConnectionByPlayerId(playerId);
-            if (target != null)
+            var targetConnection = GetConnectionByPlayerId(playerId);
+
+            if (targetConnection != null && connectionPlayers.TryGetValue(targetConnection, out var player))
             {
-                var km = new KickMessage { Reason = "Was Kicked" + (wasAFK ? " because of AFK" : "") };
+                string playerName = player.Name;
+
+                var km = new KickMessage { Reason = reason };
                 var om = server.CreateMessage();
                 km.Write(om);
-                server.SendMessage(om, target, NetDeliveryMethod.ReliableOrdered);
-                target.Disconnect("Kicked");
-                logger.Log($"Player {playerId} was kicked.", LogType.Warning);
-                BroadcastChat(-1, $"Player {playerId} was kicked.");
-                connectionPlayers.Remove(target);
+                server.SendMessage(om, targetConnection, NetDeliveryMethod.ReliableOrdered);
+
+                targetConnection.Disconnect(reason);
+
+                string logMsg = $"Player [{playerId}]{playerName} was kicked. Reason: {reason}";
+                logger.Log(logMsg, LogType.Warning);
+
+                BroadcastChat(-1, logMsg);
+
+                connectionPlayers.Remove(targetConnection);
                 playerManager.RemovePlayer(playerId);
+
                 BroadcastPlayers();
-                return true;
+
+                return playerName;
             }
-            return false;
+
+            return null;
         }
 
         public bool BanPlayer(int playerId, string reason)
@@ -204,6 +224,37 @@ namespace ServerCommon
             var outMsg = server.CreateMessage();
             cm.Write(outMsg);
             server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
+        }
+        public int GetPlayerPing(int playerId)
+        {
+            var connection = GetConnectionByPlayerId(playerId);
+            if (connection != null)
+            {
+                return (int)connection.AverageRoundtripTime;
+            }
+            return -1;
+        }
+
+        public void SendPositionUpdate(Player player)
+        {
+
+            BroadcastPlayers();
+        }
+
+        public void SendPrivateMessage(int targetPlayerId, string message)
+        {
+            var targetConnection = GetConnectionByPlayerId(targetPlayerId);
+            if (targetConnection != null)
+            {
+                var cm = new ChatMessage(-1, "Server (Private)", message);
+                var om = server.CreateMessage();
+                cm.Write(om);
+                server.SendMessage(om, targetConnection, NetDeliveryMethod.ReliableOrdered);
+            }
+            else
+            {
+                logger.Log($"Failed to send private message: Player {targetPlayerId} not found.", LogType.Warning);
+            }
         }
 
         public NetServer GetServer() => server;

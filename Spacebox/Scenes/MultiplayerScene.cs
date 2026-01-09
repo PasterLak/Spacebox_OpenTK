@@ -30,8 +30,8 @@ namespace Spacebox.Scenes
 
             base.LoadContent();
 
-            ClientNetwork.Instance.OnPlayerJoined += AddRemotePlayerToScene;
-            ClientNetwork.Instance.OnPlayerLeft += RemoveRemotePlayerFromScene;
+            ClientNetwork.Instance.Players.OnPlayerJoined += AddRemotePlayerToScene;
+            ClientNetwork.Instance.Players.OnPlayerLeft += RemoveRemotePlayerFromScene;
             ClientNetwork.Instance.OnBlockDestroyed += OnBlockDestroyed;
             ClientNetwork.Instance.OnBlockPlaced += OnBlockPlaced;
 
@@ -101,8 +101,8 @@ namespace Spacebox.Scenes
             base.UnloadContent();
             if (ClientNetwork.Instance != null)
             {
-                ClientNetwork.Instance.OnPlayerJoined -= AddRemotePlayerToScene;
-                ClientNetwork.Instance.OnPlayerLeft -= RemoveRemotePlayerFromScene;
+                ClientNetwork.Instance.Players.OnPlayerJoined -= AddRemotePlayerToScene;
+                ClientNetwork.Instance.Players.OnPlayerLeft -= RemoveRemotePlayerFromScene;
                 ClientNetwork.Instance.Disconnect("Scene unloaded");
             }
 

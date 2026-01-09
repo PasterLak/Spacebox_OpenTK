@@ -17,6 +17,7 @@ namespace SpaceServerUI
     {
         private ServerNetwork _server;
         private CommandProcessor _commandProcessor;
+        private UILogger _uiLogger;
         private bool _serverStarted;
 
         public MainWindow()
@@ -25,7 +26,7 @@ namespace SpaceServerUI
             SetLocalIp();
             var bgBrush = (Brush)this.TryFindResource("PrimaryBackgroundBrush");
             System.Diagnostics.Debug.WriteLine(bgBrush);
-
+            _uiLogger = new UILogger(this);
             LoadConfig();
 
         }
@@ -61,24 +62,37 @@ namespace SpaceServerUI
             }
         }
 
-        private void LoadConfig()
+        private bool LoadConfig()
         {
-            ConfigManager.LoadConfig();
-            Title = "Server control panel";
-            PortTextBlock.Text = $"Port: {Settings.Port}";
-            KeyTextBlock.Text = $"Key: {Settings.Key}";
-            NameTextBlock.Text = Settings.Name;
-            PortInputTextBox.Text = Settings.Port.ToString();
-            KeyInputTextBox.Text = Settings.Key;
-            NameInputTextBox.Text = Settings.Name;
+            if (ServerPreparer.IsServerReady(_uiLogger))
+            {
+                LogMessage("[Server]: Configuration loaded. Ready to run!", LogType.Success);
+
+                Title = "Server control panel";
+                PortTextBlock.Text = $"Port: {Settings.Port}";
+                KeyTextBlock.Text = $"Key: {Settings.Key}";
+                NameTextBlock.Text = Settings.Name;
+                PortInputTextBox.Text = Settings.Port.ToString();
+                KeyInputTextBox.Text = Settings.Key;
+                NameInputTextBox.Text = Settings.Name;
+
+                return true;
+            }
+            else
+            {
+                LogMessage("[Server]: Errors have occurred, the server cannot\n start until the errors above are fixed!", LogType.Error);
+               
+                return false;
+            }
         }
 
         private void StartServer()
         {
-            LoadConfig();
-            var uiLogger = new UILogger(this);
-            _server = new ServerNetwork(Settings.Key, Settings.Port, Settings.MaxPlayers, uiLogger);
-            _commandProcessor = new CommandProcessor(_server, uiLogger);
+
+            if (!LoadConfig()) return;
+           
+            _server = new ServerNetwork(Settings.Key, Settings.Port, Settings.MaxPlayers, _uiLogger);
+            _commandProcessor = new CommandProcessor(_server, _uiLogger);
             Task.Run(() => _server.RunMainLoop());
             PlayersHeaderTextBlock.Text = $"Players online: 0/{Settings.MaxPlayers}";
             Title = "Server: " + Settings.Name;

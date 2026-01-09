@@ -14,9 +14,9 @@ public static class GameSetLoader
 {
     public static ModConfig ModInfo;
     private static string modPath;
-    public static void Load(string modId, bool isMultiplayer, string serverName)
+    public static void Load(string modId, bool useLocalGameSetsFolder, string serverName)
     {
-        string modsDirectory = ModPath.GetModsPath(isMultiplayer, serverName);
+        string modsDirectory = ModPath.GetModsPath(useLocalGameSetsFolder, serverName);
         string defaultModId = Globals.GameSet.Default.ToLower();
         string defaultModPath = Path.Combine(modsDirectory, Globals.GameSet.Default);
 

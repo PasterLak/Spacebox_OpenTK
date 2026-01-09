@@ -37,13 +37,14 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
 #if DEBUG
         SceneManager.Load<MenuScene>();
 #else
-        SceneManager.Load<LogoScene>();
+        SceneManager.Load<MenuScene>();
 #endif
     }
 
     protected override void OnRegisterScenes()
     {
         SceneManager.Register<MenuScene>();
+        SceneManager.Register<ServerMessageScene>();
         SceneManager.Register<PlaygroundScene>();
         SceneManager.Register<LocalSpaceScene>();
         SceneManager.Register<MultiplayerScene>();
@@ -54,7 +55,7 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
 
     protected override void OnLoadImGui()
     {
-        LoadStarPixelFont();
+       // LoadStarPixelFont();
     }
 
     protected override void OnSetupInput()

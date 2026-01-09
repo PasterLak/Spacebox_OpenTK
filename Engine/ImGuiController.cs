@@ -30,6 +30,8 @@ namespace Engine
         private int _windowWidth;
         private int _windowHeight;
 
+        private nint _imguiContext;
+
         private System.Numerics.Vector2 _scaleFactor = System.Numerics.Vector2.One;
 
         private static bool KHRDebugAvailable = false;
@@ -54,8 +56,8 @@ namespace Engine
 
             CompatibilityProfile = (GL.GetInteger((GetPName)All.ContextProfileMask) & (int)All.ContextCompatibilityProfileBit) != 0;
 
-            nint context = ImGui.CreateContext();
-            ImGui.SetCurrentContext(context);
+            _imguiContext = ImGui.CreateContext();
+            ImGui.SetCurrentContext(_imguiContext);
             var io = ImGui.GetIO();
             io.Fonts.AddFontDefault();
 
@@ -70,6 +72,13 @@ namespace Engine
             ImGui.NewFrame();
             _frameBegun = true;
         }
+
+        public void EnsureContext()
+        {
+            if (_imguiContext == nint.Zero) return;
+            ImGui.SetCurrentContext(_imguiContext);
+        }
+
 
         public void WindowResized(int width, int height)
         {
@@ -508,6 +517,14 @@ void main()
 
             GL.DeleteTexture(_fontTexture);
             GL.DeleteProgram(_shader);
+
+            if (_imguiContext != nint.Zero)
+            {
+                // Set context before destroying to be safe
+                ImGui.SetCurrentContext(_imguiContext);
+                ImGui.DestroyContext(_imguiContext);
+                _imguiContext = nint.Zero;
+            }
         }
 
         public static void LabelObject(ObjectLabelIdentifier objLabelIdent, int glObject, string name)

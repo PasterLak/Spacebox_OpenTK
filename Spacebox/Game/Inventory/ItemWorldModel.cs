@@ -2,39 +2,42 @@ using Engine;
 using Engine.Components;
 using Engine.Components.Debug;
 
-
-namespace Spacebox.Game;
-
-public class ItemWorldModel : Node3D
+namespace Spacebox.Game
 {
-    private ModelRendererComponent modelRendererComponent;
-    public ItemWorldModel(string itemId, float modelDepth = 0.5f)
+    public class ItemWorldModel : Node3D
     {
-        //var itemTexture = Resources.Load<Texture2D>(texturePath);
-        //itemTexture.FilterMode = FilterMode.Nearest;
-      
-        Name = "ItemWorldModel";
-       // Mesh item = ItemModelGenerator.GenerateMeshFromTexture(itemTexture,  modelDepth);
+        public bool ShowModel = false;
+        private ModelRendererComponent modelRendererComponent;
 
-        var item = GameAssets.GetItemByFullID(itemId);
+        public ItemWorldModel()
+        {
+            Name = "ItemWorldModel";
+           
+            modelRendererComponent = AttachComponent(new ModelRendererComponent(null));
+           
 
-        modelRendererComponent = AttachComponent(new ModelRendererComponent(null));
-        ChangeModelTo(item);
+            AttachComponent(new AxesDebugComponent());
+            AttachComponent(new OBBCollider());
+        }
 
-        //cm.Offset = new Vector3(-0.5f, -0.5f, -modelDepth/2f);
-        AttachComponent(new AxesDebugComponent());
-        AttachComponent(new OBBCollider());
-       
-    }
+        public void ChangeModelTo(Item item)
+        {
+            if (item == null)
+            {
+                Debug.Error($"ItemWorldModel: Item is null.");
+                return;
+            }
+            var model = GameAssets.GetItemWorldModelById(item.Id);
+            if (modelRendererComponent != null)
+            {
+                modelRendererComponent.Model = model;
+            }
+        }
 
-    public void ChangeModelTo(Item item)
-    {
-        var model = GameAssets.GetItemWorldModelById(item.Id);
-        modelRendererComponent.Model = model;
-    }
-
-    public override void Render()
-    {
-        base.Render();
+        public override void Render()
+        {
+            if (!ShowModel) return;
+            base.Render();
+        }
     }
 }

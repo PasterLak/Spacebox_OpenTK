@@ -342,7 +342,7 @@ namespace Spacebox.Game.GUI
                 }
 
                 if (ClientNetwork.Instance != null)
-                    ClientNetwork.Instance.SendItemInHand(SelectedSlot.Item);
+                    ClientNetwork.Instance.SendItemInHand(SelectedSlot);
 
 
                 ShowItemDescription();

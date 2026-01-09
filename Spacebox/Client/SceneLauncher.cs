@@ -28,7 +28,7 @@ namespace Spacebox.Client
                 worldName = world.Name,
                 modId = world.ModId,
                 seed = world.Seed,
-                modfolder = modConfig.FolderName,
+                modfolderName = modConfig.FolderName,
                 key = appKey,
                 hostIp = serverInfo.IP,
                 port = serverInfo.Port,

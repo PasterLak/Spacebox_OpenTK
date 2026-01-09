@@ -8,9 +8,9 @@ namespace Spacebox.Scenes
         public ModPath() { }
 
 
-        public static string GetModsPath(bool isMultiplayer, string serverName)
+        public static string GetModsPath(bool useLocalGameSetsFolder, string serverName)
         {
-            if (!isMultiplayer)
+            if (useLocalGameSetsFolder)
             {
 
                 return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.GameSet.LocalFolder);
