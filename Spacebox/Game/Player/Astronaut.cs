@@ -11,6 +11,7 @@ namespace Spacebox.Game.Player
 {
     public abstract class Astronaut : Camera360Base
     {
+        private readonly string[] colors = new[] { "Yellow", "Orange", "Purple", "Blue", "Green", "Cyan", "Red", "White", "Black" };
         protected ModelRendererComponent AstBody;
         protected ModelRendererComponent AstHelmet;
         protected ModelRendererComponent AstTank;
@@ -18,7 +19,6 @@ namespace Spacebox.Game.Player
 
         protected HandItemVisualizer HandVisualizer;
 
-        private static Dictionary<string, Texture2D> _astronautTextures = new Dictionary<string, Texture2D>();
 
         public int SkinId { get; protected set; }
 
@@ -44,13 +44,11 @@ namespace Spacebox.Game.Player
             }
         }
 
-        protected void CreateModel(int id)
+        protected void CreateModel(int id, string color)
         {
-            SkinId = id;
-            var colors = new[] { "Yellow", "Orange", "Purple", "Blue", "Green", "Cyan", "Red", "White", "Black" };
-            int index = Math.Abs(id) % colors.Length;
-            var selectedColor = colors[index];
-            Texture2D tex = GetAstronautTexture(selectedColor);
+
+            Texture2D tex = GetAstronautTexture(color);
+
             var mat = new TextureMaterial(tex);
 
             var meshBody = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Body_Fly.obj");
@@ -66,6 +64,23 @@ namespace Spacebox.Game.Player
 
             SetupFlashlight();
         }
+        public void SetSkinColor(string color)
+        {
+            if (string.IsNullOrEmpty(color)) return;
+
+            Texture2D tex = GetAstronautTexture(color);
+            if (tex == null) return;
+
+            if (AstBody != null && AstBody.Model != null && AstBody.Model.Material is TextureMaterial bodyMat)
+                bodyMat.MainTexture = tex;
+
+            if (AstHelmet != null && AstHelmet.Model != null && AstHelmet.Model.Material is TextureMaterial helmetMat)
+                helmetMat.MainTexture = tex;
+
+            if (AstTank != null && AstTank.Model != null && AstTank.Model.Material is TextureMaterial tankMat)
+                tankMat.MainTexture = tex;
+        }
+
 
         private void SetupFlashlight()
         {
@@ -78,16 +93,17 @@ namespace Spacebox.Game.Player
             Flashlight.OuterCutOff = 25;
         }
 
-        private static Texture2D GetAstronautTexture(string color)
+        public static Texture2D GetAstronautTexture(string color)
         {
-            if (!_astronautTextures.TryGetValue(color, out Texture2D tex))
-            {
-                string texturePath = $"Resources/Textures/Skins/Astronaut_{color}.jpg";
-                tex = Resources.Load<Texture2D>(texturePath);
+            Texture2D tex = null;
+
+            string texturePath = $"Resources/Textures/Skins/Astronaut_{color}.jpg";
+            tex = Resources.Load<Texture2D>(texturePath);
+            if (!tex.YWasFlipped)
                 tex.FlipY();
-                tex.FilterMode = FilterMode.Nearest;
-                _astronautTextures[color] = tex;
-            }
+            tex.FilterMode = FilterMode.Nearest;
+
+
             return tex;
         }
 

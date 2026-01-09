@@ -48,6 +48,7 @@ namespace ServerCommon
             {
                 var hail = msg.SenderConnection.RemoteHailMessage;
                 var chosenName = hail.ReadString();
+                var chosenColor = hail.ReadString();
                 string senderIp = msg.SenderConnection.RemoteEndPoint.Address.ToString();
                 if (BanManager.IsBannedByName(chosenName) || BanManager.IsBannedByIp(senderIp))
                 {
@@ -67,7 +68,7 @@ namespace ServerCommon
                     msg.SenderConnection.Disconnect("DuplicateName");
                     return;
                 }
-                var newPlayer = playerManager.AddNewPlayer(chosenName);
+                var newPlayer = playerManager.AddNewPlayer(chosenName, chosenColor);
                 connectionPlayers[msg.SenderConnection] = newPlayer;
                 logCallback?.Invoke($"{newPlayer.Name}[{newPlayer.ID}] connected", LogType.Success);
 

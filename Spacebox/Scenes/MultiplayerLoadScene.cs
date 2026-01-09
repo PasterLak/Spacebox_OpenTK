@@ -72,7 +72,7 @@ namespace Spacebox.Scenes
                     ClientNetwork.Instance = null;
                 }
 
-                var client = new ClientNetwork(_sceneArgs.key, _sceneArgs.hostIp, _sceneArgs.port, _sceneArgs.nickname);
+                var client = new ClientNetwork(_sceneArgs);
                 ClientNetwork.Instance = client;
 
                 client.OnServerInfoReceived += OnServerInfoReceived;

@@ -10,13 +10,14 @@ namespace ServerCommon
         private int nextId = 1;
         private readonly Random rand = new Random();
 
-        public Player AddNewPlayer(string name)
+        public Player AddNewPlayer(string name, string color)
         {
             var p = new Player
             {
                 ID = nextId++,
                 Name = name,
                 Color = ColorHelper.HexToVector(ColorHelper.GetRandomColorFromListHex(rand)),
+                SkinColor = color,
                 Position = new Vector3(0f, 0f, 0f),
                 Rotation = new Vector4(0f, 0f, 0f, 0f),
                 LastTimeWasActive = Environment.TickCount

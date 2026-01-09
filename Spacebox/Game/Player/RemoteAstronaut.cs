@@ -29,19 +29,15 @@ namespace Spacebox.Game.Player
 
         }
 
-        public void OnFullyLoaded()
-        {
-            CreatePlayerVisuals();
-        }
 
-        public void CreatePlayerVisuals()
+        public void CreatePlayerVisuals(string color)
         {
             _nameTag = TagManager.Instance.CreateTag($"[{NetworkData.ID}]{NetworkData.Name}", Position, new Color4(NetworkData.Color.X, NetworkData.Color.Y, NetworkData.Color.Z, 1));
             _nameTag.TextAlignment = GUI.Tag.Alignment.Center;
 
             Name = $"RemoteAstronaut_{NetworkData.ID}";
 
-            CreateModel(NetworkData.ID);
+            CreateModel(NetworkData.ID, color);
             Flashlight.Enabled = true;
 
             //var uvIndex = GameAssets.AtlasItems.GetUVIndexByName("drill1");

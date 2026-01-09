@@ -119,7 +119,10 @@ namespace Spacebox.Scenes
             }
 
             AddChild(remote);
-            remote.CreatePlayerVisuals();
+      
+            Debug.Error($"[MultiplayerScene] Adding remote player: {remote.NetworkData.Name} with skin color: {remote.NetworkData.SkinColor}");
+            remote.CreatePlayerVisuals(remote.NetworkData.SkinColor);
+           
 
             if (localPlayer != null)
             {

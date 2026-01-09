@@ -5,6 +5,7 @@ using Spacebox.Game;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
+using Spacebox.Scenes;
 using SpaceNetwork;
 using SpaceNetwork.Messages;
 using System.Collections.Concurrent;
@@ -39,16 +40,17 @@ namespace Client
         public event Action<int, int, int> OnBlockDestroyed;
         public event Action<BlockPlaceMessage> OnBlockPlaced;
 
-        public ClientNetwork(string appKey, string host, int port, string playerName)
+        public ClientNetwork(SpaceSceneArgs args)
         {
             Instance = this;
-            var config = new NetPeerConfiguration(appKey);
+            var config = new NetPeerConfiguration(args.key);
             _client = new NetClient(config);
             _client.Start();
 
             var hail = _client.CreateMessage();
-            hail.Write(playerName);
-            _client.Connect(host, port, hail);
+            hail.Write(args.nickname);
+            hail.Write(args.skinColor);
+            _client.Connect(args.hostIp, args.port, hail);
 
             Players = new NetworkPlayerRegistry(LocalPlayerId);
             _packetHandler = new ClientPacketHandler(this, Players);

@@ -101,7 +101,7 @@ namespace Spacebox.Game.Player
             ItemLight.Enabled = false;
             AddChild(ItemLight);
 
-            CreateModel(0);
+            CreateModel(0, "Yellow");
 
             this.Flashlight.AddToggleToManager(this);
             GameMode = GameMode.Creative;

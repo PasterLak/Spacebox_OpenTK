@@ -17,6 +17,7 @@ namespace SpaceNetwork.Messages
                 msg.Write(p.ID);
                 msg.Write(p.Name);
                 msg.Write(ColorHelper.VectorToHex(p.Color));
+                msg.Write(p.SkinColor);
                 msg.Write(p.Position.X);
                 msg.Write(p.Position.Y);
                 msg.Write(p.Position.Z);
@@ -37,6 +38,7 @@ namespace SpaceNetwork.Messages
                 p.Name = msg.ReadString();
                 var hex = msg.ReadString();
                 p.Color = ColorHelper.HexToVector(hex);
+                p.SkinColor = msg.ReadString();
                 float x = msg.ReadFloat();
                 float y = msg.ReadFloat();
                 float z = msg.ReadFloat();

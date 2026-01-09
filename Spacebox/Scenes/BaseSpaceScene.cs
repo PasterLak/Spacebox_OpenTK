@@ -33,6 +33,7 @@ public struct SpaceSceneArgs
     public string hostIp;
     public int port ;
     public string nickname;
+    public string skinColor = "Red";
 
     public bool SearchForGameSetInLocalFolder = true;
     public SpaceSceneArgs() { }
@@ -109,6 +110,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         }
        
         AddChild(localPlayer);
+
+        localPlayer.SetSkinColor(SceneArgs.skinColor);
 
         PanelUI.Player = localPlayer;
 

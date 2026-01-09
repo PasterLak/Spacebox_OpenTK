@@ -7,6 +7,7 @@ namespace SpaceNetwork
         public int ID { get; set; }
         public string Name { get; set; }
         public Vector3 Color { get; set; }
+        public string SkinColor { get; set; } = "White";
         public Vector3 Position { get; set; }
         public Vector4 Rotation { get; set; }
         public Vector3 DisplayedPosition { get; set; }

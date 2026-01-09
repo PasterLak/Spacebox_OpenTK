@@ -508,7 +508,8 @@ namespace Spacebox.Game.GUI.Menu
                 worldName = world.Name,
                 modId = world.ModId,
                 seed = world.Seed,
-                modfolderName = modInfo?.FolderName ?? ""
+                modfolderName = modInfo?.FolderName ?? "",
+                skinColor = Get<MultiplayerWindow>().Config.SkinColor
             };
 
             Input.HideCursor();
@@ -558,6 +559,8 @@ namespace Spacebox.Game.GUI.Menu
 
         public List<WorldInfo> GetWorlds() => worlds;
         public List<ModConfig> GetGameSets() => gameSets;
+
+        public Type CurrentWindowType => currentWindowType;
 
         public void SetStateToControls() => Open<ControlsWindow>();
         public void SetStateToMain() => Open<MainMenuWindow>();

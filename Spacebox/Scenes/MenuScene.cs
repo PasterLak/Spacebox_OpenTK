@@ -14,6 +14,7 @@ using Spacebox.Game;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.GUI.Menu;
+using Spacebox.Game.Player;
 using Spacebox.GUI;
 
 
@@ -29,6 +30,8 @@ namespace Spacebox.Scenes
         private DevLogWindow devLogWindow = new DevLogWindow();
 
         private static PluginLoader modLoader = new PluginLoader();
+
+        private Node3D astronautNode;
 
         public override void LoadContent()
         {
@@ -101,6 +104,39 @@ namespace Spacebox.Scenes
 
             devLogWindow.AddLogFromFile("Resources/devlog.txt");
 
+
+            TextureMaterial mat = new TextureMaterial(Astronaut.GetAstronautTexture("Yellow"));
+
+             astronautNode = new Node3D();
+            astronautNode.Name = "Astronaut_Menu";
+
+            var meshBody = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Body_Fly.obj");
+            var meshHelmet = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Helmet_Closed.obj");
+            var meshTank = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Tank_Fly.obj");
+
+            astronautNode.AttachComponent(new ModelRendererComponent(new Model(meshBody, mat)));
+            astronautNode.AttachComponent(new ModelRendererComponent(new Model(meshHelmet, mat)));
+            astronautNode.AttachComponent(new ModelRendererComponent(new Model(meshTank, mat)));
+
+            AddChild(astronautNode);
+
+            astronautNode.Position = new Vector3(3, 0, -3);
+            astronautNode.Rotation = new Vector3(0, 180, 0);
+
+            menu.Get<MultiplayerWindow>().LoadConfig();
+
+
+        }
+
+        public void ChangeAstronautColor(string color)
+        {
+            var astronaut = FindChildByName("Astronaut_Menu");
+            var texture = Astronaut.GetAstronautTexture(color);
+            astronaut.GetComponents<ModelRendererComponent>().ForEach(c =>
+            {
+                var mat = c.Model.Material as TextureMaterial;
+                mat.MainTexture = texture;
+            });
         }
 
         private void SetDustSpawner()
@@ -252,7 +288,15 @@ namespace Spacebox.Scenes
         {
             base.Update();
             CenteredImageMenu.Update();
-           
+
+            if(menu.CurrentWindowType == typeof(MultiplayerWindow))
+            {
+                astronautNode.Enabled = true;
+            }else
+                        {
+                astronautNode.Enabled = false;
+            }
+
 
             if (Input.IsAnyKeyDown() && !showed)
             {

@@ -429,6 +429,53 @@ namespace Engine
                 Children[i].FindAllComponentsRecursive(results);
         }
 
+        public List<T> GetChildren<T>() where T : Node3D
+        {
+            var results = new List<T>();
+            for (int i = 0; i < Children.Count; i++)
+            {
+                if (Children[i] is T child) results.Add(child);
+            }
+            return results;
+        }
+        public bool TryGetChild<T>(out T? child) where T : Node3D
+        {
+            child = GetChild<T>();
+            return child != null;
+        }
+        public T? GetChild<T>() where T : Node3D
+        {
+            for (int i = 0; i < Children.Count; i++)
+            {
+                if (Children[i] is T child) return child;
+            }
+            return null;
+        }
+        public T? GetComponent<T>() where T : Component
+        {
+            for (int i = 0; i < Components.Count; i++)
+            {
+                if (Components[i] is T component) return component;
+            }
+            return null;
+        }
+
+        public bool TryGetComponent<T>(out T? component) where T : Component
+        {
+            component = GetComponent<T>();
+            return component != null;
+        }
+
+        public List<T> GetComponents<T>() where T : Component
+        {
+            var results = new List<T>();
+            for (int i = 0; i < Components.Count; i++)
+            {
+                if (Components[i] is T component) results.Add(component);
+            }
+            return results;
+        }
+
 
         protected void PrintHierarchy()
         {
