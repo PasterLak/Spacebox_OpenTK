@@ -40,7 +40,7 @@ namespace Spacebox.Game.GUI.Menu
             base.OnWindowChanged();
             LoadConfig();
             nickname = config.PlayerNickname;
-            // Initialize color index from loaded config
+        
             selectedColorIndex = Array.IndexOf(availableColors, config.SkinColor);
             if (selectedColorIndex == -1)
             {
@@ -48,7 +48,7 @@ namespace Spacebox.Game.GUI.Menu
                 config.SkinColor = availableColors[0];
             }
 
-            // Apply loaded color immediately
+
             ChangePlayerTexture(config.SkinColor);
         }
 
@@ -72,7 +72,6 @@ namespace Spacebox.Game.GUI.Menu
                     SaveConfig();
                 }
 
-                // Ensure skin color is valid if missing in old config
                 if (string.IsNullOrEmpty(config.SkinColor))
                 {
                     config.SkinColor = "Yellow";
@@ -177,7 +176,6 @@ namespace Spacebox.Game.GUI.Menu
             float frameHeight = ImGui.GetFrameHeight();
             string currentItem = availableColors[selectedColorIndex];
 
-            // Render custom combo preview
             if (ImGui.BeginCombo("##skinColor", ""))
             {
                 for (int i = 0; i < availableColors.Length; i++)
@@ -200,7 +198,6 @@ namespace Spacebox.Game.GUI.Menu
                 ImGui.EndCombo();
             }
 
-            // Draw icon on closed combo box
             var drawList = ImGui.GetWindowDrawList();
             var min = ImGui.GetItemRectMin();
             var style = ImGui.GetStyle();
@@ -213,7 +210,6 @@ namespace Spacebox.Game.GUI.Menu
 
             ImGui.Columns(1);
 
-            // Update config before saving
             config.PlayerNickname = nickname;
             config.SkinColor = availableColors[selectedColorIndex];
 

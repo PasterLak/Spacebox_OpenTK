@@ -232,7 +232,7 @@ namespace Engine
 
         private void RenderGUI()
         {
-            //_controller.EnsureContext();
+            _controller.EnsureContext();
 
             if (SceneManager.Current != null)
             {

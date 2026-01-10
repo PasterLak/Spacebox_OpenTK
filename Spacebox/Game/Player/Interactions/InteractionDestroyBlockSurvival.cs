@@ -19,20 +19,17 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
     private InteractiveBlock lastInteractiveBlock;
     private static AudioSource drillAudio;
     private static AudioSource drill0Audio;
-    public static BlockMiningEffect BlockMiningEffect;
+  
     private PointLight light;
+    private BlockMiningEffect BlockMiningEffect;
     public InteractionDestroyBlockSurvival(ItemSlot itemSlot) : base(itemSlot)
     {
-        if (BlockMiningEffect == null)
-        {
-
-            var texture = Resources.Load<Texture2D>("Resources/Textures/blockHit.png");
-            texture.FilterMode = FilterMode.Nearest;
-            BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1), texture, Resources.Load<Shader>("Resources/Shaders/particle"));
-        }
+ 
       
         light = new PointLight();
         light.Range = 8;
+
+        BlockMiningEffect = World.Instance.BlockMiningEffect;
 
         var drill = itemSlot.Item as DrillItem;
         if (drill != null)

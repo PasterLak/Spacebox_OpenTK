@@ -46,8 +46,8 @@ namespace SpaceNetwork.Messages
                 float yr = msg.ReadFloat();
                 float zr = msg.ReadFloat();
                 float w = msg.ReadFloat();
-                p.Position = new Vector3(x, y,z);
-                p.Rotation = new Vector4(xr, yr, zr,w);
+                p.Position = new Vector3(x, y, z);
+                p.Rotation = new Vector4(xr, yr, zr, w);
                 p.DisplayedPosition = p.Position;
                 Players[p.ID] = p;
             }

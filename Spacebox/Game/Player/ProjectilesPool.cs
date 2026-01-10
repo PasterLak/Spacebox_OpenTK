@@ -1,11 +1,12 @@
 ﻿
 using Engine;
+using Engine.Components;
 
 
 namespace Spacebox.Game.Player
 {
 
-    public class ProjectilesPool : IDisposable
+    public class ProjectilesPool : Component
     {
 
         private List<Projectile> Projectiles { get; set; }
@@ -41,22 +42,28 @@ namespace Spacebox.Game.Player
             }
         }
 
-        public void Update()
+        public override void OnUpdate()
         {
+            base.OnUpdate();
+
             for (int i = Projectiles.Count - 1; i >= 0; i--)
                 Projectiles[i].Update();
         }
 
-        public void Render()
+        public override void OnRender()
         {
+            base.OnRender();
+
             for (int i = 0; i < Projectiles.Count; i++)
             {
                 Projectiles[i].Render();
             }
         }
 
-        public void Dispose()
+        public override void OnDetached()
         {
+            base.OnDetached();
+
             var p = Projectiles.ToArray();
             foreach (var e in p)
             {

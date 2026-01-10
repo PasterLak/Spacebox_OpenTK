@@ -20,9 +20,7 @@ public class InteractionShoot : InteractionMode
     private InteractiveBlock lastInteractiveBlock;
 
     private AnimatedItemModel model;
-    public static BlockMiningEffect BlockMiningEffect;// needs dispose
-
-    public static ProjectilesPool ProjectilesPool;  // needs dispose
+  
     private ProjectileParameters projectileParameters;
     private WeaponItem weapon;
 
@@ -34,23 +32,8 @@ public class InteractionShoot : InteractionMode
         Instance = this;
 
         AllowReload = true;
-        if (BlockMiningEffect == null)
-        {
-
-            var texture = Resources.Load<Texture2D>("Resources/Textures/blockHit.png");
-            texture.FilterMode = FilterMode.Nearest;
-
-            BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1),
-                texture, Resources.Load<Shader>("Resources/Shaders/particle"));
-        }
 
         UpdateItemSlot(itemslot);
-
-
-        if (ProjectilesPool == null)
-        {
-            ProjectilesPool = new ProjectilesPool(20);
-        }
 
         var weapone = itemslot.Item as WeaponItem;
         if (weapone != null)
@@ -177,10 +160,7 @@ public class InteractionShoot : InteractionMode
 
             player.PowerBar.StatsData.Decrement(weapon.PowerUsage);
 
-            int count = 10;
-            int count1 = 0;
-
-            var projectile = ProjectilesPool.Take();
+            var projectile = World.Instance.ProjectilesPool.Take();
 
             if (projectileParameters.Name == "p_ar")
             {

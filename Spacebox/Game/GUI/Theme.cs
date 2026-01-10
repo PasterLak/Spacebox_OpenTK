@@ -22,8 +22,6 @@ namespace Spacebox.Game.GUI
             public static uint BorderLightUint => ImGui.GetColorU32(BorderLight);
             public static uint BorderDarkUint => ImGui.GetColorU32(BorderDark);
 
-
-
         }
 
         private static bool activated = false;

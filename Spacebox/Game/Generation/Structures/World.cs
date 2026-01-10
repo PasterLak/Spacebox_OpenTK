@@ -25,6 +25,9 @@ public class World : Component, ISpaceStructure
     public static WorldLoader.LoadedWorld WorldData { get; private set; }
     public static DropManager DropEffectManager;
     public static BlockDestructionManager DestructionManager;
+    public BlockMiningEffect BlockMiningEffect;
+    public LineRenderer LineRenderer;
+    public ProjectilesPool ProjectilesPool;
     public static int Seed { get; private set; }
     public static Sector? CurrentSector { get; private set; }
     public static BiomeGenerator BiomeGenerator { get; private set; }
@@ -68,9 +71,6 @@ public class World : Component, ISpaceStructure
         BiomeGenerator = new BiomeGenerator(World.Seed, WorldGenerator);
         DropEffectManager = new DropManager(player);
 
-
-
-
     }
 
     public override void Start()
@@ -79,6 +79,23 @@ public class World : Component, ISpaceStructure
         Owner.AttachComponent(DestructionManager);
         Owner.AttachComponent(DropEffectManager);
         spacer = Owner.AddChild(new Spacer(Player.Position + new Vector3(5, 5, 7)));
+
+        ProjectilesPool = new ProjectilesPool(20);
+        Owner.AttachComponent(ProjectilesPool);  
+        
+        var texture = Resources.Load<Texture2D>("Resources/Textures/blockHit.png");
+        texture.FilterMode = FilterMode.Nearest;
+
+        BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1), texture, Resources.Load<Shader>("Resources/Shaders/particle"));
+        Owner.AddChild(BlockMiningEffect);
+
+        LineRenderer = new LineRenderer();
+        LineRenderer.AddPoint(Vector3.Zero);
+        LineRenderer.AddPoint(Vector3.One);
+        LineRenderer.Thickness = 0.1f;
+        LineRenderer.Color = Color4.Red;
+
+        Owner.AddChild(LineRenderer);
     }
 
     public void Save()

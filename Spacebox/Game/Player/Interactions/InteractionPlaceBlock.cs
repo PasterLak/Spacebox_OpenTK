@@ -16,8 +16,9 @@ public class InteractionPlaceBlock : InteractionMode
     private const byte MaxBuildDistance = 6;
 
     private static AudioSource blockPlace;
- 
-    public static LineRenderer lineRenderer;
+
+    private LineRenderer lineRenderer;
+
     Random r = new Random();
     public override void OnEnable()
     {
@@ -27,24 +28,27 @@ public class InteractionPlaceBlock : InteractionMode
         if (BlockSelector.Instance != null)
             BlockSelector.Instance.SimpleBlock.Material.Shader.SetVector4("color", new Vector4(1, 1, 1, 0.5f));
 
-        
+
         BlockSelector.IsVisible = false;
 
         if (lineRenderer == null)
         {
-            lineRenderer = new LineRenderer();
-            lineRenderer.AddPoint(Vector3.Zero);
-            lineRenderer.AddPoint(Vector3.One);
-            lineRenderer.Thickness = 0.1f;
-            lineRenderer.Color = Color4.Red;
+            if (World.Instance != null)
+                lineRenderer = World.Instance.LineRenderer;
+
+
+        }
+        else
+        {
+            lineRenderer.Enabled = true;
         }
     }
-
     public override void OnDisable()
     {
         BlockSelector.IsVisible = false;
   
-        lineRenderer.Enabled = false;
+        if(lineRenderer != null)
+            lineRenderer.Enabled = false;
     }
 
     private Vector3 UpdateBlockPreview(HitInfo hit)

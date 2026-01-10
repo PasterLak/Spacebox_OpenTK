@@ -179,5 +179,11 @@ namespace Engine
         {
             _buffer?.Dispose();
         }
+
+        public override void Destroy()
+        {
+            base.Destroy();
+            Dispose();
+        }
     }
 }

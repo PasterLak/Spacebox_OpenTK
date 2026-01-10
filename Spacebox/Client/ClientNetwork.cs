@@ -47,16 +47,21 @@ namespace Client
             _client = new NetClient(config);
             _client.Start();
 
-            var hail = _client.CreateMessage();
-            hail.Write(args.nickname);
-            hail.Write(args.skinColor);
-            _client.Connect(args.hostIp, args.port, hail);
+            _client.Connect(args.hostIp, args.port, CreateHailMessage(args));
 
             Players = new NetworkPlayerRegistry(LocalPlayerId);
             _packetHandler = new ClientPacketHandler(this, Players);
 
             StartSenderThread();
             IsKicked = false;
+        }
+
+        private NetOutgoingMessage CreateHailMessage(SpaceSceneArgs args)
+        {
+            var hail = _client.CreateMessage();
+            hail.Write(args.nickname);
+            hail.Write(args.skinColor);
+            return hail;
         }
 
         private void StartSenderThread()
@@ -102,7 +107,7 @@ namespace Client
                         }
                         catch (Exception ex)
                         {
-                            Debug.Error($"Error processing message: {ex.Message}");
+                            Debug.Error($"[ClientNetwork] Error processing message: {ex.Message}");
                         }
                         break;
 
@@ -122,13 +127,13 @@ namespace Client
             if (newStatus == NetConnectionStatus.Connected)
             {
                 _serverConnection = msg.SenderConnection;
-                Debug.Log("Client connected to server.");
+                Debug.Log("[ClientNetwork] Client connected to server.");
                 IsConnected = true;
             }
             else if (newStatus == NetConnectionStatus.Disconnected)
             {
                 _serverConnection = null;
-                Debug.Log("Client disconnected from server. " + reason);
+                Debug.Log("[ClientNetwork] Client disconnected from server. " + reason);
                 if (reason != null && reason.Contains("DuplicateName")) NameInUse = true;
                 _isRunning = false;
                 IsConnected = false;

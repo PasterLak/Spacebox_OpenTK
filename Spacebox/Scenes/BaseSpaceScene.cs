@@ -279,8 +279,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
             }
         }
 
-        if (InteractionShoot.ProjectilesPool != null)
-            InteractionShoot.ProjectilesPool.Update();
     
         if (!Debug.IsVisible)
         {
@@ -306,17 +304,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         DisposalManager.ProcessDisposals();
 
-        if (InteractionShoot.ProjectilesPool != null)
-            InteractionShoot.ProjectilesPool.Render();
-
-        if (InteractionPlaceBlock.lineRenderer != null && Settings.ShowInterface)
-            InteractionPlaceBlock.lineRenderer.Render();
-
         OnRenderCenter?.Invoke();
-        if (InteractionDestroyBlockSurvival.BlockMiningEffect != null)
-            InteractionDestroyBlockSurvival.BlockMiningEffect.Render();
-
-
+  
         blockSelector.Render();
 
 
@@ -366,8 +355,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         Projectile.PointLightsPool = null;
         Chat.Clear();
-        if (InteractionShoot.ProjectilesPool != null)
-            InteractionShoot.ProjectilesPool.Dispose();
+
         ToggleManager.DisableAllWindows();
       
         PauseUI.Dispose();
@@ -375,9 +363,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         WelcomeUI.Dispose();
         ToggleManager.Dispose();
         Debug.OnVisibilityWasChanged -= OnDebugStateChanged;
-     
-        InteractionPlaceBlock.lineRenderer = null;
-        InteractionDestroyBlockSurvival.BlockMiningEffect = null;
+
 
         GameTime.Dispose();
     }

@@ -80,6 +80,7 @@ namespace Spacebox.Game.GUI
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0, 0, 0, 0));
 
+
             if (ImGui.Begin("PauseTitle", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoBringToFrontOnFocus))
             {
                 float scale = Math.Min(displaySize.X / 1920f, displaySize.Y / 1080f);

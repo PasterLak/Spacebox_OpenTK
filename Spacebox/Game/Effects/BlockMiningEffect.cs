@@ -5,7 +5,7 @@ using OpenTK.Mathematics;
 
 namespace Spacebox.Game.Effects
 {
-    public class BlockMiningEffect : IDisposable
+    public class BlockMiningEffect : Node3D
     {
         public ParticleSystem ParticleSystem { get; private set; }
         private Shader particleShader;
@@ -16,8 +16,6 @@ namespace Spacebox.Game.Effects
         private PlaneEmitter emitter2; 
         private float elapsedTime = 0f;
         private const float duration = 2f;
-
-        public bool Enabled = false;
 
         public bool IsFinished => elapsedTime >= duration && ParticleSystem.ParticlesCount == 0;
 
@@ -145,8 +143,10 @@ namespace Spacebox.Game.Effects
             
         }
 
-        public void Update()
+        public override void Update()
         {
+            base.Update();
+
             if (!Settings.Graphics.EffectsEnabled) return;
             if (elapsedTime < duration)
             {
@@ -177,11 +177,14 @@ namespace Spacebox.Game.Effects
             }
         }
 
-        public void Render()
+        public override void Render()
         {
-            if(!Enabled) return;
+          
+            if (!Enabled) return;
 
-            if(!Settings.Graphics.EffectsEnabled) return;
+            base.Render();
+
+            if (!Settings.Graphics.EffectsEnabled) return;
 
             ParticleSystem.Render();
             ParticleSystem2.Render();
@@ -194,8 +197,9 @@ namespace Spacebox.Game.Effects
 
         }
 
-        public void Dispose()
+        public override void  Destroy()
         {
+            base.Destroy();
             ParticleSystem.Destroy();
             ParticleSystem2.Destroy();
             //dustTexture.Dispose();
