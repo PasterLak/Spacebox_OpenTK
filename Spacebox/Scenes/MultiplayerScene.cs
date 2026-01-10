@@ -88,12 +88,6 @@ namespace Spacebox.Scenes
 
             ClientNetwork.Instance.PollEvents();
 
-            if (!ClientNetwork.Instance.IsConnected)
-            {
-                Debug.Error("Lost connection to server. Returning to Multiplayer Menu.");
-                SceneManager.Load<MenuScene>();
-                return;
-            }
         }
 
         public override void UnloadContent()
@@ -103,6 +97,7 @@ namespace Spacebox.Scenes
             {
                 ClientNetwork.Instance.Players.OnPlayerJoined -= AddRemotePlayerToScene;
                 ClientNetwork.Instance.Players.OnPlayerLeft -= RemoveRemotePlayerFromScene;
+                if(ClientNetwork.Instance.IsConnected)
                 ClientNetwork.Instance.Disconnect("Scene unloaded");
             }
 

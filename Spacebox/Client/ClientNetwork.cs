@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.SceneManagement;
 using Lidgren.Network;
 using OpenTK.Mathematics;
 using Spacebox.Game;
@@ -12,7 +13,7 @@ using System.Collections.Concurrent;
 
 namespace Client
 {
-    public class ClientNetwork
+    public class ClientNetwork : IDisposable
     {
         public static ClientNetwork Instance { get; set; }
 
@@ -42,7 +43,13 @@ namespace Client
 
         public ClientNetwork(SpaceSceneArgs args)
         {
+            if (Instance != null)
+            {
+                Instance.Dispose();
+                Instance = null;
+            }
             Instance = this;
+
             var config = new NetPeerConfiguration(args.key);
             _client = new NetClient(config);
             _client.Start();
@@ -78,11 +85,18 @@ namespace Client
             {
                 if (_sendQueue.TryDequeue(out var item))
                 {
-                    if (_serverConnection != null)
+                    if (_serverConnection != null && _client.Status == NetPeerStatus.Running)
                     {
-                        var om = _client.CreateMessage();
-                        item.Message.Write(om);
-                        _client.SendMessage(om, _serverConnection, item.Method);
+                        try
+                        {
+                            var om = _client.CreateMessage();
+                            item.Message.Write(om);
+                            _client.SendMessage(om, _serverConnection, item.Method);
+                        }
+                        catch
+                        {
+
+                        }
                     }
                 }
                 else
@@ -94,6 +108,8 @@ namespace Client
 
         public void PollEvents()
         {
+            if (_client.Status != NetPeerStatus.Running) return;
+
             NetIncomingMessage msg;
             while ((msg = _client.ReadMessage()) != null)
             {
@@ -135,8 +151,12 @@ namespace Client
                 _serverConnection = null;
                 Debug.Log("[ClientNetwork] Client disconnected from server. " + reason);
                 if (reason != null && reason.Contains("DuplicateName")) NameInUse = true;
-                _isRunning = false;
-                IsConnected = false;
+
+                CleanupInternal();
+
+                var args = new MenuScene2Params();
+                args.text = reason;
+                SceneManager.Load<ServerMessageScene, MenuScene2Params>(args);
             }
         }
 
@@ -189,7 +209,6 @@ namespace Client
         public void SendItemInHand(ItemSlot item)
         {
             var itemInHand = item.HasItem ? item.Item : null;
-
             Send(new ItemInHandMessage { SenderId = LocalPlayerId, ItemId = (short)(itemInHand?.Id ?? 0) }, NetDeliveryMethod.ReliableOrdered);
         }
 
@@ -209,13 +228,58 @@ namespace Client
 
         public void Disconnect(string reason)
         {
-            _client.Disconnect(reason);
-            _isRunning = false;
-            IsKicked = false;
-            LocalPlayerId = -1;
+            if (_client != null && _client.ConnectionStatus != NetConnectionStatus.Disconnected)
+            {
+                _client.Disconnect(reason);
+            }
+
+            CleanupInternal();
+
+            var args = new MenuScene2Params();
+            args.text = reason;
+            SceneManager.Load<ServerMessageScene, MenuScene2Params>(args);
         }
 
         public List<RemoteAstronaut> GetRemotePlayers() => Players.GetAll();
+
+        private void CleanupInternal()
+        {
+            _isRunning = false;
+            IsKicked = false;
+            LocalPlayerId = -1;
+            IsConnected = false;
+            _serverConnection = null;
+
+            if (_senderThread != null && _senderThread.IsAlive)
+            {
+                _senderThread.Join(500);
+            }
+            _senderThread = null;
+
+            _sendQueue.Clear();
+
+            OnServerInfoReceived = null;
+            OnZipDownloadStart = null;
+            OnZipDownloadComplete = null;
+            OnBlockDestroyed = null;
+            OnBlockPlaced = null;
+          
+        }
+
+        public void Dispose()
+        {
+            CleanupInternal();
+            if (_client != null)
+            {
+                _client.Shutdown("Disposed");
+                _client = null;
+            }
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+            GC.SuppressFinalize(this);
+        }
 
         #endregion
     }

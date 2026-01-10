@@ -363,7 +363,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         WelcomeUI.Dispose();
         ToggleManager.Dispose();
         Debug.OnVisibilityWasChanged -= OnDebugStateChanged;
-
+        
 
         GameTime.Dispose();
     }

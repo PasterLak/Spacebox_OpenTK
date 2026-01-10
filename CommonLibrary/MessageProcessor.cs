@@ -42,59 +42,41 @@ namespace ServerCommon
         private void ProcessStatusChanged(NetIncomingMessage msg)
         {
             var status = (NetConnectionStatus)msg.ReadByte();
-
             msg.ReadString();
+
             if (status == NetConnectionStatus.Connected)
             {
                 var hail = msg.SenderConnection.RemoteHailMessage;
+                if (hail == null)
+                {
+                    serverNetwork.KickConnection(msg.SenderConnection, "Protocol Error: No hail message");
+                    return;
+                }
+
                 var chosenName = hail.ReadString();
                 var chosenColor = hail.ReadString();
                 string senderIp = msg.SenderConnection.RemoteEndPoint.Address.ToString();
+
                 if (BanManager.IsBannedByName(chosenName) || BanManager.IsBannedByIp(senderIp))
                 {
-                    var km = new KickMessage { Reason = "You are banned." };
-                    var om = server.CreateMessage();
-                    km.Write(om);
-                    server.SendMessage(om, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
-                    msg.SenderConnection.Disconnect("Banned");
+                    serverNetwork.KickConnection(msg.SenderConnection, "You are banned.");
                     return;
                 }
+
                 if (playerManager.IsNameUsed(chosenName))
                 {
-                    var km = new KickMessage { Reason = "Name in use. Choose another one." };
-                    var om = server.CreateMessage();
-                    km.Write(om);
-                    server.SendMessage(om, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
-                    msg.SenderConnection.Disconnect("DuplicateName");
+                    serverNetwork.KickConnection(msg.SenderConnection, "Name is already in use.");
                     return;
                 }
+
                 var newPlayer = playerManager.AddNewPlayer(chosenName, chosenColor);
-                connectionPlayers[msg.SenderConnection] = newPlayer;
+                serverNetwork.RegisterPlayerConnection(msg.SenderConnection, newPlayer);
+
                 logCallback?.Invoke($"{newPlayer.Name}[{newPlayer.ID}] connected", LogType.Success);
 
-                var initMsg = new InitMessage { Player = newPlayer };
-                var omInit = server.CreateMessage();
-                initMsg.Write(omInit);
-                server.SendMessage(omInit, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
-
-                var serverInfoMsg = new ServerInfoMessage
-                {
-                    Info = new ServerInfo
-                    {
-                        Name = Settings.Name,
-                        Description = Settings.Description,
-                        MaxPlayers = server.Configuration.MaximumConnections,
-                        ModFolderHash = Settings.ModFolderHash,
-                        ModFolderName = Settings.ModFolder
-                    }
-                };
-                var omServerInfo = server.CreateMessage();
-                serverInfoMsg.Write(omServerInfo);
-                server.SendMessage(omServerInfo, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
-
+                SendInitData(msg.SenderConnection, newPlayer);
                 serverNetwork.BroadcastPlayers();
                 serverNetwork.BroadcastChat(-1, $"{newPlayer.Name}[{newPlayer.ID}] connected");
-
             }
             else if (status == NetConnectionStatus.Disconnected)
             {
@@ -102,11 +84,34 @@ namespace ServerCommon
                 {
                     connectionPlayers.Remove(msg.SenderConnection);
                     playerManager.RemovePlayer(p.ID);
-                    serverNetwork.BroadcastChat(-1, $"{p.Name}[{p.ID}] disconnected");
+                    serverNetwork.BroadcastChat(-1, $"{p.Name} left the game.");
                     logCallback?.Invoke($"{p.Name}[{p.ID}] disconnected", LogType.Info);
                     serverNetwork.BroadcastPlayers();
                 }
             }
+        }
+
+        private void SendInitData(NetConnection conn, Player player)
+        {
+            var initMsg = new InitMessage { Player = player };
+            var omInit = server.CreateMessage();
+            initMsg.Write(omInit);
+            server.SendMessage(omInit, conn, NetDeliveryMethod.ReliableOrdered);
+
+            var serverInfoMsg = new ServerInfoMessage
+            {
+                Info = new ServerInfo
+                {
+                    Name = Settings.Name,
+                    Description = Settings.Description,
+                    MaxPlayers = server.Configuration.MaximumConnections,
+                    ModFolderHash = Settings.ModFolderHash,
+                    ModFolderName = Settings.ModFolder
+                }
+            };
+            var omServerInfo = server.CreateMessage();
+            serverInfoMsg.Write(omServerInfo);
+            server.SendMessage(omServerInfo, conn, NetDeliveryMethod.ReliableOrdered);
         }
 
         private void SendZipToClient(NetConnection connection)
@@ -168,26 +173,12 @@ namespace ServerCommon
             }
             else if (baseMsg is RequestZipMessage)
             {
-              
                 SendZipToClient(msg.SenderConnection);
             }
-            else if (baseMsg is BlockDestroyedMessage || baseMsg is BlockPlaceMessage)
+            else if (baseMsg is BlockDestroyedMessage || baseMsg is BlockPlaceMessage || baseMsg is FlashlightMessage || baseMsg is ItemInHandMessage)
             {
                 BroadcastRaw(msg);
             }
-            else if (baseMsg is FlashlightMessage)
-            {
-
-                BroadcastRaw(msg);
-
-            }
-            else if (baseMsg is ItemInHandMessage)
-            {
-
-                BroadcastRaw(msg);
-
-            }
-
         }
 
         private void BroadcastRaw(NetIncomingMessage msg)

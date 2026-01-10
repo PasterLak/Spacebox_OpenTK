@@ -10,6 +10,7 @@ namespace ServerCommon
         private int nextId = 1;
         private readonly Random rand = new Random();
 
+
         public Player AddNewPlayer(string name, string color)
         {
             var p = new Player

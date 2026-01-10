@@ -306,10 +306,12 @@ namespace Engine
 
             ImGui.PopStyleColor(isSelected ? 2 : 1);
         }
-        public static void Render(Vector2 windowSize)
+        public static void Render()
         {
             if (!_isVisible)
                 return;
+
+            Vector2 windowSize = ImGui.GetIO().DisplaySize;
 
             ImGui.SetNextWindowPos(new Vector2(0, 0), ImGuiCond.Always);
             ImGui.SetNextWindowSize(new Vector2(windowSize.X * 0.4f, windowSize.Y), ImGuiCond.Always);

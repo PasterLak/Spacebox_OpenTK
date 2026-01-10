@@ -186,6 +186,8 @@ namespace Engine
 
             using (Prof.Time(T_Update))
             {
+                SceneManager.ApplyPendingSceneChange();
+
                 base.OnUpdateFrame(e);
                 RenderSpace.BeginFrame();
                 Input.Update();
@@ -220,7 +222,7 @@ namespace Engine
             if (SceneManager.Current != null)
             {
                 using (Prof.Time(T_SceneRender))
-                    SceneManager.Current.Render();
+                    SceneManager.Render();
 
                 using (Prof.Time(T_VisualDebug))
                     VisualDebug.Render();
@@ -233,12 +235,12 @@ namespace Engine
         private void RenderGUI()
         {
             _controller.EnsureContext();
-
+           
             if (SceneManager.Current != null)
             {
             
                 SceneManager.Current.OnGUI();
-                Debug.Render(new Vector2(ClientSize.X, ClientSize.Y).ToSystemVector2());
+                Debug.Render();
                 Overlay.OnGUI();
                 DevGui.Draw();
                 //InputOverlay.OnGUI();
@@ -250,19 +252,13 @@ namespace Engine
                     ImGui.ShowDemoWindow();
                 }
             }
-
+          
             if (Camera.Main != null)
                 _controller.Render();
 
-            try
-            {
+           
                 ImGuiController.CheckGLError("End of frame");
-            }
-            catch (Exception ex)
-            {
-                Debug.Error($"[EngineWindow] Exception during ImGui rendering: {ex}");
-            }
-
+          
            
         }
 

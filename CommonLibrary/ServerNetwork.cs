@@ -2,7 +2,10 @@
 using SpaceNetwork.Messages;
 using System.Net;
 using Lidgren.Network;
-
+using System.Linq;
+using System.Collections.Generic;
+using System.Threading;
+using System;
 
 namespace ServerCommon
 {
@@ -29,7 +32,7 @@ namespace ServerCommon
             BanManager.LoadBannedPlayers();
             InitializeServer();
             messageProcessor = new MessageProcessor(server, connectionPlayers, playerManager,
-                                          (msg, type) => logger.Log(msg, type), this);
+                                    (msg, type) => logger.Log(msg, type), this);
         }
 
         private void InitializeServer()
@@ -43,6 +46,8 @@ namespace ServerCommon
             };
             config.LocalAddress = IPAddress.Any;
             config.EnableMessageType(NetIncomingMessageType.DiscoveryRequest);
+            config.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
+
             server = new NetServer(config);
             server.Start();
             _shouldStop = false;
@@ -78,31 +83,119 @@ namespace ServerCommon
             NetIncomingMessage msg;
             while ((msg = server.ReadMessage()) != null)
             {
-                if (msg.MessageType == NetIncomingMessageType.DiscoveryRequest)
+                switch (msg.MessageType)
                 {
-                    var response = server.CreateMessage();
-                    response.Write("SpaceServer");
-                    response.Write(server.Configuration.Port);
-                    server.SendDiscoveryResponse(response, msg.SenderEndPoint);
-                }
-                else
-                {
-                    messageProcessor.Process(msg);
+                    case NetIncomingMessageType.DiscoveryRequest:
+                        var response = server.CreateMessage();
+                        response.Write("SpaceServer");
+                        response.Write(server.Configuration.Port);
+                        server.SendDiscoveryResponse(response, msg.SenderEndPoint);
+                        break;
+
+                    case NetIncomingMessageType.ConnectionApproval:
+                        msg.SenderConnection.Approve();
+                        break;
+
+                    case NetIncomingMessageType.Data:
+                        messageProcessor.Process(msg);
+                        break;
+
+                    case NetIncomingMessageType.StatusChanged:
+                        messageProcessor.Process(msg);
+                        break;
                 }
                 server.Recycle(msg);
             }
         }
 
+        public void KickConnection(NetConnection conn, string reason)
+        {
+            if (conn == null) return;
+
+            if (connectionPlayers.TryGetValue(conn, out var player))
+            {
+                DisconnectAndRemovePlayer(conn, player, reason);
+            }
+            else
+            {
+                var km = new KickMessage { Reason = reason };
+                var om = server.CreateMessage();
+                km.Write(om);
+                server.SendMessage(om, conn, NetDeliveryMethod.ReliableOrdered);
+                server.FlushSendQueue();
+                conn.Disconnect(reason);
+            }
+        }
+
+        private void DisconnectAndRemovePlayer(NetConnection connection, Player player, string reason, bool isBan = false)
+        {
+            var km = new KickMessage { Reason = reason };
+            var om = server.CreateMessage();
+            km.Write(om);
+            server.SendMessage(om, connection, NetDeliveryMethod.ReliableOrdered);
+            server.FlushSendQueue();
+            connection.Disconnect(reason);
+
+            if (connectionPlayers.ContainsKey(connection))
+            {
+                connectionPlayers.Remove(connection);
+                playerManager.RemovePlayer(player.ID);
+
+                string action = isBan ? "banned" : "kicked";
+                string logMsg = $"Player [{player.ID}]{player.Name} was {action}. Reason: {reason}";
+
+                logger.Log(logMsg, LogType.Warning);
+                BroadcastChat(-1, logMsg);
+
+                BroadcastPlayers();
+            }
+        }
+
+        public string KickPlayer(int playerId, string reason = "Kicked by server")
+        {
+            var targetConnection = GetConnectionByPlayerId(playerId);
+
+            if (targetConnection != null && connectionPlayers.TryGetValue(targetConnection, out var player))
+            {
+                string playerName = player.Name;
+                DisconnectAndRemovePlayer(targetConnection, player, reason, false);
+                return playerName;
+            }
+
+            return null;
+        }
+
+        public bool BanPlayer(int playerId, string reason)
+        {
+            var target = GetConnectionByPlayerId(playerId);
+            if (target != null && connectionPlayers.TryGetValue(target, out var player))
+            {
+                var banned = new PlayerBanned
+                {
+                    IDWhenWasBanned = playerId,
+                    Name = player.Name,
+                    Reason = reason,
+                    IPAddress = target.RemoteEndPoint.Address.ToString(),
+                    DeviceId = "",
+                    BannedAt = DateTime.UtcNow
+                };
+                BanManager.AddBannedPlayer(banned);
+
+                DisconnectAndRemovePlayer(target, player, $"Banned: {reason}", true);
+                return true;
+            }
+            return false;
+        }
+
         public string GetPlayerIp(int playerId)
         {
-
             var connection = connectionPlayers.FirstOrDefault(x => x.Value.ID == playerId).Key;
             return connection?.RemoteEndPoint?.Address?.ToString() ?? "Unknown";
         }
 
-
         public void Stop()
         {
+            DisconnectAll("Server shutting down.");
             _shouldStop = true;
             server.Shutdown("Server stopped");
             logger.Log("Server stopped.", LogType.Success);
@@ -111,15 +204,42 @@ namespace ServerCommon
         public void Restart()
         {
             logger.Log("Restarting server...", LogType.Info);
-            Stop();
+            DisconnectAll("Server restarting...");
+
+            _shouldStop = true;
+            server.Shutdown("Restarting");
+
             time = 0;
             playerManager.Reset();
+            connectionPlayers.Clear();
+
             Thread.Sleep(1000);
+
             InitializeServer();
             BanManager.LoadBannedPlayers();
             messageProcessor = new MessageProcessor(server, connectionPlayers, playerManager, logger.Log, this);
             new Thread(() => RunMainLoop()).Start();
             logger.Log("Server restarted.", LogType.Success);
+        }
+
+        private void DisconnectAll(string reason)
+        {
+            var km = new KickMessage { Reason = reason };
+            var om = server.CreateMessage();
+            km.Write(om);
+
+            if (server.ConnectionsCount > 0)
+            {
+                server.SendMessage(om, server.Connections, NetDeliveryMethod.ReliableOrdered, 0);
+                server.FlushSendQueue();
+                foreach (var conn in server.Connections)
+                {
+                    conn.Disconnect(reason);
+                }
+            }
+
+            connectionPlayers.Clear();
+            playerManager.Reset();
         }
 
         private void CheckAFKPlayers()
@@ -142,68 +262,6 @@ namespace ServerCommon
             time = 0;
         }
 
-        public string KickPlayer(int playerId, string reason = "Kicked by server")
-        {
-            var targetConnection = GetConnectionByPlayerId(playerId);
-
-            if (targetConnection != null && connectionPlayers.TryGetValue(targetConnection, out var player))
-            {
-                string playerName = player.Name;
-
-                var km = new KickMessage { Reason = reason };
-                var om = server.CreateMessage();
-                km.Write(om);
-                server.SendMessage(om, targetConnection, NetDeliveryMethod.ReliableOrdered);
-
-                targetConnection.Disconnect(reason);
-
-                string logMsg = $"Player [{playerId}]{playerName} was kicked. Reason: {reason}";
-                logger.Log(logMsg, LogType.Warning);
-
-                BroadcastChat(-1, logMsg);
-
-                connectionPlayers.Remove(targetConnection);
-                playerManager.RemovePlayer(playerId);
-
-                BroadcastPlayers();
-
-                return playerName;
-            }
-
-            return null;
-        }
-
-        public bool BanPlayer(int playerId, string reason)
-        {
-            var target = GetConnectionByPlayerId(playerId);
-            if (target != null)
-            {
-                var banned = new PlayerBanned
-                {
-                    IDWhenWasBanned = playerId,
-                    Name = connectionPlayers[target].Name,
-                    Reason = reason,
-                    IPAddress = target.RemoteEndPoint.Address.ToString(),
-                    DeviceId = "",
-                    BannedAt = DateTime.UtcNow
-                };
-                BanManager.AddBannedPlayer(banned);
-                var km = new KickMessage { Reason = $"Banned: {reason}" };
-                var om = server.CreateMessage();
-                km.Write(om);
-                server.SendMessage(om, target, NetDeliveryMethod.ReliableOrdered);
-                logger.Log($"Player {playerId} ({banned.Name}) ({banned.IPAddress}) was banned. Reason: {reason}", LogType.Warning);
-                BroadcastChat(-1, $"Player {playerId} ({connectionPlayers[target].Name}) was banned. Reason: {reason}");
-                target.Disconnect("Banned");
-                
-                connectionPlayers.Remove(target);
-                playerManager.RemovePlayer(playerId);
-                BroadcastPlayers();
-                return true;
-            }
-            return false;
-        }
-
         private NetConnection GetConnectionByPlayerId(int playerId)
         {
             return connectionPlayers.FirstOrDefault(kvp => kvp.Value.ID == playerId).Key;
@@ -214,7 +272,8 @@ namespace ServerCommon
             var pm = new PlayersMessage { Players = playerManager.GetAll() };
             var outMsg = server.CreateMessage();
             pm.Write(outMsg);
-            server.SendToAll(outMsg, NetDeliveryMethod.Unreliable);
+            if (server.ConnectionsCount > 0)
+                server.SendToAll(outMsg, NetDeliveryMethod.Unreliable);
         }
 
         public void BroadcastChat(int senderId, string text)
@@ -223,8 +282,10 @@ namespace ServerCommon
             var cm = new ChatMessage(senderId, name, text);
             var outMsg = server.CreateMessage();
             cm.Write(outMsg);
-            server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
+            if (server.ConnectionsCount > 0)
+                server.SendToAll(outMsg, NetDeliveryMethod.ReliableOrdered);
         }
+
         public int GetPlayerPing(int playerId)
         {
             var connection = GetConnectionByPlayerId(playerId);
@@ -237,10 +298,13 @@ namespace ServerCommon
 
         public void SendPositionUpdate(Player player)
         {
-
             BroadcastPlayers();
         }
-
+        public void RegisterPlayerConnection(NetConnection connection, Player player)
+        {
+            if (connection == null || player == null) return;
+            connectionPlayers[connection] = player;
+        }
         public void SendPrivateMessage(int targetPlayerId, string message)
         {
             var targetConnection = GetConnectionByPlayerId(targetPlayerId);

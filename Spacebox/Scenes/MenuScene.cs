@@ -9,6 +9,7 @@ using Engine.Utils;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Core;
 using Spacebox.Game;
 using Spacebox.Game.Generation;
@@ -253,7 +254,14 @@ namespace Spacebox.Scenes
         {
 
             base.Render();
- 
+
+            if(Input.IsKeyDown(Keys.J))
+            {
+                SceneManager.Load<ServerMessageScene>();
+            }
+        
+         
+
         }
 
         public override void OnGUI()
@@ -281,6 +289,7 @@ namespace Spacebox.Scenes
         {
             menu.Dispose();
             DevLogWindow.Instance = null;
+            Settings.ShowInterface = true;
         }
 
         bool showed = false;
@@ -296,7 +305,6 @@ namespace Spacebox.Scenes
                         {
                 astronautNode.Enabled = false;
             }
-
 
             if (Input.IsAnyKeyDown() && !showed)
             {

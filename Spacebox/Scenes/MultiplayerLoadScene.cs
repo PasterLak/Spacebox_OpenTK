@@ -51,7 +51,7 @@ namespace Spacebox.Scenes
             _camera.FOV = 100;
 
             var skyboxTexture = new SpaceTexture(512, 512, 420);
-            Lighting.Skybox = new Skybox(skyboxTexture);
+            //Lighting.Skybox = new Skybox(skyboxTexture);
 
             StartConnection();
         }
@@ -248,8 +248,9 @@ namespace Spacebox.Scenes
         private void UpdateError()
         {
             _errorReturnTimer -= Time.Delta;
-            CenteredText.SetText($"{_errorMessage}\nReturning to menu in {_errorReturnTimer:F1}...");
-
+            CenteredText.SetColor(Color4.Red);
+            CenteredText.SetText($"{_errorMessage}\nReturning to menu in {(int)_errorReturnTimer}...");
+           
             if (_errorReturnTimer <= 0)
             {
                 ClientNetwork.Instance?.Disconnect("Load failed");
@@ -258,32 +259,49 @@ namespace Spacebox.Scenes
             }
         }
 
+        string text = "";
+        int step = 0;
         private void SetState(LoadState newState)
         {
             _currentState = newState;
             _stateTimer = 0f;
             _downloadRequested = false;
 
+            string currentMessage = "";
+            step++;
+            int totalSteps = 6;
+
             switch (newState)
             {
                 case LoadState.Initializing:
-                    CenteredText.SetText("Initializing network...");
+                    currentMessage = "Initializing network...";
                     break;
                 case LoadState.Connecting:
-                    CenteredText.SetText($"Connecting to {_sceneArgs.hostIp}...");
+                    currentMessage = $"Connecting to {_sceneArgs.hostIp}...";
                     break;
                 case LoadState.WaitingForServerInfo:
-                    CenteredText.SetText("Handshaking...");
+                    currentMessage = "Handshaking...";
                     break;
                 case LoadState.CheckingMods:
-                    CenteredText.SetText("Checking game files...");
+                    currentMessage = "Checking game files...";
                     break;
                 case LoadState.DownloadingMods:
-                    CenteredText.SetText("Downloading server mods...");
+                    currentMessage = "Downloading server mods...";
                     break;
                 case LoadState.Finalizing:
-                    CenteredText.SetText("Starting game...");
+                    currentMessage = "Starting game...";
                     break;
+            }
+
+            if (!string.IsNullOrEmpty(currentMessage))
+            {
+                if (!string.IsNullOrEmpty(text))
+                {
+                    text += "\n";
+                }
+
+                text += $"[{step}] {currentMessage}";
+                CenteredText.SetText(text);
             }
         }
 
@@ -292,6 +310,8 @@ namespace Spacebox.Scenes
             _errorMessage = message;
             _errorReturnTimer = ErrorDisplayTime;
             _currentState = LoadState.Error;
+
+            CenteredText.SetText("Error:\n" + message + $"\nReturning to menu in {_errorReturnTimer:F1}...");
 
             Debug.Error($"[MultiplayerLoad] Error: {message}");
         }
@@ -315,9 +335,9 @@ namespace Spacebox.Scenes
 
         public override void OnGUI()
         {
-            //Theme.ApplySpaceboxTheme();
-            
-          // CenteredText.OnGUI();
+            Theme.ApplySpaceboxTheme();
+
+            CenteredText.OnGUI();
         }
 
         public override void UnloadContent()
