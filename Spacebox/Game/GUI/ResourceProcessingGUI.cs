@@ -6,6 +6,7 @@ using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player;
 using SpaceNetwork;
 using System.Numerics;
+using static Spacebox.Game.Resource.AtlasTexture;
 
 namespace Spacebox.Game.GUI
 {
@@ -169,19 +170,22 @@ namespace Spacebox.Game.GUI
 
             if (WindowName.Contains("Crusher"))
             {
-                var texture = Resources.Load<Texture2D>("Resources/Textures/UI/crusherInput.png");
+                var texture =
+                GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/crusherInput.png");
                 texture.FilterMode = FilterMode.Nearest;
                 inputIcon = texture.Handle;
             }
             if (WindowName.Contains("Furnace"))
             {
-                var texture = Resources.Load<Texture2D>("Resources/Textures/UI/furnaceInput.png");
+                var texture =
+                GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/furnaceInput.png");
                 texture.FilterMode = FilterMode.Nearest;
                 inputIcon = texture.Handle;
             }
             if (WindowName.Contains("Disassembler"))
             {
-                var texture = Resources.Load<Texture2D>("Resources/Textures/UI/disassemblerInput.png");
+                var texture = 
+                GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/disassemblerInput.png");
                 texture.FilterMode = FilterMode.Nearest;
                 inputIcon = texture.Handle;
             }
@@ -189,8 +193,8 @@ namespace Spacebox.Game.GUI
 
             if (outputIcon == IntPtr.Zero)
             {
-                var t1 = Resources.Load<Texture2D>("Resources/Textures/UI/crusherOutput.png");
-                var t2 = Resources.Load<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
+                var t1 = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/crusherOutput.png");
+                var t2 = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
 
                 t1.FlipY();
                 t1.FilterMode = FilterMode.Nearest;
@@ -201,21 +205,24 @@ namespace Spacebox.Game.GUI
             if (WindowName.Contains("Crusher"))
             {
               
-                var texture = Resources.Load<Texture2D>("Resources/Textures/UI/crusherOutput.png");
+                var texture = 
+                GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/crusherOutput.png");
                 texture.FilterMode = FilterMode.Nearest;
                 outputIcon = texture.Handle;
             }
             if (WindowName.Contains("Furnace"))
             {
                
-                var texture = Resources.Load<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
+                var texture = 
+                GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
                 texture.FilterMode = FilterMode.Nearest;
                 outputIcon = texture.Handle;
             }
             if (WindowName.Contains("Disassembler"))
             {
               
-                var texture = Resources.Load<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
+                var texture =
+                GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
                 texture.FilterMode = FilterMode.Nearest;
                 outputIcon = texture.Handle;
             }

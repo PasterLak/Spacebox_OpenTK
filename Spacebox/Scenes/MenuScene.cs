@@ -71,7 +71,7 @@ namespace Spacebox.Scenes
             var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
       
             Lighting.Skybox = new Skybox( skyboxTexture);
-            CenteredImageMenu.LoadImage("Resources/Textures/spaceboxLogo.png", true);
+            CenteredImageMenu.LoadImage("Resources/Textures/UI/spaceboxLogo.png", true);
 
            // Resources.Load<AudioClip>("Resources/Audio/UI/click2.ogg", true);
             menu = new GameMenu();
@@ -167,7 +167,7 @@ namespace Spacebox.Scenes
                 Direction = new Vector3(0f, 1f, 0f),
             };
 
-            var dust = Resources.Load<Texture2D>("Resources/Textures/dust.png");
+            var dust = Resources.Load<Texture2D>("Resources/Textures/Effects/dust.png");
             dust.FilterMode = FilterMode.Nearest;
             var system = new ParticleSystem(new ParticleMaterial(dust), emitter);
             system.Max = 500;

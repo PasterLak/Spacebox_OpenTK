@@ -80,7 +80,7 @@ namespace Spacebox.Scenes
             AddChild(model);
 
 
-            Engine.Texture2D skyboxTexture2 = Resources.Load<Engine.Texture2D>("Resources/Textures/arSphere.png");
+            Engine.Texture2D skyboxTexture2 = Resources.Load<Engine.Texture2D>("Resources/Textures/Effects/arSphere.png");
             Node3D sphere = new Node3D(new Vector3(0, 0, 1));
             var mat = new FadeMaterial(skyboxTexture2);
             Model m2 = new Model(GenMesh.CreateSphere(6), mat);
@@ -169,7 +169,7 @@ namespace Spacebox.Scenes
                 ColorEnd = new Vector4(1, 1, 1, 0)
             };
 
-            var dust = Resources.Load<Texture2D>("Resources/Textures/dust.png");
+            var dust = Resources.Load<Texture2D>("Resources/Textures/Effects/dust.png");
             dust.FilterMode = FilterMode.Nearest;
 
             system = new ParticleSystem(new ParticleMaterial(dust), emitter) { Max = 500, Rate = 100 };

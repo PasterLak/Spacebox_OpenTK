@@ -30,7 +30,7 @@ namespace Spacebox.Game
         {
 
             Position = pos;
-            Texture2D spacerTex = Resources.Get<Texture2D>("Resources/Textures/spacer.png");
+            Texture2D spacerTex = GameAssets.LoadResource<Texture2D>("Resources/Textures/Skins/spacer.png");
             spacerTex.FlipY();
             spacerTex.FilterMode = FilterMode.Nearest;
             Name = nameof(Spacer);
@@ -44,7 +44,7 @@ namespace Spacebox.Game
 
             obb = AttachComponent(new OBBCollider());
 
-            Model spacerModel = new Model(Resources.Load<Mesh>("Resources/Models/spacer.obj"),
+            Model spacerModel = new Model(GameAssets.LoadResource<Mesh>("Resources/Models/spacer.obj"),
                 new TextureMaterial(spacerTex));
             AttachComponent(new ModelRendererComponent(spacerModel));
             AttachComponent(new AxesDebugComponent());

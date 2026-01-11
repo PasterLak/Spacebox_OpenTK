@@ -1,0 +1,242 @@
+﻿{
+    "Default": {
+        "Name": "Default",
+        "Actions": {
+           
+            "forward": {
+                "Name": "Forward",
+                "Description": "",
+                "Category": "Movement",
+             
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "W"
+                    }
+                ]
+            },
+            "backward": {
+                "Name": "Backward",
+                "Description": "",
+                "Category": "Movement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "S"
+                    }
+                ]
+            },
+            "left": {
+                "Name": "Left",
+                "Description": "",
+                "Category": "Movement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "A"
+                    }
+                ]
+            },
+            "right": {
+                "Name": "Right",
+                "Description": "",
+                "Category": "Movement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "D"
+                    }
+                ]
+            },
+            "up": {
+                "Name": "Up",
+                "Description": "",
+                "Category": "Movement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "Space"
+                    }
+                ]
+            },
+            "down": {
+                "Name": "Down",
+                "Description": "",
+                "Category": "Movement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "LeftControl"
+                    }
+                ]
+            },
+            "rollLeft": {
+                "Name": "Roll Left",
+                "Description": "",
+                "Category": "Movement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "Q"
+                    }
+                ]
+            },
+            "rollRight": {
+                "Name": "Roll Right",
+                "Description": "",
+                "Category": "Movement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "E"
+                    }
+                ]
+            },
+            "sprint": {
+                "Name": "Sprint",
+                "Description": "Move faster",
+                "Category": "Movement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "LeftShift"
+                    }
+                ]
+            },
+            "use": {
+                "Name": "Use",
+                "Description": "Interaction with blocks",
+                "Category": "Interactions",
+                "Bindings": [
+                    {
+                        "Type": "MouseKey",
+                        "Key": "Button2"
+                    }
+                ]
+            },
+             "block_place": {
+                "Name": "Place block",
+                "Description": "Place selected block",
+                "Category": "Interactions",
+                "Bindings": [
+                    {
+                        "Type": "MouseKey",
+                        "Key": "Button2"
+                    }
+                ]
+            },
+             "block_destroy": {
+                "Name": "Destroy block",
+                "Description": "Destroy selected block",
+                "Category": "Interactions",
+                "Bindings": [
+                    {
+                        "Type": "MouseKey",
+                        "Key": "Button1"
+                    }
+                ]
+            },
+             "block_rotate": {
+                "Name": "Rotate block",
+                "Description": "Rotate selected block",
+                "Category": "Interactions",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "R"
+                    }
+                ]
+            },
+             "shoot": {
+                "Name": "Shoot",
+                "Description": "Shoot with weapon",
+                "Category": "Interactions",
+                "Bindings": [
+                    {
+                        "Type": "MouseKey",
+                        "Key": "Button1"
+                    }
+                ]
+            },
+            "zoom": {
+                "Name": "Camera zoom",
+                "Description": "",
+                "Category": "Interactions",
+                "Bindings": [
+                    {
+                        "Type": "MouseKey",
+                        "Key": "Button3"
+                    }
+                ]
+            },
+            "flashlight": {
+                "Name": "Flashlight",
+                "Description": "Turn on/off",
+                "Category": "Interactions",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "F"
+                    }
+                ]
+            },
+            "inventory": {
+                "Name": "Inventory",
+                "Description": "Open/close inventory",
+                "Category": "Inventory",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "Tab"
+                    }
+                ]
+            },
+
+            "drop_item": {
+                "Name": "Drop Item",
+                "Description": "(from hand)",
+                "Category": "Inventory",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "G"
+                    }
+                ]
+            },
+            "storage_item_quick_transfer": {
+                "Name": "Item transfer",
+                "Description": "Quick transfer of items between storages",
+                "Category": "Inventory",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "LeftShift"
+                    }
+                ]
+            },
+            "storage_item_delete": {
+                "Name": "Item delete",
+                "Description": "Delete an item from storage",
+                "Category": "Inventory",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "X"
+                    }
+                ]
+            },
+             "inputOverlay": {
+                "Name": "Input Overlay",
+                "Description": "Input Overlay",
+                "Category": "Other",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "F6"
+                    }
+                ]
+            }
+        },
+        "Axes": {}
+    }
+}

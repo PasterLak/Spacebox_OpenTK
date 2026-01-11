@@ -40,7 +40,7 @@ namespace Spacebox.Game.Effects
                 return GetEmptyTexture();
             }
 
-            Texture2D pattern = Engine.Resources.Get<Texture2D>("Resources/Textures/dust.png");
+            Texture2D pattern = Engine.Resources.Get<Texture2D>("Resources/Textures/Effects/dust.png");
 
             if (pattern == null)
             {

@@ -24,7 +24,8 @@ public class BlockSelector : IDisposable
     public BlockSelector()
     {
         Instance = this;
-        selectorTexture = Resources.Load<Texture2D>("Resources/Textures/selector.png");
+
+        selectorTexture = GameAssets.LoadResource<Texture2D>("Resources/Textures/selector.png");
         selectorTexture.FilterMode = FilterMode.Nearest;
 
         var material = new TextureMaterial(selectorTexture, Resources.Load<Shader>("Resources/Shaders/blockPreview"));

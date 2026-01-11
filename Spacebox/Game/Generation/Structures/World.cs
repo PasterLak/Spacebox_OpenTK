@@ -83,7 +83,7 @@ public class World : Component, ISpaceStructure
         ProjectilesPool = new ProjectilesPool(20);
         Owner.AttachComponent(ProjectilesPool);  
         
-        var texture = Resources.Load<Texture2D>("Resources/Textures/blockHit.png");
+        var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/blockHit.png");
         texture.FilterMode = FilterMode.Nearest;
 
         BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1), texture, Resources.Load<Shader>("Resources/Shaders/particle"));

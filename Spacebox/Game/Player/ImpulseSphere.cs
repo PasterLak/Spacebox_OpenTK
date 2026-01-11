@@ -3,7 +3,7 @@ using Engine;
 
 namespace Spacebox.Game.Player
 {
-    public class ImpulseSphere 
+    public class ImpulseSphere
     {
         private SphereRenderer _sphereRenderer;
         private float _alpha;
@@ -19,9 +19,10 @@ namespace Spacebox.Game.Player
         public ImpulseSphere()
         {
             _sphereRenderer = new SphereRenderer(Camera.Main.Position, 0.5f, 8, 8);
-           
+
             _sphereRenderer.Color = new Color4(1, 1, 1, 0.1f);
-            var texture = Engine.Resources.Get<Texture2D>("Resources/Textures/arSphere.png");
+
+            var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/arSphere.png");
             texture.FlipY();
             texture.FilterMode = FilterMode.Nearest;
             _sphereRenderer.Material = new TransparentMaterial(texture);
@@ -29,7 +30,7 @@ namespace Spacebox.Game.Player
             _isActive = false;
             _sphereRenderer.Enabled = _isActive;
             _alpha = 1f;
-            
+
         }
 
         public void Activate(Vector3 position)
@@ -39,7 +40,7 @@ namespace Spacebox.Game.Player
             _isActive = true;
             _sphereRenderer.Enabled = _isActive;
             _alpha = 0.3f;
-            
+
         }
 
         public void Update()
@@ -73,7 +74,7 @@ namespace Spacebox.Game.Player
         {
             _isActive = false;
             _sphereRenderer.Enabled = _isActive;
-            _alpha = 1f;  
+            _alpha = 1f;
             _sphereRenderer.Scale = new Vector3(1, 1, 1);
         }
 

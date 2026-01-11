@@ -35,7 +35,7 @@ namespace Spacebox.Game.Effects
                 Radius = 100
             };
 
-            var dust = Resources.Load<Texture2D>("Resources/Textures/dust.png");
+            var dust  = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/dust.png");
             dust.FilterMode = FilterMode.Nearest;
 
             system.Material.MainTexture = dust;

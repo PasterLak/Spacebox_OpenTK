@@ -25,7 +25,7 @@ namespace Spacebox.Game.Effects
 
         private void Initialize()
         {
-            dustTexture = Resources.Load<Texture2D>("Resources/Textures/star.png");
+            dustTexture = Resources.Load<Texture2D>("Resources/Textures/Effects/star.png");
 
             dustTexture.FilterMode = FilterMode.Nearest;
          

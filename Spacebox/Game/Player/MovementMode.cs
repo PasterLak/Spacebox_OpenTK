@@ -33,15 +33,15 @@ public class MovementMode : GameModeBase
 
         if (flySpeedUpAudio == null)
         {
-            flySpeedUpAudio = new AudioSource(Resources.Load<AudioClip>("flySpeedUp"));
+            flySpeedUpAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/flySpeedUp.ogg"));
             flySpeedUpAudio.IsLooped = true;
             flySpeedUpAudio.Volume = 0.1f;
         }
            
        
 
-        wallhitAudio = new AudioSource(Resources.Load<AudioClip>("wallhit"));
-        wallhitAudio2 = new AudioSource(Resources.Load<AudioClip>("wallHit2"));
+        wallhitAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/wallhit.png"));
+        wallhitAudio2 = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/wallHit2.png"));
 
 
     }

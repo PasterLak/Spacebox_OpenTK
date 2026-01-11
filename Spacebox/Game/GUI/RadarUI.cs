@@ -64,18 +64,18 @@ public class RadarUI : IDisposable
         Instance = this;
         _bgUvMax = _bgUvSize;
 
-        _gridTexture = Resources.Load<Texture2D>("Resources/Textures/UI/Radar/radarGrid.png");
-        _lineTexture = Resources.Load<Texture2D>("Resources/Textures/UI/Radar/radarLine.png");
-        _scanningTexture = Resources.Load<Texture2D>("Resources/Textures/UI/Radar/scanning.png");
-        _maskTexture = Resources.Load<Texture2D>("Resources/Textures/UI/Radar/radarMask.png");
+        _gridTexture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/Radar/radarGrid.png");
+        _lineTexture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/Radar/radarLine.png");
+        _scanningTexture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/Radar/scanning.png");
+        _maskTexture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/Radar/radarMask.png");
 
         _gridTexture.FilterMode = FilterMode.Nearest;
         _lineTexture.FilterMode = FilterMode.Nearest;
         _scanningTexture.FilterMode = FilterMode.Nearest;
         _maskTexture.FilterMode = FilterMode.Nearest;
 
-        _scanningAudio = new AudioSource(Resources.Load<AudioClip>("radarScanning"));
-        _foundAudio = new AudioSource(Resources.Load<AudioClip>("radarFound"));
+        _scanningAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("radarScanning"));
+        _foundAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("radarFound"));
 
         var inventory = ToggleManager.Register("radar");
         inventory.IsUI = true;
@@ -86,13 +86,13 @@ public class RadarUI : IDisposable
 
         if (_openAudio == null)
         {
-            _openAudio = new AudioSource(Resources.Load<AudioClip>("openBlock1"));
+            _openAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("openBlock1"));
             _openAudio.Volume = 1f;
         }
 
         if (_closeAudio == null)
         {
-            _closeAudio = new AudioSource(Resources.Load<AudioClip>("openBlock4"));
+            _closeAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("openBlock4"));
             _closeAudio.Volume = 1f;
         }
     }

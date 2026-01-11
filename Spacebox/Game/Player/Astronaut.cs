@@ -51,9 +51,9 @@ namespace Spacebox.Game.Player
 
             var mat = new TextureMaterial(tex);
 
-            var meshBody = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Body_Fly.obj");
-            var meshHelmet = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Helmet_Closed.obj");
-            var meshTank = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Tank_Fly.obj");
+            var meshBody = GameAssets.LoadResource<Engine.Mesh>("Resources/Models/Player/Astronaut_Body_Fly.obj");
+            var meshHelmet = GameAssets.LoadResource<Engine.Mesh>("Resources/Models/Player/Astronaut_Helmet_Closed.obj");
+            var meshTank = GameAssets.LoadResource<Engine.Mesh>("Resources/Models/Player/Astronaut_Tank_Fly.obj");
 
             AstBody = AttachComponent(new ModelRendererComponent(new Model(meshBody, mat)));
             AstHelmet = AttachComponent(new ModelRendererComponent(new Model(meshHelmet, mat)));
@@ -98,7 +98,8 @@ namespace Spacebox.Game.Player
             Texture2D tex = null;
 
             string texturePath = $"Resources/Textures/Skins/Astronaut_{color}.jpg";
-            tex = Resources.Load<Texture2D>(texturePath);
+           
+            tex = GameAssets.LoadResource<Texture2D>(texturePath);
             if (!tex.YWasFlipped)
                 tex.FlipY();
             tex.FilterMode = FilterMode.Nearest;

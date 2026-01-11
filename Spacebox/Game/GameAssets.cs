@@ -270,6 +270,17 @@ namespace Spacebox.Game
             ItemsStr[fullId] = item;
         }
 
+        public static T LoadResource<T>(string path) where T : IResource, new()
+        {
+            if(GameSetLoader.ModInfo == null)
+            {
+                return Resources.Load<T>(path);
+            }
+
+            var modPath = GameSetLoader.ModInfo.ModPath;
+            return ModResourceLoader.Load<T>(modPath, path);
+        }
+
         public static void DisposeAll()
         {
             BlocksTexture?.Dispose();

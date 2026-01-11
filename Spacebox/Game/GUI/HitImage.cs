@@ -29,7 +29,9 @@ namespace Spacebox.Game.GUI
             {
                 _imageTexture.Dispose();
             }
-            _imageTexture = new Texture2D("Resources/Textures/hit.png", true, false);
+          
+            _imageTexture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/hit.png");
+            _imageTexture.FilterMode = FilterMode.Nearest;
         }
 
         public void Show()

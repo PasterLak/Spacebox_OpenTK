@@ -22,7 +22,7 @@ namespace Spacebox.Game.Player
             Direction = -Vector3.UnitZ;
             Name = "Flashlight";
             Specular = new Vector3(0.5f);
-            var clip = Engine.Resources.Load<AudioClip>("Resources/Audio/flashlight.ogg");
+            var clip = GameAssets.LoadResource<AudioClip>("Resources/Audio/flashlight.ogg");
             audio = new AudioSource(clip);
             audio.Volume = 0.5f;
 

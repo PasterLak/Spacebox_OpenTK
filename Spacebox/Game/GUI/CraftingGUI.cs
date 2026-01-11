@@ -88,12 +88,13 @@ public class CraftingGUI
 
         ColumnsOfItems = (int)Math.Ceiling(slotSize);
 
-        var tex = Resources.Load<Texture2D>("Resources/Textures/slot.png");
+        var tex = 
+        GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/slot.png");
         tex.FilterMode = FilterMode.Nearest;
         SlotTexture = tex.Handle;
 
-        scrollAudio = new AudioSource(Resources.Load<AudioClip>("scroll"));
-        clickAudio = new AudioSource(Resources.Load<AudioClip>("click1"));
+        scrollAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/scroll.ogg"));
+        clickAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/click1.ogg"));
 
         var inventory = ToggleManager.Register("crafting");
         inventory.IsUI = true;

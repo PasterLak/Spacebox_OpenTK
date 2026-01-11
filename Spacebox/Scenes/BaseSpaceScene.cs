@@ -152,8 +152,9 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Debug.RegisterCommand(new SpawnAroundAsteroidCommand(localPlayer));
 
 
-        Texture2D slotTex = Resources.Load<Texture2D>("Resources/Textures/slot.png");
-        Texture2D selectedSlotTex = Resources.Load<Texture2D>("Resources/Textures/selectedSlot.png");
+        Texture2D slotTex = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/slot.png");
+        Texture2D selectedSlotTex = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/selectedSlot.png");
+
 
         slotTex.FilterMode = FilterMode.Nearest;
         slotTex.FlipY();
