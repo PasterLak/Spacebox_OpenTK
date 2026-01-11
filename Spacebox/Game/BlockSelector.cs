@@ -17,9 +17,11 @@ public class BlockSelector : IDisposable
     public SimpleBlock SimpleBlock { get; private set; }
 
     private Direction blockDirection = Direction.Up;
+    private Rotation blockRotation = Rotation.None;
 
     public Rotation Rotation = Rotation.None;
     private BlockData currentBlockData;
+    public BlockData CurrentBlockData => currentBlockData;
 
     public BlockSelector()
     {
@@ -91,29 +93,29 @@ public class BlockSelector : IDisposable
         var transformMatrix = BlockRotationHelper.CalculateTransformMatrix(
             currentBlockData.BaseFrontDirection,
             blockDirection,
-            Rotation
+            blockRotation
         );
 
         SimpleBlock.SetBlockTransform(transformMatrix);
     }
 
-    public void UpdatePosition(Vector3 position, Direction direction)
+    public void UpdatePosition(Vector3 position, Direction direction, Rotation rotation)
     {
         Vector3 newPosition = position + Vector3.One * 0.5f;
 
-        if (SimpleBlock.Position == newPosition && blockDirection == direction)
+        if (SimpleBlock.Position == newPosition && blockDirection == direction && blockRotation == rotation)
             return;
 
         SimpleBlock.Position = newPosition;
 
-        if (blockDirection != direction)
-        {
+        
             blockDirection = direction;
+        blockRotation = rotation;
             if (currentBlockData != null)
             {
                 UpdateBlockRotation();
             }
-        }
+        
     }
 
     public void Render()

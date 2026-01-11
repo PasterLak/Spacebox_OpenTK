@@ -1,14 +1,15 @@
 ﻿using OpenTK.Mathematics;
+using System.Text.Json.Serialization;
 
 namespace Engine
 {
     public struct Vector3SByte : IEquatable<Vector3SByte>
     {
-
+        [JsonPropertyName("x")]
         public sbyte X { get; set; }
-
+        [JsonPropertyName("y")]
         public sbyte Y { get; set; }
-
+        [JsonPropertyName("z")]
         public sbyte Z { get; set; }
 
         public Vector3SByte(sbyte i)

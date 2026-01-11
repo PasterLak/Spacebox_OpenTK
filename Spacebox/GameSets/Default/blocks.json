@@ -267,6 +267,11 @@
         "Sides": "bottom",
         "Forward": "furnace",
         "ForwardOff": "furnaceOff",
+        "FrontDirection": {
+            "x": 0,
+            "y": 0,
+            "z": 1
+        },
         "Mass": 2,
         "Durability": 7,
         "Efficiency": 1
@@ -277,7 +282,7 @@
         "Type": "furnace",
         "Category": "resources",
         "Sides": "bottom",
-       "Forward": "furnace2",
+        "Forward": "furnace2",
         "ForwardOff": "furnace2Off",
         "Mass": 2,
         "Durability": 10,

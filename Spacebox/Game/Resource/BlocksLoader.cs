@@ -173,7 +173,8 @@ namespace Spacebox.Game.Resource
                 Durability = (byte)Math.Clamp(block.Durability, 1, byte.MaxValue),
                 PowerToDrill = (byte)Math.Clamp(block.PowerToDrill, 0, byte.MaxValue),
                 Efficiency = Math.Max(0.1f, block.Efficiency),
-                Category = block.Category
+                Category = block.Category,
+                BaseFrontDirection = Block.GetDirectionFromNormal(block.FrontDirection)
             };
 
             blockData.Drop.Item.Id_string = string.IsNullOrWhiteSpace(block.Drop) ? "$self" : block.Drop;

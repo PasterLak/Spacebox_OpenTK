@@ -37,6 +37,8 @@ namespace Spacebox.Game.Resource
         public string Drop { get; set; } = "$self";
         public int DropQuantity { get; set; } = 1;
 
+        public Vector3SByte FrontDirection { get; set; } = Vector3SByte.Up;
+
         public string SoundPlace { get; set; } = "blockPlaceDefault";
         public string SoundDestroy { get; set; } = "blockDestroyDefault";
 

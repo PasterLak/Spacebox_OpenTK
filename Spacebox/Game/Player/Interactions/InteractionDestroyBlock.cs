@@ -62,7 +62,7 @@ public abstract class InteractionDestroyBlock : InteractionMode
         BlockSelector.IsVisible = true;
         AImedBlockElement.AimedBlock = hit.block;
         Vector3 selectorPos = hit.blockPositionIndex + hit.chunk.PositionWorld;
-        BlockSelector.Instance.UpdatePosition(selectorPos, Block.GetDirectionFromNormal(hit.normal));
+        BlockSelector.Instance.UpdatePosition(selectorPos, Block.GetDirectionFromNormal(hit.normal), Rotation.None);
     }
 
     public override void OnDisable()

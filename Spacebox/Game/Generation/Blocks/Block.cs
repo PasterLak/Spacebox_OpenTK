@@ -269,8 +269,8 @@ namespace Spacebox.Game.Generation.Blocks
                 Direction.Down => -Vector3.UnitY,
                 Direction.Left => -Vector3.UnitX,
                 Direction.Right => Vector3.UnitX,
-                Direction.Forward => Vector3.UnitZ,
-                Direction.Back => -Vector3.UnitZ,
+                Direction.Forward => -Vector3.UnitZ,
+                Direction.Back => Vector3.UnitZ,
                 _ => Vector3.Zero
             };
         }
@@ -281,6 +281,11 @@ namespace Spacebox.Game.Generation.Blocks
         }
 
         public void SetDirectionFromNormal(Vector3SByte normal)
+        {
+            Direction = GetDirectionFromNormal(normal);
+        }
+
+        public void SetRotationFromNormal(Vector3 normal)
         {
             Direction = GetDirectionFromNormal(normal);
         }
