@@ -151,7 +151,7 @@ public static class CreativeWindowUI
         ImGui.BeginChild("CreativeScroll2", new Vector2(scrollWidth, scrollHeight), ImGuiChildFlags.None, ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoDecoration);
 
 
-        var selected = Theme.Colors.Background;
+        var selected = Theme.Colors.Background.ToUInt();
 
 
         var notselected = new Vector4(0.8f, 0.75f, 0.65f, 1.0f);
@@ -230,7 +230,7 @@ public static class CreativeWindowUI
 
                         if (selectedStorage == v.Storage)
                         {
-                            selected = Theme.Colors.Background;
+                            selected = Theme.Colors.Background.ToUInt();
                             ImGui.PushStyleColor(ImGuiCol.Button, selected);
                             if (ImGui.Button("", new Vector2(SlotSize, SlotSize)))
                             {
@@ -280,7 +280,7 @@ public static class CreativeWindowUI
         ImGui.SetCursorPos(new Vector2(padding + padding + SlotSize, scrollY));
         ImGui.BeginChild("CreativeScroll", new Vector2(scrollWidth, scrollHeight), ImGuiChildFlags.None, ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoDecoration);
 
-        ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep);
+        ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep.ToUInt());
         ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
         ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
         ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1, 0, 0, 0));

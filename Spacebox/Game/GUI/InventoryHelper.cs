@@ -72,7 +72,7 @@ namespace Spacebox.Game.GUI
         }
         public static unsafe void DrawSlot(ItemSlot slot, string id, Action<ItemSlot> onSlotClicked, nint backgroundImage, bool isSelected = false)
         {
-            ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep);
+            ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep.ToUInt());
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
             ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(1, 0, 0, 0));
@@ -356,7 +356,7 @@ namespace Spacebox.Game.GUI
             var tSize = ImGui.CalcTextSize(text);
             //ImGui.Dummy(new Vector2(windowWidth/2f, padding)); ImGui.SameLine();
             ImGui.SetCursorPos(new Vector2(windowWidth - tSize.X, tSize.Y / 2f));
-            ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep);
+            ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep.ToUInt());
             if (ImGui.SmallButton(text))
             {
                 Storage.CombineStacks(storage);
@@ -374,7 +374,7 @@ namespace Spacebox.Game.GUI
             var tSize2 = ImGui.CalcTextSize(text2);
             //ImGui.Dummy(new Vector2(windowWidth/2f, padding)); ImGui.SameLine();
             ImGui.SetCursorPos(new Vector2(windowWidth - tSize2.X - tSize.X - padding, tSize2.Y / 2f));
-            ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep);
+            ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep.ToUInt());
             if (ImGui.SmallButton(text2))
             {
                 Storage.CombineStacks(storage);

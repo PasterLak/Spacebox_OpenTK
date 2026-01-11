@@ -82,6 +82,8 @@ public static class GameSetLoader
         var generator = GenerationLoader.Load(modPath, defaultModPath);
         Generation.World.WorldGenerator = generator;
 
+        Theme.LoadThemeColors(ModInfo.ModPath);
+
         Debug.Success($"[GameSetLoader] Mod '{modId}' loaded successfully.");
 
         //generator.DebugPrint();

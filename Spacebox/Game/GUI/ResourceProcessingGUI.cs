@@ -428,7 +428,7 @@ namespace Spacebox.Game.GUI
             ImGui.Text("  Recipes");
             ImGui.SetCursorPos(new Vector2(windowWidth - spacing, windowHeight - spacing  ) - size);
 
-            ImGui.PushStyleColor(ImGuiCol.ChildBg, Theme.Colors.Deep);
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, Theme.Colors.Deep.ToUInt());
             ImGui.BeginChild("RecipeList", size, ImGuiChildFlags.None   );
 
             DrawRecipeList(listContentWidth, displaySize.Y);

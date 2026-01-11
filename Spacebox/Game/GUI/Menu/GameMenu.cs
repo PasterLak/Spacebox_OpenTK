@@ -132,7 +132,7 @@ namespace Spacebox.Game.GUI.Menu
             ImGui.PushStyleColor(ImGuiCol.HeaderHovered, new Vector4(1f, 0.75f, 0f, 1f));
             ImGui.PushStyleColor(ImGuiCol.HeaderActive, new Vector4(1f, 0.8f, 0f, 1f));
             ImGui.PushStyleColor(ImGuiCol.Header, new Vector4(1f, 0.72f, 0f, 1f));
-            ImGui.PushStyleColor(ImGuiCol.ChildBg, Theme.Colors.Deep);
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, Theme.Colors.Deep.ToUInt());
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
 
             if (currentWindowType != null && windows.TryGetValue(currentWindowType, out var wnd))

@@ -342,7 +342,7 @@ public class CraftingGUI
         uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
         var drawList = ImGui.GetWindowDrawList();
 
-        ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep);
+        ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep.ToUInt());
         ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
         ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
         //ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(1, 0, 0, 0));
