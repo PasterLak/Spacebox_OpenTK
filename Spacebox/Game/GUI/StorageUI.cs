@@ -278,5 +278,19 @@ namespace Spacebox.Game.GUI
                 slot.Clear();
             }
         }
+
+        public static void Dispose()
+        {
+            
+            closeSound?.Dispose();
+            openSound?.Dispose();
+            splitAudio?.Dispose();
+
+            PencilTexture = nint.Zero;
+            Storage = null;
+            StorageBlock = null;
+            Astronaut = null;
+
+        }
     }
 }

@@ -623,6 +623,7 @@ public class CraftingGUI
         hovered = -1;
         IsVisible = false;
 
+
         SlotTexture = IntPtr.Zero;
         usedSlots = 0;
         totalSlots = 0;

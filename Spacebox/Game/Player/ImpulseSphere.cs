@@ -76,5 +76,10 @@ namespace Spacebox.Game.Player
             _alpha = 1f;  
             _sphereRenderer.Scale = new Vector3(1, 1, 1);
         }
+
+        public void Dispose()
+        {
+            _sphereRenderer.Destroy();
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace Spacebox.Game.Effects
         public StarsEffect(Camera camera)
         {
             this.camera = camera;
-            Initialize();
+            //Initialize();
         }
 
         private void Initialize()

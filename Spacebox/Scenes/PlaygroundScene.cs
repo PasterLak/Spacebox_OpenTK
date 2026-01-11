@@ -100,14 +100,7 @@ namespace Spacebox.Scenes
             var itemTexture = Resources.Load<Texture2D>("Resources/Textures/UI/trash.png");
             itemTexture.FilterMode = FilterMode.Nearest;
 
-            var modelDepth = 0.5f;
-            Mesh item = ItemModelGenerator.GenerateMeshFromTexture(itemTexture, modelDepth);
-
-            Node3D itemModel = new Node3D(new Vector3(1, 1, 1));
-            var cm = itemModel.AttachComponent(new ModelRendererComponent(new Model(item, new ItemMaterial(itemTexture, null))));
-            cm.Offset = new Vector3(-0.5f, -0.5f, -modelDepth / 2f);
-            itemModel.AttachComponent(new AxesDebugComponent());
-            itemModel.AttachComponent(new OBBCollider());
+            
             //c1.Position = new Vector3(0);
             //spacer.AddChild(c1);
 
@@ -190,7 +183,7 @@ namespace Spacebox.Scenes
             //AddChild(system);
 
 
-
+            
         }
         ParticleSystem system;
 

@@ -49,7 +49,6 @@ namespace Engine.UI
             ImGui.BeginChild(
                 "##scene_list",
                 new Vector2(0, lineH * 5)
-               // ImGuiWindowFlags.Border
             );
             foreach (var type in GetRegisteredScenes().Where(t => t != typeof(ErrorScene)))
             {
@@ -73,13 +72,11 @@ namespace Engine.UI
                 Lighting.FogColor = fogCol.ToOpenTKVector3();
 
             int fogDenSlider = (int)(Lighting.FogDensity * 10000);
-  
+
             if (ImGui.SliderInt("Fog Density", ref fogDenSlider, 0, 100))
             {
-
-                Lighting.FogDensity = fogDenSlider;
+                Lighting.FogDensity = fogDenSlider / 10000f;
             }
-
 
             ImGui.Separator();
             ImGui.Text($"Hierarchy:");
@@ -87,7 +84,6 @@ namespace Engine.UI
             ImGui.BeginChild(
                 "##scene_tree",
                 new Vector2(0, height * 0.4f)
-                //ImGuiWindowFlags.
             );
             DrawNodeTree(SceneManager.Current);
             ImGui.EndChild();
@@ -99,9 +95,51 @@ namespace Engine.UI
                 if (node != null)
                 {
                     ImGui.Text($"Node: {node.Name}");
+
+                    bool isNodeEnabled = node.Enabled;
+                    if (ImGui.Checkbox("Node Enabled", ref isNodeEnabled))
+                    {
+                        node.Enabled = isNodeEnabled;
+                    }
+
+                    ImGui.Separator();
+                    ImGui.Text("Transform");
+
+                    var pos = node.Position.ToSystemVector3();
+                    if (ImGui.DragFloat3("Position", ref pos, 0.1f))
+                    {
+                        node.Position = pos.ToOpenTKVector3();
+                    }
+
+                    var rot = node.Rotation.ToSystemVector3();
+                    if (ImGui.DragFloat3("Rotation", ref rot, 0.5f))
+                    {
+                        node.Rotation = rot.ToOpenTKVector3();
+                    }
+
+                    var scale = node.Scale.ToSystemVector3();
+                    if (ImGui.DragFloat3("Scale", ref scale, 0.1f))
+                    {
+                        node.Scale = scale.ToOpenTKVector3();
+                    }
+
+                    ImGui.Separator();
                     ImGui.Text("Components:");
-                    foreach (var c in node.Components)
-                        ImGui.BulletText(c.GetType().Name);
+
+                    for (int i = 0; i < node.Components.Count; i++)
+                    {
+                        var c = node.Components[i];
+                        bool isCompEnabled = c.Enabled;
+
+                        ImGui.PushID(i);
+                        if (ImGui.Checkbox("", ref isCompEnabled))
+                        {
+                            c.Enabled = isCompEnabled;
+                        }
+                        ImGui.SameLine();
+                        ImGui.Text(c.GetType().Name);
+                        ImGui.PopID();
+                    }
                 }
             }
 
@@ -134,7 +172,6 @@ namespace Engine.UI
 
             ImGui.PopID();
         }
-
 
         private static IEnumerable<Type> GetRegisteredScenes()
         {

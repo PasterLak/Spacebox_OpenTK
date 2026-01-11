@@ -10,6 +10,7 @@ namespace Spacebox.Game.Effects
         public DustSpawner() : base(new ParticleMaterial(null), null)
         {
             CreateDust(this);
+            Name = "DustSpawner";
         }
 
         private static void CreateDust(ParticleSystem system)

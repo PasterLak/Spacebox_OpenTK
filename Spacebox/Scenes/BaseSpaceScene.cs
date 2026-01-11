@@ -27,11 +27,11 @@ public struct SpaceSceneArgs
     public string worldName;
     public string modId;
     public string seed;
-  
+
     public string modfolderName;
     public string key;
     public string hostIp;
-    public int port ;
+    public int port;
     public string nickname;
     public string skinColor = "Red";
 
@@ -108,7 +108,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         {
             localPlayer = new LocalAstronaut(new Vector3(5, 5, 5));
         }
-       
+
         AddChild(localPlayer);
 
         localPlayer.SetSkinColor(SceneArgs.skinColor);
@@ -168,7 +168,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         blockSelector = new BlockSelector();
 
-       
+
         freeCamera = AddChild(new FreeCamera(localPlayer.Position));
         freeCamera.FOV = localPlayer.FOV;
         freeCamera.DepthFar = localPlayer.DepthFar;
@@ -177,7 +177,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         WelcomeUI.OnPlayerSpawned(World.WorldData.Info.ShowWelcomeWindow);
         WelcomeUI.Init();
         PauseUI.Init();
-        AttachComponent( new SpheresPool());
+        AttachComponent(new SpheresPool());
 
         AddChild(new ProjectileHitEffectsManager());
         AddChild(new DirectionalLight());
@@ -279,7 +279,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
             }
         }
 
-    
+
         if (!Debug.IsVisible)
         {
             if (Input.IsKeyDown(Keys.KeyPadEnter))
@@ -305,7 +305,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         DisposalManager.ProcessDisposals();
 
         OnRenderCenter?.Invoke();
-  
+
         blockSelector.Render();
 
 
@@ -324,7 +324,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
 
         PanelUI.Render();
-    
+
         InventoryUI.OnGUI(localPlayer.Inventory);
         StorageUI.OnGUI();
         CreativeWindowUI.OnGUI();
@@ -357,14 +357,14 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Chat.Clear();
 
         ToggleManager.DisableAllWindows();
-      
+        StorageUI.Dispose();
         PauseUI.Dispose();
         CraftingGUI.Dispose();
         WelcomeUI.Dispose();
         ToggleManager.Dispose();
         Debug.OnVisibilityWasChanged -= OnDebugStateChanged;
-        
 
+        GameAssets.DisposeAll();
         GameTime.Dispose();
     }
 

@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 
 namespace Engine
 {
-    public class Axes : Node3D, IDisposable
+    public class Axes : Node3D
     {
         private MeshBuffer _buffer;
         private Shader _shader;
@@ -16,16 +16,6 @@ namespace Engine
             Position = position;
             Length = length;
             Rotation = Vector3.Zero;
-            _shader = Resources.Get<Shader>("Resources/Shaders/axes");
-            UpdateVertices();
-            SetupBuffer();
-        }
-
-        public Axes(Vector3 position, float length, Vector3 rotation)
-        {
-            Position = position;
-            Length = length;
-            Rotation = rotation;
             _shader = Resources.Get<Shader>("Resources/Shaders/axes");
             UpdateVertices();
             SetupBuffer();
@@ -105,8 +95,9 @@ namespace Engine
             UpdateVertices();
         }
 
-        public void Dispose()
+        public override void Destroy()
         {
+            base.Destroy();
             _buffer.Dispose();
         }
     }

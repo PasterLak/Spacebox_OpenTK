@@ -16,7 +16,7 @@ public class ProjectileHitEffectsManager : Node3D
         Instance = this;
         _effects = new Dictionary<short, ProjectileHitEffect>();
         InitializeEffects();
-
+        Name = "ProjectileHitEffectsManager";
 
     }
 

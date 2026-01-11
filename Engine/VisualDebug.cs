@@ -37,6 +37,7 @@ namespace Engine
                 new BufferAttribute { Name = "size", Size = 1 }
             });
             _bufferPoints.SetAttributes();
+            
 
             _bufferLines = new MeshBuffer(new[]
             {
@@ -51,6 +52,10 @@ namespace Engine
                 new BufferAttribute { Name = "color", Size = 4 }
             });
             _bufferTriangles.SetAttributes();
+
+            Resources.RemoveResourceFromControll(_bufferPoints);
+            Resources.RemoveResourceFromControll(_bufferLines);
+            Resources.RemoveResourceFromControll(_bufferTriangles);
         }
 
         public static void DrawTransform(Node3D transform)

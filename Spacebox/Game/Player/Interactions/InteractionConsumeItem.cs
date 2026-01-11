@@ -39,7 +39,7 @@ public class InteractionConsumeItem : InteractionMode
         else
         {
             cooldown = consumable.UseCooldown;
-            ticks = cooldown / 2f;
+            ticks = 0;
         }
 
 

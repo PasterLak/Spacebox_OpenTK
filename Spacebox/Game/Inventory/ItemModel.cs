@@ -7,7 +7,7 @@ using Spacebox.Game.Resource;
 
 namespace Spacebox.Game
 {
-    public class ItemModel : Node3D, IDisposable
+    public class ItemModel : Node3D
     {
         public Mesh Mesh { get; private set; }
      
@@ -237,13 +237,17 @@ namespace Spacebox.Game
 
             Position = offset;
         }
-        public void Dispose()
+        public override void Destroy()
         {
+            base.Destroy();
+            if(Material != null)
+            {
+                Material.MainTexture?.Dispose();
+            }
             Material = null;
             itemCamera = null;
             Mesh?.Dispose();
-            Destroy();
-
+            
         }
     }
 }

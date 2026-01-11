@@ -125,7 +125,7 @@ namespace Engine
 
             var passthroughShader = new Shader(code.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None));
             Resources.AddResource("passthrough_shader", passthroughShader, true);
-
+            Resources.RemoveResourceFromControll(passthroughShader);
             _processManager.AddEffect(new DefaultEffect(passthroughShader));
         }
 

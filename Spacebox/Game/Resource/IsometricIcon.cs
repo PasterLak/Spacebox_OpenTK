@@ -26,7 +26,8 @@ namespace Spacebox.GUI
 
             Color4[,] origTopPixels = topSide.GetPixels();
 
-            Color4[,] isometricPixels = InitializePixels(size);
+            Color4[,] pixels = new Color4[size, size];
+            Color4[,] isometricPixels = pixels;
 
             ApplyRightSide(size, origRightPixels, isometricPixels, ShadowIntensityRightSide);
             ApplyLeftSide(size, origLeftPixels, isometricPixels, ShadowIntensityLeftSide);
@@ -39,9 +40,6 @@ namespace Spacebox.GUI
 
             isometricTexture.SetPixelsData(isometricPixels);
             isometricTexture.UpdateTexture();
-
-
-            leftSide.Dispose();
 
             return isometricTexture;
         }
@@ -72,15 +70,6 @@ namespace Spacebox.GUI
             }
 
             return true;
-        }
-
-        private static Color4[,] InitializePixels(int size)
-        {
-            Color4[,] pixels = new Color4[size, size];
-            for (int y = 0; y < size; y++)
-                for (int x = 0; x < size; x++)
-                    pixels[x, y] = new Color4(0, 0, 0, 0);
-            return pixels;
         }
 
         private static void ApplyRightSide(int size,Color4[,] original, Color4[,] isometric, float intensity)

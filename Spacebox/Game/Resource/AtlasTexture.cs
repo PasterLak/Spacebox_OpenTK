@@ -70,7 +70,6 @@ public partial class AtlasTexture : IDisposable
 
     public Texture2D CreateTexture(string path, TextureData[]? additional, int blockSizePixels, bool populateFromTopToBottom)
     {
-
         var textures = CollectAllTextures(path);
 
         if (additional != null)
@@ -82,18 +81,18 @@ public partial class AtlasTexture : IDisposable
                 if (textures.Contains(tex)) continue;
 
                 additionalTextures.Add(tex);
-
             }
 
             textures = textures
                 .Concat(additional)
                 .Distinct()
                 .ToArray();
-
-
         }
 
         BlockSizePixels = blockSizePixels;
+
+        Textures = new Dictionary<Texture2D, AtlasTextureData>();
+
         foreach (var tex in textures)
         {
             if (!Textures.ContainsKey(tex.Texture))
@@ -106,91 +105,105 @@ public partial class AtlasTexture : IDisposable
             }
         }
 
-        var size = CalculateAtlasSize(blockSizePixels, CalculateBlocksNeeded());
-        SizeBlocks = size.X;
-        Texture2D atlas = PlaceTexturesInAtlas(size, blockSizePixels, populateFromTopToBottom);
+        Texture2D atlas = null;
 
-        atlas.FilterMode = FilterMode.Nearest;
-
-
-        CalculateUV(size.X, populateFromTopToBottom);
-
-
-        foreach (var tex in Textures)
+        try
         {
-            tex.Key.Dispose();
+            var size = CalculateAtlasSize(blockSizePixels, CalculateBlocksNeeded());
+            SizeBlocks = size.X;
+            atlas = PlaceTexturesInAtlas(size, blockSizePixels, populateFromTopToBottom);
+
+            atlas.FilterMode = FilterMode.Nearest;
+
+            CalculateUV(size.X, populateFromTopToBottom);
         }
-        Textures = null;
-
-        foreach (var t in ReadyTextures)
+        finally
         {
-            if (t.Value.Texture != null)
+            if (Textures != null)
             {
-                t.Value.Texture.Dispose();
-                t.Value.Texture = null;
+                foreach (var tex in Textures)
+                {
+                    if (tex.Key != null)
+                    {
+                        tex.Key.Dispose();
+                    }
+                }
+                Textures.Clear();
+                Textures = null;
             }
 
+            foreach (var t in ReadyTextures)
+            {
+                t.Value.Texture = null;
+            }
         }
 
         return atlas;
     }
-
     public Texture2D CreateEmission(string path)
     {
         Texture2D output = null;
+        TextureData[] emissionTextures = null;
 
-        var sidePixels = SizeBlocks * BlockSizePixels;
-
-        TextureData[] emissionTextures = CollectAllTextures(path, true);
-
-        Dictionary<string, TextureData> emissions = new Dictionary<string, TextureData>();
-
-        foreach (var et in emissionTextures)
+        try
         {
-            emissions.Add(et.Name, et);
-        }
+            var sidePixels = SizeBlocks * BlockSizePixels;
+            emissionTextures = CollectAllTextures(path, true);
+            Dictionary<string, TextureData> emissions = new Dictionary<string, TextureData>();
 
-        Color4[,] atlasPixels = new Color4[sidePixels, sidePixels];
-
-        for (int i = 0; i < sidePixels; i++)
-        {
-            for (int p = 0; p < sidePixels; p++)
+            foreach (var et in emissionTextures)
             {
-                atlasPixels[i, p] = new Color4(0, 0, 0, 0);
+                emissions.Add(et.Name, et);
             }
-        }
 
-        foreach (var tex in ReadyTextures)
-        {
-            if (!emissions.ContainsKey(tex.Key)) continue;
+            Color4[,] atlasPixels = new Color4[sidePixels, sidePixels];
 
-            var pointerX = tex.Value.Position.X * BlockSizePixels;
-            var pointerY = tex.Value.Position.Y * BlockSizePixels;
-
-            var sizeX = tex.Value.Size.X * BlockSizePixels;
-            var sizeY = tex.Value.Size.Y * BlockSizePixels;
-
-            Color4[,] blockPixels = emissions[tex.Key].Texture.GetPixels();
-
-            for (int x = 0; x < sizeX; x++)
+            for (int i = 0; i < sidePixels; i++)
             {
-                for (int y = 0; y < sizeY; y++)
+                for (int p = 0; p < sidePixels; p++)
                 {
-                    atlasPixels[pointerX + x, pointerY + y] = blockPixels[x, y];
+                    atlasPixels[i, p] = new Color4(0, 0, 0, 0);
                 }
             }
 
+            foreach (var tex in ReadyTextures)
+            {
+                if (!emissions.ContainsKey(tex.Key)) continue;
+
+                var pointerX = tex.Value.Position.X * BlockSizePixels;
+                var pointerY = tex.Value.Position.Y * BlockSizePixels;
+
+                var sizeX = tex.Value.Size.X * BlockSizePixels;
+                var sizeY = tex.Value.Size.Y * BlockSizePixels;
+
+                Color4[,] blockPixels = emissions[tex.Key].Texture.GetPixels();
+
+                for (int x = 0; x < sizeX; x++)
+                {
+                    for (int y = 0; y < sizeY; y++)
+                    {
+                        atlasPixels[pointerX + x, pointerY + y] = blockPixels[x, y];
+                    }
+                }
+            }
+
+            output = new Texture2D(sidePixels, sidePixels);
+            output.SetPixelsData(atlasPixels);
+            output.FilterMode = FilterMode.Nearest;
         }
-
-        output = new Texture2D(sidePixels, sidePixels);
-
-        output.SetPixelsData(atlasPixels);
-
-        output.FilterMode = FilterMode.Nearest;
+        finally
+        {
+            if (emissionTextures != null)
+            {
+                foreach (var item in emissionTextures)
+                {
+                    item.Texture?.Dispose();
+                }
+            }
+        }
 
         return output;
     }
-
     private Texture2D PlaceTexturesInAtlas(Vector2Byte atlasSizeBlocks, int blockSizePixels, bool fromTopToBottom)
     {
         if (atlasSizeBlocks.Y != atlasSizeBlocks.X)

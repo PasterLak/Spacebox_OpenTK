@@ -146,7 +146,7 @@ namespace Spacebox.Scenes
         {
 
             if(VisualDebug.Enabled)
-            axes.Dispose();
+            axes.Destroy();
 
             
             music.Dispose();

@@ -70,6 +70,8 @@ namespace Spacebox.Game.Player
                 e.Enabled = false;
                 PutBack(e);
             }
+
+            pool.Clear(e => e.Destroy());
         }
 
 

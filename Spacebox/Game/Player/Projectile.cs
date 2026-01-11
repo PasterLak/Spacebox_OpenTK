@@ -293,6 +293,16 @@ public class Projectile : Node3D
         lineRenderer.Render();
     }
 
+    public override void Destroy()
+    {
+        base.Destroy();
+
+        lineRenderer?.Destroy();
+        light?.Destroy();
+        hitSound?.Dispose();
+        ricochetSound?.Dispose();
+        explosionSound?.Dispose();
+    }
     public void Reset()
     {
         if (useLight && PointLightsPool != null)

@@ -1,29 +1,34 @@
-﻿namespace Engine
+﻿using System;
+using System.Collections.Generic;
+
+namespace Engine
 {
-    public sealed class Pool<T> where T : class, new()
+    public sealed class Pool<T>  where T : class, new()
     {
         public bool AutoExpand { get; set; } = true;
 
         private readonly Stack<T> _availableObjects;
         private readonly List<T> _allObjects;
+        private readonly HashSet<T> _availableSet;
+
         private readonly Func<T, T> _initializeFunc;
         private readonly Action<T> _onTakeFunc;
         private readonly Action<T> _resetFunc;
         private readonly Func<T, bool> _isActiveFunc;
         private readonly Action<T, bool> _setActiveFunc;
 
-
         public Pool(int initialCount,
-                   Func<T, T> initializeFunc = null,
-                   Action<T> onTakeFunc = null,
-                   Action<T> resetFunc = null,
-                   Func<T, bool> isActiveFunc = null,
-                   Action<T, bool> setActiveFunc = null,
-                   bool autoExpand = true)
+                    Func<T, T> initializeFunc = null,
+                    Action<T> onTakeFunc = null,
+                    Action<T> resetFunc = null,
+                    Func<T, bool> isActiveFunc = null,
+                    Action<T, bool> setActiveFunc = null,
+                    bool autoExpand = true)
         {
             AutoExpand = autoExpand;
             _availableObjects = new Stack<T>(initialCount);
             _allObjects = new List<T>(initialCount);
+            _availableSet = new HashSet<T>();
 
             _initializeFunc = initializeFunc ?? (obj => obj);
             _onTakeFunc = onTakeFunc ?? (_ => { });
@@ -40,6 +45,7 @@
             {
                 var obj = CreateObject(false);
                 _availableObjects.Push(obj);
+                _availableSet.Add(obj);
             }
         }
 
@@ -57,16 +63,19 @@
             if (_availableObjects.Count > 0)
             {
                 var element = _availableObjects.Pop();
+                _availableSet.Remove(element);
                 _setActiveFunc(element, true);
                 _onTakeFunc(element);
                 return element;
             }
+
             if (AutoExpand)
             {
                 var newElement = CreateObject(true);
                 _onTakeFunc(newElement);
                 return newElement;
             }
+
             throw new InvalidOperationException($"No free elements available in the pool of type {typeof(T)}.");
         }
 
@@ -75,10 +84,36 @@
             if (element == null)
                 throw new ArgumentNullException(nameof(element));
 
+            if (_availableSet.Contains(element))
+            {
+                return;
+            }
+
             _resetFunc(element);
             _setActiveFunc(element, false);
             _availableObjects.Push(element);
+            _availableSet.Add(element);
         }
+
+        public void Clear(Action<T> cleanupAction)
+        {
+            foreach (var obj in _allObjects)
+            {
+                if (cleanupAction != null)
+                {
+                    cleanupAction(obj);
+                }
+                else if (obj is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
+
+            _allObjects.Clear();
+            _availableObjects.Clear();
+            _availableSet.Clear();
+        }
+
 
         public int TotalObjects => _allObjects.Count;
         public int AvailableObjects => _availableObjects.Count;

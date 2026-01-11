@@ -297,6 +297,7 @@ namespace Engine
             base.Destroy();
             ClearParticles();
             _renderer.Dispose();
+           
         }
     }
 }

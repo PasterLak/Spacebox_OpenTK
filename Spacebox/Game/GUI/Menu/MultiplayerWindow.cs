@@ -1,12 +1,14 @@
-﻿using System.Numerics;
-using System.Text.Json;
-using ImGuiNET;
-using Engine;
-using Spacebox.Client;
-using static Spacebox.Game.Resource.GameSetLoader;
-using SpaceNetwork;
+﻿using Engine;
 using Engine.SceneManagement;
+using ImGuiNET;
+using Spacebox.Client;
+using Spacebox.Game.Generation;
 using Spacebox.Scenes;
+using SpaceNetwork;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Text.Json;
+using static Spacebox.Game.Resource.GameSetLoader;
 
 namespace Spacebox.Game.GUI.Menu
 {
@@ -234,6 +236,10 @@ namespace Spacebox.Game.GUI.Menu
                 bool isSelected = (selectedServerIndex == i);
                 if (ImGui.Selectable(server.Name, isSelected))
                     selectedServerIndex = i;
+                if (ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
+                {
+                    Join(combinedServers);
+                }
             }
             ImGui.EndChild();
             ImGui.Separator();
@@ -250,34 +256,7 @@ namespace Spacebox.Game.GUI.Menu
             ImGui.SameLine();
             ButtonWithBackground("Join", new Vector2(btnWidth, buttonH), new Vector2(10 + btnWidth + midSpacing, buttonY), () =>
             {
-                if (selectedServerIndex >= 0 && selectedServerIndex < combinedServers.Count)
-                {
-                    var server = combinedServers[selectedServerIndex];
-                    WorldInfo world;
-                    ModConfig modConfig;
-                    var existingWorld = menu.Worlds.FirstOrDefault(w => w.Name == server.Name);
-                    if (existingWorld == null)
-                    {
-                        menu.newWorldName = server.Name;
-                        menu.newWorldAuthor = "";
-                        menu.newWorldSeed = "420";
-                        menu.SelectedGameSetIndex = 0;
-                        menu.SelectedGameModeIndex = 1;
-                        menu.CreateNewWorld();
-                        world = menu.selectedWorld;
-                        modConfig = new ModConfig { ModId = world.ModId, FolderName = world.FolderName };
-                    }
-                    else
-                    {
-                        world = existingWorld;
-                        modConfig = new ModConfig { ModId = world.ModId, FolderName = "Default" };
-                    }
-                    ServerInfo serverInfo = new ServerInfo { Name = server.Name, IP = server.IP, Port = server.Port };
-                    string appKey = Application.Version;
-                  
-                    Debug.Success("Joining server: " + serverInfo.Name + " " + serverInfo.IP + ":" + serverInfo.Port);
-                    SceneLauncher.LaunchMultiplayerGame(world, modConfig, serverInfo, config, appKey);
-                }
+                Join( combinedServers);
             });
             ImGui.SameLine();
             ButtonWithBackground("Edit", new Vector2(btnWidth, buttonH), new Vector2(10 + 2 * (btnWidth + midSpacing), buttonY), () =>
@@ -326,6 +305,38 @@ namespace Spacebox.Game.GUI.Menu
             ImGui.PopStyleColor();
             if (ShowAddServerWindow)
                 addServerWindow.Render();
+        }
+
+        private void Join(List<ServerInfo> combinedServers)
+        {
+            if (selectedServerIndex >= 0 && selectedServerIndex < combinedServers.Count)
+            {
+                var server = combinedServers[selectedServerIndex];
+                WorldInfo world;
+                ModConfig modConfig;
+                var existingWorld = menu.Worlds.FirstOrDefault(w => w.Name == server.Name);
+                if (existingWorld == null)
+                {
+                    menu.newWorldName = server.Name;
+                    menu.newWorldAuthor = "";
+                    menu.newWorldSeed = "420";
+                    menu.SelectedGameSetIndex = 0;
+                    menu.SelectedGameModeIndex = 1;
+                    menu.CreateNewWorld();
+                    world = menu.selectedWorld;
+                    modConfig = new ModConfig { ModId = world.ModId, FolderName = world.FolderName };
+                }
+                else
+                {
+                    world = existingWorld;
+                    modConfig = new ModConfig { ModId = world.ModId, FolderName = "Default" };
+                }
+                ServerInfo serverInfo = new ServerInfo { Name = server.Name, IP = server.IP, Port = server.Port };
+                string appKey = Application.Version;
+
+                Debug.Success("Joining server: " + serverInfo.Name + " " + serverInfo.IP + ":" + serverInfo.Port);
+                SceneLauncher.LaunchMultiplayerGame(world, modConfig, serverInfo, config, appKey);
+            }
         }
 
         private void ButtonWithBackground(string label, Vector2 size, Vector2 cursorPos, Action onClick)

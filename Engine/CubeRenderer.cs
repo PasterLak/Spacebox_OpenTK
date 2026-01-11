@@ -6,7 +6,7 @@ using Engine.Graphics;
 
 namespace Engine
 {
-    public class CubeRenderer : Node3D, IDisposable
+    public class CubeRenderer : Node3D
     {
         public MaterialBase Material;
         private MeshBuffer _buffer;
@@ -154,8 +154,9 @@ namespace Engine
            // GLState.CullFace(false);
         }
 
-        public void Dispose()
+        public override void Destroy()
         {
+            base.Destroy();
             _buffer?.Dispose();
             //_shader?.Dispose();
         }

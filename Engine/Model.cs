@@ -10,7 +10,7 @@ namespace Engine
         public MaterialBase Material { get; private set; }
 
         public Model(Mesh mesh)
-            : this( mesh, new ColorMaterial())
+            : this(mesh, new ColorMaterial())
         {
             Name = "Model";
         }
@@ -18,11 +18,11 @@ namespace Engine
         public Model(Mesh mesh, MaterialBase material)
         : base(new BoundingBox(Vector3.Zero, Vector3.One))
         {
-           
+
             Mesh = mesh;
             Material = material;
             Name = "Model";
-         
+
             Matrix4 modelMatrix = GetRenderModelMatrix();
 
             Vector3 worldMin = Vector3.TransformPosition(Mesh.GetBounds().Min, modelMatrix);
@@ -32,7 +32,7 @@ namespace Engine
             b.Size = b.Size * Scale;
 
             BoundingVolume = b;
-           
+
             //UpdateBounding();
 
             oldColor = Material.Color;
@@ -44,7 +44,7 @@ namespace Engine
         public override void OnCollisionEnter(Collision other)
         {
 
-            
+
             if (other is DynamicBody)
             {
                 oldColor = Material.Color;
@@ -55,7 +55,7 @@ namespace Engine
 
         public override void OnCollisionExit(Collision other)
         {
-            
+
             if (other is DynamicBody)
             {
                 Material.Color = oldColor;
@@ -68,15 +68,22 @@ namespace Engine
         {
             base.Render();
             var cam = Camera.Main;
-            
-            if(cam == null) return;
-            
+
+            if (cam == null) return;
+
             Material.Apply(this);
-        
+
             //Material.Shader.SetMatrix4("model", GetModelMatrix());
             Material.Shader.SetMatrix4("view", cam.GetViewMatrix());
             Material.Shader.SetMatrix4("projection", cam.GetProjectionMatrix());
             Mesh.Render();
+
+        }
+
+        public override void Destroy()
+        {
+            base.Destroy();
+            Mesh?.Dispose();
 
         }
     }

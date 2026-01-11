@@ -77,15 +77,15 @@ namespace Spacebox.Scenes
 
             if (GameAssets.IsInitialized)
             {
-                if (GameAssets.ModId.ToLower() != modId.ToLower())
-                {
+                
                     GameAssets.DisposeAll();
                     InitializeGamesetData(blocksPath, itemsPath, emissionPath, modId, 32, serverName, param.SearchForGameSetInLocalFolder, isMultiplayer);
-                }
+                
             }
             else
             {
                 InitializeGamesetData(blocksPath, itemsPath, emissionPath, modId, 32, serverName, param.SearchForGameSetInLocalFolder,isMultiplayer);
+              
             }
 
         }

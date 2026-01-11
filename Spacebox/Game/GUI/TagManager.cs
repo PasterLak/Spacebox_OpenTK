@@ -25,6 +25,7 @@ namespace Spacebox.Game.GUI
 
         private void InitializePool()
         {
+            
             _tagPool = new Pool<Tag>(
                 initialCount: 64,
                 initializeFunc: tag => tag,

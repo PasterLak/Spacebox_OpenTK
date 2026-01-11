@@ -41,7 +41,7 @@ namespace Spacebox.Scenes
 
             string pluginsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
 
-            modLoader.LoadMods(pluginsPath);
+            //modLoader.LoadMods(pluginsPath);
 
             if(modLoader.LoadedMods.Count > 0)
             {
@@ -73,7 +73,7 @@ namespace Spacebox.Scenes
             Lighting.Skybox = new Skybox( skyboxTexture);
             CenteredImageMenu.LoadImage("Resources/Textures/spaceboxLogo.png", true);
 
-            Resources.Load<AudioClip>("Resources/Audio/UI/click1.ogg");
+           // Resources.Load<AudioClip>("Resources/Audio/UI/click2.ogg", true);
             menu = new GameMenu();
 
             if(Settings.Graphics.EffectsEnabled)
@@ -168,7 +168,7 @@ namespace Spacebox.Scenes
             };
 
             var dust = Resources.Load<Texture2D>("Resources/Textures/dust.png");
-            dust.FilterMode = FilterMode.Linear;
+            dust.FilterMode = FilterMode.Nearest;
             var system = new ParticleSystem(new ParticleMaterial(dust), emitter);
             system.Max = 500;
             system.Rate = 70f;

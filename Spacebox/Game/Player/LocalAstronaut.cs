@@ -382,6 +382,14 @@ namespace Spacebox.Game.Player
             }
         }
 
+        public override void Destroy()
+        {
+            base.Destroy();
+            _axes.Destroy();
+
+
+        }
+
         public override void OnGUI()
         {
             base.OnGUI();

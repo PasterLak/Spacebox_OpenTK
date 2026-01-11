@@ -63,8 +63,9 @@ namespace Engine
             this.SetPoints(lines);
         }
 
-        public new void Dispose()
+        public override void Destroy()
         {
+            base.Destroy();
             base.Dispose();
         }
     }

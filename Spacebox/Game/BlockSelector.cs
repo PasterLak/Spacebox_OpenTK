@@ -136,7 +136,8 @@ public class BlockSelector : IDisposable
 
     public void Dispose()
     {
-        SimpleBlock?.Dispose();
+        SimpleBlock?.Destroy();
+        selectorTexture?.Dispose();
         Instance = null;
     }
 }

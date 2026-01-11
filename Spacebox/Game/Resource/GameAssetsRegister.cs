@@ -1,7 +1,8 @@
-﻿using OpenTK.Mathematics;
+﻿using Engine;
+using OpenTK.Mathematics;
 using Spacebox.Game.Effects;
+using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Resource;
-using Engine;
 using Spacebox.GUI;
 
 namespace Spacebox.Game
@@ -92,7 +93,7 @@ namespace Spacebox.Game
                  GameAssets.EmissionItems,
                 coordX,
                 coordY,
-               1/32f * item.ModelDepth 
+               1 / 32f * item.ModelDepth
                 );
             GameAssets.ItemWorldModels.Add(item.Id, model);
         }
@@ -115,11 +116,16 @@ namespace Spacebox.Game
 
         private static void CacheIcon(BlockData blockData)
         {
-            Texture2D texture = IsometricIcon.Create(
-                UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.GetFaceUVIndex(Generation.Blocks.Direction.Left), GameAssets.AtlasBlocks.SizeBlocks),
-                UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.GetFaceUVIndex(Generation.Blocks.Direction.Forward), GameAssets.AtlasBlocks.SizeBlocks),
-                UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.GetFaceUVIndex(Generation.Blocks.Direction.Up), GameAssets.AtlasBlocks.SizeBlocks));
+            var left = UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.GetFaceUVIndex(Generation.Blocks.Direction.Left), GameAssets.AtlasBlocks.SizeBlocks);
+            var forward = UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.GetFaceUVIndex(Generation.Blocks.Direction.Forward), GameAssets.AtlasBlocks.SizeBlocks);
+            var top = UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.GetFaceUVIndex(Generation.Blocks.Direction.Up), GameAssets.AtlasBlocks.SizeBlocks);
 
+            Texture2D texture = IsometricIcon.Create(left, forward, top);
+
+            left.Dispose();
+            forward.Dispose();
+            top.Dispose();
+            texture.Name = blockData.Id_string + "_icon";
             texture.FilterMode = FilterMode.Nearest;
             blockData.AsItem.IconTextureId = texture.Handle;
             GameAssets.ItemIcons.Add(blockData.AsItem.Id, texture);
@@ -131,12 +137,14 @@ namespace Spacebox.Game
             texture.FlipY();
             texture.FilterMode = FilterMode.Nearest;
             item.IconTextureId = texture.Handle;
+            texture.Name = item.Id_string;
             GameAssets.ItemIcons.Add(item.Id, texture);
         }
 
         private static void CreateDust(BlockData block)
         {
             Texture2D texture = BlockDestructionTexture.Generate(block.GetFaceUVIndex(Generation.Blocks.Direction.Forward, BlockState.Inactive));
+            texture.Name = block.Id_string+"_dust";
             GameAssets.BlockDusts.Add(block.Id, texture);
         }
     }

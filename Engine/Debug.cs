@@ -71,19 +71,22 @@ namespace Engine
 
         private static void RegisterDefaultCommands()
         {
-            RegisterCommand(new ClearCommand());
-            RegisterCommand(new CameraRelativeRenderingCommand());
-            RegisterCommand(new VersionCommand());
-            RegisterCommand(new ColorCommand());
-            RegisterCommand(new HelpCommand());
-            RegisterCommand(new ExitCommand());
-            RegisterCommand(new ResourcesCommand());
-            RegisterCommand(new SaveMessagesCommand());
+            RegisterCommandGlobal(new ClearCommand());
+            RegisterCommandGlobal(new CameraRelativeRenderingCommand());
+            RegisterCommandGlobal(new VersionCommand());
+            RegisterCommandGlobal(new ColorCommand());
+            RegisterCommandGlobal(new HelpCommand());
+            RegisterCommandGlobal(new ExitCommand());
+            RegisterCommandGlobal(new ResourcesCommand());
+            RegisterCommandGlobal(new SaveMessagesCommand());
         }
-
+        private static void RegisterCommandGlobal(CommandBase command)
+        {
+            CommandManager.RegisterGlobalCommand(command);
+        }
         public static void RegisterCommand(CommandBase command)
         {
-            CommandManager.RegisterCommand(command);
+            CommandManager.RegisterSceneCommand(command);
         }
 
         public static void ToggleVisibility()

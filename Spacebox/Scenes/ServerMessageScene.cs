@@ -30,7 +30,7 @@ namespace Spacebox.Scenes
       
         
         SpotLight flashlight;
-        string message;
+        string message = "";
 
         float timer = 5;
         public void Initialize(MenuScene2Params param)

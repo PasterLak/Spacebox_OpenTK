@@ -72,7 +72,7 @@ namespace Spacebox.Scenes
         public override void Render()
         {
 
-            sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
+          //  sprite.Render(new Vector2(0, 0), new Vector2(1, 1));
 
         }
 
@@ -90,14 +90,14 @@ namespace Spacebox.Scenes
         public override void Update()
         {
 
-            sprite.UpdateWindowSize(SpaceboxWindow.Instance.ClientSize);
-            sprite.UpdateSize(SpaceboxWindow.Instance.Size);
+            //sprite.UpdateWindowSize(SpaceboxWindow.Instance.ClientSize);
+            //sprite.UpdateSize(SpaceboxWindow.Instance.Size);
             //sprite.UpdateSize(new Vector2(Window.Instance.Size.X, Window.Instance.Size.Y));
            // SceneSwitcher.Update(typeof(AScene));
           
             if (Input.IsKeyDown(Keys.R))
             {
-                sprite.Shader.ReloadShader();
+               // sprite.Shader.ReloadShader();
             }
 
         }

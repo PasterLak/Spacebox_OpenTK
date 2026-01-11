@@ -5,7 +5,7 @@ using Spacebox.Game.Generation.Tools;
 
 namespace Spacebox;
 
-public class SimpleBlock : Node3D, IDisposable, IDrawable
+public class SimpleBlock : Node3D ,IDrawable
 {
     private float[] _vertices;
     private uint[] _indices;
@@ -142,10 +142,12 @@ public class SimpleBlock : Node3D, IDisposable, IDrawable
         GL.BindVertexArray(0);
     }
 
-    public void Dispose()
+    public override void Destroy()
     {
         if (_isDisposed) return;
+        base.Destroy();
         _buffer.Dispose();
+        Material.MainTexture?.Dispose();
         _isDisposed = true;
     }
 }

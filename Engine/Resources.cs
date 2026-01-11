@@ -9,7 +9,10 @@ namespace Engine
 {
     public interface IResource : IDisposable
     {
+        bool IsDisposed { get; set; }
+
         IResource Load(string path);
+        string GetResourceInfo();
         int GetHandle();
 
     }
@@ -27,6 +30,8 @@ namespace Engine
         private static readonly Dictionary<Type, IResource> _error = new Dictionary<Type, IResource>();
 
         private static List<IResource> _loadedResources = new List<IResource>();
+        private static List<IResource> _controlledResoruces = new List<IResource>();
+
         static Resources()
         {
             LoadError();
@@ -36,6 +41,7 @@ namespace Engine
         {
             var texture = Texture2D.CreateTexture(1, 1, Color4.Pink, FilterMode.Nearest);
             AddResource("error_pink", texture, true);
+            RemoveResourceFromControll(texture);
             _error.Add(typeof(Texture2D), texture);
 
 
@@ -43,14 +49,17 @@ namespace Engine
 
             var shader = new Shader(code.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None));
             AddResource("error_shader", shader, true);
+            RemoveResourceFromControll(shader);
             _error.Add(typeof(Shader), shader);
 
             var clip = new AudioClip("Resources/Audio/error.ogg");
             AddResource("Resources/Audio/error.ogg", clip, true);
+            RemoveResourceFromControll(clip);
             _error.Add(typeof(AudioClip), clip);
 
             var mesh = GenMesh.CreateCube();
             AddResource("error_mesh", mesh, true);
+            RemoveResourceFromControll(mesh);
             _error.Add(typeof(Mesh), mesh);
 
         }
@@ -217,7 +226,7 @@ namespace Engine
                         return (T)existingEntry.Resource;
                 }
             }
-            Debug.Warning($"[Resources][Get] Resource not found: {typeof(T).Name} {pathOrName}. Loading it now.");
+           // Debug.Warning($"[Resources][Get] Resource not found: {typeof(T).Name} {pathOrName}. Loading it now.");
             return Load<T>(pathOrName);
         }
 
@@ -263,14 +272,41 @@ namespace Engine
             }
         }
 
+        public static void AddResourceToControll(IResource resource)
+        {
+
+            if (resource != null && !_controlledResoruces.Contains(resource))
+            {
+                _controlledResoruces.Add(resource);
+            }
+        }
+        public static void RemoveResourceFromControll(IResource resource)
+        {
+            if (resource != null && _controlledResoruces.Contains(resource))
+            {
+                _controlledResoruces.Remove(resource);
+            }
+        }
+
 
         private static void DisposeAllResources()
         {
-            foreach (var resource in _loadedResources)
+
+
+            for (int i = _loadedResources.Count - 1; i >= 0; i--)
             {
-                resource?.Dispose();
+                var res = _loadedResources[i];
+
+                if (res != null)
+                {
+                    res.Dispose();
+                    _loadedResources[i] = null;
+                }
+
             }
             _loadedResources.Clear();
+
+
         }
 
 
@@ -300,6 +336,18 @@ namespace Engine
             }
 
             DisposeAllResources();
+
+            foreach (var resource in _controlledResoruces)
+            {
+                if (resource != null && !resource.IsDisposed)
+                {
+
+                    Debug.Error($"[Resources] Disposing controlled resource: {resource.GetResourceInfo()}");
+                    resource.Dispose();
+                }
+
+            }
+            _controlledResoruces.Clear();
         }
 
         public static void PrintLoadedResources()
@@ -349,6 +397,10 @@ namespace Engine
                 _resourcesByType[typeof(T)] = dict;
             }
             dict[canonicalKey] = new ResourceEntry { Resource = resource, Global = global };
+            if (global)
+            {
+                RemoveResourceFromControll(resource);
+            }
             if (!_aliasMap.TryGetValue(typeof(T), out var aliasDict))
             {
                 aliasDict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

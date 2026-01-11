@@ -35,7 +35,7 @@ public class World : Component, ISpaceStructure
     public LocalAstronaut Player { get; private set; }
 
     private BlockMaterial material;
-    private readonly Octree<Sector> worldOctree;
+    private Octree<Sector> worldOctree;
     private readonly Dictionary<Vector3i, Sector> loadedSectors;
     private readonly HashSet<Vector3i> loadingSectors;
     private readonly List<Vector3i> _sectorsToRemoveCache;
@@ -194,13 +194,18 @@ public class World : Component, ISpaceStructure
     {
         base.OnDetached();
 
+
+
         WorldData = null;
         WorldGenerator = null;
         BiomeGenerator = null;
         DropEffectManager = null;
         DestructionManager = null;
+        ProjectilesPool = null;
+
         WorldPersistenceManager.Dispose();
         CurrentSector?.Dispose();
+        worldOctree = null;
         CurrentSector = null;
         Instance = null;
 
@@ -211,6 +216,8 @@ public class World : Component, ISpaceStructure
         loadedSectors.Clear();
         loadingSectors.Clear();
         _sectorsToRemoveCache.Clear();
+
+        Instance = null;
 
     }
 

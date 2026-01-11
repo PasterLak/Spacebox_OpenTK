@@ -11,8 +11,7 @@ namespace Engine.Audio
         public bool IsStreaming { get; private set; }
         public int Buffer { get; private set; }
         public AudioSource AudioSource { get; set; }
-        private bool isDisposed = false;
-
+      
         private static readonly List<string> AllowedExtensions = new List<string> { ".wav", ".ogg" };
         private FileStream fileStream;
         private BinaryReader reader;
@@ -21,13 +20,14 @@ namespace Engine.Audio
         private int[] buffers;
         private bool isStreamFinished = false;
         private int sampleRate;
-
+        public bool IsDisposed { get; set; }
         public AudioClip()
         {
 
         }
         public AudioClip(string filename, AudioLoadMode loadMode = AudioLoadMode.LoadIntoMemory)
         {
+            Resources.AddResourceToControll(this);
 
             string resolvedPath = AudioPathResolver.ResolvePath(filename, AppDomain.CurrentDomain.BaseDirectory, AllowedExtensions);
             if (resolvedPath == null)
@@ -143,7 +143,7 @@ namespace Engine.Audio
         public void Dispose()
         {
 
-            if (isDisposed) return;
+            if (IsDisposed) return;
 
             if (AudioSource is not null)
             {
@@ -162,7 +162,7 @@ namespace Engine.Audio
             }
             AL.DeleteBuffer(Buffer);
 
-            isDisposed = true;
+            IsDisposed = true;
         }
 
         private void CheckALError(string operation)
@@ -173,6 +173,11 @@ namespace Engine.Audio
             {
                 throw new InvalidOperationException($"[AudioClip] OpenAL error during {operation}: {AL.GetErrorString(error)}");
             }
+        }
+
+        public string GetResourceInfo()
+        {
+            return $"AudioClip: {Name}, Path: {FileFullPath}, Streaming: {IsStreaming}";
         }
 
         public int GetHandle() { return Buffer; }

@@ -1,6 +1,7 @@
 ﻿
-using OpenTK.Mathematics;
 using Engine;
+using OpenTK.Mathematics;
+using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Resource;
 using static Spacebox.Game.ItemModelGeneratorHelper;
 
@@ -24,7 +25,13 @@ namespace Spacebox.Game
             var cellTexture = UVAtlas.GetBlockTexture(atlasTexture, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
             var cellTexture2 = UVAtlas.GetBlockTexture(emissionAtlas, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
 
-            //cellTexture2.FlipX();
+            cellTexture.Name = "ItemModel";
+            cellTexture2.Name = "ItemModel_emission";
+            Resources.AddResourceToDispose(cellTexture);
+            Resources.AddResourceToDispose(cellTexture2);
+
+            if (cellTexture2.XWasFlipped == false)
+                cellTexture2.FlipX();
             var mesh = BuildItemMesh(cellTexture, modelSize, modelDepth, drawOnlyVisibleSides);
             return ItemModelFromMesh(cellTexture, cellTexture2, mesh, isAnimated);
         }
@@ -41,6 +48,9 @@ namespace Spacebox.Game
             CellSize = 32;
             var cellTexture = UVAtlas.GetBlockTexture(atlasTexture, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
             //var cellTexture2 = UVAtlas.GetBlockTexture(emissionAtlas, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
+
+            cellTexture.Name = "ItemWorldModel";
+            Resources.AddResourceToDispose(cellTexture);
 
             //cellTexture2.FlipX();
             var mesh = BuildItemMesh(cellTexture, 1f / cellTexture.Width, modelDepth, false);

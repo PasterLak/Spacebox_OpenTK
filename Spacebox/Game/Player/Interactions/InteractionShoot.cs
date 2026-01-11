@@ -15,7 +15,6 @@ namespace Spacebox.Game.Player.Interactions;
 public class InteractionShoot : InteractionMode
 {
 
-    public static InteractionShoot Instance;
     private AudioSource shotSound;
     private InteractiveBlock lastInteractiveBlock;
 
@@ -29,8 +28,7 @@ public class InteractionShoot : InteractionMode
 
     public InteractionShoot(ItemSlot itemslot)
     {
-        Instance = this;
-
+  
         AllowReload = true;
 
         UpdateItemSlot(itemslot);
@@ -40,6 +38,7 @@ public class InteractionShoot : InteractionMode
         {
             projectileParameters = GameAssets.Projectiles[weapone.ProjectileID];
             weapon = weapone;
+            if(model != null)
             startPos = model.Position;
 
             if (shotSound == null)
@@ -169,7 +168,7 @@ public class InteractionShoot : InteractionMode
             }
                
 
-            var projectileSpawnPos = Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.05f;
+            var projectileSpawnPos = Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.25f;
 
             var shotDir = WeaponItem.CalculateSpreadCone(weapon, player.Front);
             var shotRay = new Ray(projectileSpawnPos, shotDir, 1f);

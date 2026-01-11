@@ -7,13 +7,15 @@ using Engine.Audio;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Generation.Structures;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Spacebox.Game
 {
     public static class GameAssets
     {
         public static bool IsInitialized { get; set; } = false;
-        public static string ModId { get; private set; } = "";
+      
 
         public static Texture2D BlocksTexture { get; set; }
         public static Texture2D ItemsTexture { get; set; }
@@ -21,11 +23,9 @@ namespace Spacebox.Game
         public static Texture2D EmissionItems { get; set; }
         public static Texture2D DustTexture { get; set; }
 
-        
         public static LootConfig LootConfig { get; set; }
 
         public static Dictionary<short, BlockData> Blocks = new Dictionary<short, BlockData>();
-
         public static Dictionary<string, BlockData> BlocksStr { get; private set; } = new Dictionary<string, BlockData>();
         public static Dictionary<string, Item> ItemsStr { get; private set; } = new Dictionary<string, Item>();
 
@@ -50,10 +50,16 @@ namespace Spacebox.Game
         private static short MaxBlockId = -1;
         private static short MaxItemId = -1;
 
+        private static readonly Vector2[] DefaultUVs = new Vector2[]
+        {
+            new Vector2(0f, 0f), new Vector2(1f, 0f),
+            new Vector2(1f, 1f), new Vector2(0f, 1f)
+        };
+
         public static bool TryGetRecipe(string type, short id, out Recipe recipe)
         {
             recipe = null;
-            if (Recipes.TryGetValue(type.ToLower(), out var dic))
+            if (Recipes.TryGetValue(type, out var dic))
             {
                 if (dic.TryGetValue(id, out Recipe rec))
                 {
@@ -62,7 +68,6 @@ namespace Spacebox.Game
                 }
                 return false;
             }
-
             return false;
         }
 
@@ -75,31 +80,19 @@ namespace Spacebox.Game
 
         public static bool TryGetItemSound(short id, out AudioClip clip)
         {
-            clip = null;
-            if (ItemSounds.ContainsKey(id))
-            {
-                clip = ItemSounds[id];
-                return true;
-            }
-            return false;
+            return ItemSounds.TryGetValue(id, out clip);
         }
 
         public static bool TryGetItemById(short id, out Item item)
         {
-            item = null;
-            if (Items.ContainsKey(id))
-            {
-                item = Items[id];
-                return true;
-            }
-            return false;
+            return Items.TryGetValue(id, out item);
         }
 
         public static Item? GetItemByName(string name)
         {
             foreach (var item in Items.Values)
             {
-                if (item.Name.ToLower() == name.ToLower())
+                if (string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase))
                     return item;
             }
             Debug.Error("[GameAssets] GetItemByName error: Wrong name - " + name);
@@ -110,104 +103,93 @@ namespace Spacebox.Game
         {
             return ItemsStr.ContainsKey(fullId);
         }
+
         public static BlockData? GetBlockByFullID(string idFull)
         {
-            if (BlocksStr.ContainsKey(idFull))
-                return BlocksStr[idFull];
+            if (BlocksStr.TryGetValue(idFull, out var block))
+                return block;
+
             Debug.Error("[GameAssets] GetBlockByFullID error: Wrong string id - " + idFull);
             return null;
         }
+
         public static Item? GetItemByFullID(string idFull)
         {
-            if (ItemsStr.ContainsKey(idFull))
-                return ItemsStr[idFull];
+            if (ItemsStr.TryGetValue(idFull, out var item))
+                return item;
+
             Debug.Error("[GameAssets] GetItemByFullID error: Wrong string id - " + idFull);
             return null;
         }
 
         public static bool TryGetItemByFullID(string idFull, out Item item)
         {
-            item = null;
-            if (ItemsStr.ContainsKey(idFull))
-            {
-                item = ItemsStr[idFull];
-                return true;
-            }
-            return false;
+            return ItemsStr.TryGetValue(idFull, out item);
         }
 
         public static string GetBlockFullId(Block block)
         {
-            if (!Blocks.ContainsKey(block.Id))
-                return "";
-            return Blocks[block.Id].Id_string;
+            if (Blocks.TryGetValue(block.Id, out var data))
+                return data.Id_string;
+            return "";
         }
 
         public static BlockData GetBlockDataById(short id)
         {
-            if (!Blocks.ContainsKey(id))
-                return Blocks[0];
-            return Blocks[id];
+            if (Blocks.TryGetValue(id, out var data))
+                return data;
+            return Blocks[0];
         }
 
         public static Block CreateBlockFromId(short id)
         {
-            if (!Blocks.ContainsKey(id))
-                return new Block();
+            if (Blocks.TryGetValue(id, out var data))
+                return BlockFactory.CreateBlock(data);
 
-            BlockData data = Blocks[id];
-            return BlockFactory.CreateBlock(data);
+            return new Block();
         }
 
         public static bool TryGetItemByBlockID(int blockID, out Item item)
         {
-            item = null;
-            if (Items.ContainsKey((short)blockID))
-            {
-                item = Items[(short)blockID];
-                return true;
-            }
-            return false;
+            return Items.TryGetValue((short)blockID, out item);
         }
 
         public static Vector2[] GetBlockUVsById(short id, Face face)
         {
-            if (!Blocks.ContainsKey(id))
-                return new Vector2[] { new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(0f, 1f) };
-   
-            return Blocks[id].GetFaceUV(face);
+            if (Blocks.TryGetValue(id, out var data))
+                return data.GetFaceUV(face);
 
+            return DefaultUVs;
         }
+
         public static Vector2[] GetBlockUVs(Block block, Face face)
         {
-            if (!Blocks.ContainsKey(block.Id))
-                return new Vector2[] { new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(0f, 1f) };
+            if (!Blocks.TryGetValue(block.Id, out var data))
+                return DefaultUVs;
 
-            var electricalBlock = block as ElectricalBlock;
-
-            if(electricalBlock != null)
+            if (block is ElectricalBlock electricalBlock)
             {
                 if (!electricalBlock.IsActive)
                 {
-                    return Blocks[block.Id].GetFaceUV(face, BlockState.Inactive);
+                    return data.GetFaceUV(face, BlockState.Inactive);
                 }
             }
-            return Blocks[block.Id].GetFaceUV(face, BlockState.Active);
-
+            return data.GetFaceUV(face, BlockState.Active);
         }
 
         public static Direction GetBaseFrontDirection(short id)
         {
-            if (!Blocks.ContainsKey(id)) return Direction.Up;
+            if (Blocks.TryGetValue(id, out var data))
+                return data.BaseFrontDirection;
 
-            return Blocks[id].BaseFrontDirection;
+            return Direction.Up;
         }
-
 
         public static AudioClip GetBlockAudioClipFromItemID(Item item, BlockInteractionType type)
         {
             return GetBlockAudioClipFromItemID(item.Id, type);
         }
+
         public static AudioClip GetBlockAudioClipFromItemID(short itemId, BlockInteractionType type)
         {
             var blockData = GetBlockDataById(itemId);
@@ -216,6 +198,7 @@ namespace Spacebox.Game
             else
                 return Sounds[blockData.SoundDestroy];
         }
+
         public static Storage CreateCreativeStorage(byte sizeX, List<Item> items)
         {
             List<Item> filtered = items.Where(i => i.Id > 1).ToList();
@@ -241,48 +224,35 @@ namespace Spacebox.Game
 
         public static Storage CreateCreativeStorage(byte sizeX)
         {
-            byte sizeY = (byte)(Items.Count / sizeX);
-            byte rest = (byte)(Items.Count % sizeX);
-            if (rest > 0)
-                sizeY++;
+            var allItems = Items.Values.ToList();
+            byte sizeY = (byte)((allItems.Count + sizeX - 1) / sizeX);
+
             Storage storage = new Storage(sizeX, sizeY);
-            List<short> itemsIds = Items.Keys.ToList();
-            short i = 1;
-            for (int x = 0; x < sizeX; x++)
+
+            int idx = 0;
+            for (int y = 0; y < sizeY; y++)
             {
-                for (int y = 0; y < sizeY; y++)
+                for (int x = 0; x < sizeX; x++)
                 {
-                    if (i >= itemsIds.Count) break;
-                    if (!itemsIds.Contains(i))
-                    {
-                        i++;
-                        continue;
-                    }
-                    else
-                    {
-                        ItemSlot slot = storage.GetSlot(x, y);
-                        slot.Item = Items[itemsIds[i]];
-                        slot.Count = 1;
-                        i++;
-                    }
+                    if (idx >= allItems.Count) break;
+
+                    ItemSlot slot = storage.GetSlot(x, y);
+                    slot.Item = allItems[idx];
+                    slot.Count = 1;
+                    idx++;
                 }
-                if (i >= itemsIds.Count) break;
+                if (idx >= allItems.Count) break;
             }
             return storage;
         }
 
         public static bool TryGetProjectileByName(string name, out ProjectileParameters projectile)
         {
-            if (Projectiles.Count == 0)
+            foreach (var item in Projectiles.Values)
             {
-                projectile = new ProjectileParameters();
-                return false;
-            }
-            foreach (var item in Projectiles)
-            {
-                if (item.Value.Name == name)
+                if (item.Name == name)
                 {
-                    projectile = item.Value;
+                    projectile = item;
                     return true;
                 }
             }
@@ -294,6 +264,7 @@ namespace Spacebox.Game
         {
             BlocksStr[fullId] = blockData;
         }
+
         public static void AddItemString(string fullId, Item item)
         {
             ItemsStr[fullId] = item;
@@ -304,7 +275,9 @@ namespace Spacebox.Game
             BlocksTexture?.Dispose();
             ItemsTexture?.Dispose();
             EmissionBlocks?.Dispose();
+            EmissionItems?.Dispose();
             DustTexture?.Dispose();
+
             foreach (var texture in ItemIcons.Values)
                 texture.Dispose();
             foreach (var texture in BlockDusts.Values)
@@ -313,28 +286,39 @@ namespace Spacebox.Game
                 c?.Dispose();
             foreach (var c in Sounds.Values)
                 c?.Dispose();
+
+            foreach (var itemModel in ItemModels.Values)
+                itemModel.Destroy();
+            foreach (var itemModel in ItemWorldModels.Values)
+                itemModel.Destroy();
+
+            AtlasBlocks?.Dispose();
+            AtlasItems?.Dispose();
+
             Recipes.Clear();
             LootConfig = null;
             Projectiles.Clear();
             Blocks.Clear();
             Items.Clear();
-            foreach (var itemModel in ItemModels.Values)
-                itemModel.Dispose();
+            BlocksStr.Clear();
+            ItemsStr.Clear();
             ItemModels.Clear();
-            foreach (var itemModel in ItemWorldModels.Values)
-                itemModel.Destroy();
             ItemWorldModels.Clear();
             ItemIcons.Clear();
             BlockDusts.Clear();
-            AtlasBlocks.Dispose();
-            AtlasBlocks = null;
-            AtlasItems.Dispose();
+            ItemSounds.Clear();
+            Sounds.Clear();
+            Blueprints.Clear();
             CraftingCategories.Clear();
+
+            GameSetLoader.Unload();
+
+            AtlasBlocks = null;
             AtlasItems = null;
+
             MaxBlockId = -1;
             MaxItemId = -1;
-            ModId = "";
-
+          
             IsInitialized = false;
         }
 

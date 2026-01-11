@@ -5,6 +5,7 @@ using Engine.SceneManagement;
 using Engine.Utils;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.GUI;
@@ -31,7 +32,8 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
     protected override void OnGameLoad()
     {
         AppIconLoader.LoadAndSetIcon(this, "Resources/Textures/icon.png");
-
+      
+       
         _screenshotAudio = new AudioSource(Resources.Load<AudioClip>("screenshot", true));
 
 #if DEBUG
@@ -39,6 +41,12 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
 #else
         SceneManager.Load<MenuScene>();
 #endif
+    }
+
+    protected override void OnResize(ResizeEventArgs e)
+    {
+        base.OnResize(e);
+
     }
 
     protected override void OnRegisterScenes()
@@ -55,7 +63,7 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
 
     protected override void OnLoadImGui()
     {
-       // LoadStarPixelFont();
+        // LoadStarPixelFont();
     }
 
     protected override void OnSetupInput()

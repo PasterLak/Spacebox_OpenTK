@@ -14,8 +14,21 @@ public static class GameSetLoader
 {
     public static ModConfig ModInfo;
     private static string modPath;
+
+    public static void Unload()
+    {
+        if (ModInfo != null)
+        {
+            ModInfo.Dispose();
+        }
+        ModInfo = null;
+        modPath = null;
+    }
     public static void Load(string modId, bool useLocalGameSetsFolder, string serverName)
     {
+        Unload();
+
+
         string modsDirectory = ModPath.GetModsPath(useLocalGameSetsFolder, serverName);
         string defaultModId = Globals.GameSet.Default.ToLower();
         string defaultModPath = Path.Combine(modsDirectory, Globals.GameSet.Default);
@@ -363,90 +376,82 @@ public static class GameSetLoader
         try
         {
             string json = File.ReadAllText(itemsFile);
-            JsonDocument jsonDoc = JsonDocument.Parse(json);
+
+
+            using JsonDocument jsonDoc = JsonDocument.Parse(json);
             JsonElement root = jsonDoc.RootElement;
 
             foreach (JsonElement itemElement in root.EnumerateArray())
             {
-                string type = "item";
-                string idString = "";
-                Color3Byte color = new Color3Byte();
-                if (itemElement.TryGetProperty("Type", out JsonElement typeElement))
-                {
-                    type = typeElement.GetString().ToLower();
-                }
 
                 try
                 {
+                    string type = "item";
+                    string idString = "";
+                    Color3Byte color = new Color3Byte();
+
+                    if (itemElement.TryGetProperty("Type", out JsonElement typeElement))
+                    {
+                        type = typeElement.GetString().ToLower();
+                    }
+
                     if (itemElement.TryGetProperty("GlowColor", out JsonElement t))
                     {
-                        color = t.Deserialize<Color3Byte>();
+                        try { color = t.Deserialize<Color3Byte>(); } catch { color = Color3Byte.Zero; }
                     }
-                }
-                catch (Exception ex)
-                {
-                    Debug.Error($"[GameSetLoader] Item GlowColor: " + ex);
-                    color = Color3Byte.Zero;
-                }
 
-
-                if (itemElement.TryGetProperty("ID", out JsonElement idElement))
-                {
-                    idString = idElement.GetString();
-                    idString = ValidateIdString(ModInfo.ModId, idString);
-                    idString = CombineId(ModInfo.ModId, idString);
-                    if (GameAssets.HasItem(idString))
+                    if (itemElement.TryGetProperty("ID", out JsonElement idElement))
                     {
-                        Debug.Error($"[GameSetLoader] Item with ID '{idString}' already exists. Skipping duplicate.");
+                        idString = idElement.GetString();
+                        idString = ValidateIdString(ModInfo.ModId, idString);
+                        idString = CombineId(ModInfo.ModId, idString);
+                        if (GameAssets.HasItem(idString))
+                        {
+                            Debug.Error($"[GameSetLoader] Item with ID '{idString}' already exists. Skipping duplicate.");
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        Debug.Error($"[GameSetLoader] Item is missing an ID. Skipping item.");
                         continue;
                     }
-                }
-                else
-                {
-                    Debug.Error($"[GameSetLoader] Item is missing an ID. Skipping item.");
-                    continue;
-                }
 
-
-                Item registeredItem = null;
-                switch (type)
-                {
-                    case "weapon":
-                        var weaponData = itemElement.Deserialize<WeaponItemJSON>();
-                        if (weaponData == null) continue;
-                        registeredItem = RegisterWeaponItem(weaponData, idString);
-                        break;
-
-                    case "drill":
-                        var drillData = itemElement.Deserialize<DrillItemJSON>();
-                        if (drillData == null) continue;
-                        registeredItem = RegisterDrillItem(drillData, idString);
-                        break;
-
-                    case "consumable":
-                        var consumableData = itemElement.Deserialize<ConsumableItemJSON>();
-                        if (consumableData == null) continue;
-                        registeredItem = RegisterConsumableItem(consumableData, idString);
-                        break;
-
-                    case "item":
-                    default:
-                        var itemData = itemElement.Deserialize<ItemJSON>();
-                        if (itemData == null) continue;
-                        registeredItem = RegisterItem(itemData, idString);
-                        break;
-                }
-
-                if (registeredItem != null)
-                {
-                    if (itemElement.TryGetProperty("Description", out var v))
+                    Item registeredItem = null;
+                    switch (type)
                     {
-                        registeredItem.Description = v.GetString();
+                        case "weapon":
+                            var weaponData = itemElement.Deserialize<WeaponItemJSON>();
+                            if (weaponData != null) registeredItem = RegisterWeaponItem(weaponData, idString);
+                            break;
+                        case "drill":
+                            var drillData = itemElement.Deserialize<DrillItemJSON>();
+                            if (drillData != null) registeredItem = RegisterDrillItem(drillData, idString);
+                            break;
+                        case "consumable":
+                            var consumableData = itemElement.Deserialize<ConsumableItemJSON>();
+                            if (consumableData != null) registeredItem = RegisterConsumableItem(consumableData, idString);
+                            break;
+                        case "item":
+                        default:
+                            var itemData = itemElement.Deserialize<ItemJSON>();
+                            if (itemData != null) registeredItem = RegisterItem(itemData, idString);
+                            break;
                     }
 
-                    registeredItem.Color = color;
-
-                    registeredItem.Namespace = ModInfo.ModId;
+                    if (registeredItem != null)
+                    {
+                        if (itemElement.TryGetProperty("Description", out var v))
+                        {
+                            registeredItem.Description = v.GetString();
+                        }
+                        registeredItem.Color = color;
+                        registeredItem.Namespace = ModInfo.ModId;
+                    }
+                }
+                catch (Exception exItem)
+                {
+                    Debug.Error($"[GameSetLoader] Error loading specific item: {exItem.Message}");
                 }
             }
 
@@ -455,10 +460,9 @@ public static class GameSetLoader
         }
         catch (Exception ex)
         {
-            Debug.Error($"[GamesetLoader] Error loading items: {ex.Message}");
+            Debug.Error($"[GamesetLoader] Critical error opening items.json: {ex.Message}");
         }
     }
-
     private static void SetBlocksDrop()
     {
         foreach (var block in GameAssets.Blocks.Values)
@@ -916,7 +920,6 @@ public static class GameSetLoader
             try
             {
 
-                ModSettings settings = JsonFixer.LoadJsonSafe<ModSettings>(settingsFile);
 
             }
             catch (Exception ex)
@@ -1001,6 +1004,13 @@ public static class GameSetLoader
         public Texture2D? Icon { get; set; } = null;
         public List<TextureConfig> Textures { get; set; } = new List<TextureConfig>();
         public List<DefaultItem> ItemsOnStart { get; set; } = new List<DefaultItem>();
+
+        public void Dispose()
+        {
+            Icon?.Dispose();
+            Textures.Clear();
+            ItemsOnStart.Clear();
+        }
     }
 
     public class Modlighting
@@ -1054,10 +1064,4 @@ public static class GameSetLoader
         }
     }
 
-
-
-    private class ModSettings
-    {
-        public Dictionary<string, string> Settings { get; set; } = new Dictionary<string, string>();
-    }
 }

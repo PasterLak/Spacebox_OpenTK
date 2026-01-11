@@ -17,7 +17,7 @@ namespace ServerCommon
             }
             catch (Exception ex)
             {
-              
+
                 return false;
             }
         }
@@ -62,11 +62,16 @@ namespace ServerCommon
             Settings.ModFolderHash = HashHelper.CalculateFolderHash(mod.Path);
             Settings.ModFolder = mod.Name;
 
-            if(HashHelper.VerifyFolderHash(mod.Path, Settings.ModFolderHash)) {
+            if (HashHelper.VerifyFolderHash(mod.Path, Settings.ModFolderHash))
+            {
                 logger.Log("Mod folder hash verified.", LogType.Success);
-            } else {
+            }
+            else
+            {
                 logger.Log("Mod folder hash does not match expected value.", LogType.Warning);
             }
+
+            BanManager.LoadBannedPlayers();
 
             if (string.IsNullOrWhiteSpace(Settings.Key))
             {
@@ -91,5 +96,5 @@ namespace ServerCommon
 
 
 
-     
+
 }

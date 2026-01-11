@@ -135,6 +135,7 @@ namespace Engine
         {
             _quad.Dispose();
             GL.DeleteBuffer(_instVbo);
+            
         }
     }
 }

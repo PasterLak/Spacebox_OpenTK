@@ -292,7 +292,8 @@ namespace Engine.Audio
             ALError error = AL.GetError();
             if (error != ALError.NoError)
             {
-                throw new InvalidOperationException($"[AudioSource] OpenAL error during {operation}: {AL.GetErrorString(error)}");
+                
+               Debug.Error($"[AudioSource] OpenAL error during {operation}: {AL.GetErrorString(error)}");
             }
         }
     }

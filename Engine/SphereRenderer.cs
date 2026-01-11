@@ -5,7 +5,7 @@ using OpenTK.Mathematics;
 
 namespace Engine
 {
-    public class SphereRenderer : Node3D, IDisposable
+    public class SphereRenderer : Node3D
     {
         public bool Enabled = true;
         public MaterialBase Material;
@@ -119,8 +119,9 @@ namespace Engine
            // GLState.CullFace(false);
         }
 
-        public void Dispose()
+        public override void Destroy()
         {
+            base.Destroy();
             _buffer?.Dispose();
         }
     }

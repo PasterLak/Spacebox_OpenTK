@@ -85,6 +85,6 @@ public class BlockDestructionEffect : IDisposable
 
     public void Dispose()
     {
-
+        particleSystem.Destroy();
     }
 }

@@ -29,7 +29,7 @@ namespace ServerCommon
             this.port = port;
             this.maxConnections = maxConnections;
             this.logger = logger;
-            BanManager.LoadBannedPlayers();
+           
             InitializeServer();
             messageProcessor = new MessageProcessor(server, connectionPlayers, playerManager,
                                     (msg, type) => logger.Log(msg, type), this);
@@ -37,6 +37,12 @@ namespace ServerCommon
 
         private void InitializeServer()
         {
+
+            if(!ServerPreparer.IsServerReady(logger))
+            {
+                return;
+            }
+
             var config = new NetPeerConfiguration(appKey)
             {
                 Port = port,

@@ -73,6 +73,9 @@ namespace Spacebox.Game.Player
         {
             foreach (var s in spheres.ToArray())
                 PutBack(s);
+
+            pool.Clear(e => e.Dispose());
+
             Instance = null;
 
 

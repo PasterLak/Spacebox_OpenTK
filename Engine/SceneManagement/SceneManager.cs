@@ -1,4 +1,6 @@
-﻿using Engine.Light;
+﻿using Engine.Commands;
+using Engine.GUI;
+using Engine.Light;
 using OpenTK.Mathematics;
 
 namespace Engine.SceneManagement
@@ -134,8 +136,11 @@ namespace Engine.SceneManagement
                 var name = _current.Name;
                 Debug.Log("[SceneManager] Unloading scene: " + name, Color4.White);
 
+                CommandManager.ClearSceneCommands();
+                Overlay.ClearSceneElements();
                 _current.Destroy();
                 _current.UnloadContent();
+
                 Lighting.Skybox = null;
                 LightSystem.Clear();
 
