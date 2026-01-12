@@ -91,6 +91,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         drill0Audio.Stop();
         light.Enabled = false;
         light.Destroy();
+        BlockSelector.IsVisible = false;
         light = null;
     }
 

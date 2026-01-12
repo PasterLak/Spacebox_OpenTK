@@ -26,7 +26,7 @@ public class World : Component, ISpaceStructure
     public static DropManager DropEffectManager;
     public static BlockDestructionManager DestructionManager;
     public BlockMiningEffect BlockMiningEffect;
-    public LineRenderer LineRenderer;
+
     public ProjectilesPool ProjectilesPool;
     public static int Seed { get; private set; }
     public static Sector? CurrentSector { get; private set; }
@@ -51,12 +51,13 @@ public class World : Component, ISpaceStructure
         new Vector3i( 0,  0, +1),
     };
 
-    private Spacer spacer;
+    private List<IDamageable> damageables;
     public World(LocalAstronaut player, BlockMaterial material)
     {
         Instance = this;
         Player = player;
         this.material = material;
+        damageables = new List<IDamageable>();
 
         worldOctree = new Octree<Sector>(
             Sector.SizeBlocks * SizeSectors,
@@ -71,6 +72,7 @@ public class World : Component, ISpaceStructure
         BiomeGenerator = new BiomeGenerator(World.Seed, WorldGenerator);
         DropEffectManager = new DropManager(player);
 
+        AddDamagable(player);
     }
 
     public override void Start()
@@ -78,7 +80,8 @@ public class World : Component, ISpaceStructure
         DestructionManager = new BlockDestructionManager();
         Owner.AttachComponent(DestructionManager);
         Owner.AttachComponent(DropEffectManager);
-        spacer = Owner.AddChild(new Spacer(Player.Position + new Vector3(5, 5, 7)));
+        var spacer = Owner.AddChild(new Spacer(Player.Position + new Vector3(5, 5, 7)));
+        AddDamagable(spacer);
 
         ProjectilesPool = new ProjectilesPool(20);
         Owner.AttachComponent(ProjectilesPool);
@@ -89,15 +92,14 @@ public class World : Component, ISpaceStructure
         BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1), texture, Resources.Load<Shader>("Resources/Shaders/particle"));
         Owner.AddChild(BlockMiningEffect);
 
-        LineRenderer = new LineRenderer();
-        LineRenderer.AddPoint(Vector3.Zero);
-        LineRenderer.AddPoint(Vector3.One);
-        LineRenderer.Thickness = 0.1f;
-        LineRenderer.Color = Color4.Red;
 
-        Owner.AddChild(LineRenderer);
     }
 
+    public void AddDamagable(IDamageable damageable)
+    {
+        if (!damageables.Contains(damageable))
+            damageables.Add(damageable);
+    }
     public void Save()
     {
 
@@ -168,14 +170,39 @@ public class World : Component, ISpaceStructure
             sector.Value.Render(material);
         }
     }
-
-    public bool RaycastDynamicObjects(Ray ray, out float distance, List<Node3D> objects)
+    public bool RaycastClosest(Ray ray, out float hitDistance, out IDamageable hitObject)
     {
+        hitObject = null;
+        hitDistance = float.MaxValue;
+        bool hasHit = false;
 
-        if (ray.Intersects(spacer.OBB, out distance))
+        foreach (var d in damageables)
         {
-            objects.Add(spacer);
-            return true;
+            if (d.CheckCollision(ray, out float currentDist))
+            {
+                if (currentDist < hitDistance)
+                {
+                    hitDistance = currentDist;
+                    hitObject = d;
+                    hasHit = true;
+                }
+            }
+        }
+
+        return hasHit;
+    }
+
+    public bool RaycastDynamicObjects(Ray ray, out float distance, List<IDamageable> objects)
+    {
+        distance = int.MaxValue;
+        foreach (var d in damageables)
+        {
+            if (d.CheckCollision(ray, out distance))
+            {
+                objects.Add(d);
+                return true;
+            }
+
         }
         return false;
     }

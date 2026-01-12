@@ -32,13 +32,13 @@ public class InteractionPlaceBlock : InteractionMode
         if (BlockSelector.Instance != null)
             BlockSelector.Instance.SimpleBlock.Material.Shader.SetVector4("color", new Vector4(1, 1, 1, 0.5f));
 
-
+        if(BlockSelector.Instance != null)
         BlockSelector.IsVisible = false;
 
         if (lineRenderer == null)
         {
-            if (World.Instance != null)
-                lineRenderer = World.Instance.LineRenderer;
+            if (BlockSelector.Instance != null)
+                lineRenderer = BlockSelector.Instance.LineRenderer;
 
 
         }
@@ -49,6 +49,7 @@ public class InteractionPlaceBlock : InteractionMode
     }
     public override void OnDisable()
     {
+        if(BlockSelector.Instance!=null)
         BlockSelector.IsVisible = false;
 
         if (lineRenderer != null)
@@ -63,7 +64,7 @@ public class InteractionPlaceBlock : InteractionMode
             hit.blockPositionIndex.Z + hit.normal.Z) + hit.chunk.PositionWorld;
 
         BlockPlacementHelper.CalculateOrientation(player.PositionWorld, selectorPositionWorld, player.Up,
-                     hit.normal.ToVector3(), BlockSelector.Instance.EnableMagnet, BlockSelector.Instance.EnableMagnet,BlockSelector.Instance.CurrentBlockData, BlockSelector.Instance.Rotation, out var finalDir, out var finalRot);
+                     hit.normal.ToVector3(), BlockSelector.Instance.EnableMagnet, BlockSelector.Instance.EnableMagnet, BlockSelector.Instance.CurrentBlockData, BlockSelector.Instance.Rotation, out var finalDir, out var finalRot);
         BlockSelector.Instance.UpdatePosition(selectorPositionWorld, finalDir, finalRot, true);
         lineRenderer.Enabled = false;
         /*
@@ -242,7 +243,7 @@ public class InteractionPlaceBlock : InteractionMode
         var direction = Block.GetDirectionFromNormal(norm);
 
         BlockPlacementHelper.CalculateOrientation(player.PositionWorld, selectorPosition, player.Up,
-                  new Vector3(0, 0, 0), false,false, BlockSelector.Instance.CurrentBlockData, cachedBlockRotation, out var finalDir, out var finalRot);
+                  new Vector3(0, 0, 0), false, false, BlockSelector.Instance.CurrentBlockData, cachedBlockRotation, out var finalDir, out var finalRot);
 
         if (BlockSelector.Instance != null)
             BlockSelector.Instance.UpdatePosition(selectorPosition, finalDir, finalRot, false);

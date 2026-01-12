@@ -15,12 +15,18 @@ using Spacebox.GUI;
 
 namespace Spacebox.Game
 {
-    public class Spacer : Node3D
+    public interface IDamageable
+    {
+        public void TakeDamage(Projectile projectile);
+        public bool CheckCollision(Ray ray, out float distance);
+
+    }
+    public class Spacer : Node3D, IDamageable
     {
         protected Animator animator;
         private StatsData Health { get; set; }
-        public ColliderComponent OBB => obb;
-        private ColliderComponent obb;
+      
+        private ColliderComponent collision;
         public Storage Storage { get; private set; }
 
         public PlayerEffects Effects { get; private set; } = new PlayerEffects();
@@ -42,7 +48,7 @@ namespace Spacebox.Game
             Storage = new Storage(3, 3);
             Storage.Name = Name;
 
-            obb = AttachComponent(new OBBCollider());
+            collision = AttachComponent(new SphereCollider());
 
             Model spacerModel = new Model(GameAssets.LoadResource<Mesh>("Resources/Models/spacer.obj"),
                 new TextureMaterial(spacerTex));
@@ -66,12 +72,18 @@ namespace Spacebox.Game
 
         }
 
-        public void Hit(Projectile projectile)
+        public void TakeDamage(Projectile projectile)
         {
             Health.Decrement(projectile.Parameters.Damage);
             Effects.PlayEffect(PlayerEffectType.Damage);
         }
 
+
+        public bool CheckCollision(Ray ray, out float distance)
+        {
+            return ray.Intersects(collision, out distance);
+
+        }
         private void OnHit()
         {
 
@@ -93,11 +105,11 @@ namespace Spacebox.Game
         private void AddItems(Storage storage)
         {
             var items = GameAssets.LootConfig.GenerateLoot("spacer", SeedHelper.ToIntSeed(World.CurrentSector.Seed), storage.SlotsCount);
-         
+
             foreach (var item in items)
             {
                 storage.TryAddItem(item.Item, (byte)item.Quantity);
-              
+
             }
 
 
@@ -115,7 +127,7 @@ namespace Spacebox.Game
 
             Ray ray = new Ray(cam.Position, cam.Front, 5f);
 
-            if (ray.Intersects(OBB, out float distance))
+            if (ray.Intersects(collision, out float distance))
             {
 
                 if (distance < 3)
@@ -133,13 +145,13 @@ namespace Spacebox.Game
 
             }
 
-           
-           
+
+
         }
-        
+
         public override void Render()
         {
-           
+
             base.Render();
 
         }

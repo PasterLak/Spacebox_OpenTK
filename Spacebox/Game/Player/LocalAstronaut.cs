@@ -178,6 +178,8 @@ namespace Spacebox.Game.Player
             PanelUI.SetSelectedSlot(0);
         }
 
+
+
         public override void Update()
         {
             base.Update();
@@ -278,6 +280,10 @@ namespace Spacebox.Game.Player
             OnMoved?.Invoke(this);
         }
 
+        public void TakeDamage(Projectile projectile, DeathCase? deathCase = null)
+        {
+            TakeDamage(projectile.Parameters.Damage, deathCase);
+        }
         public void TakeDamage(int damage, DeathCase? deathCase = null)
         {
             var health = HealthBar.StatsData;

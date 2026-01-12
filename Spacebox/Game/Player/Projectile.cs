@@ -37,6 +37,12 @@ public class Projectile : Node3D
 
     private const int MaxDamageForSound = 100;
 
+    public bool HasOwer(out LocalAstronaut owner)
+    {
+        owner = astronaut;
+        return astronaut != null;
+    }
+
     public Projectile()
     {
         lineRenderer = new LineRenderer();
@@ -150,23 +156,23 @@ public class Projectile : Node3D
 
     private bool CheckDynamicCollision()
     {
-        List<Node3D> hitObjects = new List<Node3D>();
-        if (World.Instance.RaycastDynamicObjects(ray, out var dist, hitObjects) && hitObjects.Count > 0)
+        if( World.Instance.RaycastClosest(ray, out var dist, out var damageable))
         {
-            var spacer = hitObjects[0] as Spacer;
-            if (spacer != null)
-            {
-                HandleDynamicHit(spacer, ray.GetPoint(dist));
-                return true;
-            }
+            HandleDynamicHit(damageable, ray.GetPoint(dist));
+            return true;
         }
         return false;
     }
 
-    private void HandleDynamicHit(Spacer spacer, Vector3 hitPos)
+
+    private void HandleDynamicHit(IDamageable damagable, Vector3 hitPos)
     {
-        spacer.Hit(this);
+        damagable.TakeDamage(this);
         ProjectileHitEffectsManager.Instance.PlayHitEffect(hitPos, Parameters.ID);
+        if (currentDamage >= 50)
+        {
+            PlayExplosionSound(Position);
+        }
         ProcessHitStats(hitPos);
 
         Enabled = false;

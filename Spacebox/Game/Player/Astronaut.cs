@@ -3,13 +3,14 @@ using Engine.Components;
 using Engine.Components.Debug;
 using Engine.Physics;
 using OpenTK.Mathematics;
+using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Resource;
 
 
 namespace Spacebox.Game.Player
 {
-    public abstract class Astronaut : Camera360Base
+    public abstract class Astronaut : Camera360Base, IDamageable
     {
         private readonly string[] colors = new[] { "Yellow", "Orange", "Purple", "Blue", "Green", "Cyan", "Red", "White", "Black" };
         protected ModelRendererComponent AstBody;
@@ -18,7 +19,7 @@ namespace Spacebox.Game.Player
         public Flashlight Flashlight { get; private set; }
 
         protected HandItemVisualizer HandVisualizer;
-
+        protected ColliderComponent sphereCollision;
 
         public int SkinId { get; protected set; }
 
@@ -28,6 +29,8 @@ namespace Spacebox.Game.Player
             Layer = CollisionLayer.Player;
 
             AttachComponent(new AxesDebugComponent());
+            sphereCollision = AttachComponent(new SphereCollider());
+
         }
 
         public bool IsLocalAstronaut()
@@ -98,7 +101,7 @@ namespace Spacebox.Game.Player
             Texture2D tex = null;
 
             string texturePath = $"Resources/Textures/Skins/Astronaut_{color}.jpg";
-           
+
             tex = GameAssets.LoadResource<Texture2D>(texturePath);
             if (!tex.YWasFlipped)
                 tex.FlipY();
@@ -123,5 +126,43 @@ namespace Spacebox.Game.Player
             if (AstTank != null) AstTank.Enabled = showModel;
         }
 
+        public void TakeDamage(Projectile projectile)
+        {
+            var local = this as LocalAstronaut;
+
+            if (local != null)
+            {
+                string[] deathMessages =
+                { "Wasted", "Hull breach detected", "Caught a bullet"};
+
+                var random = new Random();
+                string message = deathMessages[random.Next(deathMessages.Length)];
+
+                if(projectile.HasOwer(out var owner))
+                {
+
+                }
+                local.TakeDamage(projectile, new DeathCase(message));
+            }
+        }
+
+        public bool CheckCollision(Ray ray, out float distance)
+        {
+            distance = 0;
+
+            Vector3 rayDir = ray.Direction.Normalized();
+            Vector3 playerLookDir = ForwardLocal.Normalized();
+            Vector3 toRayStart = ray.Origin - Position;
+
+            float dirDot = Vector3.Dot(rayDir, playerLookDir);
+            float startPosDot = Vector3.Dot(toRayStart, playerLookDir);
+
+            if (dirDot > 0 && startPosDot > -0.5f)
+            {
+                return false;
+            }
+
+            return ray.Intersects(sphereCollision, out distance);
+        }
     }
 }

@@ -55,7 +55,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     protected BlockMaterial blockMaterial;
     protected SpaceSceneArgs SceneArgs;
 
-    protected BlockSelector blockSelector;
     protected RadarUI radarWindow;
 
     private FreeCamera freeCamera;
@@ -108,6 +107,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         {
             localPlayer = new LocalAstronaut(new Vector3(5, 5, 5));
         }
+
+        AddChild(new BlockSelector());
 
         AddChild(localPlayer);
 
@@ -166,8 +167,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         GeneratorUI.Initialize();
         InventoryUI.Player = localPlayer;
         CreativeWindowUI.SetDefaultIcon(slotTex.Handle, localPlayer);
-
-        blockSelector = new BlockSelector();
 
 
         freeCamera = AddChild(new FreeCamera(localPlayer.Position));
@@ -307,9 +306,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         OnRenderCenter?.Invoke();
 
-        blockSelector.Render();
-
-
         PanelUI.DrawItemModel();
     }
 
@@ -350,7 +346,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     {
         PanelUI.Player = null;
 
-        blockSelector.Dispose();
+       
         TickTaskManager.Dispose();
         RadarUI.Instance.Dispose();
 
