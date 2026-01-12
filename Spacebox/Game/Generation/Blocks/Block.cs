@@ -56,6 +56,11 @@ namespace Spacebox.Game.Generation.Blocks
 
         public Block() { }
 
+
+        public const Direction DefaultDirection = Direction.Up;
+        public static readonly Vector3SByte DefaultDirectionVector = new Vector3SByte(0,1,0);
+        public const Rotation DefaultRotation = Rotation.None;
+
         public Rotation Rotation
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -16,6 +16,8 @@ namespace Engine.Multithreading
         static readonly ConcurrentDictionary<string, Thread> dedicatedWorkers = new ConcurrentDictionary<string, Thread>();
         static readonly CancellationTokenSource cts = new CancellationTokenSource();
 
+        static long namedPendingCount = 0;
+
         static long tasksQueued = 0;
         static long tasksCompleted = 0;
         static long tasksFailed = 0;
@@ -135,7 +137,10 @@ namespace Engine.Multithreading
         public static Task EnqueueDedicated(string name, Action<CancellationToken> action, CancellationToken token = default)
         {
             if (!namedQueues.TryGetValue(name, out var queue)) throw new ArgumentException("No such dedicated worker");
+
             Interlocked.Increment(ref tasksQueued);
+            Interlocked.Increment(ref namedPendingCount);
+
             var tcs = new TaskCompletionSource<bool>();
             var item = new WorkItem
             {
@@ -180,16 +185,23 @@ namespace Engine.Multithreading
         {
             while (!cts.IsCancellationRequested)
             {
-                WorkItem item;
-                int totalPending = highQueue.Count + medQueue.Count + lowQueue.Count;
-                int workerCount = workers.Count;
-                int delay = totalPending > workerCount ? MIN_DELAY_MS : MAX_DELAY_MS;
-                // System.OperationCanceledException: 'The operation was canceled.'
-                if (highQueue.TryTake(out item, highQueue.Count > workerCount ? 1 : MIN_DELAY_MS, cts.Token) ||
-                    medQueue.TryTake(out item, delay, cts.Token) ||
-                    lowQueue.TryTake(out item, delay, cts.Token))
+                try
                 {
-                    item.Execute();
+                    WorkItem item;
+                    int totalPending = highQueue.Count + medQueue.Count + lowQueue.Count;
+                    int workerCount = workers.Count;
+                    int delay = totalPending > workerCount ? MIN_DELAY_MS : MAX_DELAY_MS;
+
+                    if (highQueue.TryTake(out item, highQueue.Count > workerCount ? 1 : MIN_DELAY_MS, cts.Token) ||
+                        medQueue.TryTake(out item, delay, cts.Token) ||
+                        lowQueue.TryTake(out item, delay, cts.Token))
+                    {
+                        item.Execute();
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
                 }
             }
         }
@@ -199,14 +211,15 @@ namespace Engine.Multithreading
         {
             var queue = namedQueues[name];
             foreach (var item in queue.GetConsumingEnumerable(cts.Token))
+            {
+                Interlocked.Decrement(ref namedPendingCount);
                 item.Execute();
+            }
         }
 
         static int GetNamedPending()
         {
-            int sum = 0;
-            foreach (var q in namedQueues.Values) sum += q.Count;
-            return sum;
+            return (int)Interlocked.Read(ref namedPendingCount);
         }
 
         class WorkItem { public Action Execute; }

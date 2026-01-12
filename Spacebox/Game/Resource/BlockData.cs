@@ -32,7 +32,7 @@ namespace Spacebox.Game.Resource
 
         public bool IsTransparent { get; private set; } = false;
         public Vector3 LightColor { get; private set; } = Vector3.Zero;
-        public Direction BaseFrontDirection { get; set; } = Direction.Up;
+        public Direction BaseFrontDirection { get; set; } = Block.DefaultDirection;
 
         public BlockItem AsItem { get; set; }
         public ItemSlot Drop { get; private set; }

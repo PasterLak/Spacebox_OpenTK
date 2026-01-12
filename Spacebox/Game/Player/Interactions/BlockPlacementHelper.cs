@@ -22,6 +22,7 @@ namespace Spacebox.Game.Generation.Tools
             Vector3 playerUp,
             Vector3 surfaceNormal,
             bool isSurfaceMode,
+            bool magnet,
             BlockData blockData,
             Rotation additionalRotation,
             out Direction finalDir,
@@ -41,14 +42,15 @@ namespace Spacebox.Game.Generation.Tools
                 playerUp,
                 surfaceNormal,
                 isSurfaceMode,
+                magnet,
+                additionalRotation,
                 blockData.BaseFrontDirection,
                 out var bestDir,
                 out var bestRot
             );
 
             finalDir = bestDir;
-            int combinedRot = ((int)bestRot + (int)additionalRotation) % 4;
-            finalRot = (Rotation)combinedRot;
+            finalRot = bestRot;
         }
 
         private static void FindBestMatch(
@@ -56,6 +58,8 @@ namespace Spacebox.Game.Generation.Tools
             Vector3 playerUp,
             Vector3 surfaceNormal,
             bool isSurfaceMode,
+            bool magnet,
+            Rotation additionalRotation,
             Direction baseFrontDir,
             out Direction bestDir,
             out Rotation bestRot)
@@ -69,9 +73,16 @@ namespace Spacebox.Game.Generation.Tools
             {
                 flatToPlayer = (toPlayer - Vector3.Dot(toPlayer, surfaceNormal) * surfaceNormal).Normalized();
                 if (flatToPlayer.LengthSquared < 0.01f) flatToPlayer = Vector3.UnitX;
+
+                if (magnet)
+                {
+                    Quaternion rotation = Quaternion.FromAxisAngle(surfaceNormal, -MathHelper.PiOver2 * (int)additionalRotation);
+                    flatToPlayer = Vector3.Transform(flatToPlayer, rotation);
+                }
             }
 
-            bool isVerticalSurface = MathF.Abs(surfaceNormal.Y) > 0.7f;
+            float relativeVerticality = MathF.Abs(Vector3.Dot(surfaceNormal, playerUp));
+            bool isWallRelativeToPlayer = relativeVerticality < 0.5f;
 
             for (int d = 0; d < 6; d++)
             {
@@ -88,7 +99,7 @@ namespace Spacebox.Game.Generation.Tools
 
                     if (isSurfaceMode)
                     {
-                        if (isVerticalSurface)
+                        if (magnet || !isWallRelativeToPlayer)
                         {
                             if (Vector3.Dot(worldModelY, surfaceNormal) > 0.9f)
                             {
@@ -130,6 +141,12 @@ namespace Spacebox.Game.Generation.Tools
                         }
                     }
                 }
+            }
+
+            if (!magnet)
+            {
+                int combinedRot = ((int)bestRot + (int)additionalRotation) % 4;
+                bestRot = (Rotation)combinedRot;
             }
         }
 

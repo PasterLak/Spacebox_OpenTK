@@ -167,7 +167,6 @@ namespace Engine
             var finalModel = GetRenderModelMatrix();
 
             Material.Color = _color;
-           
             Material.Apply(finalModel);
 
             GL.BindVertexArray(_buffer.VAO);

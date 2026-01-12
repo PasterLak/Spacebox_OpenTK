@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.Resource
 {
@@ -37,7 +38,7 @@ namespace Spacebox.Game.Resource
         public string Drop { get; set; } = "$self";
         public int DropQuantity { get; set; } = 1;
 
-        public Vector3SByte FrontDirection { get; set; } = Vector3SByte.Up;
+        public Vector3SByte FrontDirection { get; set; } = Block.DefaultDirectionVector;
 
         public string SoundPlace { get; set; } = "blockPlaceDefault";
         public string SoundDestroy { get; set; } = "blockDestroyDefault";

@@ -63,13 +63,15 @@ public class InteractionPlaceBlock : InteractionMode
             hit.blockPositionIndex.Z + hit.normal.Z) + hit.chunk.PositionWorld;
 
         BlockPlacementHelper.CalculateOrientation(player.PositionWorld, selectorPositionWorld, player.Up,
-                     hit.normal.ToVector3(), true, BlockSelector.Instance.CurrentBlockData, BlockSelector.Instance.Rotation, out var finalDir, out var finalRot);
-        BlockSelector.Instance.UpdatePosition(selectorPositionWorld, finalDir, finalRot);
-
+                     hit.normal.ToVector3(), BlockSelector.Instance.EnableMagnet, BlockSelector.Instance.EnableMagnet,BlockSelector.Instance.CurrentBlockData, BlockSelector.Instance.Rotation, out var finalDir, out var finalRot);
+        BlockSelector.Instance.UpdatePosition(selectorPositionWorld, finalDir, finalRot, true);
+        lineRenderer.Enabled = false;
+        /*
         lineRenderer.Points[0] = selectorPositionWorld + new Vector3(0.5f, 0.5f, 0.5f);
         lineRenderer.Points[1] = hit.chunk.SpaceEntity.CenterOfMass;
         lineRenderer.SetNeedsRebuild();
         lineRenderer.Enabled = true;
+        */
 
         return selectorPositionWorld;
     }
@@ -155,7 +157,8 @@ public class InteractionPlaceBlock : InteractionMode
 
 
                     BlockPlacementHelper.CalculateOrientation(player.PositionWorld, selectorPos, player.Up,
-                        hit.normal.ToVector3(), true, BlockSelector.Instance.CurrentBlockData, cachedBlockRotation, out var finalDir, out var finalRot);
+                        hit.normal.ToVector3(), BlockSelector.Instance.EnableMagnet, BlockSelector.Instance.EnableMagnet,
+                        BlockSelector.Instance.CurrentBlockData, cachedBlockRotation, out var finalDir, out var finalRot);
 
                     newBlock.Direction = finalDir;
                     newBlock.Rotation = finalRot;
@@ -239,10 +242,10 @@ public class InteractionPlaceBlock : InteractionMode
         var direction = Block.GetDirectionFromNormal(norm);
 
         BlockPlacementHelper.CalculateOrientation(player.PositionWorld, selectorPosition, player.Up,
-                  new Vector3(0, 0, 0), false, BlockSelector.Instance.CurrentBlockData, cachedBlockRotation, out var finalDir, out var finalRot);
+                  new Vector3(0, 0, 0), false,false, BlockSelector.Instance.CurrentBlockData, cachedBlockRotation, out var finalDir, out var finalRot);
 
         if (BlockSelector.Instance != null)
-            BlockSelector.Instance.UpdatePosition(selectorPosition, finalDir, finalRot);
+            BlockSelector.Instance.UpdatePosition(selectorPosition, finalDir, finalRot, false);
 
         if (entity != null)
         {

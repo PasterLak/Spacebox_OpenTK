@@ -81,8 +81,8 @@ public class World : Component, ISpaceStructure
         spacer = Owner.AddChild(new Spacer(Player.Position + new Vector3(5, 5, 7)));
 
         ProjectilesPool = new ProjectilesPool(20);
-        Owner.AttachComponent(ProjectilesPool);  
-        
+        Owner.AttachComponent(ProjectilesPool);
+
         var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/blockHit.png");
         texture.FilterMode = FilterMode.Nearest;
 

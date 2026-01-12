@@ -254,6 +254,11 @@
         "Sides": "craftSide",
         "Up": "craftTop",
         "Down": "bottom",
+         "FrontDirection": {
+            "x": 0,
+            "y": 0,
+            "z": 1
+        },
         "Mass": 1,
         "Durability": 5,
         "IsTransparent": false
@@ -284,6 +289,11 @@
         "Sides": "bottom",
         "Forward": "furnace2",
         "ForwardOff": "furnace2Off",
+         "FrontDirection": {
+            "x": 0,
+            "y": 0,
+            "z": 1
+        },
         "Mass": 2,
         "Durability": 10,
         "Efficiency": 1.3,
@@ -298,6 +308,11 @@
         "Sides": "crusherSide",
         "Up": "crusherTop",
         "Down": "bottom",
+         "FrontDirection": {
+            "x": 0,
+            "y": 0,
+            "z": 1
+        },
         "Durability": 5,
         "Efficiency": 0.7,
         "IsTransparent": false
@@ -310,6 +325,11 @@
         "Sides": "crusherSide2",
         "Up": "crusherTop2",
         "Down": "bottom",
+         "FrontDirection": {
+            "x": 0,
+            "y": 0,
+            "z": 1
+        },
         "Durability": 10,
         "Efficiency": 1.2,
         "IsTransparent": false,
@@ -339,6 +359,11 @@
         "UpOff": "radarOff",
         "Down": "generatorDown",
         "DownOff": "generatorDownOff",
+         "FrontDirection": {
+            "x": 0,
+            "y": 0,
+            "z": 1
+        },
         "Durability": 5,
         "IsTransparent": false
     },
@@ -351,6 +376,11 @@
         "Sides": "disassemblerSide",
         "Up": "disassemblerTop2",
         "Down": "bottom",
+         "FrontDirection": {
+            "x": 0,
+            "y": 0,
+            "z": 1
+        },
         "Durability": 5,
         "Efficiency": 1,
         "IsTransparent": false
@@ -621,6 +651,11 @@
         "UpOff": "generatorOff",
         "Down": "generatorDown",
         "DownOff": "generatorDownOff",
+         "FrontDirection": {
+            "x": 0,
+            "y": 0,
+            "z": 1
+        },
         "PowerToDrill": 1,
         "Mass": 4,
         "Durability": 10,

@@ -19,17 +19,16 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
     private InteractiveBlock lastInteractiveBlock;
     private static AudioSource drillAudio;
     private static AudioSource drill0Audio;
-  
+
     private PointLight light;
     private BlockMiningEffect BlockMiningEffect;
     public InteractionDestroyBlockSurvival(ItemSlot itemSlot) : base(itemSlot)
     {
- 
-      
+
+
         light = new PointLight();
         light.Range = 8;
 
-        BlockMiningEffect = World.Instance.BlockMiningEffect;
 
         var drill = itemSlot.Item as DrillItem;
         if (drill != null)
@@ -50,6 +49,9 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
 
     public override void OnEnable()
     {
+
+       
+
         if (blockDestroy == null)
         {
             blockDestroy = new AudioSource(Resources.Load<AudioClip>("blockDestroyDefault"));
@@ -79,9 +81,12 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         base.OnDisable();
         lastBlock = null;
         if (BlockMiningEffect != null)
+        {
             BlockMiningEffect.Enabled = false;
+            BlockMiningEffect.ClearParticles();
+        }
         model.SetAnimation(false);
-        BlockMiningEffect.ClearParticles();
+
         drillAudio.Stop();
         drill0Audio.Stop();
         light.Enabled = false;
@@ -128,8 +133,12 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         model.SetAnimation(false);
         _time = timeToDamage;
         lastBlock = null;
-        BlockMiningEffect.ClearParticles();
-        BlockMiningEffect.Enabled = false;
+        if (BlockMiningEffect != null)
+        {
+            BlockMiningEffect.ClearParticles();
+            BlockMiningEffect.Enabled = false;
+        }
+
         drillAudio.Stop();
         drill0Audio.Stop();
         light.Enabled = false;
@@ -137,6 +146,10 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
 
     public override void Update(LocalAstronaut player)
     {
+        if(BlockMiningEffect==null)
+        {
+            BlockMiningEffect = World.Instance.BlockMiningEffect;
+        }
         if (Input.IsMouseButtonUp(MouseButton.Left))
         {
 
@@ -148,13 +161,13 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             //if (Input.IsKeyDown(Keys.F) && lastInteractiveBlock != null) // Press F to interact  WTF
             //    lastInteractiveBlock.Use(player);
             model.SetAnimation(false);
-            if(light != null)
-            light.Enabled = false;
+            if (light != null)
+                light.Enabled = false;
             return;
         }
 
         Ray ray = new Ray(player.Position, player.Front, drillItem.Range);
-     
+
 
         if (drillItem.PowerUsage > player.PowerBar.StatsData.Value)
         {
@@ -172,12 +185,14 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             {
 
                 var blockData = GameAssets.GetBlockDataById(hit.block.Id);
-                BlockMiningEffect.Enabled = true;
+                if (BlockMiningEffect != null)
+                    BlockMiningEffect.Enabled = true;
 
                 var effectPosition = hit.hitPosition + new Vector3(hit.normal.X, hit.normal.Y, hit.normal.Z) * 0.05f;
                 var toPlayer = Vector3.Normalize(player.Position - effectPosition);
 
-                BlockMiningEffect.ParticleSystem.Position = effectPosition;
+                if (BlockMiningEffect != null)
+                    BlockMiningEffect.ParticleSystem.Position = effectPosition;
 
                 var cone = BlockMiningEffect.ParticleSystem.Emitter as ConeEmitter;
 
@@ -214,7 +229,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             if (lastInteractiveBlock != null)
 
             {
-                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player,  ref hit);
+                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, ref hit);
                 if (hit.block.Is<StorageBlock>(out var storageBlock))
                 {
                     storageBlock.SetPositionInChunk(hit.blockPositionIndex);
@@ -224,7 +239,8 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         }
         else
         {
-            BlockMiningEffect.Enabled = false;
+            if (BlockMiningEffect != null)
+                BlockMiningEffect.Enabled = false;
             BlockSelector.IsVisible = false;
             // CenteredText.Hide();
             if (Input.IsMouseButtonDown(MouseButton.Left))

@@ -205,14 +205,14 @@ public static class NBTHelper
 
                     int flatIndex = -1;
 
-                    if (block.Direction != Direction.Up)
+                    if (block.Direction != Block.DefaultDirection)
                     {
                         flatIndex = GetArrayIndex(x, y, z, SIZE);
                         blockWithDirectionIDs.Add(flatIndex); // indexIn1D
                         blockWithDirectionIDs.Add((byte)block.Direction);
                         //Debug.Log($"Direction save index: {indexIn1D} row direction {(byte)block.Direction} end pos {x},{y},{z} block id: {block.BlockId}");
                     }
-                    if (block.Rotation != Rotation.None)
+                    if (block.Rotation != Block.DefaultRotation)
                     {
                         if (flatIndex == -1)
                             flatIndex = GetArrayIndex(x, y, z, SIZE);

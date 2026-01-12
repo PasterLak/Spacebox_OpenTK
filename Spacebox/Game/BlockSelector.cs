@@ -4,6 +4,7 @@ using Spacebox.Game.GUI;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Resource;
+using Spacebox.Game.Generation;
 
 namespace Spacebox.Game;
 
@@ -16,10 +17,23 @@ public class BlockSelector : IDisposable
     private Texture2D selectorTexture;
     public SimpleBlock SimpleBlock { get; private set; }
 
-    private Direction blockDirection = Direction.Up;
-    private Rotation blockRotation = Rotation.None;
+    private LineRenderer _magnetLineRenderer;
+    private Matrix4 _currentTransform = Matrix4.Identity;
 
-    public Rotation Rotation = Rotation.None;
+    private Direction blockDirection = Block.DefaultDirection;
+    private Rotation blockRotation = Block.DefaultRotation;
+
+    private bool _enableMagnet = true;
+    public bool EnableMagnet
+    {
+        get => _enableMagnet;
+        private set
+        {
+            _enableMagnet = value;
+            Rotation = Block.DefaultRotation;
+        }
+    }
+    public Rotation Rotation = Block.DefaultRotation;
     private BlockData currentBlockData;
     public BlockData CurrentBlockData => currentBlockData;
 
@@ -36,16 +50,18 @@ public class BlockSelector : IDisposable
         SimpleBlock = new SimpleBlock(material, Vector3.Zero);
         SimpleBlock.Scale = new Vector3(1.05f, 1.05f, 1.05f);
 
+        _magnetLineRenderer = new LineRenderer();
+        _magnetLineRenderer.Color = Color4.Yellow;
+        _magnetLineRenderer.Thickness = 0.05f;
+
         PanelUI.OnSlotChanged += OnSelectedSlotWasChanged;
         OnSelectedSlotWasChanged(PanelUI.SelectedSlotId);
     }
 
     public void OnSelectedSlotWasChanged(short slot)
     {
-
-
         SimpleBlock.ResetBlockTransform();
-
+       
         if (PanelUI.IsHolding<DrillItem>())
         {
             SimpleBlock.Material.MainTexture = selectorTexture;
@@ -61,10 +77,15 @@ public class BlockSelector : IDisposable
                 currentBlockData = GameAssets.GetBlockDataById(blockItem.Id);
                 SimpleBlock.Material.MainTexture = GameAssets.BlocksTexture;
                 SimpleBlock.Scale = new Vector3(1f, 1f, 1f);
+                if (currentBlockData != null)
+                {
+                    if (currentBlockData.AllSidesAreSame())
+                        _onSurface = false;
+                }
                 SetupBlockMesh();
                 UpdateBlockRotation();
             }
-        } 
+        }
         else
         {
             Rotation = Rotation.None;
@@ -88,34 +109,44 @@ public class BlockSelector : IDisposable
     private void UpdateBlockRotation()
     {
         if (currentBlockData == null) return;
-        if (currentBlockData.AllSidesAreSame()) return;
+        if (currentBlockData.AllSidesAreSame())
+        {
+            _currentTransform = Matrix4.Identity;
+            return;
+        }
 
-        var transformMatrix = BlockRotationHelper.CalculateTransformMatrix(
+        _currentTransform = BlockRotationHelper.CalculateTransformMatrix(
             currentBlockData.BaseFrontDirection,
             blockDirection,
             blockRotation
         );
 
-        SimpleBlock.SetBlockTransform(transformMatrix);
+        SimpleBlock.SetBlockTransform(_currentTransform);
     }
-
-    public void UpdatePosition(Vector3 position, Direction direction, Rotation rotation)
+    private bool _onSurface;
+    public void UpdatePosition(Vector3 position, Direction direction, Rotation rotation, bool onSurface)
     {
         Vector3 newPosition = position + Vector3.One * 0.5f;
+
 
         if (SimpleBlock.Position == newPosition && blockDirection == direction && blockRotation == rotation)
             return;
 
+        World.Instance.LineRenderer.Enabled = !onSurface;
+
         SimpleBlock.Position = newPosition;
 
-        
-            blockDirection = direction;
+        blockDirection = direction;
         blockRotation = rotation;
-            if (currentBlockData != null)
-            {
-                UpdateBlockRotation();
-            }
-        
+        if (currentBlockData != null)
+        {
+            _onSurface = onSurface;
+
+            if (currentBlockData.AllSidesAreSame())
+                _onSurface = false;
+
+            UpdateBlockRotation();
+        }
     }
 
     public void Render()
@@ -131,7 +162,40 @@ public class BlockSelector : IDisposable
             }
         }
 
+        if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.M))
+        {
+            EnableMagnet = !EnableMagnet;
+
+        }
         SimpleBlock.Render();
+
+        if (EnableMagnet && _onSurface && currentBlockData != null)
+        {
+            UpdateMagnetVisuals();
+            _magnetLineRenderer.Render();
+        }
+    }
+
+    private void UpdateMagnetVisuals()
+    {
+        float size = 0.51f;
+        Vector4[] bottomCorners = new Vector4[]
+        {
+            new Vector4(-size, -size, -size, 1f),
+            new Vector4(size, -size, -size, 1f),
+            new Vector4(size, -size, size, 1f),
+            new Vector4(-size, -size, size, 1f)
+        };
+
+        var points = new List<Vector3>();
+        for (int i = 0; i < bottomCorners.Length; i++)
+        {
+            Vector4 transformed = bottomCorners[i] * _currentTransform;
+            points.Add(transformed.Xyz + SimpleBlock.Position);
+        }
+        points.Add(points[0]);
+
+        _magnetLineRenderer.SetPoints(points);
     }
 
     public Direction GetDirection() => blockDirection;
@@ -141,6 +205,7 @@ public class BlockSelector : IDisposable
     {
         SimpleBlock?.Destroy();
         selectorTexture?.Dispose();
+        _magnetLineRenderer?.Dispose();
         Instance = null;
     }
 }
