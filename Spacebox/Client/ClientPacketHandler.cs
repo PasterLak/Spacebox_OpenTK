@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Spacebox.Client;
 using Spacebox.Game;
 using Spacebox.Game.GUI;
 using SpaceNetwork.Messages;
@@ -28,7 +29,8 @@ namespace Client
                 { typeof(BlockPlaceMessage), HandleBlockPlaced },
                 { typeof(FlashlightMessage), HandleFlashlight },
                 { typeof(ItemInHandMessage), HandleItemInHand },
-                { typeof(ZipMessage), HandleZip }
+                { typeof(ZipMessage), HandleZip },
+                { typeof(RpcMessage), HandleRpc }
             };
         }
 
@@ -51,6 +53,8 @@ namespace Client
         private void HandlePlayers(BaseMessage msg)
         {
             var pm = (PlayersMessage)msg;
+            if (_network.LocalPlayerId == -1) return;
+
             _playerRegistry.SyncFromList(pm.Players);
         }
 
@@ -58,6 +62,25 @@ namespace Client
         {
             var sim = (ServerInfoMessage)msg;
             _network.SetServerInfo(sim.Info);
+        }
+
+        private void HandleRpc(BaseMessage msg)
+        {
+
+            var rpcMsg = (RpcMessage)msg;
+
+            Debug.Log($"[Client] RPC Received: {rpcMsg.MethodName} for NetID: {rpcMsg.NetworkId}"); 
+
+            var identity = NetworkIdentity.Get(rpcMsg.NetworkId);
+
+            if (identity != null)
+            {
+                identity.ExecuteRpcLocal(rpcMsg.MethodName, rpcMsg.Parameters);
+            }
+            else
+            {
+                Debug.Error($"[Client] NetworkIdentity not found for ID: {rpcMsg.NetworkId}"); 
+            }
         }
 
         private void HandleKick(BaseMessage msg)

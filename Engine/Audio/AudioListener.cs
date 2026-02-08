@@ -83,7 +83,7 @@ namespace Engine.Audio
 
             Vector3 currentPosition = Owner.PositionWorld;
             Vector3 currentForward = Owner.ForwardLocal;
-            Vector3 currentUp = Owner.Up;
+            Vector3 currentUp = Owner.UpLocal;
 
             if (_isDirty ||
                 currentPosition != _lastPosition ||

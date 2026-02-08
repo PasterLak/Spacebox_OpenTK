@@ -11,6 +11,7 @@ using Spacebox.Game.Player.GameModes;
 using Spacebox.Game.Player.Interactions;
 using Spacebox.GUI;
 using Client;
+using Spacebox.Client;
 
 namespace Spacebox.Game.Player
 {
@@ -41,7 +42,7 @@ namespace Spacebox.Game.Player
         public Action OnDeath { get; set; }
         public InertiaController InertiaController { get; private set; } = new InertiaController();
         public CameraSway CameraSway { get; private set; } = new CameraSway();
-       
+
         public HitImage HitImage { get; private set; }
         public DeathScreen DeathScreen { get; private set; } = new DeathScreen();
         public HealthBar HealthBar { get; private set; }
@@ -71,7 +72,7 @@ namespace Spacebox.Game.Player
         }
 
         private Toggi _toggle;
-        
+
         private Axes _axes;
         private float _timeToSavePosToStat = 5;
 
@@ -91,7 +92,7 @@ namespace Spacebox.Game.Player
             SetRenderSpace(true);
 
             HitImage = new HitImage();
-            
+
 
             ItemLight = new PointLight();
             ItemLight.Diffuse = new Vector3(0.2f, 1, 0.2f);
@@ -112,7 +113,7 @@ namespace Spacebox.Game.Player
                 if (IsAlive) _canMove = state;
             };
 
-            
+
 
             AddChild(Effects);
 
@@ -140,6 +141,22 @@ namespace Spacebox.Game.Player
             HealthBar.StatsData.OnIncrement += (v) => { PlayerStatistics.HealthHealed += v; };
             DeathScreen.OnRespawn += Revive;
             Flashlight.OnEnabledChanged += (b) => { PanelUI.SetFlashlight(this); };
+
+
+            AttachComponent(new NetworkNode3DComponent(true));
+
+            if (ClientNetwork.Instance != null)
+                rpc = AttachComponent(new NetworkIdentity(ClientNetwork.Instance.LocalPlayerId, true));
+          
+
+
+        }
+
+        public override void Start()
+        {
+            base.Start();
+
+            
         }
 
         private void SetData()
@@ -189,19 +206,12 @@ namespace Spacebox.Game.Player
             Matrix4 projectionMatrix = GetProjectionMatrix();
             Frustum.UpdateFrustum(this);
 
-            VisualDebug.ProjectionMatrix = projectionMatrix;
-            VisualDebug.ViewMatrix = viewMatrix;
 
             _gameModeBase.UpdateInteraction(this);
             _gameModeBase.Update(this);
 
             HitImage.Update();
             DeathScreen.Update();
-
-            if (ClientNetwork.Instance != null && ClientNetwork.Instance.IsConnected)
-            {
-                ClientNetwork.Instance.SendPosition(Position, GetRotation());
-            }
 
             if (!IsMain) return;
 
@@ -221,6 +231,12 @@ namespace Spacebox.Game.Player
                 FOV = 90;
             }
 
+            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.I))
+            {
+                Debug.Log("RPC Call send!");
+                rpc?.Call(nameof(RpcColor));
+            }
+         
 #if DEBUG
             if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.U))
             {

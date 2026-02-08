@@ -93,8 +93,8 @@ namespace Engine
             var view = cam.GetViewMatrix();
             var proj = cam.GetProjectionMatrix();
 
-            Shader.SetMatrix4("view", view, TransposeMatrices);
-            Shader.SetMatrix4("projection", proj, TransposeMatrices);
+           // Shader.SetMatrix4("view", view, TransposeMatrices);
+            // Shader.SetMatrix4("projection", proj, TransposeMatrices);
         }
         protected virtual void ApplyRenderSettings()
         {

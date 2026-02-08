@@ -15,6 +15,7 @@ namespace ServerCommon
         private readonly PlayerManager playerManager = new PlayerManager();
         public PlayerManager PlayerManager => playerManager;
         private readonly Dictionary<NetConnection, Player> connectionPlayers = new Dictionary<NetConnection, Player>();
+        private readonly Dictionary<int, NetConnection> playerConnections = new Dictionary<int, NetConnection>();
         private bool _shouldStop;
         private float time;
         private readonly ILogger logger;
@@ -145,6 +146,11 @@ namespace ServerCommon
             if (connectionPlayers.ContainsKey(connection))
             {
                 connectionPlayers.Remove(connection);
+                if (playerConnections.ContainsKey(player.ID))
+                {
+                    playerConnections.Remove(player.ID);
+                }
+
                 playerManager.RemovePlayer(player.ID);
 
                 string action = isBan ? "banned" : "kicked";
@@ -245,6 +251,7 @@ namespace ServerCommon
             }
 
             connectionPlayers.Clear();
+            playerConnections.Clear();
             playerManager.Reset();
         }
 
@@ -268,9 +275,13 @@ namespace ServerCommon
             time = 0;
         }
 
-        private NetConnection GetConnectionByPlayerId(int playerId)
+        public NetConnection GetConnectionByPlayerId(int playerId)
         {
-            return connectionPlayers.FirstOrDefault(kvp => kvp.Value.ID == playerId).Key;
+            if (playerConnections.TryGetValue(playerId, out var conn))
+            {
+                return conn;
+            }
+            return null;
         }
 
         public void BroadcastPlayers()
@@ -303,13 +314,19 @@ namespace ServerCommon
         }
 
         public void SendPositionUpdate(Player player)
-        {
+        { 
             BroadcastPlayers();
         }
         public void RegisterPlayerConnection(NetConnection connection, Player player)
         {
             if (connection == null || player == null) return;
+
             connectionPlayers[connection] = player;
+
+            if (playerConnections.ContainsKey(player.ID))
+                playerConnections.Remove(player.ID);
+
+            playerConnections[player.ID] = connection;
         }
         public void SendPrivateMessage(int targetPlayerId, string message)
         {

@@ -88,7 +88,7 @@ namespace Engine
 
         public CubeRenderer(Vector3 position, MeshBuffer buffer)
         {
-           
+
             Position = position;
             Name = "CubeRenderer";
             Material = new ColorMaterial();
@@ -100,12 +100,16 @@ namespace Engine
             AttachComponent(new AxesDebugComponent());
         }
 
-        public CubeRenderer(Vector3 position)
+        public CubeRenderer(Vector3 position) : this(position, new ColorMaterial()) { }
+
+
+
+        public CubeRenderer(Vector3 position, MaterialBase materialBase)
         {
-          
+
             Position = position;
             Name = "CubeRenderer";
-            Material = new ColorMaterial();
+            Material = materialBase;
             var attrs = new BufferAttribute[]
             {
                 new BufferAttribute { Name = "aPos",    Size = 3 },
@@ -120,7 +124,7 @@ namespace Engine
             AttachComponent(new AxesDebugComponent());
         }
 
-        
+
 
         public override void Render()
         {
@@ -130,28 +134,28 @@ namespace Engine
             if (Camera.Main == null) return;
             var cam = Camera.Main;
 
-/*
-            GLState.Blend(true);
-            GLState.DepthTest(true);
-            GLState.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            GLState.DepthTest(true);
+            /*
+                        GLState.Blend(true);
+                        GLState.DepthTest(true);
+                        GLState.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+                        GLState.DepthTest(true);
 
-            GLState.CullFace(true);
-            GLState.CullMode(CullFaceMode.Back);
-*/
+                        GLState.CullFace(true);
+                        GLState.CullMode(CullFaceMode.Back);
+            */
 
             var matModel = GetRenderModelMatrix();
 
 
             Material.Color = _color;
-   
+
             Material.Apply(matModel);
 
             GL.BindVertexArray(_buffer.VAO);
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
 
-           // GLState.CullFace(false);
+            // GLState.CullFace(false);
         }
 
         public override void Destroy()

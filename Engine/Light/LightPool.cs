@@ -1,38 +1,34 @@
 ﻿namespace Engine.Light
 {
-    public class PointLightsPool
+    public class LightPool<L> where L : LightBase, new()
     {
 
-        private Pool<PointLight> pool;
+        private Pool<L> pool;
 
-        public PointLightsPool( int initSize)
+        public LightPool(int initSize)
         {
 
-            pool = new Pool<PointLight>(initSize,
+            pool = new Pool<L>(initSize,
             obj => obj,
             obj => { obj.Enabled = true; },
             obj => { obj.Enabled = false; },
-            obj => obj.Enabled,
             (obj, active) => obj.Enabled = active);
 
         }
 
-
-        public PointLight Take()
+        public L Take()
         {
-
             return pool.Take();
-
         }
 
-        public void PutBack(PointLight light)
+        public void PutBack(L light)
         {
             if (light == null)
             {
-                Debug.Error("[PointLightsPool] PutBack: light was null");
+                Debug.Error("[LightPool] PutBack: the light object was null");
                 return;
             }
-           
+
             pool.Release(light);
         }
 

@@ -3,16 +3,15 @@ using Engine.Components;
 using Engine.Components.Debug;
 using Engine.Physics;
 using OpenTK.Mathematics;
-using Spacebox.Game.Generation;
-using Spacebox.Game.Generation.Tools;
-using Spacebox.Game.Resource;
+using Spacebox.Client;
+using SpaceNetwork.Messages;
 
 
 namespace Spacebox.Game.Player
 {
     public abstract class Astronaut : Camera360Base, IDamageable
     {
-        private readonly string[] colors = new[] { "Yellow", "Orange", "Purple", "Blue", "Green", "Cyan", "Red", "White", "Black" };
+     
         protected ModelRendererComponent AstBody;
         protected ModelRendererComponent AstHelmet;
         protected ModelRendererComponent AstTank;
@@ -20,7 +19,7 @@ namespace Spacebox.Game.Player
 
         protected HandItemVisualizer HandVisualizer;
         protected ColliderComponent sphereCollision;
-
+        protected NetworkIdentity rpc;
         public int SkinId { get; protected set; }
 
         public Astronaut(Vector3 position, bool isLocal) : base(position, isLocal)
@@ -40,11 +39,9 @@ namespace Spacebox.Game.Player
 
         public void ChangeItemInHand(Item? item)
         {
-            if (HandVisualizer != null)
-            {
-                Debug.Log($"[Astronaut] Changing item in hand to: {(item != null ? item.Name : "None")}");
-                HandVisualizer.SetItem(item);
-            }
+
+            HandVisualizer?.SetItem(item);
+
         }
 
         protected void CreateModel(int id, string color)
@@ -84,6 +81,23 @@ namespace Spacebox.Game.Player
                 tankMat.MainTexture = tex;
         }
 
+        [Rpc]
+        protected void TestRpc()
+        {
+            Debug.Log("RPC message!");
+        }
+        [Rpc]
+        protected void TestRpcArgs(int x, string message)
+        {
+            Debug.Log($"RPC message 2! {x} {message}");
+        }
+
+        [Rpc]
+        protected void RpcColor()
+        {
+            SetSkinColor("Red");
+        }
+
 
         private void SetupFlashlight()
         {
@@ -115,6 +129,9 @@ namespace Spacebox.Game.Player
         {
             base.Update();
             UpdateVisuals();
+
+
+
         }
 
         protected virtual void UpdateVisuals()
@@ -138,7 +155,7 @@ namespace Spacebox.Game.Player
                 var random = new Random();
                 string message = deathMessages[random.Next(deathMessages.Length)];
 
-                if(projectile.HasOwer(out var owner))
+                if (projectile.HasOwer(out var owner))
                 {
 
                 }

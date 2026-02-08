@@ -26,7 +26,7 @@ namespace Spacebox.Game.Player
                    obj => obj,
                 obj => { },
                 obj => { obj.Reset(); },
-                obj => obj.IsActive,
+              
                 (obj, active) => obj.IsActive = active);
 
             spheres = new List<ImpulseSphere>();

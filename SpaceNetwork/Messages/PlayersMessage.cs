@@ -15,16 +15,13 @@ namespace SpaceNetwork.Messages
             foreach (var p in Players.Values)
             {
                 msg.Write(p.ID);
+                msg.WriteObject(p.Position);
+                msg.WriteObject(p.Rotation);
                 msg.Write(p.Name);
                 msg.Write(ColorHelper.VectorToHex(p.Color));
                 msg.Write(p.SkinColor);
-                msg.Write(p.Position.X);
-                msg.Write(p.Position.Y);
-                msg.Write(p.Position.Z);
-                msg.Write(p.Rotation.X);
-                msg.Write(p.Rotation.Y);
-                msg.Write(p.Rotation.Z);
-                msg.Write(p.Rotation.W);
+                
+               
             }
         }
 
@@ -34,20 +31,15 @@ namespace SpaceNetwork.Messages
             for (int i = 0; i < count; i++)
             {
                 var p = new Player();
+
                 p.ID = msg.ReadInt32();
+                p.Position = msg.ReadObject<Vector3>();
+                p.Rotation = msg.ReadObject<Quaternion>();
                 p.Name = msg.ReadString();
-                var hex = msg.ReadString();
-                p.Color = ColorHelper.HexToVector(hex);
+                p.Color = ColorHelper.HexToVector(msg.ReadString());
                 p.SkinColor = msg.ReadString();
-                float x = msg.ReadFloat();
-                float y = msg.ReadFloat();
-                float z = msg.ReadFloat();
-                float xr = msg.ReadFloat();
-                float yr = msg.ReadFloat();
-                float zr = msg.ReadFloat();
-                float w = msg.ReadFloat();
-                p.Position = new Vector3(x, y, z);
-                p.Rotation = new Vector4(xr, yr, zr, w);
+              
+               
                 p.DisplayedPosition = p.Position;
                 Players[p.ID] = p;
             }

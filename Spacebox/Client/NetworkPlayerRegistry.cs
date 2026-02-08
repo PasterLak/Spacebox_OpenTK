@@ -1,4 +1,6 @@
-﻿using Spacebox.Game.Player;
+﻿using Engine;
+using Spacebox.Client;
+using Spacebox.Game.Player;
 using SpaceNetwork;
 
 namespace Client
@@ -20,8 +22,15 @@ namespace Client
         {
             if (p.ID == _localPlayerId) return;
 
+
             if (_remotePlayers.TryGetValue(p.ID, out var remote))
             {
+
+                if (remote.TryGetComponent<NetworkNode3DComponent>(out var netTransform))
+                {
+                    netTransform.ReceiveState(p.Position.ToOpenTKVector3(), new OpenTK.Mathematics.Quaternion(p.Rotation.X, p.Rotation.Y,p.Rotation.Z,p.Rotation.W));
+                }
+
                 remote.UpdateNetworkData(p);
             }
             else

@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using Client;
+using Engine;
 using Engine.Audio;
 using Engine.Light;
 using Engine.Physics;
@@ -17,7 +18,7 @@ public class Projectile : Node3D
     public Action<Projectile> OnSpawn;
     public Action<Projectile> OnDespawn;
 
-    public static PointLightsPool PointLightsPool;
+    public static LightPool<PointLight> PointLightsPool;
 
     private float distanceTraveled = 0;
     private byte currentRicochets = 0;
@@ -52,7 +53,7 @@ public class Projectile : Node3D
 
         if (PointLightsPool == null)
         {
-            PointLightsPool = new PointLightsPool(8);
+            PointLightsPool = new LightPool<PointLight>(8);
         }
     }
 
@@ -239,6 +240,9 @@ public class Projectile : Node3D
     private void ApplyBlockDamage(HitInfo hit)
     {
         hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage, Parameters.DropBlock);
+       // var posLocal = hit.blockPositionEntity;
+        //hit.chunk.SpaceEntity.RemoveBlockAtLocal(hit.blockPositionEntity, hit.normal);
+       // ClientNetwork.Instance?.SendBlockDestroyed((short)posLocal.X, (short)posLocal.Y, (short)posLocal.Z);
 
         if (astronaut != null)
         {

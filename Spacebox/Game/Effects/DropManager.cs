@@ -29,7 +29,7 @@ namespace Spacebox.Game.Effects
         private readonly float _mergeDistance;
 
         public const int DropLifeTime = 60;
-        private PointLightsPool _lightPool;
+        private LightPool<PointLight> _lightPool;
 
         private PointOctree<Drop> _octree;
         private Random random = new Random();
@@ -47,14 +47,14 @@ namespace Spacebox.Game.Effects
             _mergeDistanceSquared = mergeDistance * mergeDistance;
             this._mergeDistance = mergeDistance;
             _octree = new PointOctree<Drop>(8192, Vector3.Zero, 1);
-            _lightPool = new PointLightsPool(8);
+            _lightPool = new LightPool<PointLight>(8);
 
             _dropPool = new Pool<Drop>(
                 initialCount: 256,
                 initializeFunc: drop => drop,
                 onTakeFunc: null,
                 resetFunc: drop => drop.Reset(),
-                isActiveFunc: drop => drop.IsActive,
+             
                 setActiveFunc: (drop, active) => drop.IsActive = active,
                 autoExpand: true
             );

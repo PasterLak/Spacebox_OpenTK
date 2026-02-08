@@ -20,7 +20,7 @@ namespace ServerCommon
                 Color = ColorHelper.HexToVector(ColorHelper.GetRandomColorFromListHex(rand)),
                 SkinColor = color,
                 Position = new Vector3(0f, 0f, 0f),
-                Rotation = new Vector4(0f, 0f, 0f, 0f),
+                Rotation = new Quaternion(0f, 0f, 0f, 0f),
                 LastTimeWasActive = Environment.TickCount
             };
             players[p.ID] = p;

@@ -153,6 +153,8 @@ namespace Spacebox.Game
             if (UseMainCamera && Camera.Main != null)
             {
                 Position = Camera.Main.PositionWorld;
+
+       
                 model =
                      Matrix4.CreateTranslation(animatedOffset) *  swayMatrix *
                      Matrix4.CreateTranslation(Camera.Main.CameraRelativeRender ?  RenderSpace.ToRender(Position) : Position) *

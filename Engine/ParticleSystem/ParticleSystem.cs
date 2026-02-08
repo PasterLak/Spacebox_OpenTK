@@ -76,7 +76,7 @@ namespace Engine
                 initializeFunc: particle => particle,
                 onTakeFunc: particle => _pooledParticles.Add(particle),
                 resetFunc: particle => particle.Reset(),
-                isActiveFunc: particle => particle.Alive,
+              
                 setActiveFunc: (particle, active) => { }
             );
 

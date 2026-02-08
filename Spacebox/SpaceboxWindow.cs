@@ -36,9 +36,9 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
         _screenshotAudio = new AudioSource(Resources.Load<AudioClip>("screenshot", true));
 
 #if DEBUG
-        SceneManager.Load<MenuScene>();
+        SceneManager.Load<PlaygroundScene>();
 #else
-        SceneManager.Load<MenuScene>();
+        SceneManager.Load<PlaygroundScene>();
 #endif
     }
 

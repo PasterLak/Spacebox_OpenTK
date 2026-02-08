@@ -221,7 +221,7 @@ namespace Client
             var m = new Node3DMessage
             {
                 Position = new System.Numerics.Vector3(pos.X, pos.Y, pos.Z),
-                Rotation = new System.Numerics.Vector4(rot.X, rot.Y, rot.Z, rot.W)
+                Rotation = new System.Numerics.Quaternion(rot.X, rot.Y, rot.Z, rot.W)
             };
             SendImmediate(m, NetDeliveryMethod.Unreliable);
         }

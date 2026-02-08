@@ -18,7 +18,7 @@ namespace Spacebox.Game.Player
                  obj => obj,
                  obj => { obj.OnDespawn += PutBack; },
                  obj => { obj.OnDespawn -= PutBack; obj.Reset(); },
-                 obj => obj.Enabled,
+               
                  (obj, active) => obj.Enabled = active);
 
             Projectiles = new List<Projectile>();

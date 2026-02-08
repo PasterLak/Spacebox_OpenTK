@@ -11,7 +11,7 @@ out vec4 vertexColor;
 
 void main()
 {
-    gl_Position = vec4(aPosition, 1.0) * model * view * projection;
+    gl_Position = vec4(aPosition, 1.0) * model * VIEW * PROJECTION;
     vertexColor = aColor;
 }
 --Frag

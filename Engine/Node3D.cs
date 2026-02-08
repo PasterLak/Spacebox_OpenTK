@@ -256,6 +256,45 @@ namespace Engine
             Position += Vector3.Transform(localTranslation, q);
         }
 
+        public void LookAt(Node3D targetPosition, Vector3 worldUp = default)
+        {
+            LookAt(targetPosition.Position, worldUp);
+        }
+
+        public void LookAt(Vector3 targetPosition, Vector3 worldUp = default)
+        {
+
+            if (worldUp == Vector3.Zero) worldUp = Vector3.UnitY;
+            Vector3 direction = targetPosition - PositionWorld;
+
+            if (direction.LengthSquared < 0.00001f) return;
+
+            Matrix4 viewMatrix = Matrix4.LookAt(Vector3.Zero, direction, worldUp);
+
+            Quaternion worldRotation = viewMatrix.ExtractRotation().Inverted();
+
+            Quaternion localRotation;
+            if (Parent != null)
+            {
+
+                Quaternion parentWorldRot = Parent.GetModelMatrix().ExtractRotation();
+
+                localRotation = Quaternion.Invert(parentWorldRot) * worldRotation;
+            }
+            else
+            {
+                localRotation = worldRotation;
+            }
+
+            Vector3 eulerRad = localRotation.ToEulerAngles();
+
+            Rotation = new Vector3(
+                MathHelper.RadiansToDegrees(eulerRad.X),
+                MathHelper.RadiansToDegrees(eulerRad.Y),
+                MathHelper.RadiansToDegrees(eulerRad.Z)
+            );
+        }
+
         public void RotateAround(Vector3 point, Vector3 axis, float angleDegrees)
         {
             var radians = MathHelper.DegreesToRadians(angleDegrees);
@@ -339,21 +378,30 @@ namespace Engine
                 0f);
         }
 
-        public Vector3 ForwardLocal
+        public Quaternion Orientation
         {
             get
             {
-                var q = Quaternion.FromEulerAngles(
+                return Quaternion.FromEulerAngles(
                     MathHelper.DegreesToRadians(Rotation.X),
                     MathHelper.DegreesToRadians(Rotation.Y),
                     MathHelper.DegreesToRadians(Rotation.Z));
-                return Vector3.Normalize(Vector3.Transform(-Vector3.UnitZ, q));
             }
         }
 
-        public Vector3 Right => Vector3.Normalize(Vector3.Cross(ForwardLocal, Vector3.UnitY));
-        public Vector3 Up => Vector3.Normalize(Vector3.Cross(Right, ForwardLocal));
+        public Vector3 GetLocalDirection(Vector3 axis)
+        {
+            return Vector3.Transform(axis, Orientation).Normalized();
+        }
 
+        public Vector3 ForwardLocal => GetLocalDirection(-Vector3.UnitZ);
+        public Vector3 BackLocal => GetLocalDirection(Vector3.UnitZ);
+
+        public Vector3 RightLocal => GetLocalDirection(Vector3.UnitX);
+        public Vector3 LeftLocal => GetLocalDirection(-Vector3.UnitX);
+
+        public Vector3 UpLocal => GetLocalDirection(Vector3.UnitY);
+        public Vector3 DownLocal => GetLocalDirection(-Vector3.UnitY);
 
         public T? FindNode<T>() where T : Node3D
         {

@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Lidgren.Network;
+﻿using Lidgren.Network;
 using SpaceNetwork;
 using SpaceNetwork.Messages;
 using SpaceNetwork.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading;
 
 namespace ServerCommon
 {
@@ -178,6 +179,28 @@ namespace ServerCommon
             else if (baseMsg is BlockDestroyedMessage || baseMsg is BlockPlaceMessage || baseMsg is FlashlightMessage || baseMsg is ItemInHandMessage)
             {
                 BroadcastRaw(msg);
+            }
+            else if (baseMsg is RpcMessage rpc)
+            {
+                HandleRpc(rpc, msg.SenderConnection);
+            }
+        }
+
+        private void HandleRpc(BaseMessage msg, NetConnection sender)
+        {
+            var rpc = (RpcMessage)msg;
+            var outMsg = server.CreateMessage();
+            rpc.Write(outMsg);
+
+            if (rpc.TargetId == -1)
+            {
+                server.SendToAll(outMsg, sender, NetDeliveryMethod.ReliableOrdered, 0);
+            }
+            else
+            {
+                var targetConn = serverNetwork.GetConnectionByPlayerId(rpc.TargetId);
+                if (targetConn != null)
+                    server.SendMessage(outMsg, targetConn, NetDeliveryMethod.ReliableOrdered);
             }
         }
 

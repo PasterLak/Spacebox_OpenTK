@@ -58,10 +58,13 @@ public class InteractionPlaceBlock : InteractionMode
 
     private Vector3 UpdateBlockPreview(HitInfo hit, LocalAstronaut player)
     {
+
         BlockSelector.IsVisible = true;
         var selectorPositionWorld = new Vector3(hit.blockPositionIndex.X + hit.normal.X,
             hit.blockPositionIndex.Y + hit.normal.Y,
             hit.blockPositionIndex.Z + hit.normal.Z) + hit.chunk.PositionWorld;
+
+        if (BlockSelector.Instance.CurrentBlockData == null) return selectorPositionWorld;
 
         BlockPlacementHelper.CalculateOrientation(player.PositionWorld, selectorPositionWorld, player.Up,
                      hit.normal.ToVector3(), BlockSelector.Instance.EnableMagnet, BlockSelector.Instance.EnableMagnet, BlockSelector.Instance.CurrentBlockData, BlockSelector.Instance.Rotation, out var finalDir, out var finalRot);
@@ -137,6 +140,7 @@ public class InteractionPlaceBlock : InteractionMode
             if (chunk != null)
             {
                 var cachedBlockRotation = BlockSelector.Instance.Rotation;
+                var blockData = BlockSelector.Instance.CurrentBlockData;
 
                 if (PanelUI.TryPlaceItem(out var id, GameMode))
                 {
@@ -159,7 +163,7 @@ public class InteractionPlaceBlock : InteractionMode
 
                     BlockPlacementHelper.CalculateOrientation(player.PositionWorld, selectorPos, player.Up,
                         hit.normal.ToVector3(), BlockSelector.Instance.EnableMagnet, BlockSelector.Instance.EnableMagnet,
-                        BlockSelector.Instance.CurrentBlockData, cachedBlockRotation, out var finalDir, out var finalRot);
+                       blockData, cachedBlockRotation, out var finalDir, out var finalRot);
 
                     newBlock.Direction = finalDir;
                     newBlock.Rotation = finalRot;

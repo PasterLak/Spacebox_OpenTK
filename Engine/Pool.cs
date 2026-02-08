@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Engine
 {
-    public sealed class Pool<T>  where T : class, new()
+    public sealed class Pool<T> where T : class, new()
     {
         public bool AutoExpand { get; set; } = true;
 
@@ -14,14 +14,14 @@ namespace Engine
         private readonly Func<T, T> _initializeFunc;
         private readonly Action<T> _onTakeFunc;
         private readonly Action<T> _resetFunc;
-        private readonly Func<T, bool> _isActiveFunc;
+
         private readonly Action<T, bool> _setActiveFunc;
 
         public Pool(int initialCount,
                     Func<T, T> initializeFunc = null,
                     Action<T> onTakeFunc = null,
                     Action<T> resetFunc = null,
-                    Func<T, bool> isActiveFunc = null,
+
                     Action<T, bool> setActiveFunc = null,
                     bool autoExpand = true)
         {
@@ -33,7 +33,7 @@ namespace Engine
             _initializeFunc = initializeFunc ?? (obj => obj);
             _onTakeFunc = onTakeFunc ?? (_ => { });
             _resetFunc = resetFunc ?? (_ => { });
-            _isActiveFunc = isActiveFunc ?? (_ => true);
+
             _setActiveFunc = setActiveFunc ?? ((_, __) => { });
 
             CreatePool(initialCount);

@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Client;
 using Engine;
-using Spacebox.Game.GUI;
-
 using OpenTK.Mathematics;
+using Spacebox.Client;
+using Spacebox.Game.GUI;
+using System;
 
 
 namespace Spacebox.Game.Player
@@ -27,6 +28,11 @@ namespace Spacebox.Game.Player
             Position = _targetPosition;
             _currentRotation = _targetRotation;
 
+            AttachComponent(new NetworkNode3DComponent(false));
+
+            if (ClientNetwork.Instance != null)
+                AttachComponent(new NetworkIdentity(player.ID, false));
+            else Debug.Error("[RemoteAstronaut] Attach NetworkIdentity");
         }
 
 
@@ -49,8 +55,8 @@ namespace Spacebox.Game.Player
         {
             NetworkData = updatedPlayer;
 
-            _targetPosition = updatedPlayer.Position.ToOpenTKVector3();
-            _targetRotation = new Quaternion(updatedPlayer.Rotation.X, updatedPlayer.Rotation.Y, updatedPlayer.Rotation.Z, updatedPlayer.Rotation.W);
+            //_targetPosition = updatedPlayer.Position.ToOpenTKVector3();
+           // _targetRotation = new Quaternion(updatedPlayer.Rotation.X, updatedPlayer.Rotation.Y, updatedPlayer.Rotation.Z, updatedPlayer.Rotation.W);
 
             if (_nameTag != null)
             {
@@ -61,15 +67,14 @@ namespace Spacebox.Game.Player
 
         public override void Update()
         {
-            Position = Vector3.Lerp(Position, _targetPosition, Time.Delta * 10f);
-            _currentRotation = Quaternion.Slerp(_currentRotation, _targetRotation, Time.Delta * 10f);
+            //Position = Vector3.Lerp(Position, _targetPosition, Time.Delta * 10f);
+            //_currentRotation = Quaternion.Slerp(_currentRotation, _targetRotation, Time.Delta * 10f);
 
-            Rotation = Node3D.QuaternionToEuler(_currentRotation);
+           // Rotation = Node3D.QuaternionToEuler(_currentRotation);
 
             if (_nameTag != null)
             {
-                var up = Vector3.Transform(Vector3.UnitY, _currentRotation);
-                _nameTag.WorldPosition = Position + up * 1.8f;
+                _nameTag.WorldPosition = Position + UpLocal * 0.9f;
             }
 
             base.Update();

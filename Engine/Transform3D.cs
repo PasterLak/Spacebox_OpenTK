@@ -59,6 +59,8 @@ namespace Engine
                    : local;
         }
 
+
+
         public void ResetTransform()
         {
             _position = Vector3.Zero;

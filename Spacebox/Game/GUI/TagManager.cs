@@ -31,7 +31,7 @@ namespace Spacebox.Game.GUI
                 initializeFunc: tag => tag,
                 onTakeFunc: null,
                 resetFunc: tag => tag.Reset(),
-                isActiveFunc: tag => tag.Visible,
+              
                 setActiveFunc: (tag, active) => tag.Visible = active,
                 autoExpand: true
             );
