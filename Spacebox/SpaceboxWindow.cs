@@ -36,10 +36,10 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
         _screenshotAudio = new AudioSource(Resources.Load<AudioClip>("screenshot", true));
 
 #if DEBUG
-        SceneManager.Load<PlaygroundScene>();
+        SceneManager.Load<MenuScene>();
 #else
-        SceneManager.Load<PlaygroundScene>();
-#endif
+        SceneManager.Load<MenuScene>();
+#endif                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
     }
 
     protected override void OnResize(ResizeEventArgs e)

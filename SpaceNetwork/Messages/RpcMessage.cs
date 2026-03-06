@@ -1,5 +1,4 @@
-﻿using System;
-using Lidgren.Network;
+﻿using Lidgren.Network;
 
 namespace SpaceNetwork.Messages
 {
@@ -9,7 +8,7 @@ namespace SpaceNetwork.Messages
     public class RpcMessage : BaseMessage
     {
         public int NetworkId { get; set; }
-        public int TargetId { get; set; } = -1; // -1 eveyone
+        public int TargetId { get; set; } = -1; // -1 everyone
         public string MethodName { get; set; }
         public object[] Parameters { get; set; }
 

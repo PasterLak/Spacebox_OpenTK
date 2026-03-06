@@ -1,83 +1,62 @@
-﻿
+﻿using System.Collections.Generic;
+
 namespace Engine
 {
+
+    public interface IEvent { }
+
+    public interface IEventListener<T> where T : struct, IEvent
+    {
+        void OnEvent(ref T eventData);
+    }
+
     public static class EventBus
     {
-        static readonly Dictionary<Type, List<Subscription>> _subscriptions = new();
-        static readonly object _sync = new();
-
-        public static IDisposable Subscribe<T>(Action<T> handler)
+        public static void Subscribe<T>(IEventListener<T> listener) where T : struct, IEvent
         {
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
-            var sub = new Subscription(typeof(T), msg => handler((T)msg), Unsubscribe);
-            lock (_sync)
-            {
-                if (!_subscriptions.TryGetValue(typeof(T), out var list))
-                {
-                    list = new List<Subscription>();
-                    _subscriptions[typeof(T)] = list;
-                }
-                list.Add(sub);
-            }
-            return sub;
+            EventBusInternal<T>.Subscribe(listener);
         }
 
-        public static void Publish<T>(T message)
+        public static void Unsubscribe<T>(IEventListener<T> listener) where T : struct, IEvent
         {
-            if (message == null) return;
-            List<Subscription> list;
-            lock (_sync)
+            EventBusInternal<T>.Unsubscribe(listener);
+        }
+
+        public static void Publish<T>(ref T eventData) where T : struct, IEvent
+        {
+            EventBusInternal<T>.Publish(ref eventData);
+        }
+
+    }
+
+    internal static class EventBusInternal<T> where T : struct, IEvent
+    {
+        private static readonly List<IEventListener<T>> _listeners = new List<IEventListener<T>>();
+
+        public static void Subscribe(IEventListener<T> listener)
+        {
+            if (!_listeners.Contains(listener))
             {
-                if (!_subscriptions.TryGetValue(typeof(T), out list)) return;
-                list = new List<Subscription>(list);
+                _listeners.Add(listener);
             }
-            foreach (var sub in list)
+        }
+
+        public static void Unsubscribe(IEventListener<T> listener)
+        {
+            _listeners.Remove(listener);
+        }
+
+        public static void Publish(ref T eventData)
+        {
+            for (int i = 0; i < _listeners.Count; i++)
             {
-                try { sub.Handler(message); }
-                catch { Debug.Error("[EventBus] error in Publish"); }
+                _listeners[i].OnEvent(ref eventData);
             }
         }
 
         public static void Clear()
         {
-            lock (_sync)
-            {
-                _subscriptions.Clear();
-            }
-        }
-
-        static void Unsubscribe(Subscription sub)
-        {
-            lock (_sync)
-            {
-                if (_subscriptions.TryGetValue(sub.EventType, out var list))
-                {
-                    list.Remove(sub);
-                    if (list.Count == 0) _subscriptions.Remove(sub.EventType);
-                }
-            }
-        }
-
-        sealed class Subscription : IDisposable
-        {
-            public readonly Type EventType;
-            public readonly Action<object> Handler;
-            readonly Action<Subscription> _onDispose;
-            bool _disposed;
-
-            public Subscription(Type eventType, Action<object> handler, Action<Subscription> onDispose)
-            {
-                EventType = eventType;
-                Handler = handler;
-                _onDispose = onDispose;
-            }
-
-            public void Dispose()
-            {
-                if (_disposed) return;
-                _disposed = true;
-                _onDispose(this);
-            }
+            _listeners.Clear();
         }
     }
 }
