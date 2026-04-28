@@ -5,7 +5,7 @@ namespace Engine.Utils
 {
     public static class SeedHelper
     {
-        // procedural IDs are always non-negative
+        // procedural IDs are always positive, so we can use the sign bit for dynamic entities
         private const long PROCEDURAL_MASK = 0x7FFFFFFFFFFFFFFF;
 
 

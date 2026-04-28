@@ -147,6 +147,17 @@
                     }
                 ]
             },
+              "magnet": {
+                "Name": "Block magnet",
+                "Description": "Magnet mode while building",
+                "Category": "Interactions",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "M"
+                    }
+                ]
+            },
              "shoot": {
                 "Name": "Shoot",
                 "Description": "Shoot with weapon",

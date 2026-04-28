@@ -16,6 +16,8 @@ namespace Engine
 
         private static PlatformName CheckPlatform()
         {
+
+           
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 return PlatformName.Windows;

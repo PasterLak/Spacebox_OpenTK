@@ -245,7 +245,7 @@ public class BlockSelector : Node3D
             }
         }
 
-        if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.M))
+        if (Input.IsActionDown("magnet"))
         {
             EnableMagnet = !EnableMagnet;
         }
