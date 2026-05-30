@@ -23,7 +23,6 @@ public class Projectile : Node3D
     private float distanceTraveled = 0;
     private byte currentRicochets = 0;
     private byte currentDamage = 0;
-    private bool canRicochet = false;
 
     private LineRenderer lineRenderer;
     private Ray ray;
@@ -38,7 +37,7 @@ public class Projectile : Node3D
 
     private const int MaxDamageForSound = 100;
 
-    public bool HasOwer(out LocalAstronaut owner)
+    public bool HasOwer(out LocalAstronaut? owner)
     {
         owner = astronaut;
         return astronaut != null;
@@ -66,7 +65,6 @@ public class Projectile : Node3D
 
         Enabled = true;
         currentDamage = parameters.DamageBlocks;
-        canRicochet = parameters.RicochetAngle > 0;
         SpawnPosition = ray.Origin;
         Position = ray.Origin;
         Rotation = Vector3.Zero;
@@ -75,18 +73,24 @@ public class Projectile : Node3D
 
         SetLineRenderer();
         SetSounds();
+        SetLight(parameters.Color3);
 
-        if (useLight)
-        {
-            light = PointLightsPool.Take();
-            light.Range = 4;
-            light.Diffuse = parameters.Color3;
-            light.Specular = Vector3.Zero;
-            light.Enabled = true;
-        }
 
         OnSpawn?.Invoke(this);
         return this;
+    }
+
+    private void SetLight(Vector3 color)
+    {
+
+        if (!useLight) return;
+        
+            light = PointLightsPool.Take();
+            light.Range = 4;
+            light.Diffuse = color;
+            light.Specular = Vector3.Zero;
+            light.Enabled = true;
+        
     }
 
     private void SetLineRenderer()
@@ -194,7 +198,7 @@ public class Projectile : Node3D
 
     private bool TryRicochet(HitInfo hit)
     {
-        if (!canRicochet || currentRicochets >= Parameters.PossibleRicochets) return false;
+        if (Parameters.RicochetAngle <= 0 || currentRicochets >= Parameters.PossibleRicochets) return false;
 
         var angle = Ray.CalculateIncidentAngle(ray, hit.normal);
         if (angle > Parameters.RicochetAngle) return false;

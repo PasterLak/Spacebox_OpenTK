@@ -1,6 +1,7 @@
 ﻿
 using Engine.Graphics;
 using Engine.Multithreading;
+using Engine.Utils;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SkiaSharp;
@@ -289,6 +290,19 @@ namespace Engine
             pixels = newColorPixels;
             _isDirty = true;
         }
+
+        public void SetRawBytes(byte[] rawData)
+        {
+            if (rawData.Length != Width * Height * 4)
+                throw new ArgumentException("[Texture2D] Raw data length does not match texture dimensions (expected Width * Height * 4 bytes).");
+
+            Use();
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0,
+                OpenTK.Graphics.OpenGL4.PixelFormat.Rgba, PixelType.UnsignedByte, rawData);
+
+            _isDirty = false;
+        }
         private void EnsureCpuPixels()
         {
             if (pixels != null) return;
@@ -326,7 +340,8 @@ namespace Engine
                 WorkerPoolManager.Enqueue((e) =>
                 {
                     SaveImageJpg(path, 90, flipY);
-                    Debug.Log("SCR saved: " + Time.Total);
+
+                   // Debug.Log("SCR saved: " + Time.Total);
 
                 }, WorkerPoolManager.Priority.High);
 
@@ -338,32 +353,39 @@ namespace Engine
 
         }
 
-        private void SaveImageJpg(string path, int quality = 90, bool flipY = false)
+        private unsafe void SaveImageJpg(string path, int quality = 90, bool flipY = false)
         {
-            using var surface = SKSurface.Create(new SKImageInfo(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul));
-            var canvas = surface.Canvas;
+            var info = new SKImageInfo(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            using var bitmap = new SKBitmap(info);
 
-            for (int y = 0; y < Height; y++)
+            byte* rowPtr = (byte*)bitmap.GetPixels();
+            int stride = info.RowBytes;
+
+            Parallel.For(0, Height, y =>
             {
                 int targetY = flipY ? Height - 1 - y : y;
+                byte* currentPixel = rowPtr + (targetY * stride);
+
                 for (int x = 0; x < Width; x++)
                 {
-                    var color = pixels[x, y];
-                    var skColor = new SKColor(
-                        (byte)(color.R * 255),
-                        (byte)(color.G * 255),
-                        (byte)(color.B * 255),
-                        (byte)(color.A * 255));
-                    canvas.DrawPoint(x, targetY, skColor);
+                    Color4 color = pixels[x, y];
+
+                    currentPixel[0] = (byte)(color.R * 255f);
+                    currentPixel[1] = (byte)(color.G * 255f);
+                    currentPixel[2] = (byte)(color.B * 255f);
+                    currentPixel[3] = (byte)(color.A * 255f);
+
+                    currentPixel += 4;
                 }
+            });
+
+            using (var image = SKImage.FromBitmap(bitmap))
+            using (var data = image.Encode(SKEncodedImageFormat.Jpeg, quality))
+            using (var stream = File.OpenWrite(path))
+            {
+                data.SaveTo(stream);
             }
 
-            using var image = surface.Snapshot();
-            using var data = image.Encode(SKEncodedImageFormat.Jpeg, quality);
-            using var stream = File.OpenWrite(path);
-            data.SaveTo(stream);
-
-            Debug.Success($"[Texture2D] JPEG image saved to: {Path.GetFullPath(path)} , Size X:{Width} Y:{Height}");
         }
 
         private void SaveImage(string path, bool flipY = false)

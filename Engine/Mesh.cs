@@ -28,7 +28,6 @@ namespace Engine
             this.buffer = buffer;
             _indexCount = indices.Length;
 
-            //  FloatsPerVertex = buffer.FloatsPerVertex;
             buffer.BindBuffer(ref vertices, ref indices);
          
             buffer.SetAttributes();

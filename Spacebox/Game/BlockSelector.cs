@@ -276,6 +276,7 @@ public class BlockSelector : Node3D
     public override void OnGUI()
     {
         if (!Settings.ShowInterface) return;
+        if (Debug.IsVisible) return;
         base.OnGUI();
 
         if (_magnetTextTimer > 0)

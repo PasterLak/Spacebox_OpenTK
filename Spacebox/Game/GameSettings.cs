@@ -165,7 +165,7 @@ namespace Spacebox.Game
         public static void Save(GameSettings settings)
         {
             var p = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
-            string path = Path.Combine(p, "Settings.json");
+            string path = Path.Combine(p, "settings.json");
             var dir = Path.GetDirectoryName(path);
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
             var json = JsonSerializer.Serialize(settings, JsonOpts);

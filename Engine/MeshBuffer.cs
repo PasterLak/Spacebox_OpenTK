@@ -23,9 +23,6 @@ namespace Engine
         public byte FloatsPerVertex { get; private set; } = 0;
         public bool IsDisposed { get ; set ; }
 
-        private bool _isGenerated = false;
-       
-
         public MeshBuffer(BufferAttribute[] attributes)
         {
             GenBuffer();

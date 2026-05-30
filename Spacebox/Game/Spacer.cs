@@ -43,7 +43,7 @@ namespace Spacebox.Game
             Health = new StatsData();
             Health.MaxValue = 20;
             Health.Value = 20;
-            Health.OnValueChanged += OnHit;
+          
             Health.OnEqualZero += OnKilled;
             Storage = new Storage(3, 3);
             Storage.Name = Name;
@@ -84,10 +84,6 @@ namespace Spacebox.Game
             return ray.Intersects(collision, out distance);
 
         }
-        private void OnHit()
-        {
-
-        }
 
         private void GenerateLoot()
         {
@@ -111,8 +107,6 @@ namespace Spacebox.Game
                 storage.TryAddItem(item.Item, (byte)item.Quantity);
 
             }
-
-
         }
 
         public override void Update()
@@ -135,11 +129,12 @@ namespace Spacebox.Game
                     CenteredText.SetText("Press RMB to open");
                     CenteredText.Show();
 
-                    if (Input.IsMouseButtonDown(MouseButton.Right))
+                    if (Input.IsActionDown("use"))
                     {
                         if (!lootWasGenerated)
                             GenerateLoot();
                         StorageUI.OpenStorage(Storage, cam);
+                        CenteredText.Hide();
                     }
                 }
 

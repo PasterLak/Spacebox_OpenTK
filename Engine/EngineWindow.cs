@@ -17,7 +17,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Collections.Concurrent;
 
 namespace Engine
-{
+{  
     public abstract class EngineWindow : GameWindow
     {
         public static EngineWindow Instance { get; private set; }
@@ -29,7 +29,7 @@ namespace Engine
         private bool _debugUI = false;
         private ImGuiController _controller;
         private PostProcessManager _processManager;
-        private Vector2i _minimizedWindowSize;
+        private Vector2i _minimizedWindowSize; 
         private SceneRenderer _sceneRenderer;
         private FullscreenRenderer _fullscreenRenderer;
         private InputManager _inputManager;

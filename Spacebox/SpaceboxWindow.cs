@@ -48,6 +48,12 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
 
     }
 
+    protected override void OnUnload()
+    {
+
+        base.OnUnload();
+    }
+
     protected override void OnRegisterScenes()
     {
         SceneManager.Register<MenuScene>();

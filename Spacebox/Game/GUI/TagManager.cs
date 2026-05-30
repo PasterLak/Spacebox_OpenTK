@@ -146,7 +146,7 @@ namespace Spacebox.Game.GUI
             foreach (var tag in _activeTags)
             {
                 if (!tag.Visible) continue;
-                if (CameraFrustum.IsBehindCameraDot(tag.WorldPosition, camera.PositionWorld, camera.Front))
+                if (CameraFrustum.IsBehindCamera(tag.WorldPosition, camera.PositionWorld, camera.Front))
                     continue;
 
                 _visibleTags.Add(tag);
