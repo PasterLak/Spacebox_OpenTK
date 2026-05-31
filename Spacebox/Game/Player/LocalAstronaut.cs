@@ -42,6 +42,7 @@ namespace Spacebox.Game.Player
         public Action OnDeath { get; set; }
         public InertiaController InertiaController { get; private set; } = new InertiaController();
         public CameraSway CameraSway { get; private set; } = new CameraSway();
+        public ItemSway ItemSway { get; private set; } = new ItemSway();
 
         public HitImage HitImage { get; private set; }
         public DeathScreen DeathScreen { get; private set; } = new DeathScreen();
@@ -93,7 +94,6 @@ namespace Spacebox.Game.Player
 
             HitImage = new HitImage();
 
-
             ItemLight = new PointLight();
             ItemLight.Diffuse = new Vector3(0.2f, 1, 0.2f);
             ItemLight.Specular = Vector3.Zero;
@@ -112,8 +112,6 @@ namespace Spacebox.Game.Player
             {
                 if (IsAlive) _canMove = state;
             };
-
-
 
             AddChild(Effects);
 
@@ -142,21 +140,15 @@ namespace Spacebox.Game.Player
             DeathScreen.OnRespawn += Revive;
             Flashlight.OnEnabledChanged += (b) => { PanelUI.SetFlashlight(this); };
 
-
             AttachComponent(new NetworkNode3DComponent(true));
 
             if (ClientNetwork.Instance != null)
                 rpc = AttachComponent(new NetworkIdentity(ClientNetwork.Instance.LocalPlayerId, true));
-          
-
-
         }
 
         public override void Start()
         {
             base.Start();
-
-            
         }
 
         private void SetData()
@@ -195,17 +187,13 @@ namespace Spacebox.Game.Player
             PanelUI.SetSelectedSlot(0);
         }
 
-
-
         public override void Update()
         {
             base.Update();
 
-
             Matrix4 viewMatrix = GetViewMatrix();
             Matrix4 projectionMatrix = GetProjectionMatrix();
             Frustum.UpdateFrustum(this);
-
 
             _gameModeBase.UpdateInteraction(this);
             _gameModeBase.Update(this);
@@ -216,6 +204,10 @@ namespace Spacebox.Game.Player
             if (!IsMain) return;
 
             _gameModeBase.HandleInput(this);
+
+            ItemSway.EnableSway = CanMove;
+       
+            ItemSway.Update(InertiaController.Velocity, Front);
 
             if (!CanMove) return;
 
@@ -236,7 +228,7 @@ namespace Spacebox.Game.Player
                 Debug.Log("RPC Call send!");
                 rpc?.Call(nameof(RpcColor));
             }
-         
+
 #if DEBUG
             if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.U))
             {
@@ -300,6 +292,7 @@ namespace Spacebox.Game.Player
         {
             TakeDamage(projectile.Parameters.Damage, deathCase);
         }
+
         public void TakeDamage(int damage, DeathCase? deathCase = null)
         {
             var health = HealthBar.StatsData;
@@ -408,8 +401,6 @@ namespace Spacebox.Game.Player
         {
             base.Destroy();
             _axes.Destroy();
-
-
         }
 
         public override void OnGUI()

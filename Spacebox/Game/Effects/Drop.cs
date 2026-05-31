@@ -1,4 +1,5 @@
-﻿using Engine.Physics;
+﻿using Engine;
+using Engine.Physics;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
 
@@ -57,10 +58,11 @@ public class Drop : IDisposable
         TimeRemaining = lifetime;
     }
 
-    public void Update(float deltaTime)
+    public void Update()
     {
         if (!IsActive) return;
 
+        var deltaTime = Time.Delta;
         TimeRemaining -= deltaTime;
         _age += deltaTime;
 

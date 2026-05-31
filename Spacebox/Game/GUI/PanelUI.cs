@@ -1,12 +1,13 @@
-﻿using System.Numerics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
+﻿using Client;
 using Engine;
-using Spacebox.Game.Player;
 using Engine.Audio;
-using Spacebox.Game.Player.Interactions;
-using Spacebox.Game.Player.GameModes;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation;
-using Client;
+using Spacebox.Game.Player;
+using Spacebox.Game.Player.GameModes;
+using Spacebox.Game.Player.Interactions;
+using System.Numerics;
 
 
 namespace Spacebox.Game.GUI
@@ -227,18 +228,20 @@ namespace Spacebox.Game.GUI
             {
                 if (ItemModel.Enabled)
                 {
-                    ItemModel.EnableSway = Player.CanMove;
+                    if (Player != null && Player.ItemSway != null)
+                    {
+                        ItemModel.SwayMatrix = Player.ItemSway.GetSwayMatrix();
+                    }
+                    else
+                    {
+                        ItemModel.SwayMatrix = Matrix4.Identity;
+                    }
                     ItemModel.Update();
-
                 }
-
             }
 
             if (InventoryUI.IsVisible) return;
             UpdateInput();
-
-
-
         }
 
         private static void UpdatePlayerInteraction(LocalAstronaut player)
@@ -410,7 +413,7 @@ namespace Spacebox.Game.GUI
                     slot.Clear();
                 if (Input.IsMouseButton(MouseButton.Left))
                 {
-                    Vector2 mousePos = Input.Mouse.Position.ToSystemVector2();
+                    var mousePos = Input.Mouse.Position.ToSystemVector2();
                 }
             }
         }

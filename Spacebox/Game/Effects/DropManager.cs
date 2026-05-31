@@ -298,7 +298,7 @@ namespace Spacebox.Game.Effects
             foreach (var drop in _activeDrops)
             {
                 var wasStopped = drop.IsStopped;
-                drop.Update(Time.Delta);
+                drop.Update();
 
                 if (drop.IsExpired)
                 {
