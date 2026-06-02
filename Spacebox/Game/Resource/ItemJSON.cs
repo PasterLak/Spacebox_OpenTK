@@ -55,4 +55,5 @@ public class WeaponItemJSON : ItemJSON
     public float AnimationSpeed { get; set; } = 1f;
     public string Projectile { get; set; } = "";
     public string ShotSound { get; set; } = "";
+    public string Ammo { get; set; } = "";
 }

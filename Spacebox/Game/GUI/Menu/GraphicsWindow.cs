@@ -1,6 +1,7 @@
 ﻿using Engine;
 using Engine.Light;
 using ImGuiNET;
+using Spacebox.Game.Events;
 using Spacebox.Game.Generation;
 using System.Numerics;
 using static Spacebox.Game.GUI.Menu.ControlsWindow;
@@ -27,22 +28,22 @@ namespace Spacebox.Game.GUI.Menu
             this.menu = menu;
         }
 
-    
+
         public override void Render()
         {
 
-            _vsync =Settings.Graphics.VSync;
+            _vsync = Settings.Graphics.VSync;
             _ao = Settings.Graphics.AO;
             _voxelLighting = Settings.Graphics.VoxelLighting;
             _postProcessing = Settings.Graphics.PostProcessing;
-            _shadows =Settings.Graphics.Shadows;
+            _shadows = Settings.Graphics.Shadows;
             _enableEffects = Settings.Graphics.EffectsEnabled;
             _fov = Settings.Graphics.Fov;
             _resolution = Settings.Graphics.ResolutionScalePercent;
             _modeIndex = (int)Settings.Graphics.WindowMode;
-         
 
-            SettingsUI.Render("Graphics", "Graphics",  5,
+
+            SettingsUI.Render("Graphics", "Graphics", 5,
                 (listSize, rowH) =>
                 {
                     ImGui.BeginTable("table##graphics", 2, ImGuiTableFlags.NoBordersInBody);
@@ -55,7 +56,7 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
                     ImGui.Text("Window Mode");
-                    
+
                     ImGui.TableNextColumn();
                     ImGui.SetNextItemWidth(totalW * 0.28f);
                     ImGui.Combo("##winmode", ref _modeIndex, _modes, _modes.Length);
@@ -65,7 +66,7 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.TableNextColumn();
 
                     ImGui.Text("VSync");
-                  
+
                     ImGui.TableNextColumn();
                     ImGui.Dummy(dummyOffset); ImGui.SameLine();
                     ImGui.Checkbox("##vsync", ref _vsync);
@@ -95,11 +96,11 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
                     ImGui.Text("Post Processing");
-                    
-                
+
+
                     ImGui.TableNextColumn();
                     ImGui.Dummy(dummyOffset); ImGui.SameLine();
-                    ImGui.Checkbox("##bloom", ref _postProcessing );
+                    ImGui.Checkbox("##bloom", ref _postProcessing);
                     UIHelper.ShowTooltip("Applies visual enhancements like bloom, color grading, and depth of field");
 
                     ImGui.TableNextRow();
@@ -109,19 +110,19 @@ namespace Spacebox.Game.GUI.Menu
                     ImGui.Dummy(dummyOffset); ImGui.SameLine();
                     ImGui.Checkbox("##shadows", ref _shadows);
 
-                    ImGui.TableNextRow(); 
+                    ImGui.TableNextRow();
                     ImGui.TableNextColumn();
                     ImGui.Text("Enable Effects");
                     ImGui.TableNextColumn();
                     ImGui.Dummy(dummyOffset); ImGui.SameLine();
-                   
+
                     ImGui.Checkbox("##mblur", ref _enableEffects);
                     UIHelper.ShowTooltip("Toggles visual effects such as particles, dust");
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
                     ImGui.Text("FOV");
-                  
+
                     ImGui.TableNextColumn();
                     ImGui.SetNextItemWidth(totalW * 0.28f);
                     ImGui.SliderInt("##fov", ref _fov, 50, 120);
@@ -139,15 +140,29 @@ namespace Spacebox.Game.GUI.Menu
 
                     ImGui.EndTable();
 
-                   
-                },
-                () => { menu.Click1.Play(); menu.SetStateToOptions();
-                    SettingsService.Save(Settings.AsGameSettings());
-
 
                 },
-                () => { menu.Click1.Play(); menu.SetStateToOptions();
-                    SettingsService.Save(Settings.AsGameSettings());
+                () =>
+                {
+                    menu.Click1.Play(); menu.SetStateToOptions();
+                    var settings = Settings.AsGameSettings();
+                    SettingsService.Save(settings);
+
+                    var gfxEvent = new GraphicsSettingsChangedEvent { NewSettings = settings.Graphics };
+                    EventBus.Publish(ref gfxEvent);
+                    
+                    Debug.Log("Graphics settings saved and applied");
+                },
+                () =>
+                {
+                    menu.Click1.Play(); menu.SetStateToOptions();
+                    var settings = Settings.AsGameSettings();
+                    SettingsService.Save(settings);
+
+                    var gfxEvent = new GraphicsSettingsChangedEvent { NewSettings = settings.Graphics };
+                    EventBus.Publish(ref gfxEvent);
+                    Debug.Log("Graphics settings saved and applied");
+
                 }
             );
 
@@ -161,12 +176,12 @@ namespace Spacebox.Game.GUI.Menu
             Settings.Graphics.EffectsEnabled = _enableEffects;
             Settings.Graphics.Fov = _fov;
             Settings.Graphics.ResolutionScalePercent = _resolution;
-          
-            if(_modes[_modeIndex] == "Fullscreen")
+
+            if (_modes[_modeIndex] == "Fullscreen")
             {
                 Settings.Graphics.WindowMode = WindowMode.Fullscreen;
             }
-            else if(_modes[_modeIndex] == "Borderless")
+            else if (_modes[_modeIndex] == "Borderless")
             {
                 Settings.Graphics.WindowMode = WindowMode.Borderless;
             }

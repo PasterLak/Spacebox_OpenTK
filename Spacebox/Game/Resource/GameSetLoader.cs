@@ -15,6 +15,22 @@ public static class GameSetLoader
     public static ModConfig ModInfo;
     private static string modPath;
 
+    private static readonly Queue<Action> _postLoadActions = new Queue<Action>();
+
+    public static void EnqueuePostLoadAction(Action action)
+    {
+        _postLoadActions.Enqueue(action);
+    }
+
+    private static void ExecutePostLoadActions()
+    {
+        while (_postLoadActions.Count > 0)
+        {
+            _postLoadActions.Dequeue()?.Invoke();
+        }
+
+    }
+
     public static void Unload()
     {
         if (ModInfo != null)
@@ -83,6 +99,8 @@ public static class GameSetLoader
         Generation.World.WorldGenerator = generator;
 
         Theme.LoadThemeColors(ModInfo.ModPath);
+
+        ExecutePostLoadActions();
 
         Debug.Success($"[GameSetLoader] Mod '{modId}' loaded successfully.");
 
@@ -810,6 +828,15 @@ public static class GameSetLoader
         weaponItem.Recoil = data.Recoil;
         weaponItem.Spread = data.Spread;
         weaponItem.Id_string = id;
+        weaponItem.NeedsAmmo = !string.IsNullOrEmpty(data.Ammo);
+
+        if (weaponItem.NeedsAmmo)
+        {
+            EnqueuePostLoadAction(() =>
+            {
+                weaponItem.Ammo = GameAssets.GetItemByFullID(CombineId(ModInfo.ModId, data.Ammo));
+            });
+        }
 
         if (GameAssets.Sounds.ContainsKey(data.ShotSound))
         {

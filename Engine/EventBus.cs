@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Engine
 {
-
     public interface IEvent { }
 
     public interface IEventListener<T> where T : struct, IEvent
@@ -12,6 +13,28 @@ namespace Engine
 
     public static class EventBus
     {
+        private static readonly object _registryLock = new object();
+        private static readonly List<Action> _clearActions = new List<Action>();
+
+        public static void RegisterClearAction(Action action)
+        {
+            lock (_registryLock)
+            {
+                _clearActions.Add(action);
+            }
+        }
+
+        public static void ClearAll()
+        {
+            lock (_registryLock)
+            {
+                for (int i = 0; i < _clearActions.Count; i++)
+                {
+                    _clearActions[i]();
+                }
+            }
+        }
+
         public static void Subscribe<T>(IEventListener<T> listener) where T : struct, IEvent
         {
             EventBusInternal<T>.Subscribe(listener);
@@ -26,37 +49,59 @@ namespace Engine
         {
             EventBusInternal<T>.Publish(ref eventData);
         }
-
     }
 
     internal static class EventBusInternal<T> where T : struct, IEvent
     {
-        private static readonly List<IEventListener<T>> _listeners = new List<IEventListener<T>>();
+        private static readonly object _lock = new object();
+        private static IEventListener<T>[] _listeners = Array.Empty<IEventListener<T>>();
+
+        static EventBusInternal()
+        {
+            EventBus.RegisterClearAction(Clear);
+        }
 
         public static void Subscribe(IEventListener<T> listener)
         {
-            if (!_listeners.Contains(listener))
+            lock (_lock)
             {
-                _listeners.Add(listener);
+                if (!_listeners.Contains(listener))
+                {
+                    var list = _listeners.ToList();
+                    list.Add(listener);
+                    _listeners = list.ToArray();
+                }
             }
         }
 
         public static void Unsubscribe(IEventListener<T> listener)
         {
-            _listeners.Remove(listener);
+            lock (_lock)
+            {
+                if (_listeners.Contains(listener))
+                {
+                    var list = _listeners.ToList();
+                    list.Remove(listener);
+                    _listeners = list.ToArray();
+                }
+            }
         }
 
         public static void Publish(ref T eventData)
         {
-            for (int i = 0; i < _listeners.Count; i++)
+            var currentListeners = _listeners;
+            for (int i = 0; i < currentListeners.Length; i++)
             {
-                _listeners[i].OnEvent(ref eventData);
+                currentListeners[i].OnEvent(ref eventData);
             }
         }
 
-        public static void Clear()
+        private static void Clear()
         {
-            _listeners.Clear();
+            lock (_lock)
+            {
+                _listeners = Array.Empty<IEventListener<T>>();
+            }
         }
     }
 }

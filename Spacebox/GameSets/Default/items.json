@@ -124,7 +124,8 @@
         "AnimationSpeed": 0.5,
         "PowerUsage": 3,
         "Projectile": "p_pistole",
-        "ShotSound": "pistole3"
+        "ShotSound": "pistole3",
+        "Ammo": ""
     },
     {
         "ID": "smg",
@@ -142,7 +143,8 @@
         "AnimationSpeed": 0.5,
         "PowerUsage": 5,
         "Projectile": "p_smg",
-        "ShotSound": "pistole3"
+        "ShotSound": "pistole3",
+        "Ammo": ""
     },
     {
         "ID": "assault_rifle",
@@ -160,7 +162,8 @@
         "AnimationSpeed": 0.6,
         "PowerUsage": 4,
         "Projectile": "p_assault",
-        "ShotSound": "pistole2"
+        "ShotSound": "pistole2",
+        "Ammo": ""
     },
     {
         "ID": "impulse_rifle",
@@ -179,6 +182,7 @@
         "PowerUsage": 30,
         "Projectile": "p_ar",
         "ShotSound": "ar",
+        "Ammo": "",
         "GlowColor": {
             "r": 163,
             "g": 84,

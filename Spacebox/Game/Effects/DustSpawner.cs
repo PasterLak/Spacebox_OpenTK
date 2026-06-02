@@ -1,16 +1,22 @@
-﻿using OpenTK.Mathematics;
-using Engine;
+﻿using Engine;
+using OpenTK.Mathematics;
+using Spacebox.Game.Events;
 
 
 namespace Spacebox.Game.Effects
 {
-    public class DustSpawner : ParticleSystem
+    public class DustSpawner : ParticleSystem, IEventListener<GraphicsSettingsChangedEvent>
     {
 
+        private int _defaultRate = 40;
         public DustSpawner() : base(new ParticleMaterial(null), null)
         {
             CreateDust(this);
             Name = "DustSpawner";
+
+            EventBus.Subscribe(this);
+            ApplySettings(Settings.Graphics.EffectsEnabled);
+
         }
 
         private static void CreateDust(ParticleSystem system)
@@ -35,7 +41,7 @@ namespace Spacebox.Game.Effects
                 Radius = 100
             };
 
-            var dust  = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/dust.png");
+            var dust = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/dust.png");
             dust.FilterMode = FilterMode.Nearest;
 
             system.Material.MainTexture = dust;
@@ -50,20 +56,30 @@ namespace Spacebox.Game.Effects
 
         }
 
-
-        public override void Update()
+        public void OnEvent(ref GraphicsSettingsChangedEvent eventData)
         {
-
-            if (Settings.Graphics.EffectsEnabled == false)
-            {
-                if (Rate > 0) Rate = 0;
-                if(ParticlesCount > 0) ClearParticles();
-                return;
-            }
-        
-            base.Update();
-
+            Debug.Log("Received GraphicsSettingsChangedEvent in DustSpawner");
+            ApplySettings(eventData.NewSettings.EffectsEnabled);
         }
+
+        private void ApplySettings(bool effectsEnabled)
+        {
+            if (effectsEnabled)
+            {
+                Rate = _defaultRate;
+            }
+            else
+            {
+                Rate = 0;
+                ClearParticles();
+            }
+        }
+        public override void Destroy()
+        {
+            EventBus.Unsubscribe(this);
+            base.Destroy();
+        }
+
 
     }
 }

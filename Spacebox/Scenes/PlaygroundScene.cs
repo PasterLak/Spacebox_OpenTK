@@ -233,7 +233,7 @@ namespace Spacebox.Scenes
 
             if (Input.IsKeyDown(Keys.R))
             {
-                RenderSpace.SwitchSpace();
+                RenderSpace.Toggle();
             }
 
             if (Input.IsKeyDown(Keys.O))

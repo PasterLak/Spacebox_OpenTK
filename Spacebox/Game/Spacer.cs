@@ -5,7 +5,6 @@ using Engine.Components.Debug;
 using Engine.Physics;
 using Engine.Utils;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
@@ -23,15 +22,14 @@ namespace Spacebox.Game
     }
     public class Spacer : Node3D, IDamageable
     {
-        protected Animator animator;
-        private StatsData Health { get; set; }
-      
-        private ColliderComponent collision;
         public Storage Storage { get; private set; }
 
-        public PlayerEffects Effects { get; private set; } = new PlayerEffects();
+        private StatsData _health;
+        private Animator _animator;
+        private ColliderComponent _collision;
+        private PlayerEffects _effects;
+        private bool _lootWasGenerated = false;
 
-        private bool lootWasGenerated = false;
         public Spacer(Vector3 pos)
         {
 
@@ -40,25 +38,25 @@ namespace Spacebox.Game
             spacerTex.FlipY();
             spacerTex.FilterMode = FilterMode.Nearest;
             Name = nameof(Spacer);
-            Health = new StatsData();
-            Health.MaxValue = 20;
-            Health.Value = 20;
-          
-            Health.OnEqualZero += OnKilled;
+            _health = new StatsData();
+            _health.MaxValue = 20;
+            _health.Value = 20;
+
+            _health.OnEqualZero += OnKilled;
             Storage = new Storage(3, 3);
             Storage.Name = Name;
 
-            collision = AttachComponent(new SphereCollider());
+            _collision = AttachComponent(new SphereCollider());
 
             Model spacerModel = new Model(GameAssets.LoadResource<Mesh>("Resources/Models/spacer.obj"),
                 new TextureMaterial(spacerTex));
             AttachComponent(new ModelRendererComponent(spacerModel));
             AttachComponent(new AxesDebugComponent());
 
-            animator = new Animator(this);
-            animator.AddAnimation(new MoveAnimation(Position, Position + new Vector3(0, 0, 1000), 5000f, false));
-            animator.AddAnimation(new RotateAnimation(Vector3.UnitX, 5f, 0f));
-            animator.AddAnimation(new RotateAnimation(Vector3.UnitY, 5f, 0f));
+            _animator = new Animator(this);
+            _animator.AddAnimation(new MoveAnimation(Position, Position + new Vector3(0, 0, 1000), 5000f, false));
+            _animator.AddAnimation(new RotateAnimation(Vector3.UnitX, 5f, 0f));
+            _animator.AddAnimation(new RotateAnimation(Vector3.UnitY, 5f, 0f));
 
             /*
             var mo = AddChild(new ItemWorldModel("Resources/Textures/Old/drill6.png", 0.1f));
@@ -67,21 +65,20 @@ namespace Spacebox.Game
             mo.Position = new Vector3(0.3f,-0.2f,-0.2f);
             */
 
-            //Effects.Parent = this;
-            AddChild(Effects);
+            _effects = AddChild(new PlayerEffects());
 
         }
 
         public void TakeDamage(Projectile projectile)
         {
-            Health.Decrement(projectile.Parameters.Damage);
-            Effects.PlayEffect(PlayerEffectType.Damage);
+            _health.Decrement(projectile.Parameters.Damage);
+            _effects.PlayEffect(PlayerEffectType.Damage);
         }
 
 
         public bool CheckCollision(Ray ray, out float distance)
         {
-            return ray.Intersects(collision, out distance);
+            return ray.Intersects(_collision, out distance);
 
         }
 
@@ -89,7 +86,7 @@ namespace Spacebox.Game
         {
             Storage.Clear();
             AddItems(Storage);
-            lootWasGenerated = true;
+            _lootWasGenerated = true;
         }
 
         private void OnKilled()
@@ -113,7 +110,7 @@ namespace Spacebox.Game
         {
             base.Update();
 
-            animator?.Update();
+            _animator?.Update();
 
             var cam = Camera.Main as LocalAstronaut;
 
@@ -121,7 +118,7 @@ namespace Spacebox.Game
 
             Ray ray = new Ray(cam.Position, cam.Front, 5f);
 
-            if (ray.Intersects(collision, out float distance))
+            if (ray.Intersects(_collision, out float distance))
             {
 
                 if (distance < 3)
@@ -131,7 +128,7 @@ namespace Spacebox.Game
 
                     if (Input.IsActionDown("use"))
                     {
-                        if (!lootWasGenerated)
+                        if (!_lootWasGenerated)
                             GenerateLoot();
                         StorageUI.OpenStorage(Storage, cam);
                         CenteredText.Hide();

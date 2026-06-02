@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Spacebox.Game.Events;
 using System;
 using System.IO;
 using System.Text.Json;
@@ -170,6 +171,8 @@ namespace Spacebox.Game
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
             var json = JsonSerializer.Serialize(settings, JsonOpts);
             File.WriteAllText(path, json);
+
+
 
             Debug.Success($"Game settings saved to {path} (schema version: {settings.Meta.SchemaVersion})");
         }

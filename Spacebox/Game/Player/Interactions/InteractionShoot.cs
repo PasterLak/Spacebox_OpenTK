@@ -1,34 +1,33 @@
 ﻿using OpenTK.Mathematics;
-
 using Engine.Audio;
 using Engine.Physics;
 using Spacebox.Game.Animations;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
-
 using Engine;
 using Spacebox.Game.Generation.Blocks;
-
+using System;
 
 namespace Spacebox.Game.Player.Interactions;
+
 public class InteractionShoot : InteractionMode
 {
-
     private AudioSource shotSound;
     private InteractiveBlock lastInteractiveBlock;
 
     private AnimatedItemModel model;
-  
+
     private ProjectileParameters projectileParameters;
     private WeaponItem weapon;
 
     private float _time = 0;
     private bool canShoot = false;
+    private Vector3 startPos;
+    private Vector3 despawnPos = Vector3.Zero;
 
     public InteractionShoot(ItemSlot itemslot)
     {
-  
         AllowReload = true;
 
         UpdateItemSlot(itemslot);
@@ -38,47 +37,35 @@ public class InteractionShoot : InteractionMode
         {
             projectileParameters = GameAssets.Projectiles[weapone.ProjectileID];
             weapon = weapone;
-            if(model != null)
-            startPos = model.Position;
+            if (model != null)
+                startPos = model.Position;
 
             if (shotSound == null)
             {
                 var v = GameAssets.Sounds;
-                shotSound = new AudioSource(v[weapone.ShotSound]); // 
+                shotSound = new AudioSource(v[weapone.ShotSound]);
                 shotSound.Volume = 1f;
             }
-
         }
-
     }
 
     public void UpdateItemSlot(ItemSlot itemslot)
     {
-
         var mod = GameAssets.ItemModels[itemslot.Item.Id];
         model = mod as AnimatedItemModel;
-
     }
+
     public override void OnEnable()
     {
         _time = 0;
         model?.SetAnimation(true);
-        //model?.PlayDrawAnimation();
-        // light.Enabled = true;
     }
 
     public override void OnDisable()
     {
-        // CenteredText.Hide();
-
-        //BlockMiningEffect.Enabled = false;
         model.Animator.Clear();
-        // model?.SetAnimation(false);
         model.Position = startPos;
-        //model?.ResetToEnd();
-
     }
-    private Vector3 startPos;
 
     private void SetSphere(Projectile p)
     {
@@ -88,10 +75,20 @@ public class InteractionShoot : InteractionMode
 
         var sphereRenderer = SpheresPool.Instance.Take();
         sphereRenderer.Activate(despawnPos);
-
     }
 
-    private Vector3 despawnPos = Vector3.Zero;
+    private bool TryConsumeAmmo(LocalAstronaut player)
+    {
+        if (!weapon.NeedsAmmo || weapon.Ammo == null) return true;
+
+        //if (player.GameMode == GameModes.GameMode.Creative) return true;
+
+        if (player.Panel.TryRemoveItem(weapon.Ammo, 1)) return true;
+
+        if (player.Inventory.TryRemoveItem(weapon.Ammo, 1)) return true;
+
+        return false;
+    }
 
     public override void Update(LocalAstronaut player)
     {
@@ -100,6 +97,7 @@ public class InteractionShoot : InteractionMode
             canShoot = false;
             return;
         }
+
         if (_time < weapon.ReloadTime * 0.05f)
         {
             _time += Time.Delta;
@@ -110,16 +108,22 @@ public class InteractionShoot : InteractionMode
 
             if (canShoot == false && Input.IsAction("shoot") && ToggleManager.OpenedWindowsCount < 1 && !Debug.IsVisible)
             {
+                // Проверяем наличие патронов ПЕРЕД тем, как проигрывать анимацию и звук
+                if (!TryConsumeAmmo(player))
+                {
+                    // Патронов нет - можно добавить звук осечки (щелчок) здесь
+                    return;
+                }
+
                 canShoot = true;
                 model?.SetAnimation(false);
                 model?.SetAnimation(true);
-                //model.Position = startPos;
                 model.Animator.Clear();
                 if (model != null)
-                    //model.Animator.speed =  1f ;
+                {
                     model.Animator.AddAnimation(new ShootAnimation(startPos, model.Position - new Vector3(0.001f * weapon.AnimationPushback, 0, 0), 0.05f));
-                model.Animator.speed = weapon.AnimationSpeed;
-                //model?.SetAnimation(true);
+                    model.Animator.speed = weapon.AnimationSpeed;
+                }
 
                 Random random = new Random();
 
@@ -128,7 +132,6 @@ public class InteractionShoot : InteractionMode
                 player.PlayerStatistics.ShotsFired++;
             }
         }
-
 
         if (!player.CanMove)
         {
@@ -163,25 +166,20 @@ public class InteractionShoot : InteractionMode
 
             if (projectileParameters.Name == "p_ar")
             {
-              
                 projectile.OnDespawn += SetSphere;
             }
-               
 
             var projectileSpawnPos = Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.25f;
 
             var shotDir = WeaponItem.CalculateSpreadCone(weapon, player.Front);
             var shotRay = new Ray(projectileSpawnPos, shotDir, 1f);
 
-            projectile.Initialize(shotRay,
-                ref projectileParameters, player);
+            projectile.Initialize(shotRay, ref projectileParameters, player);
 
             ApplyRecoil(player, weapon, shotRay.Direction, projectileParameters);
 
             _time = 0;
-
         }
-
     }
 
     public static void ApplyRecoil(LocalAstronaut player, WeaponItem weapon, Vector3 shootDirection, ProjectileParameters projectileParams)
@@ -198,5 +196,4 @@ public class InteractionShoot : InteractionMode
         player.InertiaController.ApplyInput(recoilImpulse);
         player.InertiaController.Velocity += recoilImpulse;
     }
-
 }

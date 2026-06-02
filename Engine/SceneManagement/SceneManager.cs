@@ -146,7 +146,7 @@ namespace Engine.SceneManagement
 
                 InputManager0.RemoveAllActions(true);
 
-                //EventBus.Clear();
+                EventBus.ClearAll();
                 Camera.Main = null;
                 Resources.UnloadAll();
                 VisualDebug.Clear();

@@ -25,46 +25,57 @@ namespace Spacebox.Game.Player
         private Vector3 _currentSwayRotation = Vector3.Zero;
         private float _currentOffset = 0f;
 
+        private Matrix4 _cachedMatrix = Matrix4.Identity;
+        private bool _isDirty = true;
+
         public Matrix4 GetSwayMatrix()
         {
-            Matrix4 rotation = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(_currentSwayRotation.X)) *
-                               Matrix4.CreateRotationY(MathHelper.DegreesToRadians(_currentSwayRotation.Y)) *
-                               Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(_currentSwayRotation.Z));
-
-            Matrix4 translation = Matrix4.CreateTranslation(
-                PushBackAxis.X * _currentOffset,
-                PushBackAxis.Y * _currentOffset,
-                PushBackAxis.Z * _currentOffset
-            );
-
-            return rotation * translation;
+            if (_isDirty)
+            {
+                RecalculateMatrix();
+                _isDirty = false;
+            }
+            return _cachedMatrix;
         }
 
         public void Update(Vector3 velocity, Vector3 playerFront)
         {
             if (!EnableSway)
             {
-                _currentSwayRotation = Vector3.Lerp(_currentSwayRotation, Vector3.Zero, DampingFactor * Time.Delta);
-                _currentOffset = Lerp(_currentOffset, 0f, ReturnSmoothing * Time.Delta);
+                ReturnToOrigin();
                 return;
             }
 
-            Vector2 mouseDelta = Input.Mouse.Delta;
+            UpdateSway(Input.Mouse.Delta);
+            UpdatePushback(velocity, playerFront);
 
+            _isDirty = true;
+        }
+
+        private void UpdateSway(Vector2 mouseDelta)
+        {
             float swayX = Math.Clamp(-mouseDelta.X * SwayMultiplier, -MaxSwayAngle, MaxSwayAngle);
             float swayY = Math.Clamp(-mouseDelta.Y * SwayMultiplier, -MaxSwayAngle, MaxSwayAngle);
 
-            Vector3 targetSway = new Vector3(swayY, -swayX, 0);
-            _currentSwayRotation = Vector3.Lerp(_currentSwayRotation, targetSway, DampingFactor * Time.Delta);
+            Vector3 targetSway = new Vector3(
+                MathHelper.DegreesToRadians(swayY),
+                MathHelper.DegreesToRadians(-swayX),
+                0f
+            );
 
+            _currentSwayRotation = Vector3.Lerp(_currentSwayRotation, targetSway, DampingFactor * Time.Delta);
+        }
+
+        private void UpdatePushback(Vector3 velocity, Vector3 playerFront)
+        {
             float speedDot = Vector3.Dot(velocity, playerFront);
             float targetOffset = 0f;
 
-            if (speedDot > 0)
+            if (speedDot > 0f)
             {
                 targetOffset = Math.Min(speedDot * speedDot * PushBackMultiplier, MaxPushBack);
             }
-            else
+            else if (speedDot < 0f)
             {
                 targetOffset = Math.Max(-(speedDot * speedDot * PullForwardMultiplier), -MaxPullForward);
             }
@@ -73,7 +84,33 @@ namespace Spacebox.Game.Player
             _currentOffset = Lerp(_currentOffset, targetOffset, smoothing * Time.Delta);
         }
 
-        private float Lerp(float a, float b, float t)
+        private void ReturnToOrigin()
+        {
+            if (_currentSwayRotation == Vector3.Zero && Math.Abs(_currentOffset) < 0.0001f)
+            {
+                _currentOffset = 0f;
+                return;
+            }
+
+            _currentSwayRotation = Vector3.Lerp(_currentSwayRotation, Vector3.Zero, DampingFactor * Time.Delta);
+            _currentOffset = Lerp(_currentOffset, 0f, ReturnSmoothing * Time.Delta);
+            _isDirty = true;
+        }
+
+        private void RecalculateMatrix()
+        {
+            Quaternion rotation = Quaternion.FromEulerAngles(_currentSwayRotation);
+
+            Vector3 translation = new Vector3(
+                PushBackAxis.X * _currentOffset,
+                PushBackAxis.Y * _currentOffset,
+                PushBackAxis.Z * _currentOffset
+            );
+
+            _cachedMatrix = Matrix4.CreateFromQuaternion(rotation) * Matrix4.CreateTranslation(translation);
+        }
+
+        private static float Lerp(float a, float b, float t)
         {
             return a + (b - a) * Math.Clamp(t, 0f, 1f);
         }
