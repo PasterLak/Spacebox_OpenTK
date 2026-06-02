@@ -1,26 +1,24 @@
 ﻿using Engine;
 using Engine.Physics;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.Common.Input;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Resource;
-
+using System;
+using System.Collections.Generic;
 
 namespace Spacebox.Game.Generation
 {
     public class Chunk : IDisposable, ISpaceStructure
     {
-
-        public const byte Size = 32; // 32700+ blocks
+        public const byte Size = 32;
         public const byte SizeHalf = Size / 2;
 
         public static bool ShowChunkBounds { get; set; } = true;
         public static bool MeasureGenerationTime { get; set; } = true;
 
-
-        public int Mass { get; set; } = 0; // 255x32700 = 8,338,500 (max 4,294,967,295 in uint)
+        public int Mass { get; set; } = 0;
 
         public Vector3 SumPosMass { get; set; } = Vector3.Zero;
 
@@ -37,7 +35,6 @@ namespace Spacebox.Game.Generation
             set
             {
                 _isModified = value;
-
                 if (_isModified) SpaceEntity.IsModified = true;
             }
         }
@@ -59,7 +56,6 @@ namespace Spacebox.Game.Generation
         public enum LOD : short
         {
             None = 0, L0 = Settings.LOD0, L1 = Settings.LOD1, L2 = Settings.LOD2, L3 = Settings.LOD3
-
         }
 
         public Chunk(Vector3SByte positionIndex, SpaceEntity spaceEntity, bool emptyChunk = false)
@@ -72,7 +68,6 @@ namespace Spacebox.Game.Generation
             PositionWorld = GetChunkWorldPosition(positionIndex, spaceEntity.PositionWorld);
             PositionIndex = positionIndex;
             Blocks = new Block[Size, Size, Size];
-
             SpaceEntity = spaceEntity;
 
             CreateBoundingBox();
@@ -105,10 +100,7 @@ namespace Spacebox.Game.Generation
 
             _meshGenerator = new MeshGenerator(this, Neighbors, MeasureGenerationTime);
 
-
             _isLoadedOrGenerated = true;
-
-
         }
 
         public void RegisterElectricalBlocks()
@@ -123,7 +115,6 @@ namespace Spacebox.Game.Generation
 
                         if (block.Id != 0 && block is ElectricalBlock eBlock)
                         {
-
                             if (eBlock.EFlags == ElectricalFlags.None)
                                 continue;
 
@@ -131,7 +122,6 @@ namespace Spacebox.Game.Generation
                             int worldY = PositionIndex.Y * Size + y;
                             int worldZ = PositionIndex.Z * Size + z;
                             var globalPos = (worldX, worldY, worldZ);
-                            //eBlock.IsActive = false;
                             SpaceEntity.ElectricManager.AddBlockFast(globalPos, eBlock, this);
                         }
                     }
@@ -140,7 +130,6 @@ namespace Spacebox.Game.Generation
             SpaceEntity.ElectricManager.Rebuild();
         }
 
-        
         public static Vector3 GetChunkWorldPosition(Vector3SByte chunkIndex, Vector3 spaceEntityPosition)
         {
             return new Vector3(
@@ -164,8 +153,36 @@ namespace Spacebox.Game.Generation
             {
                 if (n.Value != null) count++;
             }
-
             return count;
+        }
+
+        public void GenerateMeshFromPadded(Block[,,] paddedBlocks)
+        {
+            if (!_isLoadedOrGenerated) return;
+            NeedsToRegenerateMesh = false;
+
+            _lightManager.PropagateLight();
+
+            var tempGenerator = new MeshGenerator(this, Neighbors, MeasureGenerationTime, paddedBlocks);
+            int oldMass = Mass;
+            Mesh newMesh = tempGenerator.GenerateMesh();
+
+            if (Mass == 0)
+            {
+                SpaceEntity.RecalculateMass(Mass - oldMass);
+                _mesh?.Dispose();
+                newMesh?.Dispose();
+                DeleteChunk();
+                return;
+            }
+
+            _mesh?.Dispose();
+            _mesh = newMesh;
+            GeometryBoundingBox = BoundingBox.CreateFromMinMax(
+                BoundingBox.Min + tempGenerator.GeometryBoundingBox.Min,
+                BoundingBox.Min + tempGenerator.GeometryBoundingBox.Max);
+
+            SpaceEntity.RecalculateMass(Mass - oldMass);
         }
 
         public void GenerateMesh()
@@ -175,17 +192,15 @@ namespace Spacebox.Game.Generation
 
         public void GenerateMesh(bool doLight)
         {
-
             if (!_isLoadedOrGenerated) return;
             NeedsToRegenerateMesh = false;
-            // Debug.Log("Regen " + PositionIndex);
+
             if (doLight)
             {
                 _lightManager.PropagateLight();
             }
 
             int oldMass = Mass;
-
             Mesh newMesh = _meshGenerator.GenerateMesh();
 
             if (Mass == 0)
@@ -194,7 +209,6 @@ namespace Spacebox.Game.Generation
                 _mesh?.Dispose();
                 newMesh?.Dispose();
                 DeleteChunk();
-
                 return;
             }
 
@@ -207,13 +221,11 @@ namespace Spacebox.Game.Generation
 
             SpaceEntity.RecalculateMass(Mass - oldMass);
             OnChunkModified?.Invoke(this);
-
         }
 
         private void DeleteChunk()
         {
             SpaceEntity.RemoveChunk(this);
-            // SpaceEntity.ChunksToDelete.Add(this);
         }
 
         public bool IsColliding(BoundingVolume volume, out CollideInfo collideInfo)
@@ -225,7 +237,6 @@ namespace Spacebox.Game.Generation
 
         public void Render(BlockMaterial material)
         {
-
             if (!_isLoadedOrGenerated) return;
 
             if (NeedsToRegenerateMesh)
@@ -235,8 +246,6 @@ namespace Spacebox.Game.Generation
             }
 
             Vector3 position = RenderSpace.ToRender(PositionWorld);
-
-
             Matrix4 model = Matrix4.CreateTranslation(position);
 
             material.Apply(model);
@@ -245,7 +254,6 @@ namespace Spacebox.Game.Generation
             {
                 _mesh.Render();
             }
-
 
             if (ShowChunkBounds && VisualDebug.Enabled)
             {
@@ -256,14 +264,12 @@ namespace Spacebox.Game.Generation
         public void AddNeighbor(Chunk neighbor)
         {
             Vector3SByte direction = neighbor.PositionIndex - this.PositionIndex;
-
             Neighbors[direction] = neighbor;
         }
 
         public void RemoveNeighbor(Chunk neighbor)
         {
             Vector3SByte direction = neighbor.PositionIndex - this.PositionIndex;
-
             Neighbors[direction] = null;
         }
 
@@ -278,14 +284,10 @@ namespace Spacebox.Game.Generation
             {
                 return;
             }
-            else
-            {
-                // place in another chunk or create new one
-            }
+
             if (block.Id == Blocks[x, y, z].Id) return;
 
             Blocks[x, y, z] = block;
-
             IsModified = true;
 
             if (block.LightLevel > 0f)
@@ -320,14 +322,17 @@ namespace Spacebox.Game.Generation
             }
             return false;
         }
+
         public void RemoveBlock(Vector3Byte blockPos, Vector3SByte normal)
         {
             RemoveBlock(blockPos.X, blockPos.Y, blockPos.Z, normal.X, normal.Y, normal.Z, true);
         }
+
         public void RemoveBlock(byte x, byte y, byte z, sbyte xNormal, sbyte yNormal, sbyte zNormal)
         {
             RemoveBlock(x, y, z, xNormal, yNormal, zNormal, true);
         }
+
         public void RemoveBlock(byte x, byte y, byte z, sbyte xNormal, sbyte yNormal, sbyte zNormal, bool spawnDrop)
         {
             if (!IsInRange(x, y, z))
@@ -336,7 +341,7 @@ namespace Spacebox.Game.Generation
             var block = Blocks[x, y, z];
             if (block.Id == 0) return;
 
-            Vector3 worldBlockPosition = new Vector3(x, y, z) + PositionWorld;
+            var worldBlockPosition = new Vector3(x, y, z) + PositionWorld;
 
             if (block.IsTransparent)
             {
@@ -356,11 +361,9 @@ namespace Spacebox.Game.Generation
                 }
                 else
                 {
-                    World.DestructionManager.DestroyBlock(worldBlockPosition, block.LightColor,
-                        block);
+                    World.DestructionManager.DestroyBlock(worldBlockPosition, block.LightColor, block);
                     if (spawnDrop)
-                        World.DropEffectManager.DropBlock(worldBlockPosition, block.LightColor,
-                       block, SpaceEntity);
+                        World.DropEffectManager.DropBlock(worldBlockPosition, block.LightColor, block, SpaceEntity);
                 }
             }
 
@@ -369,11 +372,7 @@ namespace Spacebox.Game.Generation
                 SpaceEntity.ElectricManager.RemoveBlock(this, new Vector3Byte(x, y, z));
             }
 
-
-            //Mass -= Blocks[x, y, z].Mass;
             Blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
-
-
             IsModified = true;
             CheckNeigborBlocks(new Vector3Byte(x, y, z));
             NeedsToRegenerateMesh = true;
@@ -381,7 +380,6 @@ namespace Spacebox.Game.Generation
 
         private void CreateLOD(LOD lod)
         {
-
             int downscale;
             Vector2[] uv;
             switch (lod)
@@ -415,21 +413,12 @@ namespace Spacebox.Game.Generation
                 });
         }
 
-
-
         public void SetLOD(int distanceSquared)
         {
             int lod0Threshold = ((int)LOD.L0) * ((int)LOD.L0);
             int lod1Threshold = ((int)LOD.L1) * ((int)LOD.L1);
             int lod2Threshold = ((int)LOD.L2) * ((int)LOD.L2);
 
-
-            if (Lod != LOD.L3)
-            {
-                //   Lod = LOD.L3;
-                //  CreateLOD(Lod);
-            }
-            //return;
             if (distanceSquared <= lod0Threshold)
             {
                 if (Lod != LOD.L0)
@@ -463,7 +452,6 @@ namespace Spacebox.Game.Generation
                 }
             }
         }
-
 
         public Block? GetBlock(Vector3SByte pos)
         {
@@ -513,22 +501,19 @@ namespace Spacebox.Game.Generation
                 neighbor.GenerateMesh();
             }
         }
+
         private bool HasNeighbor(Vector3SByte pos, out Chunk neighbor)
         {
             if (Neighbors.TryGetValue(pos, out neighbor))
             {
                 return neighbor != null;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public bool Raycast(Ray ray, out HitInfo info)
         {
             info = new HitInfo();
-
             if (!_isLoadedOrGenerated) return false;
 
             if (VoxelPhysics.RaycastChunk(ray, this, out info))
@@ -536,7 +521,6 @@ namespace Spacebox.Game.Generation
                 info.chunk = this;
                 return true;
             }
-
             return false;
         }
 
@@ -545,9 +529,7 @@ namespace Spacebox.Game.Generation
             if (Mass == 0f)
                 return PositionWorld;
 
-
             var local = (SumPosMass / Mass) + new Vector3(0.5f, 0.5f, 0.5f);
-
             return PositionWorld + local;
         }
 
@@ -557,22 +539,14 @@ namespace Spacebox.Game.Generation
             OnChunkModified = null;
         }
 
-
         public readonly Dictionary<Vector3SByte, Chunk> Neighbors = new Dictionary<Vector3SByte, Chunk>()
         {
             { new Vector3SByte(1, 0, 0), null },
             { new Vector3SByte(-1, 0, 0), null },
-
             { new Vector3SByte(0, 1, 0), null },
             { new Vector3SByte(0, -1, 0), null },
-
             { new Vector3SByte(0, 0, 1), null },
             { new Vector3SByte(0, 0, -1), null },
         };
-
-
     }
-
-    
-
 }

@@ -10,12 +10,14 @@ using Spacebox.Game.Physics;
 using Spacebox.Game.Resource;
 
 using System.Text;
+using System.Collections.Generic;
+using System;
 
 namespace Spacebox.Game.Generation
 {
     public class SpaceEntity : SpatialCell, IDisposable, ISpaceStructure
     {
-        public const byte SizeChunks = 16; // will be 16
+        public const byte SizeChunks = 16;
         public const byte SizeChunksHalf = SizeChunks / 2;
         public const short SizeBlocks = SizeChunks * Chunk.Size;
         public const short SizeBlocksHalf = SizeChunks * Chunk.Size / 2;
@@ -23,7 +25,7 @@ namespace Spacebox.Game.Generation
         public readonly long EntityID;
         public ulong Mass { get; set; } = 0;
 
-        public Octree<Chunk> Octree { get; private set; } // local coords
+        public Octree<Chunk> Octree { get; private set; }
 
         private Vector3 sumPosCenterOfMass;
         public Vector3 CenterOfMass { get; private set; }
@@ -51,7 +53,6 @@ namespace Spacebox.Game.Generation
         public BoundingBox GeometryBoundingBox { get; private set; }
         public ElectricNetworkManager ElectricManager { get; private set; }
         public Particle StarParticle;
-       // public StarsEffect StarsEffect { get; private set; }
 
         private StringBuilder StringBuilder = new StringBuilder();
 
@@ -70,7 +71,6 @@ namespace Spacebox.Game.Generation
 
             ElectricManager = new ElectricNetworkManager();
 
-            // BoundingBox.CreateFromMinMax(GeometryMin, GeometryMax)
             tag = CreateTag(positionWorld);
             CalculateCenterOfMass();
             CreateStar();
@@ -88,12 +88,7 @@ namespace Spacebox.Game.Generation
 
         private void CreateStar()
         {
-
-            //StarsEffect = new StarsEffect(World.Instance.Player);
-            // StarParticle = new Particle(GeometryBoundingBox.Center, Vector3.Zero, 9999999, new Vector4(1, 1, 1, 1), new Vector4(0, 0, 0, 0), 64);
-            // StarsEffect.ParticleSystem.AddParticle(StarParticle);
         }
-
 
         public void CreateFirstBlock(Block block)
         {
@@ -108,7 +103,6 @@ namespace Spacebox.Game.Generation
             chunk.PlaceBlock(new Vector3Byte(0, 0, 0), block);
             AddChunk(chunk, false);
             chunk.GenerateMesh();
-
         }
 
         public void AddChunks(Chunk[] chunks, bool generateMesh)
@@ -125,7 +119,6 @@ namespace Spacebox.Game.Generation
                 chunk.OnChunkModified += UpdateEntityGeometryMinMax;
 
                 UpdateNeighbors(chunk);
-
             }
 
             for (int i = 0; i < chunks.Length; i++)
@@ -138,18 +131,14 @@ namespace Spacebox.Game.Generation
                 {
                     MeshesTogenerate.Add(chunks[i]);
                 }
-
             }
-
 
             RecalculateGeometryBoundingBox();
             RecalculateMass();
-
         }
 
         public void GenerateMesh()
         {
-            // ElectricManager.UpdateAllNetworks(false, true);
             foreach (var chunk in MeshesTogenerate)
             {
                 chunk.GenerateMesh();
@@ -157,11 +146,11 @@ namespace Spacebox.Game.Generation
             MeshesTogenerate.Clear();
             IsGenerated = true;
         }
+
         public void AddChunk(Chunk chunk)
         {
             AddChunk(chunk, true);
         }
-
 
         public void AddChunk(Chunk chunk, bool generateMesh = true)
         {
@@ -171,8 +160,6 @@ namespace Spacebox.Game.Generation
             Chunks.Add(chunk);
 
             chunk.OnChunkModified += UpdateEntityGeometryMinMax;
-            // if (generateMesh)
-            //     chunk.GenerateMesh();
             UpdateNeighbors(chunk);
             RecalculateGeometryBoundingBox();
             RecalculateMass();
@@ -215,9 +202,8 @@ namespace Spacebox.Game.Generation
 
             sumPosCenterOfMass = Vector3.Zero;
 
-            for (int i = 0; i < Chunks.Count; i++) // opt 
+            for (int i = 0; i < Chunks.Count; i++)
             {
-
                 sumPosCenterOfMass += Chunks[i].GetCenterOfMass() * Chunks[i].Mass;
             }
 
@@ -247,13 +233,10 @@ namespace Spacebox.Game.Generation
         {
             RecalculateGeometryBoundingBox();
             CalculateGravityRadius();
-            // if (tag != null)
-            //    tag.WorldPosition = GeometryBoundingBox.Center;
         }
 
         private Tag CreateTag(Vector3 worldPos)
         {
-
             return TagManager.Instance.CreateTag("", worldPos, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
         }
 
@@ -280,7 +263,6 @@ namespace Spacebox.Game.Generation
             GeometryBoundingBox = BoundingBox.CreateFromMinMax(min, max);
         }
 
-
         private bool PlaceBlockInternal(Vector3 localPos, Block block)
         {
             int chunkX = (int)MathF.Floor(localPos.X / Chunk.Size);
@@ -294,15 +276,12 @@ namespace Spacebox.Game.Generation
 
             if (Octree.TryFindDataAtPosition(localPos + new Vector3(0.5f, 0.5f, 0.5f), out var chunk))
             {
-
                 chunk.PlaceBlock(blockPos, block);
 
                 if (block.Is<ElectricalBlock>(out var el))
                 {
-                    // Debug.Log("local " + localPos);
                     ElectricManager.AddBlock(((int)localPos.X, (int)localPos.Y, (int)localPos.Z), el, chunk);
                 }
-
             }
             else
             {
@@ -312,17 +291,14 @@ namespace Spacebox.Game.Generation
 
                 if (block.Is<ElectricalBlock>(out var el))
                 {
-                    // Debug.Log("local " + localPos);
                     ElectricManager.AddBlock(((int)localPos.X, (int)localPos.Y, (int)localPos.Z), el, newChunk);
                 }
-
             }
             return true;
         }
 
         public bool TryPlaceBlockLocal(Vector3 localBlockPosition, Block block)
         {
-          
             Vector3 worldBlockPos = PositionWorld + localBlockPosition;
             return TryPlaceBlock(worldBlockPos, block);
         }
@@ -338,7 +314,6 @@ namespace Spacebox.Game.Generation
             return PlaceBlockInternal(localPos, block);
         }
 
-
         public Vector3SByte GetChunkIndex(Vector3 worldPosition)
         {
             Vector3 relativePosition = worldPosition - PositionWorld;
@@ -352,25 +327,23 @@ namespace Spacebox.Game.Generation
 
         private static readonly Vector3SByte[] Directions = new Vector3SByte[]
         {
-            new Vector3SByte(1, 0, 0), // X+
-            new Vector3SByte(-1, 0, 0), // X-
-            new Vector3SByte(0, 1, 0), // Y+
-            new Vector3SByte(0, -1, 0), // Y-
-            new Vector3SByte(0, 0, 1), // Z+
-            new Vector3SByte(0, 0, -1) // Z-
+            new Vector3SByte(1, 0, 0),
+            new Vector3SByte(-1, 0, 0),
+            new Vector3SByte(0, 1, 0),
+            new Vector3SByte(0, -1, 0),
+            new Vector3SByte(0, 0, 1),
+            new Vector3SByte(0, 0, -1)
         };
 
         private void UpdateNeighbors(Chunk chunk, bool removing = false)
         {
             foreach (var dir in Directions)
             {
-
                 var index = (chunk.PositionIndex + dir);
-                Vector3 neighborCoord = SpaceMath.Entity.ChunkIndexToLocal(index);
+                Vector3 neighborCoord = SpaceMath.Entity.ChunkIndexToLocal(index) + new Vector3(Chunk.SizeHalf, Chunk.SizeHalf, Chunk.SizeHalf);
 
                 if (Octree.TryFindDataAtPosition(neighborCoord, out Chunk neighbor))
                 {
-
                     if (removing)
                     {
                         neighbor.RemoveNeighbor(chunk);
@@ -411,9 +384,7 @@ namespace Spacebox.Game.Generation
         public override void Update()
         {
             base.Update();
-
             HandleTag();
-
         }
 
         private void HandleTag()
@@ -422,16 +393,14 @@ namespace Spacebox.Game.Generation
 
             if (camera == null) return;
 
-            var dis = (int)(Vector3.Distance(CenterOfMass, camera.Position)); // optimize
-
+            var dis = (int)(Vector3.Distance(CenterOfMass, camera.Position));
 
             if (VisualDebug.Enabled)
             {
-
                 StringBuilder.Append("Name: ")
-                   .Append(Name)
-                    .Append("\n")
-                    .Append("ID: ")
+                    .Append(Name)
+                     .Append("\n")
+                     .Append("ID: ")
                   .Append(EntityID)
                    .Append("\n")
                   .Append(IsProcedural() ? "Asteroid" : "Spaceship")
@@ -458,10 +427,6 @@ namespace Spacebox.Game.Generation
 
             tag.Text = StringBuilder.ToString();
             StringBuilder.Clear();
-
-            //StarsEffect.Update();
-
-
         }
 
         public bool Raycast(Ray ray, out HitInfo hitInfo)
@@ -472,33 +437,19 @@ namespace Spacebox.Game.Generation
 
             if (VoxelPhysics.RaycastChunks(this, ray, out var crossedChunks))
             {
-                //Debug.Log("Chunks found: " + crossedChunks.Count );
-
                 foreach (var chunkHit in crossedChunks)
                 {
-
                     var length = ray.Length - chunkHit.Distance;
 
                     if (length <= 0) continue;
 
                     Ray chunkRay = new Ray(chunkHit.HitPosition, ray.Direction, length);
-                    // Debug.Log($"chunk check {chunkHit.Chunk.PositionIndex} origin {chunkRay.Origin}") ;
-
 
                     if (chunkHit.Chunk.Raycast(chunkRay, out hitInfo))
                     {
-                        //  Debug.Log($"chunk {chunkHit.Chunk.PositionIndex} hit!");
                         return true;
                     }
-                    else
-                    {
-                        // Debug.Log($"chunk {chunkHit.Chunk.PositionIndex} no hit");
-                    }
                 }
-            }
-            else
-            {
-
             }
 
             return false;
@@ -522,10 +473,7 @@ namespace Spacebox.Game.Generation
 
             if (Octree.TryFindDataAtPosition(localBlockPosition + new Vector3(0.5f, 0.5f, 0.5f), out Chunk chunk))
             {
-
                 var block = chunk.GetBlock((byte)blockX, (byte)blockY, (byte)blockZ);
-
-
 
                 chunk.RemoveBlock((byte)blockX, (byte)blockY, (byte)blockZ,
                                  removalNormal.X, removalNormal.Y, removalNormal.Z, true);
@@ -538,67 +486,19 @@ namespace Spacebox.Game.Generation
             }
         }
 
-
-
         public void RenderEffect(float disSqr)
         {
-
-
             return;
-            var disMin = 300f * 300f;
-            var disMax = 3000f * 3000f;
-
-            float alpha;
-            if (disSqr <= disMin)
-            {
-                alpha = 0f;
-            }
-            else if (disSqr >= disMax)
-            {
-                alpha = 1f;
-            }
-            else
-            {
-                alpha = (disSqr - disMin) / (disMax - disMin);
-            }
-
-            float size;
-
-            const float sizeMin = Chunk.Size * 2;
-            const float sizeMax = Chunk.Size * 2;
-
-            if (disSqr <= disMin)
-            {
-                size = sizeMin;
-            }
-            else if (disSqr >= disMax)
-            {
-                size = sizeMax;
-            }
-            else
-            {
-                float t = (disSqr - disMin) / (disMax - disMin);
-                size = sizeMin + (sizeMax - sizeMin) * t;
-            }
-
-            // StarParticle.ColorStart = new Vector4(1, 1, 1, alpha);
-            // StarParticle.ColorEnd = new Vector4(1, 1, 1, alpha);
-            // StarParticle.Size = size;
-
-          //  StarsEffect.Update();
-           // StarsEffect.Render();
         }
 
         HashSet<Chunk> chunks = new HashSet<Chunk>();
         public void Render(Camera camera, BlockMaterial material)
         {
-
             chunks.Clear();
             Octree.FindDataInRadius(WorldPositionToLocal(camera.Position), Settings.CHUNK_VISIBLE_RADIUS, chunks);
 
             foreach (var chunk in chunks)
             {
-
                 var dis = (int)(camera.Position - chunk.GeometryBoundingBox.Center).LengthSquared;
 
                 if (dis < Settings.CHUNK_VISIBLE_RADIUS * Settings.CHUNK_VISIBLE_RADIUS)
@@ -622,7 +522,6 @@ namespace Spacebox.Game.Generation
                     chunk.SetLOD(dis);
                     chunk.Render(material);
                 }
-
             }
 
             if (VisualDebug.Enabled)
@@ -632,9 +531,7 @@ namespace Spacebox.Game.Generation
 
                 VisualDebug.DrawBoundingBox(GeometryBoundingBox, Color4.Orange);
                 VisualDebug.DrawPosition(CenterOfMass, 8, Color4.Lime);
-
             }
-
         }
 
         public bool IsColliding(BoundingVolume volume, out CollideInfo collideInfo)
@@ -703,16 +600,11 @@ namespace Spacebox.Game.Generation
 
             CenterOfMass = sumPosCenterOfMass / Mass;
             tag.WorldPosition = CenterOfMass;
-
-
-            // StarParticle.Position = CenterOfMass;
         }
-
 
         public static Chunk GetOrCreateChunk(SpaceEntity entity, Vector3SByte idx)
         {
-
-            var localPos = SpaceMath.Entity.ChunkIndexToLocal(idx);
+            var localPos = SpaceMath.Entity.ChunkIndexToLocal(idx) + new Vector3(Chunk.SizeHalf, Chunk.SizeHalf, Chunk.SizeHalf);
             if (!entity.Octree.TryFindDataAtPosition(localPos, out Chunk chunk) || chunk == null)
             {
                 chunk = new Chunk(idx, entity, true);
@@ -742,13 +634,10 @@ namespace Spacebox.Game.Generation
             {
                 ch.Dispose();
             }
-           // StarsEffect.Dispose();
             if (tag != null)
             {
                 TagManager.Instance.ReleaseTag(tag);
-                //TagManager.UnregisterTag(tag);
             }
-           // StarsEffect.Dispose();
         }
     }
 }
