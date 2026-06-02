@@ -96,6 +96,8 @@ namespace Spacebox.Game.Player
                     player.Flashlight.Enabled = true;
                     player.PlayerStatistics.FirstPlayedUtc = DateTime.UtcNow;
 
+                    player.PlayerStatistics.StartSession();
+
                     return;
                 }
 
@@ -122,6 +124,7 @@ namespace Spacebox.Game.Player
                 player.PlayerStatistics = data.Statistics;
 
                 player.PlayerStatistics.StartSession();
+              
 
                 foreach (var savedSlot in data.InventorySlots)
                 {

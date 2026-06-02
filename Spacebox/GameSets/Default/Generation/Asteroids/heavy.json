@@ -2,9 +2,9 @@
         "Id": "heavy",
         "Name": "Heavy asteroid",
       
-        "MinRadius": 38,
+        "MinRadius": 42,
         "MaxRadius": 64,
-        "DensityThreshold": 38,
+        "DensityThreshold": 40,
         "NoiseOctaves": 3,
         "NoiseScale": 1,
         "HasCavities": true,
@@ -12,7 +12,7 @@
         "UsePerlinWorms": true,
         "WormSettings": {
             "MinCount": 10,
-            "MaxCount": 30,
+            "MaxCount": 20,
             "DiameterInBlocks": 5,
             "MaxTunnelLength": 64,
             "PathDeviation": 0.7,

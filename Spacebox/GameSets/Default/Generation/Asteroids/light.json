@@ -2,7 +2,7 @@
         "Id": "light",
         "Name": "Small asteroid",
      
-        "MinRadius": 8,
+        "MinRadius": 12,
         "MaxRadius": 16,
         "DensityThreshold": 33,
         "NoiseOctaves": 2,
@@ -13,7 +13,7 @@
          
         "WormSettings": {
             "MinCount": 1,
-            "MaxCount": 5,
+            "MaxCount": 3,
             "DiameterInBlocks": 4,
             "MaxTunnelLength": 8,
             "PathDeviation": 0.5,

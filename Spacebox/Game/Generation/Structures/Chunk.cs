@@ -169,10 +169,10 @@ namespace Spacebox.Game.Generation
 
             if (Mass == 0)
             {
-                SpaceEntity.RecalculateMass(Mass - oldMass);
+                //SpaceEntity.RecalculateMass(Mass - oldMass);
                 _mesh?.Dispose();
                 newMesh?.Dispose();
-                DeleteChunk();
+                //DeleteChunk();
                 return;
             }
 

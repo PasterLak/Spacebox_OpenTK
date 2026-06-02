@@ -49,7 +49,7 @@ namespace Spacebox.Game.Player
         }
 
         [JsonIgnore]
-        private DateTime _sessionStartTime;
+        private DateTime _sessionStartTime = DateTime.UtcNow;
 
         public void StartSession()
         {
@@ -58,10 +58,18 @@ namespace Spacebox.Game.Player
 
         public void EndSession()
         {
+          
+            if (_sessionStartTime == DateTime.MinValue)
+            {
+                _sessionStartTime = DateTime.UtcNow;
+            }
+
             var sessionDuration = (int)(DateTime.UtcNow - _sessionStartTime).TotalMinutes;
             TotalPlayTimeMinutes += sessionDuration;
             SessionsPlayed++;
             LastPlayedUtc = DateTime.UtcNow;
+
+            _sessionStartTime = DateTime.UtcNow;
         }
 
         public float GetAccuracy()

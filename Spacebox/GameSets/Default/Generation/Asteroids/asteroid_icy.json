@@ -2,8 +2,8 @@
     "Id": "asteroid_icy",
     "Name": "Icy asteroid",
 
-    "MinRadius": 12,
-    "MaxRadius": 32,
+    "MinRadius": 26,
+    "MaxRadius": 36,
     "DensityThreshold": 42,
     "NoiseOctaves": 3,
     "NoiseScale": 1,

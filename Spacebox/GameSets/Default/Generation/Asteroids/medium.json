@@ -2,7 +2,7 @@
     "Id": "medium",
     "Name": "Medium asteroid",
 
-    "MinRadius": 22,
+    "MinRadius": 24,
     "MaxRadius": 32,
     "DensityThreshold": 40,
     "NoiseOctaves": 3,

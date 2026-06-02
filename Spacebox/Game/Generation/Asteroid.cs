@@ -107,7 +107,15 @@ namespace Spacebox.Game.Generation
 
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
-                        AddChunk(chunk, false);
+                        if (chunk.Mass > 0)
+                        {
+                            AddChunk(chunk, false);
+                        }
+                        else
+                        {
+                            chunk.Dispose(); 
+                        }
+
                         lock (_genLock)
                         {
                             pendingChunks.Remove(idx);
