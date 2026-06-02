@@ -281,26 +281,76 @@ namespace Engine
             else
                 FrameLimiter.TargetFPS = 120;
         }
+       
+        public enum WindowMode { Fullscreen, Borderless, Windowed }
 
+        private Vector2i _savedWindowSize;
+        private Vector2i _savedWindowLocation;
+
+        public void SetWindowMode(WindowMode mode)
+        {
+            if (!_isFullscreen)
+            {
+                _savedWindowSize = ClientSize;
+                _savedWindowLocation = Location;
+            }
+
+            switch (mode)
+            {
+                case WindowMode.Fullscreen:
+                    WindowBorder = WindowBorder.Hidden;
+                    WindowState = WindowState.Fullscreen;
+                    _isFullscreen = true;
+                    FrameLimiter.IsRunning = false;
+                    VSync = VSyncMode.On;
+                    break;
+
+                case WindowMode.Borderless:
+                    WindowBorder = WindowBorder.Hidden;
+                    WindowState = WindowState.Normal;
+
+                    var monitor = Monitors.GetMonitorFromWindow(this);
+                    Location = monitor.ClientArea.Min;
+                    ClientSize = monitor.ClientArea.Size;
+
+                    _isFullscreen = true;
+                    FrameLimiter.IsRunning = false;
+                    VSync = VSyncMode.On;
+                    break;
+
+                case WindowMode.Windowed:
+                    WindowState = WindowState.Normal;
+                    WindowBorder = WindowBorder.Resizable;
+
+                    if (_savedWindowSize != Vector2i.Zero)
+                    {
+                        ClientSize = _savedWindowSize;
+                        Location = _savedWindowLocation;
+                    }
+                    else
+                    {
+                        CenterWindow();
+                    }
+
+                    _isFullscreen = false;
+                    FrameLimiter.IsRunning = true;
+                    VSync = VSyncMode.Off;
+                    break;
+            }
+
+            OnResized?.Invoke(Size);
+        }
         public void ToggleFullScreen()
         {
             if (!_isFullscreen)
             {
-                WindowBorder = WindowBorder.Hidden;
-                WindowState = WindowState.Fullscreen;
-                FrameLimiter.IsRunning = false;
-                VSync = VSyncMode.On;
+                SetWindowMode(WindowMode.Fullscreen);
             }
             else
             {
-                WindowBorder = WindowBorder.Resizable;
-                WindowState = WindowState.Normal;
-                ClientSize = _minimizedWindowSize;
-                FrameLimiter.IsRunning = true;
-                VSync = VSyncMode.Off;
+                SetWindowMode(WindowMode.Windowed);
             }
-            _isFullscreen = !_isFullscreen;
-            OnResized?.Invoke(Size);
+  
         }
 
         public void TogglePolygonMode()

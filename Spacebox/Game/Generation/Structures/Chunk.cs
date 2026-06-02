@@ -1,6 +1,7 @@
 ﻿using Engine;
 using Engine.Physics;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.Common.Input;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.Physics;
@@ -297,13 +298,13 @@ namespace Spacebox.Game.Generation
             NeedsToRegenerateMesh = true;
         }
 
-        public bool DamageBlock(Vector3Byte blockPos, Vector3SByte normal, byte damage, bool spawnDrop)
+        public bool DamageBlock(HitInfo hit, byte damage, bool spawnDrop)
         {
             if (damage == 0) return false;
-            if (!IsInRange(blockPos.X, blockPos.Y, blockPos.Z))
+            if (!IsInRange(hit.blockPositionIndex.X, hit.blockPositionIndex.Y, hit.blockPositionIndex.Z))
                 return false;
 
-            var block = Blocks[blockPos.X, blockPos.Y, blockPos.Z];
+            var block = Blocks[hit.blockPositionIndex.X, hit.blockPositionIndex.Y, hit.blockPositionIndex.Z];
 
             if ((((short)block.Durability) - damage) > 0)
             {
@@ -312,7 +313,9 @@ namespace Spacebox.Game.Generation
             else
             {
                 block.Durability = 0;
-                RemoveBlock(blockPos.X, blockPos.Y, blockPos.Z, normal.X, normal.Y, normal.Z, spawnDrop);
+                block.OnDestroy?.Invoke(hit);
+                RemoveBlock(hit.blockPositionIndex.X, hit.blockPositionIndex.Y, hit.blockPositionIndex.Z,
+                    hit.normal.X, hit.normal.Y, hit.normal.Z, spawnDrop);
                 return true;
             }
             return false;

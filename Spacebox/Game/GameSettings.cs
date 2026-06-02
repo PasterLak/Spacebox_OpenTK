@@ -4,11 +4,12 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static Engine.EngineWindow;
 
 
 namespace Spacebox.Game
 {
-    public enum WindowMode { Fullscreen, Borderless, Windowed}
+    
 
     public sealed class MetaSettings
     {
@@ -43,7 +44,7 @@ namespace Spacebox.Game
     {
         [JsonPropertyName("window_mode")]
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public WindowMode WindowMode { get; set; } = WindowMode.Fullscreen;
+        public WindowMode WindowMode { get; set; } 
 
         [JsonPropertyName("vsync")] public bool VSync { get; set; } = true;
         [JsonPropertyName("ambient_occlusion")] public bool AO { get; set; } = true;

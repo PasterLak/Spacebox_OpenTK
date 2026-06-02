@@ -4,6 +4,7 @@ using ImGuiNET;
 using Spacebox.Game.Events;
 using Spacebox.Game.Generation;
 using System.Numerics;
+using static Engine.EngineWindow;
 using static Spacebox.Game.GUI.Menu.ControlsWindow;
 
 namespace Spacebox.Game.GUI.Menu
@@ -180,14 +181,18 @@ namespace Spacebox.Game.GUI.Menu
             if (_modes[_modeIndex] == "Fullscreen")
             {
                 Settings.Graphics.WindowMode = WindowMode.Fullscreen;
+                SpaceboxWindow.Instance.SetWindowMode(WindowMode.Fullscreen);
+
             }
             else if (_modes[_modeIndex] == "Borderless")
             {
                 Settings.Graphics.WindowMode = WindowMode.Borderless;
+                SpaceboxWindow.Instance.SetWindowMode(WindowMode.Borderless);
             }
             else
             {
                 Settings.Graphics.WindowMode = WindowMode.Windowed;
+                SpaceboxWindow.Instance.SetWindowMode(WindowMode.Windowed);
             }
         }
     }

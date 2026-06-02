@@ -243,7 +243,7 @@ public class Projectile : Node3D
 
     private void ApplyBlockDamage(HitInfo hit)
     {
-        hit.chunk.DamageBlock(hit.blockPositionIndex, hit.normal, currentDamage, Parameters.DropBlock);
+        hit.chunk.DamageBlock(hit, currentDamage, Parameters.DropBlock);
        // var posLocal = hit.blockPositionEntity;
         //hit.chunk.SpaceEntity.RemoveBlockAtLocal(hit.blockPositionEntity, hit.normal);
        // ClientNetwork.Instance?.SendBlockDestroyed((short)posLocal.X, (short)posLocal.Y, (short)posLocal.Z);

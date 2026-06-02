@@ -13,10 +13,10 @@ namespace Spacebox.Game.Player
 
         public Vector3 PushBackAxis { get; set; } = new Vector3(-1, 0, 0);
 
-        public float PushBackMultiplier { get; set; } = 0.0001f;
+        public float PushBackMultiplier { get; set; } = 0.00009f;
         public float MaxPushBack { get; set; } = 0.015f;
 
-        public float PullForwardMultiplier { get; set; } = 0.00002f;
+        public float PullForwardMultiplier { get; set; } = 0.00003f;
         public float MaxPullForward { get; set; } = 0.015f;
 
         public float MoveSmoothing { get; set; } = 8.0f;

@@ -108,10 +108,10 @@ public class InteractionShoot : InteractionMode
 
             if (canShoot == false && Input.IsAction("shoot") && ToggleManager.OpenedWindowsCount < 1 && !Debug.IsVisible)
             {
-                // Проверяем наличие патронов ПЕРЕД тем, как проигрывать анимацию и звук
+
                 if (!TryConsumeAmmo(player))
                 {
-                    // Патронов нет - можно добавить звук осечки (щелчок) здесь
+           
                     return;
                 }
 
