@@ -23,6 +23,7 @@ public class Projectile : Node3D
     private float distanceTraveled = 0;
     private byte currentRicochets = 0;
     private byte currentDamage = 0;
+    private byte blocksDestroyedThisShot = 0;
 
     private LineRenderer lineRenderer;
     private Ray ray;
@@ -65,6 +66,7 @@ public class Projectile : Node3D
 
         Enabled = true;
         currentDamage = parameters.DamageBlocks;
+        blocksDestroyedThisShot = 0;
         SpawnPosition = ray.Origin;
         Position = ray.Origin;
         Rotation = Vector3.Zero;
@@ -75,22 +77,19 @@ public class Projectile : Node3D
         SetSounds();
         SetLight(parameters.Color3);
 
-
         OnSpawn?.Invoke(this);
         return this;
     }
 
     private void SetLight(Vector3 color)
     {
-
         if (!useLight) return;
-        
-            light = PointLightsPool.Take();
-            light.Range = 4;
-            light.Diffuse = color;
-            light.Specular = Vector3.Zero;
-            light.Enabled = true;
-        
+
+        light = PointLightsPool.Take();
+        light.Range = 4;
+        light.Diffuse = color;
+        light.Specular = Vector3.Zero;
+        light.Enabled = true;
     }
 
     private void SetLineRenderer()
@@ -161,14 +160,13 @@ public class Projectile : Node3D
 
     private bool CheckDynamicCollision()
     {
-        if( World.Instance.RaycastClosest(ray, out var dist, out var damageable))
+        if (World.Instance.RaycastClosest(ray, out var dist, out var damageable))
         {
             HandleDynamicHit(damageable, ray.GetPoint(dist));
             return true;
         }
         return false;
     }
-
 
     private void HandleDynamicHit(IDamageable damagable, Vector3 hitPos)
     {
@@ -226,32 +224,59 @@ public class Projectile : Node3D
     private void HandleVoxelHit(HitInfo hit)
     {
         ProcessHitStats(hit.hitPosition);
-        ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.hitPosition + hit.normal.ToVector3() * 0.1f, Parameters.ID);
 
         if (Parameters.Penetration >= hit.block.Durability)
         {
-            ApplyBlockDamage(hit);
+            ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.hitPosition + hit.normal.ToVector3() * 0.1f, Parameters.ID);
+
+            byte blockDurability = hit.block.Durability;
+
+            bool destroyed = ApplyBlockDamage(hit);
+
+            if (destroyed)
+            {
+
+                if (currentDamage > blockDurability)
+                {
+                    currentDamage -= blockDurability;
+                }
+                else
+                {
+                    currentDamage = 0;
+                }
+
+                blocksDestroyedThisShot++;
+
+                if (blocksDestroyedThisShot >= Parameters.MaximumBlocksCanDestroy || currentDamage <= 0)
+                {
+                    Enabled = false;
+                    OnDespawn?.Invoke(this);
+                }
+     
+            }
+            else
+            {
+  
+                Enabled = false;
+                OnDespawn?.Invoke(this);
+            }
         }
         else
         {
+
             ProjectileHitEffectsManager.Instance.PlayNoPenetrationEffect(hit.hitPosition + hit.normal.ToVector3() * 0.1f);
+            Enabled = false;
+            OnDespawn?.Invoke(this);
         }
-
-        Enabled = false;
-        OnDespawn?.Invoke(this);
     }
-
-    private void ApplyBlockDamage(HitInfo hit)
+    private bool ApplyBlockDamage(HitInfo hit)
     {
-        hit.chunk.DamageBlock(hit, currentDamage, Parameters.DropBlock);
-       // var posLocal = hit.blockPositionEntity;
-        //hit.chunk.SpaceEntity.RemoveBlockAtLocal(hit.blockPositionEntity, hit.normal);
-       // ClientNetwork.Instance?.SendBlockDestroyed((short)posLocal.X, (short)posLocal.Y, (short)posLocal.Z);
+        bool destroyed = hit.chunk.DamageBlock(hit, currentDamage, Parameters.DropBlock);
 
         if (astronaut != null)
         {
             astronaut.PlayerStatistics.BlockDamageDealt += currentDamage;
-            if (currentDamage > hit.block.Durability)
+            if (destroyed)
             {
                 astronaut.PlayerStatistics.BlocksDestroyed++;
             }
@@ -261,6 +286,8 @@ public class Projectile : Node3D
         {
             PlayExplosionSound(hit.hitPosition);
         }
+
+        return destroyed;
     }
 
     private void ProcessHitStats(Vector3 hitPos)
@@ -329,6 +356,7 @@ public class Projectile : Node3D
         distanceTraveled = 0;
         currentRicochets = 0;
         currentDamage = 0;
+        blocksDestroyedThisShot = 0;
         Scale = Vector3.One;
         ray = new Ray(Vector3.Zero, Vector3.Zero, 0f);
         lineRenderer.ClearPoints();

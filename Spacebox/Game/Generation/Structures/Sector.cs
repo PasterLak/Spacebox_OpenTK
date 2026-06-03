@@ -739,8 +739,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                 // entity.GenerateMesh();
                 foreach (var chunk in entity.Chunks)
                 {
-                    if (chunk.NeedsToRegenerateMesh || !chunk.IsGenerated)
-                        chunk.GenerateMesh();
+                    chunk.QueueMeshUpdate();
                 }
             }
         }

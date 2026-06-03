@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Multithreading;
 using Engine.Physics;
 using OpenTK.Mathematics;
 using Spacebox.Game.Effects;
@@ -11,10 +12,13 @@ using Spacebox.Game.Resource;
 
 using System.Text;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System;
 
 namespace Spacebox.Game.Generation
 {
+    public enum UpdateReason { PlayerAction = 0, Explosion = 1000, Lighting = 2000, Generation = 3000 }
+
     public class SpaceEntity : SpatialCell, IDisposable, ISpaceStructure
     {
         public const byte SizeChunks = 16;
@@ -46,6 +50,9 @@ namespace Spacebox.Game.Generation
 
         public List<Chunk> Chunks { get; private set; } = new List<Chunk>();
         private List<Chunk> MeshesTogenerate = new List<Chunk>();
+
+        public PriorityQueue<Chunk, int> MeshUpdateQueue { get; private set; } = new PriorityQueue<Chunk, int>();
+        public ConcurrentQueue<(Chunk chunk, MeshData data, int version)> ReadyMeshesQueue { get; private set; } = new ConcurrentQueue<(Chunk, MeshData, int)>();
 
         private Tag tag;
 
@@ -102,7 +109,7 @@ namespace Spacebox.Game.Generation
 
             chunk.PlaceBlock(new Vector3Byte(0, 0, 0), block);
             AddChunk(chunk, false);
-            chunk.GenerateMesh();
+            chunk.QueueMeshUpdate(UpdateReason.Generation);
         }
 
         public void AddChunks(Chunk[] chunks, bool generateMesh)
@@ -125,7 +132,7 @@ namespace Spacebox.Game.Generation
             {
                 if (generateMesh)
                 {
-                    chunks[i].GenerateMesh();
+                    chunks[i].QueueMeshUpdate(UpdateReason.Generation);
                 }
                 else
                 {
@@ -141,7 +148,7 @@ namespace Spacebox.Game.Generation
         {
             foreach (var chunk in MeshesTogenerate)
             {
-                chunk.GenerateMesh();
+                chunk.QueueMeshUpdate(UpdateReason.Generation);
             }
             MeshesTogenerate.Clear();
             IsGenerated = true;
@@ -163,6 +170,11 @@ namespace Spacebox.Game.Generation
             UpdateNeighbors(chunk);
             RecalculateGeometryBoundingBox();
             RecalculateMass();
+
+            if (generateMesh)
+            {
+                chunk.QueueMeshUpdate(UpdateReason.Generation);
+            }
         }
 
         public void RemoveChunk(Chunk chunk)
@@ -197,7 +209,6 @@ namespace Spacebox.Game.Generation
             else
             {
                 Mass = 0;
-                Debug.Error($"[SpaceEntity] Mass was negative! Id: {EntityID}");
             }
 
             sumPosCenterOfMass = Vector3.Zero;
@@ -358,33 +369,78 @@ namespace Spacebox.Game.Generation
             }
         }
 
-        public bool IsPositionInChunk(Vector3 world, out Chunk chunk)
+        public void QueueChunkUpdate(Chunk chunk, UpdateReason reason)
         {
-            var local = WorldPositionToLocal(world);
+            if (chunk.IsQueuedForMeshUpdate || chunk.IsDisposed) return;
+            chunk.IsQueuedForMeshUpdate = true;
 
-            if (Octree.TryFindDataAtPosition(local, out chunk))
+            int distance = 0;
+            if (Camera.Main != null)
             {
-                return true;
+                distance = (int)Vector3.DistanceSquared(Camera.Main.Position, chunk.GeometryBoundingBox.Center);
             }
-            else
-            {
-                chunk = null;
-                return false;
-            }
+
+            MeshUpdateQueue.Enqueue(chunk, (int)reason + distance);
         }
 
         public Vector3 WorldPositionToLocal(Vector3 world)
         {
             return world - PositionWorld;
         }
+
         public Vector3 LocalPositionToWorld(Vector3 local)
         {
             return local + PositionWorld;
         }
+
         public override void Update()
         {
             base.Update();
             HandleTag();
+            ProcessMeshUpdates();
+        }
+
+        private void ProcessMeshUpdates()
+        {
+            int dispatchedThisFrame = 0;
+            while (dispatchedThisFrame < 4 && MeshUpdateQueue.TryDequeue(out Chunk chunk, out int priority))
+            {
+                if (chunk.IsDisposed) continue;
+
+                int currentVersion = chunk.DataVersion;
+                var snapshot = chunk.CreatePaddedSnapshot();
+                var index = chunk.PositionIndex;
+
+                WorkerPoolManager.Enqueue(token =>
+                {
+                    if (token.IsCancellationRequested || chunk.IsDisposed) return;
+
+                    var generator = new MeshGenerator(index, snapshot, Chunk.MeasureGenerationTime);
+                    var meshData = generator.GenerateMeshData();
+
+                    MainThreadDispatcher.Instance.Enqueue(() =>
+                    {
+                        if (chunk.IsDisposed || chunk.DataVersion != currentVersion)
+                        {
+                            chunk.IsQueuedForMeshUpdate = false;
+                            return;
+                        }
+                        ReadyMeshesQueue.Enqueue((chunk, meshData, currentVersion));
+                    });
+                }, WorkerPoolManager.Priority.Medium);
+
+                dispatchedThisFrame++;
+            }
+
+            int uploadedThisFrame = 0;
+            while (uploadedThisFrame < 2 && ReadyMeshesQueue.TryDequeue(out var result))
+            {
+                if (!result.chunk.IsDisposed && result.chunk.DataVersion == result.version)
+                {
+                    result.chunk.ApplyMeshData(result.data);
+                }
+                uploadedThisFrame++;
+            }
         }
 
         private void HandleTag()
@@ -460,7 +516,6 @@ namespace Spacebox.Game.Generation
             Vector3 worldBlockPos = PositionWorld + localBlockPosition;
             if (!IsPositionWithinEntitySize(worldBlockPos))
             {
-                Debug.Error("Local block position is outside the entity boundaries.");
                 return false;
             }
             int chunkX = (int)MathF.Floor(localBlockPosition.X / Chunk.Size);
@@ -481,7 +536,6 @@ namespace Spacebox.Game.Generation
             }
             else
             {
-                Debug.Error($"Chunk with index {chunkIndex} not found. Block local was: {localBlockPosition}");
                 return false;
             }
         }
@@ -511,13 +565,6 @@ namespace Spacebox.Game.Generation
                     }
 
                     if (!visible) continue;
-
-                    if (chunk.NeedsToRegenerateMesh)
-                    {
-                        chunk.GenerateMesh(false);
-
-                        chunk.NeedsToRegenerateMesh = false;
-                    }
 
                     chunk.SetLOD(dis);
                     chunk.Render(material);
@@ -623,9 +670,25 @@ namespace Spacebox.Game.Generation
             return chunk;
         }
 
+        public bool IsPositionInChunk(Vector3 world, out Chunk chunk)
+        {
+            var local = WorldPositionToLocal(world);
+
+            if (Octree.TryFindDataAtPosition(local, out chunk))
+            {
+                return true;
+            }
+            else
+            {
+                chunk = null;
+                return false;
+            }
+        }
+
         public void Dispose()
         {
             Sector = null;
+            MeshUpdateQueue.Clear();
             foreach (var mesh in MeshesTogenerate)
             {
                 mesh.Dispose();

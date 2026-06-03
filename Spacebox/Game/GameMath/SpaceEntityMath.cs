@@ -27,11 +27,8 @@ public class SpaceEntityMath
         var localPos = new Vector3(chunkIndex.X * Chunk.Size, chunkIndex.Y * Chunk.Size, chunkIndex.Z * Chunk.Size);
 
         return localPos;
+
     }
-
-
-
-
     public List<Chunk> RemoveBlocksInLocalBox(SpaceEntity entity, BoundingBox localBox)
     {
         var min = localBox.Min;

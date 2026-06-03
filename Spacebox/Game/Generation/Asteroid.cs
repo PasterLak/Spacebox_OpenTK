@@ -103,17 +103,18 @@ namespace Spacebox.Game.Generation
             {
                 try
                 {
-                    var chunk = CreateChunk(idx);
+                    var result = CreateChunk(idx);
 
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
-                        if (chunk.Mass > 0)
+                        if (result.meshData.Mass > 0)
                         {
-                            AddChunk(chunk, false);
+                            AddChunk(result.chunk, false);
+                            result.chunk.ApplyMeshData(result.meshData);
                         }
                         else
                         {
-                            chunk.Dispose(); 
+                            result.chunk.Dispose();
                         }
 
                         lock (_genLock)
@@ -143,7 +144,7 @@ namespace Spacebox.Game.Generation
             return new BoundingBox(center, new Vector3(Chunk.Size));
         }
 
-        private Chunk CreateChunk(Vector3SByte idx)
+        private (Chunk chunk, MeshData meshData) CreateChunk(Vector3SByte idx)
         {
             var chunk = new Chunk(idx, this, true);
             var paddedData = voxelGen.GeneratePaddedDataForChunk(idx);
@@ -189,9 +190,10 @@ namespace Spacebox.Game.Generation
                 }
             }
 
-            chunk.GenerateMeshFromPadded(paddedBlocks);
+            var tempGenerator = new MeshGenerator(chunk.PositionIndex, paddedBlocks, Chunk.MeasureGenerationTime);
+            var meshData = tempGenerator.GenerateMeshData();
 
-            return chunk;
+            return (chunk, meshData);
         }
     }
 }

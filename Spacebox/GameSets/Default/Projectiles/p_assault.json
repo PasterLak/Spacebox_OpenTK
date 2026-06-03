@@ -14,5 +14,6 @@
     "Penetration": 65,
     "RicochetAngle": 20,
     "PossibleRicochets": 2,
+    "MaximumBlocksCanDestroy" : 3,
     "DropBlock": false
 }

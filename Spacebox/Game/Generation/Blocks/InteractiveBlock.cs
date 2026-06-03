@@ -125,7 +125,7 @@ public class InteractiveBlock : ElectricalBlock
         {
             //chunk.GenerateMesh(); MarkNeedsRegenerate
 
-            chunk.NeedsToRegenerateMesh = true;
+            chunk.QueueMeshUpdate();
         }
         lasState = state;
     }

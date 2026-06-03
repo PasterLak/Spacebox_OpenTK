@@ -218,7 +218,7 @@ namespace Spacebox.Game.Generation
                 foreach (var c in tempChangedChunks)
                 {
                     if (c != null)
-                        c.NeedsToRegenerateMesh = true;
+                        c.QueueMeshUpdate();
                 }
             }
         }
@@ -263,7 +263,7 @@ namespace Spacebox.Game.Generation
                 foreach (var c in tempChangedChunks)
                 {
                     if (c != null)
-                        c.NeedsToRegenerateMesh = true;
+                        c.QueueMeshUpdate();
                 }
             }
         }

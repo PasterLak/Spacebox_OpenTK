@@ -143,7 +143,7 @@ namespace Spacebox.Game.Player
 
             foreach ( var chunk in chunks )
             {
-                chunk.NeedsToRegenerateMesh = true;
+                chunk.QueueMeshUpdate();
             }
             Reset();
             

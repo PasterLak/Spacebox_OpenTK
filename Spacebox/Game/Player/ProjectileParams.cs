@@ -19,7 +19,7 @@ namespace Spacebox.Game.Player
         public byte Penetration { get; private set; }
         public float RicochetAngle { get; private set; }
         public int PossibleRicochets { get; private set; }
-
+        public int MaximumBlocksCanDestroy { get; set; } = 1;
         public bool DropBlock { get; private set; } = false;
 
         public ProjectileParameters()
@@ -45,6 +45,7 @@ namespace Spacebox.Game.Player
             Penetration = (byte)p.Penetration;
             RicochetAngle = p.RicochetAngle;
             PossibleRicochets = p.PossibleRicochets;
+            MaximumBlocksCanDestroy = p.MaximumBlocksCanDestroy;
 
         }
 

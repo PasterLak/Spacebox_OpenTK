@@ -10,14 +10,21 @@ using System.Collections.Generic;
 
 namespace Spacebox.Game.Generation
 {
+    public class MeshData
+    {
+        public float[] Vertices;
+        public uint[] Indices;
+        public BoundingBox GeometryBoundingBox;
+        public int Mass;
+        public Vector3 SumPosMass;
+    }
+
     public class MeshGenerator
     {
         private static bool _EnableAO = true;
         public static bool EnableAO { get => _EnableAO; set { _EnableAO = value; } }
 
         private const byte Size = Chunk.Size;
-        private readonly Chunk _chunk;
-        private readonly Block[,,] _blocks;
         private readonly Block[,,] _paddedBlocks;
         private readonly bool _measureGenerationTime;
         private static readonly Face[] faces = (Face[])Enum.GetValues(typeof(Face));
@@ -27,19 +34,15 @@ namespace Spacebox.Game.Generation
         private int vertexCount;
         private int indexCount;
         private Stopwatch stopwatch;
-        private Dictionary<Vector3SByte, Chunk> _neighbors;
-        public BoundingBox GeometryBoundingBox { get; private set; }
+        private Vector3SByte _chunkIndex;
 
-        public MeshGenerator(Chunk chunk, Dictionary<Vector3SByte, Chunk> Neighbors, bool measureGenerationTime = true, Block[,,] paddedBlocks = null)
+        public MeshGenerator(Vector3SByte chunkIndex, Block[,,] paddedBlocks, bool measureGenerationTime = true)
         {
-            _neighbors = Neighbors;
-            _blocks = chunk.Blocks;
-            _chunk = chunk;
-            _measureGenerationTime = measureGenerationTime;
+            _chunkIndex = chunkIndex;
             _paddedBlocks = paddedBlocks;
+            _measureGenerationTime = measureGenerationTime;
             AOVoxels.Init();
             PrecomputeData();
-            GeometryBoundingBox = BoundingBox.CreateFromMinMax(Vector3.Zero, Vector3.One * Chunk.Size);
         }
 
         private void PrecomputeData()
@@ -57,29 +60,17 @@ namespace Spacebox.Game.Generation
 
         private Block GetBlockSafe(sbyte x, sbyte y, sbyte z)
         {
-            if (_paddedBlocks != null)
+            int px = x + 1;
+            int py = y + 1;
+            int pz = z + 1;
+            if (px >= 0 && px < 34 && py >= 0 && py < 34 && pz >= 0 && pz < 34)
             {
-                int px = x + 1;
-                int py = y + 1;
-                int pz = z + 1;
-                if (px >= 0 && px < 34 && py >= 0 && py < 34 && pz >= 0 && pz < 34)
-                {
-                    return _paddedBlocks[px, py, pz];
-                }
-                return null;
-            }
-
-            if (IsInRange(x, y, z)) return _blocks[x, y, z];
-
-            GetNeighborChunkIndexAndLocalCoords(x, y, z, Size, out var offset, out var local);
-            if (_neighbors.TryGetValue(offset, out var chunk) && chunk != null)
-            {
-                return chunk.GetBlock(local);
+                return _paddedBlocks[px, py, pz];
             }
             return null;
         }
 
-        public Mesh GenerateMesh()
+        public MeshData GenerateMeshData()
         {
             if (_measureGenerationTime)
             {
@@ -105,7 +96,7 @@ namespace Spacebox.Game.Generation
                 {
                     for (sbyte z = 0; z < Size; z++)
                     {
-                        var block = _blocks[x, y, z];
+                        var block = _paddedBlocks[x + 1, y + 1, z + 1];
                         if (block == null || block.IsAir) continue;
 
                         byte m = block.Mass;
@@ -136,7 +127,6 @@ namespace Spacebox.Game.Generation
             Array.Copy(vertices, finalVertices, vertexCount);
             uint[] finalIndices = new uint[indexCount];
             Array.Copy(indices, finalIndices, indexCount);
-            Mesh mesh = new Mesh(finalVertices, finalIndices, BuffersData.CreateBlockBuffer());
 
             if (_measureGenerationTime && stopwatch != null)
             {
@@ -144,11 +134,14 @@ namespace Spacebox.Game.Generation
                 Engine.Debug.Success($"Chunk mesh generation time: {stopwatch.ElapsedMilliseconds} ms");
             }
 
-            GeometryBoundingBox = BoundingBox.CreateFromMinMax(new Vector3(xMin, yMin, zMin), new Vector3(xMax + 1, yMax + 1, zMax + 1));
-            _chunk.Mass = mass;
-            _chunk.SumPosMass = sumPosMass;
-
-            return mesh;
+            return new MeshData
+            {
+                Vertices = finalVertices,
+                Indices = finalIndices,
+                GeometryBoundingBox = BoundingBox.CreateFromMinMax(new Vector3(xMin, yMin, zMin), new Vector3(xMax + 1, yMax + 1, zMax + 1)),
+                Mass = mass,
+                SumPosMass = sumPosMass
+            };
         }
 
         private void AddRotatedFace(Block block, Face face, byte fIndex, sbyte x, sbyte y, sbyte z, Dictionary<Direction, Vector3> transformedVectors)
@@ -167,7 +160,7 @@ namespace Spacebox.Game.Generation
 
             if (block.IsTransparent && IsInRange(nx, ny, nz))
             {
-                var nb = _blocks[nx, ny, nz];
+                var nb = _paddedBlocks[nx + 1, ny + 1, nz + 1];
                 if (nb != null && nb.IsTransparent) return;
             }
 

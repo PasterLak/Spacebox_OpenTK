@@ -8,11 +8,11 @@ using Spacebox.Generation;
 
 namespace Spacebox.Game.Generation
 {
-    public struct MeshData
+    public struct MeshDataOld
     {
         public float[] Vertices { get; }
         public uint[] Indices { get; }
-        public MeshData(float[] vertices, uint[] indices)
+        public MeshDataOld(float[] vertices, uint[] indices)
         {
             Vertices = vertices;
             Indices = indices;
@@ -33,10 +33,10 @@ namespace Spacebox.Game.Generation
             return data;
         }
 
-        public void GenerateFromBlocksAsync(Block[,,] blocks, int downscale, Vector2[] customUV, Action<MeshData> onComplete)
+        public void GenerateFromBlocksAsync(Block[,,] blocks, int downscale, Vector2[] customUV, Action<MeshDataOld> onComplete)
         {
             bool[,,] fullData = ConvertBlocksToBool(blocks);
-            WorkerPoolManager.Enqueue<MeshData>(token =>
+            WorkerPoolManager.Enqueue<MeshDataOld>(token =>
             {
                 token.ThrowIfCancellationRequested();
                 bool[,,] lodData = downscale > 1
@@ -84,7 +84,7 @@ namespace Spacebox.Game.Generation
             return result;
         }
 
-        private static MeshData GenerateGreedyMesh(bool[,,] data, int downscale, Vector2[] customUV)
+        private static MeshDataOld GenerateGreedyMesh(bool[,,] data, int downscale, Vector2[] customUV)
         {
             int nx = data.GetLength(0), ny = data.GetLength(1), nz = data.GetLength(2);
             float scale = downscale;
@@ -135,7 +135,7 @@ namespace Spacebox.Game.Generation
             }
             if (DebugQuadsCount)
                 Debug.Log("Quads " + quad);
-            return new MeshData(vertices.ToArray(), indices.ToArray());
+            return new MeshDataOld(vertices.ToArray(), indices.ToArray());
         }
 
         private static int[,] CreateMask(bool[,,] data, int d, int slice, int dimD, int dimU, int dimV, int u, int v)

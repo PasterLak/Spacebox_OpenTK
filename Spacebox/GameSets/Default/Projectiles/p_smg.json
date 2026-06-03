@@ -15,5 +15,6 @@
     "Heals": false,
     "Penetration": 85,
     "RicochetAngle": 25,
+    "MaximumBlocksCanDestroy" : 2,
     "PossibleRicochets": 3
 }

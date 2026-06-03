@@ -21,7 +21,7 @@ namespace Spacebox.Game.Player
         public int Penetration { get; set; } = 255;
         public int RicochetAngle { get; set; } = 0;
         public int PossibleRicochets { get; set; } = 0;
-
+        public int MaximumBlocksCanDestroy { get; set; } = 1;
         public bool DropBlock { get; set; } = false;
     }
 }
