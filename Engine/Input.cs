@@ -45,18 +45,19 @@ namespace Engine
 
         }
         private static bool _ignoreNextDelta = false;
+        private static int _ignoreDeltaFrames = 0;
+
         public static void Update()
         {
-            if (_ignoreNextDelta)
+            if (_ignoreDeltaFrames > 0)
             {
                 _delta = Vector2.Zero;
-                _ignoreNextDelta = false;
+                _ignoreDeltaFrames--;
             }
             else
             {
                 _delta = MouseState.Delta;
             }
-
         }
 
         public static bool IsKey(Keys key)
@@ -142,13 +143,14 @@ namespace Engine
         public static void HideCursor()
         {
             SetCursorState(CursorState.Grabbed);
+            _ignoreDeltaFrames = 2;
         }
 
-        
-        private static void MoveCursorToCenter()
+        public static void ShowCursor()
         {
-            _gameWindow.MousePosition = GetCenter(_gameWindow);
-            _ignoreNextDelta = true;
+            SetCursorState(CursorState.Normal);
+            _ignoreDeltaFrames = 2;
+            _delta = Vector2.Zero;
         }
 
         public static Vector2 GetCenter(GameWindow window)
@@ -163,12 +165,7 @@ namespace Engine
             return new Vector2i(posX, posY);
         }
 
-        public static void ShowCursor()
-        {
-           
-            SetCursorState(CursorState.Normal);
-            _delta = Vector2.Zero;
-        }
+      
 
         public static CursorState GetCursorState()
         {
