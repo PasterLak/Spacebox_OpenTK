@@ -78,8 +78,16 @@ namespace Spacebox.Game.Generation
 
             ElectricManager = new ElectricNetworkManager();
 
-            tag = CreateTag(positionWorld);
             CalculateCenterOfMass();
+
+            MainThreadDispatcher.Instance.Enqueue(() =>
+            {
+                if (TagManager.Instance != null)
+                {
+                    tag = TagManager.Instance.CreateTag("", CenterOfMass, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
+                }
+            });
+
             CreateStar();
         }
 
@@ -244,11 +252,6 @@ namespace Spacebox.Game.Generation
         {
             RecalculateGeometryBoundingBox();
             CalculateGravityRadius();
-        }
-
-        private Tag CreateTag(Vector3 worldPos)
-        {
-            return TagManager.Instance.CreateTag("", worldPos, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
         }
 
         private void RecalculateGeometryBoundingBox()
@@ -497,7 +500,15 @@ namespace Spacebox.Game.Generation
                 }
             }
 
-            tag.Text = StringBuilder.ToString();
+            if (tag != null)
+            {
+                tag.Text = StringBuilder.ToString();
+            }
+            else if (TagManager.Instance != null)
+            {
+                tag = TagManager.Instance.CreateTag(StringBuilder.ToString(), CenterOfMass, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
+            }
+
             StringBuilder.Clear();
         }
 
@@ -657,13 +668,13 @@ namespace Spacebox.Game.Generation
             if (Mass == 0)
             {
                 CenterOfMass = BoundingBox.Center;
-                tag.WorldPosition = CenterOfMass;
+                if (tag != null) tag.WorldPosition = CenterOfMass;
 
                 return;
             }
 
             CenterOfMass = sumPosCenterOfMass / Mass;
-            tag.WorldPosition = CenterOfMass;
+            if (tag != null) tag.WorldPosition = CenterOfMass;
         }
 
         public static Chunk GetOrCreateChunk(SpaceEntity entity, Vector3SByte idx)
@@ -699,9 +710,12 @@ namespace Spacebox.Game.Generation
             {
                 ch.Dispose();
             }
-            if (tag != null)
+
+            var t = tag;
+            if (t != null)
             {
-                TagManager.Instance.ReleaseTag(tag);
+                MainThreadDispatcher.Instance.Enqueue(() => TagManager.Instance?.ReleaseTag(t));
+                tag = null;
             }
         }
     }

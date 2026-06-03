@@ -16,13 +16,11 @@ namespace Spacebox.Game.Generation;
 
 public class Sector : SpatialCell, IDisposable, ISpaceStructure
 {
-    // ------------------ CONST --------------------------------------------
-    public const short SizeBlocks = 8192; // 256 512 2048 4096 8192
+    public const short SizeBlocks = 8192;
     public const short SizeBlocksHalf = SizeBlocks / 2;
 
     public readonly long Seed;
 
-    // ------------------ Properties --------------------------------------------
 
     public List<SpaceEntity> Entities { get; private set; }
 
@@ -42,9 +40,9 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         }
     }
 
-    // ------------------ Private --------------------------------------------
     private readonly PointOctree<SpaceEntity> sectorOctree;
     private readonly PointOctree<NotGeneratedEntity> octreeNotGenerated;
+    private HashSet<long> loadingEntities = new HashSet<long>();
 
     public Sector(Vector3 positionWorld, Vector3i positionIndex, int worldSeed)
     {
@@ -118,18 +116,24 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
                         var entity = NBTHelper.TagToSpaceEntity(tag, this);
-                        if (Entities.Exists(e => e.EntityID == entity.EntityID)) return;
-
-                        ApplyLoadedEntityFixes(entity, data, fileName);
-
-                        AddEntity(entity, entity.PositionWorld);
-                        octreeNotGenerated.Remove(data);
+                        if (!Entities.Exists(e => e.EntityID == entity.EntityID))
+                        {
+                            ApplyLoadedEntityFixes(entity, data, fileName);
+                            AddEntity(entity, entity.PositionWorld);
+                            octreeNotGenerated.Remove(data);
+                        }
+                        loadingEntities.Remove(data.Id);
                     });
+                }
+                else
+                {
+                    MainThreadDispatcher.Instance.Enqueue(() => loadingEntities.Remove(data.Id));
                 }
             }
             catch (Exception ex)
             {
                 Debug.Error($"[Sector] Async load failed for {filePath}: {ex.Message}");
+                MainThreadDispatcher.Instance.Enqueue(() => loadingEntities.Remove(data.Id));
             }
         }, WorkerPoolManager.Priority.High);
     }
@@ -195,7 +199,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         foreach (var point in positions)
         {
             long rawId = GenerateUniqueIdForPoint(point, PointsIds);
-            long cleanId = rawId & 0x7FFFFFFFFFFFFFFF; // clear highest bit for generated entities, bit 64 = 0
+            long cleanId = rawId & 0x7FFFFFFFFFFFFFFF;
 
             PointsIds.Add(cleanId);
 
@@ -212,7 +216,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         data.biome = BiomesMap.GetFromSectorLocalCoord(point);
 
-        if (data.biome.AsteroidChances.Count == 0) return; // no asteroids in this biome
+        if (data.biome.AsteroidChances.Count == 0) return;
 
         var asteroidData = Biome.SelectAsteroidBySpawnChance(data.biome.AsteroidChances, random);
 
@@ -333,7 +337,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         return pos;
     }
 
-    public void SpawnPlayerNearRandomAsteroidData(LocalAstronaut player, Random random) // todo: fix 
+    public void SpawnPlayerNearRandomAsteroidData(LocalAstronaut player, Random random)
     {
 
         var asteroidsDataList = EntitiesGeneratedData.Values.ToList();
@@ -390,6 +394,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     private void GenerateAsteroidFromData(NotGeneratedEntity data)
     {
+        if (loadingEntities.Contains(data.Id)) return;
 
         if (WorldPersistenceManager.TryGetCachedEntity(data.Id, out var cachedTag))
         {
@@ -406,30 +411,35 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         if (File.Exists(filePath))
         {
-            if (IsPlayerInsideOrVeryClose(data))
-            {
-                var loadedEntity = WorldSaveLoad.LoadSpaceEntityFromFile(filePath, this);
-                if (loadedEntity != null)
-                {
-                    ApplyLoadedEntityFixes(loadedEntity, data, fileName);
-                    AddEntity(loadedEntity, loadedEntity.PositionWorld);
-                    octreeNotGenerated.Remove(data);
-                }
-                return;
-            }
-            else
-            {
-                LoadEntityFromDiskAsync(filePath, data);
-                return;
-            }
+            loadingEntities.Add(data.Id);
+            LoadEntityFromDiskAsync(filePath, data);
+            return;
         }
 
         if (data.Id >= 0)
         {
-            var newEntity = new Asteroid(data, this);
-            newEntity.Name = newEntity.EntityID.ToString();
-            AddEntity(newEntity, newEntity.PositionWorld);
-            octreeNotGenerated.Remove(data);
+            loadingEntities.Add(data.Id);
+            WorkerPoolManager.Enqueue(token =>
+            {
+                try
+                {
+                    var newEntity = new Asteroid(data, this, true);
+                    newEntity.Name = newEntity.EntityID.ToString();
+                    newEntity.OnGenerate();
+
+                    MainThreadDispatcher.Instance.Enqueue(() =>
+                    {
+                        AddEntity(newEntity, newEntity.PositionWorld);
+                        octreeNotGenerated.Remove(data);
+                        loadingEntities.Remove(data.Id);
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Debug.Error($"Failed to generate asteroid {data.Id}: {ex}");
+                    MainThreadDispatcher.Instance.Enqueue(() => loadingEntities.Remove(data.Id));
+                }
+            }, WorkerPoolManager.Priority.Medium);
         }
     }
 
@@ -494,10 +504,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         IsModified = true;
     }
 
-    // demo
     public void MoveEntityToSector(SpaceEntity entity, Sector newSector)
     {
-        //DeleteEntity(entity);
         newSector.AddEntity(entity, entity.PositionWorld);
     }
 
@@ -621,13 +629,9 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
                 entity.Render(cam, shader);
 
-                // if (entity.StarsEffect.Enabled)
-                //   entity.StarsEffect.Enabled = false;
             }
             else
             {
-                // if (!entity.StarsEffect.Enabled)
-                //     entity.StarsEffect.Enabled = true;
 
                 if (distSqr >= Settings.ENTITY_UNLOAD_DISTANCE * Settings.ENTITY_UNLOAD_DISTANCE)
                 {
@@ -659,15 +663,13 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             return;
         }
 
-        var tasks = new List<Task>();
-        var loadedEntities = new System.Collections.Concurrent.ConcurrentBag<SpaceEntity>();
-        var processedData = new System.Collections.Concurrent.ConcurrentBag<NotGeneratedEntity>();
-
         string sectorPath = WorldSaveLoad.GetSectorFolderPath(World.WorldData.WorldFolderPath, PositionIndex);
+        int totalToLoad = nearby.Count;
+        int loadedCount = 0;
 
         foreach (var data in nearby)
         {
-            tasks.Add(Task.Run(() =>
+            WorkerPoolManager.Enqueue(token =>
             {
                 try
                 {
@@ -677,7 +679,6 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                     {
                         entity = NBTHelper.TagToSpaceEntity(cachedTag, this);
                     }
-
                     else
                     {
                         string fileName = !string.IsNullOrEmpty(data.FileName) ? data.FileName : data.Id + ".entity";
@@ -699,52 +700,43 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                     {
                         var newEntity = new Asteroid(data, this, true);
                         newEntity.Name = newEntity.EntityID.ToString();
-
                         newEntity.OnGenerate();
                         entity = newEntity;
                     }
 
-                    if (entity != null)
+                    MainThreadDispatcher.Instance.Enqueue(() =>
                     {
+                        if (entity != null)
+                        {
+                            AddEntity(entity, entity.PositionWorld);
+                            octreeNotGenerated.Remove(data);
 
-                        loadedEntities.Add(entity);
-                        processedData.Add(data);
-                    }
+                            if (entity.Chunks.Count > 0)
+                            {
+                                foreach (var chunk in entity.Chunks)
+                                {
+                                    chunk.QueueMeshUpdate(UpdateReason.Generation);
+                                }
+                            }
+                        }
+                        loadedCount++;
+                    });
                 }
                 catch (Exception ex)
                 {
                     Debug.Error($"[Sector] Preload failed for entity {data.Id}: {ex.Message}");
+                    MainThreadDispatcher.Instance.Enqueue(() => { loadedCount++; });
                 }
-            }));
+            }, WorkerPoolManager.Priority.High);
         }
 
-
-        Task.WaitAll(tasks.ToArray());
-
-        foreach (var entity in loadedEntities)
+        while (loadedCount < totalToLoad)
         {
-            AddEntity(entity, entity.PositionWorld);
+            MainThreadDispatcher.Instance.ExecutePending();
+            System.Threading.Thread.Sleep(5);
         }
 
-        foreach (var data in processedData)
-        {
-            octreeNotGenerated.Remove(data);
-        }
-
-        foreach (var entity in loadedEntities)
-        {
-
-            if (entity.Chunks.Count > 0)
-            {
-                // entity.GenerateMesh();
-                foreach (var chunk in entity.Chunks)
-                {
-                    chunk.QueueMeshUpdate();
-                }
-            }
-        }
-
-        Debug.Success($"[Sector] Preload complete. Loaded {loadedEntities.Count} entities.");
+        Debug.Success($"[Sector] Preload complete. Loaded {loadedCount} entities.");
     }
 
     public void Dispose()
@@ -752,7 +744,6 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         if (Entities != null)
         {
-            // safe removal
             for (int i = Entities.Count - 1; i >= 0; i--)
             {
                 UnloadEntity(Entities[i]);
@@ -765,6 +756,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         PointsIds.Clear();
         SuppressedEntities.Clear();
         EntitiesDestroyed.Clear();
+        loadingEntities.Clear();
     }
 
     public Vector3 LocalToWorldPosition(Vector3 local)

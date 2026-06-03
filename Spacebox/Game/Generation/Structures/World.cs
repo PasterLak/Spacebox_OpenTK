@@ -126,9 +126,8 @@ public class World : Component, ISpaceStructure
     public void Load()
     {
         CurrentSector = LoadSectorNow(SpaceMath.Sector.GetSectorIndex(Player.Position));
-        //CurrentSector.SpawnPlayerNearRandomAsteroidData(Player, new Random(Seed));
 
-        //CurrentSector.PreloadAreaBlocking(Player.Position, Settings.CHUNK_VISIBLE_RADIUS);
+        CurrentSector.PreloadAreaBlocking(Player.Position, Settings.CHUNK_VISIBLE_RADIUS * 1.5f);
 
         if (CurrentSector == null)
             Debug.Error("No current sector");
@@ -263,7 +262,6 @@ public class World : Component, ISpaceStructure
             }
             else
             {
-                // Debug.Error("Loading a sector in the main thread! Index: " + index);
                 CurrentSector = LoadSectorNow(index);
             }
         }
@@ -331,7 +329,6 @@ public class World : Component, ISpaceStructure
 
     private void LoadSectorAsync(Vector3i sectorIndex)
     {
-        //loadingSectors.Add(sectorIndex);
 
         int worldSeed = Seed;
         Vector3 worldPos = SpaceMath.Sector.GetSectorPosition(sectorIndex);
@@ -353,7 +350,6 @@ public class World : Component, ISpaceStructure
                         worldOctree.Add(sector, sector.BoundingBox);
                         loadedSectors[sectorIndex] = sector;
                         loadingSectors.Remove(sectorIndex);
-                        //Debug.Log($"Sector loaded: {sectorIndex}");
                     });
                 }
                 catch (Exception ex)
