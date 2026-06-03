@@ -30,7 +30,7 @@ namespace Spacebox.Game
             if (!GameAssets.Recipes[recipeData.Type].ContainsKey(item.Id))
             {
                 Recipe recipe = new Recipe();
-                recipe.RequiredTicks = (short)(Time.SecondsToTicks(recipeData.Duration));
+                recipe.RequiredTicks = (short)(Time.SecondsToTicks(recipeData.DurationSec));
                 recipe.PowerPerTickRequared = (short)recipeData.PowerPerTickRequared;
                 recipe.Ingredient = new Ingredient(item, (byte)recipeData.Ingredient.Quantity);
                 recipe.Product = new Product(item2, (byte)recipeData.Product.Quantity);

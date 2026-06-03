@@ -48,7 +48,6 @@ namespace Spacebox.Game
             itemCamera.DepthFar = 100f;
             animatedOffset = EndPosition;
 
-
             SpaceboxWindow.OnResized += Resize;
         }
 
@@ -166,6 +165,9 @@ namespace Spacebox.Game
                     Material.Shader.SetMatrix4("model", model);
                     Material.Shader.SetMatrix4("view", itemCamera.GetViewMatrix());
                     Material.Shader.SetMatrix4("projection", itemCamera.GetProjectionMatrix());
+
+                   
+                    Material.Shader.SetVector3("viewPos", itemCamera.Position);
                 };
             }
 

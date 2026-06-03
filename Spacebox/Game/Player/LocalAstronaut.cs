@@ -207,7 +207,7 @@ namespace Spacebox.Game.Player
 
             ItemSway.EnableSway = CanMove;
        
-            ItemSway.Update(InertiaController.Velocity, Front);
+            ItemSway.Update(InertiaController.Velocity, Front, Right);
 
             if (!CanMove) return;
 

@@ -68,15 +68,21 @@ void main()
    vec3 pointLight = accumulatePointLightsWithAmbient(norm, V, vPos, base, vec3(0.1)) * pointLightStrength;
    float shadowFactor = smoothstep(shadows, 1.0, diff);
    pointLight *= shadowFactor;
-   
+
    vec2 ndc = screenPos.xy / screenPos.w;
    float distanceFromCenter = length(ndc - flashlightCenter);
    
    float flashlightFactor = 1.0 - smoothstep(0.0, flashlightRadius, distanceFromCenter);
    flashlightFactor = pow(flashlightFactor, flashlightFalloff);
    flashlightFactor = clamp(flashlightFactor, 0.0, 1.0);
+
+   vec3 stableV = V;
+   stableV.x = 0.0;
+   stableV.y = 0.0;
+   stableV = normalize(stableV);
    
-   float surfaceAngle = max(dot(norm, V), 0.0);
+   float surfaceAngle = dot(norm, stableV) * 0.5 + 0.5;
+   
    flashlightFactor *= surfaceAngle;
    
    vec3 flashlightContribution = base * flashlightColor * flashlightIntensity * flashlightFactor;

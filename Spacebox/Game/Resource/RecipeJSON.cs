@@ -16,7 +16,7 @@ namespace Spacebox.Game.Resource
     public class RecipeJSON
     {
         public string Type { get; set; } = "unknown";
-        public float Duration { get; set; } = 20f;
+        public float DurationSec { get; set; } = 20f;
         public int PowerPerTickRequared { get; set; } = 0;
         public ingredient Ingredient { get; set; }
         public product Product { get; set; }

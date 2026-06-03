@@ -16,7 +16,7 @@ namespace Spacebox.Game.Generation
         public const byte SizeHalf = Size / 2;
 
         public static bool ShowChunkBounds { get; set; } = true;
-        public static bool MeasureGenerationTime { get; set; } = true;
+        public static bool MeasureGenerationTime { get; set; } = false;
 
         public int Mass { get; set; } = 0;
 
