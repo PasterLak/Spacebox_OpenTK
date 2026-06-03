@@ -296,6 +296,7 @@ namespace Spacebox.Game.Generation
             }
 
             CheckNeigborBlocks(new Vector3Byte(x, y, z));
+            _lightManager.PropagateLight();
             QueueMeshUpdate(UpdateReason.PlayerAction);
         }
 

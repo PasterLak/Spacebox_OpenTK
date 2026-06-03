@@ -1,5 +1,7 @@
 ﻿using Engine;
+using OpenTK.Mathematics;
 using System.Collections.Generic;
+using System;
 
 namespace Spacebox.Game.Generation
 {
@@ -36,51 +38,109 @@ namespace Spacebox.Game.Generation
                 }
             }
 
-            var allChunks = new List<Chunk>(visited);
+            var chunkToIndex = new Dictionary<Chunk, int>();
+            var indexToChunk = new List<Chunk>();
 
-            foreach (var c in allChunks)
-                ResetLightLevels(c);
+            foreach (var c in visited)
+            {
+                chunkToIndex[c] = indexToChunk.Count;
+                indexToChunk.Add(c);
+            }
 
-            var lightQueue = new Queue<(Chunk, byte, byte, byte)>();
-
-            foreach (var c in allChunks)
-                EnqueueLightSources(c, lightQueue);
-
+            var lightQueue = new Queue<uint>(2048);
             var changedChunks = new HashSet<Chunk>();
+
+            for (int i = 0; i < indexToChunk.Count; i++)
+            {
+                Chunk c = indexToChunk[i];
+                for (int x = 0; x < Size; x++)
+                {
+                    for (int y = 0; y < Size; y++)
+                    {
+                        for (int z = 0; z < Size; z++)
+                        {
+                            var b = c.Blocks[x, y, z];
+                            if (b.LightLevel > 0f)
+                            {
+                                if (b.LightLevel < 15f)
+                                {
+                                    b.LightLevel = 0f;
+                                    b.LightColor = Color3Byte.Zero;
+                                    c.Blocks[x, y, z] = b;
+                                }
+                                else
+                                {
+                                    uint packed = (uint)((i << 15) | (x << 10) | (y << 5) | z);
+                                    lightQueue.Enqueue(packed);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             while (lightQueue.Count > 0)
             {
-                var (chunk, x, y, z) = lightQueue.Dequeue();
+                uint packed = lightQueue.Dequeue();
+                int z = (int)(packed & 0x1F);
+                int y = (int)((packed >> 5) & 0x1F);
+                int x = (int)((packed >> 10) & 0x1F);
+                int cIndex = (int)(packed >> 15);
+
+                Chunk chunk = indexToChunk[cIndex];
                 var block = chunk.Blocks[x, y, z];
-                var lvl = block.LightLevel;
+                float lvl = block.LightLevel;
+
                 if (lvl <= 0.1f) continue;
+
+                float newLvl = lvl * 0.8f;
+                byte r = (byte)(block.LightColor.R * 8 / 10);
+                byte g = (byte)(block.LightColor.G * 8 / 10);
+                byte b_clr = (byte)(block.LightColor.B * 8 / 10);
 
                 for (int i = 0; i < 6; i++)
                 {
-                    var nx = x + AdjacentOffsets[i].X;
-                    var ny = y + AdjacentOffsets[i].Y;
-                    var nz = z + AdjacentOffsets[i].Z;
-                    var (nChunk, bx, by, bz) = GetBlockInNeighborChunk(chunk, nx, ny, nz);
+                    int nx = x + AdjacentOffsets[i].X;
+                    int ny = y + AdjacentOffsets[i].Y;
+                    int nz = z + AdjacentOffsets[i].Z;
+
+                    Chunk nChunk = chunk;
+                    int bx = nx, by = ny, bz = nz;
+
+                    if (nx < 0 || nx >= Size || ny < 0 || ny >= Size || nz < 0 || nz >= Size)
+                    {
+                        GetNeighborCoord(chunk, nx, ny, nz, out nChunk, out bx, out by, out bz);
+                    }
+
                     if (nChunk == null) continue;
 
                     var nb = nChunk.Blocks[bx, by, bz];
                     if (!(nb.IsAir || nb.IsTransparent)) continue;
 
-                    const float att = 0.8f;
-                    var newLvl = lvl * att;
-                    var newClr = block.LightColor.ToVector3() * att;
-
                     if (newLvl > nb.LightLevel + 0.01f)
                     {
                         nb.LightLevel = newLvl;
-                        nb.LightColor = new Color3Byte(newClr);
+                        nb.LightColor = new Color3Byte(r, g, b_clr);
                         nChunk.Blocks[bx, by, bz] = nb;
                         changedChunks.Add(nChunk);
-                        lightQueue.Enqueue((nChunk, bx, by, bz));
+
+                        if (!chunkToIndex.TryGetValue(nChunk, out int nIndex))
+                        {
+                            nIndex = indexToChunk.Count;
+                            chunkToIndex[nChunk] = nIndex;
+                            indexToChunk.Add(nChunk);
+                        }
+
+                        uint nPacked = (uint)((nIndex << 15) | (bx << 10) | (by << 5) | bz);
+                        lightQueue.Enqueue(nPacked);
                     }
-                    else if (System.MathF.Abs(newLvl - nb.LightLevel) < 0.01f)
+                    else if (MathF.Abs(newLvl - nb.LightLevel) < 0.01f)
                     {
-                        nb.LightColor = new Color3Byte((nb.LightColor.ToVector3() + newClr) * 0.5f);
+                        nb.LightColor = new Color3Byte(
+                            (byte)((nb.LightColor.R + r) / 2),
+                            (byte)((nb.LightColor.G + g) / 2),
+                            (byte)((nb.LightColor.B + b_clr) / 2)
+                        );
                         nChunk.Blocks[bx, by, bz] = nb;
                         changedChunks.Add(nChunk);
                     }
@@ -95,66 +155,22 @@ namespace Spacebox.Game.Generation
             }
         }
 
-        private void ResetLightLevels(Chunk c)
+        private void GetNeighborCoord(Chunk c, int nx, int ny, int nz, out Chunk nChunk, out int bx, out int by, out int bz)
         {
-            for (byte x = 0; x < Size; x++)
-            {
-                for (byte y = 0; y < Size; y++)
-                {
-                    for (byte z = 0; z < Size; z++)
-                    {
-                        var b = c.Blocks[x, y, z];
-                        if (b.LightLevel < 15f)
-                        {
-                            b.LightLevel = 0f;
-                            b.LightColor = Color3Byte.Zero;
-                            c.Blocks[x, y, z] = b;
-                        }
-                    }
-                }
-            }
-        }
-
-        private void EnqueueLightSources(Chunk c, Queue<(Chunk, byte, byte, byte)> q)
-        {
-            for (byte x = 0; x < Size; x++)
-            {
-                for (byte y = 0; y < Size; y++)
-                {
-                    for (byte z = 0; z < Size; z++)
-                    {
-                        if (c.Blocks[x, y, z].LightLevel > 0f)
-                        {
-                            q.Enqueue((c, x, y, z));
-                        }
-                    }
-                }
-            }
-        }
-
-        private (Chunk chunk, byte x, byte y, byte z) GetBlockInNeighborChunk(Chunk c, int nx, int ny, int nz)
-        {
-            if (nx >= 0 && nx < Size && ny >= 0 && ny < Size && nz >= 0 && nz < Size)
-            {
-                return (c, (byte)nx, (byte)ny, (byte)nz);
-            }
-
             sbyte ox = 0, oy = 0, oz = 0;
-            int lx = nx, ly = ny, lz = nz;
-            if (lx < 0) { ox = -1; lx += Size; }
-            else if (lx >= Size) { ox = 1; lx -= Size; }
-            if (ly < 0) { oy = -1; ly += Size; }
-            else if (ly >= Size) { oy = 1; ly -= Size; }
-            if (lz < 0) { oz = -1; lz += Size; }
-            else if (lz >= Size) { oz = 1; lz -= Size; }
+            bx = nx; by = ny; bz = nz;
+
+            if (nx < 0) { ox = -1; bx += Size; }
+            else if (nx >= Size) { ox = 1; bx -= Size; }
+
+            if (ny < 0) { oy = -1; by += Size; }
+            else if (ny >= Size) { oy = 1; by -= Size; }
+
+            if (nz < 0) { oz = -1; bz += Size; }
+            else if (nz >= Size) { oz = 1; bz -= Size; }
 
             var off = new Vector3SByte(ox, oy, oz);
-            if (c.Neighbors.TryGetValue(off, out var n) && n != null)
-            {
-                return (n, (byte)lx, (byte)ly, (byte)lz);
-            }
-
-            return (null, 0, 0, 0);
+            c.Neighbors.TryGetValue(off, out nChunk);
         }
 
         private static readonly Vector3SByte[] AdjacentOffsets =
