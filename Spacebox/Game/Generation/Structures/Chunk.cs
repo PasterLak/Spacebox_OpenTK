@@ -342,28 +342,37 @@ namespace Spacebox.Game.Generation
 
             var worldBlockPosition = new Vector3(x, y, z) + PositionWorld;
 
-            if (block.IsTransparent)
+            Color3Byte effectLightColor = block.LightColor;
+
+            if (!block.IsTransparent)
             {
-                World.DestructionManager.DestroyBlock(worldBlockPosition, block.LightColor, block);
-                if (spawnDrop)
-                    World.DropEffectManager.DropBlock(worldBlockPosition, block.LightColor, block, SpaceEntity);
-            }
-            else
-            {
-                if (IsInRange(x + xNormal, y + yNormal, z + zNormal))
+                int nx = x + xNormal;
+                int ny = y + yNormal;
+                int nz = z + zNormal;
+
+                if (IsInRange(nx, ny, nz))
                 {
-                    World.DestructionManager.DestroyBlock(worldBlockPosition,
-                        Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, block);
-                    if (spawnDrop)
-                        World.DropEffectManager.DropBlock(worldBlockPosition,
-                            Blocks[x + xNormal, y + yNormal, z + zNormal].LightColor, block, SpaceEntity);
+                    effectLightColor = Blocks[nx, ny, nz].LightColor;
                 }
                 else
                 {
-                    World.DestructionManager.DestroyBlock(worldBlockPosition, block.LightColor, block);
-                    if (spawnDrop)
-                        World.DropEffectManager.DropBlock(worldBlockPosition, block.LightColor, block, SpaceEntity);
+                    MeshGenerator.GetNeighborChunkIndexAndLocalCoords(nx, ny, nz, Size, out var offset, out var local);
+                    if (Neighbors.TryGetValue(offset, out var nChunk) && nChunk != null)
+                    {
+                        var nBlock = nChunk.GetBlock(local);
+                        if (nBlock != null)
+                        {
+                            effectLightColor = nBlock.LightColor;
+                        }
+                    }
                 }
+            }
+
+            World.DestructionManager.DestroyBlock(worldBlockPosition, effectLightColor, block);
+
+            if (spawnDrop)
+            {
+                World.DropEffectManager.DropBlock(worldBlockPosition, effectLightColor, block, SpaceEntity);
             }
 
             if (block is ElectricalBlock)

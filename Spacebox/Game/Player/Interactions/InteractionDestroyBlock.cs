@@ -11,15 +11,16 @@ using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
 using SpaceNetwork;
+using System;
 
 public abstract class InteractionDestroyBlock : InteractionMode
 {
-   
     protected static AudioSource blockDestroy;
     protected ItemSlot selectedItemSlot;
     protected DrillItem drillItem;
     protected AnimatedItemModel model;
     Random r = new Random();
+
     protected InteractionDestroyBlock(ItemSlot itemSlot)
     {
         AllowReload = true;
@@ -40,18 +41,20 @@ public abstract class InteractionDestroyBlock : InteractionMode
     protected void DestroyBlock(HitInfo hit, LocalAstronaut player)
     {
         hit.block.OnDestroy?.Invoke(hit);
-        hit.block.Durability = 0;
-        hit.chunk.SpaceEntity.RemoveBlockAtLocal(hit.blockPositionEntity, hit.normal);
+
+        // Прямое обращение к чанку из HitInfo: никаких погрешностей float!
+        hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
+
         var x = hit.chunk.PositionIndex * Chunk.Size;
         var localPos = new Vector3(x.X + hit.blockPositionIndex.X, x.Y + hit.blockPositionIndex.Y, x.Z + hit.blockPositionIndex.Z);
         ClientNetwork.Instance?.SendBlockDestroyed((short)localPos.X, (short)localPos.Y, (short)localPos.Z);
         player.PlayerStatistics.BlocksDestroyed++;
-        
+
         if (blockDestroy != null)
         {
             PickDestroySound(hit.block.Id);
-           
-            blockDestroy.Pitch = r.Next(9, 12)  * 0.1f; 
+
+            blockDestroy.Pitch = r.Next(9, 12) * 0.1f;
             blockDestroy.Play();
         }
         else Debug.Error("blockDestroy was null!");
@@ -69,7 +72,6 @@ public abstract class InteractionDestroyBlock : InteractionMode
     public override void OnDisable()
     {
         BlockSelector.IsVisible = false;
-       // CenteredText.Hide();
         selectedItemSlot = null;
         model?.Animator.Clear();
     }

@@ -280,9 +280,10 @@ namespace Spacebox.Game.Generation
             int chunkY = (int)MathF.Floor(localPos.Y / Chunk.Size);
             int chunkZ = (int)MathF.Floor(localPos.Z / Chunk.Size);
             Vector3SByte chunkIndex = new Vector3SByte((sbyte)chunkX, (sbyte)chunkY, (sbyte)chunkZ);
-            int blockX = (int)localPos.X - chunkX * Chunk.Size;
-            int blockY = (int)localPos.Y - chunkY * Chunk.Size;
-            int blockZ = (int)localPos.Z - chunkZ * Chunk.Size;
+
+            int blockX = (int)MathF.Floor(localPos.X) - chunkX * Chunk.Size;
+            int blockY = (int)MathF.Floor(localPos.Y) - chunkY * Chunk.Size;
+            int blockZ = (int)MathF.Floor(localPos.Z) - chunkZ * Chunk.Size;
             Vector3Byte blockPos = new Vector3Byte((byte)blockX, (byte)blockY, (byte)blockZ);
 
             if (Octree.TryFindDataAtPosition(localPos + new Vector3(0.5f, 0.5f, 0.5f), out var chunk))
@@ -381,6 +382,21 @@ namespace Spacebox.Game.Generation
             }
 
             MeshUpdateQueue.Enqueue(chunk, (int)reason + distance);
+        }
+
+        public bool IsPositionInChunk(Vector3 world, out Chunk chunk)
+        {
+            var local = WorldPositionToLocal(world);
+
+            if (Octree.TryFindDataAtPosition(local, out chunk))
+            {
+                return true;
+            }
+            else
+            {
+                chunk = null;
+                return false;
+            }
         }
 
         public Vector3 WorldPositionToLocal(Vector3 world)
@@ -522,9 +538,10 @@ namespace Spacebox.Game.Generation
             int chunkY = (int)MathF.Floor(localBlockPosition.Y / Chunk.Size);
             int chunkZ = (int)MathF.Floor(localBlockPosition.Z / Chunk.Size);
             Vector3SByte chunkIndex = new Vector3SByte((sbyte)chunkX, (sbyte)chunkY, (sbyte)chunkZ);
-            int blockX = (int)localBlockPosition.X - chunkX * Chunk.Size;
-            int blockY = (int)localBlockPosition.Y - chunkY * Chunk.Size;
-            int blockZ = (int)localBlockPosition.Z - chunkZ * Chunk.Size;
+
+            int blockX = (int)MathF.Floor(localBlockPosition.X) - chunkX * Chunk.Size;
+            int blockY = (int)MathF.Floor(localBlockPosition.Y) - chunkY * Chunk.Size;
+            int blockZ = (int)MathF.Floor(localBlockPosition.Z) - chunkZ * Chunk.Size;
 
             if (Octree.TryFindDataAtPosition(localBlockPosition + new Vector3(0.5f, 0.5f, 0.5f), out Chunk chunk))
             {
@@ -668,21 +685,6 @@ namespace Spacebox.Game.Generation
                 entity.RecalculateMass();
             }
             return chunk;
-        }
-
-        public bool IsPositionInChunk(Vector3 world, out Chunk chunk)
-        {
-            var local = WorldPositionToLocal(world);
-
-            if (Octree.TryFindDataAtPosition(local, out chunk))
-            {
-                return true;
-            }
-            else
-            {
-                chunk = null;
-                return false;
-            }
         }
 
         public void Dispose()
