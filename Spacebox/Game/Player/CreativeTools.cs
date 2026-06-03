@@ -1,11 +1,13 @@
 ﻿using OpenTK.Mathematics;
-
 using Engine.Physics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Engine;
 using Spacebox.Game.GameMath;
+using Spacebox.Game.Generation.Blocks;
+using System.Collections.Generic;
+
 namespace Spacebox.Game.Player
 {
     public class CreativeTools
@@ -13,18 +15,19 @@ namespace Spacebox.Game.Player
         public static BlockPointer Block1 { get; private set; } = null;
         public static BlockPointer Block2 { get; private set; } = null;
 
-
         public static void SetPoint1(BlockPointer blockPointer)
         {
             Block1 = blockPointer;
         }
+
         public static void SetPoint2(BlockPointer blockPointer)
         {
             Block2 = blockPointer;
         }
+
         public static void AddBlock(BlockPointer blockPointer)
         {
-            if(Block1 == null)
+            if (Block1 == null)
             {
                 Block1 = blockPointer;
                 Debug.Log($"[CreativeTools] Block1 was selected");
@@ -32,7 +35,7 @@ namespace Spacebox.Game.Player
             }
             else
             {
-                if(Block2 != null)
+                if (Block2 != null)
                 {
                     Block1 = Block2;
                     Block2 = blockPointer;
@@ -43,7 +46,6 @@ namespace Spacebox.Game.Player
                     Block2 = blockPointer;
                     Debug.Log($"[CreativeTools] Block2 was selected");
                 }
-
             }
         }
 
@@ -51,7 +53,7 @@ namespace Spacebox.Game.Player
         {
             if (Block1 == null && Block2 == null) return null;
 
-            if(Block1 != null && Block2 == null)
+            if (Block1 != null && Block2 == null)
             {
                 return CreateBoundingBoxForTwoBlocks(Block1.worldPosition, Block1.worldPosition);
             }
@@ -61,22 +63,18 @@ namespace Spacebox.Game.Player
             }
 
             return null;
-
         }
 
         public static BoundingBox CreateBoundingBoxForTwoBlocks(Vector3 block1Min, Vector3 block2Min, Vector3 blockSize = default)
         {
-       
             if (blockSize == default)
             {
                 blockSize = Vector3.One;
             }
 
-         
             Vector3 block1Max = block1Min + blockSize;
             Vector3 block2Max = block2Min + blockSize;
 
-       
             Vector3 overallMin = Vector3.ComponentMin(block1Min, block2Min);
             Vector3 overallMax = Vector3.ComponentMax(block1Max, block2Max);
 
@@ -97,43 +95,28 @@ namespace Spacebox.Game.Player
                 return;
             }
 
-
             var local1 = Block1.localBlockIndexInEntity;
             var local2 = Block2.localBlockIndexInEntity;
-
-            if (local1 == local2)
-            {
-                Reset();
-                return;
-            }
 
             Vector3 realMin = Vector3.ComponentMin((Vector3)local1, (Vector3)local2);
             Vector3 realMax = Vector3.ComponentMax((Vector3)local1, (Vector3)local2);
 
-            Engine.Physics.BoundingBox deleteBounding;
-
-            
-             deleteBounding = Engine.Physics.BoundingBox.CreateFromMinMax(realMin, realMax);
-
-
-            //Debug.Log($"Delete bounding: {deleteBounding.Min} - {deleteBounding.Max}");
-
+            Engine.Physics.BoundingBox deleteBounding = Engine.Physics.BoundingBox.CreateFromMinMax(realMin, realMax);
 
             List<Chunk> chunks = new List<Chunk>();
 
-            if(PanelUI.IsHolding<EraserToolItem>())
+            if (PanelUI.IsHolding<EraserToolItem>())
             {
                 chunks = SpaceMath.Entity.RemoveBlocksInLocalBox(Block1.spaceEntity, deleteBounding);
             }
-            else if(PanelUI.IsHolding< BlockItem>())
+            else if (PanelUI.IsHolding<BlockItem>())
             {
                 var slot = PanelUI.CurrentSlot();
 
-                if(slot.HasItem)
+                if (slot.HasItem)
                 {
                     chunks = SpaceMath.Entity.FillBlocksInLocalBox(Block1.spaceEntity, deleteBounding, slot.Item.Id);
                 }
-                
             }
             else
             {
@@ -141,22 +124,19 @@ namespace Spacebox.Game.Player
                 return;
             }
 
-            foreach ( var chunk in chunks )
+            foreach (var chunk in chunks)
             {
                 chunk.QueueMeshUpdate();
             }
+
             Reset();
-            
         }
 
         public static void Reset()
         {
             Block1 = null;
             Block2 = null;
-
-          
         }
-
     }
 
     public class BlockPointer
@@ -176,18 +156,17 @@ namespace Spacebox.Game.Player
             this.spaceEntity = chunk.SpaceEntity;
             var lPos = chunk.PositionIndex * Chunk.Size;
             localBlockIndexInEntity = new Vector3(lPos.X + localBlockIndex.X, lPos.Y + localBlockIndex.Y, lPos.Z + localBlockIndex.Z);
+            worldPosition = this.spaceEntity.LocalPositionToWorld(localBlockIndexInEntity);
         }
 
         public BlockPointer(short block, SpaceEntity entity, Vector3 localBlockIndexInEntity)
         {
             this.block = block;
             this.chunk = null;
-            this.localBlockIndex = localBlockIndex;
+            this.localBlockIndex = default;
             this.spaceEntity = entity;
-            // var lPos = chunk.PositionIndex * Chunk.Size;
             this.localBlockIndexInEntity = localBlockIndexInEntity;
             worldPosition = entity.LocalPositionToWorld(localBlockIndexInEntity);
-
         }
 
         public BlockPointer(HitInfo hitInfo)

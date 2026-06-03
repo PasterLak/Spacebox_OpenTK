@@ -3,6 +3,9 @@ using Engine.Physics;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Spacebox.Game.GameMath;
 
@@ -22,13 +25,36 @@ public class SpaceEntityMath
 
         return new Vector3Byte((byte)localX, (byte)localY, (byte)localZ);
     }
+
     public Vector3 ChunkIndexToLocal(Vector3SByte chunkIndex)
     {
         var localPos = new Vector3(chunkIndex.X * Chunk.Size, chunkIndex.Y * Chunk.Size, chunkIndex.Z * Chunk.Size);
-
         return localPos;
-
     }
+
+    private void CheckAndAddNeighbor(SpaceEntity entity, Vector3SByte idx, int x, int y, int z, HashSet<Chunk> modified)
+    {
+        if (x == 0) AddNeighbor(entity, idx, -1, 0, 0, modified);
+        else if (x == Chunk.Size - 1) AddNeighbor(entity, idx, 1, 0, 0, modified);
+
+        if (y == 0) AddNeighbor(entity, idx, 0, -1, 0, modified);
+        else if (y == Chunk.Size - 1) AddNeighbor(entity, idx, 0, 1, 0, modified);
+
+        if (z == 0) AddNeighbor(entity, idx, 0, 0, -1, modified);
+        else if (z == Chunk.Size - 1) AddNeighbor(entity, idx, 0, 0, 1, modified);
+    }
+
+    private void AddNeighbor(SpaceEntity entity, Vector3SByte chunkIndex, sbyte ox, sbyte oy, sbyte oz, HashSet<Chunk> modified)
+    {
+        Vector3SByte neighborIndex = new Vector3SByte((sbyte)(chunkIndex.X + ox), (sbyte)(chunkIndex.Y + oy), (sbyte)(chunkIndex.Z + oz));
+        Vector3 neighborLocalPos = ChunkIndexToLocal(neighborIndex) + new Vector3(Chunk.SizeHalf, Chunk.SizeHalf, Chunk.SizeHalf);
+
+        if (entity.Octree.TryFindDataAtPosition(neighborLocalPos, out Chunk neighbor) && neighbor != null)
+        {
+            modified.Add(neighbor);
+        }
+    }
+
     public List<Chunk> RemoveBlocksInLocalBox(SpaceEntity entity, BoundingBox localBox)
     {
         var min = localBox.Min;
@@ -41,12 +67,12 @@ public class SpaceEntityMath
         int maxY = (int)MathF.Floor(max.Y);
         int maxZ = (int)MathF.Floor(max.Z);
 
-        int chunkMinX = minX / Chunk.Size;
-        int chunkMaxX = maxX / Chunk.Size;
-        int chunkMinY = minY / Chunk.Size;
-        int chunkMaxY = maxY / Chunk.Size;
-        int chunkMinZ = minZ / Chunk.Size;
-        int chunkMaxZ = maxZ / Chunk.Size;
+        int chunkMinX = (int)MathF.Floor((float)minX / Chunk.Size);
+        int chunkMaxX = (int)MathF.Floor((float)maxX / Chunk.Size);
+        int chunkMinY = (int)MathF.Floor((float)minY / Chunk.Size);
+        int chunkMaxY = (int)MathF.Floor((float)maxY / Chunk.Size);
+        int chunkMinZ = (int)MathF.Floor((float)minZ / Chunk.Size);
+        int chunkMaxZ = (int)MathF.Floor((float)maxZ / Chunk.Size);
 
         HashSet<Chunk> modified = new HashSet<Chunk>();
 
@@ -58,12 +84,10 @@ public class SpaceEntityMath
                 {
                     Vector3SByte idx = new Vector3SByte((sbyte)cx, (sbyte)cy, (sbyte)cz);
 
-                    var localPos = SpaceMath.Entity.ChunkIndexToLocal(idx);
+                    Vector3 chunkCenter = ChunkIndexToLocal(idx) + new Vector3(Chunk.SizeHalf, Chunk.SizeHalf, Chunk.SizeHalf);
 
-                    if (!entity.Octree.TryFindDataAtPosition(localPos, out Chunk chunk)) continue;
-
-
-                    if (chunk == null) continue;
+                    if (!entity.Octree.TryFindDataAtPosition(chunkCenter, out Chunk chunk) || chunk == null)
+                        continue;
 
                     int startX = Math.Max(0, minX - cx * Chunk.Size);
                     int endX = Math.Min(Chunk.Size - 1, maxX - cx * Chunk.Size);
@@ -71,6 +95,8 @@ public class SpaceEntityMath
                     int endY = Math.Min(Chunk.Size - 1, maxY - cy * Chunk.Size);
                     int startZ = Math.Max(0, minZ - cz * Chunk.Size);
                     int endZ = Math.Min(Chunk.Size - 1, maxZ - cz * Chunk.Size);
+
+                    bool chunkModified = false;
 
                     for (int x = startX; x <= endX; x++)
                     {
@@ -82,11 +108,18 @@ public class SpaceEntityMath
                                 if (b != null && !b.IsAir)
                                 {
                                     chunk.Blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
-                                    chunk.IsModified = true;
-                                    modified.Add(chunk);
+                                    chunkModified = true;
+
+                                    CheckAndAddNeighbor(entity, idx, x, y, z, modified);
                                 }
                             }
                         }
+                    }
+
+                    if (chunkModified)
+                    {
+                        chunk.IsModified = true;
+                        modified.Add(chunk);
                     }
                 }
             }
@@ -94,8 +127,6 @@ public class SpaceEntityMath
 
         return modified.ToList();
     }
-
-
 
     public List<Chunk> FillBlocksInLocalBox(SpaceEntity entity, BoundingBox localBox, short blockId)
     {
@@ -109,12 +140,12 @@ public class SpaceEntityMath
         int maxY = (int)MathF.Floor(max.Y);
         int maxZ = (int)MathF.Floor(max.Z);
 
-        int chunkMinX = minX / Chunk.Size;
-        int chunkMaxX = maxX / Chunk.Size;
-        int chunkMinY = minY / Chunk.Size;
-        int chunkMaxY = maxY / Chunk.Size;
-        int chunkMinZ = minZ / Chunk.Size;
-        int chunkMaxZ = maxZ / Chunk.Size;
+        int chunkMinX = (int)MathF.Floor((float)minX / Chunk.Size);
+        int chunkMaxX = (int)MathF.Floor((float)maxX / Chunk.Size);
+        int chunkMinY = (int)MathF.Floor((float)minY / Chunk.Size);
+        int chunkMaxY = (int)MathF.Floor((float)maxY / Chunk.Size);
+        int chunkMinZ = (int)MathF.Floor((float)minZ / Chunk.Size);
+        int chunkMaxZ = (int)MathF.Floor((float)maxZ / Chunk.Size);
 
         HashSet<Chunk> modified = new HashSet<Chunk>();
 
@@ -134,6 +165,8 @@ public class SpaceEntityMath
                     int startZ = Math.Max(0, minZ - cz * Chunk.Size);
                     int endZ = Math.Min(Chunk.Size - 1, maxZ - cz * Chunk.Size);
 
+                    bool chunkModified = false;
+
                     for (int x = startX; x <= endX; x++)
                     {
                         for (int y = startY; y <= endY; y++)
@@ -144,11 +177,18 @@ public class SpaceEntityMath
                                 if (b == null || b.IsAir)
                                 {
                                     c.Blocks[x, y, z] = GameAssets.CreateBlockFromId(blockId);
-                                    c.IsModified = true;
-                                    modified.Add(c);
+                                    chunkModified = true;
+
+                                    CheckAndAddNeighbor(entity, idx, x, y, z, modified);
                                 }
                             }
                         }
+                    }
+
+                    if (chunkModified)
+                    {
+                        c.IsModified = true;
+                        modified.Add(c);
                     }
                 }
             }
@@ -156,6 +196,4 @@ public class SpaceEntityMath
 
         return modified.ToList();
     }
-
-
 }
