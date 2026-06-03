@@ -21,20 +21,13 @@ namespace Spacebox.Game.Generation
             if (!EnableLighting) return;
 
             var visited = new HashSet<Chunk>();
-            var chunksQueue = new Queue<Chunk>();
-            chunksQueue.Enqueue(_chunk);
             visited.Add(_chunk);
 
-            while (chunksQueue.Count > 0)
+            foreach (var neighbor in _chunk.Neighbors.Values)
             {
-                var c = chunksQueue.Dequeue();
-                foreach (var neighbor in c.Neighbors.Values)
+                if (neighbor != null)
                 {
-                    if (neighbor != null && !visited.Contains(neighbor))
-                    {
-                        visited.Add(neighbor);
-                        chunksQueue.Enqueue(neighbor);
-                    }
+                    visited.Add(neighbor);
                 }
             }
 
@@ -53,6 +46,8 @@ namespace Spacebox.Game.Generation
             for (int i = 0; i < indexToChunk.Count; i++)
             {
                 Chunk c = indexToChunk[i];
+                bool chunkChanged = false;
+
                 for (int x = 0; x < Size; x++)
                 {
                     for (int y = 0; y < Size; y++)
@@ -67,6 +62,7 @@ namespace Spacebox.Game.Generation
                                     b.LightLevel = 0f;
                                     b.LightColor = Color3Byte.Zero;
                                     c.Blocks[x, y, z] = b;
+                                    chunkChanged = true;
                                 }
                                 else
                                 {
@@ -76,6 +72,11 @@ namespace Spacebox.Game.Generation
                             }
                         }
                     }
+                }
+
+                if (chunkChanged)
+                {
+                    changedChunks.Add(c);
                 }
             }
 

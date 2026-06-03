@@ -138,6 +138,11 @@ namespace Spacebox.Game.Generation
 
             for (int i = 0; i < chunks.Length; i++)
             {
+                chunks[i].CalculateLighting();
+            }
+
+            for (int i = 0; i < chunks.Length; i++)
+            {
                 if (generateMesh)
                 {
                     chunks[i].QueueMeshUpdate(UpdateReason.Generation);
@@ -178,6 +183,8 @@ namespace Spacebox.Game.Generation
             UpdateNeighbors(chunk);
             RecalculateGeometryBoundingBox();
             RecalculateMass();
+
+            chunk.CalculateLighting();
 
             if (generateMesh)
             {
@@ -350,7 +357,7 @@ namespace Spacebox.Game.Generation
             new Vector3SByte(0, 0, -1)
         };
 
-        private void UpdateNeighbors(Chunk chunk, bool removing = false)
+        public void UpdateNeighbors(Chunk chunk, bool removing = false)
         {
             foreach (var dir in Directions)
             {
@@ -432,20 +439,36 @@ namespace Spacebox.Game.Generation
 
                 WorkerPoolManager.Enqueue(token =>
                 {
-                    if (token.IsCancellationRequested || chunk.IsDisposed) return;
-
-                    var generator = new MeshGenerator(index, snapshot, Chunk.MeasureGenerationTime);
-                    var meshData = generator.GenerateMeshData();
-
-                    MainThreadDispatcher.Instance.Enqueue(() =>
+                    if (token.IsCancellationRequested || chunk.IsDisposed)
                     {
-                        if (chunk.IsDisposed || chunk.DataVersion != currentVersion)
+                        chunk.IsQueuedForMeshUpdate = false;
+                        return;
+                    }
+
+                    try
+                    {
+                        var generator = new MeshGenerator(index, snapshot, Chunk.MeasureGenerationTime);
+                        var meshData = generator.GenerateMeshData();
+
+                        MainThreadDispatcher.Instance.Enqueue(() =>
                         {
-                            chunk.IsQueuedForMeshUpdate = false;
-                            return;
-                        }
-                        ReadyMeshesQueue.Enqueue((chunk, meshData, currentVersion));
-                    });
+                            if (chunk.IsDisposed) return;
+
+                            if (chunk.DataVersion != currentVersion)
+                            {
+                                chunk.IsQueuedForMeshUpdate = false;
+                                QueueChunkUpdate(chunk, UpdateReason.Generation);
+                                return;
+                            }
+
+                            ReadyMeshesQueue.Enqueue((chunk, meshData, currentVersion));
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Engine.Debug.Error($"[SpaceEntity] Mesh generation failed: {ex}");
+                        chunk.IsQueuedForMeshUpdate = false;
+                    }
                 }, WorkerPoolManager.Priority.Medium);
 
                 dispatchedThisFrame++;
@@ -454,10 +477,18 @@ namespace Spacebox.Game.Generation
             int uploadedThisFrame = 0;
             while (uploadedThisFrame < 2 && ReadyMeshesQueue.TryDequeue(out var result))
             {
-                if (!result.chunk.IsDisposed && result.chunk.DataVersion == result.version)
+                if (result.chunk.IsDisposed) continue;
+
+                if (result.chunk.DataVersion == result.version)
                 {
                     result.chunk.ApplyMeshData(result.data);
                 }
+                else
+                {
+                    result.chunk.IsQueuedForMeshUpdate = false;
+                    QueueChunkUpdate(result.chunk, UpdateReason.Generation);
+                }
+
                 uploadedThisFrame++;
             }
         }
@@ -694,6 +725,8 @@ namespace Spacebox.Game.Generation
                 entity.UpdateNeighbors(chunk);
                 entity.RecalculateGeometryBoundingBox();
                 entity.RecalculateMass();
+
+                chunk.CalculateLighting();
             }
             return chunk;
         }

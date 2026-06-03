@@ -103,6 +103,11 @@ namespace Spacebox.Game.Generation
             _isLoadedOrGenerated = true;
         }
 
+        public void CalculateLighting()
+        {
+            _lightManager.PropagateLight();
+        }
+
         public Block[,,] CreatePaddedSnapshot()
         {
             var padded = new Block[34, 34, 34];
