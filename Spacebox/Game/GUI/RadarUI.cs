@@ -4,6 +4,7 @@ using ImGuiNET;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player;
 using System.Numerics;
+using System;
 
 namespace Spacebox.Game.GUI;
 
@@ -11,23 +12,7 @@ public class RadarUI : IDisposable
 {
     public static RadarUI Instance;
 
-    private bool _isVisible = false;
-    public bool IsVisible
-    {
-        get => _isVisible;
-        set
-        {
-            _isVisible = value;
-            if (_isVisible)
-            {
-                _openAudio?.Play();
-            }
-            else
-            {
-                _closeAudio?.Play();
-            }
-        }
-    }
+    private bool _wasVisible = false;
 
     public event Action OnOpen;
     public event Action OnClose;
@@ -77,13 +62,6 @@ public class RadarUI : IDisposable
         _scanningAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("radarScanning"));
         _foundAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("radarFound"));
 
-        var inventory = ToggleManager.Register("radar");
-        inventory.IsUI = true;
-        inventory.OnStateChanged += s =>
-        {
-            IsVisible = s;
-        };
-
         if (_openAudio == null)
         {
             _openAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("openBlock1"));
@@ -99,7 +77,24 @@ public class RadarUI : IDisposable
 
     public void OnGUI()
     {
-        if (!IsVisible) return;
+        bool isVisible = UIManager.IsOpen("radar");
+
+        if (isVisible != _wasVisible)
+        {
+            if (isVisible)
+            {
+                _openAudio?.Play();
+                OnOpen?.Invoke();
+            }
+            else
+            {
+                _closeAudio?.Play();
+                OnClose?.Invoke();
+            }
+            _wasVisible = isVisible;
+        }
+
+        if (!isVisible) return;
 
         Vector2 displaySize = ImGui.GetIO().DisplaySize;
         ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
@@ -124,9 +119,8 @@ public class RadarUI : IDisposable
         UpdateRadarLogic();
         UpdateRadarAudio();
 
-
-        var direction = GetDirectionFromDegrees(255); // 0 = right, 90 = up, 180 = left, 270 = down
-        float distance = windowHeight * 0.5f * MapDistanceToRadarRadius(500, 1000); // 0.1 min  0.85 max
+        var direction = GetDirectionFromDegrees(255);
+        float distance = windowHeight * 0.5f * MapDistanceToRadarRadius(500, 1000);
         Vector2 pointPos = GetPointPosition(center, direction, distance);
 
         DrawTargetPoint(drawList, center, pointPos, 8);
@@ -257,7 +251,6 @@ public class RadarUI : IDisposable
         drawList.AddImage(_maskTexture.Handle, min, max);
     }
 
-    // interpolation from 0.1 to 0.85
     public float MapDistanceToRadarRadius(float currentDistance, float maxDistance)
     {
         if (maxDistance <= 0) return 0.1f;
@@ -277,7 +270,6 @@ public class RadarUI : IDisposable
         return new Vector2(x, y);
     }
 
-    // 0 = right, 90 = up, 180 = left, 270 = down
     private Vector2 GetDirectionFromDegrees(float degrees)
     {
         float radians = (MathF.PI / 180f) * degrees;
@@ -335,24 +327,7 @@ public class RadarUI : IDisposable
 
     public void Toggle(Astronaut _)
     {
-        var v = !IsVisible;
-        ToggleManager.DisableAllWindows();
-
-        if (v)
-        {
-            OnOpen?.Invoke();
-            ToggleManager.SetState("mouse", true);
-            ToggleManager.SetState("player", false);
-            ToggleManager.SetState("radar", v);
-            ToggleManager.SetState("panel", false);
-        }
-        else
-        {
-            OnClose?.Invoke();
-            ToggleManager.SetState("mouse", false);
-            ToggleManager.SetState("player", true);
-            ToggleManager.SetState("panel", true);
-        }
+        UIManager.Toggle("radar");
     }
 
     public void Dispose()

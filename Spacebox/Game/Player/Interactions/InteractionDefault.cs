@@ -36,7 +36,7 @@ public class InteractionDefault : InteractionMode
             if (hit.block.Is<InteractiveBlock>(out var interactiveBlock))
             {
                 InteractiveBlock.UpdateInteractive(interactiveBlock, player,  ref hit);
-
+                //Debug.Log($"Raycast hit block: {hit.block.GetType().Name}");
                 if (hit.block.Is<StorageBlock>(out var storageBlock))
                 {
                     //Debug.Log("Placed: " + ((Vector3i)(hit.blockPositionEntity )));

@@ -1,36 +1,18 @@
 ﻿using ImGuiNET;
-
 using Engine.Audio;
 using Engine;
 using Spacebox.Game.Player;
 using System.Numerics;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player.GameModes;
-
+using System;
+using System.Linq;
 
 namespace Spacebox.Game.GUI;
 
-
 public class CraftingGUI
 {
-    protected static bool _isVisible = false;
-    public static bool IsVisible
-    {
-        get => _isVisible;
-        set
-        {
-            _isVisible = value;
-            if (_isVisible)
-            {
-                openSound?.Play();
-
-            }
-            else
-            {
-                closeSound?.Play();
-            }
-        }
-    }
+    private static bool _wasVisible = false;
 
     private static bool showGrid = false;
     private static int selectedButton = -1;
@@ -53,32 +35,24 @@ public class CraftingGUI
 
     public static void Toggle(LocalAstronaut player)
     {
-        var v = !IsVisible;
-        ToggleManager.DisableAllWindows();
-
-        if (v)
-        {
-            currentPlayer = player;
-            ToggleManager.SetState("crafting", true);
-            ToggleManager.SetState("mouse", true);
-            ToggleManager.SetState("player", false);
-            if (player.GameMode != GameMode.Survival)
-                ToggleManager.SetState("creative", true);
-            ToggleManager.SetState("inventory", true);
-        }
-        else
-        {
-            currentPlayer = null;
-            ToggleManager.SetState("mouse", false);
-            ToggleManager.SetState("player", true);
-        }
-
+        currentPlayer = player;
         Inventory = player.Inventory;
         Panel = player.Panel;
         showGrid = false;
+
+        if (player.GameMode != GameMode.Survival)
+        {
+            UIManager.Toggle("crafting", "inventory", "creative");
+        }
+        else
+        {
+            UIManager.Toggle("crafting", "inventory");
+        }
     }
+
     static int CategoriesCountX = 0;
     const int CategoriesCountY = 2;
+
     public static void Init()
     {
         category = GameAssets.CraftingCategories.Values.ToArray();
@@ -88,41 +62,41 @@ public class CraftingGUI
 
         ColumnsOfItems = (int)Math.Ceiling(slotSize);
 
-        var tex = 
-        GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/slot.png");
+        var tex = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/slot.png");
         tex.FilterMode = FilterMode.Nearest;
         SlotTexture = tex.Handle;
 
         scrollAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/scroll.ogg"));
         clickAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/click1.ogg"));
 
-        var inventory = ToggleManager.Register("crafting");
-        inventory.IsUI = true;
-        inventory.OnStateChanged += s =>
-        {
-            IsVisible = s;
-        };
-
         if (openSound == null)
         {
             openSound = new AudioSource(Resources.Load<AudioClip>("openBlock1"));
             openSound.Volume = 1f;
-
         }
 
         if (closeSound == null)
         {
             closeSound = new AudioSource(Resources.Load<AudioClip>("openBlock4"));
             closeSound.Volume = 1f;
-
         }
     }
 
     public static void OnGUI()
     {
-        if (!_isVisible) return;
+        bool isVisible = UIManager.IsOpen("crafting");
+
+        if (isVisible != _wasVisible)
+        {
+            if (isVisible) openSound?.Play();
+            else closeSound?.Play();
+
+            _wasVisible = isVisible;
+        }
+
+        if (!isVisible) return;
+
         Vector2 displaySize = ImGui.GetIO().DisplaySize;
-        //ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
         float windowWidth = displaySize.Y * (0.1f * CategoriesCountX);
         float windowHeight = displaySize.Y * 0.25f;
         var windowPos = GameMenu.CenterNextWindow3(windowWidth, windowHeight);
@@ -132,9 +106,7 @@ public class CraftingGUI
             | ImGuiWindowFlags.NoCollapse
             | ImGuiWindowFlags.NoTitleBar
             | ImGuiWindowFlags.NoScrollbar
-
             | ImGuiWindowFlags.NoScrollWithMouse
-            //| ImGuiWindowFlags.scr
             );
         GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y, 0.005f);
 
@@ -149,8 +121,6 @@ public class CraftingGUI
 
         if (!showGrid)
         {
-
-
             float buttonWidth = windowWidth / CategoriesCountX;
             float buttonHeight = (windowHeight - topOffset) / CategoriesCountY;
 
@@ -188,7 +158,6 @@ public class CraftingGUI
             DrawGridWithSlots(windowWidth, windowHeight, topOffset / 2f);
         }
 
-        // ImGui.PopStyleColor(6);
         ImGui.End();
     }
     static bool _resetScroll;
@@ -288,7 +257,7 @@ public class CraftingGUI
             }
             else
             {
-             
+
                 if (possibleCount > 1)
                 {
                     Blueprint.ScaleBlueprint(bp, possibleCount);
@@ -345,7 +314,6 @@ public class CraftingGUI
         ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep.ToUInt());
         ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
         ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
-        //ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(1, 0, 0, 0));
         ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1, 0, 0, 0));
 
         var itemData = category[selectedButton].Items[slotId];
@@ -359,7 +327,6 @@ public class CraftingGUI
         ;
 
         drawList.AddRect(buttonPos, buttonPos + new Vector2(width, height), Theme.Colors.BackgroundUint);
-        //drawList.AddImage(SlotTexture, buttonPos , buttonPos + new Vector2(width, height) );
 
         drawList.AddImage(SlotTexture, buttonPos, buttonPos + new Vector2(width, height));
 
@@ -372,8 +339,8 @@ public class CraftingGUI
         {
             foreach (var ing in itemData.blueprint.Ingredients)
             {
-    
-                if(CraftingLogic.IsResourceAvailable(ing, Inventory, Panel, currentPlayer)) continue;
+
+                if (CraftingLogic.IsResourceAvailable(ing, Inventory, Panel, currentPlayer)) continue;
                 else
                 {
                     canCraft = false;
@@ -413,7 +380,7 @@ public class CraftingGUI
     }
 
 
-    
+
     private static void OnHovered(CraftingCategory.Data itemData, ImGuiNET.ImDrawListPtr list, Vector2 buttonPos, Vector2 offset, float width, float height, int slotId)
     {
         if (itemData?.item == null || Inventory == null || !ImGui.IsItemHovered()) return;
@@ -506,13 +473,13 @@ public class CraftingGUI
             {
                 if (currentPlayer != null)
                     availableCount = currentPlayer.HealthBar.StatsData.Value;
-              
+
             }
             else if (ingredient.Item.Id_string == "$power")
             {
                 if (currentPlayer != null)
                     availableCount = currentPlayer.PowerBar.StatsData.Value;
-             
+
             }
             else
             {
@@ -525,13 +492,14 @@ public class CraftingGUI
                 ? new Vector4(0, 1, 0, 1)
                 : new Vector4(1, 0, 0, 1);
 
-          
+
 
             if (ingredient.Item.IconTextureId != IntPtr.Zero)
             {
                 ImGui.Image(ingredient.Item.IconTextureId, iconSize);
                 ImGui.SameLine();
-            }else
+            }
+            else
             {
                 ImGui.Dummy(iconSize);
                 ImGui.SameLine();
@@ -622,14 +590,11 @@ public class CraftingGUI
         currentPlayer = null;
         category = null;
         hovered = -1;
-        IsVisible = false;
-
 
         SlotTexture = IntPtr.Zero;
         usedSlots = 0;
         totalSlots = 0;
         selectedButton = -1;
         showGrid = false;
-
     }
 }

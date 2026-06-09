@@ -4,9 +4,11 @@ using ImGuiNET;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player;
-using SpaceNetwork;
+using Spacebox.Game.Player.GameModes;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
-using static Spacebox.Game.Resource.AtlasTexture;
 
 namespace Spacebox.Game.GUI
 {
@@ -22,135 +24,44 @@ namespace Spacebox.Game.GUI
         private static IntPtr batteryIcon = IntPtr.Zero;
         private static IntPtr inputIcon = IntPtr.Zero;
         private static IntPtr outputIcon = IntPtr.Zero;
-        protected static bool _isVisible = false;
-
-        private static StatsGUI statsGUI;
-        private static StatsData barData;
+        protected static bool _wasVisible = false;
 
         private static string status = "";
-        public static bool IsVisible
-        {
-            get => _isVisible;
-            set
-            {
-                _isVisible = value;
-
-                if (_isVisible)
-                {
-
-
-                    openSound?.Play();
-
-                }
-                else
-                {
-                    closeSound?.Play();
-                }
-            }
-        }
-
-        private static bool wasInitialized = false; //  !!!
+        private static bool wasInitialized = false;
 
         private static AudioSource craftedSound;
         private static AudioSource openSound;
         private static AudioSource closeSound;
-
         private static AudioSource pickupSound;
         private static LocalAstronaut Player;
+
         public static void Toggle(LocalAstronaut player)
         {
             Player = player;
-            if (!ToggleManager.Exists("resourceProcessing"))
+            if (!wasInitialized)
             {
                 batteryIcon = IntPtr.Zero;
                 inputIcon = IntPtr.Zero;
                 outputIcon = IntPtr.Zero;
-                wasInitialized = false;
-            }
-            if (!wasInitialized)
-            {
-                var inventory = ToggleManager.Register("resourceProcessing");
-                inventory.IsUI = true;
-                inventory.OnStateChanged += s =>
-                {
-                    IsVisible = s;
-
-                    if (!s)
-                    {
-                        player.Panel.ConnectStorage(player.Inventory, true);
-                        player.Inventory.ConnectStorage(player.Panel);
-
-                    }
-                };
-
                 wasInitialized = true;
             }
 
-            var v = !IsVisible;
-
-            ToggleManager.SetState("player", !v);
-            ToggleManager.SetState("mouse", v);
-
-            if (!v)
-            {
-
-                ToggleManager.DisableAllWindows();
-
-            }
+            if (player.GameMode != GameMode.Survival)
+                UIManager.Toggle("resourceProcessing", "inventory", "creative");
             else
-            {
-                ToggleManager.DisableAllWindows();
-                ToggleManager.SetState("inventory", v);
-                ToggleManager.SetState("creative", v);
+                UIManager.Toggle("resourceProcessing", "inventory");
 
-            }
-
-            ToggleManager.SetState("resourceProcessing", v);
-
-            if (processingBlock != null)
-            {
-                processingBlock.OnCrafted -= OnCrafted;
-            }
-
-            if (craftedSound == null)
-            {
-                craftedSound = new AudioSource(Resources.Load<AudioClip>("crafted"));
-                craftedSound.Volume = 1f;
-
-            }
-
-            if (openSound == null)
-            {
-                openSound = new AudioSource(Resources.Load<AudioClip>("openBlock1"));
-                openSound.Volume = 1f;
-
-            }
-
-            if (closeSound == null)
-            {
-                closeSound = new AudioSource(Resources.Load<AudioClip>("openBlock4"));
-                closeSound.Volume = 1f;
-
-            }
-
-            if (pickupSound == null)
-            {
-                pickupSound = new AudioSource(Resources.Load<AudioClip>("pickupDefault"));
-                pickupSound.Volume = 0.5f;
-
-            }
+            if (UIManager.IsOpen("resourceProcessing")) openSound?.Play();
+            else closeSound?.Play();
         }
 
         private static void InitIcons()
         {
             if (batteryIcon == IntPtr.Zero)
             {
-
                 var texture = Resources.Load<Texture2D>("Resources/Textures/UI/battery.png");
-
                 texture.FilterMode = FilterMode.Nearest;
                 texture.FlipY();
-
                 batteryIcon = texture.Handle;
             }
 
@@ -170,26 +81,22 @@ namespace Spacebox.Game.GUI
 
             if (WindowName.Contains("Crusher"))
             {
-                var texture =
-                GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/crusherInput.png");
+                var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/crusherInput.png");
                 texture.FilterMode = FilterMode.Nearest;
                 inputIcon = texture.Handle;
             }
             if (WindowName.Contains("Furnace"))
             {
-                var texture =
-                GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/furnaceInput.png");
+                var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/furnaceInput.png");
                 texture.FilterMode = FilterMode.Nearest;
                 inputIcon = texture.Handle;
             }
             if (WindowName.Contains("Disassembler"))
             {
-                var texture = 
-                GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/disassemblerInput.png");
+                var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/disassemblerInput.png");
                 texture.FilterMode = FilterMode.Nearest;
                 inputIcon = texture.Handle;
             }
-
 
             if (outputIcon == IntPtr.Zero)
             {
@@ -204,62 +111,70 @@ namespace Spacebox.Game.GUI
 
             if (WindowName.Contains("Crusher"))
             {
-              
-                var texture = 
-                GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/crusherOutput.png");
+                var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/crusherOutput.png");
                 texture.FilterMode = FilterMode.Nearest;
                 outputIcon = texture.Handle;
             }
             if (WindowName.Contains("Furnace"))
             {
-               
-                var texture = 
-                GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
+                var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
                 texture.FilterMode = FilterMode.Nearest;
                 outputIcon = texture.Handle;
             }
             if (WindowName.Contains("Disassembler"))
             {
-              
-                var texture =
-                GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
+                var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
                 texture.FilterMode = FilterMode.Nearest;
                 outputIcon = texture.Handle;
             }
-
         }
 
         public static void Activate(ResourceProcessingBlock block, LocalAstronaut player)
         {
-            if (!IsVisible) return;
+            Player = player;
+            if (!wasInitialized)
+            {
+                batteryIcon = IntPtr.Zero;
+                inputIcon = IntPtr.Zero;
+                outputIcon = IntPtr.Zero;
+                wasInitialized = true;
+            }
 
             var blockData = GameAssets.GetBlockDataById(block.Id);
             WindowName = blockData.Name;
 
-            if (!openSound.IsPlaying) openSound.Play();
-            InitIcons();
+            if (craftedSound == null)
+            {
+                craftedSound = new AudioSource(Resources.Load<AudioClip>("crafted"));
+                craftedSound.Volume = 1f;
+            }
+            if (openSound == null)
+            {
+                openSound = new AudioSource(Resources.Load<AudioClip>("openBlock1"));
+                openSound.Volume = 1f;
+            }
+            if (closeSound == null)
+            {
+                closeSound = new AudioSource(Resources.Load<AudioClip>("openBlock4"));
+                closeSound.Volume = 1f;
+            }
+            if (pickupSound == null)
+            {
+                pickupSound = new AudioSource(Resources.Load<AudioClip>("pickupDefault"));
+                pickupSound.Volume = 0.5f;
+            }
 
+            InitIcons();
             processingBlock = block;
 
-         
+            if (InputStorage != null) InputStorage.OnDataWasChanged -= OnInputItemWasChanged;
+            if (OutputStorage != null) OutputStorage.OnDataWasChanged -= OnInputItemWasChanged;
+            if (FuelStorage != null) FuelStorage.OnDataWasChanged -= OnInputItemWasChanged;
 
-            if (InputStorage != null)
-            {
-                InputStorage.OnDataWasChanged -= OnInputItemWasChanged;
-            }
-            if (OutputStorage != null)
-            {
-                OutputStorage.OnDataWasChanged -= OnInputItemWasChanged;
-            }
-            if (FuelStorage != null)
-            {
-                FuelStorage.OnDataWasChanged -= OnInputItemWasChanged;
-            }
             status = "Status: Ready";
             InputStorage.DisconnectStorage();
             FuelStorage.DisconnectStorage();
             OutputStorage.DisconnectStorage();
-
 
             InputStorage = processingBlock.InputStorage;
             FuelStorage = processingBlock.FuelStorage;
@@ -278,22 +193,21 @@ namespace Spacebox.Game.GUI
             OutputStorage.OnDataWasChanged += OnInputItemWasChanged;
             FuelStorage.OnDataWasChanged += OnInputItemWasChanged;
 
-
             if (block.TryStartTask(out var task))
             {
                 TickTaskManager.AddTask(task);
-
-            }
-            else
-            {
-
             }
             UpdateStatus();
+
+            if (player.GameMode != GameMode.Survival)
+                UIManager.Open("resourceProcessing", "inventory", "creative");
+            else
+                UIManager.Open("resourceProcessing", "inventory");
         }
 
         private static void OnCrafted(ResourceProcessingBlock block)
         {
-            if (!IsVisible) return;
+            if (!UIManager.IsOpen("resourceProcessing")) return;
 
             if (craftedSound.IsPlaying)
             {
@@ -304,7 +218,6 @@ namespace Spacebox.Game.GUI
             {
                 craftedSound.Play();
             }
-
         }
 
         private static void OnInputItemWasChanged(Storage storage)
@@ -319,11 +232,8 @@ namespace Spacebox.Game.GUI
                 {
                     status = "Status: Ready";
                 }
-
                 UpdateStatus();
-
             }
-
         }
 
         private static void UpdateStatus()
@@ -349,12 +259,41 @@ namespace Spacebox.Game.GUI
                     status = "Status: Done";
                 }
             }
-            else { status = "Status: Done"; }
+            else
+            {
+                status = "Status: Done";
+            }
         }
 
         public static void OnGUI()
         {
-            if (!_isVisible) return;
+          
+
+            bool isVisible = UIManager.IsOpen("resourceProcessing");
+
+            if (isVisible != _wasVisible)
+            {
+                if (isVisible)
+                {
+                    openSound?.Play();
+                }
+                else
+                {
+                    closeSound?.Play();
+                    if (Player != null)
+                    {
+                        Player.Panel.ConnectStorage(Player.Inventory, true);
+                        Player.Inventory.ConnectStorage(Player.Panel);
+                    }
+                    if (processingBlock != null)
+                    {
+                        processingBlock.OnCrafted -= OnCrafted;
+                    }
+                }
+                _wasVisible = isVisible;
+            }
+
+            if (!isVisible) return;
 
             Vector2 displaySize = ImGui.GetIO().DisplaySize;
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
@@ -403,11 +342,11 @@ namespace Spacebox.Game.GUI
 
             ImGui.SetCursorPos(new Vector2(centerX - slotSpacing, centerY + slotSpacing * 0.5f));
             InventoryUIHelper.DrawSlot(FuelStorage.GetSlot(0, 0), "FuelStorage", MoveItems, batteryIcon, false);
-            InventoryUIHelper.ShowTooltip(FuelStorage.GetSlot(0, 0), false,true);
+            InventoryUIHelper.ShowTooltip(FuelStorage.GetSlot(0, 0), false, true);
 
             ImGui.SetCursorPos(new Vector2(centerX + slotSpacing * 0.5f, centerY - slotSize * 0.7f));
             InventoryUIHelper.DrawSlot(OutputStorage.GetSlot(0, 0), "OutputStorage", MoveItems, outputIcon, false);
-            InventoryUIHelper.ShowTooltip(OutputStorage.GetSlot(0, 0), false,true);
+            InventoryUIHelper.ShowTooltip(OutputStorage.GetSlot(0, 0), false, true);
 
             ImGui.EndChild();
             ImGui.PopStyleColor();
@@ -422,14 +361,13 @@ namespace Spacebox.Game.GUI
             float scrollBarWidth = spacing;
             float listContentWidth = rightPanelWidth - spacing - scrollBarWidth;
 
-            
-            var size = new Vector2(rightPanelWidth - spacing * 2 , windowHeight - spacing*5);
+            var size = new Vector2(rightPanelWidth - spacing * 2, windowHeight - spacing * 5);
             ImGui.SetCursorPos(new Vector2(windowWidth, windowHeight - spacing * 4) - size);
             ImGui.Text("  Recipes");
-            ImGui.SetCursorPos(new Vector2(windowWidth - spacing, windowHeight - spacing  ) - size);
+            ImGui.SetCursorPos(new Vector2(windowWidth - spacing, windowHeight - spacing) - size);
 
             ImGui.PushStyleColor(ImGuiCol.ChildBg, Theme.Colors.Deep.ToUInt());
-            ImGui.BeginChild("RecipeList", size, ImGuiChildFlags.None   );
+            ImGui.BeginChild("RecipeList", size, ImGuiChildFlags.None);
 
             DrawRecipeList(listContentWidth, displaySize.Y);
 
@@ -441,7 +379,7 @@ namespace Spacebox.Game.GUI
 
         private static void DrawRecipeList(float listWidth, float displayHeight)
         {
-            if(processingBlock == null) { return; }
+            if (processingBlock == null) { return; }
 
             float scaleFactor = displayHeight / 1080f;
             float fixedItemHeight = 45f * scaleFactor;
@@ -449,21 +387,18 @@ namespace Spacebox.Game.GUI
             float numberSize = ImGui.GetTextLineHeight();
 
             List<Recipe> recipes = GameAssets.Recipes[processingBlock.BlockType].Values.ToList();
-           
+
             for (int i = 0; i < recipes.Count; i++)
             {
-               
                 float startY = ImGui.GetCursorPosY();
-
                 var recipe = recipes[i];
 
-                if(recipe == null || recipe.Ingredient.Item == null || recipe.Ingredient.Item.IconTextureId == IntPtr.Zero)
+                if (recipe == null || recipe.Ingredient.Item == null || recipe.Ingredient.Item.IconTextureId == IntPtr.Zero)
                 {
-                    
                     continue;
                 }
 
-                var inQ = recipe.Ingredient.Quantity > 1 ? recipe.Ingredient.Quantity.ToString()  : "";
+                var inQ = recipe.Ingredient.Quantity > 1 ? recipe.Ingredient.Quantity.ToString() : "";
                 var inItem = recipe.Ingredient.Item;
                 var inImg = inItem.IconTextureId;
 
@@ -472,21 +407,18 @@ namespace Spacebox.Game.GUI
                 var prImg = prItem.IconTextureId;
 
                 var imageVector = new Vector2(imageSize, imageSize);
-
                 var offsetX = new Vector2(imageSize * 0.3f, startY);
 
                 ImGui.SetCursorPos(offsetX);
                 ImGui.Image(inImg, imageVector);
                 UIHelper.ShowTooltip(inItem.Name);
-            
-                    var pos = new Vector2(imageSize - ImGui.CalcTextSize(inQ).X - 2 + offsetX.X , startY + imageSize - numberSize);
-                    pos = pos  + imageVector * 0.1f;
-                    ImGui.SetCursorPos(pos);
-                    ImGui.TextColored(new Vector4(0f, 0f, 0f, 1), inQ);
-                    ImGui.SetCursorPos(pos + imageVector * 0.04f);
-                    ImGui.TextColored(new Vector4(1), inQ);
-                    
-                
+
+                var pos = new Vector2(imageSize - ImGui.CalcTextSize(inQ).X - 2 + offsetX.X, startY + imageSize - numberSize);
+                pos = pos + imageVector * 0.1f;
+                ImGui.SetCursorPos(pos);
+                ImGui.TextColored(new Vector4(0f, 0f, 0f, 1), inQ);
+                ImGui.SetCursorPos(pos + imageVector * 0.04f);
+                ImGui.TextColored(new Vector4(1), inQ);
 
                 var arrowSize = ImGui.CalcTextSize("->");
 
@@ -494,20 +426,19 @@ namespace Spacebox.Game.GUI
                 ImGui.Text("->");
 
                 ImGui.SetCursorPos(new Vector2(listWidth - imageSize * 1.4f, startY));
-              
+
                 ImGui.Image(prImg, imageVector);
                 UIHelper.ShowTooltip(prItem.Name + "\n" + "Time: " + (processingBlock.GetTicksWithEfficiency(recipe.RequiredTicks) / 20f).ToString("#.#") + "s.");
-              
-                     pos = new Vector2(listWidth * 0.94f - ImGui.CalcTextSize(prQ).X - 2 , startY + imageSize - numberSize) ;
-                  
-                    ImGui.SetCursorPos(pos  );
-                    ImGui.TextColored(new Vector4(0f, 0f, 0f, 1), prQ);
-                    ImGui.SetCursorPos(pos + imageVector * 0.05f);
-                    ImGui.TextColored(new Vector4(1), prQ);
-                
+
+                pos = new Vector2(listWidth * 0.94f - ImGui.CalcTextSize(prQ).X - 2, startY + imageSize - numberSize);
+
+                ImGui.SetCursorPos(pos);
+                ImGui.TextColored(new Vector4(0f, 0f, 0f, 1), prQ);
+                ImGui.SetCursorPos(pos + imageVector * 0.05f);
+                ImGui.TextColored(new Vector4(1), prQ);
 
                 ImGui.SetCursorPosY(startY + fixedItemHeight);
-            }   
+            }
         }
 
         private static void MoveItems(ItemSlot slot)

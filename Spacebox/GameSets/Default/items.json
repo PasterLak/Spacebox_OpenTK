@@ -244,6 +244,14 @@
         "ModelDepth": 2.0
     },
     {
+        "ID": "thulium_ingot",
+        "Name": "Thulium Ingot",
+        "Description": "Radioactive material",
+        "Sprite": "thuliumIngot",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+    {
         "ID": "uranium_ingot",
         "Name": "Uranium Ingot",
         "Description": "Radioactive material",
@@ -300,6 +308,13 @@
         "ModelDepth": 2
     },
     {
+        "ID": "thulium_dust",
+        "Name": "Thulium Dust",
+        "Sprite": "thuliumDust",
+        "MaxStack": 64,
+        "ModelDepth": 2
+    },
+    {
         "ID": "uranium_dust",
         "Name": "Uranium Dust",
         "Sprite": "uraniumDust",
@@ -326,6 +341,14 @@
         "Name": "Iron Lens",
         "Category": "items",
         "Sprite": "ironLens",
+        "MaxStack": 64,
+        "ModelDepth": 2
+    },
+    {
+        "ID": "thulium_lens",
+        "Name": "Thulium Lens",
+        "Category": "items",
+        "Sprite": "thuliumLens",
         "MaxStack": 64,
         "ModelDepth": 2
     },

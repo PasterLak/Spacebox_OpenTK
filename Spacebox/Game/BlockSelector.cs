@@ -229,8 +229,9 @@ public class BlockSelector : Node3D
     public override void Update()
     {
         if (!Settings.ShowInterface) return;
-        base.Update();
+        if (UIManager.IsUIMode) return;
 
+        base.Update();
         HandleInput();
     }
 
@@ -254,9 +255,8 @@ public class BlockSelector : Node3D
     public override void Render()
     {
         if (!Settings.ShowInterface) return;
-        base.Render();
 
-        bool showMagnet = EnableMagnet && _onSurface && CurrentBlockData != null;
+        bool showMagnet = EnableMagnet && _onSurface && CurrentBlockData != null && !UIManager.IsUIMode;
 
         if (showMagnet)
         {
@@ -271,6 +271,7 @@ public class BlockSelector : Node3D
         {
             _magnetLineRenderer.Enabled = false;
         }
+        base.Render();
     }
 
     public override void OnGUI()

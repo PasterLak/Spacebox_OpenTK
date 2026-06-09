@@ -12,75 +12,36 @@ namespace Spacebox.Game.GUI
     public class GeneratorUI
     {
         private static GeneratorBlock generatorBlock;
-        public static bool IsVisible { get; set; } = false;
-
         static int power;
         static int consum;
         static string blockName = "Generator";
 
-        static bool shouldClose = false;
         public static void Initialize()
         {
-            var inventory = ToggleManager.Register("generator");
-            inventory.IsUI = true;
-            inventory.OnStateChanged += s => IsVisible = s;
+ 
         }
 
         public static void Open(GeneratorBlock block, Astronaut astronaut, ref HitInfo hit)
         {
             generatorBlock = block;
-            shouldClose = false;
             var pos = hit.blockPositionEntity;
-             var id = hit.chunk.SpaceEntity.ElectricManager.GetNetworkId((pos.X, pos.Y, pos.Z));
+            var id = hit.chunk.SpaceEntity.ElectricManager.GetNetworkId((pos.X, pos.Y, pos.Z));
             (power, consum) = hit.chunk.SpaceEntity.ElectricManager.GetNetworkPowerFlow(id);
 
             blockName = GameAssets.GetBlockDataById(block.Id).Name;
 
-            if (ToggleManager.IsActiveAndExists("pause")) return;
-            var v = IsVisible;
-            bool count = ToggleManager.IsActiveAndExists("radar");
-            
-
-            if (!count)
-                IsVisible = !v;
-
-            if (IsVisible)
-            {
-                ToggleManager.SetState("mouse", true);
-                ToggleManager.SetState("player", false);
-               // ToggleManager.SetState("panel", false);
-
-            }
-            else
-            {
-                Close();
-            }
+            UIManager.Open("generator");
         }
 
         public static void Close()
         {
             generatorBlock = null;
-          
-            //ToggleManager.DisableAllWindows();
-            ToggleManager.SetState("mouse", false);
-            ToggleManager.SetState("player", true);
-            
-
-            shouldClose = true;
-            //
-
+            UIManager.CloseTop();
         }
 
         public static void OnGUI()
         {
-            if (!IsVisible || generatorBlock == null) return;
-
-            if(shouldClose)
-            {
-                IsVisible = false;
-                shouldClose = false;
-                return;
-            }
+            if (!UIManager.IsOpen("generator") || generatorBlock == null) return;
 
             if (Input.IsActionDown("inventory") || Input.IsKeyDown(Keys.Escape))
             {
@@ -98,7 +59,7 @@ namespace Spacebox.Game.GUI
                 (displaySize.X - windowWidth) * 0.5f,
                 (displaySize.Y - windowHeight) * 0.5f);
 
-            var padding = windowHeight/15f;
+            var padding = windowHeight / 15f;
             var paddingV = new Vector2(padding, padding);
 
             ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
@@ -123,12 +84,12 @@ namespace Spacebox.Game.GUI
                     ImGui.Separator();
                     ImGui.Text($"Generating: +{generatorBlock.GenerationRate} EU");
                     ImGui.Text($"");
-                    ImGui.TextColored(new Vector4(1,1,0,1), "Network");
+                    ImGui.TextColored(new Vector4(1, 1, 0, 1), "Network");
 
                     ImGui.Separator();
 
                     ImGui.Text($"Power: {power} EU");
-                    ImGui.Text($"Consumption: {consum} EU");        
+                    ImGui.Text($"Consumption: {consum} EU");
 
                     var progressBarWidth = windowWidth * 0.9f;
                     var powerRatio = generatorBlock.MaxPower > 0 ? (float)generatorBlock.CurrentPower / generatorBlock.MaxPower : 0f;
@@ -139,7 +100,7 @@ namespace Spacebox.Game.GUI
                     if (v > 0.99f) v = 0.99f;
                     ImGui.ProgressBar(1 - v, new Vector2(progressBarWidth, windowHeight / 40f), "");
                     ImGui.PopStyleColor();
-                   
+
                 }
                 ImGui.EndChild();
             }
@@ -148,27 +109,15 @@ namespace Spacebox.Game.GUI
 
         private static Vector4 ConsumptionToColor()
         {
-            if (power == 0) return new Vector4(1, 1, 1, 1); 
+            if (power == 0) return new Vector4(1, 1, 1, 1);
 
             var consumptionPercentage = (consum / (float)power) * 100;
             var remainingPercentage = 100 - consumptionPercentage;
 
-            if (remainingPercentage < 33)
-            {
-                return new Vector4(1, 0, 0, 1); 
-            }
-            else if (remainingPercentage < 50)
-            {
-                return new Vector4(1, 0.5f, 0, 1); 
-            }
-            else if (remainingPercentage < 70)
-            {
-                return new Vector4(1, 1, 0, 1);
-            }
-            else
-            {
-                return new Vector4(0, 1, 0, 1); 
-            }
+            if (remainingPercentage < 33) return new Vector4(1, 0, 0, 1);
+            else if (remainingPercentage < 50) return new Vector4(1, 0.5f, 0, 1);
+            else if (remainingPercentage < 70) return new Vector4(1, 1, 0, 1);
+            else return new Vector4(0, 1, 0, 1);
         }
     }
 }

@@ -85,11 +85,15 @@ public class InteractiveBlock : ElectricalBlock
         if (disSq > InteractionDistanceSquared)
         {
             block.OnNotHovered();
+
+
         }
         else
         {
             block.OnHovered();
-            if (ToggleManager.OpenedWindowsCount == 0)
+            //Debug.Log($"Hovering! IsUIMode: {UIManager.IsUIMode}, IsUseDown: {Input.IsActionDown("use")}");
+
+            if (!UIManager.IsUIMode)
             {
                 if (Input.IsActionDown("use"))
                 {

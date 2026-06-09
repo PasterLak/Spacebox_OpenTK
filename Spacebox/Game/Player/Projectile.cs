@@ -148,15 +148,7 @@ public class Projectile : Node3D
         if (CheckVoxelCollision()) return;
     }
 
-    private void HandleMaxDistanceReached()
-    {
-        Enabled = false;
-        if (currentDamage >= 50)
-        {
-            PlayExplosionSound(Position);
-        }
-        OnDespawn?.Invoke(this);
-    }
+
 
     private bool CheckDynamicCollision()
     {
@@ -166,20 +158,6 @@ public class Projectile : Node3D
             return true;
         }
         return false;
-    }
-
-    private void HandleDynamicHit(IDamageable damagable, Vector3 hitPos)
-    {
-        damagable.TakeDamage(this);
-        ProjectileHitEffectsManager.Instance.PlayHitEffect(hitPos, Parameters.ID);
-        if (currentDamage >= 50)
-        {
-            PlayExplosionSound(Position);
-        }
-        ProcessHitStats(hitPos);
-
-        Enabled = false;
-        OnDespawn?.Invoke(this);
     }
 
     private bool CheckVoxelCollision()
@@ -192,6 +170,33 @@ public class Projectile : Node3D
             return true;
         }
         return false;
+    }
+
+    private void HandleMaxDistanceReached()
+    {
+        Enabled = false;
+
+        if (Parameters.DamageBlocks >= 50)
+        {
+            PlayExplosionSound(Position);
+        }
+
+        OnDespawn?.Invoke(this);
+    }
+
+    private void HandleDynamicHit(IDamageable damagable, Vector3 hitPos)
+    {
+        damagable.TakeDamage(this);
+        ProcessHitStats(hitPos);
+
+        ProjectileHitEffectsManager.Instance.PlayHitEffect(hitPos, Parameters.ID);
+
+        Enabled = false;
+        if (Parameters.DamageBlocks >= 50)
+        {
+            PlayExplosionSound(Position);
+        }
+        OnDespawn?.Invoke(this);
     }
 
     private bool TryRicochet(HitInfo hit)
@@ -214,7 +219,14 @@ public class Projectile : Node3D
 
         if (currentRicochets == 5)
         {
-            PlayExplosionSound(hit.hitPosition);
+            ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.hitPosition, Parameters.ID);
+
+            Enabled = false;
+            if (Parameters.DamageBlocks >= 50)
+            {
+                PlayExplosionSound(hit.hitPosition);
+            }
+            OnDespawn?.Invoke(this);
             return true;
         }
 
@@ -225,17 +237,15 @@ public class Projectile : Node3D
     {
         ProcessHitStats(hit.hitPosition);
 
+        Vector3 effectPos = hit.hitPosition + hit.normal.ToVector3() * 0.1f;
+
         if (Parameters.Penetration >= hit.block.Durability)
         {
-            ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.hitPosition + hit.normal.ToVector3() * 0.1f, Parameters.ID);
-
             byte blockDurability = hit.block.Durability;
-
             bool destroyed = ApplyBlockDamage(hit);
 
             if (destroyed)
             {
-
                 if (currentDamage > blockDurability)
                 {
                     currentDamage -= blockDurability;
@@ -249,23 +259,40 @@ public class Projectile : Node3D
 
                 if (blocksDestroyedThisShot >= Parameters.MaximumBlocksCanDestroy || currentDamage <= 0)
                 {
+                    ProjectileHitEffectsManager.Instance.PlayHitEffect(effectPos, Parameters.ID);
+
                     Enabled = false;
+                    if (Parameters.DamageBlocks >= 50)
+                    {
+                        PlayExplosionSound(hit.hitPosition);
+                    }
                     OnDespawn?.Invoke(this);
                 }
-     
+          
             }
             else
             {
   
+                ProjectileHitEffectsManager.Instance.PlayHitEffect(effectPos, Parameters.ID);
+
                 Enabled = false;
+                if (Parameters.DamageBlocks >= 50)
+                {
+                    PlayExplosionSound(hit.hitPosition);
+                }
                 OnDespawn?.Invoke(this);
             }
         }
         else
         {
 
-            ProjectileHitEffectsManager.Instance.PlayNoPenetrationEffect(hit.hitPosition + hit.normal.ToVector3() * 0.1f);
+            ProjectileHitEffectsManager.Instance.PlayNoPenetrationEffect(effectPos);
+
             Enabled = false;
+            if (Parameters.DamageBlocks >= 50)
+            {
+                PlayExplosionSound(hit.hitPosition);
+            }
             OnDespawn?.Invoke(this);
         }
     }

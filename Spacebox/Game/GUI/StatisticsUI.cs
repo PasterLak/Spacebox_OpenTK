@@ -61,7 +61,7 @@ public static class StatisticsUI
         DrawStatRow("Picked Up", ValueToString(_statistics.ItemsPickedUp), labelWidth);
         DrawStatRow("Crafted", ValueToString(_statistics.ItemsCrafted), labelWidth);
         DrawStatRow("Processed", ValueToString(_statistics.ItemsProcessed), labelWidth);
-        DrawStatRow("Consumed", ValueToString(_statistics.ItemsСonsumed), labelWidth);
+        DrawStatRow("Consumed", ValueToString(_statistics.ItemsConsumed), labelWidth);
 
         ImGui.Spacing();
         DrawCategoryHeader("Health", listSize.X, categoryColor);

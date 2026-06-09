@@ -15,15 +15,12 @@ using Spacebox.Game.Player;
 using Spacebox.Game.Player.Interactions;
 using Spacebox.Game.Resource;
 using Spacebox.GUI;
-
-
+using System;
 
 namespace Spacebox.Scenes;
 
-
 public struct SpaceSceneArgs
 {
-    // (worldName/server, modId, seed, modfolder) + ( modfolderName, key, ip, port, nickname)
     public string worldName;
     public string modId;
     public string seed;
@@ -38,32 +35,27 @@ public struct SpaceSceneArgs
     public bool SearchForGameSetInLocalFolder = true;
     public SpaceSceneArgs() { }
 
-
     public override string ToString()
     {
         string s = $"WorldName: {worldName}, ModId: {modId}, Seed: {seed},ModfolderName: {modfolderName}, " +
             $"Key: {key}, HostIp: {hostIp}, Port: {port}, Nickname: {nickname}";
         return s;
     }
-
 }
+
 public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 {
-
     protected LocalAstronaut localPlayer;
-
     protected BlockMaterial blockMaterial;
     protected SpaceSceneArgs SceneArgs;
-
     protected RadarUI radarWindow;
 
     private FreeCamera freeCamera;
+    
 
     public void Initialize(SpaceSceneArgs param)
     {
         SceneArgs = param;
-
-        Debug.Log("[BaseSpaceScene] Scene Ags: " + param.ToString());
 
         SceneAssetsPreloader.Preload(param, this, localPlayer);
 
@@ -71,24 +63,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         BlackScreenOverlay.IsEnabled = true;
         BlackScreenOverlay.OnGUI();
-
-        var mouse = ToggleManager.Register("mouse");
-        mouse.OnStateChanged += s =>
-        {
-            if (s)
-            {
-
-                Input.ShowCursor();
-
-            }
-            else
-            {
-
-                Input.HideCursor();
-
-            }
-        };
-
     }
 
     public override void LoadContent()
@@ -109,13 +83,10 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         }
 
         AddChild(new BlockSelector());
-
         AddChild(localPlayer);
 
         localPlayer.SetSkinColor(SceneArgs.skinColor);
-
         PanelUI.Player = localPlayer;
-
 
         World.LoadWorldInfo(SceneArgs.worldName);
         blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.EmissionBlocks);
@@ -126,7 +97,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/spaceBackground.ogg")).Audio.Volume = 0.05f;
 
-
         var cameraElement = Overlay.GetElementByType(typeof(CameraElement));
         if (cameraElement != null)
         {
@@ -136,10 +106,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         Input.SetCursorState(CursorState.Grabbed);
 
-
-
         localPlayer.GameMode = World.WorldData.Info.GameMode;
-
 
         if (Settings.Graphics.EffectsEnabled == true)
             localPlayer.AddChild(new DustSpawner());
@@ -152,10 +119,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Debug.RegisterCommand(new GameModCommand(localPlayer));
         Debug.RegisterCommand(new SpawnAroundAsteroidCommand(localPlayer));
 
-
         Texture2D slotTex = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/slot.png");
         Texture2D selectedSlotTex = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/selectedSlot.png");
-
 
         slotTex.FilterMode = FilterMode.Nearest;
         slotTex.FlipY();
@@ -167,7 +132,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         GeneratorUI.Initialize();
         InventoryUI.Player = localPlayer;
         CreativeWindowUI.SetDefaultIcon(slotTex.Handle, localPlayer);
-
 
         freeCamera = AddChild(new FreeCamera(localPlayer.Position));
         freeCamera.FOV = localPlayer.FOV;
@@ -184,14 +148,13 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         AttachComponent(new TagManager());
 
         TagsSaveLoader.LoadTags(World.WorldData.WorldFolderPath);
-
     }
 
     public override void Start()
     {
         base.Start();
 
-        Input.HideCursor();
+        //Input.HideCursor();
         BlackScreenOverlay.IsEnabled = false;
 
         Time.OnTick += () =>
@@ -200,29 +163,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         };
         CraftingGUI.Init();
 
-        Debug.OnVisibilityWasChanged += OnDebugStateChanged;
-
         Chat.Write("Welcome to Spacebox!", Color4.Yellow);
-
-        // Debug.Log(World.CurrentSector.WorldToLocalPosition(Camera.Main.Position));
-
-    }
-
-    private void OnDebugStateChanged(bool state)
-    {
-        ToggleManager.SetState("mouse", state);
-        ToggleManager.SetState("player", !state);
-        ToggleManager.SetState("panel", !state);
-        InputManager0.Enabled = !state;
-        ToggleManager.DisableAllWindows();
-        ToggleManager.SetState("radar", false);
-        ToggleManager.SetState("inventory", false);
-        ToggleManager.SetState("generator", false);
-
-        if (Chat.IsVisible)
-        {
-            Chat.IsVisible = false;
-        }
     }
 
     public override void Update()
@@ -237,7 +178,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         if (Input.IsKeyDown(Keys.R))
         {
             RenderSpace.SwitchSpace();
-
         }
 
         if (Input.IsKeyDown(Keys.C))
@@ -250,35 +190,25 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
             {
                 Camera.Main = localPlayer;
             }
-
         }
 #endif
+
         if (Input.IsKeyDown(Keys.Escape))
         {
-            if (Chat.IsVisible && Chat.FocusInput)
+            if (UIManager.IsTop("chat") && Chat.FocusInput)
             {
                 return;
             }
 
-            int opened = ToggleManager.OpenedWindowsCount;
-
-            ToggleManager.DisableAllWindows();
-
-            if (opened > 0)
+            if (UIManager.IsUIMode)
             {
-                ToggleManager.SetState("inventory", false);
-                ToggleManager.SetState("mouse", false);
-                ToggleManager.SetState("player", true);
-                ToggleManager.SetState("panel", true);
+                UIManager.CloseTop();
             }
             else
             {
-                ToggleManager.SetState("inventory", false);
-                ToggleManager.SetState("pause", true);
-                ToggleManager.SetState("panel", false);
+                UIManager.Open("pause");
             }
         }
-
 
         if (!Debug.IsVisible)
         {
@@ -290,7 +220,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
             {
                 Settings.ShowInterface = !Settings.ShowInterface;
             }
-
         }
 
         Chat.Update();
@@ -319,7 +248,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         ResourceProcessingGUI.OnGUI();
         CraftingGUI.OnGUI();
 
-
         PanelUI.Render();
 
         InventoryUI.OnGUI(localPlayer.Inventory);
@@ -330,7 +258,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         WelcomeUI.OnGUI();
         PauseUI.OnGUI();
         GeneratorUI.OnGUI();
-
+        AnalyzerUI.OnGUI();
 
         if (VisualDebug.Enabled)
         {
@@ -339,31 +267,26 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         BlackScreenOverlay.OnGUI();
         CenteredText.Hide();
-
     }
 
     public override void UnloadContent()
     {
         PanelUI.Player = null;
 
-       
         TickTaskManager.Dispose();
         RadarUI.Instance.Dispose();
 
         Projectile.PointLightsPool = null;
         Chat.Clear();
 
-        ToggleManager.DisableAllWindows();
+        UIManager.CloseAll();
+
         StorageUI.Dispose();
         PauseUI.Dispose();
         CraftingGUI.Dispose();
         WelcomeUI.Dispose();
-        ToggleManager.Dispose();
-        Debug.OnVisibilityWasChanged -= OnDebugStateChanged;
 
         GameAssets.DisposeAll();
         GameTime.Dispose();
     }
-
-
 }

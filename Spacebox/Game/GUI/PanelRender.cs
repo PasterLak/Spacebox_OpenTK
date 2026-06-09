@@ -5,13 +5,11 @@ using Spacebox.Game.GUI.Menu;
 
 namespace Spacebox.Game.GUI
 {
-  
-
     public static class PanelRenderer
     {
         public static void Render(Storage storage, float slotSize, nint slotTexture, nint selectedTexture, short selectedSlotId, float time)
         {
-            if (!Settings.ShowInterface || !PanelUI.IsVisible || storage == null) return;
+            if (!Settings.ShowInterface || storage == null) return;
 
             ImGuiIOPtr io = ImGui.GetIO();
             slotSize = InventoryUIHelper.SlotSize;
@@ -66,7 +64,7 @@ namespace Spacebox.Game.GUI
                         string id = $"slot_{row}_{col}";
                         bool selected = (row == 0 && col == selectedSlotId);
                         InventoryUIHelper.DrawSlot(slot, id, PanelUI.OnSlotClicked, selected);
-                        InventoryUIHelper.ShowTooltip(slot, false,true);
+                        InventoryUIHelper.ShowTooltip(slot, false, true);
                     }
                 }
 
@@ -76,8 +74,6 @@ namespace Spacebox.Game.GUI
             ImGui.End();
             ImGui.PopStyleVar(3);
         }
-
-
 
         public static void DrawItemName(string name)
         {

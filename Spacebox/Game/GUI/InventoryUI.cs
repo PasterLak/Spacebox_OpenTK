@@ -16,12 +16,10 @@ namespace Spacebox.Game.GUI
         private static nint SlotTexture = nint.Zero;
         private static nint ItemTexture = nint.Zero;
 
-        public static bool IsVisible { get; set; } = false;
-
         public static LocalAstronaut Player;
 
-
         public static AudioSource splitAudio;
+
         public static void Initialize(nint textureId)
         {
             SlotTexture = textureId;
@@ -29,43 +27,35 @@ namespace Spacebox.Game.GUI
             ItemTexture = new Texture2D("Resources/Textures/UI/trash.png", true, false).Handle;
             InventoryUIHelper.SetDefaultIcon(textureId, nint.Zero);
 
-            var inventory = ToggleManager.Register("inventory");
-            inventory.IsUI = true;
-            inventory.OnStateChanged += s =>
-            {
-                IsVisible = s;
-            };
-
             splitAudio = new AudioSource(Resources.Load<AudioClip>("splitStack"));
         }
+
         private static void HandleInput()
         {
             if (Input.IsActionDown("inventory") && !Debug.IsVisible)
             {
-                if (ToggleManager.IsActiveAndExists("pause")) return;
-                if (ToggleManager.IsActiveAndExists("generator")) return;
                 if (Player.IsAlive == false) return;
+                if (Chat.FocusInput) return; 
 
-
-                var v = IsVisible;
-
-                bool count = ToggleManager.IsActiveAndExists("radar");
-
-                ToggleManager.DisableAllWindows();
-
-
-                if (!count) 
-                    IsVisible = !v;
-
-                if (IsVisible)
+                if (!UIManager.IsUIMode)
                 {
-                    ToggleManager.SetState("mouse", true);
-                    ToggleManager.SetState("player", false);
                     if (Player.GameMode != GameMode.Survival)
-                        ToggleManager.SetState("creative", true);
+                    {
+                        UIManager.Open("inventory", "creative");
+                    }
+                    else
+                    {
+                        UIManager.Open("inventory");
+                    }
+                }
+                else
+                {
 
-                    ToggleManager.SetState("inventory", true);
+                    UIManager.CloseAll();
+                }
 
+                if (UIManager.IsOpen("inventory"))
+                {
                     ItemControlsUI.IsVisible = true;
 
                     var shift = InputManager.Instance.GetAction("storage_item_quick_transfer");
@@ -79,35 +69,24 @@ namespace Spacebox.Game.GUI
                 else
                 {
                     ItemControlsUI.IsVisible = false;
-                    ToggleManager.SetState("mouse", false);
-                    ToggleManager.SetState("player", true);
-                    ToggleManager.SetState("inventory", false);
                 }
-
-                ToggleManager.SetState("panel", !IsVisible);
-
             }
         }
+
         public static void OnGUI(Storage storage)
         {
             HandleInput();
 
-            if (!IsVisible) return;
+            if (!UIManager.IsOpen("inventory")) return;
 
             if (storage == null) return;
 
-
             var displaySize = ImGui.GetIO().DisplaySize;
-
             var style = ImGui.GetStyle();
-
 
             float titleBarHeight = ImGui.GetFontSize() + style.FramePadding.Y * 2;
 
-
-
             SlotSize = InventoryUIHelper.SlotSize;
-
 
             float windowWidth = storage.SizeX * SlotSize;
             float windowHeight = storage.SizeY * SlotSize;
@@ -120,52 +99,41 @@ namespace Spacebox.Game.GUI
             var padding = SlotSize * 0.1f;
             var paddingV = new Vector2(padding, padding);
 
-            ImGui.SetNextWindowPos(windowPos , ImGuiCond.Always);
+            ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
             ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV);
             ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoResize |
                                            ImGuiWindowFlags.NoCollapse |
                                            ImGuiWindowFlags.NoDecoration |
                                            ImGuiWindowFlags.NoScrollbar |
-                                          ImGuiWindowFlags.NoResize |
+                                           ImGuiWindowFlags.NoResize |
                                            ImGuiWindowFlags.NoScrollWithMouse;
 
-
             ImGui.Begin("Inventory", windowFlags);
-          
+
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV, displaySize.Y);
 
-            ImGui.SetCursorPos(paddingV );
-            ImGui.TextColored( new Vector4(0.9f, 0.9f, 0.9f, 1f), "Inventory");
+            ImGui.SetCursorPos(paddingV);
+            ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), "Inventory");
             InventoryUIHelper.SortStorageButtons(windowWidth, padding, storage);
 
             ImGui.SetCursorPos(paddingV + new Vector2(0, padding * 4));
             InventoryUIHelper.RenderStorage(storage, OnSlotClicked, storage.SizeX);
-            
+
             ImGui.End();
         }
 
-        
         private static void OnSlotClicked(ItemSlot slot)
         {
-
             if (slot.HasItem)
             {
                 if (Input.IsAction("storage_item_quick_transfer"))
                 {
-
                     slot.TryMoveItemToConnectedStorage(out var _);
-
                 }
                 if (Input.IsAction("storage_item_delete"))
                 {
-
                     slot.Clear();
-
                 }
-        
-            }
-            else
-            {
             }
         }
     }

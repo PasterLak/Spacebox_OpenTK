@@ -585,15 +585,13 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                 GenerateAsteroidFromData(entity);
             }
         }
-        for (int i = 0; i < Entities.Count; i++)
+        for (int i = Entities.Count - 1; i >= 0; i--)
         {
             var entity = Entities[i];
 
+            entity.Update();
 
-            Entities[i].Update();
-
-            VisualDebug.DrawSphere(Entities[i].CenterOfMass, Entities[i].GravityRadius, 8, Color4.Blue);
-
+            VisualDebug.DrawSphere(entity.CenterOfMass, entity.GravityRadius, 8, Color4.Blue);
         }
     }
 

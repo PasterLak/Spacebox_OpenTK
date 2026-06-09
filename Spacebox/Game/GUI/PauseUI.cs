@@ -6,64 +6,49 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player;
 using Spacebox.Scenes;
+using System;
 using System.Numerics;
 
 namespace Spacebox.Game.GUI
 {
     public class PauseUI
     {
-        protected static bool _isVisible = false;
+        private static bool _wasVisible = false;
         private static float parallaxIntensity = 0.02f;
+        private static string saveButtonText = "Save";
+        private static AudioSource click1;
 
-        public static bool IsVisible
+        public static void Init()
         {
-            get => _isVisible;
-            set
+            click1 = new AudioSource(Resources.Load<AudioClip>("click1"));
+        }
+
+        public static void OnGUI()
+        {
+            bool isVisible = UIManager.IsOpen("pause");
+
+            if (isVisible != _wasVisible)
             {
-                _isVisible = value;
-
-                ToggleManager.SetState("mouse", _isVisible);
-                ToggleManager.SetState("player", !_isVisible);
-                
-                Settings.ShowInterface = !_isVisible;
-
-                if (_isVisible)
+                if (isVisible)
                 {
                     Time.TimeSize = 0;
                     saveButtonText = "Save";
-
                     ColorOverlay.FadeOut(new Vector3(0, 0, 0), 0.7f);
+                    Settings.ShowInterface = false;
                 }
                 else
                 {
                     StatisticsUI.IsVisible = false;
                     Time.TimeSize = 1;
                     saveButtonText = "Save";
+                    Settings.ShowInterface = true;
                 }
-
+                _wasVisible = isVisible;
             }
-        }
-        private static string saveButtonText = "Save";
-        private static AudioSource click1;
 
+            if (!isVisible) return;
 
-        public static void Init()
-        {
-            var toggle = ToggleManager.Register("pause");
-            toggle.IsUI = true;
-            toggle.OnStateChanged += (s) =>
-            {
-                IsVisible = s;
-            };
-        }
-
-
-        public static void OnGUI()
-        {
-            if (!_isVisible) return;
-
-           
-            RenderPause(); 
+            RenderPause();
             RenderPauseTitle();
             StatisticsUI.OnGUI();
         }
@@ -71,51 +56,32 @@ namespace Spacebox.Game.GUI
         private static void RenderPauseTitle()
         {
             Vector2 displaySize = ImGui.GetIO().DisplaySize;
+            float scale = Math.Min(displaySize.X / 1920f, displaySize.Y / 1080f);
+            float scaledFontSize = 120f * scale;
+            const string pauseText = "PAUSE";
 
-            ImGui.SetNextWindowPos(Vector2.Zero);
-            ImGui.SetNextWindowSize(displaySize);
+            var font = ImGui.GetFont();
+            Vector2 textSize = font.CalcTextSizeA(scaledFontSize, float.MaxValue, 0f, pauseText);
 
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0f);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0, 0, 0, 0));
+            Vector2 mousePosition = Input.Mouse.Position.ToSystemVector2();
+            Vector2 offset = (mousePosition - displaySize / 2f) * parallaxIntensity;
 
+            float textX = (displaySize.X - textSize.X) * 0.5f + offset.X;
+            float textY = displaySize.Y * 0.15f + offset.Y;
+            Vector2 pos = new Vector2(textX, textY);
 
-            if (ImGui.Begin("PauseTitle", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoBringToFrontOnFocus))
-            {
-                float scale = Math.Min(displaySize.X / 1920f, displaySize.Y / 1080f);
-                float baseFontSize = 72f;
-                float scaledFontSize = baseFontSize * scale;
+            uint textColor = ImGui.GetColorU32(new Vector4(1f, 1f, 0f, 1f));
+            uint shadowColor1 = ImGui.GetColorU32(new Vector4(80 / 255f, 60 / 255f, 10 / 255f, 0.8f));
+            uint shadowColor2 = ImGui.GetColorU32(new Vector4(40 / 255f, 30 / 255f, 5 / 255f, 0.8f));
 
-                ImGui.SetWindowFontScale(scaledFontSize / ImGui.GetFontSize());
+            float shadowOffset1 = 4f * scale;
+            float shadowOffset2 = 8f * scale;
 
-                const string pauseText = "PAUSE";
-                Vector2 textSize = ImGui.CalcTextSize(pauseText);
+            var drawList = ImGui.GetForegroundDrawList();
 
-                Vector2 mousePosition = Input.Mouse.Position.ToSystemVector2();
-                mousePosition.X = 0;
-                Vector2 offset = (mousePosition - displaySize / 2f) * parallaxIntensity;
-
-                float textX = (displaySize.X - textSize.X) * 0.5f + offset.X;
-                float textY = displaySize.Y * 0.15f + offset.Y;
-
-                Vector4 textColor = new Vector4(1f, 1f, 1f, 1f);
-                Vector4 shadowColor = new Vector4(0.949f, 0.9f, 0.461f,0.8f);
-
-                float shadowOffset = 4f * scale;
-
-                ImGui.SetCursorPos(new Vector2(textX + shadowOffset, textY + shadowOffset));
-                ImGui.TextColored(shadowColor, pauseText);
-
-                ImGui.SetCursorPos(new Vector2(textX, textY ));
-                ImGui.TextColored(textColor, pauseText);
-
-                ImGui.SetWindowFontScale(1f);
-            }
-
-            ImGui.End();
-            ImGui.PopStyleColor();
-            ImGui.PopStyleVar(3);
+            drawList.AddText(font, scaledFontSize, pos + new Vector2(shadowOffset2, shadowOffset2), shadowColor2, pauseText);
+            drawList.AddText(font, scaledFontSize, pos + new Vector2(shadowOffset1, shadowOffset1), shadowColor1, pauseText);
+            drawList.AddText(font, scaledFontSize, pos, textColor, pauseText);
         }
 
         private static void RenderPause()
@@ -124,22 +90,26 @@ namespace Spacebox.Game.GUI
             float windowWidth = displaySize.X * 0.15f;
             float windowHeight = displaySize.Y * 0.3f;
             Vector2 windowPos = GameMenu.CenterNextWindow(windowWidth, windowHeight);
+
             ImGui.SetNextWindowPos(windowPos);
             ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight));
             ImGui.Begin("Pause", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
+
             float buttonWidth = windowWidth * 0.9f;
             float buttonHeight = windowHeight * 0.12f;
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y, 0.005f);
+
             const int buttonCount = 5;
             float spacing = (windowHeight - (buttonCount * buttonHeight)) / (buttonCount + 1);
             float currentY = spacing;
+
             ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
             GameMenu.CenterButtonWithBackground("Continue", buttonWidth, buttonHeight, () =>
             {
                 click1?.Play();
-                ToggleManager.SetState("pause", false);
-                ToggleManager.SetState("panel", true);
+                UIManager.CloseTop();
             });
+
             currentY += buttonHeight + spacing;
             ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
             GameMenu.CenterButtonWithBackground(saveButtonText, buttonWidth, buttonHeight, () =>
@@ -149,6 +119,7 @@ namespace Spacebox.Game.GUI
                     World.Instance.Save();
                 saveButtonText = "Saved!";
             });
+
             currentY += buttonHeight + spacing;
             ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
             GameMenu.CenterButtonWithBackground("Statistics", buttonWidth, buttonHeight, () =>
@@ -156,21 +127,21 @@ namespace Spacebox.Game.GUI
                 click1?.Play();
 
                 var player = SceneManager.Current.FindNode<LocalAstronaut>();
-                if (player!= null && player.PlayerStatistics != null)
+                if (player != null && player.PlayerStatistics != null)
                 {
                     StatisticsUI.Show(player.PlayerStatistics);
                 }
-
             });
+
             currentY += buttonHeight + spacing;
             ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
             GameMenu.CenterButtonWithBackground("Go to menu", buttonWidth, buttonHeight, () =>
             {
                 click1?.Play();
-                ToggleManager.SetState("pause", false);
-                ToggleManager.SetState("panel", true);
+                UIManager.CloseAll();
                 SceneManager.Load<MenuScene>();
             });
+
             currentY += buttonHeight + spacing;
             ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
             GameMenu.CenterButtonWithBackground("Exit", buttonWidth, buttonHeight, () =>
@@ -178,6 +149,7 @@ namespace Spacebox.Game.GUI
                 click1?.Play();
                 SpaceboxWindow.Instance.Quit();
             });
+
             ImGui.End();
         }
 
@@ -190,8 +162,7 @@ namespace Spacebox.Game.GUI
         {
             click1?.Dispose();
             click1 = null;
-            _isVisible = false;
-
+            _wasVisible = false;
         }
     }
 }

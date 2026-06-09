@@ -1,6 +1,4 @@
-﻿
-using Engine.Audio;
-
+﻿using Engine.Audio;
 using Engine.Light;
 using Engine;
 using OpenTK.Mathematics;
@@ -11,11 +9,9 @@ namespace Spacebox.Game.Player
 {
     public class Flashlight : SpotLight
     {
- 
         private AudioSource audio;
-        private Toggi toggle;
-
         private Engine.InputPro.InputAction action;
+
         public Flashlight()
         {
             GetDirectionFromNode = true;
@@ -25,12 +21,8 @@ namespace Spacebox.Game.Player
             var clip = GameAssets.LoadResource<AudioClip>("Resources/Audio/flashlight.ogg");
             audio = new AudioSource(clip);
             audio.Volume = 0.5f;
-
-            
-
-            this.Diffuse = new Color3Byte(245, 222, 171).ToVector3(); // was 245, 222, 171
-            this.Specular = new Color3Byte(0, 0, 0).ToVector3(); // was 0
-
+            this.Diffuse = new Color3Byte(245, 222, 171).ToVector3();
+            this.Specular = new Color3Byte(0, 0, 0).ToVector3();
         }
 
         public void AddToggleToManager(LocalAstronaut localAstronaut)
@@ -39,24 +31,14 @@ namespace Spacebox.Game.Player
             action.Subscribe(InputEventType.Pressed, () =>
             {
                 if (localAstronaut.IsAlive == false) return;
-                if (ToggleManager.OpenedWindowsCount > 0) return;
+                if (UIManager.IsUIMode) return;
                 if (Debug.IsVisible) return;
                 if (Chat.FocusInput) return;
 
                 localAstronaut.PlayerStatistics.FlashlightToggles++;
                 audio.Play();
                 Enabled = !Enabled;
-
             });
-
-            toggle = ToggleManager.Register("flashlight");
-            toggle.OnStateChanged += state =>
-            {
-                if (localAstronaut.IsAlive == false) return;
-                Enabled = state;
-                action.Enabled = state;
-
-            };
         }
 
         public override void Update()
@@ -68,9 +50,6 @@ namespace Spacebox.Game.Player
         public override void Destroy()
         {
             base.Destroy();
-           
         }
- 
-
     }
 }

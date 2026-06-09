@@ -205,5 +205,6 @@ namespace Spacebox.Game.GUI
         public int ActiveTagsCount => _activeTags.Count;
         public int PooledTagsCount => _tagPool?.AvailableObjects ?? 0;
         public int TotalTagsCount => _tagPool?.TotalObjects ?? 0;
+
     }
 }

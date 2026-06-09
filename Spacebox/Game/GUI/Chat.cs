@@ -3,14 +3,16 @@ using ImGuiNET;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Client;
+using System;
+using System.Collections.Generic;
 
 namespace Spacebox.Game.GUI
 {
     struct ChatMessage
     {
         public string Text;
-        public Vector4 Color;
-        public ChatMessage(string text, Vector4 color)
+        public System.Numerics.Vector4 Color;
+        public ChatMessage(string text, System.Numerics.Vector4 color)
         {
             Text = text;
             Color = color;
@@ -35,7 +37,7 @@ namespace Spacebox.Game.GUI
 
         private static void AddMessage(string text, Color4 c)
         {
-            _messages.Add(new ChatMessage(text, new Vector4(c.R, c.G, c.B, c.A)));
+            _messages.Add(new ChatMessage(text, new System.Numerics.Vector4(c.R, c.G, c.B, c.A)));
             IsVisible = true;
             _hideTimer = _hideDelay;
         }
@@ -68,14 +70,13 @@ namespace Spacebox.Game.GUI
         {
             if (_inputBuffer.Length > 0) return;
 
-
-
-            ToggleManager.SetState("player", false);
             PanelUI.AllowScroll = false;
             InputManager0.Enabled = false;
+
+            UIManager.Open("chat");
+
             if (!IsVisible)
             {
-
                 FocusInput = true;
                 _hideTimer = _hideDelay;
             }
@@ -90,23 +91,26 @@ namespace Spacebox.Game.GUI
             IsVisible = true;
             isStopped = false;
         }
+
         static bool isStopped = true;
+
         private static void StopInput()
         {
-            //if (!FocusInput) return;
             if (!IsVisible) return;
 
             _inputBuffer = "";
 
-
-            ToggleManager.SetState("player", true);
             PanelUI.AllowScroll = true;
             InputManager0.Enabled = true;
+
+            if (UIManager.IsTop("chat"))
+            {
+                UIManager.CloseTop();
+            }
 
             FocusInput = false;
             _hideTimer = _hideDelay;
             isStopped = true;
-
         }
 
         private static void UpdateHide()
@@ -126,40 +130,30 @@ namespace Spacebox.Game.GUI
                     _inputBuffer = "";
                     IsVisible = false;
                 }
-
             }
         }
 
         public static void Update()
         {
-            if (ToggleManager.OpenedWindowsCount > 0 || Debug.IsVisible)
+            if (UIManager.IsUIMode && !UIManager.IsOpen("chat") || Debug.IsVisible)
             {
-                if (Input.IsKeyDown(Keys.Escape))
-                {
-
-                }
                 return;
             }
 
-
             if (Input.IsKeyDown(Keys.Escape))
             {
-
                 StopInput();
-
             }
 
             if (Input.IsKeyDown(Keys.T))
             {
-
                 StartInput();
             }
 
             UpdateHide();
-
         }
 
-        public static uint Vec4ToUintColor(Vector4 color)
+        public static uint Vec4ToUintColor(System.Numerics.Vector4 color)
         {
             uint r = (uint)MathF.Round(color.X * 255f) & 0xFF;
             uint g = (uint)MathF.Round(color.Y * 255f) & 0xFF;
@@ -208,7 +202,6 @@ namespace Spacebox.Game.GUI
                     OnSend();
                 }
             }
-
 
             ImGui.End();
             ImGui.PopStyleColor(3);
@@ -267,12 +260,16 @@ namespace Spacebox.Game.GUI
             }
             _inputBuffer = "";
             FocusInput = false;
-            ToggleManager.SetState("player", true);
+
+            if (UIManager.IsTop("chat"))
+            {
+                UIManager.CloseTop();
+            }
+
             PanelUI.AllowScroll = true;
             _hideTimer = _hideDelay;
             InputManager0.Enabled = true;
         }
-
 
         public static void Clear()
         {

@@ -4,7 +4,7 @@
         "Name": "Light Rock",
         "Description": "Easily mined rock",
         "Sides": "lightRock",
-
+        "Type": "mineral",
         "PowerToDrill": 1,
         "Mass": 2,
         "Durability": 5,
@@ -16,6 +16,7 @@
     {
         "ID": "medium_rock",
         "Name": "Medium Rock",
+       "Type": "mineral",
         "Description": "Standard rock found in many big asteroids",
         "Sides": "mediumRock",
         "PowerToDrill": 3,
@@ -28,6 +29,7 @@
     {
         "ID": "heavy_rock",
         "Name": "Heavy Rock",
+       "Type": "mineral",
         "Description": "Dense rock that requires powerful tools to mine",
         "Sides": "heavyRock",
         "PowerToDrill": 5,
@@ -38,6 +40,7 @@
     {
         "ID": "cobaltite_rock",
         "Name": "Cobaltite Rock",
+        "Type": "mineral",
         "Description": "Source of cobalt crystals",
         "Sides": "cobaltite",
         "PowerToDrill": 1,
@@ -47,6 +50,7 @@
     {
         "ID": "ice_rock",
         "Name": "Icy Rock",
+        "Type": "mineral",
         "Description": "Contains ice pieces",
         "Sides": "iceBlock",
         "PowerToDrill": 1,
@@ -56,6 +60,7 @@
     {
         "ID": "dense_ice_rock",
         "Name": "Dense Ice Rock",
+       "Type": "mineral",
         "Description": "Source of methane",
         "Sides": "iceBlock2",
         "PowerToDrill": 2,
@@ -65,6 +70,7 @@
     {
         "ID": "aluminium_ore",
         "Name": "Aluminium Ore",
+        "Type": "mineral",
         "Description": "Lightweight ore used in various fields",
         "Sides": "aluOre",
         "PowerToDrill": 1,
@@ -74,6 +80,7 @@
     {
         "ID": "iron_ore",
         "Name": "Iron Ore",
+        "Type": "mineral",
         "Description": "A common ore used in construction",
         "Sides": "ironOre",
         "PowerToDrill": 2,
@@ -83,6 +90,7 @@
     {
         "ID": "titanium_ore",
         "Name": "Titanium Ore",
+        "Type": "mineral",
         "Description": "A strong and lightweight ore",
         "Sides": "titaniumOre",
         "PowerToDrill": 4,
@@ -92,6 +100,7 @@
     {
         "ID": "thulium_ore",
         "Name": "Thulium Ore",
+        "Type": "mineral",
         "Description": "A rare ore used in advanced technologies",
         "Sides": "yellowOre",
         "PowerToDrill": 3,
@@ -101,6 +110,7 @@
     {
         "ID": "obscurium_ore",
         "Name": "Obscurium Ore",
+        "Type": "mineral",
         "Description": "An extremely rare ore with unusual properties",
         "Sides": "pinkOre",
         "PowerToDrill": 5,
@@ -110,6 +120,7 @@
     {
         "ID": "uranium_ore",
         "Name": "Uranium Ore",
+        "Type": "mineral",
         "Description": "A radioactive ore used for advanced power generation",
         "Sides": "greenOre",
         "PowerToDrill": 3,
@@ -302,7 +313,7 @@
     {
         "ID": "crusher",
         "Name": "Crusher",
-        "Description": "Сrushes ores to extract more resources",
+        "Description": "Crushes ores to extract more resources",
         "Type": "crusher",
         "Category": "resources",
         "Sides": "crusherSide",
@@ -338,12 +349,15 @@
     {
         "ID": "analyzer",
         "Name": "Analyzer",
-
-        "Type": "interactive",
+        "Type": "analyzer",
+     
         "Category": "resources",
         "Sides": "bottom",
         "Up": "analyzer",
         "Down": "bottom",
+        
+        "UpOff": "analyzerOff",
+       
         "Durability": 5,
         "IsTransparent": false
     },
@@ -555,7 +569,7 @@
     {
         "ID": "gravity_generator",
         "Name": "Gravity Generator",
-        "Description": "Сan create artificial gravity",
+        "Description": "Can create artificial gravity",
         "Category": "resources",
         "Sides": "gravitySide",
         "Up": "gravityTop",

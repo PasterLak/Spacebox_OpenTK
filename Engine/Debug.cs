@@ -3,12 +3,15 @@ using ImGuiNET;
 using OpenTK.Windowing.Common;
 using Engine.Commands;
 using System.Drawing;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
 
 namespace Engine
 {
     public static class Debug
     {
-
         enum MessageType : byte
         {
             Info,
@@ -16,6 +19,7 @@ namespace Engine
             Error,
             Success
         }
+
         private struct ConsoleMessage
         {
             public string Text;
@@ -27,14 +31,13 @@ namespace Engine
             {
                 Text = text;
                 Color = color;
+                Count = 0;
+                Type = MessageType.Info;
             }
         }
 
-        private static bool _isVisible = false;
-        private static CursorState _previousCursorState;
         private static string _inputBuffer = "";
         private static List<ConsoleMessage> _messages = new List<ConsoleMessage>();
-
         private static List<string> _commandHistory = new List<string>();
         private static int _historyPos = -1;
         private static bool _focusInput = false;
@@ -62,11 +65,12 @@ namespace Engine
 
         private static readonly object _lock = new object();
 
+        public static bool IsVisible => UIManager.IsOpen("debug");
+
         static Debug()
         {
             LoadHistory();
             RegisterDefaultCommands();
-
         }
 
         private static void RegisterDefaultCommands()
@@ -80,10 +84,12 @@ namespace Engine
             RegisterCommandGlobal(new ResourcesCommand());
             RegisterCommandGlobal(new SaveMessagesCommand());
         }
+
         private static void RegisterCommandGlobal(CommandBase command)
         {
             CommandManager.RegisterGlobalCommand(command);
         }
+
         public static void RegisterCommand(CommandBase command)
         {
             CommandManager.RegisterSceneCommand(command);
@@ -91,26 +97,19 @@ namespace Engine
 
         public static void ToggleVisibility()
         {
-            _isVisible = !_isVisible;
+            UIManager.Toggle("debug");
 
-            if (_isVisible)
+            if (!IsVisible)
             {
-                _previousCursorState = Input.GetCursorState();
-                Input.ShowCursor();
-                _focusInput = true;
-
+                SaveHistory();
             }
             else
             {
-                Input.SetCursorState(_previousCursorState);
-                SaveHistory();
-
+                _focusInput = true;
             }
 
-            OnVisibilityWasChanged?.Invoke(_isVisible);
+            OnVisibilityWasChanged?.Invoke(IsVisible);
         }
-
-        public static bool IsVisible => _isVisible;
 
         private static void AddMessage(string message, Vector4? color = null)
         {
@@ -128,7 +127,6 @@ namespace Engine
                     msg.Type = MessageType.Success;
                     break;
                 default:
-
                     break;
             }
             lock (_lock)
@@ -154,7 +152,6 @@ namespace Engine
                     msg.Type = MessageType.Success;
                     break;
                 default:
-
                     break;
             }
             _messages.Add(msg);
@@ -164,116 +161,75 @@ namespace Engine
         public static void WriteLine(string message)
         {
             AddMessage($"{message}");
-
-#if DEBUG
-            Console.WriteLine($"{message}");
-#endif
         }
 
         public static void Write(string message)
         {
             AddMessage($"{message}");
-#if DEBUG
-            Console.WriteLine($"{message}");
-#endif
-
         }
 
         public static void Log(string message, OpenTK.Mathematics.Color4 color)
         {
             AddMessage($"{message}", color);
-#if DEBUG
-            Console.WriteLine($"{message}");
-#endif
         }
 
         public static void Log(string sender, string message, OpenTK.Mathematics.Color4 color)
         {
             AddMessage($"[{sender}] {message}", color);
-#if DEBUG
-            Console.WriteLine($"[{sender.GetType().Name}] {message}");
-#endif
         }
 
         public static void Log(object sender, string message, OpenTK.Mathematics.Color4 color)
         {
             AddMessage($"[{sender.GetType().Name}] {message}", color);
-#if DEBUG
-            Console.WriteLine($"[{sender.GetType().Name}] {message}");
-#endif
         }
+
         public static void Log(string sender, string message)
         {
             AddMessage($"[{sender}] {message}", Color.White);
-#if DEBUG
-            Console.WriteLine($"[{sender.GetType().Name}] {message}");
-#endif
         }
+
         public static void Log(object sender, string message)
         {
             AddMessage($"[{sender.GetType().Name}] {message}", Color.White);
-#if DEBUG
-            Console.WriteLine($"[{sender.GetType().Name}] {message}");
-#endif
         }
 
         public static void Success(object sender, string message)
         {
             AddMessage($"[Success][{sender.GetType().Name}] {message}", successColor);
             successCount++;
-#if DEBUG
-            Console.WriteLine($"[Success][{sender.GetType().Name}] {message}");
-#endif
         }
 
         public static void Success(string message)
         {
             AddMessage($"[Success] {message}", successColor);
             successCount++;
-#if DEBUG
-            Console.WriteLine($"[Success] {message}");
-#endif
         }
 
         public static void Warning(string message)
         {
             AddMessage($"[Warning] {message}", waringColor);
             warningCount++;
-#if DEBUG
-            Console.WriteLine($"[Warning] {message}");
-#endif
         }
 
         public static void Log(string message, Vector4 color)
         {
             AddMessage($"{message}", color);
-#if DEBUG
-            Console.WriteLine($"{message}");
-#endif
         }
 
         public static void Log(object message)
         {
             AddMessage($"{message.ToString()}", infoColor);
-#if DEBUG
-            Console.WriteLine($"{message.ToString()}");
-#endif
         }
+
         public static void Log(string message)
         {
             AddMessage($"{message}", infoColor);
-#if DEBUG
-            Console.WriteLine($"{message}");
-#endif
         }
 
         public static void Error(string message)
         {
             AddMessage($"[ERROR] {message}", errorColor);
             errorCount++;
-#if DEBUG
-            Console.WriteLine($"[ERROR] {message}");
-#endif
         }
 
         public static void ClearMessages()
@@ -290,7 +246,6 @@ namespace Engine
 
         private static void DrawFilterButton(string label, long count, MessageType type, Vector4 textColor)
         {
-
             if (count <= 0) return;
 
             ImGui.SameLine();
@@ -309,20 +264,21 @@ namespace Engine
 
             ImGui.PopStyleColor(isSelected ? 2 : 1);
         }
+
         public static void Render()
         {
-            if (!_isVisible)
+            if (!IsVisible)
                 return;
 
             Vector2 windowSize = ImGui.GetIO().DisplaySize;
 
             ImGui.SetNextWindowPos(new Vector2(0, 0), ImGuiCond.Always);
             ImGui.SetNextWindowSize(new Vector2(windowSize.X * 0.4f, windowSize.Y), ImGuiCond.Always);
-            //ImGui.SetNextWindowSizeConstraints(new Vector2(300, 200), new Vector2(float.MaxValue, float.MaxValue));
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(10, 10));
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0f, 0f, 0f, 0.8f));
             ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0f, 0f, 0f, 0.8f));
-            ImGui.Begin("Console", ref _isVisible, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
+
+            ImGui.Begin("Console", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
 
             ImGui.Text("CONSOLE   ");
             ImGui.PushStyleColor(ImGuiCol.Button, buttonColor);
@@ -348,8 +304,7 @@ namespace Engine
                 messagesToRender = new List<ConsoleMessage>(_messages);
             }
 
-            foreach (var msg in messagesToRender) // : 'Collection was modified; enumeration operation may not execute.'
-
+            foreach (var msg in messagesToRender)
             {
                 if (showType != MessageType.Info)
                 {
@@ -380,13 +335,11 @@ namespace Engine
                 }
                 if (ImGui.IsKeyPressed(ImGuiKey.DownArrow))
                 {
-
                     NavigateHistory(1);
                     _focusInput = true;
                 }
                 if (ImGui.IsKeyPressed(ImGuiKey.Tab))
                 {
-
                     AutoComplete();
                     _focusInput = true;
                 }
@@ -395,7 +348,6 @@ namespace Engine
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.7f, 0.5f, 0, 1));
             if (ImGui.Button("SEND", new Vector2(buttonWidth, 0)))
             {
-
                 ProcessCommand(_inputBuffer);
                 _inputBuffer = "";
                 _focusInput = true;
@@ -404,20 +356,17 @@ namespace Engine
 
             ImGui.SameLine();
 
-
             ImGui.SetNextItemWidth(inputWidth);
             bool inputActivated = ImGui.InputText("##Input", ref _inputBuffer, 256, ImGuiInputTextFlags.EnterReturnsTrue);
 
             if (_focusInput)
             {
                 ImGui.SetKeyboardFocusHere(-1);
-
                 _focusInput = false;
             }
 
             if (inputActivated)
             {
-
                 ProcessCommand(_inputBuffer);
                 _inputBuffer = "";
                 _focusInput = true;
@@ -435,11 +384,9 @@ namespace Engine
 
             _commandHistory.Add(command);
 
-
             if (_commandHistory.Count > 20)
             {
                 _commandHistory.RemoveAt(0);
-
             }
             _historyPos = -1;
         }
@@ -453,22 +400,18 @@ namespace Engine
 
             _historyPos += direction;
 
-
             if (_historyPos < 0)
             {
                 _historyPos = 0;
-
             }
             else if (_historyPos >= _commandHistory.Count)
             {
                 _historyPos = _commandHistory.Count;
                 _inputBuffer = "";
-
                 return;
             }
 
             _inputBuffer = _commandHistory[_historyPos];
-
             _focusInput = true;
         }
 
@@ -481,22 +424,18 @@ namespace Engine
             string lastToken = tokens[^1];
             List<CommandBase> matches = CommandManager.FindCommandsStartingWith(lastToken).ToList();
 
-
             if (matches.Count == 1)
             {
                 tokens[^1] = matches[0].Name;
                 _inputBuffer = string.Join(" ", tokens) + " ";
-
                 _focusInput = true;
             }
             else if (matches.Count > 1)
             {
-
                 foreach (var cmd in matches)
                 {
                     AddMessage($"- {cmd.Name}: {cmd.Description}", new Vector4(0.5f, 0.5f, 1f, 1f));
                 }
-
                 _focusInput = true;
             }
         }
@@ -520,7 +459,6 @@ namespace Engine
             {
                 try
                 {
-
                     commandObj.Execute(args);
                 }
                 catch (Exception ex)
@@ -532,7 +470,6 @@ namespace Engine
             else
             {
                 Error($"Unknown command: {cmdName}");
-
             }
         }
 
@@ -577,12 +514,6 @@ namespace Engine
                 _commandHistory = File.ReadAllLines(HistoryFilePath).ToList();
                 if (_commandHistory.Count > 20)
                     _commandHistory = _commandHistory.TakeLast(20).ToList();
-
-
-            }
-            else
-            {
-
             }
         }
 

@@ -8,7 +8,7 @@ using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Game.Player.Interactions;
 using System.Numerics;
-
+using System;
 
 namespace Spacebox.Game.GUI
 {
@@ -17,7 +17,6 @@ namespace Spacebox.Game.GUI
         private static float SlotSize = 64.0f;
         private static nint SlotTexture = nint.Zero;
         private static nint SelectedTexture = nint.Zero;
-        public static bool IsVisible { get; set; } = true;
         public static bool EnableRenderForCurrentItem { get; set; } = true;
         public static bool AllowScroll { get; set; } = true;
         public static bool IsItemModelVisible { get; set; } = true;
@@ -54,23 +53,11 @@ namespace Spacebox.Game.GUI
             InventoryUIHelper.SetDefaultIcon(slotTexture, selectedTexture);
             SetSelectedSlot(0);
             Storage.OnDataWasChanged += OnStorageDataWasChanged;
-            var inventory = ToggleManager.Register("panel");
-            inventory.OnStateChanged += s =>
-            {
-                AllowScroll = s;
 
-                if (s)
-                {
-                    ShowItemDescription();
-                }
-            };
             _lastSelectedItem = null;
             _lastSelectedSlotId = -1;
             _lastSelectedCount = 0;
-
         }
-
-
 
         private static void OnStorageDataWasChanged(Storage storage)
         {
@@ -101,7 +88,7 @@ namespace Spacebox.Game.GUI
             id = 0;
             if (SelectedSlot == null) return false;
             if (!SelectedSlot.HasItem) return false;
-            if (InventoryUI.IsVisible) return false;
+            if (UIManager.IsOpen("inventory")) return false;
             if (!(SelectedSlot.Item is BlockItem itemBlock)) return false;
             id = itemBlock.BlockId;
             if (gameMode == GameMode.Survival)
@@ -111,7 +98,6 @@ namespace Spacebox.Game.GUI
 
         public static void ShowItemModel()
         {
-
             bool hadModel = ItemModel != null;
             var lastModel = ItemModel;
             if (SelectedSlot?.HasItem == true && !(SelectedSlot.Item is BlockItem))
@@ -127,8 +113,6 @@ namespace Spacebox.Game.GUI
                     }
                 }
             }
-
-
         }
 
         private static void HideItemModel()
@@ -141,13 +125,15 @@ namespace Spacebox.Game.GUI
 
                 ItemModel = null;
             }
-
         }
 
         private static void UpdateInput()
         {
             if (Debug.IsVisible) return;
-            if (InventoryUI.IsVisible) return;
+            if (UIManager.IsOpen("inventory")) return;
+
+            if (UIManager.IsUIMode && !UIManager.IsOpen("radar")) return;
+
             if (!AllowScroll) return;
             if (Player.CanMove == false) return;
 
@@ -175,7 +161,6 @@ namespace Spacebox.Game.GUI
                 {
                     DropItem(SelectedSlot, false);
                 }
-
             }
             if (Input.IsKeyDown(Keys.D0))
             {
@@ -211,12 +196,10 @@ namespace Spacebox.Game.GUI
                 slot.Clear();
             }
 
-
             if (dropAudio != null)
             {
                 dropAudio.Play();
             }
-
         }
 
         public static void Update()
@@ -240,7 +223,7 @@ namespace Spacebox.Game.GUI
                 }
             }
 
-            if (InventoryUI.IsVisible) return;
+            if (UIManager.IsOpen("inventory")) return;
             UpdateInput();
         }
 
@@ -275,9 +258,9 @@ namespace Spacebox.Game.GUI
             _lastSelectedCount = 0;
             _lastSelectedItem = null;
         }
+
         public static void SetSelectedSlot(short id)
         {
-            // if (!AllowScroll) return;
             SelectedSlotId = id;
             SelectSlot(SelectedSlotId);
             if (wasPlayerOnes)
@@ -288,7 +271,6 @@ namespace Spacebox.Game.GUI
                         scrollAudio.Stop();
                     scrollAudio.Play();
                 }
-
             }
             else
             {
@@ -318,8 +300,6 @@ namespace Spacebox.Game.GUI
                 ShowItemModel();
                 HideItemModel();
 
-
-
                 if (_lastSelectedSlotId != slot ||
                     _lastSelectedItem != SelectedSlot.Item ||
                     _lastSelectedCount != SelectedSlot.Count)
@@ -347,10 +327,7 @@ namespace Spacebox.Game.GUI
                 if (ClientNetwork.Instance != null)
                     ClientNetwork.Instance.SendItemInHand(SelectedSlot);
 
-
                 ShowItemDescription();
-
-
 
                 OnSlotChanged?.Invoke(slot);
             }
@@ -358,13 +335,11 @@ namespace Spacebox.Game.GUI
 
         private static void ShowItemDescription()
         {
-            if (!ToggleManager.IsActiveAndExists("inventory"))
+            if (!UIManager.IsOpen("inventory"))
             {
-
                 if (SelectedSlot.HasItem && SelectedSlot.Item != null)
                 {
                     _time = TimeToHideItemName;
-
 
                     if (SelectedSlot.Item.Description != "")
                     {
@@ -375,7 +350,6 @@ namespace Spacebox.Game.GUI
                     {
                         ItemControlsUI.IsVisible = false;
                     }
-
                 }
                 else
                 {
@@ -393,7 +367,6 @@ namespace Spacebox.Game.GUI
                 if (SelectedSlot != null && SelectedSlot.HasItem && _time > 0)
                     PanelRenderer.DrawItemName(SelectedSlot.Item.Name);
             }
-
         }
 
         public static ItemSlot CurrentSlot() => SelectedSlot;
@@ -418,6 +391,4 @@ namespace Spacebox.Game.GUI
             }
         }
     }
-
-
 }

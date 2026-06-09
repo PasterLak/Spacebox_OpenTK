@@ -42,7 +42,7 @@ public abstract class InteractionDestroyBlock : InteractionMode
     {
         hit.block.OnDestroy?.Invoke(hit);
 
-        // Прямое обращение к чанку из HitInfo: никаких погрешностей float!
+        
         hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
 
         var x = hit.chunk.PositionIndex * Chunk.Size;

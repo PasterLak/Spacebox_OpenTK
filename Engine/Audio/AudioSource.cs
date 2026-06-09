@@ -77,6 +77,11 @@ namespace Engine.Audio
             get => _pitch;
             set
             {
+                if (float.IsNaN(value) || float.IsInfinity(value))
+                {
+                    value = 1.0f;
+                }
+
                 _pitch = MathHelper.Clamp(value, 0.5f, 2.0f);
                 if (!isDisposed)
                 {
@@ -158,7 +163,10 @@ namespace Engine.Audio
 
         public void SetPitchByValue(float value, float minValue, float maxValue, float minPitch = 0.5f, float maxPitch = 2.0f)
         {
-            if (minValue == maxValue) return;
+            if (float.IsNaN(value) || float.IsInfinity(value)) return;
+
+            if (Math.Abs(maxValue - minValue) < 0.0001f) return;
+
             if (minValue > maxValue)
             {
                 var temp = maxValue;

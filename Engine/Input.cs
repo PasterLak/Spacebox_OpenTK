@@ -135,6 +135,11 @@ namespace Engine
             return _lastState.IsAnyKeyDown || Mouse.IsAnyButtonDown;
         }
 
+        public static CursorState GetCursorState()
+        {
+            return _gameWindow.CursorState;
+
+        }
         public static void SetCursorState(CursorState state)
         {
             _gameWindow.CursorState = state;
@@ -165,12 +170,6 @@ namespace Engine
             return new Vector2i(posX, posY);
         }
 
-      
-
-        public static CursorState GetCursorState()
-        {
-            return _gameWindow.CursorState;
-        }
 
 
 

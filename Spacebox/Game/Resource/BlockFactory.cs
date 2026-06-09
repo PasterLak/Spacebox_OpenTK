@@ -11,6 +11,8 @@ namespace Spacebox.Game.Resource
         {
             { "interactive", data => new InteractiveBlock(data) },
             { "crusher", data => new CrusherBlock(data) },
+            { "analyzer", data => new AnalyzerBlock(data) },
+            { "mineral", data => new MineralBlock(data) },
             { "furnace", data => new FurnaceBlock(data) },
             { "disassembler", data => new DisassemblerBlock(data) },
             { "craftingtable", data => new CraftingTableBlock(data) },

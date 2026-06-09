@@ -1,6 +1,9 @@
 using OpenTK.Mathematics;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player.Interactions;
+using System;
+using System.Collections.Generic;
+using Engine;
 
 namespace Spacebox.Game.Player.GameModes;
 
@@ -28,14 +31,13 @@ public class CreativeMode : MovementMode
         player.CollisionEnabled = true;
         player.EnableCameraSway(true);
         player.InertiaController.EnableInertia(true);
-       
     }
 
     public override GameMode GetGameMode()
     {
         return GameMode.Creative;
     }
-    
+
     public override void OnEnable()
     {
         base.OnEnable();
@@ -44,10 +46,14 @@ public class CreativeMode : MovementMode
 
     public override void OnDisable()
     {
-       base.OnDisable();
-        CreativeWindowUI.IsVisible = false;
+        base.OnDisable();
+
+        if (UIManager.IsOpen("creative"))
+        {
+            UIManager.CloseAll();
+        }
+
         CreativeWindowUI.Enabled = false;
-        
     }
 
     public override void Update(LocalAstronaut player)
@@ -58,14 +64,11 @@ public class CreativeMode : MovementMode
 
     public override void HandleInput(LocalAstronaut player)
     {
-       base.HandleInput(player);
+        base.HandleInput(player);
     }
 
     public void MoveAndCollide(Vector3 movement, LocalAstronaut player)
     {
-       base.MoveAndCollide(movement, player);
+        base.MoveAndCollide(movement, player);
     }
-
-   
-
 }

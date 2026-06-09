@@ -291,7 +291,7 @@
                     "Quantity": 6
                 },
                 {
-                    "Item": "cobalt_crystal",
+                    "Item": "energy_cell",
                     "Quantity": 1
                 }
             ]
@@ -339,7 +339,7 @@
                     "Quantity": 1
                 },
                 {
-                    "Item": "titanium_dust",
+                    "Item": "thulium_dust",
                     "Quantity": 1
                 }
             ]
@@ -448,7 +448,7 @@
                 },
                 {
                     "Item": "cobalt_crystal",
-                    "Quantity": 1
+                    "Quantity": 2
                 }
             ]
         },
@@ -463,7 +463,7 @@
                     "Quantity": 1
                 },
                 {
-                    "Item": "cobalt_crystal",
+                    "Item": "thulium_ingot",
                     "Quantity": 4
                 },
                 {
@@ -523,12 +523,12 @@
                     "Quantity": 1
                 },
                 {
-                    "Item": "iron_lens",
-                    "Quantity": 8
-                },
-                {
                     "Item": "microchip",
                     "Quantity": 4
+                },
+                {
+                    "Item": "thulium_lens",
+                    "Quantity": 8
                 }
             ]
         },
@@ -545,6 +545,10 @@
                 {
                     "Item": "microchip",
                     "Quantity": 2
+                },
+                {
+                    "Item": "thulium_lens",
+                    "Quantity": 6
                 }
             ]
         },
@@ -604,6 +608,10 @@
             "Ingredients": [
                 {
                     "Item": "microchip",
+                    "Quantity": 4
+                },
+                {
+                    "Item": "thulium_lens",
                     "Quantity": 4
                 },
                 {
@@ -967,6 +975,22 @@
             "Ingredients": [
                 {
                     "Item": "iron_ingot",
+                    "Quantity": 1
+                }
+            ]
+        },
+        {
+            "Product": {
+                "Item": "thulium_lens",
+                "Quantity": 2
+            },
+            "Ingredients": [
+                {
+                    "Item": "thulium_ingot",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "glass",
                     "Quantity": 1
                 }
             ]

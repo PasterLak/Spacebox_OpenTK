@@ -8,6 +8,7 @@ dotnet publish -c Debug - r win - x64--self - contained true
 dotnet publish -c Release - r win - x64--self - contained true
 dotnet publish -c Release -r win-x64 --self-contained true --output ./publish
 dotnet publish -c Release -r win-x64 --self-contained true --output ./publish
+dotnet publish -c Release -r win-x64 --output ./publish
 
 dotnet publish Spacebox/Spacebox.csproj -c Release -r win-x64 --self-contained true --output ./publish
 dotnet publish Spacebox/Spacebox.csproj -c Release -r win-x64 --self-contained true --output ./publish /p:PublishSingleFile=true /p:PublishTrimmed=true

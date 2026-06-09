@@ -1,15 +1,15 @@
 ﻿using Engine;
 using Engine.Audio;
 using ImGuiNET;
-
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
-
 namespace Spacebox.Game.GUI;
-
 
 public class CreativeWindowCategory
 {
@@ -26,13 +26,11 @@ public class CreativeWindowCategory
         if (name != null)
             Items = GetItems(name);
 
-
         if (Items.Count > 0)
         {
             Storage = GameAssets.CreateCreativeStorage(5, Items);
-            
         }
-        
+
         ItemsCount = Items.Count;
     }
 
@@ -46,40 +44,27 @@ public class CreativeWindowCategory
             .OrderBy(i => i.Id)
             .ToList();
     }
-
-
-
 }
+
 public static class CreativeWindowUI
 {
     private static float SlotSize = 64.0f;
     private static nint SlotTexture = nint.Zero;
 
-    public static bool IsVisible { get; set; } = false;
     public static bool Enabled { get; set; } = false;
 
     private static LocalAstronaut player;
-
     private static Storage storageAll;
-
     private static CreativeWindowCategory[] categories;
-
     private static AudioSource scrollAudio;
-
     private static Storage selectedStorage;
+    static int hovered = -1;
 
     public static void SetDefaultIcon(nint textureId, LocalAstronaut player)
     {
         SlotTexture = textureId;
         CreativeWindowUI.player = player;
         storageAll = GameAssets.CreateCreativeStorage(5, GameAssets.Items.Values.ToList());
-
-        var inventory = ToggleManager.Register("creative");
-        inventory.IsUI = true;
-        inventory.OnStateChanged += s =>
-        {
-            IsVisible = s;
-        };
 
         categories = GetCategories0()
          .Select(t => new CreativeWindowCategory(t))
@@ -88,20 +73,17 @@ public static class CreativeWindowUI
 
         selectedStorage = storageAll;
 
-        scrollAudio = null;
         scrollAudio = new AudioSource(Resources.Get<AudioClip>("scroll"));
     }
 
-    static int hovered = -1;
     private static void HandleHoverAudio(int slotId)
     {
-        if ( !ImGui.IsItemHovered()) return;
+        if (!ImGui.IsItemHovered()) return;
         if (hovered == slotId) return;
 
         hovered = slotId;
         if (scrollAudio.IsPlaying) scrollAudio.Stop();
         scrollAudio.Play();
-
     }
 
     private static Type[] GetCategories0()
@@ -117,7 +99,7 @@ public static class CreativeWindowUI
 
     public static void OnGUI()
     {
-        if (!Enabled || !IsVisible || storageAll == null) return;
+        if (!Enabled || !UIManager.IsOpen("creative") || storageAll == null) return;
 
         ImGuiIOPtr io = ImGui.GetIO();
         float titleBarHeight = ImGui.GetFontSize();
@@ -126,6 +108,7 @@ public static class CreativeWindowUI
         float windowWidth = 6 * SlotSize + padding * 2;
         float windowHeight = 7 * SlotSize + titleBarHeight * 2 + padding;
         Vector2 displaySize = io.DisplaySize;
+
         Vector2 windowPos = new Vector2(
             (displaySize.X - windowWidth) / 8f,
             (displaySize.Y - windowHeight) / 2f
@@ -134,7 +117,6 @@ public static class CreativeWindowUI
         float scrollY = padding * 2 + titleBarHeight;
         float scrollHeight = windowHeight - scrollY - padding;
         float scrollWidth = windowWidth - padding;
-
 
         ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight), ImGuiCond.Always);
@@ -145,20 +127,14 @@ public static class CreativeWindowUI
         ImGui.SetCursorPos(new Vector2(padding, padding));
         ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), "Creative");
 
-
         ImGui.SetCursorPos(new Vector2(padding, scrollY));
 
         ImGui.BeginChild("CreativeScroll2", new Vector2(scrollWidth, scrollHeight), ImGuiChildFlags.None, ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoDecoration);
 
-
         var selected = Theme.Colors.Background.ToUInt();
-
-
         var notselected = new Vector4(0.8f, 0.75f, 0.65f, 1.0f);
-        // var notselected = Theme.Colors.Background;
 
-
-        if (ImGui.BeginTable("CreativeTable2", 1, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit , new Vector2(scrollWidth, scrollHeight)))
+        if (ImGui.BeginTable("CreativeTable2", 1, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit, new Vector2(scrollWidth, scrollHeight)))
         {
             for (int x = 0; x < 1; x++)
                 ImGui.TableSetupColumn($"##columnCreative2_{x}", ImGuiTableColumnFlags.WidthFixed, SlotSize);
@@ -174,18 +150,19 @@ public static class CreativeWindowUI
             {
                 ImGui.PushStyleColor(ImGuiCol.Button, notselected);
             }
+
             if (ImGui.Button(" ALL\nTYPES", new Vector2(SlotSize, SlotSize)))
             {
                 selectedStorage = storageAll;
             }
-            ;
+
             ImGui.PopStyleColor(1);
+
             if (ImGui.IsItemHovered())
             {
                 ImGui.BeginTooltip();
 
                 var total = 0;
-
                 foreach (var cat in categories)
                 {
                     total += cat.ItemsCount;
@@ -195,20 +172,17 @@ public static class CreativeWindowUI
                 ImGui.EndTooltip();
             }
 
-            ImGui.TableNextRow();
             for (int i = 0; i < categories.Length; i++)
             {
-                CreativeWindowCategory? v = categories[i];
+                CreativeWindowCategory v = categories[i];
                 ImGui.TableNextRow();
                 for (int x = 0; x < 1; x++)
                 {
-
                     ImGui.TableSetColumnIndex(x);
 
                     if (SlotTexture == nint.Zero)
                     {
                         if (ImGui.Button("ERR", new Vector2(SlotSize, SlotSize))) { }
-                        ;
                     }
                     else
                     {
@@ -221,23 +195,14 @@ public static class CreativeWindowUI
                             ImGui.PushStyleColor(ImGuiCol.Button, notselected);
                         }
 
-                        // Debug.Log(v.Name.Name);
-                        /* if (ImGui.Button(v.Items.Count.ToString(), new Vector2(SlotSize, SlotSize)))
-                         {
-                             selectedStorage = categories[i].Storage;
-                         };*/
-
-
                         if (selectedStorage == v.Storage)
                         {
                             selected = Theme.Colors.Background.ToUInt();
                             ImGui.PushStyleColor(ImGuiCol.Button, selected);
                             if (ImGui.Button("", new Vector2(SlotSize, SlotSize)))
                             {
-
                                 selectedStorage = categories[i].Storage;
                             }
-                            ;
                         }
                         else
                         {
@@ -245,9 +210,7 @@ public static class CreativeWindowUI
                             {
                                 selectedStorage = categories[i].Storage;
                             }
-                            ;
                         }
-
 
                         var pos = ImGui.GetItemRectMin();
                         var size = new Vector2(SlotSize, SlotSize) * 0.8f;
@@ -256,8 +219,6 @@ public static class CreativeWindowUI
 
                         if (v.Items.Count > 0)
                             dl.AddImage(v.Items[0].IconTextureId, center - size * 0.5f, center + size * 0.5f);
-
-                        // dl.AddImage(v.Items[0].IconTextureId, new Vector2(0, 0), new Vector2(SlotSize, SlotSize));
 
                         if (ImGui.IsItemHovered())
                         {
@@ -268,7 +229,6 @@ public static class CreativeWindowUI
 
                         ImGui.PopStyleColor(1);
                     }
-
                 }
             }
             ImGui.EndTable();
@@ -276,7 +236,6 @@ public static class CreativeWindowUI
 
         ImGui.EndChild();
 
-        // --------------------------
         ImGui.SetCursorPos(new Vector2(padding + padding + SlotSize, scrollY));
         ImGui.BeginChild("CreativeScroll", new Vector2(scrollWidth, scrollHeight), ImGuiChildFlags.None, ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoDecoration);
 
@@ -301,6 +260,7 @@ public static class CreativeWindowUI
                     ImGui.TableSetColumnIndex(x);
                     var slot = selectedStorage.GetSlot(x, y);
                     if (slot == null) continue;
+
                     string id = $"slotCreative_{x}_{y}";
                     if (SlotTexture == nint.Zero)
                     {
@@ -310,6 +270,7 @@ public static class CreativeWindowUI
                     {
                         if (ImGui.ImageButton(id, SlotTexture, new Vector2(SlotSize, SlotSize))) OnSlotClicked(slot);
                     }
+
                     if (slot.HasItem)
                     {
                         var pos = ImGui.GetItemRectMin();
@@ -317,6 +278,7 @@ public static class CreativeWindowUI
                         var center = pos + new Vector2(SlotSize * 0.5f);
                         var dl = ImGui.GetWindowDrawList();
                         dl.AddImage(GameAssets.ItemIcons[slot.Item.Id].Handle, center - size * 0.5f, center + size * 0.5f);
+
                         if (slot.Item.Is<CreativeToolItem>())
                         {
                             const string text = "c";
@@ -324,16 +286,13 @@ public static class CreativeWindowUI
                             dl.AddText(tp + new Vector2(2, 2), ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 1)), text);
                             dl.AddText(tp, ImGui.ColorConvertFloat4ToU32(new Vector4(1, 0.8f, 0, 1)), text);
                         }
+
                         if (slot.Count > 1)
                         {
                             var tp = pos + new Vector2(SlotSize * 0.05f);
                             dl.AddText(tp + new Vector2(2, 2), ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 1)), slot.Count.ToString());
                             dl.AddText(tp, ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1)), slot.Count.ToString());
                         }
-                    }
-                    else
-                    {
-                        //if (ImGui.Button(" " + (slot.Item.Category), new Vector2(SlotSize, SlotSize))) OnSlotClicked(slot);
                     }
 
                     HandleHoverAudio(slot.SlotId);
@@ -348,9 +307,6 @@ public static class CreativeWindowUI
         ImGui.End();
     }
 
-
-
-
     private static void OnSlotClicked(ItemSlot slot)
     {
         if (slot.HasItem)
@@ -359,10 +315,7 @@ public static class CreativeWindowUI
             {
                 if (Input.IsAction("storage_item_quick_transfer"))
                 {
-                    if (player.Panel.TryAddItem(slot.Item, slot.Item.StackSize))
-                    {
-
-                    }
+                    if (player.Panel.TryAddItem(slot.Item, slot.Item.StackSize)) { }
                     else
                     {
                         player.Inventory.TryAddItem(slot.Item, slot.Item.StackSize);
@@ -370,10 +323,7 @@ public static class CreativeWindowUI
                 }
                 else if (Input.IsKey(Keys.LeftControl))
                 {
-                    if (player.Panel.TryAddItem(slot.Item, (byte)(slot.Item.StackSize / 2)))
-                    {
-
-                    }
+                    if (player.Panel.TryAddItem(slot.Item, (byte)(slot.Item.StackSize / 2))) { }
                     else
                     {
                         player.Inventory.TryAddItem(slot.Item, (byte)(slot.Item.StackSize / 2));
@@ -381,20 +331,13 @@ public static class CreativeWindowUI
                 }
                 else
                 {
-                    if (player.Panel.TryAddItem(slot.Item, 1))
-                    {
-
-                    }
+                    if (player.Panel.TryAddItem(slot.Item, 1)) { }
                     else
                     {
                         player.Inventory.TryAddItem(slot.Item, 1);
                     }
                 }
-
             }
-        }
-        else
-        {
         }
     }
 }

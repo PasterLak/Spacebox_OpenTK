@@ -106,7 +106,7 @@ public class InteractionShoot : InteractionMode
         {
             if (player.PowerBar.StatsData.Value < weapon.PowerUsage) return;
 
-            if (canShoot == false && Input.IsAction("shoot") && ToggleManager.OpenedWindowsCount < 1 && !Debug.IsVisible)
+            if (canShoot == false && Input.IsAction("shoot") && !UIManager.IsUIMode)
             {
 
                 if (!TryConsumeAmmo(player))

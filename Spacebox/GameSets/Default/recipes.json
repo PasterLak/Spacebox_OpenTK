@@ -82,6 +82,18 @@
           "Product": { "Item": "titanium_dust", "Quantity": 2 }
         },
         {
+          "DurationSec": 18.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "thulium_ingot", "Quantity": 1 },
+          "Product": { "Item": "thulium_dust", "Quantity": 1 }
+        },
+        {
+          "DurationSec": 18.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "thulium_ore", "Quantity": 1 },
+          "Product": { "Item": "thulium_dust", "Quantity": 2 }
+        },
+        {
           "DurationSec": 17.5,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "uranium_ore", "Quantity": 1 },
@@ -123,7 +135,7 @@
       "Type": "furnace",
       "Recipes": [
         {
-          "DurationSec": 7.0,
+          "DurationSec": 6,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "ice_shard", "Quantity": 2 },
           "Product": { "Item": "water", "Quantity": 1 }
@@ -135,7 +147,7 @@
           "Product": { "Item": "glass", "Quantity": 1 }
         },
         {
-          "DurationSec": 11.5,
+          "DurationSec": 7.5,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "ice_rock", "Quantity": 1 },
           "Product": { "Item": "water", "Quantity": 1 }
@@ -163,6 +175,12 @@
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "titanium_dust", "Quantity": 1 },
           "Product": { "Item": "titanium_ingot", "Quantity": 1 }
+        },
+        {
+          "DurationSec": 13.5,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "thulium_dust", "Quantity": 1 },
+          "Product": { "Item": "thulium_ingot", "Quantity": 1 }
         },
         {
           "DurationSec": 12.5,

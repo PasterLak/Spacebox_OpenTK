@@ -22,11 +22,7 @@ namespace Spacebox.Game.Player
         public bool CameraActive = true;
         public Action<LocalAstronaut> OnMoved { get; set; }
 
-        private bool _canMove = true;
-        public bool CanMove
-        {
-            get => _canMove;
-        }
+        public bool CanMove => _isAlive && !UIManager.IsUIMode;
 
         private bool _isAlive = true;
         public bool IsAlive
@@ -35,7 +31,6 @@ namespace Spacebox.Game.Player
             private set
             {
                 _isAlive = value;
-                _canMove = _isAlive;
             }
         }
 
@@ -72,8 +67,6 @@ namespace Spacebox.Game.Player
             set => _collisionEnabled = value;
         }
 
-        private Toggi _toggle;
-
         private Axes _axes;
         private float _timeToSavePosToStat = 5;
 
@@ -106,12 +99,6 @@ namespace Spacebox.Game.Player
 
             this.Flashlight.AddToggleToManager(this);
             GameMode = GameMode.Creative;
-
-            _toggle = ToggleManager.Register("player");
-            _toggle.OnStateChanged += state =>
-            {
-                if (IsAlive) _canMove = state;
-            };
 
             AddChild(Effects);
 
@@ -206,9 +193,7 @@ namespace Spacebox.Game.Player
             _gameModeBase.HandleInput(this);
 
             ItemSway.EnableSway = CanMove;
-       
             ItemSway.Update(InertiaController.Velocity, Front, Right);
-
             if (!CanMove) return;
 
             if (Input.IsAction("zoom"))
@@ -324,7 +309,6 @@ namespace Spacebox.Game.Player
             FOV = 110;
             HitImage.Hide();
             Settings.ShowInterface = false;
-            PanelUI.IsVisible = false;
             PanelUI.IsItemModelVisible = false;
             Input.ShowCursor();
             Mood.AddMoodRandom(1, 10);
@@ -351,7 +335,6 @@ namespace Spacebox.Game.Player
             var power = PowerBar.StatsData;
             health.Value = health.MaxValue;
             power.Value = power.MaxValue;
-            PanelUI.IsVisible = true;
             PanelUI.IsItemModelVisible = true;
             Input.HideCursor();
             Flashlight.Enabled = true;

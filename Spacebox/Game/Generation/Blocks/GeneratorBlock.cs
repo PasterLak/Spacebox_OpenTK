@@ -14,7 +14,6 @@ namespace Spacebox.Game.Generation.Blocks
             GenerationRate = 50;
             EnableEmission = true;
 
-            
 
         }
         public override void TickElectric()

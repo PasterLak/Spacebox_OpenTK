@@ -18,7 +18,7 @@ namespace Spacebox.Game.Player
         public int ItemsCrafted { get; set; } = 0;
         public int ItemsProcessed { get; set; } = 0;
         public int ItemsPickedUp { get; set; } = 0;
-        public int ItemsСonsumed { get; set; } = 0;
+        public int ItemsConsumed { get; set; } = 0;
 
         public int ShotsFired { get; set; } = 0;
         public int ShotsHit { get; set; } = 0;
@@ -104,7 +104,7 @@ namespace Spacebox.Game.Player
               .Append(BlocksDestroyed).AppendLine(" destroyed");
 
             sb.Append("Items: ").Append(ItemsPickedUp).Append(" picked up, ")
-              .Append(ItemsCrafted).Append(" crafted, ").Append(ItemsСonsumed)
+              .Append(ItemsCrafted).Append(" crafted, ").Append(ItemsConsumed)
               .AppendLine(" consumed");
 
             sb.Append("Health: ").Append(DamageTaken).Append(" damage taken, ")

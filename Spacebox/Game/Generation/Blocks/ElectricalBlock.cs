@@ -1,6 +1,6 @@
 ﻿using Spacebox.Game.Resource;
-
 using System.Runtime.CompilerServices;
+using System;
 
 namespace Spacebox.Game.Generation.Blocks
 {
@@ -18,12 +18,10 @@ namespace Spacebox.Game.Generation.Blocks
         private int eData1;
         private int eData2;
 
-
         public ElectricalBlock(BlockData blockData) : base(blockData)
         {
             CurrentPower = 0;
             EnableEmission = false;
-            // MaxPower = 100;
         }
 
         private bool _isActive;
@@ -33,10 +31,19 @@ namespace Spacebox.Game.Generation.Blocks
             get { return _isActive; }
             set
             {
-                _isActive = value;
-                SetEnableEmission(value);
+                if (_isActive != value)
+                {
+                    _isActive = value;
+                    SetEnableEmission(value);
+                    OnActiveStateChanged(value);
+                }
             }
         }
+
+        protected virtual void OnActiveStateChanged(bool isActive)
+        {
+        }
+
         public short CurrentPower
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -48,6 +55,7 @@ namespace Spacebox.Game.Generation.Blocks
                 eData1 = eData1 & ~(0x3FFF << 0) | v << 0;
             }
         }
+
         public short MaxPower
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -59,6 +67,7 @@ namespace Spacebox.Game.Generation.Blocks
                 eData1 = eData1 & ~(0x3FFF << 14) | v << 14;
             }
         }
+
         public ElectricalFlags EFlags
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -82,6 +91,7 @@ namespace Spacebox.Game.Generation.Blocks
                 eData2 = eData2 & ~(0xFF << 0) | v << 0;
             }
         }
+
         public byte ConsumptionRate
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -106,9 +116,6 @@ namespace Spacebox.Game.Generation.Blocks
                 short remain = (short)(CurrentPower - ConsumptionRate);
                 CurrentPower = remain < 0 ? (short)0 : remain;
             }
-
-            //Debug.Log("electric block energy "  + CurrentPower);
-
         }
 
         public short ProvidePower(short amount)
@@ -124,5 +131,4 @@ namespace Spacebox.Game.Generation.Blocks
             CurrentPower = sum > MaxPower ? MaxPower : sum;
         }
     }
-
 }
