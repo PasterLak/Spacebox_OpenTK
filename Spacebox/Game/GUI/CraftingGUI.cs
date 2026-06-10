@@ -392,12 +392,17 @@ public class CraftingGUI
     static int hovered = -1;
     private static void HandleHoverAudio(int slotId)
     {
+        if (SpaceboxWindow.Instance != null && !SpaceboxWindow.Instance.IsFocused) return;
+   
+        if (!ImGui.IsItemHovered()) return;
         if (hovered == slotId) return;
 
         hovered = slotId;
         if (scrollAudio.IsPlaying) scrollAudio.Stop();
         scrollAudio.Play();
     }
+
+
 
     private static void DrawHoverImage(ImGuiNET.ImDrawListPtr list, CraftingCategory.Data itemData, Vector2 buttonPos, Vector2 offset, float width, float height)
     {

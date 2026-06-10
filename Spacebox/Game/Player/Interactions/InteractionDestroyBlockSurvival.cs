@@ -10,6 +10,7 @@ using Spacebox.Game.Physics;
 using Engine.Light;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.GUI;
 
 public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
 {
@@ -243,7 +244,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             if (BlockMiningEffect != null)
                 BlockMiningEffect.Enabled = false;
             BlockSelector.IsVisible = false;
-            // CenteredText.Hide();
+             CenteredText.Hide();
             if (Input.IsMouseButtonDown(MouseButton.Left))
                 model.SetAnimation(true);
             if (Input.IsMouseButton(MouseButton.Left))

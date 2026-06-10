@@ -75,32 +75,19 @@ public class InteractiveBlock : ElectricalBlock
     private void OnNotHovered()
     {
 
-        //CenteredText.Hide();
+        CenteredText.Hide();
     }
 
     public static void UpdateInteractive(InteractiveBlock block, LocalAstronaut player, ref HitInfo hit)
     {
-        var disSq = Vector3.DistanceSquared(player.Position, hit.hitPosition);
+        block.OnHovered();
 
-        if (disSq > InteractionDistanceSquared)
+        if (!UIManager.IsUIMode)
         {
-            block.OnNotHovered();
-
-
-        }
-        else
-        {
-            block.OnHovered();
-            //Debug.Log($"Hovering! IsUIMode: {UIManager.IsUIMode}, IsUseDown: {Input.IsActionDown("use")}");
-
-            if (!UIManager.IsUIMode)
+            if (Input.IsActionDown("use"))
             {
-                if (Input.IsActionDown("use"))
-                {
-                    block.chunk = hit.chunk;
-                    block.Use(player, ref  hit);
-
-                }
+                block.chunk = hit.chunk;
+                block.Use(player, ref hit);
             }
         }
     }

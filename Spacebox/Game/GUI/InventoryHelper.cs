@@ -252,6 +252,7 @@ namespace Spacebox.Game.GUI
 
         public static void ShowTooltip(ItemSlot slot, bool showStackSize, bool showDescription, bool showId = false)
         {
+            if (SpaceboxWindow.Instance != null && !SpaceboxWindow.Instance.IsFocused) return;
             if (IsDragging) return;
 
             if (ImGui.IsItemHovered() && !slot.HasItem && slot.Name != "")

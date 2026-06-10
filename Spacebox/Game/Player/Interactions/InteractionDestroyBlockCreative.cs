@@ -10,6 +10,7 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
+using Spacebox.GUI;
 
 namespace Spacebox.Game.Player.Interactions;
 
@@ -87,7 +88,7 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
         {
             AImedBlockElement.AimedBlock = null;
             BlockSelector.IsVisible = false;
-            //CenteredText.Hide();
+            CenteredText.Hide();
             if (Input.IsActionDown("block_destroy"))
                 model.SetAnimation(true);
         }

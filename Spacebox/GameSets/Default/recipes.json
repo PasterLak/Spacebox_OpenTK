@@ -152,6 +152,12 @@
           "Ingredient": { "Item": "ice_rock", "Quantity": 1 },
           "Product": { "Item": "water", "Quantity": 1 }
         },
+         {
+          "DurationSec": 13.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "dense_ice_rock", "Quantity": 1 },
+          "Product": { "Item": "compressed_methane", "Quantity": 1 }
+        },
         {
           "DurationSec": 9.0,
           "PowerPerTickRequared": 5,
@@ -237,7 +243,7 @@
           "Product": { "Item": "plastic", "Quantity": 1 }
         },
         {
-          "DurationSec": 12.5,
+          "DurationSec": 6.5,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "methane_ice_shard", "Quantity": 1 },
           "Product": { "Item": "compressed_methane", "Quantity": 1 }

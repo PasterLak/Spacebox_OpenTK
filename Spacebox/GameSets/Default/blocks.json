@@ -348,13 +348,15 @@
     },
     {
         "ID": "analyzer",
-        "Name": "Analyzer",
+        "Name": "Ore scanner",
         "Type": "analyzer",
-     
+        "Description": "Scans asteroid to reveal its composition",
         "Category": "resources",
-        "Sides": "bottom",
+         "Sides": "electricalSide",
+        "SidesOff": "electricalSideOff",
         "Up": "analyzer",
-        "Down": "bottom",
+        "Down": "generatorDown",
+        "DownOff": "generatorDownOff",
         
         "UpOff": "analyzerOff",
        

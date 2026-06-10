@@ -78,6 +78,8 @@ public static class CreativeWindowUI
 
     private static void HandleHoverAudio(int slotId)
     {
+        if (SpaceboxWindow.Instance != null && !SpaceboxWindow.Instance.IsFocused) return;
+      
         if (!ImGui.IsItemHovered()) return;
         if (hovered == slotId) return;
 

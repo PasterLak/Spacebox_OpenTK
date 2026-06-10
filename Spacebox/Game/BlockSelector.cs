@@ -286,10 +286,7 @@ public class BlockSelector : Node3D
             _magnetTextTimer -= Time.Delta;
             CenteredText.SetText($"Magnet: {(EnableMagnet? "on" : "off")}");
         }
-        else
-        {
-            CenteredText.Hide();
-        }
+        
     }
 
     private void UpdateMagnetVisuals()

@@ -64,8 +64,8 @@ namespace Spacebox.Game.GUI.Menu
             GameMenu.DrawElementColors(ImGui.GetCursorPos(), new Vector2(contentWidth, infoHeight), windowSize.Y, 0.004f);
             if (menu.selectedWorld != null)
             {
-                ImGui.Text(" Name: " + menu.selectedWorld.Name);
-                ImGui.Text(" Author: " + menu.selectedWorld.Author + " Game mode: " + menu.selectedWorld.GameMode);
+                ImGui.Text(" Game mode: " + menu.selectedWorld.GameMode);
+                ImGui.Text(" Author: " + menu.selectedWorld.Author);
 
                 var mod = menu.GetModById(menu.selectedWorld.ModId);
                 string version = "uknown version";
