@@ -1,5 +1,4 @@
-﻿
-using Spacebox.Game.Resource;
+﻿using Spacebox.Game.Resource;
 using Engine;
 using Spacebox.Game.Physics;
 
@@ -7,7 +6,6 @@ namespace Spacebox.Game.Generation.Blocks;
 
 public class ResourceProcessingBlock : InteractiveBlock
 {
-
     protected Recipe Recipe;
 
     public Storage InputStorage { get; private set; } = new Storage(1, 1);
@@ -16,7 +14,7 @@ public class ResourceProcessingBlock : InteractiveBlock
     public float Efficiency = 1f;
     private float TestingCoefficient = 1f;
 
-    public int ProcessedItems { get;  set; } = 0;
+    public int ProcessedItems { get; set; } = 0;
 
     public Action<ResourceProcessingBlock> OnCrafted;
     private bool _isRunning = false;
@@ -32,7 +30,6 @@ public class ResourceProcessingBlock : InteractiveBlock
     }
 
     public TickTask Task { get; private set; }
-
 
     private readonly string blockType;
 
@@ -52,13 +49,14 @@ public class ResourceProcessingBlock : InteractiveBlock
         storage.SetSlot(0, 0, item, count);
     }
 
-    private short craftTicks = 0;
-    private short currentTick = 0;
+    public short CraftTicks { get; set; } = 0;
+    public short CurrentTick { get; set; } = 0;
+
     public int GetTaskProgress()
     {
-        if (craftTicks == 0 || currentTick == 0) return 0;
+        if (CraftTicks == 0 || CurrentTick == 0) return 0;
 
-        return (int)(currentTick / (float)craftTicks * 100f);
+        return (int)(CurrentTick / (float)CraftTicks * 100f);
     }
 
     public void TryStart()
@@ -116,35 +114,27 @@ public class ResourceProcessingBlock : InteractiveBlock
         {
             if (!ValidateInput(InputStorage.GetSlot(0, 0), Recipe))
             {
-
                 StopTask();
                 return;
             }
             if (!ValidateOutput(OutputStorage.GetSlot(0, 0), Recipe))
             {
-
                 StopTask();
-
             }
         }
-
-
     }
 
     public void StopTask()
     {
         if (Task != null)
         {
-
             Task.Stop();
-
             Task = null;
-            currentTick = 0;
-            craftTicks = 0;
+            CurrentTick = 0;
+            CraftTicks = 0;
             IsRunning = false;
         }
     }
-
 
     public bool HasInput()
     {
@@ -177,7 +167,6 @@ public class ResourceProcessingBlock : InteractiveBlock
         {
             storage.TryAddItem(fuelItem.Item, fuelItem.Count);
         }
-
     }
 
     public int GetTicksWithEfficiency(int basicTicks)
@@ -192,13 +181,10 @@ public class ResourceProcessingBlock : InteractiveBlock
         if (!HasInput()) return false;
         if (IsRunning) return false;
 
-        if (GameAssets.TryGetRecipe(blockType, InputStorage.GetSlot(0, 0).Item.Id, out Recipe))
+        if (!GameAssets.TryGetRecipe(blockType, InputStorage.GetSlot(0, 0).Item.Id, out Recipe))
         {
-
+            return false;
         }
-        else return false;
-
-
 
         if (Recipe == null) return false;
 
@@ -213,14 +199,15 @@ public class ResourceProcessingBlock : InteractiveBlock
             return false;
         }
 
+        StopTask();
+
         IsRunning = true;
 
         var ticksRequared = GetTicksWithEfficiency(Recipe.RequiredTicks);
-        craftTicks = (short)ticksRequared;
-        currentTick = 0;
+        CraftTicks = (short)ticksRequared;
+        CurrentTick = 0;
 
         task = new ProcessResourceTask(ticksRequared, this);
-        StopTask();
         Task = task;
         task.OnTick += OnTick;
         return true;
@@ -230,12 +217,11 @@ public class ResourceProcessingBlock : InteractiveBlock
     {
         if (!IsRunning) return;
 
-        currentTick++;
+        CurrentTick++;
 
-        if (currentTick >= craftTicks)
+        if (CurrentTick >= CraftTicks)
         {
-
-            currentTick = 0;
+            CurrentTick = 0;
         }
     }
 
@@ -248,7 +234,6 @@ public class ResourceProcessingBlock : InteractiveBlock
     {
         if (!outSlot.HasItem) return true;
 
-
         if (outSlot.Item.Id != recipe.Product.Item.Id)
             return false;
 
@@ -260,18 +245,17 @@ public class ResourceProcessingBlock : InteractiveBlock
 
     private void Reset()
     {
-        //Recipe = null;
-        currentTick = 0;
-        craftTicks = 0;
+        CurrentTick = 0;
+        CraftTicks = 0;
         IsRunning = false;
     }
+
     public void Craft()
     {
-
         if (Recipe == null)
         {
-            craftTicks = 0;
-            currentTick = 0;
+            CraftTicks = 0;
+            CurrentTick = 0;
             IsRunning = false;
             return;
         }
@@ -282,15 +266,15 @@ public class ResourceProcessingBlock : InteractiveBlock
         if (!ValidateInput(inSlot, Recipe))
         {
             IsRunning = false;
-            craftTicks = 0;
-            currentTick = 0;
+            CraftTicks = 0;
+            CurrentTick = 0;
             return;
         }
         if (!ValidateOutput(outSlot, Recipe))
         {
             IsRunning = false;
-            craftTicks = 0;
-            currentTick = 0;
+            CraftTicks = 0;
+            CurrentTick = 0;
             return;
         }
 
@@ -299,26 +283,23 @@ public class ResourceProcessingBlock : InteractiveBlock
         if (outSlot.HasItem)
         {
             outSlot.Count += Recipe.Product.Quantity;
-            ProcessedItems += Recipe.Product.Quantity; 
+            ProcessedItems += Recipe.Product.Quantity;
         }
         else
         {
-            if(OutputStorage.TryAddItem(Recipe.Product.Item, Recipe.Product.Quantity))
+            if (OutputStorage.TryAddItem(Recipe.Product.Item, Recipe.Product.Quantity))
             {
-                ProcessedItems+= Recipe.Product.Quantity;
+                ProcessedItems += Recipe.Product.Quantity;
             }
         }
+
         OnCrafted?.Invoke(this);
+
         if (!HasInput())
         {
-            craftTicks = 0;
-            currentTick = 0;
+            CraftTicks = 0;
+            CurrentTick = 0;
             IsRunning = false;
-            // Task.Stop();
-
         }
-
-
     }
-
 }

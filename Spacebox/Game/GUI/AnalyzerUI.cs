@@ -6,6 +6,8 @@ using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Resource;
+using System;
+using System.Linq;
 using System.Numerics;
 
 namespace Spacebox.Game.GUI
@@ -128,6 +130,7 @@ namespace Spacebox.Game.GUI
                             {
                                 analyzerBlock.IsScanning = true;
                                 analyzerBlock.ScanStartAbsoluteTick = currentAbsoluteTick;
+                                if (analyzerBlock.chunk != null) analyzerBlock.chunk.IsModified = true;
                             }
                         }
                         else if (analyzerBlock.IsScanning)
@@ -157,6 +160,7 @@ namespace Spacebox.Game.GUI
                                 analyzerBlock.IsScanning = true;
                                 analyzerBlock.ScanStartAbsoluteTick = currentAbsoluteTick;
                                 analyzerBlock.CachedMinerals.Clear();
+                                if (analyzerBlock.chunk != null) analyzerBlock.chunk.IsModified = true;
                             }
 
                             ImGui.SetCursorPosY(ImGui.GetCursorPosY() + padding * 0.5f);
@@ -233,6 +237,11 @@ namespace Spacebox.Game.GUI
         {
             analyzerBlock.IsScanning = false;
             analyzerBlock.ScanComplete = true;
+
+            if (analyzerBlock.chunk != null)
+            {
+                analyzerBlock.chunk.IsModified = true;
+            }
 
             analyzerBlock.CachedMass = currentEntity.Mass;
 

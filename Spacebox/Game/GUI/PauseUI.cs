@@ -70,8 +70,8 @@ namespace Spacebox.Game.GUI
             float textY = displaySize.Y * 0.15f + offset.Y;
             Vector2 pos = new Vector2(textX, textY);
 
-            uint textColor = ImGui.GetColorU32(new Vector4(1f, 1f, 0f, 1f));
-            uint shadowColor1 = ImGui.GetColorU32(new Vector4(80 / 255f, 60 / 255f, 10 / 255f, 0.8f));
+            uint textColor = ImGui.GetColorU32(new Vector4(250/255f, 186/255f, 0f, 1f));
+            uint shadowColor1 = ImGui.GetColorU32(new Vector4(86 / 255f, 69 / 255f, 17 / 255f, 0.8f));
             uint shadowColor2 = ImGui.GetColorU32(new Vector4(40 / 255f, 30 / 255f, 5 / 255f, 0.8f));
 
             float shadowOffset1 = 4f * scale;
