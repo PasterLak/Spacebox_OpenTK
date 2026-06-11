@@ -11,8 +11,8 @@ namespace Spacebox.Game.Generation.Blocks
         public bool IsScanning = false;
         public bool ScanComplete = false;
         public long ScanStartAbsoluteTick = 0;
-        public int ScanDurationTicks = 600;
-        public float DeviationPercentage = 15f;
+        public float TimePer1000Blocks = 0.5f;
+        public float DeviationPercentage = 5f;
 
         public ulong CachedMass = 0;
         public Dictionary<short, int> CachedMinerals = new Dictionary<short, int>();
@@ -42,7 +42,6 @@ namespace Spacebox.Game.Generation.Blocks
             {
                 IsScanning = false;
                 ScanStartAbsoluteTick = 0;
-
             }
         }
     }

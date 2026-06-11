@@ -222,25 +222,13 @@
         },
         {
             "Product": {
-                "Item": "basic_titanium_crate",
-                "Quantity": 1
-            },
-            "Ingredients": [
-                {
-                    "Item": "titanium_panels",
-                    "Quantity": 3
-                }
-            ]
-        },
-        {
-            "Product": {
                 "Item": "safe",
                 "Quantity": 1
             },
             "Ingredients": [
                 {
                     "Item": "titanium_panels",
-                    "Quantity": 6
+                    "Quantity": 8
                 },
                 {
                     "Item": "plastic",
@@ -447,7 +435,7 @@
                     "Quantity": 1
                 },
                 {
-                    "Item": "cobalt_crystal",
+                    "Item": "energy_cell",
                     "Quantity": 2
                 }
             ]
@@ -462,13 +450,14 @@
                     "Item": "furnace",
                     "Quantity": 1
                 },
-                {
-                    "Item": "thulium_ingot",
-                    "Quantity": 4
-                },
+               
                 {
                     "Item": "iron_panels",
                     "Quantity": 4
+                },
+                 {
+                    "Item": "thulium_energy_cell",
+                    "Quantity": 6
                 }
             ]
         },
@@ -482,13 +471,14 @@
                     "Item": "basic_machine",
                     "Quantity": 1
                 },
-                {
-                    "Item": "cobalt_crystal",
-                    "Quantity": 2
-                },
+               
                 {
                     "Item": "iron_drill_bit",
                     "Quantity": 4
+                },
+                 {
+                    "Item": "energy_cell",
+                    "Quantity": 2
                 }
             ]
         },
@@ -503,12 +493,17 @@
                     "Quantity": 1
                 },
                 {
+                    "Item": "titanium_drill_bit",
+                    "Quantity": 4
+                },
+                {
                     "Item": "microchip",
                     "Quantity": 2
                 },
+                
                 {
-                    "Item": "titanium_drill_bit",
-                    "Quantity": 4
+                    "Item": "thulium_energy_cell",
+                    "Quantity": 2
                 }
             ]
         },
@@ -565,6 +560,10 @@
                 {
                     "Item": "microchip",
                     "Quantity": 2
+                },
+                {
+                    "Item": "energy_cell",
+                    "Quantity": 1
                 }
             ]
         },
@@ -909,6 +908,22 @@
         },
         {
             "Product": {
+                "Item": "thulium_energy_cell",
+                "Quantity": 2
+            },
+            "Ingredients": [
+                {
+                    "Item": "aluminium_ingot",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "thulium_lens",
+                    "Quantity": 1
+                }
+            ]
+        },
+        {
+            "Product": {
                 "Item": "uranium_rods",
                 "Quantity": 2
             },
@@ -1018,13 +1033,14 @@
             },
             "Ingredients": [
                 {
-                    "Item": "aluminium_ingot",
+                    "Item": "aluminium_drill_bit",
                     "Quantity": 1
                 },
                 {
-                    "Item": "aluminium_drill_bit",
+                    "Item": "aluminium_ingot",
                     "Quantity": 1
                 }
+                
             ]
         },
         {
@@ -1037,13 +1053,18 @@
                     "Item": "aluminium_drill",
                     "Quantity": 1
                 },
+                 {
+                    "Item": "aluminium_drill_bit",
+                    "Quantity": 1
+                },
                 {
                     "Item": "cobalt_crystal",
                     "Quantity": 4
                 },
-                {
-                    "Item": "aluminium_drill_bit",
-                    "Quantity": 1
+               
+                 {
+                    "Item": "energy_cell",
+                    "Quantity": 2
                 }
             ]
         },
@@ -1057,14 +1078,15 @@
                     "Item": "cobalt_drill",
                     "Quantity": 1
                 },
+                 {
+                    "Item": "iron_drill_bit",
+                    "Quantity": 1
+                },
                 {
                     "Item": "iron_ingot",
                     "Quantity": 4
                 },
-                {
-                    "Item": "iron_drill_bit",
-                    "Quantity": 1
-                },
+               
                 {
                     "Item": "energy_cell",
                     "Quantity": 2
@@ -1086,7 +1108,7 @@
                     "Quantity": 3
                 },
                 {
-                    "Item": "energy_cell",
+                    "Item": "thulium_energy_cell",
                     "Quantity": 4
                 }
             ]
@@ -1183,18 +1205,14 @@
             "Ingredients": [
                 {
                     "Item": "iron_ingot",
-                    "Quantity": 2
+                    "Quantity": 4
                 },
                 {
                     "Item": "uranium_ingot",
                     "Quantity": 3
                 },
                 {
-                    "Item": "iron_lens",
-                    "Quantity": 4
-                },
-                {
-                    "Item": "energy_cell",
+                    "Item": "thulium_energy_cell",
                     "Quantity": 8
                 }
             ]

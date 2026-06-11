@@ -66,7 +66,7 @@ namespace Engine.Graphics
 
             
             g.AMBIENT = Lighting.AmbientColor;
-            g.FOG_DENSITY = Lighting.FogDensity;
+            g.FOG_DENSITY = Lighting.FogDensityAsShaderValue;
             g.FOG = Lighting.FogColor;
             g.RANDOM01 = _random.NextSingle();
             g.CAMERA_POS = cam != null ?

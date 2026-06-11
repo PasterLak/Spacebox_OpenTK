@@ -71,11 +71,14 @@ namespace Engine.UI
             if (ImGui.ColorEdit3("Fog Color", ref fogCol))
                 Lighting.FogColor = fogCol.ToOpenTKVector3();
 
-            int fogDenSlider = (int)(Lighting.FogDensity * 10000);
+            var visibilitySlider = Lighting.FogDensity;
 
-            if (ImGui.SliderInt("Fog Density", ref fogDenSlider, 0, 100))
+             visibilitySlider = Math.Clamp(visibilitySlider, Lighting.FogDensityMin, Lighting.FogDensityMax);
+
+            if (ImGui.SliderInt("Fog Visibility", ref visibilitySlider, Lighting.FogDensityMin, Lighting.FogDensityMax))
             {
-                Lighting.FogDensity = fogDenSlider / 10000f;
+             
+                Lighting.FogDensity = ( visibilitySlider);
             }
 
             ImGui.Separator();

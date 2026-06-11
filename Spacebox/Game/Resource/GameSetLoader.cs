@@ -1050,7 +1050,7 @@ public static class GameSetLoader
     {
         public Color3Byte AmbientColor { get; set; } = Color3Byte.White;
         public Color3Byte FogColor { get; set; } = Color3Byte.Black;
-        public float FogDensity { get; set; } = 0.05f;
+        public int FogDensity { get; set; } = 10;
     }
 
     public class TextureConfig

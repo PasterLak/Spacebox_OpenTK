@@ -533,10 +533,19 @@
     },
     {
         "ID": "energy_cell",
-        "Name": "Energy Cell",
+        "Name": "Cobalt Energy Cell",
         "Description": "A cell that stores energy for various devices",
         "Category": "items",
         "Sprite": "energyCells",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+    {
+        "ID": "thulium_energy_cell",
+        "Name": "Thulium Energy Cell",
+        "Description": "A cell that stores energy for various devices",
+        "Category": "items",
+        "Sprite": "ThuliumEnergyCells",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },

@@ -624,7 +624,7 @@
         "ID": "basic_titanium_crate",
         "Name": "Basic Titanium Crate",
         "Type": "storage",
-        "Category": "other",
+        "Category": "",
         "Sides": "aluChestSide",
         "Up": "aluChestTop",
         "Down": "aluChestTop",
@@ -645,6 +645,8 @@
         "Type": "storage",
         "Category": "other",
         "Sides": "safe_side",
+        "Up": "safe_top",
+        "Down": "safe_top",
         "Forward": "safe_face",
         "StorageSize": {
             "x": 3,

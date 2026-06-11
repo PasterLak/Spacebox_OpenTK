@@ -43,7 +43,7 @@ namespace Spacebox.Game.GUI.Menu
 
         public GameMenu()
         {
-            Click1 = new AudioSource(Resources.Load<AudioClip>("Resources/Audio/UI/click2.ogg", true));
+            Click1 = new AudioSource(Resources.Load<AudioClip>("Resources/Audio/UI/click1.ogg", true));
             WorldInfoSaver.LoadWorlds(worlds);
             GameSetsUnpacker.UnpackMods(true);
             LoadGameSets();

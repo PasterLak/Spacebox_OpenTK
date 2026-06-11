@@ -24,6 +24,7 @@ public class Projectile : Node3D
     private byte currentRicochets = 0;
     private byte currentDamage = 0;
     private byte blocksDestroyedThisShot = 0;
+    private bool isHitWritten = false;
 
     private LineRenderer lineRenderer;
     private Ray ray;
@@ -268,11 +269,11 @@ public class Projectile : Node3D
                     }
                     OnDespawn?.Invoke(this);
                 }
-          
+
             }
             else
             {
-  
+
                 ProjectileHitEffectsManager.Instance.PlayHitEffect(effectPos, Parameters.ID);
 
                 Enabled = false;
@@ -321,7 +322,11 @@ public class Projectile : Node3D
     {
         if (astronaut != null)
         {
-            astronaut.PlayerStatistics.ShotsHit++;
+            if (!isHitWritten)
+            {
+                isHitWritten = true;
+                astronaut.PlayerStatistics.ShotsHit++;
+            }
         }
         PlayHitAudio(hitPos);
     }

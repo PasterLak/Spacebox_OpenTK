@@ -242,7 +242,9 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     {
         base.OnGUI();
         ColorOverlay.OnGUI();
-        CenteredText.OnGUI();
+
+        if(!UIManager.IsUIMode)
+            CenteredText.OnGUI();
 
         radarWindow.OnGUI();
         ResourceProcessingGUI.OnGUI();

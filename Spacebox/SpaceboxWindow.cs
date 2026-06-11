@@ -1,5 +1,6 @@
 ﻿using Engine;
 using Engine.Audio;
+using Engine.InputPro;
 using Engine.PostProcessing;
 using Engine.SceneManagement;
 using Engine.Utils;
@@ -54,6 +55,15 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
         base.OnUnload();
     }
 
+    protected override void OnUpdateFrame(FrameEventArgs e)
+    {
+        base.OnUpdateFrame(e);
+
+        if (Input.IsKeyDown(Keys.F12))
+        {
+            _doScreenshot = true;
+        }
+    }
     protected override void OnRegisterScenes()
     {
         SceneManager.Register<MenuScene>();
@@ -73,8 +83,15 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
 
     protected override void OnSetupInput()
     {
-        InputManager0.AddAction("screenshot", Keys.F12, true);
-        InputManager0.RegisterCallback("screenshot", () => { _doScreenshot = true; });
+       // InputManager0.AddAction("screenshot", Keys.F12, true);
+        //InputManager0.RegisterCallback("screenshot", () => { _doScreenshot = true; });
+
+        return;
+        var action = InputManager.Instance.AddAction("screenshot", "");
+        var binding = new KeyBinding(Keys.F12);
+        action.Subscribe(InputEventType.Pressed, () => { _doScreenshot = true; });
+        action.AddBinding(binding);
+        
     }
 
     protected override void OnSetupPostProcessing(PostProcessManager processManager)
