@@ -4,7 +4,7 @@
       "Type": "crusher",
       "Recipes": [
         {
-          "DurationSecSec": 5.0,
+          "DurationSec": 5.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "ice_rock", "Quantity": 1 },
           "Product": { "Item": "ice_shard", "Quantity": 3 }
@@ -100,10 +100,22 @@
           "Product": { "Item": "uranium_dust", "Quantity": 2 }
         },
         {
-          "DurationSec": 17.5,
+          "DurationSec": 35,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "uranium_ingot", "Quantity": 1 },
           "Product": { "Item": "uranium_dust", "Quantity": 1 }
+        },
+         {
+          "DurationSec": 25,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "obscurium_ingot", "Quantity": 1 },
+          "Product": { "Item": "obscurium_dust", "Quantity": 1 }
+        },
+        {
+          "DurationSec": 16.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "obscurium_ore", "Quantity": 1 },
+          "Product": { "Item": "obscurium_dust", "Quantity": 2 }
         },
         {
           "DurationSec": 10.0,
@@ -128,6 +140,12 @@
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "plastic", "Quantity": 1 },
           "Product": { "Item": "polymer_pellets", "Quantity": 4 }
+        },
+        {
+          "DurationSec": 1.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "glass", "Quantity": 1 },
+          "Product": { "Item": "sand", "Quantity": 1 }
         }
       ]
     },
@@ -225,9 +243,9 @@
           "Product": { "Item": "uranium_ingot", "Quantity": 1 }
         },
         {
-          "DurationSec": 60.0,
+          "DurationSec": 40.0,
           "PowerPerTickRequared": 5,
-          "Ingredient": { "Item": "obscurium_ore", "Quantity": 1 },
+          "Ingredient": { "Item": "obscurium_dust", "Quantity": 1 },
           "Product": { "Item": "obscurium_ingot", "Quantity": 1 }
         },
         {

@@ -113,27 +113,13 @@ namespace Spacebox.Game.GUI
         {
             if (!ShouldRenderTags()) return;
 
-            SetupWindow();
             FilterVisibleTags();
             RenderTags();
-            ImGui.End();
         }
 
         private bool ShouldRenderTags()
         {
             return Camera.Main != null && _activeTags.Count > 0 && Settings.ShowInterface;
-        }
-
-        private void SetupWindow()
-        {
-            ImGui.SetNextWindowPos(System.Numerics.Vector2.Zero, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(ImGui.GetIO().DisplaySize);
-            ImGui.Begin("TagWindow",
-                ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground |
-                ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize |
-                ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs |
-                ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNavFocus |
-                ImGuiWindowFlags.NoBringToFrontOnFocus);
         }
 
         private void FilterVisibleTags()
@@ -156,7 +142,8 @@ namespace Spacebox.Game.GUI
         private void RenderTags()
         {
             var camera = Camera.Main;
-            var drawList = ImGui.GetWindowDrawList();
+
+            var drawList = ImGui.GetBackgroundDrawList();
 
             foreach (var tag in _visibleTags)
             {
@@ -169,7 +156,7 @@ namespace Spacebox.Game.GUI
 
                 if (distanceSquared > Settings.ENTITY_SEARCH_RADIUS * Settings.ENTITY_SEARCH_RADIUS)
                 {
-                   continue;
+                    continue;
                 }
 
                 RenderTag(tag, screenPos, drawList, camera, distanceSquared);
@@ -185,13 +172,12 @@ namespace Spacebox.Game.GUI
         private void RenderTag(Tag tag, Vector2 screenPos, ImDrawListPtr drawList, Camera camera, float distanceSquared)
         {
             var textSize = ImGui.CalcTextSize(tag.Text);
-            var cursorPos = tag.GetTextPosition(screenPos.ToSystemVector2(), textSize);
 
-            ImGui.SetCursorPos(cursorPos);
+            var screenCoords = tag.GetTextPosition(screenPos.ToSystemVector2(), textSize);
 
             var fontSize = Tag.CalculateFontSize(distanceSquared);
 
-            drawList.AddText(_font, fontSize, ImGui.GetCursorPos(), tag.ColorUint, tag.Text);
+            drawList.AddText(_font, fontSize, screenCoords, tag.ColorUint, tag.Text);
         }
 
         private void OnResized(Vector2 screenSize)

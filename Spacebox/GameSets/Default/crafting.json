@@ -901,7 +901,7 @@
                     "Quantity": 1
                 },
                 {
-                    "Item": "cobalt_crystal",
+                    "Item": "cobalt_ingot",
                     "Quantity": 1
                 }
             ]
@@ -977,7 +977,7 @@
             },
             "Ingredients": [
                 {
-                    "Item": "cobalt_crystal",
+                    "Item": "cobalt_ingot",
                     "Quantity": 1
                 }
             ]
@@ -1018,11 +1018,11 @@
             "Ingredients": [
                 {
                     "Item": "aluminium_ingot",
-                    "Quantity": 1
+                    "Quantity": 2
                 },
                 {
-                    "Item": "cobalt_crystal",
-                    "Quantity": 2
+                    "Item": "cobalt_ingot",
+                    "Quantity": 1
                 }
             ]
         },
@@ -1058,8 +1058,8 @@
                     "Quantity": 1
                 },
                 {
-                    "Item": "cobalt_crystal",
-                    "Quantity": 4
+                    "Item": "cobalt_ingot",
+                    "Quantity": 2
                 },
                
                  {
@@ -1089,7 +1089,7 @@
                
                 {
                     "Item": "energy_cell",
-                    "Quantity": 2
+                    "Quantity": 4
                 }
             ]
         },
@@ -1109,7 +1109,7 @@
                 },
                 {
                     "Item": "thulium_energy_cell",
-                    "Quantity": 4
+                    "Quantity": 6
                 }
             ]
         },

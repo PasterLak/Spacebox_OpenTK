@@ -328,6 +328,13 @@
         }
     },
     {
+        "ID": "obscurium_dust",
+        "Name": "Obscurium Dust",
+        "Sprite": "obscuriumDust",
+        "MaxStack": 64,
+        "ModelDepth": 2
+    },
+    {
         "ID": "cobalt_lens",
         "Name": "Cobalt Lens",
         "Description": "A lens made of cobalt glass",
@@ -394,7 +401,7 @@
         "Name": "Cobalt Crystal",
         "Description": "A shiny cobalt crystal",
         "Sprite": "cobaltDiamond",
-        "Category": "items",
+        "Category": "",
         "MaxStack": 64,
         "ModelDepth": 1.5
     },
