@@ -68,9 +68,12 @@ public class ResourceProcessingBlock : InteractiveBlock
                 if (TryStartTask(out var t))
                 {
                     TickTaskManager.AddTask(t);
+                    
                 }
             }
+            
         }
+       
     }
 
     public ResourceProcessingBlock(BlockData blockData) : base(blockData)
@@ -243,6 +246,23 @@ public class ResourceProcessingBlock : InteractiveBlock
         return true;
     }
 
+
+    public void RestoreTaskProgress(short savedTicks)
+    {
+   
+        if (TryStartTask(out var task))
+        {
+
+            task.SetCurrentTick(savedTicks);
+
+  
+            this.CurrentTick = savedTicks;
+
+            this.IsRunning = true;
+
+            TickTaskManager.AddTask(task);
+        }
+    }
     private void Reset()
     {
         CurrentTick = 0;

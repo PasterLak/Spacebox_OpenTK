@@ -82,7 +82,6 @@
 	  <Folder Include="GameSets\Default\Generation\Loot\" />
 	  <Folder Include="GameSets\Default\AI\" />
 	  <Folder Include="GameSets\Default\Models\" />
-	  <Folder Include="GameSets\Default\Projectiles\" />
 	</ItemGroup>
 
 

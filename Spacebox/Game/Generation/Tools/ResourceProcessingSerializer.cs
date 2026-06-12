@@ -72,12 +72,20 @@ namespace Spacebox.Game.Generation.Tools
                 if (item != null) processingBlock.SetStorageAfterLoadFromNBT(item, (byte)count, processingBlock.FuelStorage);
             }
 
-            processingBlock.TryStart();
-
+            short ticks = 0;
             if (tag.TryGetValue<ShortTag>("current_tick", out var currentTickTag))
             {
-                processingBlock.CurrentTick = currentTickTag.Value;
+                ticks = currentTickTag.Value;
+                
+
             }
+
+            if (ticks > 0)
+            {
+                processingBlock.RestoreTaskProgress(ticks);
+            }
+            else
+            processingBlock.TryStart();
         }
     }
 }

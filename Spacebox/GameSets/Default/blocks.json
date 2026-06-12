@@ -123,7 +123,7 @@
         "Type": "mineral",
         "Description": "A radioactive ore used for advanced power generation",
         "Sides": "greenOre",
-        "PowerToDrill": 3,
+        "PowerToDrill": 4,
         "Mass": 1,
         "Durability": 14
     },
@@ -317,8 +317,11 @@
         "Type": "crusher",
         "Category": "resources",
         "Sides": "crusherSide",
+        "SidesOff": "crusherSideOff",
         "Up": "crusherTop",
+        "UpOff": "crusherTop",
         "Down": "bottom",
+        "DownOff": "bottom",
          "FrontDirection": {
             "x": 0,
             "y": 0,
@@ -334,8 +337,11 @@
         "Type": "crusher",
         "Category": "resources",
         "Sides": "crusherSide2",
+        "SidesOff": "crusherSide2Off",
         "Up": "crusherTop2",
+        "UpOff": "crusherTop2",
         "Down": "bottom",
+        "DownOff": "bottom",
          "FrontDirection": {
             "x": 0,
             "y": 0,
@@ -392,6 +398,9 @@
         "Sides": "disassemblerSide",
         "Up": "disassemblerTop2",
         "Down": "bottom",
+        "SidesOff": "disassemblerSideOff",
+        "UpOff": "disassemblerTop2",
+        "DownOff": "bottom",
          "FrontDirection": {
             "x": 0,
             "y": 0,

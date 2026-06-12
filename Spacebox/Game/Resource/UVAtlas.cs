@@ -62,7 +62,7 @@ public static class UVAtlas
         int startY = y * blockHeight;
 
 
-        Texture2D blockTexture = new Texture2D(blockWidth, blockHeight, true);
+        var blockTexture = new Texture2D(blockWidth, blockHeight, true);
 
 
         for (int i = 0; i < blockHeight; i++)

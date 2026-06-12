@@ -4,15 +4,15 @@
       
         "MinRadius": 42,
         "MaxRadius": 64,
-        "DensityThreshold": 40,
+        "DensityThreshold": 30,
         "NoiseOctaves": 3,
         "NoiseScale": 1,
         "HasCavities": true,
         "HasOreDeposits": true,
         "UsePerlinWorms": true,
         "WormSettings": {
-            "MinCount": 10,
-            "MaxCount": 20,
+            "MinCount": 5,
+            "MaxCount": 15,
             "DiameterInBlocks": 5,
             "MaxTunnelLength": 64,
             "PathDeviation": 0.7,
@@ -61,14 +61,14 @@
                 "Veins": [
                     {
                         "BlockId": "titanium_ore",
-                        "SpawnChance": 15000,
+                        "SpawnChance": 12000,
                         "MinVeinSize": 2,
                         "MaxVeinSize": 6,
                         "CanSpawnNearVoid": true
                     },
                     {
                         "BlockId": "thulium_ore",
-                        "SpawnChance": 9000,
+                        "SpawnChance": 8000,
                         "MinVeinSize": 2,
                         "MaxVeinSize": 6,
                         "CanSpawnNearVoid": true
@@ -82,7 +82,7 @@
                     },
                      {
                         "BlockId": "void",
-                        "SpawnChance": 2000,
+                        "SpawnChance": 500,
                         "MinVeinSize": 16,
                         "MaxVeinSize": 64,
                         "CanSpawnNearVoid": true

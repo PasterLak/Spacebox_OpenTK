@@ -1236,6 +1236,22 @@
                     "Quantity": 4
                 }
             ]
+        },
+        {
+            "Product": {
+                "Item": "obscurium_ammo",
+                "Quantity": 12
+            },
+            "Ingredients": [
+                {
+                    "Item": "obscurium_ingot",
+                    "Quantity": 1
+                },
+                {
+                    "Item": "titanium_ingot",
+                    "Quantity": 1
+                }
+            ]
         }
     ]
 }

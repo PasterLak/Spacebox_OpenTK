@@ -4,7 +4,7 @@
 
     "MinRadius": 24,
     "MaxRadius": 32,
-    "DensityThreshold": 40,
+    "DensityThreshold": 35,
     "NoiseOctaves": 3,
     "NoiseScale": 1,
     "HasCavities": true,

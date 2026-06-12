@@ -224,13 +224,9 @@ namespace Spacebox.Game.GUI
         {
             if (processingBlock != null)
             {
-                if (processingBlock.TryStartTask(out var task))
+                if (!processingBlock.IsRunning && processingBlock.TryStartTask(out var task))
                 {
                     TickTaskManager.AddTask(task);
-                }
-                else
-                {
-                    status = "Status: Ready";
                 }
                 UpdateStatus();
             }
@@ -238,30 +234,61 @@ namespace Spacebox.Game.GUI
 
         private static void UpdateStatus()
         {
-            if (processingBlock != null)
+            if (processingBlock == null)
             {
-                if (InputStorage.GetSlot(0, 0).Count == 0)
-                {
-                    status = "Status: Done";
-                    processingBlock.StopTask();
-                }
-                if (processingBlock.IsRunning)
-                {
-                    status = "Status: " + processingBlock.GetTaskProgress() + "/100";
-                }
-                else
-                {
-                    if (InputStorage.GetSlot(0, 0).Count > 0)
-                    {
-                        status = "Status: Wrong ingredient!";
-                        processingBlock.StopTask();
-                    }
-                    status = "Status: Done";
-                }
+                status = "Status: Done";
+                return;
+            }
+
+            var inputSlot = InputStorage.GetSlot(0, 0);
+
+            if (inputSlot.Count == 0)
+            {
+                status = "Status: Done";
+                processingBlock.StopTask();
+            }
+            else if (processingBlock.IsRunning)
+            {
+                status = "Status: " + processingBlock.GetTaskProgress() + "/100";
             }
             else
             {
-                status = "Status: Done";
+                bool isValidIngredient = false;
+                bool hasEnoughQuantity = false;
+
+                if (inputSlot.HasItem && GameAssets.Recipes.ContainsKey(processingBlock.BlockType))
+                {
+                    foreach (var recipe in GameAssets.Recipes[processingBlock.BlockType].Values)
+                    {
+                        if (recipe.Ingredient.Item == inputSlot.Item)
+                        {
+                            isValidIngredient = true;
+                            if (inputSlot.Count >= recipe.Ingredient.Quantity)
+                            {
+                                hasEnoughQuantity = true;
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                if (isValidIngredient)
+                {
+                    if (hasEnoughQuantity)
+                    {
+                        status = "Status: Output blocked!";
+                    }
+                    else
+                    {
+                        status = "Status: Not enough resource!";
+                    }
+                }
+                else
+                {
+                    status = "Status: Wrong ingredient!";
+                }
+
+                processingBlock.StopTask();
             }
         }
 
