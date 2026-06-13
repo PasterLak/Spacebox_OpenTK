@@ -146,6 +146,24 @@
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "glass", "Quantity": 1 },
           "Product": { "Item": "sand", "Quantity": 1 }
+        },
+        {
+          "DurationSec": 5.0,
+          "PowerPerTickRequared": 4,
+          "Ingredient": { "Item": "cobalt_lens", "Quantity": 1 },
+          "Product": { "Item": "cobalt_dust", "Quantity": 1 }
+        },
+        {
+          "DurationSec": 5.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "iron_lens", "Quantity": 1 },
+          "Product": { "Item": "iron_dust", "Quantity": 1 }
+        },
+        {
+          "DurationSec": 5.0,
+          "PowerPerTickRequared": 6,
+          "Ingredient": { "Item": "thulium_lens", "Quantity": 1 },
+          "Product": { "Item": "thulium_dust", "Quantity": 1 }
         }
       ]
     },

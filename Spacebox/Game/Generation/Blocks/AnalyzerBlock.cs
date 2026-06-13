@@ -22,7 +22,7 @@ namespace Spacebox.Game.Generation.Blocks
             IsActive = false;
             EFlags = ElectricalFlags.CanConsume;
             MaxPower = 200;
-            ConsumptionRate = 100;
+            ConsumptionRate = 70;
             CurrentPower = 0;
         }
 

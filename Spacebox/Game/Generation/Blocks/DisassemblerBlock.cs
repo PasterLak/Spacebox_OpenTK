@@ -15,9 +15,9 @@ namespace Spacebox.Game.Generation.Blocks
 
             SetEmissionWithoutRedrawChunk(false);
 
-            EFlags = ElectricalFlags.CanConsume;
+            //EFlags = ElectricalFlags.CanConsume;
       
-            ConsumptionRate = 15;
+            //ConsumptionRate = 15;
             CurrentPower = 0;
         }
 

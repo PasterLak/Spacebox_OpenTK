@@ -1,12 +1,13 @@
-﻿using ImGuiNET;
+﻿using Engine;
 using Engine.Audio;
-using Engine;
-using Spacebox.Game.Player;
-using System.Numerics;
+using ImGuiNET;
 using Spacebox.Game.GUI.Menu;
+using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
 using System;
 using System.Linq;
+using System.Numerics;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Spacebox.Game.GUI;
 
@@ -563,7 +564,10 @@ public class CraftingGUI
             drawList.AddImage(category[categoryId].IconPtr, buttonPos + offset * 4, buttonPos + new Vector2(width, height) - offset);
 
         }
-        drawList.AddText(LoadFont(), height / 6f, buttonPos + new Vector2(10, 10), Theme.Colors.Deep2Uint, "" + category[categoryId].Name);
+        Vector2 textSize = ImGui.CalcTextSize(category[categoryId].Name);
+
+  
+        drawList.AddText(LoadFont(), height / 6.5f, buttonPos + new Vector2(10, 10), Theme.Colors.Deep2Uint, "" + category[categoryId].Name);
 
         ImGui.PopStyleColor(4);
     }
