@@ -12,7 +12,7 @@ namespace Spacebox.Game.Generation.Blocks
         {
             OnUse += ResourceProcessingGUI.Toggle;
 
-            SetEmissionWithoutRedrawChunk(false);
+            SetEmission(false, false);
         }
 
         public override void Use(LocalAstronaut player, ref HitInfo hit)

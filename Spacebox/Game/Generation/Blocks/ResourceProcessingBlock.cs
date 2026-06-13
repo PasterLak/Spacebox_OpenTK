@@ -24,7 +24,7 @@ public class ResourceProcessingBlock : InteractiveBlock
         private set
         {
             _isRunning = value;
-            SetEmission(_isRunning);
+            SetEmission(_isRunning, true);
             IsActive = _isRunning;
         }
     }

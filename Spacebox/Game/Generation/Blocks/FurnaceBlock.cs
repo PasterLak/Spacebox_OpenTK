@@ -14,8 +14,7 @@ namespace Spacebox.Game.Generation.Blocks
 
             //LightLevel
 
-            SetEmissionWithoutRedrawChunk(false);
-
+            SetEmission(false,false);
         }
 
         public override void Use(LocalAstronaut player, ref HitInfo hit)

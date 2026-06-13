@@ -102,17 +102,12 @@ public class InteractiveBlock : ElectricalBlock
         EnableEmission = true;
     }
 
-    public void SetEmissionWithoutRedrawChunk(bool state)
-    {
-        EnableEmission = state;
-        lasState = state;
-    }
-    public void SetEmission(bool state)
+    public void SetEmission(bool state, bool redrawChunk)
     {
 
         EnableEmission = state;
 
-        if (chunk != null && EnableEmission != lasState)
+        if (redrawChunk && chunk != null && EnableEmission != lasState)
         {
             //chunk.GenerateMesh(); MarkNeedsRegenerate
 

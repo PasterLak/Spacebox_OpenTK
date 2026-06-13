@@ -13,10 +13,10 @@ namespace Spacebox.Game.Generation.Blocks
         {
             OnUse += ResourceProcessingGUI.Toggle;
 
-            SetEmissionWithoutRedrawChunk(false);
+            SetEmission(false, false);
 
             //EFlags = ElectricalFlags.CanConsume;
-      
+
             //ConsumptionRate = 15;
             CurrentPower = 0;
         }
