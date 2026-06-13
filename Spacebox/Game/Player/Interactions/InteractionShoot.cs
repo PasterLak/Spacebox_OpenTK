@@ -1,12 +1,13 @@
-﻿using OpenTK.Mathematics;
+﻿using Engine;
 using Engine.Audio;
 using Engine.Physics;
+using OpenTK.Mathematics;
 using Spacebox.Game.Animations;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
-using Spacebox.Game.Physics;
-using Engine;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Physics;
+using Spacebox.GUI;
 using System;
 
 namespace Spacebox.Game.Player.Interactions;
@@ -111,7 +112,12 @@ public class InteractionShoot : InteractionMode
 
                 if (!TryConsumeAmmo(player))
                 {
-           
+                    if(weapon.NeedsAmmo)
+                    {
+                    CenteredText.SetText("No ammo!");
+                    CenteredText.Show();
+
+                    }
                     return;
                 }
 
