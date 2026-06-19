@@ -2,6 +2,8 @@
 using Engine.Utils;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
+using System;
+using System.Collections.Generic;
 
 namespace Spacebox.Game.Resource
 {
@@ -31,7 +33,6 @@ namespace Spacebox.Game.Resource
 
         public static void LoadBlocks(string modPath, string defaultModPath)
         {
-
             if (!GameAssets.HasItem("default:void")) AddVoidBlock();
             if (!GameAssets.HasItem("default:air")) AddAirBlock();
 
@@ -115,26 +116,30 @@ namespace Spacebox.Game.Resource
         {
             block.Type = (block.Type ?? "block").ToLower();
 
-            block.Sides = (block.Sides ?? "").ToLower();
-            block.Up = (block.Up ?? "").ToLower();
-            block.Down = (block.Down ?? "").ToLower();
-            block.Left = (block.Left ?? "").ToLower();
-            block.Right = (block.Right ?? "").ToLower();
-            block.Forward = (block.Forward ?? "").ToLower();
-            block.Back = (block.Back ?? "").ToLower();
+            if (block.Textures.Active == null) block.Textures.Active = new FaceTextures();
+            if (block.Textures.Inactive == null) block.Textures.Inactive = new FaceTextures();
+            if (block.Sounds == null) block.Sounds = new SoundGroup();
 
-            block.SidesOff = (block.SidesOff ?? "").ToLower();
-            block.UpOff = (block.UpOff ?? "").ToLower();
-            block.DownOff = (block.DownOff ?? "").ToLower();
-            block.LeftOff = (block.LeftOff ?? "").ToLower();
-            block.RightOff = (block.RightOff ?? "").ToLower();
-            block.ForwardOff = (block.ForwardOff ?? "").ToLower();
-            block.BackOff = (block.BackOff ?? "").ToLower();
+            block.Textures.Active.All = (block.Textures.Active.All ?? "").ToLower();
+            block.Textures.Active.Up = (block.Textures.Active.Up ?? "").ToLower();
+            block.Textures.Active.Down = (block.Textures.Active.Down ?? "").ToLower();
+            block.Textures.Active.Left = (block.Textures.Active.Left ?? "").ToLower();
+            block.Textures.Active.Right = (block.Textures.Active.Right ?? "").ToLower();
+            block.Textures.Active.Forward = (block.Textures.Active.Forward ?? "").ToLower();
+            block.Textures.Active.Back = (block.Textures.Active.Back ?? "").ToLower();
+
+            block.Textures.Inactive.All = (block.Textures.Inactive.All ?? "").ToLower();
+            block.Textures.Inactive.Up = (block.Textures.Inactive.Up ?? "").ToLower();
+            block.Textures.Inactive.Down = (block.Textures.Inactive.Down ?? "").ToLower();
+            block.Textures.Inactive.Left = (block.Textures.Inactive.Left ?? "").ToLower();
+            block.Textures.Inactive.Right = (block.Textures.Inactive.Right ?? "").ToLower();
+            block.Textures.Inactive.Forward = (block.Textures.Inactive.Forward ?? "").ToLower();
+            block.Textures.Inactive.Back = (block.Textures.Inactive.Back ?? "").ToLower();
 
             block.Category = (block.Category ?? "").ToLower();
             block.Description = block.Description ?? "";
-            block.SoundPlace = block.SoundPlace ?? "blockPlaceDefault";
-            block.SoundDestroy = block.SoundDestroy ?? "blockDestroyDefault";
+            block.Sounds.Place = block.Sounds.Place ?? "blockPlaceDefault";
+            block.Sounds.Destroy = block.Sounds.Destroy ?? "blockDestroyDefault";
         }
 
         private static bool ValidateBlockType(BlockJSON block)
@@ -193,23 +198,31 @@ namespace Spacebox.Game.Resource
 
         private static bool HasInactiveTextures(BlockJSON block)
         {
-            return !string.IsNullOrEmpty(block.SidesOff) ||
-                   !string.IsNullOrEmpty(block.UpOff) ||
-                   !string.IsNullOrEmpty(block.ForwardOff);
+            return !string.IsNullOrEmpty(block.Textures.Inactive.All) ||
+                   !string.IsNullOrEmpty(block.Textures.Inactive.Up) ||
+                   !string.IsNullOrEmpty(block.Textures.Inactive.Down) ||
+                   !string.IsNullOrEmpty(block.Textures.Inactive.Left) ||
+                   !string.IsNullOrEmpty(block.Textures.Inactive.Right) ||
+                   !string.IsNullOrEmpty(block.Textures.Inactive.Forward) ||
+                   !string.IsNullOrEmpty(block.Textures.Inactive.Back);
         }
 
         private static void ApplyTextures(BlockData blockData, BlockJSON json, BlockState state)
         {
-            string sides = state == BlockState.Active ? json.Sides : json.SidesOff;
-            string up = state == BlockState.Active ? json.Up : json.UpOff;
-            string down = state == BlockState.Active ? json.Down : json.DownOff;
-            string left = state == BlockState.Active ? json.Left : json.LeftOff;
-            string right = state == BlockState.Active ? json.Right : json.RightOff;
-            string fwd = state == BlockState.Active ? json.Forward : json.ForwardOff;
-            string back = state == BlockState.Active ? json.Back : json.BackOff;
+            FaceTextures currentFace = state == BlockState.Active ? json.Textures.Active : json.Textures.Inactive;
 
-            string defaultSide = string.IsNullOrEmpty(sides) && state == BlockState.Inactive ? json.Sides : sides;
+            string sides = currentFace.All;
+            if (string.IsNullOrEmpty(sides) && state == BlockState.Inactive)
+            {
+                sides = json.Textures.Active.All;
+            }
 
+            string up = currentFace.Up;
+            string down = currentFace.Down;
+            string left = currentFace.Left;
+            string right = currentFace.Right;
+            string fwd = currentFace.Forward;
+            string back = currentFace.Back;
 
             blockData.SetTexture(string.IsNullOrEmpty(up) ? sides : up, Direction.Up, state);
             blockData.SetTexture(string.IsNullOrEmpty(down) ? sides : down, Direction.Down, state);
@@ -221,24 +234,24 @@ namespace Spacebox.Game.Resource
 
         private static void GiveBlockSounds(BlockData blockData, BlockJSON modBlockData)
         {
-            if (!GameAssets.Sounds.ContainsKey(modBlockData.SoundPlace))
+            if (!GameAssets.Sounds.ContainsKey(modBlockData.Sounds.Place))
             {
                 blockData.SetDefaultPlaceSound();
-                Debug.Error($"[GamesetLoader] Block <{modBlockData.Name}> wrong place sound: {modBlockData.SoundPlace}. Using default.");
+                Debug.Error($"[GamesetLoader] Block <{modBlockData.Name}> wrong place sound: {modBlockData.Sounds.Place}. Using default.");
             }
             else
             {
-                blockData.SoundPlace = modBlockData.SoundPlace;
+                blockData.SoundPlace = modBlockData.Sounds.Place;
             }
 
-            if (!GameAssets.Sounds.ContainsKey(modBlockData.SoundDestroy))
+            if (!GameAssets.Sounds.ContainsKey(modBlockData.Sounds.Destroy))
             {
                 blockData.SetDefaultDestroySound();
-                Debug.Error($"[GamesetLoader] Block <{modBlockData.Name}> wrong destroy sound: {modBlockData.SoundDestroy}. Using default.");
+                Debug.Error($"[GamesetLoader] Block <{modBlockData.Name}> wrong destroy sound: {modBlockData.Sounds.Destroy}. Using default.");
             }
             else
             {
-                blockData.SoundDestroy = modBlockData.SoundDestroy;
+                blockData.SoundDestroy = modBlockData.Sounds.Destroy;
             }
         }
     }

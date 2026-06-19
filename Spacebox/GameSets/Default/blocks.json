@@ -1,715 +1,944 @@
 [
-    {
-        "ID": "light_rock",
-        "Name": "Light Rock",
-        "Description": "Easily mined rock",
-        "Sides": "lightRock",
-        "Type": "mineral",
-        "PowerToDrill": 1,
-        "Mass": 2,
-        "Durability": 5,
-        "SoundPlace": "blockPlaceLight",
-
-        "Drop": "$self",
-        "DropQuantity": 1
+  {
+    "ID": "light_rock",
+    "Name": "Light Rock",
+    "Description": "Easily mined rock",
+    "Type": "mineral",
+    "PowerToDrill": 1,
+    "Mass": 2,
+    "Durability": 5,
+    "Textures": {
+      "Active": {
+        "All": "lightRock"
+      }
     },
-    {
-        "ID": "medium_rock",
-        "Name": "Medium Rock",
-       "Type": "mineral",
-        "Description": "Standard rock found in many big asteroids",
-        "Sides": "mediumRock",
-        "PowerToDrill": 3,
-        "Mass": 4,
-        "Durability": 10,
-
-        "Drop": "medium_rock",
-        "DropQuantity": 1
+    "Sounds": {
+      "Place": "blockPlaceLight"
     },
-    {
-        "ID": "heavy_rock",
-        "Name": "Heavy Rock",
-       "Type": "mineral",
-        "Description": "Dense rock that requires powerful tools to mine",
-        "Sides": "heavyRock",
-        "PowerToDrill": 5,
-        "Mass": 10,
-        "Durability": 15,
-        "SoundPlace": "blockPlaceHeavy"
+    "Drop": "$self",
+    "DropQuantity": 1
+  },
+  {
+    "ID": "medium_rock",
+    "Name": "Medium Rock",
+    "Description": "Standard rock found in many big asteroids",
+    "Type": "mineral",
+    "PowerToDrill": 3,
+    "Mass": 4,
+    "Durability": 10,
+    "Textures": {
+      "Active": {
+        "All": "mediumRock"
+      }
     },
-    {
-        "ID": "cobaltite_rock",
-        "Name": "Cobaltite Rock",
-        "Type": "mineral",
-        "Description": "Source of cobalt crystals",
-        "Sides": "cobaltite",
-        "PowerToDrill": 1,
-        "Mass": 1,
-        "Durability": 7
+    "Drop": "medium_rock",
+    "DropQuantity": 1
+  },
+  {
+    "ID": "heavy_rock",
+    "Name": "Heavy Rock",
+    "Description": "Dense rock that requires powerful tools to mine",
+    "Type": "mineral",
+    "PowerToDrill": 5,
+    "Mass": 10,
+    "Durability": 15,
+    "Textures": {
+      "Active": {
+        "All": "heavyRock"
+      }
     },
-    {
-        "ID": "ice_rock",
-        "Name": "Icy Rock",
-        "Type": "mineral",
-        "Description": "Contains ice pieces",
-        "Sides": "iceBlock",
-        "PowerToDrill": 1,
-        "Mass": 1,
-        "Durability": 4
+    "Sounds": {
+      "Place": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "cobaltite_rock",
+    "Name": "Cobaltite Rock",
+    "Description": "Source of cobalt crystals",
+    "Type": "mineral",
+    "PowerToDrill": 1,
+    "Mass": 1,
+    "Durability": 7,
+    "Textures": {
+      "Active": {
+        "All": "cobaltite"
+      }
+    }
+  },
+  {
+    "ID": "ice_rock",
+    "Name": "Icy Rock",
+    "Description": "Contains ice pieces",
+    "Type": "mineral",
+    "PowerToDrill": 1,
+    "Mass": 1,
+    "Durability": 4,
+    "Textures": {
+      "Active": {
+        "All": "iceBlock"
+      }
+    }
+  },
+  {
+    "ID": "dense_ice_rock",
+    "Name": "Dense Ice Rock",
+    "Description": "Source of methane",
+    "Type": "mineral",
+    "PowerToDrill": 2,
+    "Mass": 2,
+    "Durability": 6,
+    "Textures": {
+      "Active": {
+        "All": "iceBlock2"
+      }
+    }
+  },
+  {
+    "ID": "aluminium_ore",
+    "Name": "Aluminium Ore",
+    "Description": "Lightweight ore used in various fields",
+    "Type": "mineral",
+    "PowerToDrill": 1,
+    "Mass": 1,
+    "Durability": 6,
+    "Textures": {
+      "Active": {
+        "All": "aluOre"
+      }
+    }
+  },
+  {
+    "ID": "iron_ore",
+    "Name": "Iron Ore",
+    "Description": "A common ore used in construction",
+    "Type": "mineral",
+    "PowerToDrill": 2,
+    "Mass": 2,
+    "Durability": 8,
+    "Textures": {
+      "Active": {
+        "All": "ironOre"
+      }
+    }
+  },
+  {
+    "ID": "titanium_ore",
+    "Name": "Titanium Ore",
+    "Description": "A strong and lightweight ore",
+    "Type": "mineral",
+    "PowerToDrill": 4,
+    "Mass": 4,
+    "Durability": 20,
+    "Textures": {
+      "Active": {
+        "All": "titaniumOre"
+      }
+    }
+  },
+  {
+    "ID": "thulium_ore",
+    "Name": "Thulium Ore",
+    "Description": "A rare ore used in advanced technologies",
+    "Type": "mineral",
+    "PowerToDrill": 3,
+    "Mass": 4,
+    "Durability": 12,
+    "Textures": {
+      "Active": {
+        "All": "yellowOre"
+      }
+    }
+  },
+  {
+    "ID": "obscurium_ore",
+    "Name": "Obscurium Ore",
+    "Description": "An extremely rare ore with unusual properties",
+    "Type": "mineral",
+    "PowerToDrill": 5,
+    "Mass": 10,
+    "Durability": 50,
+    "Textures": {
+      "Active": {
+        "All": "pinkOre"
+      }
+    }
+  },
+  {
+    "ID": "uranium_ore",
+    "Name": "Uranium Ore",
+    "Description": "A radioactive ore used for advanced power generation",
+    "Type": "mineral",
+    "PowerToDrill": 4,
+    "Mass": 1,
+    "Durability": 14,
+    "Textures": {
+      "Active": {
+        "All": "greenOre"
+      }
+    }
+  },
+  {
+    "ID": "aluminium_block_light",
+    "Name": "Aluminium Light Block",
+    "Category": "blocks",
+    "PowerToDrill": 1,
+    "Mass": 2,
+    "Durability": 10,
+    "Textures": {
+      "Active": {
+        "All": "aluLight"
+      }
     },
-    {
-        "ID": "dense_ice_rock",
-        "Name": "Dense Ice Rock",
-       "Type": "mineral",
-        "Description": "Source of methane",
-        "Sides": "iceBlock2",
-        "PowerToDrill": 2,
-        "Mass": 2,
-        "Durability": 6
+    "Sounds": {
+      "Place": "blockPlaceLight"
+    }
+  },
+  {
+    "ID": "aluminium_block_medium",
+    "Name": "Aluminium Medium Block",
+    "Category": "blocks",
+    "PowerToDrill": 2,
+    "Mass": 4,
+    "Durability": 20,
+    "Textures": {
+      "Active": {
+        "All": "aluMedium"
+      }
+    }
+  },
+  {
+    "ID": "aluminium_block_heavy",
+    "Name": "Aluminium Heavy Block",
+    "Category": "blocks",
+    "PowerToDrill": 3,
+    "Mass": 6,
+    "Durability": 30,
+    "Textures": {
+      "Active": {
+        "All": "aluHeavy"
+      }
     },
-    {
-        "ID": "aluminium_ore",
-        "Name": "Aluminium Ore",
-        "Type": "mineral",
-        "Description": "Lightweight ore used in various fields",
-        "Sides": "aluOre",
-        "PowerToDrill": 1,
-        "Mass": 1,
-        "Durability": 6
+    "Sounds": {
+      "Place": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "iron_block_light",
+    "Name": "Iron Light Block",
+    "Category": "blocks",
+    "PowerToDrill": 2,
+    "Mass": 4,
+    "Durability": 40,
+    "Textures": {
+      "Active": {
+        "All": "ironLight"
+      }
     },
-    {
-        "ID": "iron_ore",
-        "Name": "Iron Ore",
-        "Type": "mineral",
-        "Description": "A common ore used in construction",
-        "Sides": "ironOre",
-        "PowerToDrill": 2,
-        "Mass": 2,
-        "Durability": 8
+    "Sounds": {
+      "Place": "blockPlaceLight"
+    }
+  },
+  {
+    "ID": "iron_block_medium",
+    "Name": "Iron Medium Block",
+    "Category": "blocks",
+    "PowerToDrill": 3,
+    "Mass": 6,
+    "Durability": 60,
+    "Textures": {
+      "Active": {
+        "All": "ironMedium"
+      }
+    }
+  },
+  {
+    "ID": "iron_block_heavy",
+    "Name": "Iron Heavy Block",
+    "Category": "blocks",
+    "PowerToDrill": 4,
+    "Mass": 8,
+    "Durability": 80,
+    "Textures": {
+      "Active": {
+        "All": "ironHeavy"
+      }
     },
-    {
-        "ID": "titanium_ore",
-        "Name": "Titanium Ore",
-        "Type": "mineral",
-        "Description": "A strong and lightweight ore",
-        "Sides": "titaniumOre",
-        "PowerToDrill": 4,
-        "Mass": 4,
-        "Durability": 20
+    "Sounds": {
+      "Place": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "titanium_block_light",
+    "Name": "Titanium Light Block",
+    "Category": "blocks",
+    "PowerToDrill": 3,
+    "Mass": 5,
+    "Durability": 80,
+    "Textures": {
+      "Active": {
+        "All": "titLight"
+      }
     },
-    {
-        "ID": "thulium_ore",
-        "Name": "Thulium Ore",
-        "Type": "mineral",
-        "Description": "A rare ore used in advanced technologies",
-        "Sides": "yellowOre",
-        "PowerToDrill": 3,
-        "Mass": 4,
-        "Durability": 12
+    "Sounds": {
+      "Place": "blockPlaceLight"
+    }
+  },
+  {
+    "ID": "titanium_block_medium",
+    "Name": "Titanium Medium Block",
+    "Category": "blocks",
+    "PowerToDrill": 4,
+    "Mass": 8,
+    "Durability": 100,
+    "Textures": {
+      "Active": {
+        "All": "titMedium"
+      }
+    }
+  },
+  {
+    "ID": "titanium_block_heavy",
+    "Name": "Titanium Heavy Block",
+    "Category": "blocks",
+    "PowerToDrill": 5,
+    "Mass": 10,
+    "Durability": 120,
+    "Textures": {
+      "Active": {
+        "All": "titHeavy"
+      }
     },
-    {
-        "ID": "obscurium_ore",
-        "Name": "Obscurium Ore",
-        "Type": "mineral",
-        "Description": "An extremely rare ore with unusual properties",
-        "Sides": "pinkOre",
-        "PowerToDrill": 5,
-        "Mass": 10,
-        "Durability": 50
+    "Sounds": {
+      "Place": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "window",
+    "Name": "Window",
+    "Description": "Allows light to pass through",
+    "Category": "windows",
+    "Mass": 1,
+    "Durability": 1,
+    "IsTransparent": true,
+    "Textures": {
+      "Active": {
+        "All": "window"
+      }
     },
-    {
-        "ID": "uranium_ore",
-        "Name": "Uranium Ore",
-        "Type": "mineral",
-        "Description": "A radioactive ore used for advanced power generation",
-        "Sides": "greenOre",
-        "PowerToDrill": 4,
-        "Mass": 1,
-        "Durability": 14
+    "Sounds": {
+      "Place": "placeGlass",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "basic_machine",
+    "Name": "Basic Machine",
+    "Category": "resources",
+    "Mass": 2,
+    "Durability": 5,
+    "Textures": {
+      "Active": {
+        "All": "basicMachine"
+      }
+    }
+  },
+  {
+    "ID": "reinforced_window",
+    "Name": "Reinforced Window",
+    "Description": "Stronger than regular windows",
+    "Category": "windows",
+    "Mass": 2,
+    "Durability": 10,
+    "IsTransparent": true,
+    "Textures": {
+      "Active": {
+        "All": "window2"
+      }
     },
-    {
-        "ID": "aluminium_block_light",
-        "Name": "Aluminium Light Block",
-        "Category": "blocks",
-        "Sides": "aluLight",
-        "PowerToDrill": 1,
-        "Mass": 2,
-        "Durability": 10,
-        "IsTransparent": false,
-        "SoundPlace": "blockPlaceLight"
+    "Sounds": {
+      "Place": "placeMetal",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "crafting_table",
+    "Name": "Crafting Table",
+    "Description": "Used for crafting items and blocks",
+    "Category": "resources",
+    "Type": "craftingtable",
+    "Mass": 1,
+    "Durability": 5,
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
     },
-    {
-        "ID": "aluminium_block_medium",
-        "Name": "Aluminium Medium Block",
-        "Category": "blocks",
-        "Sides": "aluMedium",
-        "PowerToDrill": 2,
-        "Mass": 4,
-        "Durability": 20,
-        "IsTransparent": false
-    },
-    {
-        "ID": "aluminium_block_heavy",
-        "Name": "Aluminium Heavy Block",
-        "Category": "blocks",
-        "Sides": "aluHeavy",
-        "PowerToDrill": 3,
-        "Mass": 6,
-        "Durability": 30,
-        "IsTransparent": false,
-        "SoundPlace": "blockPlaceHeavy"
-    },
-    {
-        "ID": "iron_block_light",
-        "Name": "Iron Light Block",
-        "Category": "blocks",
-        "Sides": "ironLight",
-        "PowerToDrill": 2,
-        "Mass": 4,
-        "Durability": 40,
-        "IsTransparent": false,
-        "SoundPlace": "blockPlaceLight"
-    },
-    {
-        "ID": "iron_block_medium",
-        "Name": "Iron Medium Block",
-        "Category": "blocks",
-        "Sides": "ironMedium",
-        "PowerToDrill": 3,
-        "Mass": 6,
-        "Durability": 60,
-        "IsTransparent": false
-    },
-    {
-        "ID": "iron_block_heavy",
-        "Name": "Iron Heavy Block",
-        "Category": "blocks",
-        "Sides": "ironHeavy",
-        "PowerToDrill": 4,
-        "Mass": 8,
-        "Durability": 80,
-        "IsTransparent": false,
-        "SoundPlace": "blockPlaceHeavy"
-    },
-    {
-        "ID": "titanium_block_light",
-        "Name": "Titanium Light Block",
-        "Category": "blocks",
-        "Sides": "titLight",
-        "PowerToDrill": 3,
-        "Mass": 5,
-        "Durability": 80,
-        "IsTransparent": false,
-        "SoundPlace": "blockPlaceLight"
-    },
-    {
-        "ID": "titanium_block_medium",
-        "Name": "Titanium Medium Block",
-        "Category": "blocks",
-        "Sides": "titMedium",
-        "PowerToDrill": 4,
-        "Mass": 8,
-        "Durability": 100,
-        "IsTransparent": false
-    },
-    {
-        "ID": "titanium_block_heavy",
-        "Name": "Titanium Heavy Block",
-        "Category": "blocks",
-        "Sides": "titHeavy",
-        "PowerToDrill": 5,
-        "Mass": 10,
-        "Durability": 120,
-        "IsTransparent": false,
-        "SoundPlace": "blockPlaceHeavy"
-    },
-    {
-        "ID": "window",
-        "Name": "Window",
-        "Description": "Allows light to pass through",
-        "Category": "windows",
-        "Sides": "window",
-        "Mass": 1,
-        "Durability": 1,
-        "IsTransparent": true,
-        "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "placeGlass"
-    },
-    {
-        "ID": "basic_machine",
-        "Name": "Basic Machine",
-        "Category": "resources",
-        "Sides": "basicMachine",
-        "Mass": 2,
-        "Durability": 5,
-        "IsTransparent": false
-    },
-    {
-        "ID": "reinforced_window",
-        "Name": "Reinforced Window",
-        "Description": "Stronger than regular windows",
-        "Category": "windows",
-        "Sides": "window2",
-        "Mass": 2,
-        "Durability": 10,
-        "IsTransparent": true,
-        "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "placeMetal"
-    },
-    {
-        "ID": "crafting_table",
-        "Name": "Crafting Table",
-        "Description": "Used for crafting items and blocks",
-        "Category": "resources",
-        "Type": "craftingtable",
-        "Sides": "craftSide",
+    "Textures": {
+      "Active": {
+        "All": "craftSide",
         "Up": "craftTop",
-        "Down": "bottom",
-         "FrontDirection": {
-            "x": 0,
-            "y": 0,
-            "z": 1
-        },
-        "Mass": 1,
-        "Durability": 5,
-        "IsTransparent": false
+        "Down": "bottom"
+      }
+    }
+  },
+  {
+    "ID": "furnace",
+    "Name": "Furnace",
+    "Description": "Used for smelting ores",
+    "Type": "furnace",
+    "Category": "resources",
+    "Mass": 2,
+    "Durability": 7,
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
     },
-    {
-        "ID": "furnace",
-        "Name": "Furnace",
-        "Description": "Used for smelting ores",
-        "Type": "furnace",
-        "Category": "resources",
-        "Sides": "bottom",
-        "Forward": "furnace",
-        "ForwardOff": "furnaceOff",
-        "FrontDirection": {
-            "x": 0,
-            "y": 0,
-            "z": 1
-        },
-        "Mass": 2,
-        "Durability": 7,
-        "Efficiency": 1
+    "Textures": {
+      "Active": {
+        "All": "bottom",
+        "Forward": "furnace"
+      },
+      "Inactive": {
+        "All": "bottom",
+        "Forward": "furnaceOff"
+      }
+    }
+  },
+  {
+    "ID": "enhanced_furnace",
+    "Name": "Enhanced Furnace",
+    "Type": "furnace",
+    "Category": "resources",
+    "Mass": 2,
+    "Durability": 10,
+    "Efficiency": 1.3,
+    "PowerToDrill": 3,
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
     },
-    {
-        "ID": "enhanced_furnace",
-        "Name": "Enhanced Furnace",
-        "Type": "furnace",
-        "Category": "resources",
-        "Sides": "bottom",
-        "Forward": "furnace2",
-        "ForwardOff": "furnace2Off",
-         "FrontDirection": {
-            "x": 0,
-            "y": 0,
-            "z": 1
-        },
-        "Mass": 2,
-        "Durability": 10,
-        "Efficiency": 1.3,
-        "PowerToDrill": 3
+    "Textures": {
+      "Active": {
+        "All": "bottom",
+        "Forward": "furnace2"
+      },
+      "Inactive": {
+        "All": "bottom",
+        "Forward": "furnace2Off"
+      }
+    }
+  },
+  {
+    "ID": "crusher",
+    "Name": "Crusher",
+    "Description": "Crushes ores to extract more resources",
+    "Type": "crusher",
+    "Category": "resources",
+    "Durability": 5,
+    "Efficiency": 0.7,
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
     },
-    {
-        "ID": "crusher",
-        "Name": "Crusher",
-        "Description": "Crushes ores to extract more resources",
-        "Type": "crusher",
-        "Category": "resources",
-        "Sides": "crusherSide",
-        "SidesOff": "crusherSideOff",
+    "Textures": {
+      "Active": {
+        "All": "crusherSide",
         "Up": "crusherTop",
-        "UpOff": "crusherTop",
-        "Down": "bottom",
-        "DownOff": "bottom",
-         "FrontDirection": {
-            "x": 0,
-            "y": 0,
-            "z": 1
-        },
-        "Durability": 5,
-        "Efficiency": 0.7,
-        "IsTransparent": false
+        "Down": "bottom"
+      },
+      "Inactive": {
+        "All": "crusherSideOff",
+        "Up": "crusherTop",
+        "Down": "bottom"
+      }
+    }
+  },
+  {
+    "ID": "enhanced_crusher",
+    "Name": "Enhanced Crusher",
+    "Type": "crusher",
+    "Category": "resources",
+    "Durability": 10,
+    "Efficiency": 1.2,
+    "PowerToDrill": 3,
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
     },
-    {
-        "ID": "enhanced_crusher",
-        "Name": "Enhanced Crusher",
-        "Type": "crusher",
-        "Category": "resources",
-        "Sides": "crusherSide2",
-        "SidesOff": "crusherSide2Off",
+    "Textures": {
+      "Active": {
+        "All": "crusherSide2",
         "Up": "crusherTop2",
-        "UpOff": "crusherTop2",
-        "Down": "bottom",
-        "DownOff": "bottom",
-         "FrontDirection": {
-            "x": 0,
-            "y": 0,
-            "z": 1
-        },
-        "Durability": 10,
-        "Efficiency": 1.2,
-        "IsTransparent": false,
-        "PowerToDrill": 3
-    },
-    {
-        "ID": "analyzer",
-        "Name": "Ore scanner",
-        "Type": "analyzer",
-        "Description": "Scans asteroid to reveal its composition",
-        "Category": "resources",
-         "Sides": "electricalSide",
-        "SidesOff": "electricalSideOff",
+        "Down": "bottom"
+      },
+      "Inactive": {
+        "All": "crusherSide2Off",
+        "Up": "crusherTop2",
+        "Down": "bottom"
+      }
+    }
+  },
+  {
+    "ID": "analyzer",
+    "Name": "Ore scanner",
+    "Type": "analyzer",
+    "Description": "Scans asteroid to reveal its composition",
+    "Category": "resources",
+    "Durability": 5,
+    "Textures": {
+      "Active": {
+        "All": "electricalSide",
         "Up": "analyzer",
-        "Down": "generatorDown",
-        "DownOff": "generatorDownOff",
-        
-        "UpOff": "analyzerOff",
-       
-        "Durability": 5,
-        "IsTransparent": false
+        "Down": "generatorDown"
+      },
+      "Inactive": {
+        "All": "electricalSideOff",
+        "Up": "analyzerOff",
+        "Down": "generatorDownOff"
+      }
+    }
+  },
+  {
+    "ID": "radar",
+    "Name": "Radar",
+    "Description": "Scans surroundings",
+    "Type": "radar",
+    "Category": "resources",
+    "Durability": 5,
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
     },
-    {
-        "ID": "radar",
-        "Name": "Radar",
-        "Description": "Scans surroundings",
-        "Type": "radar",
-        "Category": "resources",
-        "Sides": "electricalSide",
-        "SidesOff": "electricalSideOff",
+    "Textures": {
+      "Active": {
+        "All": "electricalSide",
         "Up": "radar",
-        "UpOff": "radarOff",
-        "Down": "generatorDown",
-        "DownOff": "generatorDownOff",
-         "FrontDirection": {
-            "x": 0,
-            "y": 0,
-            "z": 1
-        },
-        "Durability": 5,
-        "IsTransparent": false
+        "Down": "generatorDown"
+      },
+      "Inactive": {
+        "All": "electricalSideOff",
+        "Up": "radarOff",
+        "Down": "generatorDownOff"
+      }
+    }
+  },
+  {
+    "ID": "disassembler",
+    "Name": "Disassembler",
+    "Description": "Disassembles items into basic components",
+    "Type": "disassembler",
+    "Category": "resources",
+    "Durability": 5,
+    "Efficiency": 1.0,
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
     },
-    {
-        "ID": "disassembler",
-        "Name": "Disassembler",
-        "Description": "Disassembles items into basic components",
-        "Type": "disassembler",
-        "Category": "resources",
-        "Sides": "disassemblerSide",
+    "Textures": {
+      "Active": {
+        "All": "disassemblerSide",
         "Up": "disassemblerTop2",
-        "Down": "bottom",
-        "SidesOff": "disassemblerSideOff",
-        "UpOff": "disassemblerTop2",
-        "DownOff": "bottom",
-         "FrontDirection": {
-            "x": 0,
-            "y": 0,
-            "z": 1
-        },
-        "Durability": 5,
-        "Efficiency": 1,
-        "IsTransparent": false
-    },
-    {
-        "ID": "cable_block",
-        "Name": "Cable Block",
-        "Type": "cable",
-        "Sides": "wire",
-        "SidesOff": "wireOff",
+        "Down": "bottom"
+      },
+      "Inactive": {
+        "All": "disassemblerSideOff",
+        "Up": "disassemblerTop2",
+        "Down": "bottom"
+      }
+    }
+  },
+  {
+    "ID": "cable_block",
+    "Name": "Cable Block",
+    "Type": "cable",
+    "Category": "blocks",
+    "Durability": 3,
+    "Textures": {
+      "Active": {
+        "All": "wire",
         "Up": "wireTop",
-        "UpOff": "wireTopOff",
-        "Down": "wireTop",
-        "DownOff": "wireTopOff",
-        "Category": "blocks",
-        "IsTransparent": false,
-        "Durability": 3
-
+        "Down": "wireTop"
+      },
+      "Inactive": {
+        "All": "wireOff",
+        "Up": "wireTopOff",
+        "Down": "wireTopOff"
+      }
+    }
+  },
+  {
+    "ID": "light_white",
+    "Name": "Light White",
+    "Category": "lights",
+    "LightColor": {
+      "r": 255,
+      "g": 255,
+      "b": 255
     },
-
-    {
-        "ID": "light_white",
-        "Name": "Light White",
-        "Category": "lights",
-        "Sides": "white",
-        "LightColor": {
-            "r": 255,
-            "g": 255,
-            "b": 255
-        },
-        "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "placeMetal2"
+    "Textures": {
+      "Active": {
+        "All": "white"
+      }
     },
-    {
-        "ID": "light_blue",
-        "Name": "Light Blue",
-        "Category": "lights",
-        "Sides": "blue",
-        "LightColor": {
-            "r": 45,
-            "g": 45,
-            "b": 255
-        },
-        "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "placeMetal2"
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "light_blue",
+    "Name": "Light Blue",
+    "Category": "lights",
+    "LightColor": {
+      "r": 45,
+      "g": 45,
+      "b": 255
     },
-    {
-        "ID": "light_red",
-        "Name": "Light Red",
-        "Category": "lights",
-        "Sides": "red",
-        "LightColor": {
-            "r": 255,
-            "g": 15,
-            "b": 15
-        },
-        "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "placeMetal2"
+    "Textures": {
+      "Active": {
+        "All": "blue"
+      }
     },
-    {
-        "ID": "light_yellow",
-        "Name": "Light Yellow",
-        "Category": "lights",
-        "Sides": "yellow",
-        "LightColor": {
-            "r": 255,
-            "g": 216,
-            "b": 0
-        },
-        "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "placeMetal2"
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "light_red",
+    "Name": "Light Red",
+    "Category": "lights",
+    "LightColor": {
+      "r": 255,
+      "g": 15,
+      "b": 15
     },
-    {
-        "ID": "light_cyan",
-        "Name": "Light Cyan",
-        "Category": "lights",
-        "Sides": "cyan",
-        "LightColor": {
-            "r": 0,
-            "g": 255,
-            "b": 255
-        },
-        "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "placeMetal2"
+    "Textures": {
+      "Active": {
+        "All": "red"
+      }
     },
-    {
-        "ID": "light_orange",
-        "Name": "Light Orange",
-        "Category": "lights",
-        "Sides": "orange",
-        "LightColor": {
-            "r": 255,
-            "g": 106,
-            "b": 0
-        },
-        "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "placeMetal2"
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "light_yellow",
+    "Name": "Light Yellow",
+    "Category": "lights",
+    "LightColor": {
+      "r": 255,
+      "g": 216,
+      "b": 0
     },
-    {
-        "ID": "light_green",
-        "Name": "Light Green",
-        "Category": "lights",
-        "Sides": "green",
-        "LightColor": {
-            "r": 5,
-            "g": 255,
-            "b": 5
-        },
-        "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "placeMetal2"
+    "Textures": {
+      "Active": {
+        "All": "yellow"
+      }
     },
-    {
-        "ID": "light_pink",
-        "Name": "Light Pink",
-        "Category": "lights",
-        "Sides": "pink",
-        "LightColor": {
-            "r": 178,
-            "g": 0,
-            "b": 255
-        },
-        "SoundDestroy": "blockDestroyGlass",
-        "SoundPlace": "placeMetal2"
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "light_cyan",
+    "Name": "Light Cyan",
+    "Category": "lights",
+    "LightColor": {
+      "r": 0,
+      "g": 255,
+      "b": 255
     },
-
-    {
-        "ID": "moritz",
-        "Name": "Moritz",
-
-        "Sides": "moritz",
-        "PowerToDrill": 5,
-        "Mass": 1,
-        "Durability": 15,
-        "IsTransparent": false,
-        "LightColor": {
-            "r": 255,
-            "g": 245,
-            "b": 68
-        },
-        "SoundPlace": "blockPlaceMoritz",
-        "SoundDestroy": "blockDestroyMoritz"
+    "Textures": {
+      "Active": {
+        "All": "cyan"
+      }
     },
-    {
-        "ID": "basic_engine",
-        "Name": "Basic Engine",
-        "Category": "blocks",
-        "Sides": "engine1Side",
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "light_orange",
+    "Name": "Light Orange",
+    "Category": "lights",
+    "LightColor": {
+      "r": 255,
+      "g": 106,
+      "b": 0
+    },
+    "Textures": {
+      "Active": {
+        "All": "orange"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "light_green",
+    "Name": "Light Green",
+    "Category": "lights",
+    "LightColor": {
+      "r": 5,
+      "g": 255,
+      "b": 5
+    },
+    "Textures": {
+      "Active": {
+        "All": "green"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "light_pink",
+    "Name": "Light Pink",
+    "Category": "lights",
+    "LightColor": {
+      "r": 178,
+      "g": 0,
+      "b": 255
+    },
+    "Textures": {
+      "Active": {
+        "All": "pink"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "moritz",
+    "Name": "Moritz",
+    "PowerToDrill": 5,
+    "Mass": 1,
+    "Durability": 15,
+    "LightColor": {
+      "r": 255,
+      "g": 245,
+      "b": 68
+    },
+    "Textures": {
+      "Active": {
+        "All": "moritz"
+      }
+    },
+    "Sounds": {
+      "Place": "blockPlaceMoritz",
+      "Destroy": "blockDestroyMoritz"
+    }
+  },
+  {
+    "ID": "basic_engine",
+    "Name": "Basic Engine",
+    "Category": "blocks",
+    "PowerToDrill": 1,
+    "Mass": 3,
+    "Durability": 35,
+    "Textures": {
+      "Active": {
+        "All": "engine1Side",
         "Up": "engine1Top",
-        "Down": "engine1Bottom",
-        "PowerToDrill": 1,
-        "Mass": 3,
-        "Durability": 35,
-        "IsTransparent": false,
-        "SoundPlace": "blockPlaceHeavy",
-        "SoundDestroy": "blockPlaceHeavy"
+        "Down": "engine1Bottom"
+      }
     },
-    {
-        "ID": "basic_cannon",
-        "Name": "Basic Cannon",
-        "Category": "blocks",
-        "Sides": "cannon1Side",
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "basic_cannon",
+    "Name": "Basic Cannon",
+    "Category": "blocks",
+    "PowerToDrill": 1,
+    "Mass": 3,
+    "Durability": 35,
+    "Textures": {
+      "Active": {
+        "All": "cannon1Side",
         "Up": "cannon1Top",
-        "Down": "cannon1Top",
-        "PowerToDrill": 1,
-        "Mass": 3,
-        "Durability": 35,
-        "IsTransparent": false,
-        "SoundPlace": "blockPlaceHeavy",
-        "SoundDestroy": "blockPlaceHeavy"
+        "Down": "cannon1Top"
+      }
     },
-
-    {
-        "ID": "gravity_generator",
-        "Name": "Gravity Generator",
-        "Description": "Can create artificial gravity",
-        "Category": "resources",
-        "Sides": "gravitySide",
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "gravity_generator",
+    "Name": "Gravity Generator",
+    "Description": "Can create artificial gravity",
+    "Category": "resources",
+    "PowerToDrill": 1,
+    "Mass": 255,
+    "Durability": 100,
+    "Textures": {
+      "Active": {
+        "All": "gravitySide",
         "Up": "gravityTop",
-        "Down": "gravityTop",
-        "PowerToDrill": 1,
-        "Mass": 255,
-        "Durability": 100,
-        "IsTransparent": false,
-        "SoundPlace": "blockPlaceHeavy",
-        "SoundDestroy": "blockPlaceHeavy"
+        "Down": "gravityTop"
+      }
     },
-
-    {
-        "ID": "basic_aluminium_crate",
-        "Name": "Basic Aluminium Crate",
-        "Type": "storage",
-        "Category": "other",
-        "Sides": "aluChestSide",
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "basic_aluminium_crate",
+    "Name": "Basic Aluminium Crate",
+    "Type": "storage",
+    "Category": "other",
+    "PowerToDrill": 1,
+    "Mass": 4,
+    "Durability": 10,
+    "StorageSize": {
+      "x": 8,
+      "y": 3
+    },
+    "Textures": {
+      "Active": {
+        "All": "aluChestSide",
         "Forward": "aluChestFront",
-        "Up": "aluChestTop",
-        "StorageSize": {
-            "x": 8,
-            "y": 3
-
-        },
-        "PowerToDrill": 1,
-        "Mass": 4,
-        "Durability": 10,
-        "IsTransparent": false
+        "Up": "aluChestTop"
+      }
+    }
+  },
+  {
+    "ID": "basic_iron_crate",
+    "Name": "Basic Iron Crate",
+    "Type": "storage",
+    "Category": "other",
+    "PowerToDrill": 2,
+    "Mass": 8,
+    "Durability": 20,
+    "StorageSize": {
+      "x": 8,
+      "y": 3
     },
-    {
-        "ID": "basic_iron_crate",
-        "Name": "Basic Iron Crate",
-        "Type": "storage",
-        "Category": "other",
-        "Sides": "ironChestSide",
+    "Textures": {
+      "Active": {
+        "All": "ironChestSide",
         "Forward": "ironChestFront",
-        "Up": "ironChestTop",
-        "StorageSize": {
-            "x": 8,
-            "y": 3
-
-        },
-        "PowerToDrill": 2,
-        "Mass": 8,
-        "Durability": 20,
-        "IsTransparent": false
+        "Up": "ironChestTop"
+      }
+    }
+  },
+  {
+    "ID": "basic_titanium_crate",
+    "Name": "Basic Titanium Crate",
+    "Type": "storage",
+    "Category": "",
+    "PowerToDrill": 3,
+    "Mass": 6,
+    "Durability": 30,
+    "StorageSize": {
+      "x": 8,
+      "y": 3
     },
-    {
-        "ID": "basic_titanium_crate",
-        "Name": "Basic Titanium Crate",
-        "Type": "storage",
-        "Category": "",
-        "Sides": "aluChestSide",
+    "Textures": {
+      "Active": {
+        "All": "aluChestSide",
         "Up": "aluChestTop",
-        "Down": "aluChestTop",
-        "StorageSize": {
-            "x": 8,
-            "y": 3
-
-        },
-        "PowerToDrill": 3,
-        "Mass": 6,
-        "Durability": 30,
-        "IsTransparent": false
+        "Down": "aluChestTop"
+      }
+    }
+  },
+  {
+    "ID": "safe",
+    "Name": "Armored Safe",
+    "Description": "Provides high security for valuable items",
+    "Type": "storage",
+    "Category": "other",
+    "PowerToDrill": 5,
+    "Mass": 50,
+    "Durability": 200,
+    "StorageSize": {
+      "x": 3,
+      "y": 3
     },
-    {
-        "ID": "safe",
-        "Name": "Armored Safe",
-        "Description": "Provides high security for valuable items",
-        "Type": "storage",
-        "Category": "other",
-        "Sides": "safe_side",
+    "Textures": {
+      "Active": {
+        "All": "safe_side",
         "Up": "safe_top",
         "Down": "safe_top",
-        "Forward": "safe_face",
-        "StorageSize": {
-            "x": 3,
-            "y": 3
-
-        },
-        "PowerToDrill": 5,
-        "Mass": 50,
-        "Durability": 200,
-        "IsTransparent": false
-    },
-    {
-        "ID": "cobalt_power_block",
-        "Name": "Standard Cobalt Power Block",
-        "Type": "generator",
-        "Category": "resources",
-        "Sides": "generatorSides",
-        "SidesOff": "generatorSidesOff",
-        "Up": "generator",
-        "UpOff": "generatorOff",
-        "Down": "generatorDown",
-        "DownOff": "generatorDownOff",
-         "FrontDirection": {
-            "x": 0,
-            "y": 0,
-            "z": 1
-        },
-        "PowerToDrill": 1,
-        "Mass": 4,
-        "Durability": 10,
-        "IsTransparent": false
-    },
-    {
-        "ID": "nuclear_power_block",
-        "Name": "Standard Nuclear Power Block",
-        "Type": "generator",
-        "Category": "resources",
-        "Sides": "nuclear_generator",
-        "PowerToDrill": 2,
-        "Mass": 5,
-        "Durability": 15,
-        "IsTransparent": false
-    },
-    {
-        "ID": "dna_reconstructor",
-        "Name": "DNA Reconstructor",
-        "Description": "Used to revive the player or other creatures",
-        "Category": "other",
-        "Up": "spawnerTop",
-        "Down": "bottom",
-        "Sides": "spawnerSide",
-        "PowerToDrill": 1,
-        "Mass": 6,
-        "Durability": 6,
-        "IsTransparent": false
+        "Forward": "safe_face"
+      }
     }
+  },
+  {
+    "ID": "cobalt_power_block",
+    "Name": "Standard Cobalt Power Block",
+    "Type": "generator",
+    "Category": "resources",
+    "PowerToDrill": 1,
+    "Mass": 4,
+    "Durability": 10,
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+    },
+    "Textures": {
+      "Active": {
+        "All": "generatorSides",
+        "Up": "generator",
+        "Down": "generatorDown"
+      },
+      "Inactive": {
+        "All": "generatorSidesOff",
+        "Up": "generatorOff",
+        "Down": "generatorDownOff"
+      }
+    }
+  },
+  {
+    "ID": "nuclear_power_block",
+    "Name": "Standard Nuclear Power Block",
+    "Type": "generator",
+    "Category": "resources",
+    "PowerToDrill": 2,
+    "Mass": 5,
+    "Durability": 15,
+    "Textures": {
+      "Active": {
+        "All": "nuclear_generator"
+      }
+    }
+  },
+  {
+    "ID": "dna_reconstructor",
+    "Name": "DNA Reconstructor",
+    "Description": "Used to revive the player or other creatures",
+    "Category": "other",
+    "PowerToDrill": 1,
+    "Mass": 6,
+    "Durability": 6,
+    "Textures": {
+      "Active": {
+        "All": "spawnerSide",
+        "Up": "spawnerTop",
+        "Down": "bottom"
+      }
+    }
+  }
 ]

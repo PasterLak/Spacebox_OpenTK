@@ -15,38 +15,39 @@ namespace Spacebox.Game.Resource
         public int Durability { get; set; } = 1;
         public float Efficiency { get; set; } = 1f;
 
-        public string Sides { get; set; } = "";
-        public string Up { get; set; } = "";
-        public string Down { get; set; } = "";
-
-        public string Left { get; set; }
-        public string Right { get; set; }
-        public string Forward { get; set; }
-        public string Back { get; set; }
-
-        // ---
-
-        public string SidesOff { get; set; } = "";
-        public string UpOff { get; set; } = "";
-        public string DownOff { get; set; } = "";
-
-        public string LeftOff { get; set; }
-        public string RightOff { get; set; }
-        public string ForwardOff { get; set; }
-        public string BackOff { get; set; }
+        public TextureGroup Textures { get; set; } = new TextureGroup();
+        public SoundGroup Sounds { get; set; } = new SoundGroup();
 
         public string Drop { get; set; } = "$self";
         public int DropQuantity { get; set; } = 1;
 
         public Vector3SByte FrontDirection { get; set; } = Block.DefaultDirectionVector;
 
-        public string SoundPlace { get; set; } = "blockPlaceDefault";
-        public string SoundDestroy { get; set; } = "blockDestroyDefault";
-
         public bool IsTransparent { get; set; } = false;
         public Color3Byte LightColor { get; set; } = Color3Byte.Black;
-        public Vector2Byte StorageSize { get; set; } = new Vector2Byte(3,3);
+        public Vector2Byte StorageSize { get; set; } = new Vector2Byte(3, 3);
     }
 
+    public class TextureGroup
+    {
+        public FaceTextures Active { get; set; } = new FaceTextures();
+        public FaceTextures Inactive { get; set; } = new FaceTextures();
+    }
 
+    public class FaceTextures
+    {
+        public string All { get; set; } = "";
+        public string Up { get; set; } = "";
+        public string Down { get; set; } = "";
+        public string Left { get; set; } = "";
+        public string Right { get; set; } = "";
+        public string Forward { get; set; } = "";
+        public string Back { get; set; } = "";
+    }
+
+    public class SoundGroup
+    {
+        public string Place { get; set; } = "blockPlaceDefault";
+        public string Destroy { get; set; } = "blockDestroyDefault";
+    }
 }
