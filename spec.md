@@ -128,11 +128,13 @@ Behaviour subclasses are created by `BlockFactory` from the JSON `Type` string (
 | `furnace`, `crusher`, `disassembler` | resource processing blocks |
 | `analyzer`, `radar` | utility blocks |
 | `generator`, `consumer`, `cable` | electrical network (`ElectricalManager`) |
+| `oxygengenerator` | electrical consumer (20/tick); while powered fills a sealed room with air (`Game/Generation/Oxygen`) |
 
 ### 4.3 Meshing and lighting
 
 - `MeshGenerator` builds chunk meshes and reads neighbouring chunks for faces at chunk borders. `ChunkLODMeshGenerator` builds reduced-detail meshes for distant chunks.
 - Block vertex layout (`block.glsl`): position `vec3`, UV `vec2`, colour `vec3`, normal `vec3`, AO `vec2`.
+- Oxygen: each `SpaceEntity` has an `OxygenSystem`. Air is not a block: breathable cells are bit masks per chunk, rebuilt by a flood fill from every oxygen generator over empty blocks (radius 32). Reaching the radius limit or a missing chunk counts as a leak (no air). Recalculated only when a generator is placed/removed, a chunk is added/removed, or a block changes next to a reached cell. Not saved; rebuilt on load.
 - `AOVoxels` computes per-vertex ambient occlusion. `LightManager` propagates block light and emission; changing emission or light requires rebuilding the chunk mesh.
 - Textures are packed into an atlas (`UVAtlas`, `AtlasTexture`) at the GameSet's `BlockSize` (32 px by default). Block and item icons are rendered isometrically (`IsometricIcon`).
 

@@ -81,6 +81,12 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 - Projectiles damage `body.Owner is IDamageable`; the shooter's body is ignored. Drills damage `body.Owner is IDrillable` (tier damage per second, `InteractionDestroyBlock.TryDrillTarget`).
 - The player pushes non-kinematic bodies on contact (`MovementMode.PushBody`, `BodyPushFactor`).
 
+## Oxygen
+
+- `Game/Generation/Oxygen/`: `OxygenSystem` per `SpaceEntity` (`entity.Oxygen`), `AirFloodFill` (pooled buffers, main thread only), `AirMasks` (per-chunk bit masks), `AirGrid` (entity-local coordinate helpers).
+- Block edits must notify it: `Chunk.PlaceBlock`/`RemoveBlock` call `Oxygen.OnBlockChanged`; bulk edits call `Oxygen.OnChunksChanged()`.
+- Query with `World.IsBreathable(worldPos)`.
+
 ## Menu
 
 - `Scenes/MenuScene.cs` draws static UIs in `OnGUI`. Menu music: `MenuMusicController` keeps playback in sync with `Settings.Audio.MenuMusic`; `MenuMusicButton` is the top-right toggle (icons `Resources/Textures/UI/musicOn.png` / `musicOff.png`).

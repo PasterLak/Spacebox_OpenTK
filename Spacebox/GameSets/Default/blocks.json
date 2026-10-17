@@ -940,5 +940,32 @@
         "Down": "bottom"
       }
     }
+  },
+  {
+    "ID": "oxygen_generator",
+    "Name": "Oxygen Generator",
+    "Description": "Fills a closed room with air (radius 32)",
+    "Type": "oxygengenerator",
+    "Category": "other",
+    "PowerToDrill": 1,
+    "Mass": 4,
+    "Durability": 8,
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+    },
+    "Textures": {
+      "Active": {
+        "All": "oxygenGeneratorSides",
+        "Up": "oxygenGenerator",
+        "Down": "generatorDown"
+      },
+      "Inactive": {
+        "All": "oxygenGeneratorSidesOff",
+        "Up": "oxygenGeneratorOff",
+        "Down": "generatorDownOff"
+      }
+    }
   }
 ]

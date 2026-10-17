@@ -60,6 +60,8 @@ Game
 - drill damages spacer (tier = damage/s), spacer drops its loot on death
 - equipment window: armor (+health), upgrades (generator +power, flashlight, scanner)
 - oxygen: bar, -1 every 10 s in survival (config), damage at 0, compressed oxygen +100
+- oxygen generator block: fills closed rooms with air (radius 32), +10 oxygen/s in air, "Air" on bar
+- oxygen generator needs 20 energy, on/off textures
 
 
 Small

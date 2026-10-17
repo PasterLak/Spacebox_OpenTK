@@ -2,6 +2,7 @@
 using Engine.Physics;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Oxygen;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Resource;
@@ -189,6 +190,9 @@ namespace Spacebox.Game.Generation
                     {
                         Block block = Blocks[x, y, z];
 
+                        if (block is OxygenGeneratorBlock oxygenGenerator)
+                            SpaceEntity.Oxygen.RegisterGenerator(this, x, y, z, oxygenGenerator);
+
                         if (block.Id != 0 && block is ElectricalBlock eBlock)
                         {
                             if (eBlock.EFlags == ElectricalFlags.None)
@@ -288,9 +292,11 @@ namespace Spacebox.Game.Generation
                 return;
             }
 
-            if (block.Id == Blocks[x, y, z].Id) return;
+            var oldBlock = Blocks[x, y, z];
+            if (block.Id == oldBlock.Id) return;
 
             Blocks[x, y, z] = block;
+            SpaceEntity.Oxygen.OnBlockChanged(this, x, y, z, oldBlock, block);
             IsModified = true;
             DataVersion++;
 
@@ -387,6 +393,7 @@ namespace Spacebox.Game.Generation
             }
 
             Blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
+            SpaceEntity.Oxygen.OnBlockChanged(this, x, y, z, block, Blocks[x, y, z]);
             IsModified = true;
             DataVersion++;
 

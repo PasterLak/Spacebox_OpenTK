@@ -163,6 +163,21 @@ public class World : Component, ISpaceStructure
             sector.Value.Render(material);
         }
     }
+    public bool IsBreathable(Vector3 worldPosition)
+    {
+        if (CurrentSector == null) return false;
+
+        var entities = CurrentSector.Entities;
+        for (int i = 0; i < entities.Count; i++)
+        {
+            var entity = entities[i];
+            if (entity.Oxygen.GeneratorCount == 0 || !entity.IsPositionWithinEntitySize(worldPosition)) continue;
+            if (entity.Oxygen.IsOxygenated(entity.WorldPositionToLocal(worldPosition))) return true;
+        }
+
+        return false;
+    }
+
     public bool IsColliding(Vector3 pos, BoundingVolume volume, out CollideInfo collideInfo)
     {
         if (CurrentSector == null)

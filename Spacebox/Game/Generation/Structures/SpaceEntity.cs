@@ -5,6 +5,7 @@ using OpenTK.Mathematics;
 using Spacebox.Game.Effects;
 using Spacebox.Game.GameMath;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Oxygen;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
@@ -59,6 +60,7 @@ namespace Spacebox.Game.Generation
         private string _entityMassString = "0 tn";
         public BoundingBox GeometryBoundingBox { get; private set; }
         public ElectricNetworkManager ElectricManager { get; private set; }
+        public OxygenSystem Oxygen { get; private set; }
         public Particle StarParticle;
 
         private StringBuilder StringBuilder = new StringBuilder();
@@ -77,6 +79,7 @@ namespace Spacebox.Game.Generation
             GeometryBoundingBox = new BoundingBox(positionWorld, Vector3.Zero);
 
             ElectricManager = new ElectricNetworkManager();
+            Oxygen = new OxygenSystem(this);
 
             CalculateCenterOfMass();
 
@@ -181,6 +184,7 @@ namespace Spacebox.Game.Generation
 
             chunk.OnChunkModified += UpdateEntityGeometryMinMax;
             UpdateNeighbors(chunk);
+            Oxygen.OnChunksChanged();
             RecalculateGeometryBoundingBox();
             RecalculateMass();
 
@@ -201,6 +205,7 @@ namespace Spacebox.Game.Generation
             chunk.Dispose();
 
             UpdateNeighbors(chunk, true);
+            Oxygen.OnChunksChanged();
             RecalculateGeometryBoundingBox();
             RecalculateMass();
             if (Chunks.Count == 0)
@@ -423,6 +428,7 @@ namespace Spacebox.Game.Generation
         {
             base.Update();
             HandleTag();
+            Oxygen.Update();
             ProcessMeshUpdates();
         }
 

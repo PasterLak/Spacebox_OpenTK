@@ -25,6 +25,9 @@ namespace Spacebox.Game.GUI
                 if (ast.CurrentInteraction != null)
                     ImGui.Text($"Interaction: {ast.CurrentInteraction.GetType().Name}");
 
+                bool inAir = World.Instance != null && World.Instance.IsBreathable(ast.Position);
+                ImGui.Text($"In air: {(inAir ? "yes" : "no")}");
+
                 
                     
 

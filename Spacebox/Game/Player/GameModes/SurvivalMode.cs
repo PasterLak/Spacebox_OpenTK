@@ -1,5 +1,6 @@
 namespace Spacebox.Game.Player.GameModes;
 using Engine;
+using Spacebox.Game.Generation;
 using Spacebox.Game.Player.Interactions;
 
 public class SurvivalMode : MovementMode
@@ -47,7 +48,7 @@ public class SurvivalMode : MovementMode
     {
         player.PowerBar.Update();
         player.HealthBar.Update();
-        player.OxygenBar.Update();
+        player.OxygenBar.Update(World.Instance != null && World.Instance.IsBreathable(player.Position));
         UpdateSuffocation(player);
     }
 

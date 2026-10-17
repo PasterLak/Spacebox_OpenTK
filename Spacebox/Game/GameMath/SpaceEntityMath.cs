@@ -125,6 +125,8 @@ public class SpaceEntityMath
             }
         }
 
+        if (modified.Count > 0) entity.Oxygen.OnChunksChanged();
+
         return modified.ToList();
     }
 
@@ -193,6 +195,8 @@ public class SpaceEntityMath
                 }
             }
         }
+
+        if (modified.Count > 0) entity.Oxygen.OnChunksChanged();
 
         return modified.ToList();
     }

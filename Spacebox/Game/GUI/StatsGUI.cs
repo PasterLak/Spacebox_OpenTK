@@ -36,6 +36,7 @@ namespace Spacebox.Game.GUI
         public Anchor Anchor { get; set; } = Anchor.TopLeft;
         public string WindowName { get; set; } = "StatsBar";
         public bool ShowText = true;
+        public string TextOverride { get; set; }
         public Vector2 Size { get; set; } = new Vector2(200, 50);
         public StatsGUI(StatsData statsData)
         {
@@ -141,7 +142,7 @@ namespace Spacebox.Game.GUI
             );
 
 
-            string text = $"{StatsData.Value}/{StatsData.MaxValue}";
+            string text = TextOverride ?? $"{StatsData.Value}/{StatsData.MaxValue}";
 
         
             Vector2 textSize = ImGui.CalcTextSize(text);
