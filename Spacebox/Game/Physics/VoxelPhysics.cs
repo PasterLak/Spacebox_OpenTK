@@ -172,6 +172,7 @@ namespace Spacebox.Game.Physics
             hitInfo.blockPositionIndex = new Vector3Byte(0, 0, 0); // or -1 ????
             hitInfo.blockPositionEntity = new Vector3i(0) ;    
             hitInfo.normal = Vector3SByte.Zero;
+            hitInfo.normalWorld = Vector3.Zero;
             hitInfo.chunk = chunk;
             hitInfo.block = null;
 

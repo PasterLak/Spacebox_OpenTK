@@ -207,7 +207,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
                 if (BlockMiningEffect != null)
                     BlockMiningEffect.Enabled = true;
 
-                var effectPosition = hit.hitPosition + new Vector3(hit.normal.X, hit.normal.Y, hit.normal.Z) * 0.05f;
+                var effectPosition = hit.hitPosition + hit.normalWorld * 0.05f;
                 var toPlayer = Vector3.Normalize(player.Position - effectPosition);
 
                 if (BlockMiningEffect != null)

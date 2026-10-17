@@ -207,10 +207,10 @@ public class Projectile : Node3D
     {
         if (Parameters.RicochetAngle <= 0 || currentRicochets >= Parameters.PossibleRicochets) return false;
 
-        var angle = Ray.CalculateIncidentAngle(ray, hit.normal);
+        var angle = Ray.CalculateIncidentAngle(ray, hit.normalWorld);
         if (angle > Parameters.RicochetAngle) return false;
 
-        ray = ray.CalculateRicochetRay(hit.hitPosition, hit.normal, ray.Length);
+        ray = ray.CalculateRicochetRay(hit.hitPosition, hit.normalWorld, ray.Length);
         PlayRicochetSound(hit.hitPosition);
 
         if (astronaut != null)
@@ -241,7 +241,7 @@ public class Projectile : Node3D
     {
         ProcessHitStats(hit.hitPosition);
 
-        Vector3 effectPos = hit.hitPosition + hit.normal.ToVector3() * 0.1f;
+        Vector3 effectPos = hit.hitPosition + hit.normalWorld * 0.1f;
 
         if (Parameters.Penetration >= hit.block.Durability)
         {

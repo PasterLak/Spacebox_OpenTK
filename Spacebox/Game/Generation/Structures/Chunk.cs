@@ -255,8 +255,17 @@ namespace Spacebox.Game.Generation
         {
             if (!_isLoadedOrGenerated || IsDisposed) return;
 
-            Vector3 position = RenderSpace.ToRender(PositionWorld);
-            Matrix4 model = Matrix4.CreateTranslation(position);
+            Matrix4 model;
+            if (SpaceEntity.HasRotation)
+            {
+                model = Matrix4.CreateTranslation(PositionWorld - SpaceEntity.PositionWorld)
+                        * SpaceEntity.RotationMatrix
+                        * Matrix4.CreateTranslation(RenderSpace.ToRender(SpaceEntity.PositionWorld));
+            }
+            else
+            {
+                model = Matrix4.CreateTranslation(RenderSpace.ToRender(PositionWorld));
+            }
 
             material.Apply(model);
 
@@ -383,11 +392,12 @@ namespace Spacebox.Game.Generation
                 }
             }
 
-            World.DestructionManager.DestroyBlock(worldBlockPosition, effectLightColor, block);
+            var effectPosition = SpaceEntity.BlockCenterToWorldCorner(worldBlockPosition);
+            World.DestructionManager.DestroyBlock(effectPosition, effectLightColor, block);
 
             if (spawnDrop)
             {
-                World.DropEffectManager.DropBlock(worldBlockPosition, effectLightColor, block, SpaceEntity);
+                World.DropEffectManager.DropBlock(effectPosition, effectLightColor, block, SpaceEntity);
             }
 
             if (block is ElectricalBlock)

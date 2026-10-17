@@ -64,11 +64,12 @@ public class InteractionPlaceBlock : InteractionMode
             hit.blockPositionIndex.Y + hit.normal.Y,
             hit.blockPositionIndex.Z + hit.normal.Z) + hit.chunk.PositionWorld;
 
+        var entity = hit.chunk.SpaceEntity;
         if (BlockSelector.Instance.CurrentBlockData == null) return selectorPositionWorld;
 
-        BlockPlacementHelper.CalculateOrientation(player.PositionWorld, selectorPositionWorld, player.Up,
+        BlockPlacementHelper.CalculateOrientation(entity.ToEntitySpace(player.PositionWorld), selectorPositionWorld, entity.DirectionToEntitySpace(player.Up),
                      hit.normal.ToVector3(), BlockSelector.Instance.EnableMagnet, BlockSelector.Instance.EnableMagnet, BlockSelector.Instance.CurrentBlockData, BlockSelector.Instance.Rotation, out var finalDir, out var finalRot);
-        BlockSelector.Instance.UpdatePosition(selectorPositionWorld, finalDir, finalRot, true);
+        BlockSelector.Instance.UpdatePosition(selectorPositionWorld, finalDir, finalRot, true, entity);
         lineRenderer.Enabled = false;
         /*
         lineRenderer.Points[0] = selectorPositionWorld + new Vector3(0.5f, 0.5f, 0.5f);
@@ -97,7 +98,7 @@ public class InteractionPlaceBlock : InteractionMode
         {
 
             var pos = hit.blockPositionIndex + hit.chunk.PositionWorld + hit.normal + new Vector3(0.5f, 0.5f, 0.5f);
-            var disSqrt = Vector3.DistanceSquared(pos, player.Position);
+            var disSqrt = Vector3.DistanceSquared(pos, hit.chunk.SpaceEntity.ToEntitySpace(player.Position));
 
             /*if (Input.IsKeyDown(Keys.KeyPad1))
             {
@@ -161,7 +162,7 @@ public class InteractionPlaceBlock : InteractionMode
                     //chunk.PlaceBlock(x, y, z, newBlock);
 
 
-                    BlockPlacementHelper.CalculateOrientation(player.PositionWorld, selectorPos, player.Up,
+                    BlockPlacementHelper.CalculateOrientation(chunk.SpaceEntity.ToEntitySpace(player.PositionWorld), selectorPos, chunk.SpaceEntity.DirectionToEntitySpace(player.Up),
                         hit.normal.ToVector3(), BlockSelector.Instance.EnableMagnet, BlockSelector.Instance.EnableMagnet,
                        blockData, cachedBlockRotation, out var finalDir, out var finalRot);
 
@@ -228,7 +229,7 @@ public class InteractionPlaceBlock : InteractionMode
 
         if (World.CurrentSector != null && World.CurrentSector.TryGetNearestEntity(selectorPosition, out entity))
         {
-            localPos = entity.WorldPositionToLocal(selectorPosition);
+            localPos = entity.WorldPositionToLocal(entity.ToEntitySpace(selectorPosition));
 
             localPos.X = (int)MathF.Floor(localPos.X);
             localPos.Y = (int)MathF.Floor(localPos.Y);
@@ -240,17 +241,20 @@ public class InteractionPlaceBlock : InteractionMode
         }
 
 
-        var norm = (player.Position - selectorPosition).Normalized();
+        var playerPosition = entity != null ? entity.ToEntitySpace(player.Position) : player.Position;
+        var playerUp = entity != null ? entity.DirectionToEntitySpace(player.Up) : player.Up;
+
+        var norm = (playerPosition - selectorPosition).Normalized();
 
         norm = Block.RoundVector3(norm);
 
         var direction = Block.GetDirectionFromNormal(norm);
 
-        BlockPlacementHelper.CalculateOrientation(player.PositionWorld, selectorPosition, player.Up,
+        BlockPlacementHelper.CalculateOrientation(playerPosition, selectorPosition, playerUp,
                   new Vector3(0, 0, 0), false, false, BlockSelector.Instance.CurrentBlockData, cachedBlockRotation, out var finalDir, out var finalRot);
 
         if (BlockSelector.Instance != null)
-            BlockSelector.Instance.UpdatePosition(selectorPosition, finalDir, finalRot, false);
+            BlockSelector.Instance.UpdatePosition(selectorPosition, finalDir, finalRot, false, entity);
 
         if (entity != null)
         {
@@ -258,8 +262,8 @@ public class InteractionPlaceBlock : InteractionMode
 
             if (dis <= entity.GravityRadius * entity.GravityRadius)
             {
-                lineRenderer.Points[0] = selectorPosition + new Vector3(0.5f, 0.5f, 0.5f);
-                lineRenderer.Points[1] = entity.CenterOfMass;
+                lineRenderer.Points[0] = entity.ToWorldSpace(selectorPosition + new Vector3(0.5f, 0.5f, 0.5f));
+                lineRenderer.Points[1] = entity.CenterOfMassWorld;
                 lineRenderer.SetNeedsRebuild();
                 lineRenderer.Enabled = true;
             }
@@ -318,7 +322,7 @@ public class InteractionPlaceBlock : InteractionMode
                     }
                     else
                     {
-                        var newEntity = World.CurrentSector.CreateNewEntity(selectorPosition);
+                        var newEntity = World.CurrentSector.CreateNewEntity(entity.ToWorldSpace(selectorPosition));
 
                         newEntity.CreateFirstBlock(newBlock);
                         player.PlayerStatistics.BlocksPlaced++;

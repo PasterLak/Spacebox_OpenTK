@@ -56,7 +56,7 @@ public abstract class InteractionDestroyBlock : InteractionMode
         BlockSelector.Instance.Enabled = true;
         AImedBlockElement.AimedBlock = hit.block;
         Vector3 selectorPos = hit.blockPositionIndex + hit.chunk.PositionWorld;
-        BlockSelector.Instance.UpdatePosition(selectorPos, Block.GetDirectionFromNormal(hit.normal), Rotation.None, false);
+        BlockSelector.Instance.UpdatePosition(selectorPos, Block.GetDirectionFromNormal(hit.normal), Rotation.None, false, hit.chunk.SpaceEntity);
         BlockSelector.Instance.LineRenderer.Enabled = false;
     }
 

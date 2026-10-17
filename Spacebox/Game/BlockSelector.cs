@@ -1,6 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using Engine;
 using Spacebox.Game.GUI;
+using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Resource;
@@ -46,6 +47,7 @@ public class BlockSelector : Node3D
     private Texture2D _selectorTexture;
     private LineRenderer _magnetLineRenderer;
     private Matrix4 _currentTransform = Matrix4.Identity;
+    private Matrix4 _entityRotation = Matrix4.Identity;
     private Direction _blockDirection = Block.DefaultDirection;
     private Rotation _blockRotation = Block.DefaultRotation;
 
@@ -109,7 +111,8 @@ public class BlockSelector : Node3D
 
     public void OnSelectedSlotWasChanged(short slot)
     {
-        SimpleBlock.ResetBlockTransform();
+        _currentTransform = Matrix4.Identity;
+        ApplyBlockTransform();
         _transformDirty = true;
 
         if (PanelUI.IsHolding<DrillItem>())
@@ -184,20 +187,34 @@ public class BlockSelector : Node3D
             );
         }
 
-        SimpleBlock.SetBlockTransform(_currentTransform);
+        ApplyBlockTransform();
         _transformDirty = true;
     }
 
-    public void UpdatePosition(Vector3 position, Direction direction, Rotation rotation, bool onSurface)
+    private void ApplyBlockTransform()
     {
-        Vector3 newPosition = position + Vector3.One * 0.5f;
+        SimpleBlock.SetBlockTransform(_currentTransform * _entityRotation);
+    }
+
+    public void UpdatePosition(Vector3 position, Direction direction, Rotation rotation, bool onSurface, SpaceEntity entity = null)
+    {
+        Vector3 center = position + Vector3.One * 0.5f;
+        Vector3 newPosition = entity != null ? entity.ToWorldSpace(center) : center;
+        Matrix4 entityRotation = entity != null && entity.HasRotation ? entity.RotationMatrix : Matrix4.Identity;
 
         if (SimpleBlock.Position == newPosition &&
             _blockDirection == direction &&
             _blockRotation == rotation &&
-            _onSurface == onSurface)
+            _onSurface == onSurface &&
+            _entityRotation == entityRotation)
         {
             return;
+        }
+
+        if (_entityRotation != entityRotation)
+        {
+            _entityRotation = entityRotation;
+            ApplyBlockTransform();
         }
 
         LineRenderer.Enabled = !onSurface;
@@ -297,7 +314,7 @@ public class BlockSelector : Node3D
 
         for (int i = 0; i < _baseCorners.Length; i++)
         {
-            Vector4 transformed = _baseCorners[i] * _currentTransform;
+            Vector4 transformed = _baseCorners[i] * (_currentTransform * _entityRotation);
             _cachedMagnetPoints.Add(transformed.Xyz + pos);
         }
         _cachedMagnetPoints.Add(_cachedMagnetPoints[0]);

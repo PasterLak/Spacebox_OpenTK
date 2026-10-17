@@ -13,6 +13,7 @@ namespace Spacebox.Game.Physics
         public Vector3Byte blockPositionIndex;
         public Vector3i blockPositionEntity;
         public Vector3SByte normal;
+        public Vector3 normalWorld;
         public Chunk chunk;
         public Block block;
 

@@ -35,6 +35,8 @@ namespace Spacebox.Game.Generation
 
             if (!generate) return;
 
+            SetOrientation(CreateOrientation(Seed));
+
             var asteroidData = data.asteroid;
             diameterBlocks = data.radiusBlocks + data.radiusBlocks;
             Vector3 diameter = new Vector3(diameterBlocks);
@@ -45,6 +47,19 @@ namespace Spacebox.Game.Generation
                 asteroidData,
                 seed: (int)Seed
             );
+        }
+
+        public static Quaternion CreateOrientation(int seed)
+        {
+            var random = new Random(seed ^ 0x2F6B1A3D);
+            float u1 = (float)random.NextDouble();
+            float u2 = (float)random.NextDouble() * MathF.Tau;
+            float u3 = (float)random.NextDouble() * MathF.Tau;
+
+            float a = MathF.Sqrt(1f - u1);
+            float b = MathF.Sqrt(u1);
+
+            return new Quaternion(a * MathF.Sin(u2), a * MathF.Cos(u2), b * MathF.Sin(u3), b * MathF.Cos(u3));
         }
 
         public bool CanRegenerate => voxelGen != null;
@@ -137,7 +152,7 @@ namespace Spacebox.Game.Generation
 
             foreach (var idx in toCheck)
             {
-                var bounds = ComputeChunkBounds(idx);
+                var bounds = ToWorldBounds(ComputeChunkBounds(idx));
                 if ((bounds.Center - cam.Position).LengthSquared > visR2 || !frustum.IsInFrustum(bounds))
                     continue;
 

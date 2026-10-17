@@ -324,13 +324,14 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         var radius = (geometryBox.Max.Length -
                       geometryBox.Min.Length) / 2 + 100;
 
-        var pos = SpaceMath.Sector.GetRandomPointOnSphere(geometryBox.Center, random, radius);
+        var center = entity.ToWorldSpace(geometryBox.Center);
+        var pos = SpaceMath.Sector.GetRandomPointOnSphere(center, random, radius);
 
         var near = IsPointInEntity(pos, out var nearest3);
 
         while (near == true)
         {
-            pos = SpaceMath.Sector.GetRandomPointOnSphere(geometryBox.Center, random, radius);
+            pos = SpaceMath.Sector.GetRandomPointOnSphere(center, random, radius);
             near = IsPointInEntity(pos, out var nearest4);
         }
 
@@ -379,7 +380,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         for (byte i = 0; i < Entities.Count; i++)
         {
-            Vector3 diff = positionWorld - Entities[i].CenterOfMass;
+            Vector3 diff = positionWorld - Entities[i].CenterOfMassWorld;
             float distSq = diff.LengthSquared;
             if (distSq < nearestDistSq)
             {
@@ -468,7 +469,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         entity = null;
         foreach (var a in Entities)
         {
-            if (a.GeometryBoundingBox.Contains(point))
+            if (a.GeometryBoundingBox.Contains(a.ToEntitySpace(point)))
             {
                 entity = a;
                 return true;
@@ -591,7 +592,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
             entity.Update();
 
-            VisualDebug.DrawSphere(entity.CenterOfMass, entity.GravityRadius, 8, Color4.Blue);
+            VisualDebug.DrawSphere(entity.CenterOfMassWorld, entity.GravityRadius, 8, Color4.Blue);
         }
     }
 
@@ -607,10 +608,11 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         {
             var entity = Entities[i];
 
-            if (!cam.Frustum.IsInFrustum(entity.GeometryBoundingBox))
+            var worldBounds = entity.ToWorldBounds(entity.GeometryBoundingBox);
+            if (!cam.Frustum.IsInFrustum(worldBounds))
                 continue;
 
-            float distSqr = Vector3.DistanceSquared(entity.GeometryBoundingBox.Center, cam.Position);
+            float distSqr = Vector3.DistanceSquared(worldBounds.Center, cam.Position);
             bool isWithinRenderDistance = distSqr < visibleRadiusSqr;
 
             if (isWithinRenderDistance)

@@ -108,7 +108,7 @@ namespace Spacebox.Game.Generation.Tools
                 var rz = tag.Get<FloatTag>(NBTKey.ENTITY.rotation_z);
                 var rw = tag.Get<FloatTag>(NBTKey.ENTITY.rotation_w);
 
-                spaceEntity.Rotation = new Quaternion(rx, ry, rz, rw).ToEulerAngles();
+                spaceEntity.SetOrientation(new Quaternion(rx, ry, rz, rw));
             }
 
             var chunksList = tag.Get<ListTag>(NBTKey.ENTITY.chunks);
@@ -146,7 +146,7 @@ namespace Spacebox.Game.Generation.Tools
             root.Add(new FloatTag(NBTKey.ENTITY.local_y, localPos.Y));
             root.Add(new FloatTag(NBTKey.ENTITY.local_z, localPos.Z));
 
-            Quaternion rot = Quaternion.FromEulerAngles(entity.Rotation);
+            Quaternion rot = entity.Orientation;
 
             root.Add(new FloatTag(NBTKey.ENTITY.rotation_x, rot.X));
             root.Add(new FloatTag(NBTKey.ENTITY.rotation_y, rot.Y));

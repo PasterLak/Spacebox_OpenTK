@@ -61,6 +61,7 @@ Game
 - equipment window: armor (+health), upgrades (generator +power, flashlight, scanner)
 - item/block icons and UI elements in one atlas (fewer draw calls)
 - asteroids save only changed chunks, the rest is regenerated
+- asteroids have a random rotation from their seed (saved)
 - oxygen: bar, -1 every 10 s in survival (config), death at 0, compressed oxygen +100
 - oxygen generator block: fills closed rooms with air (radius 32), +10 oxygen/s in air, "Air" on bar
 - oxygen generator needs 20 energy, on/off textures

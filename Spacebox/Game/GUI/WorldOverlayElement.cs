@@ -56,13 +56,13 @@ namespace Spacebox.Game.GUI
 
                 if (World.CurrentSector.IsPointInEntity(pos, out var entity))
                 {
-                    var p1 = entity.WorldPositionToLocal(pos);
+                    var p1 = entity.WorldPositionToLocal(entity.ToEntitySpace(pos));
                     ImGui.Text($"Entity: {Vector3Int(p1)} Index: {entity.PositionIndex}");
 
-                    if (entity.IsPositionInChunk(pos, out var chunk))
+                    if (entity.IsPositionInChunk(entity.ToEntitySpace(pos), out var chunk))
                     {
 
-                        ImGui.Text($"Chunk: {SpaceMath.Entity.WorldPositionToBlockInChunk(entity, pos)} Index: {chunk.PositionIndex}");
+                        ImGui.Text($"Chunk: {SpaceMath.Entity.WorldPositionToBlockInChunk(entity, entity.ToEntitySpace(pos))} Index: {chunk.PositionIndex}");
                     }
                 }
 

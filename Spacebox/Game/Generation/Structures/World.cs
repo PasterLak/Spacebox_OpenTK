@@ -171,8 +171,11 @@ public class World : Component, ISpaceStructure
         for (int i = 0; i < entities.Count; i++)
         {
             var entity = entities[i];
-            if (entity.Oxygen.GeneratorCount == 0 || !entity.IsPositionWithinEntitySize(worldPosition)) continue;
-            if (entity.Oxygen.IsOxygenated(entity.WorldPositionToLocal(worldPosition))) return true;
+            if (entity.Oxygen.GeneratorCount == 0) continue;
+
+            var entitySpacePosition = entity.ToEntitySpace(worldPosition);
+            if (!entity.IsPositionWithinEntitySize(entitySpacePosition)) continue;
+            if (entity.Oxygen.IsOxygenated(entity.WorldPositionToLocal(entitySpacePosition))) return true;
         }
 
         return false;

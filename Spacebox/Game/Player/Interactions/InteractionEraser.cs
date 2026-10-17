@@ -125,7 +125,7 @@ public class InteractionEraser : InteractionMode
 
         }
 
-        pointer.Position = selectorPosition + Vector3.One * 0.5f;
+        pointer.Position = entity.ToWorldSpace(selectorPosition + Vector3.One * 0.5f);
 
 
 
@@ -156,7 +156,7 @@ public class InteractionEraser : InteractionMode
             if (CreativeTools.Block2 != null)
             {
                 cube2.Enabled = true;
-                cube2.Position = selectorPosition + Vector3.One * 0.5f;
+                cube2.Position = entity.ToWorldSpace(selectorPosition + Vector3.One * 0.5f);
             }
             else
             {
@@ -179,7 +179,7 @@ public class InteractionEraser : InteractionMode
             if (CreativeTools.Block1 != null)
             {
                 cube1.Enabled = true;
-                cube1.Position = selectorPosition + Vector3.One * 0.5f;
+                cube1.Position = entity.ToWorldSpace(selectorPosition + Vector3.One * 0.5f);
             }
             else
             {
@@ -209,7 +209,7 @@ public class InteractionEraser : InteractionMode
 
         if (World.CurrentSector.TryGetNearestEntity(selectorPosition, out entity))
         {
-            localPos = entity.WorldPositionToLocal(selectorPosition);
+            localPos = entity.WorldPositionToLocal(entity.ToEntitySpace(selectorPosition));
 
             localPos.X = (int)MathF.Floor(localPos.X);
             localPos.Y = (int)MathF.Floor(localPos.Y);

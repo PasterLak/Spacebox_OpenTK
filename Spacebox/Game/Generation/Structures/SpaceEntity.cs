@@ -34,6 +34,15 @@ namespace Spacebox.Game.Generation
 
         private Vector3 sumPosCenterOfMass;
         public Vector3 CenterOfMass { get; private set; }
+        public Vector3 CenterOfMassWorld => ToWorldSpace(CenterOfMass);
+
+        public Quaternion Orientation { get; private set; } = Quaternion.Identity;
+        public bool HasRotation { get; private set; }
+        private Quaternion _inverseOrientation = Quaternion.Identity;
+        private Matrix4 _rotationMatrix = Matrix4.Identity;
+        private readonly Ray _entitySpaceRay = new Ray(Vector3.Zero, Vector3.UnitZ, 1f);
+        private readonly BoundingSphere _entitySpaceSphere = new BoundingSphere(Vector3.Zero, 0f);
+        private readonly BoundingBox _worldBoundsScratch = new BoundingBox(Vector3.Zero, Vector3.Zero);
 
         private bool _isModified = false;
         public bool IsModified
@@ -88,7 +97,7 @@ namespace Spacebox.Game.Generation
             {
                 if (TagManager.Instance != null)
                 {
-                    tag = TagManager.Instance.CreateTag("", CenterOfMass, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
+                    tag = TagManager.Instance.CreateTag("", CenterOfMassWorld, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
                 }
             });
 
@@ -419,7 +428,7 @@ namespace Spacebox.Game.Generation
             int distance = 0;
             if (Camera.Main != null)
             {
-                distance = (int)Vector3.DistanceSquared(Camera.Main.Position, chunk.GeometryBoundingBox.Center);
+                distance = (int)Vector3.DistanceSquared(ToEntitySpace(Camera.Main.Position), chunk.GeometryBoundingBox.Center);
             }
 
             MeshUpdateQueue.Enqueue(chunk, (int)reason + distance);
@@ -531,7 +540,7 @@ namespace Spacebox.Game.Generation
 
             if (camera == null) return;
 
-            var dis = (int)(Vector3.Distance(CenterOfMass, camera.Position));
+            var dis = (int)(Vector3.Distance(CenterOfMassWorld, camera.Position));
 
             if (VisualDebug.Enabled)
             {
@@ -543,7 +552,7 @@ namespace Spacebox.Game.Generation
                    .Append("\n")
                   .Append(IsProcedural() ? "Asteroid" : "Spaceship")
                   .Append("\nWpos: ")
-                  .Append(Block.RoundVector3(CenterOfMass))
+                  .Append(Block.RoundVector3(CenterOfMassWorld))
                   .Append("\n")
                   .Append(dis)
                   .Append(" m\n")
@@ -569,13 +578,34 @@ namespace Spacebox.Game.Generation
             }
             else if (TagManager.Instance != null)
             {
-                tag = TagManager.Instance.CreateTag(StringBuilder.ToString(), CenterOfMass, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
+                tag = TagManager.Instance.CreateTag(StringBuilder.ToString(), CenterOfMassWorld, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
             }
 
             StringBuilder.Clear();
         }
 
         public bool Raycast(Ray ray, out HitInfo hitInfo)
+        {
+            if (!HasRotation)
+            {
+                bool directHit = RaycastEntitySpace(ray, out hitInfo);
+                if (directHit) hitInfo.normalWorld = hitInfo.normal.ToVector3();
+                return directHit;
+            }
+
+            _entitySpaceRay.Origin = ToEntitySpace(ray.Origin);
+            _entitySpaceRay.Direction = DirectionToEntitySpace(ray.Direction).Normalized();
+            _entitySpaceRay.Length = ray.Length;
+
+            if (!RaycastEntitySpace(_entitySpaceRay, out hitInfo)) return false;
+
+            hitInfo.hitPosition = ToWorldSpace(hitInfo.hitPosition);
+            hitInfo.blockPositionWorld = ToWorldSpace(hitInfo.blockPositionWorld);
+            hitInfo.normalWorld = DirectionToWorldSpace(hitInfo.normal.ToVector3());
+            return true;
+        }
+
+        private bool RaycastEntitySpace(Ray ray, out HitInfo hitInfo)
         {
             hitInfo = new HitInfo();
 
@@ -640,19 +670,20 @@ namespace Spacebox.Game.Generation
         public void Render(Camera camera, BlockMaterial material)
         {
             chunks.Clear();
-            Octree.FindDataInRadius(WorldPositionToLocal(camera.Position), Settings.CHUNK_VISIBLE_RADIUS, chunks);
+            var cameraEntitySpace = ToEntitySpace(camera.Position);
+            Octree.FindDataInRadius(WorldPositionToLocal(cameraEntitySpace), Settings.CHUNK_VISIBLE_RADIUS, chunks);
 
             foreach (var chunk in chunks)
             {
-                var dis = (int)(camera.Position - chunk.GeometryBoundingBox.Center).LengthSquared;
+                var dis = (int)(cameraEntitySpace - chunk.GeometryBoundingBox.Center).LengthSquared;
 
                 if (dis < Settings.CHUNK_VISIBLE_RADIUS * Settings.CHUNK_VISIBLE_RADIUS)
                 {
-                    bool visible = chunk.GeometryBoundingBox.Contains(camera.Position);
+                    bool visible = chunk.GeometryBoundingBox.Contains(cameraEntitySpace);
 
                     if (!visible)
                     {
-                        visible = camera.Frustum.IsInFrustum(chunk.GeometryBoundingBox);
+                        visible = camera.Frustum.IsInFrustum(ToWorldBounds(chunk.GeometryBoundingBox));
                     }
 
                     if (!visible) continue;
@@ -668,12 +699,19 @@ namespace Spacebox.Game.Generation
                 VisualDebug.DrawPosition(GeometryBoundingBox.Center, 6, Color4.Orange);
 
                 VisualDebug.DrawBoundingBox(GeometryBoundingBox, Color4.Orange);
-                VisualDebug.DrawPosition(CenterOfMass, 8, Color4.Lime);
+                VisualDebug.DrawPosition(CenterOfMassWorld, 8, Color4.Lime);
             }
         }
 
         public bool IsColliding(BoundingVolume volume, out CollideInfo collideInfo)
         {
+            if (HasRotation && volume is BoundingSphere sphere)
+            {
+                _entitySpaceSphere.Center = ToEntitySpace(sphere.Center);
+                _entitySpaceSphere.Radius = sphere.Radius;
+                volume = _entitySpaceSphere;
+            }
+
             bool c = false;
 
             var collideInfo2 = new CollideInfo();
@@ -731,13 +769,73 @@ namespace Spacebox.Game.Generation
             if (Mass == 0)
             {
                 CenterOfMass = BoundingBox.Center;
-                if (tag != null) tag.WorldPosition = CenterOfMass;
+                if (tag != null) tag.WorldPosition = CenterOfMassWorld;
 
                 return;
             }
 
             CenterOfMass = sumPosCenterOfMass / Mass;
-            if (tag != null) tag.WorldPosition = CenterOfMass;
+            if (tag != null) tag.WorldPosition = CenterOfMassWorld;
+        }
+
+        public void SetOrientation(Quaternion orientation)
+        {
+            Orientation = orientation.LengthSquared > 0f ? Quaternion.Normalize(orientation) : Quaternion.Identity;
+            _inverseOrientation = Quaternion.Invert(Orientation);
+            _rotationMatrix = Matrix4.CreateFromQuaternion(Orientation);
+            HasRotation = MathF.Abs(MathF.Abs(Orientation.W) - 1f) > 0.000001f;
+
+            if (tag != null) tag.WorldPosition = CenterOfMassWorld;
+        }
+
+        public Matrix4 RotationMatrix => _rotationMatrix;
+
+        public Vector3 ToEntitySpace(Vector3 worldPosition)
+        {
+            if (!HasRotation) return worldPosition;
+            return PositionWorld + Vector3.Transform(worldPosition - PositionWorld, _inverseOrientation);
+        }
+
+        public Vector3 ToWorldSpace(Vector3 entitySpacePosition)
+        {
+            if (!HasRotation) return entitySpacePosition;
+            return PositionWorld + Vector3.Transform(entitySpacePosition - PositionWorld, Orientation);
+        }
+
+        public Vector3 DirectionToEntitySpace(Vector3 worldDirection)
+        {
+            return HasRotation ? Vector3.Transform(worldDirection, _inverseOrientation) : worldDirection;
+        }
+
+        public Vector3 DirectionToWorldSpace(Vector3 entitySpaceDirection)
+        {
+            return HasRotation ? Vector3.Transform(entitySpaceDirection, Orientation) : entitySpaceDirection;
+        }
+
+        public Vector3 BlockCenterToWorldCorner(Vector3 entitySpaceCorner)
+        {
+            var half = new Vector3(0.5f);
+            return ToWorldSpace(entitySpaceCorner + half) - half;
+        }
+
+        public BoundingBox ToWorldBounds(BoundingBox entitySpaceBox)
+        {
+            if (!HasRotation) return entitySpaceBox;
+
+            var half = entitySpaceBox.Extents;
+            var axisX = Vector3.Transform(new Vector3(half.X, 0, 0), Orientation);
+            var axisY = Vector3.Transform(new Vector3(0, half.Y, 0), Orientation);
+            var axisZ = Vector3.Transform(new Vector3(0, 0, half.Z), Orientation);
+            var extents = Abs(axisX) + Abs(axisY) + Abs(axisZ);
+
+            _worldBoundsScratch.Center = ToWorldSpace(entitySpaceBox.Center);
+            _worldBoundsScratch.Size = extents * 2f;
+            return _worldBoundsScratch;
+        }
+
+        private static Vector3 Abs(Vector3 v)
+        {
+            return new Vector3(MathF.Abs(v.X), MathF.Abs(v.Y), MathF.Abs(v.Z));
         }
 
         public static Chunk GetOrCreateChunk(SpaceEntity entity, Vector3SByte idx)

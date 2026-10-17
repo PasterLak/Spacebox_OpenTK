@@ -81,7 +81,7 @@ public class Drop : IDisposable
                     hasHit = SourceEntity.Raycast(ray, out var entityHit);
                     if (hasHit)
                     {
-                        HandleCollision(entityHit.hitPosition, entityHit.normal.ToVector3());
+                        HandleCollision(entityHit.hitPosition, entityHit.normalWorld);
                         return;
                     }
                 }
@@ -90,7 +90,7 @@ public class Drop : IDisposable
                     hasHit = World.CurrentSector.Raycast(ray, out var worldHit);
                     if (hasHit)
                     {
-                        HandleCollision(worldHit.hitPosition, worldHit.normal.ToVector3());
+                        HandleCollision(worldHit.hitPosition, worldHit.normalWorld);
                         return;
                     }
                 }

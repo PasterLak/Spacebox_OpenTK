@@ -157,6 +157,23 @@ namespace Engine.Physics
             return distance >= 0 && distance <= Length;
         }
 
+        public Ray CalculateRicochetRay(Vector3 hitPos, Vector3 hitNormal, float length)
+        {
+            const float eps = 0.002f;
+            var n = hitNormal.Normalized();
+            var incoming = Direction.Normalized();
+            var reflectionDir = (incoming - 2f * Vector3.Dot(incoming, n) * n).Normalized();
+            return new Ray(hitPos + reflectionDir * eps, reflectionDir, length);
+        }
+
+        public static float CalculateIncidentAngle(Ray ray, Vector3 hitNormal)
+        {
+            var n = hitNormal.Normalized();
+            var incoming = -ray.Direction.Normalized();
+            var dot = Math.Clamp(Vector3.Dot(incoming, n), -1f, 1f);
+            return 90f - MathHelper.RadiansToDegrees(MathF.Acos(dot));
+        }
+
         public Ray CalculateRicochetRay(Vector3 hitPos, Vector3SByte hitNormal, float length)
         {
             const float eps = 0.002f;

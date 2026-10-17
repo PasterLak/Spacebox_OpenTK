@@ -74,6 +74,12 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 - Interactions that own left click (`block_destroy`/`shoot`) override `UsesPrimaryAction => true` (drills, shoot, eraser, camera point); passive left-click actions skip them to avoid double actions.
 - Destroy blocks through `BlockDestroyer.Destroy` / `DestroyInstantly` (callback, removal, network, stats, sound). Hold-to-repeat input: `RepeatingAction`.
 
+## Rotated entities
+
+- `SpaceEntity.Orientation` rotates the whole entity around `PositionWorld`. Chunk positions, bounding boxes, `CenterOfMass` and placement math are in entity space (unrotated). Convert world input with `ToEntitySpace` / `DirectionToEntitySpace`, and entity-space output with `ToWorldSpace` / `ToWorldBounds` / `CenterOfMassWorld`.
+- `SpaceEntity.Raycast` takes a world ray and returns world `hitPosition`/`blockPositionWorld`/`normalWorld`; `hit.normal` and `blockPositionIndex` stay in entity space for block operations. `IsColliding` accepts world spheres.
+- Effects and drops at block positions: `BlockCenterToWorldCorner`. Build preview: pass the entity to `BlockSelector.UpdatePosition`.
+
 ## Atlases
 
 - Engine `TextureAtlas` (`Engine/Graphics/Atlas/`): add with `AddDirectory`/`AddFile`/`Add(name, Texture2D|pixels)`, layers via `AddLayer*`; rebuilds lazily on `Texture`/`TryGetRegion`. Pixels passed to `Add` are top-down (like PNG files); `TryGetPixels(name, bottomUp: true)` returns GL-order pixels.
