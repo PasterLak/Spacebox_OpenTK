@@ -9,6 +9,7 @@ namespace Spacebox.Game.Player
         private const float NameTagHeight = 0.9f;
 
         private GUI.Tag _nameTag;
+        private bool _isAliveVisual = true;
 
         public string PlayerName { get; }
 
@@ -35,6 +36,14 @@ namespace Spacebox.Game.Player
             base.Update();
         }
 
+        public void SetAliveVisual(bool isAlive)
+        {
+            _isAliveVisual = isAlive;
+            if (HandVisualizer != null) HandVisualizer.Enabled = isAlive;
+            if (!isAlive && Flashlight != null) Flashlight.Enabled = false;
+            if (_nameTag != null) _nameTag.Text = isAlive ? PlayerName : PlayerName + " (dead)";
+        }
+
         public void OnDisconnect()
         {
             if (_nameTag != null)
@@ -54,9 +63,9 @@ namespace Spacebox.Game.Player
 
         protected override void UpdateVisuals()
         {
-            if (AstBody != null) AstBody.Enabled = true;
-            if (AstHelmet != null) AstHelmet.Enabled = true;
-            if (AstTank != null) AstTank.Enabled = true;
+            if (AstBody != null) AstBody.Enabled = _isAliveVisual;
+            if (AstHelmet != null) AstHelmet.Enabled = _isAliveVisual;
+            if (AstTank != null) AstTank.Enabled = _isAliveVisual;
         }
     }
 }

@@ -172,19 +172,17 @@ public class InteractionShoot : InteractionMode
 
             player.PowerBar.StatsData.Decrement(weapon.PowerUsage);
 
-            var projectile = World.Instance.ProjectilesPool.Take();
-
-            if (projectileParameters.Name == "p_ar")
-            {
-                projectile.OnDespawn += SetSphere;
-            }
-
             var projectileSpawnPos = Node3D.LocalToWorld(new Vector3(0, 0, 0), player) + player.Front * 0.25f;
 
             var shotDir = WeaponItem.CalculateSpreadCone(weapon, player.Front);
             var shotRay = new Ray(projectileSpawnPos, shotDir, 1f);
 
-            projectile.Initialize(shotRay, ref projectileParameters, player);
+            var projectile = Spacebox.Network.Combat.CombatNetwork.FireLocal(player, weapon, projectileParameters, shotRay);
+
+            if (projectileParameters.Name == "p_ar")
+            {
+                projectile.OnDespawn += SetSphere;
+            }
 
             ApplyRecoil(player, weapon, shotRay.Direction, projectileParameters);
 

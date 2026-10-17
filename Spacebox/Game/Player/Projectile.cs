@@ -7,6 +7,8 @@ using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Network;
+using Spacebox.Network.Combat;
 
 namespace Spacebox.Game.Player;
 
@@ -38,6 +40,16 @@ public class Projectile : Node3D
     private LocalAstronaut? astronaut;
 
     private const int MaxDamageForSound = 100;
+    private const float MaxFastForward = 0.5f;
+    private const float FastForwardStep = 1f / 60f;
+    private const float MinRayLength = 0.05f;
+
+    private bool _isAuthoritative = true;
+    private int _ownerPeer;
+    private float _rewind;
+
+    public bool IsAuthoritative => _isAuthoritative;
+    public int OwnerPeer => _ownerPeer;
 
     public bool HasOwer(out LocalAstronaut? owner)
     {
@@ -60,6 +72,14 @@ public class Projectile : Node3D
 
     public Projectile Initialize(Ray ray, ref ProjectileParameters parameters, LocalAstronaut? owner, bool useLight = true)
     {
+        return Initialize(ray, ref parameters, owner, Engine.Networking.NetworkManager.Instance.LocalPeerId, true, 0f, useLight);
+    }
+
+    public Projectile Initialize(Ray ray, ref ProjectileParameters parameters, LocalAstronaut? owner, int ownerPeer, bool isAuthoritative, float rewind, bool useLight = true)
+    {
+        _ownerPeer = ownerPeer;
+        _isAuthoritative = isAuthoritative;
+        _rewind = rewind;
         this.useLight = useLight;
         this.ray = ray;
         this.ray.Length = 1f;
@@ -126,10 +146,30 @@ public class Projectile : Node3D
         if (!Enabled) return;
 
         base.Update();
+        Step(Time.Delta);
+    }
 
-        float step = Parameters.Speed * Time.Delta;
+    public void FastForward(float seconds)
+    {
+        float remaining = Math.Clamp(seconds, 0f, MaxFastForward);
+        while (remaining > 0f && Enabled)
+        {
+            float delta = MathF.Min(remaining, FastForwardStep);
+            Step(delta);
+            remaining -= delta;
+        }
+    }
+
+    private void Step(float deltaTime)
+    {
+        float step = Parameters.Speed * deltaTime;
+        ray.Length = MathF.Max(step, MinRayLength);
+
+        if (CheckPlayerCollision()) return;
+        if (CheckDynamicCollision()) return;
+        if (CheckVoxelCollision()) return;
+
         Vector3 movement = ray.Direction * step;
-
         Position += movement;
         ray.Origin += movement;
         distanceTraveled += step;
@@ -140,13 +180,26 @@ public class Projectile : Node3D
         }
 
         if (distanceTraveled >= Parameters.MaxTravelDistance)
-        {
             HandleMaxDistanceReached();
-            return;
-        }
+    }
 
-        if (CheckDynamicCollision()) return;
-        if (CheckVoxelCollision()) return;
+    private bool CheckPlayerCollision()
+    {
+        if (!PlayerHitboxes.Raycast(ray.Origin, ray.Direction, ray.Length, _ownerPeer, _isAuthoritative ? _rewind : 0f, out var hit)) return false;
+
+        if (World.CurrentSector.Raycast(ray, out var voxelHit) &&
+            Vector3.DistanceSquared(ray.Origin, voxelHit.hitPosition) < hit.Distance * hit.Distance)
+            return false;
+
+        ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.Point, Parameters.ID);
+        PlayHitAudio(hit.Point);
+
+        if (_isAuthoritative)
+            CombatNetwork.ApplyPlayerHit(hit.Peer, _ownerPeer, Parameters.Damage, hit.IsHeadshot);
+
+        Enabled = false;
+        OnDespawn?.Invoke(this);
+        return true;
     }
 
 
@@ -154,7 +207,7 @@ public class Projectile : Node3D
     private bool CheckDynamicCollision()
     {
         if (!World.Instance.Physics.Raycast(ray, astronaut?.Body, out var hit)) return false;
-        if (hit.Body.Owner is not IDamageable damageable) return false;
+        if (hit.Body.Owner is Astronaut || hit.Body.Owner is not IDamageable damageable) return false;
 
         if (World.CurrentSector.Raycast(ray, out var voxelHit) &&
             Vector3.DistanceSquared(ray.Origin, voxelHit.hitPosition) < hit.Distance * hit.Distance)
@@ -179,7 +232,7 @@ public class Projectile : Node3D
 
     private bool TryTriggerReactiveBlock(HitInfo hit)
     {
-        if (hit.block is not IProjectileReactive reactive || !reactive.OnProjectileHit(hit)) return false;
+        if (!_isAuthoritative || hit.block is not IProjectileReactive reactive || !reactive.OnProjectileHit(hit)) return false;
 
         ProcessHitStats(hit.hitPosition);
         ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.hitPosition + hit.normalWorld * 0.1f, Parameters.ID);
@@ -202,7 +255,7 @@ public class Projectile : Node3D
 
     private void HandleDynamicHit(IDamageable damagable, Vector3 hitPos)
     {
-        damagable.TakeDamage(this);
+        if (_isAuthoritative) damagable.TakeDamage(this);
         ProcessHitStats(hitPos);
 
         ProjectileHitEffectsManager.Instance.PlayHitEffect(hitPos, Parameters.ID);
@@ -254,6 +307,18 @@ public class Projectile : Node3D
         ProcessHitStats(hit.hitPosition);
 
         Vector3 effectPos = hit.hitPosition + hit.normalWorld * 0.1f;
+
+        if (!_isAuthoritative)
+        {
+            if (Parameters.Penetration >= hit.block.Durability)
+                ProjectileHitEffectsManager.Instance.PlayHitEffect(effectPos, Parameters.ID);
+            else
+                ProjectileHitEffectsManager.Instance.PlayNoPenetrationEffect(effectPos);
+
+            Enabled = false;
+            OnDespawn?.Invoke(this);
+            return;
+        }
 
         if (Parameters.Penetration >= hit.block.Durability)
         {
@@ -315,6 +380,7 @@ public class Projectile : Node3D
     private bool ApplyBlockDamage(HitInfo hit)
     {
         bool destroyed = hit.chunk.DamageBlock(hit, currentDamage, Parameters.DropBlock);
+        if (destroyed) WorldEditNetwork.NotifyRemoved(hit.chunk, hit.blockPositionIndex);
 
         if (astronaut != null)
         {

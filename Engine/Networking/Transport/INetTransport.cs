@@ -21,6 +21,7 @@ public interface INetTransport : IDisposable
     bool Connect(string host, int port, string connectionKey);
     void Send(int peer, byte[] data, int offset, int length, DeliveryMode mode);
     void Disconnect(int peer, string reason);
+    int GetRoundTripTime(int peer);
     void Poll();
     void Stop();
 }

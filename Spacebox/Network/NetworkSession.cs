@@ -80,6 +80,7 @@ public sealed class NetworkSession : IDisposable
 
     public void Update()
     {
+        if (NetworkManager.Instance.IsServer) Combat.PlayerHitboxes.Record();
         if (!NetworkManager.Instance.IsRemoteClient || _localPlayer == null) return;
 
         _playerSyncTimer += Time.Delta;
@@ -124,6 +125,7 @@ public sealed class NetworkSession : IDisposable
         network.Messages.Unregister<PlayerDataMessage>();
 
         network.Shutdown("Server stopped");
+        Combat.CombatNetwork.Reset();
         _playerSpawner.Dispose();
         PlayerRegistry.Clear();
 

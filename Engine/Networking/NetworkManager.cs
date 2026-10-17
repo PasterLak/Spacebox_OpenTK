@@ -133,6 +133,14 @@ public sealed class NetworkManager
         Stopped?.Invoke();
     }
 
+    public float GetOneWayLatency(int peer)
+    {
+        if (peer == LocalPeerId || _transport == null) return 0f;
+        return _transport.GetRoundTripTime(peer) * 0.0005f;
+    }
+
+    public float LatencyToServer => IsServer ? 0f : GetOneWayLatency(ServerPeerId);
+
     public void Kick(int peer, string reason)
     {
         if (!IsServer || peer == LocalPeerId) return;

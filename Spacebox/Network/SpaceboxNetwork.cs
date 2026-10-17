@@ -18,5 +18,6 @@ public static class SpaceboxNetwork
         WorldEditNetwork.Register(network);
         EntitySync.Register(network);
         DropNetwork.Register(network);
+        Combat.CombatNetwork.Register(network);
     }
 }

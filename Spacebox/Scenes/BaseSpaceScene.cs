@@ -288,6 +288,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         GravityGeneratorUI.OnGUI();
         DnaReconstructorUI.OnGUI();
         DnaReconstructionScreen.OnGUI();
+        HitMarkerUI.OnGUI();
 
         if (VisualDebug.Enabled)
         {
@@ -313,6 +314,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         GravityGeneratorUI.Reset();
         DnaReconstructorUI.Reset();
         DnaReconstructionScreen.Reset();
+        HitMarkerUI.Reset();
         PanelUI.Player = null;
 
         TickTaskManager.Dispose();

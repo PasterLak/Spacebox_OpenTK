@@ -41,6 +41,22 @@ namespace Spacebox.Game.Player
         }
 
         public Action OnDeath { get; set; }
+        public Action OnRevived { get; set; }
+
+        private const float AttackerMemorySeconds = 10f;
+        private int _lastAttackerPeer = -1;
+        private double _lastAttackTime = double.MinValue;
+
+        public void RegisterAttacker(int peer)
+        {
+            _lastAttackerPeer = peer;
+            _lastAttackTime = Time.Total;
+        }
+
+        public int GetRecentAttacker()
+        {
+            return Time.Total - _lastAttackTime <= AttackerMemorySeconds ? _lastAttackerPeer : -1;
+        }
         public InertiaController InertiaController { get; private set; } = new InertiaController();
         public CameraSway CameraSway { get; private set; } = new CameraSway();
         public ItemSway ItemSway { get; private set; } = new ItemSway();
@@ -379,6 +395,8 @@ namespace Spacebox.Game.Player
             OxygenBar.StatsGUI.IsVisible = true;
             SetPosition(position);
             Effects.PlayEffect(PlayerEffectType.Heal);
+            _lastAttackerPeer = -1;
+            OnRevived?.Invoke();
         }
 
         public void SetItemLight(ItemSlot? slot)

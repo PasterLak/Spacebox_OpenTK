@@ -85,6 +85,11 @@ public sealed class LiteNetTransport : INetTransport
         netPeer.Disconnect(_reasonWriter);
     }
 
+    public int GetRoundTripTime(int peer)
+    {
+        return _peers.TryGetValue(peer, out var netPeer) ? netPeer.RoundTripTime : 0;
+    }
+
     public void Poll()
     {
         _manager?.PollEvents();
