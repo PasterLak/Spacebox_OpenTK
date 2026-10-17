@@ -109,7 +109,7 @@ public class Storage
         }
         else
         {
-            if (TryGetFirstFreeSlot(out ItemSlot slot2))
+            if (TryGetFirstFreeSlot(item, out ItemSlot slot2))
             {
 
                 if (count > item.StackSize)
@@ -234,7 +234,7 @@ public class Storage
         return q >= quantity;
     }
 
-    private bool TryGetFirstFreeSlot(out ItemSlot slot)
+    private bool TryGetFirstFreeSlot(Item item, out ItemSlot slot)
     {
         slot = null;
 
@@ -242,7 +242,7 @@ public class Storage
         {
             for (int y = 0; y < SizeY; y++)
             {
-                if (_slots[x, y].Count == 0)
+                if (_slots[x, y].Count == 0 && _slots[x, y].CanAccept(item))
                 {
                     slot = _slots[x, y];
                     return true;

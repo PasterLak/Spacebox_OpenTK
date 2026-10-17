@@ -62,6 +62,7 @@ Game
 - oxygen: bar, -1 every 10 s in survival (config), damage at 0, compressed oxygen +100
 - oxygen generator block: fills closed rooms with air (radius 32), +10 oxygen/s in air, "Air" on bar
 - oxygen generator needs 20 energy, on/off textures
+- oxygen generator UI: water slot, water tank (30), uses 1 water every 2 min, saved
 
 
 Small

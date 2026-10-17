@@ -86,6 +86,8 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 - `Game/Generation/Oxygen/`: `OxygenSystem` per `SpaceEntity` (`entity.Oxygen`), `AirFloodFill` (pooled buffers, main thread only), `AirMasks` (per-chunk bit masks), `AirGrid` (entity-local coordinate helpers).
 - Block edits must notify it: `Chunk.PlaceBlock`/`RemoveBlock` call `Oxygen.OnBlockChanged`; bulk edits call `Oxygen.OnChunksChanged()`.
 - Query with `World.IsBreathable(worldPos)`.
+- `OxygenGeneratorBlock` works when `IsActive` (network power) and its tank has water; its timers run from `OxygenSystem.Update`. UI: `OxygenGeneratorUI`; settings: `OxygenGeneratorBlockData`.
+- Slot filters (`ItemSlot.Filter`) are respected by drag-and-drop and `Storage.TryAddItem`.
 
 ## Menu
 

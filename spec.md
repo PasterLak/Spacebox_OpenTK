@@ -128,7 +128,7 @@ Behaviour subclasses are created by `BlockFactory` from the JSON `Type` string (
 | `furnace`, `crusher`, `disassembler` | resource processing blocks |
 | `analyzer`, `radar` | utility blocks |
 | `generator`, `consumer`, `cable` | electrical network (`ElectricalManager`) |
-| `oxygengenerator` | electrical consumer (20/tick); while powered fills a sealed room with air (`Game/Generation/Oxygen`) |
+| `oxygengenerator` | electrical consumer (20); needs water in its tank; fills a sealed room with air (`Game/Generation/Oxygen`). JSON `OxygenGenerator`: `WaterItem`, `TankCapacity` (30), `WaterConsumeInterval` (120 s), `WaterFillInterval` (1 s). Saved via `OxygenGeneratorSerializer` (`water`, `consume_progress`, `slot_data`) |
 
 ### 4.3 Meshing and lighting
 

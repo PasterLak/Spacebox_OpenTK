@@ -26,6 +26,7 @@ namespace Spacebox.Game.Resource
         public bool IsTransparent { get; set; } = false;
         public Color3Byte LightColor { get; set; } = Color3Byte.Black;
         public Vector2Byte StorageSize { get; set; } = new Vector2Byte(3, 3);
+        public OxygenGeneratorJSON OxygenGenerator { get; set; } = new OxygenGeneratorJSON();
     }
 
     public class TextureGroup

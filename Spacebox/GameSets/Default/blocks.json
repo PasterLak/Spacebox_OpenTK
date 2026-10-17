@@ -947,6 +947,12 @@
     "Description": "Fills a closed room with air (radius 32)",
     "Type": "oxygengenerator",
     "Category": "other",
+    "OxygenGenerator": {
+      "WaterItem": "water",
+      "TankCapacity": 50,
+      "WaterConsumeInterval": 120,
+      "WaterFillInterval": 1
+    },
     "PowerToDrill": 1,
     "Mass": 4,
     "Durability": 8,

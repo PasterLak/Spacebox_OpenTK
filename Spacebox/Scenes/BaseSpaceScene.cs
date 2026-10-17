@@ -263,6 +263,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         PauseUI.OnGUI();
         GeneratorUI.OnGUI();
         AnalyzerUI.OnGUI();
+        OxygenGeneratorUI.OnGUI();
 
         if (VisualDebug.Enabled)
         {

@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Engine;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
 
@@ -26,6 +27,7 @@ public sealed class OxygenSystem
 
     public void RegisterGenerator(Chunk chunk, int x, int y, int z, OxygenGeneratorBlock generator)
     {
+        generator.chunk = chunk;
         _pendingGenerators.Enqueue((ToEntity(chunk, x, y, z), generator));
     }
 
@@ -35,6 +37,7 @@ public sealed class OxygenSystem
 
         if (newBlock is OxygenGeneratorBlock generator)
         {
+            generator.chunk = chunk;
             _generators[position] = generator;
             _isDirty = true;
             return;
@@ -75,7 +78,7 @@ public sealed class OxygenSystem
             _isDirty = true;
         }
 
-        if (!_isDirty && PowerStateChanged()) _isDirty = true;
+        if (UpdateGenerators()) _isDirty = true;
         if (!_isDirty) return;
 
         _isDirty = false;
@@ -101,7 +104,7 @@ public sealed class OxygenSystem
                 continue;
             }
 
-            if (!generator.IsActive) continue;
+            if (!generator.IsWorking) continue;
 
             _activeGenerators.Add(position);
             _floodFill.FillFrom(position.X, position.Y, position.Z, _reached, _oxygenated);
@@ -116,13 +119,18 @@ public sealed class OxygenSystem
         _generatorsToRemove.Clear();
     }
 
-    private bool PowerStateChanged()
+    private bool UpdateGenerators()
     {
+        bool changed = false;
+        float deltaTime = Time.Delta;
+
         foreach (var (position, generator) in _generators)
         {
-            if (generator.IsActive != _activeGenerators.Contains(position)) return true;
+            generator.Update(deltaTime);
+            if (generator.IsWorking != _activeGenerators.Contains(position)) changed = true;
         }
-        return false;
+
+        return changed;
     }
 
     private bool TouchesReachedAir(Vector3i p)
