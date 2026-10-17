@@ -18,7 +18,7 @@ Spacebox is a voxel space-survival game (asteroid belt, mining, base/ship buildi
 
 ## Project rules
 
-- **Threading:** OpenGL calls only on the main thread. Run background work through `WorkerPoolManager.Enqueue` and hand results back with `MainThreadDispatcher`.
+- **Threading:** OpenGL calls only on the main thread. Run background work through `WorkerPoolManager.Enqueue` and hand results back with `MainThreadDispatcher` (game side, `Spacebox/Game/Generation/Structures/`); engine code uses `EngineWindow`'s main-thread queue, and GL disposal from workers goes through `DisposalManager`.
 - **Hot paths** (meshing, generation, lighting, `Update`/`Render`, `Block`): no LINQ, no per-frame allocations; reuse pools and caches. `Block` packs its state into bits of one `long`, so don't add fields to it carelessly.
 - **Engine boundary:** `Engine` must never reference `Spacebox.*`. Reusable, game-independent features belong in `Engine`.
 - **Save and content compatibility:** new fields in NBT saves or GameSet JSON need defaults so old data still loads; breaking format changes need a `VersionConverter` step. Never break the `Default` GameSet.
@@ -52,6 +52,8 @@ dotnet publish Spacebox/Spacebox.csproj -c Release -r linux-x64 --self-contained
 - There is no linter/formatter configured.
 
 ## Solution layout
+
+Detailed per-project notes: `Engine/CLAUDE.md` (engine architecture) and `Spacebox/CLAUDE.md` (game logic).
 
 Dependency direction: `Spacebox` → `Engine`, `Spacebox.Core`, `SpaceNetwork`. Servers (`SpaceServer`, `SpaceServerUI`) → `ServerCommon` (folder `CommonLibrary/`) → `SpaceNetwork`. `Engine` must not reference game code.
 
