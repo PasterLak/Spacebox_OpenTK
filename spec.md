@@ -149,7 +149,7 @@ Behaviour subclasses are created by `BlockFactory` from the JSON `Type` string (
 - **Player:** `Astronaut` → `LocalAstronaut` (local player) and `RemoteAstronaut` (network players). Includes inertia-based 6-DoF movement (`InertiaController`, `MovementMode`), camera/item sway, flashlight, equipment, mood, statistics, death handling (`DeathCase`).
 - **Game modes:** `SurvivalMode`, `CreativeMode`, `SpectatorMode`, `CameraMode` (all `GameModeBase`).
 - **Interactions:** `InteractionHandler` switches between modes such as place block, destroy block (survival/creative), shoot, consume item, eraser and camera point.
-- **Items** (`Type` in `items.json`): base `item`, `drill` (tier, power usage, range, colour), `weapon` (projectiles from `ProjectilesPool`, defined by `ProjectileJSON`), `consumable`. Max stack is limited to 255.
+- **Items** (`Type` in `items.json`): base `item`, `drill` (tier, power usage, range, colour), `weapon` (projectiles from `ProjectilesPool`, defined by `ProjectileJSON`), `consumable`, `equipment` (`Slot`: Helmet/Shoulders/Chest/Arms/Legs/Boots/PowerGenerator/Flashlight/Scanner, `Health`/`Power` bonuses to max stats; stack size 1). Max stack is limited to 255.
 - **Inventory and crafting:** `Game/Inventory`, `crafting.json`, `recipes.json`.
 - **Physics:** voxel ray hits and collisions in `VoxelPhysics`. Damage goes to `IDamageable` objects registered with `World`.
 - **Effects:** drops (`DropManager`), block destruction and mining effects, particles.
@@ -189,7 +189,7 @@ Worlds are stored in `<app dir>/Worlds/<world>/`:
 | File | Format | Content |
 |---|---|---|
 | `world.json` | JSON | `WorldInfo`: name, seed, game version, GameSet, … |
-| `player.json` | JSON | Player state (`PlayerSaveLoadManager`) |
+| `player.json` | JSON | Player state (`PlayerSaveLoadManager`): position, stats, `InventorySlots`, `PanelSlots`, `EquipmentSlots` (optional) |
 | `Sectors/<sector>/<entity>.entity` | NBT | Modified `SpaceEntity` data (`NBTHelper.SpaceEntityToTag`) |
 
 - Only modified entities are saved. When an entity unloads, it goes into a concurrent cache in `WorldPersistenceManager`. The cache is written to disk on a background worker (`SaveAllCacheToDiskAsync`) or immediately (`SaveAllCacheToDiskNow`). Saving is available from the pause menu (Esc).

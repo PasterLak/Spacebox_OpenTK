@@ -600,6 +600,9 @@
      
      {
         "ID": "aluminium_helmet",
+        "Type": "equipment",
+        "Slot": "Helmet",
+        "Health": 2,
         "Name": "Aluminium Helmet",
         "Description": "Fancy but unwearable",
         "Category": "equipment",
@@ -609,6 +612,9 @@
     },
     {
         "ID": "aluminium_chest",
+        "Type": "equipment",
+        "Slot": "Chest",
+        "Health": 5,
         "Name": "Aluminium Chest Armor",
         "Description": "Fancy but unwearable",
         "Category": "equipment",
@@ -618,6 +624,9 @@
     },
     {
         "ID": "aluminium_shoulders",
+        "Type": "equipment",
+        "Slot": "Shoulders",
+        "Health": 3,
         "Name": "Aluminium Shoulders Armor",
         "Description": "Fancy but unwearable",
         "Category": "equipment",
@@ -627,6 +636,9 @@
     },
     {
         "ID": "aluminium_arms",
+        "Type": "equipment",
+        "Slot": "Arms",
+        "Health": 2,
         "Name": "Aluminium Arms Armor",
         "Description": "Fancy but unwearable",
         "Category": "equipment",
@@ -636,6 +648,9 @@
     },
     {
         "ID": "aluminium_legs",
+        "Type": "equipment",
+        "Slot": "Legs",
+        "Health": 4,
         "Name": "Aluminium Legs Armor",
         "Description": "Fancy but unwearable",
         "Category": "equipment",
@@ -645,6 +660,9 @@
     },
     {
         "ID": "aluminium_boots",
+        "Type": "equipment",
+        "Slot": "Boots",
+        "Health": 2,
         "Name": "Aluminium Boots",
         "Description": "Fancy but unwearable",
         "Category": "equipment",
@@ -654,6 +672,8 @@
     },
     {
         "ID": "cobalt_flashlight",
+        "Type": "equipment",
+        "Slot": "Flashlight",
         "Name": "Cobalt Flashlight",
         "Description": "",
         "Category": "equipment",
@@ -663,6 +683,8 @@
     },
     {
         "ID": "basic_scanner",
+        "Type": "equipment",
+        "Slot": "Scanner",
         "Name": "Basic Scanner",
         "Description": "",
         "Category": "equipment",
@@ -672,6 +694,9 @@
     },
     {
         "ID": "basic_generator",
+        "Type": "equipment",
+        "Slot": "PowerGenerator",
+        "Power": 10,
         "Name": "Basic Power Generator",
         "Description": "",
         "Category": "equipment",

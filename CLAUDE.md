@@ -25,7 +25,8 @@ Spacebox is a voxel space-survival game (asteroid belt, mining, base/ship buildi
 - **Network:** messages in `SpaceNetwork/Messages` are registered automatically by reflection, so client and server must be built from the same `SpaceNetwork`. Handle each new message on both sides (`Spacebox/Client/ClientPacketHandler.cs`, `CommonLibrary/MessageProcessor.cs`).
 - **Do not edit** the prebuilt `Spacebox/Plugins/**/*.dll`, `Spacebox/Build/**` or the vendored `Documentation/doxygen-awesome-css/**`.
 - **Git:** feature branches are named `<feature>-<version>` (e.g. `generation-0.1.2`). Do not commit or push unless asked. Commit messages are short and imperative.
-- `Spacebox/TODO.txt`, `BUGS.txt` and `DONE.txt` belong to the author; edit them only when asked.
+- `Spacebox/TODO.txt` and `BUGS.txt` belong to the author; edit them only when asked.
+- After every game change, add a very short line to `Spacebox/DONE.txt` in the section of the current version (`Application.Version` in `Engine/Application.cs`), under `Game`, `Small`, `Fixes` or `Engine`. Create the version section in the same format if it is missing.
 - Keep `spec.md` (full technical description) up to date when architecture, file formats or limits change.
 
 Project skills in `.claude/skills/` cover repeated tasks: `add-block`, `add-item`, `add-network-message`, `release`.
@@ -79,5 +80,5 @@ Game content is JSON, not code: `Spacebox/GameSets/<Name>/` (`Default` is the ba
 ## Notes
 
 - Shaders are GLSL files under `Spacebox/Resources/Shaders/`, loaded by path without extension (e.g. `Resources.Load<Shader>("Resources/Shaders/PostProcessing/vignette", true)`).
-- `Spacebox/TODO.txt`, `BUGS.txt`, `DONE.txt` are the author's task tracking.
+- `Spacebox/TODO.txt`, `BUGS.txt` are the author's task tracking; `DONE.txt` is the changelog (see Project rules).
 - API docs can be generated with Doxygen (`Doxyfile` at the root, theme in `Documentation/`).

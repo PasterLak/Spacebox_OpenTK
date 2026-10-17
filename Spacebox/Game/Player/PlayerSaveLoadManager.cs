@@ -33,38 +33,11 @@ namespace Spacebox.Game.Player
                     Health = player.HealthBar.StatsData.Value,
                     Power = player.PowerBar.StatsData.Value,
                     IsFlashlightOn = player.Flashlight.Enabled,
-                    InventorySlots = new List<SavedItemSlot>(),
-                    PanelSlots = new List<SavedItemSlot>(),
+                    InventorySlots = CollectSlots(player.Inventory),
+                    PanelSlots = CollectSlots(player.Panel),
+                    EquipmentSlots = CollectSlots(player.Equipment.Storage),
                     Statistics = player.PlayerStatistics
                 };
-
-                foreach (var slot in player.Inventory.GetAllSlots())
-                {
-                    if (slot.HasItem)
-                    {
-                        data.InventorySlots.Add(new SavedItemSlot
-                        {
-                            ItemID = slot.Item.Id_string,
-                            Count = slot.Count,
-                            SlotX = (byte)slot.Position.X,
-                            SlotY = (byte)slot.Position.Y
-                        });
-                    }
-                }
-
-                foreach (var slot in player.Panel.GetAllSlots())
-                {
-                    if (slot.HasItem)
-                    {
-                        data.PanelSlots.Add(new SavedItemSlot
-                        {
-                            ItemID = slot.Item.Id_string,
-                            Count = slot.Count,
-                            SlotX = (byte)slot.Position.X,
-                            SlotY = (byte)slot.Position.Y
-                        });
-                    }
-                }
 
                 string jsonString = JsonSerializer.Serialize(data, new JsonSerializerOptions
                 {
@@ -115,11 +88,10 @@ namespace Spacebox.Game.Player
                 Quaternion loadedRotation = new Quaternion(data.RotationX, data.RotationY, data.RotationZ, data.RotationW);
 
                 player.SetRotation(loadedRotation);
-                player.HealthBar.StatsData.Value = data.Health;
-                player.PowerBar.StatsData.Value = data.Power;
 
                 player.Inventory.Clear();
                 player.Panel.Clear();
+                player.Equipment.Storage.Clear();
                 player.Flashlight.Enabled = data.IsFlashlightOn;
                 player.PlayerStatistics = data.Statistics;
 
@@ -178,11 +150,58 @@ namespace Spacebox.Game.Player
                 }
 
 
+                LoadEquipment(player, data.EquipmentSlots);
+                player.HealthBar.StatsData.Value = data.Health;
+                player.PowerBar.StatsData.Value = data.Power;
+
                 PanelUI.SetSelectedSlot(0);
             }
             catch (Exception ex)
             {
                 Debug.Error($"[PlayerSaveLoadManager] Error loading player data: {ex.Message}");
+            }
+        }
+
+        private static List<SavedItemSlot> CollectSlots(Storage storage)
+        {
+            var slots = new List<SavedItemSlot>();
+
+            foreach (var slot in storage.GetAllSlots())
+            {
+                if (!slot.HasItem) continue;
+
+                slots.Add(new SavedItemSlot
+                {
+                    ItemID = slot.Item.Id_string,
+                    Count = slot.Count,
+                    SlotX = (byte)slot.Position.X,
+                    SlotY = (byte)slot.Position.Y
+                });
+            }
+
+            return slots;
+        }
+
+        private static void LoadEquipment(LocalAstronaut player, List<SavedItemSlot> savedSlots)
+        {
+            foreach (var savedSlot in savedSlots)
+            {
+                if (!GameAssets.TryGetItemByFullID(savedSlot.ItemID, out var item))
+                {
+                    Debug.Error($"[PlayerSaveLoadManager] Item ID {savedSlot.ItemID} not found. Skipping loading into Equipment.");
+                    continue;
+                }
+
+                var slot = player.Equipment.Storage.GetSlot(savedSlot.SlotX, savedSlot.SlotY);
+                if (slot != null && slot.CanAccept(item))
+                {
+                    slot.Item = item;
+                    slot.Count = savedSlot.Count;
+                }
+                else if (!player.Inventory.TryAddItem(item, savedSlot.Count))
+                {
+                    Debug.Error($"[PlayerSaveLoadManager] Could not restore equipment item {savedSlot.ItemID}.");
+                }
             }
         }
 
@@ -200,6 +219,7 @@ namespace Spacebox.Game.Player
             public bool IsFlashlightOn { get; set; } = false;
             public List<SavedItemSlot> InventorySlots { get; set; }
             public List<SavedItemSlot> PanelSlots { get; set; }
+            public List<SavedItemSlot> EquipmentSlots { get; set; } = new List<SavedItemSlot>();
 
             public PlayerStatistics Statistics { get; set; } = new PlayerStatistics();
         }

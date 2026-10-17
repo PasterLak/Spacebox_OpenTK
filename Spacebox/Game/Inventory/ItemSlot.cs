@@ -8,6 +8,7 @@ public class ItemSlot
     public Item? Item;
     public string Name = "";
     public Storage Storage;
+    public Predicate<Item> Filter;
     public Vector2Byte Position { get; private set; }
 
     private byte _count;
@@ -60,8 +61,16 @@ public class ItemSlot
         Count = 0;
     }
 
+    public bool CanAccept(Item item)
+    {
+        return Filter == null || Filter(item);
+    }
+
     public void SwapWith(ItemSlot slotToSwapWith)
     {
+        if (!slotToSwapWith.CanAccept(Item)) return;
+        if (slotToSwapWith.HasItem && !CanAccept(slotToSwapWith.Item)) return;
+
         var item = Item;
         var count = Count;
 

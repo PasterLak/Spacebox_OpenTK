@@ -33,7 +33,9 @@ public class DrillItemJSON : ItemJSON
 public class EquipmentJSON : ItemJSON
 {
     public byte Tier { get; set; } = 0;
-
+    public string Slot { get; set; } = "";
+    public int Health { get; set; } = 0;
+    public int Power { get; set; } = 0;
 }
 
 public class ConsumableItemJSON : ItemJSON

@@ -333,6 +333,15 @@ namespace Spacebox.Game.GUI
                     }
 
                 }
+                else if (type == typeof(EquipmentItem))
+                {
+                    var itemType = slot.Item as EquipmentItem;
+                    text += "\nSlot: " + itemType.Slot;
+                    if (itemType.HealthBonus != 0)
+                        text += "\nHealth: +" + itemType.HealthBonus;
+                    if (itemType.PowerBonus != 0)
+                        text += "\nPower: +" + itemType.PowerBonus;
+                }
                 else if (type == typeof(ConsumableItem))
                 {
                     var itemType = slot.Item as ConsumableItem;

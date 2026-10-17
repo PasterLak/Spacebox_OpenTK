@@ -17,6 +17,8 @@ namespace Spacebox.Game.GUI
         private static nint ItemTexture = nint.Zero;
 
         public static LocalAstronaut Player;
+        public static Vector2 WindowPosition { get; private set; }
+        public static Vector2 WindowSize { get; private set; }
 
         public static AudioSource splitAudio;
 
@@ -99,8 +101,11 @@ namespace Spacebox.Game.GUI
             var padding = SlotSize * 0.1f;
             var paddingV = new Vector2(padding, padding);
 
+            WindowPosition = windowPos;
+            WindowSize = new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV;
+
             ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV);
+            ImGui.SetNextWindowSize(WindowSize);
             ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoResize |
                                            ImGuiWindowFlags.NoCollapse |
                                            ImGuiWindowFlags.NoDecoration |

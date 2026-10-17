@@ -20,6 +20,8 @@ namespace Spacebox.Game.Player
     {
         public Inventory Inventory { get; private set; }
         public Storage Panel { get; private set; }
+        public PlayerEquipment Equipment { get; private set; }
+        private EquipmentStatsBinder _equipmentStats;
         public bool CameraActive = true;
         public Action<LocalAstronaut> OnMoved { get; set; }
         public SphereBody Body { get; private set; }
@@ -158,6 +160,10 @@ namespace Spacebox.Game.Player
             Name = "LocalAstronaut";
             Panel.ConnectStorage(Inventory, true);
             Inventory.ConnectStorage(Panel);
+
+            Equipment = new PlayerEquipment();
+            Equipment.Storage.ConnectStorage(Inventory);
+            _equipmentStats = new EquipmentStatsBinder(Equipment, HealthBar.StatsData, PowerBar.StatsData);
 
             _axes = new Axes(Position, 0.01f);
         }

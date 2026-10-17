@@ -127,6 +127,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         selectedSlotTex.FilterMode = FilterMode.Nearest;
 
         InventoryUI.Initialize(slotTex.Handle);
+        EquipmentUI.Initialize();
         StorageUI.Initialize(slotTex.Handle);
         PanelUI.Initialize(localPlayer, slotTex.Handle, selectedSlotTex.Handle);
         GeneratorUI.Initialize();
@@ -253,6 +254,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         PanelUI.Render();
 
         InventoryUI.OnGUI(localPlayer.Inventory);
+        EquipmentUI.OnGUI(localPlayer.Equipment);
         StorageUI.OnGUI();
         CreativeWindowUI.OnGUI();
         Chat.OnGUI();

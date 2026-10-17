@@ -109,6 +109,7 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 |---|---|
 | Data-only block / item | GameSet JSON + texture (`add-block` / `add-item` skills) |
 | Block behaviour | `Block` subclass in `Game/Generation/Blocks/` + `BlockFactory` entry (+ serializer if stateful) |
+| Equipment item | `items.json` entry with `"Type": "equipment"`, `Slot`, `Health`/`Power`; bonuses applied by `EquipmentStatsBinder`, UI in `EquipmentUI` |
 | Item type | `Item` subclass in `Game/Inventory/` + case in `GameSetLoader` + interaction branch in `PanelUI` |
 | Interaction | `InteractionMode` subclass + game-mode whitelists + `PanelUI.UpdatePlayerInteraction` |
 | Action for any held item | `IPassiveInteraction` + add it in the game mode's `CreateInteractionHandler` |

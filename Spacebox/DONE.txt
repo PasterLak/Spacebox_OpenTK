@@ -54,10 +54,16 @@ Game
 - different drill color (point light)
 - sort items button in inventory and storage
 - better creative UI + categories there
+- creative: LMB destroys blocks with any item
+- menu music toggle button
+- spacer: sphere collision, bounces off asteroids, player pushes it
+- drill damages spacer (tier = damage/s), spacer drops its loot on death
+- equipment window: armor (+health), upgrades (generator +power, flashlight, scanner)
 
 
 Small
 - double click to open a world
+- equipment slot backgrounds
 
 Fixes
 - lock cursor if hidden
@@ -65,6 +71,10 @@ Fixes
 - screenshot white borders
 - OpenAL32.dll missing
 - transparent blocks between chunks -> culling
+- window mode and vsync settings apply, save and load
+- player flies through spacer
+- projectiles hit spacer through walls / after death
+- voxel raycast moved the ray origin
 
 Engine
 - Materials
@@ -80,6 +90,8 @@ Engine
 - dev gui
 - billboards
 - profiling, console only in debug
+- dynamic sphere bodies (PhysicsWorld)
+- window mode change event, SetVSync
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.1

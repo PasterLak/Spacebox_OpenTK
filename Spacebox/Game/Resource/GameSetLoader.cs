@@ -455,6 +455,10 @@ public static class GameSetLoader
                             var consumableData = itemElement.Deserialize<ConsumableItemJSON>();
                             if (consumableData != null) registeredItem = RegisterConsumableItem(consumableData, idString);
                             break;
+                        case "equipment":
+                            var equipmentData = itemElement.Deserialize<EquipmentJSON>();
+                            if (equipmentData != null) registeredItem = RegisterEquipmentItem(equipmentData, idString);
+                            break;
                         case "item":
                         default:
                             var itemData = itemElement.Deserialize<ItemJSON>();
@@ -927,6 +931,27 @@ public static class GameSetLoader
         GameAssetsRegister.RegisterItem(consumableItem, data.Sprite);
 
         return consumableItem;
+    }
+
+    private static Item RegisterEquipmentItem(EquipmentJSON data, string id)
+    {
+        if (!Enum.TryParse(data.Slot, true, out EquipmentSlotType slot))
+        {
+            Debug.Error($"[GameSetLoader] RegisterEquipmentItem: unknown slot <{data.Slot}> for item <{data.Name}>");
+            return null;
+        }
+
+        var equipmentItem = new EquipmentItem(data.Name, data.ModelDepth)
+        {
+            Id_string = id,
+            Category = data.Category,
+            Slot = slot,
+            HealthBonus = data.Health,
+            PowerBonus = data.Power,
+        };
+        GameAssetsRegister.RegisterItem(equipmentItem, data.Sprite);
+
+        return equipmentItem;
     }
 
     private static Item RegisterItem(ItemJSON data, string id)
