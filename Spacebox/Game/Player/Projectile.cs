@@ -153,12 +153,15 @@ public class Projectile : Node3D
 
     private bool CheckDynamicCollision()
     {
-        if (World.Instance.RaycastClosest(ray, out var dist, out var damageable))
-        {
-            HandleDynamicHit(damageable, ray.GetPoint(dist));
-            return true;
-        }
-        return false;
+        if (!World.Instance.Physics.Raycast(ray, astronaut?.Body, out var hit)) return false;
+        if (hit.Body.Owner is not IDamageable damageable) return false;
+
+        if (World.CurrentSector.Raycast(ray, out var voxelHit) &&
+            Vector3.DistanceSquared(ray.Origin, voxelHit.hitPosition) < hit.Distance * hit.Distance)
+            return false;
+
+        HandleDynamicHit(damageable, hit.Point);
+        return true;
     }
 
     private bool CheckVoxelCollision()

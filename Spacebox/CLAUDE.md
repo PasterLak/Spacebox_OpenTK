@@ -70,6 +70,21 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 - Item type is chosen by a switch on JSON `Type` in `Game/Resource/GameSetLoader.cs` (weapon / drill / consumable / item).
 - Interactions use a state pattern: `InteractionMode` (`OnEnable`, `OnDisable`, `Update(LocalAstronaut)`, `Render`, `AllowReload`) held by `InteractionHandler`. Each game mode passes a whitelist of allowed interaction types (e.g. `SurvivalMode.CreateInteractionHandler`); non-whitelisted types are rejected with an error log.
 - The active interaction is picked from the held item in `Game/GUI/PanelUI.cs` → `UpdatePlayerInteraction`.
+- Item-independent behaviour: `IPassiveInteraction`, passed to `InteractionHandler` by the game mode and updated after the active interaction (e.g. `CreativeBlockDestroying` in `CreativeMode`).
+- Interactions that own left click (`block_destroy`/`shoot`) override `UsesPrimaryAction => true` (drills, shoot, eraser, camera point); passive left-click actions skip them to avoid double actions.
+- Destroy blocks through `BlockDestroyer.Destroy` / `DestroyInstantly` (callback, removal, network, stats, sound). Hold-to-repeat input: `RepeatingAction`.
+
+## Dynamic entities
+
+- `World.Physics` (`Game/Physics/PhysicsWorld.cs`) holds every `SphereBody`: sphere-vs-voxel/body overlap and `Raycast` (closest body, no allocations, main thread only).
+- Attach `SphereBody(physics, radius)` to a node: it registers itself and unregisters on detach (`RemoveChild` does not detach, so call `DetachComponent`). Non-kinematic bodies move by `Velocity` with per-axis substeps and bounce (`Bounciness`). The player has a kinematic body (`LocalAstronaut.EnablePhysics`).
+- Projectiles damage `body.Owner is IDamageable`; the shooter's body is ignored. Drills damage `body.Owner is IDrillable` (tier damage per second, `InteractionDestroyBlock.TryDrillTarget`).
+- The player pushes non-kinematic bodies on contact (`MovementMode.PushBody`, `BodyPushFactor`).
+
+## Menu
+
+- `Scenes/MenuScene.cs` draws static UIs in `OnGUI`. Menu music: `MenuMusicController` keeps playback in sync with `Settings.Audio.MenuMusic`; `MenuMusicButton` is the top-right toggle (icons `Resources/Textures/UI/musicOn.png` / `musicOff.png`).
+- Save settings with `SettingsService.Save(Settings.AsGameSettings())`.
 
 ## Saving
 
@@ -96,6 +111,7 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 | Block behaviour | `Block` subclass in `Game/Generation/Blocks/` + `BlockFactory` entry (+ serializer if stateful) |
 | Item type | `Item` subclass in `Game/Inventory/` + case in `GameSetLoader` + interaction branch in `PanelUI` |
 | Interaction | `InteractionMode` subclass + game-mode whitelists + `PanelUI.UpdatePlayerInteraction` |
+| Action for any held item | `IPassiveInteraction` + add it in the game mode's `CreateInteractionHandler` |
 | UI window | `Game/GUI/` + wiring in `BaseSpaceScene` (`LoadContent`, `OnGUI`, `UnloadContent`) |
 | Debug command | `Game/Commands/` + registration in `BaseSpaceScene.LoadContent` |
 | Scene | `Scenes/` + `SpaceboxWindow.OnRegisterScenes` |

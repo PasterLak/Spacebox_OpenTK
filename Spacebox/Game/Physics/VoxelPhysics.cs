@@ -87,7 +87,7 @@ namespace Spacebox.Game.Physics
             if (!entity.BoundingBox.Contains(ray.Origin))
             {
 
-                ray.Origin = ray.GetPoint(startDistance);
+                ray = new Ray(ray.GetPoint(startDistance), ray.Direction, ray.Length - startDistance);
             }
 
             HashSet<Chunk> potentialChunks = new HashSet<Chunk>();
@@ -104,7 +104,7 @@ namespace Spacebox.Game.Physics
                     var ch = new ChunkHitInfo
                     {
                         Chunk = chunk,
-                        Distance = 0,
+                        Distance = startDistance,
                         HitPosition = ray.Origin
                     };
                     chunkHits.Add(ch);
@@ -126,7 +126,7 @@ namespace Spacebox.Game.Physics
                     chunkHits.Add(new ChunkHitInfo
                     {
                         Chunk = chunk,
-                        Distance = dis,
+                        Distance = startDistance + dis,
                         HitPosition = hitPos
                     });
                 }

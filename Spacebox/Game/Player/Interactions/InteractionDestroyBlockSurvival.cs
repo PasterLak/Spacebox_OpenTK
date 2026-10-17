@@ -125,6 +125,20 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
 
     }
 
+    private void UpdateTargetDrilling(LocalAstronaut player)
+    {
+        lastBlock = null;
+        if (BlockMiningEffect != null)
+            BlockMiningEffect.Enabled = false;
+
+        if (!Input.IsAction("block_destroy")) return;
+
+        if (!model.Animator.IsActive)
+            model.SetAnimation(true);
+        light.Enabled = true;
+        light.Position = player.Position;
+    }
+
     private void StopDrill()
     {
         model.SetAnimation(false);
@@ -173,7 +187,15 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             return;
         }
 
-        if (World.CurrentSector.Raycast(ray, out HitInfo hit))
+        bool hasVoxelHit = World.CurrentSector.Raycast(ray, out HitInfo hit);
+
+        if (TryDrillTarget(ray, player, hasVoxelHit, hit))
+        {
+            UpdateTargetDrilling(player);
+            return;
+        }
+
+        if (hasVoxelHit)
         {
             UpdateBlockSelector(hit);
             if (lastBlock == null && hit.block != null)

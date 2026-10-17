@@ -44,7 +44,16 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
             return;
         }
         Ray ray = new Ray(player.Position, player.Front, 10);
-        if (World.CurrentSector.Raycast(ray, out HitInfo hit))
+        bool hasVoxelHit = World.CurrentSector.Raycast(ray, out HitInfo hit);
+
+        if (TryDrillTarget(ray, player, hasVoxelHit, hit))
+        {
+            if (Input.IsActionDown("block_destroy"))
+                model.SetAnimation(true);
+            return;
+        }
+
+        if (hasVoxelHit)
         {
             UpdateBlockSelector(hit);
             if (Input.IsActionDown("block_destroy"))

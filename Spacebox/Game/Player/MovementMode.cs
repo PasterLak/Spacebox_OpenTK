@@ -14,6 +14,7 @@ public class MovementMode : GameModeBase
 {
     private const float _cameraSpeed = 3.5f;
     private const float _shiftSpeed = 7.5f;
+    private const float BodyPushFactor = 1.5f;
     private float speedUpPower = 0;
     private AudioSource flySpeedUpAudio;
 
@@ -306,11 +307,12 @@ public class MovementMode : GameModeBase
             CollisionState collision = new CollisionState();
             Vector3 velocityBefore = player.InertiaController.Velocity;
             float speedBefore = velocityBefore.Length;
+            SphereBody hitBody = null;
 
             position.X += movement.X;
             UpdateBoundingAt(position, player);
 
-            if (world.IsColliding(player.Position, player.BoundingVolume, out collision.collideInfo))
+            if (IsBlocked(world, player, out collision.collideInfo, ref hitBody))
             {
                 position.X -= movement.X;
                 collision.hitX = true;
@@ -318,7 +320,7 @@ public class MovementMode : GameModeBase
 
             position.Y += movement.Y;
             UpdateBoundingAt(position, player);
-            if (world.IsColliding(player.Position, player.BoundingVolume, out var collideInfoY))
+            if (IsBlocked(world, player, out var collideInfoY, ref hitBody))
             {
                 position.Y -= movement.Y;
                 collision.hitY = true;
@@ -327,12 +329,14 @@ public class MovementMode : GameModeBase
 
             position.Z += movement.Z;
             UpdateBoundingAt(position, player);
-            if (world.IsColliding(player.Position, player.BoundingVolume, out var collideInfoZ))
+            if (IsBlocked(world, player, out var collideInfoZ, ref hitBody))
             {
                 position.Z -= movement.Z;
                 collision.hitZ = true;
                 if (!collision.hitX && !collision.hitY) collision.collideInfo = collideInfoZ;
             }
+
+            if (hitBody != null) PushBody(hitBody, player, velocityBefore);
 
             int hitCount = (collision.hitX ? 1 : 0) + (collision.hitY ? 1 : 0) + (collision.hitZ ? 1 : 0);
 
@@ -340,7 +344,7 @@ public class MovementMode : GameModeBase
             {
                 float effectiveSpeed = CalculateEffectiveImpactSpeed(velocityBefore, collision, hitCount);
 
-                if (effectiveSpeed > 4f)
+                if (effectiveSpeed > 4f && collision.collideInfo.block != null)
                 {
                     var saveSpeed = ApplyVelocityDamage(effectiveSpeed, player, collision.collideInfo);
 
@@ -373,6 +377,35 @@ public class MovementMode : GameModeBase
         }
     }
 
+    private static bool IsBlocked(World world, LocalAstronaut player, out CollideInfo collideInfo, ref SphereBody hitBody)
+    {
+        if (world.IsColliding(player.Position, player.BoundingVolume, out collideInfo)) return true;
+
+        var body = player.Body;
+        if (body == null || !world.Physics.OverlapsSolidBody(player.BoundingVolume.Center, body.Radius, body, out var other)) return false;
+
+        hitBody = other;
+        collideInfo = default;
+        return true;
+    }
+
+    private static void PushBody(SphereBody body, LocalAstronaut player, Vector3 playerVelocity)
+    {
+        if (body.IsKinematic) return;
+
+        Vector3 normal = body.Center - player.Position;
+        if (normal.LengthSquared < 0.000001f) return;
+        normal.Normalize();
+
+        float playerSpeed = Vector3.Dot(playerVelocity, normal);
+        if (playerSpeed <= 0f) return;
+
+        float targetSpeed = playerSpeed * BodyPushFactor;
+        float bodySpeed = Vector3.Dot(body.Velocity, normal);
+        if (bodySpeed < targetSpeed)
+            body.Velocity += normal * (targetSpeed - bodySpeed);
+    }
+
     private bool ApplyVelocityDamage(float speed, LocalAstronaut player, CollideInfo collideInfo)
     {
         bool saveSpeed = false;
@@ -389,7 +422,7 @@ public class MovementMode : GameModeBase
             wallhitAudio2.Volume = MathHelper.Clamp(speed * 0.1f, 0, 1);
             wallhitAudio2.Play();
 
-            if (collideInfo.block.IsTransparent)
+            if (collideInfo.block != null && collideInfo.block.IsTransparent)
             {
                 Chunk ch = collideInfo.chunk;
                 if (ch != null)

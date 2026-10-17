@@ -8,6 +8,7 @@ using OpenTK.Mathematics;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
+using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.GUI;
 
@@ -17,20 +18,26 @@ namespace Spacebox.Game
     public interface IDamageable
     {
         public void TakeDamage(Projectile projectile);
-        public bool CheckCollision(Ray ray, out float distance);
 
     }
-    public class Spacer : Node3D, IDamageable
+    public class Spacer : Node3D, IDamageable, IDrillable
     {
         public Storage Storage { get; private set; }
 
         private StatsData _health;
         private Animator _animator;
-        private ColliderComponent _collision;
+        private const float Radius = 0.5f;
+        private const float InteractDistance = 3f;
+        private const float InteractRayLength = 5f;
+        private static readonly Vector3 InitialVelocity = new Vector3(0, 0, 0.2f);
+
+        private SphereBody _body;
+        private readonly Ray _interactRay = new Ray(Vector3.Zero, Vector3.UnitZ, InteractRayLength);
         private PlayerEffects _effects;
         private bool _lootWasGenerated = false;
+        private float _pendingDrillDamage;
 
-        public Spacer(Vector3 pos)
+        public Spacer(Vector3 pos, PhysicsWorld physics = null)
         {
 
             Position = pos;
@@ -46,7 +53,7 @@ namespace Spacebox.Game
             Storage = new Storage(3, 3);
             Storage.Name = Name;
 
-            _collision = AttachComponent(new SphereCollider());
+            _body = AttachComponent(new SphereBody(physics, Radius) { Velocity = InitialVelocity });
 
             Model spacerModel = new Model(GameAssets.LoadResource<Mesh>("Resources/Models/spacer.obj"),
                 new TextureMaterial(spacerTex));
@@ -54,7 +61,6 @@ namespace Spacebox.Game
             AttachComponent(new AxesDebugComponent());
 
             _animator = new Animator(this);
-            _animator.AddAnimation(new MoveAnimation(Position, Position + new Vector3(0, 0, 1000), 5000f, false));
             _animator.AddAnimation(new RotateAnimation(Vector3.UnitX, 5f, 0f));
             _animator.AddAnimation(new RotateAnimation(Vector3.UnitY, 5f, 0f));
 
@@ -76,10 +82,15 @@ namespace Spacebox.Game
         }
 
 
-        public bool CheckCollision(Ray ray, out float distance)
+        public void TakeDrillDamage(float damage)
         {
-            return ray.Intersects(_collision, out distance);
+            _pendingDrillDamage += damage;
+            int wholeDamage = (int)_pendingDrillDamage;
+            if (wholeDamage <= 0) return;
 
+            _pendingDrillDamage -= wholeDamage;
+            _health.Decrement(wholeDamage);
+            _effects.PlayEffect(PlayerEffectType.Damage);
         }
 
         private void GenerateLoot()
@@ -92,7 +103,12 @@ namespace Spacebox.Game
         private void OnKilled()
         {
 
+            if (!_lootWasGenerated && World.CurrentSector != null)
+                GenerateLoot();
+
+            World.DropEffectManager?.DropStorage(Storage, Position);
             Storage.Clear();
+            DetachComponent(_body);
             Parent?.RemoveChild(this);
         }
         private void AddItems(Storage storage)
@@ -116,12 +132,13 @@ namespace Spacebox.Game
 
             if (cam == null) return;
 
-            Ray ray = new Ray(cam.Position, cam.Front, 5f);
+            _interactRay.Origin = cam.Position;
+            _interactRay.Direction = cam.Front;
 
-            if (ray.Intersects(_collision, out float distance))
+            if (_interactRay.IntersectsSphere(Position, Radius, out float distance))
             {
 
-                if (distance < 3)
+                if (distance < InteractDistance)
                 {
                     CenteredText.SetText("Press RMB to open");
                     CenteredText.Show();

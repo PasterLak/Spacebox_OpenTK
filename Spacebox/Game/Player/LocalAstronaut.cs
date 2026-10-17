@@ -6,6 +6,7 @@ using Engine.Light;
 using Engine.Physics;
 using OpenTK.Mathematics;
 using Spacebox.Game.Effects;
+using Spacebox.Game.Physics;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Game.Player.Interactions;
@@ -21,6 +22,7 @@ namespace Spacebox.Game.Player
         public Storage Panel { get; private set; }
         public bool CameraActive = true;
         public Action<LocalAstronaut> OnMoved { get; set; }
+        public SphereBody Body { get; private set; }
 
         public bool CanMove => _isAlive && !UIManager.IsUIMode;
 
@@ -136,6 +138,14 @@ namespace Spacebox.Game.Player
         public override void Start()
         {
             base.Start();
+        }
+
+        public void EnablePhysics(PhysicsWorld physics)
+        {
+            if (Body != null) DetachComponent(Body);
+
+            float radius = BoundingVolume is BoundingSphere sphere ? sphere.Radius : 0.4f;
+            Body = AttachComponent(new SphereBody(physics, radius) { IsKinematic = true });
         }
 
         private void SetData()

@@ -34,6 +34,23 @@ public abstract class InteractionDestroyBlock : InteractionMode
         BlockDestroyer.Destroy(hit, player);
     }
 
+    protected bool TryDrillTarget(Engine.Physics.Ray ray, LocalAstronaut player, bool hasVoxelHit, in HitInfo voxelHit)
+    {
+        var world = World.Instance;
+        if (world == null || drillItem == null) return false;
+        if (!world.Physics.Raycast(ray, player.Body, out var hit)) return false;
+        if (hit.Body.Owner is not IDrillable target) return false;
+        if (hasVoxelHit && Vector3.DistanceSquared(ray.Origin, voxelHit.hitPosition) < hit.Distance * hit.Distance) return false;
+
+        BlockSelector.IsVisible = false;
+        AImedBlockElement.AimedBlock = null;
+
+        if (Input.IsAction("block_destroy"))
+            target.TakeDrillDamage(drillItem.Tier * Time.Delta);
+
+        return true;
+    }
+
     protected void UpdateBlockSelector(HitInfo hit)
     {
         BlockSelector.Instance.Enabled = true;

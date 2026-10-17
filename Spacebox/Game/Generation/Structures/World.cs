@@ -51,13 +51,13 @@ public class World : Component, ISpaceStructure
         new Vector3i( 0,  0, +1),
     };
 
-    private List<IDamageable> damageables;
+    public PhysicsWorld Physics { get; private set; }
     public World(LocalAstronaut player, BlockMaterial material)
     {
         Instance = this;
         Player = player;
         this.material = material;
-        damageables = new List<IDamageable>();
+        Physics = new PhysicsWorld(this);
 
         worldOctree = new Octree<Sector>(
             Sector.SizeBlocks * SizeSectors,
@@ -72,7 +72,7 @@ public class World : Component, ISpaceStructure
         BiomeGenerator = new BiomeGenerator(World.Seed, WorldGenerator);
         DropEffectManager = new DropManager(player);
 
-        AddDamagable(player);
+        player.EnablePhysics(Physics);
     }
 
     public override void Start()
@@ -80,8 +80,7 @@ public class World : Component, ISpaceStructure
         DestructionManager = new BlockDestructionManager();
         Owner.AttachComponent(DestructionManager);
         Owner.AttachComponent(DropEffectManager);
-        var spacer = Owner.AddChild(new Spacer(Player.Position + new Vector3(5, 5, 7)));
-        AddDamagable(spacer);
+        Owner.AddChild(new Spacer(Player.Position + new Vector3(5, 5, 7), Physics));
 
         ProjectilesPool = new ProjectilesPool(20);
         Owner.AttachComponent(ProjectilesPool);
@@ -95,11 +94,6 @@ public class World : Component, ISpaceStructure
 
     }
 
-    public void AddDamagable(IDamageable damageable)
-    {
-        if (!damageables.Contains(damageable))
-            damageables.Add(damageable);
-    }
     public void Save()
     {
 
@@ -169,43 +163,6 @@ public class World : Component, ISpaceStructure
             sector.Value.Render(material);
         }
     }
-    public bool RaycastClosest(Ray ray, out float hitDistance, out IDamageable hitObject)
-    {
-        hitObject = null;
-        hitDistance = float.MaxValue;
-        bool hasHit = false;
-
-        foreach (var d in damageables)
-        {
-            if (d.CheckCollision(ray, out float currentDist))
-            {
-                if (currentDist < hitDistance)
-                {
-                    hitDistance = currentDist;
-                    hitObject = d;
-                    hasHit = true;
-                }
-            }
-        }
-
-        return hasHit;
-    }
-
-    public bool RaycastDynamicObjects(Ray ray, out float distance, List<IDamageable> objects)
-    {
-        distance = int.MaxValue;
-        foreach (var d in damageables)
-        {
-            if (d.CheckCollision(ray, out distance))
-            {
-                objects.Add(d);
-                return true;
-            }
-
-        }
-        return false;
-    }
-
     public bool IsColliding(Vector3 pos, BoundingVolume volume, out CollideInfo collideInfo)
     {
         if (CurrentSector == null)

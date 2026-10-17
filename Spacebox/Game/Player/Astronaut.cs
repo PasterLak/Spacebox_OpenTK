@@ -162,24 +162,5 @@ namespace Spacebox.Game.Player
                 local.TakeDamage(projectile, new DeathCase(message));
             }
         }
-
-        public bool CheckCollision(Ray ray, out float distance)
-        {
-            distance = 0;
-
-            Vector3 rayDir = ray.Direction.Normalized();
-            Vector3 playerLookDir = ForwardLocal.Normalized();
-            Vector3 toRayStart = ray.Origin - Position;
-
-            float dirDot = Vector3.Dot(rayDir, playerLookDir);
-            float startPosDot = Vector3.Dot(toRayStart, playerLookDir);
-
-            if (dirDot > 0 && startPosDot > -0.5f)
-            {
-                return false;
-            }
-
-            return ray.Intersects(sphereCollision, out distance);
-        }
     }
 }

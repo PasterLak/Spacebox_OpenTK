@@ -46,9 +46,14 @@ namespace Engine.Physics
 
         public bool Intersects(BoundingSphere sphere, out float distance)
         {
-            var oc = Origin - sphere.Center;
+            return IntersectsSphere(sphere.Center, sphere.Radius, out distance);
+        }
+
+        public bool IntersectsSphere(Vector3 center, float radius, out float distance)
+        {
+            var oc = Origin - center;
             var b = Vector3.Dot(oc, Direction);
-            var c = Vector3.Dot(oc, oc) - sphere.Radius * sphere.Radius;
+            var c = Vector3.Dot(oc, oc) - radius * radius;
             var h = b * b - c;
             if (h < 0)
             {
