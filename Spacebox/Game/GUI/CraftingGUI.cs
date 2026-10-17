@@ -70,13 +70,13 @@ public class CraftingGUI
         scrollAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/scroll.ogg"));
         clickAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/click1.ogg"));
 
-        if (openSound == null)
+        if (openSound == null || openSound.IsDisposed)
         {
             openSound = new AudioSource(Resources.Load<AudioClip>("openBlock1"));
             openSound.Volume = 1f;
         }
 
-        if (closeSound == null)
+        if (closeSound == null || closeSound.IsDisposed)
         {
             closeSound = new AudioSource(Resources.Load<AudioClip>("openBlock4"));
             closeSound.Volume = 1f;

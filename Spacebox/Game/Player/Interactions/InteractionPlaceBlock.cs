@@ -26,7 +26,7 @@ public class InteractionPlaceBlock : InteractionMode
     Random r = new Random();
     public override void OnEnable()
     {
-        if (blockPlace == null)
+        if (blockPlace == null || blockPlace.IsDisposed)
             blockPlace = new AudioSource(Resources.Load<AudioClip>("blockPlaceDefault"));
 
         if (BlockSelector.Instance != null)

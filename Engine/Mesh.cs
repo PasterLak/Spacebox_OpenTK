@@ -149,8 +149,11 @@ namespace Engine
         public int GetHandle() { return buffer.VBO; }
         public void Dispose()
         {
+            if (IsDisposed) return;
+
             buffer?.Dispose();
             IsDisposed = true;
+            Resources.RemoveResourceFromControll(this);
         }
     }
 }

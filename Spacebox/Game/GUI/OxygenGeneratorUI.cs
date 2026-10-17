@@ -162,6 +162,13 @@ public static class OxygenGeneratorUI
         }
     }
 
+    public static void Reset()
+    {
+        _block = null;
+        _player = null;
+        _wasVisible = false;
+    }
+
     private static void OnClosed()
     {
         if (_player != null)

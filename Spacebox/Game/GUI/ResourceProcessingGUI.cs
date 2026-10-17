@@ -143,22 +143,22 @@ namespace Spacebox.Game.GUI
             var blockData = GameAssets.GetBlockDataById(block.Id);
             WindowName = blockData.Name;
 
-            if (craftedSound == null)
+            if (craftedSound == null || craftedSound.IsDisposed)
             {
                 craftedSound = new AudioSource(Resources.Load<AudioClip>("crafted"));
                 craftedSound.Volume = 1f;
             }
-            if (openSound == null)
+            if (openSound == null || openSound.IsDisposed)
             {
                 openSound = new AudioSource(Resources.Load<AudioClip>("openBlock1"));
                 openSound.Volume = 1f;
             }
-            if (closeSound == null)
+            if (closeSound == null || closeSound.IsDisposed)
             {
                 closeSound = new AudioSource(Resources.Load<AudioClip>("openBlock4"));
                 closeSound.Volume = 1f;
             }
-            if (pickupSound == null)
+            if (pickupSound == null || pickupSound.IsDisposed)
             {
                 pickupSound = new AudioSource(Resources.Load<AudioClip>("pickupDefault"));
                 pickupSound.Volume = 0.5f;

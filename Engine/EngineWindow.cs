@@ -30,7 +30,6 @@ namespace Engine
         private PostProcessManager _processManager;
         private Vector2i _minimizedWindowSize; 
         private SceneRenderer _sceneRenderer;
-        private FullscreenRenderer _fullscreenRenderer;
         private InputManager _inputManager;
      
         private static Keys _debugKey;
@@ -86,7 +85,6 @@ namespace Engine
             OnSetupPostProcessing(_processManager);
 
             MinimumSize = new Vector2i(640, 360);
-            _fullscreenRenderer = new FullscreenRenderer();
           
             OnGameLoad();
         }
@@ -288,6 +286,11 @@ namespace Engine
 
         public WindowMode CurrentWindowMode { get; private set; } = WindowMode.Windowed;
         public static Action<WindowMode> OnWindowModeChanged;
+
+        public void RebuildImGuiFontTexture(bool nearestFilter = false)
+        {
+            _controller.RecreateFontDeviceTexture(nearestFilter);
+        }
 
         public void SetVSync(bool enabled)
         {

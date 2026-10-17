@@ -293,6 +293,10 @@ namespace Engine
         }
         public void Dispose()
         {
+            if (IsDisposed) return;
+
+            Resources.RemoveResourceFromControll(this);
+
             if (Handle != 0)
                 GL.DeleteProgram(Handle);
 

@@ -165,15 +165,6 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
         config.PixelSnapH = true;
 
         io.Fonts.AddFontFromFileTTF(fontPath, fontSize, config);
-        io.Fonts.GetTexDataAsRGBA32(out byte* pixels, out int width, out int height, out int bytesPerPixel);
-
-        int fontTexture;
-        GL.GenTextures(1, out fontTexture);
-        GL.BindTexture(TextureTarget.Texture2D, fontTexture);
-        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0,
-                      PixelFormat.Rgba, PixelType.UnsignedByte, new IntPtr(pixels));
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-        io.Fonts.SetTexID((IntPtr)fontTexture);
+        Instance.RebuildImGuiFontTexture(true);
     }
 }

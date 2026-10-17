@@ -62,13 +62,13 @@ public class RadarUI : IDisposable
         _scanningAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("radarScanning"));
         _foundAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("radarFound"));
 
-        if (_openAudio == null)
+        if (_openAudio == null || _openAudio.IsDisposed)
         {
             _openAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("openBlock1"));
             _openAudio.Volume = 1f;
         }
 
-        if (_closeAudio == null)
+        if (_closeAudio == null || _closeAudio.IsDisposed)
         {
             _closeAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("openBlock4"));
             _closeAudio.Volume = 1f;

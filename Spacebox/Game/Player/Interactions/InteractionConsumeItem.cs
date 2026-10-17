@@ -59,7 +59,7 @@ public class InteractionConsumeItem : InteractionMode
     {
         if (useConsumableAudio != null)
         {
-            useConsumableAudio.Stop();
+            useConsumableAudio.Dispose();
             useConsumableAudio = null;
         }
     }

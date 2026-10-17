@@ -170,7 +170,7 @@ void main()
         /// <summary>
         /// Recreates the device texture used to render text.
         /// </summary>
-        public void RecreateFontDeviceTexture()
+        public void RecreateFontDeviceTexture(bool nearestFilter = false)
         {
             ImGuiIOPtr io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out nint pixels, out int width, out int height, out int bytesPerPixel);
@@ -180,6 +180,9 @@ void main()
             int prevActiveTexture = GL.GetInteger(GetPName.ActiveTexture);
             GL.ActiveTexture(TextureUnit.Texture0);
             int prevTexture2D = GL.GetInteger(GetPName.TextureBinding2D);
+
+            if (_fontTexture != 0)
+                GL.DeleteTexture(_fontTexture);
 
             _fontTexture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, _fontTexture);
@@ -195,8 +198,8 @@ void main()
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, mips - 1);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)(nearestFilter ? TextureMagFilter.Nearest : TextureMagFilter.Linear));
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)(nearestFilter ? TextureMinFilter.Nearest : TextureMinFilter.Linear));
 
             // Restore state
             GL.BindTexture(TextureTarget.Texture2D, prevTexture2D);

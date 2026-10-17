@@ -21,6 +21,7 @@ namespace Spacebox.Game.GUI
             SelectedTexture = selectedTextureId;
             ItemTexture = new Texture2D("Resources/Textures/UI/trash.png", true, false).Handle;
 
+            SpaceboxWindow.OnResized -= OnResize;
             SpaceboxWindow.OnResized += OnResize;
 
             OnResize(SpaceboxWindow.Instance.Size);

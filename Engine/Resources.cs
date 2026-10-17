@@ -30,7 +30,7 @@ namespace Engine
         private static readonly Dictionary<Type, IResource> _error = new Dictionary<Type, IResource>();
 
         private static List<IResource> _loadedResources = new List<IResource>();
-        private static List<IResource> _controlledResoruces = new List<IResource>();
+        private static HashSet<IResource> _controlledResoruces = new HashSet<IResource>(ReferenceEqualityComparer.Instance);
 
         static Resources()
         {
@@ -275,14 +275,14 @@ namespace Engine
         public static void AddResourceToControll(IResource resource)
         {
 
-            if (resource != null && !_controlledResoruces.Contains(resource))
+            if (resource != null)
             {
                 _controlledResoruces.Add(resource);
             }
         }
         public static void RemoveResourceFromControll(IResource resource)
         {
-            if (resource != null && _controlledResoruces.Contains(resource))
+            if (resource != null)
             {
                 _controlledResoruces.Remove(resource);
             }
@@ -337,7 +337,7 @@ namespace Engine
 
             DisposeAllResources();
 
-            foreach (var resource in _controlledResoruces)
+            foreach (var resource in _controlledResoruces.ToArray())
             {
                 if (resource != null && !resource.IsDisposed)
                 {

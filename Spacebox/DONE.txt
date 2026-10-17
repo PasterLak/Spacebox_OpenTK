@@ -79,6 +79,8 @@ Fixes
 - player flies through spacer
 - projectiles hit spacer through walls / after death
 - voxel raycast moved the ray origin
+- memory leaks: ImGui font texture per menu load, audio sources, resize event handlers, tick handler added per world load
+- sounds silent after re-entering a world
 
 Engine
 - Materials
@@ -96,6 +98,7 @@ Engine
 - profiling, console only in debug
 - dynamic sphere bodies (PhysicsWorld)
 - window mode change event, SetVSync
+- resources: controlled set pruned on dispose, double-dispose guards, AudioSource dispose deadlock fixed
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.1

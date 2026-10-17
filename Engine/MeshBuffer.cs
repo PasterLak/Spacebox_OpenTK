@@ -94,11 +94,14 @@ namespace Engine
 
         public void Dispose()
         {
+            if (IsDisposed) return;
+
             GL.DeleteBuffer(VBO);
             GL.DeleteBuffer(EBO);
             GL.DeleteVertexArray(VAO);
 
             IsDisposed = true;
+            Resources.RemoveResourceFromControll(this);
 
         }
 

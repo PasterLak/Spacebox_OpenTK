@@ -10,7 +10,18 @@ namespace Engine.Audio
         public string FileFullPath { get; private set; }
         public bool IsStreaming { get; private set; }
         public int Buffer { get; private set; }
-        public AudioSource AudioSource { get; set; }
+        private readonly HashSet<AudioSource> _sources = new HashSet<AudioSource>();
+        private readonly List<AudioSource> _sourcesToDispose = new List<AudioSource>();
+
+        internal void AddSource(AudioSource source)
+        {
+            lock (_sources) _sources.Add(source);
+        }
+
+        internal void RemoveSource(AudioSource source)
+        {
+            lock (_sources) _sources.Remove(source);
+        }
       
         private static readonly List<string> AllowedExtensions = new List<string> { ".wav", ".ogg" };
         private FileStream fileStream;
@@ -145,12 +156,18 @@ namespace Engine.Audio
 
             if (IsDisposed) return;
 
-            if (AudioSource is not null)
+            lock (_sources)
             {
-                AudioSource.Stop();
-                AudioSource?.Dispose();
-                AudioSource = null;
+                _sourcesToDispose.AddRange(_sources);
+                _sources.Clear();
             }
+
+            for (int i = 0; i < _sourcesToDispose.Count; i++)
+            {
+                _sourcesToDispose[i].Dispose();
+            }
+            _sourcesToDispose.Clear();
+            Resources.RemoveResourceFromControll(this);
 
 
             reader?.Dispose();

@@ -158,10 +158,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         //Input.HideCursor();
         BlackScreenOverlay.IsEnabled = false;
 
-        Time.OnTick += () =>
-        {
-            TickTaskManager.UpdateTasks();
-        };
+        Time.OnTick += UpdateTickTasks;
         CraftingGUI.Init();
 
         Chat.Write("Welcome to Spacebox!", Color4.Yellow);
@@ -274,8 +271,15 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         CenteredText.Hide();
     }
 
+    private static void UpdateTickTasks()
+    {
+        TickTaskManager.UpdateTasks();
+    }
+
     public override void UnloadContent()
     {
+        Time.OnTick -= UpdateTickTasks;
+        OxygenGeneratorUI.Reset();
         PanelUI.Player = null;
 
         TickTaskManager.Dispose();

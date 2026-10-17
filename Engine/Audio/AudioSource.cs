@@ -38,6 +38,7 @@ namespace Engine.Audio
         }
 
         public bool HasClip => _clip != null;
+        public bool IsDisposed => isDisposed;
         public bool IsPlaying => isPlaying && HasClip;
 
         public bool IsLooped
@@ -116,14 +117,13 @@ namespace Engine.Audio
                 bool wasPlaying = isPlaying;
                 if (wasPlaying) Stop();
 
-                if (_clip != null)
-                    _clip.AudioSource = null;
+                _clip?.RemoveSource(this);
 
                 _clip = newClip;
 
                 if (_clip != null)
                 {
-                    _clip.AudioSource = this;
+                    _clip.AddSource(this);
                     if (!_clip.IsStreaming)
                     {
                         AL.Source(handle, ALSourcei.Buffer, _clip.Buffer);
@@ -248,6 +248,8 @@ namespace Engine.Audio
 
         public void Dispose()
         {
+            Thread threadToJoin;
+
             lock (playLock)
             {
                 if (isDisposed) return;
@@ -255,8 +257,15 @@ namespace Engine.Audio
                 isDisposed = true;
 
                 cancellationTokenSource?.Cancel();
-                playbackThread?.Join();
+                threadToJoin = playbackThread;
+                playbackThread = null;
+            }
 
+            if (threadToJoin != null && threadToJoin != Thread.CurrentThread)
+                threadToJoin.Join();
+
+            lock (playLock)
+            {
                 try
                 {
                     AL.SourceStop(handle);
@@ -264,10 +273,10 @@ namespace Engine.Audio
                 }
                 catch { }
 
-                if (_clip != null)
-                    _clip.AudioSource = null;
+                _clip?.RemoveSource(this);
 
                 cancellationTokenSource?.Dispose();
+                cancellationTokenSource = null;
                 GC.SuppressFinalize(this);
             }
         }

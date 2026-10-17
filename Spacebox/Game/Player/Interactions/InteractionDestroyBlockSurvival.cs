@@ -53,13 +53,13 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
 
        
 
-        if (drillAudio == null)
+        if (drillAudio == null || drillAudio.IsDisposed)
         {
             drillAudio = new AudioSource(Resources.Load<AudioClip>("drill1"));
             drillAudio.Volume = 1f;
             drillAudio.IsLooped = true;
         }
-        if (drill0Audio == null)
+        if (drill0Audio == null || drill0Audio.IsDisposed)
         {
             drill0Audio = new AudioSource(Resources.Load<AudioClip>("drill0"));
             drill0Audio.Volume = 1f;

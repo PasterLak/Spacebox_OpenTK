@@ -66,6 +66,8 @@ public class InteractionShoot : InteractionMode
 
     public override void OnDisable()
     {
+        shotSound?.Dispose();
+        shotSound = null;
         model.Animator.Clear();
         model.Position = startPos;
     }

@@ -36,6 +36,7 @@ namespace Spacebox.Game.GUI
         public Anchor Anchor { get; set; } = Anchor.TopLeft;
         public string WindowName { get; set; } = "StatsBar";
         public bool ShowText = true;
+        private Vector2 _lastDisplaySize;
         public string TextOverride { get; set; }
         public Vector2 Size { get; set; } = new Vector2(200, 50);
         public StatsGUI(StatsData statsData)
@@ -46,14 +47,7 @@ namespace Spacebox.Game.GUI
             //_size = CalculateSize(Size,Window.Instance.Size);
             //_position = CalculateSize(Position, Window.Instance.Size);
 
-            SpaceboxWindow.OnResized += OnResized;
-
             OnResized(SpaceboxWindow.Instance.Size);
-        }
-
-        ~StatsGUI()
-        {
-            SpaceboxWindow.OnResized -= OnResized;
         }
 
         public void OnResized(OpenTK.Mathematics.Vector2 w)
@@ -70,6 +64,12 @@ namespace Spacebox.Game.GUI
 
 
             var io = ImGui.GetIO();
+            if (io.DisplaySize != _lastDisplaySize)
+            {
+                _lastDisplaySize = io.DisplaySize;
+                OnResized(new OpenTK.Mathematics.Vector2(io.DisplaySize.X, io.DisplaySize.Y));
+            }
+
             switch (Anchor)
             {
                 case Anchor.Center:

@@ -216,6 +216,7 @@ namespace Spacebox.Game
 
         public override void Destroy()
         {
+            SpaceboxWindow.OnResized -= Resize;
             base.Destroy();
             if (Material != null)
             {

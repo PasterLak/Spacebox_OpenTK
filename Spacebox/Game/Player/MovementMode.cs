@@ -32,7 +32,7 @@ public class MovementMode : GameModeBase
         SetInertia(player.InertiaController);
         SetCameraSway(player.CameraSway);
 
-        if (flySpeedUpAudio == null)
+        if (flySpeedUpAudio == null || flySpeedUpAudio.IsDisposed)
         {
             flySpeedUpAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/flySpeedUp.ogg"));
             flySpeedUpAudio.IsLooped = true;
@@ -75,7 +75,7 @@ public class MovementMode : GameModeBase
 
     public override void OnEnable()
     {
-        if (blockDestroy == null)
+        if (blockDestroy == null || blockDestroy.IsDisposed)
         {
             blockDestroy = new AudioSource(Resources.Load<AudioClip>("blockDestroyDefault"));
             blockDestroy.Volume = 1f;

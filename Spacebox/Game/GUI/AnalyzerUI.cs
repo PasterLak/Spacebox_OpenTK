@@ -35,28 +35,28 @@ namespace Spacebox.Game.GUI
 
         public static void Initialize()
         {
-            if (openSound == null)
+            if (openSound == null || openSound.IsDisposed)
             {
                 openSound = new AudioSource(Resources.Load<AudioClip>("openBlock1"));
                 openSound.Volume = 1f;
             }
-            if (closeSound == null)
+            if (closeSound == null || closeSound.IsDisposed)
             {
                 closeSound = new AudioSource(Resources.Load<AudioClip>("openBlock4"));
                 closeSound.Volume = 1f;
             }
-            if (scanSound == null)
+            if (scanSound == null || scanSound.IsDisposed)
             {
                 scanSound = new AudioSource(Resources.Load<AudioClip>("analyzer_scanning"));
                 scanSound.Volume = 1f;
                 scanSound.IsLooped = true;
             }
-            if (finishSound == null)
+            if (finishSound == null || finishSound.IsDisposed)
             {
                 finishSound = new AudioSource(Resources.Load<AudioClip>("analyzer_complete"));
                 finishSound.Volume = 0.5f;
             }
-            if (clickSound == null)
+            if (clickSound == null || clickSound.IsDisposed)
             {
                 clickSound = new AudioSource(Resources.Load<AudioClip>("click1"));
                 clickSound.Volume = 0.8f;
