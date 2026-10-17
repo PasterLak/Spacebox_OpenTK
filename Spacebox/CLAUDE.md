@@ -78,6 +78,11 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 
 - `BlockData.Size` > 1: every cell is a `Block` with `MultiblockOffset` (model-space offset, origin = 0). Use `MultiblockLayout` for offsets/UVs, `SpaceEntity.TryPlaceBlock` (places all cells or nothing), `CanPlaceStructure`, `RemoveStructure` (called by `Chunk.RemoveBlock`), `TryGetStructureBounds`. Raw writes to `chunk.Blocks` (bulk tools) bypass this and can leave partial structures.
 
+## Gravity
+
+- `GravityField.Sample(worldPos)` returns the gravity acceleration from all powered `GravityGeneratorBlock`s. Blocks that must know when they enter/leave an entity implement `IEntityBlockListener` (called on place, load and removal).
+- `MovementMode` switches the player to `GravityWalker` while the field is stronger than 0.3 m/s² and back to zero-g (keeping velocity) outside.
+
 ## Doors
 
 - `DoorBlock` (type `door`, settings in `DoorBlockData`) + per-entity `DoorSystem` (`entity.Doors`): registration, toggling, animation, auto-close, crushing and reserved cells (`IsReserved`, checked by `TryPlaceBlock`/`CanPlaceStructure`). Moving cells uses `SpaceEntity.ClearCellSilently`/`PlaceCellRaw` (no drops/effects). Door toggles are not synced over the network yet.

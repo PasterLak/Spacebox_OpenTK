@@ -7,6 +7,7 @@ using Spacebox.Game.GameMath;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Oxygen;
 using Spacebox.Game.Generation.Doors;
+using Spacebox.Game.Physics.Gravity;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
@@ -1114,6 +1115,7 @@ namespace Spacebox.Game.Generation
         public void Dispose()
         {
             Doors.Dispose();
+            GravityField.UnregisterEntity(this);
             Sector = null;
             MeshUpdateQueue.Clear();
             foreach (var mesh in MeshesTogenerate)

@@ -6,6 +6,7 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Game.Player.Interactions;
+using Spacebox.Game.Physics.Gravity;
 
 
 namespace Spacebox.Game.Player;
@@ -100,8 +101,38 @@ public class MovementMode : GameModeBase
 
    
 
+    private const float GravityThreshold = 0.3f;
+
+    private bool TryHandleGravity(LocalAstronaut player)
+    {
+        var gravity = player.CollisionEnabled && player.IsAlive ? GravityField.Sample(player.Position) : Vector3.Zero;
+
+        if (gravity.LengthSquared > GravityThreshold * GravityThreshold)
+        {
+            StopSpeedUp(player);
+            if (!player.Gravity.IsActive) player.Gravity.Enter(player, gravity);
+            player.Gravity.Update(player, gravity, player.CanMove);
+            return true;
+        }
+
+        if (player.Gravity.IsActive) player.Gravity.Exit(player);
+        return false;
+    }
+
+    private void StopSpeedUp(LocalAstronaut player)
+    {
+        player.InertiaController.SetMode(false);
+        if (speedUpPower <= 0f && !flySpeedUpAudio.IsPlaying) return;
+
+        speedUpPower = 0f;
+        flySpeedUpAudio.Volume = 0f;
+        flySpeedUpAudio.Pause();
+    }
+
     public override void HandleInput(LocalAstronaut player)
     {
+        if (TryHandleGravity(player)) return;
+
 
         Vector3 acceleration = Vector3.Zero;
         bool isMoving = false;

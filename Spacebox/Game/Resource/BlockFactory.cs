@@ -25,7 +25,8 @@ namespace Spacebox.Game.Resource
                { "consumer", data => new ConsumerBlock(data) },
                 { "storage", data => new StorageBlock(data as StorageBlockData) },
                 { "oxygengenerator", data => new OxygenGeneratorBlock(data) },
-                { "door", data => new DoorBlock(data) }
+                { "door", data => new DoorBlock(data) },
+                { "gravity", data => new GravityGeneratorBlock(data) }
         };
 
         public static Block CreateBlockFromId(short id)

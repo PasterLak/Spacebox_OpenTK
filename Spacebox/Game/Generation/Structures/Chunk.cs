@@ -108,6 +108,11 @@ namespace Spacebox.Game.Generation
             _isLoadedOrGenerated = true;
         }
 
+        private Vector3i ToLocalCell(int x, int y, int z)
+        {
+            return new Vector3i(PositionIndex.X * Size + x, PositionIndex.Y * Size + y, PositionIndex.Z * Size + z);
+        }
+
         public void CalculateLighting()
         {
             _lightManager.PropagateLight();
@@ -199,6 +204,9 @@ namespace Spacebox.Game.Generation
 
                         if (block is DoorBlock door && !door.HasMultiblockOffset)
                             SpaceEntity.Doors.RegisterLoaded(this, x, y, z, door);
+
+                        if (block is IEntityBlockListener listener)
+                            listener.OnAddedToEntity(this, ToLocalCell(x, y, z));
 
                         if (block.Id != 0 && block is ElectricalBlock eBlock)
                         {
@@ -313,6 +321,7 @@ namespace Spacebox.Game.Generation
 
             Blocks[x, y, z] = block;
             SpaceEntity.Oxygen.OnBlockChanged(this, x, y, z, oldBlock, block);
+            if (block is IEntityBlockListener addedListener) addedListener.OnAddedToEntity(this, ToLocalCell(x, y, z));
             IsModified = true;
             DataVersion++;
 
@@ -441,6 +450,8 @@ namespace Spacebox.Game.Generation
             {
                 SpaceEntity.ElectricManager.RemoveBlock(this, new Vector3Byte(x, y, z));
             }
+
+            if (block is IEntityBlockListener removedListener) removedListener.OnRemovedFromEntity();
 
             Blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
             SpaceEntity.Oxygen.OnBlockChanged(this, x, y, z, block, Blocks[x, y, z]);

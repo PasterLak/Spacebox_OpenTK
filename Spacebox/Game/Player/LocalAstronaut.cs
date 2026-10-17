@@ -26,6 +26,7 @@ namespace Spacebox.Game.Player
         public bool CameraActive = true;
         public Action<LocalAstronaut> OnMoved { get; set; }
         public SphereBody Body { get; private set; }
+        public GravityWalker Gravity { get; } = new GravityWalker();
 
         public bool CanMove => _isAlive && !UIManager.IsUIMode;
 
@@ -273,7 +274,8 @@ namespace Spacebox.Game.Player
         {
             if (CameraActive)
             {
-                Rotate();
+                if (Gravity.IsActive) Gravity.Look(this);
+                else Rotate();
             }
         }
 
@@ -416,6 +418,7 @@ namespace Spacebox.Game.Player
             PowerBar.OnGUI();
             OxygenBar.OnGUI();
             HealthBar.OnGUI();
+            GravityIndicatorUI.Draw(Gravity.IsActive);
             HitImage.Draw();
             DeathScreen.Render();
         }

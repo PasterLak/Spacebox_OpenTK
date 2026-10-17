@@ -1,6 +1,7 @@
 using Engine;
 using Engine.Components;
 using Engine.Physics;
+using Spacebox.Game.Physics.Gravity;
 using OpenTK.Mathematics;
 
 namespace Spacebox.Game.Physics;
@@ -47,7 +48,12 @@ public sealed class SphereBody : Component
     public override void OnUpdate()
     {
         if (VisualDebug.Enabled) DrawDebug();
-        if (IsKinematic || _physics == null || _velocity == Vector3.Zero) return;
+        if (IsKinematic || _physics == null) return;
+
+        if (GravityField.HasSources)
+            _velocity += GravityField.Sample(Center) * Time.Delta;
+
+        if (_velocity == Vector3.Zero) return;
 
         float distance = _velocity.Length * Time.Delta;
         int steps = Math.Clamp((int)MathF.Ceiling(distance / (Radius * 0.5f)), 1, MaxSubsteps);

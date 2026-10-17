@@ -11,6 +11,7 @@ using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
+using Spacebox.Game.Physics.Gravity;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 
@@ -194,6 +195,7 @@ public class World : Component, ISpaceStructure
     public override void OnDetached()
     {
         base.OnDetached();
+        GravityField.Clear();
 
 
 

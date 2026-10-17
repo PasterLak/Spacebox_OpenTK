@@ -786,7 +786,13 @@
   {
     "ID": "gravity_generator",
     "Name": "Gravity Generator",
-    "Description": "Can create artificial gravity",
+    "Description": "Creates artificial gravity toward its bottom side (radius 32, needs 200 EU)",
+    "Type": "gravity",
+    "Gravity": {
+      "Radius": 32,
+      "Strength": 9.81,
+      "Power": 200
+    },
     "Category": "resources",
     "PowerToDrill": 1,
     "Mass": 255,

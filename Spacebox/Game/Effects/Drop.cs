@@ -2,6 +2,7 @@
 using Engine.Physics;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
+using Spacebox.Game.Physics.Gravity;
 
 namespace Spacebox.Game.Effects;
 
@@ -66,6 +67,9 @@ public class Drop : IDisposable
         TimeRemaining -= deltaTime;
         _age += deltaTime;
 
+        if (GravityField.HasSources && !IsMovingToPlayer)
+            ApplyGravity(deltaTime);
+
         if (Velocity.LengthSquared > 0.01f)
         {
             var movement = Velocity * deltaTime;
@@ -123,6 +127,30 @@ public class Drop : IDisposable
         _throwTime = 0f;
         IsThrown = true;
         if (Deceleration <= 0f) Deceleration = 4f;
+    }
+
+    private const float SupportProbe = 0.12f;
+    private static readonly Ray _supportRay = new Ray(Vector3.Zero, -Vector3.UnitY, SupportProbe);
+
+    private void ApplyGravity(float deltaTime)
+    {
+        var gravity = GravityField.Sample(Position);
+        if (gravity.LengthSquared < 0.01f) return;
+        if (IsStopped && IsSupported(gravity)) return;
+
+        Velocity += gravity * deltaTime;
+        _initialVelocity = Velocity;
+        _throwTime = 0f;
+        IsThrown = true;
+    }
+
+    private bool IsSupported(Vector3 gravity)
+    {
+        _supportRay.Origin = Position;
+        _supportRay.Direction = gravity.Normalized();
+        _supportRay.Length = SupportProbe;
+        if (SourceEntity != null) return SourceEntity.Raycast(_supportRay, out _);
+        return World.CurrentSector != null && World.CurrentSector.Raycast(_supportRay, out _);
     }
 
     public void ResetPickupTimer()
