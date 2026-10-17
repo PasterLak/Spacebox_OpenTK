@@ -88,6 +88,10 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 
 - `PlayerRespawner` (`Game/Player/Respawn/`): spawn point respawn (preload + `WorldLoadingScreen`, then `SafeSpawnFinder`) or DNA reconstruction (`DnaReconstructorRegistry.TryFindNearestReady`, `DnaReconstructionScreen`). `DeathScreen` asks it via `ReconstructionBlocker` / `OnReconstruct`.
 
+## Explosions
+
+- `World.Explosions` (`Game/Physics/Explosions/`): `Detonate(chunk, index, data, delay)`. Blocks that react to bullets implement `IProjectileReactive` (checked in `Projectile` before ricochet). Bodies take damage through `IExplosionDamageable`. Bulk block removal: `Chunk.ClearCellForBulkEdit` + `FinishBulkEdit` + `Oxygen.OnChunksChanged`.
+
 ## Doors
 
 - `DoorBlock` (type `door`, settings in `DoorBlockData`) + per-entity `DoorSystem` (`entity.Doors`): registration, toggling, animation, auto-close, crushing and reserved cells (`IsReserved`, checked by `TryPlaceBlock`/`CanPlaceStructure`). Moving cells uses `SpaceEntity.ClearCellSilently`/`PlaceCellRaw` (no drops/effects). Door toggles are not synced over the network yet.

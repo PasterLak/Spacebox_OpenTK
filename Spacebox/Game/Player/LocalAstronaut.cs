@@ -308,6 +308,16 @@ namespace Spacebox.Game.Player
             TakeDamage(projectile.Parameters.Damage, deathCase);
         }
 
+        public void ApplyImpulse(Vector3 impulse)
+        {
+            if (impulse == Vector3.Zero) return;
+
+            if (Gravity.IsActive)
+                Gravity.AddImpulse(impulse);
+            else
+                InertiaController.Velocity += impulse;
+        }
+
         public void TakeDamage(int damage, DeathCase? deathCase = null)
         {
             var health = HealthBar.StatsData;

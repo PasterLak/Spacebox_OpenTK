@@ -359,14 +359,37 @@ namespace Spacebox.Game.Effects
                 var pushed = getPushedPosition(drop.Position);
                 if (!pushed.HasValue) continue;
 
-                if (drop.IsStopped)
-                {
-                    _octree.Remove(drop);
-                    if (!_movingDrops.Contains(drop)) _movingDrops.Add(drop);
-                }
-
-                drop.Push(pushed.Value, velocity);
+                PushDrop(drop, pushed.Value, velocity);
             }
+        }
+
+        public void PushDropsFrom(Vector3 center, float radius, float strength)
+        {
+            float radiusSquared = radius * radius;
+
+            foreach (var drop in _activeDrops)
+            {
+                if (drop.IsMovingToPlayer) continue;
+
+                var offset = drop.Position - center;
+                float distanceSquared = offset.LengthSquared;
+                if (distanceSquared >= radiusSquared) continue;
+
+                float distance = MathF.Sqrt(distanceSquared);
+                var direction = distance > 1e-3f ? offset / distance : Vector3.UnitY;
+                PushDrop(drop, drop.Position, drop.Velocity + direction * (strength * (1f - distance / radius)));
+            }
+        }
+
+        private void PushDrop(Drop drop, Vector3 position, Vector3 velocity)
+        {
+            if (drop.IsStopped)
+            {
+                _octree.Remove(drop);
+                if (!_movingDrops.Contains(drop)) _movingDrops.Add(drop);
+            }
+
+            drop.Push(position, velocity);
         }
 
         private void HandleDropStopped(Drop drop)

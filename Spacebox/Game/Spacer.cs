@@ -11,6 +11,7 @@ using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.GUI;
+using Spacebox.Game.Physics.Explosions;
 
 
 namespace Spacebox.Game
@@ -20,7 +21,7 @@ namespace Spacebox.Game
         public void TakeDamage(Projectile projectile);
 
     }
-    public class Spacer : Node3D, IDamageable, IDrillable
+    public class Spacer : Node3D, IDamageable, IDrillable, IExplosionDamageable
     {
         public Storage Storage { get; private set; }
 
@@ -81,6 +82,12 @@ namespace Spacebox.Game
             _effects.PlayEffect(PlayerEffectType.Damage);
         }
 
+
+        public void TakeExplosionDamage(int damage)
+        {
+            _health.Decrement(damage);
+            _effects.PlayEffect(PlayerEffectType.Damage);
+        }
 
         public void TakeDrillDamage(float damage)
         {

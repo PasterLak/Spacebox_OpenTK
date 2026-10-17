@@ -625,6 +625,46 @@
     },
     {
       "Product": {
+        "Item": "cobalt_bomb",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 4
+        },
+        {
+          "Item": "iron_ingot",
+          "Quantity": 2
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "uranium_bomb",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "uranium_rods",
+          "Quantity": 2
+        },
+        {
+          "Item": "cobalt_bomb",
+          "Quantity": 2
+        },
+        {
+          "Item": "titanium_panels",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
         "Item": "aluminium_drill_bit",
         "Quantity": 1
       },

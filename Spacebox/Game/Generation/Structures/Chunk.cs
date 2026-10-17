@@ -439,6 +439,30 @@ namespace Spacebox.Game.Generation
             ClearBlockSilently(x, y, z);
         }
 
+        internal bool ClearCellForBulkEdit(byte x, byte y, byte z)
+        {
+            if (!IsInRange(x, y, z)) return false;
+
+            var block = Blocks[x, y, z];
+            if (block == null || block.IsAir) return false;
+
+            Blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
+            IsModified = true;
+            DataVersion++;
+            return true;
+        }
+
+        public void FinishBulkEdit()
+        {
+            _lightManager.PropagateLight();
+            QueueMeshUpdate(UpdateReason.PlayerAction);
+
+            foreach (var neighbor in Neighbors.Values)
+            {
+                if (neighbor != null && !neighbor.IsDisposed) neighbor.QueueMeshUpdate(UpdateReason.PlayerAction);
+            }
+        }
+
         internal void ClearBlockSilently(byte x, byte y, byte z)
         {
             if (!IsInRange(x, y, z))

@@ -1153,5 +1153,63 @@
       "Place": "placeGlass",
       "Destroy": "blockDestroyGlass"
     }
+  },
+  {
+    "ID": "cobalt_bomb",
+    "Name": "Cobalt Bomb",
+    "Description": "Explodes when shot. Radius 4, penetration 100, up to 50 damage",
+    "Type": "explosive",
+    "Explosive": {
+      "Radius": 4,
+      "Penetration": 100,
+      "Damage": 50,
+      "DamageFalloff": true,
+      "PushStrength": 15,
+      "PushRadiusMultiplier": 2,
+      "ChainDelay": 0.15
+    },
+    "Category": "other",
+    "Mass": 8,
+    "Durability": 10,
+    "Textures": {
+      "Active": {
+        "All": "cobaltBombSide",
+        "Up": "cobaltBombTop",
+        "Down": "cobaltBombTop"
+      }
+    },
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "uranium_bomb",
+    "Name": "Uranium Bomb",
+    "Description": "Explodes when shot. Radius 12, penetration 200, 200 damage",
+    "Type": "explosive",
+    "Explosive": {
+      "Radius": 12,
+      "Penetration": 200,
+      "Damage": 200,
+      "DamageFalloff": false,
+      "PushStrength": 35,
+      "PushRadiusMultiplier": 2,
+      "ChainDelay": 0.15
+    },
+    "Category": "other",
+    "Mass": 12,
+    "Durability": 10,
+    "Textures": {
+      "Active": {
+        "All": "uraniumBombSide",
+        "Up": "uraniumBombTop",
+        "Down": "uraniumBombTop"
+      }
+    },
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
   }
 ]

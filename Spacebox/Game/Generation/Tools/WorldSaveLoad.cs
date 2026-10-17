@@ -83,13 +83,13 @@ namespace Spacebox.Game.Generation.Tools
         }
      
 
-        public static SpaceEntity? LoadSpaceEntityFromFile(string entityFilePath, Sector sector)
+        public static SpaceEntity? LoadSpaceEntityFromFile(string entityFilePath, Sector sector, NotGeneratedEntity generationData = null)
         {
             if (File.Exists(entityFilePath))
             {
                 CompoundTag tag = NbtFile.Read(entityFilePath, FormatOptions.Java, CompressionType.GZip);
 
-                return NBTHelper.TagToSpaceEntity(tag, sector);
+                return NBTHelper.TagToSpaceEntity(tag, sector, generationData);
             }
 
             return null;

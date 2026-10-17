@@ -113,6 +113,10 @@ namespace Spacebox.Game.Resource
                 {
                     blockData = new DoorBlockData(blockData, blockJson.Door);
                 }
+                else if (blockData.Type == "explosive")
+                {
+                    blockData = new ExplosiveBlockData(blockData, blockJson.Explosive);
+                }
                 else if (blockData.Type == "dnareconstructor")
                 {
                     blockData = new DnaReconstructorBlockData(blockData, blockJson.DnaReconstructor, GameSetLoader.ModInfo.ModId);

@@ -7,6 +7,7 @@ using OpenTK.Mathematics;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
+using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.Player;
 
@@ -168,12 +169,24 @@ public class Projectile : Node3D
     {
         if (World.CurrentSector.Raycast(ray, out var hit))
         {
+            if (TryTriggerReactiveBlock(hit)) return true;
             if (TryRicochet(hit)) return true;
 
             HandleVoxelHit(hit);
             return true;
         }
         return false;
+    }
+
+    private bool TryTriggerReactiveBlock(HitInfo hit)
+    {
+        if (hit.block is not IProjectileReactive reactive || !reactive.OnProjectileHit(hit)) return false;
+
+        ProcessHitStats(hit.hitPosition);
+        ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.hitPosition + hit.normalWorld * 0.1f, Parameters.ID);
+        Enabled = false;
+        OnDespawn?.Invoke(this);
+        return true;
     }
 
     private void HandleMaxDistanceReached()

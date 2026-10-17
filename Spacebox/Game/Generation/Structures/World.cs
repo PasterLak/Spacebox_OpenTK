@@ -14,6 +14,7 @@ using Spacebox.Game.Physics;
 using Spacebox.Game.Physics.Gravity;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
+using Spacebox.Game.Physics.Explosions;
 
 namespace Spacebox.Game.Generation;
 
@@ -34,6 +35,7 @@ public class World : Component, ISpaceStructure
     public static BiomeGenerator BiomeGenerator { get; private set; }
 
     public LocalAstronaut Player { get; private set; }
+    public ExplosionSystem Explosions { get; private set; }
 
     private BlockMaterial material;
     private Octree<Sector> worldOctree;
@@ -72,6 +74,7 @@ public class World : Component, ISpaceStructure
 
         BiomeGenerator = new BiomeGenerator(World.Seed, WorldGenerator);
         DropEffectManager = new DropManager(player);
+        Explosions = new ExplosionSystem();
 
         player.EnablePhysics(Physics);
     }
@@ -173,6 +176,8 @@ public class World : Component, ISpaceStructure
         {
             sector.Value.Update();
         }
+
+        Explosions.Update(Time.Delta);
     }
 
     public override void OnRender()
@@ -183,6 +188,8 @@ public class World : Component, ISpaceStructure
         {
             sector.Value.Render(material);
         }
+
+        Explosions.Render();
     }
     public bool IsBreathable(Vector3 worldPosition)
     {
@@ -216,6 +223,7 @@ public class World : Component, ISpaceStructure
     {
         base.OnDetached();
         GravityField.Clear();
+        Explosions?.Dispose();
         Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.Clear();
 
 

@@ -32,6 +32,7 @@ namespace Spacebox.Game.Resource
         public PowerGeneratorJSON Generator { get; set; } = new PowerGeneratorJSON();
         public GravityGeneratorJSON Gravity { get; set; } = new GravityGeneratorJSON();
         public DnaReconstructorJSON DnaReconstructor { get; set; } = new DnaReconstructorJSON();
+        public ExplosiveJSON Explosive { get; set; } = new ExplosiveJSON();
     }
 
     public class TextureGroup

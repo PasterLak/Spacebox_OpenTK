@@ -54,6 +54,12 @@ public sealed class GravityWalker
         LiftOutOfGeometry(player);
     }
 
+    public void AddImpulse(Vector3 impulse)
+    {
+        _velocity += impulse;
+        if (Vector3.Dot(impulse, _up) > 0f) _isGrounded = false;
+    }
+
     public void Exit(LocalAstronaut player)
     {
         IsActive = false;

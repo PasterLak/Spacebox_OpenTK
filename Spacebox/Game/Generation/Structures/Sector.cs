@@ -690,7 +690,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
                     if (WorldPersistenceManager.TryGetCachedEntity(data.Id, out var cachedTag))
                     {
-                        entity = NBTHelper.TagToSpaceEntity(cachedTag, this);
+                        entity = NBTHelper.TagToSpaceEntity(cachedTag, this, data);
                     }
                     else
                     {
@@ -700,7 +700,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
                         if (File.Exists(filePath))
                         {
-                            var loaded = WorldSaveLoad.LoadSpaceEntityFromFile(filePath, this);
+                            var loaded = WorldSaveLoad.LoadSpaceEntityFromFile(filePath, this, data);
                             if (loaded != null)
                             {
                                 ApplyLoadedEntityFixes(loaded, data, fileName);
