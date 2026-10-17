@@ -11,4 +11,5 @@ public interface IGravitySource
     Vector3 WorldDirection { get; }
     float Radius { get; }
     float Strength { get; }
+    bool Affects(Vector3 worldPosition);
 }

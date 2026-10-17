@@ -24,6 +24,7 @@ public sealed class OxygenSystem
     }
 
     public int GeneratorCount => _generators.Count;
+    public int LayoutVersion { get; private set; }
 
     public void RegisterGenerator(Chunk chunk, int x, int y, int z, OxygenGeneratorBlock generator)
     {
@@ -33,6 +34,7 @@ public sealed class OxygenSystem
 
     public void OnBlockChanged(Chunk chunk, int x, int y, int z, Block oldBlock, Block newBlock)
     {
+        LayoutVersion++;
         var position = ToEntity(chunk, x, y, z);
 
         if (newBlock is OxygenGeneratorBlock generator)
@@ -58,6 +60,7 @@ public sealed class OxygenSystem
 
     public void OnChunksChanged()
     {
+        LayoutVersion++;
         if (_generators.Count > 0 || !_pendingGenerators.IsEmpty)
             _isDirty = true;
     }

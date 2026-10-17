@@ -82,6 +82,7 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 
 - `GravityField.Sample(worldPos)` returns the gravity acceleration from all powered `GravityGeneratorBlock`s. Blocks that must know when they enter/leave an entity implement `IEntityBlockListener` (called on place, load and removal).
 - `MovementMode` switches the player to `GravityWalker` while the field is stronger than 0.3 m/s² and back to zero-g (keeping velocity) outside.
+- `GravityWalker` collides as an axis-aligned box in entity-local space (`EntityBoxCollider.Sweep`, `SpaceEntity.WorldToEntityLocal`/`EntityLocalToWorld`), so walls slide and float precision stays local.
 
 ## Doors
 

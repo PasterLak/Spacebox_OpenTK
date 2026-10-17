@@ -786,12 +786,24 @@
   {
     "ID": "gravity_generator",
     "Name": "Gravity Generator",
-    "Description": "Creates artificial gravity toward its bottom side (radius 32, needs 200 EU)",
+    "Description": "Creates artificial gravity toward its bottom side. Radius and strength are set in its window",
     "Type": "gravity",
     "Gravity": {
       "Radius": 32,
+      "MinRadius": 4,
+      "MaxRadius": 512,
       "Strength": 9.81,
-      "Power": 200
+      "MinStrength": 0.5,
+      "MaxStrength": 30,
+      "Power": 200,
+      "StrengthPowerFactor": 0.25,
+      "MaxRoomCells": 200000,
+      "Presets": [
+        { "Name": "Moon", "Strength": 1.62 },
+        { "Name": "Mars", "Strength": 3.71 },
+        { "Name": "Earth", "Strength": 9.81 },
+        { "Name": "Jupiter", "Strength": 24.79 }
+      ]
     },
     "Category": "resources",
     "PowerToDrill": 1,

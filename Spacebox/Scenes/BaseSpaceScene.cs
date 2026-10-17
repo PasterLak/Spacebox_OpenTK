@@ -253,6 +253,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         GeneratorUI.OnGUI();
         AnalyzerUI.OnGUI();
         OxygenGeneratorUI.OnGUI();
+        GravityGeneratorUI.OnGUI();
 
         if (VisualDebug.Enabled)
         {
@@ -272,6 +273,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     {
         Time.OnTick -= UpdateTickTasks;
         OxygenGeneratorUI.Reset();
+        GravityGeneratorUI.Reset();
         PanelUI.Player = null;
 
         TickTaskManager.Dispose();

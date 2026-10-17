@@ -54,8 +54,8 @@ public static class GravityField
                 if (distanceSquared >= radius * radius) continue;
 
                 float distance = MathF.Sqrt(distanceSquared);
-                float fade = 1f - SmoothStep(radius - FadeDistance, radius, distance);
-                if (fade <= 0f) continue;
+                float fade = 1f - SmoothStep(radius - MathF.Min(FadeDistance, radius * 0.25f), radius, distance);
+                if (fade <= 0f || !source.Affects(worldPosition)) continue;
 
                 float closeness = fade * (1f - distance / radius) + 0.001f;
                 direction += source.WorldDirection * closeness;

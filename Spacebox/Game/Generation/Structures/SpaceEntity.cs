@@ -1053,6 +1053,17 @@ namespace Spacebox.Game.Generation
             return PositionWorld + Vector3.Transform(entitySpacePosition - PositionWorld, Orientation);
         }
 
+        public Vector3 WorldToEntityLocal(Vector3 worldPosition)
+        {
+            var offset = worldPosition - PositionWorld;
+            return HasRotation ? Vector3.Transform(offset, _inverseOrientation) : offset;
+        }
+
+        public Vector3 EntityLocalToWorld(Vector3 localPosition)
+        {
+            return PositionWorld + (HasRotation ? Vector3.Transform(localPosition, Orientation) : localPosition);
+        }
+
         public Vector3 DirectionToEntitySpace(Vector3 worldDirection)
         {
             return HasRotation ? Vector3.Transform(worldDirection, _inverseOrientation) : worldDirection;

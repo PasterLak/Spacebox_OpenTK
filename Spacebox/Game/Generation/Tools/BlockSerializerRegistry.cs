@@ -14,7 +14,8 @@ namespace Spacebox.Game.Generation.Tools
             { typeof(ResourceProcessingBlock), new ResourceProcessingSerializer() },
             { typeof(AnalyzerBlock), new AnalyzerSerializer() },
             { typeof(OxygenGeneratorBlock), new OxygenGeneratorSerializer() },
-            { typeof(DoorBlock), new DoorSerializer() }
+            { typeof(DoorBlock), new DoorSerializer() },
+            { typeof(GravityGeneratorBlock), new GravityGeneratorSerializer() }
         };
 
         public static IBlockSerializer GetSerializer(Type blockType)

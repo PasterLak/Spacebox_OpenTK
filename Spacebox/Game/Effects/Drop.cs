@@ -69,6 +69,8 @@ public class Drop : IDisposable
 
         if (GravityField.HasSources && !IsMovingToPlayer)
             ApplyGravity(deltaTime);
+        else
+            _gravity = Vector3.Zero;
 
         if (Velocity.LengthSquared > 0.01f)
         {
@@ -130,11 +132,14 @@ public class Drop : IDisposable
     }
 
     private const float SupportProbe = 0.12f;
+    private const float GroundNormalDot = 0.5f;
+    private Vector3 _gravity;
     private static readonly Ray _supportRay = new Ray(Vector3.Zero, -Vector3.UnitY, SupportProbe);
 
     private void ApplyGravity(float deltaTime)
     {
         var gravity = GravityField.Sample(Position);
+        _gravity = gravity;
         if (gravity.LengthSquared < 0.01f) return;
         if (IsStopped && IsSupported(gravity)) return;
 
@@ -162,6 +167,12 @@ public class Drop : IDisposable
     {
         Position = hitPosition + normal * 0.05f;
 
+        if (_gravity.LengthSquared >= 0.01f)
+        {
+            Land(normal);
+            return;
+        }
+
         var reflectedVelocity = Velocity - 2f * Vector3.Dot(Velocity, normal) * normal;
         reflectedVelocity *= 0.8f;
 
@@ -173,6 +184,14 @@ public class Drop : IDisposable
         {
             Velocity = Vector3.Zero;
         }
+    }
+
+    private void Land(Vector3 normal)
+    {
+        bool isGround = Vector3.Dot(normal, -_gravity.Normalized()) > GroundNormalDot;
+        Velocity = isGround ? Vector3.Zero : Velocity - Vector3.Dot(Velocity, normal) * normal;
+        _initialVelocity = Velocity;
+        _throwTime = 0f;
     }
 
     public void Reset()
@@ -190,6 +209,7 @@ public class Drop : IDisposable
         _age = 0f;
         _initialVelocity = Vector3.Zero;
         _throwTime = 0f;
+        _gravity = Vector3.Zero;
     }
 
     public void Dispose()
