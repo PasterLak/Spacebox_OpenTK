@@ -8,6 +8,8 @@ namespace Spacebox.Game.Generation
     public class LightManager
     {
         private const byte Size = Chunk.Size;
+        private const int MinChannel = 3;
+        private const float MaxPropagatedLevel = 14.9f;
         public static bool EnableLighting = true;
         private readonly Chunk _chunk;
 
@@ -90,14 +92,13 @@ namespace Spacebox.Game.Generation
 
                 Chunk chunk = indexToChunk[cIndex];
                 var block = chunk.Blocks[x, y, z];
-                float lvl = block.LightLevel;
+                var sourceColor = block.LightColor;
 
-                if (lvl <= 0.1f) continue;
+                int r = sourceColor.R * 8 / 10;
+                int g = sourceColor.G * 8 / 10;
+                int b_clr = sourceColor.B * 8 / 10;
 
-                float newLvl = lvl * 0.8f;
-                byte r = (byte)(block.LightColor.R * 8 / 10);
-                byte g = (byte)(block.LightColor.G * 8 / 10);
-                byte b_clr = (byte)(block.LightColor.B * 8 / 10);
+                if (Math.Max(r, Math.Max(g, b_clr)) < MinChannel) continue;
 
                 for (int i = 0; i < 6; i++)
                 {
@@ -117,34 +118,29 @@ namespace Spacebox.Game.Generation
 
                     var nb = nChunk.Blocks[bx, by, bz];
                     if (!(nb.IsAir || nb.IsTransparent)) continue;
+                    if (nb.LightLevel >= 15f) continue;
 
-                    if (newLvl > nb.LightLevel + 0.01f)
+                    var current = nb.LightColor;
+                    int nr = Math.Max(current.R, r);
+                    int ng = Math.Max(current.G, g);
+                    int nbl = Math.Max(current.B, b_clr);
+
+                    if (nr == current.R && ng == current.G && nbl == current.B) continue;
+
+                    nb.LightColor = new Color3Byte((byte)nr, (byte)ng, (byte)nbl);
+                    nb.LightLevel = MathF.Min(MaxPropagatedLevel, Math.Max(nr, Math.Max(ng, nbl)) / 255f * 15f);
+                    nChunk.Blocks[bx, by, bz] = nb;
+                    changedChunks.Add(nChunk);
+
+                    if (!chunkToIndex.TryGetValue(nChunk, out int nIndex))
                     {
-                        nb.LightLevel = newLvl;
-                        nb.LightColor = new Color3Byte(r, g, b_clr);
-                        nChunk.Blocks[bx, by, bz] = nb;
-                        changedChunks.Add(nChunk);
-
-                        if (!chunkToIndex.TryGetValue(nChunk, out int nIndex))
-                        {
-                            nIndex = indexToChunk.Count;
-                            chunkToIndex[nChunk] = nIndex;
-                            indexToChunk.Add(nChunk);
-                        }
-
-                        uint nPacked = (uint)((nIndex << 15) | (bx << 10) | (by << 5) | bz);
-                        lightQueue.Enqueue(nPacked);
+                        nIndex = indexToChunk.Count;
+                        chunkToIndex[nChunk] = nIndex;
+                        indexToChunk.Add(nChunk);
                     }
-                    else if (MathF.Abs(newLvl - nb.LightLevel) < 0.01f)
-                    {
-                        nb.LightColor = new Color3Byte(
-                            (byte)((nb.LightColor.R + r) / 2),
-                            (byte)((nb.LightColor.G + g) / 2),
-                            (byte)((nb.LightColor.B + b_clr) / 2)
-                        );
-                        nChunk.Blocks[bx, by, bz] = nb;
-                        changedChunks.Add(nChunk);
-                    }
+
+                    uint nPacked = (uint)((nIndex << 15) | (bx << 10) | (by << 5) | bz);
+                    lightQueue.Enqueue(nPacked);
                 }
             }
 

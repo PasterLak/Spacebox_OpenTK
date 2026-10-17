@@ -188,22 +188,7 @@ namespace Spacebox.Game.Generation
             if (multiblockData != null)
                 faceUVs = MultiblockLayout.GetFaceUVs(faceUVs, multiblockData.GetFaceTiles(face), multiblockData.Size, block.MultiblockOffset, faceDir);
 
-            var currentLightLevel = block.LightLevel / 15f;
-            var currentLightColor = block.LightColor;
-            float neighborLightLevel = 0f;
-            Color3Byte neighborLightColor = Color3Byte.Zero;
-
-            var neighborBlock = GetBlockSafe(nx, ny, nz);
-            if (neighborBlock != null)
-            {
-                neighborLightLevel = neighborBlock.LightLevel / 15f;
-                neighborLightColor = neighborBlock.LightColor;
-            }
-
-            var averageLightColor = (currentLightColor.ToVector3() * currentLightLevel + neighborLightColor.ToVector3() * neighborLightLevel)
-                                    / (currentLightLevel + neighborLightLevel + 0.001f);
-            Vector3 ambient = new Vector3(0.2f, 0.2f, 0.2f);
-            var vertexColor = Vector3.Clamp(block.Color * (averageLightColor + ambient), Vector3.Zero, Vector3.One);
+            CalculateVertexColors(block, nx, ny, nz, RoundToSByte(up), RoundToSByte(right));
 
             int vStart = vertexCount / BuffersData.FloatsPerVertexBlock;
             float[] AO = new float[4];
@@ -231,9 +216,9 @@ namespace Spacebox.Game.Generation
                 vertices[vertexCount++] = faceVertices[i].Z + z;
                 vertices[vertexCount++] = faceUVs[i].X;
                 vertices[vertexCount++] = faceUVs[i].Y;
-                vertices[vertexCount++] = vertexColor.X;
-                vertices[vertexCount++] = vertexColor.Y;
-                vertices[vertexCount++] = vertexColor.Z;
+                vertices[vertexCount++] = _vertexColors[i].X;
+                vertices[vertexCount++] = _vertexColors[i].Y;
+                vertices[vertexCount++] = _vertexColors[i].Z;
                 vertices[vertexCount++] = normal.X;
                 vertices[vertexCount++] = normal.Y;
                 vertices[vertexCount++] = normal.Z;
@@ -272,6 +257,55 @@ namespace Spacebox.Game.Generation
                 indices[indexCount++] = (uint)(vStart + 3);
                 indices[indexCount++] = (uint)(vStart + 0);
             }
+        }
+
+        private static readonly Vector3 Ambient = new Vector3(0.2f, 0.2f, 0.2f);
+        private static readonly sbyte[] CornerUp = { -1, -1, 1, 1 };
+        private static readonly sbyte[] CornerRight = { -1, 1, 1, -1 };
+        private readonly Vector3[] _vertexColors = new Vector3[4];
+
+        private void CalculateVertexColors(Block block, sbyte fx, sbyte fy, sbyte fz, Vector3SByte up, Vector3SByte right)
+        {
+            TrySampleLight(fx, fy, fz, out var center);
+            var ownLight = block.IsLight ? block.LightColor.ToVector3() : Vector3.Zero;
+
+            for (int i = 0; i < 4; i++)
+            {
+                int su = CornerUp[i];
+                int sr = CornerRight[i];
+
+                var sum = center;
+                int count = 1;
+
+                bool hasUp = TrySampleLight((sbyte)(fx + up.X * su), (sbyte)(fy + up.Y * su), (sbyte)(fz + up.Z * su), out var upLight);
+                if (hasUp) { sum += upLight; count++; }
+
+                bool hasRight = TrySampleLight((sbyte)(fx + right.X * sr), (sbyte)(fy + right.Y * sr), (sbyte)(fz + right.Z * sr), out var rightLight);
+                if (hasRight) { sum += rightLight; count++; }
+
+                if ((hasUp || hasRight) &&
+                    TrySampleLight((sbyte)(fx + up.X * su + right.X * sr), (sbyte)(fy + up.Y * su + right.Y * sr), (sbyte)(fz + up.Z * su + right.Z * sr), out var cornerLight))
+                {
+                    sum += cornerLight;
+                    count++;
+                }
+
+                var light = Vector3.ComponentMax(sum / count, ownLight);
+                _vertexColors[i] = Vector3.Clamp(block.Color * (light + Ambient), Vector3.Zero, Vector3.One);
+            }
+        }
+
+        private bool TrySampleLight(sbyte x, sbyte y, sbyte z, out Vector3 light)
+        {
+            var b = GetBlockSafe(x, y, z);
+            if (b == null || !(b.IsAir || b.IsTransparent || b.IsMeshHidden))
+            {
+                light = Vector3.Zero;
+                return false;
+            }
+
+            light = b.LightColor.ToVector3();
+            return true;
         }
 
         private byte CalculateFaceAOMask(Vector3SByte blockPos, Vector3SByte normal, Vector3 up, Vector3 right)
