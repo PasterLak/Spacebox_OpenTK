@@ -109,6 +109,8 @@ namespace Spacebox.Game.Generation
                         if (z > zMax) zMax = z;
                         sumPosMass += new Vector3(x, y, z) * m;
 
+                        if (block.IsMeshHidden) continue;
+
                         var transformedVectors = BlockRotationHelper.GetTransformedFaceVectors(
                             GameAssets.GetBaseFrontDirection(block.Id),
                             block.Direction,
@@ -314,7 +316,7 @@ namespace Spacebox.Game.Generation
         private bool IsOccluder(sbyte x, sbyte y, sbyte z)
         {
             var b = GetBlockSafe(x, y, z);
-            if (b == null || b.IsAir || b.IsTransparent) return false;
+            if (b == null || b.IsAir || b.IsTransparent || b.IsMeshHidden) return false;
             return true;
         }
 
@@ -373,7 +375,7 @@ namespace Spacebox.Game.Generation
             var b = GetBlockSafe(x, y, z);
             if (b != null)
             {
-                return currentTransparent ? b.IsAir : (b.IsAir || b.IsTransparent);
+                return currentTransparent ? (b.IsAir || b.IsMeshHidden) : (b.IsAir || b.IsTransparent || b.IsMeshHidden);
             }
             return true;
         }

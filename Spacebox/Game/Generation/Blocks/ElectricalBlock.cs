@@ -80,28 +80,29 @@ namespace Spacebox.Game.Generation.Blocks
             }
         }
 
-        public byte GenerationRate
+        public ushort GenerationRate
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (byte)(eData2 >> 0 & 0xFF);
+            get => (ushort)(eData2 & 0xFFFF);
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set
-            {
-                int v = value & 0xFF;
-                eData2 = eData2 & ~(0xFF << 0) | v << 0;
-            }
+            set => eData2 = (int)((eData2 & 0xFFFF0000) | value);
         }
 
-        public byte ConsumptionRate
+        public ushort ConsumptionRate
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (byte)(eData2 >> 8 & 0xFF);
+            get => (ushort)((eData2 >> 16) & 0xFFFF);
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set
-            {
-                int v = value & 0xFF;
-                eData2 = eData2 & ~(0xFF << 8) | v << 8;
-            }
+            set => eData2 = (eData2 & 0xFFFF) | (value << 16);
+        }
+
+        public override void ConfigureAsMultiblockPart()
+        {
+            if (EFlags != ElectricalFlags.None)
+                EFlags = ElectricalFlags.CanTransfer;
+
+            GenerationRate = 0;
+            ConsumptionRate = 0;
         }
 
         public virtual void TickElectric()

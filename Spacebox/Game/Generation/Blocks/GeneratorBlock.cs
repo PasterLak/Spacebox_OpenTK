@@ -10,8 +10,9 @@ namespace Spacebox.Game.Generation.Blocks
         public GeneratorBlock(BlockData blockData) : base(blockData)
         {
             EFlags = ElectricalFlags.CanGenerate | ElectricalFlags.CanTransfer;
-            MaxPower = 500;
-            GenerationRate = 50;
+            ushort power = blockData is GeneratorBlockData generatorData ? generatorData.Power : GeneratorBlockData.DefaultPower;
+            MaxPower = (short)Math.Clamp(power * 10, 500, 16000);
+            GenerationRate = power;
             EnableEmission = true;
 
 
@@ -26,7 +27,8 @@ namespace Spacebox.Game.Generation.Blocks
         {
             base.Use(player, ref hit);
 
-            GeneratorUI.Open(this, player, ref hit);
+            var generator = hit.chunk?.SpaceEntity.GetStructureOrigin(hit.chunk, hit.blockPositionIndex) as GeneratorBlock ?? this;
+            GeneratorUI.Open(generator, player, ref hit);
         }
 
 

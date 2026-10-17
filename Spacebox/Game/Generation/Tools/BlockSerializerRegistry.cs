@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Oxygen;
+using Spacebox.Game.Generation.Doors;
 
 namespace Spacebox.Game.Generation.Tools
 {
@@ -12,7 +13,8 @@ namespace Spacebox.Game.Generation.Tools
             { typeof(StorageBlock), new StorageBlockSerializer() },
             { typeof(ResourceProcessingBlock), new ResourceProcessingSerializer() },
             { typeof(AnalyzerBlock), new AnalyzerSerializer() },
-            { typeof(OxygenGeneratorBlock), new OxygenGeneratorSerializer() }
+            { typeof(OxygenGeneratorBlock), new OxygenGeneratorSerializer() },
+            { typeof(DoorBlock), new DoorSerializer() }
         };
 
         public static IBlockSerializer GetSerializer(Type blockType)

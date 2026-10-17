@@ -350,6 +350,25 @@ namespace Spacebox.Game.Effects
             UpdateParticleSystems();
         }
 
+        public void PushDrops(Func<Vector3, Vector3?> getPushedPosition, Vector3 velocity)
+        {
+            foreach (var drop in _activeDrops)
+            {
+                if (drop.IsMovingToPlayer) continue;
+
+                var pushed = getPushedPosition(drop.Position);
+                if (!pushed.HasValue) continue;
+
+                if (drop.IsStopped)
+                {
+                    _octree.Remove(drop);
+                    if (!_movingDrops.Contains(drop)) _movingDrops.Add(drop);
+                }
+
+                drop.Push(pushed.Value, velocity);
+            }
+        }
+
         private void HandleDropStopped(Drop drop)
         {
             _movingDrops.Remove(drop);

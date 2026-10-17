@@ -31,7 +31,7 @@ namespace Spacebox.Game.Player
             _itemModel.Position = new Vector3(0.35f, -0.47f, -0.25f);
             _itemModel.Enabled = false;
 
-            _blockModel = new SimpleBlock(new TextureMaterial(GameAssets.BlocksTexture), Vector3.Zero);
+            _blockModel = new SimpleBlock(new TextureMaterial(GameAssets.BlocksTexture), Vector3.Zero) { DisposesTexture = false };
             AddChild(_blockModel);
 
             _blockModel.SetScale(0.2f);

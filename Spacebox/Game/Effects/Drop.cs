@@ -115,6 +115,16 @@ public class Drop : IDisposable
     }
 
 
+    public void Push(Vector3 position, Vector3 velocity)
+    {
+        Position = position;
+        Velocity = velocity;
+        _initialVelocity = velocity;
+        _throwTime = 0f;
+        IsThrown = true;
+        if (Deceleration <= 0f) Deceleration = 4f;
+    }
+
     public void ResetPickupTimer()
     {
         _age = 0f;

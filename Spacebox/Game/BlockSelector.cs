@@ -46,6 +46,10 @@ public class BlockSelector : Node3D
 
     private Texture2D _selectorTexture;
     private LineRenderer _magnetLineRenderer;
+    private LineRenderer _reservedAreaRenderer;
+    private readonly List<Vector3> _reservedAreaPoints = new List<Vector3>(16);
+    private static readonly int[] ReservedAreaPath = { 0, 1, 2, 3, 0, 4, 5, 1, 5, 6, 2, 6, 7, 3, 7, 4 };
+    private readonly Vector3[] _reservedCorners = new Vector3[8];
     private Matrix4 _currentTransform = Matrix4.Identity;
     private Matrix4 _entityRotation = Matrix4.Identity;
     private Vector3 _highlightSize = Vector3.One;
@@ -75,7 +79,8 @@ public class BlockSelector : Node3D
 
         SimpleBlock = new SimpleBlock(material, Vector3.Zero)
         {
-            Scale = new Vector3(1.05f)
+            Scale = new Vector3(1.05f),
+            DisposesTexture = false
         };
         AddChild(SimpleBlock);
 
@@ -97,6 +102,14 @@ public class BlockSelector : Node3D
         LineRenderer.AddPoint(Vector3.One);
         AddChild(LineRenderer);
 
+        _reservedAreaRenderer = new LineRenderer
+        {
+            Color = Color4.Cyan,
+            Thickness = MagnetLineThickness,
+            Enabled = false
+        };
+        AddChild(_reservedAreaRenderer);
+
         PanelUI.OnSlotChanged += OnSelectedSlotWasChanged;
 
         _baseCorners = new Vector4[]
@@ -114,6 +127,7 @@ public class BlockSelector : Node3D
     {
         _currentTransform = Matrix4.Identity;
         _highlightSize = Vector3.One;
+        HideReservedArea();
         ApplyBlockTransform();
         _transformDirty = true;
 
@@ -203,6 +217,34 @@ public class BlockSelector : Node3D
     private void ApplyBlockTransform()
     {
         SimpleBlock.SetBlockTransform(Matrix4.CreateScale(_highlightSize) * _currentTransform * _entityRotation);
+    }
+
+    public void ShowReservedArea(Vector3 minPosition, Vector3 size, SpaceEntity entity)
+    {
+        _reservedCorners[0] = minPosition;
+        _reservedCorners[1] = minPosition + new Vector3(size.X, 0, 0);
+        _reservedCorners[2] = minPosition + new Vector3(size.X, 0, size.Z);
+        _reservedCorners[3] = minPosition + new Vector3(0, 0, size.Z);
+        _reservedCorners[4] = minPosition + new Vector3(0, size.Y, 0);
+        _reservedCorners[5] = minPosition + new Vector3(size.X, size.Y, 0);
+        _reservedCorners[6] = minPosition + size;
+        _reservedCorners[7] = minPosition + new Vector3(0, size.Y, size.Z);
+
+        _reservedAreaPoints.Clear();
+        for (int i = 0; i < ReservedAreaPath.Length; i++)
+        {
+            var corner = _reservedCorners[ReservedAreaPath[i]];
+            _reservedAreaPoints.Add(entity != null ? entity.ToWorldSpace(corner) : corner);
+        }
+
+        _reservedAreaRenderer.SetPoints(_reservedAreaPoints);
+        _reservedAreaRenderer.Enabled = true;
+    }
+
+    public void HideReservedArea()
+    {
+        if (_reservedAreaRenderer != null)
+            _reservedAreaRenderer.Enabled = false;
     }
 
     public void SetHighlightSize(Vector3 size)
@@ -350,6 +392,7 @@ public class BlockSelector : Node3D
         SimpleBlock?.Destroy();
         _selectorTexture?.Dispose();
         _magnetLineRenderer?.Dispose();
+        _reservedAreaRenderer?.Dispose();
         LineRenderer?.Dispose();
         Instance = null;
     }

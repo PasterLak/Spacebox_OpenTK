@@ -6,6 +6,7 @@ using Spacebox.Game.Effects;
 using Spacebox.Game.GameMath;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Oxygen;
+using Spacebox.Game.Generation.Doors;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
@@ -71,6 +72,7 @@ namespace Spacebox.Game.Generation
         public BoundingBox GeometryBoundingBox { get; private set; }
         public ElectricNetworkManager ElectricManager { get; private set; }
         public OxygenSystem Oxygen { get; private set; }
+        public DoorSystem Doors { get; private set; }
         public Particle StarParticle;
 
         private StringBuilder StringBuilder = new StringBuilder();
@@ -90,6 +92,7 @@ namespace Spacebox.Game.Generation
 
             ElectricManager = new ElectricNetworkManager();
             Oxygen = new OxygenSystem(this);
+            Doors = new DoorSystem(this);
 
             CalculateCenterOfMass();
 
@@ -383,7 +386,48 @@ namespace Spacebox.Game.Generation
                 return false;
 
             Vector3 localPos = WorldPositionToLocal(worldPosition);
+            if (IsCellReserved(worldPosition)) return false;
+
             return PlaceBlockInternal(localPos, block);
+        }
+
+        public bool IsCellReserved(Vector3 position)
+        {
+            var local = WorldPositionToLocal(position);
+            return Doors.IsReserved(new Vector3i((int)MathF.Floor(local.X), (int)MathF.Floor(local.Y), (int)MathF.Floor(local.Z)));
+        }
+
+        internal void ClearCellSilently(Vector3i localCell)
+        {
+            if (TryGetBlockLocal(localCell, out var chunk, out var index))
+                chunk.ClearBlockSilently(index.X, index.Y, index.Z);
+        }
+
+        internal void PlaceCellRaw(Vector3i localCell, Block block)
+        {
+            PlaceBlockInternal(new Vector3(localCell.X, localCell.Y, localCell.Z), block);
+        }
+
+        private static readonly List<Vector3i> _slideArea = new List<Vector3i>();
+
+        public bool TryGetDoorSlideArea(Vector3 originPosition, DoorBlockData doorData, Direction direction, Rotation rotation, out Vector3 minPosition, out Vector3 size)
+        {
+            DoorSystem.GetSlideArea(doorData, direction, rotation, _slideArea);
+            minPosition = Vector3.Zero;
+            size = Vector3.Zero;
+            if (_slideArea.Count == 0) return false;
+
+            var min = new Vector3i(int.MaxValue);
+            var max = new Vector3i(int.MinValue);
+            for (int i = 0; i < _slideArea.Count; i++)
+            {
+                min = Vector3i.ComponentMin(min, _slideArea[i]);
+                max = Vector3i.ComponentMax(max, _slideArea[i]);
+            }
+
+            minPosition = originPosition + new Vector3(min.X, min.Y, min.Z);
+            size = new Vector3(max.X - min.X + 1, max.Y - min.Y + 1, max.Z - min.Z + 1);
+            return true;
         }
 
         private static readonly List<MultiblockCell> _structureCells = new List<MultiblockCell>();
@@ -397,8 +441,19 @@ namespace Spacebox.Game.Generation
                 var offset = _structureCells[i].Offset;
                 var position = originPosition + new Vector3(offset.X, offset.Y, offset.Z);
 
-                if (!IsPositionWithinEntitySize(position) || !IsPositionWithinGravityRadius(position) || !IsCellEmpty(position))
+                if (!IsPositionWithinEntitySize(position) || !IsPositionWithinGravityRadius(position) || !IsCellEmpty(position) || IsCellReserved(position))
                     return false;
+            }
+
+            if (blockData is DoorBlockData doorData)
+            {
+                DoorSystem.GetSlideArea(doorData, direction, rotation, _slideArea);
+                for (int i = 0; i < _slideArea.Count; i++)
+                {
+                    var position = originPosition + new Vector3(_slideArea[i].X, _slideArea[i].Y, _slideArea[i].Z);
+                    if (!IsPositionWithinEntitySize(position) || !IsCellEmpty(position) || IsCellReserved(position))
+                        return false;
+                }
             }
 
             return true;
@@ -454,6 +509,19 @@ namespace Spacebox.Game.Generation
             minPosition = LocalPositionToWorld(new Vector3(minLocal.X, minLocal.Y, minLocal.Z));
             size = new Vector3(max.X - min.X + 1, max.Y - min.Y + 1, max.Z - min.Z + 1);
             return true;
+        }
+
+        public Block GetStructureOrigin(Chunk chunk, Vector3Byte index)
+        {
+            var block = chunk.Blocks[index.X, index.Y, index.Z];
+            if (block == null || !block.HasMultiblockOffset || !GameAssets.Blocks.TryGetValue(block.Id, out var blockData))
+                return block;
+
+            var originLocal = GetCellLocal(chunk, index) - MultiblockLayout.GetOriginOffset(blockData, block);
+            if (!TryGetBlockLocal(originLocal, out var originChunk, out var originIndex)) return block;
+
+            var origin = originChunk.Blocks[originIndex.X, originIndex.Y, originIndex.Z];
+            return origin != null && origin.Id == block.Id && !origin.HasMultiblockOffset ? origin : block;
         }
 
         public void RemoveStructure(Chunk chunk, byte x, byte y, byte z, Vector3SByte normal, bool spawnDrop)
@@ -521,8 +589,15 @@ namespace Spacebox.Game.Generation
                 cellBlock.Direction = originBlock.Direction;
                 cellBlock.Rotation = originBlock.Rotation;
                 cellBlock.MultiblockOffset = cell.Model;
+                if (!cell.IsOrigin) cellBlock.ConfigureAsMultiblockPart();
 
                 PlaceBlockInternal(originLocal + new Vector3(cell.Offset.X, cell.Offset.Y, cell.Offset.Z), cellBlock);
+            }
+
+            if (originBlock is DoorBlock door)
+            {
+                var origin = new Vector3i((int)MathF.Floor(originLocal.X), (int)MathF.Floor(originLocal.Y), (int)MathF.Floor(originLocal.Z));
+                Doors.Register(origin, door);
             }
         }
 
@@ -613,6 +688,7 @@ namespace Spacebox.Game.Generation
         {
             base.Update();
             HandleTag();
+            Doors.Update(Time.Delta);
             Oxygen.Update();
             ProcessMeshUpdates();
         }
@@ -757,6 +833,23 @@ namespace Spacebox.Game.Generation
 
         private bool RaycastEntitySpace(Ray ray, out HitInfo hitInfo)
         {
+            bool hitVoxel = RaycastVoxels(ray, out hitInfo);
+
+            if (Doors.RaycastMovingDoors(ray, out var doorHit, out float doorDistance))
+            {
+                float voxelDistance = hitVoxel ? (hitInfo.hitPosition - ray.Origin).Length : float.MaxValue;
+                if (doorDistance < voxelDistance)
+                {
+                    hitInfo = doorHit;
+                    return true;
+                }
+            }
+
+            return hitVoxel;
+        }
+
+        private bool RaycastVoxels(Ray ray, out HitInfo hitInfo)
+        {
             hitInfo = new HitInfo();
 
             if (Chunks.Count == 0) return false;
@@ -843,6 +936,8 @@ namespace Spacebox.Game.Generation
                 }
             }
 
+            Doors.Render();
+
             if (VisualDebug.Enabled)
             {
                 VisualDebug.DrawBoundingBox(BoundingBox, Color4.Cyan);
@@ -873,6 +968,11 @@ namespace Spacebox.Game.Generation
                 if (c) return true;
             }
             collideInfo = collideInfo2;
+
+            if (volume is BoundingSphere movingDoorProbe &&
+                Doors.IntersectsMovingDoor(WorldPositionToLocal(movingDoorProbe.Center), movingDoorProbe.Radius))
+                return true;
+
             return false;
         }
 
@@ -1013,6 +1113,7 @@ namespace Spacebox.Game.Generation
 
         public void Dispose()
         {
+            Doors.Dispose();
             Sector = null;
             MeshUpdateQueue.Clear();
             foreach (var mesh in MeshesTogenerate)

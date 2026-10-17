@@ -39,7 +39,7 @@ namespace Spacebox.Game.Physics
                     {
                         Block block = Blocks[x, y, z];
                         collideInfo.block = block;
-                        if (!block.IsAir)
+                        if (!block.IsAir && !block.IsMeshHidden)
                         {
                             Vector3 blockMin = ChunkWorldPosition + new Vector3(x, y, z);
                             BoundingBox blockBox = new BoundingBox(blockMin + new Vector3(0.5f), Vector3.One);
@@ -205,7 +205,7 @@ namespace Spacebox.Game.Physics
                 if (IsInRange(x, y, z))
                 {
                     Block block = blocks[x, y, z];
-                    if (!block.IsAir)
+                    if (!block.IsAir && !block.IsMeshHidden)
                     {
                         hitInfo.blockPositionIndex = new Vector3Byte(x, y, z);
                         hitInfo.hitPosition = ray.Origin + ray.Direction * distanceTraveled;

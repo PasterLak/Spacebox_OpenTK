@@ -73,9 +73,13 @@ public class InteractionPlaceBlock : InteractionMode
         BlockSelector.Instance.UpdatePosition(selectorPositionWorld, finalDir, finalRot, true, entity);
 
         var previewData = BlockSelector.Instance.CurrentBlockData;
-        _previewPlaceable = !previewData.IsMultiblock || entity.CanPlaceStructure(selectorPositionWorld, previewData, finalDir, finalRot);
+        _previewPlaceable = previewData.IsMultiblock
+            ? entity.CanPlaceStructure(selectorPositionWorld, previewData, finalDir, finalRot)
+            : !entity.IsCellReserved(selectorPositionWorld);
         if (!_previewPlaceable)
             BlockSelector.IsVisible = false;
+
+        UpdateReservedArea(entity, selectorPositionWorld, previewData, finalDir, finalRot);
         lineRenderer.Enabled = false;
         /*
         lineRenderer.Points[0] = selectorPositionWorld + new Vector3(0.5f, 0.5f, 0.5f);
@@ -149,7 +153,7 @@ public class InteractionPlaceBlock : InteractionMode
                 var cachedBlockRotation = BlockSelector.Instance.Rotation;
                 var blockData = BlockSelector.Instance.CurrentBlockData;
 
-                if (blockData != null && blockData.IsMultiblock && !_previewPlaceable)
+                if (blockData != null && !_previewPlaceable)
                     return;
 
                 if (PanelUI.TryPlaceItem(out var id, GameMode))
@@ -198,6 +202,19 @@ public class InteractionPlaceBlock : InteractionMode
                 }
             }
 
+        }
+    }
+
+    private static void UpdateReservedArea(SpaceEntity entity, Vector3 originPosition, BlockData blockData, Direction direction, Rotation rotation)
+    {
+        if (entity != null && blockData is DoorBlockData doorData &&
+            entity.TryGetDoorSlideArea(originPosition, doorData, direction, rotation, out var min, out var size))
+        {
+            BlockSelector.Instance.ShowReservedArea(min, size, entity);
+        }
+        else
+        {
+            BlockSelector.Instance.HideReservedArea();
         }
     }
 
@@ -266,16 +283,21 @@ public class InteractionPlaceBlock : InteractionMode
             BlockSelector.Instance.UpdatePosition(selectorPosition, finalDir, finalRot, false, entity);
 
         var currentData = BlockSelector.Instance.CurrentBlockData;
-        bool structureBlocked = currentData != null && currentData.IsMultiblock && entity != null &&
-                                entity.IsPositionWithinEntitySize(selectorPosition) &&
-                                entity.IsPositionWithinGravityRadius(selectorPosition) &&
-                                !entity.CanPlaceStructure(selectorPosition, currentData, finalDir, finalRot);
+        bool insideEntityRange = entity != null &&
+                                 entity.IsPositionWithinEntitySize(selectorPosition) &&
+                                 entity.IsPositionWithinGravityRadius(selectorPosition);
+        bool structureBlocked = currentData != null && insideEntityRange &&
+                                (currentData.IsMultiblock
+                                    ? !entity.CanPlaceStructure(selectorPosition, currentData, finalDir, finalRot)
+                                    : entity.IsCellReserved(selectorPosition));
         if (structureBlocked)
         {
             BlockSelector.IsVisible = false;
             lineRenderer.Enabled = false;
             return;
         }
+
+        UpdateReservedArea(entity, selectorPosition, currentData, finalDir, finalRot);
 
         if (entity != null)
         {

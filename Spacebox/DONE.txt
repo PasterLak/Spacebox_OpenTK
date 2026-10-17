@@ -63,6 +63,11 @@ Game
 - asteroids save only changed chunks, the rest is regenerated
 - asteroids have a random rotation from their seed (saved)
 - blocks with custom sizes (Size in blocks.json), structure preview, metal door 2x2
+- sliding doors: use to open/close, auto close, slide area check + preview lines, push/crush player, airlocks, saved
+- moving doors collide with bullets, drops and physics bodies
+- aluminium, iron and titanium doors + crafting
+- nuclear power block: 2x3x2, 300 energy
+- big window 2x2x1 + crafting
 - oxygen: bar, -1 every 10 s in survival (config), death at 0, compressed oxygen +100
 - oxygen generator block: fills closed rooms with air (radius 32), +10 oxygen/s in air, "Air" on bar
 - oxygen generator needs 20 energy, on/off textures
@@ -86,6 +91,7 @@ Fixes
 - memory leaks: ImGui font texture per menu load, audio sources, resize event handlers, tick handler added per world load
 - sounds silent after re-entering a world
 - time stayed paused after "Go to menu" (black menu, frozen world load)
+- block textures broken after a door animation or removing a held-block model (shared atlas was disposed)
 - saved asteroids lost chunks that were never generated
 - duplicate chunk when building in a not yet generated chunk
 - asteroid deleted when its visible chunks were mined

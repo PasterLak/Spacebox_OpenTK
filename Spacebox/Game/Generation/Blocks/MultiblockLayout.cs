@@ -29,7 +29,12 @@ public static class MultiblockLayout
 
     public static Vector3i ToEntityOffset(Vector3Byte model, Matrix4 transform)
     {
-        var rotated = Vector3.TransformVector(new Vector3(model.X, model.Y, model.Z), transform);
+        return ToEntityOffset(new Vector3(model.X, model.Y, model.Z), transform);
+    }
+
+    public static Vector3i ToEntityOffset(Vector3 model, Matrix4 transform)
+    {
+        var rotated = Vector3.TransformVector(model, transform);
         return new Vector3i((int)MathF.Round(rotated.X), (int)MathF.Round(rotated.Y), (int)MathF.Round(rotated.Z));
     }
 

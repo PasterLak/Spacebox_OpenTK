@@ -101,6 +101,14 @@ namespace Spacebox.Game.Resource
 
                     blockData = new StorageBlockData(blockData, Size);
                 }
+                else if (blockData.Type == "generator")
+                {
+                    blockData = new GeneratorBlockData(blockData, blockJson.Generator);
+                }
+                else if (blockData.Type == "door")
+                {
+                    blockData = new DoorBlockData(blockData, blockJson.Door);
+                }
                 else if (blockData.Type == "oxygengenerator")
                 {
                     blockData = new OxygenGeneratorBlockData(blockData, blockJson.OxygenGenerator, GameSetLoader.ModInfo.ModId);

@@ -1252,6 +1252,10 @@
                     "Quantity": 1
                 }
             ]
-        }
+        },
+        {"Product": {"Item": "aluminium_door", "Quantity": 1}, "Ingredients": [{"Item": "aluminium_panels", "Quantity": 6}]},
+        {"Product": {"Item": "iron_door", "Quantity": 1}, "Ingredients": [{"Item": "iron_panels", "Quantity": 6}]},
+        {"Product": {"Item": "titanium_door", "Quantity": 1}, "Ingredients": [{"Item": "titanium_panels", "Quantity": 6}]},
+        {"Product": {"Item": "big_window", "Quantity": 1}, "Ingredients": [{"Item": "glass", "Quantity": 24}]}
     ]
 }

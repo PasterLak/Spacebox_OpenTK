@@ -28,6 +28,8 @@ namespace Spacebox.Game.Resource
         public Vector2Byte StorageSize { get; set; } = new Vector2Byte(3, 3);
         public Vector3Byte Size { get; set; } = new Vector3Byte(1);
         public OxygenGeneratorJSON OxygenGenerator { get; set; } = new OxygenGeneratorJSON();
+        public DoorJSON Door { get; set; } = new DoorJSON();
+        public PowerGeneratorJSON Generator { get; set; } = new PowerGeneratorJSON();
     }
 
     public class TextureGroup

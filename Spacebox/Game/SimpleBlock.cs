@@ -16,6 +16,7 @@ public class SimpleBlock : Node3D ,IDrawable
     private Dictionary<Face, Vector2[]> _uvs = new Dictionary<Face, Vector2[]>();
     private Matrix4 _blockTransform = Matrix4.Identity;
     private bool _isDisposed;
+    public bool DisposesTexture { get; set; } = true;
 
     public SimpleBlock(TextureMaterial material, Vector3 position) : base(position)
     {
@@ -156,7 +157,8 @@ public class SimpleBlock : Node3D ,IDrawable
         if (_isDisposed) return;
         base.Destroy();
         _buffer.Dispose();
-        Material.MainTexture?.Dispose();
+        if (DisposesTexture)
+            Material.MainTexture?.Dispose();
         _isDisposed = true;
     }
 }

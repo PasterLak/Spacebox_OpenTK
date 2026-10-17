@@ -3,6 +3,7 @@ using Engine.Physics;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Oxygen;
+using Spacebox.Game.Generation.Doors;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Resource;
@@ -195,6 +196,9 @@ namespace Spacebox.Game.Generation
 
                         if (block is OxygenGeneratorBlock oxygenGenerator)
                             SpaceEntity.Oxygen.RegisterGenerator(this, x, y, z, oxygenGenerator);
+
+                        if (block is DoorBlock door && !door.HasMultiblockOffset)
+                            SpaceEntity.Doors.RegisterLoaded(this, x, y, z, door);
 
                         if (block.Id != 0 && block is ElectricalBlock eBlock)
                         {
@@ -416,6 +420,22 @@ namespace Spacebox.Game.Generation
             {
                 World.DropEffectManager.DropBlock(effectPosition, effectLightColor, block, SpaceEntity);
             }
+
+            if (block is DoorBlock door && !door.HasMultiblockOffset)
+            {
+                SpaceEntity.Doors.Unregister(door);
+            }
+
+            ClearBlockSilently(x, y, z);
+        }
+
+        internal void ClearBlockSilently(byte x, byte y, byte z)
+        {
+            if (!IsInRange(x, y, z))
+                return;
+
+            var block = Blocks[x, y, z];
+            if (block == null || block.Id == 0) return;
 
             if (block is ElectricalBlock)
             {

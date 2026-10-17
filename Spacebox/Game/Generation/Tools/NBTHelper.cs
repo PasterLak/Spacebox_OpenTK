@@ -387,6 +387,7 @@ namespace Spacebox.Game.Generation.Tools
                     GetCoordinatesFrom1DIndex(arr[i], SIZE, out byte x, out byte y, out byte z);
                     int packed = arr[i + 1];
                     blocks[x, y, z].MultiblockOffset = new Vector3Byte((byte)(packed & 0xF), (byte)((packed >> 4) & 0xF), (byte)((packed >> 8) & 0xF));
+                    if (blocks[x, y, z].HasMultiblockOffset) blocks[x, y, z].ConfigureAsMultiblockPart();
                 }
             }
 

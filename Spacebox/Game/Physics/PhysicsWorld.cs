@@ -15,6 +15,8 @@ public sealed class PhysicsWorld
         _world = world;
     }
 
+    public IReadOnlyList<SphereBody> Bodies => _bodies;
+
     public void Register(SphereBody body)
     {
         if (!_bodies.Contains(body)) _bodies.Add(body);

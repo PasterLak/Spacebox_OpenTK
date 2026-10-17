@@ -1,6 +1,7 @@
 ﻿
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Oxygen;
+using Spacebox.Game.Generation.Doors;
 
 
 namespace Spacebox.Game.Resource
@@ -23,7 +24,8 @@ namespace Spacebox.Game.Resource
               { "generator", data => new GeneratorBlock(data) },
                { "consumer", data => new ConsumerBlock(data) },
                 { "storage", data => new StorageBlock(data as StorageBlockData) },
-                { "oxygengenerator", data => new OxygenGeneratorBlock(data) }
+                { "oxygengenerator", data => new OxygenGeneratorBlock(data) },
+                { "door", data => new DoorBlock(data) }
         };
 
         public static Block CreateBlockFromId(short id)

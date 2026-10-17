@@ -915,13 +915,33 @@
     "ID": "nuclear_power_block",
     "Name": "Standard Nuclear Power Block",
     "Type": "generator",
+    "Generator": {
+      "Power": 300
+    },
+    "Size": {
+      "x": 2,
+      "y": 3,
+      "z": 2
+    },
     "Category": "resources",
-    "PowerToDrill": 2,
-    "Mass": 5,
-    "Durability": 15,
+    "PowerToDrill": 3,
+    "Mass": 25,
+    "Durability": 65,
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+    },
     "Textures": {
       "Active": {
-        "All": "nuclear_generator"
+        "All": "nuclear_generator",
+        "Up": "wireTop",
+        "Down": "wireTop"
+      },
+      "Inactive": {
+        "All": "nuclear_generatorOff",
+        "Up": "wireTopOff",
+        "Down": "wireTopOff"
       }
     }
   },
@@ -975,14 +995,20 @@
     }
   },
   {
-    "ID": "metal_door",
-    "Name": "Metal Door",
-    "Description": "A 2x2 door made of aluminium",
-    "Type": "block",
+    "ID": "aluminium_door",
+    "Name": "Aluminium Door",
+    "Description": "Sliding 2x2 door made of aluminium",
+    "Type": "door",
     "Category": "other",
     "PowerToDrill": 1,
     "Mass": 2,
     "Durability": 6,
+    "Door": {
+      "MoveDirection": "Right",
+      "Speed": 2,
+      "OpenTime": 3,
+      "AutoClose": true
+    },
     "Size": {
       "x": 2,
       "y": 2,
@@ -996,9 +1022,112 @@
     "Textures": {
       "Active": {
         "All": "aluMedium",
-        "Forward": "door",
-        "Back": "door"
+        "Forward": "doorAluminium",
+        "Back": "doorAluminium"
       }
+    },
+    "Sounds": {
+      "Place": "placeMetal"
+    }
+  },
+  {
+    "ID": "iron_door",
+    "Name": "Iron Door",
+    "Description": "Sliding 2x2 door made of iron",
+    "Type": "door",
+    "Category": "other",
+    "PowerToDrill": 1,
+    "Mass": 3,
+    "Durability": 12,
+    "Door": {
+      "MoveDirection": "Right",
+      "Speed": 1.6,
+      "OpenTime": 3,
+      "AutoClose": true
+    },
+    "Size": {
+      "x": 2,
+      "y": 2,
+      "z": 1
+    },
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+    },
+    "Textures": {
+      "Active": {
+        "All": "ironMedium",
+        "Forward": "doorIron",
+        "Back": "doorIron"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal"
+    }
+  },
+  {
+    "ID": "titanium_door",
+    "Name": "Titanium Door",
+    "Description": "Sliding 2x2 door made of titanium",
+    "Type": "door",
+    "Category": "other",
+    "PowerToDrill": 2,
+    "Mass": 3,
+    "Durability": 20,
+    "Door": {
+      "MoveDirection": "Right",
+      "Speed": 2.4,
+      "OpenTime": 3,
+      "AutoClose": true
+    },
+    "Size": {
+      "x": 2,
+      "y": 2,
+      "z": 1
+    },
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+    },
+    "Textures": {
+      "Active": {
+        "All": "titMedium",
+        "Forward": "doorTitanium",
+        "Back": "doorTitanium"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal"
+    }
+  },
+  {
+    "ID": "big_window",
+    "Name": "Big Window",
+    "Description": "A 2x2 window",
+    "Category": "windows",
+    "Mass": 4,
+    "Durability": 4,
+    "IsTransparent": true,
+    "Size": {
+      "x": 2,
+      "y": 2,
+      "z": 1
+    },
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+    },
+    "Textures": {
+      "Active": {
+        "All": "window"
+      }
+    },
+    "Sounds": {
+      "Place": "placeGlass",
+      "Destroy": "blockDestroyGlass"
     }
   }
 ]

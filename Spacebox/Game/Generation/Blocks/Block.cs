@@ -87,6 +87,18 @@ namespace Spacebox.Game.Generation.Blocks
             }
         }
 
+        public virtual void ConfigureAsMultiblockPart()
+        {
+        }
+
+        public bool IsMeshHidden
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ((data >> 49) & 1) != 0;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set => data = value ? data | (1L << 49) : data & ~(1L << 49);
+        }
+
         public bool HasMultiblockOffset
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
