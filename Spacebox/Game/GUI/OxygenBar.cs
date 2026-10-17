@@ -14,7 +14,7 @@ public class OxygenBar
     public StatsGUI StatsGUI { get; set; }
 
     public float ConsumeInterval { get; set; } = 10f;
-    public int ConsumeAmount { get; set; } = 1;
+    public int ConsumeAmount { get; set; } = 20;
     public int RefillPerSecond { get; set; } = 10;
     public bool IsInAir { get; private set; }
 
