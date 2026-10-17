@@ -26,6 +26,8 @@ namespace Spacebox.Scenes
 
         private GameMenu menu;
 
+        private MenuMusicButton musicButton;
+
         private Canvas canvas;
 
         private DevLogWindow devLogWindow = new DevLogWindow();
@@ -82,15 +84,7 @@ namespace Spacebox.Scenes
 
             var music = AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/menu.ogg"));
             music.PlayOnStart = false;
-            if (Settings.Audio.MenuMusic)
-            {
-                music.Audio.Play();
-            }
-            else
-            {
-                music.Audio.IsLooped = false;
-                music.Audio.Stop();
-            }
+            musicButton = new MenuMusicButton(new MenuMusicController(music.Audio), menu.Click1);
 
             /*var jump = InputManager.Instance.AddAction("inputOverlay", "Jump action");
 
@@ -275,6 +269,7 @@ namespace Spacebox.Scenes
             CenteredImageMenu.Draw();
            
             VerticalLinks.Draw();
+            musicButton.Draw();
             menu.Render();
             //devLogWindow.Render();
             //canvas.Draw();
