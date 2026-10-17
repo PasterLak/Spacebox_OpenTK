@@ -19,13 +19,7 @@ namespace Spacebox.Game.GUI.Menu
 
         private void LoadGameSettings()
         {
-            var p = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
-            var s = SettingsService.Load(Path.Combine(p, "Settings.json"));
-           
-            Settings.Audio = s.Audio;
-            Settings.Gameplay = s.Game;
-            Settings.Graphics = s.Graphics;
-            Settings.Meta = s.Meta;
+            Settings.LoadSettings();
 
         }
         public override void Render()

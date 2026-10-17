@@ -60,7 +60,11 @@ namespace Spacebox.Game.GUI.Menu
 
                     ImGui.TableNextColumn();
                     ImGui.SetNextItemWidth(totalW * 0.28f);
-                    ImGui.Combo("##winmode", ref _modeIndex, _modes, _modes.Length);
+                    if (ImGui.Combo("##winmode", ref _modeIndex, _modes, _modes.Length))
+                    {
+                        Settings.Graphics.WindowMode = (WindowMode)_modeIndex;
+                        SpaceboxWindow.Instance.SetWindowMode(Settings.Graphics.WindowMode);
+                    }
                     UIHelper.ShowTooltip("Switch between fullscreen, windowed, or borderless display modes");
 
                     ImGui.TableNextRow();
@@ -70,7 +74,8 @@ namespace Spacebox.Game.GUI.Menu
 
                     ImGui.TableNextColumn();
                     ImGui.Dummy(dummyOffset); ImGui.SameLine();
-                    ImGui.Checkbox("##vsync", ref _vsync);
+                    if (ImGui.Checkbox("##vsync", ref _vsync))
+                        SpaceboxWindow.Instance.SetVSync(_vsync);
                     UIHelper.ShowTooltip("Synchronizes frame rate with monitor refresh rate to reduce screen tearing");
 
                     ImGui.TableNextRow();
@@ -177,23 +182,6 @@ namespace Spacebox.Game.GUI.Menu
             Settings.Graphics.EffectsEnabled = _enableEffects;
             Settings.Graphics.Fov = _fov;
             Settings.Graphics.ResolutionScalePercent = _resolution;
-
-            if (_modes[_modeIndex] == "Fullscreen")
-            {
-                Settings.Graphics.WindowMode = WindowMode.Fullscreen;
-                SpaceboxWindow.Instance.SetWindowMode(WindowMode.Fullscreen);
-
-            }
-            else if (_modes[_modeIndex] == "Borderless")
-            {
-                Settings.Graphics.WindowMode = WindowMode.Borderless;
-                SpaceboxWindow.Instance.SetWindowMode(WindowMode.Borderless);
-            }
-            else
-            {
-                Settings.Graphics.WindowMode = WindowMode.Windowed;
-                SpaceboxWindow.Instance.SetWindowMode(WindowMode.Windowed);
-            }
         }
     }
 }

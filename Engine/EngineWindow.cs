@@ -25,7 +25,6 @@ namespace Engine
 
         public static readonly ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
 
-        private bool _isFullscreen = false;
         private bool _debugUI = false;
         private ImGuiController _controller;
         private PostProcessManager _processManager;
@@ -287,9 +286,20 @@ namespace Engine
         private Vector2i _savedWindowSize;
         private Vector2i _savedWindowLocation;
 
+        public WindowMode CurrentWindowMode { get; private set; } = WindowMode.Windowed;
+        public static Action<WindowMode> OnWindowModeChanged;
+
+        public void SetVSync(bool enabled)
+        {
+            VSync = enabled ? VSyncMode.On : VSyncMode.Off;
+            FrameLimiter.IsRunning = !enabled;
+        }
+
         public void SetWindowMode(WindowMode mode)
         {
-            if (!_isFullscreen)
+            if (mode == CurrentWindowMode) return;
+
+            if (CurrentWindowMode == WindowMode.Windowed)
             {
                 _savedWindowSize = ClientSize;
                 _savedWindowLocation = Location;
@@ -300,9 +310,6 @@ namespace Engine
                 case WindowMode.Fullscreen:
                     WindowBorder = WindowBorder.Hidden;
                     WindowState = WindowState.Fullscreen;
-                    _isFullscreen = true;
-                    FrameLimiter.IsRunning = false;
-                    VSync = VSyncMode.On;
                     break;
 
                 case WindowMode.Borderless:
@@ -312,10 +319,6 @@ namespace Engine
                     var monitor = Monitors.GetMonitorFromWindow(this);
                     Location = monitor.ClientArea.Min;
                     ClientSize = monitor.ClientArea.Size;
-
-                    _isFullscreen = true;
-                    FrameLimiter.IsRunning = false;
-                    VSync = VSyncMode.On;
                     break;
 
                 case WindowMode.Windowed:
@@ -331,18 +334,16 @@ namespace Engine
                     {
                         CenterWindow();
                     }
-
-                    _isFullscreen = false;
-                    FrameLimiter.IsRunning = true;
-                    VSync = VSyncMode.Off;
                     break;
             }
 
+            CurrentWindowMode = mode;
             OnResized?.Invoke(Size);
+            OnWindowModeChanged?.Invoke(mode);
         }
         public void ToggleFullScreen()
         {
-            if (!_isFullscreen)
+            if (CurrentWindowMode == WindowMode.Windowed)
             {
                 SetWindowMode(WindowMode.Fullscreen);
             }

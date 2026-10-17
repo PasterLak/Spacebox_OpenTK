@@ -49,6 +49,11 @@ public class Settings
 
     public static void LoadSettings()
     {
+        var settings = SettingsService.Load();
 
+        Audio = settings.Audio;
+        Gameplay = settings.Game;
+        Graphics = settings.Graphics;
+        Meta = settings.Meta;
     }
 }

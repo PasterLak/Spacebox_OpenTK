@@ -9,6 +9,7 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Spacebox.Game;
 using Spacebox.Game.GUI;
 using Spacebox.Scenes;
 
@@ -36,11 +37,29 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
 
         _screenshotAudio = new AudioSource(Resources.Load<AudioClip>("screenshot", true));
 
+        ApplyDisplaySettings();
+
 #if DEBUG
         SceneManager.Load<MenuScene>();
 #else
         SceneManager.Load<MenuScene>();
 #endif                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+    }
+
+    private void ApplyDisplaySettings()
+    {
+        Settings.LoadSettings();
+        SetVSync(Settings.Graphics.VSync);
+        SetWindowMode(Settings.Graphics.WindowMode);
+        OnWindowModeChanged += SaveWindowMode;
+    }
+
+    private static void SaveWindowMode(WindowMode mode)
+    {
+        if (Settings.Graphics.WindowMode == mode) return;
+
+        Settings.Graphics.WindowMode = mode;
+        SettingsService.Save(Settings.AsGameSettings());
     }
 
     protected override void OnResize(ResizeEventArgs e)

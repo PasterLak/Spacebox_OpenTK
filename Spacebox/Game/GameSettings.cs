@@ -44,7 +44,7 @@ namespace Spacebox.Game
     {
         [JsonPropertyName("window_mode")]
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public WindowMode WindowMode { get; set; } 
+        public WindowMode WindowMode { get; set; } = WindowMode.Windowed;
 
         [JsonPropertyName("vsync")] public bool VSync { get; set; } = true;
         [JsonPropertyName("ambient_occlusion")] public bool AO { get; set; } = true;
@@ -60,6 +60,7 @@ namespace Spacebox.Game
             bool changed = false;
             if (OutOfRange(Fov, 50, 120)) { Fov = d.Fov; changed = true; }
             if (OutOfRange(ResolutionScalePercent, 10, 100)) { ResolutionScalePercent = d.ResolutionScalePercent; changed = true; }
+            if (!Enum.IsDefined(WindowMode)) { WindowMode = d.WindowMode; changed = true; }
             return changed;
         }
 
@@ -129,6 +130,13 @@ namespace Spacebox.Game
             Converters = { new JsonStringEnumConverter() }
         };
 
+        public static readonly string FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Settings.json");
+
+        public static GameSettings Load(IEnumerable<string> allowedLanguages = null)
+        {
+            return Load(FilePath, allowedLanguages);
+        }
+
         public static GameSettings Load(string path, IEnumerable<string> allowedLanguages = null)
         {
             var defaults = GameSettings.Default();
@@ -166,8 +174,7 @@ namespace Spacebox.Game
 
         public static void Save(GameSettings settings)
         {
-            var p = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
-            string path = Path.Combine(p, "settings.json");
+            string path = FilePath;
             var dir = Path.GetDirectoryName(path);
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
             var json = JsonSerializer.Serialize(settings, JsonOpts);
