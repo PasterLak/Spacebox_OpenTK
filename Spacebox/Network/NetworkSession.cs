@@ -36,6 +36,8 @@ public sealed class NetworkSession : IDisposable
         network.Messages.Register<PlayerDataMessage>(OnPlayerData);
         network.PeerDisconnected += OnPeerDisconnected;
         network.DisconnectedFromServer += OnDisconnectedFromServer;
+
+        if (World.DropEffectManager != null) World.DropEffectManager.Replicator = new DropNetwork();
     }
 
     public bool Start()
@@ -189,6 +191,7 @@ public sealed class NetworkSession : IDisposable
         if (!network.IsServer || !PlayerRegistry.TryGet(sender, out var player) || player.PlayerObject != null) return;
 
         network.SendSpawnedObjectsTo(sender);
+        DropNetwork.SendAllTo(sender);
         player.PlayerObject = _playerSpawner.SpawnPlayer(sender, player.Name, player.SkinColor, Vector3.Zero, Quaternion.Identity);
         ChatService.Broadcast($"{player.Name} joined the game", Color4.Yellow);
     }

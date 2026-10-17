@@ -29,6 +29,30 @@ namespace Spacebox.Game.Effects
         private readonly float _mergeDistance;
 
         public const int DropLifeTime = 60;
+        private const float PickupRequestTimeout = 1.5f;
+
+        private readonly Dictionary<uint, Drop> _networkDrops = new Dictionary<uint, Drop>();
+        private IDropReplicator _replicator;
+        private uint _nextNetId = 1;
+
+        public IReadOnlyCollection<Drop> NetworkDrops => _networkDrops.Values;
+        private bool IsRemote => _replicator != null && !_replicator.IsAuthority;
+        private bool IsAuthority => _replicator != null && _replicator.IsAuthority;
+
+        public IDropReplicator Replicator
+        {
+            get => _replicator;
+            set
+            {
+                _replicator = value;
+                if (!IsAuthority) return;
+
+                foreach (var drop in _activeDrops)
+                {
+                    if (drop.NetId == 0) AssignNetId(drop);
+                }
+            }
+        }
         private LightPool<PointLight> _lightPool;
 
         private PointOctree<Drop> _octree;
@@ -81,10 +105,77 @@ namespace Spacebox.Game.Effects
 
         public void DropItem(Vector3 position, Vector3 direction, float speed, Item item, int quantity, float pickupDelay = 0.5f, float deceleration = 5f, SpaceEntity sourceEntity = null)
         {
+            if (item == null || quantity <= 0) return;
+
+            var velocity = direction.LengthSquared > 1e-8f ? direction.Normalized() * speed : Vector3.Zero;
+
+            if (IsRemote)
+            {
+                _replicator.RequestSpawn(item, quantity, position, velocity, pickupDelay, deceleration, sourceEntity);
+                return;
+            }
+
+            var drop = SpawnItemDrop(position, velocity, item, quantity, pickupDelay, deceleration, sourceEntity);
+            RegisterSpawn(drop, velocity, false, default);
+        }
+
+        public void SpawnReplicated(uint netId, Item item, int quantity, Vector3 position, Vector3 velocity, float pickupDelay, float deceleration, SpaceEntity sourceEntity, bool fromBlock, Color3Byte color)
+        {
+            if (item == null || _networkDrops.ContainsKey(netId)) return;
+
+            var drop = fromBlock
+                ? SpawnBlockDrop(position, item, quantity, pickupDelay, sourceEntity, color)
+                : SpawnItemDrop(position, velocity, item, quantity, pickupDelay, deceleration, sourceEntity);
+
+            drop.NetId = netId;
+            _networkDrops[netId] = drop;
+        }
+
+        public bool TryGetNetworkDrop(uint netId, out Drop drop)
+        {
+            return _networkDrops.TryGetValue(netId, out drop);
+        }
+
+        public void RemoveReplicated(uint netId)
+        {
+            if (_networkDrops.TryGetValue(netId, out var drop)) RemoveDrop(drop);
+        }
+
+        public void ApplyReplicatedQuantity(uint netId, int quantity, Vector3 position)
+        {
+            if (!_networkDrops.TryGetValue(netId, out var drop)) return;
+
+            drop.Info = new Drop.DropInfo { item = drop.Info.item, quantity = quantity };
+            drop.Position = position;
+        }
+
+        public bool TryClaim(uint netId, Vector3? claimerPosition, float maxDistance, out Item item, out int quantity, out Vector3 position)
+        {
+            item = null;
+            quantity = 0;
+            position = Vector3.Zero;
+
+            if (!_networkDrops.TryGetValue(netId, out var drop) || !drop.CanBePickedUp) return false;
+            if (claimerPosition.HasValue && Vector3.DistanceSquared(claimerPosition.Value, drop.Position) > maxDistance * maxDistance) return false;
+
+            item = drop.Info.item;
+            quantity = drop.Info.quantity;
+            position = drop.Position;
+            RemoveDrop(drop);
+            return true;
+        }
+
+        public void GrantPickup(Item item, int quantity, Vector3 position)
+        {
+            int left = AddToPlayer(item, quantity);
+            if (left > 0) DropItem(_player.Position, _player.Front, 1f, item, left, 2f, 4f);
+        }
+
+        private Drop SpawnItemDrop(Vector3 position, Vector3 initialVelocity, Item item, int quantity, float pickupDelay, float deceleration, SpaceEntity sourceEntity)
+        {
             var drop = _dropPool.Take();
             drop.Initialize(position, item, quantity, DropLifeTime, pickupDelay, sourceEntity);
 
-            var initialVelocity = direction.Normalized() * speed;
             drop.Velocity = initialVelocity;
             drop._initialVelocity = initialVelocity;
             drop.IsMovingToPlayer = false;
@@ -96,6 +187,21 @@ namespace Spacebox.Game.Effects
 
             EnsureParticleSystemItem(item.Id);
             CreateParticle(position, item.Id, drop);
+            return drop;
+        }
+
+        private void RegisterSpawn(Drop drop, Vector3 velocity, bool fromBlock, Color3Byte color)
+        {
+            if (!IsAuthority) return;
+
+            AssignNetId(drop);
+            _replicator.OnSpawned(drop, velocity, fromBlock, color);
+        }
+
+        private void AssignNetId(Drop drop)
+        {
+            drop.NetId = _nextNetId++;
+            _networkDrops[drop.NetId] = drop;
         }
 
         public void DropStorage(Storage storage, Vector3 position, float speed = 2f, float spreadRadius = 0.1f, float pickupDelay = 2f, float deceleration = 4f, SpaceEntity sourceEntity = null)
@@ -152,6 +258,8 @@ namespace Spacebox.Game.Effects
 
         public void DropBlock(Vector3 position, Color3Byte color, Block block, SpaceEntity entity, float pickupDelay = 0f)
         {
+            if (IsRemote) return;
+
             var blockData = GameAssets.GetBlockDataById(block.Id);
             if (blockData.Id == 0 || blockData.Drop.Count <= 0) return;
 
@@ -162,14 +270,24 @@ namespace Spacebox.Game.Effects
             if (TryMergeWithNearbyDrop(dropPosition, item, quantity))
                 return;
 
+            var drop = SpawnBlockDrop(dropPosition, item, quantity, pickupDelay, entity, color);
+            RegisterSpawn(drop, Vector3.Zero, true, color);
+        }
+
+        private Drop SpawnBlockDrop(Vector3 dropPosition, Item item, int quantity, float pickupDelay, SpaceEntity entity, Color3Byte color)
+        {
             var drop = _dropPool.Take();
             drop.Initialize(dropPosition, item, quantity, DropLifeTime, pickupDelay, entity);
 
             _activeDrops.Add(drop);
             _octree.Add(drop, dropPosition);
 
-            EnsureParticleSystemBlock(item.Id, blockData, color);
+            if (item is BlockItem blockItem)
+                EnsureParticleSystemBlock(item.Id, GameAssets.GetBlockDataById(blockItem.BlockId), color);
+            else
+                EnsureParticleSystemItem(item.Id);
             CreateParticle(dropPosition, item.Id, drop);
+            return drop;
         }
 
         private bool TryMergeWithNearbyDrop(Vector3 position, Item item, int quantity)
@@ -187,6 +305,7 @@ namespace Spacebox.Game.Effects
                         var midPoint = (nearbyDrop.Position + position) * 0.5f;
                         nearbyDrop.Position = midPoint;
                         nearbyDrop.AddQuantity(quantity, DropLifeTime);
+                        if (IsAuthority && nearbyDrop.NetId != 0) _replicator.OnQuantityChanged(nearbyDrop);
 
                         if (_dropToParticle.TryGetValue(nearbyDrop, out var particle))
                         {
@@ -300,7 +419,7 @@ namespace Spacebox.Game.Effects
                 var wasStopped = drop.IsStopped;
                 drop.Update();
 
-                if (drop.IsExpired)
+                if (drop.IsExpired && !IsRemote)
                 {
                     toRemove.Add(drop);
                     continue;
@@ -314,12 +433,19 @@ namespace Spacebox.Game.Effects
                 }
 
 
-                if (!drop.CanBePickedUp) continue;
+                if (!drop.CanBePickedUp || _player.IsFrozen) continue;
 
                 var distanceSquared = (drop.Position - targetPosition).LengthSquared;
 
+
                 if (ShouldPickup(distanceSquared))
                 {
+                    if (IsRemote)
+                    {
+                        RequestPickup(drop);
+                        continue;
+                    }
+
                     ProcessPickup(drop);
                     if (drop.Info.quantity == 0)
                     {
@@ -392,11 +518,22 @@ namespace Spacebox.Game.Effects
             drop.Push(position, velocity);
         }
 
+        private void RequestPickup(Drop drop)
+        {
+            if (drop.NetId == 0) return;
+
+            drop.PickupRequestTimer -= Time.Delta;
+            if (drop.PickupRequestTimer > 0f) return;
+
+            drop.PickupRequestTimer = PickupRequestTimeout;
+            _replicator.RequestPickup(drop);
+        }
+
         private void HandleDropStopped(Drop drop)
         {
             _movingDrops.Remove(drop);
 
-            if (TryMergeStoppedDrop(drop))
+            if (!IsRemote && TryMergeStoppedDrop(drop))
             {
                 RemoveDrop(drop);
                 return;
@@ -426,6 +563,7 @@ namespace Spacebox.Game.Effects
                         var midPoint = (nearbyDrop.Position + stoppedDrop.Position) * 0.5f;
                         nearbyDrop.Position = midPoint;
                         nearbyDrop.AddQuantity(stoppedDrop.Info.quantity, 60);
+                        if (IsAuthority && nearbyDrop.NetId != 0) _replicator.OnQuantityChanged(nearbyDrop);
 
                         if (_dropToParticle.TryGetValue(nearbyDrop, out var particle))
                         {
@@ -518,14 +656,30 @@ namespace Spacebox.Game.Effects
 
         private void ProcessPickup(Drop drop)
         {
-            var quantity = drop.Info.quantity;
+            int before = drop.Info.quantity;
+            int quantity = AddToPlayer(drop.Info.item, before);
+
+            if (quantity > 0)
+            {
+                drop.Info = new Drop.DropInfo { item = drop.Info.item, quantity = quantity };
+                StopDropMovement(drop);
+                if (quantity != before && IsAuthority && drop.NetId != 0) _replicator.OnQuantityChanged(drop);
+            }
+            else
+            {
+                drop.Info = new Drop.DropInfo { item = drop.Info.item, quantity = 0 };
+            }
+        }
+
+        private int AddToPlayer(Item item, int quantity)
+        {
             var addedQuantity = 0;
 
             while (quantity > 0)
             {
                 var amountToAdd = Math.Min(quantity, 255);
 
-                if (_player.Panel.TryAddItem(drop.Info.item, (byte)amountToAdd))
+                if (_player.Panel.TryAddItem(item, (byte)amountToAdd))
                 {
                     addedQuantity += amountToAdd;
                     quantity -= amountToAdd;
@@ -542,15 +696,7 @@ namespace Spacebox.Game.Effects
                 PlayPickupSound();
             }
 
-            if (quantity > 0)
-            {
-                drop.Info = new Drop.DropInfo { item = drop.Info.item, quantity = quantity };
-                StopDropMovement(drop);
-            }
-            else
-            {
-                drop.Info = new Drop.DropInfo { item = drop.Info.item, quantity = 0 };
-            }
+            return quantity;
         }
         private void PlayPickupSound()
         {
@@ -579,7 +725,13 @@ namespace Spacebox.Game.Effects
 
         private void RemoveDrop(Drop drop)
         {
-            _activeDrops.Remove(drop);
+            if (!_activeDrops.Remove(drop)) return;
+
+            if (drop.NetId != 0)
+            {
+                _networkDrops.Remove(drop.NetId);
+                if (IsAuthority) _replicator.OnRemoved(drop);
+            }
 
             if (drop.IsMovingToPlayer)
             {
@@ -626,6 +778,8 @@ namespace Spacebox.Game.Effects
                 _dropPool.Release(drop);
             }
             _activeDrops.Clear();
+            _networkDrops.Clear();
+            _replicator = null;
             _movingDrops.Clear();
             _dropToParticle.Clear();
             _dropToLight.Clear();
@@ -659,6 +813,7 @@ namespace Spacebox.Game.Effects
 
             EnsureParticleSystemItem(item.Id);
             CreateParticle(position, item.Id, drop);
+            RegisterSpawn(drop, Vector3.Zero, false, default);
         }
 
         public void SaveDrops(string filePath)

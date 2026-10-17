@@ -17,5 +17,6 @@ public static class SpaceboxNetwork
         ChatService.Register(network);
         WorldEditNetwork.Register(network);
         EntitySync.Register(network);
+        DropNetwork.Register(network);
     }
 }

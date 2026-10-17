@@ -137,7 +137,7 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 
 ## Multiplayer
 
-- `Network/`: `GameSession` (Singleplayer/Host/Client/Dedicated), `NetworkSession` (per game scene: starts the mode, join handling, player spawn, saves), `ClientConnector` (menu join), `PlayerRegistry`, `ChatService`, `WorldEditNetwork` (block edits), `EntitySync` (modified entity data), `Players/` (`PlayerSpawnService`, `AstronautNetwork`), `Dedicated/` (`--server`, `serverconfig.json`, console commands), `LaunchOptions`.
+- `Network/`: `GameSession` (Singleplayer/Host/Client/Dedicated), `NetworkSession` (per game scene: starts the mode, join handling, player spawn, saves), `ClientConnector` (menu join), `PlayerRegistry`, `ChatService`, `WorldEditNetwork` (block edits), `EntitySync` (modified entity data), `DropNetwork` (server-owned drops via `DropManager.Replicator`), `Players/` (`PlayerSpawnService`, `AstronautNetwork`), `Dedicated/` (`--server`, `serverconfig.json`, console commands), `LaunchOptions`.
 - Every game scene runs a session; check `NetworkManager.Instance.IsServer` before authoritative changes and `GameSession.IsRemoteClient` before touching save files.
 - New world changes must be sent: block edits through `WorldEditNetwork`, everything else through a message, an RPC or a `NetworkVariable`. The `add-network-message` skill describes the old Lidgren system and is outdated.
 

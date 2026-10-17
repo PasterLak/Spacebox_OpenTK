@@ -23,6 +23,8 @@ public class Drop : IDisposable
     public bool IsMovingToPlayer;
     public bool IsActive;
     public bool IsThrown;
+    public uint NetId;
+    public float PickupRequestTimer;
 
     private float _age;
     public Vector3 _initialVelocity;
@@ -210,6 +212,8 @@ public class Drop : IDisposable
         _initialVelocity = Vector3.Zero;
         _throwTime = 0f;
         _gravity = Vector3.Zero;
+        NetId = 0;
+        PickupRequestTimer = 0f;
     }
 
     public void Dispose()
