@@ -71,7 +71,7 @@ Game
 - power blocks show generated energy in tooltip
 - smooth voxel lighting: colors blend per channel, light per vertex
 - gravity generator: 200 EU, radius 32, walking/jumping, smooth zone borders, drops and objects fall, crafting
-- explosive blocks: cobalt bomb (r4, pen 100, up to 50 dmg) and uranium bomb (r12, pen 200, 200 dmg), detonate when shot, chain reactions, blocks/storages drop items, push player/drops/bodies, fire/smoke/sparks + flash + sound, crafting
+- explosive blocks: cobalt bomb (r4, pen 100, up to 50 dmg) and uranium bomb (r12, pen 200, 200 dmg), detonate when shot, chain reactions, storages drop their items, destroyed blocks drop only if DropBlocks is set in json, DestroyStorageItems option destroys storage contents, push player/drops/bodies, fire/smoke/sparks + flash + sound, crafting
 - DNA reconstructor: UI with DNA slot, needs power; after death respawn at the nearest one (1 DNA), reconstruction animation
 - respawn point saved (first join place), respawn moves out of blocks
 - gravity generator window: radius 4-512, strength with Moon/Mars/Earth/Jupiter presets, on/off, only inside closed rooms; power depends on radius and strength; settings in json, saved

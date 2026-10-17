@@ -18,7 +18,7 @@ public sealed class ExplosionBlockBreaker
     private readonly Dictionary<(short ItemId, Chunk Chunk), DropGroup> _drops = new Dictionary<(short, Chunk), DropGroup>();
     private readonly Random _random = new Random();
 
-    public void Break(SpaceEntity entity, HashSet<Vector3i> cells, Vector3i origin, Vector3 worldCenter, Action<Chunk, Vector3Byte, ExplosiveBlockData> chainExplosive)
+    public void Break(SpaceEntity entity, HashSet<Vector3i> cells, Vector3i origin, Vector3 worldCenter, ExplosiveBlockData data, Action<Chunk, Vector3Byte, ExplosiveBlockData> chainExplosive)
     {
         _touchedChunks.Clear();
         _specialCells.Clear();
@@ -51,7 +51,7 @@ public sealed class ExplosionBlockBreaker
                 continue;
             }
 
-            CollectDrop(entity, chunk, cell, block);
+            if (data.DropBlocks) CollectDrop(entity, chunk, cell, block);
 
             if (effects < MaxDestructionEffects)
             {
@@ -63,7 +63,7 @@ public sealed class ExplosionBlockBreaker
             if (chunk.ClearCellForBulkEdit(index.X, index.Y, index.Z)) _touchedChunks.Add(chunk);
         }
 
-        RemoveSpecialBlocks(entity);
+        RemoveSpecialBlocks(entity, data);
 
         foreach (var chunk in _touchedChunks)
             chunk.FinishBulkEdit();
@@ -81,7 +81,7 @@ public sealed class ExplosionBlockBreaker
         return GameAssets.Blocks.TryGetValue(block.Id, out var data) && data.IsMultiblock;
     }
 
-    private void RemoveSpecialBlocks(SpaceEntity entity)
+    private void RemoveSpecialBlocks(SpaceEntity entity, ExplosiveBlockData data)
     {
         for (int i = 0; i < _specialCells.Count; i++)
         {
@@ -100,8 +100,8 @@ public sealed class ExplosionBlockBreaker
                 blockPositionWorld = entity.EntityLocalToWorld(new Vector3(cell.X + 0.5f, cell.Y + 0.5f, cell.Z + 0.5f))
             };
 
-            block.OnDestroy?.Invoke(hit);
-            chunk.RemoveBlock(index.X, index.Y, index.Z, 0, 0, 0, true);
+            if (!data.DestroyStorageItems) block.OnDestroy?.Invoke(hit);
+            chunk.RemoveBlock(index.X, index.Y, index.Z, 0, 0, 0, data.DropBlocks);
         }
     }
 

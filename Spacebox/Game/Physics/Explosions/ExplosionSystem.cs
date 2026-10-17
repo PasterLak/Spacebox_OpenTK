@@ -86,7 +86,7 @@ public sealed class ExplosionSystem : IDisposable
         var worldCenter = entity.EntityLocalToWorld(centerLocal);
 
         _rayCaster.Collect(entity, centerLocal, data.Radius, data.Penetration, _cells);
-        _breaker.Break(entity, _cells, pending.Cell, worldCenter, _chainExplosive);
+        _breaker.Break(entity, _cells, pending.Cell, worldCenter, data, _chainExplosive);
         _forces.Apply(worldCenter, data);
         _effects.Play(worldCenter, data.Radius);
     }

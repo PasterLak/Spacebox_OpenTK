@@ -1160,13 +1160,15 @@
     "Description": "Explodes when shot. Radius 4, penetration 100, up to 50 damage",
     "Type": "explosive",
     "Explosive": {
-      "Radius": 4,
-      "Penetration": 100,
-      "Damage": 50,
+      "Radius": 3,
+      "Penetration": 10,
+      "Damage": 30,
       "DamageFalloff": true,
       "PushStrength": 15,
       "PushRadiusMultiplier": 2,
-      "ChainDelay": 0.15
+      "ChainDelay": 0.15,
+      "DropBlocks": false,
+      "DestroyStorageItems": false
     },
     "Category": "other",
     "Mass": 8,
@@ -1174,8 +1176,8 @@
     "Textures": {
       "Active": {
         "All": "cobaltBombSide",
-        "Up": "cobaltBombTop",
-        "Down": "cobaltBombTop"
+        "Up": "bottom",
+        "Down": "bottom"
       }
     },
     "Sounds": {
@@ -1190,12 +1192,14 @@
     "Type": "explosive",
     "Explosive": {
       "Radius": 12,
-      "Penetration": 200,
+      "Penetration": 180,
       "Damage": 200,
       "DamageFalloff": false,
       "PushStrength": 35,
       "PushRadiusMultiplier": 2,
-      "ChainDelay": 0.15
+      "ChainDelay": 0.15,
+      "DropBlocks": false,
+      "DestroyStorageItems": false
     },
     "Category": "other",
     "Mass": 12,
@@ -1203,8 +1207,8 @@
     "Textures": {
       "Active": {
         "All": "uraniumBombSide",
-        "Up": "uraniumBombTop",
-        "Down": "uraniumBombTop"
+        "Up": "bottom",
+        "Down": "bottom"
       }
     },
     "Sounds": {
