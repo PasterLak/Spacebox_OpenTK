@@ -19,7 +19,7 @@ namespace Engine
         public Skybox(Mesh mesh, MaterialBase material)
         {
             Init(mesh, material);
-        }
+        } 
 
         private void Init(Mesh mesh, MaterialBase material)
         {

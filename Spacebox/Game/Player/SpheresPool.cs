@@ -26,7 +26,7 @@ namespace Spacebox.Game.Player
                    obj => obj,
                 obj => { },
                 obj => { obj.Reset(); },
-                obj => obj.IsActive,
+              
                 (obj, active) => obj.IsActive = active);
 
             spheres = new List<ImpulseSphere>();
@@ -73,6 +73,9 @@ namespace Spacebox.Game.Player
         {
             foreach (var s in spheres.ToArray())
                 PutBack(s);
+
+            pool.Clear(e => e.Dispose());
+
             Instance = null;
 
 

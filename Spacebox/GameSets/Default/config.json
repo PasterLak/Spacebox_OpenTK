@@ -6,16 +6,25 @@
     "Version": "0.1.2",
     "BlockSize": 32,
 
-    "Textures": [
+    "Dependencies": [
         {
-            "Type": "Dust",
-            "Name": "Dust Texture",
-            "Path": "Textures/dust.png"
+            "GameSet": "base_game",
+            "Version": "0.1.2"
         }
     ],
+
     "ItemsOnStart": [
-        {"ID" : "aluminium_drill", "Count" : 1},
-        {"ID" : "furnace", "Count" : 1},
-        {"ID" : "crafting_table", "Count" : 1}
+        {
+            "ID": "aluminium_drill",
+            "Count": 1
+        },
+        {
+            "ID": "furnace",
+            "Count": 1
+        },
+        {
+            "ID": "crafting_table",
+            "Count": 1
+        }
     ]
 }

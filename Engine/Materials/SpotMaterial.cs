@@ -59,15 +59,5 @@ namespace Engine
           
         }
 
-        public static MeshBuffer GetMeshBuffer()
-        {
-            var attrs = new BufferAttribute[]
-            {
-                new BufferAttribute { Name = "vertexPosition", Size = 3 },
-                new BufferAttribute { Name = "vertexNormal",   Size = 3 },
-                new BufferAttribute { Name = "vertexUV",       Size = 2 }
-            };
-            return new MeshBuffer(attrs);
-        }
     }
 }

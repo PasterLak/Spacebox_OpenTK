@@ -2,12 +2,12 @@
 
 namespace Engine.Commands
 {
-    public class VersionCommand : ICommand
+    public class VersionCommand : CommandBase
     {
-        public string Name => "version";
-        public string Description => "Displays the game version.";
+        public override string Name => "version";
+        public override string Description => "Displays the game version";
 
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
             //string version = Application.Version; 
            // Debug.AddMessage($"Game version: {version}", new Vector4(1f, 1f, 0f, 1f));

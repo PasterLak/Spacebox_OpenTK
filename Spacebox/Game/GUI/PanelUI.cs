@@ -1,12 +1,14 @@
-﻿using System.Numerics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
+﻿using Client;
 using Engine;
-using Spacebox.Game.Player;
 using Engine.Audio;
-using Spacebox.Game.Player.Interactions;
-using Spacebox.Game.Player.GameModes;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation;
-
+using Spacebox.Game.Player;
+using Spacebox.Game.Player.GameModes;
+using Spacebox.Game.Player.Interactions;
+using System.Numerics;
+using System;
 
 namespace Spacebox.Game.GUI
 {
@@ -15,7 +17,6 @@ namespace Spacebox.Game.GUI
         private static float SlotSize = 64.0f;
         private static nint SlotTexture = nint.Zero;
         private static nint SelectedTexture = nint.Zero;
-        public static bool IsVisible { get; set; } = true;
         public static bool EnableRenderForCurrentItem { get; set; } = true;
         public static bool AllowScroll { get; set; } = true;
         public static bool IsItemModelVisible { get; set; } = true;
@@ -35,38 +36,28 @@ namespace Spacebox.Game.GUI
         private static float TimeToHideItemName = 2f;
         private static float _time = 0;
         private static bool wasPlayerOnes = false;
-        public static Astronaut Player;
+        public static LocalAstronaut Player;
         private static short _lastSelectedSlotId = -1;
         private static Item _lastSelectedItem = null;
         private static byte _lastSelectedCount = 0;
 
-        public static void Initialize(Astronaut player, nint slotTexture, nint selectedTexture)
+        public static void Initialize(LocalAstronaut player, nint slotTexture, nint selectedTexture)
         {
             Player = player;
             Storage = Player.Panel;
             SlotTexture = slotTexture;
             SelectedTexture = selectedTexture;
-            scrollAudio = new AudioSource(Resources.Load<AudioClip>("scroll"));
-            dropAudio = new AudioSource(Resources.Load<AudioClip>("Resources/Audio/dropped.ogg"));
+            scrollAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/scroll.ogg"));
+            dropAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/dropped.ogg"));
 
             InventoryUIHelper.SetDefaultIcon(slotTexture, selectedTexture);
             SetSelectedSlot(0);
             Storage.OnDataWasChanged += OnStorageDataWasChanged;
-            var inventory = ToggleManager.Register("panel");
-            inventory.OnStateChanged += s => { 
-                AllowScroll = s; 
 
-                if(s)
-                {
-                    ShowItemDescription();
-                }
-            };
             _lastSelectedItem = null;
             _lastSelectedSlotId = -1;
             _lastSelectedCount = 0;
         }
-
-         
 
         private static void OnStorageDataWasChanged(Storage storage)
         {
@@ -97,7 +88,7 @@ namespace Spacebox.Game.GUI
             id = 0;
             if (SelectedSlot == null) return false;
             if (!SelectedSlot.HasItem) return false;
-            if (InventoryUI.IsVisible) return false;
+            if (UIManager.IsOpen("inventory")) return false;
             if (!(SelectedSlot.Item is BlockItem itemBlock)) return false;
             id = itemBlock.BlockId;
             if (gameMode == GameMode.Survival)
@@ -107,7 +98,6 @@ namespace Spacebox.Game.GUI
 
         public static void ShowItemModel()
         {
-
             bool hadModel = ItemModel != null;
             var lastModel = ItemModel;
             if (SelectedSlot?.HasItem == true && !(SelectedSlot.Item is BlockItem))
@@ -123,8 +113,6 @@ namespace Spacebox.Game.GUI
                     }
                 }
             }
-
-
         }
 
         private static void HideItemModel()
@@ -137,13 +125,15 @@ namespace Spacebox.Game.GUI
 
                 ItemModel = null;
             }
-
         }
 
         private static void UpdateInput()
         {
             if (Debug.IsVisible) return;
-            if (InventoryUI.IsVisible) return;
+            if (UIManager.IsOpen("inventory")) return;
+
+            if (UIManager.IsUIMode && !UIManager.IsOpen("radar")) return;
+
             if (!AllowScroll) return;
             if (Player.CanMove == false) return;
 
@@ -161,9 +151,16 @@ namespace Spacebox.Game.GUI
                     SelectedSlotId = (short)(Storage.SizeY - 1);
                 SetSelectedSlot(SelectedSlotId);
             }
-            if (Input.IsActionDown("dropItem"))
+            if (Input.IsActionDown("drop_item"))
             {
-                DropItem(SelectedSlot);
+                if (Input.IsKey(Keys.LeftShift))
+                {
+                    DropItem(SelectedSlot, true);
+                }
+                else
+                {
+                    DropItem(SelectedSlot, false);
+                }
             }
             if (Input.IsKeyDown(Keys.D0))
             {
@@ -179,7 +176,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        private static void DropItem(ItemSlot slot)
+        private static void DropItem(ItemSlot slot, bool dropAll)
         {
             if (slot == null) return;
             if (!slot.HasItem) return;
@@ -188,15 +185,21 @@ namespace Spacebox.Game.GUI
 
             var dropPosition = Player.Position + Player.Front * 0.5f;
 
-
-            World.DropEffectManager.DropItem(dropPosition, Player.Front, 6f, slot.Item, 1,2,4);
-            slot.DropOne();
+            if (!dropAll)
+            {
+                World.DropEffectManager.DropItem(dropPosition, Player.Front, 6f, slot.Item, 1, 2, 4);
+                slot.DropOne();
+            }
+            else
+            {
+                World.DropEffectManager.DropItemSlot(dropPosition, Player.Front, 6f, slot, 2, 4);
+                slot.Clear();
+            }
 
             if (dropAudio != null)
             {
                 dropAudio.Play();
             }
-
         }
 
         public static void Update()
@@ -208,21 +211,23 @@ namespace Spacebox.Game.GUI
             {
                 if (ItemModel.Enabled)
                 {
-                    ItemModel.EnableSway = Player.CanMove;
+                    if (Player != null && Player.ItemSway != null)
+                    {
+                        ItemModel.SwayMatrix = Player.ItemSway.GetSwayMatrix();
+                    }
+                    else
+                    {
+                        ItemModel.SwayMatrix = Matrix4.Identity;
+                    }
                     ItemModel.Update();
-
                 }
-
             }
 
-            if (InventoryUI.IsVisible) return;
+            if (UIManager.IsOpen("inventory")) return;
             UpdateInput();
-
-
-
         }
 
-        private static void UpdatePlayerInteraction(Astronaut player)
+        private static void UpdatePlayerInteraction(LocalAstronaut player)
         {
             if (player == null) return;
             if (player.GameMode == GameMode.Spectator) return;
@@ -253,9 +258,9 @@ namespace Spacebox.Game.GUI
             _lastSelectedCount = 0;
             _lastSelectedItem = null;
         }
+
         public static void SetSelectedSlot(short id)
         {
-            // if (!AllowScroll) return;
             SelectedSlotId = id;
             SelectSlot(SelectedSlotId);
             if (wasPlayerOnes)
@@ -266,7 +271,6 @@ namespace Spacebox.Game.GUI
                         scrollAudio.Stop();
                     scrollAudio.Play();
                 }
-
             }
             else
             {
@@ -274,11 +278,11 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void SetFlashlight(Astronaut ast)
+        public static void SetFlashlight(LocalAstronaut ast)
         {
-            if(ast != null)
+            if (ast != null)
             {
-                if(ItemModel != null)
+                if (ItemModel != null)
                 {
                     ItemModel.Material.SetFlashlight(ast.Flashlight);
                 }
@@ -296,8 +300,6 @@ namespace Spacebox.Game.GUI
                 ShowItemModel();
                 HideItemModel();
 
-
-
                 if (_lastSelectedSlotId != slot ||
                     _lastSelectedItem != SelectedSlot.Item ||
                     _lastSelectedCount != SelectedSlot.Count)
@@ -308,27 +310,36 @@ namespace Spacebox.Game.GUI
                     _lastSelectedCount = SelectedSlot.Count;
                 }
 
-                if(Player != null && SelectedSlot != null)
-                Player.SetItemLight(SelectedSlot);
+                if (Player != null && SelectedSlot != null)
+                {
+                    Player.SetItemLight(SelectedSlot);
 
+                    if (SelectedSlot.HasItem)
+                    {
+                        Player.ChangeItemInHand(SelectedSlot.Item);
+                    }
+                    else
+                    {
+                        Player.ChangeItemInHand(null);
+                    }
+                }
+
+                if (ClientNetwork.Instance != null)
+                    ClientNetwork.Instance.SendItemInHand(SelectedSlot);
 
                 ShowItemDescription();
 
-
-
-                    OnSlotChanged?.Invoke(slot);
+                OnSlotChanged?.Invoke(slot);
             }
         }
 
         private static void ShowItemDescription()
         {
-            if (!ToggleManager.IsActiveAndExists("inventory"))
+            if (!UIManager.IsOpen("inventory"))
             {
-
                 if (SelectedSlot.HasItem && SelectedSlot.Item != null)
                 {
                     _time = TimeToHideItemName;
-
 
                     if (SelectedSlot.Item.Description != "")
                     {
@@ -339,7 +350,6 @@ namespace Spacebox.Game.GUI
                     {
                         ItemControlsUI.IsVisible = false;
                     }
-
                 }
                 else
                 {
@@ -357,7 +367,6 @@ namespace Spacebox.Game.GUI
                 if (SelectedSlot != null && SelectedSlot.HasItem && _time > 0)
                     PanelRenderer.DrawItemName(SelectedSlot.Item.Name);
             }
-
         }
 
         public static ItemSlot CurrentSlot() => SelectedSlot;
@@ -370,18 +379,16 @@ namespace Spacebox.Game.GUI
             if (slot.HasItem)
             {
                 if (Input.IsAction("storage_item_quick_transfer"))
-                    slot.MoveItemToConnectedStorage();
+                    slot.TryMoveItemToConnectedStorage(out var _);
                 if (Input.IsKey(Keys.LeftAlt))
                     slot.Split();
                 if (Input.IsAction("storage_item_delete"))
                     slot.Clear();
                 if (Input.IsMouseButton(MouseButton.Left))
                 {
-                    Vector2 mousePos = Input.Mouse.Position.ToSystemVector2();
+                    var mousePos = Input.Mouse.Position.ToSystemVector2();
                 }
             }
         }
     }
-
-
 }

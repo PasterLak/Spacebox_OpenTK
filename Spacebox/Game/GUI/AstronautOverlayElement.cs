@@ -14,7 +14,7 @@ namespace Spacebox.Game.GUI
             if (Camera.Main != null)
             {
                 var cam = Camera.Main;
-                Astronaut ast = cam as Astronaut;
+                LocalAstronaut ast = cam as LocalAstronaut;
 
                 if (ast == null) return;
 

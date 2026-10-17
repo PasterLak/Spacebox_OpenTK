@@ -1,0 +1,18 @@
+{
+        "Id": "debug",
+        "Name": "Debug biome",
+        "Description": "Common rocky asteroids with basic minerals",
+        "SpawnChance": 100,
+        "MinDistanceFromCenter": 0,
+        "MaxDistanceFromCenter": 0,
+        "DebugColor": {
+            "r": 0,
+            "g": 255,
+            "b": 255
+        },
+        "Asteroids": {
+           
+            "cheese" : 50
+           
+        }
+    }

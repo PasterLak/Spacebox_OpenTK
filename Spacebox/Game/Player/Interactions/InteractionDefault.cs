@@ -1,4 +1,3 @@
-using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using Engine.Physics;
 
@@ -23,7 +22,7 @@ public class InteractionDefault : InteractionMode
         //CenteredText.Hide();
     }
 
-    public override void Update(Astronaut player)
+    public override void Update(LocalAstronaut player)
     {
         Ray ray = new Ray(player.Position, player.Front, InteractiveBlock.InteractionDistance);
         HitInfo hit;
@@ -37,7 +36,7 @@ public class InteractionDefault : InteractionMode
             if (hit.block.Is<InteractiveBlock>(out var interactiveBlock))
             {
                 InteractiveBlock.UpdateInteractive(interactiveBlock, player,  ref hit);
-
+                //Debug.Log($"Raycast hit block: {hit.block.GetType().Name}");
                 if (hit.block.Is<StorageBlock>(out var storageBlock))
                 {
                     //Debug.Log("Placed: " + ((Vector3i)(hit.blockPositionEntity )));

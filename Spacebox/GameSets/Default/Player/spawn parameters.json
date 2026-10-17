@@ -1,0 +1,32 @@
+{
+
+    "GiveItemsOnStart": [
+        {
+            "ID": "aluminium_drill",
+            "PutIn": "hand",
+            "SlotId": 0,
+            "Count": 1
+        },
+        {
+            "ID": "furnace",
+            "PutIn": "inventory",
+            "Count": 1
+        },
+        {
+            "ID": "crafting_table",
+            "Count": 1
+        }
+    ],
+    "SpawnSettings": {
+
+        "PreferredSpawnBiome": "none",
+        "SpawnRandomly": true,
+        "SpawnDistanceFromOrigin": 1000,
+        "SpawnNearAsteroids": true,
+        "HealthOnSpawn": 100,
+        "EnergyOnSpawn": 100,
+        "OxygenOnSpawn": 100
+
+    }
+
+}

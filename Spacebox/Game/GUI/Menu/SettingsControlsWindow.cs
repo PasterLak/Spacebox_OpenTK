@@ -1,5 +1,6 @@
-﻿
-using ImGuiNET;
+﻿using ImGuiNET;
+using Spacebox.Game.Player.GameModes;
+using System;
 using System.Numerics;
 
 namespace Spacebox.Game.GUI.Menu
@@ -21,8 +22,11 @@ namespace Spacebox.Game.GUI.Menu
             Vector2 windowPos = GameMenu.CenterNextWindow2(windowWidth, windowHeight);
             ImGui.SetNextWindowPos(windowPos);
             ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight));
-            ImGui.Begin("Create New World", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove
+
+        
+            ImGui.Begin("Settings", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove
                 | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar);
+
             float inputWidth = windowWidth * 0.8f;
             float inputHeight = windowHeight * 0.06f;
             float buttonWidth = windowWidth * 0.4f;
@@ -33,12 +37,16 @@ namespace Spacebox.Game.GUI.Menu
             float totalInputHeight = (labelHeight + inputHeight + spacing) * 4;
             float topPadding = (windowHeight - totalInputHeight - buttonHeight - ImGui.GetStyle().WindowPadding.Y * 2) / 2;
             ImGui.Dummy(new Vector2(0, topPadding / 2f));
+
             menu.CenterInputText("World Name", ref menu.newWorldName, 100, inputWidth, inputHeight);
             ImGui.Dummy(new Vector2(0, spacing));
             menu.CenterInputText("Author", ref menu.newWorldAuthor, 100, inputWidth, inputHeight);
             ImGui.Dummy(new Vector2(0, spacing));
             menu.CenterInputText("Seed", ref menu.newWorldSeed, 100, inputWidth, inputHeight);
             ImGui.Dummy(new Vector2(0, spacing));
+
+      
+
             string comboLabel = "Game Mode";
             Vector2 labelSize = ImGui.CalcTextSize(comboLabel);
             ImGui.SetCursorPosX((windowWidth - labelSize.X) * 0.5f);
@@ -47,12 +55,15 @@ namespace Spacebox.Game.GUI.Menu
             ImGui.SetNextItemWidth(inputWidth);
             ImGui.SetCursorPosX((windowWidth - inputWidth) / 2);
 
-            if (ImGui.BeginCombo("##GameMode", menu.Gamemodes[menu.SelectedGameModeIndex]))
+            string[] gameModeNames = Enum.GetNames(typeof(GameMode));
+            string currentPreview = gameModeNames.Length > menu.SelectedGameModeIndex ? gameModeNames[menu.SelectedGameModeIndex] : "";
+
+            if (ImGui.BeginCombo("##GameMode", currentPreview))
             {
-                for (int i = 0; i < menu.Gamemodes.Length; i++)
+                for (int i = 0; i < gameModeNames.Length; i++)
                 {
                     bool isSelected = i == menu.SelectedGameModeIndex;
-                    if (ImGui.Selectable(menu.Gamemodes[i], isSelected))
+                    if (ImGui.Selectable(gameModeNames[i], isSelected))
                     {
                         menu.Click1.Play();
                         menu.SelectedGameModeIndex = i;
@@ -66,22 +77,46 @@ namespace Spacebox.Game.GUI.Menu
             }
 
             ImGui.PopStyleVar();
+
+          
             string comboLabel2 = "GameSet";
             Vector2 labelSize2 = ImGui.CalcTextSize(comboLabel2);
             ImGui.SetCursorPosX((windowWidth - labelSize2.X) * 0.5f);
             ImGui.Text(comboLabel2);
             ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(ImGui.GetStyle().FramePadding.X, (inputHeight - labelHeight) / 2));
             ImGui.SetNextItemWidth(inputWidth);
+
+            string comboPreview2 = menu.GameSets[menu.SelectedGameSetIndex].ModName;
+            var selectedIcon = menu.GameSets[menu.SelectedGameSetIndex].Icon;
+
+            if (selectedIcon != null && selectedIcon.Handle != IntPtr.Zero)
+            {
+                comboPreview2 = $"  {comboPreview2}";
+            }
+
             ImGui.SetCursorPosX((windowWidth - inputWidth) / 2);
-            if (ImGui.BeginCombo("##GameSet", menu.GameSets[menu.SelectedGameSetIndex].ModName))
+
+            if (ImGui.BeginCombo("##GameSet", comboPreview2))
             {
                 for (int i = 0; i < menu.GameSets.Count; i++)
                 {
                     bool isSelected = i == menu.SelectedGameSetIndex;
-                    if (ImGui.Selectable(menu.GameSets[i].ModName, isSelected))
+                    var icon = menu.GameSets[i].Icon;
+
+                    if (icon != null && icon.Handle != IntPtr.Zero)
+                    {
+                        ImGui.Image(icon.Handle, new System.Numerics.Vector2(labelSize2.Y, labelSize2.Y));
+                        ImGui.SameLine();
+                    }
+                    else
+                    {
+                        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + labelSize2.Y);
+                    }
+
+                    if (ImGui.Selectable(" " + menu.GameSets[i].ModName, isSelected))
                     {
                         menu.Click1.Play();
-                      
+                        menu.SelectedGameSetIndex = i;
                     }
                     if (isSelected)
                     {
@@ -91,23 +126,25 @@ namespace Spacebox.Game.GUI.Menu
                 ImGui.EndCombo();
             }
             ImGui.PopStyleVar();
+
             float totalButtonWidth = buttonWidth * 2 + spacing;
             float bottomMargin = windowHeight * 0.05f;
             float buttonY = windowHeight - buttonHeight - bottomMargin;
             float buttonStartX = (windowWidth - totalButtonWidth) / 2;
+
             menu.ButtonWithBackground("Save", new Vector2(buttonWidth, buttonHeight),
                 new Vector2(buttonStartX, buttonY),
                 () =>
                 {
                     menu.Click1.Play();
-                    
+                    // Save logic here
                 });
             menu.ButtonWithBackground("Back", new Vector2(buttonWidth, buttonHeight),
                 new Vector2(buttonStartX + buttonWidth + spacing, buttonY),
                 () =>
                 {
                     menu.Click1.Play();
-                  menu.SetStateToOptions();
+                    menu.SetStateToOptions();
                 });
             ImGui.End();
         }

@@ -1,14 +1,11 @@
 ﻿using Engine;
 using Engine.Audio;
-using Engine.Graphics;
-using Engine.GUI;
 using Engine.InputPro;
 using Engine.PostProcessing;
 using Engine.SceneManagement;
 using Engine.Utils;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -16,119 +13,148 @@ using Spacebox.Game.GUI;
 using Spacebox.Scenes;
 
 
-namespace Spacebox
+namespace Spacebox;
+
+public interface IGameWindow
 {
-    public interface IGameWindow
+    void Quit();
+}
+
+public class SpaceboxWindow : EngineWindow, IGameWindow
+{
+    private bool _doScreenshot = false;
+    private AudioSource _screenshotAudio;
+
+    public SpaceboxWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
+        : base(gameWindowSettings, nativeWindowSettings)
     {
-        void Quit();
     }
 
-    public class SpaceboxWindow : EngineWindow, IGameWindow
+    protected override void OnGameLoad()
     {
-        private bool _doScreenshot = false;
-        private AudioSource _screenshotAudio;
+        AppIconLoader.LoadAndSetIcon(this, "Resources/Textures/icon.png");
 
-        public SpaceboxWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
-            : base(gameWindowSettings, nativeWindowSettings)
-        {
-        }
-
-        protected override void OnGameLoad()
-        {
-            AppIconLoader.LoadAndSetIcon(this, "Resources/Textures/icon.png");
-
-            _screenshotAudio = new AudioSource(Resources.Load<AudioClip>("screenshot", true));
+        _screenshotAudio = new AudioSource(Resources.Load<AudioClip>("screenshot", true));
 
 #if DEBUG
-            SceneManager.Load<MenuScene>();
+        SceneManager.Load<MenuScene>();
 #else
-            SceneManager.Load<LogoScene>();
-#endif
-        }
+        SceneManager.Load<MenuScene>();
+#endif                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+    }
 
-        protected override void OnRegisterScenes()
+    protected override void OnResize(ResizeEventArgs e)
+    {
+        base.OnResize(e);
+
+    }
+
+    protected override void OnUnload()
+    {
+
+        base.OnUnload();
+    }
+
+    protected override void OnUpdateFrame(FrameEventArgs e)
+    {
+        base.OnUpdateFrame(e);
+
+        if (Input.IsKeyDown(Keys.F12))
         {
-            SceneManager.Register<MenuScene>();
-            SceneManager.Register<PlaygroundScene>();
-            SceneManager.Register<LocalSpaceScene>();
-            SceneManager.Register<MultiplayerScene>();
-            SceneManager.Register<LogoScene>();
-            SceneManager.Register<ParticleSystemEditor>();
+            _doScreenshot = true;
         }
+    }
+    protected override void OnRegisterScenes()
+    {
+        SceneManager.Register<MenuScene>();
+        SceneManager.Register<ServerMessageScene>();
+        SceneManager.Register<PlaygroundScene>();
+        SceneManager.Register<LocalSpaceScene>();
+        SceneManager.Register<MultiplayerScene>();
+        SceneManager.Register<MultiplayerLoadScene>();
+        SceneManager.Register<LogoScene>();
+        SceneManager.Register<ParticleSystemEditor>();
+    }
 
-        protected override void OnLoadImGui()
+    protected override void OnLoadImGui()
+    {
+        // LoadStarPixelFont();
+    }
+
+    protected override void OnSetupInput()
+    {
+       // InputManager0.AddAction("screenshot", Keys.F12, true);
+        //InputManager0.RegisterCallback("screenshot", () => { _doScreenshot = true; });
+
+        return;
+        var action = InputManager.Instance.AddAction("screenshot", "");
+        var binding = new KeyBinding(Keys.F12);
+        action.Subscribe(InputEventType.Pressed, () => { _doScreenshot = true; });
+        action.AddBinding(binding);
+        
+    }
+
+    protected override void OnSetupPostProcessing(PostProcessManager processManager)
+    {
+        var blackWhiteShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/blackWhite", true);
+
+        var vignetteShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/vignette", true);
+        var vignetteEffect = new VignetteEffect(vignetteShader);
+        vignetteEffect.Enabled = true;
+        processManager.AddEffect(vignetteEffect);
+
+        var edgeDetectionShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/edgeDetection", true);
+
+        var normalShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/normalView", true);
+        var depthShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/depthView", true);
+
+        Texture2D ssaoNoiseTex = SsaoNoise.GenerateRotationNoise(4, 1234);
+        var ssaoShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/ssao", true);
+    }
+
+    protected override void OnPostRender()
+    {
+        if (_doScreenshot)
         {
-            LoadStarPixelFont();
+            Screenshot();
+            _doScreenshot = false;
         }
+    }
 
-        protected override void OnSetupInput()
+    private void Screenshot()
+    {
+        FramebufferCapture.SaveScreenshot(this);
+        _screenshotAudio.Play();
+        ColorOverlay.FadeOut(new System.Numerics.Vector3(1, 1, 1), 0.2f);
+    }
+
+    private static unsafe void LoadStarPixelFont(float fontSize = 16.0f)
+    {
+        string basePath = AppDomain.CurrentDomain.BaseDirectory;
+        string fontPath = Path.Combine(basePath, "Resources", "StarPixel.ttf");
+
+        if (!File.Exists(fontPath))
         {
-            InputManager0.AddAction("screenshot", Keys.F12, true);
-            InputManager0.RegisterCallback("screenshot", () => { _doScreenshot = true; });
+            Console.WriteLine($"Font file not found: {fontPath}");
+            return;
         }
 
-        protected override void OnSetupPostProcessing(PostProcessManager processManager)
-        {
-            var blackWhiteShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/blackWhite", true);
+        ImGuiIOPtr io = ImGui.GetIO();
+        ImFontConfigPtr config = new ImFontConfigPtr(ImGuiNative.ImFontConfig_ImFontConfig());
+        config.OversampleH = 1;
+        config.OversampleV = 1;
+        config.PixelSnapH = true;
 
-            var vignetteShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/vignette", true);
-            var vignetteEffect = new VignetteEffect(vignetteShader);
-            vignetteEffect.Enabled = false;
-            processManager.AddEffect(vignetteEffect);
+        io.Fonts.AddFontFromFileTTF(fontPath, fontSize, config);
+        io.Fonts.GetTexDataAsRGBA32(out byte* pixels, out int width, out int height, out int bytesPerPixel);
 
-            var edgeDetectionShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/edgeDetection", true);
-
-            var normalShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/normalView", true);
-            var depthShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/depthView", true);
-
-            Texture2D ssaoNoiseTex = SsaoNoise.GenerateRotationNoise(4, 1234);
-            var ssaoShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/ssao", true);
-        }
-
-        protected override void OnPostRender()
-        {
-            if (_doScreenshot)
-            {
-                Screenshot();
-                _doScreenshot = false;
-            }
-        }
-
-        private void Screenshot()
-        {
-            FramebufferCapture.SaveScreenshot(this);
-            _screenshotAudio.Play();
-            ColorOverlay.FadeOut(new System.Numerics.Vector3(1, 1, 1), 0.2f);
-        }
-
-        private static unsafe void LoadStarPixelFont(float fontSize = 16.0f)
-        {
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            string fontPath = Path.Combine(basePath, "Resources", "StarPixel.ttf");
-
-            if (!File.Exists(fontPath))
-            {
-                Console.WriteLine($"Font file not found: {fontPath}");
-                return;
-            }
-
-            ImGuiIOPtr io = ImGui.GetIO();
-            ImFontConfigPtr config = new ImFontConfigPtr(ImGuiNative.ImFontConfig_ImFontConfig());
-            config.OversampleH = 1;
-            config.OversampleV = 1;
-            config.PixelSnapH = true;
-
-            io.Fonts.AddFontFromFileTTF(fontPath, fontSize, config);
-            io.Fonts.GetTexDataAsRGBA32(out byte* pixels, out int width, out int height, out int bytesPerPixel);
-
-            int fontTexture;
-            GL.GenTextures(1, out fontTexture);
-            GL.BindTexture(TextureTarget.Texture2D, fontTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0,
-                          PixelFormat.Rgba, PixelType.UnsignedByte, new IntPtr(pixels));
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            io.Fonts.SetTexID((IntPtr)fontTexture);
-        }
+        int fontTexture;
+        GL.GenTextures(1, out fontTexture);
+        GL.BindTexture(TextureTarget.Texture2D, fontTexture);
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0,
+                      PixelFormat.Rgba, PixelType.UnsignedByte, new IntPtr(pixels));
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+        io.Fonts.SetTexID((IntPtr)fontTexture);
     }
 }

@@ -1,13 +1,15 @@
 ﻿using Engine;
+using Spacebox.Game.Events;
 using System;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static Engine.EngineWindow;
 
 
 namespace Spacebox.Game
 {
-    public enum WindowMode { Fullscreen, Borderless, Windowed}
+    
 
     public sealed class MetaSettings
     {
@@ -42,7 +44,7 @@ namespace Spacebox.Game
     {
         [JsonPropertyName("window_mode")]
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public WindowMode WindowMode { get; set; } = WindowMode.Fullscreen;
+        public WindowMode WindowMode { get; set; } 
 
         [JsonPropertyName("vsync")] public bool VSync { get; set; } = true;
         [JsonPropertyName("ambient_occlusion")] public bool AO { get; set; } = true;
@@ -165,11 +167,13 @@ namespace Spacebox.Game
         public static void Save(GameSettings settings)
         {
             var p = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
-            string path = Path.Combine(p, "Settings.json");
+            string path = Path.Combine(p, "settings.json");
             var dir = Path.GetDirectoryName(path);
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
             var json = JsonSerializer.Serialize(settings, JsonOpts);
             File.WriteAllText(path, json);
+
+
 
             Debug.Success($"Game settings saved to {path} (schema version: {settings.Meta.SchemaVersion})");
         }

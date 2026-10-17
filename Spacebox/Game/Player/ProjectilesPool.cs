@@ -1,11 +1,12 @@
 ﻿
 using Engine;
+using Engine.Components;
 
 
 namespace Spacebox.Game.Player
 {
 
-    public class ProjectilesPool : IDisposable
+    public class ProjectilesPool : Component
     {
 
         private List<Projectile> Projectiles { get; set; }
@@ -17,8 +18,8 @@ namespace Spacebox.Game.Player
                  obj => obj,
                  obj => { obj.OnDespawn += PutBack; },
                  obj => { obj.OnDespawn -= PutBack; obj.Reset(); },
-                 obj => obj.IsActive,
-                 (obj, active) => obj.IsActive = active);
+               
+                 (obj, active) => obj.Enabled = active);
 
             Projectiles = new List<Projectile>();
         }
@@ -26,7 +27,7 @@ namespace Spacebox.Game.Player
         public Projectile Take()
         {
             var e = pool.Take();
-          
+
             Projectiles.Add(e);
             return e;
         }
@@ -36,33 +37,41 @@ namespace Spacebox.Game.Player
             if (projectile != null)
             {
                 Projectiles.Remove(projectile);
-                
+
                 pool.Release(projectile);
             }
         }
 
-        public void Update()
+        public override void OnUpdate()
         {
+            base.OnUpdate();
+
             for (int i = Projectiles.Count - 1; i >= 0; i--)
                 Projectiles[i].Update();
         }
 
-        public void Render()
+        public override void OnRender()
         {
+            base.OnRender();
+
             for (int i = 0; i < Projectiles.Count; i++)
             {
                 Projectiles[i].Render();
             }
         }
 
-        public void Dispose()
+        public override void OnDetached()
         {
+            base.OnDetached();
+
             var p = Projectiles.ToArray();
             foreach (var e in p)
             {
-                e.IsActive = false;
+                e.Enabled = false;
                 PutBack(e);
             }
+
+            pool.Clear(e => e.Destroy());
         }
 
 

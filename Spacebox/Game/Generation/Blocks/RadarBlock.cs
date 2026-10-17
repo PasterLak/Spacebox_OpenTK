@@ -7,7 +7,7 @@ namespace Spacebox.Game.Generation.Blocks
 {
     public class RadarBlock : InteractiveBlock
     {
-        public RadarBlock(BlockJSON blockData) : base(blockData)
+        public RadarBlock(BlockData blockData) : base(blockData)
         {
 
             if (RadarUI.Instance != null)
@@ -20,7 +20,7 @@ namespace Spacebox.Game.Generation.Blocks
             CurrentPower = 0;
         }
 
-        public override void Use(Astronaut player, ref HitInfo hit)
+        public override void Use(LocalAstronaut player, ref HitInfo hit)
         {
 
             if (!IsActive) return;

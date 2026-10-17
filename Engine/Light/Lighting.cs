@@ -10,12 +10,15 @@ namespace Engine.Light
         public static Vector3 AmbientColor = new Vector3(1);
         public static Vector3 FogColor;
 
-        private static float _fogDensity = 32 / 10_000.0f;
-        public static float FogDensity
+        private static int _fogDensity = 10 ;
+        public static int FogDensity
         {
             get => _fogDensity;
-            set { _fogDensity = value / 10_000.0f; }
+            set { _fogDensity = value; }
         }
+        public const int FogDensityMin = 0;
+        public const int FogDensityMax = 100;
+        public static float FogDensityAsShaderValue => _fogDensity / 10_000f;
 
         private static Node3D _skybox;
         public static Node3D? Skybox

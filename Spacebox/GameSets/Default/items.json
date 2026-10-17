@@ -3,14 +3,15 @@
         "Info": "Tags:  Name, Type<Drill,Weapone,Item>, Sprite, MaxStack, ModelDepth",
         "ID": "aluminium_drill",
         "Name": "Aluminium Drill",
-        "Description": "A basic drill. Can mine only soft blocks.",
+        "Description": "Can mine only soft blocks",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill1",
         "MaxStack": 1,
-        "PowerUsage": 5,
+        "PowerUsage": 7,
         "ModelDepth": 2,
-        "Power": 1,
+        "Range": 2,
+        "Tier": 1,
         "DrillColor": {
             "r": 118,
             "g": 135,
@@ -20,14 +21,15 @@
     {
         "ID": "cobalt_drill",
         "Name": "Cobalt Drill",
-        "Description": "A sturdy drill. Can mine soft blocks.",
+        "Description": "A sturdy drill. Can mine soft blocks",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill2",
         "MaxStack": 1,
-        "PowerUsage": 5,
+        "PowerUsage": 8,
         "ModelDepth": 2,
-        "Power": 2,
+        "Range": 2.5,
+        "Tier": 2,
         "DrillColor": {
             "r": 38,
             "g": 212,
@@ -37,14 +39,15 @@
     {
         "ID": "iron_drill",
         "Name": "Iron Drill",
-        "Description": "A strong drill. Can mine medium blocks.",
+        "Description": "A strong drill. Can mine medium blocks",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill3",
         "MaxStack": 1,
-        "PowerUsage": 6,
+        "PowerUsage": 9,
         "ModelDepth": 2,
-        "Power": 3,
+        "Range": 3,
+        "Tier": 3,
         "DrillColor": {
             "r": 38,
             "g": 192,
@@ -54,14 +57,15 @@
     {
         "ID": "triple_iron_drill",
         "Name": "Triple Iron Drill",
-        "Description": "A powerful drill with three drill bits. Can mine hard blocks.",
+        "Description": "A powerful drill with three drill bits. Can mine hard blocks",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill4",
         "MaxStack": 1,
-        "PowerUsage": 8,
-        "ModelDepth": 4,
-        "Power": 4,
+        "PowerUsage": 12,
+        "ModelDepth": 5,
+        "Range": 4,
+        "Tier": 4,
         "DrillColor": {
             "r": 38,
             "g": 180,
@@ -76,9 +80,10 @@
         "Category": "drills",
         "Sprite": "drill5",
         "MaxStack": 1,
-        "PowerUsage": 4,
+        "PowerUsage": 3,
         "ModelDepth": 3,
-        "Power": 5,
+        "Tier": 5,
+        "Range": 6,
         "DrillColor": {
             "r": 57,
             "g": 76,
@@ -88,14 +93,15 @@
     {
         "ID": "obscurium_drill",
         "Name": "Obscurium Drill",
-        "Description": "The ultimate drill. Can mine anything.",
+        "Description": "The ultimate drill. Can mine anything",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill6",
         "MaxStack": 1,
-        "PowerUsage": 0,
+        "PowerUsage": 4,
         "ModelDepth": 3,
-        "Power": 6,
+        "Range": 5,
+        "Tier": 6,
         "DrillColor": {
             "r": 201,
             "g": 48,
@@ -105,7 +111,7 @@
     {
         "ID": "pistol",
         "Name": "Pistol",
-        "Description": "A basic sidearm.",
+        "Description": "A basic sidearm",
         "Type": "weapon",
         "Category": "weapons",
         "Sprite": "weapon1",
@@ -113,17 +119,18 @@
         "ModelDepth": 1.5,
         "ReloadTime": 10,
         "Spread": 50,
-        "Pushback": 18,
-        "PlayerPushbackForce": 30,
+        "AnimationPushback": 18,
+        "Recoil": 1,
         "AnimationSpeed": 0.5,
         "PowerUsage": 3,
         "Projectile": "p_pistole",
-        "ShotSound": "pistole2"
+        "ShotSound": "pistole3",
+        "Ammo": ""
     },
     {
         "ID": "smg",
         "Name": "SMG",
-        "Description": "A rapid-fire submachine gun.",
+        "Description": "A rapid-fire submachine gun",
         "Type": "weapon",
         "Category": "weapons",
         "Sprite": "weapon2",
@@ -131,17 +138,18 @@
         "ModelDepth": 2,
         "ReloadTime": 7,
         "Spread": 35,
-        "Pushback": 20,
-        "PlayerPushbackForce": 30,
+        "AnimationPushback": 20,
+        "Recoil": 5,
         "AnimationSpeed": 0.5,
         "PowerUsage": 5,
         "Projectile": "p_smg",
-        "ShotSound": "pistole2"
+        "ShotSound": "pistole3",
+        "Ammo": ""
     },
     {
         "ID": "assault_rifle",
         "Name": "Assault Rifle",
-        "Description": "A versatile automatic rifle.",
+        "Description": "A versatile automatic rifle",
         "Type": "weapon",
         "Category": "weapons",
         "Sprite": "weapon3",
@@ -149,17 +157,18 @@
         "ModelDepth": 2,
         "ReloadTime": 5,
         "Spread": 30,
-        "Pushback": 15,
-        "PlayerPushbackForce": 30,
+        "AnimationPushback": 15,
+        "Recoil": 4,
         "AnimationSpeed": 0.6,
         "PowerUsage": 4,
         "Projectile": "p_assault",
-        "ShotSound": "pistole2"
+        "ShotSound": "pistole2",
+        "Ammo": ""
     },
     {
         "ID": "impulse_rifle",
         "Name": "Impulse Rifle",
-        "Description": "A high-powered energy rifle.",
+        "Description": "A high-powered energy rifle",
         "Type": "weapon",
         "Category": "weapons",
         "Sprite": "weapon4",
@@ -167,23 +176,45 @@
         "ModelDepth": 3,
         "ReloadTime": 45,
         "Spread": 7,
-        "Pushback": 30,
-        "PlayerPushbackForce": 30,
+        "AnimationPushback": 30,
+        "Recoil": 200,
         "AnimationSpeed": 0.25,
         "PowerUsage": 30,
         "Projectile": "p_ar",
         "ShotSound": "ar",
-         "GlowColor": {
+        "Ammo": "obscurium_ammo",
+        "GlowColor": {
             "r": 163,
             "g": 84,
             "b": 211
         }
-        
+
+    },
+    
+    {
+        "ID": "laser_gun",
+        "Name": "Laser",
+        "Description": "Can destroy planets",
+        "Type": "weapon",
+        "Category": "",
+        "Sprite": "scanner1",
+        "MaxStack": 1,
+        "ModelDepth": 3,
+        "ReloadTime": 1,
+        "Spread": 0,
+        "AnimationPushback": 0,
+        "Recoil": 0,
+        "AnimationSpeed": 0.25,
+        "PowerUsage": 0,
+        "Projectile": "p_laser",
+        "ShotSound": "pistole2",
+        "Ammo": ""
+
     },
     {
         "ID": "aluminium_drill_bit",
         "Name": "Aluminium Drill Bit",
-       
+
         "Sprite": "aluDrillBit",
         "Category": "items",
         "MaxStack": 64,
@@ -234,12 +265,21 @@
         "ModelDepth": 2.0
     },
     {
+        "ID": "thulium_ingot",
+        "Name": "Thulium Ingot",
+        "Description": "Radioactive material",
+        "Sprite": "thuliumIngot",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+    {
         "ID": "uranium_ingot",
         "Name": "Uranium Ingot",
+        "Description": "Radioactive material",
         "Sprite": "uranIngot",
         "MaxStack": 64,
         "ModelDepth": 1.0,
-         "GlowColor": {
+        "GlowColor": {
             "r": 50,
             "g": 255,
             "b": 50
@@ -248,6 +288,7 @@
     {
         "ID": "obscurium_ingot",
         "Name": "Obscurium Ingot",
+        "Description": "Mysterious and powerful material",
         "Sprite": "poniumIngot",
         "MaxStack": 64,
         "ModelDepth": 1.0
@@ -288,12 +329,19 @@
         "ModelDepth": 2
     },
     {
+        "ID": "thulium_dust",
+        "Name": "Thulium Dust",
+        "Sprite": "thuliumDust",
+        "MaxStack": 64,
+        "ModelDepth": 2
+    },
+    {
         "ID": "uranium_dust",
         "Name": "Uranium Dust",
         "Sprite": "uraniumDust",
         "MaxStack": 64,
         "ModelDepth": 2,
-        
+
         "GlowColor": {
             "r": 50,
             "g": 255,
@@ -301,8 +349,16 @@
         }
     },
     {
+        "ID": "obscurium_dust",
+        "Name": "Obscurium Dust",
+        "Sprite": "obscuriumDust",
+        "MaxStack": 64,
+        "ModelDepth": 2
+    },
+    {
         "ID": "cobalt_lens",
         "Name": "Cobalt Lens",
+        "Description": "A lens made of cobalt glass",
         "Category": "items",
         "Sprite": "cobaltLens",
         "MaxStack": 64,
@@ -313,6 +369,14 @@
         "Name": "Iron Lens",
         "Category": "items",
         "Sprite": "ironLens",
+        "MaxStack": 64,
+        "ModelDepth": 2
+    },
+    {
+        "ID": "thulium_lens",
+        "Name": "Thulium Lens",
+        "Category": "items",
+        "Sprite": "thuliumLens",
         "MaxStack": 64,
         "ModelDepth": 2
     },
@@ -343,11 +407,12 @@
     {
         "ID": "med_kit",
         "Name": "Med Kit",
-        "Description": "A basic medical kit. Restores 50 health.",
+        "Description": "Heals the player",
         "Sprite": "health3",
         "Type": "consumable",
         "Category": "consumables",
         "Sound": "heal",
+        "UseCooldown" : 1.5,
         "HealAmount": 50,
         "MaxStack": 64,
         "ModelDepth": 2.0
@@ -355,8 +420,9 @@
     {
         "ID": "cobalt_crystal",
         "Name": "Cobalt Crystal",
+        "Description": "A shiny cobalt crystal",
         "Sprite": "cobaltDiamond",
-        "Category": "items",
+        "Category": "",
         "MaxStack": 64,
         "ModelDepth": 1.5
     },
@@ -370,6 +436,7 @@
     {
         "ID": "methane_ice_shard",
         "Name": "Methane Ice",
+        "Description": "Frozen methane ice shard",
         "Sprite": "methane_ice",
         "MaxStack": 64,
         "ModelDepth": 1.5
@@ -377,7 +444,7 @@
     {
         "ID": "glass",
         "Name": "Glass",
-       
+        "Description": "Transparent material",
         "Sprite": "glass",
         "MaxStack": 64,
         "ModelDepth": 1.5
@@ -392,11 +459,12 @@
     {
         "ID": "uranium_rods",
         "Name": "Uranium Rods",
+        "Description": "Radioactive fuel rods",
         "Category": "items",
         "Sprite": "uranRods",
         "MaxStack": 64,
         "ModelDepth": 2.0,
-         "GlowColor": {
+        "GlowColor": {
             "r": 50,
             "g": 255,
             "b": 50
@@ -405,6 +473,7 @@
     {
         "ID": "water",
         "Name": "Water",
+        "Description": "Essential for life",
         "Sprite": "water1",
         "MaxStack": 64,
         "ModelDepth": 2.0
@@ -412,7 +481,7 @@
     {
         "ID": "liquid_hydrogen",
         "Name": "Liquid Hydrogen",
-        "Description": "Highly flammable fuel.",
+        "Description": "Highly flammable fuel",
         "Category": "items",
         "Sprite": "hydrogen",
         "MaxStack": 64,
@@ -421,22 +490,22 @@
     {
         "ID": "compressed_oxygen",
         "Name": "Compressed Oxygen",
-        "Description": "Oxygen for breathing in space.",
+        "Description": "Oxygen for breathing in space",
         "Category": "consumables",
         "Sprite": "oxygen",
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
-     {
+    {
         "ID": "compressed_methane",
         "Name": "Compressed Methane",
-        "Description": "Highly flammable fuel.",
-        "Category": "items",
+        "Description": "Highly flammable fuel",
+
         "Sprite": "methane",
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
-        {
+    {
         "ID": "polymer_pellets",
         "Name": "Polymer Pellets",
         "Description": "Useful polymer",
@@ -445,24 +514,35 @@
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
-    
-      {
+    {
+        "ID": "polymer_fiber",
+        "Name": "Polymer Fiber",
+        "Description": "For clothes and equipment",
+        "Category": "items",
+        "Sprite": "polymer_fiber",
+        "MaxStack": 64,
+        "ModelDepth": 3.0
+    },
+   
+    {
         "ID": "plastic",
         "Name": "Plastic",
         "Description": "Useful polymer",
-     
+
         "Sprite": "plastic",
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
-    
+
     {
         "ID": "power",
-        "Name": "Power",
+        "Name": "Cobalt Power Overcharge",
+        "Description": "Restores power",
         "Sprite": "power",
         "Type": "consumable",
         "Category": "consumables",
         "Sound": "use",
+        "UseCooldown" : 1,
         "PowerAmount": 100,
         "MaxStack": 64,
         "ModelDepth": 3.0
@@ -470,26 +550,37 @@
     {
         "ID": "beer",
         "Name": "Beer",
+        "Description": "Was added accidentally",
         "Sprite": "beer",
         "Type": "consumable",
         "Sound": "beer",
+        "UseCooldown" : 0.7,
         "HealAmount": 10,
         "MaxStack": 20,
         "ModelDepth": 3.0
     },
     {
         "ID": "energy_cell",
-        "Name": "Energy Cell",
-        "Description": "A cell that stores energy for various devices.",
+        "Name": "Cobalt Energy Cell",
+        "Description": "A cell that stores energy for various devices",
         "Category": "items",
         "Sprite": "energyCells",
         "MaxStack": 64,
         "ModelDepth": 2.0
     },
     {
+        "ID": "thulium_energy_cell",
+        "Name": "Thulium Energy Cell",
+        "Description": "A cell that stores energy for various devices",
+        "Category": "items",
+        "Sprite": "ThuliumEnergyCells",
+        "MaxStack": 64,
+        "ModelDepth": 2.0
+    },
+    {
         "ID": "microchip",
         "Name": "Microchip",
-        "Description": "A small electronic component used in various devices.",
+        "Description": "A small electronic component used in various devices",
         "Category": "items",
         "Sprite": "microchip",
         "MaxStack": 64,
@@ -498,10 +589,102 @@
     {
         "ID": "dna_sample",
         "Name": "DNA Sample",
-        "Description": "A sample of DNA to revive an organism.",
+        "Description": "A sample of DNA to revive an organism",
         "Category": "items",
         "Sprite": "dna",
         "MaxStack": 8,
+        "ModelDepth": 2.0
+    },
+
+
+     
+     {
+        "ID": "aluminium_helmet",
+        "Name": "Aluminium Helmet",
+        "Description": "Fancy but unwearable",
+        "Category": "equipment",
+        "Sprite": "aluminium_helmet",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "aluminium_chest",
+        "Name": "Aluminium Chest Armor",
+        "Description": "Fancy but unwearable",
+        "Category": "equipment",
+        "Sprite": "aluminium_chest",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "aluminium_shoulders",
+        "Name": "Aluminium Shoulders Armor",
+        "Description": "Fancy but unwearable",
+        "Category": "equipment",
+        "Sprite": "aluminium_shoulders",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "aluminium_arms",
+        "Name": "Aluminium Arms Armor",
+        "Description": "Fancy but unwearable",
+        "Category": "equipment",
+        "Sprite": "aluminium_arms",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "aluminium_legs",
+        "Name": "Aluminium Legs Armor",
+        "Description": "Fancy but unwearable",
+        "Category": "equipment",
+        "Sprite": "aluminium_legs",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "aluminium_boots",
+        "Name": "Aluminium Boots",
+        "Description": "Fancy but unwearable",
+        "Category": "equipment",
+        "Sprite": "aluminium_boots",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "cobalt_flashlight",
+        "Name": "Cobalt Flashlight",
+        "Description": "",
+        "Category": "equipment",
+        "Sprite": "flashlight1",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "basic_scanner",
+        "Name": "Basic Scanner",
+        "Description": "",
+        "Category": "equipment",
+        "Sprite": "scanner1",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "basic_generator",
+        "Name": "Basic Power Generator",
+        "Description": "",
+        "Category": "equipment",
+        "Sprite": "generator1",
+        "MaxStack": 1,
+        "ModelDepth": 3.0
+    },
+    {
+        "ID": "obscurium_ammo",
+        "Name": "Obscurium Ammo",
+        "Sprite": "obscurium_ammo",
+        "Category": "weapons",
+        "MaxStack": 64,
         "ModelDepth": 2.0
     }
 ]

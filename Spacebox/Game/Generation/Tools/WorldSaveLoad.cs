@@ -1,12 +1,11 @@
-﻿
-using Engine;
+﻿using Engine;
 using OpenTK.Mathematics;
 using SharpNBT;
+using Spacebox.Game.Generation.Structures;
 
 
 namespace Spacebox.Game.Generation.Tools
 {
-
 
     public class WorldSaveLoad
     {
@@ -14,11 +13,22 @@ namespace Spacebox.Game.Generation.Tools
         //            world.json
         //            player.json
 
-        public static void SaveWorld(string worldPath)
-        {
-            if (!Validate(worldPath)) return;
 
-            SaveSector(World.CurrentSector, Path.Combine(worldPath, "Sectors"));
+        public static void SaveWorld(string worldPath, Dictionary<Vector3i, Sector> loadedSectors)
+        {
+            if (!Validate(worldPath))
+            {
+                Debug.Error("[WorldSaveLoad] SaveWorld validation failed! Path: " + worldPath);
+                return;
+            }
+
+            foreach (var sector in loadedSectors.Values)
+            {
+                if (!sector.IsModified) continue;
+
+                SaveSector(sector, Path.Combine(worldPath, "Sectors"));
+            }
+
 
         }
 
@@ -33,12 +43,23 @@ namespace Spacebox.Game.Generation.Tools
         {
             if (World.WorldData == null)
             {
-                Debug.Error("NULLL World.Data inCanLoadSectorHere");
+                Debug.Error("[WorldSaveLoad] NULL World.Data in CanLoadSectorHere");
             }
             sectorFolderPath = GetSectorFolderPath(World.WorldData.WorldFolderPath, sectorIndex);
-            //Debug.Success("Sector folder path:" + sectorFolderPath);
+
             return Directory.Exists(sectorFolderPath);
 
+        }
+
+        public static void LoadSectorData(Sector sector)
+        {
+            string folderPath = GetSectorFolderPath(World.WorldData.WorldFolderPath, sector.PositionIndex);
+            string filePath = Path.Combine(folderPath, sector.ToFolderName() + ".sector");
+
+            if (TryLoadSectorDataFile(filePath, out var tag))
+            {
+                NBTHelper.TagToSectorOnly(tag, sector);
+            }
         }
 
         public static bool IsThereSectorFileHere(Vector3i sectorIndex)
@@ -46,7 +67,7 @@ namespace Spacebox.Game.Generation.Tools
             return CanLoadSectorHere(sectorIndex, out var filePath);
         }
 
-        public static bool TryLoadSectorDataFile(string filePath, out CompoundTag tag)
+        private static bool TryLoadSectorDataFile(string filePath, out CompoundTag tag)
         {
             tag = null;
             if (File.Exists(filePath))
@@ -60,59 +81,7 @@ namespace Spacebox.Game.Generation.Tools
 
             return false;
         }
-
-        public static SpaceEntity[] LoadSpaceEntities(Sector sector)
-        {
-            string sectorFolderPath = GetSectorFolderPath(World.WorldData.WorldFolderPath, sector.PositionIndex);
-
-            return LoadSpaceEntities(sectorFolderPath, sector);
-        }
-
-        public static SpaceEntity[] LoadSpaceEntities(string sectorFolderPath, Sector sector)
-        {
-
-            List<SpaceEntity> spaceEntities = new List<SpaceEntity>();
-
-            if (Directory.Exists(sectorFolderPath))
-            {
-                var files = Directory.GetFiles(sectorFolderPath);
-
-                foreach (var file in files)
-                {
-                    if (Path.GetExtension(file) != ".entity") continue;
-
-                    var e = LoadSpaceEntityFromFile(file, sector);
-
-                    var fileName = Path.GetFileNameWithoutExtension(file);
-
-                    if (e.Name != fileName)
-                    {
-                        Debug.Warning("[WorldSaveLoad] Entity name was changed because file name was changed: " + e.Name + " to " + fileName);
-                        e.Name = fileName;
-                        e.SetModified();
-
-                    }
-
-                    if (e != null)
-                    {
-                        spaceEntities.Add(e);
-                        Debug.Success("[WorldSaveLoad] Entity found: " + e.Name);
-                    }
-                    else
-                    {
-                        Debug.Error("[WorldSaveLoad] Entity loaded from file was null! File path: : " + file);
-                    }
-
-                }
-            }
-            else
-            {
-                Debug.Error("[WorldSaveLoad] Wrong sector folder path: " + sectorFolderPath);
-            }
-
-            return spaceEntities.ToArray();
-        }
-
+     
 
         public static SpaceEntity? LoadSpaceEntityFromFile(string entityFilePath, Sector sector)
         {
@@ -121,6 +90,17 @@ namespace Spacebox.Game.Generation.Tools
                 CompoundTag tag = NbtFile.Read(entityFilePath, FormatOptions.Java, CompressionType.GZip);
 
                 return NBTHelper.TagToSpaceEntity(tag, sector);
+            }
+
+            return null;
+        }
+        public static CompoundTag? LoadSpaceEntityTagFromFile(string entityFilePath)
+        {
+            if (File.Exists(entityFilePath))
+            {
+                CompoundTag tag = NbtFile.Read(entityFilePath, FormatOptions.Java, CompressionType.GZip);
+
+                return tag;
             }
 
             return null;
@@ -144,6 +124,16 @@ namespace Spacebox.Game.Generation.Tools
                 Directory.CreateDirectory(sectorFolderPath);
             }
 
+            foreach (var deleted in sector.EntitiesDestroyed)
+            {
+                string deletedEntityPath = Path.Combine(sectorFolderPath, deleted + ".entity");
+                if (File.Exists(deletedEntityPath))
+                {
+                    File.Delete(deletedEntityPath);
+
+                }
+            }
+
             for (int i = 0; i < entities.Count; i++)
             {
                 if (!entities[i].IsModified) continue;
@@ -151,12 +141,52 @@ namespace Spacebox.Game.Generation.Tools
                 var entity = entities[i];
                 var entityTag = NBTHelper.SpaceEntityToTag(entity);
 
-                Debug.Success("Entity was saved: " + entities[i].Name + "  pos: " + entities[i].PositionWorld);
-                NbtFile.WriteAsync(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
+                Debug.Success("[WorldSaveLoad] Entity was saved: " + entities[i].EntityID + "  pos: " + entities[i].PositionWorld);
+                //NbtFile.WriteAsync(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
+                NbtFile.Write(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
             }
 
-            NbtFile.WriteAsync(Path.Combine(sectorFolderPath, sectorFolderName + ".sector"), NBTHelper.SectorOnlyToTag(sector), FormatOptions.Java, CompressionType.GZip);
+            //NbtFile.WriteAsync(Path.Combine(sectorFolderPath, sectorFolderName + ".sector"), NBTHelper.SectorOnlyToTag(sector), FormatOptions.Java, CompressionType.GZip);
+            NbtFile.Write(Path.Combine(sectorFolderPath, sectorFolderName + ".sector"), NBTHelper.SectorOnlyToTag(sector), FormatOptions.Java, CompressionType.GZip);
 
+        }
+
+        public static List<NotGeneratedEntity> ScanAllEntities(Vector3i sectorIndex)
+        {
+            var list = new List<NotGeneratedEntity>();
+            if (!CanLoadSectorHere(sectorIndex, out var folderPath)) return list;
+
+            var files = Directory.GetFiles(folderPath, "*.entity");
+            foreach (var file in files)
+            {
+                try
+                {
+
+                    var tag = NbtFile.Read(file, FormatOptions.Java, CompressionType.GZip);
+
+                    if (tag == null) continue;
+
+                    long id = tag.Get<LongTag>(NBTKey.ENTITY.id).Value;
+
+                    float x = tag.Get<FloatTag>(NBTKey.ENTITY.local_x).Value;
+                    float y = tag.Get<FloatTag>(NBTKey.ENTITY.local_y).Value;
+                    float z = tag.Get<FloatTag>(NBTKey.ENTITY.local_z).Value;
+
+                    string fileNameNoExt = Path.GetFileNameWithoutExtension(file);
+
+                    var meta = new NotGeneratedEntity
+                    {
+                        Id = id,
+                        positionInSector = new Vector3(x, y, z),
+                        FileName = fileNameNoExt,
+
+                        radiusBlocks = 32
+                    };
+                    list.Add(meta);
+                }
+                catch { }
+            }
+            return list;
         }
 
         private static bool Validate(string path)

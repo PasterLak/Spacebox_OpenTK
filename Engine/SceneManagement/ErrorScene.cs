@@ -12,8 +12,9 @@ namespace Engine.SceneManagement
 
         public override void LoadContent()
         {
-           // Window.Instance.Title = "Error";
-           
+            // Window.Instance.Title = "Error";
+
+          
         }
 
         public override void Start()

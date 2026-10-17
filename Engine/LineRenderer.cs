@@ -167,7 +167,6 @@ namespace Engine
             var finalModel = GetRenderModelMatrix();
 
             Material.Color = _color;
-           
             Material.Apply(finalModel);
 
             GL.BindVertexArray(_buffer.VAO);
@@ -178,6 +177,12 @@ namespace Engine
         public void Dispose()
         {
             _buffer?.Dispose();
+        }
+
+        public override void Destroy()
+        {
+            base.Destroy();
+            Dispose();
         }
     }
 }

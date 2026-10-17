@@ -11,7 +11,7 @@ namespace Engine
 
         private static bool _switchSpace = false;
 
-        public static void SwitchSpace()
+        public static void Toggle()
         {
             _switchSpace = true;
         }

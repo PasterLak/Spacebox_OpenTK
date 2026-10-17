@@ -201,5 +201,15 @@ namespace Engine
                 _tickElapsedTime = 0.0f;
             }
         }
+
+        public static int SecondsToTicks(float seconds)
+        {
+            return (int)(seconds * TargetTPS);
+        }
+
+        public static float TicksToSeconds(int ticks)
+        {
+            return ticks / TargetTPS;
+        }
     }
 }

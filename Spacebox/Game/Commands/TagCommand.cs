@@ -7,11 +7,11 @@ using Engine.Commands;
 
 namespace Spacebox.Game.Commands
 {
-    internal class TagCommand : ICommand
+    internal class TagCommand : CommandBase
     {
-        public string Name => "tag";
+        public override string Name => "tag";
 
-        public string Description => "tag <create/delete> <name>";
+        public override string Description => "Tag <create/delete> <name>";
 
         public Astronaut Astronaut { get; set; }
 
@@ -20,9 +20,10 @@ namespace Spacebox.Game.Commands
         {
             this.Astronaut = astronaut;
         }
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
-            
+
+            if (ValidateArgs(args, 2) == false) return;
 
             if (Astronaut == null)
             {
@@ -30,23 +31,37 @@ namespace Spacebox.Game.Commands
                 return;
             }
 
+
             if (args[0] == "delete")
             {
-                if(args.Length == 2)
+
+                TagManager.Instance.ReleaseTagByText(args[1]);
+                Debug.Success("Tag deleted!: " + args[1]);
+
+            }
+
+            if (args[0] == "visible")
+            {
+
+
+                if (TagManager.Instance.TryGetTagByName(args[1], out var tag))
                 {
-                    
-                    TagManager.Instance.ReleaseTagByText(args[1]);
-                    Debug.Success("Tag deleted!: " + args[1]);
+                    tag.Visible = !tag.Visible;
+                    Debug.Success("Tag visibility changed!: " + args[1] + " to " + tag.Visible);
                 }
+                else
+                {
+                    Debug.Error("Tag not found!: " + args[1]);
+                }
+
             }
 
             else if (args[0] == "create")
             {
-                if(args.Length == 2)
-                {
-                    TagManager.Instance.CreateTag(args[1], Astronaut.Position, Color4.Yellow, true);
-                    Debug.Success("Tag added!: " + args[1]);
-                }
+
+                TagManager.Instance.CreateTag(args[1], Astronaut.Position, Color4.Yellow, true);
+                Debug.Success("Tag added!: " + args[1]);
+
 
                 if (args.Length == 5)
                 {
@@ -55,7 +70,7 @@ namespace Spacebox.Game.Commands
                     var b = int.Parse(args[3]);
 
 
-                    TagManager.Instance.CreateTag(args[1], Astronaut.Position, new Color4(r,g,b,1), true);
+                    TagManager.Instance.CreateTag(args[1], Astronaut.Position, new Color4(r, g, b, 1), true);
 
                     Debug.Success("Tag added!: " + args[1]);
                 }
@@ -65,9 +80,9 @@ namespace Spacebox.Game.Commands
 
             }
 
-           
+
         }
 
-     
+
     }
 }

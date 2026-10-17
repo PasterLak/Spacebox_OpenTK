@@ -1,35 +1,16 @@
 ﻿using ImGuiNET;
-
 using Engine.Audio;
 using Engine;
 using Spacebox.Game.Generation;
 using System.Numerics;
 using Spacebox.Game.GUI.Menu;
+using System;
 
 namespace Spacebox.Game.GUI
 {
     public class WelcomeUI
     {
-        protected static bool _isVisible = false;
-        public static bool IsVisible
-        {
-            get => _isVisible;
-            set
-            {
-                _isVisible = value;
-            
-                ToggleManager.DisableAllWindows();
-                ToggleManager.SetState("mouse", _isVisible);
-                ToggleManager.SetState("player", !_isVisible);
-                ToggleManager.SetState("panel", !_isVisible);
-                
-                Settings.ShowInterface = !_isVisible;
-
-
-
-            }
-        }
-
+        private static bool _wasVisible = false;
         private static AudioSource clickAudio;
         private static IntPtr bannerTextureId;
 
@@ -38,32 +19,38 @@ namespace Spacebox.Game.GUI
             clickAudio = new AudioSource(Resources.Load<AudioClip>("click1"));
             var texture = Engine.Resources.Get<Texture2D>("Resources/Textures/UI/welcome.jpg");
             texture.FlipY();
-            texture.UpdateTexture(true);
+            texture.FilterMode = FilterMode.Nearest;
             if (texture != null)
                 bannerTextureId = texture.Handle;
         }
 
         public static void OnPlayerSpawned(bool savedState)
         {
-
-            IsVisible = savedState;
+            if (savedState)
+            {
+                UIManager.Open("welcome");
+                
+            }
         }
 
         public static void OnGUI()
         {
-            if (!_isVisible) return;
+            bool isVisible = UIManager.IsOpen("welcome");
 
-            if (Input.GetCursorState() != OpenTK.Windowing.Common.CursorState.Normal)
+            if (isVisible != _wasVisible)
             {
-                Input.ShowCursor();
+                Settings.ShowInterface = !isVisible;
+                _wasVisible = isVisible;
             }
+
+            if (!isVisible) return;
 
             Vector2 displaySize = ImGui.GetIO().DisplaySize;
             float windowWidth = displaySize.Y * 0.55f;
             float windowHeight = displaySize.Y * 0.7f;
             Vector2 windowPos = GameMenu.CenterNextWindow(windowWidth, windowHeight);
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
-            ImGui.PushStyleColor(ImGuiCol.ChildBg, Theme.Colors.Deep);
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, Theme.Colors.Deep.ToUInt());
 
             ImGui.Begin("Welcome!",
                 ImGuiWindowFlags.NoResize
@@ -77,11 +64,8 @@ namespace Spacebox.Game.GUI
 
             const string text = "Welcome to Spacebox!";
             var textSize = ImGui.CalcTextSize(text);
-            //ImGui.SetCursorPos(new Vector2(windowWidth * 0.502f - textSize.X * 0.5f, textSize.Y));
-            //ImGui.TextColored(new Vector4(0.1f, 0.1f, 0.1f, 0.5f), text);
             ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize.X * 0.5f, textSize.Y));
             ImGui.TextColored(new Vector4(1.0f, 0.75f, 0.0f, 1f), text);
-
 
             float sidePadding = windowWidth * 0.05f;
             float topPadding = windowHeight * 0.10f;
@@ -112,7 +96,6 @@ namespace Spacebox.Game.GUI
             "\r\n\r\nEnjoy the game!");
             ImGui.EndChild();
 
-
             float buttonWidth = windowWidth * 0.25f;
             float buttonHeight = sidePadding;
             float bottomPadding = windowHeight * 0.05f;
@@ -123,7 +106,7 @@ namespace Spacebox.Game.GUI
             GameMenu.CenterButtonWithBackground("Start", buttonWidth, buttonHeight, () =>
             {
                 clickAudio?.Play();
-                IsVisible = false;
+                UIManager.CloseTop();
                 SaveWelcomeState();
             });
 
@@ -139,7 +122,6 @@ namespace Spacebox.Game.GUI
                 info.ShowWelcomeWindow = false;
                 WorldInfoSaver.Save(info);
             }
-
         }
 
         public static void Dispose()
@@ -147,8 +129,6 @@ namespace Spacebox.Game.GUI
             clickAudio?.Dispose();
             clickAudio = null;
             bannerTextureId = IntPtr.Zero;
-            _isVisible = false;
-
         }
     }
 }

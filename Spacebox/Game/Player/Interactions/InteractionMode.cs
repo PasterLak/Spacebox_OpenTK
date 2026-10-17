@@ -9,8 +9,8 @@ public abstract class InteractionMode
     public bool AllowReload = false;
     public abstract void OnEnable();
     public abstract void OnDisable();
-    public abstract void Update(Astronaut player);
-    public virtual void Render(Astronaut player)
+    public abstract void Update(LocalAstronaut player);
+    public virtual void Render(LocalAstronaut player)
     {
 
     }

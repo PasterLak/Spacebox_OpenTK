@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 using ImGuiNET;
-using Engine;
 using Spacebox.Game.Player;
 using Spacebox.GUI;
 
@@ -14,7 +13,7 @@ namespace Spacebox.Game.GUI
         TopRight,
         BottomLeft,
         BottomRight,
-     
+
         Center,
         Top,
         Bottom,
@@ -58,17 +57,17 @@ namespace Spacebox.Game.GUI
 
         public void OnResized(OpenTK.Mathematics.Vector2 w)
         {
-          
-            _size = GUIHelper.CalculateSize(Size,w);
+
+            _size = GUIHelper.CalculateSize(Size, w);
             _position = GUIHelper.CalculateSize(Position, w);
         }
-        
+
         public void OnGUI()
         {
-            if(!IsVisible) return;
+            if (!IsVisible) return;
             if (!Settings.ShowInterface) return;
 
-          
+
             var io = ImGui.GetIO();
             switch (Anchor)
             {
@@ -79,7 +78,7 @@ namespace Spacebox.Game.GUI
                     basePosition = new Vector2(0, 0) + _position;
                     break;
                 case Anchor.TopRight:
-                    basePosition = new Vector2(io.DisplaySize.X - _size.X, 0) 
+                    basePosition = new Vector2(io.DisplaySize.X - _size.X, 0)
                         + new Vector2(-_position.X, _position.Y);
                     break;
                 case Anchor.BottomLeft:
@@ -89,7 +88,7 @@ namespace Spacebox.Game.GUI
                 case Anchor.BottomRight:
                     basePosition = new Vector2(io.DisplaySize.X - _size.X, io.DisplaySize.Y - _size.Y) - _position;
                     break;
-               
+
 
                 case Anchor.Right:
                     basePosition = new Vector2(io.DisplaySize.X - _size.X,
@@ -97,7 +96,7 @@ namespace Spacebox.Game.GUI
                         + new Vector2(-_position.X, _position.Y);
                     break;
                 case Anchor.Left:
-                    basePosition = new Vector2(0, 
+                    basePosition = new Vector2(0,
                         io.DisplaySize.Y * 0.5f - _size.Y * 0.5f)
                         + new Vector2(_position.X, _position.Y);
                     break;
@@ -106,23 +105,23 @@ namespace Spacebox.Game.GUI
                         + new Vector2(-_position.X, _position.Y);
                     break;
                 case Anchor.Bottom:
-                    basePosition = new Vector2(io.DisplaySize.X * 0.5f - _size.X * 0.5f, io.DisplaySize.Y - _size.Y) 
-                        +new Vector2(_position.X,  - _position.Y); 
+                    basePosition = new Vector2(io.DisplaySize.X * 0.5f - _size.X * 0.5f, io.DisplaySize.Y - _size.Y)
+                        + new Vector2(_position.X, -_position.Y);
                     break;
-             
+
                 default:
                     break;
             }
-            
+
             ImGui.SetNextWindowPos(basePosition, ImGuiCond.Always);
             ImGui.SetNextWindowSize(_size, ImGuiCond.Always);
 
             ImGui.Begin(WindowName, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
-                                         ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoBringToFrontOnFocus 
-                                         | ImGuiWindowFlags.NoFocusOnAppearing |
-                                         ImGuiWindowFlags.NoInputs);
+                                         ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoBringToFrontOnFocus
+                                         | ImGuiWindowFlags.NoFocusOnAppearing);
+            //ImGuiWindowFlags.NoInputs);
 
-            
+
 
             float fillPercent = (float)StatsData.Value / StatsData.MaxValue;
             fillPercent = Math.Clamp(fillPercent, 0f, 1f);
@@ -133,7 +132,7 @@ namespace Spacebox.Game.GUI
                 ImGui.ColorConvertFloat4ToU32(BackgroundColor)
             );
 
-            
+
 
             ImGui.GetWindowDrawList().AddRectFilled(
                 basePosition,
@@ -141,23 +140,37 @@ namespace Spacebox.Game.GUI
                 ImGui.ColorConvertFloat4ToU32(FillColor)
             );
 
-            
 
             string text = $"{StatsData.Value}/{StatsData.MaxValue}";
-            Vector2 textSize = ImGui.CalcTextSize(text);
-            Vector2 textPos = basePosition + (_size - textSize) / 2;
 
-            if(ShowText)
+        
+            Vector2 textSize = ImGui.CalcTextSize(text);
+  
+            float textX = basePosition.X + (_size.X - textSize.X) * 0.5f;
+            float textY = basePosition.Y + (_size.Y - textSize.Y) * 0.5f;
+
+            if (ShowText)
             {
                 ImGui.GetWindowDrawList().AddText(
-                textPos,
-                ImGui.ColorConvertFloat4ToU32(TextColor),
-                text
-            );
+                 new Vector2(textX, textY),
+                 ImGui.ColorConvertFloat4ToU32(TextColor),
+                 text
+                    );
 
-                
             }
-            
+
+            ImGui.SetCursorPos(Vector2.Zero);
+
+            ImGui.InvisibleButton($"##{WindowName}_Hitbox", _size);
+
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                ImGui.Text(StatsData.Name);
+                ImGui.EndTooltip();
+            }
+
+
 
             ImGui.End();
         }

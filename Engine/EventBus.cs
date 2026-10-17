@@ -1,82 +1,106 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Engine
 {
+    public interface IEvent { }
+
+    public interface IEventListener<T> where T : struct, IEvent
+    {
+        void OnEvent(ref T eventData);
+    }
+
     public static class EventBus
     {
-        static readonly Dictionary<Type, List<Subscription>> _subscriptions = new();
-        static readonly object _sync = new();
+        private static readonly object _registryLock = new object();
+        private static readonly List<Action> _clearActions = new List<Action>();
 
-        public static IDisposable Subscribe<T>(Action<T> handler)
+        public static void RegisterClearAction(Action action)
         {
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
-            var sub = new Subscription(typeof(T), msg => handler((T)msg), Unsubscribe);
-            lock (_sync)
+            lock (_registryLock)
             {
-                if (!_subscriptions.TryGetValue(typeof(T), out var list))
+                _clearActions.Add(action);
+            }
+        }
+
+        public static void ClearAll()
+        {
+            lock (_registryLock)
+            {
+                for (int i = 0; i < _clearActions.Count; i++)
                 {
-                    list = new List<Subscription>();
-                    _subscriptions[typeof(T)] = list;
-                }
-                list.Add(sub);
-            }
-            return sub;
-        }
-
-        public static void Publish<T>(T message)
-        {
-            if (message == null) return;
-            List<Subscription> list;
-            lock (_sync)
-            {
-                if (!_subscriptions.TryGetValue(typeof(T), out list)) return;
-                list = new List<Subscription>(list);
-            }
-            foreach (var sub in list)
-            {
-                try { sub.Handler(message); }
-                catch { Debug.Error("[EventBus] error in Publish"); }
-            }
-        }
-
-        public static void Clear()
-        {
-            lock (_sync)
-            {
-                _subscriptions.Clear();
-            }
-        }
-
-        static void Unsubscribe(Subscription sub)
-        {
-            lock (_sync)
-            {
-                if (_subscriptions.TryGetValue(sub.EventType, out var list))
-                {
-                    list.Remove(sub);
-                    if (list.Count == 0) _subscriptions.Remove(sub.EventType);
+                    _clearActions[i]();
                 }
             }
         }
 
-        sealed class Subscription : IDisposable
+        public static void Subscribe<T>(IEventListener<T> listener) where T : struct, IEvent
         {
-            public readonly Type EventType;
-            public readonly Action<object> Handler;
-            readonly Action<Subscription> _onDispose;
-            bool _disposed;
+            EventBusInternal<T>.Subscribe(listener);
+        }
 
-            public Subscription(Type eventType, Action<object> handler, Action<Subscription> onDispose)
+        public static void Unsubscribe<T>(IEventListener<T> listener) where T : struct, IEvent
+        {
+            EventBusInternal<T>.Unsubscribe(listener);
+        }
+
+        public static void Publish<T>(ref T eventData) where T : struct, IEvent
+        {
+            EventBusInternal<T>.Publish(ref eventData);
+        }
+    }
+
+    internal static class EventBusInternal<T> where T : struct, IEvent
+    {
+        private static readonly object _lock = new object();
+        private static IEventListener<T>[] _listeners = Array.Empty<IEventListener<T>>();
+
+        static EventBusInternal()
+        {
+            EventBus.RegisterClearAction(Clear);
+        }
+
+        public static void Subscribe(IEventListener<T> listener)
+        {
+            lock (_lock)
             {
-                EventType = eventType;
-                Handler = handler;
-                _onDispose = onDispose;
+                if (!_listeners.Contains(listener))
+                {
+                    var list = _listeners.ToList();
+                    list.Add(listener);
+                    _listeners = list.ToArray();
+                }
             }
+        }
 
-            public void Dispose()
+        public static void Unsubscribe(IEventListener<T> listener)
+        {
+            lock (_lock)
             {
-                if (_disposed) return;
-                _disposed = true;
-                _onDispose(this);
+                if (_listeners.Contains(listener))
+                {
+                    var list = _listeners.ToList();
+                    list.Remove(listener);
+                    _listeners = list.ToArray();
+                }
+            }
+        }
+
+        public static void Publish(ref T eventData)
+        {
+            var currentListeners = _listeners;
+            for (int i = 0; i < currentListeners.Length; i++)
+            {
+                currentListeners[i].OnEvent(ref eventData);
+            }
+        }
+
+        private static void Clear()
+        {
+            lock (_lock)
+            {
+                _listeners = Array.Empty<IEventListener<T>>();
             }
         }
     }

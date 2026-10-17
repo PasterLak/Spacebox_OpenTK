@@ -3,12 +3,15 @@ using ImGuiNET;
 using OpenTK.Windowing.Common;
 using Engine.Commands;
 using System.Drawing;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
 
 namespace Engine
 {
     public static class Debug
     {
-        
         enum MessageType : byte
         {
             Info,
@@ -16,9 +19,11 @@ namespace Engine
             Error,
             Success
         }
+
         private struct ConsoleMessage
         {
             public string Text;
+            public int Count = 0;
             public Vector4 Color;
             public MessageType Type = MessageType.Info;
 
@@ -26,11 +31,11 @@ namespace Engine
             {
                 Text = text;
                 Color = color;
+                Count = 0;
+                Type = MessageType.Info;
             }
         }
-        
-        private static bool _isVisible = false;
-        private static CursorState _previousCursorState;
+
         private static string _inputBuffer = "";
         private static List<ConsoleMessage> _messages = new List<ConsoleMessage>();
         private static List<string> _commandHistory = new List<string>();
@@ -44,67 +49,73 @@ namespace Engine
         private static long errorCount = 0;
         private static long successCount = 0;
 
-        private static Vector4 errorColor = new Vector4(1,0,0,1);
-        private static Vector4 waringColor = new Vector4(1,0.45f,0,1);
-        private static Vector4 infoColor = new Vector4(1,1,1,1);
-        private static Vector4 successColor = new Vector4(0,1,0,1);
+        private static Vector4 errorColor = new Vector4(1, 0, 0, 1);
+        private static Vector4 waringColor = new Vector4(1, 0.45f, 0, 1);
+        private static Vector4 infoColor = new Vector4(1, 1, 1, 1);
+        private static Vector4 successColor = new Vector4(0, 1, 0, 1);
 
-        private static Vector4 buttonColor = new Vector4(0.3f, 0.3f, 0.3f,0.5f);
+        private static Vector4 buttonColor = new Vector4(0.3f, 0.3f, 0.3f, 0.5f);
         private static Vector4 buttonSelectedColor = new Vector4(0.4f, 0.4f, 0.4f, 0.7f);
 
         private static MessageType showType = MessageType.Info;
 
         private static readonly string HistoryFilePath = "command_history.txt";
         private static int _autoCompleteIndex = 0;
-        private static List<ICommand> _autoCompleteMatches = new List<ICommand>();
+        private static List<CommandBase> _autoCompleteMatches = new List<CommandBase>();
+
+        private static readonly object _lock = new object();
+
+        public static bool IsVisible => UIManager.IsOpen("debug");
 
         static Debug()
         {
             LoadHistory();
-            RegisterCommand(new ClearCommand());
-            RegisterCommand(new CameraRelativeRenderingCommand());
-            RegisterCommand(new VersionCommand());
-            RegisterCommand(new ColorCommand());
-            RegisterCommand(new HelpCommand());
-            RegisterCommand(new ExitCommand());
-            RegisterCommand(new ResourcesCommand());
-            RegisterCommand(new SaveMessagesCommand());
-
+            RegisterDefaultCommands();
         }
 
-        public static void RegisterCommand(ICommand command)
+        private static void RegisterDefaultCommands()
         {
-            CommandManager.RegisterCommand(command);
+            RegisterCommandGlobal(new ClearCommand());
+            RegisterCommandGlobal(new CameraRelativeRenderingCommand());
+            RegisterCommandGlobal(new VersionCommand());
+            RegisterCommandGlobal(new ColorCommand());
+            RegisterCommandGlobal(new HelpCommand());
+            RegisterCommandGlobal(new ExitCommand());
+            RegisterCommandGlobal(new ResourcesCommand());
+            RegisterCommandGlobal(new SaveMessagesCommand());
+        }
+
+        private static void RegisterCommandGlobal(CommandBase command)
+        {
+            CommandManager.RegisterGlobalCommand(command);
+        }
+
+        public static void RegisterCommand(CommandBase command)
+        {
+            CommandManager.RegisterSceneCommand(command);
         }
 
         public static void ToggleVisibility()
         {
-            _isVisible = !_isVisible;
-            
-            if (_isVisible)
-            {
-                _previousCursorState = Input.GetCursorState();
-                Input.ShowCursor();
-                _focusInput = true;
+            UIManager.Toggle("debug");
 
+            if (!IsVisible)
+            {
+                SaveHistory();
             }
             else
             {
-                Input.SetCursorState(_previousCursorState);
-                SaveHistory();
-
+                _focusInput = true;
             }
 
-            OnVisibilityWasChanged?.Invoke(_isVisible);
+            OnVisibilityWasChanged?.Invoke(IsVisible);
         }
-
-        public static bool IsVisible => _isVisible;
 
         private static void AddMessage(string message, Vector4? color = null)
         {
             var msg = new ConsoleMessage(message, color ?? infoColor);
-            
-            switch(color)
+
+            switch (color)
             {
                 case var c when c == errorColor:
                     msg.Type = MessageType.Error;
@@ -116,11 +127,13 @@ namespace Engine
                     msg.Type = MessageType.Success;
                     break;
                 default:
-                 
                     break;
             }
-            _messages.Add(msg);
-            messageCount++;
+            lock (_lock)
+            {
+                _messages.Add(msg);
+                messageCount++;
+            }
         }
 
         private static void AddMessage(string message, OpenTK.Mathematics.Color4 color)
@@ -139,7 +152,6 @@ namespace Engine
                     msg.Type = MessageType.Success;
                     break;
                 default:
-
                     break;
             }
             _messages.Add(msg);
@@ -149,184 +161,133 @@ namespace Engine
         public static void WriteLine(string message)
         {
             AddMessage($"{message}");
-
-#if DEBUG
-            Console.WriteLine($"{message}");
-#endif
         }
 
         public static void Write(string message)
         {
             AddMessage($"{message}");
-#if DEBUG
-            Console.WriteLine($"{message}");
-#endif
-
         }
 
         public static void Log(string message, OpenTK.Mathematics.Color4 color)
         {
             AddMessage($"{message}", color);
-#if DEBUG
-            Console.WriteLine($"{message}");
-#endif
+        }
+
+        public static void Log(string sender, string message, OpenTK.Mathematics.Color4 color)
+        {
+            AddMessage($"[{sender}] {message}", color);
         }
 
         public static void Log(object sender, string message, OpenTK.Mathematics.Color4 color)
         {
             AddMessage($"[{sender.GetType().Name}] {message}", color);
-#if DEBUG
-            Console.WriteLine($"[{sender.GetType().Name}] {message}");
-#endif
         }
+
+        public static void Log(string sender, string message)
+        {
+            AddMessage($"[{sender}] {message}", Color.White);
+        }
+
         public static void Log(object sender, string message)
         {
             AddMessage($"[{sender.GetType().Name}] {message}", Color.White);
-#if DEBUG
-            Console.WriteLine($"[{sender.GetType().Name}] {message}");
-#endif
         }
 
         public static void Success(object sender, string message)
         {
             AddMessage($"[Success][{sender.GetType().Name}] {message}", successColor);
             successCount++;
-#if DEBUG
-            Console.WriteLine($"[Success][{sender.GetType().Name}] {message}");
-#endif
         }
 
         public static void Success(string message)
         {
             AddMessage($"[Success] {message}", successColor);
             successCount++;
-#if DEBUG
-            Console.WriteLine($"[Success] {message}");
-#endif
         }
 
         public static void Warning(string message)
         {
             AddMessage($"[Warning] {message}", waringColor);
             warningCount++;
-#if DEBUG
-            Console.WriteLine($"[Warning] {message}");
-#endif
         }
 
         public static void Log(string message, Vector4 color)
         {
             AddMessage($"{message}", color);
-#if DEBUG
-            Console.WriteLine($"{message}");
-#endif
         }
 
         public static void Log(object message)
         {
             AddMessage($"{message.ToString()}", infoColor);
-#if DEBUG
-            Console.WriteLine($"{message.ToString()}");
-#endif
         }
+
         public static void Log(string message)
         {
             AddMessage($"{message}", infoColor);
-#if DEBUG
-            Console.WriteLine($"{message}");
-#endif
         }
 
         public static void Error(string message)
         {
             AddMessage($"[ERROR] {message}", errorColor);
             errorCount++;
-#if DEBUG
-            Console.WriteLine($"[ERROR] {message}");
-#endif
         }
 
         public static void ClearMessages()
         {
-            _messages.Clear();
-            messageCount = 0;
-            warningCount = 0;
-            errorCount = 0;
-            successCount = 0;
+            lock (_lock)
+            {
+                _messages.Clear();
+                messageCount = 0;
+                warningCount = 0;
+                errorCount = 0;
+                successCount = 0;
+            }
         }
 
-        public static void Render(Vector2 windowSize)
+        private static void DrawFilterButton(string label, long count, MessageType type, Vector4 textColor)
         {
-            if (!_isVisible)
+            if (count <= 0) return;
+
+            ImGui.SameLine();
+
+            bool isSelected = showType == type;
+
+            if (isSelected)
+                ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
+
+            ImGui.PushStyleColor(ImGuiCol.Text, textColor);
+
+            if (ImGui.Button($" {label}: {count} "))
+            {
+                showType = type;
+            }
+
+            ImGui.PopStyleColor(isSelected ? 2 : 1);
+        }
+
+        public static void Render()
+        {
+            if (!IsVisible)
                 return;
+
+            Vector2 windowSize = ImGui.GetIO().DisplaySize;
 
             ImGui.SetNextWindowPos(new Vector2(0, 0), ImGuiCond.Always);
             ImGui.SetNextWindowSize(new Vector2(windowSize.X * 0.4f, windowSize.Y), ImGuiCond.Always);
-            //ImGui.SetNextWindowSizeConstraints(new Vector2(300, 200), new Vector2(float.MaxValue, float.MaxValue));
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(10, 10));
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0f, 0f, 0f, 0.8f));
             ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0f, 0f, 0f, 0.8f));
-            ImGui.Begin("Console", ref _isVisible, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
+
+            ImGui.Begin("Console", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
 
             ImGui.Text("CONSOLE   ");
             ImGui.PushStyleColor(ImGuiCol.Button, buttonColor);
-            if (messageCount > 0)
-            {
-                ImGui.SameLine();
 
-                
-                if(showType == MessageType.Info)
-                    ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
+            DrawFilterButton("Messages", messageCount, MessageType.Info, infoColor);
+            DrawFilterButton("Success", successCount, MessageType.Success, successColor);
+            DrawFilterButton("Warning", warningCount, MessageType.Warning, waringColor);
+            DrawFilterButton("Error", errorCount, MessageType.Error, errorColor);
 
-                ImGui.PushStyleColor(ImGuiCol.Text, infoColor);
-                if(ImGui.Button(" Messages: " + messageCount))
-                {
-                    showType = MessageType.Info;
-                }
-                ImGui.PopStyleColor(showType == MessageType.Info ? 2 : 1);
-            }
-            if (successCount > 0)
-            {
-                ImGui.SameLine();
-
-                if (showType == MessageType.Success)
-                    ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
-
-                ImGui.PushStyleColor(ImGuiCol.Text, successColor);
-                if (ImGui.Button(" Success: " + successCount))
-                {
-                   showType = MessageType.Success;
-                }
-                ImGui.PopStyleColor(showType == MessageType.Success ? 2 : 1);
-            }
-            if (warningCount > 0)
-            {
-                ImGui.SameLine();
-
-                if (showType == MessageType.Warning)
-                    ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
-
-                ImGui.PushStyleColor(ImGuiCol.Text, waringColor);
-                if (ImGui.Button(" Warning: " + warningCount))
-                {
-                    showType = MessageType.Warning;
-                }
-                ImGui.PopStyleColor(showType == MessageType.Warning ? 2 : 1);
-            }
-            if (errorCount > 0)
-            {
-                ImGui.SameLine();
-
-                if (showType == MessageType.Error)
-                    ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
-
-                ImGui.PushStyleColor(ImGuiCol.Text, errorColor);
-                if (ImGui.Button(" Error: " + errorCount))
-                {
-                    showType = MessageType.Error;
-                }
-                ImGui.PopStyleColor(showType == MessageType.Error ? 2 : 1);
-            }
             ImGui.PopStyleColor();
             ImGui.Separator();
 
@@ -335,26 +296,34 @@ namespace Engine
                 childHeight = 100f;
 
             ImGui.BeginChild("ScrollingRegion", new Vector2(0, childHeight), ImGuiChildFlags.AlwaysAutoResize);
-            foreach (var msg in _messages) // : 'Collection was modified; enumeration operation may not execute.'
 
+            List<ConsoleMessage> messagesToRender;
+
+            lock (_lock)
+            {
+                messagesToRender = new List<ConsoleMessage>(_messages);
+            }
+
+            foreach (var msg in messagesToRender)
             {
                 if (showType != MessageType.Info)
                 {
-                    if(msg.Type != showType)
+                    if (msg.Type != showType)
                         continue;
                 }
-              
+
                 ImGui.PushStyleColor(ImGuiCol.Text, msg.Color);
                 ImGui.TextWrapped(msg.Text);
                 ImGui.PopStyleColor();
             }
+
             if (ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
                 ImGui.SetScrollHereY(1.0f);
             ImGui.EndChild();
 
             ImGui.Separator();
 
-            float buttonWidth = windowSize.X  * 0.06f;
+            float buttonWidth = windowSize.X * 0.06f;
             float inputWidth = ImGui.GetContentRegionAvail().X - buttonWidth - ImGui.GetStyle().ItemSpacing.X;
 
             if (ImGui.IsWindowFocused(ImGuiFocusedFlags.AnyWindow))
@@ -366,22 +335,19 @@ namespace Engine
                 }
                 if (ImGui.IsKeyPressed(ImGuiKey.DownArrow))
                 {
-
                     NavigateHistory(1);
                     _focusInput = true;
                 }
                 if (ImGui.IsKeyPressed(ImGuiKey.Tab))
                 {
-
                     AutoComplete();
                     _focusInput = true;
                 }
             }
 
-            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.7f, 0.5f,0,1));
+            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.7f, 0.5f, 0, 1));
             if (ImGui.Button("SEND", new Vector2(buttonWidth, 0)))
             {
-
                 ProcessCommand(_inputBuffer);
                 _inputBuffer = "";
                 _focusInput = true;
@@ -390,26 +356,23 @@ namespace Engine
 
             ImGui.SameLine();
 
-
             ImGui.SetNextItemWidth(inputWidth);
             bool inputActivated = ImGui.InputText("##Input", ref _inputBuffer, 256, ImGuiInputTextFlags.EnterReturnsTrue);
 
             if (_focusInput)
             {
                 ImGui.SetKeyboardFocusHere(-1);
-
                 _focusInput = false;
             }
 
             if (inputActivated)
             {
-
                 ProcessCommand(_inputBuffer);
                 _inputBuffer = "";
                 _focusInput = true;
             }
-           
-            ImGui.End();    
+
+            ImGui.End();
             ImGui.PopStyleColor();
             ImGui.PopStyleVar();
         }
@@ -421,11 +384,9 @@ namespace Engine
 
             _commandHistory.Add(command);
 
-
             if (_commandHistory.Count > 20)
             {
                 _commandHistory.RemoveAt(0);
-
             }
             _historyPos = -1;
         }
@@ -434,28 +395,23 @@ namespace Engine
         {
             if (_commandHistory.Count == 0)
             {
-
                 return;
             }
 
             _historyPos += direction;
 
-
             if (_historyPos < 0)
             {
                 _historyPos = 0;
-
             }
             else if (_historyPos >= _commandHistory.Count)
             {
                 _historyPos = _commandHistory.Count;
                 _inputBuffer = "";
-
                 return;
             }
 
             _inputBuffer = _commandHistory[_historyPos];
-
             _focusInput = true;
         }
 
@@ -466,24 +422,20 @@ namespace Engine
                 return;
 
             string lastToken = tokens[^1];
-            List<ICommand> matches = CommandManager.FindCommandsStartingWith(lastToken).ToList();
-
+            List<CommandBase> matches = CommandManager.FindCommandsStartingWith(lastToken).ToList();
 
             if (matches.Count == 1)
             {
                 tokens[^1] = matches[0].Name;
                 _inputBuffer = string.Join(" ", tokens) + " ";
-
                 _focusInput = true;
             }
             else if (matches.Count > 1)
             {
-
                 foreach (var cmd in matches)
                 {
                     AddMessage($"- {cmd.Name}: {cmd.Description}", new Vector4(0.5f, 0.5f, 1f, 1f));
                 }
-
                 _focusInput = true;
             }
         }
@@ -507,7 +459,6 @@ namespace Engine
             {
                 try
                 {
-
                     commandObj.Execute(args);
                 }
                 catch (Exception ex)
@@ -519,7 +470,6 @@ namespace Engine
             else
             {
                 Error($"Unknown command: {cmdName}");
-
             }
         }
 
@@ -564,12 +514,6 @@ namespace Engine
                 _commandHistory = File.ReadAllLines(HistoryFilePath).ToList();
                 if (_commandHistory.Count > 20)
                     _commandHistory = _commandHistory.TakeLast(20).ToList();
-
-
-            }
-            else
-            {
-
             }
         }
 
@@ -577,7 +521,7 @@ namespace Engine
         {
             File.WriteAllLines(HistoryFilePath, _commandHistory);
         }
-      
+
         public static void SaveMessagesToFile(bool useDefaultFileName = false)
         {
             const string debugFolderPath = "Debug";
@@ -589,12 +533,15 @@ namespace Engine
                 Directory.CreateDirectory(debugFolderPath);
             }
 
-            string filename = useDefaultFileName ? "last_console_log.txt": $"console_log_{GetDateTimeNow()}.txt";
+            string filename = useDefaultFileName ? "last_console_log.txt" : $"console_log_{GetDateTimeNow()}.txt";
             string filepath = Path.Combine(debugFolderPath, filename);
 
             try
             {
-                File.WriteAllLines(filepath, _messages.Select(m => m.Text));
+                lock (_lock)
+                {
+                    File.WriteAllLines(filepath, _messages.Select(m => m.Text));
+                }
                 Log($"Console messages saved to '{filepath}'.");
             }
             catch (Exception ex)

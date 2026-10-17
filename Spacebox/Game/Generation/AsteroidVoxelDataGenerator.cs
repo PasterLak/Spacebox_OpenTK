@@ -2,31 +2,23 @@
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Generation;
+using System;
 
 namespace Spacebox.Game.Generation
 {
     public class AsteroidVoxelDataGenerator
     {
-        public int[,,] voxelData;
-        public int gridSize;
-        public float blockSize;
-        public Vector3 asteroidDimensions;
-        public int threshold;
-        public byte noiseOctaves;
-        public float noiseScale;
-        public int seed;
+        private float blockSize;
+        private Vector3 asteroidDimensions;
+        private int threshold;
+        private byte noiseOctaves;
+        private float noiseScale;
+        private int seed;
         private NoiseGenerator noiseGenerator;
         private AsteroidData asteroidData;
         private float[] layerThresholds;
 
-        public int[,,] VoxelData => voxelData;
-
-        public AsteroidVoxelDataGenerator(
-            Vector3 asteroidDimensions,
-            float blockSize,
-            AsteroidData asteroidData,
-            int seed
-        )
+        public AsteroidVoxelDataGenerator(Vector3 asteroidDimensions, float blockSize, AsteroidData asteroidData, int seed)
         {
             this.asteroidData = asteroidData;
             this.asteroidDimensions = asteroidDimensions;
@@ -74,9 +66,10 @@ namespace Spacebox.Game.Generation
             return asteroidData.Layers[asteroidData.Layers.Length - 1].FillBlockID;
         }
 
-        public int[,,] GenerateDataForChunk(Vector3SByte chunkIdx)
+        public int[,,] GeneratePaddedDataForChunk(Vector3SByte chunkIdx)
         {
-            var chunkSize = Chunk.Size;
+            int paddedSize = Chunk.Size + 2;
+
             if (noiseGenerator == null)
             {
                 noiseGenerator = new NoiseGenerator(seed);
@@ -84,19 +77,20 @@ namespace Spacebox.Game.Generation
                 noiseGenerator.Masks.sphericalGradient = true;
             }
 
-            gridSize = (int)asteroidDimensions.X;
             Vector3 regionSize = asteroidDimensions;
             float radius = asteroidDimensions.X * 0.5f;
 
-            var chunkData = new int[chunkSize, chunkSize, chunkSize];
+            var chunkData = new int[paddedSize, paddedSize, paddedSize];
 
-            for (int x = 0; x < chunkSize; x++)
-                for (int y = 0; y < chunkSize; y++)
-                    for (int z = 0; z < chunkSize; z++)
+            for (int x = 0; x < paddedSize; x++)
+            {
+                for (int y = 0; y < paddedSize; y++)
+                {
+                    for (int z = 0; z < paddedSize; z++)
                     {
-                        int gx = chunkIdx.X * chunkSize + x;
-                        int gy = chunkIdx.Y * chunkSize + y;
-                        int gz = chunkIdx.Z * chunkSize + z;
+                        int gx = chunkIdx.X * Chunk.Size + (x - 1);
+                        int gy = chunkIdx.Y * Chunk.Size + (y - 1);
+                        int gz = chunkIdx.Z * Chunk.Size + (z - 1);
 
                         Vector3 pos = new Vector3(gx, gy, gz) * blockSize;
                         Vector3 samplePos = (pos + regionSize * 0.5f) * noiseScale;
@@ -119,46 +113,10 @@ namespace Spacebox.Game.Generation
 
                         chunkData[x, y, z] = blockId;
                     }
-
-            return chunkData;
-        }
-
-        public void GenerateData()
-        {
-            noiseGenerator = new NoiseGenerator(seed);
-            noiseGenerator.Masks.sphericalFalloffDistance = asteroidDimensions.X * 0.5f;
-            noiseGenerator.Masks.sphericalGradient = true;
-            gridSize = (int)asteroidDimensions.X;
-
-            voxelData = new int[gridSize, gridSize, gridSize];
-            Vector3 regionSize = asteroidDimensions;
-            float radius = asteroidDimensions.X * 0.5f;
-            float halfSize = gridSize * 0.5f;
-
-            for (int x = 0; x < gridSize; x++)
-            {
-                for (int y = 0; y < gridSize; y++)
-                {
-                    for (int z = 0; z < gridSize; z++)
-                    {
-                        Vector3 pos = new Vector3(x - halfSize, y - halfSize, z - halfSize) * blockSize;
-                        Vector3 samplePos = (pos + regionSize * 0.5f) * noiseScale;
-                        byte noiseValue = noiseGenerator.PerlinNoise3DWithMask(samplePos, ref regionSize, noiseOctaves, noiseGenerator.Masks.SphericalMaskFunction);
-
-                        if (noiseValue > threshold)
-                        {
-                            float distance = pos.Length;
-                            float normalized = 1.0f - (distance / radius);
-                            normalized = MathF.Max(0f, MathF.Min(1f, normalized));
-                            voxelData[x, y, z] = GetBlockIdFromDistance(normalized);
-                        }
-                        else
-                        {
-                            voxelData[x, y, z] = 0;
-                        }
-                    }
                 }
             }
+
+            return chunkData;
         }
     }
 }

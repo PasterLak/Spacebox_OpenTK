@@ -8,15 +8,16 @@ namespace Spacebox.Game.Generation.Blocks
     public class FurnaceBlock : ResourceProcessingBlock
     {
 
-        public FurnaceBlock(BlockJSON blockData) : base(blockData)
+        public FurnaceBlock(BlockData blockData) : base(blockData)
         {
             OnUse += ResourceProcessingGUI.Toggle;
 
             //LightLevel
-            SetEmissionWithoutRedrawChunk(false);
+
+            SetEmission(false,false);
         }
 
-        public override void Use(Astronaut player, ref HitInfo hit)
+        public override void Use(LocalAstronaut player, ref HitInfo hit)
         {
             base.Use(player, ref hit);
             ResourceProcessingGUI.Activate(this, player);

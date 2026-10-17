@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Lidgren.Network;
+﻿using Lidgren.Network;
 using SpaceNetwork;
 using SpaceNetwork.Messages;
+using SpaceNetwork.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading;
 
 namespace ServerCommon
 {
@@ -41,69 +43,41 @@ namespace ServerCommon
         private void ProcessStatusChanged(NetIncomingMessage msg)
         {
             var status = (NetConnectionStatus)msg.ReadByte();
-         
             msg.ReadString();
+
             if (status == NetConnectionStatus.Connected)
             {
                 var hail = msg.SenderConnection.RemoteHailMessage;
+                if (hail == null)
+                {
+                    serverNetwork.KickConnection(msg.SenderConnection, "Protocol Error: No hail message");
+                    return;
+                }
+
                 var chosenName = hail.ReadString();
+                var chosenColor = hail.ReadString();
                 string senderIp = msg.SenderConnection.RemoteEndPoint.Address.ToString();
+
                 if (BanManager.IsBannedByName(chosenName) || BanManager.IsBannedByIp(senderIp))
                 {
-                    var km = new KickMessage { Reason = "You are banned." };
-                    var om = server.CreateMessage();
-                    km.Write(om);
-                    server.SendMessage(om, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
-                    msg.SenderConnection.Disconnect("Banned");
+                    serverNetwork.KickConnection(msg.SenderConnection, "You are banned.");
                     return;
                 }
+
                 if (playerManager.IsNameUsed(chosenName))
                 {
-                    var km = new KickMessage { Reason = "Name in use. Choose another one." };
-                    var om = server.CreateMessage();
-                    km.Write(om);
-                    server.SendMessage(om, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
-                    msg.SenderConnection.Disconnect("DuplicateName");
+                    serverNetwork.KickConnection(msg.SenderConnection, "Name is already in use.");
                     return;
                 }
-                var newPlayer = playerManager.AddNewPlayer(chosenName);
-                connectionPlayers[msg.SenderConnection] = newPlayer;
+
+                var newPlayer = playerManager.AddNewPlayer(chosenName, chosenColor);
+                serverNetwork.RegisterPlayerConnection(msg.SenderConnection, newPlayer);
+
                 logCallback?.Invoke($"{newPlayer.Name}[{newPlayer.ID}] connected", LogType.Success);
 
-                var initMsg = new InitMessage { Player = newPlayer };
-                var omInit = server.CreateMessage();
-                initMsg.Write(omInit);
-                server.SendMessage(omInit, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
-
-                var serverInfoMsg = new ServerInfoMessage
-                {
-                    Info = new ServerInfo
-                    {
-                        Name = Settings.Name,
-                        Description = Settings.Description,
-                        MaxPlayers = server.Configuration.MaximumConnections
-                    }
-                };
-                var omServerInfo = server.CreateMessage();
-                serverInfoMsg.Write(omServerInfo);
-                server.SendMessage(omServerInfo, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered);
-
+                SendInitData(msg.SenderConnection, newPlayer);
                 serverNetwork.BroadcastPlayers();
                 serverNetwork.BroadcastChat(-1, $"{newPlayer.Name}[{newPlayer.ID}] connected");
-
-                var connection = msg.SenderConnection;
-                ThreadPool.QueueUserWorkItem(_ =>
-                {
-                    Thread.Sleep(1000);
-                    if (connection != null && connection.Status == NetConnectionStatus.Connected)
-                    {
-                        SendZipToClient(connection);
-                    }
-                    else
-                    {
-                        logCallback?.Invoke("Recipient connection is null or not connected. Zip will not be sent.", LogType.Warning);
-                    }
-                });
             }
             else if (status == NetConnectionStatus.Disconnected)
             {
@@ -111,11 +85,34 @@ namespace ServerCommon
                 {
                     connectionPlayers.Remove(msg.SenderConnection);
                     playerManager.RemovePlayer(p.ID);
-                    serverNetwork.BroadcastChat(-1, $"{p.Name}[{p.ID}] disconnected");
+                    serverNetwork.BroadcastChat(-1, $"{p.Name} left the game.");
                     logCallback?.Invoke($"{p.Name}[{p.ID}] disconnected", LogType.Info);
                     serverNetwork.BroadcastPlayers();
                 }
             }
+        }
+
+        private void SendInitData(NetConnection conn, Player player)
+        {
+            var initMsg = new InitMessage { Player = player };
+            var omInit = server.CreateMessage();
+            initMsg.Write(omInit);
+            server.SendMessage(omInit, conn, NetDeliveryMethod.ReliableOrdered);
+
+            var serverInfoMsg = new ServerInfoMessage
+            {
+                Info = new ServerInfo
+                {
+                    Name = Settings.Name,
+                    Description = Settings.Description,
+                    MaxPlayers = server.Configuration.MaximumConnections,
+                    ModFolderHash = Settings.ModFolderHash,
+                    ModFolderName = Settings.ModFolder
+                }
+            };
+            var omServerInfo = server.CreateMessage();
+            serverInfoMsg.Write(omServerInfo);
+            server.SendMessage(omServerInfo, conn, NetDeliveryMethod.ReliableOrdered);
         }
 
         private void SendZipToClient(NetConnection connection)
@@ -128,22 +125,22 @@ namespace ServerCommon
             try
             {
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                string folderToZip = System.IO.Path.Combine(baseDir, "GameSet", Settings.GameSetFolder);
+                string folderToZip = System.IO.Path.Combine(baseDir, "GameSet", Settings.ModFolder);
                 if (!System.IO.Directory.Exists(folderToZip))
                 {
                     logCallback?.Invoke("GameSet folder not found: " + folderToZip, LogType.Error);
                     return;
                 }
-                byte[] zipData = ZipManager.CreateZipFromFolder(folderToZip);
+                byte[] zipData = ZipHelper.CreateZipFromFolder(folderToZip);
                 var zipMsg = new ZipMessage
                 {
-                    ModName = Settings.GameSetFolder,
+                    ModName = Settings.ModFolder,
                     ZipData = zipData
                 };
                 var omZip = server.CreateMessage();
                 zipMsg.Write(omZip);
                 server.SendMessage(omZip, connection, NetDeliveryMethod.ReliableOrdered);
-                logCallback?.Invoke("Zip sent to client: " + connection.RemoteEndPoint, LogType.Info);
+                logCallback?.Invoke("Gameset sent to client: " + connection.RemoteEndPoint, LogType.Info);
             }
             catch (Exception ex)
             {
@@ -175,9 +172,35 @@ namespace ServerCommon
                     logCallback?.Invoke($"> {p.Name}[{p.ID}]: {cm.Text}", LogType.Normal);
                 }
             }
-            else if (baseMsg is BlockDestroyedMessage || baseMsg is BlockPlaceMessage)
+            else if (baseMsg is RequestZipMessage)
+            {
+                SendZipToClient(msg.SenderConnection);
+            }
+            else if (baseMsg is BlockDestroyedMessage || baseMsg is BlockPlaceMessage || baseMsg is FlashlightMessage || baseMsg is ItemInHandMessage)
             {
                 BroadcastRaw(msg);
+            }
+            else if (baseMsg is RpcMessage rpc)
+            {
+                HandleRpc(rpc, msg.SenderConnection);
+            }
+        }
+
+        private void HandleRpc(BaseMessage msg, NetConnection sender)
+        {
+            var rpc = (RpcMessage)msg;
+            var outMsg = server.CreateMessage();
+            rpc.Write(outMsg);
+
+            if (rpc.TargetId == -1)
+            {
+                server.SendToAll(outMsg, sender, NetDeliveryMethod.ReliableOrdered, 0);
+            }
+            else
+            {
+                var targetConn = serverNetwork.GetConnectionByPlayerId(rpc.TargetId);
+                if (targetConn != null)
+                    server.SendMessage(outMsg, targetConn, NetDeliveryMethod.ReliableOrdered);
             }
         }
 

@@ -1,7 +1,9 @@
-﻿using ImGuiNET;
+﻿using Engine;
+using ImGuiNET;
 using Spacebox.Game;
 using System.Numerics;
-using Engine;
+
+
 namespace Spacebox.GUI
 {
     public static class CenteredText
@@ -20,6 +22,10 @@ namespace Spacebox.GUI
         public static void SetColor(Vector4 color)
         {
             _color = color;
+        }
+        public static void SetColor(OpenTK.Mathematics.Color4 color)
+        {
+            _color = color.ToSystemVector4();
         }
 
         public static void Show()
@@ -119,7 +125,9 @@ namespace Spacebox.GUI
 
         public static void OnGUI()
         {
+           
             if (!Settings.ShowInterface) return;
+           
             if (!IsVisible)
             {
 

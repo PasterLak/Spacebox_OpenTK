@@ -1,4 +1,3 @@
-using OpenTK.Mathematics;
 
 using Engine.Commands;
 using Spacebox.Game.Player;
@@ -7,20 +6,20 @@ using Spacebox.Game.Player.GameModes;
 
 namespace Spacebox.Game.Commands
 {
-    internal class GameModCommand : ICommand
+    internal class GameModCommand : CommandBase
     {
-        public string Name => "gm";
+        public override string Name => "gm";
 
-        public string Description => "gamemod <0,1,2>";
+        public override string Description => "Change gamemode. Usage: gm <0,1,2>  (survival,creative,spectator)";
 
-        public Astronaut Astronaut { get; set; }
+        public LocalAstronaut Astronaut { get; set; }
 
 
-        public GameModCommand(Astronaut astronaut)
+        public GameModCommand(LocalAstronaut astronaut)
         {
             this.Astronaut = astronaut;
         }
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
 
 
@@ -30,40 +29,41 @@ namespace Spacebox.Game.Commands
                 return;
             }
 
-            if (args.Length == 1)
+            if (ValidateArgs(args, 1) == false) return;
+
+
+
+            if (TryParse<int>(args[0], out var id))
             {
-
-                if (int.TryParse(args[0], out int id))
+                GameMode gm = GameMode.Spectator;
+                if (id == 0)
                 {
-                    GameMode gm = GameMode.Spectator;
-                    if (id == 0)
-                    {
-                        gm = GameMode.Survival;
-                    }
-                    if (id == 1)
-                    {
-                        gm = GameMode.Creative;
-                    }
-                    if (id == 2)
-                    {
-                        gm = GameMode.Spectator;
-                    }
-
-                    if (id >= 0 && id <= 2)
-                    {
-                        Astronaut.GameMode = gm;
-                        Debug.Success("Gamemod changed to " + gm.ToString());
-                    }
-                    else
-                    {
-                        Debug.Error("Wrong game mode id!");
-                    }
-                    
+                    gm = GameMode.Survival;
+                }
+                if (id == 1)
+                {
+                    gm = GameMode.Creative;
+                }
+                if (id == 2)
+                {
+                    gm = GameMode.Spectator;
                 }
 
-                
+                if (id >= 0 && id <= 2)
+                {
+                    Astronaut.GameMode = gm;
+                    Debug.Success("Gamemod changed to " + gm.ToString());
+                }
+                else
+                {
+                    Debug.Error("Wrong game mode id!");
+                }
+
             }
-           
+
+
+
+
 
         }
 

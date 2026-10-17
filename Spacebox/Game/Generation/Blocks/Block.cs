@@ -8,7 +8,7 @@ namespace Spacebox.Game.Generation.Blocks
 {
     public enum Direction : byte
     {
-        
+
         Down = 0,
         Up = 1,
         Left = 2,
@@ -23,7 +23,7 @@ namespace Spacebox.Game.Generation.Blocks
         Right = 1,
         Half = 2,
         Left = 3
-        
+
     }
 
     [Flags]
@@ -56,6 +56,11 @@ namespace Spacebox.Game.Generation.Blocks
 
         public Block() { }
 
+
+        public const Direction DefaultDirection = Direction.Up;
+        public static readonly Vector3SByte DefaultDirectionVector = new Vector3SByte(0,1,0);
+        public const Rotation DefaultRotation = Rotation.None;
+
         public Rotation Rotation
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -63,14 +68,14 @@ namespace Spacebox.Game.Generation.Blocks
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
-               
+
                 long v = ((long)value & 0b11) << 35;
                 data = (data & ~(0b11L << 35)) | v;
             }
         }
         public void SetRotation(Rotation rot) => Rotation = rot;
 
-        
+
         public Block(short blockId, Direction dir, byte mass, byte durability,
                      bool isTransparent, bool isAir, bool isLight, bool enableEmission)
         {
@@ -81,10 +86,10 @@ namespace Spacebox.Game.Generation.Blocks
             SetTransparent(isTransparent);
             SetAir(isAir);
             SetLight(isLight);
-            SetEnableEmission(enableEmission); 
+            SetEnableEmission(enableEmission);
         }
 
-        public Block(BlockJSON blockData)
+        public Block(BlockData blockData)
         {
             Id = blockData.Id;
             LightColor = new Color3Byte(blockData.LightColor);
@@ -93,7 +98,7 @@ namespace Spacebox.Game.Generation.Blocks
             SetMass(blockData.Mass);
             SetDurability(blockData.Durability);
             SetTransparent(blockData.IsTransparent);
-            SetAir(blockData.Id == 0);
+            SetAir(blockData.Id <= 1);
 
             SetEnableEmission(true);
 
@@ -128,7 +133,7 @@ namespace Spacebox.Game.Generation.Blocks
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
-               
+
                 long v = ((long)value & 0b111) << 12;
                 data = data & ~(0b111L << 12) | v;
             }
@@ -173,6 +178,8 @@ namespace Spacebox.Game.Generation.Blocks
             }
         }
 
+       
+
         public bool IsTransparent
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -190,7 +197,7 @@ namespace Spacebox.Game.Generation.Blocks
         public bool IsAir
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (Flags & BlockFlags.Air) != 0;
+            get => (Flags & BlockFlags.Air) != 0 ;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
@@ -200,6 +207,11 @@ namespace Spacebox.Game.Generation.Blocks
             }
         }
         public void SetAir(bool val) => IsAir = val;
+
+        public bool IsVoid()
+        {
+            return Id == 0;
+        }
 
         public bool IsLight
         {
@@ -262,8 +274,8 @@ namespace Spacebox.Game.Generation.Blocks
                 Direction.Down => -Vector3.UnitY,
                 Direction.Left => -Vector3.UnitX,
                 Direction.Right => Vector3.UnitX,
-                Direction.Forward => Vector3.UnitZ,
-                Direction.Back => -Vector3.UnitZ,
+                Direction.Forward => -Vector3.UnitZ,
+                Direction.Back => Vector3.UnitZ,
                 _ => Vector3.Zero
             };
         }
@@ -278,6 +290,11 @@ namespace Spacebox.Game.Generation.Blocks
             Direction = GetDirectionFromNormal(normal);
         }
 
+        public void SetRotationFromNormal(Vector3 normal)
+        {
+            Direction = GetDirectionFromNormal(normal);
+        }
+
 
         public bool Is<T>() where T : Block => this is T;
         public bool Is<T>(out T? res) where T : Block
@@ -286,9 +303,10 @@ namespace Spacebox.Game.Generation.Blocks
             return res != null;
         }
 
+
         public override string ToString()
         {
-            return $"ID={Id}, Dir={Direction}, Rot={Rotation}, Mass={Mass}, Dur={Durability}, \nFlags=[T={IsTransparent}, A={IsAir}, L={IsLight}, E={EnableEmission}], " +
+            return $"ID={Id} {GetType().Name}, Dir={Direction}, Rot={Rotation}, Mass={Mass}, Dur={Durability}, \nFlags=[T={IsTransparent}, A={IsAir}, L={IsLight}, E={EnableEmission}], " +
                    $"\nCol={RoundVector3(Color)}, LCol={LightColor}, LLvl={RoundFloat(LightLevel)}";
         }
 

@@ -166,7 +166,7 @@ namespace Engine.Physics
 
         /// <summary>
         /// Returns the longest side length of the OBB.
-        /// </summary>
+        /// </summary> 
         public override float GetLongestSide()
         {
             return MathHelper.Max(MathHelper.Max(Size.X, Size.Y), Size.Z);

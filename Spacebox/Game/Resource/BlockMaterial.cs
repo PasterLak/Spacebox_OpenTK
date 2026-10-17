@@ -1,11 +1,11 @@
 ﻿using Engine;
-using Spacebox.Game.Player;
+
 
 namespace Spacebox.Game.Resource
 {
     public class BlockMaterial : TextureMaterial
     {
-        private Astronaut player;
+       
 
         private Texture2D? _emission;
 
@@ -22,14 +22,12 @@ namespace Spacebox.Game.Resource
             }
         }
 
-        public BlockMaterial(Texture2D texture, Texture2D emissionAtlas, Astronaut player) : 
+        public BlockMaterial(Texture2D texture, Texture2D emissionAtlas) : 
             base(texture, Resources.Load<Shader>("Resources/Shaders/block"))
         {
             RenderMode = RenderMode.Cutout;
             EmissionTexture = emissionAtlas;
-            this.player = player;
-
-            
+        
         }
 
         protected override void UpdateDynamicUniforms()

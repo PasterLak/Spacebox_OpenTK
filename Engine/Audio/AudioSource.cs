@@ -14,14 +14,16 @@ namespace Engine.Audio
         private Thread playbackThread;
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
+        private bool _is3D = false;
         private Vector3 _position = Vector3.Zero;
+
         public Vector3 Position
         {
             get => _position;
             set
             {
                 _position = value;
-                if (!isDisposed)
+                if (!isDisposed && _is3D)
                 {
                     AL.Source(handle, ALSource3f.Position, value.X, value.Y, value.Z);
                     CheckALError("Setting position");
@@ -75,6 +77,11 @@ namespace Engine.Audio
             get => _pitch;
             set
             {
+                if (float.IsNaN(value) || float.IsInfinity(value))
+                {
+                    value = 1.0f;
+                }
+
                 _pitch = MathHelper.Clamp(value, 0.5f, 2.0f);
                 if (!isDisposed)
                 {
@@ -90,7 +97,9 @@ namespace Engine.Audio
         {
             handle = AL.GenSource();
             AL.Source(handle, ALSourcef.Gain, _volume);
-            AL.Source(handle, ALSource3f.Position, Position.X, Position.Y, Position.Z);
+            AL.Source(handle, ALSourceb.SourceRelative, true);
+            AL.Source(handle, ALSource3f.Position, 0, 0, 0);
+
             CheckALError("Initializing AudioSource");
 
             SetClip(clip);
@@ -100,7 +109,7 @@ namespace Engine.Audio
         {
             if (newClip == null) return;
 
-                lock (playLock)
+            lock (playLock)
             {
                 if (isDisposed) return;
 
@@ -140,7 +149,12 @@ namespace Engine.Audio
                 Debug.Error("[AudioSource] The sound has 2 channels (stereo). It is recommended to use 1 channel (mono) for 3D sound! File:" + _clip.FileFullPath);
             }
 
+            _is3D = true;
+
             AL.Source(handle, ALSourceb.SourceRelative, false);
+
+            AL.Source(handle, ALSource3f.Position, _position.X, _position.Y, _position.Z);
+
             AL.Source(handle, ALSourcef.ReferenceDistance, referenceDistance);
             AL.Source(handle, ALSourcef.MaxDistance, maxDistance);
             AL.Source(handle, ALSourcef.RolloffFactor, rolloffFactor);
@@ -149,7 +163,10 @@ namespace Engine.Audio
 
         public void SetPitchByValue(float value, float minValue, float maxValue, float minPitch = 0.5f, float maxPitch = 2.0f)
         {
-            if (minValue == maxValue) return;
+            if (float.IsNaN(value) || float.IsInfinity(value)) return;
+
+            if (Math.Abs(maxValue - minValue) < 0.0001f) return;
+
             if (minValue > maxValue)
             {
                 var temp = maxValue;
@@ -292,7 +309,7 @@ namespace Engine.Audio
             ALError error = AL.GetError();
             if (error != ALError.NoError)
             {
-                throw new InvalidOperationException($"[AudioSource] OpenAL error during {operation}: {AL.GetErrorString(error)}");
+                Debug.Error($"[AudioSource] OpenAL error during {operation}: {AL.GetErrorString(error)}");
             }
         }
     }

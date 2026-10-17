@@ -1,7 +1,9 @@
 namespace Spacebox.Game.GUI;
 using Engine;
+using Engine.Utils;
 using Spacebox.Game.Player.GameModes;
 using System.IO;
+using System.Text.Json;
 
 public class WorldInfo
 {
@@ -47,6 +49,8 @@ public class WorldInfo
         info.pixeldata = loadTask.Result;
 
     }
+
+    
 
     public static void CreatePreviewFromPixels(WorldInfo info)
     {

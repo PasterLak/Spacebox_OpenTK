@@ -1,7 +1,8 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Windowing.Desktop;
+﻿using Engine.Multithreading;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using Engine.Multithreading;
+using OpenTK.Windowing.Desktop;
+using static Engine.Application;
 
 namespace Engine
 {
@@ -47,15 +48,43 @@ namespace Engine
             SaveScreenshot(window.ClientSize);
         }
 
+
         public static void SaveScreenshot(Vector2i clientSize)
         {
-            if (!Directory.Exists("Screenshots"))
-                Directory.CreateDirectory("Screenshots");
+            string rootFolder;
 
-            string filePath = $"Screenshots/screenshot_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.png";
+            if (Application.Platform == PlatformName.Windows || Application.Platform == PlatformName.Linux)
+            {
+                rootFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+
+                if (string.IsNullOrEmpty(rootFolder))
+                {
+                    rootFolder = "Screenshots";
+                }
+                else
+                {
+                    rootFolder = Path.Combine(rootFolder, "Spacebox");
+                }
+            }
+            else
+            {
+                rootFolder = "Screenshots";
+            }
+
+            if (!Directory.Exists(rootFolder))
+                Directory.CreateDirectory(rootFolder);
+
+            string version = Application.Version;
+            string timestamp = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
+            string fileName = $"screenshot_v{version}_{timestamp}.png";
+            string filePath = Path.Combine(rootFolder, fileName);
+
             SaveScreenshotUsingTexture(clientSize, filePath);
+
             Debug.Success($"Screenshot saved: {Path.GetFullPath(filePath)}");
         }
+
+
 
         public static void SaveFrameUsingTexture(GameWindow window, string filePath)
         {
@@ -75,16 +104,16 @@ namespace Engine
             int width = clientSize.X;
             int height = clientSize.Y;
             byte[] pixels = new byte[width * height * 4];
-          
+
             GL.ReadPixels(0, 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
             Texture2D texture = new Texture2D(width, height);
 
-                Color4[,] colorData = ConvertToColorArray(pixels, width, height);
-      
+            Color4[,] colorData = ConvertToColorArray(pixels, width, height);
+
             texture.SetPixelsData(colorData);
-      
+
             texture.SaveToPng(filePath);
-          
+
             texture.Dispose();
         }
 
@@ -94,10 +123,10 @@ namespace Engine
 
             int width = clientSize.Y;
             int height = clientSize.Y;
-            int dropXSize = (clientSize.X - height)/2;
+            int dropXSize = (clientSize.X - height) / 2;
 
             byte[] pixels = new byte[width * height * 4];
-            GL.ReadPixels(dropXSize , 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+            GL.ReadPixels(dropXSize, 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
             Color4[,] colorData = ConvertToColorArray(pixels, width, height);
             Color4[,] finalData;
             DownscaleColor4(colorData, width, height);
@@ -111,12 +140,12 @@ namespace Engine
             }
             else
             {
-                 finalData = colorData;
+                finalData = colorData;
             }
 
             Texture2D texture = new Texture2D(width, height);
             texture.SetPixelsData(finalData);
-            texture.SaveToPng(filePath, false,false);
+            texture.SaveToPng(filePath, false, false);
             texture.Dispose();
         }
 
@@ -152,7 +181,7 @@ namespace Engine
             var camera = Camera.Main;
 
             SaveTextureAsPng(renderer.ColorTexture, clientSize, "GBufferDumps/color.png");
-            SaveTextureAsPng(renderer.NormalTexture, clientSize, "GBufferDumps/normal.png" );
+            SaveTextureAsPng(renderer.NormalTexture, clientSize, "GBufferDumps/normal.png");
             SaveTextureAsPng(renderer.DepthTexture, clientSize, "GBufferDumps/depth.png", true);
 
             Debug.Success("G-Buffer textures saved to GBufferDumps/");
@@ -164,7 +193,7 @@ namespace Engine
                                      bool isDepth = false,
                                      float nearPlane = 0.1f,
                                      float farPlane = 10f,
-                                     bool invert = false)         
+                                     bool invert = false)
         {
             int w = size.X;
             int h = size.Y;
@@ -186,7 +215,7 @@ namespace Engine
                                  (farPlane + nearPlane - ndc * (farPlane - nearPlane));
 
                     float v = linZ / farPlane;   // 0..1     
-                    if (invert) v = 1f - v;    
+                    if (invert) v = 1f - v;
 
                     byte g = (byte)MathF.Round(Math.Clamp(v, 0f, 1f) * 255f);
                     int p = i * 4;

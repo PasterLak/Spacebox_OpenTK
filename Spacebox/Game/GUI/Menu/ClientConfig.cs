@@ -7,6 +7,7 @@ namespace Spacebox.Game.GUI.Menu
     public class ClientConfig
     {
         public string PlayerNickname { get; set; } = "";
+        public string SkinColor { get; set; } = "Yellow";
         public List<ServerInfo> Servers { get; set; } = new List<ServerInfo>();
 
 

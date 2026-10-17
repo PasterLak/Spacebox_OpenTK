@@ -2,27 +2,22 @@
 using System.Globalization;
 using System.Runtime.InteropServices;
 
-
 namespace Engine
 {
-    public class Application
+    public static class Application
     {
         public const string Version = "0.1.2";
         public const string Author = "PasterLak";
         public const string EngineVersion = "1.5";
 
+        public static string BaseDirectory => AppDomain.CurrentDomain.BaseDirectory;
 
-        public static string BaseDirectory
-        {
-            get
-            {
-                return AppDomain.CurrentDomain.BaseDirectory;
-            }
-        }
+        public static PlatformName Platform { get; } = CheckPlatform();
 
-        public static PlatformName Platform => CheckPlatform();
         private static PlatformName CheckPlatform()
         {
+
+           
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 return PlatformName.Windows;
@@ -67,7 +62,7 @@ namespace Engine
 
         public static void OpenLink(string url)
         {
-            if (url == string.Empty) return;
+            if (string.IsNullOrEmpty(url)) return;
 
             try
             {
@@ -95,6 +90,5 @@ namespace Engine
             OSX,
             Unknown
         }
-
     }
 }

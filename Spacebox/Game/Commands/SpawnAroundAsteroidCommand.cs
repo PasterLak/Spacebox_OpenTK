@@ -7,11 +7,11 @@ using Engine;
 
 namespace Spacebox.Game.Commands
 {
-    internal class SpawnAroundAsteroidCommand : ICommand
+    internal class SpawnAroundAsteroidCommand : CommandBase
     {
-        public string Name => "tpa";
+        public override string Name => "tpa";
 
-        public string Description => "tp to asteroid";
+        public override string Description => "Teleport to the nearest asteroid";
 
         public Astronaut Astronaut { get; set; }
 
@@ -20,7 +20,7 @@ namespace Spacebox.Game.Commands
         {
             this.Astronaut = astronaut;
         }
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
 
 

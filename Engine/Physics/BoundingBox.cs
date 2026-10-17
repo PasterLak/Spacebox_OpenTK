@@ -84,6 +84,10 @@ namespace Engine.Physics
                 var distanceSquared = (sphere.Center - closestPoint).LengthSquared;
                 return distanceSquared <= sphere.Radius * sphere.Radius;
             }
+            else if (other is BoundingBoxOBB bob)
+            {
+                return bob.Intersects(this);
+            }
 
             return false;
         }

@@ -1,13 +1,11 @@
 ﻿using Engine;
 using Engine.Audio;
 using ImGuiNET;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
-using Spacebox.Game.Resource;
-using Spacebox.GUI;
+using System;
 using System.Numerics;
 using System.Text;
 
@@ -16,13 +14,11 @@ namespace Spacebox.Game.GUI
     public static class StorageUI
     {
         private static float SlotSize = 64.0f;
-        private static nint SlotTexture = nint.Zero;
-        private static nint ItemTexture = nint.Zero;
         private static nint PencilTexture = nint.Zero;
         private static Storage? Storage;
         private static StorageBlock? StorageBlock;
-        private static Astronaut? Astronaut;
-        public static bool IsVisible { get; set; } = false;
+        private static LocalAstronaut? Astronaut;
+        private static bool _wasVisible = false;
 
         private static AudioSource openSound;
         private static AudioSource closeSound;
@@ -33,11 +29,9 @@ namespace Spacebox.Game.GUI
 
         public static void Initialize(nint textureId)
         {
-            SlotTexture = textureId;
             var itemTexture = Resources.Load<Texture2D>("Resources/Textures/UI/trash.png");
             itemTexture.FilterMode = FilterMode.Nearest;
             itemTexture.FlipY();
-            ItemTexture = itemTexture.Handle;
 
             var pencil = Resources.Load<Texture2D>("Resources/Textures/UI/pencil.png");
             pencil.FilterMode = FilterMode.Nearest;
@@ -46,70 +40,41 @@ namespace Spacebox.Game.GUI
 
             InventoryUIHelper.SetDefaultIcon(textureId, nint.Zero);
 
-            var inventory = ToggleManager.Register("storage");
-            inventory.IsUI = true;
-            inventory.OnStateChanged += s => IsVisible = s;
-
             splitAudio = new AudioSource(Resources.Load<AudioClip>("splitStack"));
             openSound = new AudioSource(Resources.Get<AudioClip>("openStorage"));
             closeSound = new AudioSource(Resources.Get<AudioClip>("closeStorage"));
         }
 
-        public static void OpenStorage(StorageBlock storageBlock, Astronaut astronaut)
+        public static void OpenStorage(StorageBlock storageBlock, LocalAstronaut astronaut)
         {
             StorageBlock = storageBlock;
             OpenStorage(storageBlock.Storage, astronaut);
-
         }
-        public static void OpenStorage(Storage storage, Astronaut astronaut)
-        {
 
+        public static void OpenStorage(Storage storage, LocalAstronaut astronaut)
+        {
             Storage = storage;
             Astronaut = astronaut;
             Storage.ConnectStorage(astronaut.Inventory);
             astronaut.Inventory.ConnectStorage(Storage);
+            astronaut.Panel.ConnectStorage(Storage);
 
-            openSound?.Play();
-            if (ToggleManager.IsActiveAndExists("pause")) return;
-            var v = IsVisible;
-
-            bool count = ToggleManager.IsActiveAndExists("radar");
-
-            ToggleManager.DisableAllWindows();
-
-            if (!count)
-                IsVisible = !v;
-
-            if (IsVisible)
-            {
-                ToggleManager.SetState("mouse", true);
-                ToggleManager.SetState("player", false);
-
-                if (astronaut.GameMode != GameMode.Survival)
-                    ToggleManager.SetState("creative", true);
-
-                ToggleManager.SetState("inventory", true);
-            }
+            if (astronaut.GameMode != GameMode.Survival)
+                UIManager.Open("storage", "inventory", "creative");
             else
-            {
-                ToggleManager.SetState("mouse", false);
-                ToggleManager.SetState("player", true);
-                ToggleManager.SetState("inventory", false);
-            }
-
-            ToggleManager.SetState("panel", !IsVisible);
+                UIManager.Open("storage", "inventory");
         }
 
-        public static void CloseStorage()
+        private static void CloseStorage()
         {
             Storage?.DisconnectStorage();
             Storage = null;
             StorageBlock = null;
-            IsVisible = false;
-            closeSound?.Play();
+
             if (Astronaut is not null)
             {
                 Astronaut.Inventory.ConnectStorage(Astronaut.Panel);
+                Astronaut.Panel.ConnectStorage(Astronaut.Inventory, true);
                 Astronaut = null;
             }
             editingName = false;
@@ -118,13 +83,23 @@ namespace Spacebox.Game.GUI
 
         public static void OnGUI()
         {
-            if (!IsVisible || Storage == null) return;
+            bool isVisible = UIManager.IsOpen("storage");
 
-            if (Input.IsActionDown("inventory") || Input.IsKeyDown(Keys.Escape))
+            if (isVisible != _wasVisible)
             {
-                CloseStorage();
-                return;
+                if (isVisible)
+                {
+                    openSound?.Play();
+                }
+                else
+                {
+                    closeSound?.Play();
+                    CloseStorage();
+                }
+                _wasVisible = isVisible;
             }
+
+            if (!isVisible || Storage == null) return;
 
             var io = ImGui.GetIO();
             var displaySize = io.DisplaySize;
@@ -152,46 +127,48 @@ namespace Spacebox.Game.GUI
 
             ImGui.Begin("Storage", windowFlags);
 
-            
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV, displaySize.Y);
 
-            ImGui.SetCursorPos(paddingV);
-           
-          
-            if (!editingName)
+            if (Storage.SizeX >= 2)
             {
-                var stb = StorageBlock;
-                ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), stb?.Name ?? Storage.Name);
-                ImGui.SameLine();
-                if (stb != null && ImGui.ImageButton("##edit", PencilTexture, paddingV * 4))
+                ImGui.SetCursorPos(paddingV);
+
+                if (!editingName)
                 {
-                    StartNameEdit();
-                }
+                    var stb = StorageBlock;
+                    ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), stb?.Name ?? Storage.Name);
+                    ImGui.SameLine();
+                    if (stb != null && ImGui.ImageButton("##edit", PencilTexture, paddingV * 4))
+                    {
+                        StartNameEdit();
+                    }
 
-                if(ImGui.IsItemHovered())
+                    if (ImGui.IsItemHovered())
+                    {
+                        ImGui.BeginTooltip();
+                        ImGui.Text("Rename");
+                        ImGui.EndTooltip();
+                    }
+                }
+                else
                 {
-                    ImGui.BeginTooltip();
-
-                    ImGui.Text("Rename");
-
-                    ImGui.EndTooltip();
+                    float buttonWidth = ImGui.CalcTextSize("Save").X + style.FramePadding.X * 2;
+                    ImGui.SetNextItemWidth(windowWidth - buttonWidth - windowWidth / 2f);
+                    bool enterPressed = ImGui.InputText("##storageName", buffer, (uint)buffer.Length, ImGuiInputTextFlags.EnterReturnsTrue);
+                    ImGui.SameLine();
+                    if (ImGui.SmallButton("Save") || enterPressed)
+                    {
+                        SaveName();
+                    }
                 }
-               
             }
-            else
+
+            if (Storage.SizeX >= 3)
             {
-                float buttonWidth = ImGui.CalcTextSize("Save").X + style.FramePadding.X * 2;
-                ImGui.SetNextItemWidth(windowWidth - buttonWidth - windowWidth/2f);
-                bool enterPressed = ImGui.InputText("##storageName", buffer, (uint)buffer.Length, ImGuiInputTextFlags.EnterReturnsTrue);
                 ImGui.SameLine();
-                if (ImGui.SmallButton("Save") || enterPressed)
-                {
-                    SaveName();
-                }
-                
+                InventoryUIHelper.SortStorageButtons(windowWidth, padding, Storage);
             }
-            ImGui.SameLine();
-            InventoryUIHelper.SortStorageButtons(windowWidth, padding, Storage);
+
             ImGui.SetCursorPos(paddingV + new Vector2(0, padding * 4));
             InventoryUIHelper.RenderStorage(Storage, OnSlotClicked, Storage.SizeX);
 
@@ -224,18 +201,46 @@ namespace Spacebox.Game.GUI
             editingName = false;
         }
 
+        private static void TryMoveToPlayerPanel(ItemSlot slot, byte rest)
+        {
+            if (Astronaut?.Panel == null) return;
+
+            if (Astronaut.Panel.TryAddItem(slot.Item, rest))
+            {
+                slot.Count = (byte)(slot.Count - rest);
+            }
+        }
+
         private static void OnSlotClicked(ItemSlot slot)
         {
             if (!slot.HasItem) return;
 
             if (Input.IsAction("storage_item_quick_transfer"))
             {
-                slot.MoveItemToConnectedStorage();
+                if (slot.TryMoveItemToConnectedStorage(out var rest))
+                {
+                }
+                else
+                {
+                    TryMoveToPlayerPanel(slot, rest);
+                }
             }
             else if (Input.IsAction("storage_item_delete"))
             {
                 slot.Clear();
             }
+        }
+
+        public static void Dispose()
+        {
+            closeSound?.Dispose();
+            openSound?.Dispose();
+            splitAudio?.Dispose();
+
+            PencilTexture = nint.Zero;
+            Storage = null;
+            StorageBlock = null;
+            Astronaut = null;
         }
     }
 }

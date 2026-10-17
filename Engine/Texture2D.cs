@@ -1,6 +1,7 @@
 ﻿
 using Engine.Graphics;
 using Engine.Multithreading;
+using Engine.Utils;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SkiaSharp;
@@ -22,22 +23,26 @@ namespace Engine
 
     public class Texture2D : IResource
     {
-        private static int[] _boundTextures = new int[32]; 
-        private static int _activeUnit = 0; 
-
+        private static int[] _boundTextures = new int[32];
+        private static int _activeUnit = 0;
+        public string Name;
         public int Handle { get; private set; }
         public int Width { get; private set; }
         public int Height { get; private set; }
         private Color4[,] pixels;
         public static bool AllowDebug = true;
+
+        private bool _isDirty = true;
         private FilterMode _filterMode = FilterMode.Linear;
         public FilterMode FilterMode
         {
             get => _filterMode;
             set
             {
+                if (_filterMode == value) return;
+
                 _filterMode = value;
-                SetTextureParameters();
+                _isDirty = true;
                 UpdateTexture();
             }
         }
@@ -49,6 +54,7 @@ namespace Engine
 
         public Texture2D(PixelData pixelData, FilterMode filterMode = FilterMode.Linear)
         {
+            Resources.AddResourceToControll(this);
             Width = pixelData.Width;
             Height = pixelData.Height;
             _filterMode = filterMode;
@@ -62,6 +68,7 @@ namespace Engine
         }
         public Texture2D(int width, int height, bool pixelated = false)
         {
+            Resources.AddResourceToControll(this);
             Width = width;
             Height = height;
             pixels = new Color4[width, height];
@@ -77,6 +84,7 @@ namespace Engine
         }
         public Texture2D(string path, bool pixelated = false, bool flipY = true)
         {
+            Resources.AddResourceToControll(this);
             Handle = GL.GenTexture();
             GPUDebug.LabelTexture(Handle, "Texture2D " + path);
             Use();
@@ -132,7 +140,7 @@ namespace Engine
             LoadTextureFromPixels();
 
             if (AllowDebug)
-                Debug.Log($"[Texture2D][{Handle}] Loaded! - {path}", Color4.Coral);
+                Debug.Log($"[Texture2D][{Handle}] Loaded:{path}", Color4.Coral);
         }
 
         private void LoadTextureFromPixels()
@@ -179,14 +187,20 @@ namespace Engine
         {
             if (x < 0 || x >= Width || y < 0 || y >= Height)
                 throw new ArgumentOutOfRangeException();
-            pixels[x, y] = new Color4(color.R/255f, color.G/255f, color.B/255f, 1) ;
+            pixels[x, y] = new Color4(color.R / 255f, color.G / 255f, color.B / 255f, 1);
+
+            _isDirty = true;
         }
         public void SetPixel(int x, int y, Color4 color)
         {
             if (x < 0 || x >= Width || y < 0 || y >= Height)
                 throw new ArgumentOutOfRangeException();
             pixels[x, y] = color;
+
+            _isDirty = true;
         }
+
+        public bool XWasFlipped { get; private set; } = false;
         public void FlipX()
         {
             for (int y = 0; y < Height; y++)
@@ -196,8 +210,14 @@ namespace Engine
                     pixels[x, y] = pixels[Width - 1 - x, y];
                     pixels[Width - 1 - x, y] = temp;
                 }
+
+            _isDirty = true;
+            XWasFlipped = !XWasFlipped;
             UpdateTexture();
         }
+        public bool YWasFlipped { get; private set; } = false;
+        public bool IsDisposed { get; set; }
+
         public void FlipY()
         {
             for (int y = 0; y < Height / 2; y++)
@@ -207,19 +227,22 @@ namespace Engine
                     pixels[x, y] = pixels[x, Height - 1 - y];
                     pixels[x, Height - 1 - y] = temp;
                 }
+
+            _isDirty = true;
+            YWasFlipped = !YWasFlipped;
             UpdateTexture();
         }
         public void UpdateTexture()
         {
+            if (!_isDirty) return;
+
             Use();
             LoadTextureFromPixels();
             SetTextureParameters();
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            _isDirty = false;
         }
-        public void UpdateTexture(bool pixelated)
-        {
-            FilterMode = pixelated ? FilterMode.Nearest : FilterMode.Linear;
-        }
+
         public void Use(TextureUnit unit = TextureUnit.Texture0)
         {
             int unitIndex = (int)(unit - TextureUnit.Texture0);
@@ -236,13 +259,15 @@ namespace Engine
                 _boundTextures[unitIndex] = Handle;
             }
         }
-        public Color4[,] GetPixelData() => pixels;
+        public Color4[,] GetPixels() => pixels;
         public void SetPixelsData(Color4[,] newPixels)
         {
             if (newPixels.GetLength(0) != Width || newPixels.GetLength(1) != Height)
                 throw new ArgumentException("[Texture2D] Pixel data does not match texture size.");
             pixels = newPixels;
+            _isDirty = true;
         }
+
         public void SetPixelsData(Vector3[,] newPixels)
         {
             int width = newPixels.GetLength(0);
@@ -263,6 +288,20 @@ namespace Engine
             }
 
             pixels = newColorPixels;
+            _isDirty = true;
+        }
+
+        public void SetRawBytes(byte[] rawData)
+        {
+            if (rawData.Length != Width * Height * 4)
+                throw new ArgumentException("[Texture2D] Raw data length does not match texture dimensions (expected Width * Height * 4 bytes).");
+
+            Use();
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0,
+                OpenTK.Graphics.OpenGL4.PixelFormat.Rgba, PixelType.UnsignedByte, rawData);
+
+            _isDirty = false;
         }
         private void EnsureCpuPixels()
         {
@@ -297,11 +336,12 @@ namespace Engine
 
             if (doAsync)
             {
-   
+
                 WorkerPoolManager.Enqueue((e) =>
                 {
                     SaveImageJpg(path, 90, flipY);
-                    Debug.Log("SCR saved: " + Time.Total);
+
+                   // Debug.Log("SCR saved: " + Time.Total);
 
                 }, WorkerPoolManager.Priority.High);
 
@@ -310,35 +350,42 @@ namespace Engine
             {
                 SaveImageJpg(path, 90, flipY);
             }
-           
+
         }
 
-        private void SaveImageJpg(string path, int quality = 90, bool flipY = false)
+        private unsafe void SaveImageJpg(string path, int quality = 90, bool flipY = false)
         {
-            using var surface = SKSurface.Create(new SKImageInfo(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul));
-            var canvas = surface.Canvas;
+            var info = new SKImageInfo(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            using var bitmap = new SKBitmap(info);
 
-            for (int y = 0; y < Height; y++)
+            byte* rowPtr = (byte*)bitmap.GetPixels();
+            int stride = info.RowBytes;
+
+            Parallel.For(0, Height, y =>
             {
                 int targetY = flipY ? Height - 1 - y : y;
+                byte* currentPixel = rowPtr + (targetY * stride);
+
                 for (int x = 0; x < Width; x++)
                 {
-                    var color = pixels[x, y];
-                    var skColor = new SKColor(
-                        (byte)(color.R * 255),
-                        (byte)(color.G * 255),
-                        (byte)(color.B * 255),
-                        (byte)(color.A * 255));
-                    canvas.DrawPoint(x, targetY, skColor);
+                    Color4 color = pixels[x, y];
+
+                    currentPixel[0] = (byte)(color.R * 255f);
+                    currentPixel[1] = (byte)(color.G * 255f);
+                    currentPixel[2] = (byte)(color.B * 255f);
+                    currentPixel[3] = (byte)(color.A * 255f);
+
+                    currentPixel += 4;
                 }
+            });
+
+            using (var image = SKImage.FromBitmap(bitmap))
+            using (var data = image.Encode(SKEncodedImageFormat.Jpeg, quality))
+            using (var stream = File.OpenWrite(path))
+            {
+                data.SaveTo(stream);
             }
 
-            using var image = surface.Snapshot();
-            using var data = image.Encode(SKEncodedImageFormat.Jpeg, quality);
-            using var stream = File.OpenWrite(path);
-            data.SaveTo(stream);
-
-            Debug.Success($"[Texture2D] JPEG image saved to: {Path.GetFullPath(path)} , Size X:{Width} Y:{Height}");
         }
 
         private void SaveImage(string path, bool flipY = false)
@@ -404,7 +451,7 @@ namespace Engine
             if (Handle != 0)
             {
                 GL.DeleteTexture(Handle);
-
+                IsDisposed = true;
                 for (int i = 0; i < _boundTextures.Length; i++)
                 {
                     if (_boundTextures[i] == Handle)
@@ -412,7 +459,7 @@ namespace Engine
                 }
             }
 
-            
+
         }
 
         public IResource Load(string path)
@@ -429,44 +476,9 @@ namespace Engine
 
         public int GetHandle() { return Handle; }
 
-    }
-
-    public static class PixelDataLoader
-    {
-        public static async Task<PixelData> LoadAsync(string path, bool flipY = true)
+        public string GetResourceInfo()
         {
-            if (!File.Exists(path))
-                throw new FileNotFoundException($"[Texture2D] Texture file not found: {path}");
-
-            return await Task.Run(() =>
-            {
-                using var input = File.OpenRead(path);
-                using var codec = SKCodec.Create(input);
-                var info = codec.Info;
-
-                var bitmap = new SKBitmap(info.Width, info.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
-                codec.GetPixels(bitmap.Info, bitmap.GetPixels());
-
-                int width = bitmap.Width;
-                int height = bitmap.Height;
-                byte[] data = new byte[width * height * 4];
-
-                for (int y = 0; y < height; y++)
-                {
-                    int row = flipY ? height - 1 - y : y;
-                    for (int x = 0; x < width; x++)
-                    {
-                        var color = bitmap.GetPixel(x, row);
-                        int index = (y * width + x) * 4;
-                        data[index + 0] = color.Red;
-                        data[index + 1] = color.Green;
-                        data[index + 2] = color.Blue;
-                        data[index + 3] = color.Alpha;
-                    }
-                }
-
-                return new PixelData { Width = width, Height = height, Data = data };
-            });
+            return $"Texture2D {Name}(Handle: {Handle}, Size: {Width}x{Height})";
         }
     }
 

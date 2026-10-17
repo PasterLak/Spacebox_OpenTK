@@ -40,6 +40,8 @@ namespace Engine.SceneManagement
         static readonly Prof.Token T_SceneSkybox = Prof.RegisterTimer("Render.Scene.Skybox");
         static readonly Prof.Token T_SceneBVH = Prof.RegisterTimer("Render.Scene.BVH");
 
+        public static Node3D Root => SceneManager.Current;
+
         public virtual void Render()
         {
             if (Lighting.Skybox != null)

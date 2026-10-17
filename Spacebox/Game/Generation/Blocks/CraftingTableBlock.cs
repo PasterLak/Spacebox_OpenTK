@@ -7,13 +7,13 @@ namespace Spacebox.Game.Generation.Blocks
 {
     public class CraftingTableBlock : InteractiveBlock
     {
-        public CraftingTableBlock(BlockJSON blockData) : base(blockData)
+        public CraftingTableBlock(BlockData blockData) : base(blockData)
         {
             OnUse += CraftingGUI.Toggle;
 
         }
 
-        public override void Use(Astronaut player, ref HitInfo hit)
+        public override void Use(LocalAstronaut player, ref HitInfo hit)
         {
             base.Use(player, ref hit);
         }

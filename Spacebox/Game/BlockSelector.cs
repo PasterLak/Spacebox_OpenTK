@@ -4,138 +4,318 @@ using Spacebox.Game.GUI;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Resource;
+using Spacebox.GUI;
 
-namespace Spacebox.Game
+namespace Spacebox.Game;
+
+public class BlockSelector : Node3D
 {
-    public class BlockSelector : IDisposable
+    public static BlockSelector Instance;
+
+    public static bool IsVisible
     {
-        public static BlockSelector Instance;
-        public static bool IsVisible = false;
+        get => Instance != null && Instance.Enabled;
+        set { if (Instance != null) Instance.Enabled = value; }
+    }
 
-        private Texture2D selectorTexture;
-        public SimpleBlock SimpleBlock { get; private set; }
+    private const float MagnetTextDuration = 1f;
+    private const float MagnetLineThickness = 0.05f;
+    private const float NormalLineThickness = 0.1f;
+    private const float MagnetBoxSize = 0.51f;
+    private const string SelectorTexturePath = "Resources/Textures/selector.png";
+    private const string ShaderPath = "Resources/Shaders/blockPreview";
 
-        private Direction blockDirection = Direction.Up;
+    public SimpleBlock SimpleBlock { get; private set; }
+    public LineRenderer LineRenderer { get; private set; }
+    public BlockData CurrentBlockData { get; private set; }
 
-        public Rotation Rotation = Rotation.None;
-        private BlockJSON currentBlockData;
-
-        public BlockSelector()
+    public bool EnableMagnet
+    {
+        get => _enableMagnet;
+        private set
         {
-            Instance = this;
-            selectorTexture = Resources.Load<Texture2D>("Resources/Textures/selector.png");
-            selectorTexture.FilterMode = FilterMode.Nearest;
+            if (_enableMagnet == value) return;
+            _enableMagnet = value;
+            Rotation = Block.DefaultRotation;
+            _magnetTextTimer = MagnetTextDuration;
+            _transformDirty = true;
+        }
+    }
+    public Rotation Rotation { get; private set; } = Block.DefaultRotation;
 
-            var material = new TextureMaterial(selectorTexture, Resources.Load<Shader>("Resources/Shaders/blockPreview"));
-            material.Color = new Color4(1f, 1f, 1f, 1f);
+    private Texture2D _selectorTexture;
+    private LineRenderer _magnetLineRenderer;
+    private Matrix4 _currentTransform = Matrix4.Identity;
+    private Direction _blockDirection = Block.DefaultDirection;
+    private Rotation _blockRotation = Block.DefaultRotation;
 
-            SimpleBlock = new SimpleBlock(material, Vector3.Zero);
-            SimpleBlock.Scale = new Vector3(1.05f, 1.05f, 1.05f);
+    private bool _enableMagnet = true;
+    private bool _onSurface;
+    private float _magnetTextTimer;
+    private bool _transformDirty;
 
-            PanelUI.OnSlotChanged += OnSelectedSlotWasChanged;
-            OnSelectedSlotWasChanged(PanelUI.SelectedSlotId);
+    private readonly List<Vector3> _cachedMagnetPoints = new List<Vector3>(5);
+    private readonly Vector4[] _baseCorners;
+
+    public BlockSelector()
+    {
+        Instance = this;
+
+        _selectorTexture = GameAssets.LoadResource<Texture2D>(SelectorTexturePath);
+        _selectorTexture.FilterMode = FilterMode.Nearest;
+
+        var shader = Resources.Load<Shader>(ShaderPath);
+        var material = new TextureMaterial(_selectorTexture, shader)
+        {
+            Color = Color4.White
+        };
+
+        SimpleBlock = new SimpleBlock(material, Vector3.Zero)
+        {
+            Scale = new Vector3(1.05f)
+        };
+        AddChild(SimpleBlock);
+
+        _magnetLineRenderer = new LineRenderer
+        {
+            Color = Color4.Yellow,
+            Thickness = MagnetLineThickness,
+            Enabled = false
+        };
+        AddChild(_magnetLineRenderer);
+
+        LineRenderer = new LineRenderer
+        {
+            Thickness = NormalLineThickness,
+            Color = Color4.Red,
+            Enabled = false
+        };
+        LineRenderer.AddPoint(Vector3.Zero);
+        LineRenderer.AddPoint(Vector3.One);
+        AddChild(LineRenderer);
+
+        PanelUI.OnSlotChanged += OnSelectedSlotWasChanged;
+
+        _baseCorners = new Vector4[]
+        {
+            new Vector4(-MagnetBoxSize, -MagnetBoxSize, -MagnetBoxSize, 1f),
+            new Vector4(MagnetBoxSize, -MagnetBoxSize, -MagnetBoxSize, 1f),
+            new Vector4(MagnetBoxSize, -MagnetBoxSize, MagnetBoxSize, 1f),
+            new Vector4(-MagnetBoxSize, -MagnetBoxSize, MagnetBoxSize, 1f)
+        };
+
+        OnSelectedSlotWasChanged(PanelUI.SelectedSlotId);
+    }
+
+    public void OnSelectedSlotWasChanged(short slot)
+    {
+        SimpleBlock.ResetBlockTransform();
+        _transformDirty = true;
+
+        if (PanelUI.IsHolding<DrillItem>())
+        {
+            ConfigureForDrill();
+        }
+        else if (PanelUI.IsHolding<BlockItem>())
+        {
+            ConfigureForBlock();
+        }
+        else
+        {
+            Rotation = Rotation.None;
+            CurrentBlockData = null;
+        }
+    }
+
+    private void ConfigureForDrill()
+    {
+        SimpleBlock.Material.MainTexture = _selectorTexture;
+        SimpleBlock.Scale = new Vector3(1.05f);
+        SimpleBlock.ResetUV();
+        CurrentBlockData = null;
+    }
+
+    private void ConfigureForBlock()
+    {
+        var blockItem = PanelUI.CurrentSlot().Item as BlockItem;
+        if (blockItem == null) return;
+
+        CurrentBlockData = GameAssets.GetBlockDataById(blockItem.Id);
+        SimpleBlock.Material.MainTexture = GameAssets.BlocksTexture;
+        SimpleBlock.Scale = Vector3.One;
+
+        if (CurrentBlockData != null && CurrentBlockData.AllSidesAreSame())
+        {
+            _onSurface = false;
         }
 
-        public void OnSelectedSlotWasChanged(short slot)
-        {
-            
-            
-            SimpleBlock.ResetBlockTransform();
+        SetupBlockMesh();
+        UpdateBlockRotation();
+    }
 
-            if (PanelUI.IsHolding<DrillItem>())
-            {
-                SimpleBlock.Material.MainTexture = selectorTexture;
-                SimpleBlock.Scale = new Vector3(1.05f, 1.05f, 1.05f);
-                SimpleBlock.ResetUV();
-                currentBlockData = null;
-            }
-            else if (PanelUI.IsHolding<BlockItem>())
-            {
-                var blockItem = PanelUI.CurrentSlot().Item as BlockItem;
-                if (blockItem != null)
-                {
-                    currentBlockData = GameAssets.GetBlockDataById(blockItem.Id);
-                    SimpleBlock.Material.MainTexture = GameAssets.BlocksTexture;
-                    SimpleBlock.Scale = new Vector3(1f, 1f, 1f);
-                    SetupBlockMesh();
-                    UpdateBlockRotation();
-                }
-            }else
-            {
-                Rotation = Rotation.None;
-            }
+    private void SetupBlockMesh()
+    {
+        if (CurrentBlockData == null) return;
+
+        for (byte i = 0; i < 6; i++)
+        {
+            Face face = (Face)i;
+            Vector2[] uv = CurrentBlockData.GetFaceUV(face, BlockState.Inactive);
+            SimpleBlock.ChangeUV(uv, face, false);
         }
 
-        private void SetupBlockMesh()
+        SimpleBlock.RegenerateMesh();
+    }
+
+    private void UpdateBlockRotation()
+    {
+        if (CurrentBlockData == null) return;
+
+        if (CurrentBlockData.AllSidesAreSame())
         {
-            if (currentBlockData == null) return;
-
-            for (byte i = 0; i < 6; i++)
-            {
-                Face face = (Face)i;
-                Vector2[] uv = currentBlockData.GetFaceUV(face);
-                SimpleBlock.ChangeUV(uv, face, false);
-            }
-
-            SimpleBlock.RegenerateMesh();
+            _currentTransform = Matrix4.Identity;
         }
-
-        private void UpdateBlockRotation()
+        else
         {
-            if (currentBlockData == null) return;
-            if(currentBlockData.AllSidesAreSame) return;
-
-            var transformMatrix = BlockRotationHelper.CalculateTransformMatrix(
-                currentBlockData.BaseFrontDirection,
-                blockDirection,
-                Rotation
+            _currentTransform = BlockRotationHelper.CalculateTransformMatrix(
+                CurrentBlockData.BaseFrontDirection,
+                _blockDirection,
+                _blockRotation
             );
-
-            SimpleBlock.SetBlockTransform(transformMatrix);
         }
 
-        public void UpdatePosition(Vector3 position, Direction direction)
+        SimpleBlock.SetBlockTransform(_currentTransform);
+        _transformDirty = true;
+    }
+
+    public void UpdatePosition(Vector3 position, Direction direction, Rotation rotation, bool onSurface)
+    {
+        Vector3 newPosition = position + Vector3.One * 0.5f;
+
+        if (SimpleBlock.Position == newPosition &&
+            _blockDirection == direction &&
+            _blockRotation == rotation &&
+            _onSurface == onSurface)
         {
-            Vector3 newPosition = position + Vector3.One * 0.5f;
+            return;
+        }
 
-            if (SimpleBlock.Position == newPosition && blockDirection == direction)
-                return;
+        LineRenderer.Enabled = !onSurface;
+        SimpleBlock.Position = newPosition;
 
-            SimpleBlock.Position = newPosition;
+        _blockDirection = direction;
+        _blockRotation = rotation;
 
-            if (blockDirection != direction)
+        if (CurrentBlockData != null)
+        {
+            if (_onSurface != onSurface)
             {
-                blockDirection = direction;
-                if (currentBlockData != null)
-                {
-                    UpdateBlockRotation();
-                }
+                Rotation = Block.DefaultRotation;
+            }
+
+            _onSurface = onSurface;
+
+            if (CurrentBlockData.AllSidesAreSame())
+            {
+                _onSurface = false;
+            }
+
+            UpdateBlockRotation();
+        }
+
+        _transformDirty = true;
+    }
+
+    public override void Update()
+    {
+        if (!Settings.ShowInterface) return;
+        if (UIManager.IsUIMode) return;
+
+        base.Update();
+        HandleInput();
+    }
+
+    private void HandleInput()
+    {
+        if (Input.IsActionDown("block_rotate"))
+        {
+            Rotation = (Rotation)(((byte)Rotation + 1) % 4);
+            if (CurrentBlockData != null)
+            {
+                UpdateBlockRotation();
             }
         }
 
-        public void Render()
+        if (Input.IsActionDown("magnet"))
         {
-            if (!IsVisible || !Settings.ShowInterface) return;
+            EnableMagnet = !EnableMagnet;
+        }
+    }
 
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.R))
+    public override void Render()
+    {
+        if (!Settings.ShowInterface) return;
+
+        bool showMagnet = EnableMagnet && _onSurface && CurrentBlockData != null && !UIManager.IsUIMode;
+
+        if (showMagnet)
+        {
+            if (_transformDirty)
             {
-                Rotation = (Rotation)(((byte)Rotation + 1) % 4);
-                if (currentBlockData != null)
-                {
-                    UpdateBlockRotation();
-                }
+                UpdateMagnetVisuals();
+                _transformDirty = false;
             }
-
-            SimpleBlock.Render();
+            _magnetLineRenderer.Enabled = true;
         }
-
-        public Direction GetDirection() => blockDirection;
-        public Rotation GetRotation() => Rotation;
-
-        public void Dispose()
+        else
         {
-            SimpleBlock?.Dispose();
-            Instance = null;
+            _magnetLineRenderer.Enabled = false;
         }
+        base.Render();
+    }
+
+    public override void OnGUI()
+    {
+        if (!Settings.ShowInterface) return;
+        if (Debug.IsVisible) return;
+        base.OnGUI();
+
+        if (_magnetTextTimer > 0)
+        {
+            CenteredText.Show();
+            _magnetTextTimer -= Time.Delta;
+            CenteredText.SetText($"Magnet: {(EnableMagnet? "on" : "off")}");
+        }
+        
+    }
+
+    private void UpdateMagnetVisuals()
+    {
+        _cachedMagnetPoints.Clear();
+
+        Vector3 pos = SimpleBlock.Position;
+
+        for (int i = 0; i < _baseCorners.Length; i++)
+        {
+            Vector4 transformed = _baseCorners[i] * _currentTransform;
+            _cachedMagnetPoints.Add(transformed.Xyz + pos);
+        }
+        _cachedMagnetPoints.Add(_cachedMagnetPoints[0]);
+
+        _magnetLineRenderer.SetPoints(_cachedMagnetPoints);
+    }
+
+    public Direction GetDirection() => _blockDirection;
+    public Rotation GetRotation() => Rotation;
+
+    public override void Destroy()
+    {
+        base.Destroy();
+        PanelUI.OnSlotChanged -= OnSelectedSlotWasChanged;
+        SimpleBlock?.Destroy();
+        _selectorTexture?.Dispose();
+        _magnetLineRenderer?.Dispose();
+        LineRenderer?.Dispose();
+        Instance = null;
     }
 }

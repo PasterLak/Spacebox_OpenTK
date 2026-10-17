@@ -29,7 +29,7 @@ namespace Engine
         private Dictionary<string, int> _previousUniformLocations;
 
         private ShaderHotReloader _hotReloader;
-
+        public bool IsDisposed { get; set; }
         public Shader()
         {
 
@@ -37,7 +37,7 @@ namespace Engine
         public Shader(string shaderPath)
         {
             _shaderPath = shaderPath;
-
+            Resources.AddResourceToControll(this);
             var r = LoadFromPath(_shaderPath);
             Load(ref r.vertexSrc, ref r.fragmentSrc, ref r.geometrySrc);
             _hotReloader = new ShaderHotReloader(_shaderPath, OnShaderFileChanged);
@@ -46,11 +46,15 @@ namespace Engine
         public Shader(string[] code)
         {
             _shaderPath = "";
-
+            Resources.AddResourceToControll(this);
             var r = LoadFromCode(code);
             Load(ref r.vertexSrc, ref r.fragmentSrc, ref r.geometrySrc); 
         }
 
+        public string GetResourceInfo()
+        {
+            return $"Shader: {Path.GetFileName(_shaderPath)} (Handle: {Handle})";
+        }
 
         private void OnShaderFileChanged(object sender, FileSystemEventArgs e)
         {
@@ -300,6 +304,8 @@ namespace Engine
             _watcher?.Dispose();
             _hotReloader?.Dispose();
             _hotReloader = null;
+
+            IsDisposed = true;
         }
 
         public IResource Load(string path)

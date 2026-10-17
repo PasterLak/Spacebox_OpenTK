@@ -10,6 +10,7 @@ using Spacebox.Game.Physics;
 using Engine.Light;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.GUI;
 
 public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
 {
@@ -19,20 +20,16 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
     private InteractiveBlock lastInteractiveBlock;
     private static AudioSource drillAudio;
     private static AudioSource drill0Audio;
-    public static BlockMiningEffect BlockMiningEffect;
+
     private PointLight light;
+    private BlockMiningEffect BlockMiningEffect;
     public InteractionDestroyBlockSurvival(ItemSlot itemSlot) : base(itemSlot)
     {
-        if (BlockMiningEffect == null)
-        {
 
-            var texture = Resources.Load<Texture2D>("Resources/Textures/blockHit.png");
-            texture.FilterMode = FilterMode.Nearest;
-            BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1), texture, Resources.Load<Shader>("Resources/Shaders/particle"));
-        }
-      
+
         light = new PointLight();
         light.Range = 8;
+
 
         var drill = itemSlot.Item as DrillItem;
         if (drill != null)
@@ -53,6 +50,9 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
 
     public override void OnEnable()
     {
+
+       
+
         if (blockDestroy == null)
         {
             blockDestroy = new AudioSource(Resources.Load<AudioClip>("blockDestroyDefault"));
@@ -82,17 +82,21 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         base.OnDisable();
         lastBlock = null;
         if (BlockMiningEffect != null)
+        {
             BlockMiningEffect.Enabled = false;
+            BlockMiningEffect.ClearParticles();
+        }
         model.SetAnimation(false);
-        BlockMiningEffect.ClearParticles();
+
         drillAudio.Stop();
         drill0Audio.Stop();
         light.Enabled = false;
         light.Destroy();
+        BlockSelector.IsVisible = false;
         light = null;
     }
 
-    private void ProcessDestroying(HitInfo hit, byte power, Astronaut astronaut, DrillItem drill)
+    private void ProcessDestroying(HitInfo hit, byte power, LocalAstronaut astronaut, DrillItem drill)
     {
         if (hit.block == null) return;
         if (hit.block.Durability == 0)
@@ -113,7 +117,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         }
     }
 
-    private void DamageBlock(HitInfo hit, Astronaut astronaut, DrillItem drill, byte damage = 1)
+    private void DamageBlock(HitInfo hit, LocalAstronaut astronaut, DrillItem drill, byte damage = 1)
     {
         int dam = hit.block.Durability - damage;
         hit.block.Durability = (byte)(dam < 0 ? 0 : dam);
@@ -131,15 +135,23 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         model.SetAnimation(false);
         _time = timeToDamage;
         lastBlock = null;
-        BlockMiningEffect.ClearParticles();
-        BlockMiningEffect.Enabled = false;
+        if (BlockMiningEffect != null)
+        {
+            BlockMiningEffect.ClearParticles();
+            BlockMiningEffect.Enabled = false;
+        }
+
         drillAudio.Stop();
         drill0Audio.Stop();
         light.Enabled = false;
     }
 
-    public override void Update(Astronaut player)
+    public override void Update(LocalAstronaut player)
     {
+        if(BlockMiningEffect==null)
+        {
+            BlockMiningEffect = World.Instance.BlockMiningEffect;
+        }
         if (Input.IsMouseButtonUp(MouseButton.Left))
         {
 
@@ -151,15 +163,15 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             //if (Input.IsKeyDown(Keys.F) && lastInteractiveBlock != null) // Press F to interact  WTF
             //    lastInteractiveBlock.Use(player);
             model.SetAnimation(false);
-            if(light != null)
-            light.Enabled = false;
+            if (light != null)
+                light.Enabled = false;
             return;
         }
 
-        Ray ray = new Ray(player.Position, player.Front, MaxDestroyDistance);
-        var drill = selectedItemSlot.Item as DrillItem;
+        Ray ray = new Ray(player.Position, player.Front, drillItem.Range);
 
-        if (drill.PowerUsage > player.PowerBar.StatsData.Value)
+
+        if (drillItem.PowerUsage > player.PowerBar.StatsData.Value)
         {
             BlockSelector.IsVisible = false;
             StopDrill();
@@ -175,12 +187,14 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             {
 
                 var blockData = GameAssets.GetBlockDataById(hit.block.Id);
-                BlockMiningEffect.Enabled = true;
+                if (BlockMiningEffect != null)
+                    BlockMiningEffect.Enabled = true;
 
                 var effectPosition = hit.hitPosition + new Vector3(hit.normal.X, hit.normal.Y, hit.normal.Z) * 0.05f;
                 var toPlayer = Vector3.Normalize(player.Position - effectPosition);
 
-                BlockMiningEffect.ParticleSystem.Position = effectPosition;
+                if (BlockMiningEffect != null)
+                    BlockMiningEffect.ParticleSystem.Position = effectPosition;
 
                 var cone = BlockMiningEffect.ParticleSystem.Emitter as ConeEmitter;
 
@@ -195,17 +209,17 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
                 if (!light.Enabled)
                     light.Enabled = true;
                 light.Position = player.Position;
-                if (drill != null)
+                if (drillItem != null)
                 {
-                    if (drill.Power >= blockData.PowerToDrill)
-                        ProcessDestroying(hit, drill.Power, player, drill);
+                    if (drillItem.Tier >= blockData.PowerToDrill)
+                        ProcessDestroying(hit, drillItem.Tier, player, drillItem);
                     else
                         BlockMiningEffect.SetEmitter(false);
                 }
             }
             if (Input.IsMouseButtonDown(MouseButton.Left))
             {
-                if (drill.PowerUsage > player.PowerBar.StatsData.Value) return;
+                if (drillItem.PowerUsage > player.PowerBar.StatsData.Value) return;
 
                 model.SetAnimation(true);
                 BlockMiningEffect.Enabled = true;
@@ -217,7 +231,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             if (lastInteractiveBlock != null)
 
             {
-                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player,  ref hit);
+                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, ref hit);
                 if (hit.block.Is<StorageBlock>(out var storageBlock))
                 {
                     storageBlock.SetPositionInChunk(hit.blockPositionIndex);
@@ -227,9 +241,10 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         }
         else
         {
-            BlockMiningEffect.Enabled = false;
+            if (BlockMiningEffect != null)
+                BlockMiningEffect.Enabled = false;
             BlockSelector.IsVisible = false;
-            // CenteredText.Hide();
+             CenteredText.Hide();
             if (Input.IsMouseButtonDown(MouseButton.Left))
                 model.SetAnimation(true);
             if (Input.IsMouseButton(MouseButton.Left))

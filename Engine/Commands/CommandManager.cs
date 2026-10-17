@@ -1,38 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Engine.Commands
+﻿namespace Engine.Commands
 {
     public static class CommandManager
     {
-        private static List<ICommand> _commands = new List<ICommand>();
+        private static List<CommandBase> _globalCommands = new List<CommandBase>();
+        private static List<CommandBase> _sceneCommands = new List<CommandBase>();
 
-        public static void RegisterCommand(ICommand command)
+        public static void RegisterGlobalCommand(CommandBase command)
         {
-            if (!_commands.Any(c => c.Name.Equals(command.Name, StringComparison.OrdinalIgnoreCase)))
+            if (IsCommandRegistered(command.Name))
             {
-                _commands.Add(command);
+                Debug.Error($"[CommandManager] Global Command '{command.Name}' is already registered.");
+                return;
             }
-            else
+            _globalCommands.Add(command);
+        }
+
+        public static void RegisterSceneCommand(CommandBase command)
+        {
+            if (IsCommandRegistered(command.Name))
             {
-                Console.WriteLine($"Command '{command.Name}' is already registered.");
+                Debug.Error($"[CommandManager] Scene Command '{command.Name}' is already registered.");
+                return;
             }
+            _sceneCommands.Add(command);
         }
 
-        public static ICommand GetCommand(string name)
+        public static void RegisterCommand(CommandBase command)
         {
-            return _commands.FirstOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            RegisterSceneCommand(command);
         }
 
-        public static IEnumerable<ICommand> GetCommands()
+        public static void ClearSceneCommands()
         {
-            return _commands;
+            _sceneCommands.Clear();
         }
 
-        public static IEnumerable<ICommand> FindCommandsStartingWith(string prefix)
+        private static bool IsCommandRegistered(string name)
         {
-            return _commands.Where(c => c.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+            return _globalCommands.Any(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) ||
+                   _sceneCommands.Any(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public static CommandBase GetCommand(string name)
+        {
+            var cmd = _sceneCommands.FirstOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            if (cmd != null)
+                return cmd;
+
+            return _globalCommands.FirstOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public static IEnumerable<CommandBase> GetCommands()
+        {
+            return _globalCommands.Concat(_sceneCommands);
+        }
+
+        public static IEnumerable<CommandBase> FindCommandsStartingWith(string prefix)
+        {
+            return _globalCommands.Concat(_sceneCommands)
+                .Where(c => c.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

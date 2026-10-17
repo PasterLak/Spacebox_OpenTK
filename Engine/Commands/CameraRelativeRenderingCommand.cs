@@ -1,20 +1,19 @@
-﻿using System.Numerics;
-
+﻿
 namespace Engine.Commands
 {
-    public class CameraRelativeRenderingCommand : ICommand
+    public class CameraRelativeRenderingCommand : CommandBase
     {
-        public string Name => "camRelRender";
-        public string Description => "";
+        public override string Name => "camRelRender";
+        public override string Description => "Toggles camera relative render";
 
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
 
             Camera cam = Camera.Main;
 
             if(cam != null)
             {
-                RenderSpace.SwitchSpace();
+                RenderSpace.Toggle();
                 Debug.Success("Camera Relative rendering: " + cam.CameraRelativeRender);
             }
         }

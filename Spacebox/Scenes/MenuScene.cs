@@ -5,13 +5,17 @@ using Engine.InputPro;
 using Engine.Light;
 using Engine.SceneManagement;
 using Engine.UI;
+using Engine.Utils;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using Spacebox.Core;
 using Spacebox.Game;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
 using Spacebox.Game.GUI.Menu;
+using Spacebox.Game.Player;
 using Spacebox.GUI;
 
 
@@ -26,11 +30,30 @@ namespace Spacebox.Scenes
 
         private DevLogWindow devLogWindow = new DevLogWindow();
 
+        private static PluginLoader modLoader = new PluginLoader();
+
+        private Node3D astronautNode;
+
         public override void LoadContent()
         {
 
             //Theme.ApplySpaceboxTheme();
 
+            string pluginsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
+
+            //modLoader.LoadMods(pluginsPath);
+
+            if(modLoader.LoadedMods.Count > 0)
+            {
+                var mod = modLoader.LoadedMods[0] as IWorldConverter;
+
+                if (mod != null)
+                {
+                    Debug.Log("Mod Loader", $"Loaded mod for game version: {mod.TargetGameVersion}", Color4.LightGreen);
+                }
+            }
+
+    
             InputManager.Instance.LoadConfiguration("Resources/default_input.json");
 
             var player = new CameraStatic(new Vector3(0, 0, 0));
@@ -48,9 +71,9 @@ namespace Spacebox.Scenes
             var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
       
             Lighting.Skybox = new Skybox( skyboxTexture);
-            CenteredImageMenu.LoadImage("Resources/Textures/spaceboxLogo.png", true);
+            CenteredImageMenu.LoadImage("Resources/Textures/UI/spaceboxLogo.png", true);
 
-            Resources.Load<AudioClip>("Resources/Audio/UI/click1.ogg");
+           // Resources.Load<AudioClip>("Resources/Audio/UI/click2.ogg", true);
             menu = new GameMenu();
 
             if(Settings.Graphics.EffectsEnabled)
@@ -83,7 +106,38 @@ namespace Spacebox.Scenes
             devLogWindow.AddLogFromFile("Resources/devlog.txt");
 
 
+            TextureMaterial mat = new TextureMaterial(Astronaut.GetAstronautTexture("Yellow"));
 
+             astronautNode = new Node3D();
+            astronautNode.Name = "Astronaut_Menu";
+
+            var meshBody = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Body_Fly.obj");
+            var meshHelmet = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Helmet_Closed.obj");
+            var meshTank = Resources.Load<Engine.Mesh>("Resources/Models/Player/Astronaut_Tank_Fly.obj");
+
+            astronautNode.AttachComponent(new ModelRendererComponent(new Model(meshBody, mat)));
+            astronautNode.AttachComponent(new ModelRendererComponent(new Model(meshHelmet, mat)));
+            astronautNode.AttachComponent(new ModelRendererComponent(new Model(meshTank, mat)));
+
+            AddChild(astronautNode);
+
+            astronautNode.Position = new Vector3(3, 0, -3);
+            astronautNode.Rotation = new Vector3(0, 180, 0);
+
+            menu.Get<MultiplayerWindow>().LoadConfig();
+
+
+        }
+
+        public void ChangeAstronautColor(string color)
+        {
+            var astronaut = FindChildByName("Astronaut_Menu");
+            var texture = Astronaut.GetAstronautTexture(color);
+            astronaut.GetComponents<ModelRendererComponent>().ForEach(c =>
+            {
+                var mat = c.Model.Material as TextureMaterial;
+                mat.MainTexture = texture;
+            });
         }
 
         private void SetDustSpawner()
@@ -113,8 +167,8 @@ namespace Spacebox.Scenes
                 Direction = new Vector3(0f, 1f, 0f),
             };
 
-            var dust = Resources.Load<Texture2D>("Resources/Textures/dust.png");
-            dust.FilterMode = FilterMode.Linear;
+            var dust = Resources.Load<Texture2D>("Resources/Textures/Effects/dust.png");
+            dust.FilterMode = FilterMode.Nearest;
             var system = new ParticleSystem(new ParticleMaterial(dust), emitter);
             system.Max = 500;
             system.Rate = 70f;
@@ -163,6 +217,8 @@ namespace Spacebox.Scenes
 
             ResetImGuiFont();
 
+            Settings.ShowInterface = false; // for hide + CenteredText, todo rewrite
+
 
         }
 
@@ -198,7 +254,14 @@ namespace Spacebox.Scenes
         {
 
             base.Render();
- 
+
+            if(Input.IsKeyDown(Keys.J))
+            {
+                SceneManager.Load<ServerMessageScene>();
+            }
+        
+         
+
         }
 
         public override void OnGUI()
@@ -213,10 +276,12 @@ namespace Spacebox.Scenes
            
             VerticalLinks.Draw();
             menu.Render();
-            devLogWindow.Render();
+            //devLogWindow.Render();
             //canvas.Draw();
             // ImGui.PopFont();
             ColorOverlay.OnGUI();
+
+            //CenteredText.Hide();
             CenteredText.OnGUI();
         }
 
@@ -224,6 +289,7 @@ namespace Spacebox.Scenes
         {
             menu.Dispose();
             DevLogWindow.Instance = null;
+            Settings.ShowInterface = true;
         }
 
         bool showed = false;
@@ -231,7 +297,14 @@ namespace Spacebox.Scenes
         {
             base.Update();
             CenteredImageMenu.Update();
-           
+
+            if(menu.CurrentWindowType == typeof(MultiplayerWindow))
+            {
+                astronautNode.Enabled = true;
+            }else
+                        {
+                astronautNode.Enabled = false;
+            }
 
             if (Input.IsAnyKeyDown() && !showed)
             {

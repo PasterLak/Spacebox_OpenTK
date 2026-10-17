@@ -24,16 +24,6 @@
     "draw_distance": 12,
     "language": "English",
     "keep_inventory": false
-  },
-  "controls": {
-    "bindings": {
-      "move_forward": ["W"],
-      "move_backward": ["S"],
-      "move_left": ["A"],
-      "move_right": ["D"],
-      "open_inventory": ["Tab"],
-      "flashlight": ["F"],
-      "speed_up": ["LeftShift"]
-    }
   }
+  
 }

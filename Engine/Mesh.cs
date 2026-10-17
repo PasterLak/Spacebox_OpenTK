@@ -16,17 +16,18 @@ namespace Engine
 
         public List<Vector3> VerticesPositions { get; private set; }
         private static PolygonMode polygonMode = PolygonMode.Fill;
-
+        public bool IsDisposed { get; set; }
         public Mesh()
         {
 
         }
         public Mesh(float[] vertices, uint[] indices, MeshBuffer buffer)
         {
+            Resources.AddResourceToControll(this);
+
             this.buffer = buffer;
             _indexCount = indices.Length;
 
-            //  FloatsPerVertex = buffer.FloatsPerVertex;
             buffer.BindBuffer(ref vertices, ref indices);
          
             buffer.SetAttributes();
@@ -36,6 +37,8 @@ namespace Engine
 
         public Mesh(float[] vertices, int[] indices)
         {
+            Resources.AddResourceToControll(this);
+
             _indexCount = indices.Length;
             VerticesPositions = new List<Vector3>();
            // ComputeBoundingBox(vertices);
@@ -57,6 +60,8 @@ namespace Engine
 
         public Mesh(string path)
         {
+            Resources.AddResourceToControll(this);
+
             var (vertices, indices) = ObjLoader.Load(path);
             _indexCount = indices.Length;
             VerticesPositions = new List<Vector3>();
@@ -131,6 +136,11 @@ namespace Engine
             return randomPoints;
         }
 
+        public string GetResourceInfo()
+        {
+            return $"Mesh: Vertices={VerticesPositions?.Count ?? 0}, Indices={_indexCount}";
+        }
+
         public IResource Load(string path)
         {
             return new Mesh(path);
@@ -139,7 +149,8 @@ namespace Engine
         public int GetHandle() { return buffer.VBO; }
         public void Dispose()
         {
-            buffer.Dispose();
+            buffer?.Dispose();
+            IsDisposed = true;
         }
     }
 }

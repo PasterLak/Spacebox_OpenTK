@@ -7,7 +7,7 @@ namespace Engine.Components
     public class ModelRendererComponent : Component
     {
         public Vector3 Offset { get; set; } = new Vector3(0);
-        public Model Model { get; }
+        public Model Model { get; set; }
      
         public ModelRendererComponent(Model model)
         {
@@ -35,6 +35,12 @@ namespace Engine.Components
             Model.Material.Shader.SetMatrix4("projection", Camera.Main.GetProjectionMatrix());
             Model.Mesh.Render();
 
+        }
+
+        public override void OnDetached()
+        {
+            base.OnDetached();
+            Model.Destroy();
         }
 
     }

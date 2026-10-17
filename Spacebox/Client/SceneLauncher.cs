@@ -1,7 +1,10 @@
-﻿using Engine.SceneManagement;
+﻿using Engine;
+using Engine.SceneManagement;
 using Spacebox.Game.GUI;
+using Spacebox.Game.GUI.Menu;
 using Spacebox.Scenes;
 using SpaceNetwork;
+
 using static Spacebox.Game.Resource.GameSetLoader;
 
 namespace Spacebox.Client
@@ -20,20 +23,23 @@ namespace Spacebox.Client
             SceneManager.Load<LocalSpaceScene>(); // args.ToArray()
         }
 
-        public static void LaunchMultiplayerGame(WorldInfo world, ModConfig modConfig, ServerInfo serverInfo, string playerName, string appKey)
+        public static void LaunchMultiplayerGame(WorldInfo world, ModConfig modConfig, ServerInfo serverInfo, ClientConfig clientConfig, string appKey)
         {
-            var args = new List<string>
+           
+            SpaceSceneArgs args = new SpaceSceneArgs
             {
-                world.Name,
-                world.ModId,
-                world.Seed,
-                modConfig.FolderName,
-                appKey,
-                serverInfo.IP,
-                serverInfo.Port.ToString(),
-                playerName
+                worldName = world.Name,
+                modId = world.ModId,
+                seed = world.Seed,
+                modfolderName = modConfig.FolderName,
+                key = appKey,
+                hostIp = serverInfo.IP,
+                port = serverInfo.Port,
+                nickname = clientConfig.PlayerNickname,
+                skinColor = clientConfig.SkinColor
             };
-            SceneManager.Load<MultiplayerLoadScene>(); // args.ToArray()
+
+            SceneManager.Load<MultiplayerLoadScene, SpaceSceneArgs>(args);
         }
     }
 }

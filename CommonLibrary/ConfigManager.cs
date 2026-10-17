@@ -1,56 +1,55 @@
 ﻿using SpaceNetwork;
 
 
-namespace ServerCommon
-{
-    public static class ConfigManager
-    {
-        private static readonly string ConfigFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.txt");
+namespace ServerCommon;
 
-        public static void LoadConfig()
+public static class ConfigManager
+{
+    private static readonly string ConfigFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.txt");
+
+    public static void LoadConfig()
+    {
+        if (!File.Exists(ConfigFilePath))
         {
-            if (!File.Exists(ConfigFilePath))
+            Settings.Key = "defaultKey";
+            SaveConfig();
+            return;
+        }
+        try
+        {
+            var config = KeyValueFileReader.ReadFile(ConfigFilePath);
+            if (config.ContainsKey("port") && int.TryParse(config["port"], out int port))
+                Settings.Port = port;
+            if (config.ContainsKey("key") && !string.IsNullOrWhiteSpace(config["key"]))
+                Settings.Key = config["key"];
+            else
             {
                 Settings.Key = "defaultKey";
                 SaveConfig();
-                return;
             }
-            try
+            if (config.ContainsKey("name") && !string.IsNullOrWhiteSpace(config["name"]))
+                Settings.Name = config["name"];
+            else
             {
-                var config = KeyValueFileReader.ReadFile(ConfigFilePath);
-                if (config.ContainsKey("port") && int.TryParse(config["port"], out int port))
-                    Settings.Port = port;
-                if (config.ContainsKey("key") && !string.IsNullOrWhiteSpace(config["key"]))
-                    Settings.Key = config["key"];
-                else
-                {
-                    Settings.Key = "defaultKey";
-                    SaveConfig();
-                }
-                if (config.ContainsKey("name") && !string.IsNullOrWhiteSpace(config["name"]))
-                    Settings.Name = config["name"];
-                else
-                {
-                    Settings.Name = "MyServer";
-                    SaveConfig();
-                }
-                if (config.ContainsKey("maxPlayers") && int.TryParse(config["maxPlayers"], out int maxPlayers))
-                    Settings.MaxPlayers = maxPlayers;
-                if (config.ContainsKey("pingInterval") && float.TryParse(config["pingInterval"], out float pingInterval))
-                    Settings.PingInterval = pingInterval;
-                if (config.ContainsKey("connectionTimeout") && float.TryParse(config["connectionTimeout"], out float connectionTimeout))
-                    Settings.ConnectionTimeout = connectionTimeout;
+                Settings.Name = "MyServer";
+                SaveConfig();
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Error loading configuration", ex);
-            }
+            if (config.ContainsKey("maxPlayers") && int.TryParse(config["maxPlayers"], out int maxPlayers))
+                Settings.MaxPlayers = maxPlayers;
+            if (config.ContainsKey("pingInterval") && float.TryParse(config["pingInterval"], out float pingInterval))
+                Settings.PingInterval = pingInterval;
+            if (config.ContainsKey("connectionTimeout") && float.TryParse(config["connectionTimeout"], out float connectionTimeout))
+                Settings.ConnectionTimeout = connectionTimeout;
         }
-
-        public static void SaveConfig()
+        catch (Exception ex)
         {
-            var dict = Settings.ServerDataToDictionary();
-            KeyValueFileWriter.WriteFile(ConfigFilePath, dict);
+            throw new Exception("Error loading configuration", ex);
         }
+    }
+
+    public static void SaveConfig()
+    {
+        var dict = Settings.ServerDataToDictionary();
+        KeyValueFileWriter.WriteFile(ConfigFilePath, dict);
     }
 }

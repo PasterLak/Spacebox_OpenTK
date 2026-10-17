@@ -2,12 +2,12 @@
 
 namespace Engine.Commands
 {
-    public class SaveMessagesCommand : ICommand
+    public class SaveMessagesCommand : CommandBase
     {
-        public string Name => "savelog";
-        public string Description => "Save all console messages to file";
+        public override string Name => "savelog";
+        public override string Description => "Save all console messages to a file";
 
-        public void Execute(string[] args)
+        public override void Execute(string[] args)
         {
 
             Debug.SaveMessagesToFile();

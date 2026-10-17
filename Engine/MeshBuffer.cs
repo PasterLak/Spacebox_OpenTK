@@ -13,7 +13,7 @@ namespace Engine
             Size = size;
         }
     }
-    public class MeshBuffer : IDisposable
+    public class MeshBuffer : IDisposable, IResource
     {
         public int VAO { get; private set; }
         public int VBO { get; private set; }
@@ -21,9 +21,7 @@ namespace Engine
 
         private List<BufferAttribute> attributes = new List<BufferAttribute>();
         public byte FloatsPerVertex { get; private set; } = 0;
-
-        private bool _isGenerated = false;
-       
+        public bool IsDisposed { get ; set ; }
 
         public MeshBuffer(BufferAttribute[] attributes)
         {
@@ -32,6 +30,8 @@ namespace Engine
             {
                 AddAttribute(attributes[i].Name, attributes[i].Size);
             }
+
+            Resources.AddResourceToControll(this);
         }
         public MeshBuffer()
         {
@@ -98,6 +98,23 @@ namespace Engine
             GL.DeleteBuffer(EBO);
             GL.DeleteVertexArray(VAO);
 
+            IsDisposed = true;
+
+        }
+
+        public IResource Load(string path)
+        {
+          return null;
+        }
+
+        public string GetResourceInfo()
+        {
+          return $"[MeshBuffer] VAO: {VAO}, VBO: {VBO}, EBO: {EBO}, Attributes: {attributes.Count}, FloatsPerVertex: {FloatsPerVertex}";
+        }
+
+        public int GetHandle()
+        {
+            return VAO;
         }
     }
 }

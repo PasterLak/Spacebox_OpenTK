@@ -31,11 +31,15 @@ namespace Spacebox.Game.Effects
 
         private void InitializeEffects()
         {
-            var damageTexture = Resources.Load<Texture2D>("Resources/Textures/damageEffect.png");
-            var healTexture = Resources.Load<Texture2D>("Resources/Textures/healEffect.png");
-            var chargeTexture = Resources.Load<Texture2D>("Resources/Textures/white.png");
-            var teleportTexture = Resources.Load<Texture2D>("Resources/Textures/white.png");
-            var customTexture = Resources.Load<Texture2D>("Resources/Textures/white.png");
+            var damageTexture = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/damageEffect.png");
+            var healTexture 
+             = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/healEffect.png");
+            var chargeTexture 
+             = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/white.png");
+            var teleportTexture 
+             = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/white.png");
+            var customTexture 
+             = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/white.png");
 
             _effects[PlayerEffectType.Damage] = CreateEffect(damageTexture, new Vector4(1f, 0f, 0f, 0.4f), new Vector4(1f, 0f, 0f, 0f));
             _effects[PlayerEffectType.Heal] = CreateEffect(healTexture, new Vector4(0f, 1f, 0f, 0.4f), new Vector4(0f, 1f, 0f, 0f));

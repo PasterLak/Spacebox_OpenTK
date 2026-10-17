@@ -165,6 +165,11 @@ namespace Engine
 
         public void DrawDebug()
         {
+            if(VisualDebug.Enabled == false)
+            {
+                return;
+            }
+
             VisualDebug.DrawBoundingBox(boundingBox, Color4.Pink);
             rootNode.DrawDebug();
         }

@@ -24,6 +24,7 @@ namespace Engine.PostProcessing
                 new BufferAttribute { Name = "aTexCoords", Size = 2 }
             };
             fullscreenBuffer = new MeshBuffer(attrs);
+            Resources.RemoveResourceFromControll(fullscreenBuffer);
             float[] vertices = {
                 -1f, -1f, 0f, 0f,
                  1f, -1f, 1f, 0f,

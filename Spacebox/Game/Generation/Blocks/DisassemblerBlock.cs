@@ -9,14 +9,19 @@ namespace Spacebox.Game.Generation.Blocks
     public class DisassemblerBlock : ResourceProcessingBlock
     {
 
-        public DisassemblerBlock(BlockJSON blockData) : base(blockData)
+        public DisassemblerBlock(BlockData blockData) : base(blockData)
         {
             OnUse += ResourceProcessingGUI.Toggle;
 
-            SetEmissionWithoutRedrawChunk(false);
+            SetEmission(false, false);
+
+            //EFlags = ElectricalFlags.CanConsume;
+
+            //ConsumptionRate = 15;
+            CurrentPower = 0;
         }
 
-        public override void Use(Astronaut player, ref HitInfo hit)
+        public override void Use(LocalAstronaut player, ref HitInfo hit)
         {
 
             base.Use(player, ref hit);

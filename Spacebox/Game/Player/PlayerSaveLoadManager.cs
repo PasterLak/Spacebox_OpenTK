@@ -9,7 +9,7 @@ namespace Spacebox.Game.Player
 {
     public static class PlayerSaveLoadManager
     {
-        public static void SavePlayer(Astronaut player, string worldFolder)
+        public static void SavePlayer(LocalAstronaut player, string worldFolder)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace Spacebox.Game.Player
             }
         }
 
-        public static void LoadPlayer(Astronaut player, string worldFolder)
+        public static void LoadPlayer(LocalAstronaut player, string worldFolder)
         {
 
             try
@@ -91,10 +91,12 @@ namespace Spacebox.Game.Player
                 {
                     Debug.Log("[PlayerSaveLoadManager] Player save file does not exist.");
 
-                    World.CurrentSector.SpawnPlayerNearAsteroid(player, new Random(World.Seed));
+                    World.CurrentSector.SpawnPlayerNearRandomAsteroidData(player, new Random(World.Seed));
                     GameSetLoader.GiveStartItems(player, GameAssets.ItemsStr);
                     player.Flashlight.Enabled = true;
                     player.PlayerStatistics.FirstPlayedUtc = DateTime.UtcNow;
+
+                    player.PlayerStatistics.StartSession();
 
                     return;
                 }
@@ -122,6 +124,7 @@ namespace Spacebox.Game.Player
                 player.PlayerStatistics = data.Statistics;
 
                 player.PlayerStatistics.StartSession();
+              
 
                 foreach (var savedSlot in data.InventorySlots)
                 {

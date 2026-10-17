@@ -56,7 +56,7 @@ namespace Engine
             return corners;
         }
 
-        public static bool IsBehindCameraDot(Vector3 position, Vector3 cameraPos, Vector3 cameraForward)
+        public static bool IsBehindCamera(Vector3 position, Vector3 cameraPos, Vector3 cameraForward)
         {
             Vector3 diff = position - cameraPos;
        

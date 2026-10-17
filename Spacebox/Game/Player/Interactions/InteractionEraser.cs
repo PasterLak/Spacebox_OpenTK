@@ -65,7 +65,7 @@ public class InteractionEraser : InteractionMode
     }
 
 
-    public override void Update(Astronaut player)
+    public override void Update(LocalAstronaut player)
     {
         if (!player.CanMove)
         {
@@ -193,7 +193,7 @@ public class InteractionEraser : InteractionMode
         }
     }
 
-    private void OnNoEntityFound(Ray ray, Astronaut player)
+    private void OnNoEntityFound(Ray ray, LocalAstronaut player)
     {
         AImedBlockElement.AimedBlock = null;
 
@@ -234,7 +234,7 @@ public class InteractionEraser : InteractionMode
         }
     }
 
-    public override void Render(Astronaut player)
+    public override void Render(LocalAstronaut player)
     {
         boxRender.Render();
         cube1.Render();

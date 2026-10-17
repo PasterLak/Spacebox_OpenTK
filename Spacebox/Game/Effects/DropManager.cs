@@ -21,7 +21,7 @@ namespace Spacebox.Game.Effects
         private readonly AudioSource[] _pickupSounds = new AudioSource[3];
         private readonly Dictionary<Drop, Particle> _dropToParticle = new Dictionary<Drop, Particle>();
         private readonly Dictionary<Drop, PointLight> _dropToLight = new Dictionary<Drop, PointLight>();
-        private readonly Astronaut _player;
+        private readonly LocalAstronaut _player;
         private readonly float _maxSpeed;
         private readonly float _moveDistanceSquared;
         private readonly float _pickupDistanceSquared;
@@ -29,12 +29,12 @@ namespace Spacebox.Game.Effects
         private readonly float _mergeDistance;
 
         public const int DropLifeTime = 60;
-        private PointLightsPool _lightPool;
+        private LightPool<PointLight> _lightPool;
 
         private PointOctree<Drop> _octree;
         private Random random = new Random();
         public DropManager(
-            Astronaut player,
+            LocalAstronaut player,
             float maxSpeed = 20f,
             float moveDistance = 2f,
             float pickupDistance = 0.3f,
@@ -47,14 +47,14 @@ namespace Spacebox.Game.Effects
             _mergeDistanceSquared = mergeDistance * mergeDistance;
             this._mergeDistance = mergeDistance;
             _octree = new PointOctree<Drop>(8192, Vector3.Zero, 1);
-            _lightPool = new PointLightsPool(8);
+            _lightPool = new LightPool<PointLight>(8);
 
             _dropPool = new Pool<Drop>(
                 initialCount: 256,
                 initializeFunc: drop => drop,
                 onTakeFunc: null,
                 resetFunc: drop => drop.Reset(),
-                isActiveFunc: drop => drop.IsActive,
+             
                 setActiveFunc: (drop, active) => drop.IsActive = active,
                 autoExpand: true
             );
@@ -74,6 +74,11 @@ namespace Spacebox.Game.Effects
             }
         }
 
+        public void DropItemSlot(Vector3 position, Vector3 direction, float speed, ItemSlot itemSlot,  float pickupDelay = 0.5f, float deceleration = 5f, SpaceEntity sourceEntity = null)
+        {
+            DropItem(position, direction, speed, itemSlot.Item, itemSlot.Count, pickupDelay, deceleration, sourceEntity);
+        }
+
         public void DropItem(Vector3 position, Vector3 direction, float speed, Item item, int quantity, float pickupDelay = 0.5f, float deceleration = 5f, SpaceEntity sourceEntity = null)
         {
             var drop = _dropPool.Take();
@@ -89,7 +94,7 @@ namespace Spacebox.Game.Effects
             _activeDrops.Add(drop);
             _movingDrops.Add(drop);
 
-            EnsureParticleSystemForItem(item.Id);
+            EnsureParticleSystemItem(item.Id);
             CreateParticle(position, item.Id, drop);
         }
 
@@ -163,7 +168,7 @@ namespace Spacebox.Game.Effects
             _activeDrops.Add(drop);
             _octree.Add(drop, dropPosition);
 
-            EnsureParticleSystem(item.Id, blockData, color);
+            EnsureParticleSystemBlock(item.Id, blockData, color);
             CreateParticle(dropPosition, item.Id, drop);
         }
 
@@ -200,7 +205,7 @@ namespace Spacebox.Game.Effects
 
             return false;
         }
-        private void EnsureParticleSystem(short itemId, BlockJSON blockData, Color3Byte color)
+        private void EnsureParticleSystemBlock(short itemId, BlockData blockData, Color3Byte color)
         {
             if (_particleSystems.ContainsKey(itemId)) return;
 
@@ -209,10 +214,6 @@ namespace Spacebox.Game.Effects
             {
                 LifeMin = 20,
                 LifeMax = 20,
-                StartSizeMin = 0.2f,
-                StartSizeMax = 0.2f,
-                EndSizeMin = 0.2f,
-                EndSizeMax = 0.2f,
                 ColorStart = new Vector4(color.R / 255f, color.G / 255f, color.B / 255f, 1f),
                 ColorEnd = new Vector4(color.R / 255f, color.G / 255f, color.B / 255f, 1f),
                 SpeedMin = 0,
@@ -231,7 +232,7 @@ namespace Spacebox.Game.Effects
             _particleSystems[itemId] = particleSystem;
         }
 
-        private void EnsureParticleSystemForItem(short itemId)
+        private void EnsureParticleSystemItem(short itemId)
         {
             if (_particleSystems.ContainsKey(itemId)) return;
 
@@ -240,10 +241,6 @@ namespace Spacebox.Game.Effects
             {
                 LifeMin = 20,
                 LifeMax = 20,
-                StartSizeMin = 0.2f,
-                StartSizeMax = 0.2f,
-                EndSizeMin = 0.2f,
-                EndSizeMax = 0.2f,
                 ColorStart = new Vector4(1f),
                 ColorEnd = new Vector4(1f),
                 SpeedMin = 0,
@@ -267,7 +264,7 @@ namespace Spacebox.Game.Effects
             if (!_particleSystems.TryGetValue(itemId, out var particleSystem)) return;
 
             var particle = particleSystem.CreateParticle(position, Vector3.Zero, 20f);
-            particle.StartSize = particle.EndSize = particle.Size = 0.2f;
+            particle.StartSize = particle.EndSize = particle.Size = drop.IsBlock ? 0.2f : 0.3f;
             particle.ColorStart = particle.ColorEnd = particle.Color = new Vector4(1f);
             particleSystem.PushParticle(particle);
 
@@ -301,7 +298,7 @@ namespace Spacebox.Game.Effects
             foreach (var drop in _activeDrops)
             {
                 var wasStopped = drop.IsStopped;
-                drop.Update(Time.Delta);
+                drop.Update();
 
                 if (drop.IsExpired)
                 {
@@ -309,14 +306,14 @@ namespace Spacebox.Game.Effects
                     continue;
                 }
 
-           
+
                 if (!wasStopped && drop.IsStopped && drop.IsThrown)
                 {
                     justStopped.Add(drop);
                     continue;
                 }
 
-              
+
                 if (!drop.CanBePickedUp) continue;
 
                 var distanceSquared = (drop.Position - targetPosition).LengthSquared;
@@ -329,7 +326,7 @@ namespace Spacebox.Game.Effects
                         toRemove.Add(drop);
                     }
                 }
-              
+
                 else if (drop.IsStopped && ShouldMoveTowardsPlayer(distanceSquared) && !drop.IsMovingToPlayer)
                 {
                     StartMovingToPlayer(drop, targetPosition);
@@ -485,6 +482,7 @@ namespace Spacebox.Game.Effects
             while (quantity > 0)
             {
                 var amountToAdd = Math.Min(quantity, 255);
+
                 if (_player.Panel.TryAddItem(drop.Info.item, (byte)amountToAdd))
                 {
                     addedQuantity += amountToAdd;
@@ -617,12 +615,16 @@ namespace Spacebox.Game.Effects
             _activeDrops.Add(drop);
             _octree.Add(drop, position);
 
-            EnsureParticleSystemForItem(item.Id);
+            EnsureParticleSystemItem(item.Id);
             CreateParticle(position, item.Id, drop);
         }
 
         public void SaveDrops(string filePath)
         {
+            if (_activeDrops.Count == 0)
+            {
+                return;
+            }
             var dropData = DropSaveManager.SerializeDrops(_activeDrops);
             DropSaveManager.SaveToFile(dropData, filePath);
         }

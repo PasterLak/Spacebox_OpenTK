@@ -22,7 +22,6 @@ namespace Engine.Physics
         }
         public Vector3 CollisionScale { get; set; } = Vector3.One;
 
-        public CollisionManager CollisionManager { get; set; }
         public CollisionLayer Layer { get; set; } = CollisionLayer.Default;
 
         public bool AllowCollisionDebug = true;

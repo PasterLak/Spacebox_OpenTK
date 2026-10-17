@@ -7,14 +7,13 @@ namespace Spacebox.Game.Generation.Blocks
 {
     public class GeneratorBlock : InteractiveBlock
     {
-        public GeneratorBlock(BlockJSON blockData) : base(blockData)
+        public GeneratorBlock(BlockData blockData) : base(blockData)
         {
             EFlags = ElectricalFlags.CanGenerate | ElectricalFlags.CanTransfer;
             MaxPower = 500;
             GenerationRate = 50;
             EnableEmission = true;
 
-            
 
         }
         public override void TickElectric()
@@ -23,7 +22,7 @@ namespace Spacebox.Game.Generation.Blocks
             SetEnableEmission(CurrentPower > 0);
         }
 
-        public override void Use(Astronaut player, ref HitInfo hit)
+        public override void Use(LocalAstronaut player, ref HitInfo hit)
         {
             base.Use(player, ref hit);
 

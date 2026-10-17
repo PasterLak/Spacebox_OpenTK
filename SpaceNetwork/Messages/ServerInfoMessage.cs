@@ -10,6 +10,8 @@ namespace SpaceNetwork.Messages
             msg.Write(Info.Name ?? "");
             msg.Write(Info.Description ?? "");
             msg.Write(Info.MaxPlayers);
+            msg.Write(Info.ModFolderName);
+            msg.Write(Info.ModFolderHash);
         }
         public override void Read(NetIncomingMessage msg)
         {
@@ -17,7 +19,9 @@ namespace SpaceNetwork.Messages
             {
                 Name = msg.ReadString(),
                 Description = msg.ReadString(),
-                MaxPlayers = msg.ReadInt32()
+                MaxPlayers = msg.ReadInt32(),
+                ModFolderName = msg.ReadString(),
+                ModFolderHash = msg.ReadString()
             };
         }
     }

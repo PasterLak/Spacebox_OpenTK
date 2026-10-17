@@ -1,5 +1,6 @@
 ﻿using Engine;
 using OpenTK.Mathematics;
+using Spacebox.Game.GameMath;
 using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Game.Generation
@@ -18,9 +19,9 @@ namespace Spacebox.Game.Generation
         HashSet<Chunk> tempChangedChunks = new HashSet<Chunk>();
         Queue<(int, int, int)> floodFillQueue = new Queue<(int, int, int)>();
 
-        int nextNetworkId = 1;
+        private int nextNetworkId = 1;
 
-        
+
 
         public void AddBlockFast((int x, int y, int z) globalPos, ElectricalBlock block, Chunk parentChunk)
         {
@@ -45,7 +46,7 @@ namespace Spacebox.Game.Generation
         public void RemoveBlock(Chunk chunk, Vector3Byte posInChunk)
         {
             var index = chunk.PositionIndex;
-            Vector3 entityLocalPos = SpaceEntity.ChunkIndexToLocal(index);
+            Vector3 entityLocalPos = SpaceMath.Entity.ChunkIndexToLocal(index);
             var globalPos = ((int)(entityLocalPos.X + posInChunk.X),
                            (int)(entityLocalPos.Y + posInChunk.Y),
                            (int)(entityLocalPos.Z + posInChunk.Z));
@@ -211,13 +212,13 @@ namespace Spacebox.Game.Generation
                     }
                 }
             }
-           // Debug.Log("Regen: " + tempChangedChunks.Count);
+            // Debug.Log("Regen: " + tempChangedChunks.Count);
             if (tempChangedChunks.Count > 0)
             {
                 foreach (var c in tempChangedChunks)
                 {
                     if (c != null)
-                        c.NeedsToRegenerateMesh = true;
+                        c.QueueMeshUpdate();
                 }
             }
         }
@@ -255,14 +256,14 @@ namespace Spacebox.Game.Generation
                     }
                 }
             }
-           // Debug.Log("Regen: " + tempChangedChunks.Count);
+            // Debug.Log("Regen: " + tempChangedChunks.Count);
             if (tempChangedChunks.Count > 0)
             {
 
                 foreach (var c in tempChangedChunks)
                 {
                     if (c != null)
-                        c.NeedsToRegenerateMesh = true;
+                        c.QueueMeshUpdate();
                 }
             }
         }
@@ -323,7 +324,7 @@ namespace Spacebox.Game.Generation
 
             while (floodFillQueue.Count > 0)
             {
-                var (x,y,z) = floodFillQueue.Dequeue();
+                var (x, y, z) = floodFillQueue.Dequeue();
 
                 if (blockToNetwork.ContainsKey((x, y, z))) continue;
                 if (!Blocks.ContainsKey((x, y, z))) continue;
@@ -383,10 +384,10 @@ namespace Spacebox.Game.Generation
         {
             if (!blockToNetwork.TryGetValue(blockPos, out int networkId))
             {
-               
+
                 return 0;
             }
-                
+
 
             return GetNetworkCurrentPower(networkId);
         }

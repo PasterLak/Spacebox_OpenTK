@@ -17,7 +17,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Collections.Concurrent;
 
 namespace Engine
-{
+{  
     public abstract class EngineWindow : GameWindow
     {
         public static EngineWindow Instance { get; private set; }
@@ -29,7 +29,7 @@ namespace Engine
         private bool _debugUI = false;
         private ImGuiController _controller;
         private PostProcessManager _processManager;
-        private Vector2i _minimizedWindowSize;
+        private Vector2i _minimizedWindowSize; 
         private SceneRenderer _sceneRenderer;
         private FullscreenRenderer _fullscreenRenderer;
         private InputManager _inputManager;
@@ -125,7 +125,7 @@ namespace Engine
 
             var passthroughShader = new Shader(code.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None));
             Resources.AddResource("passthrough_shader", passthroughShader, true);
-
+            Resources.RemoveResourceFromControll(passthroughShader);
             _processManager.AddEffect(new DefaultEffect(passthroughShader));
         }
 
@@ -186,6 +186,8 @@ namespace Engine
 
             using (Prof.Time(T_Update))
             {
+                SceneManager.ApplyPendingSceneChange();
+
                 base.OnUpdateFrame(e);
                 RenderSpace.BeginFrame();
                 Input.Update();
@@ -220,7 +222,7 @@ namespace Engine
             if (SceneManager.Current != null)
             {
                 using (Prof.Time(T_SceneRender))
-                    SceneManager.Current.Render();
+                    SceneManager.Render();
 
                 using (Prof.Time(T_VisualDebug))
                     VisualDebug.Render();
@@ -232,10 +234,13 @@ namespace Engine
 
         private void RenderGUI()
         {
+            _controller.EnsureContext();
+           
             if (SceneManager.Current != null)
             {
+            
                 SceneManager.Current.OnGUI();
-                Debug.Render(new Vector2(ClientSize.X, ClientSize.Y).ToSystemVector2());
+                Debug.Render();
                 Overlay.OnGUI();
                 DevGui.Draw();
                 //InputOverlay.OnGUI();
@@ -247,11 +252,14 @@ namespace Engine
                     ImGui.ShowDemoWindow();
                 }
             }
-
+          
             if (Camera.Main != null)
                 _controller.Render();
 
-            ImGuiController.CheckGLError("End of frame");
+           
+                ImGuiController.CheckGLError("End of frame");
+          
+           
         }
 
         private void UpdateDefaultInputs()
@@ -273,26 +281,76 @@ namespace Engine
             else
                 FrameLimiter.TargetFPS = 120;
         }
+       
+        public enum WindowMode { Fullscreen, Borderless, Windowed }
 
+        private Vector2i _savedWindowSize;
+        private Vector2i _savedWindowLocation;
+
+        public void SetWindowMode(WindowMode mode)
+        {
+            if (!_isFullscreen)
+            {
+                _savedWindowSize = ClientSize;
+                _savedWindowLocation = Location;
+            }
+
+            switch (mode)
+            {
+                case WindowMode.Fullscreen:
+                    WindowBorder = WindowBorder.Hidden;
+                    WindowState = WindowState.Fullscreen;
+                    _isFullscreen = true;
+                    FrameLimiter.IsRunning = false;
+                    VSync = VSyncMode.On;
+                    break;
+
+                case WindowMode.Borderless:
+                    WindowBorder = WindowBorder.Hidden;
+                    WindowState = WindowState.Normal;
+
+                    var monitor = Monitors.GetMonitorFromWindow(this);
+                    Location = monitor.ClientArea.Min;
+                    ClientSize = monitor.ClientArea.Size;
+
+                    _isFullscreen = true;
+                    FrameLimiter.IsRunning = false;
+                    VSync = VSyncMode.On;
+                    break;
+
+                case WindowMode.Windowed:
+                    WindowState = WindowState.Normal;
+                    WindowBorder = WindowBorder.Resizable;
+
+                    if (_savedWindowSize != Vector2i.Zero)
+                    {
+                        ClientSize = _savedWindowSize;
+                        Location = _savedWindowLocation;
+                    }
+                    else
+                    {
+                        CenterWindow();
+                    }
+
+                    _isFullscreen = false;
+                    FrameLimiter.IsRunning = true;
+                    VSync = VSyncMode.Off;
+                    break;
+            }
+
+            OnResized?.Invoke(Size);
+        }
         public void ToggleFullScreen()
         {
             if (!_isFullscreen)
             {
-                WindowBorder = WindowBorder.Hidden;
-                WindowState = WindowState.Fullscreen;
-                FrameLimiter.IsRunning = false;
-                VSync = VSyncMode.On;
+                SetWindowMode(WindowMode.Fullscreen);
             }
             else
             {
-                WindowBorder = WindowBorder.Resizable;
-                WindowState = WindowState.Normal;
-                ClientSize = _minimizedWindowSize;
-                FrameLimiter.IsRunning = true;
-                VSync = VSyncMode.Off;
+                SetWindowMode(WindowMode.Windowed);
             }
-            _isFullscreen = !_isFullscreen;
-            OnResized?.Invoke(Size);
+  
         }
 
         public void TogglePolygonMode()
@@ -340,6 +398,7 @@ namespace Engine
             Debug.SaveMessagesToFile(true);
             Close();
             WorkerPoolManager.Shutdown();
+            ServiceLocator.Reset();
         }
 
         public static void Shutdown(object sender, EventArgs e)

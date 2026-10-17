@@ -71,7 +71,7 @@ namespace Engine.SceneManagement
                 RotationSpeedMax = 180f,
             };
 
-            var dust2 = Resources.Load<Texture2D>("Resources/Textures/dust.png");
+            var dust2 = Resources.Load<Texture2D>("Resources/Textures/Effects/dust.png");
             dust2.FilterMode = FilterMode.Nearest;
 
              system2 = new ParticleSystem(new ParticleMaterial(dust2), emitter2) { Max = 500, Rate = 100 };

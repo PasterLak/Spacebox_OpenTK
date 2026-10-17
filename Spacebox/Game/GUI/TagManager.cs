@@ -25,13 +25,14 @@ namespace Spacebox.Game.GUI
 
         private void InitializePool()
         {
+            
             _tagPool = new Pool<Tag>(
                 initialCount: 64,
                 initializeFunc: tag => tag,
                 onTakeFunc: null,
                 resetFunc: tag => tag.Reset(),
-                isActiveFunc: tag => tag.Enabled,
-                setActiveFunc: (tag, active) => tag.Enabled = active,
+              
+                setActiveFunc: (tag, active) => tag.Visible = active,
                 autoExpand: true
             );
         }
@@ -42,6 +43,20 @@ namespace Spacebox.Game.GUI
             tag.Initialize(text, worldPosition, color, isStatic, alignment);
             _activeTags.Add(tag);
             return tag;
+        }
+
+        public bool TryGetTagByName(string text, out Tag foundTag)
+        {
+            foreach (var tag in _activeTags)
+            {
+                if (tag.Text == text)
+                {
+                    foundTag = tag;
+                    return true;
+                }
+            }
+            foundTag = null;
+            return false;
         }
 
         public bool ReleaseTag(Tag tag)
@@ -91,33 +106,20 @@ namespace Spacebox.Game.GUI
             ClearAllTags();
             _tagPool = null;
             SpaceboxWindow.OnResized -= OnResized;
+            Instance = null;
         }
 
         public override void OnGUI()
         {
             if (!ShouldRenderTags()) return;
 
-            SetupWindow();
             FilterVisibleTags();
             RenderTags();
-            ImGui.End();
         }
 
         private bool ShouldRenderTags()
         {
             return Camera.Main != null && _activeTags.Count > 0 && Settings.ShowInterface;
-        }
-
-        private void SetupWindow()
-        {
-            ImGui.SetNextWindowPos(System.Numerics.Vector2.Zero, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(ImGui.GetIO().DisplaySize);
-            ImGui.Begin("TagWindow",
-                ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground |
-                ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize |
-                ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs |
-                ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNavFocus |
-                ImGuiWindowFlags.NoBringToFrontOnFocus);
         }
 
         private void FilterVisibleTags()
@@ -129,8 +131,8 @@ namespace Spacebox.Game.GUI
 
             foreach (var tag in _activeTags)
             {
-                if (!tag.Enabled) continue;
-                if (CameraFrustum.IsBehindCameraDot(tag.WorldPosition, camera.PositionWorld, camera.Front))
+                if (!tag.Visible) continue;
+                if (CameraFrustum.IsBehindCamera(tag.WorldPosition, camera.PositionWorld, camera.Front))
                     continue;
 
                 _visibleTags.Add(tag);
@@ -140,7 +142,8 @@ namespace Spacebox.Game.GUI
         private void RenderTags()
         {
             var camera = Camera.Main;
-            var drawList = ImGui.GetWindowDrawList();
+
+            var drawList = ImGui.GetBackgroundDrawList();
 
             foreach (var tag in _visibleTags)
             {
@@ -153,7 +156,7 @@ namespace Spacebox.Game.GUI
 
                 if (distanceSquared > Settings.ENTITY_SEARCH_RADIUS * Settings.ENTITY_SEARCH_RADIUS)
                 {
-                   continue;
+                    continue;
                 }
 
                 RenderTag(tag, screenPos, drawList, camera, distanceSquared);
@@ -169,13 +172,12 @@ namespace Spacebox.Game.GUI
         private void RenderTag(Tag tag, Vector2 screenPos, ImDrawListPtr drawList, Camera camera, float distanceSquared)
         {
             var textSize = ImGui.CalcTextSize(tag.Text);
-            var cursorPos = tag.GetTextPosition(screenPos.ToSystemVector2(), textSize);
 
-            ImGui.SetCursorPos(cursorPos);
+            var screenCoords = tag.GetTextPosition(screenPos.ToSystemVector2(), textSize);
 
             var fontSize = Tag.CalculateFontSize(distanceSquared);
 
-            drawList.AddText(_font, fontSize, ImGui.GetCursorPos(), tag.ColorUint, tag.Text);
+            drawList.AddText(_font, fontSize, screenCoords, tag.ColorUint, tag.Text);
         }
 
         private void OnResized(Vector2 screenSize)
@@ -189,5 +191,6 @@ namespace Spacebox.Game.GUI
         public int ActiveTagsCount => _activeTags.Count;
         public int PooledTagsCount => _tagPool?.AvailableObjects ?? 0;
         public int TotalTagsCount => _tagPool?.TotalObjects ?? 0;
+
     }
 }

@@ -2,28 +2,42 @@ using Engine;
 using Engine.Components;
 using Engine.Components.Debug;
 
-
-namespace Spacebox.Game;
-
-public class ItemWorldModel : Node3D
+namespace Spacebox.Game
 {
-    public ItemWorldModel(string texturePath, float modelDepth = 0.5f)
+    public class ItemWorldModel : Node3D
     {
-        var itemTexture = Resources.Load<Texture2D>(texturePath);
-        itemTexture.FilterMode = FilterMode.Nearest;
+        public bool ShowModel = false;
+        private ModelRendererComponent modelRendererComponent;
 
-        Name = "ItemWorldModel";
-        Mesh item = ItemModelGenerator.GenerateMeshFromTexture(itemTexture,  modelDepth);
-        
-        var cm = AttachComponent(new ModelRendererComponent(new Model(item, new TextureMaterial(itemTexture))));
-        //cm.Offset = new Vector3(-0.5f, -0.5f, -modelDepth/2f);
-        AttachComponent(new AxesDebugComponent());
-        AttachComponent(new OBBCollider());
-       
-    }
+        public ItemWorldModel()
+        {
+            Name = "ItemWorldModel";
+           
+            modelRendererComponent = AttachComponent(new ModelRendererComponent(null));
+           
 
-    public override void Render()
-    {
-        base.Render();
+            AttachComponent(new AxesDebugComponent());
+            AttachComponent(new OBBCollider());
+        }
+
+        public void ChangeModelTo(Item item)
+        {
+            if (item == null)
+            {
+                Debug.Error($"ItemWorldModel: Item is null.");
+                return;
+            }
+            var model = GameAssets.GetItemWorldModelById(item.Id);
+            if (modelRendererComponent != null)
+            {
+                modelRendererComponent.Model = model;
+            }
+        }
+
+        public override void Render()
+        {
+            if (!ShowModel) return;
+            base.Render();
+        }
     }
 }

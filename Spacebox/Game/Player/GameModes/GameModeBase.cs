@@ -4,11 +4,11 @@ using Spacebox.Game.Player.Interactions;
 
 public abstract class GameModeBase
 {
-    protected Astronaut Player;
+    protected LocalAstronaut Player;
     public InteractionHandler InteractionHandler  { get; private set; }
     public abstract  GameMode GetGameMode();
 
-    public GameModeBase(Astronaut player,  InteractionHandler interactionHandler)
+    public GameModeBase(LocalAstronaut player,  InteractionHandler interactionHandler)
     {
         Player = player;
         InteractionHandler  = interactionHandler;
@@ -25,13 +25,13 @@ public abstract class GameModeBase
     
     public abstract void OnEnable();
     public abstract void OnDisable();
-    public abstract void Update(Astronaut player);
-    public virtual void Render(Astronaut player)
+    public abstract void Update(LocalAstronaut player);
+    public virtual void Render(LocalAstronaut player)
     {
         InteractionHandler.Render(player);
     }
-    public abstract void UpdateInteraction(Astronaut player);
-    public abstract void HandleInput(Astronaut player);
+    public abstract void UpdateInteraction(LocalAstronaut player);
+    public abstract void HandleInput(LocalAstronaut player);
 }
 
 

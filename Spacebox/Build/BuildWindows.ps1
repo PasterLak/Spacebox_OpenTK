@@ -2,7 +2,7 @@
 
 # ==== CONFIGURATION ====
 $version = "0.1.2 alpha"
-$configuration = "Release"
+$configuration = "Final"
 $runtime = "win-x64"
 $framework = "net8.0"
 $finalFolderName = "Spacebox_v$version"

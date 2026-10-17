@@ -1,7 +1,9 @@
-﻿
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using Engine.Utils;
 using Engine;
+using System.Collections.Generic;
+using System;
+using Spacebox.Game.Generation;
 
 public struct WormParameters
 {
@@ -9,7 +11,7 @@ public struct WormParameters
     public byte MinCount;
     public byte MaxCount;
     public byte WormDiameter;
-    public float Deviation; // 0 strenght line, 1 360 grad
+    public float Deviation;
     public byte MaxDistance;
     public float StepSize;
     public int Seed;
@@ -28,128 +30,99 @@ public struct WormParameters
 
 public class PerlinWorms
 {
-    readonly WormParameters p;
-    readonly List<Vector3i> sphereOffsets;
-
-    public PerlinWorms(WormParameters parameters)
+    public static void CarvePaddedChunk(int[,,] paddedData, Vector3SByte chunkIdx, int worldSeed, WormParameters p)
     {
-        p = parameters;
-        sphereOffsets = BuildSphereOffsets(1);
-    }
-
-    static readonly Dictionary<(int d, int c), Vector3i[]> Cache = new();
-
-
-
-    public static IEnumerable<(Vector3SByte chunk, Vector3i voxel)> Voxels(WormParameters p, int chunkCount, int chunkSize)
-    {
-        int world = chunkCount * chunkSize;
-        int half = chunkCount / 2;
-
-        var rng = new Random(p.Seed);
-        var noise = new FastNoiseLite(p.Seed);
-        noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
-
-        p.WormCount = (byte)rng.Next(p.MinCount, p.MaxCount);
-
-        float step = MathF.Max(1f, p.StepSize);
-        int maxSteps = (int)(p.MaxDistance / step);
-        var off = Offsets(p.WormDiameter);
-
-        for (int w = 0; w < p.WormCount; ++w)
-        {
-            var pos = new Vector3(rng.Next(world), rng.Next(world), rng.Next(world));
-            var dir = Rand(rng);
-
-            for (int s = 0; s < maxSteps; ++s)
-            {
-                int bx = (int)MathF.Round(pos.X);
-                int by = (int)MathF.Round(pos.Y);
-                int bz = (int)MathF.Round(pos.Z);
-
-                foreach (var o in off)
-                {
-                    int vx = bx + o.X, vy = by + o.Y, vz = bz + o.Z;
-                    if ((uint)vx >= world || (uint)vy >= world || (uint)vz >= world) continue;
-
-                    var c = new Vector3SByte(
-                        (sbyte)(vx / chunkSize - half),
-                        (sbyte)(vy / chunkSize - half),
-                        (sbyte)(vz / chunkSize - half));
-
-                    var v = new Vector3i(vx % chunkSize, vy % chunkSize, vz % chunkSize);
-                    yield return (c, v);
-                }
-
-                var n = new Vector3(noise.GetNoise(pos.Y, pos.Z),
-                                    noise.GetNoise(pos.X, pos.Z),
-                                    noise.GetNoise(pos.X, pos.Y)) - new Vector3(.5f);
-                dir = Vector3.Normalize(dir + n * p.Deviation);
-                pos += dir * step;
-            }
-        }
-    }
-
-    public void Carve(int[,,] voxels, float blockSize)
-    {
-        int N = voxels.GetLength(0);
-        var rng = new Random(p.Seed);               // RNG is now always seed-locked
-        var noise = new FastNoiseLite(p.Seed);        // noise seeded too
-        noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
+        int searchRadius = (int)MathF.Ceiling(p.MaxDistance / (float)Chunk.Size);
+        var sphereOffsets = Offsets(p.WormDiameter);
         const float scale = 0.1f;
 
-        for (int w = 0; w < p.WormCount; ++w)
+        float minGlobalX = chunkIdx.X * Chunk.Size - 1 - p.WormDiameter;
+        float maxGlobalX = chunkIdx.X * Chunk.Size + Chunk.Size + 1 + p.WormDiameter;
+        float minGlobalY = chunkIdx.Y * Chunk.Size - 1 - p.WormDiameter;
+        float maxGlobalY = chunkIdx.Y * Chunk.Size + Chunk.Size + 1 + p.WormDiameter;
+        float minGlobalZ = chunkIdx.Z * Chunk.Size - 1 - p.WormDiameter;
+        float maxGlobalZ = chunkIdx.Z * Chunk.Size + Chunk.Size + 1 + p.WormDiameter;
+
+        for (int cx = -searchRadius; cx <= searchRadius; cx++)
         {
-            var pos = new Vector3(
-                rng.NextSingle() * (N - 1),
-                rng.NextSingle() * (N - 1),
-                rng.NextSingle() * (N - 1));
-            var dir = RandomUnit(rng);
-
-            float travelled = 0;
-            float maxSteps = p.MaxDistance / p.StepSize;
-
-            while (travelled < maxSteps)
+            for (int cy = -searchRadius; cy <= searchRadius; cy++)
             {
-                int bx = (int)MathF.Round(pos.X);
-                int by = (int)MathF.Round(pos.Y);
-                int bz = (int)MathF.Round(pos.Z);
-
-                foreach (var off in sphereOffsets)
+                for (int cz = -searchRadius; cz <= searchRadius; cz++)
                 {
-                    int x = bx + off.X, y = by + off.Y, z = bz + off.Z;
-                    if ((uint)x < N && (uint)y < N && (uint)z < N)
-                        voxels[x, y, z] = 0;
+                    Vector3SByte originChunk = new Vector3SByte(
+                        (sbyte)(chunkIdx.X + cx),
+                        (sbyte)(chunkIdx.Y + cy),
+                        (sbyte)(chunkIdx.Z + cz));
+
+                    int nodeSeed = Hash(originChunk.X, originChunk.Y, originChunk.Z, worldSeed);
+                    var rng = new Random(nodeSeed);
+                    var noise = new FastNoiseLite(nodeSeed);
+                    noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
+
+                    int wormCount = rng.Next(p.MinCount, p.MaxCount + 1);
+
+                    for (int w = 0; w < wormCount; ++w)
+                    {
+                        Vector3 pos = new Vector3(
+                            originChunk.X * Chunk.Size + rng.NextSingle() * Chunk.Size,
+                            originChunk.Y * Chunk.Size + rng.NextSingle() * Chunk.Size,
+                            originChunk.Z * Chunk.Size + rng.NextSingle() * Chunk.Size);
+
+                        Vector3 dir = RandomUnit(rng);
+                        float travelled = 0;
+                        float maxSteps = p.MaxDistance / p.StepSize;
+
+                        while (travelled < maxSteps)
+                        {
+                            if (pos.X >= minGlobalX && pos.X <= maxGlobalX &&
+                                pos.Y >= minGlobalY && pos.Y <= maxGlobalY &&
+                                pos.Z >= minGlobalZ && pos.Z <= maxGlobalZ)
+                            {
+                                int bx = (int)MathF.Round(pos.X);
+                                int by = (int)MathF.Round(pos.Y);
+                                int bz = (int)MathF.Round(pos.Z);
+
+                                foreach (var off in sphereOffsets)
+                                {
+                                    int lx = (bx + off.X) - (chunkIdx.X * Chunk.Size) + 1;
+                                    int ly = (by + off.Y) - (chunkIdx.Y * Chunk.Size) + 1;
+                                    int lz = (bz + off.Z) - (chunkIdx.Z * Chunk.Size) + 1;
+
+                                    if (lx >= 0 && lx < 34 && ly >= 0 && ly < 34 && lz >= 0 && lz < 34)
+                                    {
+                                        paddedData[lx, ly, lz] = 0;
+                                    }
+                                }
+                            }
+
+                            var n = new Vector3(
+                                noise.GetNoise(pos.Y * scale, pos.Z * scale),
+                                noise.GetNoise(pos.X * scale, pos.Z * scale),
+                                noise.GetNoise(pos.X * scale, pos.Y * scale)) - new Vector3(0.5f);
+                            dir = Vector3.Normalize(dir + n * p.Deviation);
+                            pos += dir * p.StepSize;
+                            travelled += p.StepSize;
+                        }
+                    }
                 }
-
-                var n = new Vector3(
-                    noise.GetNoise(pos.Y * scale, pos.Z * scale),
-                    noise.GetNoise(pos.X * scale, pos.Z * scale),
-                    noise.GetNoise(pos.X * scale, pos.Y * scale)) - new Vector3(0.5f);
-                dir = Vector3.Normalize(dir + n * p.Deviation);
-
-                pos += dir * p.StepSize;
-                travelled += p.StepSize;
             }
         }
     }
 
-    // ---- local helpers --------------------------------------------------
-    private List<Vector3i> BuildSphereOffsets(int blockSize)
+    private static int Hash(int x, int y, int z, int seed)
     {
-        float rWorld = (p.WormDiameter / blockSize) * 0.5f;
-        int rGrid = (int)MathF.Ceiling(rWorld);
-        float r2 = rWorld * rWorld;
-
-        var list = new List<Vector3i>();
-        for (int dx = -rGrid; dx <= rGrid; ++dx)
-            for (int dy = -rGrid; dy <= rGrid; ++dy)
-                for (int dz = -rGrid; dz <= rGrid; ++dz)
-                    if (dx * dx + dy * dy + dz * dz <= r2)
-                        list.Add(new Vector3i(dx, dy, dz));
-        return list;
+        unchecked
+        {
+            int hash = 17;
+            hash = hash * 31 + x;
+            hash = hash * 31 + y;
+            hash = hash * 31 + z;
+            hash = hash * 31 + seed;
+            return hash;
+        }
     }
-    static Vector3i[] Offsets(int dia)
+
+    private static Vector3i[] Offsets(int dia)
     {
         float rad = dia * .5f;
         int r = (int)MathF.Ceiling(rad);
@@ -163,16 +136,7 @@ public class PerlinWorms
         return list.ToArray();
     }
 
-    static Vector3 Rand(Random r)
-    {
-        double a = 2 * Math.PI * r.NextDouble();
-        double b = Math.Acos(2 * r.NextDouble() - 1);
-        return new Vector3((float)(Math.Sin(b) * Math.Cos(a)),
-                           (float)(Math.Sin(b) * Math.Sin(a)),
-                           (float)Math.Cos(b));
-    }
-
-    static Vector3 RandomUnit(Random rng)
+    private static Vector3 RandomUnit(Random rng)
     {
         double u = rng.NextDouble();
         double v = rng.NextDouble();
@@ -182,5 +146,4 @@ public class PerlinWorms
                     (float)(Math.Sin(φ) * Math.Sin(θ)),
                     (float)Math.Cos(φ));
     }
-
 }

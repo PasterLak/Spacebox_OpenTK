@@ -20,12 +20,12 @@ namespace Spacebox.Game.Effects
         public StarsEffect(Camera camera)
         {
             this.camera = camera;
-            Initialize();
+            //Initialize();
         }
 
         private void Initialize()
         {
-            dustTexture = Resources.Load<Texture2D>("Resources/Textures/star.png");
+            dustTexture = Resources.Load<Texture2D>("Resources/Textures/Effects/star.png");
 
             dustTexture.FilterMode = FilterMode.Nearest;
          

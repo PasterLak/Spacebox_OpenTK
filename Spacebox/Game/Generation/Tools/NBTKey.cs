@@ -8,15 +8,17 @@ namespace Spacebox.Game.Generation.Tools
             public const string index_x = "index_x";
             public const string index_y = "index_y";
             public const string index_z = "index_z";
+            public const string suppressed_ids = "suppressed_ids";
         }
 
         public static class ENTITY
         {
             public const string id = "id";
+            public const string file_name = "file_name";
             public const string name = "name";
-            public const string world_x = "world_x";
-            public const string world_y = "world_y";
-            public const string world_z = "world_z";
+            public const string local_x = "local_x";
+            public const string local_y = "local_y";
+            public const string local_z = "local_z";
 
             public const string rotation_x = "rotation_x";
             public const string rotation_y = "rotation_y";
@@ -36,6 +38,7 @@ namespace Spacebox.Game.Generation.Tools
             public const string palette_blocks = "palette_blocks";
             public const string palette_items = "palette_items";
             public const string blocks = "blocks";
+            public const string directions = "directions";
             public const string rotations = "rotations";
 
             public const string storages = "storages";

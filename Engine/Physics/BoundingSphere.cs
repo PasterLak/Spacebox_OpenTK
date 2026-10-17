@@ -25,6 +25,10 @@ namespace Engine.Physics
             {
                 return box.Intersects(this);
             }
+            else if (other is BoundingBoxOBB bob)
+            {
+                return bob.Intersects(this);
+            }
 
             return false;
         }

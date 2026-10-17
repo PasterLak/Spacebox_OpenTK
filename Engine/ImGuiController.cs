@@ -30,6 +30,8 @@ namespace Engine
         private int _windowWidth;
         private int _windowHeight;
 
+        private nint _imguiContext;
+
         private System.Numerics.Vector2 _scaleFactor = System.Numerics.Vector2.One;
 
         private static bool KHRDebugAvailable = false;
@@ -54,22 +56,29 @@ namespace Engine
 
             CompatibilityProfile = (GL.GetInteger((GetPName)All.ContextProfileMask) & (int)All.ContextCompatibilityProfileBit) != 0;
 
-            nint context = ImGui.CreateContext();
-            ImGui.SetCurrentContext(context);
+            _imguiContext = ImGui.CreateContext();
+            ImGui.SetCurrentContext(_imguiContext);
             var io = ImGui.GetIO();
             io.Fonts.AddFontDefault();
 
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
             // Enable Docking
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
-           
+
             CreateDeviceResources();
-         
+
             SetPerFrameImGuiData(1f / 60f);
 
             ImGui.NewFrame();
             _frameBegun = true;
         }
+
+        public void EnsureContext()
+        {
+            if (_imguiContext == nint.Zero) return;
+            ImGui.SetCurrentContext(_imguiContext);
+        }
+
 
         public void WindowResized(int width, int height)
         {
@@ -206,7 +215,10 @@ void main()
             if (_frameBegun)
             {
                 _frameBegun = false;
+               
                 ImGui.Render();
+
+                
                 RenderImDrawData(ImGui.GetDrawData());
             }
         }
@@ -222,7 +234,7 @@ void main()
             }
 
             SetPerFrameImGuiData(deltaSeconds);
-        
+
             UpdateImGuiInput(wnd);
 
             _frameBegun = true;
@@ -264,14 +276,14 @@ void main()
 
             if (wnd.CursorState == OpenTK.Windowing.Common.CursorState.Grabbed) // new
             {
-                io.MousePos = new System.Numerics.Vector2(io.DisplaySize.X/2f, io.DisplaySize.Y/2f);
+                io.MousePos = new System.Numerics.Vector2(io.DisplaySize.X / 2f, io.DisplaySize.Y / 2f);
             }
             else
             {
                 io.MousePos = new System.Numerics.Vector2(point.X, point.Y);
             }
 
-                foreach (Keys key in Enum.GetValues(typeof(Keys)))
+            foreach (Keys key in Enum.GetValues(typeof(Keys)))
             {
                 if (key == Keys.Unknown)
                 {
@@ -311,7 +323,7 @@ void main()
             {
                 return;
             }
-
+           
             // Get intial state.
             int prevVAO = GL.GetInteger(GetPName.VertexArrayBinding);
             int prevArrayBuffer = GL.GetInteger(GetPName.ArrayBufferBinding);
@@ -382,10 +394,10 @@ void main()
                     GL.BufferData(BufferTarget.ElementArrayBuffer, newSize, nint.Zero, BufferUsageHint.DynamicDraw);
                     _indexBufferSize = newSize;
 
-                   // Console.WriteLine($"Resized dear imgui index buffer to new size {_indexBufferSize}");
+                    //Debug.Log($"Resized dear imgui index buffer to new size {_indexBufferSize}");
                 }
             }
-
+           
             // Setup orthographic projection matrix into our constant buffer
             ImGuiIOPtr io = ImGui.GetIO();
             Matrix4 mvp = Matrix4.CreateOrthographicOffCenter(
@@ -397,8 +409,18 @@ void main()
                 1.0f);
 
             GL.UseProgram(_shader);
-            GL.UniformMatrix4(_shaderProjectionMatrixLocation, false, ref mvp);
-            GL.Uniform1(_shaderFontTextureLocation, 0);
+            
+
+            if (_shaderProjectionMatrixLocation != -1)
+                GL.UniformMatrix4(_shaderProjectionMatrixLocation, false, ref mvp);
+
+            if (_shaderFontTextureLocation != -1)
+                GL.Uniform1(_shaderFontTextureLocation, 0);
+            int currentProgram;
+            GL.GetInteger(GetPName.CurrentProgram, out currentProgram);
+            bool alive = GL.IsProgram(currentProgram);
+
+           // Debug.Error($"Shader handle: {_shader} current: {currentProgram} alive:{alive} ");
             CheckGLError("Projection");
 
             GL.BindVertexArray(_vertexArray);
@@ -410,8 +432,8 @@ void main()
             GL.Enable(EnableCap.ScissorTest);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
             //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-           // GL.Disable(EnableCap.CullFace);
-           // GL.Disable(EnableCap.DepthTest);
+            // GL.Disable(EnableCap.CullFace);
+            // GL.Disable(EnableCap.DepthTest);
 
 
 
@@ -508,6 +530,14 @@ void main()
 
             GL.DeleteTexture(_fontTexture);
             GL.DeleteProgram(_shader);
+
+            if (_imguiContext != nint.Zero)
+            {
+                // Set context before destroying to be safe
+                ImGui.SetCurrentContext(_imguiContext);
+                ImGui.DestroyContext(_imguiContext);
+                _imguiContext = nint.Zero;
+            }
         }
 
         public static void LabelObject(ObjectLabelIdentifier objLabelIdent, int glObject, string name)
@@ -577,11 +607,12 @@ void main()
 
         public static void CheckGLError(string title)
         {
+            return;
             ErrorCode error;
             int i = 1;
             while ((error = GL.GetError()) != ErrorCode.NoError)
             {
-                // Debug.Error($"{title} ({i++}): {error}");
+                 Debug.Error($"[ImGuiController][{title}] ({i++}): {error}");
             }
         }
 

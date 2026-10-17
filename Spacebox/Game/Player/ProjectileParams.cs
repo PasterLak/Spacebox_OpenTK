@@ -16,14 +16,15 @@ namespace Spacebox.Game.Player
         public Vector3 Color3 => new Vector3(Color.R, Color.G, Color.B);
         public byte Damage { get; private set; }
         public byte DamageBlocks { get; private set; }
+        public byte Penetration { get; private set; }
         public float RicochetAngle { get; private set; }
         public int PossibleRicochets { get; private set; }
-
+        public int MaximumBlocksCanDestroy { get; set; } = 1;
         public bool DropBlock { get; private set; } = false;
 
         public ProjectileParameters()
         {
-            SetErrorParams(this);
+            SetErrorParams(ref this);
         }
 
         public ProjectileParameters(short id, ProjectileJSON projectileJSON)
@@ -41,12 +42,35 @@ namespace Spacebox.Game.Player
             Mass = (byte)p.Mass;
             Damage = (byte)p.Damage;
             DamageBlocks = (byte)p.DamageBlocks;
+            Penetration = (byte)p.Penetration;
             RicochetAngle = p.RicochetAngle;
             PossibleRicochets = p.PossibleRicochets;
+            MaximumBlocksCanDestroy = p.MaximumBlocksCanDestroy;
 
         }
 
         public static ProjectileParameters GetTestProjectile()
+        {
+            var p = new ProjectileParameters();
+
+            p.ID = short.MaxValue - 2;
+            p.Name = "projectiletest";
+            p.Speed = 15;
+            p.MaxTravelDistance = 100;
+            p.Length = 0.75f;
+            p.Thickness = 0.1f;
+            p.Color = Color4.Blue;
+            p.Penetration = 255;
+            p.Mass = 2;
+            p.Damage = 5;
+            p.DamageBlocks = 5;
+            p.RicochetAngle = 30;
+            p.PossibleRicochets = 5;
+
+            return p;
+        }
+
+        public static ProjectileParameters GetNoPenetrationProjectile()
         {
             var p = new ProjectileParameters();
 
@@ -56,8 +80,8 @@ namespace Spacebox.Game.Player
             p.MaxTravelDistance = 100;
             p.Length = 0.75f;
             p.Thickness = 0.1f;
-            p.Color = Color4.Blue;
-
+            p.Color = Color4.Yellow;
+            p.Penetration = 255;
             p.Mass = 2;
             p.Damage = 5;
             p.DamageBlocks = 5;
@@ -66,16 +90,17 @@ namespace Spacebox.Game.Player
 
             return p;
         }
+
         public static ProjectileParameters GetErrorProjectile()
         {
             var p = new ProjectileParameters();
 
-            SetErrorParams(p);
+            SetErrorParams(ref p);
 
             return p;
         }
 
-        private static void SetErrorParams(ProjectileParameters p)
+        private static void SetErrorParams(ref ProjectileParameters p)
         {
             p.ID = short.MaxValue;
             p.Name = "projectileerror";
@@ -85,7 +110,7 @@ namespace Spacebox.Game.Player
             p.Thickness = 0.1f;
             p.Mass = 1;
             p.Color = Color4.Pink;
-
+            p.Penetration = 255;
             p.Damage = 0;
             p.DamageBlocks = 0;
             p.RicochetAngle = 0;

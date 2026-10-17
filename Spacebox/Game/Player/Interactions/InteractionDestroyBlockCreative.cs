@@ -1,4 +1,4 @@
-﻿namespace Spacebox.Game.Player.Interactions;
+﻿
 using Engine;
 using Engine.Animation;
 using Engine.Audio;
@@ -12,6 +12,7 @@ using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
 
+namespace Spacebox.Game.Player.Interactions;
 
 public class InteractionDestroyBlockCreative : InteractionDestroyBlock
 {
@@ -36,9 +37,9 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
         model.Animator.AddAnimation(new MoveAnimation(model.Position, model.Position + new Vector3(0.005f, 0, 0), 0.05f, true));
     }
 
-    public override void Update(Astronaut player)
+    public override void Update(LocalAstronaut player)
     {
-        if (Input.IsMouseButtonUp(MouseButton.Left))
+        if (Input.IsActionUp("block_destroy"))
         {
             _time = MinBlockDestroyTime;
             model.SetAnimation(false);
@@ -48,11 +49,11 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
             model.SetAnimation(false);
             return;
         }
-        Ray ray = new Ray(player.Position, player.Front, MaxDestroyDistance);
+        Ray ray = new Ray(player.Position, player.Front, 10);
         if (World.CurrentSector.Raycast(ray, out HitInfo hit))
         {
             UpdateBlockSelector(hit);
-            if (Input.IsMouseButtonDown(MouseButton.Left))
+            if (Input.IsActionDown("block_destroy"))
             {
                 _time = MinBlockDestroyTime;
                 model.SetAnimation(true);
@@ -60,7 +61,7 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
                 DestroyBlock(hit, player);
                 
             }
-            if (Input.IsMouseButton(MouseButton.Left))
+            if (Input.IsAction("block_destroy"))
             {
                 _time -= Time.Delta;
                 if (_time <= 0)
@@ -87,13 +88,13 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
         {
             AImedBlockElement.AimedBlock = null;
             BlockSelector.IsVisible = false;
-            //CenteredText.Hide();
-            if (Input.IsMouseButtonDown(MouseButton.Left))
+            CenteredText.Hide();
+            if (Input.IsActionDown("block_destroy"))
                 model.SetAnimation(true);
         }
     }
 
-    public override void Render(Astronaut player)
+    public override void Render(LocalAstronaut player)
     {
     }
 }

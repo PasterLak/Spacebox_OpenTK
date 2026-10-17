@@ -9,7 +9,8 @@ public class InputAction
     public List<InputBinding> Bindings { get; set; } = new();
     public bool Enabled { get; set; } = true;
     public float DeadZone { get; set; } = 0.1f;
-
+    public string Category { get; set; } = "Default";
+  
     public bool HasBindings => Bindings.Count > 0;
 
     [JsonIgnore]
