@@ -162,6 +162,12 @@ namespace Spacebox.Game.GUI
         {
             click1?.Dispose();
             click1 = null;
+
+            if (_wasVisible)
+            {
+                Time.TimeSize = 1;
+                StatisticsUI.IsVisible = false;
+            }
             _wasVisible = false;
         }
     }

@@ -81,6 +81,7 @@ Fixes
 - voxel raycast moved the ray origin
 - memory leaks: ImGui font texture per menu load, audio sources, resize event handlers, tick handler added per world load
 - sounds silent after re-entering a world
+- time stayed paused after "Go to menu" (black menu, frozen world load)
 
 Engine
 - Materials
