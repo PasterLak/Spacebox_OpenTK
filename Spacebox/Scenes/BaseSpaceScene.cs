@@ -167,6 +167,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         MainThreadDispatcher.Instance.ExecutePending(StreamingBudget.DispatcherBudgetMs);
         WorldLoadingScreen.Update();
+        DnaReconstructionScreen.Update();
 
 #if DEBUG
         if (Input.IsKeyDown(Keys.R))
@@ -265,6 +266,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         AnalyzerUI.OnGUI();
         OxygenGeneratorUI.OnGUI();
         GravityGeneratorUI.OnGUI();
+        DnaReconstructorUI.OnGUI();
+        DnaReconstructionScreen.OnGUI();
 
         if (VisualDebug.Enabled)
         {
@@ -286,6 +289,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         OxygenGeneratorUI.Reset();
         WorldLoadingScreen.Reset();
         GravityGeneratorUI.Reset();
+        DnaReconstructorUI.Reset();
+        DnaReconstructionScreen.Reset();
         PanelUI.Player = null;
 
         TickTaskManager.Dispose();

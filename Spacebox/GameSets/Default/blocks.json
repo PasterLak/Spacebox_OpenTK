@@ -966,7 +966,13 @@
   {
     "ID": "dna_reconstructor",
     "Name": "DNA Reconstructor",
-    "Description": "Used to revive the player or other creatures",
+    "Description": "Revives you here after death. Needs power and DNA samples (1 per revival)",
+    "Type": "dnareconstructor",
+    "DnaReconstructor": {
+      "DnaItem": "dna_sample",
+      "Power": 50,
+      "ReconstructionTime": 5
+    },
     "Category": "other",
     "PowerToDrill": 1,
     "Mass": 6,

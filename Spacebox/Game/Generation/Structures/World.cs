@@ -216,6 +216,7 @@ public class World : Component, ISpaceStructure
     {
         base.OnDetached();
         GravityField.Clear();
+        Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.Clear();
 
 
 

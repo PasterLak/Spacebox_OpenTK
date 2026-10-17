@@ -34,6 +34,7 @@ namespace Spacebox.Game.Player
                     Power = player.PowerBar.StatsData.Value,
                     Oxygen = player.OxygenBar.StatsData.Value,
                     IsFlashlightOn = player.Flashlight.Enabled,
+                    SpawnPoint = new[] { player.SpawnPosition.X, player.SpawnPosition.Y, player.SpawnPosition.Z },
                     InventorySlots = CollectSlots(player.Inventory),
                     PanelSlots = CollectSlots(player.Panel),
                     EquipmentSlots = CollectSlots(player.Equipment.Storage),
@@ -85,7 +86,9 @@ namespace Spacebox.Game.Player
                 }
 
                 player.SetPosition( new Vector3(data.PositionX, data.PositionY, data.PositionZ));
-                player.SpawnPosition = player.Position;
+                player.SpawnPosition = data.SpawnPoint is { Length: 3 }
+                    ? new Vector3(data.SpawnPoint[0], data.SpawnPoint[1], data.SpawnPoint[2])
+                    : player.Position;
                 Quaternion loadedRotation = new Quaternion(data.RotationX, data.RotationY, data.RotationZ, data.RotationW);
 
                 player.SetRotation(loadedRotation);
@@ -220,6 +223,7 @@ namespace Spacebox.Game.Player
             public int Power { get; set; } = 100;
             public int Oxygen { get; set; } = 100;
             public bool IsFlashlightOn { get; set; } = false;
+            public float[] SpawnPoint { get; set; }
             public List<SavedItemSlot> InventorySlots { get; set; }
             public List<SavedItemSlot> PanelSlots { get; set; }
             public List<SavedItemSlot> EquipmentSlots { get; set; } = new List<SavedItemSlot>();

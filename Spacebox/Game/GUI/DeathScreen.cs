@@ -19,6 +19,7 @@ namespace Spacebox.Game.GUI
         private string deathMessage = "YOU DIED";
         private string deathCause = "";
         private string respawnButtonText = "Respawn";
+        private string reconstructButtonText = "Reconstruct from DNA";
 
         private AudioSource deathSound;
         private bool soundPlayed = false;
@@ -55,6 +56,8 @@ namespace Spacebox.Game.GUI
         }
 
         public event Action OnRespawn;
+        public event Action OnReconstruct;
+        public Func<string> ReconstructionBlocker { get; set; }
 
         public DeathScreen()
         {
@@ -232,8 +235,44 @@ namespace Spacebox.Game.GUI
 
             if (ImGui.Button(respawnButtonText, buttonSize))
             {
-                OnRespawn?.Invoke();
                 Hide();
+                OnRespawn?.Invoke();
+                return;
+            }
+
+            RenderReconstructButton(displaySize, scale, buttonPos + new Vector2(0f, buttonHeight + offsetValue * 4f), buttonSize, offset);
+        }
+
+        private void RenderReconstructButton(Vector2 displaySize, float scale, Vector2 buttonPos, Vector2 buttonSize, Vector2 offset)
+        {
+            if (OnReconstruct == null) return;
+
+            string blocker = ReconstructionBlocker?.Invoke();
+            var drawList = ImGui.GetWindowDrawList();
+
+            ImGui.SetCursorPos(buttonPos);
+            Vector2 buttonScreenPos = ImGui.GetCursorScreenPos();
+
+            if (blocker != null)
+            {
+                drawList.AddRectFilled(buttonScreenPos - offset, buttonScreenPos + buttonSize + offset, ImGui.GetColorU32(new Vector4(0.3f, 0.3f, 0.3f, 0.8f)));
+                ImGui.BeginDisabled();
+                ImGui.Button(reconstructButtonText, buttonSize);
+                ImGui.EndDisabled();
+
+                Vector2 textSize = ImGui.CalcTextSize(blocker);
+                ImGui.SetCursorPos(new Vector2((displaySize.X - textSize.X) * 0.5f, buttonPos.Y + buttonSize.Y + offset.Y * 3f));
+                ImGui.TextColored(new Vector4(1f, 0.75f, 0.3f, 1f), blocker);
+                return;
+            }
+
+            drawList.AddRectFilled(buttonScreenPos - offset, buttonScreenPos + buttonSize + offset, ImGui.GetColorU32(new Vector4(0.3f, 0.85f, 1f, 1f)));
+            drawList.AddRectFilled(buttonScreenPos, buttonScreenPos + buttonSize + offset, ImGui.GetColorU32(new Vector4(0.15f, 0.45f, 0.6f, 1f)));
+
+            if (ImGui.Button(reconstructButtonText, buttonSize))
+            {
+                Hide();
+                OnReconstruct.Invoke();
             }
         }
 

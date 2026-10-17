@@ -1170,6 +1170,7 @@ namespace Spacebox.Game.Generation
         {
             Doors.Dispose();
             GravityField.UnregisterEntity(this);
+            Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.UnregisterEntity(this);
             Sector = null;
             MeshUpdateQueue.Clear();
             foreach (var mesh in MeshesTogenerate)

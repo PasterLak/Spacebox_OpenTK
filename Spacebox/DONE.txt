@@ -71,6 +71,8 @@ Game
 - power blocks show generated energy in tooltip
 - smooth voxel lighting: colors blend per channel, light per vertex
 - gravity generator: 200 EU, radius 32, walking/jumping, smooth zone borders, drops and objects fall, crafting
+- DNA reconstructor: UI with DNA slot, needs power; after death respawn at the nearest one (1 DNA), reconstruction animation
+- respawn point saved (first join place), respawn moves out of blocks
 - gravity generator window: radius 4-512, strength with Moon/Mars/Earth/Jupiter presets, on/off, only inside closed rooms; power depends on radius and strength; settings in json, saved
 - oxygen: bar, -1 every 10 s in survival (config), death at 0, compressed oxygen +100
 - oxygen generator block: fills closed rooms with air (radius 32), +10 oxygen/s in air, "Air" on bar

@@ -10,6 +10,7 @@ using Spacebox.Game.Physics;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Game.Player.Interactions;
+using Spacebox.Game.Player.Respawn;
 using Spacebox.Game.Resource;
 using Spacebox.GUI;
 using Client;
@@ -48,6 +49,7 @@ namespace Spacebox.Game.Player
 
         public HitImage HitImage { get; private set; }
         public DeathScreen DeathScreen { get; private set; } = new DeathScreen();
+        public PlayerRespawner Respawner { get; private set; }
         public HealthBar HealthBar { get; private set; }
         public Mood Mood { get; private set; }
         public PowerBar PowerBar { get; private set; }
@@ -135,7 +137,10 @@ namespace Spacebox.Game.Player
             };
 
             HealthBar.StatsData.OnIncrement += (v) => { PlayerStatistics.HealthHealed += v; };
-            DeathScreen.OnRespawn += Revive;
+            Respawner = new PlayerRespawner(this);
+            DeathScreen.OnRespawn += Respawner.RespawnAtSpawnPoint;
+            DeathScreen.OnReconstruct += ReconstructOrRespawn;
+            DeathScreen.ReconstructionBlocker = Respawner.GetReconstructionBlocker;
             Flashlight.OnEnabledChanged += (b) => { PanelUI.SetFlashlight(this); };
 
             AttachComponent(new NetworkNode3DComponent(true));
@@ -350,7 +355,13 @@ namespace Spacebox.Game.Player
             OnDeath?.Invoke();
         }
 
-        public void Revive()
+        private void ReconstructOrRespawn()
+        {
+            if (!Respawner.RespawnAtReconstructor())
+                Respawner.RespawnAtSpawnPoint();
+        }
+
+        public void Revive(Vector3 position)
         {
             if (IsAlive) return;
 
@@ -368,7 +379,7 @@ namespace Spacebox.Game.Player
             HealthBar.StatsGUI.IsVisible = true;
             PowerBar.StatsGUI.IsVisible = true;
             OxygenBar.StatsGUI.IsVisible = true;
-            SetPosition(SpawnPosition);
+            SetPosition(position);
             Effects.PlayEffect(PlayerEffectType.Heal);
         }
 

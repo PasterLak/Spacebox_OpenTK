@@ -84,6 +84,10 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 - `MovementMode` switches the player to `GravityWalker` while the field is stronger than 0.3 m/s² and back to zero-g (keeping velocity) outside.
 - `GravityWalker` collides as an axis-aligned box in entity-local space (`EntityBoxCollider.Sweep`, `SpaceEntity.WorldToEntityLocal`/`EntityLocalToWorld`), so walls slide and float precision stays local.
 
+## Respawn
+
+- `PlayerRespawner` (`Game/Player/Respawn/`): spawn point respawn (preload + `WorldLoadingScreen`, then `SafeSpawnFinder`) or DNA reconstruction (`DnaReconstructorRegistry.TryFindNearestReady`, `DnaReconstructionScreen`). `DeathScreen` asks it via `ReconstructionBlocker` / `OnReconstruct`.
+
 ## Doors
 
 - `DoorBlock` (type `door`, settings in `DoorBlockData`) + per-entity `DoorSystem` (`entity.Doors`): registration, toggling, animation, auto-close, crushing and reserved cells (`IsReserved`, checked by `TryPlaceBlock`/`CanPlaceStructure`). Moving cells uses `SpaceEntity.ClearCellSilently`/`PlaceCellRaw` (no drops/effects). Door toggles are not synced over the network yet.

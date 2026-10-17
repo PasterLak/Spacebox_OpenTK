@@ -26,12 +26,14 @@ public static class WorldLoadingScreen
     private static int _maxPending;
     private static float _progress;
     private static string _step = "Preparing";
+    private static Action _onComplete;
 
     public static bool IsActive { get; private set; }
 
-    public static void Begin(LocalAstronaut player)
+    public static void Begin(LocalAstronaut player, Action onComplete = null)
     {
         _player = player;
+        _onComplete = onComplete;
         _elapsed = 0f;
         _stableFrames = 0;
         _maxPending = 1;
@@ -88,6 +90,7 @@ public static class WorldLoadingScreen
         IsActive = false;
         StreamingBudget.IsLoading = false;
         _player = null;
+        _onComplete = null;
     }
 
     private static string GetStep(StreamingWork work)
@@ -110,6 +113,8 @@ public static class WorldLoadingScreen
         if (_elapsed >= MaxDuration) Debug.Warning("[WorldLoadingScreen] Loading timed out, showing the world anyway");
 
         if (_player != null) _player.IsFrozen = false;
+        var onComplete = _onComplete;
         Reset();
+        onComplete?.Invoke();
     }
 }
