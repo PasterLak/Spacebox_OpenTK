@@ -162,7 +162,7 @@ A GameSet is a folder (or a `.zip` / `.rar` archive, extracted by `GameSetsUnpac
 
 ```
 GameSets/Default/
-  config.json      ModId, ModName, Author, Version, BlockSize, Dependencies, ItemsOnStart
+  config.json      ModId, ModName, Author, Version, BlockSize, OxygenConsumeInterval (s per 1 oxygen, default 10), Dependencies, ItemsOnStart
   blocks.json      block definitions (ID, Name, Type, PowerToDrill, Mass, Durability,
                    Textures, Sounds, Drop, DropQuantity, …)
   items.json       item definitions
@@ -189,7 +189,7 @@ Worlds are stored in `<app dir>/Worlds/<world>/`:
 | File | Format | Content |
 |---|---|---|
 | `world.json` | JSON | `WorldInfo`: name, seed, game version, GameSet, … |
-| `player.json` | JSON | Player state (`PlayerSaveLoadManager`): position, stats, `InventorySlots`, `PanelSlots`, `EquipmentSlots` (optional) |
+| `player.json` | JSON | Player state (`PlayerSaveLoadManager`): position, health/power/oxygen, `InventorySlots`, `PanelSlots`, `EquipmentSlots` (optional) |
 | `Sectors/<sector>/<entity>.entity` | NBT | Modified `SpaceEntity` data (`NBTHelper.SpaceEntityToTag`) |
 
 - Only modified entities are saved. When an entity unloads, it goes into a concurrent cache in `WorldPersistenceManager`. The cache is written to disk on a background worker (`SaveAllCacheToDiskAsync`) or immediately (`SaveAllCacheToDiskNow`). Saving is available from the pause menu (Esc).

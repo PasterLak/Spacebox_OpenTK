@@ -10,6 +10,7 @@ using Spacebox.Game.Physics;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Game.Player.Interactions;
+using Spacebox.Game.Resource;
 using Spacebox.GUI;
 using Client;
 using Spacebox.Client;
@@ -48,6 +49,7 @@ namespace Spacebox.Game.Player
         public HealthBar HealthBar { get; private set; }
         public Mood Mood { get; private set; }
         public PowerBar PowerBar { get; private set; }
+        public OxygenBar OxygenBar { get; private set; }
 
         private GameModeBase _gameModeBase;
         private GameMode _gameMode => _gameModeBase.GetGameMode();
@@ -84,6 +86,9 @@ namespace Spacebox.Game.Player
 
             HealthBar = new HealthBar();
             PowerBar = new PowerBar();
+            OxygenBar = new OxygenBar();
+            if (GameSetLoader.ModInfo != null)
+                OxygenBar.ConsumeInterval = GameSetLoader.ModInfo.OxygenConsumeInterval;
             Mood = AttachComponent(new Mood(this));
 
             SetData();
@@ -331,6 +336,7 @@ namespace Spacebox.Game.Player
             Flashlight.Enabled = false;
             HealthBar.StatsGUI.IsVisible = false;
             PowerBar.StatsGUI.IsVisible = false;
+            OxygenBar.StatsGUI.IsVisible = false;
 
             if (deathCase != null)
                 DeathScreen.Show(deathCase);
@@ -351,11 +357,13 @@ namespace Spacebox.Game.Player
             var power = PowerBar.StatsData;
             health.Value = health.MaxValue;
             power.Value = power.MaxValue;
+            OxygenBar.StatsData.Fill();
             PanelUI.IsItemModelVisible = true;
             Input.HideCursor();
             Flashlight.Enabled = true;
             HealthBar.StatsGUI.IsVisible = true;
             PowerBar.StatsGUI.IsVisible = true;
+            OxygenBar.StatsGUI.IsVisible = true;
             SetPosition(SpawnPosition);
             Effects.PlayEffect(PlayerEffectType.Heal);
         }
@@ -406,6 +414,7 @@ namespace Spacebox.Game.Player
         {
             base.OnGUI();
             PowerBar.OnGUI();
+            OxygenBar.OnGUI();
             HealthBar.OnGUI();
             HitImage.Draw();
             DeathScreen.Render();

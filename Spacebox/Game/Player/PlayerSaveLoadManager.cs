@@ -32,6 +32,7 @@ namespace Spacebox.Game.Player
                     RotationW = player.GetRotation().W,
                     Health = player.HealthBar.StatsData.Value,
                     Power = player.PowerBar.StatsData.Value,
+                    Oxygen = player.OxygenBar.StatsData.Value,
                     IsFlashlightOn = player.Flashlight.Enabled,
                     InventorySlots = CollectSlots(player.Inventory),
                     PanelSlots = CollectSlots(player.Panel),
@@ -153,6 +154,7 @@ namespace Spacebox.Game.Player
                 LoadEquipment(player, data.EquipmentSlots);
                 player.HealthBar.StatsData.Value = data.Health;
                 player.PowerBar.StatsData.Value = data.Power;
+                player.OxygenBar.StatsData.Value = data.Oxygen;
 
                 PanelUI.SetSelectedSlot(0);
             }
@@ -216,6 +218,7 @@ namespace Spacebox.Game.Player
             public float RotationW { get; set; } = 1;
             public int Health { get; set; } = 100;
             public int Power { get; set; } = 100;
+            public int Oxygen { get; set; } = 100;
             public bool IsFlashlightOn { get; set; } = false;
             public List<SavedItemSlot> InventorySlots { get; set; }
             public List<SavedItemSlot> PanelSlots { get; set; }

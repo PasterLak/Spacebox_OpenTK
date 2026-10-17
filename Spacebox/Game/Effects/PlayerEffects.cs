@@ -9,7 +9,8 @@ namespace Spacebox.Game.Effects
         Heal,
         Charge,
         Teleport,
-        Custom
+        Custom,
+        Oxygen
     }
 
     public class PlayerEffects : Node3D
@@ -46,12 +47,14 @@ namespace Spacebox.Game.Effects
             _effects[PlayerEffectType.Charge] = CreateEffect(chargeTexture, new Vector4(0f, 0f, 1f, 0.4f), new Vector4(0f, 0f, 1f, 0f));
             _effects[PlayerEffectType.Teleport] = CreateEffect(teleportTexture, new Vector4(0.5f, 0f, 1f, 0.6f), new Vector4(0.5f, 0f, 1f, 0f));
             _effects[PlayerEffectType.Custom] = CreateEffect(customTexture, new Vector4(1f, 1f, 1f, 0.4f), new Vector4(1f, 1f, 1f, 0f));
+            _effects[PlayerEffectType.Oxygen] = CreateEffect(chargeTexture, new Vector4(0f, 1f, 1f, 0.4f), new Vector4(0f, 1f, 1f, 0f));
 
             _maxDuration[PlayerEffectType.Damage] = 1.5f;
             _maxDuration[PlayerEffectType.Heal] = 2.0f;
             _maxDuration[PlayerEffectType.Charge] = 2.5f;
             _maxDuration[PlayerEffectType.Teleport] = 1.0f;
             _maxDuration[PlayerEffectType.Custom] = 1.5f;
+            _maxDuration[PlayerEffectType.Oxygen] = 2.5f;
 
             foreach (var effect in _effects.Values)
             {

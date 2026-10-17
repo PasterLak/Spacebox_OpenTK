@@ -59,6 +59,7 @@ Game
 - spacer: sphere collision, bounces off asteroids, player pushes it
 - drill damages spacer (tier = damage/s), spacer drops its loot on death
 - equipment window: armor (+health), upgrades (generator +power, flashlight, scanner)
+- oxygen: bar, -1 every 10 s in survival (config), damage at 0, compressed oxygen +100
 
 
 Small

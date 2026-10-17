@@ -4,6 +4,7 @@ public class ConsumableItem : Item
 {
     public byte HealAmount = 0;
     public byte PowerAmount = 0;
+    public byte OxygenAmount = 0;
 
     public string UseSound;
     public float UseCooldown = 0;

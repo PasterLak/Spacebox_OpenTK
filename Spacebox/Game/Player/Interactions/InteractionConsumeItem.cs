@@ -150,8 +150,15 @@ public class InteractionConsumeItem : InteractionMode
             }
 
 
+            if (consumable.OxygenAmount > 0)
+            {
+                ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 1, 1), 0.15f);
+                player.Effects.PlayEffect(PlayerEffectType.Oxygen);
+            }
+
             player.HealthBar.StatsData.Increment(consumable.HealAmount);
             player.PowerBar.StatsData.Increment(consumable.PowerAmount);
+            player.OxygenBar.StatsData.Increment(consumable.OxygenAmount);
         }
         else
         {

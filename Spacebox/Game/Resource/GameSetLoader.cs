@@ -924,6 +924,7 @@ public static class GameSetLoader
             Id_string = id,
             HealAmount = data.HealAmount,
             PowerAmount = data.PowerAmount,
+            OxygenAmount = data.OxygenAmount,
             UseCooldown = data.UseCooldown,
             UseSound = data.Sound,
             Category = data.Category,
@@ -1056,6 +1057,7 @@ public static class GameSetLoader
         public string Author { get; set; } = "";
         public string Version { get; set; } = "0";
         public int BlockSize { get; set; } = 32;
+        public float OxygenConsumeInterval { get; set; } = 10f;
         public string FolderName { get; set; } = "";
         public string ModPath { get; set; } = "";
 

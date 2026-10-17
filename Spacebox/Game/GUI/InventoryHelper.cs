@@ -349,6 +349,8 @@ namespace Spacebox.Game.GUI
                         text += "\nHealing: +" + itemType.HealAmount;
                     if (itemType.PowerAmount > 0)
                         text += "\nPower: +" + itemType.PowerAmount;
+                    if (itemType.OxygenAmount > 0)
+                        text += "\nOxygen: +" + itemType.OxygenAmount;
 
                 }
 

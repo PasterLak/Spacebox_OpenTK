@@ -487,15 +487,19 @@
         "MaxStack": 64,
         "ModelDepth": 3.0
     },
-    {
-        "ID": "compressed_oxygen",
-        "Name": "Compressed Oxygen",
-        "Description": "Oxygen for breathing in space",
-        "Category": "consumables",
-        "Sprite": "oxygen",
-        "MaxStack": 64,
-        "ModelDepth": 3.0
-    },
+  {
+    "ID": "compressed_oxygen",
+    "Name": "Compressed Oxygen",
+    "Description": "Oxygen for breathing in space",
+    "Category": "consumables",
+    "Type": "consumable",
+    "Sound": "beer",
+    "UseCooldown": 1,
+    "OxygenAmount": 100,
+    "Sprite": "oxygen",
+    "MaxStack": 64,
+    "ModelDepth": 3.0
+  },
     {
         "ID": "compressed_methane",
         "Name": "Compressed Methane",
