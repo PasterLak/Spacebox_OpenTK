@@ -150,8 +150,7 @@ public static class OxygenGeneratorUI
 
     private static AtlasSprite GetWaterIcon()
     {
-        var water = GameAssets.GetBlockDataById(_block.Id) is Resource.OxygenGeneratorBlockData data ? data.WaterItem : null;
-        return water?.Icon ?? AtlasSprite.None;
+        return UIAtlas.Get("water");
     }
 
     private static void OnSlotClicked(ItemSlot slot)

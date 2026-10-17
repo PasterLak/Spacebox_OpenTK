@@ -68,6 +68,7 @@ Game
 - aluminium, iron and titanium doors + crafting
 - nuclear power block: 2x3x2, 300 energy
 - big window 2x2x1 + crafting
+- power blocks show generated energy in tooltip
 - oxygen: bar, -1 every 10 s in survival (config), death at 0, compressed oxygen +100
 - oxygen generator block: fills closed rooms with air (radius 32), +10 oxygen/s in air, "Air" on bar
 - oxygen generator needs 20 energy, on/off textures

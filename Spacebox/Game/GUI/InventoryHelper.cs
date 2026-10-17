@@ -313,6 +313,11 @@ namespace Spacebox.Game.GUI
                         {
                             text += $"\nSize: {storageData.Size.X}x{ storageData.Size.Y} slots";
                         }
+
+                        if (d is GeneratorBlockData generatorData)
+                        {
+                            text += $"\nGenerates: {generatorData.Power} EU";
+                        }
                     }
 
                 }
