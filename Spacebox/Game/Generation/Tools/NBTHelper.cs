@@ -227,6 +227,7 @@ namespace Spacebox.Game.Generation.Tools
 
             List<int> blockWithDirectionIDs = new List<int>();
             List<int> blockWithRotationIDs = new List<int>();
+            List<int> multiblockOffsets = new List<int>();
 
             var complexBlocksList = new ListTag(NBTKey.CHUNK.storages, TagType.Compound);
 
@@ -262,6 +263,13 @@ namespace Spacebox.Game.Generation.Tools
                         {
                             blockWithRotationIDs.Add(indexIn1D);
                             blockWithRotationIDs.Add((byte)block.Rotation);
+                        }
+
+                        if (block.HasMultiblockOffset)
+                        {
+                            var offset = block.MultiblockOffset;
+                            multiblockOffsets.Add(indexIn1D);
+                            multiblockOffsets.Add(offset.X | (offset.Y << 4) | (offset.Z << 8));
                         }
 
                         var serializer = BlockSerializerRegistry.GetSerializer(block.GetType());
@@ -305,6 +313,9 @@ namespace Spacebox.Game.Generation.Tools
 
             var listRotations = new IntArrayTag(NBTKey.CHUNK.rotations, blockWithRotationIDs.ToArray());
             root.Add(listRotations);
+
+            if (multiblockOffsets.Count > 0)
+                root.Add(new IntArrayTag(NBTKey.CHUNK.multiblock_offsets, multiblockOffsets.ToArray()));
 
             root.Add(complexBlocksList);
 
@@ -365,6 +376,17 @@ namespace Spacebox.Game.Generation.Tools
                 {
                     GetCoordinatesFrom1DIndex(arr[i], SIZE, out byte x, out byte y, out byte z);
                     blocks[x, y, z].Rotation = (Rotation)arr[i + 1];
+                }
+            }
+
+            if (tag.TryGetValue<IntArrayTag>(NBTKey.CHUNK.multiblock_offsets, out var listMultiblockOffsets))
+            {
+                var arr = listMultiblockOffsets.ToArray();
+                for (int i = 0; i + 1 < arr.Length; i += 2)
+                {
+                    GetCoordinatesFrom1DIndex(arr[i], SIZE, out byte x, out byte y, out byte z);
+                    int packed = arr[i + 1];
+                    blocks[x, y, z].MultiblockOffset = new Vector3Byte((byte)(packed & 0xF), (byte)((packed >> 4) & 0xF), (byte)((packed >> 8) & 0xF));
                 }
             }
 

@@ -364,6 +364,23 @@ namespace Spacebox.Game.Generation
             var block = Blocks[x, y, z];
             if (block.Id == 0) return;
 
+            if (GameAssets.Blocks.TryGetValue(block.Id, out var blockData) && blockData.IsMultiblock)
+            {
+                SpaceEntity.RemoveStructure(this, x, y, z, new Vector3SByte(xNormal, yNormal, zNormal), spawnDrop);
+                return;
+            }
+
+            RemoveBlockCell(x, y, z, xNormal, yNormal, zNormal, spawnDrop);
+        }
+
+        internal void RemoveBlockCell(byte x, byte y, byte z, sbyte xNormal, sbyte yNormal, sbyte zNormal, bool spawnDrop)
+        {
+            if (!IsInRange(x, y, z))
+                return;
+
+            var block = Blocks[x, y, z];
+            if (block.Id == 0) return;
+
             var worldBlockPosition = new Vector3(x, y, z) + PositionWorld;
 
             Color3Byte effectLightColor = block.LightColor;

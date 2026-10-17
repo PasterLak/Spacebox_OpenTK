@@ -126,6 +126,12 @@ namespace Spacebox.Game.Generation
                 return;
             }
 
+            if (GameAssets.Blocks.TryGetValue(block.Id, out var blockData) && blockData.IsMultiblock)
+            {
+                PlaceStructureCells(Vector3.Zero, block, blockData);
+                return;
+            }
+
             Chunk chunk = new Chunk(new Vector3SByte(0, 0, 0), this, true);
 
             chunk.PlaceBlock(new Vector3Byte(0, 0, 0), block);
@@ -369,11 +375,155 @@ namespace Spacebox.Game.Generation
         {
             if (block.Id == 0)
                 return true;
+
+            if (GameAssets.Blocks.TryGetValue(block.Id, out var blockData) && blockData.IsMultiblock)
+                return TryPlaceStructure(worldPosition, block, blockData);
+
             if (!IsPositionWithinEntitySize(worldPosition) || !IsPositionWithinGravityRadius(worldPosition))
                 return false;
 
             Vector3 localPos = WorldPositionToLocal(worldPosition);
             return PlaceBlockInternal(localPos, block);
+        }
+
+        private static readonly List<MultiblockCell> _structureCells = new List<MultiblockCell>();
+
+        public bool CanPlaceStructure(Vector3 originPosition, BlockData blockData, Direction direction, Rotation rotation)
+        {
+            MultiblockLayout.GetCells(blockData, direction, rotation, _structureCells);
+
+            for (int i = 0; i < _structureCells.Count; i++)
+            {
+                var offset = _structureCells[i].Offset;
+                var position = originPosition + new Vector3(offset.X, offset.Y, offset.Z);
+
+                if (!IsPositionWithinEntitySize(position) || !IsPositionWithinGravityRadius(position) || !IsCellEmpty(position))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public bool IsCellEmpty(Vector3 position)
+        {
+            var local = WorldPositionToLocal(position);
+            var cell = new Vector3i((int)MathF.Floor(local.X), (int)MathF.Floor(local.Y), (int)MathF.Floor(local.Z));
+            if (!TryGetBlockLocal(cell, out var chunk, out var index)) return true;
+
+            var block = chunk.Blocks[index.X, index.Y, index.Z];
+            return block == null || block.IsAir;
+        }
+
+        public bool TryGetBlockLocal(Vector3i localCell, out Chunk chunk, out Vector3Byte indexInChunk)
+        {
+            int cx = (int)MathF.Floor(localCell.X / (float)Chunk.Size);
+            int cy = (int)MathF.Floor(localCell.Y / (float)Chunk.Size);
+            int cz = (int)MathF.Floor(localCell.Z / (float)Chunk.Size);
+            indexInChunk = new Vector3Byte((byte)(localCell.X - cx * Chunk.Size), (byte)(localCell.Y - cy * Chunk.Size), (byte)(localCell.Z - cz * Chunk.Size));
+
+            if (cx < sbyte.MinValue || cx > sbyte.MaxValue || cy < sbyte.MinValue || cy > sbyte.MaxValue || cz < sbyte.MinValue || cz > sbyte.MaxValue)
+            {
+                chunk = null;
+                return false;
+            }
+
+            return TryGetChunk(new Vector3SByte((sbyte)cx, (sbyte)cy, (sbyte)cz), out chunk);
+        }
+
+        public bool TryGetStructureBounds(Chunk chunk, Vector3Byte index, out Vector3 minPosition, out Vector3 size)
+        {
+            minPosition = Vector3.Zero;
+            size = Vector3.One;
+
+            var block = chunk.Blocks[index.X, index.Y, index.Z];
+            if (block == null || !GameAssets.Blocks.TryGetValue(block.Id, out var blockData) || !blockData.IsMultiblock)
+                return false;
+
+            var originLocal = GetCellLocal(chunk, index) - MultiblockLayout.GetOriginOffset(blockData, block);
+            MultiblockLayout.GetCells(blockData, block.Direction, block.Rotation, _structureCells);
+
+            var min = new Vector3i(int.MaxValue);
+            var max = new Vector3i(int.MinValue);
+            for (int i = 0; i < _structureCells.Count; i++)
+            {
+                min = Vector3i.ComponentMin(min, _structureCells[i].Offset);
+                max = Vector3i.ComponentMax(max, _structureCells[i].Offset);
+            }
+
+            var minLocal = originLocal + min;
+            minPosition = LocalPositionToWorld(new Vector3(minLocal.X, minLocal.Y, minLocal.Z));
+            size = new Vector3(max.X - min.X + 1, max.Y - min.Y + 1, max.Z - min.Z + 1);
+            return true;
+        }
+
+        public void RemoveStructure(Chunk chunk, byte x, byte y, byte z, Vector3SByte normal, bool spawnDrop)
+        {
+            var block = chunk.Blocks[x, y, z];
+            if (!GameAssets.Blocks.TryGetValue(block.Id, out var blockData))
+                return;
+
+            var clickedLocal = GetCellLocal(chunk, new Vector3Byte(x, y, z));
+            var originLocal = clickedLocal - MultiblockLayout.GetOriginOffset(blockData, block);
+            short id = block.Id;
+            var direction = block.Direction;
+            var rotation = block.Rotation;
+
+            MultiblockLayout.GetCells(blockData, direction, rotation, _structureCells);
+            var cells = _structureCells.ToArray();
+            bool clickedRemoved = false;
+
+            for (int i = 0; i < cells.Length; i++)
+            {
+                var cellLocal = originLocal + cells[i].Offset;
+                if (!TryGetBlockLocal(cellLocal, out var cellChunk, out var cellIndex)) continue;
+
+                var cellBlock = cellChunk.Blocks[cellIndex.X, cellIndex.Y, cellIndex.Z];
+                var model = cellBlock.MultiblockOffset;
+                if (cellBlock.Id != id || cellBlock.Direction != direction || cellBlock.Rotation != rotation ||
+                    model.X != cells[i].Model.X || model.Y != cells[i].Model.Y || model.Z != cells[i].Model.Z)
+                    continue;
+
+                bool isClicked = cellLocal == clickedLocal;
+                clickedRemoved |= isClicked;
+                cellChunk.RemoveBlockCell(cellIndex.X, cellIndex.Y, cellIndex.Z, normal.X, normal.Y, normal.Z, spawnDrop && isClicked);
+            }
+
+            if (!clickedRemoved && !chunk.Blocks[x, y, z].IsAir)
+                chunk.RemoveBlockCell(x, y, z, normal.X, normal.Y, normal.Z, spawnDrop);
+        }
+
+        private static Vector3i GetCellLocal(Chunk chunk, Vector3Byte index)
+        {
+            return new Vector3i(
+                chunk.PositionIndex.X * Chunk.Size + index.X,
+                chunk.PositionIndex.Y * Chunk.Size + index.Y,
+                chunk.PositionIndex.Z * Chunk.Size + index.Z);
+        }
+
+        private bool TryPlaceStructure(Vector3 originPosition, Block originBlock, BlockData blockData)
+        {
+            if (!CanPlaceStructure(originPosition, blockData, originBlock.Direction, originBlock.Rotation))
+                return false;
+
+            PlaceStructureCells(WorldPositionToLocal(originPosition), originBlock, blockData);
+            return true;
+        }
+
+        private void PlaceStructureCells(Vector3 originLocal, Block originBlock, BlockData blockData)
+        {
+            MultiblockLayout.GetCells(blockData, originBlock.Direction, originBlock.Rotation, _structureCells);
+            var cells = _structureCells.ToArray();
+
+            for (int i = 0; i < cells.Length; i++)
+            {
+                var cell = cells[i];
+                var cellBlock = cell.IsOrigin ? originBlock : GameAssets.CreateBlockFromId(originBlock.Id);
+                cellBlock.Direction = originBlock.Direction;
+                cellBlock.Rotation = originBlock.Rotation;
+                cellBlock.MultiblockOffset = cell.Model;
+
+                PlaceBlockInternal(originLocal + new Vector3(cell.Offset.X, cell.Offset.Y, cell.Offset.Z), cellBlock);
+            }
         }
 
         public Vector3SByte GetChunkIndex(Vector3 worldPosition)

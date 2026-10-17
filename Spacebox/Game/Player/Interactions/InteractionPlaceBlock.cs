@@ -22,6 +22,7 @@ public class InteractionPlaceBlock : InteractionMode
     private static AudioSource blockPlace;
 
     private LineRenderer lineRenderer;
+    private bool _previewPlaceable = true;
 
     Random r = new Random();
     public override void OnEnable()
@@ -70,6 +71,11 @@ public class InteractionPlaceBlock : InteractionMode
         BlockPlacementHelper.CalculateOrientation(entity.ToEntitySpace(player.PositionWorld), selectorPositionWorld, entity.DirectionToEntitySpace(player.Up),
                      hit.normal.ToVector3(), BlockSelector.Instance.EnableMagnet, BlockSelector.Instance.EnableMagnet, BlockSelector.Instance.CurrentBlockData, BlockSelector.Instance.Rotation, out var finalDir, out var finalRot);
         BlockSelector.Instance.UpdatePosition(selectorPositionWorld, finalDir, finalRot, true, entity);
+
+        var previewData = BlockSelector.Instance.CurrentBlockData;
+        _previewPlaceable = !previewData.IsMultiblock || entity.CanPlaceStructure(selectorPositionWorld, previewData, finalDir, finalRot);
+        if (!_previewPlaceable)
+            BlockSelector.IsVisible = false;
         lineRenderer.Enabled = false;
         /*
         lineRenderer.Points[0] = selectorPositionWorld + new Vector3(0.5f, 0.5f, 0.5f);
@@ -142,6 +148,9 @@ public class InteractionPlaceBlock : InteractionMode
             {
                 var cachedBlockRotation = BlockSelector.Instance.Rotation;
                 var blockData = BlockSelector.Instance.CurrentBlockData;
+
+                if (blockData != null && blockData.IsMultiblock && !_previewPlaceable)
+                    return;
 
                 if (PanelUI.TryPlaceItem(out var id, GameMode))
                 {
@@ -255,6 +264,18 @@ public class InteractionPlaceBlock : InteractionMode
 
         if (BlockSelector.Instance != null)
             BlockSelector.Instance.UpdatePosition(selectorPosition, finalDir, finalRot, false, entity);
+
+        var currentData = BlockSelector.Instance.CurrentBlockData;
+        bool structureBlocked = currentData != null && currentData.IsMultiblock && entity != null &&
+                                entity.IsPositionWithinEntitySize(selectorPosition) &&
+                                entity.IsPositionWithinGravityRadius(selectorPosition) &&
+                                !entity.CanPlaceStructure(selectorPosition, currentData, finalDir, finalRot);
+        if (structureBlocked)
+        {
+            BlockSelector.IsVisible = false;
+            lineRenderer.Enabled = false;
+            return;
+        }
 
         if (entity != null)
         {

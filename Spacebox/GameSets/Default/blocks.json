@@ -973,5 +973,32 @@
         "Down": "generatorDownOff"
       }
     }
+  },
+  {
+    "ID": "metal_door",
+    "Name": "Metal Door",
+    "Description": "A 2x2 door made of aluminium",
+    "Type": "block",
+    "Category": "other",
+    "PowerToDrill": 1,
+    "Mass": 2,
+    "Durability": 6,
+    "Size": {
+      "x": 2,
+      "y": 2,
+      "z": 1
+    },
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+    },
+    "Textures": {
+      "Active": {
+        "All": "aluMedium",
+        "Forward": "door",
+        "Back": "door"
+      }
+    }
   }
 ]

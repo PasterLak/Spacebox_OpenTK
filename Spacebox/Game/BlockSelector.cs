@@ -48,6 +48,7 @@ public class BlockSelector : Node3D
     private LineRenderer _magnetLineRenderer;
     private Matrix4 _currentTransform = Matrix4.Identity;
     private Matrix4 _entityRotation = Matrix4.Identity;
+    private Vector3 _highlightSize = Vector3.One;
     private Direction _blockDirection = Block.DefaultDirection;
     private Rotation _blockRotation = Block.DefaultRotation;
 
@@ -112,6 +113,7 @@ public class BlockSelector : Node3D
     public void OnSelectedSlotWasChanged(short slot)
     {
         _currentTransform = Matrix4.Identity;
+        _highlightSize = Vector3.One;
         ApplyBlockTransform();
         _transformDirty = true;
 
@@ -147,7 +149,7 @@ public class BlockSelector : Node3D
         SimpleBlock.Material.MainTexture = GameAssets.BlocksTexture;
         SimpleBlock.Scale = Vector3.One;
 
-        if (CurrentBlockData != null && CurrentBlockData.AllSidesAreSame())
+        if (CurrentBlockData != null && CurrentBlockData.AllSidesAreSame() && !CurrentBlockData.IsMultiblock)
         {
             _onSurface = false;
         }
@@ -159,6 +161,13 @@ public class BlockSelector : Node3D
     private void SetupBlockMesh()
     {
         if (CurrentBlockData == null) return;
+
+        if (CurrentBlockData.IsMultiblock)
+        {
+            var (vertices, indices) = MultiblockPreviewMesh.Build(CurrentBlockData, BlockState.Inactive);
+            SimpleBlock.SetCustomMesh(vertices, indices);
+            return;
+        }
 
         for (byte i = 0; i < 6; i++)
         {
@@ -174,7 +183,7 @@ public class BlockSelector : Node3D
     {
         if (CurrentBlockData == null) return;
 
-        if (CurrentBlockData.AllSidesAreSame())
+        if (CurrentBlockData.AllSidesAreSame() && !CurrentBlockData.IsMultiblock)
         {
             _currentTransform = Matrix4.Identity;
         }
@@ -193,7 +202,16 @@ public class BlockSelector : Node3D
 
     private void ApplyBlockTransform()
     {
-        SimpleBlock.SetBlockTransform(_currentTransform * _entityRotation);
+        SimpleBlock.SetBlockTransform(Matrix4.CreateScale(_highlightSize) * _currentTransform * _entityRotation);
+    }
+
+    public void SetHighlightSize(Vector3 size)
+    {
+        if (CurrentBlockData != null) size = Vector3.One;
+        if (_highlightSize == size) return;
+
+        _highlightSize = size;
+        ApplyBlockTransform();
     }
 
     public void UpdatePosition(Vector3 position, Direction direction, Rotation rotation, bool onSurface, SpaceEntity entity = null)
@@ -232,7 +250,7 @@ public class BlockSelector : Node3D
 
             _onSurface = onSurface;
 
-            if (CurrentBlockData.AllSidesAreSame())
+            if (CurrentBlockData.AllSidesAreSame() && !CurrentBlockData.IsMultiblock)
             {
                 _onSurface = false;
             }

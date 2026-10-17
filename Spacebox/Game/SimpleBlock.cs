@@ -66,6 +66,15 @@ public class SimpleBlock : Node3D ,IDrawable
             RegenerateMesh();
     }
 
+    public void SetCustomMesh(float[] vertices, uint[] indices)
+    {
+        IsUsingDefaultUV = false;
+        _vertices = vertices;
+        _indices = indices;
+        _buffer.BindBuffer(ref _vertices, ref _indices);
+        _buffer.SetAttributes();
+    }
+
     public void RegenerateMesh()
     {
         (_vertices, _indices) = GenerateMeshData();

@@ -33,7 +33,7 @@ Add an object to `Spacebox/GameSets/Default/blocks.json` (fields come from `Spac
 
 - `ID` must be unique, snake_case. The mod id prefix is added by the loader.
 - `Textures.Active` / `Textures.Inactive` accept `All` or per face `Up, Down, Left, Right, Forward, Back`. `Inactive` is used by machines when off.
-- Optional: `IsTransparent`, `LightColor {r,g,b}` (emissive), `FrontDirection`, `Efficiency`, `StorageSize` (storage only).
+- Optional: `IsTransparent`, `LightColor {r,g,b}` (emissive), `FrontDirection`, `Efficiency`, `StorageSize` (storage only), `Size {x,y,z}` (multi-cell block, 1–16 per axis; x = width, y = height, z = depth relative to the front face). For multi-cell faces, a texture of N×M tiles (e.g. 64×64 px for a 2×2 face) spans the face; a single-tile texture repeats per cell. Multi-cell blocks should use plain types (`block`); machine/storage behaviour is per cell.
 - Mass and Durability are stored in 8 bits each (0–255).
 
 ## 3. New behaviour (only if needed)

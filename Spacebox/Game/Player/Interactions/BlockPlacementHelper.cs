@@ -28,7 +28,7 @@ namespace Spacebox.Game.Generation.Tools
             out Direction finalDir,
             out Rotation finalRot)
         {
-            if (blockData.AllSidesAreSame())
+            if (blockData.AllSidesAreSame() && !blockData.IsMultiblock)
             {
                 finalDir = Direction.Up;
                 finalRot = Rotation.None;

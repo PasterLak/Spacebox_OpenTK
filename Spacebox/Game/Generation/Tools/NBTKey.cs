@@ -43,6 +43,7 @@ namespace Spacebox.Game.Generation.Tools
             public const string directions = "directions";
             public const string rotations = "rotations";
             public const string needs_generation = "needs_generation";
+            public const string multiblock_offsets = "multiblock_offsets";
 
             public const string storages = "storages";
             public const string processing_blocks = "processing_blocks";

@@ -45,6 +45,7 @@ namespace Spacebox.Game.Resource
             public string[] TextureNames = new string[6];
             public Vector2[][] UVs = new Vector2[6][];
             public string[] ResolvedTextureNames = new string[6];
+            public Vector2i[] Tiles = { Vector2i.One, Vector2i.One, Vector2i.One, Vector2i.One, Vector2i.One, Vector2i.One };
             public bool AllSidesAreSame = true;
         }
 
@@ -64,6 +65,19 @@ namespace Spacebox.Game.Resource
         }
 
     
+
+        public Vector3Byte Size { get; set; } = new Vector3Byte(1);
+        public bool IsMultiblock => Size.X > 1 || Size.Y > 1 || Size.Z > 1;
+        public int CellCount => Size.X * Size.Y * Size.Z;
+
+        public Vector2i GetFaceTiles(Face face, BlockState state = BlockState.Active)
+        {
+            if (!_texturesByState.TryGetValue(state, out var textureState) &&
+                !_texturesByState.TryGetValue(BlockState.Active, out textureState))
+                return Vector2i.One;
+
+            return textureState.Tiles[(int)FaceToDirection(face)];
+        }
 
         public bool AllSidesAreSame(BlockState state = BlockState.Active)
         {
@@ -89,6 +103,7 @@ namespace Spacebox.Game.Resource
             IsTransparent = baseBlock.IsTransparent;
             LightColor = baseBlock.LightColor;
             BaseFrontDirection = baseBlock.BaseFrontDirection;
+            Size = baseBlock.Size;
             AsItem = baseBlock.AsItem;
             Drop = baseBlock.Drop;
             SoundPlace = baseBlock.SoundPlace;
@@ -103,6 +118,7 @@ namespace Spacebox.Game.Resource
                 System.Array.Copy(state.Value.TextureNames, newState.TextureNames, 6);
                 System.Array.Copy(state.Value.UVs, newState.UVs, 6);
                 System.Array.Copy(state.Value.ResolvedTextureNames, newState.ResolvedTextureNames, 6);
+                System.Array.Copy(state.Value.Tiles, newState.Tiles, 6);
                 _texturesByState[state.Key] = newState;
             }
         }
@@ -136,6 +152,8 @@ namespace Spacebox.Game.Resource
             SetTexture(textureName, Direction.Back, state);
         }
 
+        private static int TileSizePixels => Math.Max(1, GameSetLoader.ModInfo?.BlockSize ?? 32);
+
         public static void CacheUvs(BlockData b)
         {
             foreach (var kvp in b._texturesByState)
@@ -163,8 +181,12 @@ namespace Spacebox.Game.Resource
                     if (textureName != firstTexture)
                         state.AllSidesAreSame = false;
 
-                    state.UVs[i] = GameAssets.AtlasBlocks.GetRegion(textureName)?.Uvs;
+                    var region = GameAssets.AtlasBlocks.GetRegion(textureName);
+                    state.UVs[i] = region?.Uvs;
                     state.ResolvedTextureNames[i] = textureName;
+                    state.Tiles[i] = region == null
+                        ? Vector2i.One
+                        : new Vector2i(Math.Max(1, region.Width / TileSizePixels), Math.Max(1, region.Height / TileSizePixels));
                 }
             }
         }

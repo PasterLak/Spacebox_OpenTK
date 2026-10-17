@@ -55,8 +55,18 @@ public abstract class InteractionDestroyBlock : InteractionMode
     {
         BlockSelector.Instance.Enabled = true;
         AImedBlockElement.AimedBlock = hit.block;
+        var entity = hit.chunk.SpaceEntity;
         Vector3 selectorPos = hit.blockPositionIndex + hit.chunk.PositionWorld;
-        BlockSelector.Instance.UpdatePosition(selectorPos, Block.GetDirectionFromNormal(hit.normal), Rotation.None, false, hit.chunk.SpaceEntity);
+        Vector3 highlightSize = Vector3.One;
+
+        if (entity.TryGetStructureBounds(hit.chunk, hit.blockPositionIndex, out var structureMin, out var structureSize))
+        {
+            highlightSize = structureSize;
+            selectorPos = structureMin + structureSize * 0.5f - new Vector3(0.5f);
+        }
+
+        BlockSelector.Instance.SetHighlightSize(highlightSize);
+        BlockSelector.Instance.UpdatePosition(selectorPos, Block.GetDirectionFromNormal(hit.normal), Rotation.None, false, entity);
         BlockSelector.Instance.LineRenderer.Enabled = false;
     }
 

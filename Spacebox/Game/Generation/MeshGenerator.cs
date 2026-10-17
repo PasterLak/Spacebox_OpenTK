@@ -115,9 +115,11 @@ namespace Spacebox.Game.Generation
                             block.Rotation
                         );
 
+                        var multiblockData = GameAssets.Blocks.TryGetValue(block.Id, out var blockData) && blockData.IsMultiblock ? blockData : null;
+
                         for (byte fIndex = 0; fIndex < faces.Length; fIndex++)
                         {
-                            AddRotatedFace(block, faces[fIndex], fIndex, x, y, z, transformedVectors);
+                            AddRotatedFace(block, faces[fIndex], fIndex, x, y, z, transformedVectors, multiblockData);
                         }
                     }
                 }
@@ -144,7 +146,7 @@ namespace Spacebox.Game.Generation
             };
         }
 
-        private void AddRotatedFace(Block block, Face face, byte fIndex, sbyte x, sbyte y, sbyte z, Dictionary<Direction, Vector3> transformedVectors)
+        private void AddRotatedFace(Block block, Face face, byte fIndex, sbyte x, sbyte y, sbyte z, Dictionary<Direction, Vector3> transformedVectors, Resource.BlockData multiblockData)
         {
             Direction faceDir = (Direction)face;
             Vector3 transformedNormal = transformedVectors[faceDir];
@@ -181,6 +183,8 @@ namespace Spacebox.Game.Generation
             faceVertices[3] = faceCenter + upVector - rightVector;
 
             var faceUVs = GameAssets.GetBlockUVs(block, face);
+            if (multiblockData != null)
+                faceUVs = MultiblockLayout.GetFaceUVs(faceUVs, multiblockData.GetFaceTiles(face), multiblockData.Size, block.MultiblockOffset, faceDir);
 
             var currentLightLevel = block.LightLevel / 15f;
             var currentLightColor = block.LightColor;

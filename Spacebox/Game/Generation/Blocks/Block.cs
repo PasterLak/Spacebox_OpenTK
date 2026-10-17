@@ -75,6 +75,24 @@ namespace Spacebox.Game.Generation.Blocks
         }
         public void SetRotation(Rotation rot) => Rotation = rot;
 
+        public Vector3Byte MultiblockOffset
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => new Vector3Byte((byte)((data >> 37) & 0xF), (byte)((data >> 41) & 0xF), (byte)((data >> 45) & 0xF));
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set
+            {
+                long v = ((long)(value.X & 0xF) << 37) | ((long)(value.Y & 0xF) << 41) | ((long)(value.Z & 0xF) << 45);
+                data = (data & ~(0xFFFL << 37)) | v;
+            }
+        }
+
+        public bool HasMultiblockOffset
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ((data >> 37) & 0xFFF) != 0;
+        }
+
 
         public Block(short blockId, Direction dir, byte mass, byte durability,
                      bool isTransparent, bool isAir, bool isLight, bool enableEmission)

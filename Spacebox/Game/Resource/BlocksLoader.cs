@@ -169,6 +169,11 @@ namespace Spacebox.Game.Resource
             return isValid;
         }
 
+        private static byte ClampSize(byte value)
+        {
+            return (byte)Math.Clamp((int)value, 1, MultiblockLayout.MaxSize);
+        }
+
         private static BlockData CreateBlockData(BlockJSON block, string blockId)
         {
             bool hasLightColor = block.LightColor != Color3Byte.Black;
@@ -183,7 +188,8 @@ namespace Spacebox.Game.Resource
                 PowerToDrill = (byte)Math.Clamp(block.PowerToDrill, 0, byte.MaxValue),
                 Efficiency = Math.Max(0.1f, block.Efficiency),
                 Category = block.Category,
-                BaseFrontDirection = Block.GetDirectionFromNormal(block.FrontDirection)
+                BaseFrontDirection = Block.GetDirectionFromNormal(block.FrontDirection),
+                Size = new Vector3Byte(ClampSize(block.Size.X), ClampSize(block.Size.Y), ClampSize(block.Size.Z))
             };
 
             blockData.Drop.Item.Id_string = string.IsNullOrWhiteSpace(block.Drop) ? "$self" : block.Drop;

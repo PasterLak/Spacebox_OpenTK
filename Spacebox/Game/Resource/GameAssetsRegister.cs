@@ -126,12 +126,32 @@ namespace Spacebox.Game
                 !blocks.TryGetPixels(blockData.GetFaceTextureName(Generation.Blocks.Direction.Up), true, out var top))
                 return;
 
-            var pixels = IsometricIcon.CreatePixels(left, forward, top);
+            int faceSize = Math.Min(MinSide(left), Math.Min(MinSide(forward), MinSide(top)));
+            var pixels = IsometricIcon.CreatePixels(Resample(left, faceSize), Resample(forward, faceSize), Resample(top, faceSize));
             if (pixels == null) return;
 
             string iconName = GameAtlasFactory.BlockIconName(blockData);
             GameAssets.AtlasItems.Add(iconName, pixels, true);
             blockData.AsItem.Icon = GameAssets.AtlasItems.GetSprite(iconName);
+        }
+
+        private static int MinSide(Color4[,] pixels)
+        {
+            return Math.Min(pixels.GetLength(0), pixels.GetLength(1));
+        }
+
+        private static Color4[,] Resample(Color4[,] source, int size)
+        {
+            int width = source.GetLength(0);
+            int height = source.GetLength(1);
+            if (width == size && height == size) return source;
+
+            var result = new Color4[size, size];
+            for (int x = 0; x < size; x++)
+                for (int y = 0; y < size; y++)
+                    result[x, y] = source[x * width / size, y * height / size];
+
+            return result;
         }
 
         private static void CreateDust(BlockData block)
