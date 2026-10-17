@@ -40,7 +40,7 @@ namespace Engine.Components
         public override void OnDetached()
         {
             base.OnDetached();
-            Model.Destroy();
+            Model?.Destroy();
         }
 
     }

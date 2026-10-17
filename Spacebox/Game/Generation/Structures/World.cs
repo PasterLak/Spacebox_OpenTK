@@ -100,13 +100,20 @@ public class World : Component, ISpaceStructure
 
     public void Save()
     {
+        if (Spacebox.Network.GameSession.IsRemoteClient)
+        {
+            Spacebox.Network.NetworkSession.Current?.SendLocalPlayerData();
+            return;
+        }
 
-        PlayerSaveLoadManager.SavePlayer(Player, WorldData.WorldFolderPath);
+        if (Spacebox.Network.GameSession.HasLocalPlayer)
+            PlayerSaveLoadManager.SavePlayer(Player, WorldData.WorldFolderPath);
         WorldSaveLoad.SaveWorld(WorldData.WorldFolderPath, loadedSectors);
 
         WorldPersistenceManager.SaveAllCacheToDiskNow(WorldData.WorldFolderPath);
 
-        WorldData.Info.GameMode = Player.GameMode;
+        if (Spacebox.Network.GameSession.HasLocalPlayer)
+            WorldData.Info.GameMode = Player.GameMode;
         WorldData.Info.Day = GameTime.Day;
         WorldData.Info.Ticks = GameTime.DayTick;
         WorldInfoSaver.Save(WorldData.Info);
@@ -134,7 +141,8 @@ public class World : Component, ISpaceStructure
     public void PreloadAroundPlayer()
     {
         CurrentSector = GetOrLoadSector(SpaceMath.Sector.GetSectorIndex(Player.Position));
-        CurrentSector.PreloadAreaBlocking(Player.Position, Settings.ENTITY_SEARCH_RADIUS);
+        if (!Spacebox.Network.GameSession.IsRemoteClient)
+            CurrentSector.PreloadAreaBlocking(Player.Position, Settings.ENTITY_SEARCH_RADIUS);
         UpdateSectors();
     }
 
@@ -149,6 +157,69 @@ public class World : Component, ISpaceStructure
     private Sector GetOrLoadSector(Vector3i index)
     {
         return loadedSectors.TryGetValue(index, out var sector) ? sector : LoadSectorNow(index);
+    }
+
+    public static void LoadRemoteWorldInfo(Spacebox.Network.RemoteWorldInfo remote)
+    {
+        string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Multiplayer", MakeSafeFolderName(remote.ServerName), MakeSafeFolderName(remote.WorldName));
+        Directory.CreateDirectory(folder);
+
+        WorldData = new WorldLoader.LoadedWorld
+        {
+            WorldFolderPath = folder,
+            Info = new WorldInfo
+            {
+                Name = remote.WorldName,
+                Seed = remote.Seed,
+                ModId = remote.ModId,
+                GameMode = (Spacebox.Game.Player.GameModes.GameMode)remote.GameMode,
+                Day = remote.Day,
+                Ticks = remote.Ticks,
+                FolderName = folder,
+                ShowWelcomeWindow = false,
+                IsLocalWorld = false
+            }
+        };
+
+        Seed = SeedHelper.ComputeSeed(remote.Seed);
+        GameTime.SetDay(remote.Day);
+        GameTime.SetTick(remote.Ticks);
+    }
+
+    private static string MakeSafeFolderName(string name)
+    {
+        var invalid = Path.GetInvalidFileNameChars();
+        var chars = (name ?? "World").ToCharArray();
+        for (int i = 0; i < chars.Length; i++)
+        {
+            if (Array.IndexOf(invalid, chars[i]) >= 0) chars[i] = '_';
+        }
+        return new string(chars);
+    }
+
+    public bool TryGetSector(Vector3i index, out Sector sector)
+    {
+        return loadedSectors.TryGetValue(index, out sector);
+    }
+
+    public bool TryFindEntity(long entityId, out SpaceEntity entity)
+    {
+        foreach (var sector in loadedSectors.Values)
+        {
+            var entities = sector.Entities;
+            if (entities == null) continue;
+
+            for (int i = 0; i < entities.Count; i++)
+            {
+                if (entities[i].EntityID != entityId) continue;
+
+                entity = entities[i];
+                return true;
+            }
+        }
+
+        entity = null;
+        return false;
     }
 
     public static void LoadWorldInfo(string worldName)

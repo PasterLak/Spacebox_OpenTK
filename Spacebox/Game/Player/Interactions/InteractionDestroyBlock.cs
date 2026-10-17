@@ -1,16 +1,13 @@
 ﻿namespace Spacebox.Game.Player.Interactions;
 
-using Client;
 using Engine;
 using Engine.Audio;
-using global::Client;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.GUI;
-using SpaceNetwork;
 using System;
 
 public abstract class InteractionDestroyBlock : InteractionMode

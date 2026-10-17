@@ -1,4 +1,4 @@
-﻿using Client;
+﻿using Spacebox.Network.Players;
 using Engine;
 using Engine.Audio;
 using OpenTK.Mathematics;
@@ -320,8 +320,7 @@ namespace Spacebox.Game.GUI
                     }
                 }
 
-                if (ClientNetwork.Instance != null)
-                    ClientNetwork.Instance.SendItemInHand(SelectedSlot);
+                AstronautNetwork.Local?.SetHeldItem(SelectedSlot);
 
                 ShowItemDescription();
 

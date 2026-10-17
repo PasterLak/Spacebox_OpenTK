@@ -1,10 +1,9 @@
 ﻿using Engine;
 using Engine.SceneManagement;
 using ImGuiNET;
-using Spacebox.Client;
 using Spacebox.Game.Generation;
+using Spacebox.Network;
 using Spacebox.Scenes;
-using SpaceNetwork;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text.Json;
@@ -21,9 +20,7 @@ namespace Spacebox.Game.GUI.Menu
         public bool ShowAddServerWindow = false;
         public AddServerWindow addServerWindow;
         private string nickname;
-        private Thread discoveryThread;
-        private readonly object localServerLock = new object();
-        private List<ServerInfo> localServers = new List<ServerInfo>();
+        private string statusText = "";
 
         private string[] availableColors = new[] { "Yellow", "Orange", "Purple", "Blue", "Green", "Cyan", "Red", "White", "Black" };
         private int selectedColorIndex = 0;
@@ -105,30 +102,6 @@ namespace Spacebox.Game.GUI.Menu
             File.WriteAllText(path, json);
         }
 
-        private void StartLocalDiscovery()
-        {
-            if (discoveryThread != null && discoveryThread.IsAlive)
-                return;
-            discoveryThread = new Thread(() =>
-            {
-                var discovered = LocalServerFinder.DiscoverServers("spacebox" + Application.Version, 5544, 5000);
-                lock (localServerLock)
-                {
-                    localServers.Clear();
-                    if (discovered != null && discovered.Count > 0)
-                    {
-                        foreach (var server in discovered)
-                        {
-                            server.Name = $"[Local] {server.Name} {server.IP} {server.Port}";
-                            localServers.Add(server);
-                        }
-                    }
-                }
-            });
-            discoveryThread.IsBackground = true;
-            discoveryThread.Start();
-        }
-
         public ClientConfig GetConfig() => config;
 
         private Vector4 GetColorVector(string colorName)
@@ -150,7 +123,6 @@ namespace Spacebox.Game.GUI.Menu
 
         public override void Render()
         {
-            StartLocalDiscovery();
             Vector2 windowSize = ImGui.GetIO().DisplaySize;
             float windowWidth = windowSize.X * 0.35f;
             float windowHeight = windowSize.Y * 0.45f;
@@ -218,17 +190,8 @@ namespace Spacebox.Game.GUI.Menu
             SaveConfig();
 
             ImGui.Separator();
-            ImGui.Text("Saved Servers:");
-            List<ServerInfo> combinedServers = new List<ServerInfo>();
-            combinedServers.AddRange(config.Servers);
-            lock (localServerLock)
-            {
-                foreach (var ls in localServers)
-                {
-                    if (!config.Servers.Any(s => s.IP == ls.IP && s.Port == ls.Port))
-                        combinedServers.Add(ls);
-                }
-            }
+            ImGui.Text(string.IsNullOrEmpty(statusText) ? "Saved Servers:" : statusText);
+            List<ServerEntry> combinedServers = config.Servers;
             ImGui.BeginChild("ServerList", new Vector2(windowWidth - 20, windowHeight * 0.4f));
             for (int i = 0; i < combinedServers.Count; i++)
             {
@@ -248,10 +211,16 @@ namespace Spacebox.Game.GUI.Menu
             float availableW = windowWidth - 20;
             float btnWidth = (availableW - midSpacing * 3) / 4;
             float buttonY = windowHeight * 0.75f;
-            ButtonWithBackground("Refresh", new Vector2(btnWidth, buttonH), new Vector2(10, buttonY), () =>
+            ButtonWithBackground(ClientConnector.IsConnecting ? "Cancel" : "Localhost", new Vector2(btnWidth, buttonH), new Vector2(10, buttonY), () =>
             {
-                StartLocalDiscovery();
-                Console.WriteLine("Refreshing local servers...");
+                if (ClientConnector.IsConnecting)
+                {
+                    ClientConnector.Cancel();
+                    statusText = "";
+                    return;
+                }
+
+                Connect(new ServerEntry { Name = "Localhost", IP = "127.0.0.1", Port = Engine.Networking.NetworkManager.DefaultPort });
             });
             ImGui.SameLine();
             ButtonWithBackground("Join", new Vector2(btnWidth, buttonH), new Vector2(10 + btnWidth + midSpacing, buttonY), () =>
@@ -307,36 +276,37 @@ namespace Spacebox.Game.GUI.Menu
                 addServerWindow.Render();
         }
 
-        private void Join(List<ServerInfo> combinedServers)
+        private void Join(List<ServerEntry> combinedServers)
         {
             if (selectedServerIndex >= 0 && selectedServerIndex < combinedServers.Count)
-            {
-                var server = combinedServers[selectedServerIndex];
-                WorldInfo world;
-                ModConfig modConfig;
-                var existingWorld = menu.Worlds.FirstOrDefault(w => w.Name == server.Name);
-                if (existingWorld == null)
-                {
-                    menu.newWorldName = server.Name;
-                    menu.newWorldAuthor = "";
-                    menu.newWorldSeed = "420";
-                    menu.SelectedGameSetIndex = 0;
-                    menu.SelectedGameModeIndex = 1;
-                    menu.CreateNewWorld();
-                    world = menu.selectedWorld;
-                    modConfig = new ModConfig { ModId = world.ModId, FolderName = world.FolderName };
-                }
-                else
-                {
-                    world = existingWorld;
-                    modConfig = new ModConfig { ModId = world.ModId, FolderName = "Default" };
-                }
-                ServerInfo serverInfo = new ServerInfo { Name = server.Name, IP = server.IP, Port = server.Port };
-                string appKey = Application.Version;
+                Connect(combinedServers[selectedServerIndex]);
+        }
 
-                Debug.Success("Joining server: " + serverInfo.Name + " " + serverInfo.IP + ":" + serverInfo.Port);
-                SceneLauncher.LaunchMultiplayerGame(world, modConfig, serverInfo, config, appKey);
-            }
+        private void Connect(ServerEntry server)
+        {
+            if (ClientConnector.IsConnecting) return;
+
+            GameSession.SetPlayer(config.PlayerNickname, config.SkinColor);
+            statusText = $"Connecting to {server.IP}:{server.Port}...";
+            Debug.Log($"[Network] Joining {server.Name} {server.IP}:{server.Port}");
+
+            ClientConnector.Connect(server.IP, server.Port, OnJoinAccepted, reason => statusText = "Failed: " + reason);
+        }
+
+        private void OnJoinAccepted(RemoteWorldInfo world)
+        {
+            statusText = "";
+            Input.HideCursor();
+
+            SceneManager.Load<LocalSpaceScene, SpaceSceneArgs>(new SpaceSceneArgs
+            {
+                worldName = world.WorldName,
+                modId = world.ModId,
+                seed = world.Seed,
+                modfolderName = GameSetLocator.FindFolder(world.ModId),
+                skinColor = config.SkinColor,
+                nickname = config.PlayerNickname
+            });
         }
 
         private void ButtonWithBackground(string label, Vector2 size, Vector2 cursorPos, Action onClick)

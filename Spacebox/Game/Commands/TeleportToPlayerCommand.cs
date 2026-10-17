@@ -2,8 +2,8 @@
 using Engine.Commands;
 using Spacebox.Game.Player;
 using Engine;
+using Engine.SceneManagement;
 using System.Numerics;
-using Client;
 
 namespace Spacebox.Game.Commands
 {
@@ -11,7 +11,7 @@ namespace Spacebox.Game.Commands
     {
         public override string Name => "tpp";
 
-        public override string Description => "Teleport to a player. Usage: tpp <id>";
+        public override string Description => "Teleport to a player. Usage: tpp <name>";
 
         public LocalAstronaut Astronaut { get; set; }
 
@@ -25,7 +25,7 @@ namespace Spacebox.Game.Commands
         {
             if (args.Length < 1)
             {
-                Debug.Error($"Usage: {Name} [playerID]");
+                Debug.Error($"Usage: {Name} [playerName]");
                 return;
             }
 
@@ -35,43 +35,29 @@ namespace Spacebox.Game.Commands
                 return;
             }
 
-            if (!Is<int>(args[0]))
+            var target = FindPlayer(SceneManager.Current, args[0]);
+            if (target == null)
             {
-                Debug.Error("Enter the player ID! ");
+                Debug.Error("There is no player named " + args[0]);
                 return;
             }
-            var id = int.Parse(args[0]);
-            if (ClientNetwork.Instance != null)
-            {
-                var players = ClientNetwork.Instance.GetRemotePlayers();
 
-                RemoteAstronaut player = null;
-
-                foreach (var p in players)
-                {
-                    if (p.NetworkData.ID == id)
-                    {
-                        player = p;
-                        break;
-                    }
-                }
-
-                if (player != null)
-                {
-                 
-                    Astronaut.Teleport(player.Position);
-                    Debug.Log("Teleported to " + player.NetworkData.Name, new Vector4(0f, 1f, 0f, 1f));
-                }
-                else
-                {
-                    Debug.Error("There are no player with ID: " + id);
-                }
-            }
-            else
-            {
-                Debug.Error("There are no ClientNetwork.Instance ");
-            }
+            Astronaut.Teleport(target.Position);
+            Debug.Log("Teleported to " + target.PlayerName, new Vector4(0f, 1f, 0f, 1f));
         }
 
+        private static RemoteAstronaut FindPlayer(Node3D node, string name)
+        {
+            if (node == null) return null;
+            if (node is RemoteAstronaut remote && string.Equals(remote.PlayerName, name, StringComparison.OrdinalIgnoreCase)) return remote;
+
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var found = FindPlayer(node.Children[i], name);
+                if (found != null) return found;
+            }
+
+            return null;
+        }
     }
 }

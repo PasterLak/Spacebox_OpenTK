@@ -2,7 +2,7 @@
 using ImGuiNET;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Client;
+using Spacebox.Network;
 using System;
 using System.Collections.Generic;
 
@@ -56,9 +56,7 @@ namespace Spacebox.Game.GUI
 
         public static void Say(string sender, string text)
         {
-            if (ClientNetwork.Instance != null)
-                ClientNetwork.Instance.SendMessage(text);
-            AddMessage(sender + text, Color4.White);
+            ChatService.Send(text);
         }
 
         public static void Say(string text)
@@ -253,10 +251,7 @@ namespace Spacebox.Game.GUI
         {
             if (!string.IsNullOrWhiteSpace(_inputBuffer))
             {
-                if (ClientNetwork.Instance != null)
-                    ClientNetwork.Instance.SendMessage(_inputBuffer);
-                else
-                    AddMessage(_inputBuffer, Color4.White);
+                ChatService.Send(_inputBuffer);
             }
             _inputBuffer = "";
             FocusInput = false;

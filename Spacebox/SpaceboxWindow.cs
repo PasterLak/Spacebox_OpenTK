@@ -11,6 +11,8 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game;
 using Spacebox.Game.GUI;
+using Spacebox.Network;
+using Spacebox.Network.Dedicated;
 using Spacebox.Scenes;
 
 
@@ -38,6 +40,21 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
         _screenshotAudio = new AudioSource(Resources.Load<AudioClip>("screenshot", true));
 
         ApplyDisplaySettings();
+        Debug.MirrorToStandardOutput = LaunchOptions.IsHidden;
+        SpaceboxNetwork.Initialize();
+        InputManager.Instance.LoadConfiguration("Resources/default_input.json");
+
+        if (LaunchOptions.IsDedicated)
+        {
+            DedicatedServer.Launch();
+            return;
+        }
+
+        if (LaunchOptions.HasConnectTarget)
+        {
+            QuickJoin.Start(LaunchOptions.ConnectAddress, LaunchOptions.ConnectPort, LaunchOptions.PlayerName);
+            return;
+        }
 
 #if DEBUG
         SceneManager.Load<MenuScene>();
@@ -89,8 +106,6 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
         SceneManager.Register<ServerMessageScene>();
         SceneManager.Register<PlaygroundScene>();
         SceneManager.Register<LocalSpaceScene>();
-        SceneManager.Register<MultiplayerScene>();
-        SceneManager.Register<MultiplayerLoadScene>();
         SceneManager.Register<LogoScene>();
         SceneManager.Register<ParticleSystemEditor>();
     }

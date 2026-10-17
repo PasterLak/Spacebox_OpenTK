@@ -83,6 +83,7 @@ Game
 
 Small
 - double click to open a world
+- new multiplayer: game is always server+client, singleplayer can be opened to network (pause menu), join by IP, dedicated server (--server, serverconfig.json, console commands), per-player saves on the server, player sync (movement, flashlight, held item), chat, block edits, modified asteroids sent by the server
 - loading screen over the skybox with a yellow progress bar and current step, until everything around the player is loaded (preload at the saved position, chunks outside the view and LODs are built too, no lag when turning)
 - equipment slot backgrounds
 
@@ -104,12 +105,16 @@ Fixes
 - duplicate chunk when building in a not yet generated chunk
 - asteroid deleted when its visible chunks were mined
 - saved asteroids near the player lost their unmodified chunks after reload (preload ignored generation data)
+- multiplayer: remote players now rotate, held item is sent right after joining, no atlas cube in the hand of a player with an empty slot
+- crash on start when the window was resized during loading (Release build)
+- crash when a remote player held a block without textures (null UVs in the hand block model)
 - gravity: mouse look up/down blocked, shift boost kept going (now shift = run), gravity icon in the bottom-right corner
 - drops in gravity land on the ground without bouncing
 - gravity strength changes jump height (same jump speed, at least 1.2 m)
 - gravity walking: stuck at walls and bumps on flat floor (box collision in entity-local space, slides along walls)
 
 Engine
+- networking: LiteNetLib transport, NetworkManager (offline/host/client/dedicated), messages, NetworkObject/NetworkBehaviour, [Rpc] methods, NetworkVariable, spawner, NetworkTransform
 - Materials
 - remake SceneGraph
 - Components

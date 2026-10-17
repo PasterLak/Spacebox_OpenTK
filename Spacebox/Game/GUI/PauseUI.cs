@@ -5,6 +5,7 @@ using ImGuiNET;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player;
+using Spacebox.Network;
 using Spacebox.Scenes;
 using System;
 using System.Numerics;
@@ -16,6 +17,7 @@ namespace Spacebox.Game.GUI
         private static bool _wasVisible = false;
         private static float parallaxIntensity = 0.02f;
         private static string saveButtonText = "Save";
+        private static string networkButtonText = "Open to network";
         private static AudioSource click1;
 
         public static void Init()
@@ -31,8 +33,9 @@ namespace Spacebox.Game.GUI
             {
                 if (isVisible)
                 {
-                    Time.TimeSize = 0;
+                    if (!IsMultiplayerActive()) Time.TimeSize = 0;
                     saveButtonText = "Save";
+                    networkButtonText = Engine.Networking.NetworkManager.Instance.IsListening ? $"Open on port {GameSession.Port}" : "Open to network";
                     ColorOverlay.FadeOut(new Vector3(0, 0, 0), 0.7f);
                     Settings.ShowInterface = false;
                 }
@@ -99,7 +102,7 @@ namespace Spacebox.Game.GUI
             float buttonHeight = windowHeight * 0.12f;
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y, 0.005f);
 
-            const int buttonCount = 5;
+            const int buttonCount = 6;
             float spacing = (windowHeight - (buttonCount * buttonHeight)) / (buttonCount + 1);
             float currentY = spacing;
 
@@ -135,6 +138,26 @@ namespace Spacebox.Game.GUI
 
             currentY += buttonHeight + spacing;
             ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
+            GameMenu.CenterButtonWithBackground(networkButtonText, buttonWidth, buttonHeight, () =>
+            {
+                click1?.Play();
+                var session = NetworkSession.Current;
+                var network = Engine.Networking.NetworkManager.Instance;
+                if (session == null || !network.IsServer || network.IsListening) return;
+
+                if (session.OpenToNetwork(GameSession.Port))
+                {
+                    networkButtonText = $"Open on port {GameSession.Port}";
+                    Time.TimeSize = 1;
+                }
+                else
+                {
+                    networkButtonText = "Port is busy";
+                }
+            });
+
+            currentY += buttonHeight + spacing;
+            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
             GameMenu.CenterButtonWithBackground("Go to menu", buttonWidth, buttonHeight, () =>
             {
                 click1?.Play();
@@ -151,6 +174,12 @@ namespace Spacebox.Game.GUI
             });
 
             ImGui.End();
+        }
+
+        private static bool IsMultiplayerActive()
+        {
+            var network = Engine.Networking.NetworkManager.Instance;
+            return network.IsRemoteClient || network.IsListening;
         }
 
         public static void SetParallaxIntensity(float intensity)

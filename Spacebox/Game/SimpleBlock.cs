@@ -61,7 +61,7 @@ public class SimpleBlock : Node3D ,IDrawable
         _vertices = null;
         _indices = null;
         IsUsingDefaultUV = false;
-        _uvs[face] = uv;
+        _uvs[face] = uv != null && uv.Length >= 4 ? uv : CubeMeshData.GetBasicUVs();
 
         if (regenerateMesh)
             RegenerateMesh();
@@ -140,7 +140,7 @@ public class SimpleBlock : Node3D ,IDrawable
 
     public override void Render()
     {
-        if (_isDisposed) return;
+        if (_isDisposed || !Enabled) return;
 
         base.Render();
 

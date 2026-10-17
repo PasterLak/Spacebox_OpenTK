@@ -1,4 +1,4 @@
-﻿using Client;
+﻿using Spacebox.Network;
 using Engine;
 using Spacebox.Game;
 using Spacebox.Game.Resource;
@@ -27,34 +27,9 @@ namespace Spacebox.Scenes
         {
 
             bool isMultiplayer = false;
-            if ((scene as MultiplayerScene) != null)
-            {
-                isMultiplayer = true;
-                param.SearchForGameSetInLocalFolder = true;
-            }
-
-            var modFolderName = "";
             var modId = param.modId;
-            var seedString = param.seed;
-
-            if (isMultiplayer)
-            {
-                if (ClientNetwork.Instance != null)
-                {
-                    modFolderName = ClientNetwork.Instance.ReceivedServerInfo.ModFolderName;
-                }
-            }
-            else
-            {
-                modFolderName = param.modfolderName;
-            }
-
+            var modFolderName = string.IsNullOrEmpty(param.modfolderName) ? GameSetLocator.FindFolder(modId) : param.modfolderName;
             string serverName = "";
-
-            if (isMultiplayer)
-            {
-                serverName = param.worldName;
-            }
 
 
             string modsFolder = ModPath.GetModsPath(param.SearchForGameSetInLocalFolder, serverName);

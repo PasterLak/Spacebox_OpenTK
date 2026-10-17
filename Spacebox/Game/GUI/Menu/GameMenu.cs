@@ -502,14 +502,21 @@ namespace Spacebox.Game.GUI.Menu
                 if (mod.ModId == world.ModId) { modInfo = mod; break; }
             }
 
+            var clientConfig = Get<MultiplayerWindow>().LoadConfig();
             var arg = new SpaceSceneArgs()
             {
                 worldName = world.Name,
                 modId = world.ModId,
                 seed = world.Seed,
                 modfolderName = modInfo?.FolderName ?? "",
-                skinColor = Get<MultiplayerWindow>().Config.SkinColor
+                skinColor = clientConfig.SkinColor
             };
+
+            Spacebox.Network.GameSession.SetPlayer(clientConfig.PlayerNickname, clientConfig.SkinColor);
+            if (multiplayer)
+                Spacebox.Network.GameSession.BeginHost(Engine.Networking.NetworkManager.DefaultPort);
+            else
+                Spacebox.Network.GameSession.BeginSingleplayer();
 
             Input.HideCursor();
             hide = true;
@@ -522,10 +529,7 @@ namespace Spacebox.Game.GUI.Menu
             ColorOverlay.StartFade(FadeMode.FadeIn, new Vector3(0, 0, 0), 1f, 0, 1, 0, () =>
             {
 
-                if (multiplayer)
-                    SceneManager.Load<MultiplayerScene, SpaceSceneArgs>(arg);
-                else
-                    SceneManager.Load<LocalSpaceScene, SpaceSceneArgs>(arg);
+                SceneManager.Load<LocalSpaceScene, SpaceSceneArgs>(arg);
             }, (t) =>
             {
 

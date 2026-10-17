@@ -1,0 +1,21 @@
+using Engine;
+using Engine.Networking;
+
+namespace Spacebox.Network;
+
+public static class SpaceboxNetwork
+{
+    private static bool _initialized;
+
+    public static void Initialize()
+    {
+        if (_initialized) return;
+        _initialized = true;
+
+        var network = NetworkManager.Instance;
+        network.ConnectionKey = "Spacebox:" + Application.Version;
+        ChatService.Register(network);
+        WorldEditNetwork.Register(network);
+        EntitySync.Register(network);
+    }
+}

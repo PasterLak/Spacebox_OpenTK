@@ -202,6 +202,7 @@ namespace Engine
 
                 UpdateDefaultInputs();
                 OnUpdateInput();
+                Networking.NetworkManager.Instance.Update();
 
                 using (Prof.Time(T_UpdateScene))
                 {
@@ -427,12 +428,12 @@ namespace Engine
             base.OnResize(e);
             GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
             _minimizedWindowSize = ClientSize;
-            _sceneRenderer.Resize(ClientSize.X, ClientSize.Y);
-            _processManager.UpdateResolution(ClientSize);
+            _sceneRenderer?.Resize(ClientSize.X, ClientSize.Y);
+            _processManager?.UpdateResolution(ClientSize);
             OnResized?.Invoke(Size);
             if (Camera.Main != null)
                 Camera.Main.AspectRatio = (float)Size.X / Size.Y;
-            _controller.WindowResized(ClientSize.X, ClientSize.Y);
+            _controller?.WindowResized(ClientSize.X, ClientSize.Y);
         }
 
         protected abstract void OnRegisterScenes();

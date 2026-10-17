@@ -3,8 +3,6 @@ using Engine.Components;
 using Engine.Components.Debug;
 using Engine.Physics;
 using OpenTK.Mathematics;
-using Spacebox.Client;
-using SpaceNetwork.Messages;
 
 
 namespace Spacebox.Game.Player
@@ -19,7 +17,6 @@ namespace Spacebox.Game.Player
 
         protected HandItemVisualizer HandVisualizer;
         protected ColliderComponent sphereCollision;
-        protected NetworkIdentity rpc;
         public int SkinId { get; protected set; }
 
         public Astronaut(Vector3 position, bool isLocal) : base(position, isLocal)
@@ -79,23 +76,6 @@ namespace Spacebox.Game.Player
 
             if (AstTank != null && AstTank.Model != null && AstTank.Model.Material is TextureMaterial tankMat)
                 tankMat.MainTexture = tex;
-        }
-
-        [Rpc]
-        protected void TestRpc()
-        {
-            Debug.Log("RPC message!");
-        }
-        [Rpc]
-        protected void TestRpcArgs(int x, string message)
-        {
-            Debug.Log($"RPC message 2! {x} {message}");
-        }
-
-        [Rpc]
-        protected void RpcColor()
-        {
-            SetSkinColor("Red");
         }
 
 

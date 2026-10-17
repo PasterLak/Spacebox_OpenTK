@@ -12,7 +12,7 @@ Spacebox is a single-player voxel survival game set in an asteroid belt, with an
 | Graphics | OpenGL 3.3 core, forward-compatible context (OpenTK 4.8.2) |
 | UI | ImGui.NET 1.91 (game UI and debug tools), SkiaSharp (engine-side 2D) |
 | Audio | OpenAL (via OpenTK) + NVorbis (`.ogg`) |
-| Networking | Lidgren.Network 1.0.2 (UDP) |
+| Networking | LiteNetLib 1.3.1 (UDP) in `Engine/Networking` |
 | Save format | NBT (SharpNBT) for world entities, JSON for metadata/player |
 | Archives | SharpCompress (`.zip` / `.rar` GameSets) |
 | Tests / benchmarks | xUnit 2.5, BenchmarkDotNet 0.14 |
@@ -23,7 +23,7 @@ Spacebox is a single-player voxel survival game set in an asteroid belt, with an
 | Project | Type | Depends on | Purpose |
 |---|---|---|---|
 | `Engine` | Library | — | Reusable engine: window, scenes, rendering, input, audio, physics, GUI, threading |
-| `Spacebox` | Exe (WinExe in Release) | Engine, Spacebox.Core, SpaceNetwork | The game client |
+| `Spacebox` | Exe (WinExe in Release) | Engine, Spacebox.Core | The game: client, host and dedicated server (`--server`) |
 | `Spacebox.Core` | Library | — | Public plugin API (`IPlugin`, `IGameApi`, `IWorldConverter`, `WorldInfo`) |
 | `SpaceNetwork` | Library | Lidgren | Network message definitions shared by client and server |
 | `ServerCommon` (`CommonLibrary/`) | Library | SpaceNetwork | Server logic: networking, players, bans, commands, config |
@@ -59,7 +59,7 @@ Spacebox is a single-player voxel survival game set in an asteroid belt, with an
 
 - `Scene` (abstract, inherits `Node3D`) implements `LoadContent` / `UnloadContent` / `Update` / `Render`.
 - `SceneManager.Register<T>()` then `SceneManager.Load<T>()`; `ErrorScene` is shown when a scene fails to load.
-- Game scenes: `LogoScene`, `MenuScene`, `LocalSpaceScene` (single-player, built on `BaseSpaceScene`), `MultiplayerLoadScene`, `MultiplayerScene`, `ServerMessageScene`, `PlaygroundScene`. Engine tool scene: `ParticleSystemEditor`.
+- Game scenes: `LogoScene`, `MenuScene`, `LocalSpaceScene` (all game modes, built on `BaseSpaceScene`), `ServerMessageScene`, `PlaygroundScene`. Engine tool scene: `ParticleSystemEditor`.
 - `Node3D` + `Transform3D` form the hierarchy; behaviour is attached as `Component`s.
 
 ### 3.3 Rendering
@@ -205,16 +205,16 @@ Worlds are stored in `<app dir>/Worlds/<world>/`:
 
 ## 8. Multiplayer
 
-- **Transport:** Lidgren UDP. The Lidgren app identifier is the game version (`Application.Version`), so client and server versions must match exactly.
-- **Discovery:** `LocalServerFinder` uses Lidgren LAN discovery (`DiscoverLocalPeers`).
-- **Messages** (`SpaceNetwork/Messages`, created by `MessageFactory`, registered in `MessageRegistry`):
-  `InitMessage`, `ServerInfoMessage`, `SeedMessage`, `PlayersMessage`, `Node3DMessage` (transform sync), `BlockPlaceMessage`, `BlockDestroyedMessage`, `ItemInHandMessage`, `FlashlightMessage`, `ChatMessage`, `RpcMessage`, `KickMessage`, `RequestZipMessage` / `ZipMessage` (the server sends its GameSet archive to the client).
-- **Client:** `ClientNetwork`, `ClientPacketHandler` (message-type → handler map), `NetworkPlayerRegistry`, `NetworkIdentity`, `NetworkNode3DComponent`. The server's GameSet is stored under `GameSets/Server`.
-- **Server** (`ServerCommon`): `ServerNetwork`, `MessageProcessor`, `PlayerManager`, `BanManager`, `CommandProcessor`, `ConfigManager`. Configured with `config.txt` (key=value):
+The game is always client and server at once (Godot-style shared world). Engine networking lives in `Engine/Networking`, game networking in `Spacebox/Network`. The old `SpaceNetwork`/`SpaceServer`/`SpaceServerUI`/`CommonLibrary` projects are deprecated and no longer referenced by the game.
 
-```
-name, description, port (default 14242), key (version), maxPlayers, seed, pingInterval, connectionTimeout
-```
+- **Modes** (`NetworkManager.Mode`, `GameSession.Mode`): `Offline` (singleplayer = server without a socket), `Host` (same world, listening), `Client` (remote), `DedicatedServer` (`Spacebox.exe --server`, hidden window, `serverconfig.json`, stdin commands `say`, `players`, `kick`, `save`, `stop`). Singleplayer can be opened to the network from the pause menu ("Open to network", port 7777). `--connect host:port --name <name> [--hidden]` joins directly.
+- **Transport:** LiteNetLib 1.3.1 behind `INetTransport` (`LiteNetTransport`). Connection key `Spacebox:<Application.Version>`. Peer 1 is always the server; clients get their id via `AssignPeerIdMessage`.
+- **Messages:** structs implementing `INetMessage` (`Serialize`/`Deserialize` with `NetWriter`/`NetReader`), registered with `NetworkManager.Messages.Register<T>(handler)`; id = FNV hash of the type's full name. `SendToServer` on the server dispatches locally, so game code is the same for host and client.
+- **Objects:** `NetworkSpawner.Register(prefabKey, create, destroy)`; the server calls `Spawn(key, ownerPeer, writeSpawnData)` and late joiners get all objects (`SendSpawnedObjectsTo`). `NetworkObject` + `NetworkBehaviour` components; `NetworkVariable<T>` (server- or owner-writable, replicated at `TickRate` = 20 Hz, full state in spawn messages); `[Rpc(RpcTarget.Server|Owner|Clients|ClientsExceptOwner|All)]` methods called with `SendRpc(nameof(...), args)`, arguments serialized by `NetSerializer` (primitives, strings, vectors, quaternions, enums, arrays, `INetSerializable`, custom `Register<T>`); clients may only call `Server` RPCs, by default only on objects they own. `NetworkTransform` syncs owner-driven position/rotation with interpolation.
+- **Join:** `JoinRequestMessage` (name, skin, version) → server checks version and unique name → `JoinAcceptedMessage` (world name, seed, mod id, game mode, time, saved player JSON) → client loads `LocalSpaceScene` in client mode → `ClientReadyMessage` → server sends existing objects and spawns the `astronaut` prefab owned by the client (`PlayerSpawnService`, `AstronautNetwork`: transform, flashlight, held item).
+- **Players and saves:** each player is saved as `players/<name>.json` in the world folder (fallback to the legacy `player.json` for the local player). Remote clients send their serialized state every 10 s and when leaving (`PlayerDataMessage`); the server writes it. Clients never save the world; their scratch folder is `Multiplayer/<server>/<world>`.
+- **World:** clients generate untouched asteroids from the seed and ask the server for saved/modified entity data (`EntityDataRequestMessage` → `EntityDataMessage`, NBT gzip bytes from the loaded entity, cache or file). Block edits are applied locally and sent as `BlockEditMessage`; the server applies and rebroadcasts them. Chat goes through the server (`ChatService`).
+- **Not synced yet:** storages, machines, doors, power, oxygen, gravity, drops, projectiles/damage, explosions, physics bodies, respawn, day time after join, sector metadata (destroyed asteroids), player-built entities; the server only streams the world around its own (host) player; no GameSet download and no LAN discovery yet.
 
 ## 9. Build, Test & Distribution
 

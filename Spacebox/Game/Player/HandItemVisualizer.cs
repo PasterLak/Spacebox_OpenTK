@@ -48,7 +48,7 @@ namespace Spacebox.Game.Player
 
             if (item != null)
             {
-                if (item is BlockItem blockItem)
+                if (item is BlockItem blockItem && blockItem.BlockId != 0)
                 {
                     PrepareBlock(blockItem);
                     _isHoldingBlock = true;

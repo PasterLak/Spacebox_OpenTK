@@ -1,0 +1,76 @@
+using Engine.Networking;
+
+namespace Spacebox.Network;
+
+public enum SessionMode : byte
+{
+    Singleplayer,
+    Host,
+    Client,
+    Dedicated
+}
+
+public static class GameSession
+{
+    public static SessionMode Mode { get; private set; } = SessionMode.Singleplayer;
+    public static string PlayerName { get; private set; } = "Player";
+    public static string SkinColor { get; private set; } = "Yellow";
+    public static string HostAddress { get; private set; } = "127.0.0.1";
+    public static int Port { get; private set; } = NetworkManager.DefaultPort;
+    public static RemoteWorldInfo RemoteWorld { get; private set; }
+    public static string PendingPlayerJson { get; set; }
+
+    public static bool IsRemoteClient => Mode == SessionMode.Client;
+    public static bool IsDedicated => Mode == SessionMode.Dedicated;
+    public static bool HasLocalPlayer => Mode != SessionMode.Dedicated;
+
+    public static void SetPlayer(string name, string skinColor)
+    {
+        PlayerName = string.IsNullOrWhiteSpace(name) ? "Player" : name.Trim();
+        SkinColor = string.IsNullOrWhiteSpace(skinColor) ? "Yellow" : skinColor;
+    }
+
+    public static void BeginSingleplayer()
+    {
+        Mode = SessionMode.Singleplayer;
+        RemoteWorld = null;
+    }
+
+    public static void BeginHost(int port)
+    {
+        Mode = SessionMode.Host;
+        Port = port;
+        RemoteWorld = null;
+    }
+
+    public static void BeginClient(string address, int port)
+    {
+        Mode = SessionMode.Client;
+        HostAddress = string.IsNullOrWhiteSpace(address) ? "127.0.0.1" : address.Trim();
+        Port = port;
+        RemoteWorld = null;
+    }
+
+    public static void BeginDedicated(int port)
+    {
+        Mode = SessionMode.Dedicated;
+        Port = port;
+        RemoteWorld = null;
+    }
+
+    public static void SetRemoteWorld(RemoteWorldInfo info)
+    {
+        RemoteWorld = info;
+    }
+}
+
+public sealed class RemoteWorldInfo
+{
+    public string ServerName;
+    public string WorldName;
+    public string Seed;
+    public string ModId;
+    public byte GameMode;
+    public int Day;
+    public int Ticks;
+}

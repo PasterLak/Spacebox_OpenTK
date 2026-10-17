@@ -13,8 +13,6 @@ using Spacebox.Game.Player.Interactions;
 using Spacebox.Game.Player.Respawn;
 using Spacebox.Game.Resource;
 using Spacebox.GUI;
-using Client;
-using Spacebox.Client;
 
 namespace Spacebox.Game.Player
 {
@@ -143,10 +141,6 @@ namespace Spacebox.Game.Player
             DeathScreen.ReconstructionBlocker = Respawner.GetReconstructionBlocker;
             Flashlight.OnEnabledChanged += (b) => { PanelUI.SetFlashlight(this); };
 
-            AttachComponent(new NetworkNode3DComponent(true));
-
-            if (ClientNetwork.Instance != null)
-                rpc = AttachComponent(new NetworkIdentity(ClientNetwork.Instance.LocalPlayerId, true));
         }
 
         public override void Start()
@@ -235,12 +229,6 @@ namespace Spacebox.Game.Player
             if (Input.IsActionUp("zoom"))
             {
                 FOV = 90;
-            }
-
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.I))
-            {
-                Debug.Log("RPC Call send!");
-                rpc?.Call(nameof(RpcColor));
             }
 
 #if DEBUG

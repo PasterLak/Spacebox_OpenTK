@@ -111,6 +111,7 @@ public static class WorldLoadingScreen
     private static void Finish()
     {
         if (_elapsed >= MaxDuration) Debug.Warning("[WorldLoadingScreen] Loading timed out, showing the world anyway");
+        else Debug.Log($"[WorldLoadingScreen] World ready in {_elapsed:0.0}s");
 
         if (_player != null) _player.IsFrozen = false;
         var onComplete = _onComplete;

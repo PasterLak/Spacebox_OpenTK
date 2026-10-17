@@ -1,7 +1,7 @@
 ﻿
 using System.Numerics;
 using ImGuiNET;
-using SpaceNetwork;
+using Spacebox.Network;
 
 namespace Spacebox.Game.GUI.Menu
 {
@@ -12,12 +12,12 @@ namespace Spacebox.Game.GUI.Menu
         private string serverIP = "";
         private int serverPort = 7777;
         private bool isEditMode = false;
-        private ServerInfo editingServer = null;
+        private ServerEntry editingServer = null;
         public AddServerWindow(MultiplayerWindow parent)
         {
             this.parent = parent;
         }
-        public void SetEditMode(ServerInfo server)
+        public void SetEditMode(ServerEntry server)
         {
             if (server == null)
             {
@@ -87,7 +87,7 @@ namespace Spacebox.Game.GUI.Menu
                     }
                     else
                     {
-                        var newServer = new ServerInfo
+                        var newServer = new ServerEntry
                         {
                             Name = serverName,
                             IP = serverIP,

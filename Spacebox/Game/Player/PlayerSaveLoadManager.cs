@@ -9,18 +9,49 @@ namespace Spacebox.Game.Player
 {
     public static class PlayerSaveLoadManager
     {
-        public static void SavePlayer(LocalAstronaut player, string worldFolder)
+        private const string PlayersFolder = "players";
+        private const string LegacyFileName = "player.json";
+
+        public static string GetPlayerFilePath(string worldFolder, string playerName)
+        {
+            var safeName = new string((playerName ?? "Player").Select(c => Path.GetInvalidFileNameChars().Contains(c) ? '_' : c).ToArray());
+            return Path.Combine(worldFolder, PlayersFolder, safeName + ".json");
+        }
+
+        public static string ReadPlayerJson(string worldFolder, string playerName, bool allowLegacy)
+        {
+            string path = GetPlayerFilePath(worldFolder, playerName);
+            if (File.Exists(path)) return File.ReadAllText(path);
+
+            string legacy = Path.Combine(worldFolder, LegacyFileName);
+            return allowLegacy && File.Exists(legacy) ? File.ReadAllText(legacy) : null;
+        }
+
+        public static void WritePlayerJson(string worldFolder, string playerName, string json)
         {
             try
             {
-                string saveFilePath = Path.Combine(worldFolder, "player.json");
+                string path = GetPlayerFilePath(worldFolder, playerName);
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+                File.WriteAllText(path, json);
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"[PlayerSaveLoadManager] Error saving player '{playerName}': {ex.Message}");
+            }
+        }
 
-                if (!Directory.Exists(worldFolder))
-                {
-                    Directory.CreateDirectory(worldFolder);
-                }
-                player.PlayerStatistics.EndSession();
+        public static void SavePlayer(LocalAstronaut player, string worldFolder)
+        {
+            player.PlayerStatistics.EndSession();
+            WritePlayerJson(worldFolder, Spacebox.Network.GameSession.PlayerName, Serialize(player));
+            player.PlayerStatistics.StartSession();
+        }
 
+        public static string Serialize(LocalAstronaut player)
+        {
+            try
+            {
                 PlayerData data = new PlayerData
                 {
                     PositionX = player.Position.X,
@@ -41,48 +72,60 @@ namespace Spacebox.Game.Player
                     Statistics = player.PlayerStatistics
                 };
 
-                string jsonString = JsonSerializer.Serialize(data, new JsonSerializerOptions
+                return JsonSerializer.Serialize(data, new JsonSerializerOptions
                 {
                     WriteIndented = true
                 });
-
-                File.WriteAllText(saveFilePath, jsonString);
-
             }
             catch (Exception ex)
             {
-                Debug.Error($"[PlayerSaveLoadManager] Error saving player data: {ex.Message}");
+                Debug.Error($"[PlayerSaveLoadManager] Error serializing player data: {ex.Message}");
+                return null;
             }
         }
 
         public static void LoadPlayer(LocalAstronaut player, string worldFolder)
         {
-
+            string json = null;
             try
             {
-                string saveFilePath = Path.Combine(worldFolder, "player.json");
+                json = ReadPlayerJson(worldFolder, Spacebox.Network.GameSession.PlayerName, true);
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"[PlayerSaveLoadManager] Error reading player data: {ex.Message}");
+            }
 
-                if (!File.Exists(saveFilePath))
-                {
-                    Debug.Log("[PlayerSaveLoadManager] Player save file does not exist.");
+            LoadPlayerFromJson(player, json);
+        }
 
-                    World.CurrentSector.SpawnPlayerNearRandomAsteroidData(player, new Random(World.Seed));
-                    GameSetLoader.GiveStartItems(player, GameAssets.ItemsStr);
-                    player.Flashlight.Enabled = true;
-                    player.PlayerStatistics.FirstPlayedUtc = DateTime.UtcNow;
+        public static void LoadPlayerFromJson(LocalAstronaut player, string json)
+        {
+            if (string.IsNullOrEmpty(json) || !Apply(player, json))
+                ApplyNewPlayer(player);
+        }
 
-                    player.PlayerStatistics.StartSession();
+        public static void ApplyNewPlayer(LocalAstronaut player)
+        {
+            Debug.Log("[PlayerSaveLoadManager] New player, spawning near an asteroid.");
 
-                    return;
-                }
+            World.CurrentSector.SpawnPlayerNearRandomAsteroidData(player, new Random(World.Seed));
+            GameSetLoader.GiveStartItems(player, GameAssets.ItemsStr);
+            player.Flashlight.Enabled = true;
+            player.PlayerStatistics.FirstPlayedUtc = DateTime.UtcNow;
+            player.PlayerStatistics.StartSession();
+        }
 
-                string jsonString = File.ReadAllText(saveFilePath);
+        private static bool Apply(LocalAstronaut player, string jsonString)
+        {
+            try
+            {
                 PlayerData data = JsonSerializer.Deserialize<PlayerData>(jsonString);
 
                 if (data == null)
                 {
                     Debug.Error("[PlayerSaveLoadManager] Failed to deserialize player data.");
-                    return;
+                    return false;
                 }
 
                 player.SetPosition( new Vector3(data.PositionX, data.PositionY, data.PositionZ));
@@ -160,10 +203,12 @@ namespace Spacebox.Game.Player
                 player.OxygenBar.StatsData.Value = data.Oxygen;
 
                 PanelUI.SetSelectedSlot(0);
+                return true;
             }
             catch (Exception ex)
             {
                 Debug.Error($"[PlayerSaveLoadManager] Error loading player data: {ex.Message}");
+                return false;
             }
         }
 

@@ -111,8 +111,17 @@ namespace Engine
             OnVisibilityWasChanged?.Invoke(IsVisible);
         }
 
+        public static bool MirrorToStandardOutput { get; set; }
+
+        public static void ExecuteCommand(string command)
+        {
+            ProcessCommand(command);
+        }
+
         private static void AddMessage(string message, Vector4? color = null)
         {
+            if (MirrorToStandardOutput) System.Console.Out.WriteLine(message);
+
             var msg = new ConsoleMessage(message, color ?? infoColor);
 
             switch (color)
@@ -138,6 +147,8 @@ namespace Engine
 
         private static void AddMessage(string message, OpenTK.Mathematics.Color4 color)
         {
+            if (MirrorToStandardOutput) System.Console.Out.WriteLine(message);
+
             var msg = new ConsoleMessage(message, new Vector4(color.R, color.G, color.B, color.A));
 
             switch (color)

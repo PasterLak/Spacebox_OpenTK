@@ -2,6 +2,7 @@
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Engine.Audio;
+using Spacebox.Network;
 
 
 namespace Spacebox;
@@ -11,8 +12,9 @@ public static class Program
 
 
    // [STAThread]
-    private static void Main()
+    private static void Main(string[] args)
     {
+        LaunchOptions.Parse(args);
 
        
         var monitor = Monitors.GetPrimaryMonitor();
@@ -35,6 +37,7 @@ public static class Program
            
 
             Flags = ContextFlags.ForwardCompatible,
+            StartVisible = !LaunchOptions.IsDedicated && !LaunchOptions.IsHidden,
         };
      
         SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());

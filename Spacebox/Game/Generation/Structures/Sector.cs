@@ -3,6 +3,7 @@ using Engine.Multithreading;
 using Engine.Physics;
 using Engine.Utils;
 using OpenTK.Mathematics;
+using SharpNBT;
 using Spacebox.Game.GameMath;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.Generation.Tools;
@@ -398,6 +399,13 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     {
         if (loadingEntities.Contains(data.Id)) return;
 
+        if (Spacebox.Network.GameSession.IsRemoteClient)
+        {
+            loadingEntities.Add(data.Id);
+            Spacebox.Network.EntitySync.Request(this, data);
+            return;
+        }
+
         if (WorldPersistenceManager.TryGetCachedEntity(data.Id, out var cachedTag))
         {
             var entity = NBTHelper.TagToSpaceEntity(cachedTag, this, data);
@@ -421,28 +429,61 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         if (data.Id >= 0)
         {
             loadingEntities.Add(data.Id);
-            WorkerPoolManager.Enqueue(token =>
-            {
-                try
-                {
-                    var newEntity = new Asteroid(data, this, true);
-                    newEntity.Name = newEntity.EntityID.ToString();
-                    newEntity.OnGenerate();
-
-                    MainThreadDispatcher.Instance.Enqueue(() =>
-                    {
-                        AddEntity(newEntity, newEntity.PositionWorld);
-                        octreeNotGenerated.Remove(data);
-                        loadingEntities.Remove(data.Id);
-                    });
-                }
-                catch (Exception ex)
-                {
-                    Debug.Error($"Failed to generate asteroid {data.Id}: {ex}");
-                    MainThreadDispatcher.Instance.Enqueue(() => loadingEntities.Remove(data.Id));
-                }
-            }, WorkerPoolManager.Priority.Medium);
+            GenerateFreshAsteroid(data);
         }
+    }
+
+    public void ApplyRemoteEntityData(long entityId, CompoundTag tag)
+    {
+        if (!loadingEntities.Contains(entityId)) return;
+
+        if (!EntitiesGeneratedData.TryGetValue(entityId, out var data))
+        {
+            loadingEntities.Remove(entityId);
+            return;
+        }
+
+        if (tag == null)
+        {
+            if (data.Id >= 0) GenerateFreshAsteroid(data);
+            else loadingEntities.Remove(entityId);
+            return;
+        }
+
+        var entity = NBTHelper.TagToSpaceEntity(tag, this, data);
+        if (entity != null && !Entities.Exists(e => e.EntityID == entity.EntityID))
+        {
+            ApplyLoadedEntityFixes(entity, data, entity.Name);
+            AddEntity(entity, entity.PositionWorld);
+            octreeNotGenerated.Remove(data);
+        }
+
+        loadingEntities.Remove(entityId);
+    }
+
+    private void GenerateFreshAsteroid(NotGeneratedEntity data)
+    {
+        WorkerPoolManager.Enqueue(token =>
+        {
+            try
+            {
+                var newEntity = new Asteroid(data, this, true);
+                newEntity.Name = newEntity.EntityID.ToString();
+                newEntity.OnGenerate();
+
+                MainThreadDispatcher.Instance.Enqueue(() =>
+                {
+                    AddEntity(newEntity, newEntity.PositionWorld);
+                    octreeNotGenerated.Remove(data);
+                    loadingEntities.Remove(data.Id);
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"Failed to generate asteroid {data.Id}: {ex}");
+                MainThreadDispatcher.Instance.Enqueue(() => loadingEntities.Remove(data.Id));
+            }
+        }, WorkerPoolManager.Priority.Medium);
     }
 
     private void ApplyLoadedEntityFixes(SpaceEntity loadedEntity, NotGeneratedEntity data, string realFileName)

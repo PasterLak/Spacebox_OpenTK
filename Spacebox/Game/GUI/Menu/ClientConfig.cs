@@ -1,6 +1,5 @@
 ﻿
-using Spacebox.Client;
-using SpaceNetwork;
+using Spacebox.Network;
 
 namespace Spacebox.Game.GUI.Menu
 {
@@ -8,7 +7,7 @@ namespace Spacebox.Game.GUI.Menu
     {
         public string PlayerNickname { get; set; } = "";
         public string SkinColor { get; set; } = "Yellow";
-        public List<ServerInfo> Servers { get; set; } = new List<ServerInfo>();
+        public List<ServerEntry> Servers { get; set; } = new List<ServerEntry>();
 
 
 

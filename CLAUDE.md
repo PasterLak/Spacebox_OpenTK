@@ -22,7 +22,7 @@ Spacebox is a voxel space-survival game (asteroid belt, mining, base/ship buildi
 - **Hot paths** (meshing, generation, lighting, `Update`/`Render`, `Block`): no LINQ, no per-frame allocations; reuse pools and caches. `Block` packs its state into bits of one `long`, so don't add fields to it carelessly.
 - **Engine boundary:** `Engine` must never reference `Spacebox.*`. Reusable, game-independent features belong in `Engine`.
 - **Save and content compatibility:** new fields in NBT saves or GameSet JSON need defaults so old data still loads; breaking format changes need a `VersionConverter` step. Never break the `Default` GameSet.
-- **Network:** messages in `SpaceNetwork/Messages` are registered automatically by reflection, so client and server must be built from the same `SpaceNetwork`. Handle each new message on both sides (`Spacebox/Client/ClientPacketHandler.cs`, `CommonLibrary/MessageProcessor.cs`).
+- **Network:** the game is client, host and dedicated server in one executable (`Engine/Networking` + `Spacebox/Network`, see `spec.md` §8). The server is authoritative; sync new state with `NetworkVariable<T>`, `[Rpc]` methods on `NetworkBehaviour`s or `INetMessage` structs registered on `NetworkManager.Messages`. `SpaceNetwork`, `SpaceServer`, `SpaceServerUI` and `CommonLibrary` are deprecated: do not change them, the game no longer references them.
 - **Do not edit** the prebuilt `Spacebox/Plugins/**/*.dll`, `Spacebox/Build/**` or the vendored `Documentation/doxygen-awesome-css/**`.
 - **Git:** feature branches are named `<feature>-<version>` (e.g. `generation-0.1.2`). Do not commit or push unless asked. Commit messages are short and imperative.
 - `Spacebox/TODO.txt` and `BUGS.txt` belong to the author; edit them only when asked.
@@ -56,7 +56,7 @@ dotnet publish Spacebox/Spacebox.csproj -c Release -r linux-x64 --self-contained
 
 Detailed per-project notes: `Engine/CLAUDE.md` (engine architecture) and `Spacebox/CLAUDE.md` (game logic).
 
-Dependency direction: `Spacebox` → `Engine`, `Spacebox.Core`, `SpaceNetwork`. Servers (`SpaceServer`, `SpaceServerUI`) → `ServerCommon` (folder `CommonLibrary/`) → `SpaceNetwork`. `Engine` must not reference game code.
+Dependency direction: `Spacebox` → `Engine`, `Spacebox.Core`. Servers (`SpaceServer`, `SpaceServerUI`) → `ServerCommon` (folder `CommonLibrary/`) → `SpaceNetwork`. `Engine` must not reference game code.
 
 - **Engine/** — reusable engine: `EngineWindow` (abstract `GameWindow` with hook methods `OnRegisterScenes`, `OnGameLoad`, `OnSetupPostProcessing`, …), `SceneManagement` (`Scene` is a `Node3D`; scenes are registered then loaded via `SceneManager.Load<T>()`), `Node3D`/`Components` scene graph, `Resources.Load<T>(pathOrName, global)` resource cache, rendering (shaders, materials, post-processing, lights, particles), ImGui-based GUI, `InputPro` input actions, `Audio` (OpenAL + NVorbis), octrees, `ServiceLocator`, `EventBus`, `Debug` logging.
 - **Spacebox/** — the game. `Program.cs` → `SpaceboxWindow` (subclasses `EngineWindow`, registers scenes, starts at `MenuScene`). `Scenes/` holds menu, single-player (`LocalSpaceScene` / `BaseSpaceScene`) and multiplayer scenes. `Client/` is the multiplayer client side.

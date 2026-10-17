@@ -1,4 +1,3 @@
-using Client;
 using Engine;
 using Engine.Audio;
 using Engine.Physics;
@@ -11,7 +10,7 @@ using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Resource;
-using SpaceNetwork;
+using Spacebox.Network;
 
 namespace Spacebox.Game.Player.Interactions;
 
@@ -184,12 +183,7 @@ public class InteractionPlaceBlock : InteractionMode
 
                     if (chunk.SpaceEntity.TryPlaceBlock(selectorPos, newBlock))
                     {
-                        if (ClientNetwork.Instance != null)
-                        {
-                            var loc = chunk.SpaceEntity.WorldPositionToLocal(selectorPos);
-                            ClientNetwork.Instance.SendBlockPlaced(newBlock, (short)loc.X, (short)loc.Y, (short)loc.Z);
-
-                        }
+                        WorldEditNetwork.NotifyPlaced(chunk.SpaceEntity, selectorPos, newBlock);
                         player.PlayerStatistics.BlocksPlaced++;
                     }
 
@@ -355,12 +349,7 @@ public class InteractionPlaceBlock : InteractionMode
 
                     if (entity.TryPlaceBlock(selectorPosition, newBlock))
                     {
-                        if (ClientNetwork.Instance != null)
-                        {
-                            var loc = entity.WorldPositionToLocal(selectorPosition);
-                            ClientNetwork.Instance.SendBlockPlaced(newBlock, (short)loc.X, (short)loc.Y, (short)loc.Z);
-
-                        }
+                        WorldEditNetwork.NotifyPlaced(entity, selectorPosition, newBlock);
                         player.PlayerStatistics.BlocksPlaced++;
                     }
                     else

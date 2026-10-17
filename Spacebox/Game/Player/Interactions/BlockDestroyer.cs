@@ -1,6 +1,6 @@
 using Engine;
 using Engine.Audio;
-using global::Client;
+using Spacebox.Network;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
@@ -18,10 +18,7 @@ public static class BlockDestroyer
     {
         hit.block.OnDestroy?.Invoke(hit);
         hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
-
-        var chunkOrigin = hit.chunk.PositionIndex * Chunk.Size;
-        var localPos = new Vector3(chunkOrigin.X + hit.blockPositionIndex.X, chunkOrigin.Y + hit.blockPositionIndex.Y, chunkOrigin.Z + hit.blockPositionIndex.Z);
-        ClientNetwork.Instance?.SendBlockDestroyed((short)localPos.X, (short)localPos.Y, (short)localPos.Z);
+        WorldEditNetwork.NotifyRemoved(hit.chunk, hit.blockPositionIndex);
         player.PlayerStatistics.BlocksDestroyed++;
 
         PlaySound(hit.block.Id);

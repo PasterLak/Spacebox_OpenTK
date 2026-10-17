@@ -68,7 +68,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Engine\Engine.csproj" />
 		<ProjectReference Include="..\Spacebox.Core\Spacebox.Core.csproj" />
-		<ProjectReference Include="..\SpaceNetwork\SpaceNetwork.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

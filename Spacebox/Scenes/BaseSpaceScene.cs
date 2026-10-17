@@ -15,6 +15,7 @@ using Spacebox.Game.Player;
 using Spacebox.Game.Player.Interactions;
 using Spacebox.Game.Resource;
 using Spacebox.GUI;
+using Spacebox.Network;
 using System;
 
 namespace Spacebox.Scenes;
@@ -51,6 +52,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     protected RadarUI radarWindow;
 
     private FreeCamera freeCamera;
+    private NetworkSession _networkSession;
     
 
     public void Initialize(SpaceSceneArgs param)
@@ -88,12 +90,18 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         localPlayer.SetSkinColor(SceneArgs.skinColor);
         PanelUI.Player = localPlayer;
 
-        World.LoadWorldInfo(SceneArgs.worldName);
+        if (GameSession.IsRemoteClient && GameSession.RemoteWorld != null)
+            World.LoadRemoteWorldInfo(GameSession.RemoteWorld);
+        else
+            World.LoadWorldInfo(SceneArgs.worldName);
         blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.EmissionBlocks);
         var world = new World(localPlayer, blockMaterial);
         AttachComponent(world);
         world.Load();
-        PlayerSaveLoadManager.LoadPlayer(localPlayer, World.WorldData.WorldFolderPath);
+        if (GameSession.IsRemoteClient)
+            PlayerSaveLoadManager.LoadPlayerFromJson(localPlayer, GameSession.PendingPlayerJson);
+        else
+            PlayerSaveLoadManager.LoadPlayer(localPlayer, World.WorldData.WorldFolderPath);
 
         AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/spaceBackground.ogg")).Audio.Volume = 0.05f;
 
@@ -118,6 +126,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Debug.RegisterCommand(new ClearInventoryCommand(localPlayer));
         Debug.RegisterCommand(new GameModCommand(localPlayer));
         Debug.RegisterCommand(new SpawnAroundAsteroidCommand(localPlayer));
+        Debug.RegisterCommand(new TeleportToPlayerCommand(localPlayer));
 
         InventoryUI.Initialize();
         StorageUI.Initialize();
@@ -144,6 +153,16 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         AttachComponent(new TagManager());
 
         TagsSaveLoader.LoadTags(World.WorldData.WorldFolderPath);
+
+        if (GameSession.IsDedicated)
+        {
+            localPlayer.IsFrozen = true;
+            localPlayer.Flashlight.Enabled = false;
+        }
+
+        _networkSession = new NetworkSession(this, localPlayer);
+        if (!_networkSession.Start() && GameSession.IsRemoteClient)
+            SceneManager.Load<MenuScene>();
     }
 
     public override void Start()
@@ -166,6 +185,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         base.Update();
 
         MainThreadDispatcher.Instance.ExecutePending(StreamingBudget.DispatcherBudgetMs);
+        _networkSession?.Update();
         WorldLoadingScreen.Update();
         DnaReconstructionScreen.Update();
 
@@ -285,6 +305,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
     public override void UnloadContent()
     {
+        _networkSession?.Dispose();
+        _networkSession = null;
         Time.OnTick -= UpdateTickTasks;
         OxygenGeneratorUI.Reset();
         WorldLoadingScreen.Reset();
