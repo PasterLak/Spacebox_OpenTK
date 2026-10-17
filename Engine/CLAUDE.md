@@ -14,6 +14,7 @@ Game-independent engine over OpenTK (GL 3.3 core). Namespace `Engine.*`. Must ne
 | `Resources.cs` | Typed resource cache (`IResource`) |
 | `Shader.cs`, `Materials/`, `Texture2D.cs`, `Mesh.cs`, `Model.cs`, `MeshBuffer.cs` | Rendering primitives |
 | `SceneRenderer.cs`, `Graphics/` | Scene FBO (color/normal/depth); `GLState`, `GPUDebug`, `UniformBuffer`, `GlobalUniforms` |
+| `Graphics/Atlas/` | `TextureAtlas` (skyline packing, any sizes, layers, lazy rebuild), `AtlasLayout`, `AtlasRegion`, `AtlasSprite` (ImGui drawing), `ImagePixels` |
 | `Light/` | `LightSystem` (UBO), `Lighting` (ambient, fog, `Lighting.Skybox`), light types, `LightPool` |
 | `PostProcessing/` | `PostProcessManager` + effects (`DefaultEffect`, SSAO, Vignette, …) |
 | `Skybox.cs` | Skybox `Node3D`, assigned to `Lighting.Skybox` |

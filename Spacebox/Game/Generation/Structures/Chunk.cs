@@ -410,15 +410,15 @@ namespace Spacebox.Game.Generation
             {
                 case LOD.L1:
                     downscale = 2;
-                    uv = GameAssets.AtlasBlocks.GetUVByName("LOD");
+                    uv = GameAssets.AtlasBlocks.GetRegion(GameAtlasFactory.LodTexture).Uvs;
                     break;
                 case LOD.L2:
                     downscale = 8;
-                    uv = GameAssets.AtlasBlocks.GetUVByName("LOD");
+                    uv = GameAssets.AtlasBlocks.GetRegion(GameAtlasFactory.LodTexture).Uvs;
                     break;
                 case LOD.L3:
                     downscale = 16;
-                    uv = GameAssets.AtlasBlocks.GetUVByName("LOD");
+                    uv = GameAssets.AtlasBlocks.GetRegion(GameAtlasFactory.LodTexture).Uvs;
                     break;
                 default: return;
             }

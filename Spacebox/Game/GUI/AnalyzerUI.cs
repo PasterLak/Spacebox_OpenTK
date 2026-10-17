@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using Engine.Graphics.Atlas;
+using Engine;
 using Engine.Audio;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -301,19 +302,19 @@ namespace Spacebox.Game.GUI
                                 {
                                     float startY = ImGui.GetCursorPosY();
 
-                                    IntPtr icon = IntPtr.Zero;
+                                    AtlasSprite icon = AtlasSprite.None;
                                     if (GameAssets.TryGetItemByBlockID(kvp.Key, out Item item) && item != null)
                                     {
-                                        icon = item.IconTextureId;
+                                        icon = item.Icon;
                                     }
 
                                     float textOffsetY = (rowHeight - ImGui.GetTextLineHeight()) * 0.5f;
                                     float iconOffsetY = (rowHeight - iconSize) * 0.5f;
 
                                     ImGui.SetCursorPosY(startY + iconOffsetY);
-                                    if (icon != IntPtr.Zero)
+                                    if (icon.IsValid)
                                     {
-                                        ImGui.Image(icon, new Vector2(iconSize, iconSize));
+                                        icon.Image(new Vector2(iconSize, iconSize));
                                         ImGui.SameLine();
                                     }
                                     else

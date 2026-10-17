@@ -119,20 +119,12 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Debug.RegisterCommand(new GameModCommand(localPlayer));
         Debug.RegisterCommand(new SpawnAroundAsteroidCommand(localPlayer));
 
-        Texture2D slotTex = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/slot.png");
-        Texture2D selectedSlotTex = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/selectedSlot.png");
-
-        slotTex.FilterMode = FilterMode.Nearest;
-        slotTex.FlipY();
-        selectedSlotTex.FilterMode = FilterMode.Nearest;
-
-        InventoryUI.Initialize(slotTex.Handle);
-        EquipmentUI.Initialize();
-        StorageUI.Initialize(slotTex.Handle);
-        PanelUI.Initialize(localPlayer, slotTex.Handle, selectedSlotTex.Handle);
+        InventoryUI.Initialize();
+        StorageUI.Initialize();
+        PanelUI.Initialize(localPlayer);
         GeneratorUI.Initialize();
         InventoryUI.Player = localPlayer;
-        CreativeWindowUI.SetDefaultIcon(slotTex.Handle, localPlayer);
+        CreativeWindowUI.SetDefaultIcon(localPlayer);
 
         freeCamera = AddChild(new FreeCamera(localPlayer.Position));
         freeCamera.FOV = localPlayer.FOV;

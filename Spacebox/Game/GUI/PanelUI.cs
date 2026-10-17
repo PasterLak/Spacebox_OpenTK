@@ -15,8 +15,6 @@ namespace Spacebox.Game.GUI
     public static class PanelUI
     {
         private static float SlotSize = 64.0f;
-        private static nint SlotTexture = nint.Zero;
-        private static nint SelectedTexture = nint.Zero;
         public static bool EnableRenderForCurrentItem { get; set; } = true;
         public static bool AllowScroll { get; set; } = true;
         public static bool IsItemModelVisible { get; set; } = true;
@@ -41,16 +39,14 @@ namespace Spacebox.Game.GUI
         private static Item _lastSelectedItem = null;
         private static byte _lastSelectedCount = 0;
 
-        public static void Initialize(LocalAstronaut player, nint slotTexture, nint selectedTexture)
+        public static void Initialize(LocalAstronaut player)
         {
             Player = player;
             Storage = Player.Panel;
-            SlotTexture = slotTexture;
-            SelectedTexture = selectedTexture;
             scrollAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/scroll.ogg"));
             dropAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/dropped.ogg"));
 
-            InventoryUIHelper.SetDefaultIcon(slotTexture, selectedTexture);
+            InventoryUIHelper.Initialize();
             SetSelectedSlot(0);
             Storage.OnDataWasChanged += OnStorageDataWasChanged;
 
@@ -360,7 +356,7 @@ namespace Spacebox.Game.GUI
 
         public static void Render()
         {
-            PanelRenderer.Render(Storage, SlotSize, SlotTexture, SelectedTexture, SelectedSlotId, _time);
+            PanelRenderer.Render(Storage, SelectedSlotId);
 
             if (Settings.ShowInterface)
             {

@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using Engine.Graphics.Atlas;
+using Engine;
 using Engine.Audio;
 using ImGuiNET;
 using Spacebox.Game.Generation.Blocks;
@@ -21,9 +22,9 @@ namespace Spacebox.Game.GUI
         protected static ResourceProcessingBlock processingBlock;
 
         public static string WindowName = "";
-        private static IntPtr batteryIcon = IntPtr.Zero;
-        private static IntPtr inputIcon = IntPtr.Zero;
-        private static IntPtr outputIcon = IntPtr.Zero;
+        private static AtlasSprite batteryIcon;
+        private static AtlasSprite inputIcon;
+        private static AtlasSprite outputIcon;
         protected static bool _wasVisible = false;
 
         private static string status = "";
@@ -40,9 +41,9 @@ namespace Spacebox.Game.GUI
             Player = player;
             if (!wasInitialized)
             {
-                batteryIcon = IntPtr.Zero;
-                inputIcon = IntPtr.Zero;
-                outputIcon = IntPtr.Zero;
+                batteryIcon = AtlasSprite.None;
+                inputIcon = AtlasSprite.None;
+                outputIcon = AtlasSprite.None;
                 wasInitialized = true;
             }
 
@@ -57,75 +58,22 @@ namespace Spacebox.Game.GUI
 
         private static void InitIcons()
         {
-            if (batteryIcon == IntPtr.Zero)
-            {
-                var texture = Resources.Load<Texture2D>("Resources/Textures/UI/battery.png");
-                texture.FilterMode = FilterMode.Nearest;
-                texture.FlipY();
-                batteryIcon = texture.Handle;
-            }
-
-            if (inputIcon == IntPtr.Zero)
-            {
-                var t1 = Resources.Load<Texture2D>("Resources/Textures/UI/crusherInput.png");
-                var t2 = Resources.Load<Texture2D>("Resources/Textures/UI/furnaceInput.png");
-                var t3 = Resources.Load<Texture2D>("Resources/Textures/UI/disassemblerInput.png");
-
-                t1.FlipY();
-                t1.FilterMode = FilterMode.Nearest;
-                t2.FlipY();
-                t2.FilterMode = FilterMode.Nearest;
-                t3.FlipY();
-                t3.FilterMode = FilterMode.Nearest;
-            }
+            batteryIcon = UIAtlas.Get("battery");
 
             if (WindowName.Contains("Crusher"))
             {
-                var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/crusherInput.png");
-                texture.FilterMode = FilterMode.Nearest;
-                inputIcon = texture.Handle;
+                inputIcon = UIAtlas.Get("crusherinput");
+                outputIcon = UIAtlas.Get("crusheroutput");
             }
-            if (WindowName.Contains("Furnace"))
+            else if (WindowName.Contains("Furnace"))
             {
-                var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/furnaceInput.png");
-                texture.FilterMode = FilterMode.Nearest;
-                inputIcon = texture.Handle;
+                inputIcon = UIAtlas.Get("furnaceinput");
+                outputIcon = UIAtlas.Get("furnaceoutput");
             }
-            if (WindowName.Contains("Disassembler"))
+            else if (WindowName.Contains("Disassembler"))
             {
-                var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/disassemblerInput.png");
-                texture.FilterMode = FilterMode.Nearest;
-                inputIcon = texture.Handle;
-            }
-
-            if (outputIcon == IntPtr.Zero)
-            {
-                var t1 = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/crusherOutput.png");
-                var t2 = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
-
-                t1.FlipY();
-                t1.FilterMode = FilterMode.Nearest;
-                t2.FlipY();
-                t2.FilterMode = FilterMode.Nearest;
-            }
-
-            if (WindowName.Contains("Crusher"))
-            {
-                var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/crusherOutput.png");
-                texture.FilterMode = FilterMode.Nearest;
-                outputIcon = texture.Handle;
-            }
-            if (WindowName.Contains("Furnace"))
-            {
-                var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
-                texture.FilterMode = FilterMode.Nearest;
-                outputIcon = texture.Handle;
-            }
-            if (WindowName.Contains("Disassembler"))
-            {
-                var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/furnaceOutput.png");
-                texture.FilterMode = FilterMode.Nearest;
-                outputIcon = texture.Handle;
+                inputIcon = UIAtlas.Get("disassemblerinput");
+                outputIcon = UIAtlas.Get("furnaceoutput");
             }
         }
 
@@ -134,9 +82,9 @@ namespace Spacebox.Game.GUI
             Player = player;
             if (!wasInitialized)
             {
-                batteryIcon = IntPtr.Zero;
-                inputIcon = IntPtr.Zero;
-                outputIcon = IntPtr.Zero;
+                batteryIcon = AtlasSprite.None;
+                inputIcon = AtlasSprite.None;
+                outputIcon = AtlasSprite.None;
                 wasInitialized = true;
             }
 
@@ -420,24 +368,24 @@ namespace Spacebox.Game.GUI
                 float startY = ImGui.GetCursorPosY();
                 var recipe = recipes[i];
 
-                if (recipe == null || recipe.Ingredient.Item == null || recipe.Ingredient.Item.IconTextureId == IntPtr.Zero)
+                if (recipe == null || recipe.Ingredient.Item == null || !recipe.Ingredient.Item.Icon.IsValid)
                 {
                     continue;
                 }
 
                 var inQ = recipe.Ingredient.Quantity > 1 ? recipe.Ingredient.Quantity.ToString() : "";
                 var inItem = recipe.Ingredient.Item;
-                var inImg = inItem.IconTextureId;
+                var inImg = inItem.Icon;
 
                 var prQ = recipe.Product.Quantity > 1 ? recipe.Product.Quantity.ToString() : "";
                 var prItem = recipe.Product.Item;
-                var prImg = prItem.IconTextureId;
+                var prImg = prItem.Icon;
 
                 var imageVector = new Vector2(imageSize, imageSize);
                 var offsetX = new Vector2(imageSize * 0.3f, startY);
 
                 ImGui.SetCursorPos(offsetX);
-                ImGui.Image(inImg, imageVector);
+                inImg.Image(imageVector);
                 UIHelper.ShowTooltip(inItem.Name);
 
                 var pos = new Vector2(imageSize - ImGui.CalcTextSize(inQ).X - 2 + offsetX.X, startY + imageSize - numberSize);
@@ -454,7 +402,7 @@ namespace Spacebox.Game.GUI
 
                 ImGui.SetCursorPos(new Vector2(listWidth - imageSize * 1.4f, startY));
 
-                ImGui.Image(prImg, imageVector);
+                prImg.Image(imageVector);
                 UIHelper.ShowTooltip(prItem.Name + "\n" + "Time: " + (processingBlock.GetTicksWithEfficiency(recipe.RequiredTicks) / 20f).ToString("#.#") + "s.");
 
                 pos = new Vector2(listWidth * 0.94f - ImGui.CalcTextSize(prQ).X - 2, startY + imageSize - numberSize);

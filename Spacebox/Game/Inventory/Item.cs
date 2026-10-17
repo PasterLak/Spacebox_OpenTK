@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Graphics.Atlas;
 using OpenTK.Mathematics;
 
 namespace Spacebox.Game
@@ -14,7 +15,7 @@ namespace Spacebox.Game
         public string Description { get; set; } = "";
         public float ModelDepth = 1f;
         public Vector2i TextureCoord = new Vector2i(0,0);
-        public IntPtr IconTextureId { get; set; }
+        public AtlasSprite Icon { get; set; }
 
         public Color3Byte Color { get; set; } = new Color3Byte(0);
         public bool IsLuminous => Color != Color3Byte.Zero;
@@ -66,7 +67,7 @@ namespace Spacebox.Game
         {
             Item item = new Item(Id, StackSize, Name);
             item.TextureCoord = TextureCoord;
-            item.IconTextureId = IconTextureId;
+            item.Icon = Icon;
 
             return item;
         }

@@ -74,6 +74,12 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 - Interactions that own left click (`block_destroy`/`shoot`) override `UsesPrimaryAction => true` (drills, shoot, eraser, camera point); passive left-click actions skip them to avoid double actions.
 - Destroy blocks through `BlockDestroyer.Destroy` / `DestroyInstantly` (callback, removal, network, stats, sound). Hold-to-repeat input: `RepeatingAction`.
 
+## Atlases
+
+- Engine `TextureAtlas` (`Engine/Graphics/Atlas/`): add with `AddDirectory`/`AddFile`/`Add(name, Texture2D|pixels)`, layers via `AddLayer*`; rebuilds lazily on `Texture`/`TryGetRegion`. Pixels passed to `Add` are top-down (like PNG files); `TryGetPixels(name, bottomUp: true)` returns GL-order pixels.
+- `GameAssets.AtlasBlocks` / `AtlasItems` are built by `GameAtlasFactory`; built-in textures live in `Resources/Textures/Blocks` and `Resources/Textures/Items`.
+- Item icons: `Item.Icon` (`AtlasSprite`, draw with `Draw`/`Image`/`ImageButton`). UI elements: `UIAtlas.Get("slot")` (lower-case path under `Resources/Textures/UI`, files up to 128 px; inside a world they share the items atlas with item icons). `GameAssets.GetItemIconTexture(id)` creates a standalone texture only when needed (drops).
+
 ## Dynamic entities
 
 - `World.Physics` (`Game/Physics/PhysicsWorld.cs`) holds every `SphereBody`: sphere-vs-voxel/body overlap and `Raycast` (closest body, no allocations, main thread only).

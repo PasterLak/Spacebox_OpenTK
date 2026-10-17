@@ -209,7 +209,7 @@ namespace Spacebox.Game.Effects
         {
             if (_particleSystems.ContainsKey(itemId)) return;
 
-            var texture = GameAssets.ItemIcons[itemId];
+            var texture = GameAssets.GetItemIconTexture(itemId);
             var emitter = new PointEmitter()
             {
                 LifeMin = 20,
@@ -236,7 +236,7 @@ namespace Spacebox.Game.Effects
         {
             if (_particleSystems.ContainsKey(itemId)) return;
 
-            var texture = GameAssets.ItemIcons[itemId];
+            var texture = GameAssets.GetItemIconTexture(itemId);
             var emitter = new PointEmitter()
             {
                 LifeMin = 20,

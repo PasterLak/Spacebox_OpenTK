@@ -1,4 +1,5 @@
-﻿
+﻿using Engine.Graphics.Atlas;
+
 namespace Spacebox.Game.GUI;
 
 public class CraftingCategory
@@ -6,7 +7,7 @@ public class CraftingCategory
     public string Id { get; set; } = "x";
     public string Name { get; set; } = "x";
     public string Icon { get; set; } = "";
-    public IntPtr IconPtr { get; set; } = IntPtr.Zero;
+    public AtlasSprite IconSprite { get; set; }
     public int ItemsCountInCategory => Items.Count;
     public List<Data> Items = new List<Data>();
 

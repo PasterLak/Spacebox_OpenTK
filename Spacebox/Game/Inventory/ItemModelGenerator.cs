@@ -11,19 +11,14 @@ namespace Spacebox.Game
     {
         private static int CellSize = 32;
 
-        public static ItemModel GenerateItemModelFromAtlas(
-            Texture2D atlasTexture,
-            Texture2D emissionAtlas,
-            int cellX,
-            int cellY,
+        public static ItemModel GenerateItemModel(
+            Texture2D cellTexture,
+            Texture2D cellTexture2,
             float modelSize = 1f,
             float modelDepth = 0.2f,
             bool isAnimated = false,
             bool drawOnlyVisibleSides = true)
         {
-            CellSize = 32;
-            var cellTexture = UVAtlas.GetBlockTexture(atlasTexture, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
-            var cellTexture2 = UVAtlas.GetBlockTexture(emissionAtlas, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
 
             cellTexture.Name = "ItemModel";
             cellTexture2.Name = "ItemModel_emission";
@@ -36,17 +31,11 @@ namespace Spacebox.Game
             return ItemModelFromMesh(cellTexture, cellTexture2, mesh, isAnimated);
         }
 
-        public static Model GenerateModelFromAtlas(
-            Texture2D atlasTexture,
-            Texture2D emissionAtlas,
-            int cellX,
-            int cellY,
-          
+        public static Model GenerateWorldModel(
+            Texture2D cellTexture,
             float modelDepth = 0.2f
          )
         {
-            CellSize = 32;
-            var cellTexture = UVAtlas.GetBlockTexture(atlasTexture, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
             //var cellTexture2 = UVAtlas.GetBlockTexture(emissionAtlas, cellX, cellY, GameAssets.AtlasItems.SizeBlocks);
 
             cellTexture.Name = "ItemWorldModel";

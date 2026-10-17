@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using Engine.Graphics.Atlas;
+using System.Numerics;
 using System.Text.Json;
 using ImGuiNET;
 using Engine;
@@ -29,7 +30,7 @@ namespace Spacebox.Game.GUI.Menu
         public string newWorldSeed = "";
         private int selectedGameSetIndex = 0;
         public WorldInfo selectedWorld = null;
-        public Texture2D trashIcon;
+        public AtlasSprite TrashIcon => UIAtlas.Get("trash");
         private Vector2 oldItemSpacing;
         private Vector2 oldWindowPadding;
         public AudioSource Click1;
@@ -48,8 +49,6 @@ namespace Spacebox.Game.GUI.Menu
             GameSetsUnpacker.UnpackMods(true);
             LoadGameSets();
 
-            trashIcon = Resources.Load<Texture2D>("Resources/Textures/UI/trash.png");
-            trashIcon.FlipY();
 
             gamemodes = Enum.GetNames<GameMode>();
 
@@ -492,7 +491,7 @@ namespace Spacebox.Game.GUI.Menu
             }
             Vector2 imagePosMin = buttonPos + offset;
             Vector2 imagePosMax = buttonPos + size - offset;
-            drawList.AddImage(trashIcon.Handle, imagePosMin, imagePosMax);
+            TrashIcon.Draw(drawList, imagePosMin, imagePosMax);
         }
 
         public void LoadWorld(WorldInfo world, bool multiplayer = false)

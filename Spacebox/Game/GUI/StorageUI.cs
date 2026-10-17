@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using Engine.Graphics.Atlas;
+using Engine;
 using Engine.Audio;
 using ImGuiNET;
 using Spacebox.Game.Generation.Blocks;
@@ -14,7 +15,7 @@ namespace Spacebox.Game.GUI
     public static class StorageUI
     {
         private static float SlotSize = 64.0f;
-        private static nint PencilTexture = nint.Zero;
+        private static AtlasSprite PencilSprite => UIAtlas.Get("pencil");
         private static Storage? Storage;
         private static StorageBlock? StorageBlock;
         private static LocalAstronaut? Astronaut;
@@ -27,18 +28,9 @@ namespace Spacebox.Game.GUI
         private static bool editingName = false;
         private static byte[] buffer = new byte[32];
 
-        public static void Initialize(nint textureId)
+        public static void Initialize()
         {
-            var itemTexture = Resources.Load<Texture2D>("Resources/Textures/UI/trash.png");
-            itemTexture.FilterMode = FilterMode.Nearest;
-            itemTexture.FlipY();
-
-            var pencil = Resources.Load<Texture2D>("Resources/Textures/UI/pencil.png");
-            pencil.FilterMode = FilterMode.Nearest;
-            pencil.FlipY();
-            PencilTexture = pencil.Handle;
-
-            InventoryUIHelper.SetDefaultIcon(textureId, nint.Zero);
+            InventoryUIHelper.Initialize();
 
             splitAudio = new AudioSource(Resources.Load<AudioClip>("splitStack"));
             openSound = new AudioSource(Resources.Get<AudioClip>("openStorage"));
@@ -138,7 +130,7 @@ namespace Spacebox.Game.GUI
                     var stb = StorageBlock;
                     ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), stb?.Name ?? Storage.Name);
                     ImGui.SameLine();
-                    if (stb != null && ImGui.ImageButton("##edit", PencilTexture, paddingV * 4))
+                    if (stb != null && PencilSprite.ImageButton("##edit", paddingV * 4))
                     {
                         StartNameEdit();
                     }
@@ -237,7 +229,6 @@ namespace Spacebox.Game.GUI
             openSound?.Dispose();
             splitAudio?.Dispose();
 
-            PencilTexture = nint.Zero;
             Storage = null;
             StorageBlock = null;
             Astronaut = null;

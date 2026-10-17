@@ -19,7 +19,6 @@ public class CraftingGUI
     private static int selectedButton = -1;
     private static int usedSlots = 0;
     private static int totalSlots = 0;
-    private static IntPtr SlotTexture;
 
     private static CraftingCategory[] category;
     private static Storage Inventory;
@@ -63,9 +62,6 @@ public class CraftingGUI
 
         ColumnsOfItems = (int)Math.Ceiling(slotSize);
 
-        var tex = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/slot.png");
-        tex.FilterMode = FilterMode.Nearest;
-        SlotTexture = tex.Handle;
 
         scrollAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/scroll.ogg"));
         clickAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/click1.ogg"));
@@ -299,7 +295,7 @@ public class CraftingGUI
         var p1 = ImGui.GetItemRectMax();
         var drawList = ImGui.GetWindowDrawList();
         drawList.AddRect(p0, p1, Theme.Colors.BackgroundUint);
-        drawList.AddImage(SlotTexture, p0, p1);
+        InventoryUIHelper.SlotSprite.Draw(drawList, p0, p1);
 
     }
 
@@ -329,7 +325,7 @@ public class CraftingGUI
 
         drawList.AddRect(buttonPos, buttonPos + new Vector2(width, height), Theme.Colors.BackgroundUint);
 
-        drawList.AddImage(SlotTexture, buttonPos, buttonPos + new Vector2(width, height));
+        InventoryUIHelper.SlotSprite.Draw(drawList, buttonPos, buttonPos + new Vector2(width, height));
 
 
         var canCraft = true;
@@ -351,14 +347,14 @@ public class CraftingGUI
         }
 
 
-        if (itemData.item.IconTextureId != IntPtr.Zero)
+        if (itemData.item.Icon.IsValid)
         {
             if (canCraft)
             {
                 var count = CraftingLogic.CalculatePossibleItemCraftCount(Inventory, Panel, itemData.blueprint, currentPlayer);
                 var t = count > 1 ? count.ToString() : "";
                 var text = ImGui.CalcTextSize(t);
-                drawList.AddImage(itemData.item.IconTextureId, buttonPos + offset, buttonPos + new Vector2(width, height) - offset);
+                itemData.item.Icon.Draw(drawList, buttonPos + offset, buttonPos + new Vector2(width, height) - offset);
 
                 drawList.AddText(buttonPos + new Vector2(offset.X + offset.X / 4f, height - text.Y), ImGui.GetColorU32(new Vector4(0, 0, 0, 1)), t);
                 drawList.AddText(buttonPos + new Vector2(offset.X, height - text.Y - text.Y / 12f), ImGui.GetColorU32(new Vector4(1f, 1f, 1f, 1)), t);
@@ -368,8 +364,8 @@ public class CraftingGUI
                 Vector4 tintColor2 = new Vector4(0.9f, 0.9f, 0.9f, 0.25f);
 
 
-                drawList.AddImage(itemData.item.IconTextureId, buttonPos + offset, buttonPos + new Vector2(width, height) - offset,
-                                  Vector2.Zero, Vector2.One, ImGui.GetColorU32(tintColor2));
+                itemData.item.Icon.Draw(drawList, buttonPos + offset, buttonPos + new Vector2(width, height) - offset,
+                                  ImGui.GetColorU32(tintColor2));
 
 
             }
@@ -410,7 +406,7 @@ public class CraftingGUI
 
         var startPos = buttonPos + offset;
         var endPos = buttonPos + new Vector2(width, height) - offset;
-        list.AddImage(itemData.item.IconTextureId, startPos, endPos);
+        itemData.item.Icon.Draw(list, startPos, endPos);
     }
 
     private static void ShowTooltip(CraftingCategory.Data itemData, float height)
@@ -500,9 +496,9 @@ public class CraftingGUI
 
 
 
-            if (ingredient.Item.IconTextureId != IntPtr.Zero)
+            if (ingredient.Item.Icon.IsValid)
             {
-                ImGui.Image(ingredient.Item.IconTextureId, iconSize);
+                ingredient.Item.Icon.Image(iconSize);
                 ImGui.SameLine();
             }
             else
@@ -559,9 +555,9 @@ public class CraftingGUI
         }
 
 
-        if (category[categoryId].IconPtr != IntPtr.Zero)
+        if (category[categoryId].IconSprite.IsValid)
         {
-            drawList.AddImage(category[categoryId].IconPtr, buttonPos + offset * 4, buttonPos + new Vector2(width, height) - offset);
+            category[categoryId].IconSprite.Draw(drawList, buttonPos + offset * 4, buttonPos + new Vector2(width, height) - offset);
 
         }
         Vector2 textSize = ImGui.CalcTextSize(category[categoryId].Name);
@@ -600,7 +596,6 @@ public class CraftingGUI
         category = null;
         hovered = -1;
 
-        SlotTexture = IntPtr.Zero;
         usedSlots = 0;
         totalSlots = 0;
         selectedButton = -1;

@@ -13,8 +13,6 @@ namespace Spacebox.Game.GUI
     public static class InventoryUI
     {
         private static float SlotSize = 64.0f;
-        private static nint SlotTexture = nint.Zero;
-        private static nint ItemTexture = nint.Zero;
 
         public static LocalAstronaut Player;
         public static Vector2 WindowPosition { get; private set; }
@@ -22,12 +20,9 @@ namespace Spacebox.Game.GUI
 
         public static AudioSource splitAudio;
 
-        public static void Initialize(nint textureId)
+        public static void Initialize()
         {
-            SlotTexture = textureId;
-
-            ItemTexture = new Texture2D("Resources/Textures/UI/trash.png", true, false).Handle;
-            InventoryUIHelper.SetDefaultIcon(textureId, nint.Zero);
+            InventoryUIHelper.Initialize();
 
             splitAudio = new AudioSource(Resources.Load<AudioClip>("splitStack"));
         }

@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using Engine.Graphics.Atlas;
+using Engine;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation;
@@ -11,16 +12,11 @@ namespace Spacebox.Game.GUI
     public static class InventoryUIHelper
     {
         public static float SlotSize = 64.0f;
-        public static nint SlotTexture = nint.Zero;
-        public static nint ItemTexture = nint.Zero;
-        public static nint SelectedTexture = nint.Zero;
+        public static AtlasSprite SlotSprite => UIAtlas.Get("slot");
+        public static AtlasSprite SelectedSprite => UIAtlas.Get("selectedslot");
 
-        public static void SetDefaultIcon(nint slotTextureId, nint selectedTextureId)
+        public static void Initialize()
         {
-            SlotTexture = slotTextureId;
-            SelectedTexture = selectedTextureId;
-            ItemTexture = new Texture2D("Resources/Textures/UI/trash.png", true, false).Handle;
-
             SpaceboxWindow.OnResized -= OnResize;
             SpaceboxWindow.OnResized += OnResize;
 
@@ -69,9 +65,9 @@ namespace Spacebox.Game.GUI
 
         public static unsafe void DrawSlot(ItemSlot slot, string id, Action<ItemSlot> onSlotClicked, bool isSelected = false)
         {
-            DrawSlot(slot, id, onSlotClicked, nint.Zero, isSelected);
+            DrawSlot(slot, id, onSlotClicked, AtlasSprite.None, isSelected);
         }
-        public static unsafe void DrawSlot(ItemSlot slot, string id, Action<ItemSlot> onSlotClicked, nint backgroundImage, bool isSelected = false)
+        public static unsafe void DrawSlot(ItemSlot slot, string id, Action<ItemSlot> onSlotClicked, AtlasSprite backgroundImage, bool isSelected = false)
         {
             ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep.ToUInt());
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
@@ -79,19 +75,9 @@ namespace Spacebox.Game.GUI
             ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(1, 0, 0, 0));
             ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1, 0, 0, 0));
 
-            if (SlotTexture == nint.Zero)
+            if (SlotSprite.ImageButton(id, new Vector2(SlotSize, SlotSize)))
             {
-                if (ImGui.Button("", new Vector2(SlotSize, SlotSize)))
-                {
-                    onSlotClicked?.Invoke(slot);
-                }
-            }
-            else
-            {
-                if (ImGui.ImageButton(id, SlotTexture, new Vector2(SlotSize, SlotSize)))
-                {
-                    onSlotClicked?.Invoke(slot);
-                }
+                onSlotClicked?.Invoke(slot);
             }
 
             if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
@@ -183,15 +169,14 @@ namespace Spacebox.Game.GUI
 
             Vector2 posCenter = pos + new Vector2(SlotSize * 0.5f, SlotSize * 0.5f);
 
-            if (isSelected && SelectedTexture != nint.Zero)
+            if (isSelected)
             {
-                drawList.AddImage(SelectedTexture, posCenter - sizeSlot * 0.5f, posCenter + sizeSlot * 0.5f);
+                SelectedSprite.Draw(drawList, posCenter - sizeSlot * 0.5f, posCenter + sizeSlot * 0.5f);
             }
 
             if (slot.HasItem)
             {
-                if (GameAssets.ItemIcons.ContainsKey(slot.Item.Id))
-                    drawList.AddImage(GameAssets.ItemIcons[slot.Item.Id].Handle, posCenter - sizeItem * 0.5f, posCenter + sizeItem * 0.5f);
+                slot.Item.Icon.Draw(drawList, posCenter - sizeItem * 0.5f, posCenter + sizeItem * 0.5f);
 
                 if (slot.Count > 1)
                 {
@@ -219,10 +204,7 @@ namespace Spacebox.Game.GUI
             }
             else
             {
-                if (backgroundImage != nint.Zero)
-                {
-                    drawList.AddImage(backgroundImage, posCenter - sizeItem * 0.5f, posCenter + sizeItem * 0.5f);
-                }
+                backgroundImage.Draw(drawList, posCenter - sizeItem * 0.5f, posCenter + sizeItem * 0.5f);
             }
 
             ImGui.PopStyleColor(5);
@@ -234,9 +216,9 @@ namespace Spacebox.Game.GUI
             ImDrawListPtr drawList = ImGui.GetWindowDrawList();
             Vector2 pos = ImGui.GetItemRectMin();
 
-            if (GameAssets.ItemIcons.ContainsKey(slot.Item.Id))
+            if (slot.Item.Icon.IsValid)
             {
-                ImGui.Image(GameAssets.ItemIcons[slot.Item.Id].Handle, new Vector2(SlotSize * 0.8f, SlotSize * 0.8f));
+                slot.Item.Icon.Image(new Vector2(SlotSize * 0.8f, SlotSize * 0.8f));
             }
             if (slot.Count > 1)
             {

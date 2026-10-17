@@ -59,6 +59,7 @@ Game
 - spacer: sphere collision, bounces off asteroids, player pushes it
 - drill damages spacer (tier = damage/s), spacer drops its loot on death
 - equipment window: armor (+health), upgrades (generator +power, flashlight, scanner)
+- item/block icons and UI elements in one atlas (fewer draw calls)
 - oxygen: bar, -1 every 10 s in survival (config), death at 0, compressed oxygen +100
 - oxygen generator block: fills closed rooms with air (radius 32), +10 oxygen/s in air, "Air" on bar
 - oxygen generator needs 20 energy, on/off textures
@@ -99,6 +100,7 @@ Engine
 - profiling, console only in debug
 - dynamic sphere bodies (PhysicsWorld)
 - window mode change event, SetVSync
+- TextureAtlas: textures of any size, optimal packing, layers, add textures at runtime
 - resources: controlled set pruned on dispose, double-dispose guards, AudioSource dispose deadlock fixed
 
 |------------------------------------------------------------------------------------------------------------------------------

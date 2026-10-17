@@ -7,20 +7,16 @@ namespace Spacebox.Game.GUI.Menu;
 
 public class MenuMusicButton
 {
-    private const string MusicOnIconPath = "Resources/Textures/UI/musicOn.png";
-    private const string MusicOffIconPath = "Resources/Textures/UI/musicOff.png";
+    private const string MusicOnIcon = "musicon";
+    private const string MusicOffIcon = "musicoff";
 
     private readonly MenuMusicController _controller;
     private readonly AudioSource _clickSound;
-    private readonly IntPtr _musicOnIcon;
-    private readonly IntPtr _musicOffIcon;
 
     public MenuMusicButton(MenuMusicController controller, AudioSource clickSound)
     {
         _controller = controller;
         _clickSound = clickSound;
-        _musicOnIcon = LoadIcon(MusicOnIconPath);
-        _musicOffIcon = LoadIcon(MusicOffIconPath);
     }
 
     public void Draw()
@@ -54,17 +50,9 @@ public class MenuMusicButton
         Vector2 iconMin = new Vector2(buttonPos.X + iconOffset, buttonPos.Y + iconOffset);
         Vector2 iconMax = new Vector2(iconMin.X + iconSize, iconMin.Y + iconSize);
         uint tint = ImGui.IsItemHovered() ? 0xFFFFFFFF : 0xC8FFFFFF;
-        ImGui.GetWindowDrawList().AddImage(_controller.IsEnabled ? _musicOnIcon : _musicOffIcon,
-            iconMin, iconMax, Vector2.Zero, Vector2.One, tint);
+        UIAtlas.Get(_controller.IsEnabled ? MusicOnIcon : MusicOffIcon).Draw(ImGui.GetWindowDrawList(), iconMin, iconMax, tint);
 
         ImGui.End();
         ImGui.PopStyleVar();
-    }
-
-    private static IntPtr LoadIcon(string path)
-    {
-        var texture = Resources.Load<Texture2D>(path);
-        texture.FlipY();
-        return texture.Handle;
     }
 }

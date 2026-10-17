@@ -44,7 +44,7 @@ namespace Spacebox.Game.Resource
         {
             public string[] TextureNames = new string[6];
             public Vector2[][] UVs = new Vector2[6][];
-            public Vector2Byte[] UVIndices = new Vector2Byte[6];
+            public string[] ResolvedTextureNames = new string[6];
             public bool AllSidesAreSame = true;
         }
 
@@ -102,7 +102,7 @@ namespace Spacebox.Game.Resource
                 };
                 System.Array.Copy(state.Value.TextureNames, newState.TextureNames, 6);
                 System.Array.Copy(state.Value.UVs, newState.UVs, 6);
-                System.Array.Copy(state.Value.UVIndices, newState.UVIndices, 6);
+                System.Array.Copy(state.Value.ResolvedTextureNames, newState.ResolvedTextureNames, 6);
                 _texturesByState[state.Key] = newState;
             }
         }
@@ -163,8 +163,8 @@ namespace Spacebox.Game.Resource
                     if (textureName != firstTexture)
                         state.AllSidesAreSame = false;
 
-                    state.UVs[i] = GameAssets.AtlasBlocks.GetUVByName(textureName);
-                    state.UVIndices[i] = GameAssets.AtlasBlocks.GetUVIndexByName(textureName);
+                    state.UVs[i] = GameAssets.AtlasBlocks.GetRegion(textureName)?.Uvs;
+                    state.ResolvedTextureNames[i] = textureName;
                 }
             }
         }
@@ -187,13 +187,13 @@ namespace Spacebox.Game.Resource
             return textureState.UVs[dirIndex];
         }
 
-        public Vector2Byte GetFaceUVIndex(Direction direction, BlockState state = BlockState.Active)
+        public string GetFaceTextureName(Direction direction, BlockState state = BlockState.Active)
         {
             if (!_texturesByState.TryGetValue(state, out var textureState))
             {
                 textureState = _texturesByState[BlockState.Active];
             }
-            return textureState.UVIndices[(int)direction];
+            return textureState.ResolvedTextureNames[(int)direction];
         }
 
         private static Direction FaceToDirection(Face face)

@@ -1,3 +1,4 @@
+using Engine.Graphics.Atlas;
 using System.Numerics;
 using Engine;
 using ImGuiNET;
@@ -147,11 +148,10 @@ public static class OxygenGeneratorUI
         ImGui.TextDisabled($"Next water use: {secondsLeft:0}s");
     }
 
-    private static nint GetWaterIcon()
+    private static AtlasSprite GetWaterIcon()
     {
         var water = GameAssets.GetBlockDataById(_block.Id) is Resource.OxygenGeneratorBlockData data ? data.WaterItem : null;
-        if (water != null && GameAssets.ItemIcons.TryGetValue(water.Id, out var icon)) return icon.Handle;
-        return nint.Zero;
+        return water?.Icon ?? AtlasSprite.None;
     }
 
     private static void OnSlotClicked(ItemSlot slot)

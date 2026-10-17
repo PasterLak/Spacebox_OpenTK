@@ -1,4 +1,5 @@
 using System.Numerics;
+using Engine.Graphics.Atlas;
 using Engine;
 using ImGuiNET;
 using Spacebox.Game.GUI.Menu;
@@ -10,7 +11,7 @@ public static class EquipmentUI
 {
     private const int Columns = 3;
     private const string Title = "Equipment";
-    private const string BackgroundsFolder = "Resources/Textures/UI/Equipment";
+    private const string BackgroundsFolder = "equipment/";
     private const float SlotGapRatio = 0.1f;
 
     private static readonly EquipmentSlotType[] _armorSlots =
@@ -25,25 +26,17 @@ public static class EquipmentUI
     };
 
     private static readonly Action<ItemSlot> _onSlotClicked = OnSlotClicked;
-    private static readonly nint[] _backgrounds = new nint[Enum.GetValues<EquipmentSlotType>().Length];
+    private static readonly string[] _backgroundNames = CreateBackgroundNames();
 
-    public static void Initialize()
+    private static string[] CreateBackgroundNames()
     {
-        foreach (var type in Enum.GetValues<EquipmentSlotType>())
+        var types = Enum.GetValues<EquipmentSlotType>();
+        var names = new string[types.Length];
+        foreach (var type in types)
         {
-            _backgrounds[(int)type] = LoadBackground(type);
+            names[(int)type] = BackgroundsFolder + type.ToString().ToLowerInvariant();
         }
-    }
-
-    private static nint LoadBackground(EquipmentSlotType type)
-    {
-        string path = $"{BackgroundsFolder}/{char.ToLowerInvariant(type.ToString()[0])}{type.ToString()[1..]}.png";
-        if (!File.Exists(path)) return nint.Zero;
-
-        var texture = GameAssets.LoadResource<Texture2D>(path);
-        texture.FilterMode = FilterMode.Nearest;
-        texture.FlipY();
-        return texture.Handle;
+        return names;
     }
 
     public static void OnGUI(PlayerEquipment equipment)
@@ -87,7 +80,7 @@ public static class EquipmentUI
         {
             var slot = equipment.GetSlot(types[i]);
             ImGui.SetCursorPos(origin + new Vector2(i % Columns * slotStep, i / Columns * slotStep));
-            InventoryUIHelper.DrawSlot(slot, slot.Name, _onSlotClicked, _backgrounds[(int)types[i]]);
+            InventoryUIHelper.DrawSlot(slot, slot.Name, _onSlotClicked, UIAtlas.Get(_backgroundNames[(int)types[i]]));
             InventoryUIHelper.ShowTooltip(slot, false, true);
         }
     }

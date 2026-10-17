@@ -45,7 +45,7 @@ Add an object to `Spacebox/GameSets/Default/blocks.json` (fields come from `Spac
 
 ## 4. Texture
 
-- PNG, `BlockSize` px square (32 by default, see `GameSets/Default/config.json`), in `Spacebox/GameSets/Default/Blocks/`.
+- PNG in `Spacebox/GameSets/Default/Blocks/` (32 px is the standard; other sizes are packed too, but isometric icons need all faces of a block to have the same square size).
 - The file name matches the name used in `Textures` (case-insensitive).
 
 ## 5. Optional

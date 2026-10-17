@@ -44,6 +44,30 @@ namespace Spacebox.GUI
             return isometricTexture;
         }
 
+        public static Color4[,] CreatePixels(Color4[,] leftSide, Color4[,] forwardSide, Color4[,] topSide)
+        {
+            int originalSize = leftSide.GetLength(0);
+            if (!IsSquareOfSize(leftSide, originalSize) || !IsSquareOfSize(forwardSide, originalSize) || !IsSquareOfSize(topSide, originalSize))
+            {
+                Debug.Error("[IsometricIcon] All sides must be square and have the same size!");
+                return null;
+            }
+
+            int size = originalSize * 2;
+            Color4[,] isometricPixels = new Color4[size, size];
+
+            ApplyRightSide(size, forwardSide, isometricPixels, ShadowIntensityRightSide);
+            ApplyLeftSide(size, leftSide, isometricPixels, ShadowIntensityLeftSide);
+            ApplyTop(size, topSide, isometricPixels, LightIntensity);
+
+            return ImageProcessing.MirrorX(isometricPixels);
+        }
+
+        private static bool IsSquareOfSize(Color4[,] pixels, int size)
+        {
+            return pixels.GetLength(0) == size && pixels.GetLength(1) == size;
+        }
+
         private static bool ValidateTextures(Texture2D leftSide, Texture2D right, Texture2D topSide)
         {
             if (leftSide.Width != leftSide.Height)

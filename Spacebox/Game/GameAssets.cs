@@ -4,6 +4,7 @@ using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 using Engine;
 using Engine.Audio;
+using Engine.Graphics.Atlas;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Generation.Structures;
@@ -17,10 +18,10 @@ namespace Spacebox.Game
         public static bool IsInitialized { get; set; } = false;
       
 
-        public static Texture2D BlocksTexture { get; set; }
-        public static Texture2D ItemsTexture { get; set; }
-        public static Texture2D EmissionBlocks { get; set; }
-        public static Texture2D EmissionItems { get; set; }
+        public static Texture2D BlocksTexture => AtlasBlocks?.Texture;
+        public static Texture2D ItemsTexture => AtlasItems?.Texture;
+        public static Texture2D EmissionBlocks => AtlasBlocks?.GetLayerTexture(GameAtlasFactory.EmissionLayer);
+        public static Texture2D EmissionItems => AtlasItems?.GetLayerTexture(GameAtlasFactory.EmissionLayer);
         public static Texture2D DustTexture { get; set; }
 
         public static LootConfig LootConfig { get; set; }
@@ -44,8 +45,8 @@ namespace Spacebox.Game
 
         public static Dictionary<short, ProjectileParameters> Projectiles = new Dictionary<short, ProjectileParameters>();
 
-        public static AtlasTexture AtlasBlocks;
-        public static AtlasTexture AtlasItems;
+        public static TextureAtlas AtlasBlocks;
+        public static TextureAtlas AtlasItems;
 
         private static short MaxBlockId = -1;
         private static short MaxItemId = -1;
@@ -55,6 +56,19 @@ namespace Spacebox.Game
             new Vector2(0f, 0f), new Vector2(1f, 0f),
             new Vector2(1f, 1f), new Vector2(0f, 1f)
         };
+
+        public static Texture2D GetItemIconTexture(short itemId)
+        {
+            if (ItemIcons.TryGetValue(itemId, out var cached)) return cached;
+            if (!Items.TryGetValue(itemId, out var item) || !item.Icon.IsValid) return null;
+
+            var texture = AtlasItems.CreateTexture(item.Icon.Region.Name, false);
+            if (texture == null) return null;
+
+            texture.Name = item.Id_string + "_icon";
+            ItemIcons.Add(itemId, texture);
+            return texture;
+        }
 
         public static bool TryGetRecipe(string type, short id, out Recipe recipe)
         {
@@ -283,10 +297,6 @@ namespace Spacebox.Game
 
         public static void DisposeAll()
         {
-            BlocksTexture?.Dispose();
-            ItemsTexture?.Dispose();
-            EmissionBlocks?.Dispose();
-            EmissionItems?.Dispose();
             DustTexture?.Dispose();
 
             foreach (var texture in ItemIcons.Values)

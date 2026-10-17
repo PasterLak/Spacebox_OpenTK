@@ -136,7 +136,7 @@ Behaviour subclasses are created by `BlockFactory` from the JSON `Type` string (
 - Block vertex layout (`block.glsl`): position `vec3`, UV `vec2`, colour `vec3`, normal `vec3`, AO `vec2`.
 - Oxygen: each `SpaceEntity` has an `OxygenSystem`. Air is not a block: breathable cells are bit masks per chunk, rebuilt by a flood fill from every oxygen generator over empty blocks (radius 32). Reaching the radius limit or a missing chunk counts as a leak (no air). Recalculated only when a generator is placed/removed, a chunk is added/removed, or a block changes next to a reached cell. Not saved; rebuilt on load.
 - `AOVoxels` computes per-vertex ambient occlusion. `LightManager` propagates block light and emission; changing emission or light requires rebuilding the chunk mesh.
-- Textures are packed into an atlas (`UVAtlas`, `AtlasTexture`) at the GameSet's `BlockSize` (32 px by default). Block and item icons are rendered isometrically (`IsometricIcon`).
+- Textures are packed by `Engine.Graphics.Atlas.TextureAtlas` (skyline packing, any texture sizes, power-of-two atlas, optional padding, extra layers such as `emission`). Textures can be added from folders, files, `Texture2D` or pixels at any time; the atlas rebuilds lazily and `AtlasRegion` UVs update in place. `GameAtlasFactory` builds the blocks atlas (GameSet `Blocks/` + `Resources/Textures/Blocks`, e.g. `LOD.png`) and the items atlas (GameSet `Items/` + `Resources/Textures/Items` creative tools + small UI images from `Resources/Textures/UI` + generated isometric block icons). UI draws icons and slots with `AtlasSprite` (one texture for a whole inventory).
 
 ### 4.4 Procedural generation
 
@@ -164,7 +164,7 @@ A GameSet is a folder (or a `.zip` / `.rar` archive, extracted by `GameSetsUnpac
 
 ```
 GameSets/Default/
-  config.json      ModId, ModName, Author, Version, BlockSize, OxygenConsumeInterval (s per 1 oxygen, default 10), Dependencies, ItemsOnStart
+  config.json      ModId, ModName, Author, Version, BlockSize (no longer limits texture sizes), OxygenConsumeInterval (s per 1 oxygen, default 10), Dependencies, ItemsOnStart
   blocks.json      block definitions (ID, Name, Type, PowerToDrill, Mass, Durability,
                    Textures, Sounds, Drop, DropQuantity, …)
   items.json       item definitions
@@ -222,7 +222,7 @@ dotnet publish Spacebox/Spacebox.csproj -c Release -r <win-x64|linux-x64|osx-x64
 
 - `Resources/`, `GameSets/`, `Plugins/` and shaders are copied to the output folder as content files.
 - Windows: `Build/AddAfterBuild/OpenAL32.dll` may need to be placed next to the executable if audio doesn't work.
-- Tests cover packed vector types, blocks, UV atlas, AO, mesh generation, world logic and version conversion.
+- Tests cover packed vector types, blocks, atlas packing (`AtlasLayout`), AO, mesh generation, world logic and version conversion.
 - API docs: Doxygen (`Doxyfile`, theme in `Documentation/doxygen-awesome-css`).
 - Releases: https://pasterlak.itch.io/spacebox
 
@@ -236,6 +236,6 @@ dotnet publish Spacebox/Spacebox.csproj -c Release -r <win-x64|linux-x64|osx-x64
 | World size | 8192 sectors per axis | `World.SizeSectors` |
 | Max block types | 4096 | 12-bit BlockId |
 | Max stack | 255 | `ItemJSON.ValidateMaxStack` |
-| Atlas tile size | 32 px (per GameSet) | `config.json` `BlockSize` |
+| Atlas size | power of two, up to 8192 px; textures of any size | `TextureAtlas.MaxSize` |
 | Default server port | 14242 | `ServerCommon/Settings.cs` |
 | OpenGL | 3.3 core | `Program.cs` |

@@ -7,12 +7,12 @@ namespace Spacebox.Game.GUI
 {
     public static class PanelRenderer
     {
-        public static void Render(Storage storage, float slotSize, nint slotTexture, nint selectedTexture, short selectedSlotId, float time)
+        public static void Render(Storage storage, short selectedSlotId)
         {
             if (!Settings.ShowInterface || storage == null) return;
 
             ImGuiIOPtr io = ImGui.GetIO();
-            slotSize = InventoryUIHelper.SlotSize;
+            float slotSize = InventoryUIHelper.SlotSize;
             float windowWidth = storage.SizeY * slotSize;
             float windowHeight = storage.SizeX * slotSize;
             Vector2 displaySize = io.DisplaySize;

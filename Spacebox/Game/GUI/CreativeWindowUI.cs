@@ -49,7 +49,6 @@ public class CreativeWindowCategory
 public static class CreativeWindowUI
 {
     private static float SlotSize = 64.0f;
-    private static nint SlotTexture = nint.Zero;
 
     public static bool Enabled { get; set; } = false;
 
@@ -60,9 +59,8 @@ public static class CreativeWindowUI
     private static Storage selectedStorage;
     static int hovered = -1;
 
-    public static void SetDefaultIcon(nint textureId, LocalAstronaut player)
+    public static void SetDefaultIcon(LocalAstronaut player)
     {
-        SlotTexture = textureId;
         CreativeWindowUI.player = player;
         storageAll = GameAssets.CreateCreativeStorage(5, GameAssets.Items.Values.ToList());
 
@@ -182,7 +180,7 @@ public static class CreativeWindowUI
                 {
                     ImGui.TableSetColumnIndex(x);
 
-                    if (SlotTexture == nint.Zero)
+                    if (!InventoryUIHelper.SlotSprite.IsValid)
                     {
                         if (ImGui.Button("ERR", new Vector2(SlotSize, SlotSize))) { }
                     }
@@ -208,7 +206,7 @@ public static class CreativeWindowUI
                         }
                         else
                         {
-                            if (ImGui.ImageButton(v.Name.Name, SlotTexture, new Vector2(SlotSize, SlotSize)))
+                            if (InventoryUIHelper.SlotSprite.ImageButton(v.Name.Name, new Vector2(SlotSize, SlotSize)))
                             {
                                 selectedStorage = categories[i].Storage;
                             }
@@ -220,7 +218,7 @@ public static class CreativeWindowUI
                         var dl = ImGui.GetWindowDrawList();
 
                         if (v.Items.Count > 0)
-                            dl.AddImage(v.Items[0].IconTextureId, center - size * 0.5f, center + size * 0.5f);
+                            v.Items[0].Icon.Draw(dl, center - size * 0.5f, center + size * 0.5f);
 
                         if (ImGui.IsItemHovered())
                         {
@@ -264,14 +262,7 @@ public static class CreativeWindowUI
                     if (slot == null) continue;
 
                     string id = $"slotCreative_{x}_{y}";
-                    if (SlotTexture == nint.Zero)
-                    {
-                        if (ImGui.Button("", new Vector2(SlotSize, SlotSize))) OnSlotClicked(slot);
-                    }
-                    else
-                    {
-                        if (ImGui.ImageButton(id, SlotTexture, new Vector2(SlotSize, SlotSize))) OnSlotClicked(slot);
-                    }
+                    if (InventoryUIHelper.SlotSprite.ImageButton(id, new Vector2(SlotSize, SlotSize))) OnSlotClicked(slot);
 
                     if (slot.HasItem)
                     {
@@ -279,7 +270,7 @@ public static class CreativeWindowUI
                         var size = new Vector2(SlotSize, SlotSize) * 0.8f;
                         var center = pos + new Vector2(SlotSize * 0.5f);
                         var dl = ImGui.GetWindowDrawList();
-                        dl.AddImage(GameAssets.ItemIcons[slot.Item.Id].Handle, center - size * 0.5f, center + size * 0.5f);
+                        slot.Item.Icon.Draw(dl, center - size * 0.5f, center + size * 0.5f);
 
                         if (slot.Item.Is<CreativeToolItem>())
                         {

@@ -10,22 +10,11 @@ namespace Spacebox.Scenes
     public static class SceneAssetsPreloader
     {
 
-        private static void InitializeGamesetData(string blocksPath, string itemsPath, string emissionPath, string modId, byte blockSizePixels, string serverName, bool useLocalGameSetsFolder, bool isMultiplayer)
+        private static void InitializeGamesetData(string blocksPath, string itemsPath, string emissionPath, string modId, string serverName, bool useLocalGameSetsFolder, bool isMultiplayer)
         {
 
-            GameAssets.AtlasBlocks = new AtlasTexture();
-            GameAssets.AtlasItems = new AtlasTexture();
-            var texture = GameAssets.AtlasBlocks.CreateTexture(blocksPath, blockSizePixels, false);
-
-
-            var items = GameAssets.AtlasItems.CreateTexture(itemsPath, blockSizePixels, false);
-            var emissions = GameAssets.AtlasBlocks.CreateEmission(emissionPath);
-            var emissions2 = GameAssets.AtlasItems.CreateEmission(emissionPath);
-           
-            GameAssets.BlocksTexture = texture;
-            GameAssets.ItemsTexture = items;
-            GameAssets.EmissionBlocks = emissions;
-            GameAssets.EmissionItems = emissions2;
+            GameAssets.AtlasBlocks = GameAtlasFactory.CreateBlocksAtlas(blocksPath, emissionPath);
+            GameAssets.AtlasItems = GameAtlasFactory.CreateItemsAtlas(itemsPath, emissionPath);
 
 
             GameSetLoader.Load(modId, useLocalGameSetsFolder, isMultiplayer ? serverName : "");
@@ -79,12 +68,12 @@ namespace Spacebox.Scenes
             {
                 
                     GameAssets.DisposeAll();
-                    InitializeGamesetData(blocksPath, itemsPath, emissionPath, modId, 32, serverName, param.SearchForGameSetInLocalFolder, isMultiplayer);
+                    InitializeGamesetData(blocksPath, itemsPath, emissionPath, modId, serverName, param.SearchForGameSetInLocalFolder, isMultiplayer);
                 
             }
             else
             {
-                InitializeGamesetData(blocksPath, itemsPath, emissionPath, modId, 32, serverName, param.SearchForGameSetInLocalFolder,isMultiplayer);
+                InitializeGamesetData(blocksPath, itemsPath, emissionPath, modId, serverName, param.SearchForGameSetInLocalFolder, isMultiplayer);
               
             }
 

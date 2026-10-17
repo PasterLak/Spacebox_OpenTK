@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Graphics.Atlas;
 using OpenTK.Mathematics;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation.Blocks;
@@ -66,13 +67,13 @@ namespace Spacebox.Game
                 GameAssets.IncrementItemId(item);
                 GameAssets.Items.Add(item.Id, item);
                 GameAssets.AddItemString(item.Id_string, item);
-                var uvIndex = GameAssets.AtlasItems.GetUVIndexByName(spriteId.ToLower());
-                byte coordX = uvIndex.X;
-                byte coordY = uvIndex.Y;
-                item.TextureCoord = new Vector2i(coordX, coordY);
-                CacheIcon(item, coordX, coordY);
-                GenerateItemModel(coordX, coordY, item);
-                GenerateItemWorldModel(coordX, coordY, item);
+                string spriteName = spriteId.ToLowerInvariant();
+                if (!GameAssets.AtlasItems.Contains(spriteName))
+                    Debug.Error($"[GameAssetsRegister] Sprite <{spriteName}> for item <{item.Name}> was not found");
+
+                item.Icon = GameAssets.AtlasItems.GetSprite(spriteName);
+                GenerateItemModel(spriteName, item);
+                GenerateItemWorldModel(spriteName, item);
                 if (item is ConsumableItem consumable)
                 {
                     if (!GameAssets.ItemSounds.ContainsKey(consumable.Id) && GameAssets.Sounds.ContainsKey(consumable.UseSound))
@@ -86,27 +87,25 @@ namespace Spacebox.Game
 
         }
 
-        private static void GenerateItemWorldModel(byte coordX, byte coordY, Item item)
+        private static void GenerateItemWorldModel(string spriteName, Item item)
         {
-            Model model = ItemModelGenerator.GenerateModelFromAtlas(
-                GameAssets.ItemsTexture,
-                 GameAssets.EmissionItems,
-                coordX,
-                coordY,
+            Model model = ItemModelGenerator.GenerateWorldModel(
+                CreateItemTexture(spriteName),
                1 / 32f * item.ModelDepth
                 );
             GameAssets.ItemWorldModels.Add(item.Id, model);
         }
 
 
-        private static void GenerateItemModel(byte coordX, byte coordY, Item item)
+        private static void GenerateItemModel(string spriteName, Item item)
         {
             bool isAnimated = item is DrillItem || item is WeaponItem;
-            ItemModel model = ItemModelGenerator.GenerateItemModelFromAtlas(
-                GameAssets.ItemsTexture,
-                 GameAssets.EmissionItems,
-                coordX,
-                coordY,
+            var texture = CreateItemTexture(spriteName);
+            var emission = GameAssets.AtlasItems.CreateLayerTexture(GameAtlasFactory.EmissionLayer, spriteName)
+                           ?? Texture2D.CreateTexture(texture.Width, texture.Height, new Color4(0, 0, 0, 0), FilterMode.Nearest);
+            ItemModel model = ItemModelGenerator.GenerateItemModel(
+                texture,
+                emission,
                 0.004f,
                 item.ModelDepth / 500f * 2f,
                 isAnimated,
@@ -114,37 +113,35 @@ namespace Spacebox.Game
             GameAssets.ItemModels.Add(item.Id, model);
         }
 
-        private static void CacheIcon(BlockData blockData)
+        private static Texture2D CreateItemTexture(string spriteName)
         {
-            var left = UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.GetFaceUVIndex(Generation.Blocks.Direction.Left), GameAssets.AtlasBlocks.SizeBlocks);
-            var forward = UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.GetFaceUVIndex(Generation.Blocks.Direction.Forward), GameAssets.AtlasBlocks.SizeBlocks);
-            var top = UVAtlas.GetBlockTexture(GameAssets.BlocksTexture, blockData.GetFaceUVIndex(Generation.Blocks.Direction.Up), GameAssets.AtlasBlocks.SizeBlocks);
-
-            Texture2D texture = IsometricIcon.Create(left, forward, top);
-
-            left.Dispose();
-            forward.Dispose();
-            top.Dispose();
-            texture.Name = blockData.Id_string + "_icon";
-            texture.FilterMode = FilterMode.Nearest;
-            blockData.AsItem.IconTextureId = texture.Handle;
-            GameAssets.ItemIcons.Add(blockData.AsItem.Id, texture);
+            return GameAssets.AtlasItems.CreateTexture(spriteName) ?? new Texture2D(32, 32, true);
         }
 
-        private static void CacheIcon(Item item, byte x, byte y)
+        private static void CacheIcon(BlockData blockData)
         {
-            Texture2D texture = UVAtlas.GetBlockTexture(GameAssets.ItemsTexture, x, y, GameAssets.AtlasItems.SizeBlocks);
-            texture.FlipY();
-            texture.FilterMode = FilterMode.Nearest;
-            item.IconTextureId = texture.Handle;
-            texture.Name = item.Id_string;
-            GameAssets.ItemIcons.Add(item.Id, texture);
+            var blocks = GameAssets.AtlasBlocks;
+            if (!blocks.TryGetPixels(blockData.GetFaceTextureName(Generation.Blocks.Direction.Left), true, out var left) ||
+                !blocks.TryGetPixels(blockData.GetFaceTextureName(Generation.Blocks.Direction.Forward), true, out var forward) ||
+                !blocks.TryGetPixels(blockData.GetFaceTextureName(Generation.Blocks.Direction.Up), true, out var top))
+                return;
+
+            var pixels = IsometricIcon.CreatePixels(left, forward, top);
+            if (pixels == null) return;
+
+            string iconName = GameAtlasFactory.BlockIconName(blockData);
+            GameAssets.AtlasItems.Add(iconName, pixels, true);
+            blockData.AsItem.Icon = GameAssets.AtlasItems.GetSprite(iconName);
         }
 
         private static void CreateDust(BlockData block)
         {
-            Texture2D texture = BlockDestructionTexture.Generate(block.GetFaceUVIndex(Generation.Blocks.Direction.Forward, BlockState.Inactive));
-            texture.Name = block.Id_string+"_dust";
+            var face = GameAssets.AtlasBlocks.CreateTexture(block.GetFaceTextureName(Generation.Blocks.Direction.Forward, BlockState.Inactive));
+            Texture2D texture = face != null
+                ? BlockDestructionTexture.Generate(face)
+                : Texture2D.CreateTexture(8, 8, new Color4(0, 0, 0, 0), FilterMode.Nearest);
+            face?.Dispose();
+            texture.Name = block.Id_string + "_dust";
             GameAssets.BlockDusts.Add(block.Id, texture);
         }
     }

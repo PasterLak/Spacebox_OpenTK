@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using Engine.Graphics.Atlas;
+using Engine;
 using Engine.Audio;
 using Engine.Light;
 using Engine.Utils;
@@ -616,7 +617,7 @@ public static class GameSetLoader
 
                             if (item != null)
                             {
-                                category.IconPtr = item.IconTextureId;
+                                category.IconSprite = item.Icon;
                             }
                         }
 
@@ -757,7 +758,7 @@ public static class GameSetLoader
                 {
                     item2 = new Item(255, ingName == "$health" ? "Health" : "Power", 0.5f);
                     item2.Id_string = ingName;
-                    item2.IconTextureId = IntPtr.Zero;
+                    item2.Icon = AtlasSprite.None;
 
                 }
                 else
