@@ -20,6 +20,7 @@ namespace Spacebox.Game.Generation
         private readonly HashSet<Vector3SByte> pendingChunks = new HashSet<Vector3SByte>();
         private readonly HashSet<Vector3SByte> generatingChunks = new();
         private readonly HashSet<Vector3SByte> loadedChunks = new HashSet<Vector3SByte>();
+        private readonly List<Vector3SByte> _chunksToCheck = new List<Vector3SByte>();
         private readonly HashSet<Vector3SByte> _removedChunks = new HashSet<Vector3SByte>();
         private bool _savedWithoutGenerator;
 
@@ -144,28 +145,58 @@ namespace Spacebox.Game.Generation
             float visR = Settings.CHUNK_VISIBLE_RADIUS;
             float visR2 = visR * visR;
 
-            Vector3SByte[] toCheck;
+            _chunksToCheck.Clear();
             lock (_genLock)
             {
-                toCheck = pendingChunks.ToArray();
+                foreach (var idx in pendingChunks)
+                {
+                    if (!generatingChunks.Contains(idx) && !loadedChunks.Contains(idx))
+                        _chunksToCheck.Add(idx);
+                }
             }
 
-            foreach (var idx in toCheck)
+            if (_chunksToCheck.Count > 0)
             {
-                var bounds = ToWorldBounds(ComputeChunkBounds(idx));
-                if ((bounds.Center - cam.Position).LengthSquared > visR2 || !frustum.IsInFrustum(bounds))
-                    continue;
+                ScheduleChunks(cam.Position, visR2, frustum, true);
+                ScheduleChunks(cam.Position, visR2, frustum, false);
+            }
+            base.Update();
+        }
 
+        private void ScheduleChunks(Vector3 cameraPosition, float radiusSquared, CameraFrustum frustum, bool visibleOnly)
+        {
+            for (int i = _chunksToCheck.Count - 1; i >= 0; i--)
+            {
+                var idx = _chunksToCheck[i];
+                var bounds = ToWorldBounds(ComputeChunkBounds(idx));
+                if ((bounds.Center - cameraPosition).LengthSquared > radiusSquared) continue;
+                if (visibleOnly && !frustum.IsInFrustum(bounds)) continue;
+
+                _chunksToCheck.RemoveAt(i);
                 lock (_genLock)
                 {
-                    if (generatingChunks.Contains(idx) || loadedChunks.Contains(idx))
-                        continue;
-                    generatingChunks.Add(idx);
+                    if (!generatingChunks.Add(idx)) continue;
                 }
 
                 GenerateChunkAsync(idx);
             }
-            base.Update();
+        }
+
+        public override void CollectStreamingWork(Vector3 cameraPosition, ref StreamingWork work)
+        {
+            base.CollectStreamingWork(cameraPosition, ref work);
+            float radiusSquared = Settings.CHUNK_VISIBLE_RADIUS * Settings.CHUNK_VISIBLE_RADIUS;
+
+            lock (_genLock)
+            {
+                work.Chunks += generatingChunks.Count;
+                foreach (var idx in pendingChunks)
+                {
+                    if (loadedChunks.Contains(idx) || generatingChunks.Contains(idx)) continue;
+                    var bounds = ToWorldBounds(ComputeChunkBounds(idx));
+                    if ((bounds.Center - cameraPosition).LengthSquared <= radiusSquared) work.Chunks++;
+                }
+            }
         }
 
         private void GenerateChunkAsync(Vector3SByte idx)

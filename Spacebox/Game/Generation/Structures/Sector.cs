@@ -43,6 +43,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     private readonly PointOctree<SpaceEntity> sectorOctree;
     private readonly PointOctree<NotGeneratedEntity> octreeNotGenerated;
     private HashSet<long> loadingEntities = new HashSet<long>();
+    private readonly List<NotGeneratedEntity> _streamingNearby = new List<NotGeneratedEntity>();
 
     public Sector(Vector3 positionWorld, Vector3i positionIndex, int worldSeed)
     {
@@ -520,6 +521,18 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         IsModified = true;
 
         return entity;
+    }
+
+    public void CollectStreamingWork(Vector3 cameraPosition, ref StreamingWork work)
+    {
+        work.Entities += loadingEntities.Count;
+
+        _streamingNearby.Clear();
+        if (GetNotGeneratedEntitiesNearby(cameraPosition, _streamingNearby))
+            work.Entities += _streamingNearby.Count;
+
+        for (int i = 0; i < Entities.Count; i++)
+            Entities[i].CollectStreamingWork(cameraPosition, ref work);
     }
 
     public bool GetNotGeneratedEntitiesNearby(Vector3 pos, List<NotGeneratedEntity> nearby)

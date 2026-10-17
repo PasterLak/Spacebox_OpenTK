@@ -691,13 +691,46 @@ namespace Spacebox.Game.Generation
             HandleTag();
             Doors.Update(Time.Delta);
             Oxygen.Update();
+            UpdateLods();
             ProcessMeshUpdates();
+        }
+
+        private int _meshJobsInFlight;
+        private const float LodUpdateInterval = 0.25f;
+        private float _lodTimer;
+        private readonly HashSet<Chunk> _lodChunks = new HashSet<Chunk>();
+
+        private void UpdateLods()
+        {
+            var camera = Camera.Main;
+            if (camera == null) return;
+
+            _lodTimer -= Time.Delta;
+            if (_lodTimer > 0f && !StreamingBudget.IsLoading) return;
+            _lodTimer = LodUpdateInterval;
+
+            var cameraEntitySpace = ToEntitySpace(camera.Position);
+            const int radiusSquared = Settings.CHUNK_VISIBLE_RADIUS * Settings.CHUNK_VISIBLE_RADIUS;
+
+            _lodChunks.Clear();
+            Octree.FindDataInRadius(WorldPositionToLocal(cameraEntitySpace), Settings.CHUNK_VISIBLE_RADIUS, _lodChunks);
+            foreach (var chunk in _lodChunks)
+            {
+                int distanceSquared = (int)(cameraEntitySpace - chunk.GeometryBoundingBox.Center).LengthSquared;
+                if (distanceSquared < radiusSquared) chunk.SetLOD(distanceSquared);
+            }
+        }
+
+        public virtual void CollectStreamingWork(Vector3 cameraPosition, ref StreamingWork work)
+        {
+            work.Meshes += MeshUpdateQueue.Count + ReadyMeshesQueue.Count + Volatile.Read(ref _meshJobsInFlight);
         }
 
         private void ProcessMeshUpdates()
         {
             int dispatchedThisFrame = 0;
-            while (dispatchedThisFrame < 4 && MeshUpdateQueue.TryDequeue(out Chunk chunk, out int priority))
+            int maxDispatch = StreamingBudget.MeshDispatchPerFrame;
+            while (dispatchedThisFrame < maxDispatch && MeshUpdateQueue.TryDequeue(out Chunk chunk, out int priority))
             {
                 if (chunk.IsDisposed) continue;
 
@@ -705,8 +738,11 @@ namespace Spacebox.Game.Generation
                 var snapshot = chunk.CreatePaddedSnapshot();
                 var index = chunk.PositionIndex;
 
+                Interlocked.Increment(ref _meshJobsInFlight);
                 WorkerPoolManager.Enqueue(token =>
                 {
+                    try
+                    {
                     if (token.IsCancellationRequested || chunk.IsDisposed)
                     {
                         chunk.IsQueuedForMeshUpdate = false;
@@ -737,13 +773,19 @@ namespace Spacebox.Game.Generation
                         Engine.Debug.Error($"[SpaceEntity] Mesh generation failed: {ex}");
                         chunk.IsQueuedForMeshUpdate = false;
                     }
+                    }
+                    finally
+                    {
+                        Interlocked.Decrement(ref _meshJobsInFlight);
+                    }
                 }, WorkerPoolManager.Priority.Medium);
 
                 dispatchedThisFrame++;
             }
 
             int uploadedThisFrame = 0;
-            while (uploadedThisFrame < 2 && ReadyMeshesQueue.TryDequeue(out var result))
+            int maxUpload = StreamingBudget.MeshUploadPerFrame;
+            while (uploadedThisFrame < maxUpload && ReadyMeshesQueue.TryDequeue(out var result))
             {
                 if (result.chunk.IsDisposed) continue;
 
@@ -923,6 +965,8 @@ namespace Spacebox.Game.Generation
 
                 if (dis < Settings.CHUNK_VISIBLE_RADIUS * Settings.CHUNK_VISIBLE_RADIUS)
                 {
+                    chunk.SetLOD(dis);
+
                     bool visible = chunk.GeometryBoundingBox.Contains(cameraEntitySpace);
 
                     if (!visible)
@@ -932,7 +976,6 @@ namespace Spacebox.Game.Generation
 
                     if (!visible) continue;
 
-                    chunk.SetLOD(dis);
                     chunk.Render(material);
                 }
             }

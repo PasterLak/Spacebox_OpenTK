@@ -29,6 +29,7 @@ namespace Spacebox.Game.Player
         public GravityWalker Gravity { get; } = new GravityWalker();
 
         public bool CanMove => _isAlive && !UIManager.IsUIMode;
+        public bool IsFrozen { get; set; }
 
         private bool _isAlive = true;
         public bool IsAlive
@@ -203,6 +204,7 @@ namespace Spacebox.Game.Player
             Matrix4 viewMatrix = GetViewMatrix();
             Matrix4 projectionMatrix = GetProjectionMatrix();
             Frustum.UpdateFrustum(this);
+            if (IsFrozen) return;
 
             _gameModeBase.UpdateInteraction(this);
             _gameModeBase.Update(this);

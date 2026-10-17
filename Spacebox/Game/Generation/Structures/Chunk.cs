@@ -174,6 +174,7 @@ namespace Spacebox.Game.Generation
             SumPosMass = data.SumPosMass;
 
             IsQueuedForMeshUpdate = false;
+            Lod = LOD.L0;
 
             SpaceEntity.RecalculateMass(Mass - oldMass);
             OnChunkModified?.Invoke(this);
@@ -463,6 +464,9 @@ namespace Spacebox.Game.Generation
             QueueMeshUpdate(UpdateReason.PlayerAction);
         }
 
+        private static int _pendingLodJobs;
+        public static int PendingLodJobs => Volatile.Read(ref _pendingLodJobs);
+
         private void CreateLOD(LOD lod)
         {
             int downscale;
@@ -484,11 +488,13 @@ namespace Spacebox.Game.Generation
                 default: return;
             }
             var requested = lod;
+            Interlocked.Increment(ref _pendingLodJobs);
             new ChunkLODMeshGenerator()
                 .GenerateFromBlocksAsync(this.Blocks, downscale, uv, data =>
                 {
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
+                        Interlocked.Decrement(ref _pendingLodJobs);
                         if (Lod == requested && !IsDisposed)
                         {
                             _mesh?.Dispose();

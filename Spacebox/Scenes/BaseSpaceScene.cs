@@ -131,6 +131,9 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         freeCamera.DepthFar = localPlayer.DepthFar;
         Camera.Main = localPlayer;
 
+        world.PreloadAroundPlayer();
+        WorldLoadingScreen.Begin(localPlayer);
+
         WelcomeUI.OnPlayerSpawned(World.WorldData.Info.ShowWelcomeWindow);
         WelcomeUI.Init();
         PauseUI.Init();
@@ -162,7 +165,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         base.Update();
 
-        MainThreadDispatcher.Instance.ExecutePending();
+        MainThreadDispatcher.Instance.ExecutePending(StreamingBudget.DispatcherBudgetMs);
+        WorldLoadingScreen.Update();
 
 #if DEBUG
         if (Input.IsKeyDown(Keys.R))
@@ -225,11 +229,18 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         OnRenderCenter?.Invoke();
 
-        PanelUI.DrawItemModel();
+        if (!WorldLoadingScreen.IsActive)
+            PanelUI.DrawItemModel();
     }
 
     public override void OnGUI()
     {
+        if (WorldLoadingScreen.IsActive)
+        {
+            WorldLoadingScreen.OnGUI();
+            return;
+        }
+
         base.OnGUI();
         ColorOverlay.OnGUI();
 
@@ -273,6 +284,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     {
         Time.OnTick -= UpdateTickTasks;
         OxygenGeneratorUI.Reset();
+        WorldLoadingScreen.Reset();
         GravityGeneratorUI.Reset();
         PanelUI.Player = null;
 

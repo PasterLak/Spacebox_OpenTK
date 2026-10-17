@@ -80,6 +80,7 @@ Game
 
 Small
 - double click to open a world
+- loading screen over the skybox with a yellow progress bar and current step, until everything around the player is loaded (preload at the saved position, chunks outside the view and LODs are built too, no lag when turning)
 - equipment slot backgrounds
 
 Fixes

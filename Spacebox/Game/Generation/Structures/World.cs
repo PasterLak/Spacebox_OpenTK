@@ -122,12 +122,30 @@ public class World : Component, ISpaceStructure
     {
         CurrentSector = LoadSectorNow(SpaceMath.Sector.GetSectorIndex(Player.Position));
 
-        CurrentSector.PreloadAreaBlocking(Player.Position, Settings.CHUNK_VISIBLE_RADIUS * 1.5f);
-
         if (CurrentSector == null)
             Debug.Error("No current sector");
 
         DropEffectManager.LoadDrops(Path.Combine(WorldData.WorldFolderPath, "drop.json"));
+    }
+
+    public void PreloadAroundPlayer()
+    {
+        CurrentSector = GetOrLoadSector(SpaceMath.Sector.GetSectorIndex(Player.Position));
+        CurrentSector.PreloadAreaBlocking(Player.Position, Settings.ENTITY_SEARCH_RADIUS);
+        UpdateSectors();
+    }
+
+    public StreamingWork CollectStreamingWork(Vector3 cameraPosition)
+    {
+        var work = new StreamingWork();
+        foreach (var sector in loadedSectors.Values)
+            sector.CollectStreamingWork(cameraPosition, ref work);
+        return work;
+    }
+
+    private Sector GetOrLoadSector(Vector3i index)
+    {
+        return loadedSectors.TryGetValue(index, out var sector) ? sector : LoadSectorNow(index);
     }
 
     public static void LoadWorldInfo(string worldName)
@@ -159,6 +177,8 @@ public class World : Component, ISpaceStructure
 
     public override void OnRender()
     {
+        if (StreamingBudget.IsLoading) return;
+
         foreach (var sector in loadedSectors)
         {
             sector.Value.Render(material);
@@ -233,14 +253,7 @@ public class World : Component, ISpaceStructure
 
         if (CurrentSector.PositionIndex != index)
         {
-            if (loadedSectors.TryGetValue(index, out var sector))
-            {
-                CurrentSector = sector;
-            }
-            else
-            {
-                CurrentSector = LoadSectorNow(index);
-            }
+            CurrentSector = GetOrLoadSector(index);
         }
 
         PopulateSectorsToUnload(cam.PositionWorld);

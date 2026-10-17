@@ -136,7 +136,8 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 
 - Engine `EventBus` is used only for settings events; everything else uses plain C# `event`/`Action`.
 - Tick-based logic: `Time.OnTick` → `TickTaskManager`.
-- `MainThreadDispatcher` (`Game/Generation/Structures/MainThreadDispatcher.cs`) brings worker results back to the GL thread; drained in `BaseSpaceScene.Update` and `Sector`. `DisposalManager.ProcessDisposals` is also driven from `BaseSpaceScene`.
+- `MainThreadDispatcher` (`Game/Generation/Structures/MainThreadDispatcher.cs`) brings worker results back to the GL thread; drained in `BaseSpaceScene.Update` with a time budget (`StreamingBudget`, unlimited while loading) and in `Sector`.
+- World loading: `World.PreloadAroundPlayer` runs after the player is loaded; `WorldLoadingScreen` keeps the player frozen until `World.GetPendingStreamingWork` (entities, chunks, mesh jobs) and LOD jobs reach zero. `DisposalManager.ProcessDisposals` is also driven from `BaseSpaceScene`.
 
 ## Where to add things
 
