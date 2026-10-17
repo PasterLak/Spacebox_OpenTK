@@ -23,7 +23,10 @@ public class CreativeMode : MovementMode
             typeof(InteractionDefault),
             typeof(InteractionEraser),
             typeof(InteractionCameraPoint)
-        }, GameMode.Creative);
+        }, GameMode.Creative, new IPassiveInteraction[]
+        {
+            new CreativeBlockDestroying()
+        });
     }
 
     public CreativeMode(LocalAstronaut player) : base(player, CreateInteractionHandler())

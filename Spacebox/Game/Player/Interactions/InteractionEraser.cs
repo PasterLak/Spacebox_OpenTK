@@ -17,6 +17,8 @@ public class InteractionEraser : InteractionMode
 {
     private const byte MaxBuildDistance = 6;
 
+    public override bool UsesPrimaryAction => true;
+
     private BoundingBoxRenderer boxRender;
 
     private CubeRenderer pointer;

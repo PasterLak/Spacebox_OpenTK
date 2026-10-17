@@ -7,6 +7,7 @@ public abstract class InteractionMode
     public GameMode GameMode { get; set; } = GameMode.Spectator;
 
     public bool AllowReload = false;
+    public virtual bool UsesPrimaryAction => false;
     public abstract void OnEnable();
     public abstract void OnDisable();
     public abstract void Update(LocalAstronaut player);

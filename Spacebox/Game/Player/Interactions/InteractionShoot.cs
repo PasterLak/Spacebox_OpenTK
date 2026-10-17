@@ -27,6 +27,8 @@ public class InteractionShoot : InteractionMode
     private Vector3 startPos;
     private Vector3 despawnPos = Vector3.Zero;
 
+    public override bool UsesPrimaryAction => true;
+
     public InteractionShoot(ItemSlot itemslot)
     {
         AllowReload = true;

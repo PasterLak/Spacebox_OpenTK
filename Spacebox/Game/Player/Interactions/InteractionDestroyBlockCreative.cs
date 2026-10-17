@@ -17,7 +17,7 @@ namespace Spacebox.Game.Player.Interactions;
 public class InteractionDestroyBlockCreative : InteractionDestroyBlock
 {
     private const float MinBlockDestroyTime = 0.175f;
-    private float _time = MinBlockDestroyTime;
+    private readonly RepeatingAction _destroyAction = new RepeatingAction("block_destroy", MinBlockDestroyTime);
     private InteractiveBlock lastInteractiveBlock;
 
     public InteractionDestroyBlockCreative(ItemSlot itemSlot) : base(itemSlot)
@@ -26,11 +26,6 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
 
     public override void OnEnable()
     {
-        if (blockDestroy == null)
-        {
-            blockDestroy = new AudioSource(Resources.Load<AudioClip>("blockDestroyDefault"));
-            blockDestroy.Volume = 1f;
-        }
         if (BlockSelector.Instance != null)
             BlockSelector.Instance.SimpleBlock.Material.Shader.SetVector4("color", Vector4.One);
         BlockSelector.IsVisible = false;
@@ -41,7 +36,6 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
     {
         if (Input.IsActionUp("block_destroy"))
         {
-            _time = MinBlockDestroyTime;
             model.SetAnimation(false);
         }
         if (!player.CanMove)
@@ -54,23 +48,9 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
         {
             UpdateBlockSelector(hit);
             if (Input.IsActionDown("block_destroy"))
-            {
-                _time = MinBlockDestroyTime;
                 model.SetAnimation(true);
-                player.PlayerStatistics.BlockDamageDealt += hit.block.Durability;
-                DestroyBlock(hit, player);
-                
-            }
-            if (Input.IsAction("block_destroy"))
-            {
-                _time -= Time.Delta;
-                if (_time <= 0)
-                {
-                    _time = MinBlockDestroyTime;
-                    player.PlayerStatistics.BlockDamageDealt += hit.block.Durability;
-                    DestroyBlock(hit, player);
-                }
-            }
+            if (_destroyAction.Poll())
+                BlockDestroyer.DestroyInstantly(hit, player);
             if (hit.block.Is<InteractiveBlock>(out var b))
             {
                 lastInteractiveBlock = b;

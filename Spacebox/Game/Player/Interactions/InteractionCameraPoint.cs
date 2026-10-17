@@ -11,6 +11,8 @@ namespace Spacebox.Game.Player.Interactions
     {
         private LineRenderer lineRenderer;
         private CubeRenderer cubeRenderer;
+
+        public override bool UsesPrimaryAction => true;
         private bool IsEditing = true;
         private bool isFlying = false;
         public float FlightSpeed = 0.02f;

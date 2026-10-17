@@ -53,11 +53,6 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
 
        
 
-        if (blockDestroy == null)
-        {
-            blockDestroy = new AudioSource(Resources.Load<AudioClip>("blockDestroyDefault"));
-            blockDestroy.Volume = 1f;
-        }
         if (drillAudio == null)
         {
             drillAudio = new AudioSource(Resources.Load<AudioClip>("drill1"));

@@ -12,6 +12,7 @@ public class InteractionHandler
         set { SetInteraction(value, _gameMode); }
     }
     private readonly HashSet<Type> _allowedInteractions;
+    private readonly List<IPassiveInteraction> _passiveInteractions = new List<IPassiveInteraction>();
 
     private readonly GameMode _gameMode;
     public InteractionHandler(GameMode gameMode)
@@ -32,6 +33,12 @@ public class InteractionHandler
 
         _allowedInteractions.Add(typeof(InteractionDefault));
         SetInteraction(defaultMode, gameMode);
+    }
+
+    public InteractionHandler(InteractionMode defaultMode, HashSet<Type> allowedInteractions, GameMode gameMode, IEnumerable<IPassiveInteraction> passiveInteractions)
+        : this(defaultMode, allowedInteractions, gameMode)
+    {
+        _passiveInteractions.AddRange(passiveInteractions);
     }
 
     public void SetInteraction(InteractionMode interaction, GameMode gameMode)
@@ -60,8 +67,13 @@ public class InteractionHandler
 
     public void Update(LocalAstronaut player)
     {
-        
+
         Interaction.Update(player);
+
+        for (int i = 0; i < _passiveInteractions.Count; i++)
+        {
+            _passiveInteractions[i].Update(player, Interaction);
+        }
     }
 
     public void Render(LocalAstronaut player)
