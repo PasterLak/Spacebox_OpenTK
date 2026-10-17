@@ -26,6 +26,8 @@ namespace Spacebox.Game.Generation.Tools
             public const string rotation_w = "rotation_w";
 
             public const string chunks = "chunks";
+            public const string only_changed_chunks = "only_changed_chunks";
+            public const string removed_chunks = "removed_chunks";
         }
 
         public static class CHUNK
@@ -40,6 +42,7 @@ namespace Spacebox.Game.Generation.Tools
             public const string blocks = "blocks";
             public const string directions = "directions";
             public const string rotations = "rotations";
+            public const string needs_generation = "needs_generation";
 
             public const string storages = "storages";
             public const string processing_blocks = "processing_blocks";

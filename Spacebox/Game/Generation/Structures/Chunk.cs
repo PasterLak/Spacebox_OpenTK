@@ -44,6 +44,8 @@ namespace Spacebox.Game.Generation
         }
 
         public bool IsGenerated { get; private set; } = false;
+        public bool HasSavedData { get; private set; } = false;
+        public bool ShouldBeSaved => IsModified || HasSavedData;
 
         private Mesh _mesh;
         private readonly LightManager _lightManager;
@@ -83,6 +85,7 @@ namespace Spacebox.Game.Generation
                     Array.Copy(loadedBlocks, Blocks, loadedBlocks.Length);
                     RegisterElectricalBlocks();
                     IsGenerated = true;
+                    HasSavedData = true;
                 }
                 else
                 {

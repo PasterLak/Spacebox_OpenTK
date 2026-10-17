@@ -50,6 +50,7 @@ namespace Spacebox.Game.Generation
         public Sector Sector { get; private set; }
 
         public List<Chunk> Chunks { get; private set; } = new List<Chunk>();
+        private readonly Dictionary<Vector3SByte, Chunk> _chunksByIndex = new Dictionary<Vector3SByte, Chunk>();
         private List<Chunk> MeshesTogenerate = new List<Chunk>();
 
         public PriorityQueue<Chunk, int> MeshUpdateQueue { get; private set; } = new PriorityQueue<Chunk, int>();
@@ -133,10 +134,12 @@ namespace Spacebox.Game.Generation
 
                 Octree.Add(chunk, BoundingBox.CreateFromMinMax(local, local + Vector3.One * Chunk.Size));
                 Chunks.Add(chunk);
+                _chunksByIndex[chunk.PositionIndex] = chunk;
 
                 chunk.OnChunkModified += UpdateEntityGeometryMinMax;
 
                 UpdateNeighbors(chunk);
+                OnChunkAdded(chunk);
             }
 
             for (int i = 0; i < chunks.Length; i++)
@@ -181,9 +184,11 @@ namespace Spacebox.Game.Generation
 
             Octree.Add(chunk, BoundingBox.CreateFromMinMax(local, local + Vector3.One * Chunk.Size));
             Chunks.Add(chunk);
+            _chunksByIndex[chunk.PositionIndex] = chunk;
 
             chunk.OnChunkModified += UpdateEntityGeometryMinMax;
             UpdateNeighbors(chunk);
+            OnChunkAdded(chunk);
             Oxygen.OnChunksChanged();
             RecalculateGeometryBoundingBox();
             RecalculateMass();
@@ -200,6 +205,9 @@ namespace Spacebox.Game.Generation
         {
             Octree.Remove(chunk);
             Chunks.Remove(chunk);
+            if (_chunksByIndex.TryGetValue(chunk.PositionIndex, out var indexed) && indexed == chunk)
+                _chunksByIndex.Remove(chunk.PositionIndex);
+            OnChunkRemoved(chunk);
 
             chunk.OnChunkModified -= UpdateEntityGeometryMinMax;
             chunk.Dispose();
@@ -208,10 +216,28 @@ namespace Spacebox.Game.Generation
             Oxygen.OnChunksChanged();
             RecalculateGeometryBoundingBox();
             RecalculateMass();
-            if (Chunks.Count == 0)
+            if (Chunks.Count == 0 && CanBeDeletedWhenEmpty)
             {
                 DeleteSpaceEntity();
             }
+        }
+
+        public bool TryGetChunk(Vector3SByte index, out Chunk chunk)
+        {
+            return _chunksByIndex.TryGetValue(index, out chunk);
+        }
+
+        public virtual bool SavesOnlyChangedChunks => false;
+        public virtual IReadOnlyCollection<Vector3SByte> RemovedChunks => Array.Empty<Vector3SByte>();
+        public virtual bool IsChunkGenerated(Vector3SByte index) => true;
+        protected virtual bool CanBeDeletedWhenEmpty => true;
+
+        protected virtual void OnChunkAdded(Chunk chunk)
+        {
+        }
+
+        protected virtual void OnChunkRemoved(Chunk chunk)
+        {
         }
 
         private void DeleteSpaceEntity()

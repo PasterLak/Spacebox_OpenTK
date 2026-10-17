@@ -192,7 +192,7 @@ Worlds are stored in `<app dir>/Worlds/<world>/`:
 |---|---|---|
 | `world.json` | JSON | `WorldInfo`: name, seed, game version, GameSet, … |
 | `player.json` | JSON | Player state (`PlayerSaveLoadManager`): position, health/power/oxygen, `InventorySlots`, `PanelSlots`, `EquipmentSlots` (optional) |
-| `Sectors/<sector>/<entity>.entity` | NBT | Modified `SpaceEntity` data (`NBTHelper.SpaceEntityToTag`) |
+| `Sectors/<sector>/<entity>.entity` | NBT | Modified `SpaceEntity` data (`NBTHelper.SpaceEntityToTag`). Procedural asteroids set `only_changed_chunks` = 1 and store only edited/previously saved chunks plus `removed_chunks` (packed chunk indices); unchanged chunks are regenerated from the seed on load. A chunk with `needs_generation` = 1 was created before its natural content was generated and gets it merged in later. Files without the flag (older saves, player-built entities) contain all chunks. |
 
 - Only modified entities are saved. When an entity unloads, it goes into a concurrent cache in `WorldPersistenceManager`. The cache is written to disk on a background worker (`SaveAllCacheToDiskAsync`) or immediately (`SaveAllCacheToDiskNow`). Saving is available from the pause menu (Esc).
 - `VersionConverter` upgrades `WorldInfo` step by step (e.g. `0.0.8 → 0.0.9 → …`). Larger format changes are handled by converter plugins.

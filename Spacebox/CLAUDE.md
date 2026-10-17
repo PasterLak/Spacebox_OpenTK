@@ -103,6 +103,7 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 ## Saving
 
 - World data: NBT (SharpNBT `CompoundTag`, GZip) — `Game/Generation/Tools/WorldSaveLoad.cs` (sector folders, `.entity` files), `Structures/WorldPersistenceManager.cs` (caches and writes unloaded entities), `NBTHelper` / `NBTKey` / `PackingTools`.
+- Procedural asteroids save only changed chunks (`SpaceEntity.SavesOnlyChangedChunks`, `Chunk.ShouldBeSaved` = modified or loaded from a save, `Asteroid.RemovedChunks`). Anything that changes chunk data must set `chunk.IsModified = true`, otherwise the change is lost on save.
 - Player and tags: JSON in the world folder (`PlayerSaveLoadManager`, `TagsSaveLoader`).
 - `Game/WorldLoader.cs` loads `WorldInfo`; `Game/VersionConverter.cs` upgrades step by step (0.0.8 → 0.0.9 → 0.1.0 → 0.1.1 → 0.1.2). New format versions add a step there; new fields need defaults.
 

@@ -20,6 +20,8 @@ namespace Spacebox.Game.Generation
         private readonly HashSet<Vector3SByte> pendingChunks = new HashSet<Vector3SByte>();
         private readonly HashSet<Vector3SByte> generatingChunks = new();
         private readonly HashSet<Vector3SByte> loadedChunks = new HashSet<Vector3SByte>();
+        private readonly HashSet<Vector3SByte> _removedChunks = new HashSet<Vector3SByte>();
+        private bool _savedWithoutGenerator;
 
         public NotGeneratedEntity NotGeneratedEntity;
         protected readonly int Seed;
@@ -43,6 +45,60 @@ namespace Spacebox.Game.Generation
                 asteroidData,
                 seed: (int)Seed
             );
+        }
+
+        public bool CanRegenerate => voxelGen != null;
+        public override bool SavesOnlyChangedChunks => CanRegenerate || _savedWithoutGenerator;
+        public override IReadOnlyCollection<Vector3SByte> RemovedChunks => _removedChunks;
+
+        public override bool IsChunkGenerated(Vector3SByte index)
+        {
+            if (!CanRegenerate) return true;
+            lock (_genLock) return loadedChunks.Contains(index);
+        }
+
+        protected override bool CanBeDeletedWhenEmpty
+        {
+            get
+            {
+                if (!CanRegenerate) return true;
+                lock (_genLock) return pendingChunks.Count == 0 && generatingChunks.Count == 0;
+            }
+        }
+
+        public void MarkSavedWithoutGenerator()
+        {
+            _savedWithoutGenerator = true;
+        }
+
+        public void RestoreSavedState(IEnumerable<Vector3SByte> completeChunks, IEnumerable<Vector3SByte> removedChunks)
+        {
+            lock (_genLock)
+            {
+                foreach (var index in completeChunks)
+                {
+                    pendingChunks.Remove(index);
+                    loadedChunks.Add(index);
+                }
+
+                foreach (var index in removedChunks)
+                {
+                    _removedChunks.Add(index);
+                    pendingChunks.Remove(index);
+                    loadedChunks.Add(index);
+                }
+            }
+        }
+
+        protected override void OnChunkAdded(Chunk chunk)
+        {
+            _removedChunks.Remove(chunk.PositionIndex);
+        }
+
+        protected override void OnChunkRemoved(Chunk chunk)
+        {
+            if (SavesOnlyChangedChunks && IsChunkGenerated(chunk.PositionIndex))
+                _removedChunks.Add(chunk.PositionIndex);
         }
 
         private static float ComputeStep(byte wormDiameter, float overlapK = 0.75f)
@@ -107,10 +163,16 @@ namespace Spacebox.Game.Generation
 
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
-                        if (result.meshData.Mass > 0)
+                        if (TryGetChunk(idx, out var existing))
+                        {
+                            MergeGeneratedBlocks(existing, result.chunk);
+                            result.chunk.Dispose();
+                        }
+                        else if (result.meshData.Mass > 0)
                         {
                             AddChunk(result.chunk, false);
                             result.chunk.ApplyMeshData(result.meshData);
+                            RefreshEditedNeighbors(result.chunk);
                         }
                         else
                         {
@@ -134,6 +196,50 @@ namespace Spacebox.Game.Generation
                     }
                 }
             }, WorkerPoolManager.Priority.High);
+        }
+
+        private static void MergeGeneratedBlocks(Chunk existing, Chunk generated)
+        {
+            bool changed = false;
+
+            for (int x = 0; x < Chunk.Size; x++)
+            {
+                for (int y = 0; y < Chunk.Size; y++)
+                {
+                    for (int z = 0; z < Chunk.Size; z++)
+                    {
+                        var current = existing.Blocks[x, y, z];
+                        var natural = generated.Blocks[x, y, z];
+                        if ((current == null || current.IsAir) && natural != null && !natural.IsAir)
+                        {
+                            existing.Blocks[x, y, z] = natural;
+                            changed = true;
+                        }
+                    }
+                }
+            }
+
+            if (!changed) return;
+
+            existing.IsModified = true;
+            existing.CalculateLighting();
+            existing.QueueMeshUpdate(UpdateReason.Generation);
+        }
+
+        private static void RefreshEditedNeighbors(Chunk chunk)
+        {
+            bool hasEditedNeighbor = false;
+
+            foreach (var neighbor in chunk.Neighbors.Values)
+            {
+                if (neighbor == null || !neighbor.ShouldBeSaved) continue;
+
+                hasEditedNeighbor = true;
+                neighbor.QueueMeshUpdate(UpdateReason.Generation);
+            }
+
+            if (hasEditedNeighbor)
+                chunk.QueueMeshUpdate(UpdateReason.Generation);
         }
 
         private BoundingBox ComputeChunkBounds(Vector3SByte idx)

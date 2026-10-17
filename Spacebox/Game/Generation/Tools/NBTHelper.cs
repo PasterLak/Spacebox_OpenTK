@@ -47,7 +47,7 @@ namespace Spacebox.Game.Generation.Tools
             }
         }
 
-        public static SpaceEntity? TagToSpaceEntity(CompoundTag tag, Sector sector)
+        public static SpaceEntity? TagToSpaceEntity(CompoundTag tag, Sector sector, NotGeneratedEntity generationData = null)
         {
             if (tag == null) return null;
 
@@ -61,16 +61,35 @@ namespace Spacebox.Game.Generation.Tools
             var worldPos = sector.LocalToWorldPosition(new Vector3(x, y, z));
 
             SpaceEntity spaceEntity;
+            bool onlyChangedChunks = tag.TryGetValue<ByteTag>(NBTKey.ENTITY.only_changed_chunks, out var onlyChangedTag) && onlyChangedTag.Value == 1;
 
             if (id >= 0)
             {
-                var stubData = new NotGeneratedEntity
-                {
-                    Id = id,
-                    positionWorld = worldPos
-                };
+                Asteroid asteroid;
 
-                var asteroid = new Asteroid(stubData, sector, false);
+                if (onlyChangedChunks && generationData?.asteroid != null && generationData.Id == id)
+                {
+                    generationData.positionWorld = worldPos;
+                    asteroid = new Asteroid(generationData, sector, true);
+                    asteroid.OnGenerate();
+                }
+                else
+                {
+                    var stubData = new NotGeneratedEntity
+                    {
+                        Id = id,
+                        positionWorld = worldPos
+                    };
+
+                    asteroid = new Asteroid(stubData, sector, false);
+
+                    if (onlyChangedChunks)
+                    {
+                        asteroid.MarkSavedWithoutGenerator();
+                        Debug.Warning($"[NBTHelper] Asteroid {id} has no generation data; only its saved chunks are loaded");
+                    }
+                }
+
                 asteroid.IsGenerated = true;
                 spaceEntity = asteroid;
             }
@@ -94,13 +113,23 @@ namespace Spacebox.Game.Generation.Tools
 
             var chunksList = tag.Get<ListTag>(NBTKey.ENTITY.chunks);
             var chunks = new List<Chunk>();
+            var completeChunks = new List<Vector3SByte>();
 
-            foreach (CompoundTag chunk in chunksList)
+            foreach (CompoundTag chunkTag in chunksList)
             {
-                chunks.Add(TagToChunk(chunk, spaceEntity));
+                var chunk = TagToChunk(chunkTag, spaceEntity);
+                chunks.Add(chunk);
+
+                bool needsGeneration = chunkTag.TryGetValue<ByteTag>(NBTKey.CHUNK.needs_generation, out var needsTag) && needsTag.Value == 1;
+                if (!needsGeneration)
+                    completeChunks.Add(chunk.PositionIndex);
             }
 
             spaceEntity.AddChunks(chunks.ToArray(), false);
+
+            if (onlyChangedChunks && spaceEntity is Asteroid restoredAsteroid)
+                restoredAsteroid.RestoreSavedState(completeChunks, ReadChunkIndices(tag, NBTKey.ENTITY.removed_chunks));
+
             return spaceEntity;
         }
 
@@ -124,17 +153,56 @@ namespace Spacebox.Game.Generation.Tools
             root.Add(new FloatTag(NBTKey.ENTITY.rotation_z, rot.Z));
             root.Add(new FloatTag(NBTKey.ENTITY.rotation_w, rot.W));
 
+            bool onlyChangedChunks = entity.SavesOnlyChangedChunks;
+            root.Add(new ByteTag(NBTKey.ENTITY.only_changed_chunks, (byte)(onlyChangedChunks ? 1 : 0)));
+
             var chunks = new ListTag(NBTKey.ENTITY.chunks, TagType.Compound);
             var chunksList = entity.Chunks;
 
             for (int i = 0; i < chunksList.Count; i++)
             {
-                chunks.Add(ChunkToTag(chunksList[i]));
+                var chunk = chunksList[i];
+                if (onlyChangedChunks && !chunk.ShouldBeSaved) continue;
+
+                var chunkTag = ChunkToTag(chunk);
+                if (onlyChangedChunks && !entity.IsChunkGenerated(chunk.PositionIndex))
+                    chunkTag.Add(new ByteTag(NBTKey.CHUNK.needs_generation, 1));
+
+                chunks.Add(chunkTag);
             }
 
             root.Add(chunks);
 
+            if (onlyChangedChunks)
+                root.Add(new IntArrayTag(NBTKey.ENTITY.removed_chunks, PackChunkIndices(entity.RemovedChunks)));
+
             return root;
+        }
+
+        private static int[] PackChunkIndices(IReadOnlyCollection<Vector3SByte> indices)
+        {
+            var packed = new int[indices.Count];
+            int i = 0;
+            foreach (var index in indices)
+            {
+                packed[i++] = (PackingTools.SByteToByte(index.X) << 16) | (PackingTools.SByteToByte(index.Y) << 8) | PackingTools.SByteToByte(index.Z);
+            }
+            return packed;
+        }
+
+        private static List<Vector3SByte> ReadChunkIndices(CompoundTag tag, string key)
+        {
+            var result = new List<Vector3SByte>();
+            if (!tag.TryGetValue<IntArrayTag>(key, out var arrayTag)) return result;
+
+            foreach (int packed in arrayTag)
+            {
+                result.Add(new Vector3SByte(
+                    PackingTools.ByteToSByte((byte)((packed >> 16) & 0xFF)),
+                    PackingTools.ByteToSByte((byte)((packed >> 8) & 0xFF)),
+                    PackingTools.ByteToSByte((byte)(packed & 0xFF))));
+            }
+            return result;
         }
 
         public static CompoundTag ChunkToTag(Chunk chunk)

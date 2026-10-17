@@ -115,7 +115,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                 {
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
-                        var entity = NBTHelper.TagToSpaceEntity(tag, this);
+                        var entity = NBTHelper.TagToSpaceEntity(tag, this, data);
                         if (!Entities.Exists(e => e.EntityID == entity.EntityID))
                         {
                             ApplyLoadedEntityFixes(entity, data, fileName);
@@ -398,7 +398,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         if (WorldPersistenceManager.TryGetCachedEntity(data.Id, out var cachedTag))
         {
-            var entity = NBTHelper.TagToSpaceEntity(cachedTag, this);
+            var entity = NBTHelper.TagToSpaceEntity(cachedTag, this, data);
             AddEntity(entity, entity.PositionWorld);
             octreeNotGenerated.Remove(data);
             return;
