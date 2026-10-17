@@ -177,7 +177,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 #if DEBUG
         if (Input.IsKeyDown(Keys.R))
         {
-            RenderSpace.SwitchSpace();
+            RenderSpace.Toggle();
         }
 
         if (Input.IsKeyDown(Keys.C))
