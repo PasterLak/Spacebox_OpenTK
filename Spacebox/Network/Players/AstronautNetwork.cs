@@ -23,6 +23,7 @@ public sealed class AstronautNetwork : NetworkTransform
     private readonly NetworkVariable<bool> _isVulnerable;
     private readonly NetworkVariable<short> _flashlightItem;
     private readonly NetworkVariable<bool> _hasOxygen;
+    private readonly NetworkVariable<bool> _isUsingItem;
     private readonly NetworkVariable<short>[] _equipment;
     private static readonly EquipmentSlotType[] EquipmentSlots = Enum.GetValues<EquipmentSlotType>();
 
@@ -42,6 +43,7 @@ public sealed class AstronautNetwork : NetworkTransform
         _isVulnerable = CreateVariable(false, NetworkWritePermission.Owner);
         _flashlightItem = CreateVariable(NoItem, NetworkWritePermission.Owner);
         _hasOxygen = CreateVariable(true, NetworkWritePermission.Owner);
+        _isUsingItem = CreateVariable(false, NetworkWritePermission.Owner);
         _equipment = new NetworkVariable<short>[EquipmentSlots.Length];
         for (int i = 0; i < _equipment.Length; i++) _equipment[i] = CreateVariable(NoItem, NetworkWritePermission.Owner);
     }
@@ -55,6 +57,7 @@ public sealed class AstronautNetwork : NetworkTransform
             _isVulnerable.Value = local.GameMode == GameMode.Survival;
             _flashlightItem.Value = local.ActiveFlashlightItem?.Id ?? NoItem;
             _hasOxygen.Value = local.HasOxygen;
+            _isUsingItem.Value = local.IsUsingItem;
             WriteEquipment(local);
         }
     }
@@ -87,6 +90,8 @@ public sealed class AstronautNetwork : NetworkTransform
         _flashlightItem.Changed += (_, value) => ApplyFlashlight(astronaut, value);
         if (astronaut is RemoteAstronaut remote) remote.DrillDamaged += OnDrilledLocally;
         _hasOxygen.Changed += (_, value) => astronaut.HasOxygen = value;
+        _isUsingItem.Changed += (_, value) => SetUsing(astronaut, value);
+        SetUsing(astronaut, _isUsingItem.Value);
         astronaut.HasOxygen = _hasOxygen.Value;
         for (int i = 0; i < _equipment.Length; i++)
         {
@@ -162,6 +167,11 @@ public sealed class AstronautNetwork : NetworkTransform
     private static void ApplyEquipment(Astronaut astronaut, EquipmentSlotType slot, short itemId)
     {
         astronaut.ArmorVisual?.Set(slot, GetItem(itemId) as EquipmentItem);
+    }
+
+    private static void SetUsing(Astronaut astronaut, bool isUsing)
+    {
+        if (astronaut.HeldItemVisual != null) astronaut.HeldItemVisual.IsUsing = isUsing;
     }
 
     private void OnDrilledLocally(int damage)

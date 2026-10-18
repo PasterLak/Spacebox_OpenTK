@@ -25,6 +25,8 @@ namespace Spacebox.Game.Player
         private EquipmentFlashlightBinder _flashlightBinder;
         public FallDamage FallDamage { get; private set; }
 
+        public bool IsUsingItem => PanelUI.CurrentSlot() is { HasItem: true, Item: DrillItem } && PanelUI.IsHeldItemAnimating;
+
         public EquipmentItem? ActiveFlashlightItem => Equipment.FlashlightItem ?? HeldFlashlightItem;
         public bool CanUseFlashlight => GameMode == GameMode.Spectator || ActiveFlashlightItem != null;
 

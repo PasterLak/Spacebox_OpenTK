@@ -108,6 +108,7 @@ public static class CombatNetwork
         projectile.FastForward(latency);
 
         if (GameSession.HasLocalPlayer) _sounds.PlayShot(weapon, message.Origin);
+        PlayShotKick(sender);
 
         network.SendToClients(new ProjectileSpawnMessage
         {
@@ -144,6 +145,12 @@ public static class CombatNetwork
         projectile.FastForward(message.Age + network.LatencyToServer);
 
         _sounds.PlayShot(weapon, message.Origin);
+        PlayShotKick(message.ShooterPeer);
+    }
+
+    private static void PlayShotKick(int shooterPeer)
+    {
+        if (PlayerHitboxes.FindPlayer(shooterPeer) is RemoteAstronaut shooter) shooter.HeldItemVisual?.PlayKick();
     }
 
     private static void OnPlayerDamage(int sender, PlayerDamageMessage message)

@@ -11,8 +11,20 @@ namespace Spacebox.Game.Player
         private ItemWorldModel _itemModel;
         private SimpleBlock _blockModel;
 
+        private const float VibrationSpeed = 55f;
+        private const float VibrationAmount = 0.012f;
+        private const float KickDistance = 0.08f;
+        private const float KickRecovery = 12f;
+
+        private static readonly Vector3 ItemBasePosition = new Vector3(0.35f, -0.47f, -0.25f);
+        private static readonly Vector3 BlockBasePosition = new Vector3(0.35f, -0.25f, -0.45f);
+
         private bool _isHoldingBlock;
         private bool _isHoldingItem;
+        private float _kick;
+        private float _time;
+
+        public bool IsUsing { get; set; }
 
         public HandItemVisualizer(Astronaut owner)
         {
@@ -28,7 +40,7 @@ namespace Spacebox.Game.Player
 
             _itemModel.Rotate(new Vector3(10, 90, -10));
             _itemModel.SetScale(0.6f);
-            _itemModel.Position = new Vector3(0.35f, -0.47f, -0.25f);
+            _itemModel.Position = ItemBasePosition;
             _itemModel.Enabled = false;
 
             _blockModel = new SimpleBlock(new TextureMaterial(GameAssets.BlocksTexture), Vector3.Zero) { DisposesTexture = false };
@@ -36,7 +48,7 @@ namespace Spacebox.Game.Player
 
             _blockModel.SetScale(0.2f);
             _blockModel.Rotate(0, 180, 0);
-            _blockModel.Position = new Vector3(0.35f, -0.25f, -0.45f);
+            _blockModel.Position = BlockBasePosition;
             _blockModel.Enabled = false;
         }
 
@@ -81,6 +93,28 @@ namespace Spacebox.Game.Player
                 _blockModel.ChangeUV(uv, face, false);
             }
             _blockModel.RegenerateMesh();
+        }
+
+        public void PlayKick()
+        {
+            _kick = 1f;
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            if (_owner.IsMain) return;
+
+            float deltaTime = Time.Delta;
+            _time += deltaTime;
+            _kick = MathF.Max(0f, _kick - KickRecovery * deltaTime * _kick - deltaTime);
+
+            var offset = new Vector3(0f, 0f, _kick * KickDistance);
+            if (IsUsing)
+                offset += new Vector3(MathF.Sin(_time * VibrationSpeed) * VibrationAmount, MathF.Cos(_time * VibrationSpeed * 1.3f) * VibrationAmount * 0.5f, 0f);
+
+            _itemModel.Position = ItemBasePosition + offset;
+            _blockModel.Position = BlockBasePosition + offset;
         }
 
         public override void Render()

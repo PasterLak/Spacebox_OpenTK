@@ -108,6 +108,7 @@ Small
 - straight item pipe (output only up), configurable pipe output sides, filter slot tooltip, filter slot is not filled by shift-click
 - astronaut oxygen tank model is hidden when the player has no oxygen (synced to other players)
 - armor models on astronauts (helmet, chest, shoulders, arms, legs, boots) from the GameSet, 1 texel outside the body, aluminium/iron/titanium textures, visible on local and remote players
+- remote players' held items animate: drill vibrates while drilling, weapons kick back on every shot (synced)
 - fall damage in gravity (survival): from 5 blocks on Earth gravity, per-preset safe height and damage (Moon 8/2, Mars 6/3, Earth 5/4, Jupiter 3/6), impact sound (other players hear it in 3D)
 - data-driven mobs (GameSet Mobs/*.json), console command mob <id>|list|clear
 - Mineral Parasite Larva item spawns a parasite (item type mob_spawner)

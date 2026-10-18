@@ -19,6 +19,7 @@ namespace Spacebox.Game.Player
         public Flashlight Flashlight { get; private set; }
 
         protected HandItemVisualizer HandVisualizer;
+        public HandItemVisualizer HeldItemVisual => HandVisualizer;
         protected ColliderComponent sphereCollision;
         public int SkinId { get; protected set; }
 

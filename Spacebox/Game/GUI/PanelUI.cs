@@ -75,6 +75,8 @@ namespace Spacebox.Game.GUI
             ItemModel.Render();
         }
 
+        public static bool IsHeldItemAnimating => ItemModel is AnimatedItemModel { Animator.IsActive: true };
+
         public static ItemModel GetSlotModel()
         {
             return GameAssets.ItemModels[SelectedSlot.Item.Id];
