@@ -128,10 +128,16 @@ namespace Spacebox.Game
             {
                 Position = Camera.Main.PositionWorld;
 
+                var cameraTranslation = Matrix4.CreateTranslation(Camera.Main.CameraRelativeRender ? RenderSpace.ToRender(Position) : Position);
+                var cameraRotation = Matrix4.CreateRotationY(additionalRotationAngle);
+
                 model =
                      Matrix4.CreateTranslation(animatedOffset) * SwayMatrix *
-                     Matrix4.CreateTranslation(Camera.Main.CameraRelativeRender ? RenderSpace.ToRender(Position) : Position) *
-                     Matrix4.CreateRotationY(additionalRotationAngle);
+                     cameraTranslation *
+                     cameraRotation;
+
+                Material.LightModel = Matrix4.CreateTranslation(EndPosition) * cameraTranslation * cameraRotation;
+                Material.ViewToRender = null;
 
                 Material.Apply(model);
             }
@@ -159,6 +165,12 @@ namespace Spacebox.Game
                      additionalRotation *
                      Matrix4.CreateTranslation(itemCamera.Position);
 
+                Material.LightModel =
+                     Matrix4.CreateTranslation(EndPosition) *
+                     additionalRotation *
+                     Matrix4.CreateTranslation(itemCamera.Position);
+                Material.ViewToRender = GetViewToRender();
+
                 Material.Action = () =>
                 {
                     Material.Shader.Use();
@@ -173,6 +185,16 @@ namespace Spacebox.Game
 
             Material.Apply(model);
             Mesh.Render();
+        }
+
+        private static Matrix4? GetViewToRender()
+        {
+            var camera = Camera.Main;
+            if (camera == null) return null;
+
+            var viewToRender = camera.GetViewMatrix().Inverted();
+            viewToRender.Row3 = new Vector4(RenderSpace.ToRender(camera.PositionWorld), 1f);
+            return viewToRender;
         }
 
         private void PlaceModelDebug()

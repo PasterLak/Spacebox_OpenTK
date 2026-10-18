@@ -6,7 +6,14 @@ layout (location = 2) in vec2 aTexCoord;
 uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
+uniform mat4 lightModel;
+uniform int useLightModel = 0;
+uniform mat4 viewToRender;
+uniform int useViewToRender = 0;
 out vec3 Normal;
+out vec3 LightNormal;
+out vec3 LightPos;
+out vec3 LightView;
 out vec3 FragPos;
 out vec2 TexCoords;
 out vec3 vPos;
@@ -19,7 +26,22 @@ void main()
    Normal = aNormal;
    TexCoords = aTexCoord;
    vPos = wp.xyz;
-   screenPos = gl_Position;
+   screenPos = useLightModel == 1 ? vec4(aPosition, 1.0) * lightModel * view * projection : gl_Position;
+
+   if (useViewToRender == 1)
+   {
+       vec4 viewPos = wp * view;
+       mat3 toRender = mat3(viewToRender);
+       LightPos = (viewPos * viewToRender).xyz;
+       LightNormal = aNormal * mat3(model) * mat3(view) * toRender;
+       LightView = normalize(-viewPos.xyz) * toRender;
+   }
+   else
+   {
+       LightPos = wp.xyz;
+       LightNormal = aNormal;
+       LightView = vec3(0.0);
+   }
 }
 
 --Frag
@@ -31,6 +53,11 @@ in vec3 Normal;
 in vec2 TexCoords;
 in vec3 vPos;
 in vec4 screenPos;
+in vec3 LightNormal;
+in vec3 LightPos;
+in vec3 LightView;
+uniform int useViewToRender = 0;
+uniform vec3 viewPos;
 
 layout(location = 0) out vec4 gColor;   
 layout(location = 1) out vec4 gNormal; 
@@ -55,7 +82,7 @@ void main()
        discard;
 
    vec3 norm = normalize(Normal);
-   vec3 V = normalize(CAMERA_POS - vPos);
+   vec3 V = normalize((useViewToRender == 1 ? viewPos : CAMERA_POS) - vPos);
    vec3 base = texColor.rgb;
    
    vec3 lightDirection = normalize(lightDir);
@@ -65,7 +92,9 @@ void main()
    vec3 ambientBase = base * clamp(0.3 + AMBIENT * 0.6, 0.5, 1);
    vec3 directionalLight = shading * ambientBase;
    
-   vec3 pointLight = accumulatePointLightsWithAmbient(norm, V, vPos, base, vec3(0.1)) * pointLightStrength;
+   vec3 lightNorm = normalize(LightNormal);
+   vec3 lightV = useViewToRender == 1 ? normalize(LightView) : V;
+   vec3 pointLight = accumulatePointLightsWithAmbient(lightNorm, lightV, LightPos, base, vec3(0.1)) * pointLightStrength;
    float shadowFactor = smoothstep(shadows, 1.0, diff);
    pointLight *= shadowFactor;
 

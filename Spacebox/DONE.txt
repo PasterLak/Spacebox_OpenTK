@@ -133,6 +133,9 @@ Fixes
 - gravity strength changes jump height (same jump speed, at least 1.2 m)
 - gravity walking: stuck at walls and bumps on flat floor (box collision in entity-local space, slides along walls)
 - pause screen faded out after opening the port (darkening now fixed, not a time-based fade)
+- held item flashlight spot stayed on screen while the drill shook/swayed (visible border); light now follows the item
+- held item lit by point lights in the wrong place (item camera space vs world lights), light slid over the model while turning or boosting
+- held item flashlight shading broke into a moving border when flying fast (view vector used the moving world camera instead of the item camera)
 
 Engine
 - networking: LiteNetLib transport, NetworkManager (offline/host/client/dedicated), messages, NetworkObject/NetworkBehaviour, [Rpc] methods, NetworkVariable, spawner, NetworkTransform

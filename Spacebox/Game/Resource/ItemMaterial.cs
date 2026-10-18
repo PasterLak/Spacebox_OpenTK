@@ -48,11 +48,20 @@ namespace Spacebox.Game.Resource
 
         public Action Action;
 
+        public Matrix4? LightModel { get; set; }
+        public Matrix4? ViewToRender { get; set; }
+
         protected override void UpdateDynamicUniforms()
         {
             base.UpdateDynamicUniforms();
 
             Action?.Invoke();
+
+            Shader.SetInt("useLightModel", LightModel.HasValue ? 1 : 0);
+            if (LightModel.HasValue) Shader.SetMatrix4("lightModel", LightModel.Value);
+
+            Shader.SetInt("useViewToRender", ViewToRender.HasValue ? 1 : 0);
+            if (ViewToRender.HasValue) Shader.SetMatrix4("viewToRender", ViewToRender.Value);
         }
        
     }
