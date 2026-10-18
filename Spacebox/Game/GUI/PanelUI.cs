@@ -241,6 +241,8 @@ namespace Spacebox.Game.GUI
             }
             else if (IsHolding<ConsumableItem>())
                 player.SetInteraction(new InteractionConsumeItem(SelectedSlot));
+            else if (IsHolding<MobSpawnerItem>())
+                player.SetInteraction(new InteractionSpawnMob(SelectedSlot));
             else if (IsHolding<EraserToolItem>())
                 player.SetInteraction(new InteractionEraser());
             else if (IsHolding<CameraPointItem>())

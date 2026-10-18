@@ -36,6 +36,7 @@ Game-independent engine over OpenTK (GL 3.3 core). Namespace `Engine.*`. Must ne
 | `Math/`, `VectorExtensions.cs` | Byte vectors, colors, helpers |
 | `Utils/` | `ObjLoader`, `PixelDataLoader`, `FastNoiseLite`, `GenMesh`, `ShaderHotReloader`, `DirectoryArchive` (zip folders, content hash, safe extract) |
 | `Debug.cs`, `VisualDebug.cs`, `Prof.cs` | Logging + console, debug lines (F4), profiler scopes; `Debug.MirrorToStandardOutput`, `Debug.ExecuteCommand` |
+| `AI/` | `StateMachine/` (`State<TContext>`, hierarchical `StateMachine<TContext>`), `Pathfinding/` (`INavigationGrid`, `VoxelLine` DDA, `VoxelPathfinder` A*, `PathRequest`, `PathScheduler` with per-frame node budget) — main thread only |
 | `Networking/` | `NetworkManager` (modes, peers, send), `Transport/` (`INetTransport`, `LiteNetTransport`), `Serialization/` (`NetWriter`, `NetReader`, `NetSerializer`), `Messages/`, `Objects/` (`NetworkObject`, `NetworkBehaviour`, `NetworkVariable<T>`, `NetworkSpawner`, `ReplicationSystem`), `Rpc/` (`[Rpc]`, `RpcSystem`), `Behaviours/NetworkTransform`, `Transfer/` (`NetTransferService` = `NetworkManager.Transfers`, chunked blob downloads) |
 | `ServiceLocator.cs`, `EventBus.cs`, `DisposalManager.cs`, `Pool.cs`, `TickTaskManager.cs`, `TimedEventManager.cs` | Services (see below) |
 

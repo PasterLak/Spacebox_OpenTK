@@ -19,6 +19,7 @@ Game project on top of `Engine` (see `Engine/CLAUDE.md`). World hierarchy, GameS
 
 | Path | Purpose |
 |---|---|
+| `Game/Mobs/` | Mobs: `Mob`, `MobSystem`, `MobDefinition`, senses, locomotion, `Navigation/`, `Feeding/`, `States/`, `Brains/`, `Spawning/` (see Mobs) |
 | `Game/Player/` | `Astronaut`, `LocalAstronaut`, `RemoteAstronaut`, movement, flashlight, projectiles, death, stats, player save |
 | `Game/Player/GameModes/` | `GameModeBase` + Survival / Creative / Spectator / Camera |
 | `Game/Player/Interactions/` | `InteractionMode` subclasses + `InteractionHandler` |
@@ -114,6 +115,13 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 - Attach `SphereBody(physics, radius)` to a node: it registers itself and unregisters on detach (`RemoveChild` does not detach, so call `DetachComponent`). Non-kinematic bodies move by `Velocity` with per-axis substeps and bounce (`Bounciness`). The player has a kinematic body (`LocalAstronaut.EnablePhysics`).
 - Projectiles damage `body.Owner is IDamageable`; the shooter's body is ignored. Drills damage `body.Owner is IDrillable` (tier damage per second, `InteractionDestroyBlock.TryDrillTarget`).
 - The player pushes non-kinematic bodies on contact (`MovementMode.PushBody`, `BodyPushFactor`).
+
+## Mobs
+
+- Definitions: `GameSets/<set>/Mobs/*.json` (`MobJSON` → `MobDefinition`, `MobsLoader`, `GameAssets.Mobs`). A new mob with existing behaviour is JSON + model/texture only.
+- New behaviour: build a `StateMachine<MobContext>` from states in `Game/Mobs/States/` (or new `State<MobContext>` classes) in an `IMobBrain`, register it in `MobBrainFactory` under the JSON `Behaviour` name.
+- AI, spawning and despawning run only on the server; replicas only animate. Mob changes visible to clients go through `IMobLink` (`MobNetwork`).
+- Spawner items: `MobSpawnerItem` (`Type: "mob_spawner"`), `InteractionSpawnMob`, `MobSpawnNetwork`.
 
 ## Oxygen
 

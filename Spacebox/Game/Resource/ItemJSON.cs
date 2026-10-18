@@ -47,6 +47,12 @@ public class ConsumableItemJSON : ItemJSON
     public string Sound { get; set; } = "default";
 }
 
+public class MobSpawnerItemJSON : ItemJSON
+{
+    public string Mob { get; set; } = "";
+    public float UseCooldown { get; set; } = 0.5f;
+}
+
 public class WeaponItemJSON : ItemJSON
 {
     public byte Damage { get; set; } = 0;

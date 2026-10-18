@@ -11,6 +11,7 @@ using Spacebox.Game.Commands;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
+using Spacebox.Game.Mobs;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.Interactions;
 using Spacebox.Game.Resource;
@@ -128,6 +129,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Debug.RegisterCommand(new GameModCommand(localPlayer));
         Debug.RegisterCommand(new SpawnAroundAsteroidCommand(localPlayer));
         Debug.RegisterCommand(new TeleportToPlayerCommand(localPlayer));
+        Debug.RegisterCommand(new SpawnMobCommand(localPlayer));
 
         InventoryUI.Initialize();
         StorageUI.Initialize();
@@ -152,6 +154,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         AddChild(new ProjectileHitEffectsManager());
         AddChild(new DirectionalLight());
         AttachComponent(new TagManager());
+        AttachComponent(new MobSystem());
 
         TagsSaveLoader.LoadTags(World.WorldData.WorldFolderPath);
 

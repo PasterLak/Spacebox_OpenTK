@@ -12,6 +12,7 @@ public class SurvivalMode : MovementMode
            typeof(InteractionDestroyBlockSurvival),
             typeof(InteractionPlaceBlock),
             typeof(InteractionConsumeItem),
+            typeof(InteractionSpawnMob),
             typeof(InteractionShoot),
             typeof(InteractionDefault),
              typeof(InteractionEraser)

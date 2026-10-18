@@ -30,5 +30,6 @@ public static class SpaceboxNetwork
         SectorNetwork.Register(network);
         EntityCreationNetwork.Register(network);
         PlayerListNetwork.Register(network);
+        Mobs.MobSpawnNetwork.Register(network);
     }
 }

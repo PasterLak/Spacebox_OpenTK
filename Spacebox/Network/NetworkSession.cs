@@ -18,11 +18,13 @@ public sealed class NetworkSession : IDisposable
     private readonly LocalAstronaut _localPlayer;
     private readonly PlayerSpawnService _playerSpawner;
     private readonly Npc.SpacerSpawnService _spacerSpawner;
+    private readonly Mobs.MobSpawnService _mobSpawner;
     private float _playerSyncTimer;
     private bool _disposed;
 
     public static NetworkSession Current { get; private set; }
     public Npc.SpacerSpawnService Spacers => _spacerSpawner;
+    public Mobs.MobSpawnService Mobs => _mobSpawner;
 
     public NetworkSession(Node3D root, LocalAstronaut localPlayer)
     {
@@ -33,6 +35,7 @@ public sealed class NetworkSession : IDisposable
         network.ConnectionKey = "Spacebox:" + Application.Version;
         _playerSpawner = new PlayerSpawnService(root, _localPlayer);
         _spacerSpawner = new Npc.SpacerSpawnService(root);
+        _mobSpawner = new Mobs.MobSpawnService(root);
 
         network.Messages.Register<JoinRequestMessage>(OnJoinRequest);
         network.Messages.Register<ClientReadyMessage>(OnClientReady);
@@ -155,6 +158,7 @@ public sealed class NetworkSession : IDisposable
 
         network.Shutdown("Server stopped");
         Combat.CombatNetwork.Reset();
+        Spacebox.Network.Mobs.MobSpawnNetwork.Reset();
         Containers.ContainerNetwork.Reset();
         BlockStateNetwork.Clear();
         SectorNetwork.Clear();
@@ -162,6 +166,7 @@ public sealed class NetworkSession : IDisposable
         Moderation.ServerModeration.Reset();
         _playerSpawner.Dispose();
         _spacerSpawner.Dispose();
+        _mobSpawner.Dispose();
         PlayerRegistry.Clear();
 
         if (Current == this) Current = null;

@@ -19,6 +19,7 @@ public class CreativeMode : MovementMode
             typeof(InteractionDestroyBlockCreative),
             typeof(InteractionPlaceBlock),
             typeof(InteractionConsumeItem),
+            typeof(InteractionSpawnMob),
             typeof(InteractionShoot),
             typeof(InteractionDefault),
             typeof(InteractionEraser),

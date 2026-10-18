@@ -3,6 +3,7 @@ using Engine.Networking;
 using OpenTK.Mathematics;
 using Spacebox.Game;
 using Spacebox.Game.Player;
+using Spacebox.Game.Player.GameModes;
 
 namespace Spacebox.Network.Players;
 
@@ -13,17 +14,28 @@ public sealed class AstronautNetwork : NetworkTransform
     private readonly NetworkVariable<bool> _flashlight;
     private readonly NetworkVariable<short> _heldItem;
     private readonly NetworkVariable<bool> _isAlive;
+    private readonly NetworkVariable<bool> _isVulnerable;
 
     public static AstronautNetwork Local { get; private set; }
 
     public string PlayerName { get; set; }
     public bool IsAlive => _isAlive.Value;
+    public bool IsVulnerable => _isAlive.Value && _isVulnerable.Value;
 
     public AstronautNetwork()
     {
         _flashlight = CreateVariable(false, NetworkWritePermission.Owner);
         _heldItem = CreateVariable(NoItem, NetworkWritePermission.Owner);
         _isAlive = CreateVariable(true, NetworkWritePermission.Owner);
+        _isVulnerable = CreateVariable(false, NetworkWritePermission.Owner);
+    }
+
+    public override void OnUpdate()
+    {
+        base.OnUpdate();
+
+        if (IsSpawned && IsOwner && Owner is LocalAstronaut local)
+            _isVulnerable.Value = local.GameMode == GameMode.Survival;
     }
 
     public override void OnNetworkSpawn()

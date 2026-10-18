@@ -44,6 +44,7 @@ namespace Spacebox.Game
         public static Dictionary<short, Blueprint> Blueprints = new Dictionary<short, Blueprint>();
 
         public static Dictionary<short, ProjectileParameters> Projectiles = new Dictionary<short, ProjectileParameters>();
+        public static Dictionary<string, Mobs.MobDefinition> Mobs = new Dictionary<string, Mobs.MobDefinition>();
 
         public static TextureAtlas AtlasBlocks;
         public static TextureAtlas AtlasItems;
@@ -319,6 +320,7 @@ namespace Spacebox.Game
             Recipes.Clear();
             LootConfig = null;
             Projectiles.Clear();
+            Mobs.Clear();
             Blocks.Clear();
             Items.Clear();
             BlocksStr.Clear();

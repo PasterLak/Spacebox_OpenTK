@@ -83,6 +83,7 @@ Spacebox is a single-player voxel survival game set in an asteroid belt, with an
 | Threading | `Engine/Multithreading/WorkerPoolManager` | `ProcessorCount − 1` background workers with priority queue, plus named dedicated workers; `Enqueue(Action<CancellationToken>, Priority)` |
 | Debug | `Debug`, `VisualDebug`, `Prof`, `Overlay` | Logging, debug drawing, profiler (`PROFILING`), overlay panels (FPS, camera, threads, lighting) |
 | Console commands | `Engine/Commands` + `Spacebox/Game/Commands` | `CommandBase` / `CommandManager`; e.g. help, clear, version, teleport, gamemode, tag, clear inventory |
+| AI | `Engine/AI` | `StateMachine<TContext>` (hierarchical: a machine is itself a `State`, transitions are predicates on a context, any-state transitions, `TimeInState`); voxel pathfinding over `INavigationGrid` (`VoxelPathfinder`: straight line first via `VoxelLine` DDA, else 26-neighbour weighted A* without corner cutting, node budget with partial paths, line-of-sight smoothing; `PathScheduler` runs queued `PathRequest`s with a node budget per frame) |
 | Misc | | `ServiceLocator`, `EventBus`, `TimedEventManager`, `TickTaskManager`, `DisposalManager`, `Pool<T>` |
 
 ## 4. World Model
@@ -161,6 +162,9 @@ Behaviour subclasses are created by `BlockFactory` from the JSON `Type` string (
 - **Inventory and crafting:** `Game/Inventory`, `crafting.json`, `recipes.json`.
 - **Physics:** voxel ray hits and collisions in `VoxelPhysics`. Damage goes to `IDamageable` objects registered with `World`.
 - **Effects:** drops (`DropManager`), block destruction and mining effects, particles.
+- **Mobs** (`Game/Mobs`): data-driven (`Mobs/*.json` in the GameSet → `MobDefinition` in `GameAssets.Mobs`). `Mob` is a `Node3D` with a `SphereBody`; mouth = model +Z, it faces its movement, food or target. AI runs only on the server: `MobSenses` (sight range, field of view, hearing range, line of sight through blocks, alert on damage, forget time), `MobLocomotion` (path requests through `MobSystem.Paths`, waypoint steering, repath, stuck/unreachable flags), brain from `MobBrainFactory` by `Behaviour` (a `StateMachine<MobContext>` of reusable states in `Mobs/States`). Navigation uses `MobNavigationGrid`, anchored to the nearest asteroid's block grid (entity-local cells, also rotated entities) or to world cells in empty space. `MobSpawner` (server) spawns around players by the `Spawn` rules; mobs farther than `DespawnDistance` from every player are despawned; mobs are not saved. `MobSystem` (scene component) owns the scheduler, spawner, despawning and the live mob list.
+- **Mineral parasite** (`behaviour: parasite`): 50 HP, bite 8–20 every 1.2 s in 1.6 m, sees 14 m (140° FOV, hears 4 m). Forages (search food → approach → eat 3 s → repeat, wander if nothing found) on natural blocks (all asteroid layer/vein blocks, `NaturalBlocks`), chases and bites visible survival players, 10 % of parasites flee instead. Spawns only in unlit air cells next to natural blocks, max 1 per chunk, 24 total, 16–48 m from a player. Drops one random rock/cobaltite/ice block.
+- **Mob spawner items** (`Type: "mob_spawner"`, `Mob`: mob id, `UseCooldown`): RMB spawns the mob at the aimed surface or 3 m ahead (consumed in survival); `mineral_parasite_spawner`. Console: `mob <id> [count]`, `mob list`, `mob clear` (server only).
 
 ## 6. Content & Modding
 
@@ -177,6 +181,7 @@ GameSets/Default/
   crafting.json    crafting categories/blueprints
   recipes.json     processing recipes (furnace, crusher, …)
   Blocks/ Items/ Emissions/ Sounds/ UI/ Projectiles/ AI/
+  Mobs/            mob definitions (Id, Behaviour, Model, Texture, Health, Min/MaxDamage, speeds, senses, FleeChance %, EatTime, EdibleBlocks (empty = natural blocks), Drops, Spawn rules); all fields have defaults
   Generation/      generator.json, Asteroids/, Biomes/, Loot/, Structures/
   Player/          spawn parameters
   Optional/        lighting.json
@@ -227,11 +232,12 @@ The game is always client and server at once (Godot-style shared world). Engine 
 - **Transfers (engine):** `NetworkManager.Transfers` sends large blobs in 32 KB chunks (16 per frame per transfer). The server registers providers with `Serve(name, provider)`; clients call `Request(name, completed, failed, progress)`. Max 512 MB; pending requests fail on disconnect.
 - **Sectors and entities:** when a client loads a sector it requests a manifest (`SectorManifestRequestMessage`); the server answers once it has the sector loaded with the suppressed (destroyed) procedural ids and all player-built entities (id, file name, position). The client removes destroyed asteroids and registers the player-built ones, whose data then comes through `EntitySync`. Entities destroyed permanently on the server are broadcast (`EntityRemovedMessage`). Placing a block in empty space on a client sends `EntityCreateRequestMessage`; the server creates the entity and broadcasts `EntityCreatedMessage` (id, position, first block) to everyone.
 - **Spacer:** spawned only by the server as the `spacer` network prefab (`Network/Npc/`). The server simulates physics, health and loot; clients get a kinematic replica moved by `SpacerNetwork` (a `NetworkTransform`). Client drill damage and pushes go to the server by RPC; damage effects are broadcast. Its storage is a container with an object key (`ContainerKey.ForObject(netId)`, resolved through the spawner), so loot uses the normal container sync; killing it drops the loot on the server and despawns it.
+- **Mobs:** network prefab `mob` (`Network/Mobs/`, spawn data: mob id, position, timid flag, seed). The server runs AI and physics; `MobNetwork` (a `NetworkTransform`) moves kinematic replicas and replicates the current `MobAction` (chewing animation). Bites, hurt and death effects are client RPCs; only the bitten player applies the damage (survival only). Player vulnerability (alive + survival) is an owner-written `AstronautNetwork` variable used for targeting. Drill damage and pushes from clients go to the server by RPC. Eaten blocks are removed on the server and broadcast as normal block edits. Spawner items send `MobSpawnRequestMessage` (checked: item type, distance ≤ 8 from the player, rate limit).
 - **Players and moderation:** the server sends `PlayerListMessage` (peer, name, round-trip ping, muted, host) every second and on join/leave (`PlayerListNetwork`); the pause menu shows it in multiplayer (`PlayerListUI`). The host gets Kick, Mute and Ban buttons; the dedicated console has `kick`, `ban`, `unban`, `mute`, `unmute`. `ServerModeration` stores banned names, banned non-loopback IPs and muted names in `moderation.json` in the world folder; banned players are rejected on join, muted players' chat is dropped. Kicks and bans send the reason with the disconnect.
 - **Connection feedback:** `ClientConnector` raises `StepAdded`/`ProgressChanged` for every join step; `ConnectionScreen` (drawn by `MenuScene` over the skybox) lists them, shows the GameSet download bar and errors in red with "Back to menu". Disconnects in game (`NetworkSession`) load the menu and show the reason (`DisconnectReasons.Describe` turns transport codes into text).
 - **Time:** the server sends `TimeSyncMessage` to a joining client and every 10 s; clients snap when they drift more than 40 ticks.
 - **DNA reconstructor:** the DNA count is block state, so clients see whether respawn is possible without opening it.
-- **Not synced yet:** other physics bodies (none besides the spacer and the player exist); no LAN discovery yet. Remote players in a sector other than the host's still use the host sector for drop and physics collisions.
+- **Not synced yet:** other physics bodies (none besides the spacer, mobs and the player exist); no LAN discovery yet. Remote players in a sector other than the host's still use the host sector for drop and physics collisions.
 
 ## 9. Build, Test & Distribution
 

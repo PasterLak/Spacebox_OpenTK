@@ -93,6 +93,7 @@ public static class GameSetLoader
         LoadRecipes(modPath, defaultModPath);
         LoadCrafting(modPath, defaultModPath);
         LoadLoot(modPath, defaultModPath);
+        MobsLoader.Load(modPath, defaultModPath);
         LoadSettings(modPath);
         LoadOptionalFiles(modPath);
 
@@ -455,6 +456,10 @@ public static class GameSetLoader
                         case "consumable":
                             var consumableData = itemElement.Deserialize<ConsumableItemJSON>();
                             if (consumableData != null) registeredItem = RegisterConsumableItem(consumableData, idString);
+                            break;
+                        case "mob_spawner":
+                            var spawnerData = itemElement.Deserialize<MobSpawnerItemJSON>();
+                            if (spawnerData != null) registeredItem = RegisterMobSpawnerItem(spawnerData, idString);
                             break;
                         case "equipment":
                             var equipmentData = itemElement.Deserialize<EquipmentJSON>();
@@ -933,6 +938,21 @@ public static class GameSetLoader
         GameAssetsRegister.RegisterItem(consumableItem, data.Sprite);
 
         return consumableItem;
+    }
+
+    private static Item RegisterMobSpawnerItem(MobSpawnerItemJSON data, string id)
+    {
+        data.ValidateMaxStack();
+        var spawnerItem = new MobSpawnerItem((byte)data.MaxStack, data.Name, data.ModelDepth)
+        {
+            Id_string = id,
+            Category = data.Category,
+            MobId = data.Mob,
+            UseCooldown = data.UseCooldown,
+        };
+        GameAssetsRegister.RegisterItem(spawnerItem, data.Sprite);
+
+        return spawnerItem;
     }
 
     private static Item RegisterEquipmentItem(EquipmentJSON data, string id)

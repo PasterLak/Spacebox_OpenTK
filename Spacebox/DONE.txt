@@ -83,6 +83,11 @@ Game
 
 Small
 - double click to open a world
+- mineral parasite mob model and texture (Resources/Models/mineral_parasite.obj, Textures/Mobs/mineral_parasite.png; Blender source and build scripts in Assets/Models)
+- mineral parasite mob: eats natural blocks, bites survival players (8-20), 50 hp, 10% flee, spawns in dark near asteroid blocks (1 per chunk), drops a rock, multiplayer synced
+- data-driven mobs (GameSet Mobs/*.json), console command mob <id>|list|clear
+- Mineral Parasite Larva item spawns a parasite (item type mob_spawner)
+- engine: hierarchical state machine and voxel pathfinding (A*, open space shortcut, path scheduler)
 - multiplayer pause: player list with ping; host can kick, mute and ban (bans/mutes saved in moderation.json of the world, console: ban, unban, mute, unmute)
 - connection screen over the skybox: every join step as text, GameSet download progress, red errors with "Back to menu"; kicks, bans and disconnects show the reason
 - multiplayer: missing GameSet is downloaded from the server into Server/<host_port>/GameSet (local GameSets untouched, reused if unchanged)
