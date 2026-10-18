@@ -40,7 +40,7 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
         _screenshotAudio = new AudioSource(Resources.Load<AudioClip>("screenshot", true));
 
         ApplyDisplaySettings();
-        Debug.MirrorToStandardOutput = LaunchOptions.IsHidden;
+        Debug.MirrorToStandardOutput = LaunchOptions.IsHidden || LaunchOptions.IsDedicated;
         SpaceboxNetwork.Initialize();
         InputManager.Instance.LoadConfiguration("Resources/default_input.json");
 

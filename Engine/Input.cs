@@ -140,9 +140,11 @@ namespace Engine
             return _gameWindow.CursorState;
 
         }
+        public static bool CursorCaptureEnabled { get; set; } = true;
+
         public static void SetCursorState(CursorState state)
         {
-            _gameWindow.CursorState = state;
+            _gameWindow.CursorState = CursorCaptureEnabled ? state : CursorState.Normal;
 
         }
         public static void HideCursor()

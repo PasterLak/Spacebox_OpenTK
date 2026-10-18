@@ -93,6 +93,7 @@ Small
 - item in hand is lit by light blocks (block light around the player, smoothed)
 - drops, spacer, players and mobs are lit by light blocks
 - items held by remote players and mob eating dust are lit by light blocks
+- dedicated server: start-server.bat / start-server.sh, all log messages in the terminal (Windows release too), no mouse capture by the hidden window, clean exit on stop
 - data-driven mobs (GameSet Mobs/*.json), console command mob <id>|list|clear
 - Mineral Parasite Larva item spawns a parasite (item type mob_spawner)
 - engine: hierarchical state machine and voxel pathfinding (A*, open space shortcut, path scheduler)

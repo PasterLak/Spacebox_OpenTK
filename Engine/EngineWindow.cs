@@ -128,6 +128,7 @@ namespace Engine
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            if (IsQuitting) return;
             base.OnRenderFrame(e);
 
             using (Prof.Time(T_Render))
@@ -179,6 +180,7 @@ namespace Engine
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            if (IsQuitting) return;
             Prof.ResetFrame();
 
             using (Prof.Time(T_Update))
@@ -198,6 +200,7 @@ namespace Engine
                 {
                     try { action.Invoke(); }
                     catch (Exception ex) { Debug.Error($"Exception in main thread action: {ex}"); }
+                    if (IsQuitting) return;
                 }
 
                 UpdateDefaultInputs();
@@ -391,8 +394,13 @@ namespace Engine
             return ClientSize.X / (float)ClientSize.Y;
         }
 
+        public bool IsQuitting { get; private set; }
+
         public virtual void Quit()
         {
+            if (IsQuitting) return;
+            IsQuitting = true;
+
             if (SceneManager.Current != null)
                 SceneManager.Current.UnloadContent();
 

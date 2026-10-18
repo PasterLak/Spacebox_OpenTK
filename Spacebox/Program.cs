@@ -16,6 +16,12 @@ public static class Program
     {
         LaunchOptions.Parse(args);
 
+        if (LaunchOptions.IsDedicated)
+        {
+            Engine.Utils.TerminalConsole.Attach("Spacebox Server");
+            Engine.Input.CursorCaptureEnabled = false;
+        }
+
        
         var monitor = Monitors.GetPrimaryMonitor();
         var _audioManager = AudioDevice.Instance; // move!!!!

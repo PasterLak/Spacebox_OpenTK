@@ -285,7 +285,7 @@ public class InputManager
     public void SetCursorState(CursorState state)
     {
         if (window != null)
-            window.CursorState = state;
+            window.CursorState = Engine.Input.CursorCaptureEnabled ? state : CursorState.Normal;
     }
 
     public void CenterCursor()

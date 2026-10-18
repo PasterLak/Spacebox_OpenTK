@@ -120,8 +120,6 @@ namespace Engine
 
         private static void AddMessage(string message, Vector4? color = null)
         {
-            if (MirrorToStandardOutput) System.Console.Out.WriteLine(message);
-
             var msg = new ConsoleMessage(message, color ?? infoColor);
 
             switch (color)
@@ -138,6 +136,7 @@ namespace Engine
                 default:
                     break;
             }
+            MirrorMessage(message, msg.Type);
             lock (_lock)
             {
                 _messages.Add(msg);
@@ -147,8 +146,6 @@ namespace Engine
 
         private static void AddMessage(string message, OpenTK.Mathematics.Color4 color)
         {
-            if (MirrorToStandardOutput) System.Console.Out.WriteLine(message);
-
             var msg = new ConsoleMessage(message, new Vector4(color.R, color.G, color.B, color.A));
 
             switch (color)
@@ -165,8 +162,30 @@ namespace Engine
                 default:
                     break;
             }
+            MirrorMessage(message, msg.Type);
             _messages.Add(msg);
             messageCount++;
+        }
+
+        private static readonly object _mirrorLock = new object();
+
+        private static void MirrorMessage(string message, MessageType type)
+        {
+            if (!MirrorToStandardOutput) return;
+
+            lock (_mirrorLock)
+            {
+                var previous = System.Console.ForegroundColor;
+                System.Console.ForegroundColor = type switch
+                {
+                    MessageType.Error => System.ConsoleColor.Red,
+                    MessageType.Warning => System.ConsoleColor.Yellow,
+                    MessageType.Success => System.ConsoleColor.Green,
+                    _ => previous
+                };
+                System.Console.Out.WriteLine($"[{System.DateTime.Now:HH:mm:ss}] {message}");
+                System.Console.ForegroundColor = previous;
+            }
         }
 
         public static void WriteLine(string message)
