@@ -353,25 +353,47 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     }
 
+    private const float EntityQueryMargin = 1f;
+
+    private readonly BoundingBox _rayProbeBox = new BoundingBox(Vector3.Zero, Vector3.Zero);
+
     public bool IsColliding(Vector3 positionWorld, BoundingVolume volume, out CollideInfo collideInfo)
     {
-        if (TryGetNearestEntity(positionWorld, out var entity))
+        float margin = volume.GetLongestSide() + EntityQueryMargin;
+        float marginSquared = margin * margin;
+
+        for (int i = 0; i < Entities.Count; i++)
         {
-            return entity.IsColliding(volume, out collideInfo);
+            var entity = Entities[i];
+            if (DistanceSquaredToGeometry(entity, positionWorld) > marginSquared) continue;
+            if (entity.IsColliding(volume, out collideInfo)) return true;
         }
+
         collideInfo = new CollideInfo();
         return false;
     }
 
     public bool Raycast(Ray ray, out HitInfo hitInfo)
     {
-        if (TryGetNearestEntity(ray.Origin, out var entity))
+        hitInfo = new HitInfo();
+        bool found = false;
+        float closestSquared = float.MaxValue;
+
+        for (int i = 0; i < Entities.Count; i++)
         {
-            return entity.Raycast(ray, out hitInfo);
+            var entity = Entities[i];
+            if (!RayMayHit(entity, ray)) continue;
+            if (!entity.Raycast(ray, out var hit)) continue;
+
+            float distanceSquared = (hit.hitPosition - ray.Origin).LengthSquared;
+            if (distanceSquared >= closestSquared) continue;
+
+            closestSquared = distanceSquared;
+            hitInfo = hit;
+            found = true;
         }
 
-        hitInfo = new HitInfo();
-        return false;
+        return found;
     }
 
     public bool TryGetNearestEntity(Vector3 positionWorld, out SpaceEntity entity)
@@ -379,20 +401,40 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         entity = null;
         if (Entities.Count == 0) return false;
 
-        float nearestDistSq = float.MaxValue;
+        float nearestGeometry = float.MaxValue;
+        float nearestCenter = float.MaxValue;
 
-        for (byte i = 0; i < Entities.Count; i++)
+        for (int i = 0; i < Entities.Count; i++)
         {
-            Vector3 diff = positionWorld - Entities[i].CenterOfMassWorld;
-            float distSq = diff.LengthSquared;
-            if (distSq < nearestDistSq)
+            var candidate = Entities[i];
+            float geometry = DistanceSquaredToGeometry(candidate, positionWorld);
+            float center = (positionWorld - candidate.CenterOfMassWorld).LengthSquared;
+
+            if (geometry < nearestGeometry || (geometry == nearestGeometry && center < nearestCenter))
             {
-                nearestDistSq = distSq;
-                entity = Entities[i];
+                nearestGeometry = geometry;
+                nearestCenter = center;
+                entity = candidate;
             }
         }
 
         return true;
+    }
+
+    private static float DistanceSquaredToGeometry(SpaceEntity entity, Vector3 positionWorld)
+    {
+        if (entity.Chunks.Count == 0) return float.MaxValue;
+        return SpaceMath.World.DistanceToBox(entity.ToEntitySpace(positionWorld), entity.GeometryBoundingBox);
+    }
+
+    private bool RayMayHit(SpaceEntity entity, Ray ray)
+    {
+        if (entity.Chunks.Count == 0) return false;
+
+        var bounds = entity.ToWorldBounds(entity.GeometryBoundingBox);
+        _rayProbeBox.Center = bounds.Center;
+        _rayProbeBox.Size = bounds.Size + new Vector3(EntityQueryMargin * 2f);
+        return _rayProbeBox.Contains(ray.Origin) || ray.Intersects(_rayProbeBox, out _);
     }
 
 
@@ -712,8 +754,6 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             var entity = Entities[i];
 
             entity.Update();
-
-            VisualDebug.DrawSphere(entity.CenterOfMassWorld, entity.GravityRadius, 8, Color4.Blue);
         }
     }
 

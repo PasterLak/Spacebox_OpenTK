@@ -84,3 +84,4 @@ Game content is JSON, not code: `Spacebox/GameSets/<Name>/` (`Default` is the ba
 - Shaders are GLSL files under `Spacebox/Resources/Shaders/`, loaded by path without extension (e.g. `Resources.Load<Shader>("Resources/Shaders/PostProcessing/vignette", true)`).
 - `Spacebox/TODO.txt`, `BUGS.txt` are the author's task tracking; `DONE.txt` is the changelog (see Project rules).
 - API docs can be generated with Doxygen (`Doxyfile` at the root, theme in `Documentation/`).
+- `ships-design.md`: design of player-built ships (movable entities, thrusters, consoles, cannons, camera blocks, boarding, collisions, multiplayer) and the planned work packages. Read it before working on movable entities or ship blocks.

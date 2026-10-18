@@ -169,6 +169,8 @@ Fixes
 - version converter upgraded worlds past the app version and failed for worlds already up to date
 - sliding doors changed colour while moving (no block light on the animated mesh)
 - held item looked emissive near light blocks (block light on it softened and desaturated)
+- block placement range of asteroids grew with mass (heavy asteroids grabbed blocks far away); now 16 blocks from the nearest block
+- player and bullets went through an asteroid when a small entity was built next to it (collisions and raycasts only checked the entity with the nearest center of mass)
 
 Engine
 - Engine.Tests project (engine-only tests), Spacebox.Tests fixed and extended

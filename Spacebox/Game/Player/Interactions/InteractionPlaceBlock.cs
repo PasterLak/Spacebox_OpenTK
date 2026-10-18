@@ -279,7 +279,7 @@ public class InteractionPlaceBlock : InteractionMode
         var currentData = BlockSelector.Instance.CurrentBlockData;
         bool insideEntityRange = entity != null &&
                                  entity.IsPositionWithinEntitySize(selectorPosition) &&
-                                 entity.IsPositionWithinGravityRadius(selectorPosition);
+                                 entity.IsWithinBuildRange(selectorPosition);
         bool structureBlocked = currentData != null && insideEntityRange &&
                                 (currentData.IsMultiblock
                                     ? !entity.CanPlaceStructure(selectorPosition, currentData, finalDir, finalRot)
@@ -295,9 +295,7 @@ public class InteractionPlaceBlock : InteractionMode
 
         if (entity != null)
         {
-            var dis = Vector3.DistanceSquared(selectorPosition, entity.CenterOfMass);
-
-            if (dis <= entity.GravityRadius * entity.GravityRadius)
+            if (insideEntityRange)
             {
                 lineRenderer.Points[0] = entity.ToWorldSpace(selectorPosition + new Vector3(0.5f, 0.5f, 0.5f));
                 lineRenderer.Points[1] = entity.CenterOfMassWorld;

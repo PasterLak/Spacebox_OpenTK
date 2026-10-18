@@ -285,7 +285,6 @@ namespace Spacebox.Game.Generation
             }
 
             CalculateCenterOfMass();
-            CalculateGravityRadius();
             _entityMassString = Mass.ToString("N0").Replace(",", ".");
         }
 
@@ -302,14 +301,12 @@ namespace Spacebox.Game.Generation
                 sumPosCenterOfMass += Chunks[i].GetCenterOfMass() * chunkMass;
             }
             CalculateCenterOfMass();
-            CalculateGravityRadius();
             _entityMassString = Mass.ToString("N0").Replace(",", ".");
         }
 
         private void UpdateEntityGeometryMinMax(Chunk chunk)
         {
             RecalculateGeometryBoundingBox();
-            CalculateGravityRadius();
         }
 
         private void RecalculateGeometryBoundingBox()
@@ -384,7 +381,7 @@ namespace Spacebox.Game.Generation
             if (GameAssets.Blocks.TryGetValue(block.Id, out var blockData) && blockData.IsMultiblock)
                 return TryPlaceStructure(worldPosition, block, blockData);
 
-            if (!IsPositionWithinEntitySize(worldPosition) || !IsPositionWithinGravityRadius(worldPosition))
+            if (!IsPositionWithinEntitySize(worldPosition) || !IsWithinBuildRange(worldPosition))
                 return false;
 
             Vector3 localPos = WorldPositionToLocal(worldPosition);
@@ -437,13 +434,14 @@ namespace Spacebox.Game.Generation
         public bool CanPlaceStructure(Vector3 originPosition, BlockData blockData, Direction direction, Rotation rotation)
         {
             MultiblockLayout.GetCells(blockData, direction, rotation, _structureCells);
+            if (!IsWithinBuildRange(originPosition)) return false;
 
             for (int i = 0; i < _structureCells.Count; i++)
             {
                 var offset = _structureCells[i].Offset;
                 var position = originPosition + new Vector3(offset.X, offset.Y, offset.Z);
 
-                if (!IsPositionWithinEntitySize(position) || !IsPositionWithinGravityRadius(position) || !IsCellEmpty(position) || IsCellReserved(position))
+                if (!IsPositionWithinEntitySize(position) || !IsCellEmpty(position) || IsCellReserved(position))
                     return false;
             }
 
@@ -829,9 +827,7 @@ namespace Spacebox.Game.Generation
                   .Append(dis)
                   .Append(" m\n")
                   .Append(_entityMassString)
-                  .Append(" tn, gR: ")
-                  .Append((int)GravityRadius)
-                  .Append(" m");
+                  .Append(" tn");
             }
             else
             {
@@ -1032,34 +1028,21 @@ namespace Spacebox.Game.Generation
                 && local.Z >= -SizeBlocksHalf && local.Z < SizeBlocksHalf;
         }
 
-        public float GravityRadius { get; private set; }
+        public const int BuildAttachDistance = 16;
 
-        private const float GravityScale = 1.0f;
+        private Func<Vector3SByte, Block[,,]?> _chunkBlocksLookup;
 
-        private void CalculateGravityRadius()
+        public bool IsWithinBuildRange(Vector3 worldPosition)
         {
-            if (Mass == 0)
-            {
-                GravityRadius = 0f;
-                return;
-            }
-
-            GravityRadius = GravityScale * MathF.Pow((float)Mass, 0.32f);
-
-            GravityRadius += GeometryBoundingBox.Diagonal;
-
-            int dis = (int)Vector3.Distance(GeometryBoundingBox.Center, CenterOfMass);
-            GravityRadius += dis;
-
-            if (GravityRadius < 10)
-            {
-                GravityRadius = 10;
-            }
+            var local = WorldPositionToLocal(worldPosition);
+            var cell = new Vector3i((int)MathF.Floor(local.X), (int)MathF.Floor(local.Y), (int)MathF.Floor(local.Z));
+            _chunkBlocksLookup ??= GetChunkBlocksForProximity;
+            return BlockProximity.HasBlockWithin(cell, BuildAttachDistance, _chunkBlocksLookup);
         }
-        public bool IsPositionWithinGravityRadius(Vector3 worldPosition)
+
+        private Block[,,]? GetChunkBlocksForProximity(Vector3SByte index)
         {
-            float distanceSquared = Vector3.DistanceSquared(CenterOfMass, worldPosition);
-            return distanceSquared <= GravityRadius * GravityRadius;
+            return TryGetChunk(index, out var chunk) && !chunk.IsDisposed && chunk.Mass > 0 ? chunk.Blocks : null;
         }
 
         private void CalculateCenterOfMass()

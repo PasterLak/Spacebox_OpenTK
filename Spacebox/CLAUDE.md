@@ -101,6 +101,7 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 ## Rotated entities
 
 - `SpaceEntity.Orientation` rotates the whole entity around `PositionWorld`. Chunk positions, bounding boxes, `CenterOfMass` and placement math are in entity space (unrotated). Convert world input with `ToEntitySpace` / `DirectionToEntitySpace`, and entity-space output with `ToWorldSpace` / `ToWorldBounds` / `CenterOfMassWorld`.
+- `Sector.IsColliding` and `Sector.Raycast` test every entity whose block bounds are near (closest hit wins); `Sector.TryGetNearestEntity` picks by distance to the entity's block bounds, not its center of mass. Never resolve collisions against a single "nearest" entity — entities can touch.
 - `SpaceEntity.Raycast` takes a world ray and returns world `hitPosition`/`blockPositionWorld`/`normalWorld`; `hit.normal` and `blockPositionIndex` stay in entity space for block operations. `IsColliding` accepts world spheres.
 - Effects and drops at block positions: `BlockCenterToWorldCorner`. Build preview: pass the entity to `BlockSelector.UpdatePosition`.
 
