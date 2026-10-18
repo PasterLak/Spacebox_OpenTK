@@ -159,6 +159,11 @@ namespace Spacebox.Game.Generation
             {
                 ScheduleChunks(cam.Position, visR2, frustum, true);
                 ScheduleChunks(cam.Position, visR2, frustum, false);
+
+                var observers = WorldObservers.Remote;
+                float observerRadius2 = WorldObservers.RemoteChunkRadius * WorldObservers.RemoteChunkRadius;
+                for (int i = 0; i < observers.Count && _chunksToCheck.Count > 0; i++)
+                    ScheduleChunks(observers[i], observerRadius2, frustum, false);
             }
             base.Update();
         }

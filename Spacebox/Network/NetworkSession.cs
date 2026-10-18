@@ -80,7 +80,12 @@ public sealed class NetworkSession : IDisposable
 
     public void Update()
     {
-        if (NetworkManager.Instance.IsServer) Combat.PlayerHitboxes.Record();
+        if (NetworkManager.Instance.IsServer)
+        {
+            Combat.PlayerHitboxes.Record();
+            UpdateObservers();
+        }
+        Containers.ContainerNetwork.Update();
         if (!NetworkManager.Instance.IsRemoteClient || _localPlayer == null) return;
 
         _playerSyncTimer += Time.Delta;
@@ -88,6 +93,23 @@ public sealed class NetworkSession : IDisposable
 
         _playerSyncTimer = 0f;
         SendLocalPlayerData();
+    }
+
+    private readonly List<Vector3> _observerPositions = new List<Vector3>();
+
+    private void UpdateObservers()
+    {
+        _observerPositions.Clear();
+        int localPeer = NetworkManager.Instance.LocalPeerId;
+
+        foreach (var networkObject in NetworkManager.Instance.Spawner.Objects)
+        {
+            if (networkObject.OwnerPeer == localPeer || networkObject.Owner is not Astronaut) continue;
+            var transform = networkObject.GetBehaviour<AstronautNetwork>();
+            if (transform != null) _observerPositions.Add(transform.TargetPosition);
+        }
+
+        WorldObservers.SetRemote(_observerPositions);
     }
 
     public void SaveRemotePlayers()
@@ -126,6 +148,7 @@ public sealed class NetworkSession : IDisposable
 
         network.Shutdown("Server stopped");
         Combat.CombatNetwork.Reset();
+        Containers.ContainerNetwork.Reset();
         _playerSpawner.Dispose();
         PlayerRegistry.Clear();
 

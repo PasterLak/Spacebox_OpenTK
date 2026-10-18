@@ -1,10 +1,11 @@
 ﻿using Spacebox.Game.Resource;
 using Engine;
+using Engine.Networking;
 using Spacebox.Game.Physics;
 
 namespace Spacebox.Game.Generation.Blocks;
 
-public class ResourceProcessingBlock : InteractiveBlock
+public class ResourceProcessingBlock : InteractiveBlock, IContainerBlock
 {
     protected Recipe Recipe;
 
@@ -34,6 +35,30 @@ public class ResourceProcessingBlock : InteractiveBlock
     private readonly string blockType;
 
     public string BlockType => blockType;
+
+    public string ContainerWindowId => "resourceProcessing";
+
+    public IReadOnlyList<Storage> GetContainerStorages() => GetAllStorages();
+
+    public void WriteContainerState(NetWriter writer)
+    {
+        writer.Write(IsRunning);
+        writer.Write(CurrentTick);
+        writer.Write(CraftTicks);
+    }
+
+    public void ReadContainerState(NetReader reader)
+    {
+        bool running = reader.ReadBool();
+        CurrentTick = reader.ReadShort();
+        CraftTicks = reader.ReadShort();
+        if (running != IsRunning) IsRunning = running;
+    }
+
+    public void OnContainerChangedByNetwork()
+    {
+        if (!IsRunning) TryStart();
+    }
 
     public Storage[] GetAllStorages()
     {
@@ -181,6 +206,7 @@ public class ResourceProcessingBlock : InteractiveBlock
     {
         task = null;
 
+        if (Spacebox.Network.GameSession.IsRemoteClient) return false;
         if (!HasInput()) return false;
         if (IsRunning) return false;
 

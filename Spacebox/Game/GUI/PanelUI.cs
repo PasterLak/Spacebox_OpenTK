@@ -178,6 +178,7 @@ namespace Spacebox.Game.GUI
             if (!slot.HasItem) return;
             if (Player == null) return;
             if (Player.GameMode == GameMode.Spectator) return;
+            if (!Spacebox.Network.Containers.ContainerNetwork.CanDropFrom(slot)) return;
 
             var dropPosition = Player.Position + Player.Front * 0.5f;
 

@@ -33,15 +33,32 @@ public sealed class PlayerRespawner
     {
         if (!DnaReconstructorRegistry.TryFindNearestReady(_player.Position, out var reconstructor)) return false;
         if (!SafeSpawnFinder.TryFindNear(reconstructor.Entity, reconstructor.LocalCell, out var position)) return false;
+
+        if (Engine.Networking.NetworkManager.Instance.IsRemoteClient)
+        {
+            var key = new Spacebox.Network.Messages.ContainerKey(reconstructor.Entity.EntityID, reconstructor.LocalCell);
+            Spacebox.Network.Containers.ContainerNetwork.RequestTake(key, reconstructor.Data.DnaItem, 1, granted =>
+            {
+                if (granted) StartReconstruction(reconstructor, position);
+                else RespawnAtSpawnPoint();
+            });
+            return true;
+        }
+
         if (!reconstructor.TryConsumeDna()) return false;
 
+        StartReconstruction(reconstructor, position);
+        return true;
+    }
+
+    private void StartReconstruction(DnaReconstructorBlock reconstructor, Vector3 position)
+    {
         var rotation = FaceTowards(reconstructor, position);
         DnaReconstructionScreen.Play(reconstructor.Data.ReconstructionTime, () =>
         {
             _player.Revive(position);
             _player.SetRotation(rotation);
         });
-        return true;
     }
 
     private void MoveToFreeSpace()

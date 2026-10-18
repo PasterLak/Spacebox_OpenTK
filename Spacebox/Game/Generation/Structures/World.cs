@@ -294,6 +294,7 @@ public class World : Component, ISpaceStructure
     {
         base.OnDetached();
         GravityField.Clear();
+        WorldObservers.Clear();
         Explosions?.Dispose();
         Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.Clear();
 
@@ -353,6 +354,34 @@ public class World : Component, ISpaceStructure
             if (dist < Settings.VIEW_DISTANCE_TO_NEXT_SECTOR)
                 TryLoadNeighbor(baseIdx + dir, dist);
         }
+
+        LoadObserverSectors();
+    }
+
+    private void LoadObserverSectors()
+    {
+        var observers = WorldObservers.Remote;
+        for (int i = 0; i < observers.Count; i++)
+        {
+            var index = SpaceMath.Sector.GetSectorIndex(observers[i]);
+            if (loadedSectors.ContainsKey(index) || loadingSectors.Contains(index)) continue;
+
+            loadingSectors.Add(index);
+            LoadSectorAsync(index);
+        }
+    }
+
+    public static Sector SectorAt(Vector3 position)
+    {
+        var world = Instance;
+        if (world != null)
+        {
+            foreach (var sector in world.loadedSectors.Values)
+            {
+                if (sector.BoundingBox.Contains(position)) return sector;
+            }
+        }
+        return CurrentSector;
     }
 
     private void TryLoadNeighbor(Vector3i idx, float distance)
@@ -375,11 +404,24 @@ public class World : Component, ISpaceStructure
             var sector = kv.Value;
 
             if (!sector.BoundingBox.Contains(cameraPosition)
-                && SpaceMath.World.DistanceToBox(cameraPosition, sector.BoundingBox) > Settings.SECTOR_UNLOAD_DISTANCE_SQUARED)
+                && SpaceMath.World.DistanceToBox(cameraPosition, sector.BoundingBox) > Settings.SECTOR_UNLOAD_DISTANCE_SQUARED
+                && !IsNeededByObserver(sector))
             {
                 _sectorsToRemoveCache.Add(idx);
             }
         }
+    }
+
+    private static bool IsNeededByObserver(Sector sector)
+    {
+        var observers = WorldObservers.Remote;
+        for (int i = 0; i < observers.Count; i++)
+        {
+            if (sector.BoundingBox.Contains(observers[i]) ||
+                SpaceMath.World.DistanceToBox(observers[i], sector.BoundingBox) <= Settings.SECTOR_UNLOAD_DISTANCE_SQUARED)
+                return true;
+        }
+        return false;
     }
 
     private void UnloadSector(Vector3i index)

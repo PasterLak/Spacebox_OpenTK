@@ -62,6 +62,23 @@ public static class WorldEditNetwork
         if (network.IsServer) network.SendToClients(message, DeliveryMode.Reliable, sender);
     }
 
+    private static void InvokeDestroy(SpaceEntity entity, Vector3i cell)
+    {
+        if (!entity.TryGetBlockLocal(cell, out var chunk, out var index)) return;
+
+        var block = chunk.Blocks[index.X, index.Y, index.Z];
+        if (block == null || block.IsAir || block.OnDestroy == null) return;
+
+        block.OnDestroy.Invoke(new Spacebox.Game.Physics.HitInfo
+        {
+            chunk = chunk,
+            block = block,
+            blockPositionIndex = index,
+            blockPositionEntity = cell,
+            blockPositionWorld = entity.EntityLocalToWorld(new Vector3(cell.X + 0.5f, cell.Y + 0.5f, cell.Z + 0.5f))
+        });
+    }
+
     private static void Apply(BlockEditMessage message)
     {
         var world = World.Instance;
@@ -71,6 +88,7 @@ public static class WorldEditNetwork
 
         if (message.IsRemoval)
         {
+            if (NetworkManager.Instance.IsServer) InvokeDestroy(entity, message.Cell);
             entity.RemoveBlockAtLocal(local, new Vector3SByte(0, 0, 0));
             return;
         }

@@ -1,3 +1,4 @@
+using Engine.Networking;
 using OpenTK.Mathematics;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
@@ -7,7 +8,7 @@ using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation.Blocks;
 
-public class DnaReconstructorBlock : InteractiveBlock, IEntityBlockListener
+public class DnaReconstructorBlock : InteractiveBlock, IEntityBlockListener, IContainerBlock
 {
     private readonly DnaReconstructorBlockData _data;
 
@@ -51,6 +52,22 @@ public class DnaReconstructorBlock : InteractiveBlock, IEntityBlockListener
     {
         base.Use(player, ref hit);
         DnaReconstructorUI.Open(this, player);
+    }
+
+    public string ContainerWindowId => "dnaReconstructor";
+
+    public IReadOnlyList<Storage> GetContainerStorages() => [DnaStorage];
+
+    public void WriteContainerState(NetWriter writer)
+    {
+    }
+
+    public void ReadContainerState(NetReader reader)
+    {
+    }
+
+    public void OnContainerChangedByNetwork()
+    {
     }
 
     public bool TryConsumeDna()

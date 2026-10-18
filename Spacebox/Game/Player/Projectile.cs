@@ -187,7 +187,7 @@ public class Projectile : Node3D
     {
         if (!PlayerHitboxes.Raycast(ray.Origin, ray.Direction, ray.Length, _ownerPeer, _isAuthoritative ? _rewind : 0f, out var hit)) return false;
 
-        if (World.CurrentSector.Raycast(ray, out var voxelHit) &&
+        if (World.SectorAt(ray.Origin).Raycast(ray, out var voxelHit) &&
             Vector3.DistanceSquared(ray.Origin, voxelHit.hitPosition) < hit.Distance * hit.Distance)
             return false;
 
@@ -209,7 +209,7 @@ public class Projectile : Node3D
         if (!World.Instance.Physics.Raycast(ray, astronaut?.Body, out var hit)) return false;
         if (hit.Body.Owner is Astronaut || hit.Body.Owner is not IDamageable damageable) return false;
 
-        if (World.CurrentSector.Raycast(ray, out var voxelHit) &&
+        if (World.SectorAt(ray.Origin).Raycast(ray, out var voxelHit) &&
             Vector3.DistanceSquared(ray.Origin, voxelHit.hitPosition) < hit.Distance * hit.Distance)
             return false;
 
@@ -219,7 +219,7 @@ public class Projectile : Node3D
 
     private bool CheckVoxelCollision()
     {
-        if (World.CurrentSector.Raycast(ray, out var hit))
+        if (World.SectorAt(ray.Origin).Raycast(ray, out var hit))
         {
             if (TryTriggerReactiveBlock(hit)) return true;
             if (TryRicochet(hit)) return true;

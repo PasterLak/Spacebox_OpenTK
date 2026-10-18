@@ -206,7 +206,7 @@ namespace Spacebox.Game.Effects
 
         public void DropStorage(Storage storage, Vector3 position, float speed = 2f, float spreadRadius = 0.1f, float pickupDelay = 2f, float deceleration = 4f, SpaceEntity sourceEntity = null)
         {
-            if (storage == null || !storage.HasAnyItems()) return;
+            if (storage == null || !storage.HasAnyItems() || IsRemote) return;
 
             var itemGroups = new Dictionary<short, int>();
             foreach (var slot in storage.GetAllSlots())

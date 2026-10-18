@@ -45,6 +45,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     private readonly PointOctree<NotGeneratedEntity> octreeNotGenerated;
     private HashSet<long> loadingEntities = new HashSet<long>();
     private readonly List<NotGeneratedEntity> _streamingNearby = new List<NotGeneratedEntity>();
+    private readonly List<NotGeneratedEntity> _observerNearby = new List<NotGeneratedEntity>();
 
     public Sector(Vector3 positionWorld, Vector3i positionIndex, int worldSeed)
     {
@@ -640,6 +641,16 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                 GenerateAsteroidFromData(entity);
             }
         }
+
+        var observers = WorldObservers.Remote;
+        for (int i = 0; i < observers.Count; i++)
+        {
+            _observerNearby.Clear();
+            if (!octreeNotGenerated.GetNearbyNonAlloc(observers[i], WorldObservers.RemoteEntityRadius, _observerNearby)) continue;
+
+            for (int j = 0; j < _observerNearby.Count; j++)
+                GenerateAsteroidFromData(_observerNearby[j]);
+        }
         for (int i = Entities.Count - 1; i >= 0; i--)
         {
             var entity = Entities[i];
@@ -687,7 +698,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             else
             {
 
-                if (distSqr >= Settings.ENTITY_UNLOAD_DISTANCE * Settings.ENTITY_UNLOAD_DISTANCE)
+                if (distSqr >= Settings.ENTITY_UNLOAD_DISTANCE * Settings.ENTITY_UNLOAD_DISTANCE &&
+                    !WorldObservers.IsNearRemote(worldBounds.Center, Settings.ENTITY_UNLOAD_DISTANCE))
                 {
                     UnloadEntity(entity);
                 }

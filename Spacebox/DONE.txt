@@ -83,6 +83,9 @@ Game
 
 Small
 - double click to open a world
+- multiplayer: storage names are synced to all players
+- multiplayer: the server loads the world around every player, so block edits, containers and fights work anywhere
+- multiplayer containers: storages, machines, oxygen generator and DNA reconstructor are synced, several players can use one at the same time, server checks every change (no item duplication), machines work only on the server
 - multiplayer combat: shots seen by everyone with effects and sounds, server-side hit detection with lag compensation (head/body hitboxes, headshot x2), damage and kills between players, hit marker, death sync (dead players hidden, kill message), projectiles no longer pass through blocks at high speed
 - multiplayer drops: everyone sees the same drops, server decides who picks a drop up (only one player gets it), thrown items and storage contents are spawned by the server
 - new multiplayer: game is always server+client, singleplayer can be opened to network (pause menu), join by IP, dedicated server (--server, serverconfig.json, console commands), per-player saves on the server, player sync (movement, flashlight, held item), chat, block edits, modified asteroids sent by the server

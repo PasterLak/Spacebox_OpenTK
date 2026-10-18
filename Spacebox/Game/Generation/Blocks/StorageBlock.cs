@@ -1,4 +1,5 @@
 ﻿
+using Engine.Networking;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
@@ -8,7 +9,7 @@ using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation.Blocks;
 
-public class StorageBlock : InteractiveBlock
+public class StorageBlock : InteractiveBlock, IContainerBlock
 {
     private static readonly HashSet<string> IgnoredStorageNames = new()
     {
@@ -106,13 +107,38 @@ public class StorageBlock : InteractiveBlock
         }
     }
 
+    public string ContainerWindowId => "storage";
+
+    public IReadOnlyList<Storage> GetContainerStorages()
+    {
+        EnsureStorage();
+        return [_storage];
+    }
+
+    public void WriteContainerState(NetWriter writer)
+    {
+        writer.Write(Name);
+    }
+
+    public void ReadContainerState(NetReader reader)
+    {
+        EnsureStorage();
+        Name = reader.ReadString() ?? "";
+    }
+
+    public void OnContainerChangedByNetwork()
+    {
+    }
+
+    private void EnsureStorage()
+    {
+        if (Storage == null)
+            Storage = new Storage(_blockData.Size);
+    }
+
     public override void Use(LocalAstronaut player, ref HitInfo hit)
     {
-
-        if (Storage == null)
-        {
-            Storage = new Storage(_blockData.Size);
-        }
+        EnsureStorage();
 
         base.Use(player, ref hit);
 

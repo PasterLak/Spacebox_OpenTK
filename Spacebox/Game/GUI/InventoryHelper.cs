@@ -115,7 +115,7 @@ namespace Spacebox.Game.GUI
 
                         var cam = Camera.Main;
 
-                        if (cam != null)
+                        if (cam != null && Spacebox.Network.Containers.ContainerNetwork.CanDropFrom(slot))
                         {
 
                             var dropPosition = cam.Position + cam.Front * 0.5f;

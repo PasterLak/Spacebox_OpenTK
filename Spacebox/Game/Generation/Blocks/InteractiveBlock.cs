@@ -87,6 +87,8 @@ public class InteractiveBlock : ElectricalBlock
             if (Input.IsActionDown("use"))
             {
                 block.chunk = hit.chunk;
+                if (block is IContainerBlock container)
+                    Spacebox.Network.Containers.ContainerNetwork.OnInteract(container, hit.chunk, hit.blockPositionIndex);
                 block.Use(player, ref hit);
             }
         }

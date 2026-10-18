@@ -187,7 +187,7 @@ namespace Spacebox.Game.GUI
             string newName = Encoding.UTF8.GetString(buffer, 0, len).Trim();
             if (!string.IsNullOrWhiteSpace(newName))
             {
-                StorageBlock.Name = newName;
+                Spacebox.Network.Containers.StorageNameNetwork.Rename(StorageBlock, newName);
             }
 
             editingName = false;

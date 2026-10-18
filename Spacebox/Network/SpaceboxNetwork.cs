@@ -19,5 +19,7 @@ public static class SpaceboxNetwork
         EntitySync.Register(network);
         DropNetwork.Register(network);
         Combat.CombatNetwork.Register(network);
+        Containers.ContainerNetwork.Register(network);
+        Containers.StorageNameNetwork.Register(network);
     }
 }

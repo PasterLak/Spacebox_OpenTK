@@ -1,3 +1,4 @@
+using Engine.Networking;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
@@ -6,7 +7,7 @@ using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation.Oxygen;
 
-public class OxygenGeneratorBlock : InteractiveBlock
+public class OxygenGeneratorBlock : InteractiveBlock, IContainerBlock
 {
     public const int Radius = 32;
     public const byte RequiredPower = 20;
@@ -46,8 +47,31 @@ public class OxygenGeneratorBlock : InteractiveBlock
         OxygenGeneratorUI.Open(this, player);
     }
 
+    public string ContainerWindowId => "oxygenGenerator";
+
+    public IReadOnlyList<Storage> GetContainerStorages() => [WaterStorage];
+
+    public void WriteContainerState(NetWriter writer)
+    {
+        writer.Write(Water);
+        writer.Write(ConsumeProgress);
+    }
+
+    public void ReadContainerState(NetReader reader)
+    {
+        int water = reader.ReadInt();
+        float progress = reader.ReadFloat();
+        Restore(water, progress);
+    }
+
+    public void OnContainerChangedByNetwork()
+    {
+    }
+
     public void Update(float deltaTime)
     {
+        if (Spacebox.Network.GameSession.IsRemoteClient) return;
+
         FillTank(deltaTime);
         ConsumeWater(deltaTime);
     }
