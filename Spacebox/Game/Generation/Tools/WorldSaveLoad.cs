@@ -126,7 +126,7 @@ namespace Spacebox.Game.Generation.Tools
 
             foreach (var deleted in sector.EntitiesDestroyed)
             {
-                string deletedEntityPath = Path.Combine(sectorFolderPath, deleted + ".entity");
+                string deletedEntityPath = EntityFiles.PathOf(sectorFolderPath, deleted.ToString());
                 if (File.Exists(deletedEntityPath))
                 {
                     File.Delete(deletedEntityPath);
@@ -143,7 +143,7 @@ namespace Spacebox.Game.Generation.Tools
 
                 Debug.Success("[WorldSaveLoad] Entity was saved: " + entities[i].EntityID + "  pos: " + entities[i].PositionWorld);
                 //NbtFile.WriteAsync(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
-                NbtFile.Write(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
+                NbtFile.Write(EntityFiles.PathOf(sectorFolderPath, entity.Name), entityTag, FormatOptions.Java, CompressionType.GZip);
             }
 
             //NbtFile.WriteAsync(Path.Combine(sectorFolderPath, sectorFolderName + ".sector"), NBTHelper.SectorOnlyToTag(sector), FormatOptions.Java, CompressionType.GZip);
@@ -156,7 +156,9 @@ namespace Spacebox.Game.Generation.Tools
             var list = new List<NotGeneratedEntity>();
             if (!CanLoadSectorHere(sectorIndex, out var folderPath)) return list;
 
-            var files = Directory.GetFiles(folderPath, "*.entity");
+            if (!Spacebox.Network.GameSession.IsRemoteClient) EntityFiles.RepairDoubleExtensions(folderPath);
+
+            var files = Directory.GetFiles(folderPath, "*" + EntityFiles.Extension);
             foreach (var file in files)
             {
                 try
@@ -172,7 +174,7 @@ namespace Spacebox.Game.Generation.Tools
                     float y = tag.Get<FloatTag>(NBTKey.ENTITY.local_y).Value;
                     float z = tag.Get<FloatTag>(NBTKey.ENTITY.local_z).Value;
 
-                    string fileNameNoExt = Path.GetFileNameWithoutExtension(file);
+                    string fileNameNoExt = EntityFiles.NameOf(file);
 
                     var meta = new NotGeneratedEntity
                     {

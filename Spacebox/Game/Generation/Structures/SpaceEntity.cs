@@ -649,7 +649,9 @@ namespace Spacebox.Game.Generation
 
         public void QueueChunkUpdate(Chunk chunk, UpdateReason reason)
         {
-            if (chunk.IsQueuedForMeshUpdate || chunk.IsDisposed) return;
+            if (chunk.IsDisposed) return;
+            chunk.RequestMesh();
+            if (chunk.IsQueuedForMeshUpdate) return;
             chunk.IsQueuedForMeshUpdate = true;
 
             int distance = 0;
@@ -735,7 +737,7 @@ namespace Spacebox.Game.Generation
             {
                 if (chunk.IsDisposed) continue;
 
-                int currentVersion = chunk.DataVersion;
+                int currentVersion = chunk.MeshVersion;
                 var snapshot = chunk.CreatePaddedSnapshot();
                 var index = chunk.PositionIndex;
 
@@ -759,7 +761,7 @@ namespace Spacebox.Game.Generation
                         {
                             if (chunk.IsDisposed) return;
 
-                            if (chunk.DataVersion != currentVersion)
+                            if (chunk.MeshVersion != currentVersion)
                             {
                                 chunk.IsQueuedForMeshUpdate = false;
                                 QueueChunkUpdate(chunk, UpdateReason.Generation);
@@ -790,7 +792,7 @@ namespace Spacebox.Game.Generation
             {
                 if (result.chunk.IsDisposed) continue;
 
-                if (result.chunk.DataVersion == result.version)
+                if (result.chunk.MeshVersion == result.version)
                 {
                     result.chunk.ApplyMeshData(result.data);
                 }

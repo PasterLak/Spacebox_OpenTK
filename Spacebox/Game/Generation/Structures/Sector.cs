@@ -418,7 +418,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         string sectorPath = WorldSaveLoad.GetSectorFolderPath(World.WorldData.WorldFolderPath, PositionIndex);
 
         string fileName = !string.IsNullOrEmpty(data.FileName) ? data.FileName : data.Id.ToString();
-        string filePath = Path.Combine(sectorPath, fileName + ".entity");
+        string filePath = EntityFiles.PathOf(sectorPath, fileName);
 
         if (File.Exists(filePath))
         {
@@ -496,6 +496,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             asteroid.IsGenerated = true;
         }
 
+
+        realFileName = EntityFiles.NameOf(realFileName);
 
         if (loadedEntity.Name != realFileName)
         {
@@ -801,9 +803,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                     }
                     else
                     {
-                        string fileName = !string.IsNullOrEmpty(data.FileName) ? data.FileName : data.Id + ".entity";
-                        if (!fileName.EndsWith(".entity")) fileName += ".entity";
-                        string filePath = Path.Combine(sectorPath, fileName);
+                        string fileName = EntityFiles.NameOf(!string.IsNullOrEmpty(data.FileName) ? data.FileName : data.Id.ToString());
+                        string filePath = EntityFiles.PathOf(sectorPath, fileName);
 
                         if (File.Exists(filePath))
                         {

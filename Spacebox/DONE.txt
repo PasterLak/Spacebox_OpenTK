@@ -162,6 +162,8 @@ Fixes
 - players flew through other players (remote players now have a collision body); drill did not damage other players
 - impulse rifle sphere explosion was only visible to the shooter (now on every player, projectile JSON ImpactSphere)
 - crusher: 1 lens gave 1 dust (infinite cobalt/iron/thulium), now 2 lenses -> 1 dust
+- asteroids loaded near the player saved to <id>.entity.entity, so loading showed an old snapshot; names fixed, newest save restored on load
+- walls between saved and regenerated asteroid chunks: a remesh requested while the chunk mesh was being built was dropped
 
 Engine
 - networking: LiteNetLib transport, NetworkManager (offline/host/client/dedicated), messages, NetworkObject/NetworkBehaviour, [Rpc] methods, NetworkVariable, spawner, NetworkTransform

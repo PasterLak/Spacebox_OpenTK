@@ -97,7 +97,7 @@ namespace Spacebox.Game.Generation
                         Directory.CreateDirectory(sectorPath);
                     }
 
-                    string filePath = Path.Combine(sectorPath, data.Name + ".entity");
+                    string filePath = EntityFiles.PathOf(sectorPath, data.Name);
                     NbtFile.Write(filePath, data.Tag, FormatOptions.Java, CompressionType.GZip);
                 }
                 catch (Exception ex)

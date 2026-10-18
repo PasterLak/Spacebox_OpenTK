@@ -30,6 +30,9 @@ namespace Spacebox.Game.Generation
         public Block[,,] Blocks { get; private set; }
 
         public int DataVersion { get; private set; } = 0;
+        private int _meshRequestVersion;
+        public int MeshVersion => DataVersion + Volatile.Read(ref _meshRequestVersion);
+        public void RequestMesh() => Interlocked.Increment(ref _meshRequestVersion);
         public bool IsDisposed { get; private set; } = false;
         public bool IsQueuedForMeshUpdate { get; set; } = false;
 

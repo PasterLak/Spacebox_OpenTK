@@ -609,6 +609,7 @@ public static class GameSetLoader
             if (crafting == null)
             {
                 Debug.Error("[GameSetLoader] Crafting was null!");
+                return;
             }
 
             if (crafting.Categories != null && crafting.Categories.Length > 0)
