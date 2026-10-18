@@ -31,6 +31,11 @@ public sealed class ExplosionSystem : IDisposable
         _effects.Play(worldCenter, data.Radius);
     }
 
+    public void PlayEffect(Vector3 worldCenter, float radius)
+    {
+        if (radius > 0f) _effects.Play(worldCenter, radius);
+    }
+
     public ExplosionSystem()
     {
         _chainExplosive = (chunk, index, data) => Detonate(chunk, index, data, data.ChainDelay);

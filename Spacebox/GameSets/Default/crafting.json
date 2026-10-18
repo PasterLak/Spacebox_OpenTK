@@ -625,6 +625,30 @@
     },
     {
       "Product": {
+        "Item": "oxygen_generator",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "basic_machine",
+          "Quantity": 1
+        },
+        {
+          "Item": "aluminium_panels",
+          "Quantity": 4
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 1
+        },
+        {
+          "Item": "glass",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
         "Item": "cobalt_bomb",
         "Quantity": 1
       },

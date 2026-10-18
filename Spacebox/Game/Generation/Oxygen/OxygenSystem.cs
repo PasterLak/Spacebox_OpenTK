@@ -107,10 +107,15 @@ public sealed class OxygenSystem
                 continue;
             }
 
-            if (!generator.IsWorking) continue;
+            if (!generator.CanRun)
+            {
+                generator.SetOutside(false);
+                continue;
+            }
 
             _activeGenerators.Add(position);
-            _floodFill.FillFrom(position.X, position.Y, position.Z, _reached, _oxygenated);
+            bool enclosed = _floodFill.FillFrom(position.X, position.Y, position.Z, _reached, _oxygenated);
+            generator.SetOutside(!enclosed);
         }
 
         _floodFill.EndPass(chunks);
@@ -130,7 +135,7 @@ public sealed class OxygenSystem
         foreach (var (position, generator) in _generators)
         {
             generator.Update(deltaTime);
-            if (generator.IsWorking != _activeGenerators.Contains(position)) changed = true;
+            if (generator.CanRun != _activeGenerators.Contains(position)) changed = true;
         }
 
         return changed;

@@ -24,5 +24,6 @@ namespace Spacebox.Game.Player
         public int MaximumBlocksCanDestroy { get; set; } = 1;
         public bool DropBlock { get; set; } = false;
         public bool ImpactSphere { get; set; } = false;
+        public float ImpactExplosionRadius { get; set; } = 0f;
     }
 }

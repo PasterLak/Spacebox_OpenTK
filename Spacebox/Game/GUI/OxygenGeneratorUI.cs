@@ -142,6 +142,16 @@ public static class OxygenGeneratorUI
             return;
         }
 
+        if (_block.IsOutside)
+        {
+            ImGui.PushTextWrapPos(ImGui.GetWindowWidth() * 0.95f);
+            ImGui.TextColored(WarningColor, "Room not sealed");
+            ImGui.SetCursorPosX(x);
+            ImGui.TextDisabled("Air leaks out");
+            ImGui.PopTextWrapPos();
+            return;
+        }
+
         ImGui.TextColored(WorkingColor, "Working");
         ImGui.SetCursorPosX(x);
         float secondsLeft = (1f - _block.ConsumeProgress) * _block.WaterConsumeInterval;

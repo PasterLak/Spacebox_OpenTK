@@ -81,6 +81,8 @@ Game
 - oxygen generator UI: water slot, water tank (30), uses 1 water every 2 min, saved
 - disassembler reworked: needs power (40), 4x2 input/output, recipes from crafting (50% by default) or disassembly.json
 - disassembler: energy cells, uranium rods, microchips, cables, drill bits, ammo, titanium crate; fixed-size window, arrow progress, synced power/sound in multiplayer
+- oxygen generator crafting; stops and shows a message when it is not in a closed room
+- impulse rifle sphere impact plays the bomb explosion effect (projectile JSON ImpactExplosionRadius)
 
 
 Small
@@ -165,6 +167,8 @@ Fixes
 - asteroids loaded near the player saved to <id>.entity.entity, so loading showed an old snapshot; names fixed, newest save restored on load
 - walls between saved and regenerated asteroid chunks: a remesh requested while the chunk mesh was being built was dropped
 - version converter upgraded worlds past the app version and failed for worlds already up to date
+- sliding doors changed colour while moving (no block light on the animated mesh)
+- held item looked emissive near light blocks (block light on it softened and desaturated)
 
 Engine
 - Engine.Tests project (engine-only tests), Spacebox.Tests fixed and extended

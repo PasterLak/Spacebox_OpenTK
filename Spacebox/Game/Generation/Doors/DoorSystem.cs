@@ -14,6 +14,7 @@ public sealed class DoorSystem : IDisposable
     private const float PushMargin = 0.02f;
     private const float DropRadius = 0.15f;
     private const float PushedSpeedMultiplier = 1.5f;
+    private const string MovingBlockShader = "Resources/Shaders/movingBlock";
 
     private sealed class DoorRecord
     {
@@ -25,6 +26,8 @@ public sealed class DoorSystem : IDisposable
         public bool? PendingOpen;
         public Vector3 BoxMinOffset;
         public Vector3 BoxSize;
+        public Vector3 HomeLight;
+        public Vector3 OpenLight;
         public SimpleBlock Visual;
         public readonly List<Chunk> AffectedChunks = new List<Chunk>();
     }
@@ -38,6 +41,7 @@ public sealed class DoorSystem : IDisposable
     private readonly List<Block> _movingBlocks = new List<Block>();
     private readonly List<Vector3i> _fromCells = new List<Vector3i>();
     private readonly List<Vector3i> _toCells = new List<Vector3i>();
+    private readonly HashSet<Vector3i> _doorVolume = new HashSet<Vector3i>();
     private bool _reservedDirty;
 
     public static event Action<SpaceEntity, Vector3i, bool> StateChanged;
@@ -172,6 +176,7 @@ public sealed class DoorSystem : IDisposable
 
             record.Visual.Position = _entity.ToWorldSpace(_entity.LocalPositionToWorld(origin) + new Vector3(0.5f));
             record.Visual.SetBlockTransform(MultiblockLayout.GetTransform(record.Door.Data, record.Door.Direction, record.Door.Rotation) * _entity.RotationMatrix);
+            record.Visual.ExtraLight = Vector3.Lerp(record.HomeLight, record.OpenLight, record.Progress);
             record.Visual.Render();
         }
     }
@@ -225,17 +230,32 @@ public sealed class DoorSystem : IDisposable
         record.AnimationDirection = direction;
         record.Progress = direction > 0 ? 0f : 1f;
         record.WaitingForMesh = false;
+        SampleLight(record, direction);
         SetHidden(record, true);
         CalculateBox(record);
 
         if (record.Visual == null)
         {
             var (vertices, indices) = MultiblockPreviewMesh.Build(record.Door.Data, BlockState.Active);
-            record.Visual = new SimpleBlock(new TextureMaterial(GameAssets.BlocksTexture), Vector3.Zero) { DisposesTexture = false };
+            var shader = Resources.Load<Shader>(MovingBlockShader, true);
+            record.Visual = new SimpleBlock(new TextureMaterial(GameAssets.BlocksTexture, shader), Vector3.Zero) { DisposesTexture = false };
             record.Visual.SetCustomMesh(vertices, indices);
         }
 
         _reservedDirty = true;
+    }
+
+    private void SampleLight(DoorRecord record, int direction)
+    {
+        _doorVolume.Clear();
+        _doorVolume.UnionWith(_fromCells);
+        _doorVolume.UnionWith(_toCells);
+
+        var fromLight = BlockLightSampler.AverageAroundCells(_entity, _fromCells, _doorVolume);
+        var toLight = BlockLightSampler.AverageAroundCells(_entity, _toCells, _doorVolume);
+
+        record.HomeLight = direction > 0 ? fromLight : toLight;
+        record.OpenLight = direction > 0 ? toLight : fromLight;
     }
 
     private void Animate(DoorRecord record, float deltaTime)

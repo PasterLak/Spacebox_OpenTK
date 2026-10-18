@@ -30,6 +30,33 @@ public static class BlockLightSampler
         return weightSum > 1e-4f ? sum / weightSum : Vector3.Zero;
     }
 
+    public static Vector3 AverageAroundCells(SpaceEntity entity, IReadOnlyList<Vector3i> cells, HashSet<Vector3i> volume)
+    {
+        var sum = Vector3.Zero;
+        int count = 0;
+
+        for (int i = 0; i < cells.Count; i++)
+        {
+            for (int d = 0; d < Neighbors.Length; d++)
+            {
+                var neighbor = cells[i] + Neighbors[d];
+                if (volume.Contains(neighbor) || !TryGetCellLight(entity, neighbor, out var light)) continue;
+
+                sum += light;
+                count++;
+            }
+        }
+
+        return count > 0 ? sum / count : Vector3.Zero;
+    }
+
+    private static readonly Vector3i[] Neighbors =
+    [
+        new Vector3i(1, 0, 0), new Vector3i(-1, 0, 0),
+        new Vector3i(0, 1, 0), new Vector3i(0, -1, 0),
+        new Vector3i(0, 0, 1), new Vector3i(0, 0, -1)
+    ];
+
     private static SpaceEntity? FindEntity(Vector3 worldPosition)
     {
         var sector = World.SectorAt(worldPosition);

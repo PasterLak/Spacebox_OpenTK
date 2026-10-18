@@ -22,6 +22,7 @@ namespace Spacebox.Game.Player
         public int MaximumBlocksCanDestroy { get; set; } = 1;
         public bool DropBlock { get; private set; } = false;
         public bool ImpactSphere { get; private set; }
+        public float ImpactExplosionRadius { get; private set; }
 
         public ProjectileParameters()
         {
@@ -48,6 +49,7 @@ namespace Spacebox.Game.Player
             PossibleRicochets = p.PossibleRicochets;
             MaximumBlocksCanDestroy = p.MaximumBlocksCanDestroy;
             ImpactSphere = p.ImpactSphere;
+            ImpactExplosionRadius = Math.Max(0f, p.ImpactExplosionRadius);
 
         }
 

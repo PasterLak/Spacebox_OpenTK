@@ -42,7 +42,14 @@ public class OxygenGeneratorBlock : InteractiveBlock, IContainerBlock, IEntityBl
     public int TankCapacity => _data?.TankCapacity ?? 30;
     public float WaterConsumeInterval => _data?.WaterConsumeInterval ?? 120f;
     public bool HasWater => Water > 0;
-    public bool IsWorking => IsActive && HasWater;
+    public bool CanRun => IsActive && HasWater;
+    public bool IsOutside { get; private set; }
+    public bool IsWorking => CanRun && !IsOutside;
+
+    public void SetOutside(bool outside)
+    {
+        IsOutside = outside;
+    }
 
     public OxygenGeneratorBlock(BlockData blockData) : base(blockData)
     {

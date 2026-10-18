@@ -1,3 +1,4 @@
+using Spacebox.Game.Generation;
 using Spacebox.Network;
 
 namespace Spacebox.Game.Player;
@@ -18,5 +19,6 @@ public static class ProjectileImpactEffects
     {
         projectile.OnDespawn -= SpawnSphere;
         SpheresPool.Instance?.Take().Activate(projectile.Position);
+        World.Instance?.Explosions?.PlayEffect(projectile.Position, projectile.Parameters.ImpactExplosionRadius);
     }
 }

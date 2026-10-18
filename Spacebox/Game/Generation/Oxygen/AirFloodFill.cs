@@ -45,22 +45,34 @@ public sealed class AirFloodFill
         return true;
     }
 
-    public void FillFrom(int gx, int gy, int gz, AirMasks reached, AirMasks oxygen)
+    public bool FillFrom(int gx, int gy, int gz, AirMasks reached, AirMasks oxygen)
     {
+        bool hasAir = false;
+        bool sealedRoom = false;
+
         for (int d = 0; d < 6; d++)
         {
             int sx = gx + _dx[d];
             int sy = gy + _dy[d];
             int sz = gz + _dz[d];
 
-            if (reached.Contains(sx, sy, sz)) continue;
+            if (reached.Contains(sx, sy, sz))
+            {
+                hasAir = true;
+                sealedRoom |= oxygen.Contains(sx, sy, sz);
+                continue;
+            }
+
             if (!TryGetBlock(sx, sy, sz, out var start) || !IsPassable(start)) continue;
 
-            Flood(gx, gy, gz, sx - gx + Radius, sy - gy + Radius, sz - gz + Radius, reached, oxygen);
+            hasAir = true;
+            sealedRoom |= Flood(gx, gy, gz, sx - gx + Radius, sy - gy + Radius, sz - gz + Radius, reached, oxygen);
         }
+
+        return !hasAir || sealedRoom;
     }
 
-    private void Flood(int gx, int gy, int gz, int startX, int startY, int startZ, AirMasks reached, AirMasks oxygen)
+    private bool Flood(int gx, int gy, int gz, int startX, int startY, int startZ, AirMasks reached, AirMasks oxygen)
     {
         int count = 0;
         int head = 0;
@@ -116,6 +128,8 @@ public sealed class AirFloodFill
 
             _visited[index >> 6] &= ~(1UL << (index & 63));
         }
+
+        return !leak;
     }
 
     private static bool IsPassable(Block block)

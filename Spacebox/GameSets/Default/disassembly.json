@@ -95,6 +95,15 @@
       ]
     },
     {
+      "Item": "oxygen_generator",
+      "DurationSec": 20,
+      "Products": [
+        { "Item": "basic_machine", "Quantity": 1 },
+        { "Item": "aluminium_panels", "Quantity": 2 },
+        { "Item": "glass", "Quantity": 1 }
+      ]
+    },
+    {
       "Item": "disassembler",
       "DurationSec": 20,
       "Products": [
