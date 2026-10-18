@@ -228,6 +228,7 @@ namespace Spacebox.Game.Player
         {
             base.Update();
             _flashlightBinder?.Update();
+            HasOxygen = OxygenBar.StatsData.Value > 0;
 
             Matrix4 viewMatrix = GetViewMatrix();
             Matrix4 projectionMatrix = GetProjectionMatrix();

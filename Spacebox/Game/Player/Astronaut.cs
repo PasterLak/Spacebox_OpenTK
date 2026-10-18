@@ -13,6 +13,8 @@ namespace Spacebox.Game.Player
         protected ModelRendererComponent AstBody;
         protected ModelRendererComponent AstHelmet;
         protected ModelRendererComponent AstTank;
+
+        public bool HasOxygen { get; set; } = true;
         public Flashlight Flashlight { get; private set; }
 
         protected HandItemVisualizer HandVisualizer;
@@ -120,7 +122,7 @@ namespace Spacebox.Game.Player
 
             if (AstBody != null) AstBody.Enabled = showModel;
             if (AstHelmet != null) AstHelmet.Enabled = showModel;
-            if (AstTank != null) AstTank.Enabled = showModel;
+            if (AstTank != null) AstTank.Enabled = showModel && HasOxygen;
         }
 
         public void TakeDamage(Projectile projectile)

@@ -17,6 +17,7 @@ public sealed class AstronautNetwork : NetworkTransform
     private readonly NetworkVariable<bool> _isAlive;
     private readonly NetworkVariable<bool> _isVulnerable;
     private readonly NetworkVariable<short> _flashlightItem;
+    private readonly NetworkVariable<bool> _hasOxygen;
 
     public static AstronautNetwork Local { get; private set; }
 
@@ -33,6 +34,7 @@ public sealed class AstronautNetwork : NetworkTransform
         _isAlive = CreateVariable(true, NetworkWritePermission.Owner);
         _isVulnerable = CreateVariable(false, NetworkWritePermission.Owner);
         _flashlightItem = CreateVariable(NoItem, NetworkWritePermission.Owner);
+        _hasOxygen = CreateVariable(true, NetworkWritePermission.Owner);
     }
 
     public override void OnUpdate()
@@ -43,6 +45,7 @@ public sealed class AstronautNetwork : NetworkTransform
         {
             _isVulnerable.Value = local.GameMode == GameMode.Survival;
             _flashlightItem.Value = local.ActiveFlashlightItem?.Id ?? NoItem;
+            _hasOxygen.Value = local.HasOxygen;
         }
     }
 
@@ -72,6 +75,8 @@ public sealed class AstronautNetwork : NetworkTransform
         _heldItem.Changed += (_, value) => astronaut.ChangeItemInHand(GetItem(value));
         _isAlive.Changed += (_, value) => ApplyAliveVisual(astronaut, value);
         _flashlightItem.Changed += (_, value) => ApplyFlashlight(astronaut, value);
+        _hasOxygen.Changed += (_, value) => astronaut.HasOxygen = value;
+        astronaut.HasOxygen = _hasOxygen.Value;
         ApplyFlashlight(astronaut, _flashlightItem.Value);
         ApplyAliveVisual(astronaut, _isAlive.Value);
         astronaut.Flashlight.Enabled = _flashlight.Value;
