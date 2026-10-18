@@ -113,7 +113,7 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 
 - `World.Physics` (`Game/Physics/PhysicsWorld.cs`) holds every `SphereBody`: sphere-vs-voxel/body overlap and `Raycast` (closest body, no allocations, main thread only).
 - Attach `SphereBody(physics, radius)` to a node: it registers itself and unregisters on detach (`RemoveChild` does not detach, so call `DetachComponent`). Non-kinematic bodies move by `Velocity` with per-axis substeps and bounce (`Bounciness`). The player has a kinematic body (`LocalAstronaut.EnablePhysics`).
-- Projectiles damage `body.Owner is IDamageable`; the shooter's body is ignored. Drills damage `body.Owner is IDrillable` (tier damage per second, `InteractionDestroyBlock.TryDrillTarget`).
+- Projectiles damage `body.Owner is IDamageable`; the shooter's body is ignored. Drills damage `body.Owner is IDrillable` (`DrillItem.Damage` per second from the drill's JSON `Damage`, `InteractionDestroyBlock.TryDrillTarget`).
 - The player pushes non-kinematic bodies on contact (`MovementMode.PushBody`, `BodyPushFactor`).
 
 ## Mobs

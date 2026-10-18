@@ -1,0 +1,32 @@
+[
+  {
+    "ID": "light_rock",
+    "Probability": 45,
+    "MinCount": 1,
+    "MaxCount": 3
+  },
+  {
+    "ID": "medium_rock",
+    "Probability": 30,
+    "MinCount": 1,
+    "MaxCount": 2
+  },
+  {
+    "ID": "heavy_rock",
+    "Probability": 15,
+    "MinCount": 1,
+    "MaxCount": 1
+  },
+  {
+    "ID": "cobaltite_rock",
+    "Probability": 25,
+    "MinCount": 1,
+    "MaxCount": 2
+  },
+  {
+    "ID": "ice_rock",
+    "Probability": 15,
+    "MinCount": 1,
+    "MaxCount": 2
+  }
+]

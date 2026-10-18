@@ -13,8 +13,14 @@ public sealed class SphereBody : Component
     private readonly PhysicsWorld _physics;
     private BoundingSphere _debugSphere;
     private Vector3 _velocity;
+    private float _hitRadius;
 
     public float Radius { get; set; }
+    public float HitRadius
+    {
+        get => _hitRadius > 0f ? _hitRadius : Radius;
+        set => _hitRadius = value;
+    }
     public float Bounciness { get; set; } = 0.8f;
     public bool IsKinematic { get; set; }
     public bool IsSolid { get; set; } = true;

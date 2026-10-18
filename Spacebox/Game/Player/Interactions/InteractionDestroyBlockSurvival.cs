@@ -23,6 +23,8 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
 
     private PointLight light;
     private BlockMiningEffect BlockMiningEffect;
+    private const float TargetPowerInterval = 1f;
+    private float _targetPowerTimer;
     public InteractionDestroyBlockSurvival(ItemSlot itemSlot) : base(itemSlot)
     {
 
@@ -128,15 +130,23 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
     private void UpdateTargetDrilling(LocalAstronaut player)
     {
         lastBlock = null;
-        if (BlockMiningEffect != null)
-            BlockMiningEffect.Enabled = false;
-
         if (!Input.IsAction("block_destroy")) return;
+
+        ConsumeTargetPower(player);
 
         if (!model.Animator.IsActive)
             model.SetAnimation(true);
         light.Enabled = true;
         light.Position = player.Position;
+    }
+
+    private void ConsumeTargetPower(LocalAstronaut player)
+    {
+        _targetPowerTimer += Time.Delta;
+        if (_targetPowerTimer < TargetPowerInterval) return;
+
+        _targetPowerTimer -= TargetPowerInterval;
+        player.PowerBar.StatsData.Decrement(drillItem.PowerUsage);
     }
 
     private void StopDrill()

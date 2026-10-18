@@ -62,8 +62,12 @@ public static class MobsLoader
             FleeChance = Math.Clamp(json.FleeChance, (byte)0, (byte)100) / 100f,
             EatTime = MathF.Max(0.1f, json.EatTime),
             FoodSearchRadius = Math.Clamp(json.FoodSearchRadius, 1f, 32f),
+            MealIntervalMin = MathF.Max(1f, MathF.Min(json.MealIntervalMin, json.MealIntervalMax)),
+            MealIntervalMax = MathF.Max(1f, MathF.Max(json.MealIntervalMin, json.MealIntervalMax)),
+            MealNearDistance = MathF.Max(0f, json.MealNearDistance),
+            MealFarDistance = MathF.Max(json.MealNearDistance, json.MealFarDistance),
             EdibleBlocks = ResolveBlocks(json.Id, json.EdibleBlocks),
-            Drops = ResolveDrops(json.Id, json.Drops),
+            LootTable = ResolveLoot(json.Id, json.Loot),
             Spawn = json.Spawn ?? new MobSpawnJSON()
         };
     }
@@ -81,19 +85,14 @@ public static class MobsLoader
         return result;
     }
 
-    private static IReadOnlyList<Item> ResolveDrops(string mobId, string[] ids)
+    private static string ResolveLoot(string mobId, string loot)
     {
-        if (ids == null || ids.Length == 0) return Array.Empty<Item>();
+        if (string.IsNullOrWhiteSpace(loot)) return "";
 
-        var result = new List<Item>(ids.Length);
-        foreach (var id in ids)
-        {
-            string fullId = ToFullId(id);
-            if (GameAssets.BlocksStr.TryGetValue(fullId, out var block) && block.AsItem != null) result.Add(block.AsItem);
-            else if (GameAssets.ItemsStr.TryGetValue(fullId, out var item)) result.Add(item);
-            else Debug.Error($"[MobsLoader] Mob '{mobId}': unknown drop '{id}'");
-        }
-        return result;
+        string table = Path.GetFileNameWithoutExtension(loot.Trim());
+        if (GameAssets.LootConfig == null || !GameAssets.LootConfig.LootTables.ContainsKey(table))
+            Debug.Error($"[MobsLoader] Mob '{mobId}': loot table '{table}' not found in Generation/Loot");
+        return table;
     }
 
     private static string ToFullId(string id)

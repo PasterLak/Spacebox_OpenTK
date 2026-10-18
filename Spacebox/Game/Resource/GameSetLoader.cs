@@ -879,6 +879,7 @@ public static class GameSetLoader
             Tier = data.Tier,
             PowerUsage = (byte)data.PowerUsage,
             Range = data.Range,
+            Damage = MathF.Max(0f, data.Damage),
             Category = data.Category,
             Id_string = id,
             DrillColor = data.DrillColor,

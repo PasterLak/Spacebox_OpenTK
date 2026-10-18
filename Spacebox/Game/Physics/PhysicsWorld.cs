@@ -68,7 +68,7 @@ public sealed class PhysicsWorld
             var body = _bodies[i];
             if (body == ignore || !body.Enabled) continue;
 
-            if (ray.IntersectsSphere(body.Center, body.Radius, out float distance) && distance < closestDistance)
+            if (ray.IntersectsSphere(body.Center, body.HitRadius, out float distance) && distance < closestDistance)
             {
                 closestDistance = distance;
                 closest = body;

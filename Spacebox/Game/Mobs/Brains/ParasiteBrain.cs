@@ -39,20 +39,23 @@ public sealed class ParasiteBrain : IMobBrain
 
     private static StateMachine<MobContext> BuildForaging()
     {
+        var rest = new RestState();
         var seek = new SeekFoodState();
         var approach = new ApproachFoodState();
         var eat = new EatBlockState();
         var wander = new WanderState();
 
         var forage = new StateMachine<MobContext>();
-        forage.SetInitial(seek);
+        forage.SetInitial(rest);
         forage
+            .AddTransition(rest, seek, c => c.WantsToEat)
             .AddTransition(seek, approach, c => c.Food.IsValid)
             .AddTransition(seek, wander, c => c.FoodSearchFailed)
             .AddTransition(approach, eat, _ => approach.IsNearFood)
             .AddTransition(approach, seek, _ => approach.HasFailed)
-            .AddTransition(eat, seek, c => !c.Food.IsValid)
-            .AddTransition(wander, seek, _ => wander.TimeInState > WanderTime);
+            .AddTransition(eat, rest, c => !c.Food.IsValid)
+            .AddTransition(wander, seek, c => c.WantsToEat && wander.TimeInState > WanderTime)
+            .AddTransition(wander, rest, c => !c.WantsToEat);
 
         return forage;
     }

@@ -85,6 +85,11 @@ Small
 - double click to open a world
 - mineral parasite mob model and texture (Resources/Models/mineral_parasite.obj, Textures/Mobs/mineral_parasite.png; Blender source and build scripts in Assets/Models)
 - mineral parasite mob: eats natural blocks, bites survival players (8-20), 50 hp, 10% flee, spawns in dark near asteroid blocks (1 per chunk), drops a rock, multiplayer synced
+- parasite eats every 1-10 min depending on player distance (never when far), dust particles while eating, drops from loot table (Loot: file name), drill deals tier damage/s
+- parasite is not pushed back while attacking; resting/wandering parasites stay on asteroid surfaces and return to them
+- drill/bullet hit sphere of mobs matches the model size, drilling a mob shows mining sparks
+- drills: Damage parameter (per second) for spacer and mobs instead of tier, shown in tooltip
+- drilling the spacer or mobs uses drill power (PowerUsage per second) in survival
 - data-driven mobs (GameSet Mobs/*.json), console command mob <id>|list|clear
 - Mineral Parasite Larva item spawns a parasite (item type mob_spawner)
 - engine: hierarchical state machine and voxel pathfinding (A*, open space shortcut, path scheduler)

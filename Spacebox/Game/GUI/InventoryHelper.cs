@@ -281,6 +281,7 @@ namespace Spacebox.Game.GUI
                     text += "\nTier: " + itemType.Tier;
                     text += "\nPower usage: " + itemType.PowerUsage;
                     text += "\nRange: " + itemType.Range + " blocks";
+                    text += "\nDamage: " + itemType.Damage + "/s";
                 }
                 else if (type == typeof(WeaponItem))
                 {

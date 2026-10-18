@@ -8,6 +8,7 @@ public sealed class EatBlockState : State<MobContext>
     {
         Context.Locomotion.Stop();
         Context.Mob.Action = MobAction.Eating;
+        Context.Mob.BeginEating(Context.Food);
     }
 
     protected override void OnUpdate(float deltaTime)
@@ -18,7 +19,7 @@ public sealed class EatBlockState : State<MobContext>
         Context.Mob.LookAt(food.BlockWorld);
         if (TimeInState < Context.Definition.EatTime) return;
 
-        Context.Mob.EatBlock(food);
+        if (Context.Mob.EatBlock(food)) Context.Hunger = 0f;
         Context.Food = default;
     }
 

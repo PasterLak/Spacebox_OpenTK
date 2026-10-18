@@ -15,6 +15,7 @@ public abstract class InteractionDestroyBlock : InteractionMode
     protected ItemSlot selectedItemSlot;
     protected DrillItem drillItem;
     protected AnimatedItemModel model;
+    private bool _targetEffectActive;
 
     public override bool UsesPrimaryAction => true;
 
@@ -34,18 +35,65 @@ public abstract class InteractionDestroyBlock : InteractionMode
     protected bool TryDrillTarget(Engine.Physics.Ray ray, LocalAstronaut player, bool hasVoxelHit, in HitInfo voxelHit)
     {
         var world = World.Instance;
-        if (world == null || drillItem == null) return false;
-        if (!world.Physics.Raycast(ray, player.Body, out var hit)) return false;
-        if (hit.Body.Owner is not IDrillable target) return false;
-        if (hasVoxelHit && Vector3.DistanceSquared(ray.Origin, voxelHit.hitPosition) < hit.Distance * hit.Distance) return false;
+        if (world == null || drillItem == null || !TryFindDrillTarget(world, ray, player, hasVoxelHit, voxelHit, out var target, out var hitPoint))
+        {
+            HideTargetHitEffect(world);
+            return false;
+        }
 
         BlockSelector.IsVisible = false;
         AImedBlockElement.AimedBlock = null;
 
         if (Input.IsAction("block_destroy"))
-            target.TakeDrillDamage(drillItem.Tier * Time.Delta);
+        {
+            target.TakeDrillDamage(drillItem.Damage * Time.Delta);
+            ShowTargetHitEffect(world, player, hitPoint);
+        }
+        else
+        {
+            HideTargetHitEffect(world);
+        }
 
         return true;
+    }
+
+    private static bool TryFindDrillTarget(World world, Engine.Physics.Ray ray, LocalAstronaut player, bool hasVoxelHit, in HitInfo voxelHit, out IDrillable target, out Vector3 hitPoint)
+    {
+        target = null;
+        hitPoint = default;
+
+        if (!world.Physics.Raycast(ray, player.Body, out var hit)) return false;
+        if (hit.Body.Owner is not IDrillable drillable) return false;
+        if (hasVoxelHit && Vector3.DistanceSquared(ray.Origin, voxelHit.hitPosition) < hit.Distance * hit.Distance) return false;
+
+        target = drillable;
+        hitPoint = hit.Point;
+        return true;
+    }
+
+    private void ShowTargetHitEffect(World world, LocalAstronaut player, Vector3 hitPoint)
+    {
+        var effect = world.BlockMiningEffect;
+        if (effect == null) return;
+
+        _targetEffectActive = true;
+        effect.Enabled = true;
+        effect.SetEmitter(true);
+        effect.ParticleSystem.Position = hitPoint;
+        if (effect.ParticleSystem.Emitter is ConeEmitter cone)
+            cone.Direction = Vector3.Normalize(player.Position - hitPoint);
+    }
+
+    private void HideTargetHitEffect(World world)
+    {
+        if (!_targetEffectActive) return;
+        _targetEffectActive = false;
+
+        var effect = world?.BlockMiningEffect;
+        if (effect == null) return;
+
+        effect.Enabled = false;
+        effect.ClearParticles();
     }
 
     protected void UpdateBlockSelector(HitInfo hit)
@@ -72,5 +120,6 @@ public abstract class InteractionDestroyBlock : InteractionMode
         BlockSelector.IsVisible = false;
         selectedItemSlot = null;
         model?.Animator.Clear();
+        HideTargetHitEffect(World.Instance);
     }
 }

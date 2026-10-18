@@ -16,10 +16,12 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
     private const float AlertDuration = 10f;
     private const float MinFacingSpeed = 0.2f;
     private const float DropSpeed = 1.5f;
+    private const float HitRadiusFactor = 0.5f;
 
     private readonly StatsData _health;
     private readonly SphereBody _body;
     private readonly MobAnimator _animator;
+    private readonly MobEatingEffect _eatingEffect = new MobEatingEffect();
     private readonly Random _random;
     private IMobBrain? _brain;
     private Quaternion _orientation = Quaternion.Identity;
@@ -51,6 +53,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
         {
             if (_action == value) return;
             _action = value;
+            if (value != MobAction.Eating) _eatingEffect.Stop();
             if (!IsReplica) Link?.SyncAction(value);
         }
     }
@@ -66,7 +69,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
         _health = new StatsData(definition.Name, definition.Health, definition.Health);
         _health.OnEqualZero += Die;
 
-        _body = AttachComponent(new SphereBody(physics, definition.Radius) { Bounciness = 0f });
+        _body = AttachComponent(new SphereBody(physics, definition.Radius) { Bounciness = 0f, HitRadius = HitRadiusFactor * definition.Scale });
         AttachComponent(new ModelRendererComponent(MobModels.Get(definition)));
         _animator = new MobAnimator(this, definition.Scale, (float)_random.NextDouble() * 10f);
 
@@ -90,6 +93,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
     public void ApplyReplicatedAction(MobAction action)
     {
         _action = action;
+        if (action != MobAction.Eating) _eatingEffect.Stop();
     }
 
     public void LookAt(Vector3 worldPoint)
@@ -112,6 +116,13 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
         if (!IsReplica && !IsDead) UpdateAuthority(deltaTime);
 
         _animator.Update(deltaTime, _action);
+        _eatingEffect.Update(deltaTime);
+    }
+
+    public override void Render()
+    {
+        base.Render();
+        _eatingEffect.Render();
     }
 
     public void TakeDamage(Projectile projectile)
@@ -150,6 +161,8 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
 
     public void Push(Vector3 normal, float targetSpeed)
     {
+        if (_action == MobAction.Hunting) return;
+
         if (IsReplica) Link!.SendPush(normal, targetSpeed);
         else _body.Push(normal, targetSpeed);
     }
@@ -161,6 +174,22 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
         int damage = Definition.RollDamage(_random);
         if (Link != null) Link.BroadcastBite(targetPeer, damage);
         else PlayBite();
+    }
+
+    public void BeginEating(FoodTarget food)
+    {
+        if (IsReplica || !food.IsValid || !Navigation.TryGetBlock(food.Cell, out _, out _, out var block)) return;
+
+        var normal = food.Entity!.DirectionToWorldSpace(new Vector3(food.Normal.X, food.Normal.Y, food.Normal.Z));
+        var surface = food.BlockWorld + normal * 0.5f;
+
+        if (Link != null) Link.BroadcastEating(surface, normal, block.Id, Definition.EatTime);
+        else PlayEatingEffect(surface, normal, block.Id, Definition.EatTime);
+    }
+
+    public void PlayEatingEffect(Vector3 surface, Vector3 direction, short blockId, float duration)
+    {
+        _eatingEffect.Play(surface, direction, blockId, duration);
     }
 
     public bool EatBlock(FoodTarget food)
@@ -196,6 +225,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
         _isRemoved = true;
 
         Locomotion.Stop();
+        _eatingEffect.Dispose();
         DetachComponent(_body);
         Parent?.RemoveChild(this);
         MobSystem.Instance?.Unregister(this);
@@ -244,11 +274,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
         IsDead = true;
 
         Locomotion.Stop();
-        var drop = Definition.RollDrop(_random);
-        short effectBlock = drop is BlockItem blockItem ? blockItem.BlockId : (short)0;
-
-        if (drop != null && !IsReplica)
-            World.DropEffectManager?.DropItem(Position, MobRandom.Direction(_random), DropSpeed, drop, 1);
+        short effectBlock = DropLoot();
 
         if (Link != null)
         {
@@ -259,6 +285,21 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
 
         PlayDeathEffect(effectBlock);
         Remove();
+    }
+
+    private short DropLoot()
+    {
+        short effectBlock = 0;
+        var loot = Definition.RollLoot(_random);
+
+        for (int i = 0; i < loot.Count; i++)
+        {
+            var item = loot[i].Item;
+            if (effectBlock == 0 && item is BlockItem blockItem) effectBlock = blockItem.BlockId;
+            if (!IsReplica) World.DropEffectManager?.DropItem(Position, MobRandom.Direction(_random), DropSpeed, item, loot[i].Quantity);
+        }
+
+        return effectBlock;
     }
 
     private static Quaternion LookRotation(Vector3 direction)

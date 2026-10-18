@@ -25,8 +25,12 @@ public class MobJSON
     public byte FleeChance { get; set; } = 0;
     public float EatTime { get; set; } = 3f;
     public float FoodSearchRadius { get; set; } = 8f;
+    public float MealIntervalMin { get; set; } = 60f;
+    public float MealIntervalMax { get; set; } = 600f;
+    public float MealNearDistance { get; set; } = 24f;
+    public float MealFarDistance { get; set; } = 96f;
     public string[] EdibleBlocks { get; set; } = Array.Empty<string>();
-    public string[] Drops { get; set; } = Array.Empty<string>();
+    public string Loot { get; set; } = "";
     public MobSpawnJSON Spawn { get; set; } = new MobSpawnJSON();
 }
 

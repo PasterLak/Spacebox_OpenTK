@@ -1,5 +1,5 @@
 using Engine.AI;
-using OpenTK.Mathematics;
+using Spacebox.Game.Mobs.Navigation;
 
 namespace Spacebox.Game.Mobs.States;
 
@@ -36,18 +36,10 @@ public sealed class WanderState : State<MobContext>
     private void PickGoal()
     {
         _legTime = 0f;
-        var grid = Context.Grid;
-        var origin = Context.Mob.Position;
 
-        for (int i = 0; i < GoalAttempts; i++)
-        {
-            var goal = origin + MobRandom.Direction(Context.Random) * MobRandom.Range(Context.Random, MinDistance, MaxDistance);
-            if (!grid.IsPassable(grid.WorldToCell(goal))) continue;
-
+        if (SurfaceFinder.TryFind(Context.Grid, Context.Mob.Position, MinDistance, MaxDistance, Context.Random, out var goal, GoalAttempts))
             Context.Locomotion.MoveTo(goal, Context.Definition.Speed, ArriveDistance);
-            return;
-        }
-
-        Context.Locomotion.Stop();
+        else
+            Context.Locomotion.Stop();
     }
 }

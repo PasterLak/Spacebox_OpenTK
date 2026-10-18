@@ -12,6 +12,7 @@
         "ModelDepth": 2,
         "Range": 2,
         "Tier": 1,
+        "Damage": 2,
         "DrillColor": {
             "r": 118,
             "g": 135,
@@ -30,6 +31,7 @@
         "ModelDepth": 2,
         "Range": 2.5,
         "Tier": 2,
+        "Damage": 4,
         "DrillColor": {
             "r": 38,
             "g": 212,
@@ -48,6 +50,7 @@
         "ModelDepth": 2,
         "Range": 3,
         "Tier": 3,
+        "Damage": 5,
         "DrillColor": {
             "r": 38,
             "g": 192,
@@ -66,6 +69,7 @@
         "ModelDepth": 5,
         "Range": 4,
         "Tier": 4,
+        "Damage": 20,
         "DrillColor": {
             "r": 38,
             "g": 180,
@@ -83,6 +87,7 @@
         "PowerUsage": 3,
         "ModelDepth": 3,
         "Tier": 5,
+        "Damage": 7,
         "Range": 6,
         "DrillColor": {
             "r": 57,
@@ -102,6 +107,7 @@
         "ModelDepth": 3,
         "Range": 5,
         "Tier": 6,
+        "Damage": 7,
         "DrillColor": {
             "r": 201,
             "g": 48,
@@ -117,7 +123,7 @@
         "Sprite": "weapon1",
         "MaxStack": 1,
         "ModelDepth": 1.5,
-        "ReloadTime": 10,
+        "ReloadTime": 12,
         "Spread": 50,
         "AnimationPushback": 18,
         "Recoil": 1,
@@ -182,7 +188,7 @@
         "PowerUsage": 30,
         "Projectile": "p_ar",
         "ShotSound": "ar",
-        "Ammo": "obscurium_ammo",
+        "Ammo": "",
         "GlowColor": {
             "r": 163,
             "g": 84,

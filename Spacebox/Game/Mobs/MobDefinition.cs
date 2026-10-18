@@ -25,8 +25,12 @@ public sealed class MobDefinition
     public float FleeChance { get; init; }
     public float EatTime { get; init; } = 3f;
     public float FoodSearchRadius { get; init; } = 8f;
+    public float MealIntervalMin { get; init; } = 60f;
+    public float MealIntervalMax { get; init; } = 600f;
+    public float MealNearDistance { get; init; } = 24f;
+    public float MealFarDistance { get; init; } = 96f;
     public IReadOnlySet<short>? EdibleBlocks { get; init; }
-    public IReadOnlyList<Item> Drops { get; init; } = Array.Empty<Item>();
+    public string LootTable { get; init; } = "";
     public MobSpawnJSON Spawn { get; init; } = new MobSpawnJSON();
 
     public bool CanEat(short blockId)
@@ -42,8 +46,19 @@ public sealed class MobDefinition
         return random.Next(min, max + 1);
     }
 
-    public Item? RollDrop(Random random)
+    public float HungerRate(float nearestPlayerDistance)
     {
-        return Drops.Count == 0 ? null : Drops[random.Next(Drops.Count)];
+        if (nearestPlayerDistance >= MealFarDistance) return 0f;
+
+        float range = MathF.Max(1f, MealFarDistance - MealNearDistance);
+        float t = Math.Clamp((nearestPlayerDistance - MealNearDistance) / range, 0f, 1f);
+        float interval = MealIntervalMin + (MealIntervalMax - MealIntervalMin) * t;
+        return 1f / MathF.Max(1f, interval);
+    }
+
+    public IReadOnlyList<Resource.LootResult> RollLoot(Random random)
+    {
+        if (string.IsNullOrEmpty(LootTable) || GameAssets.LootConfig == null) return Array.Empty<Resource.LootResult>();
+        return GameAssets.LootConfig.GenerateLoot(LootTable, random.Next());
     }
 }

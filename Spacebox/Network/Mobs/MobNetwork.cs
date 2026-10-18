@@ -66,6 +66,11 @@ public sealed class MobNetwork : NetworkTransform, IMobLink
         SendRpc(nameof(Bite), targetPeer, damage);
     }
 
+    public void BroadcastEating(Vector3 surface, Vector3 direction, short blockId, float duration)
+    {
+        SendRpc(nameof(Eating), surface, direction, blockId, duration);
+    }
+
     public void BroadcastDeath(short effectBlockId)
     {
         SendRpc(nameof(Death), effectBlockId);
@@ -102,6 +107,12 @@ public sealed class MobNetwork : NetworkTransform, IMobLink
 
         mob.PlayBite();
         if (targetPeer == NetworkManager.Instance.LocalPeerId) DamageLocalPlayer(mob, damage);
+    }
+
+    [Rpc(RpcTarget.Clients)]
+    private void Eating(Vector3 surface, Vector3 direction, short blockId, float duration)
+    {
+        if (Owner is Mob mob) mob.PlayEatingEffect(surface, direction, blockId, duration);
     }
 
     [Rpc(RpcTarget.Clients)]
