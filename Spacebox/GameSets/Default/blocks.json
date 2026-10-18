@@ -1030,6 +1030,58 @@
     }
   },
   {
+    "ID": "item_pipe",
+    "Name": "Item Pipe",
+    "Description": "Moves one item per second from the block below (input) to the blocks on its other sides. Takes only results from machines and feeds them only items they can process. Put an item into the Filter slot to move only that item. Needs 5 power",
+    "Type": "pipe",
+    "Pipe": {
+      "TransferInterval": 1,
+      "Power": 5,
+      "OutputSides": [ "Up", "Left", "Right", "Forward", "Back" ]
+    },
+    "Category": "other",
+    "PowerToDrill": 1,
+    "Mass": 3,
+    "Durability": 5,
+    "Textures": {
+      "Active": {
+        "All": "pipeOutput",
+        "Down": "pipeInput"
+      },
+      "Inactive": {
+        "All": "pipeOutputOff",
+        "Down": "pipeInputOff"
+      }
+    }
+  },
+  {
+    "ID": "item_pipe_straight",
+    "Name": "Straight Item Pipe",
+    "Description": "Moves one item per second from the block below (input) only to the block above (output). Takes only results from machines and feeds them only items they can process. Put an item into the Filter slot to move only that item. Needs 5 power",
+    "Type": "pipe",
+    "Pipe": {
+      "TransferInterval": 1,
+      "Power": 5,
+      "OutputSides": [ "Up" ]
+    },
+    "Category": "other",
+    "PowerToDrill": 1,
+    "Mass": 3,
+    "Durability": 5,
+    "Textures": {
+      "Active": {
+        "All": "pipeStraightSide",
+        "Up": "pipeOutput",
+        "Down": "pipeInput"
+      },
+      "Inactive": {
+        "All": "pipeStraightSideOff",
+        "Up": "pipeOutputOff",
+        "Down": "pipeInputOff"
+      }
+    }
+  },
+  {
     "ID": "aluminium_door",
     "Name": "Aluminium Door",
     "Description": "Sliding 2x2 door made of aluminium",

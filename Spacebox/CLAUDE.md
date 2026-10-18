@@ -124,6 +124,10 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 - AI, spawning and despawning run only on the server; replicas only animate. Mob changes visible to clients go through `IMobLink` (`MobNetwork`).
 - Spawner items: `MobSpawnerItem` (`Type: "mob_spawner"`), `InteractionSpawnMob`, `MobSpawnNetwork`.
 
+## Item transport
+
+- `PipeBlock` (type `pipe`, settings `PipeBlockData`) moves items between neighbours through `IItemTransferEndpoint` (`Game/Logistics/`). A new block that should work with pipes implements `IItemTransferEndpoint` itself or gets an adapter registered with `ItemTransferEndpoints.Register`; existing adapters: `StorageEndpoint` (storages, filtered container slots) and `MachineEndpoint` (`ResourceProcessingBlock`). Transfers run on the server only.
+
 ## Oxygen
 
 - `Game/Generation/Oxygen/`: `OxygenSystem` per `SpaceEntity` (`entity.Oxygen`), `AirFloodFill` (pooled buffers, main thread only), `AirMasks` (per-chunk bit masks), `AirGrid` (entity-local coordinate helpers).

@@ -93,6 +93,7 @@ public sealed class NetworkSession : IDisposable
         }
         Containers.ContainerNetwork.Update();
         AnalyzerNetwork.Update();
+        if (NetworkManager.Instance.IsServer) Spacebox.Game.Generation.Blocks.PipeRegistry.Update(Time.Delta);
         BlockStateNetwork.Update();
         TimeNetwork.Update();
         SectorNetwork.Update();
@@ -163,6 +164,7 @@ public sealed class NetworkSession : IDisposable
         Containers.ContainerNetwork.Reset();
         BlockStateNetwork.Clear();
         AnalyzerNetwork.Reset();
+        Spacebox.Game.Generation.Blocks.PipeRegistry.Clear();
         SectorNetwork.Clear();
         PlayerListNetwork.Clear();
         Moderation.ServerModeration.Reset();

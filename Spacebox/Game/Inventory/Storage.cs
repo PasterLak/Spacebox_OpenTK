@@ -242,7 +242,7 @@ public class Storage
         {
             for (int y = 0; y < SizeY; y++)
             {
-                if (_slots[x, y].Count == 0 && _slots[x, y].CanAccept(item))
+                if (_slots[x, y].Count == 0 && !_slots[x, y].IsManualOnly && _slots[x, y].CanAccept(item))
                 {
                     slot = _slots[x, y];
                     return true;
@@ -261,7 +261,7 @@ public class Storage
         {
             for (int y = 0; y < SizeY; y++)
             {
-                if (_slots[x, y].Count == 0) continue;
+                if (_slots[x, y].Count == 0 || _slots[x, y].IsManualOnly) continue;
 
 
                 if (_slots[x, y].Item.Id == item.Id)

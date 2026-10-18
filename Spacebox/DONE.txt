@@ -104,6 +104,8 @@ Small
 - ore scanner synced in multiplayer: server runs the scan (also with the window closed), everyone sees progress and result
 - oxygen generator has its own textures (water tank with bubbles, fan vent) with glow
 - new gravity generator textures (field chevrons, coil top, emitter bottom) and DNA reconstructor textures (DNA capsule, hatch), both with off textures and glow
+- item pipe: moves 1 item/s from its bottom (input) to the other sides, 5 power, filter slot, understands storages and machines (takes only results, feeds only valid ingredients), chains with other pipes, textures, crafting
+- straight item pipe (output only up), configurable pipe output sides, filter slot tooltip, filter slot is not filled by shift-click
 - fall damage in gravity (survival): from 5 blocks on Earth gravity, per-preset safe height and damage (Moon 8/2, Mars 6/3, Earth 5/4, Jupiter 3/6), impact sound (other players hear it in 3D)
 - data-driven mobs (GameSet Mobs/*.json), console command mob <id>|list|clear
 - Mineral Parasite Larva item spawns a parasite (item type mob_spawner)

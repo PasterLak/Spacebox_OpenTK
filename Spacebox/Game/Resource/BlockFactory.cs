@@ -28,7 +28,8 @@ namespace Spacebox.Game.Resource
                 { "door", data => new DoorBlock(data) },
                 { "gravity", data => new GravityGeneratorBlock(data) },
                 { "dnareconstructor", data => new DnaReconstructorBlock(data) },
-                { "explosive", data => new ExplosiveBlock(data) }
+                { "explosive", data => new ExplosiveBlock(data) },
+                { "pipe", data => new PipeBlock(data) }
         };
 
         public static Block CreateBlockFromId(short id)

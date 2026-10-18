@@ -7,6 +7,8 @@ public class ItemSlot
     public short SlotId;
     public Item? Item;
     public string Name = "";
+    public string Hint = "";
+    public bool IsManualOnly;
     public Storage Storage;
     public Predicate<Item> Filter;
     public Vector2Byte Position { get; private set; }

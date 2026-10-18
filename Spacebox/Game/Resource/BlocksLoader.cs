@@ -117,6 +117,10 @@ namespace Spacebox.Game.Resource
                 {
                     blockData = new ExplosiveBlockData(blockData, blockJson.Explosive);
                 }
+                else if (blockData.Type == "pipe")
+                {
+                    blockData = new PipeBlockData(blockData, blockJson.Pipe);
+                }
                 else if (blockData.Type == "dnareconstructor")
                 {
                     blockData = new DnaReconstructorBlockData(blockData, blockJson.DnaReconstructor, GameSetLoader.ModInfo.ModId);

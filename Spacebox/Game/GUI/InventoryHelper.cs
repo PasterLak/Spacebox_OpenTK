@@ -238,10 +238,11 @@ namespace Spacebox.Game.GUI
             if (SpaceboxWindow.Instance != null && !SpaceboxWindow.Instance.IsFocused) return;
             if (IsDragging) return;
 
-            if (ImGui.IsItemHovered() && !slot.HasItem && slot.Name != "")
+            if (ImGui.IsItemHovered() && !slot.HasItem && (slot.Name != "" || slot.Hint != ""))
             {
                 ImGui.BeginTooltip();
                 ImGui.Text(slot.Name);
+                if (slot.Hint != "") ImGui.TextDisabled(slot.Hint);
 
                 ImGui.EndTooltip();
             }
@@ -345,6 +346,7 @@ namespace Spacebox.Game.GUI
 
                 ImGui.BeginTooltip();
                 ImGui.Text($"{slot.Item.Name}\n{text}");
+                if (slot.Hint != "") ImGui.TextDisabled(slot.Hint);
                 ImGui.EndTooltip();
             }
         }
