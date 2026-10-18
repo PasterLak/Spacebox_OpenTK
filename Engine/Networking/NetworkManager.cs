@@ -143,6 +143,18 @@ public sealed class NetworkManager
 
     public float LatencyToServer => IsServer ? 0f : GetOneWayLatency(ServerPeerId);
 
+    public int GetRoundTripMilliseconds(int peer)
+    {
+        if (peer == LocalPeerId || _transport == null) return 0;
+        return _transport.GetRoundTripTime(peer);
+    }
+
+    public string GetPeerAddress(int peer)
+    {
+        if (peer == LocalPeerId || _transport == null) return string.Empty;
+        return _transport.GetAddress(peer);
+    }
+
     public void Kick(int peer, string reason)
     {
         if (!IsServer || peer == LocalPeerId) return;

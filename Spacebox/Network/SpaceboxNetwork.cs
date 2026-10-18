@@ -29,5 +29,6 @@ public static class SpaceboxNetwork
         TimeNetwork.Register(network);
         SectorNetwork.Register(network);
         EntityCreationNetwork.Register(network);
+        PlayerListNetwork.Register(network);
     }
 }

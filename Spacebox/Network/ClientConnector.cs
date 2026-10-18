@@ -9,9 +9,12 @@ public static class ClientConnector
     private static Action<RemoteWorldInfo> _onAccepted;
     private static Action<string> _onFailed;
     private static bool _isConnecting;
+    private static bool _isDownloading;
 
     public static bool IsConnecting => _isConnecting;
-    public static string Status { get; private set; }
+
+    public static event Action<string> StepAdded;
+    public static event Action<float> ProgressChanged;
 
     public static void Connect(string address, int port, Action<RemoteWorldInfo> onAccepted, Action<string> onFailed)
     {
@@ -20,7 +23,7 @@ public static class ClientConnector
         _onAccepted = onAccepted;
         _onFailed = onFailed;
         _isConnecting = true;
-        Status = $"Connecting to {address}:{port}...";
+        Step($"Connecting to {address}:{port}");
 
         GameSession.BeginClient(address, port);
 
@@ -45,6 +48,7 @@ public static class ClientConnector
 
     private static void OnConnected()
     {
+        Step($"Connected, joining as {GameSession.PlayerName}");
         NetworkManager.Instance.SendToServer(new JoinRequestMessage
         {
             Name = GameSession.PlayerName,
@@ -73,14 +77,21 @@ public static class ClientConnector
 
         GameSession.SetRemoteWorld(world);
         GameSession.PendingPlayerJson = message.PlayerJson;
-        Status = "Checking GameSet...";
+        Step($"Joined world '{message.WorldName}'");
+        Step("Checking GameSet");
 
         GameSetDownloader.Prepare(world, OnDownloadProgress, () => Complete(world), OnDownloadFailed);
     }
 
     private static void OnDownloadProgress(float progress)
     {
-        Status = $"Downloading GameSet {(int)(progress * 100f)}%";
+        if (!_isDownloading)
+        {
+            _isDownloading = true;
+            Step("Downloading GameSet from the server");
+        }
+
+        ProgressChanged?.Invoke(progress);
     }
 
     private static void OnDownloadFailed(string reason)
@@ -93,6 +104,8 @@ public static class ClientConnector
     {
         if (!_isConnecting) return;
 
+        Step("GameSet ready");
+        Step("Loading world");
         var callback = _onAccepted;
         Unsubscribe();
         callback?.Invoke(world);
@@ -106,7 +119,13 @@ public static class ClientConnector
 
     private static void OnConnectionLost(string reason)
     {
-        Fail(reason);
+        Fail(DisconnectReasons.Describe(reason));
+    }
+
+    private static void Step(string text)
+    {
+        Debug.Log("[Network] " + text);
+        StepAdded?.Invoke(text);
     }
 
     private static void Fail(string reason)
@@ -128,7 +147,7 @@ public static class ClientConnector
         network.Messages.Unregister<JoinAcceptedMessage>();
         network.Messages.Unregister<JoinRejectedMessage>();
         _isConnecting = false;
-        Status = null;
+        _isDownloading = false;
         _onAccepted = null;
         _onFailed = null;
     }

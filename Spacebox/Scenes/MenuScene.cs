@@ -250,6 +250,13 @@ namespace Spacebox.Scenes
             // ImFontPtr myFont = ImGui.GetIO().Fonts.Fonts[1];
             // ImGui.PushFont(myFont);
             BlackScreenOverlay.OnGUI();
+
+            if (ConnectionScreen.IsVisible)
+            {
+                ConnectionScreen.OnGUI();
+                ColorOverlay.OnGUI();
+                return;
+            }
             
             CenteredImageMenu.Draw();
            

@@ -92,6 +92,7 @@ public sealed class NetworkSession : IDisposable
         BlockStateNetwork.Update();
         TimeNetwork.Update();
         SectorNetwork.Update();
+        PlayerListNetwork.Update();
         if (!NetworkManager.Instance.IsRemoteClient || _localPlayer == null) return;
 
         _playerSyncTimer += Time.Delta;
@@ -157,6 +158,8 @@ public sealed class NetworkSession : IDisposable
         Containers.ContainerNetwork.Reset();
         BlockStateNetwork.Clear();
         SectorNetwork.Clear();
+        PlayerListNetwork.Clear();
+        Moderation.ServerModeration.Reset();
         _playerSpawner.Dispose();
         _spacerSpawner.Dispose();
         PlayerRegistry.Clear();
@@ -183,7 +186,7 @@ public sealed class NetworkSession : IDisposable
         var network = NetworkManager.Instance;
         if (!network.IsServer || sender == network.LocalPeerId) return;
 
-        string reason = ValidateJoin(message);
+        string reason = ValidateJoin(sender, message);
         if (reason != null)
         {
             network.Send(sender, new JoinRejectedMessage { Reason = reason });
@@ -212,10 +215,11 @@ public sealed class NetworkSession : IDisposable
         Debug.Log($"[Server] {name} is joining (peer {sender})");
     }
 
-    private static string ValidateJoin(JoinRequestMessage message)
+    private static string ValidateJoin(int sender, JoinRequestMessage message)
     {
         if (message.GameVersion != Application.Version) return $"Version mismatch: server {Application.Version}, client {message.GameVersion}";
         if (string.IsNullOrWhiteSpace(message.Name)) return "Invalid name";
+        if (Moderation.ServerModeration.IsBanned(message.Name.Trim(), NetworkManager.Instance.GetPeerAddress(sender))) return Moderation.ServerModeration.BannedReason;
         if (string.Equals(message.Name.Trim(), GameSession.PlayerName, StringComparison.OrdinalIgnoreCase) && GameSession.HasLocalPlayer) return "Name is already taken";
         if (PlayerRegistry.TryGetByName(message.Name.Trim(), out _)) return "Name is already taken";
         return null;
@@ -230,6 +234,7 @@ public sealed class NetworkSession : IDisposable
         DropNetwork.SendAllTo(sender);
         TimeNetwork.SendTo(sender);
         player.PlayerObject = _playerSpawner.SpawnPlayer(sender, player.Name, player.SkinColor, Vector3.Zero, Quaternion.Identity);
+        PlayerListNetwork.MarkDirty();
         ChatService.Broadcast($"{player.Name} joined the game", Color4.Yellow);
     }
 
@@ -252,12 +257,14 @@ public sealed class NetworkSession : IDisposable
         if (!string.IsNullOrEmpty(player.LastPlayerJson) && World.WorldData != null)
             PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, player.LastPlayerJson);
 
+        PlayerListNetwork.MarkDirty();
         ChatService.Broadcast($"{player.Name} left the game", Color4.Yellow);
     }
 
     private void OnDisconnectedFromServer(string reason)
     {
         Debug.Error($"[Network] Disconnected from server: {reason}");
+        Spacebox.Game.GUI.ConnectionScreen.ShowMessage("Disconnected", DisconnectReasons.Describe(reason));
         SceneManager.Load<MenuScene>();
     }
 }

@@ -90,6 +90,11 @@ public sealed class LiteNetTransport : INetTransport
         return _peers.TryGetValue(peer, out var netPeer) ? netPeer.RoundTripTime : 0;
     }
 
+    public string GetAddress(int peer)
+    {
+        return _peers.TryGetValue(peer, out var netPeer) ? netPeer.Address.ToString() : string.Empty;
+    }
+
     public void Poll()
     {
         _manager?.PollEvents();

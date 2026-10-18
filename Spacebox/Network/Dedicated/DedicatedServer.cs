@@ -73,6 +73,10 @@ public static class DedicatedServer
         CommandManager.RegisterGlobalCommand(new SayCommand());
         CommandManager.RegisterGlobalCommand(new PlayersCommand());
         CommandManager.RegisterGlobalCommand(new KickCommand());
+        CommandManager.RegisterGlobalCommand(new BanCommand());
+        CommandManager.RegisterGlobalCommand(new UnbanCommand());
+        CommandManager.RegisterGlobalCommand(new MuteCommand(true));
+        CommandManager.RegisterGlobalCommand(new MuteCommand(false));
         CommandManager.RegisterGlobalCommand(new SaveCommand());
         CommandManager.RegisterGlobalCommand(new StopCommand());
     }

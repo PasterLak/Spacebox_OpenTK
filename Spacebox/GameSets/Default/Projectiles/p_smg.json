@@ -10,7 +10,7 @@
         "g": 200,
         "b": 190
     },
-    "Damage": 5,
+    "Damage": 6,
     "DamageBlocks": 4,
     "Heals": false,
     "Penetration": 85,

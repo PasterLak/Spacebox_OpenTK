@@ -190,7 +190,6 @@ namespace Spacebox.Game.GUI.Menu
             SaveConfig();
 
             ImGui.Separator();
-            if (ClientConnector.IsConnecting && !string.IsNullOrEmpty(ClientConnector.Status)) statusText = ClientConnector.Status;
             ImGui.Text(string.IsNullOrEmpty(statusText) ? "Saved Servers:" : statusText);
             List<ServerEntry> combinedServers = config.Servers;
             ImGui.BeginChild("ServerList", new Vector2(windowWidth - 20, windowHeight * 0.4f));
@@ -288,10 +287,11 @@ namespace Spacebox.Game.GUI.Menu
             if (ClientConnector.IsConnecting) return;
 
             GameSession.SetPlayer(config.PlayerNickname, config.SkinColor);
-            statusText = $"Connecting to {server.IP}:{server.Port}...";
+            statusText = "";
             Debug.Log($"[Network] Joining {server.Name} {server.IP}:{server.Port}");
 
-            ClientConnector.Connect(server.IP, server.Port, OnJoinAccepted, reason => statusText = "Failed: " + reason);
+            ConnectionScreen.Show($"Joining {server.Name}");
+            ClientConnector.Connect(server.IP, server.Port, OnJoinAccepted, reason => ConnectionScreen.ShowError("Connection failed", reason));
         }
 
         private void OnJoinAccepted(RemoteWorldInfo world)

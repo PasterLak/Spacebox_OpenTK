@@ -9,7 +9,7 @@
         "g": 255,
         "b": 0
     },
-    "Damage": 4,
+    "Damage": 5,
     "DamageBlocks": 2,
     "Penetration": 65,
     "RicochetAngle": 20,

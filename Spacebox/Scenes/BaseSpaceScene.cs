@@ -161,9 +161,13 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
             localPlayer.Flashlight.Enabled = false;
         }
 
+        ConnectionScreen.Hide();
         _networkSession = new NetworkSession(this, localPlayer);
         if (!_networkSession.Start() && GameSession.IsRemoteClient)
+        {
+            ConnectionScreen.ShowMessage("Connection failed", "Lost the connection to the server while loading");
             SceneManager.Load<MenuScene>();
+        }
     }
 
     public override void Start()

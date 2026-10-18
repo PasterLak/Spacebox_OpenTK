@@ -83,6 +83,8 @@ Game
 
 Small
 - double click to open a world
+- multiplayer pause: player list with ping; host can kick, mute and ban (bans/mutes saved in moderation.json of the world, console: ban, unban, mute, unmute)
+- connection screen over the skybox: every join step as text, GameSet download progress, red errors with "Back to menu"; kicks, bans and disconnects show the reason
 - multiplayer: missing GameSet is downloaded from the server into Server/<host_port>/GameSet (local GameSets untouched, reused if unchanged)
 - multiplayer: player-built entities, destroyed asteroids, spacer (movement, damage, loot, push), DNA count for respawn and day time are synced
 - multiplayer: doors, explosions, machine on/off state, oxygen generator water and gravity generator settings are synced; container windows close when the block is destroyed
@@ -120,6 +122,7 @@ Fixes
 - drops in gravity land on the ground without bouncing
 - gravity strength changes jump height (same jump speed, at least 1.2 m)
 - gravity walking: stuck at walls and bumps on flat floor (box collision in entity-local space, slides along walls)
+- pause screen faded out after opening the port (darkening now fixed, not a time-based fade)
 
 Engine
 - networking: LiteNetLib transport, NetworkManager (offline/host/client/dedicated), messages, NetworkObject/NetworkBehaviour, [Rpc] methods, NetworkVariable, spawner, NetworkTransform

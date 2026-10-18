@@ -495,7 +495,7 @@
     "Type": "consumable",
     "Sound": "beer",
     "UseCooldown": 1,
-    "OxygenAmount": 100,
+    "OxygenAmount": 50,
     "Sprite": "oxygen",
     "MaxStack": 64,
     "ModelDepth": 3.0

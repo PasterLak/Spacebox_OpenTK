@@ -42,6 +42,12 @@ public static class ChatService
         if (!NetworkManager.Instance.IsServer || string.IsNullOrWhiteSpace(message.Text)) return;
 
         string name = sender == NetworkManager.Instance.LocalPeerId ? GameSession.PlayerName : PlayerRegistry.GetName(sender);
+        if (sender != NetworkManager.Instance.LocalPeerId && Moderation.ServerModeration.IsMuted(name))
+        {
+            NetworkManager.Instance.Send(sender, new ChatBroadcastMessage { Text = "You are muted", Color = Pack(Color4.OrangeRed) });
+            return;
+        }
+
         string text = message.Text.Length > 256 ? message.Text.Substring(0, 256) : message.Text;
         Broadcast($"[{name}]: {text}", Color4.White);
     }

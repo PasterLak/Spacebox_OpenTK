@@ -19,6 +19,7 @@ namespace Spacebox.Game.GUI
         private static string saveButtonText = "Save";
         private static string networkButtonText = "Open to network";
         private static AudioSource click1;
+        private static readonly uint DimColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.7f));
 
         public static void Init()
         {
@@ -36,7 +37,6 @@ namespace Spacebox.Game.GUI
                     if (!IsMultiplayerActive()) Time.TimeSize = 0;
                     saveButtonText = "Save";
                     networkButtonText = Engine.Networking.NetworkManager.Instance.IsListening ? $"Open on port {GameSession.Port}" : "Open to network";
-                    ColorOverlay.FadeOut(new Vector3(0, 0, 0), 0.7f);
                     Settings.ShowInterface = false;
                 }
                 else
@@ -51,7 +51,9 @@ namespace Spacebox.Game.GUI
 
             if (!isVisible) return;
 
+            ImGui.GetBackgroundDrawList().AddRectFilled(Vector2.Zero, ImGui.GetIO().DisplaySize, DimColor);
             RenderPause();
+            if (IsMultiplayerActive()) PlayerListUI.Draw();
             RenderPauseTitle();
             StatisticsUI.OnGUI();
         }
