@@ -293,6 +293,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         GeneratorUI.OnGUI();
         AnalyzerUI.OnGUI();
         OxygenGeneratorUI.OnGUI();
+        DisassemblerUI.OnGUI();
         GravityGeneratorUI.OnGUI();
         DnaReconstructorUI.OnGUI();
         DnaReconstructionScreen.OnGUI();
@@ -318,6 +319,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         _networkSession = null;
         Time.OnTick -= UpdateTickTasks;
         OxygenGeneratorUI.Reset();
+        DisassemblerUI.Reset();
         WorldLoadingScreen.Reset();
         GravityGeneratorUI.Reset();
         DnaReconstructorUI.Reset();

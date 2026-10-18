@@ -130,7 +130,7 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 
 ## Item transport
 
-- `PipeBlock` (type `pipe`, settings `PipeBlockData`) moves items between neighbours through `IItemTransferEndpoint` (`Game/Logistics/`). A new block that should work with pipes implements `IItemTransferEndpoint` itself or gets an adapter registered with `ItemTransferEndpoints.Register`; existing adapters: `StorageEndpoint` (storages, filtered container slots) and `MachineEndpoint` (`ResourceProcessingBlock`). Transfers run on the server only.
+- `PipeBlock` (type `pipe`, settings `PipeBlockData`) moves items between neighbours through `IItemTransferEndpoint` (`Game/Logistics/`). A new block that should work with pipes implements `IItemTransferEndpoint` itself or gets an adapter registered with `ItemTransferEndpoints.Register`; existing adapters: `StorageEndpoint` (storages, filtered container slots), `MachineEndpoint` (`ResourceProcessingBlock`) and `DisassemblerEndpoint`. Transfers run on the server only.
 
 ## Oxygen
 
@@ -139,6 +139,11 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 - Query with `World.IsBreathable(worldPos)`.
 - `OxygenGeneratorBlock` works when `IsActive` (network power) and its tank has water; its timers run from `OxygenSystem.Update`. UI: `OxygenGeneratorUI`; settings: `OxygenGeneratorBlockData`.
 - Slot filters (`ItemSlot.Filter`) are respected by drag-and-drop and `Storage.TryAddItem`.
+
+## Disassembly
+
+- `Game/Disassembly/`: `DisassemblyRecipes` (static, built in `GameSetLoader` after crafting from `disassembly.json` via `DisassemblySettingsLoader`) resolves one `DisassemblyRecipe` per item through `IDisassemblyRule`s (configured → legacy `recipes.json` → derived from `IDisassemblySourceProvider`s: crafting, processing). New recipe sources are new providers; the math is in `DisassemblyCalculator`.
+- `DisassemblerBlock` (type `disassembler`, `DisassemblerBlockData`) keeps its slots in `DisassemblerInventory` and ticks only while powered and busy (server only, `TickTask` started through `MainThreadDispatcher`). UI: `DisassemblerUI`.
 
 ## Menu
 

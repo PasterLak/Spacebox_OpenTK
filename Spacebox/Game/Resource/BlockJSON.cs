@@ -34,6 +34,7 @@ namespace Spacebox.Game.Resource
         public DnaReconstructorJSON DnaReconstructor { get; set; } = new DnaReconstructorJSON();
         public ExplosiveJSON Explosive { get; set; } = new ExplosiveJSON();
         public PipeJSON Pipe { get; set; } = new PipeJSON();
+        public DisassemblerJSON Disassembler { get; set; } = new DisassemblerJSON();
     }
 
     public class TextureGroup

@@ -3,6 +3,7 @@ using Engine;
 using Engine.Audio;
 using Engine.Light;
 using Engine.Utils;
+using Spacebox.Game.Disassembly;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
@@ -92,6 +93,7 @@ public static class GameSetLoader
         SetBlocksDrop();
         LoadRecipes(modPath, defaultModPath);
         LoadCrafting(modPath, defaultModPath);
+        DisassemblyRecipes.Initialize(DisassemblySettingsLoader.Load(modPath, ModInfo.ModId));
         LoadLoot(modPath, defaultModPath);
         MobsLoader.Load(modPath, defaultModPath);
         LoadSettings(modPath);

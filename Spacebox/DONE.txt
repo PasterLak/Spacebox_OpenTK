@@ -79,6 +79,8 @@ Game
 - oxygen generator block: fills closed rooms with air (radius 32), +10 oxygen/s in air, "Air" on bar
 - oxygen generator needs 20 energy, on/off textures
 - oxygen generator UI: water slot, water tank (30), uses 1 water every 2 min, saved
+- disassembler reworked: needs power (40), 4x2 input/output, recipes from crafting (50% by default) or disassembly.json
+- disassembler: energy cells, uranium rods, microchips, cables, drill bits, ammo, titanium crate; fixed-size window, arrow progress, synced power/sound in multiplayer
 
 
 Small
@@ -159,6 +161,7 @@ Fixes
 - held item flashlight shading broke into a moving border when flying fast (view vector used the moving world camera instead of the item camera)
 - players flew through other players (remote players now have a collision body); drill did not damage other players
 - impulse rifle sphere explosion was only visible to the shooter (now on every player, projectile JSON ImpactSphere)
+- crusher: 1 lens gave 1 dust (infinite cobalt/iron/thulium), now 2 lenses -> 1 dust
 
 Engine
 - networking: LiteNetLib transport, NetworkManager (offline/host/client/dedicated), messages, NetworkObject/NetworkBehaviour, [Rpc] methods, NetworkVariable, spawner, NetworkTransform

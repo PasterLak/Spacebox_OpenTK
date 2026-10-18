@@ -530,11 +530,14 @@
   {
     "ID": "disassembler",
     "Name": "Disassembler",
-    "Description": "Disassembles items into basic components",
+    "Description": "Disassembles items back into their components. Needs power",
     "Type": "disassembler",
     "Category": "resources",
     "Durability": 5,
     "Efficiency": 1.0,
+    "Disassembler": {
+      "Power": 40
+    },
     "FrontDirection": {
       "x": 0,
       "y": 0,

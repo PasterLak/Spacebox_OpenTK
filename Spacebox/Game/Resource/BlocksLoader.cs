@@ -125,6 +125,10 @@ namespace Spacebox.Game.Resource
                 {
                     blockData = new DnaReconstructorBlockData(blockData, blockJson.DnaReconstructor, GameSetLoader.ModInfo.ModId);
                 }
+                else if (blockData.Type == "disassembler")
+                {
+                    blockData = new DisassemblerBlockData(blockData, blockJson.Disassembler);
+                }
                 else if (blockData.Type == "oxygengenerator")
                 {
                     blockData = new OxygenGeneratorBlockData(blockData, blockJson.OxygenGenerator, GameSetLoader.ModInfo.ModId);

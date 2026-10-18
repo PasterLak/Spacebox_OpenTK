@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using Spacebox.Game.Disassembly;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
@@ -318,6 +319,7 @@ namespace Spacebox.Game
             AtlasItems?.Dispose();
 
             Recipes.Clear();
+            DisassemblyRecipes.Clear();
             LootConfig = null;
             Projectiles.Clear();
             Mobs.Clear();

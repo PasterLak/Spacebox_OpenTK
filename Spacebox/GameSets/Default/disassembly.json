@@ -1,0 +1,118 @@
+{
+  "DefaultReturnPercent": 50,
+  "DefaultDurationSec": 10,
+  "Items": [
+    { "Item": "aluminium_block_light", "ReturnPercent": 100 },
+    { "Item": "aluminium_block_medium", "ReturnPercent": 100 },
+    { "Item": "aluminium_block_heavy", "ReturnPercent": 100 },
+    { "Item": "iron_block_light", "ReturnPercent": 100 },
+    { "Item": "iron_block_medium", "ReturnPercent": 100 },
+    { "Item": "iron_block_heavy", "ReturnPercent": 100 },
+    { "Item": "titanium_block_light", "ReturnPercent": 100 },
+    { "Item": "titanium_block_medium", "ReturnPercent": 100 },
+    { "Item": "titanium_block_heavy", "ReturnPercent": 100 },
+    { "Item": "aluminium_door", "ReturnPercent": 100 },
+    { "Item": "iron_door", "ReturnPercent": 100 },
+    { "Item": "titanium_door", "ReturnPercent": 100 },
+    { "Item": "window", "ReturnPercent": 100 },
+    { "Item": "reinforced_window", "ReturnPercent": 100 },
+    { "Item": "big_window", "ReturnPercent": 100, "DurationSec": 20 },
+    { "Item": "basic_aluminium_crate", "ReturnPercent": 100 },
+    { "Item": "basic_iron_crate", "ReturnPercent": 100 },
+    { "Item": "crafting_table", "ReturnPercent": 100 },
+    { "Item": "basic_titanium_crate", "Products": [ { "Item": "titanium_panels", "Quantity": 3 } ] },
+
+    { "Item": "energy_cell", "InputQuantity": 4 },
+    { "Item": "thulium_energy_cell", "InputQuantity": 4 },
+    { "Item": "uranium_rods", "InputQuantity": 4 },
+    { "Item": "microchip", "InputQuantity": 2 },
+    { "Item": "cable_block", "InputQuantity": 4 },
+    { "Item": "aluminium_drill_bit", "InputQuantity": 2 },
+    { "Item": "iron_drill_bit", "InputQuantity": 2 },
+    { "Item": "titanium_drill_bit", "InputQuantity": 2 },
+    { "Item": "obscurium_ammo", "InputQuantity": 24 },
+
+    { "Item": "light_blue", "Products": [ { "Item": "light_white", "Quantity": 1 } ] },
+    { "Item": "light_red", "Products": [ { "Item": "light_white", "Quantity": 1 } ] },
+    { "Item": "light_yellow", "Products": [ { "Item": "light_white", "Quantity": 1 } ] },
+    { "Item": "light_cyan", "Products": [ { "Item": "light_white", "Quantity": 1 } ] },
+    { "Item": "light_orange", "Products": [ { "Item": "light_white", "Quantity": 1 } ] },
+    { "Item": "light_green", "Products": [ { "Item": "light_white", "Quantity": 1 } ] },
+    { "Item": "light_pink", "Products": [ { "Item": "light_white", "Quantity": 1 } ] },
+
+    {
+      "Item": "furnace",
+      "DurationSec": 20,
+      "Products": [
+        { "Item": "basic_machine", "Quantity": 1 },
+        { "Item": "energy_cell", "Quantity": 1 }
+      ]
+    },
+    {
+      "Item": "enhanced_furnace",
+      "DurationSec": 30,
+      "Products": [
+        { "Item": "furnace", "Quantity": 1 },
+        { "Item": "iron_panels", "Quantity": 2 },
+        { "Item": "thulium_energy_cell", "Quantity": 3 }
+      ]
+    },
+    {
+      "Item": "crusher",
+      "DurationSec": 20,
+      "Products": [
+        { "Item": "basic_machine", "Quantity": 1 },
+        { "Item": "iron_drill_bit", "Quantity": 2 },
+        { "Item": "energy_cell", "Quantity": 1 }
+      ]
+    },
+    {
+      "Item": "enhanced_crusher",
+      "DurationSec": 30,
+      "Products": [
+        { "Item": "crusher", "Quantity": 1 },
+        { "Item": "titanium_drill_bit", "Quantity": 2 },
+        { "Item": "microchip", "Quantity": 1 },
+        { "Item": "thulium_energy_cell", "Quantity": 1 }
+      ]
+    },
+    {
+      "Item": "analyzer",
+      "DurationSec": 20,
+      "Products": [
+        { "Item": "basic_machine", "Quantity": 1 },
+        { "Item": "microchip", "Quantity": 2 },
+        { "Item": "thulium_lens", "Quantity": 4 }
+      ]
+    },
+    {
+      "Item": "radar",
+      "DurationSec": 20,
+      "Products": [
+        { "Item": "basic_machine", "Quantity": 1 },
+        { "Item": "microchip", "Quantity": 1 },
+        { "Item": "thulium_lens", "Quantity": 3 }
+      ]
+    },
+    {
+      "Item": "disassembler",
+      "DurationSec": 20,
+      "Products": [
+        { "Item": "basic_machine", "Quantity": 1 },
+        { "Item": "microchip", "Quantity": 1 }
+      ]
+    },
+
+    { "Item": "aluminium_drill", "DurationSec": 50, "Products": [ { "Item": "aluminium_ingot", "Quantity": 1 } ] },
+    { "Item": "cobalt_drill", "DurationSec": 50 },
+    { "Item": "iron_drill", "DurationSec": 50 },
+    { "Item": "triple_iron_drill", "DurationSec": 50 },
+    { "Item": "titanium_drill", "DurationSec": 50 },
+    { "Item": "obscurium_drill", "DurationSec": 100 },
+
+    { "Item": "pistol", "DurationSec": 40 },
+    { "Item": "smg", "DurationSec": 60 },
+    { "Item": "assault_rifle", "DurationSec": 65 },
+    { "Item": "impulse_rifle", "DurationSec": 75 }
+  ]
+}

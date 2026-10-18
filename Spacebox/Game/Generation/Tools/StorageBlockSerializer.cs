@@ -23,22 +23,7 @@ namespace Spacebox.Game.Generation.Tools
                 root.Add(new StringTag(NBTKey.STORAGE.name, name));
             }
 
-            var slotsData = new List<long>();
-            foreach (var slot in storageBlock.Storage.GetAllSlots())
-            {
-                if (slot != null && slot.HasItem)
-                {
-                    if (itemsPalette.TryAdd(slot.Item.Id_string, indexInPalette))
-                    {
-                        indexInPalette++;
-                    }
-
-                    long packedData = PackingTools.PackShorts(itemsPalette[slot.Item.Id_string], slot.Count, slot.Position.X, slot.Position.Y);
-                    slotsData.Add(packedData);
-                }
-            }
-
-            root.Add(new LongArrayTag(NBTKey.STORAGE.slots_data, slotsData.ToArray()));
+            root.Add(new LongArrayTag(NBTKey.STORAGE.slots_data, StorageSlotsNbt.Write(storageBlock.Storage, itemsPalette, ref indexInPalette)));
             return root;
         }
 
@@ -62,18 +47,7 @@ namespace Spacebox.Game.Generation.Tools
 
             if (tag.TryGetValue<LongArrayTag>(NBTKey.STORAGE.slots_data, out var slotsData))
             {
-                var arr = slotsData.ToArray();
-                foreach (var slotData in arr)
-                {
-                    PackingTools.UnpackShorts(slotData, out var paletteId, out var count, out var posX, out var posY);
-                    var itemIdStr = paletteItems[paletteId];
-                    var item = GameAssets.GetItemByFullID(itemIdStr);
-
-                    if (item != null)
-                    {
-                        newStorage.GetSlot(posX, posY)?.SetData(item, (byte)count);
-                    }
-                }
+                StorageSlotsNbt.Read(newStorage, slotsData.ToArray(), paletteItems);
             }
 
             storageBlock.Storage = newStorage;

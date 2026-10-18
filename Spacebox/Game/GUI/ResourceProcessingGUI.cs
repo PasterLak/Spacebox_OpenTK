@@ -70,11 +70,6 @@ namespace Spacebox.Game.GUI
                 inputIcon = UIAtlas.Get("furnaceinput");
                 outputIcon = UIAtlas.Get("furnaceoutput");
             }
-            else if (WindowName.Contains("Disassembler"))
-            {
-                inputIcon = UIAtlas.Get("disassemblerinput");
-                outputIcon = UIAtlas.Get("furnaceoutput");
-            }
         }
 
         public static void Activate(ResourceProcessingBlock block, LocalAstronaut player)
