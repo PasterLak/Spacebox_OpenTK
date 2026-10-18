@@ -12,7 +12,7 @@
         "ModelDepth": 2,
         "Range": 2,
         "Tier": 1,
-        "Damage": 2,
+        "Damage": 10,
         "DrillColor": {
             "r": 118,
             "g": 135,
@@ -31,7 +31,7 @@
         "ModelDepth": 2,
         "Range": 2.5,
         "Tier": 2,
-        "Damage": 4,
+        "Damage": 12,
         "DrillColor": {
             "r": 38,
             "g": 212,
@@ -50,7 +50,7 @@
         "ModelDepth": 2,
         "Range": 3,
         "Tier": 3,
-        "Damage": 5,
+        "Damage": 15,
         "DrillColor": {
             "r": 38,
             "g": 192,
@@ -69,7 +69,7 @@
         "ModelDepth": 5,
         "Range": 4,
         "Tier": 4,
-        "Damage": 20,
+        "Damage": 40,
         "DrillColor": {
             "r": 38,
             "g": 180,
@@ -87,7 +87,7 @@
         "PowerUsage": 3,
         "ModelDepth": 3,
         "Tier": 5,
-        "Damage": 7,
+        "Damage": 15,
         "Range": 6,
         "DrillColor": {
             "r": 57,
@@ -107,7 +107,7 @@
         "ModelDepth": 3,
         "Range": 5,
         "Tier": 6,
-        "Damage": 7,
+        "Damage": 15,
         "DrillColor": {
             "r": 201,
             "g": 48,

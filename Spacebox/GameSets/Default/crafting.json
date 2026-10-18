@@ -1709,6 +1709,6 @@
         }
       ]
     },
-        {"Product": {"Item": "gravity_generator", "Quantity": 1}, "Ingredients": [{"Item": "titanium_panels", "Quantity": 4}, {"Item": "microchip", "Quantity": 2}, {"Item": "cobalt_crystal", "Quantity": 2}, {"Item": "uranium_rods", "Quantity": 1}]}
+        {"Product": {"Item": "gravity_generator", "Quantity": 1}, "Ingredients": [{"Item": "titanium_panels", "Quantity": 4}, {"Item": "microchip", "Quantity": 2}, {"Item": "cobalt_lens", "Quantity": 2}, {"Item": "uranium_rods", "Quantity": 1}]}
     ]
 }

@@ -401,7 +401,7 @@
           "DurationSec": 65.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "assault_rifle", "Quantity": 1 },
-          "Product": { "Item": "titanium_ingot", "Quantity": 2 }
+          "Product": { "Item": "iron_ingot", "Quantity": 2 }
         },
         {
           "DurationSec": 75.0,

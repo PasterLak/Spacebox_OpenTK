@@ -128,6 +128,7 @@ Small
 - equipment slot backgrounds
 
 Fixes
+- disassembling assault rifle gave titanium it does not need
 - lock cursor if hidden
 - esc in inventory
 - screenshot white borders
