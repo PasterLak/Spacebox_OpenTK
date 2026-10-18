@@ -50,6 +50,7 @@ namespace Spacebox.Game.Resource
 
         public Matrix4? LightModel { get; set; }
         public Matrix4? ViewToRender { get; set; }
+        public Vector3 BlockLight { get; set; }
 
         protected override void UpdateDynamicUniforms()
         {
@@ -60,6 +61,7 @@ namespace Spacebox.Game.Resource
             Shader.SetInt("useLightModel", LightModel.HasValue ? 1 : 0);
             if (LightModel.HasValue) Shader.SetMatrix4("lightModel", LightModel.Value);
 
+            Shader.SetVector3("blockLight", BlockLight);
             Shader.SetInt("useViewToRender", ViewToRender.HasValue ? 1 : 0);
             if (ViewToRender.HasValue) Shader.SetMatrix4("viewToRender", ViewToRender.Value);
         }

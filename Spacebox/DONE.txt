@@ -90,6 +90,7 @@ Small
 - drill/bullet hit sphere of mobs matches the model size, drilling a mob shows mining sparks
 - drills: Damage parameter (per second) for spacer and mobs instead of tier, shown in tooltip
 - drilling the spacer or mobs uses drill power (PowerUsage per second) in survival
+- item in hand is lit by light blocks (block light around the player, smoothed)
 - data-driven mobs (GameSet Mobs/*.json), console command mob <id>|list|clear
 - Mineral Parasite Larva item spawns a parasite (item type mob_spawner)
 - engine: hierarchical state machine and voxel pathfinding (A*, open space shortcut, path scheduler)

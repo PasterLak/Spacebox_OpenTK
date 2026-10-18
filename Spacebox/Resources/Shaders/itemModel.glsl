@@ -58,6 +58,7 @@ in vec3 LightPos;
 in vec3 LightView;
 uniform int useViewToRender = 0;
 uniform vec3 viewPos;
+uniform vec3 blockLight = vec3(0.0);
 
 layout(location = 0) out vec4 gColor;   
 layout(location = 1) out vec4 gNormal; 
@@ -116,7 +117,7 @@ void main()
    
    vec3 flashlightContribution = base * flashlightColor * flashlightIntensity * flashlightFactor;
    
-   vec3 combined = directionalLight + pointLight + flashlightContribution;
+   vec3 combined = directionalLight + pointLight + flashlightContribution + base * blockLight;
    vec4 emission = texture(texture1, TexCoords);
    vec3 final = mix(combined, base, emission.a);
    

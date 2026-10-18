@@ -14,6 +14,7 @@ namespace Spacebox.Game.GUI
 {
     public static class PanelUI
     {
+        private static readonly BlockLightProbe _heldItemLight = new BlockLightProbe();
         private static float SlotSize = 64.0f;
         public static bool EnableRenderForCurrentItem { get; set; } = true;
         public static bool AllowScroll { get; set; } = true;
@@ -211,6 +212,11 @@ namespace Spacebox.Game.GUI
                     if (Player != null && Player.ItemSway != null)
                     {
                         ItemModel.SwayMatrix = Player.ItemSway.GetSwayMatrix();
+                    }
+                    if (Player != null && ItemModel.Material != null)
+                    {
+                        _heldItemLight.Update(Player.Position, Time.Delta);
+                        ItemModel.Material.BlockLight = _heldItemLight.Value;
                     }
                     else
                     {
