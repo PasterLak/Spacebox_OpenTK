@@ -1281,5 +1281,473 @@
       "Place": "blockPlaceHeavy",
       "Destroy": "blockPlaceHeavy"
     }
+  },
+  {
+    "ID": "thruster_weak",
+    "Name": "Weak Hydrogen Thruster",
+    "Description": "Pushes the ship away from its glowing side. Force 20, uses 8 power",
+    "Type": "thruster",
+    "Thruster": {
+      "Force": 20,
+      "Power": 8
+    },
+    "Category": "ships",
+    "PowerToDrill": 2,
+    "Mass": 5,
+    "Durability": 10,
+    "FrontDirection": {
+      "x": 0,
+      "y": -1,
+      "z": 0
+    },
+    "Textures": {
+      "Active": {
+        "All": "thrusterWeakWalls",
+        "Up": "thrusterWeakTop",
+        "Down": "thrusterWeakBottom"
+      },
+      "Inactive": {
+        "All": "thrusterWeakWallsOff",
+        "Up": "thrusterWeakTopOff",
+        "Down": "thrusterWeakBottomOff"
+      }
+    },
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "thruster_standard",
+    "Name": "Standard Hydrogen Thruster",
+    "Description": "Pushes the ship away from its glowing side. Force 60, uses 15 power",
+    "Type": "thruster",
+    "Thruster": {
+      "Force": 60,
+      "Power": 15
+    },
+    "Size": {
+      "x": 1,
+      "y": 2,
+      "z": 1
+    },
+    "Category": "ships",
+    "PowerToDrill": 2,
+    "Mass": 10,
+    "Durability": 20,
+    "FrontDirection": {
+      "x": 0,
+      "y": -1,
+      "z": 0
+    },
+    "Textures": {
+      "Active": {
+        "All": "thrusterStandardWalls",
+        "Up": "thrusterStandardTop",
+        "Down": "thrusterStandardBottom"
+      },
+      "Inactive": {
+        "All": "thrusterStandardWallsOff",
+        "Up": "thrusterStandardTopOff",
+        "Down": "thrusterStandardBottomOff"
+      }
+    },
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "thruster_powerful",
+    "Name": "Powerful Hydrogen Thruster",
+    "Description": "Pushes the ship away from its glowing side. Force 160, uses 30 power",
+    "Type": "thruster",
+    "Thruster": {
+      "Force": 160,
+      "Power": 30
+    },
+    "Size": {
+      "x": 2,
+      "y": 1,
+      "z": 2
+    },
+    "Category": "ships",
+    "PowerToDrill": 2,
+    "Mass": 20,
+    "Durability": 40,
+    "FrontDirection": {
+      "x": 0,
+      "y": -1,
+      "z": 0
+    },
+    "Textures": {
+      "Active": {
+        "All": "thrusterPowerfulWalls",
+        "Up": "thrusterPowerfulTop",
+        "Down": "thrusterPowerfulBottom"
+      },
+      "Inactive": {
+        "All": "thrusterPowerfulWallsOff",
+        "Up": "thrusterPowerfulTopOff",
+        "Down": "thrusterPowerfulBottomOff"
+      }
+    },
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "thruster_ion",
+    "Name": "Standard Ion Thruster",
+    "Description": "Pushes the ship away from its glowing side. Force 1200, uses 75 power",
+    "Type": "thruster",
+    "Thruster": {
+      "Force": 1200,
+      "Power": 75
+    },
+    "Size": {
+      "x": 2,
+      "y": 2,
+      "z": 2
+    },
+    "Category": "ships",
+    "PowerToDrill": 2,
+    "Mass": 40,
+    "Durability": 80,
+    "FrontDirection": {
+      "x": 0,
+      "y": -1,
+      "z": 0
+    },
+    "Textures": {
+      "Active": {
+        "All": "thrusterIonWalls",
+        "Up": "thrusterIonTop",
+        "Down": "thrusterIonBottom"
+      },
+      "Inactive": {
+        "All": "thrusterIonWallsOff",
+        "Up": "thrusterIonTopOff",
+        "Down": "thrusterIonBottomOff"
+      }
+    },
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "ship_console",
+    "Name": "Ship Console",
+    "Description": "Pilot seat. Flies the ship and fires bound blocks",
+    "Type": "shipconsole",
+    "Console": {
+      "Buttons": 8,
+      "Power": 15,
+      "Weapons": false,
+      "Flight": true
+    },
+    "Category": "ships",
+    "PowerToDrill": 2,
+    "Mass": 1,
+    "Durability": 6,
+    "Textures": {
+      "Active": {
+        "All": "shipConsoleWalls",
+        "Up": "shipConsoleTop",
+        "Down": "shipConsoleBottom"
+      },
+      "Inactive": {
+        "All": "shipConsoleWallsOff",
+        "Up": "shipConsoleTopOff",
+        "Down": "shipConsoleBottomOff"
+      }
+    },
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "cannon_console",
+    "Name": "Cannon Console",
+    "Description": "Gunner seat. Aims and fires bound cannons",
+    "Type": "shipconsole",
+    "Console": {
+      "Buttons": 1,
+      "Power": 15,
+      "Weapons": true,
+      "Flight": false
+    },
+    "Category": "ships",
+    "PowerToDrill": 2,
+    "Mass": 1,
+    "Durability": 6,
+    "Textures": {
+      "Active": {
+        "All": "cannonConsoleWalls",
+        "Up": "cannonConsoleTop",
+        "Down": "cannonConsoleBottom"
+      },
+      "Inactive": {
+        "All": "cannonConsoleWallsOff",
+        "Up": "cannonConsoleTopOff",
+        "Down": "cannonConsoleBottomOff"
+      }
+    },
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "ship_camera",
+    "Name": "Ship Camera",
+    "Description": "Bind it to a console to look through it while piloting",
+    "Type": "shipcamera",
+    "ShipCamera": {
+      "Power": 15
+    },
+    "Category": "ships",
+    "PowerToDrill": 2,
+    "Mass": 1,
+    "Durability": 40,
+    "Textures": {
+      "Active": {
+        "All": "shipCameraWalls",
+        "Up": "shipCameraTop",
+        "Down": "shipCameraBottom"
+      },
+      "Inactive": {
+        "All": "shipCameraWallsOff",
+        "Up": "shipCameraTopOff",
+        "Down": "shipCameraBottomOff"
+      }
+    },
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "cannon_antipersonnel",
+    "Name": "Anti-Personnel Gun",
+    "Description": "Ship weapon. Bind it to a console to aim and fire",
+    "Type": "cannon",
+    "Cannon": {
+      "Projectile": "p_cannon_antipersonnel",
+      "ReloadTime": 200,
+      "ShotSound": "smg",
+      "BarrelLength": 1.5,
+      "AimCone": 60,
+      "TurnSpeed": 180,
+      "Power": 15
+    },
+    "Category": "ships",
+    "PowerToDrill": 2,
+    "Mass": 3,
+    "Durability": 20,
+    "FrontDirection": {
+      "x": 0,
+      "y": 1,
+      "z": 0
+    },
+    "Textures": {
+      "Active": {
+        "All": "cannonAntiPersonnelWalls",
+        "Up": "cannonAntiPersonnelTop",
+        "Down": "cannonAntiPersonnelBottom"
+      },
+      "Inactive": {
+        "All": "cannonAntiPersonnelWallsOff",
+        "Up": "cannonAntiPersonnelTopOff",
+        "Down": "cannonAntiPersonnelBottomOff"
+      }
+    },
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "cannon_light_assault",
+    "Name": "Light Assault Gun",
+    "Description": "Ship weapon. Bind it to a console to aim and fire",
+    "Type": "cannon",
+    "Cannon": {
+      "Projectile": "p_cannon_light",
+      "ReloadTime": 300,
+      "ShotSound": "ar",
+      "BarrelLength": 2.5,
+      "AimCone": 60,
+      "TurnSpeed": 180,
+      "Power": 45
+    },
+    "Size": {
+      "x": 1,
+      "y": 2,
+      "z": 1
+    },
+    "Category": "ships",
+    "PowerToDrill": 2,
+    "Mass": 10,
+    "Durability": 40,
+    "FrontDirection": {
+      "x": 0,
+      "y": 1,
+      "z": 0
+    },
+    "Textures": {
+      "Active": {
+        "All": "cannonLightAssaultWalls",
+        "Up": "cannonLightAssaultTop",
+        "Down": "cannonLightAssaultBottom"
+      },
+      "Inactive": {
+        "All": "cannonLightAssaultWallsOff",
+        "Up": "cannonLightAssaultTopOff",
+        "Down": "cannonLightAssaultBottomOff"
+      }
+    },
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "cannon_heavy_assault",
+    "Name": "Heavy Assault Gun",
+    "Description": "Ship weapon. Bind it to a console to aim and fire",
+    "Type": "cannon",
+    "Cannon": {
+      "Projectile": "p_cannon_heavy",
+      "ReloadTime": 300,
+      "ShotSound": "ar",
+      "BarrelLength": 2.5,
+      "AimCone": 60,
+      "TurnSpeed": 180,
+      "Power": 60
+    },
+    "Size": {
+      "x": 1,
+      "y": 2,
+      "z": 1
+    },
+    "Category": "ships",
+    "PowerToDrill": 2,
+    "Mass": 10,
+    "Durability": 40,
+    "FrontDirection": {
+      "x": 0,
+      "y": 1,
+      "z": 0
+    },
+    "Textures": {
+      "Active": {
+        "All": "cannonHeavyAssaultWalls",
+        "Up": "cannonHeavyAssaultTop",
+        "Down": "cannonHeavyAssaultBottom"
+      },
+      "Inactive": {
+        "All": "cannonHeavyAssaultWallsOff",
+        "Up": "cannonHeavyAssaultTopOff",
+        "Down": "cannonHeavyAssaultBottomOff"
+      }
+    },
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "cannon_anticorvette",
+    "Name": "Anti-Corvette Gun",
+    "Description": "Ship weapon. Bind it to a console to aim and fire",
+    "Type": "cannon",
+    "Cannon": {
+      "Projectile": "p_cannon_antipersonnel_heavy",
+      "ReloadTime": 600,
+      "ShotSound": "ar",
+      "BarrelLength": 2,
+      "AimCone": 60,
+      "TurnSpeed": 180,
+      "Power": 150
+    },
+    "Size": {
+      "x": 2,
+      "y": 3,
+      "z": 1
+    },
+    "Category": "ships",
+    "PowerToDrill": 2,
+    "Mass": 25,
+    "Durability": 60,
+    "FrontDirection": {
+      "x": 0,
+      "y": 1,
+      "z": 0
+    },
+    "Textures": {
+      "Active": {
+        "All": "cannonAntiCorvetteWalls",
+        "Up": "cannonAntiCorvetteTop",
+        "Down": "cannonAntiCorvetteBottom"
+      },
+      "Inactive": {
+        "All": "cannonAntiCorvetteWallsOff",
+        "Up": "cannonAntiCorvetteTopOff",
+        "Down": "cannonAntiCorvetteBottomOff"
+      }
+    },
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
+  },
+  {
+    "ID": "cannon_antifrigate",
+    "Name": "Anti-Frigate Gun",
+    "Description": "Ship weapon. Bind it to a console to aim and fire",
+    "Type": "cannon",
+    "Cannon": {
+      "Projectile": "p_cannon_plasma",
+      "ReloadTime": 1000,
+      "ShotSound": "ar",
+      "BarrelLength": 2.5,
+      "AimCone": 60,
+      "TurnSpeed": 180,
+      "Power": 300
+    },
+    "Size": {
+      "x": 2,
+      "y": 4,
+      "z": 2
+    },
+    "Category": "ships",
+    "PowerToDrill": 2,
+    "Mass": 50,
+    "Durability": 120,
+    "FrontDirection": {
+      "x": 0,
+      "y": 1,
+      "z": 0
+    },
+    "Textures": {
+      "Active": {
+        "All": "cannonAntiFrigateWalls",
+        "Up": "cannonAntiFrigateTop",
+        "Down": "cannonAntiFrigateBottom"
+      },
+      "Inactive": {
+        "All": "cannonAntiFrigateWallsOff",
+        "Up": "cannonAntiFrigateTopOff",
+        "Down": "cannonAntiFrigateBottomOff"
+      }
+    },
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
+    }
   }
 ]

@@ -29,7 +29,11 @@ namespace Spacebox.Game.Resource
                 { "gravity", data => new GravityGeneratorBlock(data) },
                 { "dnareconstructor", data => new DnaReconstructorBlock(data) },
                 { "explosive", data => new ExplosiveBlock(data) },
-                { "pipe", data => new PipeBlock(data) }
+                { "pipe", data => new PipeBlock(data) },
+                { "thruster", data => new ThrusterBlock(data) },
+                { "shipconsole", data => new ShipConsoleBlock(data) },
+                { "cannon", data => new CannonBlock(data) },
+                { "shipcamera", data => new ShipCameraBlock(data) }
         };
 
         public static Block CreateBlockFromId(short id)

@@ -35,6 +35,10 @@ namespace Spacebox.Game.Resource
         public ExplosiveJSON Explosive { get; set; } = new ExplosiveJSON();
         public PipeJSON Pipe { get; set; } = new PipeJSON();
         public DisassemblerJSON Disassembler { get; set; } = new DisassemblerJSON();
+        public ThrusterJSON Thruster { get; set; } = new ThrusterJSON();
+        public ShipConsoleJSON Console { get; set; } = new ShipConsoleJSON();
+        public CannonJSON Cannon { get; set; } = new CannonJSON();
+        public ShipCameraJSON ShipCamera { get; set; } = new ShipCameraJSON();
     }
 
     public class TextureGroup

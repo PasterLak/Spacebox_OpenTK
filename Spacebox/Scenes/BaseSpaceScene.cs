@@ -15,6 +15,7 @@ using Spacebox.Game.Mobs;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.Interactions;
 using Spacebox.Game.Resource;
+using Spacebox.Game.Ships;
 using Spacebox.GUI;
 using Spacebox.Network;
 using System;
@@ -295,6 +296,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         OxygenGeneratorUI.OnGUI();
         DisassemblerUI.OnGUI();
         GravityGeneratorUI.OnGUI();
+        ShipConsoleUI.OnGUI();
         DnaReconstructorUI.OnGUI();
         DnaReconstructionScreen.OnGUI();
         HitMarkerUI.OnGUI();
@@ -325,6 +327,11 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         DnaReconstructorUI.Reset();
         DnaReconstructionScreen.Reset();
         HitMarkerUI.Reset();
+        ShipConsoleUI.Reset();
+        ShipPilot.Reset();
+        ShipRider.Reset();
+        ShipNetwork.Reset();
+        ShipWeapons.Reset();
         PanelUI.Player = null;
 
         TickTaskManager.Dispose();

@@ -16,7 +16,7 @@ public class DnaReconstructorBlock : InteractiveBlock, IEntityBlockListener, ICo
     public Storage DnaStorage { get; } = new Storage(1, 1);
     public SpaceEntity Entity { get; private set; }
     public Vector3i LocalCell { get; private set; }
-    public Vector3 WorldCenter { get; private set; }
+    public Vector3 WorldCenter => Entity != null ? Entity.EntityLocalToWorld(new Vector3(LocalCell.X + 0.5f, LocalCell.Y + 0.5f, LocalCell.Z + 0.5f)) : Vector3.Zero;
     public DnaReconstructorBlockData Data => _data;
 
     public int DnaCount
@@ -95,7 +95,6 @@ public class DnaReconstructorBlock : InteractiveBlock, IEntityBlockListener, ICo
         this.chunk = chunk;
         Entity = chunk.SpaceEntity;
         LocalCell = localCell;
-        WorldCenter = Entity.EntityLocalToWorld(new Vector3(localCell.X + 0.5f, localCell.Y + 0.5f, localCell.Z + 0.5f));
         DnaReconstructorRegistry.Register(this);
     }
 

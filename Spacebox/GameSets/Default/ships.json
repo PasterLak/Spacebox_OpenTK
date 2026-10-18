@@ -1,0 +1,13 @@
+{
+  "MaxSpeed": 20,
+  "MaxAngularSpeed": 1.5,
+  "LinearDamping": 0.25,
+  "AngularDamping": 0.03,
+  "LinearSnap": 0.025,
+  "AngularSnap": 0.003,
+  "MaxStep": 0.05,
+  "BoardDistance": 2.5,
+  "LeaveDistance": 5,
+  "CollisionBounce": 0.2,
+  "ProjectileOwnerIgnoreTime": 0.25
+}

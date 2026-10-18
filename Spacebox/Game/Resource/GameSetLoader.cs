@@ -4,6 +4,7 @@ using Engine.Audio;
 using Engine.Light;
 using Engine.Utils;
 using Spacebox.Game.Disassembly;
+using Spacebox.Game.Ships;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
@@ -94,6 +95,7 @@ public static class GameSetLoader
         LoadRecipes(modPath, defaultModPath);
         LoadCrafting(modPath, defaultModPath);
         DisassemblyRecipes.Initialize(DisassemblySettingsLoader.Load(modPath, ModInfo.ModId));
+        ShipPhysicsSettings.Current = ShipPhysicsSettingsLoader.Load(modPath);
         LoadLoot(modPath, defaultModPath);
         MobsLoader.Load(modPath, defaultModPath);
         LoadSettings(modPath);

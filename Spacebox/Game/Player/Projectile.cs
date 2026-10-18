@@ -47,6 +47,9 @@ public class Projectile : Node3D
     private bool _isAuthoritative = true;
     private int _ownerPeer;
     private float _rewind;
+    private float _speed;
+    private SpaceEntity? _ignoredEntity;
+    private float _ignoreTime;
 
     public bool IsAuthoritative => _isAuthoritative;
     public int OwnerPeer => _ownerPeer;
@@ -84,6 +87,9 @@ public class Projectile : Node3D
         this.ray = ray;
         this.ray.Length = 1f;
         this.Parameters = parameters;
+        _speed = parameters.Speed;
+        _ignoredEntity = null;
+        _ignoreTime = 0f;
 
         Enabled = true;
         currentDamage = parameters.DamageBlocks;
@@ -100,6 +106,27 @@ public class Projectile : Node3D
 
         OnSpawn?.Invoke(this);
         return this;
+    }
+
+    public void SetCarrier(Vector3 carrierVelocity, SpaceEntity? ignoredEntity, float ignoreTime)
+    {
+        var velocity = ray.Direction * Parameters.Speed + carrierVelocity;
+        float speed = velocity.Length;
+        if (speed > 1e-4f)
+        {
+            ray.Direction = velocity / speed;
+            _speed = speed;
+            SetLineRenderer();
+        }
+
+        _ignoredEntity = ignoredEntity;
+        _ignoreTime = ignoreTime;
+    }
+
+    private bool RaycastVoxels(out HitInfo hit)
+    {
+        var ignored = _ignoreTime > 0f ? _ignoredEntity : null;
+        return World.SectorAt(ray.Origin).Raycast(ray, out hit, ignored);
     }
 
     private void SetLight(Vector3 color)
@@ -162,7 +189,8 @@ public class Projectile : Node3D
 
     private void Step(float deltaTime)
     {
-        float step = Parameters.Speed * deltaTime;
+        float step = _speed * deltaTime;
+        if (_ignoreTime > 0f) _ignoreTime -= deltaTime;
         ray.Length = MathF.Max(step, MinRayLength);
 
         if (CheckPlayerCollision()) return;
@@ -187,7 +215,7 @@ public class Projectile : Node3D
     {
         if (!PlayerHitboxes.Raycast(ray.Origin, ray.Direction, ray.Length, _ownerPeer, _isAuthoritative ? _rewind : 0f, out var hit)) return false;
 
-        if (World.SectorAt(ray.Origin).Raycast(ray, out var voxelHit) &&
+        if (RaycastVoxels(out var voxelHit) &&
             Vector3.DistanceSquared(ray.Origin, voxelHit.hitPosition) < hit.Distance * hit.Distance)
             return false;
 
@@ -209,7 +237,7 @@ public class Projectile : Node3D
         if (!World.Instance.Physics.Raycast(ray, astronaut?.Body, out var hit)) return false;
         if (hit.Body.Owner is Astronaut || hit.Body.Owner is not IDamageable damageable) return false;
 
-        if (World.SectorAt(ray.Origin).Raycast(ray, out var voxelHit) &&
+        if (RaycastVoxels(out var voxelHit) &&
             Vector3.DistanceSquared(ray.Origin, voxelHit.hitPosition) < hit.Distance * hit.Distance)
             return false;
 
@@ -219,7 +247,7 @@ public class Projectile : Node3D
 
     private bool CheckVoxelCollision()
     {
-        if (World.SectorAt(ray.Origin).Raycast(ray, out var hit))
+        if (RaycastVoxels(out var hit))
         {
             if (TryTriggerReactiveBlock(hit)) return true;
             if (TryRicochet(hit)) return true;

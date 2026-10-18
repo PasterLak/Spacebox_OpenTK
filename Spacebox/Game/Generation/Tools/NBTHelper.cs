@@ -130,6 +130,12 @@ namespace Spacebox.Game.Generation.Tools
             if (onlyChangedChunks && spaceEntity is Asteroid restoredAsteroid)
                 restoredAsteroid.RestoreSavedState(completeChunks, ReadChunkIndices(tag, NBTKey.ENTITY.removed_chunks));
 
+            if (spaceEntity.Ship != null)
+            {
+                spaceEntity.Ship.Motion.Velocity = ReadVector(tag, NBTKey.ENTITY.velocity);
+                spaceEntity.Ship.Motion.AngularVelocity = ReadVector(tag, NBTKey.ENTITY.angular_velocity);
+            }
+
             return spaceEntity;
         }
 
@@ -156,6 +162,12 @@ namespace Spacebox.Game.Generation.Tools
             bool onlyChangedChunks = entity.SavesOnlyChangedChunks;
             root.Add(new ByteTag(NBTKey.ENTITY.only_changed_chunks, (byte)(onlyChangedChunks ? 1 : 0)));
 
+            if (entity.Ship != null && entity.Ship.Motion.IsMoving)
+            {
+                WriteVector(root, NBTKey.ENTITY.velocity, entity.Ship.Motion.Velocity);
+                WriteVector(root, NBTKey.ENTITY.angular_velocity, entity.Ship.Motion.AngularVelocity);
+            }
+
             var chunks = new ListTag(NBTKey.ENTITY.chunks, TagType.Compound);
             var chunksList = entity.Chunks;
 
@@ -177,6 +189,17 @@ namespace Spacebox.Game.Generation.Tools
                 root.Add(new IntArrayTag(NBTKey.ENTITY.removed_chunks, PackChunkIndices(entity.RemovedChunks)));
 
             return root;
+        }
+
+        private static void WriteVector(CompoundTag root, string key, Vector3 value)
+        {
+            root.Add(new ListTag(key, TagType.Float) { new FloatTag(null, value.X), new FloatTag(null, value.Y), new FloatTag(null, value.Z) });
+        }
+
+        private static Vector3 ReadVector(CompoundTag tag, string key)
+        {
+            if (!tag.TryGetValue<ListTag>(key, out var list) || list.Count < 3) return Vector3.Zero;
+            return new Vector3(((FloatTag)list[0]).Value, ((FloatTag)list[1]).Value, ((FloatTag)list[2]).Value);
         }
 
         private static int[] PackChunkIndices(IReadOnlyCollection<Vector3SByte> indices)

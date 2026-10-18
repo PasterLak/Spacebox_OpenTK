@@ -1,0 +1,19 @@
+{
+    "Speed": 25,
+    "Mass": 20,
+    "MaxTravelDistance": 175,
+    "Length": 1.0,
+    "Thickness": 0.25,
+    "Color": {
+        "r": 160,
+        "g": 0,
+        "b": 160
+    },
+    "Damage": 45,
+    "DamageBlocks": 90,
+    "Penetration": 160,
+    "RicochetAngle": 10,
+    "PossibleRicochets": 0,
+    "MaximumBlocksCanDestroy": 8,
+    "DropBlock": false
+}

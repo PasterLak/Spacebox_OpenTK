@@ -125,6 +125,22 @@ namespace Spacebox.Game.Resource
                 {
                     blockData = new DnaReconstructorBlockData(blockData, blockJson.DnaReconstructor, GameSetLoader.ModInfo.ModId);
                 }
+                else if (blockData.Type == "thruster")
+                {
+                    blockData = new ThrusterBlockData(blockData, blockJson.Thruster);
+                }
+                else if (blockData.Type == "shipconsole")
+                {
+                    blockData = new ShipConsoleBlockData(blockData, blockJson.Console);
+                }
+                else if (blockData.Type == "cannon")
+                {
+                    blockData = new CannonBlockData(blockData, blockJson.Cannon);
+                }
+                else if (blockData.Type == "shipcamera")
+                {
+                    blockData = new ShipCameraBlockData(blockData, blockJson.ShipCamera);
+                }
                 else if (blockData.Type == "disassembler")
                 {
                     blockData = new DisassemblerBlockData(blockData, blockJson.Disassembler);

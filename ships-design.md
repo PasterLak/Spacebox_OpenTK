@@ -130,6 +130,15 @@ Per console: position in entity space, color → key list, bound blocks as (colo
 
 Goal: ships built anywhere, thrusters push at their position, consoles bind thrusters/cannons/cameras to keys, players ride ships, server authoritative — plus splitting, velocity-inheriting projectiles and automatic flight controls.
 
+### 3.0 Status
+
+WP1–WP9 are implemented (`Spacebox/Game/Ships/`, `Spacebox/Network/ShipNetwork.cs`, ship blocks in `Game/Generation/Blocks/`, data in GameSet `blocks.json` / `ships.json`). Differences from the plan below:
+
+- WP1 kept chunk world caches: `SpaceEntity.SetPose` shifts them instead of switching chunks to local origins. Rotation stays around `PositionWorld`; `ShipBody` keeps the center of mass fixed while rotating.
+- WP4 binding happens from the seat (`ShipBindingTool`), not with a held tool item.
+- WP6 uses hull face samples against blocks of nearby entities with substeps instead of block-vs-block SAT.
+- Not done yet (WP10): ship splitting, players pushed by ships they are not standing on, damage from collisions.
+
 ### 3.1 Principles
 
 - **Entity-local everything.** Chunks, blocks, oxygen, electricity, doors and light already work per entity. Remove the remaining world-space caches so moving an entity is *only* a transform change (no remesh, no relight).

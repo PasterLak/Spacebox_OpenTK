@@ -375,6 +375,11 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     public bool Raycast(Ray ray, out HitInfo hitInfo)
     {
+        return Raycast(ray, out hitInfo, null);
+    }
+
+    public bool Raycast(Ray ray, out HitInfo hitInfo, SpaceEntity? ignored)
+    {
         hitInfo = new HitInfo();
         bool found = false;
         float closestSquared = float.MaxValue;
@@ -382,7 +387,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         for (int i = 0; i < Entities.Count; i++)
         {
             var entity = Entities[i];
-            if (!RayMayHit(entity, ray)) continue;
+            if (entity == ignored || !RayMayHit(entity, ray)) continue;
             if (!entity.Raycast(ray, out var hit)) continue;
 
             float distanceSquared = (hit.hitPosition - ray.Origin).LengthSquared;
@@ -574,6 +579,12 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     }
 
     public static event Action<Sector, long> EntityDestroyedPermanently;
+
+    internal void OnEntityMoved(SpaceEntity entity, Vector3 oldPosition)
+    {
+        sectorOctree.Remove(entity, oldPosition);
+        sectorOctree.Add(entity, entity.PositionWorld);
+    }
 
     public void DestroyEntity(SpaceEntity entity, bool isDestroyedPermentantly)
     {

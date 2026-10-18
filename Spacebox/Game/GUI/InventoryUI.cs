@@ -29,7 +29,7 @@ namespace Spacebox.Game.GUI
 
         private static void HandleInput()
         {
-            if (Input.IsActionDown("inventory") && !Debug.IsVisible)
+            if (Input.IsActionDown("inventory") && !Debug.IsVisible && !Spacebox.Game.Ships.ShipPilot.IsPiloting)
             {
                 if (Player.IsAlive == false) return;
                 if (Chat.FocusInput) return; 

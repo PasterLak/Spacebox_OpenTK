@@ -238,6 +238,13 @@ namespace Spacebox.Game.Generation
             );
         }
 
+        internal void ShiftWorld(Vector3 delta)
+        {
+            PositionWorld += delta;
+            BoundingBox.Center += delta;
+            GeometryBoundingBox.Center += delta;
+        }
+
         private void CreateBoundingBox()
         {
             Vector3 chunkMin = PositionWorld;

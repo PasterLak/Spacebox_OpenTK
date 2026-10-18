@@ -28,6 +28,8 @@ namespace Spacebox.Game.Generation.Tools
             public const string chunks = "chunks";
             public const string only_changed_chunks = "only_changed_chunks";
             public const string removed_chunks = "removed_chunks";
+            public const string velocity = "velocity";
+            public const string angular_velocity = "angular_velocity";
         }
 
         public static class CHUNK

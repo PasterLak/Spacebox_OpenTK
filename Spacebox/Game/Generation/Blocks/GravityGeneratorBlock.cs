@@ -16,8 +16,9 @@ public class GravityGeneratorBlock : InteractiveBlock, IGravitySource, IEntityBl
 
     public SpaceEntity Entity { get; private set; }
     public Vector3i LocalCell => _localCell;
-    public Vector3 WorldCenter { get; private set; }
-    public Vector3 WorldDirection { get; private set; }
+    private Vector3 _localDown = -Vector3.UnitY;
+    public Vector3 WorldCenter => Entity != null ? Entity.EntityLocalToWorld(new Vector3(_localCell.X + 0.5f, _localCell.Y + 0.5f, _localCell.Z + 0.5f)) : Vector3.Zero;
+    public Vector3 WorldDirection => Entity != null ? Entity.DirectionToWorldSpace(_localDown).Normalized() : _localDown;
     public int RadiusSetting { get; private set; }
     public float Radius => RadiusSetting;
     public float Strength { get; private set; }
@@ -110,13 +111,9 @@ public class GravityGeneratorBlock : InteractiveBlock, IGravitySource, IEntityBl
         Entity = chunk.SpaceEntity;
         _localCell = localCell;
 
-        var center = Entity.LocalPositionToWorld(new Vector3(localCell.X + 0.5f, localCell.Y + 0.5f, localCell.Z + 0.5f));
-        WorldCenter = Entity.ToWorldSpace(center);
-
         var baseFront = GameAssets.GetBaseFrontDirection(Id);
         var transform = BlockRotationHelper.CalculateTransformMatrix(baseFront, Direction, Rotation);
-        var down = Vector3.TransformVector(-Vector3.UnitY, transform).Normalized();
-        WorldDirection = Entity.DirectionToWorldSpace(down).Normalized();
+        _localDown = Vector3.TransformVector(-Vector3.UnitY, transform).Normalized();
 
         _room.Clear();
         GravityField.Register(this);

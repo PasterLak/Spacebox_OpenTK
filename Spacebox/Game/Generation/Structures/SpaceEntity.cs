@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System;
 
+using Spacebox.Game.Ships;
 namespace Spacebox.Game.Generation
 {
     public enum UpdateReason { PlayerAction = 0, Explosion = 1000, Lighting = 2000, Generation = 3000 }
@@ -31,6 +32,11 @@ namespace Spacebox.Game.Generation
 
         public readonly long EntityID;
         public ulong Mass { get; set; } = 0;
+        public int MassVersion { get; private set; }
+        public ShipBody Ship { get; private set; }
+        private ShipControlSystem _shipControl;
+        public ShipControlSystem ShipControl => _shipControl ??= new ShipControlSystem(this);
+        public bool HasShipControl => _shipControl != null && _shipControl.HasParts;
 
         public Octree<Chunk> Octree { get; private set; }
 
@@ -94,6 +100,7 @@ namespace Spacebox.Game.Generation
             ElectricManager = new ElectricNetworkManager();
             Oxygen = new OxygenSystem(this);
             Doors = new DoorSystem(this);
+            if (IsDynamic()) Ship = new ShipBody(this);
 
             CalculateCenterOfMass();
 
@@ -285,6 +292,7 @@ namespace Spacebox.Game.Generation
             }
 
             CalculateCenterOfMass();
+            MassVersion++;
             _entityMassString = Mass.ToString("N0").Replace(",", ".");
         }
 
@@ -301,6 +309,7 @@ namespace Spacebox.Game.Generation
                 sumPosCenterOfMass += Chunks[i].GetCenterOfMass() * chunkMass;
             }
             CalculateCenterOfMass();
+            MassVersion++;
             _entityMassString = Mass.ToString("N0").Replace(",", ".");
         }
 
@@ -689,6 +698,8 @@ namespace Spacebox.Game.Generation
         public override void Update()
         {
             base.Update();
+            _shipControl?.Update(Time.Delta);
+            Ship?.Update(Time.Delta);
             HandleTag();
             Doors.Update(Time.Delta);
             Oxygen.Update();
@@ -1032,6 +1043,14 @@ namespace Spacebox.Game.Generation
 
         private Func<Vector3SByte, Block[,,]?> _chunkBlocksLookup;
 
+        public bool HasBlockNear(Vector3 worldPosition, int range)
+        {
+            var local = WorldToEntityLocal(worldPosition);
+            var cell = new Vector3i((int)MathF.Floor(local.X), (int)MathF.Floor(local.Y), (int)MathF.Floor(local.Z));
+            _chunkBlocksLookup ??= GetChunkBlocksForProximity;
+            return BlockProximity.HasBlockWithin(cell, range, _chunkBlocksLookup);
+        }
+
         public bool IsWithinBuildRange(Vector3 worldPosition)
         {
             var local = WorldPositionToLocal(worldPosition);
@@ -1075,6 +1094,30 @@ namespace Spacebox.Game.Generation
         {
             if (!HasRotation) return worldPosition;
             return PositionWorld + Vector3.Transform(worldPosition - PositionWorld, _inverseOrientation);
+        }
+
+        public void SetPose(Vector3 positionWorld, Quaternion orientation)
+        {
+            var delta = positionWorld - PositionWorld;
+            if (delta != Vector3.Zero) ShiftWorld(delta);
+            if (orientation != Orientation) SetOrientation(orientation);
+            if (tag != null) tag.WorldPosition = CenterOfMassWorld;
+        }
+
+        private void ShiftWorld(Vector3 delta)
+        {
+            var oldPosition = PositionWorld;
+            PositionWorld += delta;
+            Position = PositionWorld;
+            BoundingBox.Center += delta;
+            GeometryBoundingBox.Center += delta;
+            sumPosCenterOfMass += delta * Mass;
+            CenterOfMass += delta;
+
+            for (int i = 0; i < Chunks.Count; i++)
+                Chunks[i].ShiftWorld(delta);
+
+            Sector?.OnEntityMoved(this, oldPosition);
         }
 
         public Vector3 ToWorldSpace(Vector3 entitySpacePosition)
@@ -1153,8 +1196,11 @@ namespace Spacebox.Game.Generation
             return chunk;
         }
 
+        public bool IsDisposed { get; private set; }
+
         public void Dispose()
         {
+            IsDisposed = true;
             Doors.Dispose();
             GravityField.UnregisterEntity(this);
             Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.UnregisterEntity(this);

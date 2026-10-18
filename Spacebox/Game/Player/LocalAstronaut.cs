@@ -14,6 +14,7 @@ using Spacebox.Game.Player.Respawn;
 using Spacebox.Game.Resource;
 using Spacebox.GUI;
 
+using Spacebox.Game.Ships;
 namespace Spacebox.Game.Player
 {
     public class LocalAstronaut : Astronaut
@@ -246,15 +247,30 @@ namespace Spacebox.Game.Player
             Frustum.UpdateFrustum(this);
             if (IsFrozen) return;
 
-            _gameModeBase.UpdateInteraction(this);
-            _gameModeBase.Update(this);
+            if (IsMain) ShipRider.Carry(this);
+            UpdateControl();
+            if (IsMain) ShipRider.Capture(this);
+        }
+
+        private void UpdateControl()
+        {
+            if (ShipPilot.IsPiloting)
+            {
+                _gameModeBase.Update(this);
+                if (IsMain) ShipPilot.Update(this);
+            }
+            else
+            {
+                _gameModeBase.UpdateInteraction(this);
+                _gameModeBase.Update(this);
+            }
 
             HitImage.Update();
             DeathScreen.Update();
 
             if (!IsMain) return;
 
-            _gameModeBase.HandleInput(this);
+            if (!ShipPilot.IsPiloting) _gameModeBase.HandleInput(this);
 
             ItemSway.EnableSway = CanMove;
             ItemSway.Update(InertiaController.Velocity, Front, Right);
@@ -458,6 +474,8 @@ namespace Spacebox.Game.Player
             {
                 _gameModeBase.Render(this);
             }
+
+            if (IsMain) ShipBindingTool.Render();
         }
 
         public override void Destroy()

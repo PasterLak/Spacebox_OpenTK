@@ -98,6 +98,14 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 
 - `DoorBlock` (type `door`, settings in `DoorBlockData`) + per-entity `DoorSystem` (`entity.Doors`): registration, toggling, animation, auto-close, crushing and reserved cells (`IsReserved`, checked by `TryPlaceBlock`/`CanPlaceStructure`). Moving cells uses `SpaceEntity.ClearCellSilently`/`PlaceCellRaw` (no drops/effects). Toggles go through the server (`DoorNetwork`).
 
+## Ships
+
+- `Game/Ships/`: every dynamic entity has a `ShipBody` (`entity.Ship`); move entities only with `SpaceEntity.SetPose` (keeps chunk caches and the sector octree in sync). Physics settings: GameSet `ships.json` → `ShipPhysicsSettings.Current`.
+- Ship blocks (`ThrusterBlock`, `ShipConsoleBlock`, `CannonBlock`, `ShipCameraBlock`) implement `IShipPart` and register with `entity.ShipControl` from `IEntityBlockListener` (origin cell only for multi-cell blocks). Bindings are keyed by the part's origin cell (`ConsoleBindings`), saved by `ShipConsoleSerializer`.
+- A new trigger block: implement `IShipPart`, register in `OnAddedToEntity`, react in `ShipControlSystem.ApplyCommand`, allow it in `CanBind`.
+- Local pilot state is static (`ShipPilot`, `ShipRider`, `ShipBindingTool`, `ShipConsoleUI`) and reset in `BaseSpaceScene.UnloadContent`. Remote clients never simulate ships; they apply `ShipStateMessage` snapshots. Everything that changes ships goes through `ShipNetwork`.
+- Collisions: `ShipCollider` samples hull faces (`ShipHull`) against blocks of nearby entities; the math is in `ShipContactSolver` (tested in `Spacebox.Tests/Ships`).
+
 ## Rotated entities
 
 - `SpaceEntity.Orientation` rotates the whole entity around `PositionWorld`. Chunk positions, bounding boxes, `CenterOfMass` and placement math are in entity space (unrotated). Convert world input with `ToEntitySpace` / `DirectionToEntitySpace`, and entity-space output with `ToWorldSpace` / `ToWorldBounds` / `CenterOfMassWorld`.

@@ -83,6 +83,11 @@ Game
 - disassembler: energy cells, uranium rods, microchips, cables, drill bits, ammo, titanium crate; fixed-size window, arrow progress, synced power/sound in multiplayer
 - oxygen generator crafting; stops and shows a message when it is not in a closed room
 - impulse rifle sphere impact plays the bomb explosion effect (projectile JSON ImpactExplosionRadius)
+- ships: player-built entities fly as rigid bodies (mass, inertia, damping, speed limits in ships.json), keep velocity in saves
+- ship blocks: 4 thrusters, ship console, cannon console, camera, 5 cannons (anti-personnel, light/heavy assault, anti-corvette, anti-frigate) with textures, projectiles and crafting
+- ship console: sit to pilot, bind thrusters/cannons/camera by looking at them (colour groups), keys per group, automatic flight (move, roll, mouse steering, brake), camera view, speed HUD
+- ships collide with asteroids and other ships (bounce, friction), thruster flames, players stay aboard moving ships
+- cannons fire through server combat code, shots add the ship speed and ignore their own ship; ship state, pilot input and bindings synced in multiplayer
 
 
 Small

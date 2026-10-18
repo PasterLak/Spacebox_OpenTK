@@ -15,6 +15,7 @@ using Spacebox.Game.Physics.Gravity;
 using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 using Spacebox.Game.Physics.Explosions;
+using Spacebox.Game.Ships;
 
 namespace Spacebox.Game.Generation;
 
@@ -36,6 +37,7 @@ public class World : Component, ISpaceStructure
 
     public LocalAstronaut Player { get; private set; }
     public ExplosionSystem Explosions { get; private set; }
+    public ShipThrusterEffects ThrusterEffects { get; private set; }
 
     private BlockMaterial material;
     private Octree<Sector> worldOctree;
@@ -75,6 +77,7 @@ public class World : Component, ISpaceStructure
         BiomeGenerator = new BiomeGenerator(World.Seed, WorldGenerator);
         DropEffectManager = new DropManager(player);
         Explosions = new ExplosionSystem();
+        ThrusterEffects = new ShipThrusterEffects();
 
         player.EnablePhysics(Physics);
     }
@@ -203,6 +206,8 @@ public class World : Component, ISpaceStructure
         return loadedSectors.TryGetValue(index, out sector);
     }
 
+    public Dictionary<Vector3i, Sector>.ValueCollection LoadedSectors => loadedSectors.Values;
+
     public bool TryFindEntity(long entityId, out SpaceEntity entity)
     {
         foreach (var sector in loadedSectors.Values)
@@ -250,6 +255,7 @@ public class World : Component, ISpaceStructure
         }
 
         Explosions.Update(Time.Delta);
+        ThrusterEffects.Update(CurrentSector, Time.Delta);
     }
 
     public override void OnRender()
@@ -262,6 +268,7 @@ public class World : Component, ISpaceStructure
         }
 
         Explosions.Render();
+        ThrusterEffects.Render();
     }
     public bool IsBreathable(Vector3 worldPosition)
     {
@@ -297,6 +304,7 @@ public class World : Component, ISpaceStructure
         GravityField.Clear();
         WorldObservers.Clear();
         Explosions?.Dispose();
+        ThrusterEffects?.Dispose();
         Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.Clear();
 
 

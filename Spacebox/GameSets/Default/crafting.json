@@ -49,6 +49,11 @@
       "Id": "consumables",
       "Name": "Consumables",
       "Icon": "med_kit"
+    },
+    {
+      "Id": "ships",
+      "Name": "Ships",
+      "Icon": "ship_console"
     }
   ],
   "Blueprints": [
@@ -1733,6 +1738,262 @@
         }
       ]
     },
-        {"Product": {"Item": "gravity_generator", "Quantity": 1}, "Ingredients": [{"Item": "titanium_panels", "Quantity": 4}, {"Item": "microchip", "Quantity": 2}, {"Item": "cobalt_lens", "Quantity": 2}, {"Item": "uranium_rods", "Quantity": 1}]}
-    ]
+        {"Product": {"Item": "gravity_generator", "Quantity": 1}, "Ingredients": [{"Item": "titanium_panels", "Quantity": 4}, {"Item": "microchip", "Quantity": 2}, {"Item": "cobalt_lens", "Quantity": 2}, {"Item": "uranium_rods", "Quantity": 1}]},
+    {
+      "Product": {
+        "Item": "thruster_weak",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "aluminium_panels",
+          "Quantity": 4
+        },
+        {
+          "Item": "energy_cell",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "thruster_standard",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "thruster_weak",
+          "Quantity": 1
+        },
+        {
+          "Item": "iron_panels",
+          "Quantity": 6
+        },
+        {
+          "Item": "energy_cell",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "thruster_powerful",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_panels",
+          "Quantity": 12
+        },
+        {
+          "Item": "thulium_energy_cell",
+          "Quantity": 4
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "thruster_ion",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "titanium_panels",
+          "Quantity": 16
+        },
+        {
+          "Item": "thulium_energy_cell",
+          "Quantity": 8
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 4
+        },
+        {
+          "Item": "uranium_rods",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "ship_console",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "basic_machine",
+          "Quantity": 1
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 2
+        },
+        {
+          "Item": "glass",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "cannon_console",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "basic_machine",
+          "Quantity": 1
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 3
+        },
+        {
+          "Item": "cobalt_lens",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "ship_camera",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "aluminium_panels",
+          "Quantity": 2
+        },
+        {
+          "Item": "cobalt_lens",
+          "Quantity": 1
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "cannon_antipersonnel",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_panels",
+          "Quantity": 4
+        },
+        {
+          "Item": "energy_cell",
+          "Quantity": 2
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "cannon_light_assault",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_panels",
+          "Quantity": 6
+        },
+        {
+          "Item": "energy_cell",
+          "Quantity": 4
+        },
+        {
+          "Item": "cobalt_lens",
+          "Quantity": 2
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "cannon_heavy_assault",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "titanium_panels",
+          "Quantity": 6
+        },
+        {
+          "Item": "thulium_energy_cell",
+          "Quantity": 4
+        },
+        {
+          "Item": "thulium_lens",
+          "Quantity": 2
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "cannon_anticorvette",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "titanium_panels",
+          "Quantity": 12
+        },
+        {
+          "Item": "thulium_energy_cell",
+          "Quantity": 6
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 3
+        },
+        {
+          "Item": "uranium_rods",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "cannon_antifrigate",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "titanium_panels",
+          "Quantity": 24
+        },
+        {
+          "Item": "uranium_rods",
+          "Quantity": 6
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 6
+        },
+        {
+          "Item": "obscurium_ingot",
+          "Quantity": 2
+        }
+      ]
+    }
+  ]
 }
