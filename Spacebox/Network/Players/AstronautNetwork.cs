@@ -10,6 +10,7 @@ namespace Spacebox.Network.Players;
 public sealed class AstronautNetwork : NetworkTransform
 {
     private const short NoItem = -1;
+    private const int MaxFallDamage = 255;
 
     private readonly NetworkVariable<bool> _flashlight;
     private readonly NetworkVariable<short> _heldItem;
@@ -18,6 +19,8 @@ public sealed class AstronautNetwork : NetworkTransform
     private readonly NetworkVariable<short> _flashlightItem;
 
     public static AstronautNetwork Local { get; private set; }
+
+    private FallImpactSound? _fallSound;
 
     public string PlayerName { get; set; }
     public bool IsAlive => _isAlive.Value;
@@ -58,6 +61,7 @@ public sealed class AstronautNetwork : NetworkTransform
                 _isAlive.Value = localAstronaut.IsAlive;
                 localAstronaut.OnDeath += OnLocalDeath;
                 localAstronaut.OnRevived += OnLocalRevived;
+                localAstronaut.FallDamage.Impact += OnLocalFallImpact;
             }
             SetHeldItem(Spacebox.Game.GUI.PanelUI.CurrentSlot());
             astronaut.Flashlight.OnEnabledChanged += OnLocalFlashlightChanged;
@@ -76,6 +80,9 @@ public sealed class AstronautNetwork : NetworkTransform
 
     public override void OnNetworkDespawn()
     {
+        _fallSound?.Dispose();
+        _fallSound = null;
+
         if (Local == this)
         {
             Local = null;
@@ -84,6 +91,7 @@ public sealed class AstronautNetwork : NetworkTransform
             {
                 localAstronaut.OnDeath -= OnLocalDeath;
                 localAstronaut.OnRevived -= OnLocalRevived;
+                localAstronaut.FallDamage.Impact -= OnLocalFallImpact;
             }
         }
     }
@@ -116,6 +124,26 @@ public sealed class AstronautNetwork : NetworkTransform
     {
         var settings = GetItem(itemId) is EquipmentItem equipment ? equipment.Flashlight : null;
         astronaut.Flashlight.Apply(settings ?? FlashlightSettings.Default);
+    }
+
+    private void OnLocalFallImpact(int damage)
+    {
+        SendRpc(nameof(ReportFallImpact), damage);
+    }
+
+    [Rpc(RpcTarget.Server)]
+    private void ReportFallImpact(int damage)
+    {
+        SendRpc(nameof(FallImpact), Math.Clamp(damage, 1, MaxFallDamage));
+    }
+
+    [Rpc(RpcTarget.ClientsExceptOwner, Delivery = DeliveryMode.ReliableUnordered)]
+    private void FallImpact(int damage)
+    {
+        if (Owner is not Astronaut astronaut) return;
+
+        _fallSound ??= new FallImpactSound(true);
+        _fallSound.Play(damage, astronaut.Position);
     }
 
     private void OnLocalRevived()
