@@ -25,7 +25,6 @@ public class InteractionShoot : InteractionMode
     private float _time = 0;
     private bool canShoot = false;
     private Vector3 startPos;
-    private Vector3 despawnPos = Vector3.Zero;
 
     public override bool UsesPrimaryAction => true;
 
@@ -70,16 +69,6 @@ public class InteractionShoot : InteractionMode
         shotSound = null;
         model.Animator.Clear();
         model.Position = startPos;
-    }
-
-    private void SetSphere(Projectile p)
-    {
-        p.OnDespawn -= SetSphere;
-
-        despawnPos = p.Position;
-
-        var sphereRenderer = SpheresPool.Instance.Take();
-        sphereRenderer.Activate(despawnPos);
     }
 
     private bool TryConsumeAmmo(LocalAstronaut player)
@@ -177,12 +166,7 @@ public class InteractionShoot : InteractionMode
             var shotDir = WeaponItem.CalculateSpreadCone(weapon, player.Front);
             var shotRay = new Ray(projectileSpawnPos, shotDir, 1f);
 
-            var projectile = Spacebox.Network.Combat.CombatNetwork.FireLocal(player, weapon, projectileParameters, shotRay);
-
-            if (projectileParameters.Name == "p_ar")
-            {
-                projectile.OnDespawn += SetSphere;
-            }
+            Spacebox.Network.Combat.CombatNetwork.FireLocal(player, weapon, projectileParameters, shotRay);
 
             ApplyRecoil(player, weapon, shotRay.Direction, projectileParameters);
 

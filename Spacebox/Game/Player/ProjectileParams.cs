@@ -21,6 +21,7 @@ namespace Spacebox.Game.Player
         public int PossibleRicochets { get; private set; }
         public int MaximumBlocksCanDestroy { get; set; } = 1;
         public bool DropBlock { get; private set; } = false;
+        public bool ImpactSphere { get; private set; }
 
         public ProjectileParameters()
         {
@@ -46,6 +47,7 @@ namespace Spacebox.Game.Player
             RicochetAngle = p.RicochetAngle;
             PossibleRicochets = p.PossibleRicochets;
             MaximumBlocksCanDestroy = p.MaximumBlocksCanDestroy;
+            ImpactSphere = p.ImpactSphere;
 
         }
 

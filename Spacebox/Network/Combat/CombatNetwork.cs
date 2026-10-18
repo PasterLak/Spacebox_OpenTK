@@ -43,6 +43,7 @@ public static class CombatNetwork
 
         var projectile = World.Instance.ProjectilesPool.Take();
         projectile.Initialize(ray, ref parameters, shooter, network.LocalPeerId, isAuthoritative, NetworkTransform.InterpolationDelay);
+        ProjectileImpactEffects.Attach(projectile);
 
         if (isAuthoritative)
         {
@@ -106,6 +107,7 @@ public static class CombatNetwork
         var projectile = World.Instance.ProjectilesPool.Take();
         projectile.Initialize(new Ray(message.Origin, direction, 1f), ref parameters, null, sender, true, rewind);
         projectile.FastForward(latency);
+        ProjectileImpactEffects.Attach(projectile);
 
         if (GameSession.HasLocalPlayer) _sounds.PlayShot(weapon, message.Origin);
         PlayShotKick(sender);
@@ -143,6 +145,7 @@ public static class CombatNetwork
         var projectile = World.Instance.ProjectilesPool.Take();
         projectile.Initialize(new Ray(message.Origin, message.Direction, 1f), ref parameters, null, message.ShooterPeer, false, 0f);
         projectile.FastForward(message.Age + network.LatencyToServer);
+        ProjectileImpactEffects.Attach(projectile);
 
         _sounds.PlayShot(weapon, message.Origin);
         PlayShotKick(message.ShooterPeer);

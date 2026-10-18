@@ -16,5 +16,6 @@
     "RicochetAngle": 70,
     "PossibleRicochets": 5,
     "MaximumBlocksCanDestroy" : 5,
-    "DropBlock": false
+    "DropBlock": false,
+    "ImpactSphere": true
 }

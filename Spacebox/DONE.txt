@@ -157,6 +157,7 @@ Fixes
 - held item lit by point lights in the wrong place (item camera space vs world lights), light slid over the model while turning or boosting
 - held item flashlight shading broke into a moving border when flying fast (view vector used the moving world camera instead of the item camera)
 - players flew through other players (remote players now have a collision body); drill did not damage other players
+- impulse rifle sphere explosion was only visible to the shooter (now on every player, projectile JSON ImpactSphere)
 
 Engine
 - networking: LiteNetLib transport, NetworkManager (offline/host/client/dedicated), messages, NetworkObject/NetworkBehaviour, [Rpc] methods, NetworkVariable, spawner, NetworkTransform
