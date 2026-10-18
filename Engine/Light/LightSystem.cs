@@ -44,10 +44,22 @@ namespace Engine.Light
             public Vector3 specular; public float pad3;
         }
 
-        static readonly UniformBuffer<LightsCountGpu> _cntUBO = new("LightsCountBlock");
-        static readonly UniformBuffer<DirGpu> _dirUBO = new("DirBlock");
-        static readonly UniformBuffer<PointGpu> _ptUBO = new("PointBlock");
-        static readonly UniformBuffer<SpotGpu> _spUBO = new("SpotBlock");
+        static UniformBuffer<LightsCountGpu> _cntUBO;
+        static UniformBuffer<DirGpu> _dirUBO;
+        static UniformBuffer<PointGpu> _ptUBO;
+        static UniformBuffer<SpotGpu> _spUBO;
+
+        public static bool IsGpuInitialized => _cntUBO != null;
+
+        public static void InitializeGpu()
+        {
+            if (IsGpuInitialized) return;
+
+            _cntUBO = new UniformBuffer<LightsCountGpu>("LightsCountBlock");
+            _dirUBO = new UniformBuffer<DirGpu>("DirBlock");
+            _ptUBO = new UniformBuffer<PointGpu>("PointBlock");
+            _spUBO = new UniformBuffer<SpotGpu>("SpotBlock");
+        }
 
         public static void Register(LightBase l) { if (!_all.Contains(l)) _all.Add(l); }
         public static void Unregister(LightBase l) { _all.Remove(l); }
@@ -64,7 +76,7 @@ namespace Engine.Light
 
             var cam = Camera.Main;
 
-            if (cam == null) return;
+            if (cam == null || !IsGpuInitialized) return;
 
             Span<DirGpu> dir = stackalloc DirGpu[MAX_DIR];
             Span<PointGpu> pt = stackalloc PointGpu[MAX_POINT];

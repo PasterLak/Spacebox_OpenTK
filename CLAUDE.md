@@ -14,7 +14,8 @@ Spacebox is a voxel space-survival game (asteroid belt, mining, base/ship buildi
 - Match the style of the surrounding code (naming, namespaces, structure).
 - In new code, private fields are `_camelCase` and new files use file-scoped namespaces (`namespace X;`). Do not rename or reformat existing code unless asked.
 - Log with `Debug.Log` / `Debug.Warning` / `Debug.Error` / `Debug.Success`, never `Console.WriteLine`, in game and engine code.
-- After code changes, run `dotnet build Spacebox/Spacebox.csproj` (and `dotnet test Spacebox.Tests` when logic covered by tests changed). A task is not done while the build fails. A project hook (`.claude/hooks/build-check.sh`) also builds after every `.cs` edit and reports errors.
+- After code changes, run `dotnet build Spacebox/Spacebox.csproj`, then run both test projects after every change to `Engine` or the game: `dotnet test Engine.Tests` and `dotnet test Spacebox.Tests`. A task is not done while the build or any test fails.
+- Tests: engine-only tests go to `Engine.Tests` (references only `Engine`), game tests to `Spacebox.Tests`. Add tests for new logic that can run without an OpenGL context (math, serialization, data rules, inventory). A project hook (`.claude/hooks/build-check.sh`) also builds after every `.cs` edit and reports errors.
 
 ## Project rules
 
@@ -38,8 +39,9 @@ dotnet build Spacebox.sln                       # build everything (SpaceServerU
 dotnet run --project Spacebox/Spacebox.csproj   # run the game (Debug)
 dotnet run --project SpaceServer                # run the dedicated server
 
-dotnet test Spacebox.Tests                                          # xUnit tests
-dotnet test Spacebox.Tests --filter "FullyQualifiedName~WorldTests" # single class
+dotnet test Engine.Tests                                            # engine xUnit tests
+dotnet test Spacebox.Tests                                          # game xUnit tests
+dotnet test Spacebox.Tests --filter "FullyQualifiedName~StorageTests" # single class
 dotnet test Spacebox.Tests --filter "FullyQualifiedName~BlockTests.SomeMethod"
 
 dotnet run -c Debug --project Spacebox.Benchmarks   # BenchmarkDotNet; edit Program.cs to choose which benchmark runs
@@ -47,7 +49,7 @@ dotnet run -c Debug --project Spacebox.Benchmarks   # BenchmarkDotNet; edit Prog
 dotnet publish Spacebox/Spacebox.csproj -c Release -r linux-x64 --self-contained true --output ./publish   # also win-x64 / osx-x64; single-file: only the executable + game folders
 ```
 
-- `Spacebox.Tests` and `Spacebox.Benchmarks` are marked non-buildable in `Release`; use `Debug` for them.
+- `Engine.Tests`, `Spacebox.Tests` and `Spacebox.Benchmarks` are marked non-buildable in `Release`; use `Debug` for them.
 - `Debug`/`Profile` define `PROFILING` and `ASSERTS` (also via `Directory.Build.props`); `Release` defines only `TRACE` and builds the game as `WinExe`.
 - `Spacebox/Build/AddAfterBuild/OpenAL32.dll` (Windows audio) is bundled into Windows publishes by `Spacebox.csproj`; normal builds don't copy it.
 - There is no linter/formatter configured.

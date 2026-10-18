@@ -65,7 +65,7 @@ namespace Spacebox.Tests
         }
 
         [Fact]
-        public void Increment_WithNegativeAmount_IncreasesCountByAbsAmount()
+        public void Increment_WithNegativeAmount_IsIgnored()
         {
             // Arrange
             var statsBar = new StatsData
@@ -79,14 +79,14 @@ namespace Spacebox.Tests
             statsBar.Increment(-20);
 
             // Assert
-            Assert.Equal(70, statsBar.Value);
+            Assert.Equal(50, statsBar.Value);
             Assert.False(statsBar.IsMaxReached);
             Assert.False(statsBar.IsMinReached);
-            Assert.True(eventFired);
+            Assert.False(eventFired);
         }
 
         [Fact]
-        public void Increment_WithZeroAmount_DoesNotChangeCount_ButFiresDataChanged()
+        public void Increment_WithZeroAmount_IsIgnored()
         {
             // Arrange
             var statsBar = new StatsData
@@ -103,7 +103,7 @@ namespace Spacebox.Tests
             Assert.Equal(50, statsBar.Value);
             Assert.False(statsBar.IsMaxReached);
             Assert.False(statsBar.IsMinReached);
-            Assert.True(eventFired); // DataChanged is still fired even if Count doesn't change
+            Assert.False(eventFired); // DataChanged is still fired even if Count doesn't change
         }
 
         [Fact]
@@ -201,7 +201,7 @@ namespace Spacebox.Tests
         }
 
         [Fact]
-        public void Decrement_WithNegativeAmount_DecreasesCountByAbsAmount()
+        public void Decrement_WithNegativeAmount_IsIgnored()
         {
             // Arrange
             var statsBar = new StatsData
@@ -217,15 +217,15 @@ namespace Spacebox.Tests
             statsBar.Decrement(-20);
 
             // Assert
-            Assert.Equal(30, statsBar.Value);
+            Assert.Equal(50, statsBar.Value);
             Assert.False(statsBar.IsMaxReached);
             Assert.False(statsBar.IsMinReached);
-            Assert.True(dataChangedFired);
+            Assert.False(dataChangedFired);
             Assert.False(onEqualZeroFired);
         }
 
         [Fact]
-        public void Decrement_WithZeroAmount_DoesNotChangeCount_ButFiresDataChanged()
+        public void Decrement_WithZeroAmount_IsIgnored()
         {
             // Arrange
             var statsBar = new StatsData
@@ -244,7 +244,7 @@ namespace Spacebox.Tests
             Assert.Equal(50, statsBar.Value);
             Assert.False(statsBar.IsMaxReached);
             Assert.False(statsBar.IsMinReached);
-            Assert.True(dataChangedFired); // DataChanged is still fired even if Count doesn't change
+            Assert.False(dataChangedFired); // DataChanged is still fired even if Count doesn't change
             Assert.False(onEqualZeroFired);
         }
 

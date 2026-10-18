@@ -1,6 +1,6 @@
 using Engine.AI;
 
-namespace Spacebox.Tests.Engine;
+namespace Engine.Tests.AI;
 
 public class StateMachineTests
 {

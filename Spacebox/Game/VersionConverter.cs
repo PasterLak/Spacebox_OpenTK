@@ -22,48 +22,32 @@ namespace Spacebox.Game
         }
 
 
+        private static readonly Dictionary<string, string> NextVersions = new Dictionary<string, string>
+        {
+            { "0.0.8", "0.0.9" },
+            { "0.0.9", "0.1.0" },
+            { "0.1.0", "0.1.1" },
+            { "0.1.1", "0.1.2" }
+        };
+
         public static bool Convert(WorldInfo worldInfo, string appVersion)
         {
 
             //if (worldInfo.GameVersion == appVersion) return true;
-           
-            if (worldInfo.GameVersion == "0.0.8" )
+            if (!IsVersionOlder(worldInfo.GameVersion, appVersion)) return worldInfo.GameVersion == appVersion;
+
+            while (worldInfo.GameVersion != appVersion)
             {
-                worldInfo.GameVersion = "0.0.9";
+                if (!NextVersions.TryGetValue(worldInfo.GameVersion, out var next) || IsVersionOlder(appVersion, next))
+                {
+                    Debug.Error($"[VersionConverter] Failed to convert map version {worldInfo.GameVersion} to newer {appVersion} !");
+                    return false;
+                }
 
-                return ConvertToNextVersion(worldInfo,appVersion);
-            }
-            if (worldInfo.GameVersion == "0.0.9" )
-            {
-                worldInfo.GameVersion = "0.1.0";
-
-                return ConvertToNextVersion(worldInfo,appVersion);
-            }
-
-            if (worldInfo.GameVersion == "0.1.0")
-            {
-                worldInfo.GameVersion = "0.1.1";
-
-                return ConvertToNextVersion(worldInfo, appVersion);
+                worldInfo.GameVersion = next;
             }
 
-            if (worldInfo.GameVersion == "0.1.1")
-            {
-                worldInfo.GameVersion = "0.1.2";
-
-                return ConvertToNextVersion(worldInfo, appVersion);
-            }
-
-            Debug.Error($"[VersionConverter] Failed to convert map version {worldInfo.GameVersion} to newer {appVersion} !");
-
-            return false;
-        }
-
-        private static bool ConvertToNextVersion(WorldInfo worldInfo, string appVersion)
-        {
-            if (worldInfo.GameVersion == appVersion) return true;
-
-            return Convert(worldInfo,appVersion);
+            return true;
         }
     }
 }

@@ -144,7 +144,7 @@ namespace Spacebox.Tests
             bool result = VersionConverter.Convert(worldInfo, appVersion);
 
             // Assert
-            Assert.False(result);
+            Assert.True(result);
             Assert.Equal("0.0.9", worldInfo.GameVersion);
         }
 
@@ -173,7 +173,7 @@ namespace Spacebox.Tests
 
             // Further conversion should return false as worldVersion == appVersion
             bool secondResult = VersionConverter.Convert(worldInfo, appVersion);
-            Assert.False(secondResult);
+            Assert.True(secondResult);
             Assert.Equal("0.0.9", worldInfo.GameVersion);
         }
 

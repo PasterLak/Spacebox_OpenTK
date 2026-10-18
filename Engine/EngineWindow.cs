@@ -63,6 +63,9 @@ namespace Engine
             
             Debug.Log("[Engine started!]");
             Input.Initialize(this);
+            ResourceFallbacks.Initialize();
+            LightSystem.InitializeGpu();
+            VisualDebug.InitializeGpu();
 
             _sceneRenderer = new SceneRenderer(ClientSize.X, ClientSize.Y);
             FrameLimiter.Initialize(120);

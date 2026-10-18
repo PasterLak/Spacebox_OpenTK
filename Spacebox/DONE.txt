@@ -164,8 +164,11 @@ Fixes
 - crusher: 1 lens gave 1 dust (infinite cobalt/iron/thulium), now 2 lenses -> 1 dust
 - asteroids loaded near the player saved to <id>.entity.entity, so loading showed an old snapshot; names fixed, newest save restored on load
 - walls between saved and regenerated asteroid chunks: a remesh requested while the chunk mesh was being built was dropped
+- version converter upgraded worlds past the app version and failed for worlds already up to date
 
 Engine
+- Engine.Tests project (engine-only tests), Spacebox.Tests fixed and extended
+- GPU setup of Resources fallbacks, LightSystem and VisualDebug moved out of static constructors into explicit init in OnLoad; scene switching is unit-tested
 - networking: LiteNetLib transport, NetworkManager (offline/host/client/dedicated), messages, NetworkObject/NetworkBehaviour, [Rpc] methods, NetworkVariable, spawner, NetworkTransform
 - networking: chunked data transfers (NetworkManager.Transfers), DirectoryArchive (zip folders, content hash, safe extract)
 - ModelRendererComponent/TextureMaterial ExtraLight (added light for textured models), IExtraLightTarget

@@ -46,7 +46,7 @@ Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
 - abstract: `OnRegisterScenes`, `OnGameLoad`
 - virtual: `OnLoadImGui`, `OnSetupInput`, `OnSetupPostProcessing(PostProcessManager)`, `OnRenderGameGUI`, `OnUpdateInput`, `OnPostRender`
 
-`OnLoad` order: `Input.Initialize` → `SceneRenderer` → `FrameLimiter` → `SceneManager.Initialize(OnRegisterScenes)` → `ImGuiController` → `OnLoadImGui` → default F-key bindings → `OnSetupInput` → `PostProcessManager` → `OnSetupPostProcessing` → `OnGameLoad`.
+`OnLoad` order: `Input.Initialize` → `ResourceFallbacks.Initialize` → `LightSystem.InitializeGpu` → `VisualDebug.InitializeGpu` → `SceneRenderer` → `FrameLimiter` → `SceneManager.Initialize(OnRegisterScenes)` → `ImGuiController` → `OnLoadImGui` → default F-key bindings → `OnSetupInput` → `PostProcessManager` → `OnSetupPostProcessing` → `OnGameLoad`.
 
 `OnUpdateFrame`: `SceneManager.ApplyPendingSceneChange` → `RenderSpace.BeginFrame` → `Input.Update` → `Time.Update` → ImGui update → `InputManager.Update` (InputPro) → `InputManager0.Update` → drain main-thread action queue → `OnUpdateInput` → `SceneManager.Update` → `GlobalUniforms.Push` → `AudioDevice.Update`.
 
@@ -67,7 +67,8 @@ Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
 ## Resources (`Resources.cs`)
 
 - `Resources.Load<T>(path, global = false)`: cached per type; key is the path without extension with `/` separators, plus a short file-name alias.
-- On failure it logs and returns an error resource (pink texture, error shader/mesh/clip) — it does not throw.
+- On failure it logs and returns the fallback from `ResourceFallbacks` (pink texture, error shader/mesh/clip, created in `EngineWindow.OnLoad`) — it does not throw. A type without a fallback throws `InvalidOperationException`.
+- `Resources` itself is a plain registry without GPU work, so it is usable in tests.
 - Non-global resources are disposed on every scene switch. Use `global: true` for anything that outlives a scene (all engine-owned resources).
 - `Get<T>` loads on miss; `AddResource(name, res, global)` registers code-created resources. Leaked "controlled" resources are reported by `UnloadAll`.
 
@@ -88,6 +89,7 @@ Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
 ## Threading and services
 
 - GL calls only on the main thread (buffer/texture/shader creation **and** disposal).
+- Static systems never create GPU objects in static constructors or field initializers: keep their bookkeeping GL-free and create GPU objects in an explicit `InitializeGpu()` called from `EngineWindow.OnLoad` (`ResourceFallbacks`, `LightSystem`, `VisualDebug`). This keeps them testable (`Engine.Tests` covers `SceneManager`, `Resources`, `Scene`) and prevents GL calls from worker threads that first touch a type.
 - `WorkerPoolManager.Enqueue(action, Priority.High|Medium|Low, token)` returns a `Task`; named dedicated workers via `AddDedicatedWorker` / `EnqueueDedicated`.
 - Main-thread marshalling inside the engine: `EngineWindow`'s main-thread action queue. (The game's `MainThreadDispatcher` lives in `Spacebox`, not here.)
 - `DisposalManager`: thread-safe queue to defer GL disposal from worker threads; processed by the game scene.

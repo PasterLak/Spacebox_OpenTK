@@ -1,6 +1,6 @@
 using Engine.Graphics.Atlas;
 
-namespace Spacebox.Tests
+namespace Engine.Tests
 {
     public class AtlasLayoutTests
     {

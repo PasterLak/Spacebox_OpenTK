@@ -1,7 +1,7 @@
 using Engine;
 using OpenTK.Mathematics;
 
-namespace Spacebox.Tests
+namespace Engine.Tests
 {
     public class Vector3SByteTests
     {

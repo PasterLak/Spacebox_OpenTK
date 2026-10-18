@@ -19,14 +19,12 @@ namespace Engine
 
         private static float LineWidth = 1.0f;
 
-        static VisualDebug()
-        {
-            Initialize();
+        public static bool IsGpuInitialized => _shader != null;
 
-        }
-
-        private static void Initialize()
+        public static void InitializeGpu()
         {
+            if (IsGpuInitialized) return;
+
             _shader = Resources.Load<Shader>("Resources/Shaders/debug", true);
 
             _bufferPoints = new MeshBuffer(new[]
@@ -384,7 +382,7 @@ namespace Engine
         public static void Render()
         {
 
-            if (!Enabled) return;
+            if (!Enabled || !IsGpuInitialized) return;
             if (_points.Count == 0 && _lines.Count == 0 && _triangles.Count == 0) return;
 
 

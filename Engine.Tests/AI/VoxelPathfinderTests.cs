@@ -1,7 +1,7 @@
 using Engine.AI;
 using OpenTK.Mathematics;
 
-namespace Spacebox.Tests.Engine;
+namespace Engine.Tests.AI;
 
 public class VoxelPathfinderTests
 {
