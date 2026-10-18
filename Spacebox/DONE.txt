@@ -94,6 +94,16 @@ Small
 - drops, spacer, players and mobs are lit by light blocks
 - items held by remote players and mob eating dust are lit by light blocks
 - dedicated server: start-server.bat / start-server.sh, all log messages in the terminal (Windows release too), no mouse capture by the hidden window, clean exit on stop
+- release/final publish (also BuildWindows.ps1) is a single executable: dlls, native libraries and OpenAL32.dll (Windows) are bundled, the game folder shows only the exe, Resources, GameSets, Plugins and scripts
+- Linux package: BuildLinux.ps1, start.sh / start-server.sh (fix executable bit, xvfb-run for servers without display), game always runs from its own folder
+- published game contains a default serverconfig.json and only the start scripts of its platform
+- iron and titanium armor sets (helmet, chest, shoulders, arms, legs, boots) with crafting
+- equipment tiers: aluminium/iron/titanium flashlights (intensity, range, cone), radars (distance; + mass; +20% range) and power generators, crafting; survival and creative need a radar to see asteroid markers and own markers and a flashlight to use light; new players (and old saves once) get aluminium radar and flashlight equipped
+- equip with shift-click from inventory/hotbar or right click with the item in hand (swaps with the equipped one)
+- a flashlight held in the hand works when no flashlight is equipped
+- ore scanner synced in multiplayer: server runs the scan (also with the window closed), everyone sees progress and result
+- oxygen generator has its own textures (water tank with bubbles, fan vent) with glow
+- new gravity generator textures (field chevrons, coil top, emitter bottom) and DNA reconstructor textures (DNA capsule, hatch), both with off textures and glow
 - data-driven mobs (GameSet Mobs/*.json), console command mob <id>|list|clear
 - Mineral Parasite Larva item spawns a parasite (item type mob_spawner)
 - engine: hierarchical state machine and voxel pathfinding (A*, open space shortcut, path scheduler)

@@ -16,6 +16,9 @@ namespace Spacebox.Game.GUI
         private ImFontPtr _font;
         private Pool<Tag> _tagPool;
 
+        public Func<RadarSettings?>? RadarSource { get; set; }
+        public RadarSettings? Radar => RadarSource != null ? RadarSource() : RadarSettings.Unlimited;
+
         public TagManager()
         {
             Instance = this;
@@ -144,6 +147,9 @@ namespace Spacebox.Game.GUI
             var camera = Camera.Main;
 
             var drawList = ImGui.GetBackgroundDrawList();
+            var radar = Radar;
+            float generalRangeSquared = Settings.ENTITY_SEARCH_RADIUS * Settings.ENTITY_SEARCH_RADIUS;
+            float radarRangeSquared = radar != null ? radar.Range * radar.Range : -1f;
 
             foreach (var tag in _visibleTags)
             {
@@ -154,7 +160,8 @@ namespace Spacebox.Game.GUI
 
                 var distanceSquared = Vector3.DistanceSquared(camera.PositionWorld, tag.WorldPosition);
 
-                if (distanceSquared > Settings.ENTITY_SEARCH_RADIUS * Settings.ENTITY_SEARCH_RADIUS)
+                float maxDistanceSquared = tag.Category == Tag.TagCategory.General ? generalRangeSquared : radarRangeSquared;
+                if (distanceSquared > maxDistanceSquared)
                 {
                     continue;
                 }

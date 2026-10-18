@@ -22,6 +22,14 @@ namespace Spacebox.Game.Player
         public Storage Panel { get; private set; }
         public PlayerEquipment Equipment { get; private set; }
         private EquipmentStatsBinder _equipmentStats;
+        private EquipmentFlashlightBinder _flashlightBinder;
+
+        public EquipmentItem? ActiveFlashlightItem => Equipment.FlashlightItem ?? HeldFlashlightItem;
+        public bool CanUseFlashlight => GameMode == GameMode.Spectator || ActiveFlashlightItem != null;
+
+        private static EquipmentItem? HeldFlashlightItem =>
+            PanelUI.CurrentSlot() is { HasItem: true, Item: EquipmentItem { Flashlight: not null } item } ? item : null;
+        public RadarSettings? Radar => GameMode == GameMode.Spectator ? RadarSettings.Unlimited : Equipment.Radar;
         public bool CameraActive = true;
         public Action<LocalAstronaut> OnMoved { get; set; }
         public SphereBody Body { get; private set; }
@@ -126,6 +134,7 @@ namespace Spacebox.Game.Player
 
             this.Flashlight.AddToggleToManager(this);
             GameMode = GameMode.Creative;
+            _flashlightBinder = new EquipmentFlashlightBinder(this);
 
             AddChild(Effects);
 
@@ -208,6 +217,7 @@ namespace Spacebox.Game.Player
             }
 
             _gameModeBase.OnEnable();
+            _flashlightBinder?.Apply();
             PanelUI.ResetLastSelected();
             PanelUI.SetSelectedSlot(0);
         }
@@ -215,6 +225,7 @@ namespace Spacebox.Game.Player
         public override void Update()
         {
             base.Update();
+            _flashlightBinder?.Update();
 
             Matrix4 viewMatrix = GetViewMatrix();
             Matrix4 projectionMatrix = GetProjectionMatrix();

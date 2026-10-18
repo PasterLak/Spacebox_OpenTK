@@ -92,6 +92,7 @@ public sealed class NetworkSession : IDisposable
             UpdateObservers();
         }
         Containers.ContainerNetwork.Update();
+        AnalyzerNetwork.Update();
         BlockStateNetwork.Update();
         TimeNetwork.Update();
         SectorNetwork.Update();
@@ -161,6 +162,7 @@ public sealed class NetworkSession : IDisposable
         Spacebox.Network.Mobs.MobSpawnNetwork.Reset();
         Containers.ContainerNetwork.Reset();
         BlockStateNetwork.Clear();
+        AnalyzerNetwork.Reset();
         SectorNetwork.Clear();
         PlayerListNetwork.Clear();
         Moderation.ServerModeration.Reset();

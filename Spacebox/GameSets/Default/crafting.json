@@ -916,6 +916,342 @@
     },
     {
       "Product": {
+        "Item": "iron_helmet",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_ingot",
+          "Quantity": 4
+        },
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "iron_chest",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_ingot",
+          "Quantity": 12
+        },
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 6
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "iron_shoulders",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_ingot",
+          "Quantity": 4
+        },
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "iron_arms",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_ingot",
+          "Quantity": 3
+        },
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "iron_legs",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_ingot",
+          "Quantity": 8
+        },
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 4
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "iron_boots",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_ingot",
+          "Quantity": 3
+        },
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "titanium_helmet",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "titanium_ingot",
+          "Quantity": 4
+        },
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "titanium_chest",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "titanium_ingot",
+          "Quantity": 12
+        },
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 6
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "titanium_shoulders",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "titanium_ingot",
+          "Quantity": 4
+        },
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "titanium_arms",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "titanium_ingot",
+          "Quantity": 3
+        },
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "titanium_legs",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "titanium_ingot",
+          "Quantity": 8
+        },
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 4
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "titanium_boots",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "titanium_ingot",
+          "Quantity": 3
+        },
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "aluminium_flashlight",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "aluminium_ingot",
+          "Quantity": 3
+        },
+        {
+          "Item": "glass",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "cobalt_flashlight",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_ingot",
+          "Quantity": 3
+        },
+        {
+          "Item": "cobalt_lens",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "titanium_flashlight",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "titanium_ingot",
+          "Quantity": 3
+        },
+        {
+          "Item": "thulium_lens",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "basic_scanner",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "aluminium_ingot",
+          "Quantity": 3
+        },
+        {
+          "Item": "glass",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "iron_scanner",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_ingot",
+          "Quantity": 4
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "titanium_scanner",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "titanium_ingot",
+          "Quantity": 4
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "basic_generator",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "aluminium_ingot",
+          "Quantity": 4
+        },
+        {
+          "Item": "energy_cell",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "iron_generator",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_ingot",
+          "Quantity": 4
+        },
+        {
+          "Item": "energy_cell",
+          "Quantity": 4
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "titanium_generator",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "titanium_ingot",
+          "Quantity": 4
+        },
+        {
+          "Item": "thulium_energy_cell",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
         "Item": "power",
         "Quantity": 1
       },

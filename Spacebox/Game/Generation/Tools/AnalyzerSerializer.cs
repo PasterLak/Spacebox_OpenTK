@@ -28,6 +28,7 @@ namespace Spacebox.Game.Generation.Tools
                 if (elapsedTicks < 0) elapsedTicks = 0;
 
                 root.Add(new LongTag("elapsed_ticks", elapsedTicks));
+                root.Add(new LongTag("duration_ticks", analyzer.ScanDurationTicks));
             }
             else if (analyzer.ScanComplete)
             {
@@ -70,6 +71,10 @@ namespace Spacebox.Game.Generation.Tools
                 {
                     long currentAbsoluteTick = GameTime.Day * 24000L + GameTime.DayTick;
                     analyzer.ScanStartAbsoluteTick = currentAbsoluteTick - tickTag.Value;
+                }
+                if (tag.TryGetValue<LongTag>("duration_ticks", out var durationTag))
+                {
+                    analyzer.ScanDurationTicks = durationTag.Value;
                 }
             }
             else if (tag.TryGetValue<ByteTag>("scan_complete", out var isCompleteTag) && isCompleteTag.Value == 1)

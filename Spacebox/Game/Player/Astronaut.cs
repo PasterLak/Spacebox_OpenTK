@@ -87,8 +87,7 @@ namespace Spacebox.Game.Player
             Flashlight.Position = Vector3.Zero;
             Flashlight.Diffuse = new Color3Byte(242, 211, 143).ToVector3();
             Flashlight.Specular = Vector3.Zero;
-            Flashlight.CutOff = 15;
-            Flashlight.OuterCutOff = 25;
+            Flashlight.Apply(FlashlightSettings.Default);
         }
 
         public static Texture2D GetAstronautTexture(string color)

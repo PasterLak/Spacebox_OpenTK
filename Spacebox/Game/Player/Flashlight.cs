@@ -31,6 +31,7 @@ namespace Spacebox.Game.Player
             action.Subscribe(InputEventType.Pressed, () =>
             {
                 if (localAstronaut.IsAlive == false) return;
+                if (!Enabled && !localAstronaut.CanUseFlashlight) return;
                 if (UIManager.IsUIMode) return;
                 if (Debug.IsVisible) return;
                 if (Chat.FocusInput) return;
@@ -39,6 +40,14 @@ namespace Spacebox.Game.Player
                 audio.Play();
                 Enabled = !Enabled;
             });
+        }
+
+        public void Apply(FlashlightSettings settings)
+        {
+            Intensity = settings.Intensity;
+            Range = settings.Range;
+            CutOff = settings.InnerAngle;
+            OuterCutOff = settings.OuterAngle;
         }
 
         public override void Update()

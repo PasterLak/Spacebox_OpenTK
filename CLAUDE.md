@@ -44,12 +44,12 @@ dotnet test Spacebox.Tests --filter "FullyQualifiedName~BlockTests.SomeMethod"
 
 dotnet run -c Debug --project Spacebox.Benchmarks   # BenchmarkDotNet; edit Program.cs to choose which benchmark runs
 
-dotnet publish Spacebox/Spacebox.csproj -c Release -r linux-x64 --self-contained true --output ./publish   # also win-x64 / osx-x64
+dotnet publish Spacebox/Spacebox.csproj -c Release -r linux-x64 --self-contained true --output ./publish   # also win-x64 / osx-x64; single-file: only the executable + game folders
 ```
 
 - `Spacebox.Tests` and `Spacebox.Benchmarks` are marked non-buildable in `Release`; use `Debug` for them.
 - `Debug`/`Profile` define `PROFILING` and `ASSERTS` (also via `Directory.Build.props`); `Release` defines only `TRACE` and builds the game as `WinExe`.
-- `Spacebox/Build/AddAfterBuild/OpenAL32.dll` is a manual Windows workaround for audio, not part of the build.
+- `Spacebox/Build/AddAfterBuild/OpenAL32.dll` (Windows audio) is bundled into Windows publishes by `Spacebox.csproj`; normal builds don't copy it.
 - There is no linter/formatter configured.
 
 ## Solution layout

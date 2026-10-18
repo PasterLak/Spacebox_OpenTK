@@ -92,7 +92,7 @@ namespace Spacebox.Scenes
               new[]
               {
                      "Resources/Models/sphere2.obj",
-                     "Resources/Models/spacer.obj",
+                     "Resources/Models/Mobs/spacer.obj",
 
                      "Resources/Models/sphere.obj",
 

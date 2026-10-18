@@ -14,6 +14,7 @@ public static class Program
    // [STAThread]
     private static void Main(string[] args)
     {
+        Directory.SetCurrentDirectory(AppContext.BaseDirectory);
         LaunchOptions.Parse(args);
 
         if (LaunchOptions.IsDedicated)

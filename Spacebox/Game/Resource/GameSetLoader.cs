@@ -971,6 +971,8 @@ public static class GameSetLoader
             Slot = slot,
             HealthBonus = data.Health,
             PowerBonus = data.Power,
+            Flashlight = data.Flashlight,
+            Radar = data.Radar,
         };
         GameAssetsRegister.RegisterItem(equipmentItem, data.Sprite);
 
@@ -1134,6 +1136,8 @@ public static class GameSetLoader
 
             if (GameAssets.TryGetItemByFullID(fullId, out Item item))
             {
+                if (player.Equipment.TryEquipIfEmpty(item)) continue;
+
                 if (!player.Panel.TryAddItem(item, itemData.Count))
                 {
                     Debug.Error($"[GameSetLoader][GiveStartItems] Failed to add start item: {itemData.ID} [{itemData.Count}]");
@@ -1143,6 +1147,18 @@ public static class GameSetLoader
             {
                 Debug.Error($"[GameSetLoader][GiveStartItems] Start item not found: {fullId}");
             }
+        }
+    }
+
+    public static void GiveStartEquipment(LocalAstronaut player)
+    {
+        if (ModInfo?.ItemsOnStart == null) return;
+
+        foreach (var itemData in ModInfo.ItemsOnStart)
+        {
+            if (string.IsNullOrEmpty(itemData.ID)) continue;
+            if (GameAssets.TryGetItemByFullID(CombineId(ModInfo.ModId, itemData.ID), out Item item))
+                player.Equipment.TryEquipIfEmpty(item);
         }
     }
 

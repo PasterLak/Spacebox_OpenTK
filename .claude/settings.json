@@ -12,8 +12,8 @@
       "Bash(git branch *)"
     ],
     "deny": [
-      "Edit(/Spacebox/Plugins/**)",
-      "Edit(/Spacebox/Build/**)",
+     
+ 
       "Edit(/Documentation/doxygen-awesome-css/**)"
     ]
   },

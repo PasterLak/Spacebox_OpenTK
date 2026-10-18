@@ -61,7 +61,7 @@ namespace Spacebox.Game
 
             _body = AttachComponent(new SphereBody(physics, Radius) { Velocity = InitialVelocity });
 
-            Model spacerModel = new Model(GameAssets.LoadResource<Mesh>("Resources/Models/spacer.obj"),
+            Model spacerModel = new Model(GameAssets.LoadResource<Mesh>("Resources/Models/Mobs/spacer.obj"),
                 new TextureMaterial(spacerTex));
             AttachComponent(new ModelRendererComponent(spacerModel));
             AttachComponent(new BlockLightReceiver());

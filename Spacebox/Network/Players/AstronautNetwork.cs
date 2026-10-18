@@ -15,6 +15,7 @@ public sealed class AstronautNetwork : NetworkTransform
     private readonly NetworkVariable<short> _heldItem;
     private readonly NetworkVariable<bool> _isAlive;
     private readonly NetworkVariable<bool> _isVulnerable;
+    private readonly NetworkVariable<short> _flashlightItem;
 
     public static AstronautNetwork Local { get; private set; }
 
@@ -28,6 +29,7 @@ public sealed class AstronautNetwork : NetworkTransform
         _heldItem = CreateVariable(NoItem, NetworkWritePermission.Owner);
         _isAlive = CreateVariable(true, NetworkWritePermission.Owner);
         _isVulnerable = CreateVariable(false, NetworkWritePermission.Owner);
+        _flashlightItem = CreateVariable(NoItem, NetworkWritePermission.Owner);
     }
 
     public override void OnUpdate()
@@ -35,7 +37,10 @@ public sealed class AstronautNetwork : NetworkTransform
         base.OnUpdate();
 
         if (IsSpawned && IsOwner && Owner is LocalAstronaut local)
+        {
             _isVulnerable.Value = local.GameMode == GameMode.Survival;
+            _flashlightItem.Value = local.ActiveFlashlightItem?.Id ?? NoItem;
+        }
     }
 
     public override void OnNetworkSpawn()
@@ -62,6 +67,8 @@ public sealed class AstronautNetwork : NetworkTransform
         _flashlight.Changed += (_, value) => astronaut.Flashlight.Enabled = value;
         _heldItem.Changed += (_, value) => astronaut.ChangeItemInHand(GetItem(value));
         _isAlive.Changed += (_, value) => ApplyAliveVisual(astronaut, value);
+        _flashlightItem.Changed += (_, value) => ApplyFlashlight(astronaut, value);
+        ApplyFlashlight(astronaut, _flashlightItem.Value);
         ApplyAliveVisual(astronaut, _isAlive.Value);
         astronaut.Flashlight.Enabled = _flashlight.Value;
         astronaut.ChangeItemInHand(GetItem(_heldItem.Value));
@@ -103,6 +110,12 @@ public sealed class AstronautNetwork : NetworkTransform
 
         int killer = Owner is LocalAstronaut local ? local.GetRecentAttacker() : -1;
         SendRpc(nameof(ReportDeath), killer);
+    }
+
+    private static void ApplyFlashlight(Astronaut astronaut, short itemId)
+    {
+        var settings = GetItem(itemId) is EquipmentItem equipment ? equipment.Flashlight : null;
+        astronaut.Flashlight.Apply(settings ?? FlashlightSettings.Default);
     }
 
     private void OnLocalRevived()

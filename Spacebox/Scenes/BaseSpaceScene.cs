@@ -153,7 +153,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         AddChild(new ProjectileHitEffectsManager());
         AddChild(new DirectionalLight());
-        AttachComponent(new TagManager());
+        AttachComponent(new TagManager()).RadarSource = () => localPlayer.Radar;
         AttachComponent(new MobSystem());
 
         TagsSaveLoader.LoadTags(World.WorldData.WorldFolderPath);

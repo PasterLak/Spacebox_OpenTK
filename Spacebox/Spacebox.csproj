@@ -29,6 +29,31 @@
 		<OutputType>WinExe</OutputType>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="('$(Configuration)' == 'Release' Or '$(Configuration)' == 'Final') And '$(RuntimeIdentifier)' != ''">
+		<PublishSingleFile>true</PublishSingleFile>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<LaunchScripts Condition="'$(RuntimeIdentifier)' != '' And $(RuntimeIdentifier.StartsWith('win'))">windows</LaunchScripts>
+		<LaunchScripts Condition="'$(RuntimeIdentifier)' != '' And !$(RuntimeIdentifier.StartsWith('win'))">unix</LaunchScripts>
+		<LaunchScripts Condition="'$(RuntimeIdentifier)' == '' And $([MSBuild]::IsOSPlatform('Windows'))">windows</LaunchScripts>
+		<LaunchScripts Condition="'$(LaunchScripts)' == ''">unix</LaunchScripts>
+	</PropertyGroup>
+
+	<ItemGroup Condition="$(RuntimeIdentifier.StartsWith('win'))">
+		<None Include="Build\AddAfterBuild\OpenAL32.dll" Link="OpenAL32.dll" Visible="false">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemDefinitionGroup>
+		<Content>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		</Content>
+	</ItemDefinitionGroup>
+
 	<PropertyGroup Condition="'$(Configuration)' != 'Release'">
 		<OutputType>Exe</OutputType>
 	</PropertyGroup>
@@ -59,10 +84,15 @@
 		<Content Include="Resources\Shaders\**\*.*">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-		<None Update="start-server.bat">
+		<None Update="serverconfig.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		</None>
+		<None Update="start-server.bat" Condition="'$(LaunchScripts)' == 'windows'">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<None Update="start-server.sh">
+		<None Update="start-server.sh;start.sh" Condition="'$(LaunchScripts)' == 'unix'">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<Content Include="GameSets\**\*.*">

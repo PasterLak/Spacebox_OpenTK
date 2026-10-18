@@ -197,7 +197,8 @@ namespace Spacebox.Game.Player
                 }
 
 
-                LoadEquipment(player, data.EquipmentSlots);
+                if (data.EquipmentSlots != null) LoadEquipment(player, data.EquipmentSlots);
+                else GameSetLoader.GiveStartEquipment(player);
                 player.HealthBar.StatsData.Value = data.Health;
                 player.PowerBar.StatsData.Value = data.Power;
                 player.OxygenBar.StatsData.Value = data.Oxygen;
@@ -271,7 +272,7 @@ namespace Spacebox.Game.Player
             public float[] SpawnPoint { get; set; }
             public List<SavedItemSlot> InventorySlots { get; set; }
             public List<SavedItemSlot> PanelSlots { get; set; }
-            public List<SavedItemSlot> EquipmentSlots { get; set; } = new List<SavedItemSlot>();
+            public List<SavedItemSlot> EquipmentSlots { get; set; }
 
             public PlayerStatistics Statistics { get; set; } = new PlayerStatistics();
         }

@@ -2,4 +2,7 @@
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DefineConstants>$(DefineConstants);PROFILING;ASSERTS</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Final'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
 </Project>

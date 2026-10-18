@@ -9,6 +9,7 @@ using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Resource;
 using Spacebox.GUI;
+using Spacebox.Network;
 using System;
 using System.Linq;
 using System.Numerics;
@@ -20,7 +21,7 @@ namespace Spacebox.Game.GUI
         private static AnalyzerBlock analyzerBlock;
         private static SpaceEntity currentEntity;
         private static string blockName = "Analyzer";
-        private static readonly Random random = new Random();
+        private static bool _wasScanning;
 
         private static bool _hasPower = false;
         private static bool _wasVisible = false;
@@ -115,27 +116,25 @@ namespace Spacebox.Game.GUI
             if (currentEntity.Mass == _lastCheckedMass) return;
 
             _lastCheckedMass = currentEntity.Mass;
-            _lastBlockCount = 0;
+            _lastBlockCount = AnalyzerScanner.CountBlocks(currentEntity);
+        }
 
-            foreach (var chunk in currentEntity.Chunks)
+        private static void UpdateScanSounds()
+        {
+            bool isScanning = analyzerBlock.IsScanning;
+            if (isScanning == _wasScanning) return;
+
+            if (isScanning)
             {
-                if (chunk.IsDisposed) continue;
-
-                for (int x = 0; x < Chunk.Size; x++)
-                {
-                    for (int y = 0; y < Chunk.Size; y++)
-                    {
-                        for (int z = 0; z < Chunk.Size; z++)
-                        {
-                            var block = chunk.Blocks[x, y, z];
-                            if (block != null && block.Id != 0)
-                            {
-                                _lastBlockCount++;
-                            }
-                        }
-                    }
-                }
+                if (scanSound != null && !scanSound.IsPlaying) scanSound.Play();
             }
+            else
+            {
+                scanSound?.Stop();
+                if (analyzerBlock.ScanComplete) finishSound?.Play();
+            }
+
+            _wasScanning = isScanning;
         }
 
         public static void OnGUI()
@@ -147,13 +146,7 @@ namespace Spacebox.Game.GUI
                 if (isVisible)
                 {
                     openSound?.Play();
-                    if (analyzerBlock != null && analyzerBlock.IsScanning)
-                    {
-                        if (scanSound != null && !scanSound.IsPlaying)
-                        {
-                            scanSound.Play();
-                        }
-                    }
+                    _wasScanning = false;
                 }
                 else
                 {
@@ -173,6 +166,7 @@ namespace Spacebox.Game.GUI
 
             CheckPower();
             CountBlocksIfMassChanged();
+            UpdateScanSounds();
 
             var io = ImGui.GetIO();
             var displaySize = io.DisplaySize;
@@ -215,9 +209,9 @@ namespace Spacebox.Game.GUI
                 ImGui.SetCursorPosX(padding);
                 ImGui.TextWrapped("Scanning allows determining the approximate composition of the asteroid.");
 
-                float totalScanSeconds = (_lastBlockCount / 1000f) * analyzerBlock.TimePer1000Blocks;
-                if (totalScanSeconds <= analyzerBlock.TimePer1000Blocks) totalScanSeconds = analyzerBlock.TimePer1000Blocks;
-                long totalTicksNeeded = (long)(totalScanSeconds * 20f);
+                float totalScanSeconds = analyzerBlock.IsScanning && analyzerBlock.ScanDurationTicks > 0
+                    ? analyzerBlock.ScanDurationTicks / 20f
+                    : AnalyzerScanner.GetScanSeconds(analyzerBlock, _lastBlockCount);
 
                 ImGui.SetCursorPosY(ImGui.GetCursorPosY() + windowHeight * 0.01f);
                 ImGui.SetCursorPosX(padding);
@@ -246,14 +240,7 @@ namespace Spacebox.Game.GUI
                     }
                     else if (analyzerBlock.IsScanning)
                     {
-                        long currentAbsoluteTick = GameTime.Day * 24000L + GameTime.DayTick;
-                        float progress = (currentAbsoluteTick - analyzerBlock.ScanStartAbsoluteTick) / (float)totalTicksNeeded;
-
-                        if (progress >= 1f)
-                        {
-                            progress = 1f;
-                            CompleteScan();
-                        }
+                        float progress = analyzerBlock.Progress;
 
                         string scanText = "Scanning in progress...";
                         float textWidth = ImGui.CalcTextSize(scanText).X;
@@ -366,10 +353,7 @@ namespace Spacebox.Game.GUI
                         if (ImGui.Button("Cancel Scan", new Vector2(totalBtnWidth, buttonHeight)))
                         {
                             clickSound?.Play();
-                            scanSound?.Stop();
-                            analyzerBlock.IsScanning = false;
-                            analyzerBlock.ScanStartAbsoluteTick = 0;
-                            if (analyzerBlock.chunk != null) analyzerBlock.chunk.IsModified = true;
+                            AnalyzerNetwork.Request(analyzerBlock, AnalyzerAction.Cancel);
                         }
                     }
                     else if (analyzerBlock.ScanComplete)
@@ -380,15 +364,7 @@ namespace Spacebox.Game.GUI
                         if (ImGui.Button("Rescan", new Vector2(btnWidth, buttonHeight)))
                         {
                             clickSound?.Play();
-                            if (scanSound != null && !scanSound.IsPlaying)
-                            {
-                                scanSound.Play();
-                            }
-                            analyzerBlock.ScanComplete = false;
-                            analyzerBlock.IsScanning = true;
-                            analyzerBlock.ScanStartAbsoluteTick = GameTime.Day * 24000L + GameTime.DayTick;
-                            analyzerBlock.CachedMinerals.Clear();
-                            if (analyzerBlock.chunk != null) analyzerBlock.chunk.IsModified = true;
+                            AnalyzerNetwork.Request(analyzerBlock, AnalyzerAction.Start);
                         }
 
                         ImGui.SameLine();
@@ -396,10 +372,7 @@ namespace Spacebox.Game.GUI
                         if (ImGui.Button("Clear Data", new Vector2(btnWidth, buttonHeight)))
                         {
                             clickSound?.Play();
-                            analyzerBlock.ScanComplete = false;
-                            analyzerBlock.CachedMinerals.Clear();
-                            analyzerBlock.CachedMass = 0;
-                            if (analyzerBlock.chunk != null) analyzerBlock.chunk.IsModified = true;
+                            AnalyzerNetwork.Request(analyzerBlock, AnalyzerAction.Clear);
                         }
                     }
                     else
@@ -409,13 +382,7 @@ namespace Spacebox.Game.GUI
                         if (ImGui.Button("Scan Asteroid", new Vector2(totalBtnWidth, buttonHeight)))
                         {
                             clickSound?.Play();
-                            if (scanSound != null && !scanSound.IsPlaying)
-                            {
-                                scanSound.Play();
-                            }
-                            analyzerBlock.IsScanning = true;
-                            analyzerBlock.ScanStartAbsoluteTick = GameTime.Day * 24000L + GameTime.DayTick;
-                            if (analyzerBlock.chunk != null) analyzerBlock.chunk.IsModified = true;
+                            AnalyzerNetwork.Request(analyzerBlock, AnalyzerAction.Start);
                         }
                     }
 
@@ -424,62 +391,6 @@ namespace Spacebox.Game.GUI
             }
             ImGui.End();
             ImGui.PopStyleVar();
-        }
-
-        private static void CompleteScan()
-        {
-            scanSound?.Stop();
-            finishSound?.Play();
-            analyzerBlock.IsScanning = false;
-            analyzerBlock.ScanComplete = true;
-
-            if (analyzerBlock.chunk != null)
-            {
-                analyzerBlock.chunk.IsModified = true;
-            }
-
-            analyzerBlock.CachedMass = currentEntity.Mass;
-
-            analyzerBlock.CachedMinerals.Clear();
-            var exactCounts = new Dictionary<short, int>();
-
-            foreach (var chunk in currentEntity.Chunks)
-            {
-                if (chunk.IsDisposed) continue;
-
-                for (int x = 0; x < Chunk.Size; x++)
-                {
-                    for (int y = 0; y < Chunk.Size; y++)
-                    {
-                        for (int z = 0; z < Chunk.Size; z++)
-                        {
-                            var block = chunk.Blocks[x, y, z];
-                            if (block != null && block is MineralBlock)
-                            {
-                                if (!exactCounts.ContainsKey(block.Id))
-                                    exactCounts[block.Id] = 0;
-
-                                exactCounts[block.Id]++;
-                            }
-                        }
-                    }
-                }
-            }
-
-            float deviation = analyzerBlock.DeviationPercentage / 100f;
-
-            foreach (var kvp in exactCounts)
-            {
-                double mineralMultiplier = deviation == 0f ? 1.0 : 1.0 + (random.NextDouble() * 2.0 - 1.0) * deviation;
-                int estimatedCount = (int)(kvp.Value * mineralMultiplier);
-
-                if (estimatedCount < 0) estimatedCount = 0;
-
-                if (estimatedCount > 0)
-                {
-                    analyzerBlock.CachedMinerals[kvp.Key] = estimatedCount;
-                }
-            }
         }
 
         public static void Dispose()

@@ -102,6 +102,7 @@ namespace Spacebox.Game.Generation
                 if (TagManager.Instance != null)
                 {
                     tag = TagManager.Instance.CreateTag("", CenterOfMassWorld, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
+                    tag.Category = GUI.Tag.TagCategory.Entity;
                 }
             });
 
@@ -833,7 +834,7 @@ namespace Spacebox.Game.Generation
             else
             {
                 StringBuilder.Append(dis).Append(" m");
-                if (Mass > 0)
+                if (Mass > 0 && TagManager.Instance?.Radar?.ShowMass == true)
                 {
                     StringBuilder.Append("\n")
                       .Append(_entityMassString)
@@ -848,6 +849,7 @@ namespace Spacebox.Game.Generation
             else if (TagManager.Instance != null)
             {
                 tag = TagManager.Instance.CreateTag(StringBuilder.ToString(), CenterOfMassWorld, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
+                tag.Category = GUI.Tag.TagCategory.Entity;
             }
 
             StringBuilder.Clear();

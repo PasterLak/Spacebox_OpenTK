@@ -9,6 +9,10 @@ public class PlayerEquipment
 
     public int HealthBonus { get; private set; }
     public int PowerBonus { get; private set; }
+    public EquipmentItem? FlashlightItem { get; private set; }
+    public EquipmentItem? RadarItem { get; private set; }
+    public FlashlightSettings? Flashlight => FlashlightItem?.Flashlight;
+    public RadarSettings? Radar => RadarItem?.Radar;
 
     public PlayerEquipment()
     {
@@ -30,10 +34,43 @@ public class PlayerEquipment
         return Storage.GetSlot((int)type, 0);
     }
 
+    public bool TryEquip(ItemSlot source)
+    {
+        if (source == null || !source.HasItem || source.Item is not EquipmentItem equipment) return false;
+
+        var target = GetSlot(equipment.Slot);
+        if (target == source) return false;
+
+        if (!target.HasItem)
+        {
+            target.SetData(source.Item, source.Count);
+            source.Clear();
+            return true;
+        }
+
+        if (target.Item.Id == source.Item.Id) return false;
+
+        source.SwapWith(target);
+        return true;
+    }
+
+    public bool TryEquipIfEmpty(Item item)
+    {
+        if (item is not EquipmentItem equipment) return false;
+
+        var target = GetSlot(equipment.Slot);
+        if (target.HasItem) return false;
+
+        target.SetData(item, 1);
+        return true;
+    }
+
     private void Recalculate()
     {
         int health = 0;
         int power = 0;
+        EquipmentItem? flashlight = null;
+        EquipmentItem? radar = null;
 
         for (int i = 0; i < _slotTypes.Length; i++)
         {
@@ -42,13 +79,17 @@ public class PlayerEquipment
             {
                 health += equipment.HealthBonus;
                 power += equipment.PowerBonus;
+                if (equipment.Flashlight != null) flashlight = equipment;
+                if (equipment.Radar != null) radar = equipment;
             }
         }
 
-        if (health == HealthBonus && power == PowerBonus) return;
+        if (health == HealthBonus && power == PowerBonus && flashlight == FlashlightItem && radar == RadarItem) return;
 
         HealthBonus = health;
         PowerBonus = power;
+        FlashlightItem = flashlight;
+        RadarItem = radar;
         OnChanged?.Invoke();
     }
 

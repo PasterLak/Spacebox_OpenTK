@@ -5,6 +5,7 @@ $version = "0.1.2 alpha"
 $configuration = "Final"
 $runtime = "win-x64"
 $framework = "net8.0"
+$selfContained = $true
 $finalFolderName = "Spacebox_v$version"
 # ========================
 
@@ -28,7 +29,6 @@ $projectRoot = Find-ProjectRoot $scriptDir
 $projectFile = Join-Path $projectRoot "Spacebox.csproj"
 $publishRoot = Join-Path $projectRoot "bin\$configuration\$framework\$runtime"
 $publishDir = Join-Path $publishRoot "publish"
-$openAlDll = Join-Path $projectRoot "Build\AddAfterBuild\OpenAL32.dll"
 $finalDir = Join-Path $publishRoot $finalFolderName
 $zipPath = Join-Path $publishRoot "$finalFolderName.zip"
 
@@ -42,7 +42,8 @@ New-Item -Path "$publishDir" -ItemType Directory -Force | Out-Null
 Write-Host "Publishing project..."
 # -p:OutputType=WinExe
 $logTemp = Join-Path $env:TEMP "spacebox_build_log.txt"
-dotnet publish $projectFile -c $configuration -r $runtime --no-self-contained *> $logTemp
+$selfContainedArg = if ($selfContained) { "--self-contained" } else { "--no-self-contained" }
+dotnet publish $projectFile -c $configuration -r $runtime $selfContainedArg *> $logTemp
 
 
 
@@ -50,14 +51,6 @@ dotnet publish $projectFile -c $configuration -r $runtime --no-self-contained *>
 if (-Not (Test-Path $publishDir)) {
     Write-Error "Publish folder not found: $publishDir"
     exit 1
-}
-
-# Step 2: Copy OpenAL32.dll
-if (Test-Path $openAlDll) {
-    Copy-Item $openAlDll -Destination $publishDir -Force
-    Write-Host "Copied OpenAL32.dll to $publishDir"
-} else {
-    Write-Warning "OpenAL32.dll not found at $openAlDll"
 }
 
 # Step 3: Remove everything in publishRoot except publish folder
@@ -98,9 +91,14 @@ if (Test-Path $zipPath) {
     Remove-Item $zipPath -Force
 }
 
-$extraData = Join-Path $projectRoot "Build\AddAfterBuild\Install_if_not_working.zip"
-Compress-Archive -Path $finalDir, $extraData -DestinationPath $zipPath
-Write-Host "Created archive with folder and data.zip: $zipPath"
+if ($selfContained) {
+    Compress-Archive -Path $finalDir -DestinationPath $zipPath
+    Write-Host "Created archive: $zipPath"
+} else {
+    $extraData = Join-Path $projectRoot "Build\AddAfterBuild\Install_if_not_working.zip"
+    Compress-Archive -Path $finalDir, $extraData -DestinationPath $zipPath
+    Write-Host "Created archive with folder and data.zip: $zipPath"
+}
 
 
 # Step 6: Open folder

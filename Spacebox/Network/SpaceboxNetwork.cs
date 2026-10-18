@@ -22,6 +22,7 @@ public static class SpaceboxNetwork
         Containers.ContainerNetwork.Register(network);
         Containers.StorageNameNetwork.Register(network);
         BlockStateNetwork.Register(network);
+        AnalyzerNetwork.Register(network);
         GravityConfigNetwork.Register(network);
         DoorNetwork.Register(network);
         ExplosionNetwork.Register(network);

@@ -247,6 +247,8 @@ namespace Spacebox.Game.GUI
             }
             else if (IsHolding<ConsumableItem>())
                 player.SetInteraction(new InteractionConsumeItem(SelectedSlot));
+            else if (IsHolding<EquipmentItem>())
+                player.SetInteraction(new InteractionEquipItem(SelectedSlot));
             else if (IsHolding<MobSpawnerItem>())
                 player.SetInteraction(new InteractionSpawnMob(SelectedSlot));
             else if (IsHolding<EraserToolItem>())
@@ -383,7 +385,10 @@ namespace Spacebox.Game.GUI
             if (slot.HasItem)
             {
                 if (Input.IsAction("storage_item_quick_transfer"))
-                    slot.TryMoveItemToConnectedStorage(out var _);
+                {
+                    if (Player == null || !Player.Equipment.TryEquip(slot))
+                        slot.TryMoveItemToConnectedStorage(out var _);
+                }
                 if (Input.IsKey(Keys.LeftAlt))
                     slot.Split();
                 if (Input.IsAction("storage_item_delete"))

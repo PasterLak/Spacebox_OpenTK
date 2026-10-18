@@ -813,7 +813,12 @@
       "Active": {
         "All": "gravitySide",
         "Up": "gravityTop",
-        "Down": "gravityTop"
+        "Down": "gravityBottom"
+      },
+      "Inactive": {
+        "All": "gravitySideOff",
+        "Up": "gravityTopOff",
+        "Down": "gravityBottomOff"
       }
     },
     "Sounds": {
@@ -981,6 +986,11 @@
       "Active": {
         "All": "spawnerSide",
         "Up": "spawnerTop",
+        "Down": "bottom"
+      },
+      "Inactive": {
+        "All": "spawnerSideOff",
+        "Up": "spawnerTopOff",
         "Down": "bottom"
       }
     }

@@ -13,6 +13,7 @@ public class Tag
     public Alignment TextAlignment { get; set; }
     public uint ColorUint { get; private set; }
     public bool Visible { get; set; }
+    public TagCategory Category { get; set; }
 
     private static float MinFontSize;
     private static float MaxFontSize;
@@ -30,6 +31,7 @@ public class Tag
         Color = color;
         IsStatic = isStatic;
         TextAlignment = alignment;
+        Category = isStatic ? TagCategory.Waypoint : TagCategory.General;
         Visible = true;
         UpdateColorUint();
     }
@@ -43,6 +45,7 @@ public class Tag
         TextAlignment = Alignment.Center;
         ColorUint = 0;
         Visible = false;
+        Category = TagCategory.General;
     }
 
     private void UpdateColorUint()
@@ -82,6 +85,13 @@ public class Tag
             Alignment.Center => screenPosition - textSize * 0.5f,
             _ => screenPosition - textSize * 0.5f
         };
+    }
+
+    public enum TagCategory : byte
+    {
+        General,
+        Entity,
+        Waypoint
     }
 
     public enum Alignment : byte
