@@ -15,6 +15,7 @@ namespace Spacebox.Game.Player
         protected ModelRendererComponent AstTank;
 
         public bool HasOxygen { get; set; } = true;
+        public Armor.ArmorRenderer ArmorVisual { get; private set; }
         public Flashlight Flashlight { get; private set; }
 
         protected HandItemVisualizer HandVisualizer;
@@ -57,6 +58,7 @@ namespace Spacebox.Game.Player
             AstBody = AttachComponent(new ModelRendererComponent(new Model(meshBody, mat)));
             AstHelmet = AttachComponent(new ModelRendererComponent(new Model(meshHelmet, mat)));
             AstTank = AttachComponent(new ModelRendererComponent(new Model(meshTank, mat)));
+            ArmorVisual = AttachComponent(new Armor.ArmorRenderer());
             AttachComponent(new Effects.BlockLightReceiver());
 
             HandVisualizer = new HandItemVisualizer(this);
@@ -123,6 +125,7 @@ namespace Spacebox.Game.Player
             if (AstBody != null) AstBody.Enabled = showModel;
             if (AstHelmet != null) AstHelmet.Enabled = showModel;
             if (AstTank != null) AstTank.Enabled = showModel && HasOxygen;
+            if (ArmorVisual != null) ArmorVisual.Visible = showModel;
         }
 
         public void TakeDamage(Projectile projectile)

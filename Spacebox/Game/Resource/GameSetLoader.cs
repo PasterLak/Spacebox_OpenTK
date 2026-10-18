@@ -973,10 +973,20 @@ public static class GameSetLoader
             PowerBonus = data.Power,
             Flashlight = data.Flashlight,
             Radar = data.Radar,
+            ArmorModelPath = ResolveGameSetFile(data.ArmorModel),
+            ArmorTexturePath = ResolveGameSetFile(data.ArmorTexture),
         };
         GameAssetsRegister.RegisterItem(equipmentItem, data.Sprite);
 
         return equipmentItem;
+    }
+
+    private static string ResolveGameSetFile(string relativePath)
+    {
+        if (string.IsNullOrWhiteSpace(relativePath) || ModInfo == null) return "";
+
+        string path = Path.Combine(ModInfo.ModPath, relativePath);
+        return File.Exists(path) ? path : "";
     }
 
     private static Item RegisterItem(ItemJSON data, string id)

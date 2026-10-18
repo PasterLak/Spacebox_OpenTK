@@ -124,6 +124,10 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 - AI, spawning and despawning run only on the server; replicas only animate. Mob changes visible to clients go through `IMobLink` (`MobNetwork`).
 - Spawner items: `MobSpawnerItem` (`Type: "mob_spawner"`), `InteractionSpawnMob`, `MobSpawnNetwork`.
 
+## Armor visuals
+
+- Equipment JSON `ArmorModel`/`ArmorTexture` (GameSet-relative, resolved by `GameSetLoader`; missing files = no visual). `ArmorRenderer` (component on every `Astronaut`, does not own the shared meshes) draws one piece per equipment slot, follows body visibility and block light. Local equipment changes update it directly; remote players get the slot item ids from `AstronautNetwork`. Meshes must match the astronaut pose (`Astronaut_Body_Fly`, `Astronaut_Helmet_Closed`) and the 64×64 skin UV layout.
+
 ## Item transport
 
 - `PipeBlock` (type `pipe`, settings `PipeBlockData`) moves items between neighbours through `IItemTransferEndpoint` (`Game/Logistics/`). A new block that should work with pipes implements `IItemTransferEndpoint` itself or gets an adapter registered with `ItemTransferEndpoints.Register`; existing adapters: `StorageEndpoint` (storages, filtered container slots) and `MachineEndpoint` (`ResourceProcessingBlock`). Transfers run on the server only.

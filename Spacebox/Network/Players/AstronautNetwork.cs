@@ -18,6 +18,8 @@ public sealed class AstronautNetwork : NetworkTransform
     private readonly NetworkVariable<bool> _isVulnerable;
     private readonly NetworkVariable<short> _flashlightItem;
     private readonly NetworkVariable<bool> _hasOxygen;
+    private readonly NetworkVariable<short>[] _equipment;
+    private static readonly EquipmentSlotType[] EquipmentSlots = Enum.GetValues<EquipmentSlotType>();
 
     public static AstronautNetwork Local { get; private set; }
 
@@ -35,6 +37,8 @@ public sealed class AstronautNetwork : NetworkTransform
         _isVulnerable = CreateVariable(false, NetworkWritePermission.Owner);
         _flashlightItem = CreateVariable(NoItem, NetworkWritePermission.Owner);
         _hasOxygen = CreateVariable(true, NetworkWritePermission.Owner);
+        _equipment = new NetworkVariable<short>[EquipmentSlots.Length];
+        for (int i = 0; i < _equipment.Length; i++) _equipment[i] = CreateVariable(NoItem, NetworkWritePermission.Owner);
     }
 
     public override void OnUpdate()
@@ -46,6 +50,7 @@ public sealed class AstronautNetwork : NetworkTransform
             _isVulnerable.Value = local.GameMode == GameMode.Survival;
             _flashlightItem.Value = local.ActiveFlashlightItem?.Id ?? NoItem;
             _hasOxygen.Value = local.HasOxygen;
+            WriteEquipment(local);
         }
     }
 
@@ -77,6 +82,12 @@ public sealed class AstronautNetwork : NetworkTransform
         _flashlightItem.Changed += (_, value) => ApplyFlashlight(astronaut, value);
         _hasOxygen.Changed += (_, value) => astronaut.HasOxygen = value;
         astronaut.HasOxygen = _hasOxygen.Value;
+        for (int i = 0; i < _equipment.Length; i++)
+        {
+            var slot = EquipmentSlots[i];
+            _equipment[i].Changed += (_, value) => ApplyEquipment(astronaut, slot, value);
+            ApplyEquipment(astronaut, slot, _equipment[i].Value);
+        }
         ApplyFlashlight(astronaut, _flashlightItem.Value);
         ApplyAliveVisual(astronaut, _isAlive.Value);
         astronaut.Flashlight.Enabled = _flashlight.Value;
@@ -129,6 +140,20 @@ public sealed class AstronautNetwork : NetworkTransform
     {
         var settings = GetItem(itemId) is EquipmentItem equipment ? equipment.Flashlight : null;
         astronaut.Flashlight.Apply(settings ?? FlashlightSettings.Default);
+    }
+
+    private void WriteEquipment(LocalAstronaut local)
+    {
+        for (int i = 0; i < _equipment.Length; i++)
+        {
+            var slot = local.Equipment.GetSlot(EquipmentSlots[i]);
+            _equipment[i].Value = slot.HasItem ? slot.Item.Id : NoItem;
+        }
+    }
+
+    private static void ApplyEquipment(Astronaut astronaut, EquipmentSlotType slot, short itemId)
+    {
+        astronaut.ArmorVisual?.Set(slot, GetItem(itemId) as EquipmentItem);
     }
 
     private void OnLocalFallImpact(int damage)

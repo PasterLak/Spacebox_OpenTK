@@ -196,6 +196,7 @@ namespace Spacebox.Game.Player
 
             Equipment = new PlayerEquipment();
             Equipment.Storage.ConnectStorage(Inventory);
+            Equipment.Storage.OnDataWasChanged += _ => ApplyArmorVisuals();
             _equipmentStats = new EquipmentStatsBinder(Equipment, HealthBar.StatsData, PowerBar.StatsData);
 
             _axes = new Axes(Position, 0.01f);
@@ -222,6 +223,14 @@ namespace Spacebox.Game.Player
             _flashlightBinder?.Apply();
             PanelUI.ResetLastSelected();
             PanelUI.SetSelectedSlot(0);
+        }
+
+        private void ApplyArmorVisuals()
+        {
+            if (ArmorVisual == null) return;
+
+            foreach (var slot in Enum.GetValues<EquipmentSlotType>())
+                ArmorVisual.Set(slot, Equipment.GetSlot(slot) is { HasItem: true, Item: EquipmentItem item } ? item : null);
         }
 
         public override void Update()

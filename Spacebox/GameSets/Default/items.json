@@ -618,7 +618,9 @@
         "Category": "equipment",
         "Sprite": "aluminium_helmet",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_helmet.obj",
+        "ArmorTexture": "Models/Armor/armor_aluminium.png"
     },
     {
         "ID": "aluminium_chest",
@@ -630,7 +632,9 @@
         "Category": "equipment",
         "Sprite": "aluminium_chest",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_chest.obj",
+        "ArmorTexture": "Models/Armor/armor_aluminium.png"
     },
     {
         "ID": "aluminium_shoulders",
@@ -642,7 +646,9 @@
         "Category": "equipment",
         "Sprite": "aluminium_shoulders",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_shoulders.obj",
+        "ArmorTexture": "Models/Armor/armor_aluminium.png"
     },
     {
         "ID": "aluminium_arms",
@@ -654,7 +660,9 @@
         "Category": "equipment",
         "Sprite": "aluminium_arms",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_arms.obj",
+        "ArmorTexture": "Models/Armor/armor_aluminium.png"
     },
     {
         "ID": "aluminium_legs",
@@ -666,7 +674,9 @@
         "Category": "equipment",
         "Sprite": "aluminium_legs",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_legs.obj",
+        "ArmorTexture": "Models/Armor/armor_aluminium.png"
     },
     {
         "ID": "aluminium_boots",
@@ -678,7 +688,9 @@
         "Category": "equipment",
         "Sprite": "aluminium_boots",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_boots.obj",
+        "ArmorTexture": "Models/Armor/armor_aluminium.png"
     },
     {
         "ID": "iron_helmet",
@@ -690,7 +702,9 @@
         "Category": "equipment",
         "Sprite": "iron_helmet",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_helmet.obj",
+        "ArmorTexture": "Models/Armor/armor_iron.png"
     },
     {
         "ID": "iron_chest",
@@ -702,7 +716,9 @@
         "Category": "equipment",
         "Sprite": "iron_chest",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_chest.obj",
+        "ArmorTexture": "Models/Armor/armor_iron.png"
     },
     {
         "ID": "iron_shoulders",
@@ -714,7 +730,9 @@
         "Category": "equipment",
         "Sprite": "iron_shoulders",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_shoulders.obj",
+        "ArmorTexture": "Models/Armor/armor_iron.png"
     },
     {
         "ID": "iron_arms",
@@ -726,7 +744,9 @@
         "Category": "equipment",
         "Sprite": "iron_arms",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_arms.obj",
+        "ArmorTexture": "Models/Armor/armor_iron.png"
     },
     {
         "ID": "iron_legs",
@@ -738,7 +758,9 @@
         "Category": "equipment",
         "Sprite": "iron_legs",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_legs.obj",
+        "ArmorTexture": "Models/Armor/armor_iron.png"
     },
     {
         "ID": "iron_boots",
@@ -750,7 +772,9 @@
         "Category": "equipment",
         "Sprite": "iron_boots",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_boots.obj",
+        "ArmorTexture": "Models/Armor/armor_iron.png"
     },
     {
         "ID": "titanium_helmet",
@@ -762,7 +786,9 @@
         "Category": "equipment",
         "Sprite": "titanium_helmet",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_helmet.obj",
+        "ArmorTexture": "Models/Armor/armor_titanium.png"
     },
     {
         "ID": "titanium_chest",
@@ -774,7 +800,9 @@
         "Category": "equipment",
         "Sprite": "titanium_chest",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_chest.obj",
+        "ArmorTexture": "Models/Armor/armor_titanium.png"
     },
     {
         "ID": "titanium_shoulders",
@@ -786,7 +814,9 @@
         "Category": "equipment",
         "Sprite": "titanium_shoulders",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_shoulders.obj",
+        "ArmorTexture": "Models/Armor/armor_titanium.png"
     },
     {
         "ID": "titanium_arms",
@@ -798,7 +828,9 @@
         "Category": "equipment",
         "Sprite": "titanium_arms",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_arms.obj",
+        "ArmorTexture": "Models/Armor/armor_titanium.png"
     },
     {
         "ID": "titanium_legs",
@@ -810,7 +842,9 @@
         "Category": "equipment",
         "Sprite": "titanium_legs",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_legs.obj",
+        "ArmorTexture": "Models/Armor/armor_titanium.png"
     },
     {
         "ID": "titanium_boots",
@@ -822,7 +856,9 @@
         "Category": "equipment",
         "Sprite": "titanium_boots",
         "MaxStack": 1,
-        "ModelDepth": 3.0
+        "ModelDepth": 3.0,
+        "ArmorModel": "Models/Armor/armor_boots.obj",
+        "ArmorTexture": "Models/Armor/armor_titanium.png"
     },
     {
         "ID": "aluminium_flashlight",

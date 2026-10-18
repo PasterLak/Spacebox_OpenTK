@@ -66,6 +66,7 @@ namespace Spacebox.Game.Player
             if (AstBody != null) AstBody.Enabled = _isAliveVisual;
             if (AstHelmet != null) AstHelmet.Enabled = _isAliveVisual;
             if (AstTank != null) AstTank.Enabled = _isAliveVisual && HasOxygen;
+            if (ArmorVisual != null) ArmorVisual.Visible = _isAliveVisual;
         }
     }
 }

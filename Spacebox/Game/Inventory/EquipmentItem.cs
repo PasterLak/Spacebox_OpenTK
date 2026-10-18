@@ -7,6 +7,8 @@ public class EquipmentItem : Item
     public int PowerBonus;
     public FlashlightSettings? Flashlight;
     public RadarSettings? Radar;
+    public string ArmorModelPath = "";
+    public string ArmorTexturePath = "";
 
     public EquipmentItem(string name, float modelDepth) : base(1, name, modelDepth)
     {

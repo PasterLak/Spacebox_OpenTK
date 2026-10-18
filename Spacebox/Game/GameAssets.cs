@@ -321,6 +321,7 @@ namespace Spacebox.Game
             LootConfig = null;
             Projectiles.Clear();
             Mobs.Clear();
+            Player.Armor.ArmorLibrary.Clear();
             Blocks.Clear();
             Items.Clear();
             BlocksStr.Clear();

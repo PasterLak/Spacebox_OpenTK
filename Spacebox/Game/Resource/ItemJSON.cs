@@ -39,6 +39,8 @@ public class EquipmentJSON : ItemJSON
     public int Power { get; set; } = 0;
     public FlashlightSettings? Flashlight { get; set; }
     public RadarSettings? Radar { get; set; }
+    public string ArmorModel { get; set; } = "";
+    public string ArmorTexture { get; set; } = "";
 }
 
 public class ConsumableItemJSON : ItemJSON
