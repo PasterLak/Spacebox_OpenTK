@@ -12,6 +12,7 @@ using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
 using Spacebox.GUI;
 using Spacebox.Game.Physics.Explosions;
+using Engine.Networking;
 
 
 namespace Spacebox.Game
@@ -21,7 +22,7 @@ namespace Spacebox.Game
         public void TakeDamage(Projectile projectile);
 
     }
-    public class Spacer : Node3D, IDamageable, IDrillable, IExplosionDamageable
+    public class Spacer : Node3D, IDamageable, IDrillable, IExplosionDamageable, IPushable, IContainer
     {
         public Storage Storage { get; private set; }
 
@@ -37,6 +38,10 @@ namespace Spacebox.Game
         private PlayerEffects _effects;
         private bool _lootWasGenerated = false;
         private float _pendingDrillDamage;
+
+        public ISpacerLink Link { get; set; }
+        private bool IsReplica => Link != null && Link.IsReplica;
+        public string ContainerWindowId => "storage";
 
         public Spacer(Vector3 pos, PhysicsWorld physics = null)
         {
@@ -76,17 +81,24 @@ namespace Spacebox.Game
 
         }
 
+        public void MakeReplica()
+        {
+            _body.IsKinematic = true;
+            _body.Velocity = Vector3.Zero;
+            _animator = null;
+        }
+
         public void TakeDamage(Projectile projectile)
         {
-            _health.Decrement(projectile.Parameters.Damage);
-            _effects.PlayEffect(PlayerEffectType.Damage);
+            if (IsReplica) return;
+            ApplyDamage(projectile.Parameters.Damage);
         }
 
 
         public void TakeExplosionDamage(int damage)
         {
-            _health.Decrement(damage);
-            _effects.PlayEffect(PlayerEffectType.Damage);
+            if (IsReplica) return;
+            ApplyDamage(damage);
         }
 
         public void TakeDrillDamage(float damage)
@@ -96,8 +108,53 @@ namespace Spacebox.Game
             if (wholeDamage <= 0) return;
 
             _pendingDrillDamage -= wholeDamage;
-            _health.Decrement(wholeDamage);
+            if (IsReplica) Link.SendDrillDamage(wholeDamage);
+            else ApplyDamage(wholeDamage);
+        }
+
+        public void ApplyDamage(int damage)
+        {
+            if (damage <= 0 || _health.Value <= 0) return;
+
+            if (Link != null) Link.BroadcastDamageEffect();
+            else PlayDamageEffect();
+
+            _health.Decrement(damage);
+        }
+
+        public void PlayDamageEffect()
+        {
             _effects.PlayEffect(PlayerEffectType.Damage);
+        }
+
+        public void Push(Vector3 normal, float targetSpeed)
+        {
+            if (IsReplica) Link.SendPush(normal, targetSpeed);
+            else _body.Push(normal, targetSpeed);
+        }
+
+        public IReadOnlyList<Storage> GetContainerStorages()
+        {
+            if (!_lootWasGenerated && !IsReplica && World.CurrentSector != null) GenerateLoot();
+            return [Storage];
+        }
+
+        public void WriteContainerState(NetWriter writer)
+        {
+        }
+
+        public void ReadContainerState(NetReader reader)
+        {
+        }
+
+        public void OnContainerChangedByNetwork()
+        {
+        }
+
+        public void Remove()
+        {
+            DetachComponent(_body);
+            Parent?.RemoveChild(this);
         }
 
         private void GenerateLoot()
@@ -115,8 +172,9 @@ namespace Spacebox.Game
 
             World.DropEffectManager?.DropStorage(Storage, Position);
             Storage.Clear();
-            DetachComponent(_body);
-            Parent?.RemoveChild(this);
+
+            if (Link != null) Link.NotifyKilled();
+            else Remove();
         }
         private void AddItems(Storage storage)
         {
@@ -152,9 +210,10 @@ namespace Spacebox.Game
 
                     if (Input.IsActionDown("use"))
                     {
-                        if (!_lootWasGenerated)
+                        if (!_lootWasGenerated && !IsReplica)
                             GenerateLoot();
                         StorageUI.OpenStorage(Storage, cam);
+                        Link?.NotifyOpened();
                         CenteredText.Hide();
                     }
                 }

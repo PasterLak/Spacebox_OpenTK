@@ -17,10 +17,12 @@ public sealed class NetworkSession : IDisposable
 
     private readonly LocalAstronaut _localPlayer;
     private readonly PlayerSpawnService _playerSpawner;
+    private readonly Npc.SpacerSpawnService _spacerSpawner;
     private float _playerSyncTimer;
     private bool _disposed;
 
     public static NetworkSession Current { get; private set; }
+    public Npc.SpacerSpawnService Spacers => _spacerSpawner;
 
     public NetworkSession(Node3D root, LocalAstronaut localPlayer)
     {
@@ -30,6 +32,7 @@ public sealed class NetworkSession : IDisposable
         var network = NetworkManager.Instance;
         network.ConnectionKey = "Spacebox:" + Application.Version;
         _playerSpawner = new PlayerSpawnService(root, _localPlayer);
+        _spacerSpawner = new Npc.SpacerSpawnService(root);
 
         network.Messages.Register<JoinRequestMessage>(OnJoinRequest);
         network.Messages.Register<ClientReadyMessage>(OnClientReady);
@@ -87,6 +90,8 @@ public sealed class NetworkSession : IDisposable
         }
         Containers.ContainerNetwork.Update();
         BlockStateNetwork.Update();
+        TimeNetwork.Update();
+        SectorNetwork.Update();
         if (!NetworkManager.Instance.IsRemoteClient || _localPlayer == null) return;
 
         _playerSyncTimer += Time.Delta;
@@ -151,7 +156,9 @@ public sealed class NetworkSession : IDisposable
         Combat.CombatNetwork.Reset();
         Containers.ContainerNetwork.Reset();
         BlockStateNetwork.Clear();
+        SectorNetwork.Clear();
         _playerSpawner.Dispose();
+        _spacerSpawner.Dispose();
         PlayerRegistry.Clear();
 
         if (Current == this) Current = null;
@@ -197,7 +204,9 @@ public sealed class NetworkSession : IDisposable
             GameMode = (byte)info.GameMode,
             Day = GameTime.Day,
             Ticks = GameTime.DayTick,
-            PlayerJson = PlayerSaveLoadManager.ReadPlayerJson(World.WorldData.WorldFolderPath, name, false)
+            PlayerJson = PlayerSaveLoadManager.ReadPlayerJson(World.WorldData.WorldFolderPath, name, false),
+            GameSetHash = GameSetPackage.Hash,
+            GameSetFolder = GameSetPackage.FolderName
         });
 
         Debug.Log($"[Server] {name} is joining (peer {sender})");
@@ -219,6 +228,7 @@ public sealed class NetworkSession : IDisposable
 
         network.SendSpawnedObjectsTo(sender);
         DropNetwork.SendAllTo(sender);
+        TimeNetwork.SendTo(sender);
         player.PlayerObject = _playerSpawner.SpawnPlayer(sender, player.Name, player.SkinColor, Vector3.Zero, Quaternion.Identity);
         ChatService.Broadcast($"{player.Name} joined the game", Color4.Yellow);
     }

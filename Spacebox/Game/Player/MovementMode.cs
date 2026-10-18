@@ -422,7 +422,7 @@ public class MovementMode : GameModeBase
 
     private static void PushBody(SphereBody body, LocalAstronaut player, Vector3 playerVelocity)
     {
-        if (body.IsKinematic) return;
+        if (body.IsKinematic && body.Owner is not IPushable) return;
 
         Vector3 normal = body.Center - player.Position;
         if (normal.LengthSquared < 0.000001f) return;
@@ -432,9 +432,8 @@ public class MovementMode : GameModeBase
         if (playerSpeed <= 0f) return;
 
         float targetSpeed = playerSpeed * BodyPushFactor;
-        float bodySpeed = Vector3.Dot(body.Velocity, normal);
-        if (bodySpeed < targetSpeed)
-            body.Velocity += normal * (targetSpeed - bodySpeed);
+        if (body.Owner is IPushable pushable) pushable.Push(normal, targetSpeed);
+        else body.Push(normal, targetSpeed);
     }
 
     private bool ApplyVelocityDamage(float speed, LocalAstronaut player, CollideInfo collideInfo)

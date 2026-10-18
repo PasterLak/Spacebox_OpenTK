@@ -7,24 +7,37 @@ public readonly struct ContainerKey : IEquatable<ContainerKey>
 {
     public readonly long EntityId;
     public readonly Vector3i Cell;
+    public readonly bool IsObject;
 
-    public ContainerKey(long entityId, Vector3i cell)
+    public ContainerKey(long entityId, Vector3i cell) : this(entityId, cell, false)
+    {
+    }
+
+    private ContainerKey(long entityId, Vector3i cell, bool isObject)
     {
         EntityId = entityId;
         Cell = cell;
+        IsObject = isObject;
     }
+
+    public static ContainerKey ForObject(uint netId) => new ContainerKey(netId, Vector3i.Zero, true);
 
     public void Write(NetWriter writer)
     {
+        writer.Write(IsObject);
         writer.Write(EntityId);
         writer.Write(Cell);
     }
 
-    public static ContainerKey Read(NetReader reader) => new ContainerKey(reader.ReadLong(), reader.ReadVector3i());
+    public static ContainerKey Read(NetReader reader)
+    {
+        bool isObject = reader.ReadBool();
+        return new ContainerKey(reader.ReadLong(), reader.ReadVector3i(), isObject);
+    }
 
-    public bool Equals(ContainerKey other) => EntityId == other.EntityId && Cell == other.Cell;
+    public bool Equals(ContainerKey other) => IsObject == other.IsObject && EntityId == other.EntityId && Cell == other.Cell;
     public override bool Equals(object obj) => obj is ContainerKey other && Equals(other);
-    public override int GetHashCode() => HashCode.Combine(EntityId, Cell);
+    public override int GetHashCode() => HashCode.Combine(IsObject, EntityId, Cell);
 }
 
 public struct SlotState : IEquatable<SlotState>

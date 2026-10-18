@@ -24,6 +24,7 @@ public sealed class NetworkManager
     public NetworkSpawner Spawner { get; }
     public RpcSystem Rpcs { get; }
     public ReplicationSystem Replication { get; }
+    public NetTransferService Transfers { get; }
 
     public bool IsActive => Mode != NetworkMode.None;
     public bool IsServer => Mode == NetworkMode.Offline || Mode == NetworkMode.Host || Mode == NetworkMode.DedicatedServer;
@@ -47,6 +48,7 @@ public sealed class NetworkManager
         Spawner = new NetworkSpawner(this);
         Rpcs = new RpcSystem(this);
         Replication = new ReplicationSystem(this);
+        Transfers = new NetTransferService(this);
         Messages.Register<AssignPeerIdMessage>(OnAssignPeerId);
     }
 
@@ -152,6 +154,7 @@ public sealed class NetworkManager
         if (Mode == NetworkMode.None) return;
 
         _transport?.Poll();
+        Transfers.Update();
 
         _tickTimer += Time.Delta;
         float interval = 1f / MathF.Max(1f, TickRate);

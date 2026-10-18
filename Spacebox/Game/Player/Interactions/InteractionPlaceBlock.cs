@@ -354,9 +354,7 @@ public class InteractionPlaceBlock : InteractionMode
                     }
                     else
                     {
-                        var newEntity = World.CurrentSector.CreateNewEntity(entity.ToWorldSpace(selectorPosition));
-
-                        newEntity.CreateFirstBlock(newBlock);
+                        EntityCreationNetwork.PlaceNewEntity(World.CurrentSector, entity.ToWorldSpace(selectorPosition), newBlock);
                         player.PlayerStatistics.BlocksPlaced++;
                     }
 

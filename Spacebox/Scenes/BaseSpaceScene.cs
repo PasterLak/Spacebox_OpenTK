@@ -34,6 +34,7 @@ public struct SpaceSceneArgs
     public string skinColor = "Red";
 
     public bool SearchForGameSetInLocalFolder = true;
+    public string gameSetServerFolder = "";
     public SpaceSceneArgs() { }
 
     public override string ToString()

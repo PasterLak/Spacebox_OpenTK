@@ -13,7 +13,7 @@ public static class ContainerNetwork
     private static readonly ContainerClient _client = new ContainerClient();
     private static readonly Dictionary<int, Action<bool>> _takeCallbacks = new Dictionary<int, Action<bool>>();
     private static int _nextTakeRequest = 1;
-    private static IContainerBlock _localOpenBlock;
+    private static IContainer _localOpenBlock;
     private static ContainerKey _localOpenKey;
 
     public static void Register(NetworkManager network)
@@ -32,10 +32,22 @@ public static class ContainerNetwork
     {
         if (chunk?.SpaceEntity == null) return;
 
-        _localOpenBlock = block;
-        _localOpenKey = ContainerResolver.KeyFor(chunk, index);
+        Track(block, ContainerResolver.KeyFor(chunk, index));
+    }
 
-        if (NetworkManager.Instance.IsRemoteClient) _client.Open(block, _localOpenKey);
+    public static void OnInteract(IContainer container, NetworkObject networkObject)
+    {
+        if (networkObject == null || !networkObject.IsSpawned) return;
+
+        Track(container, ContainerKey.ForObject(networkObject.NetId));
+    }
+
+    private static void Track(IContainer container, ContainerKey key)
+    {
+        _localOpenBlock = container;
+        _localOpenKey = key;
+
+        if (NetworkManager.Instance.IsRemoteClient) _client.Open(container, key);
     }
 
     public static bool CanDropFrom(ItemSlot slot)

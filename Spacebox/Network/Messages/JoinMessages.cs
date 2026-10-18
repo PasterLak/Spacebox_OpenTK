@@ -36,6 +36,8 @@ public struct JoinAcceptedMessage : INetMessage
     public int Day;
     public int Ticks;
     public string PlayerJson;
+    public string GameSetHash;
+    public string GameSetFolder;
 
     public void Serialize(NetWriter writer)
     {
@@ -47,6 +49,8 @@ public struct JoinAcceptedMessage : INetMessage
         writer.Write(Day);
         writer.Write(Ticks);
         writer.Write(PlayerJson);
+        writer.Write(GameSetHash);
+        writer.Write(GameSetFolder);
     }
 
     public void Deserialize(NetReader reader)
@@ -59,6 +63,8 @@ public struct JoinAcceptedMessage : INetMessage
         Day = reader.ReadInt();
         Ticks = reader.ReadInt();
         PlayerJson = reader.ReadString();
+        GameSetHash = reader.ReadString();
+        GameSetFolder = reader.ReadString();
     }
 }
 

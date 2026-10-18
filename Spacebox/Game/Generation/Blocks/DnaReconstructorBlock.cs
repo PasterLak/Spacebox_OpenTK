@@ -8,9 +8,10 @@ using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation.Blocks;
 
-public class DnaReconstructorBlock : InteractiveBlock, IEntityBlockListener, IContainerBlock
+public class DnaReconstructorBlock : InteractiveBlock, IEntityBlockListener, IContainerBlock, INetworkStateBlock
 {
     private readonly DnaReconstructorBlockData _data;
+    private int _syncedDnaCount = -1;
 
     public Storage DnaStorage { get; } = new Storage(1, 1);
     public SpaceEntity Entity { get; private set; }
@@ -28,7 +29,7 @@ public class DnaReconstructorBlock : InteractiveBlock, IEntityBlockListener, ICo
     }
 
     public int DnaCapacity => _data.DnaItem?.StackSize ?? 1;
-    public bool HasDna => DnaCount > 0;
+    public bool HasDna => (Spacebox.Network.GameSession.IsRemoteClient && _syncedDnaCount >= 0 ? _syncedDnaCount : DnaCount) > 0;
     public bool IsReady => IsActive && HasDna && Entity != null;
 
     public DnaReconstructorBlock(BlockData blockData) : base(blockData)
@@ -43,7 +44,7 @@ public class DnaReconstructorBlock : InteractiveBlock, IEntityBlockListener, ICo
         var slot = DnaStorage.GetSlot(0, 0);
         slot.Name = "DNA";
         slot.Filter = IsDna;
-        DnaStorage.OnDataWasChanged += _ => MarkModified();
+        DnaStorage.OnDataWasChanged += _ => OnDnaChanged();
 
         OnDestroy += DropDna;
     }
@@ -68,6 +69,16 @@ public class DnaReconstructorBlock : InteractiveBlock, IEntityBlockListener, ICo
 
     public void OnContainerChangedByNetwork()
     {
+    }
+
+    public void WriteNetworkState(NetWriter writer)
+    {
+        writer.Write(DnaCount);
+    }
+
+    public void ReadNetworkState(NetReader reader)
+    {
+        _syncedDnaCount = reader.ReadInt();
     }
 
     public bool TryConsumeDna()
@@ -109,5 +120,11 @@ public class DnaReconstructorBlock : InteractiveBlock, IEntityBlockListener, ICo
     private void MarkModified()
     {
         if (chunk != null) chunk.IsModified = true;
+    }
+
+    private void OnDnaChanged()
+    {
+        MarkModified();
+        if (Entity != null) Spacebox.Network.BlockStateNetwork.MarkDirty(Entity, LocalCell, this);
     }
 }

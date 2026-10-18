@@ -11,6 +11,7 @@ public static class ClientConnector
     private static bool _isConnecting;
 
     public static bool IsConnecting => _isConnecting;
+    public static string Status { get; private set; }
 
     public static void Connect(string address, int port, Action<RemoteWorldInfo> onAccepted, Action<string> onFailed)
     {
@@ -19,6 +20,7 @@ public static class ClientConnector
         _onAccepted = onAccepted;
         _onFailed = onFailed;
         _isConnecting = true;
+        Status = $"Connecting to {address}:{port}...";
 
         GameSession.BeginClient(address, port);
 
@@ -64,11 +66,32 @@ public static class ClientConnector
             ModId = message.ModId,
             GameMode = message.GameMode,
             Day = message.Day,
-            Ticks = message.Ticks
+            Ticks = message.Ticks,
+            GameSetHash = message.GameSetHash,
+            GameSetFolder = message.GameSetFolder
         };
 
         GameSession.SetRemoteWorld(world);
         GameSession.PendingPlayerJson = message.PlayerJson;
+        Status = "Checking GameSet...";
+
+        GameSetDownloader.Prepare(world, OnDownloadProgress, () => Complete(world), OnDownloadFailed);
+    }
+
+    private static void OnDownloadProgress(float progress)
+    {
+        Status = $"Downloading GameSet {(int)(progress * 100f)}%";
+    }
+
+    private static void OnDownloadFailed(string reason)
+    {
+        Fail(reason);
+        NetworkManager.Instance.Shutdown("GameSet download failed");
+    }
+
+    private static void Complete(RemoteWorldInfo world)
+    {
+        if (!_isConnecting) return;
 
         var callback = _onAccepted;
         Unsubscribe();
@@ -105,6 +128,7 @@ public static class ClientConnector
         network.Messages.Unregister<JoinAcceptedMessage>();
         network.Messages.Unregister<JoinRejectedMessage>();
         _isConnecting = false;
+        Status = null;
         _onAccepted = null;
         _onFailed = null;
     }

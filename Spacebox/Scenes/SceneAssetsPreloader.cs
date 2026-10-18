@@ -26,10 +26,10 @@ namespace Spacebox.Scenes
         public static void Preload(SpaceSceneArgs param, BaseSpaceScene scene, Astronaut astronaut)
         {
 
-            bool isMultiplayer = false;
+            bool isMultiplayer = !param.SearchForGameSetInLocalFolder;
             var modId = param.modId;
             var modFolderName = string.IsNullOrEmpty(param.modfolderName) ? GameSetLocator.FindFolder(modId) : param.modfolderName;
-            string serverName = "";
+            string serverName = isMultiplayer ? param.gameSetServerFolder ?? "" : "";
 
 
             string modsFolder = ModPath.GetModsPath(param.SearchForGameSetInLocalFolder, serverName);

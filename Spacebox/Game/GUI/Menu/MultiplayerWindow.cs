@@ -190,6 +190,7 @@ namespace Spacebox.Game.GUI.Menu
             SaveConfig();
 
             ImGui.Separator();
+            if (ClientConnector.IsConnecting && !string.IsNullOrEmpty(ClientConnector.Status)) statusText = ClientConnector.Status;
             ImGui.Text(string.IsNullOrEmpty(statusText) ? "Saved Servers:" : statusText);
             List<ServerEntry> combinedServers = config.Servers;
             ImGui.BeginChild("ServerList", new Vector2(windowWidth - 20, windowHeight * 0.4f));
@@ -298,15 +299,7 @@ namespace Spacebox.Game.GUI.Menu
             statusText = "";
             Input.HideCursor();
 
-            SceneManager.Load<LocalSpaceScene, SpaceSceneArgs>(new SpaceSceneArgs
-            {
-                worldName = world.WorldName,
-                modId = world.ModId,
-                seed = world.Seed,
-                modfolderName = GameSetLocator.FindFolder(world.ModId),
-                skinColor = config.SkinColor,
-                nickname = config.PlayerNickname
-            });
+            SceneManager.Load<LocalSpaceScene, SpaceSceneArgs>(world.ToSceneArgs(config.SkinColor, config.PlayerNickname));
         }
 
         private void ButtonWithBackground(string label, Vector2 size, Vector2 cursorPos, Action onClick)

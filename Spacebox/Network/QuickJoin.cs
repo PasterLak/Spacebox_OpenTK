@@ -16,15 +16,7 @@ public static class QuickJoin
 
     private static void OnAccepted(RemoteWorldInfo world)
     {
-        SceneManager.Load<LocalSpaceScene, SpaceSceneArgs>(new SpaceSceneArgs
-        {
-            worldName = world.WorldName,
-            modId = world.ModId,
-            seed = world.Seed,
-            modfolderName = GameSetLocator.FindFolder(world.ModId),
-            skinColor = GameSession.SkinColor,
-            nickname = GameSession.PlayerName
-        });
+        SceneManager.Load<LocalSpaceScene, SpaceSceneArgs>(world.ToSceneArgs(GameSession.SkinColor, GameSession.PlayerName));
     }
 
     private static void OnFailed(string reason)

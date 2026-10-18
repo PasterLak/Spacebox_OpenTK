@@ -14,7 +14,7 @@ public sealed class ContainerClient
     private sealed class OpenContainer
     {
         public ContainerKey Key;
-        public IContainerBlock Block;
+        public IContainer Block;
         public IReadOnlyList<Storage> Storages;
         public bool HasSnapshot;
         public bool IsClosing;
@@ -56,7 +56,7 @@ public sealed class ContainerClient
         return false;
     }
 
-    public void Open(IContainerBlock block, ContainerKey key)
+    public void Open(IContainer block, ContainerKey key)
     {
         if (_open.TryGetValue(key, out var existing))
         {

@@ -27,6 +27,14 @@ public sealed class SphereBody : Component
 
     public Vector3 Center => Owner.Position;
 
+    public void Push(Vector3 normal, float targetSpeed)
+    {
+        if (IsKinematic) return;
+
+        float speed = Vector3.Dot(_velocity, normal);
+        if (speed < targetSpeed) _velocity += normal * (targetSpeed - speed);
+    }
+
     public SphereBody(PhysicsWorld physics, float radius)
     {
         _physics = physics;

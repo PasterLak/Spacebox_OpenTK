@@ -13,7 +13,7 @@ public sealed class ContainerServer
     private sealed class Entry
     {
         public ContainerKey Key;
-        public IContainerBlock Block;
+        public IContainer Block;
         public IReadOnlyList<Storage> Storages;
         public readonly HashSet<int> Viewers = new HashSet<int>();
         public int Version;
@@ -143,7 +143,7 @@ public sealed class ContainerServer
         _entries.Clear();
     }
 
-    private Entry CreateEntry(ContainerKey key, IContainerBlock block)
+    private Entry CreateEntry(ContainerKey key, IContainer block)
     {
         var entry = new Entry { Key = key, Block = block, Storages = block.GetContainerStorages() };
         entry.Handler = _ =>

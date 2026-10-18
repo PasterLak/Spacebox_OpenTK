@@ -83,6 +83,8 @@ Game
 
 Small
 - double click to open a world
+- multiplayer: missing GameSet is downloaded from the server into Server/<host_port>/GameSet (local GameSets untouched, reused if unchanged)
+- multiplayer: player-built entities, destroyed asteroids, spacer (movement, damage, loot, push), DNA count for respawn and day time are synced
 - multiplayer: doors, explosions, machine on/off state, oxygen generator water and gravity generator settings are synced; container windows close when the block is destroyed
 - multiplayer: storage names are synced to all players
 - multiplayer: the server loads the world around every player, so block edits, containers and fights work anywhere
@@ -121,6 +123,7 @@ Fixes
 
 Engine
 - networking: LiteNetLib transport, NetworkManager (offline/host/client/dedicated), messages, NetworkObject/NetworkBehaviour, [Rpc] methods, NetworkVariable, spawner, NetworkTransform
+- networking: chunked data transfers (NetworkManager.Transfers), DirectoryArchive (zip folders, content hash, safe extract)
 - Materials
 - remake SceneGraph
 - Components

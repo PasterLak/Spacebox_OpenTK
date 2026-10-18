@@ -84,7 +84,8 @@ public class World : Component, ISpaceStructure
         DestructionManager = new BlockDestructionManager();
         Owner.AttachComponent(DestructionManager);
         Owner.AttachComponent(DropEffectManager);
-        Owner.AddChild(new Spacer(Player.Position + new Vector3(5, 5, 7), Physics));
+        if (!Spacebox.Network.GameSession.IsRemoteClient)
+            Spacebox.Network.NetworkSession.Current?.Spacers.Spawn(Player.Position + new Vector3(5, 5, 7));
 
         ProjectilesPool = new ProjectilesPool(20);
         Owner.AttachComponent(ProjectilesPool);
@@ -186,7 +187,7 @@ public class World : Component, ISpaceStructure
         GameTime.SetTick(remote.Ticks);
     }
 
-    private static string MakeSafeFolderName(string name)
+    public static string MakeSafeFolderName(string name)
     {
         var invalid = Path.GetInvalidFileNameChars();
         var chars = (name ?? "World").ToCharArray();
@@ -371,6 +372,8 @@ public class World : Component, ISpaceStructure
         }
     }
 
+    public static event Action<Sector> SectorLoaded;
+
     public static Sector SectorAt(Vector3 position)
     {
         var world = Instance;
@@ -462,6 +465,7 @@ public class World : Component, ISpaceStructure
                         worldOctree.Add(sector, sector.BoundingBox);
                         loadedSectors[sectorIndex] = sector;
                         loadingSectors.Remove(sectorIndex);
+                        SectorLoaded?.Invoke(sector);
                     });
                 }
                 catch (Exception ex)
@@ -499,6 +503,7 @@ public class World : Component, ISpaceStructure
 
         worldOctree.Add(newSector, newSector.BoundingBox);
         loadedSectors.Add(newSector.PositionIndex, newSector);
+        SectorLoaded?.Invoke(newSector);
 
         return newSector;
     }

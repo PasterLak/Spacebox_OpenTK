@@ -12,7 +12,7 @@ Game project on top of `Engine` (see `Engine/CLAUDE.md`). World hierarchy, GameS
   - `LoadContent` order: `GameTime`, skybox, `RadarUI`, `BlockSelector`, `LocalAstronaut`, `World` component + `world.Load()`, `PlayerSaveLoadManager.LoadPlayer`, overlays, debug commands, static UIs (`InventoryUI`, `StorageUI`, `PanelUI`, `GeneratorUI`, `CreativeWindowUI`, `WelcomeUI`, `PauseUI`), `SpheresPool`, `ProjectileHitEffectsManager`, `TagManager`.
   - `Update`: `Time.HandleTicks`, `MainThreadDispatcher.ExecutePending`, Escape via `UIManager`, chat/panel updates.
   - `OnGUI` calls each static UI's `OnGUI`; `UnloadContent` disposes them and calls `GameAssets.DisposeAll()`.
-- Multiplayer: `MultiplayerLoadScene` connects and downloads the server GameSet zip → `MultiplayerScene` (subclass of `BaseSpaceScene`) subscribes to `ClientNetwork.Instance` events and spawns `RemoteAstronaut`s.
+- Multiplayer: `MultiplayerWindow`/`QuickJoin` → `ClientConnector` (join, GameSet check/download) → `LocalSpaceScene` with `RemoteWorldInfo.ToSceneArgs`; see the Multiplayer section.
 - Test/legacy: `PlaygroundScene`, `PlanetsScene*`, `LogoScene`, `ServerMessageScene`, `Scenes/Test/`.
 
 ## Folder map
@@ -33,7 +33,7 @@ Game project on top of `Engine` (see `Engine/CLAUDE.md`). World hierarchy, GameS
 | `Game/Plugins/`, `Game/PluginLoader.cs` | `GameApi` and plugin DLL loading |
 | `Game/Generation/` | World structures, `Blocks/`, meshing/AO, light and electric managers, `Tools/` (NBT, serializers) |
 | `Generation/` | Stateless algorithms: noise, `PerlinWorms`, `InternalCavities`, `AsteroidOreGenerator`, `ChunkLODMeshGenerator`, seeds |
-| `Client/` | Multiplayer client: `ClientNetwork`, `ClientPacketHandler`, `NetworkPlayerRegistry`, `NetworkIdentity`, `LocalServerFinder`, `SceneLauncher` |
+| `Network/` | Multiplayer (see the Multiplayer section) |
 | `Scenes/` | All scenes |
 | `Resources/` | Shaders (`includes/`, `PostProcessing/`, `Engine/`), audio, fonts, models, textures, `Settings.json`, `default_input.json`, `theme.json` |
 
@@ -42,7 +42,7 @@ Game project on top of `Engine` (see `Engine/CLAUDE.md`). World hierarchy, GameS
 - `Game/GameAssets.cs`: static session registry — `Blocks`/`Items` (by short id or string id), models, icons, sounds, recipes, blueprints, projectiles, atlases; `CreateBlockFromId`; cleared by `DisposeAll` on scene unload.
 - `Globals.cs`: path constants. `Settings.cs`: static settings sections saved to `Resources/Settings.json`; DTOs in `GameSettings.cs` (with defaults and `Validate`).
 - `Game/UIManager.cs`: named window stack controlling the cursor (`Open("pause")`, `IsUIMode`, `CloseTop`).
-- Static singletons: `World.Instance`, `ClientNetwork.Instance`, `BlockSelector`, `RadarUI`, `TagManager`, `SpheresPool`, `ProjectileHitEffectsManager`, `MainThreadDispatcher`.
+- Static singletons: `World.Instance`, `NetworkSession.Current`, `BlockSelector`, `RadarUI`, `TagManager`, `SpheresPool`, `ProjectileHitEffectsManager`, `MainThreadDispatcher`.
 - Static UIs follow `Init` / `OnGUI` / `Dispose` and must be wired by hand into `BaseSpaceScene` (`LoadContent`, `OnGUI`, `UnloadContent`). Missing `Dispose` leaks state across scene loads.
 
 ## Blocks (`Game/Generation/Blocks/`)
@@ -94,7 +94,7 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 
 ## Doors
 
-- `DoorBlock` (type `door`, settings in `DoorBlockData`) + per-entity `DoorSystem` (`entity.Doors`): registration, toggling, animation, auto-close, crushing and reserved cells (`IsReserved`, checked by `TryPlaceBlock`/`CanPlaceStructure`). Moving cells uses `SpaceEntity.ClearCellSilently`/`PlaceCellRaw` (no drops/effects). Door toggles are not synced over the network yet.
+- `DoorBlock` (type `door`, settings in `DoorBlockData`) + per-entity `DoorSystem` (`entity.Doors`): registration, toggling, animation, auto-close, crushing and reserved cells (`IsReserved`, checked by `TryPlaceBlock`/`CanPlaceStructure`). Moving cells uses `SpaceEntity.ClearCellSilently`/`PlaceCellRaw` (no drops/effects). Toggles go through the server (`DoorNetwork`).
 
 ## Rotated entities
 
@@ -137,7 +137,8 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 
 ## Multiplayer
 
-- `Network/`: `GameSession` (Singleplayer/Host/Client/Dedicated), `NetworkSession` (per game scene: starts the mode, join handling, player spawn, saves), `ClientConnector` (menu join), `PlayerRegistry`, `ChatService`, `WorldEditNetwork` (block edits), `EntitySync` (modified entity data), `DropNetwork` (server-owned drops via `DropManager.Replicator`), `Combat/` (`CombatNetwork` shots and damage, `PlayerHitboxes` lag-compensated hit tests), `Containers/` (server-authoritative item containers, new container blocks implement `IContainerBlock`), `BlockStateNetwork` (blocks with visible state implement `INetworkStateBlock` and call `MarkDirty`), `DoorNetwork`, `ExplosionNetwork`, `Players/` (`PlayerSpawnService`, `AstronautNetwork`), `Dedicated/` (`--server`, `serverconfig.json`, console commands), `LaunchOptions`.
+- `Network/`: `GameSession` (Singleplayer/Host/Client/Dedicated), `NetworkSession` (per game scene: starts the mode, join handling, player spawn, saves), `ClientConnector` (menu join), `PlayerRegistry`, `ChatService`, `WorldEditNetwork` (block edits), `EntitySync` (modified entity data), `DropNetwork` (server-owned drops via `DropManager.Replicator`), `Combat/` (`CombatNetwork` shots and damage, `PlayerHitboxes` lag-compensated hit tests), `Containers/` (server-authoritative item containers, new container blocks implement `IContainerBlock`), `BlockStateNetwork` (blocks with visible state implement `INetworkStateBlock` and call `MarkDirty`), `DoorNetwork`, `ExplosionNetwork`, `SectorNetwork` (destroyed asteroids, player-built entities per sector), `EntityCreationNetwork` (new entities only through the server), `TimeNetwork`, `GameSets/` (hash, server package, client download into `Server/<host>_<port>/GameSet`), `Npc/` (`spacer` prefab, `SpacerNetwork`), `Players/` (`PlayerSpawnService`, `AstronautNetwork`), `Dedicated/` (`--server`, `serverconfig.json`, console commands), `LaunchOptions`.
+- Item containers implement `IContainer` (`Game/Inventory/`); blocks use `IContainerBlock`, network objects (spacer) are resolved with `ContainerKey.ForObject(netId)`. Bodies that react to player pushes over the network implement `IPushable`.
 - Every game scene runs a session; check `NetworkManager.Instance.IsServer` before authoritative changes and `GameSession.IsRemoteClient` before touching save files.
 - New world changes must be sent: block edits through `WorldEditNetwork`, everything else through a message, an RPC or a `NetworkVariable`. The `add-network-message` skill describes the old Lidgren system and is outdated.
 

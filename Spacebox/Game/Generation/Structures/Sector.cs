@@ -529,6 +529,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         sectorOctree.Add(entity, positionWorld);
     }
 
+    public static event Action<Sector, long> EntityDestroyedPermanently;
+
     public void DestroyEntity(SpaceEntity entity, bool isDestroyedPermentantly)
     {
         var id = entity.EntityID;
@@ -546,6 +548,54 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         EntitiesDestroyed.Add(name);
         IsModified = true;
+        EntityDestroyedPermanently?.Invoke(this, id);
+    }
+
+    public void CollectCustomEntities(List<NotGeneratedEntity> output)
+    {
+        for (int i = 0; i < Entities.Count; i++)
+        {
+            var entity = Entities[i];
+            if (!entity.IsDynamic()) continue;
+
+            output.Add(new NotGeneratedEntity
+            {
+                Id = entity.EntityID,
+                FileName = entity.Name,
+                positionInSector = WorldToLocalPosition(entity.PositionWorld)
+            });
+        }
+
+        foreach (var data in EntitiesGeneratedData.Values)
+        {
+            if (data.Id < 0 && !Entities.Exists(e => e.EntityID == data.Id)) output.Add(data);
+        }
+    }
+
+    public void ApplyRemoteManifest(IReadOnlyList<long> suppressed, IReadOnlyList<NotGeneratedEntity> customEntities)
+    {
+        for (int i = 0; i < suppressed.Count; i++)
+            RemoveEntityRemote(suppressed[i]);
+
+        for (int i = 0; i < customEntities.Count; i++)
+        {
+            var saved = customEntities[i];
+            if (SuppressedEntities.Contains(saved.Id) || EntitiesGeneratedData.ContainsKey(saved.Id) || Entities.Exists(e => e.EntityID == saved.Id)) continue;
+
+            saved.positionWorld = LocalToWorldPosition(saved.positionInSector);
+            EntitiesGeneratedData.Add(saved.Id, saved);
+            octreeNotGenerated.Add(saved, saved.positionWorld);
+        }
+    }
+
+    public void RemoveEntityRemote(long entityId)
+    {
+        if (entityId >= 0) SuppressedEntities.Add(entityId);
+        RemoveGeneratedData(entityId);
+        loadingEntities.Remove(entityId);
+
+        var entity = Entities.Find(e => e.EntityID == entityId);
+        if (entity != null) DestroyEntity(entity, false);
     }
 
     public void MoveEntityToSector(SpaceEntity entity, Sector newSector)
@@ -555,7 +605,11 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     public SpaceEntity CreateNewEntity(Vector3 positionWorld)
     {
-        var id = GenerateDynamicEntityId();
+        return CreateNewEntity(positionWorld, GenerateDynamicEntityId());
+    }
+
+    public SpaceEntity CreateNewEntity(Vector3 positionWorld, long id)
+    {
         SpaceEntity entity = new SpaceEntity(id, positionWorld, this);
 
         AddEntity(entity, positionWorld);

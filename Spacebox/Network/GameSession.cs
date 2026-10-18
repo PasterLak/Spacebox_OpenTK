@@ -1,4 +1,5 @@
 using Engine.Networking;
+using Spacebox.Scenes;
 
 namespace Spacebox.Network;
 
@@ -73,4 +74,23 @@ public sealed class RemoteWorldInfo
     public byte GameMode;
     public int Day;
     public int Ticks;
+    public string GameSetHash;
+    public string GameSetFolder;
+    public string GameSetCacheName;
+    public bool UseLocalGameSet = true;
+
+    public SpaceSceneArgs ToSceneArgs(string skinColor, string nickname)
+    {
+        return new SpaceSceneArgs
+        {
+            worldName = WorldName,
+            modId = ModId,
+            seed = Seed,
+            modfolderName = string.IsNullOrEmpty(GameSetFolder) ? GameSetLocator.FindFolder(ModId) : GameSetFolder,
+            SearchForGameSetInLocalFolder = UseLocalGameSet,
+            gameSetServerFolder = GameSetCacheName ?? "",
+            skinColor = skinColor,
+            nickname = nickname
+        };
+    }
 }
