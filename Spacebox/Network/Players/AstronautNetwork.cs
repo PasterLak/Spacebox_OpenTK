@@ -11,6 +11,11 @@ public sealed class AstronautNetwork : NetworkTransform
 {
     private const short NoItem = -1;
     private const int MaxFallDamage = 255;
+    private const float MaxDrillDistance = 8f;
+    private const int MaxDrillDamagePerSecond = 20;
+    private const float DrillWindow = 1f;
+
+    private readonly Dictionary<int, DrillBudget> _drillBudgets = new Dictionary<int, DrillBudget>();
 
     private readonly NetworkVariable<bool> _flashlight;
     private readonly NetworkVariable<short> _heldItem;
@@ -80,6 +85,7 @@ public sealed class AstronautNetwork : NetworkTransform
         _heldItem.Changed += (_, value) => astronaut.ChangeItemInHand(GetItem(value));
         _isAlive.Changed += (_, value) => ApplyAliveVisual(astronaut, value);
         _flashlightItem.Changed += (_, value) => ApplyFlashlight(astronaut, value);
+        if (astronaut is RemoteAstronaut remote) remote.DrillDamaged += OnDrilledLocally;
         _hasOxygen.Changed += (_, value) => astronaut.HasOxygen = value;
         astronaut.HasOxygen = _hasOxygen.Value;
         for (int i = 0; i < _equipment.Length; i++)
@@ -98,6 +104,8 @@ public sealed class AstronautNetwork : NetworkTransform
     {
         _fallSound?.Dispose();
         _fallSound = null;
+        _drillBudgets.Clear();
+        if (Owner is RemoteAstronaut remote) remote.DrillDamaged -= OnDrilledLocally;
 
         if (Local == this)
         {
@@ -154,6 +162,52 @@ public sealed class AstronautNetwork : NetworkTransform
     private static void ApplyEquipment(Astronaut astronaut, EquipmentSlotType slot, short itemId)
     {
         astronaut.ArmorVisual?.Set(slot, GetItem(itemId) as EquipmentItem);
+    }
+
+    private void OnDrilledLocally(int damage)
+    {
+        SendRpc(nameof(DrillDamage), damage);
+    }
+
+    [Rpc(RpcTarget.Server, RequireOwnership = false)]
+    private void DrillDamage(int damage)
+    {
+        int attacker = RpcContext.SenderPeer;
+        if (attacker == OwnerPeer || damage <= 0 || !IsAlive) return;
+
+        var attackerAstronaut = Spacebox.Network.Combat.PlayerHitboxes.FindPlayer(attacker);
+        if (attackerAstronaut == null) return;
+
+        var victimPosition = IsOwner && Owner is Astronaut astronaut ? astronaut.Position : TargetPosition;
+        if (Vector3.DistanceSquared(attackerAstronaut.Position, victimPosition) > MaxDrillDistance * MaxDrillDistance) return;
+
+        int allowed = ConsumeDrillBudget(attacker, damage);
+        if (allowed > 0) Spacebox.Network.Combat.CombatNetwork.ApplyPlayerHit(OwnerPeer, attacker, allowed, false);
+    }
+
+    private int ConsumeDrillBudget(int attacker, int damage)
+    {
+        float now = Time.Total;
+        if (!_drillBudgets.TryGetValue(attacker, out var budget) || now - budget.Start >= DrillWindow || now < budget.Start)
+            budget = new DrillBudget(now, 0);
+
+        int allowed = Math.Min(damage, MaxDrillDamagePerSecond - budget.Damage);
+        if (allowed <= 0) return 0;
+
+        _drillBudgets[attacker] = new DrillBudget(budget.Start, budget.Damage + allowed);
+        return allowed;
+    }
+
+    private readonly struct DrillBudget
+    {
+        public readonly float Start;
+        public readonly int Damage;
+
+        public DrillBudget(float start, int damage)
+        {
+            Start = start;
+            Damage = damage;
+        }
     }
 
     private void OnLocalFallImpact(int damage)
