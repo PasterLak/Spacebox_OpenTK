@@ -17,6 +17,19 @@ public sealed class ExplosionSystem : IDisposable
     private readonly List<PendingExplosion> _pending = new List<PendingExplosion>();
     private readonly HashSet<(SpaceEntity, Vector3i)> _scheduled = new HashSet<(SpaceEntity, Vector3i)>();
     private readonly Action<Chunk, Vector3Byte, ExplosiveBlockData> _chainExplosive;
+    private readonly List<Vector3i> _removedCells = new List<Vector3i>();
+
+    public static event Action<SpaceEntity, Vector3i, short, IReadOnlyList<Vector3i>> Exploded;
+
+    public void ApplyReplica(SpaceEntity entity, Vector3i cell, ExplosiveBlockData data, IReadOnlyList<Vector3i> cells)
+    {
+        var centerLocal = new Vector3(cell.X + 0.5f, cell.Y + 0.5f, cell.Z + 0.5f);
+        var worldCenter = entity.EntityLocalToWorld(centerLocal);
+
+        _breaker.Break(entity, cells, cell, worldCenter, data, _chainExplosive, true, null);
+        _forces.Apply(worldCenter, data);
+        _effects.Play(worldCenter, data.Radius);
+    }
 
     public ExplosionSystem()
     {
@@ -85,10 +98,13 @@ public sealed class ExplosionSystem : IDisposable
         var centerLocal = new Vector3(pending.Cell.X + 0.5f, pending.Cell.Y + 0.5f, pending.Cell.Z + 0.5f);
         var worldCenter = entity.EntityLocalToWorld(centerLocal);
 
+        short bombId = chunk.Blocks[index.X, index.Y, index.Z].Id;
+
         _rayCaster.Collect(entity, centerLocal, data.Radius, data.Penetration, _cells);
-        _breaker.Break(entity, _cells, pending.Cell, worldCenter, data, _chainExplosive);
+        _breaker.Break(entity, _cells, pending.Cell, worldCenter, data, _chainExplosive, false, _removedCells);
         _forces.Apply(worldCenter, data);
         _effects.Play(worldCenter, data.Radius);
+        Exploded?.Invoke(entity, pending.Cell, bombId, _removedCells);
     }
 
     private struct PendingExplosion

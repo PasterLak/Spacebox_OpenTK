@@ -20,7 +20,12 @@ public class DoorBlock : InteractiveBlock
     public override void Use(LocalAstronaut player, ref HitInfo hit)
     {
         base.Use(player, ref hit);
-        hit.chunk?.SpaceEntity.Doors.Toggle(hit.chunk, hit.blockPositionIndex);
+        if (hit.chunk == null) return;
+
+        if (Engine.Networking.NetworkManager.Instance.IsRemoteClient)
+            Spacebox.Network.DoorNetwork.RequestToggle(hit.chunk, hit.blockPositionIndex);
+        else
+            hit.chunk.SpaceEntity.Doors.Toggle(hit.chunk, hit.blockPositionIndex);
     }
 
     public void Restore(bool isOpen, float autoCloseTimer)

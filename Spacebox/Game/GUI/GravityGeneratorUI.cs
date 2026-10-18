@@ -83,7 +83,7 @@ public static class GravityGeneratorUI
         ImGui.SetCursorPosX(padding);
         DrawPresets(ref strength, contentWidth);
 
-        _block.Configure(radius, strength, isEnabled, insideOnly);
+        Spacebox.Network.GravityConfigNetwork.Configure(_block, radius, strength, isEnabled, insideOnly);
         if (!ImGui.IsAnyItemActive()) _block.ApplyPendingPower();
 
         ImGui.SetCursorPosX(padding);

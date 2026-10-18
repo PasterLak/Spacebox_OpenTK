@@ -24,7 +24,7 @@ public sealed class ExplosionForces
 
     private static void ApplyToPlayer(LocalAstronaut player, Vector3 center, ExplosiveBlockData data)
     {
-        if (player == null || !player.IsAlive) return;
+        if (player == null || !player.IsAlive || !Spacebox.Network.GameSession.HasLocalPlayer) return;
 
         float distance = Vector3.Distance(player.Position, center);
         player.ApplyImpulse(GetImpulse(player.Position, center, distance, data));

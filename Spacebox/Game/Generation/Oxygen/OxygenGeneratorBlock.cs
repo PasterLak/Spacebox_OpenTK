@@ -7,8 +7,28 @@ using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation.Oxygen;
 
-public class OxygenGeneratorBlock : InteractiveBlock, IContainerBlock
+public class OxygenGeneratorBlock : InteractiveBlock, IContainerBlock, IEntityBlockListener, INetworkStateBlock
 {
+    private SpaceEntity _entity;
+    private OpenTK.Mathematics.Vector3i _cell;
+
+    public void OnAddedToEntity(Chunk chunk, OpenTK.Mathematics.Vector3i localCell)
+    {
+        _entity = chunk.SpaceEntity;
+        _cell = localCell;
+    }
+
+    public void OnRemovedFromEntity()
+    {
+        _entity = null;
+    }
+
+    public void WriteNetworkState(NetWriter writer) => writer.Write(Water);
+
+    public void ReadNetworkState(NetReader reader) => Restore(reader.ReadInt(), ConsumeProgress);
+
+    private void MarkStateDirty() => Spacebox.Network.BlockStateNetwork.MarkDirty(_entity, _cell, this);
+
     public const int Radius = 32;
     public const byte RequiredPower = 20;
 
@@ -98,6 +118,7 @@ public class OxygenGeneratorBlock : InteractiveBlock, IContainerBlock
         _fillTime -= interval;
         slot.TakeOne();
         Water++;
+        MarkStateDirty();
         MarkModified();
     }
 
@@ -110,6 +131,7 @@ public class OxygenGeneratorBlock : InteractiveBlock, IContainerBlock
 
         ConsumeProgress -= 1f;
         Water--;
+        MarkStateDirty();
         MarkModified();
     }
 

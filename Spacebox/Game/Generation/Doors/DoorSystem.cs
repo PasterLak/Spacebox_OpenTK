@@ -22,6 +22,7 @@ public sealed class DoorSystem : IDisposable
         public float Progress;
         public int AnimationDirection;
         public bool WaitingForMesh;
+        public bool? PendingOpen;
         public Vector3 BoxMinOffset;
         public Vector3 BoxSize;
         public SimpleBlock Visual;
@@ -38,6 +39,29 @@ public sealed class DoorSystem : IDisposable
     private readonly List<Vector3i> _fromCells = new List<Vector3i>();
     private readonly List<Vector3i> _toCells = new List<Vector3i>();
     private bool _reservedDirty;
+
+    public static event Action<SpaceEntity, Vector3i, bool> StateChanged;
+
+    public void ApplyRemoteState(Vector3i home, bool open)
+    {
+        FlushPending();
+
+        foreach (var record in _doors.Values)
+        {
+            if (GetHome(record) != home) continue;
+
+            if (record.AnimationDirection != 0 || record.WaitingForMesh)
+            {
+                record.PendingOpen = open;
+                return;
+            }
+
+            if (record.Door.IsOpen == open) return;
+            if (open) Open(record);
+            else Close(record);
+            return;
+        }
+    }
 
     public DoorSystem(SpaceEntity entity)
     {
@@ -116,7 +140,17 @@ public sealed class DoorSystem : IDisposable
             {
                 if (AreChunksMeshed(record)) DestroyVisual(record);
             }
-            else if (record.Door.IsOpen && record.Door.Data.AutoClose)
+            else if (record.PendingOpen.HasValue)
+            {
+                bool open = record.PendingOpen.Value;
+                record.PendingOpen = null;
+                if (record.Door.IsOpen != open)
+                {
+                    if (open) Open(record);
+                    else Close(record);
+                }
+            }
+            else if (!Spacebox.Network.GameSession.IsRemoteClient && record.Door.IsOpen && record.Door.Data.AutoClose)
             {
                 record.Door.AutoCloseTimer -= deltaTime;
                 if (record.Door.AutoCloseTimer <= 0f) Close(record);
@@ -163,6 +197,7 @@ public sealed class DoorSystem : IDisposable
         record.Door.IsOpen = true;
         record.Door.AutoCloseTimer = record.Door.Data.OpenTime;
         StartAnimation(record, 1);
+        StateChanged?.Invoke(_entity, GetHome(record), true);
     }
 
     private void Close(DoorRecord record)
@@ -182,6 +217,7 @@ public sealed class DoorSystem : IDisposable
         record.Door.IsOpen = false;
         record.Door.AutoCloseTimer = 0f;
         StartAnimation(record, -1);
+        StateChanged?.Invoke(_entity, GetHome(record), false);
     }
 
     private void StartAnimation(DoorRecord record, int direction)

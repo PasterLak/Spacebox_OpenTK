@@ -5,8 +5,11 @@ using Spacebox.Game.Physics;
 
 namespace Spacebox.Game.Generation.Blocks;
 
-public class ResourceProcessingBlock : InteractiveBlock, IContainerBlock
+public class ResourceProcessingBlock : InteractiveBlock, IContainerBlock, IEntityBlockListener, INetworkStateBlock
 {
+    private SpaceEntity _entity;
+    private OpenTK.Mathematics.Vector3i _cell;
+
     protected Recipe Recipe;
 
     public Storage InputStorage { get; private set; } = new Storage(1, 1);
@@ -24,11 +27,29 @@ public class ResourceProcessingBlock : InteractiveBlock, IContainerBlock
         get => _isRunning;
         private set
         {
+            bool changed = _isRunning != value;
             _isRunning = value;
             SetEmission(_isRunning, true);
             IsActive = _isRunning;
+            if (changed) Spacebox.Network.BlockStateNetwork.MarkDirty(_entity, _cell, this);
         }
     }
+
+    public void OnAddedToEntity(Chunk chunk, OpenTK.Mathematics.Vector3i localCell)
+    {
+        this.chunk = chunk;
+        _entity = chunk.SpaceEntity;
+        _cell = localCell;
+    }
+
+    public void OnRemovedFromEntity()
+    {
+        _entity = null;
+    }
+
+    public void WriteNetworkState(NetWriter writer) => WriteContainerState(writer);
+
+    public void ReadNetworkState(NetReader reader) => ReadContainerState(reader);
 
     public TickTask Task { get; private set; }
 

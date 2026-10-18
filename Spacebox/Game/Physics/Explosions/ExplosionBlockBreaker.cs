@@ -18,8 +18,9 @@ public sealed class ExplosionBlockBreaker
     private readonly Dictionary<(short ItemId, Chunk Chunk), DropGroup> _drops = new Dictionary<(short, Chunk), DropGroup>();
     private readonly Random _random = new Random();
 
-    public void Break(SpaceEntity entity, HashSet<Vector3i> cells, Vector3i origin, Vector3 worldCenter, ExplosiveBlockData data, Action<Chunk, Vector3Byte, ExplosiveBlockData> chainExplosive)
+    public void Break(SpaceEntity entity, IEnumerable<Vector3i> cells, Vector3i origin, Vector3 worldCenter, ExplosiveBlockData data, Action<Chunk, Vector3Byte, ExplosiveBlockData> chainExplosive, bool isReplica, List<Vector3i> removedCells)
     {
+        removedCells?.Clear();
         _touchedChunks.Clear();
         _specialCells.Clear();
         _drops.Clear();
@@ -36,14 +37,17 @@ public sealed class ExplosionBlockBreaker
             if (cell == origin)
             {
                 if (chunk.ClearCellForBulkEdit(index.X, index.Y, index.Z)) _touchedChunks.Add(chunk);
+                removedCells?.Add(cell);
                 continue;
             }
 
-            if (block is ExplosiveBlock explosive)
+            if (block is ExplosiveBlock explosive && !isReplica)
             {
                 chainExplosive(chunk, index, explosive.Data);
                 continue;
             }
+
+            removedCells?.Add(cell);
 
             if (NeedsFullRemoval(block))
             {
@@ -51,7 +55,7 @@ public sealed class ExplosionBlockBreaker
                 continue;
             }
 
-            if (data.DropBlocks) CollectDrop(entity, chunk, cell, block);
+            if (data.DropBlocks && !isReplica) CollectDrop(entity, chunk, cell, block);
 
             if (effects < MaxDestructionEffects)
             {
@@ -63,14 +67,14 @@ public sealed class ExplosionBlockBreaker
             if (chunk.ClearCellForBulkEdit(index.X, index.Y, index.Z)) _touchedChunks.Add(chunk);
         }
 
-        RemoveSpecialBlocks(entity, data);
+        RemoveSpecialBlocks(entity, data, isReplica);
 
         foreach (var chunk in _touchedChunks)
             chunk.FinishBulkEdit();
 
         if (_touchedChunks.Count > 0) entity.Oxygen.OnChunksChanged();
 
-        SpawnDrops(entity, worldCenter);
+        if (!isReplica) SpawnDrops(entity, worldCenter);
     }
 
     private static bool NeedsFullRemoval(Block block)
@@ -81,7 +85,7 @@ public sealed class ExplosionBlockBreaker
         return GameAssets.Blocks.TryGetValue(block.Id, out var data) && data.IsMultiblock;
     }
 
-    private void RemoveSpecialBlocks(SpaceEntity entity, ExplosiveBlockData data)
+    private void RemoveSpecialBlocks(SpaceEntity entity, ExplosiveBlockData data, bool isReplica)
     {
         for (int i = 0; i < _specialCells.Count; i++)
         {
@@ -100,8 +104,8 @@ public sealed class ExplosionBlockBreaker
                 blockPositionWorld = entity.EntityLocalToWorld(new Vector3(cell.X + 0.5f, cell.Y + 0.5f, cell.Z + 0.5f))
             };
 
-            if (!data.DestroyStorageItems) block.OnDestroy?.Invoke(hit);
-            chunk.RemoveBlock(index.X, index.Y, index.Z, 0, 0, 0, data.DropBlocks);
+            if (!isReplica && !data.DestroyStorageItems) block.OnDestroy?.Invoke(hit);
+            chunk.RemoveBlock(index.X, index.Y, index.Z, 0, 0, 0, data.DropBlocks && !isReplica);
         }
     }
 

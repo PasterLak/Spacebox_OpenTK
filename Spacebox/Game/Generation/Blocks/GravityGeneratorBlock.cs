@@ -7,7 +7,7 @@ using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation.Blocks;
 
-public class GravityGeneratorBlock : InteractiveBlock, IGravitySource, IEntityBlockListener
+public class GravityGeneratorBlock : InteractiveBlock, IGravitySource, IEntityBlockListener, INetworkStateBlock
 {
     private readonly GravityGeneratorBlockData _data;
     private readonly GravityRoom _room = new GravityRoom();
@@ -15,6 +15,7 @@ public class GravityGeneratorBlock : InteractiveBlock, IGravitySource, IEntityBl
     private bool _isPowerDirty;
 
     public SpaceEntity Entity { get; private set; }
+    public Vector3i LocalCell => _localCell;
     public Vector3 WorldCenter { get; private set; }
     public Vector3 WorldDirection { get; private set; }
     public int RadiusSetting { get; private set; }
@@ -59,6 +60,25 @@ public class GravityGeneratorBlock : InteractiveBlock, IGravitySource, IEntityBl
 
         UpdateConsumption();
         if (chunk != null) chunk.IsModified = true;
+        Spacebox.Network.BlockStateNetwork.MarkDirty(Entity, _localCell, this);
+    }
+
+    public void WriteNetworkState(Engine.Networking.NetWriter writer)
+    {
+        writer.Write(RadiusSetting);
+        writer.Write(Strength);
+        writer.Write(IsGravityEnabled);
+        writer.Write(InsideOnly);
+    }
+
+    public void ReadNetworkState(Engine.Networking.NetReader reader)
+    {
+        int radius = reader.ReadInt();
+        float strength = reader.ReadFloat();
+        bool enabled = reader.ReadBool();
+        bool insideOnly = reader.ReadBool();
+        Configure(radius, strength, enabled, insideOnly);
+        ApplyPendingPower();
     }
 
     public void ApplyPendingPower()

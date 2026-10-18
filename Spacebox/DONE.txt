@@ -83,6 +83,7 @@ Game
 
 Small
 - double click to open a world
+- multiplayer: doors, explosions, machine on/off state, oxygen generator water and gravity generator settings are synced; container windows close when the block is destroyed
 - multiplayer: storage names are synced to all players
 - multiplayer: the server loads the world around every player, so block edits, containers and fights work anywhere
 - multiplayer containers: storages, machines, oxygen generator and DNA reconstructor are synced, several players can use one at the same time, server checks every change (no item duplication), machines work only on the server

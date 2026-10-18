@@ -1,3 +1,4 @@
+using Engine;
 using Engine.Networking;
 using Spacebox.Game;
 using Spacebox.Game.Generation;
@@ -12,6 +13,8 @@ public static class ContainerNetwork
     private static readonly ContainerClient _client = new ContainerClient();
     private static readonly Dictionary<int, Action<bool>> _takeCallbacks = new Dictionary<int, Action<bool>>();
     private static int _nextTakeRequest = 1;
+    private static IContainerBlock _localOpenBlock;
+    private static ContainerKey _localOpenKey;
 
     public static void Register(NetworkManager network)
     {
@@ -27,8 +30,12 @@ public static class ContainerNetwork
 
     public static void OnInteract(IContainerBlock block, Chunk chunk, Vector3Byte index)
     {
-        if (!NetworkManager.Instance.IsRemoteClient || chunk?.SpaceEntity == null) return;
-        _client.Open(block, ContainerResolver.KeyFor(chunk, index));
+        if (chunk?.SpaceEntity == null) return;
+
+        _localOpenBlock = block;
+        _localOpenKey = ContainerResolver.KeyFor(chunk, index);
+
+        if (NetworkManager.Instance.IsRemoteClient) _client.Open(block, _localOpenKey);
     }
 
     public static bool CanDropFrom(ItemSlot slot)
@@ -55,13 +62,32 @@ public static class ContainerNetwork
 
     public static void Update()
     {
+        CloseWindowIfContainerRemoved();
+
         var network = NetworkManager.Instance;
         if (network.IsServer) _server.Update();
         else if (network.IsRemoteClient) _client.Update();
     }
 
+    private static void CloseWindowIfContainerRemoved()
+    {
+        if (_localOpenBlock == null) return;
+
+        if (!UIManager.IsOpen(_localOpenBlock.ContainerWindowId))
+        {
+            _localOpenBlock = null;
+            return;
+        }
+
+        if (ContainerResolver.TryResolve(_localOpenKey, out var current) && current == _localOpenBlock) return;
+
+        _localOpenBlock = null;
+        UIManager.CloseAll();
+    }
+
     public static void Reset()
     {
+        _localOpenBlock = null;
         _server.Clear();
         _client.Clear();
         _takeCallbacks.Clear();

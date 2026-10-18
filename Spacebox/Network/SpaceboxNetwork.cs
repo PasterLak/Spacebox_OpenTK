@@ -21,5 +21,9 @@ public static class SpaceboxNetwork
         Combat.CombatNetwork.Register(network);
         Containers.ContainerNetwork.Register(network);
         Containers.StorageNameNetwork.Register(network);
+        BlockStateNetwork.Register(network);
+        GravityConfigNetwork.Register(network);
+        DoorNetwork.Register(network);
+        ExplosionNetwork.Register(network);
     }
 }

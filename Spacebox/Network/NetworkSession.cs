@@ -86,6 +86,7 @@ public sealed class NetworkSession : IDisposable
             UpdateObservers();
         }
         Containers.ContainerNetwork.Update();
+        BlockStateNetwork.Update();
         if (!NetworkManager.Instance.IsRemoteClient || _localPlayer == null) return;
 
         _playerSyncTimer += Time.Delta;
@@ -149,6 +150,7 @@ public sealed class NetworkSession : IDisposable
         network.Shutdown("Server stopped");
         Combat.CombatNetwork.Reset();
         Containers.ContainerNetwork.Reset();
+        BlockStateNetwork.Clear();
         _playerSpawner.Dispose();
         PlayerRegistry.Clear();
 
