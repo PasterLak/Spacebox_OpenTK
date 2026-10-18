@@ -25,6 +25,7 @@ public class GravityGeneratorBlock : InteractiveBlock, IGravitySource, IEntityBl
     public bool InsideOnly { get; private set; }
     public bool IsEmitting => IsActive && IsGravityEnabled && Entity != null;
     public GravityGeneratorBlockData Data => _data;
+    public FallDamageJSON FallDamage => _data.GetFallDamage(Strength);
     public GravityRoom Room => _room;
     public ushort RequiredPower => _data.CalculatePower(RadiusSetting, Strength);
     public bool IsDefaultConfiguration => RadiusSetting == _data.Radius && Strength == _data.Strength && IsGravityEnabled && !InsideOnly;

@@ -23,6 +23,7 @@ namespace Spacebox.Game.Player
         public PlayerEquipment Equipment { get; private set; }
         private EquipmentStatsBinder _equipmentStats;
         private EquipmentFlashlightBinder _flashlightBinder;
+        public FallDamage FallDamage { get; private set; }
 
         public EquipmentItem? ActiveFlashlightItem => Equipment.FlashlightItem ?? HeldFlashlightItem;
         public bool CanUseFlashlight => GameMode == GameMode.Spectator || ActiveFlashlightItem != null;
@@ -135,6 +136,7 @@ namespace Spacebox.Game.Player
             this.Flashlight.AddToggleToManager(this);
             GameMode = GameMode.Creative;
             _flashlightBinder = new EquipmentFlashlightBinder(this);
+            FallDamage = new FallDamage(this);
 
             AddChild(Effects);
 

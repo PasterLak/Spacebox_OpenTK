@@ -11,5 +11,6 @@ public interface IGravitySource
     Vector3 WorldDirection { get; }
     float Radius { get; }
     float Strength { get; }
+    Spacebox.Game.Resource.FallDamageJSON FallDamage { get; }
     bool Affects(Vector3 worldPosition);
 }

@@ -1,9 +1,16 @@
 namespace Spacebox.Game.Resource;
 
+public class FallDamageJSON
+{
+    public float SafeHeight { get; set; } = 5f;
+    public float DamagePerBlock { get; set; } = 4f;
+}
+
 public class GravityPresetJSON
 {
     public string Name { get; set; } = "Earth";
     public float Strength { get; set; } = 9.81f;
+    public FallDamageJSON? FallDamage { get; set; }
 }
 
 public class GravityGeneratorJSON
@@ -17,6 +24,7 @@ public class GravityGeneratorJSON
     public int Power { get; set; } = 200;
     public float StrengthPowerFactor { get; set; } = 0.25f;
     public int MaxRoomCells { get; set; } = 200000;
+    public FallDamageJSON FallDamage { get; set; } = new FallDamageJSON();
     public List<GravityPresetJSON> Presets { get; set; } = new List<GravityPresetJSON>
     {
         new GravityPresetJSON { Name = "Moon", Strength = 1.62f },
@@ -40,6 +48,7 @@ public class GravityGeneratorBlockData : BlockData
     public float StrengthPowerFactor { get; }
     public int MaxRoomCells { get; }
     public IReadOnlyList<GravityPresetJSON> Presets { get; }
+    public FallDamageJSON FallDamage { get; }
 
     public GravityGeneratorBlockData(BlockData baseBlock, GravityGeneratorJSON settings) : base(baseBlock)
     {
@@ -54,6 +63,24 @@ public class GravityGeneratorBlockData : BlockData
         StrengthPowerFactor = Math.Clamp(settings.StrengthPowerFactor, 0f, 1f);
         MaxRoomCells = Math.Max(1, settings.MaxRoomCells);
         Presets = settings.Presets ?? new List<GravityPresetJSON>();
+        FallDamage = settings.FallDamage ?? new FallDamageJSON();
+    }
+
+    public FallDamageJSON GetFallDamage(float strength)
+    {
+        GravityPresetJSON? nearest = null;
+        float nearestDifference = float.MaxValue;
+
+        for (int i = 0; i < Presets.Count; i++)
+        {
+            float difference = MathF.Abs(Presets[i].Strength - strength);
+            if (difference >= nearestDifference) continue;
+
+            nearestDifference = difference;
+            nearest = Presets[i];
+        }
+
+        return nearest?.FallDamage ?? FallDamage;
     }
 
     public ushort CalculatePower(int radius, float strength)

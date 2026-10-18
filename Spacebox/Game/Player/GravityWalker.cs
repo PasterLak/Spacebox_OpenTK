@@ -38,6 +38,10 @@ public sealed class GravityWalker
     private Vector3 _lastWorldPosition;
     private int _upAxis = 1;
     private float _upSign = 1f;
+    private float _peakFallSpeed;
+    private bool _isAirborne;
+
+    public event Action<float, Vector3>? Landed;
 
     private static readonly float[] CapsuleSamples = { CapsuleRadius, CapsuleHeight * 0.5f, CapsuleHeight - CapsuleRadius };
 
@@ -51,6 +55,8 @@ public sealed class GravityWalker
         _up = -gravity.Normalized();
         _velocity = player.InertiaController.Velocity;
         _isGrounded = false;
+        _isAirborne = false;
+        _peakFallSpeed = 0f;
         LiftOutOfGeometry(player);
     }
 
@@ -101,9 +107,24 @@ public sealed class GravityWalker
         }
 
         _velocity = horizontal + vertical;
+        _peakFallSpeed = MathF.Max(_peakFallSpeed, -Vector3.Dot(_velocity, _up));
         Move(player, _velocity * deltaTime);
+        TrackLanding(gravity);
         player.CameraSway.Update(0f);
         player.OnMoved?.Invoke(player);
+    }
+
+    private void TrackLanding(Vector3 gravity)
+    {
+        if (!_isGrounded)
+        {
+            _isAirborne = true;
+            return;
+        }
+
+        if (_isAirborne && _peakFallSpeed > 0f) Landed?.Invoke(_peakFallSpeed, gravity);
+        _isAirborne = false;
+        _peakFallSpeed = 0f;
     }
 
     public void Look(LocalAstronaut player)

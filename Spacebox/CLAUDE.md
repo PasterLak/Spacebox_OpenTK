@@ -83,6 +83,7 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 
 - `GravityField.Sample(worldPos)` returns the gravity acceleration from all powered `GravityGeneratorBlock`s. Blocks that must know when they enter/leave an entity implement `IEntityBlockListener` (called on place, load and removal).
 - `MovementMode` switches the player to `GravityWalker` while the field is stronger than 0.3 m/s² and back to zero-g (keeping velocity) outside.
+- Fall damage (`Game/Player/FallDamage.cs`, survival only): `GravityWalker.Landed` reports the peak fall speed; the fallen height is `v² / 2g` with the current gravity. Settings (`FallDamage`: `SafeHeight`, `DamagePerBlock`) come from the gravity generator JSON, overridden by the preset nearest to the dominant generator's strength (`GravityField.GetDominantSource`). The impact sound (`FallImpactSound`) plays locally and is relayed by `AstronautNetwork` (owner → server RPC → `ClientsExceptOwner`) as a 3D sound at the player.
 - `GravityWalker` collides as an axis-aligned box in entity-local space (`EntityBoxCollider.Sweep`, `SpaceEntity.WorldToEntityLocal`/`EntityLocalToWorld`), so walls slide and float precision stays local.
 
 ## Respawn

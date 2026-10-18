@@ -798,11 +798,12 @@
       "Power": 200,
       "StrengthPowerFactor": 0.25,
       "MaxRoomCells": 200000,
+      "FallDamage": { "SafeHeight": 5, "DamagePerBlock": 4 },
       "Presets": [
-        { "Name": "Moon", "Strength": 1.62 },
-        { "Name": "Mars", "Strength": 3.71 },
-        { "Name": "Earth", "Strength": 9.81 },
-        { "Name": "Jupiter", "Strength": 24.79 }
+        { "Name": "Moon", "Strength": 1.62, "FallDamage": { "SafeHeight": 8, "DamagePerBlock": 2 } },
+        { "Name": "Mars", "Strength": 3.71, "FallDamage": { "SafeHeight": 6, "DamagePerBlock": 3 } },
+        { "Name": "Earth", "Strength": 9.81, "FallDamage": { "SafeHeight": 5, "DamagePerBlock": 4 } },
+        { "Name": "Jupiter", "Strength": 24.79, "FallDamage": { "SafeHeight": 3, "DamagePerBlock": 6 } }
       ]
     },
     "Category": "resources",
