@@ -91,6 +91,8 @@ Small
 - drills: Damage parameter (per second) for spacer and mobs instead of tier, shown in tooltip
 - drilling the spacer or mobs uses drill power (PowerUsage per second) in survival
 - item in hand is lit by light blocks (block light around the player, smoothed)
+- drops, spacer, players and mobs are lit by light blocks
+- items held by remote players and mob eating dust are lit by light blocks
 - data-driven mobs (GameSet Mobs/*.json), console command mob <id>|list|clear
 - Mineral Parasite Larva item spawns a parasite (item type mob_spawner)
 - engine: hierarchical state machine and voxel pathfinding (A*, open space shortcut, path scheduler)
@@ -141,6 +143,7 @@ Fixes
 Engine
 - networking: LiteNetLib transport, NetworkManager (offline/host/client/dedicated), messages, NetworkObject/NetworkBehaviour, [Rpc] methods, NetworkVariable, spawner, NetworkTransform
 - networking: chunked data transfers (NetworkManager.Transfers), DirectoryArchive (zip folders, content hash, safe extract)
+- ModelRendererComponent/TextureMaterial ExtraLight (added light for textured models), IExtraLightTarget
 - Materials
 - remake SceneGraph
 - Components

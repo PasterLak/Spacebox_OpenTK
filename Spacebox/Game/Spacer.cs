@@ -64,6 +64,7 @@ namespace Spacebox.Game
             Model spacerModel = new Model(GameAssets.LoadResource<Mesh>("Resources/Models/spacer.obj"),
                 new TextureMaterial(spacerTex));
             AttachComponent(new ModelRendererComponent(spacerModel));
+            AttachComponent(new BlockLightReceiver());
             AttachComponent(new AxesDebugComponent());
 
             _animator = new Animator(this);

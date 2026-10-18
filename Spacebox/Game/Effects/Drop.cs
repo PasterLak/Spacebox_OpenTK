@@ -30,6 +30,8 @@ public class Drop : IDisposable
     public Vector3 _initialVelocity;
     private float _throwTime;
     public SpaceEntity SourceEntity;
+    public Vector3 BlockLight;
+    public float LightSampleTimer;
 
     public bool IsBlock { get; private set; }
     public bool IsExpired => TimeRemaining <= 0f;

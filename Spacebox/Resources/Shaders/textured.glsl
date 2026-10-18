@@ -40,6 +40,7 @@ void main()
 
 
 uniform vec4 color = vec4(1,1,1,1);
+uniform vec3 extraLight = vec3(0.0);
 
 in vec3 worldPosition;
 in vec3 worldNormal;
@@ -62,6 +63,7 @@ void main()
    
     vec3 lighting =
           AMBIENT +
+          extraLight +
           accumulateDirLights (N, V, baseColor) +
           accumulatePointLights(N, V, worldPosition, baseColor) +
           accumulateSpotLights(N, V, worldPosition, baseColor);

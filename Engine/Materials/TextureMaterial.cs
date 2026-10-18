@@ -19,6 +19,8 @@ namespace Engine
             }
         }
 
+        public OpenTK.Mathematics.Vector3 ExtraLight { get; set; }
+
         public TextureMaterial(Texture2D texture) : base(Resources.Load<Shader>("Resources/Shaders/textured"))
         {
             Init(texture);
@@ -42,6 +44,12 @@ namespace Engine
             RenderFace = RenderFace.Front;
             RenderMode = RenderMode.Cutout;
             AddTexture("texture0", MainTexture);
+        }
+
+        protected override void UpdateDynamicUniforms()
+        {
+            base.UpdateDynamicUniforms();
+            Shader.SetVector3("extraLight", ExtraLight);
         }
 
         public static MeshBuffer GetMeshBuffer()

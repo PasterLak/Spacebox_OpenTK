@@ -29,6 +29,7 @@ namespace Spacebox.Game.Effects
         private readonly float _mergeDistance;
 
         public const int DropLifeTime = 60;
+        private const float DropLightInterval = 0.25f;
         private const float PickupRequestTimeout = 1.5f;
 
         private readonly Dictionary<uint, Drop> _networkDrops = new Dictionary<uint, Drop>();
@@ -635,12 +636,23 @@ namespace Spacebox.Game.Effects
             if (_dropToParticle.TryGetValue(drop, out var particle))
             {
                 particle.Position = drop.Position;
+                UpdateDropLight(drop, particle);
             }
 
             if (_dropToLight.TryGetValue(drop, out var light))
             {
                 light.Position = drop.Position;
             }
+        }
+
+        private static void UpdateDropLight(Drop drop, Particle particle)
+        {
+            drop.LightSampleTimer -= Time.Delta;
+            if (drop.LightSampleTimer > 0f) return;
+
+            drop.LightSampleTimer = DropLightInterval;
+            drop.BlockLight = BlockLightSampler.Sample(drop.Position, drop.SourceEntity);
+            particle.Color = new Vector4(Vector3.One + drop.BlockLight, 1f);
         }
 
         public override void OnRender()

@@ -55,6 +55,7 @@ namespace Spacebox.Game.Player
             AstBody = AttachComponent(new ModelRendererComponent(new Model(meshBody, mat)));
             AstHelmet = AttachComponent(new ModelRendererComponent(new Model(meshHelmet, mat)));
             AstTank = AttachComponent(new ModelRendererComponent(new Model(meshTank, mat)));
+            AttachComponent(new Effects.BlockLightReceiver());
 
             HandVisualizer = new HandItemVisualizer(this);
             AddChild(HandVisualizer);

@@ -5,7 +5,7 @@ using Spacebox.Game.Generation.Tools;
 
 namespace Spacebox;
 
-public class SimpleBlock : Node3D ,IDrawable
+public class SimpleBlock : Node3D ,IDrawable, Engine.Light.IExtraLightTarget
 {
     private float[] _vertices;
     private uint[] _indices;
@@ -17,6 +17,12 @@ public class SimpleBlock : Node3D ,IDrawable
     private Matrix4 _blockTransform = Matrix4.Identity;
     private bool _isDisposed;
     public bool DisposesTexture { get; set; } = true;
+
+    public Vector3 ExtraLight
+    {
+        get => Material.ExtraLight;
+        set => Material.ExtraLight = value;
+    }
 
     public SimpleBlock(TextureMaterial material, Vector3 position) : base(position)
     {

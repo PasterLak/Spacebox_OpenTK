@@ -71,6 +71,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
 
         _body = AttachComponent(new SphereBody(physics, definition.Radius) { Bounciness = 0f, HitRadius = HitRadiusFactor * definition.Scale });
         AttachComponent(new ModelRendererComponent(MobModels.Get(definition)));
+        AttachComponent(new Effects.BlockLightReceiver());
         _animator = new MobAnimator(this, definition.Scale, (float)_random.NextDouble() * 10f);
 
         Navigation.Bind(position);

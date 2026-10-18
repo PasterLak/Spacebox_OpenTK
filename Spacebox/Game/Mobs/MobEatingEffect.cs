@@ -1,5 +1,6 @@
 using Engine;
 using OpenTK.Mathematics;
+using Spacebox.Game.Generation;
 using Spacebox.Network;
 
 namespace Spacebox.Game.Mobs;
@@ -19,7 +20,7 @@ public sealed class MobEatingEffect
         if (!CanPlay(surface) || !GameAssets.BlockDusts.TryGetValue(blockId, out var texture)) return;
 
         Dispose();
-        _emitter = CreateEmitter(direction);
+        _emitter = CreateEmitter(direction, Vector3.One + BlockLightSampler.Sample(surface));
         _particles = new ParticleSystem(new ParticleMaterial(texture), _emitter)
         {
             Rate = EmitRate,
@@ -64,7 +65,7 @@ public sealed class MobEatingEffect
         return Vector3.DistanceSquared(Camera.Main.Position, surface) <= VisibleDistance * VisibleDistance;
     }
 
-    private static ConeEmitter CreateEmitter(Vector3 direction)
+    private static ConeEmitter CreateEmitter(Vector3 direction, Vector3 light)
     {
         return new ConeEmitter
         {
@@ -78,8 +79,8 @@ public sealed class MobEatingEffect
             EndSizeMax = 0.05f,
             RotationSpeedMin = 0f,
             RotationSpeedMax = 180f,
-            ColorStart = new Vector4(1f, 1f, 1f, 1f),
-            ColorEnd = new Vector4(0.6f, 0.6f, 0.6f, 0f),
+            ColorStart = new Vector4(light, 1f),
+            ColorEnd = new Vector4(light * 0.6f, 0f),
             Direction = direction,
             Angle = 35f,
             Height = 0.05f
