@@ -15,6 +15,11 @@ namespace Spacebox.Game.GUI
 {
     public class ResourceProcessingGUI
     {
+        static ResourceProcessingGUI()
+        {
+            InventoryUIHelper.ItemsDraggedOut += CreditProcessedItems;
+        }
+
         protected static Recipe Recipe = new Recipe();
         protected static Storage InputStorage = new Storage(1, 1);
         protected static Storage FuelStorage = new Storage(1, 1);
@@ -422,25 +427,25 @@ namespace Spacebox.Game.GUI
                 return;
             }
 
+            var itemBefore = slot.Item;
+            int countBefore = slot.Count;
+
             if (slot.TryMoveItemToConnectedStorage(out var rest))
             {
-                OnTransferSuccess(slot);
+                RestartPickupSound();
             }
             else
             {
                 TryMoveToPlayerPanel(slot, rest);
             }
+
+            CreditProcessedItems(slot, PlayerStatistics.CountMovedFrom(itemBefore, countBefore, slot.Item, slot.Count));
         }
 
-        private static void OnTransferSuccess(ItemSlot slot)
+        private static void CreditProcessedItems(ItemSlot slot, int moved)
         {
-            if (slot.Storage == OutputStorage && Player != null)
-            {
-                Player.PlayerStatistics.ItemsProcessed += processingBlock.ProcessedItems;
-                processingBlock.ProcessedItems = 0;
-            }
-
-            RestartPickupSound();
+            if (moved > 0 && slot.Storage == OutputStorage && Player != null)
+                Player.PlayerStatistics.AddProcessedItems(moved);
         }
 
         private static void TryMoveToPlayerPanel(ItemSlot slot, byte rest)

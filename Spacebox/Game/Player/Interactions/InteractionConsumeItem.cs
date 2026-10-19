@@ -135,6 +135,7 @@ public class InteractionConsumeItem : InteractionMode
                 useConsumableAudio.Play();
             }
             player.PlayerStatistics.ItemsConsumed++;
+            player.PlayerStatistics.RecordItemUse(consumable.Id_string);
 
             if (consumable.HealAmount > 0)
             {

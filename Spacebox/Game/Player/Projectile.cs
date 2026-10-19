@@ -27,6 +27,7 @@ public class Projectile : Node3D
     private byte currentDamage = 0;
     private byte blocksDestroyedThisShot = 0;
     private bool isHitWritten = false;
+    private bool isExplosionWritten = false;
 
     private LineRenderer lineRenderer;
     private Ray ray;
@@ -94,6 +95,8 @@ public class Projectile : Node3D
         Enabled = true;
         currentDamage = parameters.DamageBlocks;
         blocksDestroyedThisShot = 0;
+        isHitWritten = false;
+        isExplosionWritten = false;
         SpawnPosition = ray.Origin;
         Position = ray.Origin;
         Rotation = Vector3.Zero;
@@ -220,7 +223,8 @@ public class Projectile : Node3D
             return false;
 
         ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.Point, Parameters.ID);
-        PlayHitAudio(hit.Point);
+        ProcessHitStats(hit.Point);
+        astronaut?.PlayerStatistics.RecordEntityDamage(Parameters.Damage);
 
         if (_isAuthoritative)
             CombatNetwork.ApplyPlayerHit(hit.Peer, _ownerPeer, Parameters.Damage, hit.IsHeadshot);
@@ -285,6 +289,7 @@ public class Projectile : Node3D
     {
         if (_isAuthoritative) damagable.TakeDamage(this);
         ProcessHitStats(hitPos);
+        astronaut?.PlayerStatistics.RecordEntityDamage(Parameters.Damage);
 
         ProjectileHitEffectsManager.Instance.PlayHitEffect(hitPos, Parameters.ID);
 
@@ -462,8 +467,9 @@ public class Projectile : Node3D
         explosionSound.SetPitchByValue(Parameters.MaxTravelDistance + 5 - distanceTraveled, 0, Parameters.MaxTravelDistance, 0.8f, 1f);
         explosionSound.Play();
 
-        if (astronaut != null)
+        if (astronaut != null && !isExplosionWritten)
         {
+            isExplosionWritten = true;
             astronaut.PlayerStatistics.ExplosionsCaused++;
         }
     }
@@ -498,6 +504,8 @@ public class Projectile : Node3D
         currentRicochets = 0;
         currentDamage = 0;
         blocksDestroyedThisShot = 0;
+        isHitWritten = false;
+        isExplosionWritten = false;
         Scale = Vector3.One;
         ray = new Ray(Vector3.Zero, Vector3.Zero, 0f);
         lineRenderer.ClearPoints();

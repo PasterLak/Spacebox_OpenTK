@@ -93,7 +93,6 @@ namespace Spacebox.Game.Player
         public PlayerStatistics PlayerStatistics { get; set; } = new PlayerStatistics();
         public PlayerEffects Effects { get; private set; } = new PlayerEffects();
         public Vector3 SpawnPosition { get; set; }
-        public Vector3 LastStatPosition { get; private set; }
         public PointLight ItemLight { get; private set; }
 
         private bool _collisionEnabled = true;
@@ -104,13 +103,13 @@ namespace Spacebox.Game.Player
         }
 
         private Axes _axes;
-        private float _timeToSavePosToStat = 5;
+        private readonly PlayerStatsTracker _statsTracker;
 
         public LocalAstronaut(Vector3 position) : base(position, true)
         {
             FOV = Settings.Graphics.Fov;
             SpawnPosition = position;
-            LastStatPosition = position;
+            _statsTracker = new PlayerStatsTracker(this);
             DepthNear = 0.01f;
             DepthFar = Settings.ViewDistance;
 
@@ -152,19 +151,10 @@ namespace Spacebox.Game.Player
             OnMoved += (a) =>
             {
                 audioListener.Velocity = InertiaController.Velocity;
-                _timeToSavePosToStat -= Time.Delta;
-
-                if (_timeToSavePosToStat < 0)
-                {
-                    _timeToSavePosToStat = 5;
-                    if (GameMode != null && GameMode != GameMode.Spectator)
-                        PlayerStatistics.UpdateDistance(LastStatPosition, Position);
-
-                    LastStatPosition = Position;
-                }
             };
 
             HealthBar.StatsData.OnIncrement += (v) => { PlayerStatistics.HealthHealed += v; };
+            HealthBar.StatsData.OnDecrement += (v) => { PlayerStatistics.RecordDamageTaken(v); };
             Respawner = new PlayerRespawner(this);
             DeathScreen.OnRespawn += Respawner.RespawnAtSpawnPoint;
             DeathScreen.OnReconstruct += ReconstructOrRespawn;
@@ -239,6 +229,7 @@ namespace Spacebox.Game.Player
         public override void Update()
         {
             base.Update();
+            _statsTracker.Update(Time.Delta);
             _flashlightBinder?.Update();
             HasOxygen = OxygenBar.StatsData.Value > 0;
 
@@ -333,14 +324,14 @@ namespace Spacebox.Game.Player
 
         public void SetPosition(Vector3 position)
         {
-            LastStatPosition = position;
             Position = position;
+            _statsTracker.ResetPosition();
         }
 
         public void Teleport(Vector3 position)
         {
             Position = position;
-            LastStatPosition = Position;
+            _statsTracker.ResetPosition();
             InertiaController.Reset();
             Effects.PlayEffect(PlayerEffectType.Teleport);
             PlayerStatistics.TeleportsUsed++;
@@ -367,7 +358,6 @@ namespace Spacebox.Game.Player
         {
             var health = HealthBar.StatsData;
             damage = Math.Min(damage, health.MaxValue);
-            PlayerStatistics.DamageTaken += damage;
             health.Decrement(damage);
             Mood.AddMood(1);
 
@@ -387,7 +377,7 @@ namespace Spacebox.Game.Player
         private void Death(DeathCase? deathCase = null)
         {
             if (!IsAlive) return;
-            PlayerStatistics.DeathsTotal++;
+            PlayerStatistics.RecordDeath(deathCase?.CauseOfDeath);
 
             IsAlive = false;
             InertiaController.Reset();

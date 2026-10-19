@@ -1,6 +1,4 @@
-﻿
-using Engine;
-using OpenTK.Mathematics;
+﻿using Engine;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -8,7 +6,12 @@ namespace Spacebox.Game.Player
 {
     public class PlayerStatistics
     {
+        public const int MaxTrackedKeys = 64;
+        public const string OtherKey = "Other";
+        public const string UnknownDeathCause = "Unknown";
+
         public int TotalPlayTimeMinutes { get; set; } = 0;
+        public double PlayTimeSeconds { get; set; } = 0;
         public int SessionsPlayed { get; set; } = 0;
         public DateTime FirstPlayedUtc { get; set; }
         public DateTime LastPlayedUtc { get; set; } = DateTime.UtcNow;
@@ -25,70 +28,165 @@ namespace Spacebox.Game.Player
         public int ProjectilesRicocheted { get; set; } = 0;
         public int ExplosionsCaused { get; set; } = 0;
         public long BlockDamageDealt { get; set; } = 0;
-        public long EntityDamageDealt { get; set; } = 0;
+        public double EntityDamageDealt { get; set; } = 0;
 
         public int DeathsTotal { get; set; } = 0;
         public int DamageTaken { get; set; } = 0;
         public int HealthHealed { get; set; } = 0;
 
-        public long DistanceTraveled { get; set; } = 0;
-        public int MaxSpeedReached { get; set; } = 0;
+        public double DistanceTraveled { get; set; } = 0;
+        public double DistanceInShips { get; set; } = 0;
+        public float MaxSpeedReached { get; set; } = 0;
         public int TeleportsUsed { get; set; } = 0;
 
-        public int AsteroidsDiscovered { get; set; } = 0;
-        public int SectorsExplored { get; set; } = 0;
+        public HashSet<long> VisitedAsteroids { get; set; } = new HashSet<long>();
+        public HashSet<string> VisitedSectors { get; set; } = new HashSet<string>();
         public int FlashlightToggles { get; set; } = 0;
+
+        public int AsteroidsDiscovered
+        {
+            get => VisitedAsteroids?.Count ?? 0;
+            set { }
+        }
+
+        public int SectorsExplored
+        {
+            get => VisitedSectors?.Count ?? 0;
+            set { }
+        }
 
         public Dictionary<string, int> ItemsUsed { get; set; } = new Dictionary<string, int>();
         public Dictionary<string, int> DeathCauses { get; set; } = new Dictionary<string, int>();
 
-        public void UpdateDistance(Vector3 lastPos, Vector3 currentPos)
-        {
-            var dis = (long)Vector3.Distance(currentPos, lastPos);
-            DistanceTraveled += dis;
-        }
-
         [JsonIgnore]
-        private DateTime _sessionStartTime = DateTime.UtcNow;
+        public int SessionMinutes => (int)(_sessionSeconds / 60);
 
-        public void StartSession()
+        private double _sessionSeconds;
+
+        public void Normalize()
         {
-            _sessionStartTime = DateTime.UtcNow;
+            VisitedAsteroids ??= new HashSet<long>();
+            VisitedSectors ??= new HashSet<string>();
+            ItemsUsed ??= new Dictionary<string, int>();
+            DeathCauses ??= new Dictionary<string, int>();
+
+            if (!double.IsFinite(PlayTimeSeconds) || PlayTimeSeconds < 0) PlayTimeSeconds = 0;
+            if (!double.IsFinite(DistanceTraveled) || DistanceTraveled < 0) DistanceTraveled = 0;
+            if (!double.IsFinite(DistanceInShips) || DistanceInShips < 0) DistanceInShips = 0;
+            if (!double.IsFinite(EntityDamageDealt) || EntityDamageDealt < 0) EntityDamageDealt = 0;
+            if (!float.IsFinite(MaxSpeedReached) || MaxSpeedReached < 0) MaxSpeedReached = 0;
+            if (PlayTimeSeconds <= 0 && TotalPlayTimeMinutes > 0) PlayTimeSeconds = TotalPlayTimeMinutes * 60.0;
         }
 
-        public void EndSession()
+        public void StartSession() => StartSession(DateTime.UtcNow);
+
+        public void StartSession(DateTime nowUtc)
         {
-          
-            if (_sessionStartTime == DateTime.MinValue)
-            {
-                _sessionStartTime = DateTime.UtcNow;
-            }
-
-            var sessionDuration = (int)(DateTime.UtcNow - _sessionStartTime).TotalMinutes;
-            TotalPlayTimeMinutes += sessionDuration;
+            Normalize();
+            if (FirstPlayedUtc == default) FirstPlayedUtc = nowUtc;
+            LastPlayedUtc = nowUtc;
             SessionsPlayed++;
-            LastPlayedUtc = DateTime.UtcNow;
+            _sessionSeconds = 0;
+        }
 
-            _sessionStartTime = DateTime.UtcNow;
+        public void AddPlayTime(double seconds)
+        {
+            if (!double.IsFinite(seconds) || seconds <= 0) return;
+            PlayTimeSeconds += seconds;
+            _sessionSeconds += seconds;
+            TotalPlayTimeMinutes = (int)(PlayTimeSeconds / 60);
+        }
+
+        public void PrepareForSave() => PrepareForSave(DateTime.UtcNow);
+
+        public void PrepareForSave(DateTime nowUtc)
+        {
+            Normalize();
+            TotalPlayTimeMinutes = (int)(PlayTimeSeconds / 60);
+            LastPlayedUtc = nowUtc;
+        }
+
+        public void AddDistance(double meters, bool inShip)
+        {
+            if (!double.IsFinite(meters) || meters <= 0) return;
+            DistanceTraveled += meters;
+            if (inShip) DistanceInShips += meters;
+        }
+
+        public void RecordSpeed(float speed)
+        {
+            if (float.IsFinite(speed) && speed > MaxSpeedReached) MaxSpeedReached = speed;
+        }
+
+        public bool RecordAsteroid(long entityId)
+        {
+            VisitedAsteroids ??= new HashSet<long>();
+            return VisitedAsteroids.Add(entityId);
+        }
+
+        public bool RecordSector(string sectorKey)
+        {
+            if (string.IsNullOrEmpty(sectorKey)) return false;
+            VisitedSectors ??= new HashSet<string>();
+            return VisitedSectors.Add(sectorKey);
+        }
+
+        public void RecordDeath(string cause)
+        {
+            DeathsTotal++;
+            DeathCauses ??= new Dictionary<string, int>();
+            Increment(DeathCauses, string.IsNullOrWhiteSpace(cause) ? UnknownDeathCause : cause.Trim());
+        }
+
+        public void RecordItemUse(string itemId)
+        {
+            if (string.IsNullOrWhiteSpace(itemId)) return;
+            ItemsUsed ??= new Dictionary<string, int>();
+            Increment(ItemsUsed, itemId);
+        }
+
+        public void AddProcessedItems(int count)
+        {
+            if (count > 0) ItemsProcessed += count;
+        }
+
+        public static int CountMovedFrom(Item itemBefore, int countBefore, Item itemAfter, int countAfter)
+        {
+            if (itemBefore == null || countBefore <= 0) return 0;
+            int left = itemAfter == itemBefore ? countAfter : 0;
+            return Math.Max(0, countBefore - left);
+        }
+
+        public void RecordDamageTaken(int damage)
+        {
+            if (damage > 0) DamageTaken += damage;
+        }
+
+        public void RecordEntityDamage(double damage)
+        {
+            if (double.IsFinite(damage) && damage > 0) EntityDamageDealt += damage;
         }
 
         public float GetAccuracy()
         {
-            return ShotsFired > 0 ? (float)ShotsHit / ShotsFired * 100f : 0f;
+            return ShotsFired > 0 ? MathF.Min(100f, (float)ShotsHit / ShotsFired * 100f) : 0f;
         }
 
         public int GetAverageSessionTimeMinutes()
         {
-            return SessionsPlayed > 0 ? TotalPlayTimeMinutes / SessionsPlayed : 0;
+            return SessionsPlayed > 0 ? (int)(PlayTimeSeconds / 60 / SessionsPlayed) : 0;
         }
 
-
+        private static void Increment(Dictionary<string, int> counts, string key)
+        {
+            if (!counts.ContainsKey(key) && counts.Count >= MaxTrackedKeys) key = OtherKey;
+            counts.TryGetValue(key, out int value);
+            counts[key] = value + 1;
+        }
 
         public void Print()
         {
             var sb = new StringBuilder();
-
-            LastPlayedUtc = DateTime.UtcNow;
 
             sb.AppendLine("=== PLAYER STATISTICS ===");
             sb.Append("Play Time: ").Append(TotalPlayTimeMinutes).Append(" min (")
@@ -108,7 +206,7 @@ namespace Spacebox.Game.Player
               .AppendLine(" consumed");
 
             sb.Append("Health: ").Append(DamageTaken).Append(" damage taken, ")
-             .Append(" dealt, ").Append(HealthHealed)
+              .Append(EntityDamageDealt.ToString("F0")).Append(" dealt, ").Append(HealthHealed)
               .Append(" healed, ").Append(DeathsTotal).AppendLine(" deaths");
 
             sb.Append("Movement: ").Append(DistanceTraveled.ToString("F1")).Append(" units, max speed ")

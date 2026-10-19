@@ -46,7 +46,8 @@ public static class StatisticsUI
        
 
         DrawCategoryHeader("General", listSize.X, categoryColor);
-        DrawStatRow("Play Time", $"{_statistics.TotalPlayTimeMinutes} min ({_statistics.SessionsPlayed} sessions)", labelWidth);
+        DrawStatRow("Play Time", $"{FormatDuration(_statistics.PlayTimeSeconds)} ({_statistics.SessionsPlayed} sessions)", labelWidth);
+        DrawStatRow("This Session", $"{_statistics.SessionMinutes} minutes", labelWidth);
         DrawStatRow("Average Session", $"{_statistics.GetAverageSessionTimeMinutes()} minutes", labelWidth);
         DrawStatRow("Game time", $"{GameTime.ToString()}", labelWidth);
 
@@ -68,6 +69,8 @@ public static class StatisticsUI
         DrawStatRow("Health Healed", ValueToString(_statistics.HealthHealed), labelWidth);
         DrawStatRow("Damage Taken", ValueToString(_statistics.DamageTaken), labelWidth);
         DrawStatRow("Deaths", _statistics.DeathsTotal.ToString(), labelWidth);
+        foreach (var cause in _statistics.DeathCauses)
+            DrawStatRow("   " + cause.Key, ValueToString(cause.Value), labelWidth);
 
         ImGui.Spacing();
         DrawCategoryHeader("Combat", listSize.X, categoryColor);
@@ -80,7 +83,12 @@ public static class StatisticsUI
 
         ImGui.Spacing();
         DrawCategoryHeader("Exploration", listSize.X, categoryColor);
-        DrawStatRow("Distance Traveled", ValueToString(_statistics.DistanceTraveled) + " m.", labelWidth);
+        DrawStatRow("Distance Traveled", FormatDistance(_statistics.DistanceTraveled), labelWidth);
+        DrawStatRow("Distance In Ships", FormatDistance(_statistics.DistanceInShips), labelWidth);
+        DrawStatRow("Max Speed", $"{_statistics.MaxSpeedReached:F1} m/s", labelWidth);
+        DrawStatRow("Asteroids Visited", ValueToString(_statistics.AsteroidsDiscovered), labelWidth);
+        DrawStatRow("Sectors Visited", ValueToString(_statistics.SectorsExplored), labelWidth);
+        DrawStatRow("Teleports", ValueToString(_statistics.TeleportsUsed), labelWidth);
         //DrawStatRow("Max Speed", $"{_statistics.MaxSpeedReached}", labelWidth);
         //DrawStatRow("Asteroids Found", _statistics.AsteroidsDiscovered.ToString(), labelWidth);
     }
@@ -93,6 +101,22 @@ public static class StatisticsUI
     private static string ValueToString(long value)
     {
         return value.ToString("N0").Replace(",", " ");
+    }
+
+    private static string ValueToString(double value)
+    {
+        return ValueToString((long)Math.Round(value));
+    }
+
+    private static string FormatDistance(double meters)
+    {
+        return meters >= 10000 ? $"{meters / 1000:F1} km" : ValueToString(meters) + " m";
+    }
+
+    private static string FormatDuration(double seconds)
+    {
+        var time = TimeSpan.FromSeconds(Math.Max(0, seconds));
+        return time.TotalHours >= 1 ? $"{(int)time.TotalHours} h {time.Minutes} min" : $"{time.Minutes} min";
     }
 
     private static void DrawCategoryHeader(string category, float width, Vector4 color)

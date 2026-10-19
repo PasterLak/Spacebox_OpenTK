@@ -43,15 +43,14 @@ namespace Spacebox.Game.Player
 
         public static void SavePlayer(LocalAstronaut player, string worldFolder)
         {
-            player.PlayerStatistics.EndSession();
             WritePlayerJson(worldFolder, Spacebox.Network.GameSession.PlayerName, Serialize(player));
-            player.PlayerStatistics.StartSession();
         }
 
         public static string Serialize(LocalAstronaut player)
         {
             try
             {
+                player.PlayerStatistics.PrepareForSave();
                 PlayerData data = new PlayerData
                 {
                     PositionX = player.Position.X,
@@ -112,7 +111,7 @@ namespace Spacebox.Game.Player
             World.CurrentSector.SpawnPlayerNearRandomAsteroidData(player, new Random(World.Seed));
             GameSetLoader.GiveStartItems(player, GameAssets.ItemsStr);
             player.Flashlight.Enabled = true;
-            player.PlayerStatistics.FirstPlayedUtc = DateTime.UtcNow;
+            player.PlayerStatistics = new PlayerStatistics();
             player.PlayerStatistics.StartSession();
         }
 
@@ -140,7 +139,7 @@ namespace Spacebox.Game.Player
                 player.Panel.Clear();
                 player.Equipment.Storage.Clear();
                 player.Flashlight.Enabled = data.IsFlashlightOn;
-                player.PlayerStatistics = data.Statistics;
+                player.PlayerStatistics = data.Statistics ?? new PlayerStatistics();
 
                 player.PlayerStatistics.StartSession();
               

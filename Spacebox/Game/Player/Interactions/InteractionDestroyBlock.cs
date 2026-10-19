@@ -46,7 +46,9 @@ public abstract class InteractionDestroyBlock : InteractionMode
 
         if (Input.IsAction("block_destroy"))
         {
-            target.TakeDrillDamage(drillItem.Damage * Time.Delta);
+            float damage = drillItem.Damage * Time.Delta;
+            target.TakeDrillDamage(damage);
+            player.PlayerStatistics.RecordEntityDamage(damage);
             ShowTargetHitEffect(world, player, hitPoint);
         }
         else

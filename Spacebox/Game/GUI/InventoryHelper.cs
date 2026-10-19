@@ -11,6 +11,8 @@ namespace Spacebox.Game.GUI
 {
     public static class InventoryUIHelper
     {
+        public static event Action<ItemSlot, int> ItemsDraggedOut;
+
         public static float SlotSize = 64.0f;
         public static AtlasSprite SlotSprite => UIAtlas.Get("slot");
         public static AtlasSprite SelectedSprite => UIAtlas.Get("selectedslot");
@@ -149,7 +151,12 @@ namespace Spacebox.Game.GUI
                     {
                         if (startSlot != slot)
                         {
-                            startSlot.SwapWith(slot);
+                            var draggedItem = startSlot.Item;
+                            int draggedCount = startSlot.Count;
+                            var source = startSlot;
+                            source.SwapWith(slot);
+                            int moved = Spacebox.Game.Player.PlayerStatistics.CountMovedFrom(draggedItem, draggedCount, source.Item, source.Count);
+                            if (moved > 0) ItemsDraggedOut?.Invoke(source, moved);
                         }
 
                         IsDragging = false;
