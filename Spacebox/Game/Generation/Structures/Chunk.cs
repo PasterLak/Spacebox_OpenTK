@@ -72,15 +72,22 @@ namespace Spacebox.Game.Generation
         {
         }
 
+        internal Chunk(Vector3SByte positionIndex, SpaceEntity spaceEntity, Func<Chunk, BlockGenerator> createGenerator)
+        {
+            InitializeStructure(positionIndex, spaceEntity);
+
+            createGenerator(this).Generate();
+            IsGenerated = true;
+
+            _lightManager = new LightManager(this);
+            _lightManager.PropagateLight();
+
+            _isLoadedOrGenerated = true;
+        }
+
         internal Chunk(Vector3SByte positionIndex, SpaceEntity spaceEntity, Block[,,] loadedBlocks, bool isLoaded, bool emptyChunk)
         {
-            PositionWorld = GetChunkWorldPosition(positionIndex, spaceEntity.PositionWorld);
-            PositionIndex = positionIndex;
-            Blocks = new Block[Size, Size, Size];
-            SpaceEntity = spaceEntity;
-
-            CreateBoundingBox();
-            GeometryBoundingBox = new BoundingBox(BoundingBox);
+            InitializeStructure(positionIndex, spaceEntity);
 
             if (!emptyChunk)
             {
@@ -111,6 +118,17 @@ namespace Spacebox.Game.Generation
             _isLoadedOrGenerated = true;
         }
 
+        private void InitializeStructure(Vector3SByte positionIndex, SpaceEntity spaceEntity)
+        {
+            PositionWorld = GetChunkWorldPosition(positionIndex, spaceEntity.PositionWorld);
+            PositionIndex = positionIndex;
+            Blocks = new Block[Size, Size, Size];
+            SpaceEntity = spaceEntity;
+
+            CreateBoundingBox();
+            GeometryBoundingBox = new BoundingBox(BoundingBox);
+        }
+
         private Vector3i ToLocalCell(int x, int y, int z)
         {
             return new Vector3i(PositionIndex.X * Size + x, PositionIndex.Y * Size + y, PositionIndex.Z * Size + z);
@@ -123,7 +141,7 @@ namespace Spacebox.Game.Generation
 
         public Block[,,] CreatePaddedSnapshot()
         {
-            var padded = new Block[34, 34, 34];
+            var padded = PaddedArrayPools.Blocks.Rent();
             for (int x = -1; x <= Size; x++)
             {
                 for (int y = -1; y <= Size; y++)

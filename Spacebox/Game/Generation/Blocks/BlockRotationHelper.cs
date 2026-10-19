@@ -74,6 +74,39 @@ namespace Spacebox.Game.Generation.Blocks
             return Quaternion.FromAxisAngle(Vector3.Normalize(rotatedAxis), MathHelper.DegreesToRadians(angle));
         }
 
+        private const int DirectionCount = 6;
+        private const int RotationCount = 4;
+
+        private static readonly Dictionary<Direction, Vector3>[] CachedFaceVectors = BuildFaceVectorCache();
+
+        private static Dictionary<Direction, Vector3>[] BuildFaceVectorCache()
+        {
+            var cache = new Dictionary<Direction, Vector3>[DirectionCount * DirectionCount * RotationCount];
+            for (int b = 0; b < DirectionCount; b++)
+                for (int f = 0; f < DirectionCount; f++)
+                    for (int r = 0; r < RotationCount; r++)
+                        cache[GetCacheIndex((Direction)b, (Direction)f, (Rotation)r)] = GetTransformedFaceVectors((Direction)b, (Direction)f, (Rotation)r);
+            return cache;
+        }
+
+        private static int GetCacheIndex(Direction baseFrontDirection, Direction facingDirection, Rotation rotation)
+        {
+            return ((int)baseFrontDirection * DirectionCount + (int)facingDirection) * RotationCount + (int)rotation;
+        }
+
+        private static bool IsCacheable(Direction baseFrontDirection, Direction facingDirection, Rotation rotation)
+        {
+            return (int)baseFrontDirection < DirectionCount && (int)facingDirection < DirectionCount && (int)rotation < RotationCount;
+        }
+
+        public static IReadOnlyDictionary<Direction, Vector3> GetCachedFaceVectors(Direction baseFrontDirection, Direction facingDirection, Rotation rotation)
+        {
+            if (IsCacheable(baseFrontDirection, facingDirection, rotation))
+                return CachedFaceVectors[GetCacheIndex(baseFrontDirection, facingDirection, rotation)];
+
+            return GetTransformedFaceVectors(baseFrontDirection, facingDirection, rotation);
+        }
+
         public static Dictionary<Direction, Vector3> GetTransformedFaceVectors(Direction baseFrontDirection, Direction facingDirection, Rotation rotation)
         {
             Matrix4 transformMatrix = CalculateTransformMatrix(baseFrontDirection, facingDirection, rotation);
@@ -89,7 +122,7 @@ namespace Spacebox.Game.Generation.Blocks
             };
         }
 
-        public static Vector3 GetFaceUp(Dictionary<Direction, Vector3> faceVectors, Direction face)
+        public static Vector3 GetFaceUp(IReadOnlyDictionary<Direction, Vector3> faceVectors, Direction face)
         {
             return face switch
             {
@@ -100,7 +133,7 @@ namespace Spacebox.Game.Generation.Blocks
             };
         }
 
-        public static Vector3 GetFaceRight(Dictionary<Direction, Vector3> faceVectors, Direction face)
+        public static Vector3 GetFaceRight(IReadOnlyDictionary<Direction, Vector3> faceVectors, Direction face)
         {
             return face switch
             {

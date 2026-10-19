@@ -1746,6 +1746,10 @@
       },
       "Ingredients": [
         {
+          "Item": "liquid_hydrogen",
+          "Quantity": 2
+        },
+        {
           "Item": "aluminium_panels",
           "Quantity": 4
         },
@@ -1761,6 +1765,10 @@
         "Quantity": 1
       },
       "Ingredients": [
+        {
+          "Item": "liquid_hydrogen",
+          "Quantity": 4
+        },
         {
           "Item": "thruster_weak",
           "Quantity": 1
@@ -1781,6 +1789,10 @@
         "Quantity": 1
       },
       "Ingredients": [
+        {
+          "Item": "liquid_hydrogen",
+          "Quantity": 8
+        },
         {
           "Item": "iron_panels",
           "Quantity": 12

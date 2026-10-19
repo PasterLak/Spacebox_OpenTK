@@ -33,7 +33,7 @@ public static class AsteroidChunkBuilder
         var oreGen = new AsteroidOreGenerator(asteroid, chunkSeed);
         oreGen.ApplyOres(ref paddedData);
 
-        var paddedBlocks = new Block[PaddedSize, PaddedSize, PaddedSize];
+        var paddedBlocks = PaddedArrayPools.Blocks.Rent();
         for (int x = 0; x < PaddedSize; x++)
         {
             for (int y = 0; y < PaddedSize; y++)
@@ -45,6 +45,7 @@ public static class AsteroidChunkBuilder
             }
         }
 
+        PaddedArrayPools.Voxels.Return(paddedData);
         return paddedBlocks;
     }
 

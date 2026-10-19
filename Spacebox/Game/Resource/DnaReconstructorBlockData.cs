@@ -12,7 +12,7 @@ public class DnaReconstructorBlockData : BlockData
     {
         settings ??= new DnaReconstructorJSON();
 
-        string dnaItem = string.IsNullOrEmpty(settings.DnaItem) ? "dna_sample" : settings.DnaItem;
+        string dnaItem = string.IsNullOrEmpty(settings.DnaItem) ? "dna_ui" : settings.DnaItem;
         DnaItemId = dnaItem.Contains(':') ? dnaItem : GameSetLoader.CombineId(modId, dnaItem);
         Power = (ushort)Math.Clamp(settings.Power, 0, 8000);
         ReconstructionTime = Math.Clamp(settings.ReconstructionTime, 1f, 30f);

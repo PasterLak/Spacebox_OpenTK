@@ -558,6 +558,7 @@ namespace Spacebox.Game.GUI.Menu
         public void Dispose()
         {
                    
+            Get<MultiplayerWindow>()?.Dispose();
             Click1.Dispose();
         }
 

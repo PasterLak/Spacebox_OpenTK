@@ -90,6 +90,7 @@ public sealed class AsteroidPreviewContent : IPreviewContent
             var padded = AsteroidChunkBuilder.BuildPaddedBlocks(generator, asteroid, seed, seed, index);
             CountBlocks(padded);
             var meshData = new MeshGenerator(index, padded, false).GenerateMeshData();
+            PaddedArrayPools.Blocks.Return(padded);
             if (!_cancelled) _ready.Enqueue(new ChunkMeshData(index, meshData.Vertices, meshData.Indices));
         }
         catch (Exception ex)

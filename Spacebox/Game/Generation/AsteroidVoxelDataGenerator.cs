@@ -80,7 +80,7 @@ namespace Spacebox.Game.Generation
             Vector3 regionSize = asteroidDimensions;
             float radius = asteroidDimensions.X * 0.5f;
 
-            var chunkData = new int[paddedSize, paddedSize, paddedSize];
+            var chunkData = PaddedArrayPools.Voxels.Rent();
 
             for (int x = 0; x < paddedSize; x++)
             {

@@ -44,6 +44,30 @@ public sealed class NetworkSession : IDisposable
         network.DisconnectedFromServer += OnDisconnectedFromServer;
 
         if (World.DropEffectManager != null) World.DropEffectManager.Replicator = new DropNetwork();
+        if (!GameSession.IsRemoteClient) Discovery.ServerAdvertiser.Start(CreateAdvertisement());
+    }
+
+    private static Discovery.ServerAdvertisement CreateAdvertisement()
+    {
+        var config = Dedicated.DedicatedServer.Config;
+        if (GameSession.IsDedicated && config != null)
+        {
+            return new Discovery.ServerAdvertisement
+            {
+                Name = config.ServerName,
+                Description = config.Description,
+                IconPath = config.IconFile,
+                LanDiscovery = config.LanDiscovery,
+                MaxPlayers = config.MaxPlayers,
+                IsDedicated = true
+            };
+        }
+
+        return new Discovery.ServerAdvertisement
+        {
+            Description = $"{GameSession.PlayerName}'s game",
+            MaxPlayers = NetworkManager.Instance.MaxPeers + 1
+        };
     }
 
     public bool Start()
@@ -159,6 +183,7 @@ public sealed class NetworkSession : IDisposable
         network.Messages.Unregister<PlayerDataMessage>();
 
         network.Shutdown("Server stopped");
+        Discovery.ServerAdvertiser.Stop();
         Combat.CombatNetwork.Reset();
         Spacebox.Network.Mobs.MobSpawnNetwork.Reset();
         Containers.ContainerNetwork.Reset();
@@ -209,7 +234,7 @@ public sealed class NetworkSession : IDisposable
         var info = World.WorldData.Info;
         network.Send(sender, new JoinAcceptedMessage
         {
-            ServerName = info.Name,
+            ServerName = Discovery.ServerAdvertiser.ServerName,
             WorldName = info.Name,
             Seed = info.Seed,
             ModId = info.ModId,

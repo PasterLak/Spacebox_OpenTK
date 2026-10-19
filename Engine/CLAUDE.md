@@ -37,7 +37,7 @@ Game-independent engine over OpenTK (GL 3.3 core). Namespace `Engine.*`. Must ne
 | `Utils/` | `ObjLoader`, `PixelDataLoader`, `FastNoiseLite`, `GenMesh`, `ShaderHotReloader`, `DirectoryArchive` (zip folders, content hash, safe extract) |
 | `Debug.cs`, `VisualDebug.cs`, `Prof.cs` | Logging + console, debug lines (F4), profiler scopes; `Debug.MirrorToStandardOutput`, `Debug.ExecuteCommand` |
 | `AI/` | `StateMachine/` (`State<TContext>`, hierarchical `StateMachine<TContext>`), `Pathfinding/` (`INavigationGrid`, `VoxelLine` DDA, `VoxelPathfinder` A*, `PathRequest`, `PathScheduler` with per-frame node budget) — main thread only |
-| `Networking/` | `NetworkManager` (modes, peers, send), `Transport/` (`INetTransport`, `LiteNetTransport`), `Serialization/` (`NetWriter`, `NetReader`, `NetSerializer`), `Messages/`, `Objects/` (`NetworkObject`, `NetworkBehaviour`, `NetworkVariable<T>`, `NetworkSpawner`, `ReplicationSystem`), `Rpc/` (`[Rpc]`, `RpcSystem`), `Behaviours/NetworkTransform`, `Transfer/` (`NetTransferService` = `NetworkManager.Transfers`, chunked blob downloads) |
+| `Networking/` | `NetworkManager` (modes, peers, send), `Transport/` (`INetTransport`, `LiteNetTransport`), `Serialization/` (`NetWriter`, `NetReader`, `NetSerializer`), `Messages/`, `Objects/` (`NetworkObject`, `NetworkBehaviour`, `NetworkVariable<T>`, `NetworkSpawner`, `ReplicationSystem`), `Rpc/` (`[Rpc]`, `RpcSystem`), `Behaviours/NetworkTransform`, `Transfer/` (`NetTransferService` = `NetworkManager.Transfers`, chunked blob downloads), `Query/` (connectionless server info: `ServerQueryResponder` = `NetworkManager.Query`, `ServerQueryClient` over an `IQuerySocket` for pings, LAN broadcast and icon download) |
 | `ServiceLocator.cs`, `EventBus.cs`, `DisposalManager.cs`, `Pool.cs`, `TickTaskManager.cs`, `TimedEventManager.cs` | Services (see below) |
 
 ## Lifecycle (`EngineWindow.cs`)
@@ -99,7 +99,7 @@ Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
 - Main-thread marshalling inside the engine: `EngineWindow`'s main-thread action queue. (The game's `MainThreadDispatcher` lives in `Spacebox`, not here.)
 - `DisposalManager`: thread-safe queue to defer GL disposal from worker threads; processed by the game scene.
 - `EventBus`: struct events implementing `IEvent`, listeners `IEventListener<T>`, `Publish(ref e)`. Cleared on every scene switch — subscribe again in each scene.
-- `ServiceLocator` (`Register`/`Get`/`TryGet`), `Pool<T>` (`Get`/`Release`), `TickTaskManager` (game ticks), `TimedEventManager` (unused), `Debug` (`Log`/`Warning`/`Error`/`Success`, console on backtick, log file).
+- `ServiceLocator` (`Register`/`Get`/`TryGet`), `Pool<T>` (`Get`/`Release`), `ConcurrentPool<T>` (thread-safe `Rent`/`Return` with reset and a retain limit, for buffers shared by workers and the main thread), `TickTaskManager` (game ticks), `TimedEventManager` (unused), `Debug` (`Log`/`Warning`/`Error`/`Success`, console on backtick, log file).
 
 ## Which to use
 

@@ -40,7 +40,20 @@ namespace Spacebox.Game.Generation
                 return;
             }
 
-            var visited = new HashSet<Chunk>();
+            var scratch = LightPropagationScratch.Pool.Rent();
+            try
+            {
+                PropagateLight(scratch);
+            }
+            finally
+            {
+                LightPropagationScratch.Pool.Return(scratch);
+            }
+        }
+
+        private void PropagateLight(LightPropagationScratch scratch)
+        {
+            var visited = scratch.Visited;
             visited.Add(_chunk);
 
             foreach (var neighbor in _chunk.Neighbors.Values)
@@ -51,8 +64,8 @@ namespace Spacebox.Game.Generation
                 }
             }
 
-            var chunkToIndex = new Dictionary<Chunk, int>();
-            var indexToChunk = new List<Chunk>();
+            var chunkToIndex = scratch.ChunkToIndex;
+            var indexToChunk = scratch.IndexToChunk;
 
             foreach (var c in visited)
             {
@@ -60,8 +73,8 @@ namespace Spacebox.Game.Generation
                 indexToChunk.Add(c);
             }
 
-            var lightQueue = new Queue<uint>(2048);
-            var changedChunks = new HashSet<Chunk>();
+            var lightQueue = scratch.LightQueue;
+            var changedChunks = scratch.ChangedChunks;
 
             for (int i = 0; i < indexToChunk.Count; i++)
             {

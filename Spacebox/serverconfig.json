@@ -1,5 +1,8 @@
 {
   "ServerName": "Spacebox Server",
+  "Description": "A Spacebox server",
+  "IconFile": "server-icon.png",
+  "LanDiscovery": true,
   "WorldName": "ServerWorld",
   "Seed": "",
   "ModId": "default",

@@ -815,6 +815,7 @@ namespace Spacebox.Game.Generation
                     }
                     finally
                     {
+                        PaddedArrayPools.Blocks.Return(snapshot);
                         Interlocked.Decrement(ref _meshJobsInFlight);
                     }
                 }, WorkerPoolManager.Priority.Medium);

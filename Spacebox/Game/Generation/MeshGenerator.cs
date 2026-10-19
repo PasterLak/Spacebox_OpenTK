@@ -53,11 +53,8 @@ namespace Spacebox.Game.Generation
                 faceNormals[i] = faces[i].GetNormal();
         }
 
-        const int floatsPerVertex = BuffersData.FloatsPerVertexBlock;
-        const int vertsPerBlock = 24;
-        const int indicesPerBlock = 36;
-        const int estimatedVertices = Size * Size * Size * vertsPerBlock * floatsPerVertex;
-        const int estimatedIndices = Size * Size * Size * indicesPerBlock;
+        private const int FloatsPerFace = 4 * BuffersData.FloatsPerVertexBlock;
+        private const int IndicesPerFace = 6;
 
         private Block GetBlockSafe(sbyte x, sbyte y, sbyte z)
         {
@@ -73,13 +70,30 @@ namespace Spacebox.Game.Generation
 
         public MeshData GenerateMeshData()
         {
+            var buffers = MeshBuildBuffers.Pool.Rent();
+            try
+            {
+                vertices = buffers.Vertices;
+                indices = buffers.Indices;
+                return BuildMeshData();
+            }
+            finally
+            {
+                buffers.Vertices = vertices;
+                buffers.Indices = indices;
+                vertices = null;
+                indices = null;
+                MeshBuildBuffers.Pool.Return(buffers);
+            }
+        }
+
+        private MeshData BuildMeshData()
+        {
             if (_measureGenerationTime)
             {
                 stopwatch = Stopwatch.StartNew();
             }
 
-            vertices = new float[estimatedVertices];
-            indices = new uint[estimatedIndices];
             vertexCount = 0;
             indexCount = 0;
             int mass = 0;
@@ -118,7 +132,7 @@ namespace Spacebox.Game.Generation
                             continue;
                         }
 
-                        var transformedVectors = BlockRotationHelper.GetTransformedFaceVectors(
+                        var transformedVectors = BlockRotationHelper.GetCachedFaceVectors(
                             GameAssets.GetBaseFrontDirection(block.Id),
                             block.Direction,
                             block.Rotation
@@ -155,7 +169,7 @@ namespace Spacebox.Game.Generation
             };
         }
 
-        private void AddRotatedFace(Block block, Face face, byte fIndex, sbyte x, sbyte y, sbyte z, Dictionary<Direction, Vector3> transformedVectors, Resource.BlockData multiblockData)
+        private void AddRotatedFace(Block block, Face face, byte fIndex, sbyte x, sbyte y, sbyte z, IReadOnlyDictionary<Direction, Vector3> transformedVectors, Resource.BlockData multiblockData)
         {
             Direction faceDir = (Direction)face;
             Vector3 transformedNormal = transformedVectors[faceDir];
@@ -185,7 +199,9 @@ namespace Spacebox.Game.Generation
             Vector3 upVector = up * 0.5f;
             Vector3 rightVector = right * 0.5f;
 
-            Vector3[] faceVertices = new Vector3[4];
+            EnsureCapacity(FloatsPerFace, IndicesPerFace);
+
+            Vector3[] faceVertices = _faceVertices;
             faceVertices[0] = faceCenter - upVector - rightVector;
             faceVertices[1] = faceCenter - upVector + rightVector;
             faceVertices[2] = faceCenter + upVector + rightVector;
@@ -308,6 +324,7 @@ namespace Spacebox.Game.Generation
 
         private readonly Vector2[][] _shapeFaceUVs = new Vector2[6][];
         private readonly float[] _faceAO = new float[4];
+        private readonly Vector3[] _faceVertices = new Vector3[4];
         private readonly Vector3SByte[] _aoOffsets = new Vector3SByte[8];
 
         private void EnsureCapacity(int extraFloats, int extraIndices)

@@ -91,6 +91,8 @@ Game
 - blocks with custom geometry (Model in blocks.json: OBJ file in Models/Blocks or code shape), collisions and raycasts use the model box
 - lights are wall torches (0.4x0.8x0.4 model, bottom on the clicked surface or centred in the air, model preview while building), new textures: iron metal bands at top/bottom, glowing window around all sides; magnet square is drawn on the clicked surface; in the air the rotate key turns it (up, away, down, towards the player), renamed Ivory/Cobalt/Crimson/Amber/Azure/Ember/Emerald/Violet Wall Torch
 - thruster nozzles keep cells free (NozzleLength in json: weak 1, others 2), zone shown while building (red when blocked), no blocks or thrusters in a nozzle's way
+- hydrogen thrusters need liquid hydrogen to craft (weak 2, standard 4, powerful 8)
+- new server list: icons (game icon if none), name, description, address, ping, players, version; LAN and local servers found automatically; info window with all details and editing of name/address/port; serverconfig.json gets Description, IconFile, LanDiscovery
 
 
 Small
@@ -234,6 +236,8 @@ Engine
 - window mode change event, SetVSync
 - TextureAtlas: textures of any size, optimal packing, layers, add textures at runtime
 - resources: controlled set pruned on dispose, double-dispose guards, AudioSource dispose deadlock fixed
+- server query protocol (Engine/Networking/Query): connectionless server info, LAN broadcast discovery and chunked icon download on the game port
+- ConcurrentPool<T> (thread-safe bounded pool); chunk meshing reuses pooled vertex/index buffers (was ~45 MB per remesh), padded block/voxel arrays and light scratch are pooled, rotation face vectors cached, generated asteroid chunks skip the empty air fill
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.1

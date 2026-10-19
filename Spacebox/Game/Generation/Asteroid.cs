@@ -295,22 +295,12 @@ namespace Spacebox.Game.Generation
 
         private (Chunk chunk, MeshData meshData) CreateChunk(Vector3SByte idx)
         {
-            var chunk = new Chunk(idx, this, true);
             var paddedBlocks = AsteroidChunkBuilder.BuildPaddedBlocks(voxelGen, NotGeneratedEntity.asteroid, Seed, EntityID, idx);
-
-            for (int x = 0; x < Chunk.Size; x++)
-            {
-                for (int y = 0; y < Chunk.Size; y++)
-                {
-                    for (int z = 0; z < Chunk.Size; z++)
-                    {
-                        chunk.Blocks[x, y, z] = paddedBlocks[x + 1, y + 1, z + 1];
-                    }
-                }
-            }
+            var chunk = new Chunk(idx, this, c => new BlockGeneratorFromPadded(c, c.PositionWorld, paddedBlocks));
 
             var tempGenerator = new MeshGenerator(chunk.PositionIndex, paddedBlocks, Chunk.MeasureGenerationTime);
             var meshData = tempGenerator.GenerateMeshData();
+            PaddedArrayPools.Blocks.Return(paddedBlocks);
 
             return (chunk, meshData);
         }

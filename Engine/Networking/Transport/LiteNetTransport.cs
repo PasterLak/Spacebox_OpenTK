@@ -22,6 +22,7 @@ public sealed class LiteNetTransport : INetTransport
     public event Action<int, string> PeerDisconnected;
     public event Action<int, byte[], int, int> DataReceived;
     public event Action<string> ConnectionFailed;
+    public event Action<IPEndPoint, byte[], int, int, bool> UnconnectedReceived;
 
     public bool IsRunning => _manager != null && _manager.IsRunning;
 
@@ -32,6 +33,7 @@ public sealed class LiteNetTransport : INetTransport
         _listener.PeerDisconnectedEvent += OnPeerDisconnected;
         _listener.NetworkReceiveEvent += OnNetworkReceive;
         _listener.NetworkErrorEvent += OnNetworkError;
+        _listener.NetworkReceiveUnconnectedEvent += OnNetworkReceiveUnconnected;
     }
 
     public bool StartServer(int port, int maxPeers, string connectionKey)
@@ -74,6 +76,11 @@ public sealed class LiteNetTransport : INetTransport
     {
         if (_peers.TryGetValue(peer, out var netPeer))
             netPeer.Send(data, offset, length, ToDeliveryMethod(mode));
+    }
+
+    public void SendUnconnected(IPEndPoint endPoint, byte[] data, int offset, int length)
+    {
+        _manager?.SendUnconnectedMessage(data, offset, length, endPoint);
     }
 
     public void Disconnect(int peer, string reason)
@@ -120,7 +127,8 @@ public sealed class LiteNetTransport : INetTransport
         return new NetManager(_listener)
         {
             AutoRecycle = true,
-            UnconnectedMessagesEnabled = false,
+            UnconnectedMessagesEnabled = _isServer,
+            BroadcastReceiveEnabled = _isServer,
             DisconnectTimeout = 10000,
             ChannelsCount = 1
         };
@@ -164,6 +172,11 @@ public sealed class LiteNetTransport : INetTransport
     {
         int peer = _isServer ? netPeer.Id + FirstClientPeerId : NetworkManager.ServerPeerId;
         DataReceived?.Invoke(peer, reader.RawData, reader.UserDataOffset, reader.UserDataSize);
+    }
+
+    private void OnNetworkReceiveUnconnected(IPEndPoint endPoint, NetPacketReader reader, UnconnectedMessageType type)
+    {
+        UnconnectedReceived?.Invoke(endPoint, reader.RawData, reader.UserDataOffset, reader.UserDataSize, type == UnconnectedMessageType.Broadcast);
     }
 
     private void OnNetworkError(IPEndPoint endPoint, SocketError error)

@@ -114,7 +114,7 @@ namespace Spacebox.Scenes
 
             AddChild(astronautNode);
 
-            astronautNode.Position = new Vector3(3, 0, -3);
+            astronautNode.Position = new Vector3(4.3f, 0, -3);
             astronautNode.Rotation = new Vector3(0, 180, 0);
 
             menu.Get<MultiplayerWindow>().LoadConfig();

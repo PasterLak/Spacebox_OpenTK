@@ -9,6 +9,9 @@ public sealed class ServerConfig
     private const string FileName = "serverconfig.json";
 
     public string ServerName { get; set; } = "Spacebox Server";
+    public string Description { get; set; } = "A Spacebox server";
+    public string IconFile { get; set; } = "server-icon.png";
+    public bool LanDiscovery { get; set; } = true;
     public string WorldName { get; set; } = "ServerWorld";
     public string Seed { get; set; } = "";
     public string ModId { get; set; } = "default";
@@ -27,7 +30,11 @@ public sealed class ServerConfig
             try
             {
                 var loaded = JsonSerializer.Deserialize<ServerConfig>(File.ReadAllText(path));
-                if (loaded != null) return loaded;
+                if (loaded != null)
+                {
+                    Save(loaded, path, options);
+                    return loaded;
+                }
             }
             catch (Exception ex)
             {
@@ -36,16 +43,22 @@ public sealed class ServerConfig
         }
 
         var config = new ServerConfig { Seed = new Random().Next().ToString() };
+        if (Save(config, path, options)) Debug.Warning($"[Server] Created default {FileName}");
+
+        return config;
+    }
+
+    private static bool Save(ServerConfig config, string path, JsonSerializerOptions options)
+    {
         try
         {
             File.WriteAllText(path, JsonSerializer.Serialize(config, options));
-            Debug.Warning($"[Server] Created default {FileName}");
+            return true;
         }
         catch (Exception ex)
         {
             Debug.Error($"[Server] Failed to write {FileName}: {ex.Message}");
+            return false;
         }
-
-        return config;
     }
 }

@@ -1,3 +1,6 @@
+using System.Net;
+using Engine.Networking.Query;
+
 namespace Engine.Networking;
 
 public sealed class NetworkManager
@@ -25,6 +28,7 @@ public sealed class NetworkManager
     public RpcSystem Rpcs { get; }
     public ReplicationSystem Replication { get; }
     public NetTransferService Transfers { get; }
+    public ServerQueryResponder Query { get; } = new ServerQueryResponder();
 
     public bool IsActive => Mode != NetworkMode.None;
     public bool IsServer => Mode == NetworkMode.Offline || Mode == NetworkMode.Host || Mode == NetworkMode.DedicatedServer;
@@ -230,6 +234,7 @@ public sealed class NetworkManager
         _transport.PeerDisconnected += OnPeerDisconnected;
         _transport.DataReceived += OnDataReceived;
         _transport.ConnectionFailed += OnConnectionFailed;
+        _transport.UnconnectedReceived += OnUnconnectedReceived;
         return _transport;
     }
 
@@ -241,6 +246,7 @@ public sealed class NetworkManager
         _transport.PeerDisconnected -= OnPeerDisconnected;
         _transport.DataReceived -= OnDataReceived;
         _transport.ConnectionFailed -= OnConnectionFailed;
+        _transport.UnconnectedReceived -= OnUnconnectedReceived;
         _transport.Dispose();
         _transport = null;
     }
@@ -282,6 +288,12 @@ public sealed class NetworkManager
     {
         Shutdown(reason);
         ConnectionFailed?.Invoke(reason);
+    }
+
+    private void OnUnconnectedReceived(IPEndPoint sender, byte[] data, int offset, int length, bool isBroadcast)
+    {
+        if (!IsServer || _transport == null) return;
+        Query.Handle(sender, data, offset, length, isBroadcast, _transport.SendUnconnected);
     }
 
     private void OnDataReceived(int peer, byte[] data, int offset, int length)

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Spacebox.Network;
 
 public class ServerEntry
@@ -6,4 +8,8 @@ public class ServerEntry
     public string Description { get; set; } = "";
     public string IP { get; set; } = "127.0.0.1";
     public int Port { get; set; } = Engine.Networking.NetworkManager.DefaultPort;
+    public string IconHash { get; set; } = "";
+
+    [JsonIgnore]
+    public string Address => $"{IP}:{Port}";
 }
