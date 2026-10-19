@@ -28,6 +28,7 @@ namespace Spacebox.Game.Generation
         private const byte Size = Chunk.Size;
         private readonly Block[,,] _paddedBlocks;
         private readonly bool _measureGenerationTime;
+        private readonly bool _buildGeometry = !Application.IsHeadless;
         private static readonly Face[] faces = (Face[])Enum.GetValues(typeof(Face));
         private static Vector3SByte[] faceNormals;
         private float[] vertices;
@@ -124,7 +125,7 @@ namespace Spacebox.Game.Generation
                         if (z > zMax) zMax = z;
                         sumPosMass += new Vector3(x, y, z) * m;
 
-                        if (block.IsMeshHidden) continue;
+                        if (!_buildGeometry || block.IsMeshHidden) continue;
 
                         if (BlockShapes.TryGet(block, out var shape))
                         {

@@ -101,6 +101,10 @@ Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
 - `EventBus`: struct events implementing `IEvent`, listeners `IEventListener<T>`, `Publish(ref e)`. Cleared on every scene switch — subscribe again in each scene.
 - `ServiceLocator` (`Register`/`Get`/`TryGet`), `Pool<T>` (`Get`/`Release`), `ConcurrentPool<T>` (thread-safe `Rent`/`Return` with reset and a retain limit, for buffers shared by workers and the main thread), `TickTaskManager` (game ticks), `TimedEventManager` (unused), `Debug` (`Log`/`Warning`/`Error`/`Success`, console on backtick, log file).
 
+## Headless mode
+
+- `Application.EnableHeadless()` (before the window is created; the game calls it for `--server`): `EngineWindow` skips rendering, post-processing, scene renderer, light/debug GPU init and `GlobalUniforms`; ImGui keeps a context and frames but draws nothing; `AudioDevice` opens no OpenAL device and `AudioClip`/`AudioSource`/`AudioListener` do nothing; `Texture2D` from files is a 1x1 CPU placeholder with `Handle` 0, other textures keep CPU pixels only; `Shader` does not compile; `MeshBuffer`/`Mesh`/`UniformBuffer`/`ParticleRenderer` create no GL objects; `TextureAtlas` registers images as 1x1 placeholders. New GPU or audio code must keep working with handle 0 / `Application.IsHeadless`.
+
 ## Which to use
 
 - `Octree<T>` — bounds-based (world sectors, chunks). `PointOctree<T>` — point-based (drops, sector entities).

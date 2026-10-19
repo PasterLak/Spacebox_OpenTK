@@ -61,6 +61,12 @@ namespace Engine
         public Mesh(string path)
         {
             Resources.AddResourceToControll(this);
+            if (Application.IsHeadless)
+            {
+                VerticesPositions = new List<Vector3>();
+                buffer = new MeshBuffer();
+                return;
+            }
 
             var (vertices, indices) = ObjLoader.Load(path);
             _indexCount = indices.Length;
@@ -116,6 +122,8 @@ namespace Engine
                     polygonMode = PolygonMode.Line;
                 }
             }
+
+            if (buffer == null || buffer.VAO == 0) return;
 
             GL.BindVertexArray(buffer.VAO);
             GL.DrawElements(PrimitiveType.Triangles, _indexCount, DrawElementsType.UnsignedInt, 0);

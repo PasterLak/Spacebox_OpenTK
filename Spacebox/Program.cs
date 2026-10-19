@@ -19,6 +19,7 @@ public static class Program
 
         if (LaunchOptions.IsDedicated)
         {
+            Engine.Application.EnableHeadless();
             Engine.Utils.TerminalConsole.Attach("Spacebox Server");
             Engine.Input.CursorCaptureEnabled = false;
         }

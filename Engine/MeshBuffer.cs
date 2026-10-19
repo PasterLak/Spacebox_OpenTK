@@ -40,6 +40,8 @@ namespace Engine
 
         private void GenBuffer()
         {
+            if (Application.IsHeadless) return;
+
             VAO = GL.GenVertexArray();
             VBO = GL.GenBuffer();
             EBO = GL.GenBuffer();
@@ -47,6 +49,8 @@ namespace Engine
 
         public void BindBuffer(ref float[] vertices, ref uint[] indices)
         {
+            if (VAO == 0) return;
+
             GL.BindVertexArray(VAO);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
@@ -69,6 +73,8 @@ namespace Engine
         }
         public void SetAttributes()
         {
+            if (VAO == 0) return;
+
             GL.BindVertexArray(VAO);
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
 
@@ -96,9 +102,12 @@ namespace Engine
         {
             if (IsDisposed) return;
 
-            GL.DeleteBuffer(VBO);
-            GL.DeleteBuffer(EBO);
-            GL.DeleteVertexArray(VAO);
+            if (VAO != 0)
+            {
+                GL.DeleteBuffer(VBO);
+                GL.DeleteBuffer(EBO);
+                GL.DeleteVertexArray(VAO);
+            }
 
             IsDisposed = true;
             Resources.RemoveResourceFromControll(this);

@@ -58,6 +58,8 @@ namespace Engine
             Width = pixelData.Width;
             Height = pixelData.Height;
             _filterMode = filterMode;
+            if (Application.IsHeadless) return;
+
             Handle = GL.GenTexture();
             GPUDebug.LabelTexture(Handle, "Texture2D PixelData");
             Use();
@@ -72,8 +74,7 @@ namespace Engine
             Width = width;
             Height = height;
             pixels = new Color4[width, height];
-            Handle = GL.GenTexture();
-            GPUDebug.LabelTexture(Handle, "Texture2D");
+            Handle = CreateHandle("Texture2D");
             for (int y = 0; y < Height; y++)
                 for (int x = 0; x < Width; x++)
                     pixels[x, y] = new Color4(1f, 1f, 1f, 1f);
@@ -85,8 +86,14 @@ namespace Engine
         public Texture2D(string path, bool pixelated = false, bool flipY = true)
         {
             Resources.AddResourceToControll(this);
-            Handle = GL.GenTexture();
-            GPUDebug.LabelTexture(Handle, "Texture2D " + path);
+            _filterMode = pixelated ? FilterMode.Nearest : FilterMode.Linear;
+            if (Application.IsHeadless)
+            {
+                CreatePlaceholder();
+                return;
+            }
+
+            Handle = CreateHandle("Texture2D " + path);
             Use();
             try { LoadTextureFromFile(path, flipY); }
             catch (Exception ex)
@@ -143,8 +150,27 @@ namespace Engine
                 Debug.Log($"[Texture2D][{Handle}] Loaded:{path}", Color4.Coral);
         }
 
+        private static int CreateHandle(string label)
+        {
+            if (Application.IsHeadless) return 0;
+
+            int handle = GL.GenTexture();
+            GPUDebug.LabelTexture(handle, label);
+            return handle;
+        }
+
+        private void CreatePlaceholder()
+        {
+            Width = 1;
+            Height = 1;
+            pixels = new Color4[1, 1];
+            pixels[0, 0] = Color4.White;
+        }
+
         private void LoadTextureFromPixels()
         {
+            if (Handle == 0) return;
+
             byte[] pixelData = new byte[Width * Height * 4];
             for (int y = 0; y < Height; y++)
                 for (int x = 0; x < Width; x++)
@@ -169,6 +195,8 @@ namespace Engine
         }
         private void SetTextureParameters()
         {
+            if (Handle == 0) return;
+
             TextureMinFilter minFilter = _filterMode == FilterMode.Nearest ? TextureMinFilter.Nearest : TextureMinFilter.LinearMipmapLinear;
             TextureMagFilter magFilter = _filterMode == FilterMode.Nearest ? TextureMagFilter.Nearest : TextureMagFilter.Linear;
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
@@ -251,6 +279,8 @@ namespace Engine
 
         public void Use(TextureUnit unit = TextureUnit.Texture0)
         {
+            if (Handle == 0) return;
+
             int unitIndex = (int)(unit - TextureUnit.Texture0);
 
             if (_activeUnit != unitIndex)
@@ -302,6 +332,9 @@ namespace Engine
             if (rawData.Length != Width * Height * 4)
                 throw new ArgumentException("[Texture2D] Raw data length does not match texture dimensions (expected Width * Height * 4 bytes).");
 
+            _isDirty = false;
+            if (Handle == 0) return;
+
             Use();
 
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0,
@@ -312,6 +345,12 @@ namespace Engine
         private void EnsureCpuPixels()
         {
             if (pixels != null) return;
+            if (Handle == 0)
+            {
+                pixels = new Color4[Width, Height];
+                return;
+            }
+
             Use();
             byte[] raw = new byte[Width * Height * 4];
             GL.GetTexImage(TextureTarget.Texture2D, 0,
@@ -474,6 +513,13 @@ namespace Engine
 
         public IResource Load(string path)
         {
+            _filterMode = FilterMode.Linear;
+            if (Application.IsHeadless)
+            {
+                CreatePlaceholder();
+                return this;
+            }
+
             Handle = GL.GenTexture();
             Use();
             LoadTextureFromFile(path, true);

@@ -73,14 +73,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     public override void LoadContent()
     {
         GameTime.Init();
-        var texture = new SpaceTexture(512, 512, World.Seed);
-
-        var skybox = new Skybox(texture);
-        skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
-
-        Lighting.Skybox = skybox;
-
-        radarWindow = new RadarUI(texture);
+        if (!Application.IsHeadless) CreateSky();
 
         if (localPlayer == null)
         {
@@ -106,9 +99,12 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         else
             PlayerSaveLoadManager.LoadPlayer(localPlayer, World.WorldData.WorldFolderPath);
 
-        var background = AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/spaceBackground.ogg"));
-        background.Audio.Volume = 0.05f;
-        background.Audio.Channel = Engine.Audio.AudioChannel.Ambient;
+        if (!Application.IsHeadless)
+        {
+            var background = AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/spaceBackground.ogg"));
+            background.Audio.Volume = 0.05f;
+            background.Audio.Channel = Engine.Audio.AudioChannel.Ambient;
+        }
 
         var cameraElement = Overlay.GetElementByType(typeof(CameraElement));
         if (cameraElement != null)
@@ -121,7 +117,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         localPlayer.GameMode = World.WorldData.Info.GameMode;
 
-        localPlayer.AddChild(new DustSpawner());
+        if (!Application.IsHeadless) localPlayer.AddChild(new DustSpawner());
 
         Debug.RegisterCommand(new DebugTexturesCommand());
         Debug.RegisterCommand(new TeleportCommand(localPlayer));
@@ -173,6 +169,18 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
             ConnectionScreen.ShowMessage("Connection failed", "Lost the connection to the server while loading");
             SceneManager.Load<MenuScene>();
         }
+    }
+
+    private void CreateSky()
+    {
+        var texture = new SpaceTexture(512, 512, World.Seed);
+
+        var skybox = new Skybox(texture);
+        skybox.Scale = new Vector3(Settings.ViewDistance, Settings.ViewDistance, Settings.ViewDistance);
+
+        Lighting.Skybox = skybox;
+
+        radarWindow = new RadarUI(texture);
     }
 
     public override void Start()
@@ -278,7 +286,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         if(!UIManager.IsUIMode)
             CenteredText.OnGUI();
 
-        radarWindow.OnGUI();
+        radarWindow?.OnGUI();
         ResourceProcessingGUI.OnGUI();
         CraftingGUI.OnGUI();
 
@@ -336,7 +344,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         PanelUI.Player = null;
 
         TickTaskManager.Dispose();
-        RadarUI.Instance.Dispose();
+        radarWindow?.Dispose();
 
         Projectile.PointLightsPool = null;
         Chat.Clear();

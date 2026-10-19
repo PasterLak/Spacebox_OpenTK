@@ -521,6 +521,8 @@ namespace Spacebox.Game.Generation
 
         private void CreateLOD(LOD lod)
         {
+            if (Application.IsHeadless) return;
+
             int downscale;
             Vector2[] uv;
             switch (lod)

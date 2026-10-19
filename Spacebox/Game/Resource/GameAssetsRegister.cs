@@ -52,7 +52,7 @@ namespace Spacebox.Game
                 GameAssets.IncrementItemId(blockData.AsItem);
                 GameAssets.Items.Add(item.Id, item);
                 GameAssets.AddItemString(blockData.Id_string, item);
-                CacheIcon(blockData);
+                if (!Application.IsHeadless) CacheIcon(blockData);
             }
             catch (Exception ex)
             {

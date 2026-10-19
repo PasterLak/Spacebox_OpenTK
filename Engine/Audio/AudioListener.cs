@@ -22,7 +22,7 @@ namespace Engine.Audio
             set
             {
                 _gain = MathHelper.Clamp(value, 0f, 1f);
-                AL.Listener(ALListenerf.Gain, _gain);
+                if (AudioDevice.IsEnabled) AL.Listener(ALListenerf.Gain, _gain);
             }
         }
 
@@ -42,7 +42,7 @@ namespace Engine.Audio
             set
             {
                 _dopplerFactor = MathHelper.Clamp(value, 0f, 10f);
-                AL.DopplerFactor(_dopplerFactor);
+                if (AudioDevice.IsEnabled) AL.DopplerFactor(_dopplerFactor);
             }
         }
 
@@ -52,7 +52,7 @@ namespace Engine.Audio
             set
             {
                 _speedOfSound = MathHelper.Clamp(value, 0.1f, 10000f);
-                AL.SpeedOfSound(_speedOfSound);
+                if (AudioDevice.IsEnabled) AL.SpeedOfSound(_speedOfSound);
             }
         }
 
@@ -62,12 +62,14 @@ namespace Engine.Audio
             set
             {
                 _distanceModel = value;
-                AL.DistanceModel((ALDistanceModel)value);
+                if (AudioDevice.IsEnabled) AL.DistanceModel((ALDistanceModel)value);
             }
         }
 
         public override void Start()
         {
+            if (!AudioDevice.IsEnabled) return;
+
             AL.DopplerFactor(_dopplerFactor);
             AL.SpeedOfSound(_speedOfSound);
             AL.DistanceModel((ALDistanceModel)_distanceModel);
@@ -79,7 +81,7 @@ namespace Engine.Audio
 
         public override void OnUpdate()
         {
-            if (Owner == null) return;
+            if (Owner == null || !AudioDevice.IsEnabled) return;
 
             Vector3 currentPosition = Owner.PositionWorld;
             Vector3 currentForward = Owner.ForwardLocal;
@@ -123,6 +125,12 @@ namespace Engine.Audio
 
         public override void OnDetached()
         {
+            if (!AudioDevice.IsEnabled)
+            {
+                base.OnDetached();
+                return;
+            }
+
             try
             {
                 AL.Listener(ALListener3f.Position, 0, 0, 0);

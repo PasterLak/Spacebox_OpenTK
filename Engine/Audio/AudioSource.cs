@@ -6,6 +6,7 @@ namespace Engine.Audio
     public class AudioSource : IDisposable
     {
         private readonly int handle;
+        private readonly bool _hasAl;
         private AudioClip _clip;
         private bool isDisposed = false;
         private bool isPlaying = false;
@@ -23,7 +24,7 @@ namespace Engine.Audio
             set
             {
                 _position = value;
-                if (!isDisposed && _is3D)
+                if (!isDisposed && _is3D && _hasAl)
                 {
                     AL.Source(handle, ALSource3f.Position, value.X, value.Y, value.Z);
                     CheckALError("Setting position");
@@ -45,13 +46,13 @@ namespace Engine.Audio
         {
             get
             {
-                if (isDisposed) return false;
+                if (isDisposed || !_hasAl) return false;
                 AL.GetSource(handle, ALSourceb.Looping, out bool looped);
                 return looped;
             }
             set
             {
-                if (isDisposed) return;
+                if (isDisposed || !_hasAl) return;
                 AL.Source(handle, ALSourceb.Looping, value);
                 CheckALError("Setting looping");
             }
@@ -80,7 +81,7 @@ namespace Engine.Audio
                 }
 
                 _pitch = MathHelper.Clamp(value, 0.5f, 2.0f);
-                if (!isDisposed)
+                if (!isDisposed && _hasAl)
                 {
                     AL.Source(handle, ALSourcef.Pitch, _pitch);
                     CheckALError("Setting pitch");
@@ -108,20 +109,27 @@ namespace Engine.Audio
 
         internal void ApplyGain()
         {
-            if (isDisposed) return;
+            if (isDisposed || !_hasAl) return;
             AL.Source(handle, ALSourcef.Gain, _volume * AudioMixer.GetGain(_channel));
             CheckALError("Setting volume");
         }
 
         public AudioSource(AudioClip clip)
         {
-            handle = AL.GenSource();
-            AL.Source(handle, ALSourcef.Gain, _volume * AudioMixer.GetGain(_channel));
+            _hasAl = AudioDevice.IsEnabled;
+            if (_hasAl)
+            {
+                handle = AL.GenSource();
+                AL.Source(handle, ALSourcef.Gain, _volume * AudioMixer.GetGain(_channel));
+            }
             AudioMixer.Register(this);
-            AL.Source(handle, ALSourceb.SourceRelative, true);
-            AL.Source(handle, ALSource3f.Position, 0, 0, 0);
+            if (_hasAl)
+            {
+                AL.Source(handle, ALSourceb.SourceRelative, true);
+                AL.Source(handle, ALSource3f.Position, 0, 0, 0);
 
-            CheckALError("Initializing AudioSource");
+                CheckALError("Initializing AudioSource");
+            }
 
             SetClip(clip);
         }
@@ -144,7 +152,7 @@ namespace Engine.Audio
                 if (_clip != null)
                 {
                     _clip.AddSource(this);
-                    if (!_clip.IsStreaming)
+                    if (_hasAl && !_clip.IsStreaming)
                     {
                         AL.Source(handle, ALSourcei.Buffer, _clip.Buffer);
                         CheckALError("Setting buffer");
@@ -152,7 +160,7 @@ namespace Engine.Audio
 
                     if (wasPlaying) Play();
                 }
-                else
+                else if (_hasAl)
                 {
                     AL.Source(handle, ALSourcei.Buffer, 0);
                     CheckALError("Clearing buffer");
@@ -162,7 +170,7 @@ namespace Engine.Audio
 
         public void Setup3D(float referenceDistance = 1.0f, float maxDistance = 100.0f, float rolloffFactor = 1.0f)
         {
-            if (isDisposed) return;
+            if (isDisposed || !_hasAl) return;
 
             if (_clip != null && _clip.IsStereo())
             {
@@ -203,7 +211,7 @@ namespace Engine.Audio
         {
             lock (playLock)
             {
-                if (isDisposed || _clip == null) return;
+                if (isDisposed || _clip == null || !_hasAl) return;
 
                 if (isPlaying) Stop();
 
@@ -287,12 +295,15 @@ namespace Engine.Audio
 
             lock (playLock)
             {
-                try
+                if (_hasAl)
                 {
-                    AL.SourceStop(handle);
-                    AL.DeleteSource(handle);
+                    try
+                    {
+                        AL.SourceStop(handle);
+                        AL.DeleteSource(handle);
+                    }
+                    catch { }
                 }
-                catch { }
 
                 _clip?.RemoveSource(this);
 

@@ -96,7 +96,7 @@ public sealed class TextureAtlas : IDisposable
 
     public bool AddFile(string name, string path, bool overwrite = false)
     {
-        if (!ImagePixels.TryLoadTopDown(path, out var pixels)) return false;
+        if (!TryLoadPixels(path, out var pixels)) return false;
         return Add(name, pixels, overwrite);
     }
 
@@ -139,13 +139,22 @@ public sealed class TextureAtlas : IDisposable
         int added = 0;
         foreach (var file in EnumerateImages(path, recursive))
         {
-            if (ImagePixels.TryLoadTopDown(file, out var pixels) &&
+            if (TryLoadPixels(file, out var pixels) &&
                 AddLayer(layer, Path.GetFileNameWithoutExtension(file).ToLowerInvariant(), pixels))
             {
                 added++;
             }
         }
         return added;
+    }
+
+    private static bool TryLoadPixels(string path, out Color4[,] pixels)
+    {
+        if (!Application.IsHeadless) return ImagePixels.TryLoadTopDown(path, out pixels);
+
+        pixels = new Color4[1, 1];
+        pixels[0, 0] = Color4.White;
+        return File.Exists(path);
     }
 
     public bool Remove(string name)

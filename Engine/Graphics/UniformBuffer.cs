@@ -20,12 +20,16 @@ namespace Engine.Graphics
         public UniformBuffer(string blockName)
         {
             Binding = BindingAllocator.GetOrAssign(blockName);
+            if (Application.IsHeadless) return;
+
             _handle = GL.GenBuffer();
             GL.BindBufferBase(BufferRangeTarget.UniformBuffer, Binding, _handle);
         }
 
         public void Update(ReadOnlySpan<T> data)
         {
+            if (_handle == 0) return;
+
             GL.BindBuffer(BufferTarget.UniformBuffer, _handle);
             GL.BufferData(BufferTarget.UniformBuffer,
                 data.Length * Unsafe.SizeOf<T>(),

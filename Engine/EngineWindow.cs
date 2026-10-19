@@ -64,17 +64,20 @@ namespace Engine
             Debug.Log("[Engine started!]");
             Input.Initialize(this);
             ResourceFallbacks.Initialize();
-            LightSystem.InitializeGpu();
-            VisualDebug.InitializeGpu();
+            if (!Application.IsHeadless)
+            {
+                LightSystem.InitializeGpu();
+                VisualDebug.InitializeGpu();
+                _sceneRenderer = new SceneRenderer(SceneSize.X, SceneSize.Y);
+            }
 
-            _sceneRenderer = new SceneRenderer(SceneSize.X, SceneSize.Y);
             FrameLimiter.Initialize(120);
             FrameLimiter.IsRunning = true;
 
             SceneManager.Initialize(() => OnRegisterScenes());
 
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
-            OnLoadImGui();
+            if (!Application.IsHeadless) OnLoadImGui();
 
             _debugKey = Application.Platform == Application.PlatformName.OSX ? (Keys)161 : Keys.GraveAccent;
 
@@ -83,9 +86,12 @@ namespace Engine
 
             CenterWindow();
 
-            _processManager = new PostProcessManager();
-            SetupDefaultPostProcessing();
-            OnSetupPostProcessing(_processManager);
+            if (!Application.IsHeadless)
+            {
+                _processManager = new PostProcessManager();
+                SetupDefaultPostProcessing();
+                OnSetupPostProcessing(_processManager);
+            }
 
             MinimumSize = new Vector2i(640, 360);
           
@@ -133,6 +139,12 @@ namespace Engine
         {
             if (IsQuitting) return;
             base.OnRenderFrame(e);
+
+            if (Application.IsHeadless)
+            {
+                FrameLimiter.Update();
+                return;
+            }
 
             using (Prof.Time(T_Render))
             {
@@ -215,7 +227,7 @@ namespace Engine
                     SceneManager.Update();
                 }
 
-                GlobalUniforms.Push();
+                if (!Application.IsHeadless) GlobalUniforms.Push();
                 Time.EndUpdate();
                 AudioDevice.Instance.Update();
             }
@@ -433,9 +445,9 @@ namespace Engine
                 SceneManager.Current.UnloadContent();
 
             AudioDevice.Instance.Dispose();
-            _processManager.Dispose();
+            _processManager?.Dispose();
             Resources.UnloadAll(true);
-            _sceneRenderer.Dispose();
+            _sceneRenderer?.Dispose();
             Debug.SaveMessagesToFile(true);
             Close();
             WorkerPoolManager.Shutdown();

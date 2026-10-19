@@ -21,6 +21,12 @@ namespace Engine
         {
             Material = material;
             _quad = new MeshBuffer(new[] { new BufferAttribute("aPos", 3), new BufferAttribute("aUV", 2) });
+            if (Application.IsHeadless)
+            {
+                _data = Array.Empty<float>();
+                return;
+            }
+
             UpdateQuadUV();
             _instVbo = GL.GenBuffer();
             GL.BindVertexArray(_quad.VAO);
@@ -64,6 +70,8 @@ namespace Engine
             _data = new float[_maxParticles * floatsPerInstance];
             _count = 0;
             int stride = floatsPerInstance * sizeof(float);
+            if (_instVbo == 0) return;
+
             GL.BindBuffer(BufferTarget.ArrayBuffer, _instVbo);
             GL.BufferData(BufferTarget.ArrayBuffer, _maxParticles * stride, IntPtr.Zero, BufferUsageHint.DynamicDraw);
             int offset = 0, loc = 2;
@@ -120,6 +128,8 @@ namespace Engine
 
         public void End()
         {
+            if (_instVbo == 0) return;
+
             GL.BindBuffer(BufferTarget.ArrayBuffer, _instVbo);
             GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, _count * 20 * sizeof(float), _data);
             GL.BindVertexArray(_quad.VAO);
@@ -134,7 +144,7 @@ namespace Engine
         public void Dispose()
         {
             _quad.Dispose();
-            GL.DeleteBuffer(_instVbo);
+            if (_instVbo != 0) GL.DeleteBuffer(_instVbo);
             
         }
     }

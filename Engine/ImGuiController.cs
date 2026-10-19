@@ -47,6 +47,12 @@ namespace Engine
             _windowWidth = width;
             _windowHeight = height;
 
+            if (Application.IsHeadless)
+            {
+                CreateHeadlessContext();
+                return;
+            }
+
             int major = GL.GetInteger(GetPName.MajorVersion);
             int minor = GL.GetInteger(GetPName.MinorVersion);
 
@@ -66,6 +72,21 @@ namespace Engine
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 
             CreateDeviceResources();
+
+            SetPerFrameImGuiData(1f / 60f);
+
+            ImGui.NewFrame();
+            _frameBegun = true;
+        }
+
+        private void CreateHeadlessContext()
+        {
+            _imguiContext = ImGui.CreateContext();
+            ImGui.SetCurrentContext(_imguiContext);
+            var io = ImGui.GetIO();
+            io.Fonts.AddFontDefault();
+            io.Fonts.GetTexDataAsRGBA32(out nint _, out int _, out int _, out int _);
+            io.Fonts.ClearTexData();
 
             SetPerFrameImGuiData(1f / 60f);
 
@@ -172,6 +193,8 @@ void main()
         /// </summary>
         public void RecreateFontDeviceTexture(bool nearestFilter = false)
         {
+            if (Application.IsHeadless) return;
+
             ImGuiIOPtr io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out nint pixels, out int width, out int height, out int bytesPerPixel);
 
@@ -222,8 +245,8 @@ void main()
                
                 ImGui.Render();
 
-                
-                RenderImDrawData(ImGui.GetDrawData());
+                if (!Application.IsHeadless)
+                    RenderImDrawData(ImGui.GetDrawData());
             }
         }
 
@@ -529,12 +552,15 @@ void main()
         /// </summary>
         public void Dispose()
         {
-            GL.DeleteVertexArray(_vertexArray);
-            GL.DeleteBuffer(_vertexBuffer);
-            GL.DeleteBuffer(_indexBuffer);
+            if (!Application.IsHeadless)
+            {
+                GL.DeleteVertexArray(_vertexArray);
+                GL.DeleteBuffer(_vertexBuffer);
+                GL.DeleteBuffer(_indexBuffer);
 
-            GL.DeleteTexture(_fontTexture);
-            GL.DeleteProgram(_shader);
+                GL.DeleteTexture(_fontTexture);
+                GL.DeleteProgram(_shader);
+            }
 
             if (_imguiContext != nint.Zero)
             {

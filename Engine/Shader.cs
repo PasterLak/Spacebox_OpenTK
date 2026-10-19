@@ -38,6 +38,8 @@ namespace Engine
         {
             _shaderPath = shaderPath;
             Resources.AddResourceToControll(this);
+            if (Application.IsHeadless) return;
+
             var r = LoadFromPath(_shaderPath);
             Load(ref r.vertexSrc, ref r.fragmentSrc, ref r.geometrySrc);
             _hotReloader = new ShaderHotReloader(_shaderPath, OnShaderFileChanged);
@@ -47,6 +49,8 @@ namespace Engine
         {
             _shaderPath = "";
             Resources.AddResourceToControll(this);
+            if (Application.IsHeadless) return;
+
             var r = LoadFromCode(code);
             Load(ref r.vertexSrc, ref r.fragmentSrc, ref r.geometrySrc); 
         }
@@ -233,7 +237,7 @@ namespace Engine
 
         }
 
-        public int GetAttribLocation(string attribName) => GL.GetAttribLocation(Handle, attribName);
+        public int GetAttribLocation(string attribName) => Handle == 0 ? -1 : GL.GetAttribLocation(Handle, attribName);
 
         public void SetBool(string name, bool data)
         {
@@ -300,7 +304,7 @@ namespace Engine
             if (Handle != 0)
                 GL.DeleteProgram(Handle);
 
-            if(ACTIVE_SHADER == Handle)
+            if(Handle != 0 && ACTIVE_SHADER == Handle)
             {
                 GL.UseProgram(0);
                 ACTIVE_SHADER = 0;

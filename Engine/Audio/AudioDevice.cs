@@ -13,10 +13,11 @@ namespace Engine.Audio
 
         private bool isDisposed = false;
 
+        public static bool IsEnabled => !Application.IsHeadless;
+
         AudioDevice()
         {
-
-            Setup();
+            if (IsEnabled) Setup();
         }
 
         public static AudioDevice Instance
@@ -67,12 +68,12 @@ namespace Engine.Audio
         public void Dispose()
         {
             if (isDisposed) return;
+            isDisposed = true;
+            if (Context == ALContext.Null) return;
 
             ALC.MakeContextCurrent(ALContext.Null);
             ALC.DestroyContext(Context);
             ALC.CloseDevice(Device);
-
-            isDisposed = true;
         }
 
         private void CheckALError(string operation)

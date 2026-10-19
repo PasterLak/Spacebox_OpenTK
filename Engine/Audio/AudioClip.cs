@@ -39,6 +39,13 @@ namespace Engine.Audio
         public AudioClip(string filename, AudioLoadMode loadMode = AudioLoadMode.LoadIntoMemory)
         {
             Resources.AddResourceToControll(this);
+            IsStreaming = loadMode == AudioLoadMode.Stream;
+            if (!AudioDevice.IsEnabled)
+            {
+                FileFullPath = filename;
+                Name = Path.GetFileNameWithoutExtension(filename);
+                return;
+            }
 
             string resolvedPath = AudioPathResolver.ResolvePath(filename, AppDomain.CurrentDomain.BaseDirectory, AllowedExtensions);
             if (resolvedPath == null)
@@ -67,6 +74,8 @@ namespace Engine.Audio
 
         public bool IsStereo()
         {
+            if (Buffer == 0) return false;
+
             try
             {
                 AL.GetBuffer(Buffer, ALGetBufferi.Channels, out int channels);
@@ -177,7 +186,7 @@ namespace Engine.Audio
                 AL.DeleteBuffers(buffers);
                 CheckALError("Deleting streaming buffers");
             }
-            AL.DeleteBuffer(Buffer);
+            if (Buffer != 0) AL.DeleteBuffer(Buffer);
 
             IsDisposed = true;
         }

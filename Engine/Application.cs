@@ -12,6 +12,10 @@ namespace Engine
 
         public static string BaseDirectory => AppDomain.CurrentDomain.BaseDirectory;
 
+        public static bool IsHeadless { get; private set; }
+
+        public static void EnableHeadless() => IsHeadless = true;
+
         public static PlatformName Platform { get; } = CheckPlatform();
 
         private static PlatformName CheckPlatform()
