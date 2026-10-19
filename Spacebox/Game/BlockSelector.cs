@@ -52,6 +52,7 @@ public class BlockSelector : Node3D
     private static readonly int[] ReservedAreaPath = { 0, 1, 2, 3, 0, 4, 5, 1, 5, 6, 2, 6, 7, 3, 7, 4 };
     private readonly Vector3[] _reservedCorners = new Vector3[8];
     private Matrix4 _currentTransform = Matrix4.Identity;
+    private Matrix4 _magnetTransform = Matrix4.Identity;
     private Matrix4 _entityRotation = Matrix4.Identity;
     private Vector3 _highlightSize = Vector3.One;
     private Direction _blockDirection = Block.DefaultDirection;
@@ -129,6 +130,7 @@ public class BlockSelector : Node3D
     public void OnSelectedSlotWasChanged(short slot)
     {
         _currentTransform = Matrix4.Identity;
+        _magnetTransform = Matrix4.Identity;
         _highlightSize = Vector3.One;
         _shapePoseKey = -1;
         HideReservedArea();
@@ -204,7 +206,11 @@ public class BlockSelector : Node3D
         if (CurrentBlockData.Shape != null)
         {
             _currentTransform = Matrix4.Identity;
+            _magnetTransform = BlockRotationHelper.CalculateTransformMatrix(Direction.Up, _blockDirection, _blockRotation);
             UpdateShapeMesh(CurrentBlockData.Shape);
+            ApplyBlockTransform();
+            _transformDirty = true;
+            return;
         }
         else if (CurrentBlockData.AllSidesAreSame() && !CurrentBlockData.IsMultiblock)
         {
@@ -219,6 +225,7 @@ public class BlockSelector : Node3D
             );
         }
 
+        _magnetTransform = _currentTransform;
         ApplyBlockTransform();
         _transformDirty = true;
     }
@@ -407,7 +414,7 @@ public class BlockSelector : Node3D
 
         for (int i = 0; i < _baseCorners.Length; i++)
         {
-            Vector4 transformed = _baseCorners[i] * (_currentTransform * _entityRotation);
+            Vector4 transformed = _baseCorners[i] * (_magnetTransform * _entityRotation);
             _cachedMagnetPoints.Add(transformed.Xyz + pos);
         }
         _cachedMagnetPoints.Add(_cachedMagnetPoints[0]);

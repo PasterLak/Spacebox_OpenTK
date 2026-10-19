@@ -587,7 +587,9 @@
     },
     "Textures": {
       "Active": {
-        "All": "white"
+        "All": "torchWhite",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
       }
     },
     "Sounds": {
@@ -607,7 +609,9 @@
     },
     "Textures": {
       "Active": {
-        "All": "blue"
+        "All": "torchBlue",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
       }
     },
     "Sounds": {
@@ -627,7 +631,9 @@
     },
     "Textures": {
       "Active": {
-        "All": "red"
+        "All": "torchRed",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
       }
     },
     "Sounds": {
@@ -647,7 +653,9 @@
     },
     "Textures": {
       "Active": {
-        "All": "yellow"
+        "All": "torchYellow",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
       }
     },
     "Sounds": {
@@ -667,7 +675,9 @@
     },
     "Textures": {
       "Active": {
-        "All": "cyan"
+        "All": "torchCyan",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
       }
     },
     "Sounds": {
@@ -687,7 +697,9 @@
     },
     "Textures": {
       "Active": {
-        "All": "orange"
+        "All": "torchOrange",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
       }
     },
     "Sounds": {
@@ -707,7 +719,9 @@
     },
     "Textures": {
       "Active": {
-        "All": "green"
+        "All": "torchGreen",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
       }
     },
     "Sounds": {
@@ -727,7 +741,9 @@
     },
     "Textures": {
       "Active": {
-        "All": "pink"
+        "All": "torchPink",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
       }
     },
     "Sounds": {

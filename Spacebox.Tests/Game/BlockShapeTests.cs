@@ -211,16 +211,31 @@ public class BlockShapeTests
         Assert.Equal(new Engine.Vector3SByte(-nx, -ny, -nz), data.Shape!.GetSupportOffset(direction, rotation));
     }
 
-    [Fact]
-    public void Placement_ShapedBlockInAir_IsUpright()
+    [Theory]
+    [InlineData(Rotation.None, Direction.Up)]
+    [InlineData(Rotation.Right, Direction.Left)]
+    [InlineData(Rotation.Half, Direction.Down)]
+    [InlineData(Rotation.Left, Direction.Right)]
+    public void Placement_ShapedBlockInAir_RotationTurnsThroughPlayerView(Rotation selected, Direction expected)
     {
         var data = new Spacebox.Game.Resource.BlockData("Torch", "block") { Shape = new BlockShape(TorchGeometry()) };
 
-        BlockPlacementHelper.CalculateOrientation(new Vector3(5, 7, 3), Vector3.Zero, Vector3.UnitY, Vector3.Zero,
-            false, false, data, Rotation.Half, out var direction, out var rotation);
+        BlockPlacementHelper.CalculateOrientation(new Vector3(5, 7, 1), Vector3.Zero, Vector3.UnitY, Vector3.Zero,
+            false, false, data, selected, out var direction, out var rotation);
 
-        Assert.Equal(Direction.Up, direction);
+        Assert.Equal(expected, direction);
         Assert.Equal(Rotation.None, rotation);
+    }
+
+    [Fact]
+    public void Placement_ShapedBlockInAir_FollowsPlayerUp()
+    {
+        var data = new Spacebox.Game.Resource.BlockData("Torch", "block") { Shape = new BlockShape(TorchGeometry()) };
+
+        BlockPlacementHelper.CalculateOrientation(new Vector3(0, 0, 5), Vector3.Zero, new Vector3(0.9f, 0.3f, 0f), Vector3.Zero,
+            false, false, data, Rotation.None, out var direction, out _);
+
+        Assert.Equal(Direction.Right, direction);
     }
 
     [Fact]

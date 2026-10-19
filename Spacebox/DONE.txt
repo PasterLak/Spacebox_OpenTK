@@ -89,7 +89,7 @@ Game
 - ships collide with asteroids and other ships (bounce, friction), thruster flames, players stay aboard moving ships
 - cannons fire through server combat code, shots add the ship speed and ignore their own ship; ship state, pilot input and bindings synced in multiplayer
 - blocks with custom geometry (Model in blocks.json: OBJ file in Models/Blocks or code shape), collisions and raycasts use the model box
-- lights are wall torches (0.4x0.8x0.4 model, bottom on the clicked surface or centred in the air, model preview while building), renamed Ivory/Cobalt/Crimson/Amber/Azure/Ember/Emerald/Violet Wall Torch
+- lights are wall torches (0.4x0.8x0.4 model, bottom on the clicked surface or centred in the air, model preview while building), new textures: iron metal bands at top/bottom, glowing window around all sides; magnet square is drawn on the clicked surface; in the air the rotate key turns it (up, away, down, towards the player), renamed Ivory/Cobalt/Crimson/Amber/Azure/Ember/Emerald/Violet Wall Torch
 
 
 Small

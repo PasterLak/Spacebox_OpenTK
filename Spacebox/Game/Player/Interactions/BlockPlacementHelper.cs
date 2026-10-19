@@ -30,7 +30,10 @@ namespace Spacebox.Game.Generation.Tools
         {
             if (blockData.Shape != null)
             {
-                finalDir = surfaceNormal.LengthSquared > 0.5f ? Block.GetDirectionFromNormal(surfaceNormal) : Direction.Up;
+                var shapeUp = surfaceNormal.LengthSquared > 0.5f
+                    ? surfaceNormal
+                    : GetShapeUpInAir(playerPosition, blockPosition, playerUp, additionalRotation);
+                finalDir = Block.GetDirectionFromNormal(shapeUp);
                 finalRot = Rotation.None;
                 return;
             }
@@ -155,6 +158,22 @@ namespace Spacebox.Game.Generation.Tools
                 int combinedRot = ((int)bestRot + (int)additionalRotation) % 4;
                 bestRot = (Rotation)combinedRot;
             }
+        }
+
+        private static Vector3 GetShapeUpInAir(Vector3 playerPosition, Vector3 blockPosition, Vector3 playerUp, Rotation rotation)
+        {
+            Vector3 up = GetDominantAxis(playerUp);
+            Vector3 away = blockPosition - playerPosition;
+            away -= Vector3.Dot(away, up) * up;
+            Vector3 forward = away.LengthSquared > 1e-6f ? GetDominantAxis(away) : GetDominantAxis(Vector3.Cross(up, Vector3.UnitX + Vector3.UnitZ * 0.5f));
+
+            return rotation switch
+            {
+                Rotation.Right => forward,
+                Rotation.Half => -up,
+                Rotation.Left => -forward,
+                _ => up
+            };
         }
 
         private static Vector3 GetDominantAxis(Vector3 v)
