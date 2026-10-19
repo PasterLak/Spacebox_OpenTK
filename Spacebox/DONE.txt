@@ -94,6 +94,7 @@ Game
 - hydrogen thrusters need liquid hydrogen to craft (weak 2, standard 4, powerful 8)
 - dedicated server runs at UpdateRate (serverconfig.json, default 30) instead of the client FPS/VSync settings, which made it spin at full CPU
 - dedicated server no longer plays music or loads audio, textures, shaders and models; chunk meshing there only computes mass
+- server whitelist (WhitelistEnabled + Whitelist) and player accounts (RegistrationEnabled): password window when joining, create account, save password for automatic join, passwords stored hashed (PBKDF2) and never sent; console command unregister
 - new server list: icons (game icon if none), name, description, address, ping, players, version; LAN and local servers found automatically; info window with all details and editing of name/address/port; serverconfig.json gets Description, IconFile, LanDiscovery
 
 
