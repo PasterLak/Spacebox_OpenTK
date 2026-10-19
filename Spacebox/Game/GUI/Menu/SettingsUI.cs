@@ -44,12 +44,18 @@ public static class SettingsUI
         ImGui.SetCursorPos(new Vector2((ww - btnW) / 2f, wh - btnH - spacing));
 
         if (onSave != null)
+        {
             ButtonWithBackground("Save", new Vector2(listSize.X / 2f - spacing, btnH),
                 new Vector2((ww - btnW) / 2f, wh - btnH - spacing), onSave);
+            UIHelper.ShowTooltip("Keep these settings and save them for the next start.");
+        }
 
         if (onBack != null)
+        {
             ButtonWithBackground("Back", new Vector2(listSize.X / 2f - spacing, btnH),
             new Vector2((ww - btnW) / 2f + listSize.X / 2f + spacing, wh - btnH - spacing), onBack);
+            UIHelper.ShowTooltip("Go back and undo the changes that were not saved.");
+        }
 
         ImGui.End();
     }

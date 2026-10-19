@@ -28,7 +28,7 @@ Game-independent engine over OpenTK (GL 3.3 core). Namespace `Engine.*`. Must ne
 | `InputPro/` | Current input system (`InputManager.Instance`) |
 | `Input.cs` | Raw keyboard/mouse state |
 | `InputManager0.cs`, `InputAction0.cs` | Legacy input — do not use in new code |
-| `Audio/` | OpenAL `AudioDevice`, `AudioClip`, `AudioSource`, `AudioMixer`, Ogg/Wave loaders |
+| `Audio/` | OpenAL `AudioDevice`, `AudioClip`, `AudioSource`, `AudioMixer` (master + channels Effects/Music/Ambient/UI, `Muted`; set a source's `Channel`), Ogg/Wave loaders |
 | `Animation/` | `Animator`, move/rotate tweens |
 | `ParticleSystem/` | Emitters and renderer |
 | `Commands/` | Debug-console commands (`CommandManager`, `CommandBase`) |
@@ -87,6 +87,8 @@ Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
 
 - GUI is ImGui (ImGui.NET) via `ImGuiController`. `UIManager` keeps a stack of named windows (`Open`, `Toggle`, `CloseTop`, `IsOpen`); gate gameplay input on `IsUIMode`. The debug console is the `"debug"` window.
 - ImGui style is global: a scene with its own look captures `GUI/ImGuiStyleSnapshot.Capture()` on load, applies its theme only around its own GUI pass and calls `Restore()` after it and on unload.
+- `InputManager.LoadConfiguration` keeps the existing `InputAction` objects (and their `Subscribe` callbacks) and only replaces their bindings, so reloading the key config is safe at any time.
+- `ParticleSystem.GloballyEnabled` hides and stops all particle systems (the particle setting). Post-processing effects that must always run (the passthrough `DefaultEffect`) override `IsRequired`; `PostProcessManager.Enabled = false` skips only the others.
 - Input: named actions → `InputPro.InputManager.Instance` (JSON bindings, remappable); raw state → `Input.IsKey` / `IsKeyDown` / `Input.Mouse`. `InputManager0`/`InputAction0` are legacy (still used for engine F-keys).
 
 ## Threading and services

@@ -285,7 +285,7 @@ namespace Spacebox.Game.Player
             }
             if (Input.IsActionUp("zoom"))
             {
-                FOV = 90;
+                FOV = Settings.Graphics.Fov;
             }
 
 #if DEBUG
@@ -307,7 +307,7 @@ namespace Spacebox.Game.Player
 
         public override Matrix4 GetViewMatrix()
         {
-            Quaternion sway = CameraSway.GetSwayRotation();
+            Quaternion sway = Settings.Gameplay.CameraSway ? CameraSway.GetSwayRotation() : Quaternion.Identity;
             Quaternion combinedRotation = GetRotation() * sway;
             Vector3 newFront = Vector3.Transform(-Vector3.UnitZ, combinedRotation);
             Vector3 newUp = Vector3.Transform(Vector3.UnitY, combinedRotation);

@@ -34,7 +34,7 @@ namespace Spacebox.Game.Player
         private List<AudioClip> _allEffectClips = new List<AudioClip>();
         private List<AudioClip> _availableEffects = new List<AudioClip>();
         private List<AudioClip> _playedEffects = new List<AudioClip>();
-        private AudioSource _audioSource = new AudioSource();
+        private AudioSource _audioSource = new AudioSource(null, AudioChannel.Ambient);
         private List<TimedMoodEvent> _timedEvents = new List<TimedMoodEvent>();
         private Vector3 _lastPosition;
 

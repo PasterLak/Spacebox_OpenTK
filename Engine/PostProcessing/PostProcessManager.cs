@@ -5,11 +5,18 @@ namespace Engine.PostProcessing
     public abstract class PostProcessEffect
     {
         public bool Enabled { get; set; } = true;
+        public virtual bool IsRequired => false;
+
+        public bool ShouldApply(bool postProcessingEnabled)
+        {
+            return Enabled && (postProcessingEnabled || IsRequired);
+        }
         public abstract void Apply(int inputTexture, int outputFbo, Vector2i clientSize);
     }
     public class PostProcessManager : IDisposable
     {
         private List<PostProcessEffect> effects = new List<PostProcessEffect>();
+        public bool Enabled { get; set; } = true;
         private bool disposed = false;
         private static MeshBuffer fullscreenBuffer;
         private int[] pingpongFBO = new int[2];
@@ -91,7 +98,7 @@ namespace Engine.PostProcessing
             int readTexture = sceneRenderer.ColorTexture;
             for (int i = 0; i < effects.Count; i++)
             {
-                if (!effects[i].Enabled) continue;
+                if (!effects[i].ShouldApply(Enabled)) continue;
 
                 int writeFBO = pingpongFBO[currentPingPong];
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, writeFBO);

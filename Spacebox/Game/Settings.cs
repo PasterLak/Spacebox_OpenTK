@@ -28,10 +28,11 @@ public class Settings
     public const int LOD0 = 150;
     public const int LOD1 = 256;
     public const int LOD2 = 512;
-    public const int LOD3 = CHUNK_VISIBLE_RADIUS; // = CHUNK_VISIBLE_RADIUS ?  512 old
+    public const int LOD3 = MAX_CHUNK_VISIBLE_RADIUS; // = CHUNK_VISIBLE_RADIUS ?  512 old
 
-    public const int CHUNK_VISIBLE_RADIUS = 900;
-    public const int ENTITY_VISIBLE_RADIUS = 1000;
+    public const int MAX_CHUNK_VISIBLE_RADIUS = 900;
+    public static int CHUNK_VISIBLE_RADIUS => Gameplay.DrawDistance * MAX_CHUNK_VISIBLE_RADIUS / GameplaySettings.MaxDrawDistance;
+    public static int ENTITY_VISIBLE_RADIUS => Gameplay.DrawDistance;
     public const int ENTITY_SEARCH_RADIUS = 1200;
     public const int ENTITY_UNLOAD_DISTANCE = 1500;
     public const int VIEW_DISTANCE_TO_NEXT_SECTOR = ENTITY_SEARCH_RADIUS;

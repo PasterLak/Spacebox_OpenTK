@@ -8,7 +8,7 @@ namespace Spacebox.Game.GUI.Menu;
 
 public class ControlsWindow : MenuWindow
 {
-    private GameMenu menu;
+    private readonly IOptionsNavigator _options;
     private InputRemapper remapper;
     private string remappingAction = null;
     private bool isRemapping = false;
@@ -16,11 +16,11 @@ public class ControlsWindow : MenuWindow
     private const float MAX_REMAP_TIME = 10f;
     private List<string> sameKeys = new List<string>();
 
-    public ControlsWindow(GameMenu menu)
+    public ControlsWindow(IOptionsNavigator options)
     {
-        this.menu = menu;
+        _options = options;
         remapper = new InputRemapper();
-        InputManager.Instance.LoadConfiguration("Resources/default_input.json");
+        InputManager.Instance.LoadConfiguration(OptionsMenu.InputConfigPath);
     }
 
     public override void Render()
@@ -32,15 +32,15 @@ public class ControlsWindow : MenuWindow
             },
             () =>
             {
-                menu.Click1.Play();
-                InputManager.Instance.SaveConfiguration("Resources/default_input.json");
-                menu.SetStateToOptions();
+                _options.PlayClick();
+                InputManager.Instance.SaveConfiguration(OptionsMenu.InputConfigPath);
+                _options.ShowOptions();
             },
             () =>
             {
-                menu.Click1.Play();
-                InputManager.Instance.LoadConfiguration("Resources/default_input.json");
-                menu.SetStateToOptions();
+                _options.PlayClick();
+                InputManager.Instance.LoadConfiguration(OptionsMenu.InputConfigPath);
+                _options.ShowOptions();
             }
         );
 
@@ -100,6 +100,7 @@ public class ControlsWindow : MenuWindow
 
                     ImGui.TableNextColumn();
                     ImGui.Text(action.Name);
+                    UIHelper.ShowTooltip(string.IsNullOrEmpty(action.Description) ? action.Name : action.Description);
 
                     ImGui.TableNextColumn();
                     ImGui.TextWrapped(action.Description);
@@ -108,9 +109,15 @@ public class ControlsWindow : MenuWindow
                     string bindingText = GetBindingDisplayText(action);
 
                     if (sameKeys.Contains(bindingText))
+                    {
                         ImGui.TextColored(new Vector4(1, 0.5f, 0, 1), bindingText);
+                        UIHelper.ShowTooltip("This key is also used by another action.");
+                    }
                     else
+                    {
                         ImGui.Text(bindingText);
+                        UIHelper.ShowTooltip("Current key for this action.");
+                    }
 
                     ImGui.TableNextColumn();
 
@@ -125,6 +132,7 @@ public class ControlsWindow : MenuWindow
                         {
                             StartRemapping(id);
                         }
+                        UIHelper.ShowTooltip("Click, then press the new key or mouse button. Save keeps the change, Back restores the old keys.");
                     }
                 }
                 ImGui.EndTable();

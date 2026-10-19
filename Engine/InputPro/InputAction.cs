@@ -29,6 +29,16 @@ public class InputAction
         Description = description;
     }
 
+    public void CopySettingsFrom(InputAction source)
+    {
+        Name = source.Name;
+        Description = source.Description;
+        Bindings = source.Bindings;
+        Enabled = source.Enabled;
+        DeadZone = source.DeadZone;
+        Category = source.Category;
+    }
+
     public void AddBinding(InputBinding binding)
     {
         Bindings.Add(binding);

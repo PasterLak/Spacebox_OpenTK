@@ -153,6 +153,10 @@ Fixes
 - unloaded ships load again when the player returns (they disappeared until the sector was reloaded)
 - entity files are portable: asteroid files store their asteroid type and radius and regenerate their untouched parts in any sector or world
 - Mods menu: GameSet list, download mods placeholder, GameSet editor and generation editor
+- Options in the pause menu; options apply live, Save keeps them, Back/Escape restore the saved ones; tooltips on every option
+- audio settings work: master, music, ambient, effects and interface channels, mute when unfocused
+- graphics settings work: max FPS, resolution scale, post processing, voxel AO and voxel lighting (rebuild the world meshes), FOV, particles; shadows removed
+- game settings: draw distance in blocks (also limits chunk generation), mouse sensitivity, invert mouse Y, camera sway; keep inventory removed
 - GameSet editor: edit every parameter of blocks, items, projectiles, recipes, loot, mobs, asteroids, biomes and any JSON file, pickers with icons, save/discard/reload, 3D previews of blocks, items, projectiles and asteroids, atlas viewer, sector biome map; --editor launch option
 - disassembling assault rifle gave titanium it does not need
 - lock cursor if hidden
@@ -195,9 +199,14 @@ Fixes
 - player and bullets went through an asteroid when a small entity was built next to it (collisions and raycasts only checked the entity with the nearest center of mass)
 - block break dust failed for blocks with non-square textures
 - leaving the GameSet editor left its ImGui style (padding, rounding, colours, font) in the menu and the game
+- releasing zoom reset the field of view to 90 instead of the FOV setting
+- flashlight could not be turned off after the options were opened (reloading the key config dropped action subscriptions)
+- turning particles off now hides every particle effect at once and nothing else
+- turning post processing off broke the image; the final pass that draws the image always runs now
 
 Engine
 - RenderTexture (offscreen rendering with its own camera) and OrbitViewCamera
+- AudioMixer with channels (Effects, Music, Ambient, UI), EngineWindow.RenderScale and PostProcessingEnabled, Camera360Base mouse sensitivity and invert Y
 - ImGui left the blend function cache stale (text drawn as boxes in scenes without other blending); texture binding cache is reset after ImGui
 - Engine.Tests project (engine-only tests), Spacebox.Tests fixed and extended
 - GPU setup of Resources fallbacks, LightSystem and VisualDebug moved out of static constructors into explicit init in OnLoad; scene switching is unit-tested

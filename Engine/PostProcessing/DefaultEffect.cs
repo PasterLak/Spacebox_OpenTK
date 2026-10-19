@@ -7,6 +7,7 @@ namespace Engine.PostProcessing
     public class DefaultEffect : PostProcessEffect
     {
         private Shader blackWhiteShader;
+        public override bool IsRequired => true;
         public DefaultEffect(Shader shader)
         {
             

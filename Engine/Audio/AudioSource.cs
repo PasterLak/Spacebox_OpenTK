@@ -64,11 +64,7 @@ namespace Engine.Audio
             set
             {
                 _volume = MathHelper.Clamp(value, 0f, 1f);
-                if (!isDisposed)
-                {
-                    AL.Source(handle, ALSourcef.Gain, _volume);
-                    CheckALError("Setting volume");
-                }
+                ApplyGain();
             }
         }
 
@@ -92,12 +88,36 @@ namespace Engine.Audio
             }
         }
 
+        private AudioChannel _channel = AudioChannel.Effects;
+        public AudioChannel Channel
+        {
+            get => _channel;
+            set
+            {
+                _channel = value;
+                ApplyGain();
+            }
+        }
+
         public AudioSource() : this(null) { }
+
+        public AudioSource(AudioClip clip, AudioChannel channel) : this(clip)
+        {
+            Channel = channel;
+        }
+
+        internal void ApplyGain()
+        {
+            if (isDisposed) return;
+            AL.Source(handle, ALSourcef.Gain, _volume * AudioMixer.GetGain(_channel));
+            CheckALError("Setting volume");
+        }
 
         public AudioSource(AudioClip clip)
         {
             handle = AL.GenSource();
-            AL.Source(handle, ALSourcef.Gain, _volume);
+            AL.Source(handle, ALSourcef.Gain, _volume * AudioMixer.GetGain(_channel));
+            AudioMixer.Register(this);
             AL.Source(handle, ALSourceb.SourceRelative, true);
             AL.Source(handle, ALSource3f.Position, 0, 0, 0);
 
@@ -255,6 +275,7 @@ namespace Engine.Audio
                 if (isDisposed) return;
                 isPlaying = false;
                 isDisposed = true;
+                AudioMixer.Unregister(this);
 
                 cancellationTokenSource?.Cancel();
                 threadToJoin = playbackThread;

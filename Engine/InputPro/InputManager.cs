@@ -199,6 +199,7 @@ public class InputManager
         {
             var json = File.ReadAllText(path);
             var jsonDocument = JsonDocument.Parse(json);
+            var previousProfiles = profiles;
             profiles = new Dictionary<string, InputProfile>();
             var profileActionOrders = new Dictionary<string, List<string>>();
 
@@ -243,6 +244,12 @@ public class InputManager
                         }
                     }
                 }
+            }
+
+            foreach (var pair in profiles)
+            {
+                if (previousProfiles.TryGetValue(pair.Key, out var previous))
+                    pair.Value.KeepExistingActions(previous);
             }
 
             if (profiles.ContainsKey("Default"))

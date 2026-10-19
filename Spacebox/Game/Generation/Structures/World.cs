@@ -388,6 +388,26 @@ public class World : Component, ISpaceStructure
 
     public static event Action<Sector> SectorLoaded;
 
+    public void RefreshChunkVisuals(bool relight)
+    {
+        foreach (var sector in loadedSectors.Values)
+        {
+            var entities = sector.Entities;
+            if (entities == null) continue;
+
+            for (int e = 0; e < entities.Count; e++)
+            {
+                var chunks = entities[e].Chunks;
+                for (int c = 0; c < chunks.Count; c++)
+                {
+                    if (chunks[c].IsDisposed) continue;
+                    if (relight) chunks[c].CalculateLighting();
+                    chunks[c].QueueMeshUpdate(UpdateReason.PlayerAction);
+                }
+            }
+        }
+    }
+
     public void OnEntityMoved(SpaceEntity entity)
     {
         _entityTracker.Request(entity);

@@ -1,74 +1,71 @@
 ﻿using ImGuiNET;
 using System.Numerics;
-using static Spacebox.Game.GUI.Menu.ControlsWindow;
 
 namespace Spacebox.Game.GUI.Menu
 {
     public class GameWindow : MenuWindow
     {
-        private GameMenu menu;
+        private const int DrawDistanceStep = 50;
 
-        private int _drawDistance = 12;
+        private readonly IOptionsNavigator _options;
         private readonly string[] _languages = { "English" };
         private int _languageIndex = 0;
-        private bool _keepInventory = false;
 
-        public GameWindow(GameMenu menu)
+        public GameWindow(IOptionsNavigator options)
         {
-            this.menu = menu;
+            _options = options;
         }
 
         public override void Render()
         {
-
-            _drawDistance = Settings.Gameplay.DrawDistance;
+            var game = Settings.Gameplay;
             _languageIndex = Settings.Gameplay.Language == "English" ? 0 : 0; // Currently only English is supported
 
-            SettingsUI.Render("Game", "Game",  5,
+            SettingsUI.Render("Game", "Game", 5,
                 (listSize, rowH) =>
                 {
-                    ImGui.BeginTable("table##game", 2, ImGuiTableFlags.NoBordersInBody);
-                    float totalW = listSize.X;
-                    ImGui.TableSetupColumn("Label", ImGuiTableColumnFlags.WidthFixed, totalW * 0.7f);
-                    ImGui.TableSetupColumn("Value", ImGuiTableColumnFlags.WidthFixed, totalW * 0.3f);
+                    var rows = OptionsRows.Begin("table##game", listSize.X);
 
-                    Vector2 dummyOffset = new Vector2(totalW * 0.3f / 1.4f, 0);
+                    int drawDistance = game.DrawDistance;
+                    if (rows.Slider("Draw Distance", "How far asteroids, ships and their chunks are drawn and generated, in blocks. Lower values give more FPS.", ref drawDistance, GameplaySettings.MinDrawDistance, GameplaySettings.MaxDrawDistance, "%d blocks"))
+                        game.DrawDistance = Math.Clamp(drawDistance / DrawDistanceStep * DrawDistanceStep, GameplaySettings.MinDrawDistance, GameplaySettings.MaxDrawDistance);
 
-                    ImGui.TableNextRow();
-                    ImGui.TableNextColumn();
-                    ImGui.Text("Draw Distance");
-                    ImGui.TableNextColumn();
-                    ImGui.SetNextItemWidth(totalW * 0.28f);
-                    ImGui.SliderInt("##drawdistance", ref _drawDistance, 2, 32);
-                    UIHelper.ShowTooltip("Controls how far objects are rendered");
+                    rows.Combo("Language", "Select the game’s display language", ref _languageIndex, _languages);
 
-                    ImGui.TableNextRow();
-                    ImGui.TableNextColumn();
-                    ImGui.Text("Language");
-                    ImGui.TableNextColumn();
-                    ImGui.SetNextItemWidth(totalW * 0.28f);
-                    ImGui.Combo("##language", ref _languageIndex, _languages, _languages.Length);
-                    UIHelper.ShowTooltip("Select the game’s display language");
+                    int sensitivity = game.MouseSensitivity;
+                    if (rows.Slider("Mouse Sensitivity", "How fast the camera turns when you move the mouse. 100% is the default speed.", ref sensitivity, 10, 300, "%d%%"))
+                    {
+                        game.MouseSensitivity = sensitivity;
+                        SettingsApplier.ApplyGameplay(game);
+                    }
 
-                    ImGui.TableNextRow();
-                    ImGui.TableNextColumn();
-                    ImGui.Text("Keep Inventory");
-                    ImGui.TableNextColumn();
-                    ImGui.Dummy(dummyOffset); ImGui.SameLine();
-                    ImGui.Checkbox("##keepinv", ref _keepInventory);
-                    UIHelper.ShowTooltip("Retain items after death instead of losing them");
+                    bool invert = game.InvertMouseY;
+                    if (rows.Checkbox("Invert Mouse Y", "Moving the mouse up looks down, like in flight controls.", ref invert))
+                    {
+                        game.InvertMouseY = invert;
+                        SettingsApplier.ApplyGameplay(game);
+                    }
 
-                    ImGui.EndTable();
+                    bool sway = game.CameraSway;
+                    if (rows.Checkbox("Camera Sway", "The view sways slightly while you move. Turn it off if it makes you dizzy.", ref sway))
+                        game.CameraSway = sway;
+
+                    rows.End();
                 },
-                () => { menu.Click1.Play(); menu.SetStateToOptions();
+                () =>
+                {
+                    _options.PlayClick();
                     SettingsService.Save(Settings.AsGameSettings());
+                    _options.ShowOptions();
                 },
-                () => { menu.Click1.Play(); menu.SetStateToOptions();
-                    SettingsService.Save(Settings.AsGameSettings());
+                () =>
+                {
+                    _options.PlayClick();
+                    OptionsMenu.DiscardUnsavedChanges();
+                    _options.ShowOptions();
                 }
             );
 
-            Settings.Gameplay.DrawDistance = _drawDistance;
             Settings.Gameplay.Language = _languages[_languageIndex];
         }
     }

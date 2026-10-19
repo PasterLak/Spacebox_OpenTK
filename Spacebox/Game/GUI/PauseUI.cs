@@ -19,11 +19,16 @@ namespace Spacebox.Game.GUI
         private static string saveButtonText = "Save";
         private static string networkButtonText = "Open to network";
         private static AudioSource click1;
+        private const string OptionsWindowName = "pauseOptions";
+        private static OptionsMenu _options;
+        private static bool _optionsWasOpen;
+        private static bool _optionsClosedByMenu;
         private static readonly uint DimColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.7f));
 
         public static void Init()
         {
-            click1 = new AudioSource(Resources.Load<AudioClip>("click1"));
+            click1 = new AudioSource(Resources.Load<AudioClip>("click1"), AudioChannel.UI);
+            _options = new OptionsMenu(click1, CloseOptions);
         }
 
         public static void OnGUI()
@@ -49,13 +54,42 @@ namespace Spacebox.Game.GUI
                 _wasVisible = isVisible;
             }
 
+            UpdateOptionsState();
             if (!isVisible) return;
 
             ImGui.GetBackgroundDrawList().AddRectFilled(Vector2.Zero, ImGui.GetIO().DisplaySize, DimColor);
+            if (UIManager.IsOpen(OptionsWindowName))
+            {
+                using (MenuStyle.Begin())
+                    _options?.Render();
+                return;
+            }
+
             RenderPause();
             if (IsMultiplayerActive()) PlayerListUI.Draw();
             RenderPauseTitle();
             StatisticsUI.OnGUI();
+        }
+
+        private static void OpenOptions()
+        {
+            _options?.ShowOptions();
+            _optionsClosedByMenu = false;
+            UIManager.Open(OptionsWindowName);
+        }
+
+        private static void CloseOptions()
+        {
+            _optionsClosedByMenu = true;
+            if (UIManager.IsTop(OptionsWindowName)) UIManager.CloseTop();
+        }
+
+        private static void UpdateOptionsState()
+        {
+            bool isOpen = UIManager.IsOpen(OptionsWindowName);
+            if (_optionsWasOpen && !isOpen && !_optionsClosedByMenu) OptionsMenu.DiscardUnsavedChanges();
+            if (!isOpen) _optionsClosedByMenu = false;
+            _optionsWasOpen = isOpen;
         }
 
         private static void RenderPauseTitle()
@@ -93,7 +127,7 @@ namespace Spacebox.Game.GUI
         {
             Vector2 displaySize = ImGui.GetIO().DisplaySize;
             float windowWidth = displaySize.X * 0.15f;
-            float windowHeight = displaySize.Y * 0.3f;
+            float windowHeight = displaySize.Y * 0.35f;
             Vector2 windowPos = GameMenu.CenterNextWindow(windowWidth, windowHeight);
 
             ImGui.SetNextWindowPos(windowPos);
@@ -104,7 +138,7 @@ namespace Spacebox.Game.GUI
             float buttonHeight = windowHeight * 0.12f;
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y, 0.005f);
 
-            const int buttonCount = 6;
+            const int buttonCount = 7;
             float spacing = (windowHeight - (buttonCount * buttonHeight)) / (buttonCount + 1);
             float currentY = spacing;
 
@@ -123,6 +157,14 @@ namespace Spacebox.Game.GUI
                 if (World.Instance != null)
                     World.Instance.Save();
                 saveButtonText = "Saved!";
+            });
+
+            currentY += buttonHeight + spacing;
+            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
+            GameMenu.CenterButtonWithBackground("Options", buttonWidth, buttonHeight, () =>
+            {
+                click1?.Play();
+                OpenOptions();
             });
 
             currentY += buttonHeight + spacing;
@@ -193,6 +235,9 @@ namespace Spacebox.Game.GUI
         {
             click1?.Dispose();
             click1 = null;
+            _options = null;
+            _optionsWasOpen = false;
+            _optionsClosedByMenu = false;
 
             if (_wasVisible)
             {

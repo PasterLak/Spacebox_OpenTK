@@ -7,10 +7,14 @@ namespace Spacebox.Game.GUI.Menu
     {
         public static void ShowTooltip(string text)
         {
-            if (ImGui.IsItemHovered())
+            if (string.IsNullOrEmpty(text)) return;
+
+            if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
             {
                 ImGui.BeginTooltip();
-                ImGui.Text(text);
+                ImGui.PushTextWrapPos(ImGui.GetFontSize() * 32f);
+                ImGui.TextUnformatted(text);
+                ImGui.PopTextWrapPos();
                 ImGui.EndTooltip();
             }
         }

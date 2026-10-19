@@ -63,18 +63,18 @@ public class CraftingGUI
         ColumnsOfItems = (int)Math.Ceiling(slotSize);
 
 
-        scrollAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/scroll.ogg"));
-        clickAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/click1.ogg"));
+        scrollAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/scroll.ogg"), AudioChannel.UI);
+        clickAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/click1.ogg"), AudioChannel.UI);
 
         if (openSound == null || openSound.IsDisposed)
         {
-            openSound = new AudioSource(Resources.Load<AudioClip>("openBlock1"));
+            openSound = new AudioSource(Resources.Load<AudioClip>("openBlock1"), AudioChannel.UI);
             openSound.Volume = 1f;
         }
 
         if (closeSound == null || closeSound.IsDisposed)
         {
-            closeSound = new AudioSource(Resources.Load<AudioClip>("openBlock4"));
+            closeSound = new AudioSource(Resources.Load<AudioClip>("openBlock4"), AudioChannel.UI);
             closeSound.Volume = 1f;
         }
     }

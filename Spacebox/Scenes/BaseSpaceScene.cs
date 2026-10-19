@@ -106,7 +106,9 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         else
             PlayerSaveLoadManager.LoadPlayer(localPlayer, World.WorldData.WorldFolderPath);
 
-        AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/spaceBackground.ogg")).Audio.Volume = 0.05f;
+        var background = AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/spaceBackground.ogg"));
+        background.Audio.Volume = 0.05f;
+        background.Audio.Channel = Engine.Audio.AudioChannel.Ambient;
 
         var cameraElement = Overlay.GetElementByType(typeof(CameraElement));
         if (cameraElement != null)
@@ -119,8 +121,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         localPlayer.GameMode = World.WorldData.Info.GameMode;
 
-        if (Settings.Graphics.EffectsEnabled == true)
-            localPlayer.AddChild(new DustSpawner());
+        localPlayer.AddChild(new DustSpawner());
 
         Debug.RegisterCommand(new DebugTexturesCommand());
         Debug.RegisterCommand(new TeleportCommand(localPlayer));

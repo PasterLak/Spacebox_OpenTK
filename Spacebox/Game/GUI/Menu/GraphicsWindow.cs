@@ -1,187 +1,98 @@
-﻿using Engine;
-using Engine.Light;
-using ImGuiNET;
-using Spacebox.Game.Events;
-using Spacebox.Game.Generation;
+﻿using ImGuiNET;
 using System.Numerics;
 using static Engine.EngineWindow;
-using static Spacebox.Game.GUI.Menu.ControlsWindow;
 
 namespace Spacebox.Game.GUI.Menu
 {
     public class GraphicsWindow : MenuWindow
     {
-        private GameMenu menu;
-
-        private bool _vsync = true;
-        private bool _ao = true;
-        private bool _voxelLighting = true;
-        private bool _postProcessing = true;
-        private bool _shadows = true;
-        private bool _enableEffects = false;
-        private int _fov = 75;
-        private int _resolution = 100;
+        private readonly IOptionsNavigator _options;
         private readonly string[] _modes = { "Fullscreen", "Borderless", "Windowed" };
-        private int _modeIndex = 2;
+        private int _pendingResolution = -1;
 
-        public GraphicsWindow(GameMenu menu)
+        public GraphicsWindow(IOptionsNavigator options)
         {
-            this.menu = menu;
+            _options = options;
         }
-
 
         public override void Render()
         {
-
-            _vsync = Settings.Graphics.VSync;
-            _ao = Settings.Graphics.AO;
-            _voxelLighting = Settings.Graphics.VoxelLighting;
-            _postProcessing = Settings.Graphics.PostProcessing;
-            _shadows = Settings.Graphics.Shadows;
-            _enableEffects = Settings.Graphics.EffectsEnabled;
-            _fov = Settings.Graphics.Fov;
-            _resolution = Settings.Graphics.ResolutionScalePercent;
-            _modeIndex = (int)Settings.Graphics.WindowMode;
-
+            var graphics = Settings.Graphics;
 
             SettingsUI.Render("Graphics", "Graphics", 5,
                 (listSize, rowH) =>
                 {
-                    ImGui.BeginTable("table##graphics", 2, ImGuiTableFlags.NoBordersInBody);
-                    float totalW = listSize.X;
-                    ImGui.TableSetupColumn("Label", ImGuiTableColumnFlags.WidthFixed, totalW * 0.7f);
-                    ImGui.TableSetupColumn("Value", ImGuiTableColumnFlags.WidthFixed, totalW * 0.3f);
+                    var rows = OptionsRows.Begin("table##graphics", listSize.X);
 
-                    var dummyOffset = new Vector2(totalW * 0.3f / 1.4f, 0);
+                    rows.Section("Display");
+                    int mode = (int)graphics.WindowMode;
+                    if (rows.Combo("Window Mode", "Fullscreen uses the whole monitor, Borderless is a window without frame covering the screen, Windowed is a normal window.", ref mode, _modes))
+                        Apply(graphics, () => graphics.WindowMode = (WindowMode)mode);
 
-                    ImGui.TableNextRow();
-                    ImGui.TableNextColumn();
-                    ImGui.Text("Window Mode");
+                    bool vsync = graphics.VSync;
+                    if (rows.Checkbox("VSync", "Matches the frame rate to the monitor refresh rate to avoid screen tearing. While on, Max FPS is not used.", ref vsync))
+                        Apply(graphics, () => graphics.VSync = vsync);
 
-                    ImGui.TableNextColumn();
-                    ImGui.SetNextItemWidth(totalW * 0.28f);
-                    if (ImGui.Combo("##winmode", ref _modeIndex, _modes, _modes.Length))
+                    int fps = graphics.MaxFps <= 0 ? GraphicsSettings.MaxFpsLimit + 1 : graphics.MaxFps;
+                    if (graphics.VSync) ImGui.BeginDisabled();
+                    if (rows.Slider("Max FPS", "Upper limit of frames per second when VSync is off. Lower limits save power and keep the computer cooler. The right end means unlimited.", ref fps, GraphicsSettings.MinFps, GraphicsSettings.MaxFpsLimit + 1, fps > GraphicsSettings.MaxFpsLimit ? "Unlimited" : "%d"))
+                        Apply(graphics, () => graphics.MaxFps = fps > GraphicsSettings.MaxFpsLimit ? 0 : fps);
+                    if (graphics.VSync) ImGui.EndDisabled();
+
+                    int resolution = _pendingResolution >= 0 ? _pendingResolution : graphics.ResolutionScalePercent;
+                    if (rows.Slider("Resolution Scale", "Renders the world at a lower resolution and stretches it to the window. The interface stays sharp. Lower values give more FPS.", ref resolution, 10, 100, "%d%%"))
+                        _pendingResolution = resolution;
+                    if (OptionsRows.LastItemReleased && _pendingResolution >= 0)
                     {
-                        Settings.Graphics.WindowMode = (WindowMode)_modeIndex;
-                        SpaceboxWindow.Instance.SetWindowMode(Settings.Graphics.WindowMode);
+                        int value = _pendingResolution;
+                        _pendingResolution = -1;
+                        Apply(graphics, () => graphics.ResolutionScalePercent = value);
                     }
-                    UIHelper.ShowTooltip("Switch between fullscreen, windowed, or borderless display modes");
 
-                    ImGui.TableNextRow();
-                    ImGui.TableNextColumn();
+                    int fov = graphics.Fov;
+                    if (rows.Slider("Field of View", "How wide the camera sees, in degrees. Higher values show more around you.", ref fov, 50, 120, "%d"))
+                        Apply(graphics, () => graphics.Fov = fov);
 
-                    ImGui.Text("VSync");
+                    rows.Section("World");
+                    bool ao = graphics.AO;
+                    if (rows.Checkbox("Voxel Ambient Occlusion", "Darkens corners and edges where blocks meet, which makes shapes easier to read. Rebuilds the world meshes when changed.", ref ao))
+                        Apply(graphics, () => graphics.AO = ao);
 
-                    ImGui.TableNextColumn();
-                    ImGui.Dummy(dummyOffset); ImGui.SameLine();
-                    if (ImGui.Checkbox("##vsync", ref _vsync))
-                        SpaceboxWindow.Instance.SetVSync(_vsync);
-                    UIHelper.ShowTooltip("Synchronizes frame rate with monitor refresh rate to reduce screen tearing");
+                    bool lighting = graphics.VoxelLighting;
+                    if (rows.Checkbox("Voxel Lighting", "Light from lamps and glowing blocks spreads to the blocks around them. Turning it off is faster but leaves only the lamps themselves bright.", ref lighting))
+                        Apply(graphics, () => graphics.VoxelLighting = lighting);
 
-                    ImGui.TableNextRow();
-                    ImGui.TableNextColumn();
+                    rows.Section("Effects");
+                    bool post = graphics.PostProcessing;
+                    if (rows.Checkbox("Post Processing", "Screen effects applied after the world is drawn, such as the vignette at the screen edges.", ref post))
+                        Apply(graphics, () => graphics.PostProcessing = post);
 
-                    ImGui.Text("Ambient Occlusion");
+                    bool effects = graphics.EffectsEnabled;
+                    if (rows.Checkbox("Particle Effects", "Space dust, mining sparks and similar particles. Turning them off gives a little more FPS.", ref effects))
+                        Apply(graphics, () => graphics.EffectsEnabled = effects);
 
-                    ImGui.TableNextColumn();
-                    ImGui.Dummy(dummyOffset); ImGui.SameLine();
-                    ImGui.Checkbox("##ao", ref _ao);
-                    UIHelper.ShowTooltip("Darkening the corners between blocks");
-
-                    ImGui.TableNextRow();
-                    ImGui.TableNextColumn();
-
-                    ImGui.Text("Voxel Lighting");
-
-                    ImGui.TableNextColumn();
-                    ImGui.Dummy(dummyOffset); ImGui.SameLine();
-                    ImGui.Checkbox("##voxel_lighting", ref _voxelLighting);
-                    UIHelper.ShowTooltip("Calculate lighting for glowing blocks");
-
-
-                    ImGui.TableNextRow();
-                    ImGui.TableNextColumn();
-                    ImGui.Text("Post Processing");
-
-
-                    ImGui.TableNextColumn();
-                    ImGui.Dummy(dummyOffset); ImGui.SameLine();
-                    ImGui.Checkbox("##bloom", ref _postProcessing);
-                    UIHelper.ShowTooltip("Applies visual enhancements like bloom, color grading, and depth of field");
-
-                    ImGui.TableNextRow();
-                    ImGui.TableNextColumn();
-                    ImGui.Text("Shadows");
-                    ImGui.TableNextColumn();
-                    ImGui.Dummy(dummyOffset); ImGui.SameLine();
-                    ImGui.Checkbox("##shadows", ref _shadows);
-
-                    ImGui.TableNextRow();
-                    ImGui.TableNextColumn();
-                    ImGui.Text("Enable Effects");
-                    ImGui.TableNextColumn();
-                    ImGui.Dummy(dummyOffset); ImGui.SameLine();
-
-                    ImGui.Checkbox("##mblur", ref _enableEffects);
-                    UIHelper.ShowTooltip("Toggles visual effects such as particles, dust");
-
-                    ImGui.TableNextRow();
-                    ImGui.TableNextColumn();
-                    ImGui.Text("FOV");
-
-                    ImGui.TableNextColumn();
-                    ImGui.SetNextItemWidth(totalW * 0.28f);
-                    ImGui.SliderInt("##fov", ref _fov, 50, 120);
-                    UIHelper.ShowTooltip("Adjusts your field of view — higher values let you see more of the scene");
-
-                    ImGui.TableNextRow();
-                    ImGui.TableNextColumn();
-                    ImGui.Text("Resolution");
-                    ImGui.TableNextColumn();
-                    ImGui.SetNextItemWidth(totalW * 0.28f);
-                    ImGui.SliderInt("##resolution", ref _resolution, 10, 100);
-
-
-
-
-                    ImGui.EndTable();
-
-
+                    rows.End();
                 },
                 () =>
                 {
-                    menu.Click1.Play(); menu.SetStateToOptions();
-                    var settings = Settings.AsGameSettings();
-                    SettingsService.Save(settings);
-
-                    var gfxEvent = new GraphicsSettingsChangedEvent { NewSettings = settings.Graphics };
-                    EventBus.Publish(ref gfxEvent);
-                    
-                    Debug.Log("Graphics settings saved and applied");
+                    _options.PlayClick();
+                    SettingsService.Save(Settings.AsGameSettings());
+                    _options.ShowOptions();
                 },
                 () =>
                 {
-                    menu.Click1.Play(); menu.SetStateToOptions();
-                    var settings = Settings.AsGameSettings();
-                    SettingsService.Save(settings);
-
-                    var gfxEvent = new GraphicsSettingsChangedEvent { NewSettings = settings.Graphics };
-                    EventBus.Publish(ref gfxEvent);
-                    Debug.Log("Graphics settings saved and applied");
-
+                    _options.PlayClick();
+                    _pendingResolution = -1;
+                    OptionsMenu.DiscardUnsavedChanges();
+                    _options.ShowOptions();
                 }
             );
+        }
 
-            Settings.Graphics.VSync = _vsync;
-            Settings.Graphics.AO = _ao;
-            MeshGenerator.EnableAO = _ao;
-            Settings.Graphics.VoxelLighting = _voxelLighting;
-            LightManager.EnableLighting = _voxelLighting;
-            Settings.Graphics.PostProcessing = _postProcessing;
-            Settings.Graphics.Shadows = _shadows;
-            Settings.Graphics.EffectsEnabled = _enableEffects;
-            Settings.Graphics.Fov = _fov;
-            Settings.Graphics.ResolutionScalePercent = _resolution;
+        private static void Apply(GraphicsSettings graphics, Action change)
+        {
+            change();
+            SettingsApplier.ApplyGraphics(graphics);
         }
     }
 }

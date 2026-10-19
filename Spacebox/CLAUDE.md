@@ -41,7 +41,9 @@ Game project on top of `Engine` (see `Engine/CLAUDE.md`). World hierarchy, GameS
 ## Global state
 
 - `Game/GameAssets.cs`: static session registry — `Blocks`/`Items` (by short id or string id), models, icons, sounds, recipes, blueprints, projectiles, atlases; `CreateBlockFromId`; cleared by `DisposeAll` on scene unload.
-- `Globals.cs`: path constants. `Settings.cs`: static settings sections saved to `Resources/Settings.json`; DTOs in `GameSettings.cs` (with defaults and `Validate`).
+- `Globals.cs`: path constants. `Settings.cs`: static settings sections saved to `Resources/Settings.json`; DTOs in `GameSettings.cs` (with defaults and `Validate`). `SettingsApplier` pushes them into the systems (audio mixer, window, frame limiter, render scale, post processing, AO/voxel lighting remesh, FOV, mouse); call it after changing a setting, at startup it runs from `SpaceboxWindow.ApplyDisplaySettings`.
+- Options screens (`Game/GUI/Menu/OptionsMenu`, `OptionsWindow`, `AudioWindow`, `GameWindow`, `GraphicsWindow`, `ControlsWindow`) are shared by the main menu (`OptionsHostWindow`) and the pause menu (`PauseUI`, UI layer `pauseOptions`). They talk to an `IOptionsNavigator`; rows go through `OptionsRows` (label + widget + tooltip). Changes apply live, Save writes the file, Back/Escape restore the saved settings. A new setting: field with default + range check in `GameSettings.cs`, a row with a tooltip, and its effect in `SettingsApplier`.
+- Sounds pick a mixer channel: `new AudioSource(clip, AudioChannel.UI)` for interface sounds, `Music`/`Ambient` for loops, `Effects` (default) for gameplay.
 - `Game/UIManager.cs`: named window stack controlling the cursor (`Open("pause")`, `IsUIMode`, `CloseTop`).
 - Static singletons: `World.Instance`, `NetworkSession.Current`, `BlockSelector`, `RadarUI`, `TagManager`, `SpheresPool`, `ProjectileHitEffectsManager`, `MainThreadDispatcher`.
 - Static UIs follow `Init` / `OnGUI` / `Dispose` and must be wired by hand into `BaseSpaceScene` (`LoadContent`, `OnGUI`, `UnloadContent`). Missing `Dispose` leaks state across scene loads.

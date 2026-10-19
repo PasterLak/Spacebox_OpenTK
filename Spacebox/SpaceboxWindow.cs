@@ -37,7 +37,7 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
     {
         AppIconLoader.LoadAndSetIcon(this, "Resources/Textures/icon.png");
 
-        _screenshotAudio = new AudioSource(Resources.Load<AudioClip>("screenshot", true));
+        _screenshotAudio = new AudioSource(Resources.Load<AudioClip>("screenshot", true), AudioChannel.UI);
 
         ApplyDisplaySettings();
         Debug.MirrorToStandardOutput = LaunchOptions.IsHidden || LaunchOptions.IsDedicated;
@@ -69,8 +69,7 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
     private void ApplyDisplaySettings()
     {
         Settings.LoadSettings();
-        SetVSync(Settings.Graphics.VSync);
-        SetWindowMode(Settings.Graphics.WindowMode);
+        SettingsApplier.ApplyAll();
         OnWindowModeChanged += SaveWindowMode;
     }
 
@@ -97,6 +96,7 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
     protected override void OnUpdateFrame(FrameEventArgs e)
     {
         base.OnUpdateFrame(e);
+        SettingsApplier.UpdateFocusMute(IsFocused);
 
         if (Input.IsKeyDown(Keys.F12))
         {

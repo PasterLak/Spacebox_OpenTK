@@ -134,10 +134,11 @@ public sealed class GravityWalker
         var reference = upright ? _up : Vector3.Transform(Vector3.UnitY, rotation);
 
         var delta = Input.Mouse.Delta;
-        rotation = Quaternion.FromAxisAngle(reference, -delta.X * MouseSensitivity) * rotation;
+        float sensitivity = MouseSensitivity * Camera360Base.MouseSensitivity;
+        rotation = Quaternion.FromAxisAngle(reference, -delta.X * sensitivity) * rotation;
 
         var right = Vector3.Transform(Vector3.UnitX, rotation);
-        var pitched = Quaternion.FromAxisAngle(right, -delta.Y * MouseSensitivity) * rotation;
+        var pitched = Quaternion.FromAxisAngle(right, -Camera360Base.LookDeltaY(delta.Y) * sensitivity) * rotation;
         if (!upright || Vector3.Dot(Vector3.Transform(Vector3.UnitY, pitched), _up) > MinUpDot)
             rotation = pitched;
 

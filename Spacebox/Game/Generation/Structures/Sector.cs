@@ -864,7 +864,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         var cam = Camera.Main;
 
-        const float visibleRadiusSqr = Settings.ENTITY_VISIBLE_RADIUS * Settings.ENTITY_VISIBLE_RADIUS;
+        float visibleRadiusSqr = Settings.ENTITY_VISIBLE_RADIUS * Settings.ENTITY_VISIBLE_RADIUS;
 
         for (int i = 0; i < Entities.Count; i++)
         {

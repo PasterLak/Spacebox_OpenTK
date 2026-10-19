@@ -59,7 +59,7 @@ public static class DisassemblerUI
         block.OnDisassembled += _onDisassembled;
 
         if (_craftedSound == null || _craftedSound.IsDisposed)
-            _craftedSound = new AudioSource(Resources.Load<AudioClip>("crafted"));
+            _craftedSound = new AudioSource(Resources.Load<AudioClip>("crafted"), AudioChannel.UI);
 
         block.InputStorage.ConnectStorage(player.Inventory);
         block.OutputStorage.ConnectStorage(player.Inventory);

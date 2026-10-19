@@ -24,7 +24,7 @@ namespace Spacebox.Game.GUI
         {
             InventoryUIHelper.Initialize();
 
-            splitAudio = new AudioSource(Resources.Load<AudioClip>("splitStack"));
+            splitAudio = new AudioSource(Resources.Load<AudioClip>("splitStack"), AudioChannel.UI);
         }
 
         private static void HandleInput()

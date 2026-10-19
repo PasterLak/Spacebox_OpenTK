@@ -71,7 +71,7 @@ public static class CreativeWindowUI
 
         selectedStorage = storageAll;
 
-        scrollAudio = new AudioSource(Resources.Get<AudioClip>("scroll"));
+        scrollAudio = new AudioSource(Resources.Get<AudioClip>("scroll"), AudioChannel.UI);
     }
 
     private static void HandleHoverAudio(int slotId)

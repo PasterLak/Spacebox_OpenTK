@@ -729,7 +729,7 @@ namespace Spacebox.Game.Generation
             _lodTimer = LodUpdateInterval;
 
             var cameraEntitySpace = ToEntitySpace(camera.Position);
-            const int radiusSquared = Settings.CHUNK_VISIBLE_RADIUS * Settings.CHUNK_VISIBLE_RADIUS;
+            int radiusSquared = Settings.CHUNK_VISIBLE_RADIUS * Settings.CHUNK_VISIBLE_RADIUS;
 
             _lodChunks.Clear();
             Octree.FindDataInRadius(WorldPositionToLocal(cameraEntitySpace), Settings.CHUNK_VISIBLE_RADIUS, _lodChunks);

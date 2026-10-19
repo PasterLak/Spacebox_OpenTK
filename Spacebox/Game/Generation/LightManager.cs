@@ -18,9 +18,27 @@ namespace Spacebox.Game.Generation
             _chunk = chunk;
         }
 
+        private void ClearPropagatedLight()
+        {
+            var blocks = _chunk.Blocks;
+            for (int x = 0; x < Size; x++)
+            for (int y = 0; y < Size; y++)
+            for (int z = 0; z < Size; z++)
+            {
+                var block = blocks[x, y, z];
+                if (block == null || block.LightLevel <= 0f || block.LightLevel >= 15f) continue;
+                block.LightLevel = 0f;
+                block.LightColor = Color3Byte.Zero;
+            }
+        }
+
         public void PropagateLight()
         {
-            if (!EnableLighting) return;
+            if (!EnableLighting)
+            {
+                ClearPropagatedLight();
+                return;
+            }
 
             var visited = new HashSet<Chunk>();
             visited.Add(_chunk);

@@ -31,8 +31,6 @@ namespace Spacebox.Game.GUI.Menu
         private int selectedGameSetIndex = 0;
         public WorldInfo selectedWorld = null;
         public AtlasSprite TrashIcon => UIAtlas.Get("trash");
-        private Vector2 oldItemSpacing;
-        private Vector2 oldWindowPadding;
         public AudioSource Click1;
         public bool showDeleteWindow = false;
         public bool showVersionConvertWindow = false;
@@ -44,7 +42,7 @@ namespace Spacebox.Game.GUI.Menu
 
         public GameMenu()
         {
-            Click1 = new AudioSource(Resources.Load<AudioClip>("Resources/Audio/UI/click1.ogg", true));
+            Click1 = new AudioSource(Resources.Load<AudioClip>("Resources/Audio/UI/click1.ogg", true), AudioChannel.UI);
             WorldInfoSaver.LoadWorlds(worlds);
             GameSetsUnpacker.UnpackMods(true);
             LoadGameSets();
@@ -55,13 +53,9 @@ namespace Spacebox.Game.GUI.Menu
             Reg(new MainMenuWindow(this));
             Reg(new WorldSelectWindow(this));
             Reg(new NewWorldWindow(this));
-            Reg(new OptionsWindow(this));
             Reg(new MultiplayerWindow(this));
             Reg(new SettingsControlsWindow(this));
-            Reg(new ControlsWindow(this));
-            Reg(new GraphicsWindow(this));
-            Reg(new AudioWindow(this));
-            Reg(new GameWindow(this));
+            Reg(new OptionsHostWindow(this));
             Reg(new ModsWindow(this));
 
             deleteWindow = new DeleteWindow(this);
@@ -99,13 +93,6 @@ namespace Spacebox.Game.GUI.Menu
         public void Render()
         {
             if (hide) return;
-            if (currentWindowType == typeof(ControlsWindow) && windows.TryGetValue(currentWindowType, out var wnd1))
-
-            {
-                var v = (ControlsWindow)wnd1;
-                if (v != null)
-                    v.Update();
-            }
 
             if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.RightAlt))
             {
@@ -126,24 +113,14 @@ namespace Spacebox.Game.GUI.Menu
 
             if (!IsVisible) return;
 
-            oldItemSpacing = ImGui.GetStyle().ItemSpacing;
-            oldWindowPadding = ImGui.GetStyle().WindowPadding;
-            ImGui.GetStyle().ItemSpacing = Vector2.Zero;
-            ImGui.PushStyleColor(ImGuiCol.HeaderHovered, new Vector4(1f, 0.75f, 0f, 1f));
-            ImGui.PushStyleColor(ImGuiCol.HeaderActive, new Vector4(1f, 0.8f, 0f, 1f));
-            ImGui.PushStyleColor(ImGuiCol.Header, new Vector4(1f, 0.72f, 0f, 1f));
-            ImGui.PushStyleColor(ImGuiCol.ChildBg, Theme.Colors.Deep.ToUInt());
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(1f, 0.75f, 0f, 0f));
+            using (MenuStyle.Begin())
+            {
+                if (currentWindowType != null && windows.TryGetValue(currentWindowType, out var wnd))
+                    wnd.Render();
 
-            if (currentWindowType != null && windows.TryGetValue(currentWindowType, out var wnd))
-                wnd.Render();
-
-            if (showDeleteWindow) deleteWindow.Render();
-            if (showVersionConvertWindow) updateVersionWindow.Render();
-
-            ImGui.PopStyleColor(5);
-            ImGui.GetStyle().ItemSpacing = oldItemSpacing;
-            ImGui.GetStyle().WindowPadding = oldWindowPadding;
+                if (showDeleteWindow) deleteWindow.Render();
+                if (showVersionConvertWindow) updateVersionWindow.Render();
+            }
         }
 
         public static void DrawElementColors(Vector2 windowPos, Vector2 windowSize, float displayY, float offsetMultiplayer = 0.004f)
@@ -589,14 +566,20 @@ namespace Spacebox.Game.GUI.Menu
 
         public Type CurrentWindowType => currentWindowType;
 
-        public void SetStateToControls() => Open<ControlsWindow>();
+        public void SetStateToControls() => OpenOptions<ControlsWindow>();
         public void SetStateToMain() => Open<MainMenuWindow>();
         public void SetStateToWorldSelect() => Open<WorldSelectWindow>();
         public void SetStateToNewWorld() => Open<NewWorldWindow>();
-        public void SetStateToOptions() => Open<OptionsWindow>();
+        public void SetStateToOptions() => OpenOptions<OptionsWindow>();
         public void SetStateToMultiplayer() => Open<MultiplayerWindow>();
         public void SetStateToSettingsControls() => Open<SettingsControlsWindow>();
-        public void SetStateToGraphics() => Open<GraphicsWindow>();
+        public void SetStateToGraphics() => OpenOptions<GraphicsWindow>();
+
+        private void OpenOptions<T>() where T : MenuWindow
+        {
+            Open<OptionsHostWindow>();
+            Get<OptionsHostWindow>().Options.Show<T>();
+        }
         public void SetStateToMods() => Open<ModsWindow>();
     }
 }

@@ -50,34 +50,44 @@ namespace Spacebox.Game
         [JsonPropertyName("ambient_occlusion")] public bool AO { get; set; } = true;
         [JsonPropertyName("voxel_lighting")] public bool VoxelLighting { get; set; } = true;
         [JsonPropertyName("post_processing")] public bool PostProcessing { get; set; } = true;
-        [JsonPropertyName("shadows")] public bool Shadows { get; set; } = true;
         [JsonPropertyName("effects_enabled")] public bool EffectsEnabled { get; set; } = true;
         [JsonPropertyName("fov")] public int Fov { get; set; } = 90;                           // 50..120
         [JsonPropertyName("resolution_scale_percent")] public int ResolutionScalePercent { get; set; } = 100; // 10..100
+        [JsonPropertyName("max_fps")] public int MaxFps { get; set; } = 120;
 
         public bool Validate(GraphicsSettings d)
         {
             bool changed = false;
             if (OutOfRange(Fov, 50, 120)) { Fov = d.Fov; changed = true; }
             if (OutOfRange(ResolutionScalePercent, 10, 100)) { ResolutionScalePercent = d.ResolutionScalePercent; changed = true; }
+            if (MaxFps != 0 && OutOfRange(MaxFps, MinFps, MaxFpsLimit)) { MaxFps = d.MaxFps; changed = true; }
             if (!Enum.IsDefined(WindowMode)) { WindowMode = d.WindowMode; changed = true; }
             return changed;
         }
+
+        public const int MinFps = 30;
+        public const int MaxFpsLimit = 360;
 
         static bool OutOfRange(int v, int min, int max) => v < min || v > max;
     }
 
     public sealed class GameplaySettings
     {
-        [JsonPropertyName("draw_distance")] public int DrawDistance { get; set; } = 12; // 2..32
+        public const int MinDrawDistance = 200;
+        public const int MaxDrawDistance = 1000;
+
+        [JsonPropertyName("draw_distance")] public int DrawDistance { get; set; } = MaxDrawDistance; // 2..32
         [JsonPropertyName("language")] public string Language { get; set; } = "English";
-        [JsonPropertyName("keep_inventory")] public bool KeepInventory { get; set; } = false;
+        [JsonPropertyName("mouse_sensitivity")] public int MouseSensitivity { get; set; } = 100;
+        [JsonPropertyName("invert_mouse_y")] public bool InvertMouseY { get; set; } = false;
+        [JsonPropertyName("camera_sway")] public bool CameraSway { get; set; } = true;
 
         public bool Validate(GameplaySettings d, HashSet<string> allowedLanguages = null)
         {
             bool changed = false;
 
-            if (OutOfRange(DrawDistance, 2, 32)) { DrawDistance = d.DrawDistance; changed = true; }
+            if (OutOfRange(DrawDistance, MinDrawDistance, MaxDrawDistance)) { DrawDistance = d.DrawDistance; changed = true; }
+            if (OutOfRange(MouseSensitivity, 10, 300)) { MouseSensitivity = d.MouseSensitivity; changed = true; }
 
             if (string.IsNullOrWhiteSpace(Language)) { Language = d.Language; changed = true; }
             else if (allowedLanguages != null && allowedLanguages.Count > 0 && !allowedLanguages.Contains(Language))

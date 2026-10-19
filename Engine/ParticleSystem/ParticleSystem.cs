@@ -10,6 +10,8 @@ namespace Engine
 
     public class ParticleSystem : Node3D
     {
+        public static bool GloballyEnabled { get; set; } = true;
+
         private readonly HashSet<Particle> _pooledParticles = new();
         private readonly List<Particle> _active = new();
         private readonly Pool<Particle> _particlePool;
@@ -88,6 +90,11 @@ namespace Engine
         public override void Update()
         {
             base.Update();
+            if (!GloballyEnabled)
+            {
+                if (_active.Count > 0) ClearParticles();
+                return;
+            }
             if (UseManually) return;
 
             float dtSim = Time.Delta * SimulationSpeed;
@@ -148,7 +155,7 @@ namespace Engine
 
         public override void Render()
         {
-            if (!Enabled) return;
+            if (!Enabled || !GloballyEnabled) return;
             base.Render();
             Emitter.Debug();
             var model = Space == SimulationSpace.Local ? GetRenderModelMatrix() : Matrix4.Identity;
@@ -189,7 +196,7 @@ namespace Engine
 
         public void PushParticle(Particle particle)
         {
-            if (_active.Count >= Max) return;
+            if (!GloballyEnabled || _active.Count >= Max) return;
             if (Space == SimulationSpace.World)
                 particle.Position = LocalToWorld(particle.Position);
             _active.Add(particle);

@@ -25,9 +25,17 @@ namespace Engine
         }
 
 
+        public static float MouseSensitivity { get; set; } = 1f;
+        public static bool InvertMouseY { get; set; }
+
+        public static float LookDeltaY(float deltaY)
+        {
+            return InvertMouseY ? -deltaY : deltaY;
+        }
+
         public void Rotate()
         {
-            const float sensitivity = 0.002f;
+            float sensitivity = 0.002f * MouseSensitivity;
 
             Vector3 localUp = _up;
             Quaternion rotationYaw = Quaternion.FromAxisAngle(localUp, -Input.Mouse.Delta.X * sensitivity);
@@ -35,7 +43,7 @@ namespace Engine
 
             Vector3 localRight = Vector3.Transform(Vector3.UnitX, _rotation);
 
-            Quaternion rotationPitch = Quaternion.FromAxisAngle(localRight, -Input.Mouse.Delta.Y * sensitivity);
+            Quaternion rotationPitch = Quaternion.FromAxisAngle(localRight, -LookDeltaY(Input.Mouse.Delta.Y) * sensitivity);
             _rotation = rotationPitch * _rotation;
 
             _rotation = Quaternion.Normalize(_rotation);

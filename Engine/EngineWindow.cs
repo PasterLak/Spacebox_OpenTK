@@ -67,7 +67,7 @@ namespace Engine
             LightSystem.InitializeGpu();
             VisualDebug.InitializeGpu();
 
-            _sceneRenderer = new SceneRenderer(ClientSize.X, ClientSize.Y);
+            _sceneRenderer = new SceneRenderer(SceneSize.X, SceneSize.Y);
             FrameLimiter.Initialize(120);
             FrameLimiter.IsRunning = true;
 
@@ -299,6 +299,31 @@ namespace Engine
             _controller.RecreateFontDeviceTexture(nearestFilter);
         }
 
+        private float _renderScale = 1f;
+
+        public float RenderScale
+        {
+            get => _renderScale;
+            set
+            {
+                float clamped = Math.Clamp(value, 0.1f, 1f);
+                if (clamped == _renderScale) return;
+                _renderScale = clamped;
+                _sceneRenderer?.Resize(SceneSize.X, SceneSize.Y);
+            }
+        }
+
+        public bool PostProcessingEnabled
+        {
+            get => _processManager == null || _processManager.Enabled;
+            set
+            {
+                if (_processManager != null) _processManager.Enabled = value;
+            }
+        }
+
+        private Vector2i SceneSize => new Vector2i(Math.Max(1, (int)(ClientSize.X * _renderScale)), Math.Max(1, (int)(ClientSize.Y * _renderScale)));
+
         public void SetVSync(bool enabled)
         {
             VSync = enabled ? VSyncMode.On : VSyncMode.Off;
@@ -439,7 +464,7 @@ namespace Engine
             base.OnResize(e);
             GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
             _minimizedWindowSize = ClientSize;
-            _sceneRenderer?.Resize(ClientSize.X, ClientSize.Y);
+            _sceneRenderer?.Resize(SceneSize.X, SceneSize.Y);
             _processManager?.UpdateResolution(ClientSize);
             OnResized?.Invoke(Size);
             if (Camera.Main != null)

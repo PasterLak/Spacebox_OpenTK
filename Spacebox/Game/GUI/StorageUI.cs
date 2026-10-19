@@ -32,9 +32,9 @@ namespace Spacebox.Game.GUI
         {
             InventoryUIHelper.Initialize();
 
-            splitAudio = new AudioSource(Resources.Load<AudioClip>("splitStack"));
-            openSound = new AudioSource(Resources.Get<AudioClip>("openStorage"));
-            closeSound = new AudioSource(Resources.Get<AudioClip>("closeStorage"));
+            splitAudio = new AudioSource(Resources.Load<AudioClip>("splitStack"), AudioChannel.UI);
+            openSound = new AudioSource(Resources.Get<AudioClip>("openStorage"), AudioChannel.UI);
+            closeSound = new AudioSource(Resources.Get<AudioClip>("closeStorage"), AudioChannel.UI);
         }
 
         public static void OpenStorage(StorageBlock storageBlock, LocalAstronaut astronaut)

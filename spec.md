@@ -72,6 +72,8 @@ Spacebox is a single-player voxel survival game set in an asteroid belt, with an
 - Post-processing (`PostProcessManager`): vignette (on by default); black-and-white, edge detection, SSAO, normal view and depth view are also available.
 - Other renderers: skybox / procedural skybox, particles, sprites/billboards, lines/axes/bounding-box debug draws, planets/atmosphere/sun/water shaders.
 
+- Render scale: `EngineWindow.RenderScale` renders the scene FBO at a fraction of the window size; post processing stretches it to the window, the GUI stays at full resolution. `EngineWindow.PostProcessingEnabled` skips all effects.
+
 ### 3.4 Other subsystems
 
 | Subsystem | Location | Notes |
@@ -86,6 +88,7 @@ Spacebox is a single-player voxel survival game set in an asteroid belt, with an
 | AI | `Engine/AI` | `StateMachine<TContext>` (hierarchical: a machine is itself a `State`, transitions are predicates on a context, any-state transitions, `TimeInState`); voxel pathfinding over `INavigationGrid` (`VoxelPathfinder`: straight line first via `VoxelLine` DDA, else 26-neighbour weighted A* without corner cutting, node budget with partial paths, line-of-sight smoothing; `PathScheduler` runs queued `PathRequest`s with a node budget per frame) |
 | Misc | | `ServiceLocator`, `EventBus`, `TimedEventManager`, `TickTaskManager`, `DisposalManager`, `Pool<T>` |
 
+- Audio mixer (`Engine/Audio/AudioMixer`): every `AudioSource` belongs to a channel (`Effects`, `Music`, `Ambient`, `UI`); its OpenAL gain is `Volume * Master * channel volume` (0 while `Muted`).
 ## 4. World Model
 
 ### 4.1 Spatial hierarchy
@@ -276,6 +279,18 @@ dotnet publish Spacebox/Spacebox.csproj -c Release -r <win-x64|linux-x64|osx-x64
 - Tests cover packed vector types, blocks, atlas packing (`AtlasLayout`), AO, mesh generation, world logic and version conversion.
 - API docs: Doxygen (`Doxyfile`, theme in `Documentation/doxygen-awesome-css`).
 - Releases: https://pasterlak.itch.io/spacebox
+
+## 9b. Settings
+
+`Resources/Settings.json` (`GameSettings`, missing or invalid values fall back to defaults):
+
+| Section | Values |
+|---|---|
+| audio | master, music, ambient, effects, ui (0-100), mute_when_unfocused, menu_music |
+| graphics | window_mode, vsync, max_fps (0 = unlimited, 30-360), resolution_scale_percent (10-100), fov (50-120), ambient_occlusion (voxel AO), voxel_lighting, post_processing, effects_enabled |
+| game | draw_distance (200-1000 blocks: entity draw radius, chunk draw/generation radius = 90 %), language, mouse_sensitivity (10-300 %), invert_mouse_y, camera_sway |
+
+Options are reachable from the main menu and the pause menu.
 
 ## 10. Limits & Constants
 

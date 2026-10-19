@@ -78,7 +78,6 @@ namespace Spacebox.Scenes
            // Resources.Load<AudioClip>("Resources/Audio/UI/click2.ogg", true);
             menu = new GameMenu();
 
-            if(Settings.Graphics.EffectsEnabled)
             SetDustSpawner();
 
 

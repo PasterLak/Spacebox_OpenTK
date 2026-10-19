@@ -9,14 +9,14 @@ namespace Engine.Components
         public BackgroundMusicComponent(string path) 
         {
             var clip = Resources.Load<AudioClip>(path);
-            Audio = new AudioSource(clip);
+            Audio = new AudioSource(clip, AudioChannel.Music);
             Audio.IsLooped = true;
         }
 
         public BackgroundMusicComponent(AudioClip clip)
         {
         
-            Audio = new AudioSource(clip);
+            Audio = new AudioSource(clip, AudioChannel.Music);
             Audio.IsLooped = true;
         }
 
