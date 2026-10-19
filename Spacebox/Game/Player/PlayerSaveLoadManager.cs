@@ -11,6 +11,7 @@ namespace Spacebox.Game.Player
     {
         private const string PlayersFolder = "players";
         private const string LegacyFileName = "player.json";
+        private const string LocalFileName = "localplayer.json";
 
         public static string GetPlayerFilePath(string worldFolder, string playerName)
         {
@@ -25,6 +26,32 @@ namespace Spacebox.Game.Player
 
             string legacy = Path.Combine(worldFolder, LegacyFileName);
             return allowLegacy && File.Exists(legacy) ? File.ReadAllText(legacy) : null;
+        }
+
+        public static string GetLocalPlayerFilePath(string worldFolder)
+        {
+            return Path.Combine(worldFolder, LocalFileName);
+        }
+
+        public static string ReadLocalPlayerJson(string worldFolder, string playerName)
+        {
+            string path = GetLocalPlayerFilePath(worldFolder);
+            return File.Exists(path) ? File.ReadAllText(path) : ReadPlayerJson(worldFolder, playerName, true);
+        }
+
+        public static void WriteLocalPlayerJson(string worldFolder, string json)
+        {
+            if (json == null) return;
+
+            try
+            {
+                Directory.CreateDirectory(worldFolder);
+                File.WriteAllText(GetLocalPlayerFilePath(worldFolder), json);
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"[PlayerSaveLoadManager] Error saving local player: {ex.Message}");
+            }
         }
 
         public static void WritePlayerJson(string worldFolder, string playerName, string json)
@@ -43,7 +70,7 @@ namespace Spacebox.Game.Player
 
         public static void SavePlayer(LocalAstronaut player, string worldFolder)
         {
-            WritePlayerJson(worldFolder, Spacebox.Network.GameSession.PlayerName, Serialize(player));
+            WriteLocalPlayerJson(worldFolder, Serialize(player));
         }
 
         public static string Serialize(LocalAstronaut player)
@@ -88,7 +115,7 @@ namespace Spacebox.Game.Player
             string json = null;
             try
             {
-                json = ReadPlayerJson(worldFolder, Spacebox.Network.GameSession.PlayerName, true);
+                json = ReadLocalPlayerJson(worldFolder, Spacebox.Network.GameSession.PlayerName);
             }
             catch (Exception ex)
             {

@@ -110,6 +110,25 @@ public class ServerQueryTests
     }
 
     [Fact]
+    public void Discover_SendsDirectedBroadcastsWithSameRequest()
+    {
+        var directed = new IPEndPoint(IPAddress.Parse("10.0.0.255"), 7777);
+        var network = new FakeQueryNetwork();
+        network.AddServer(ServerA, CreateResponder(new byte[] { 1 }));
+        network.AddServer(directed, CreateResponder(new byte[] { 2 }));
+        var client = CreateClient(network, out var socket);
+        var results = new List<ServerQueryResult>();
+        client.InfoReceived += results.Add;
+
+        client.Discover(7777, new[] { directed.Address });
+        client.Update();
+
+        Assert.Equal(2, socket.SentCount);
+        Assert.Equal(3, results.Count);
+        Assert.All(results, r => Assert.True(r.FromBroadcast));
+    }
+
+    [Fact]
     public void Discover_Timeout_DoesNotReportOffline()
     {
         var client = CreateClient(new FakeQueryNetwork(), out _);

@@ -52,6 +52,8 @@ namespace Spacebox.Game.Player
         public override void Start()
         {
             base.Start();
+            if (Application.IsHeadless) return;
+
             LoadMoodEffects();
             SetupTimedEvents();
 
@@ -250,7 +252,7 @@ namespace Spacebox.Game.Player
         {
             base.OnUpdate();
 
-            if (!_astronaut.IsAlive) return;
+            if (Application.IsHeadless || !_astronaut.IsAlive) return;
 
             for (int i = 0; i < _timedEvents.Count; i++)
             {
@@ -289,6 +291,8 @@ namespace Spacebox.Game.Player
         private void PlayRandomEffect()
         {
             MoodData.Reset();
+
+            if (Application.IsHeadless) return;
 
             if (_allEffectClips.Count == 0)
             {

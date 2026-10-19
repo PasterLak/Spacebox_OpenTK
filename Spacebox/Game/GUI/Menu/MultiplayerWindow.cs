@@ -52,6 +52,7 @@ namespace Spacebox.Game.GUI.Menu
 
             EnsureBrowser();
             _browser.SetSavedServers(config.Servers);
+            _browser.KnownLocal = new LocalServerHistory(config.LocalServers);
             _browser.Refresh();
         }
 
@@ -278,6 +279,8 @@ namespace Spacebox.Game.GUI.Menu
             _browser.HasIcon = _icons.Has;
             _browser.IconReceived += _icons.Store;
             _browser.SavedEntriesChanged += SaveConfig;
+            _browser.KnownLocalChanged += SaveConfig;
+            _browser.DirectedBroadcasts = LocalBroadcastAddresses.Collect();
         }
 
         private void Join(ServerListItem item)

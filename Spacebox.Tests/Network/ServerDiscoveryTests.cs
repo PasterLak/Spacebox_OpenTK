@@ -122,6 +122,61 @@ public class ServerDiscoveryTests
     }
 
     [Fact]
+    public void Browser_PingsKnownLocalServerOutsideBroadcastRange()
+    {
+        var known = new IPEndPoint(IPAddress.Parse("192.168.1.30"), 7790);
+        var network = new FakeServerNetwork();
+        network.Add(known, Status(9, "Known"));
+        var browser = CreateBrowser(network);
+        browser.SetSavedServers(new List<ServerEntry>());
+        browser.KnownLocal = new LocalServerHistory(new List<string> { "192.168.1.30:7790" });
+
+        browser.Refresh();
+        browser.Update(0.01f);
+
+        Assert.Single(browser.Local);
+        Assert.Equal("Known", browser.Local[0].DisplayName);
+    }
+
+    [Fact]
+    public void Browser_RemembersDiscoveredLanServer()
+    {
+        var network = new FakeServerNetwork();
+        network.Add(Lan, Status(7));
+        var browser = CreateBrowser(network);
+        browser.SetSavedServers(new List<ServerEntry>());
+        var addresses = new List<string>();
+        browser.KnownLocal = new LocalServerHistory(addresses);
+        int changes = 0;
+        browser.KnownLocalChanged += () => changes++;
+
+        browser.Refresh();
+        browser.Update(0.01f);
+        browser.Refresh();
+        browser.Update(0.01f);
+
+        Assert.Equal(new[] { "192.168.1.20:7777" }, addresses);
+        Assert.Equal(1, changes);
+    }
+
+    [Fact]
+    public void LocalServerHistory_MovesToFrontAndLimitsSize()
+    {
+        var addresses = new List<string> { "bad", "10.0.0.1:7777" };
+        var history = new LocalServerHistory(addresses);
+        Assert.Equal(new[] { "10.0.0.1:7777" }, addresses);
+
+        for (int i = 0; i < LocalServerHistory.MaxEntries + 4; i++)
+            history.Remember(new IPEndPoint(IPAddress.Parse("10.0.1." + i), 7777));
+        Assert.Equal(LocalServerHistory.MaxEntries, addresses.Count);
+
+        Assert.True(history.Remember(new IPEndPoint(IPAddress.Parse("10.0.1.5"), 7777)));
+        Assert.Equal("10.0.1.5:7777", addresses[0]);
+        Assert.False(history.Remember(new IPEndPoint(IPAddress.Parse("10.0.1.5"), 7777)));
+        Assert.False(history.Remember(new IPEndPoint(IPAddress.Loopback, 7777)));
+    }
+
+    [Fact]
     public void IconFile_AcceptsOnlySmallPng()
     {
         var png = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0 };
@@ -132,6 +187,36 @@ public class ServerDiscoveryTests
         Assert.False(ServerIconFile.IsValid(big));
         Assert.False(ServerIconFile.IsValid(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }));
         Assert.False(ServerIconFile.IsValid(null));
+    }
+
+    [Fact]
+    public void IconFile_AcceptsJpeg()
+    {
+        var jpeg = new byte[] { 0xFF, 0xD8, 0xFF, 0xE0, 0 };
+
+        Assert.True(ServerIconFile.IsJpeg(jpeg));
+        Assert.True(ServerIconFile.IsValid(jpeg));
+        Assert.False(ServerIconFile.IsPng(jpeg));
+    }
+
+    [Fact]
+    public void IconFile_ResolvesJpegWhenPngIsMissing()
+    {
+        string folder = Path.Combine(Path.GetTempPath(), "spacebox_icon_" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        try
+        {
+            string jpg = Path.Combine(folder, "server-icon.jpg");
+            File.WriteAllBytes(jpg, new byte[] { 0xFF, 0xD8, 0xFF, 0xE0, 0 });
+
+            Assert.Equal(jpg, ServerIconFile.ResolvePath(Path.Combine(folder, "server-icon.png")));
+            Assert.NotNull(ServerIconFile.TryRead(Path.Combine(folder, "server-icon.png")));
+            Assert.Null(ServerIconFile.ResolvePath(Path.Combine(folder, "missing.png")));
+        }
+        finally
+        {
+            Directory.Delete(folder, true);
+        }
     }
 
     [Fact]

@@ -69,13 +69,18 @@ public sealed class ServerQueryClient : IDisposable
         ResolveAsync(key, host.Trim(), port);
     }
 
-    public void Discover(int port)
+    public void Discover(int port, IReadOnlyList<IPAddress> directedBroadcasts = null)
     {
         if (!EnsureStarted()) return;
 
         int requestId = Register(null, true);
         WriteInfoRequest(requestId);
         _socket.Broadcast(port, _writer.Buffer, 0, _writer.Length);
+
+        if (directedBroadcasts == null) return;
+
+        for (int i = 0; i < directedBroadcasts.Count; i++)
+            _socket.Send(new IPEndPoint(directedBroadcasts[i], port), _writer.Buffer, 0, _writer.Length);
     }
 
     public void RequestBlob(IPEndPoint endPoint, ulong hash, int length)

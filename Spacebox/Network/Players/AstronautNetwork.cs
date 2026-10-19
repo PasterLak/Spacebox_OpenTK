@@ -145,8 +145,9 @@ public sealed class AstronautNetwork : NetworkTransform
     {
         _isAlive.Value = false;
 
-        int killer = Owner is LocalAstronaut local ? local.GetRecentAttacker() : -1;
-        SendRpc(nameof(ReportDeath), killer);
+        var local = Owner as LocalAstronaut;
+        int killer = local != null ? local.GetRecentAttacker() : -1;
+        SendRpc(nameof(ReportDeath), killer, local?.LastDeathCase?.CauseOfDeath ?? "");
     }
 
     private static void ApplyFlashlight(Astronaut astronaut, short itemId)
@@ -246,12 +247,11 @@ public sealed class AstronautNetwork : NetworkTransform
     }
 
     [Rpc(RpcTarget.Server)]
-    private void ReportDeath(int killerPeer)
+    private void ReportDeath(int killerPeer, string reason)
     {
         string victim = Spacebox.Network.Combat.CombatNetwork.GetPlayerName(OwnerPeer);
-        string text = killerPeer > 0 && killerPeer != OwnerPeer
-            ? $"{victim} was killed by {Spacebox.Network.Combat.CombatNetwork.GetPlayerName(killerPeer)}"
-            : $"{victim} died";
+        string killer = killerPeer > 0 && killerPeer != OwnerPeer ? Spacebox.Network.Combat.CombatNetwork.GetPlayerName(killerPeer) : null;
+        string text = DeathMessageFormatter.Format(victim, killer, reason);
 
         ChatService.Broadcast(text, new Color4(1f, 0.35f, 0.35f, 1f));
     }

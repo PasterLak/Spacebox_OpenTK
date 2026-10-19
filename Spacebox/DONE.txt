@@ -143,6 +143,7 @@ Small
 - new multiplayer: game is always server+client, singleplayer can be opened to network (pause menu), join by IP, dedicated server (--server, serverconfig.json, console commands), per-player saves on the server, player sync (movement, flashlight, held item), chat, block edits, modified asteroids sent by the server
 - loading screen over the skybox with a yellow progress bar and current step, until everything around the player is loaded (preload at the saved position, chunks outside the view and LODs are built too, no lag when turning)
 - equipment slot backgrounds
+- multiplayer chat shows the death reason; server list remembers found LAN servers and pings them first, LAN search also broadcasts to every network adapter subnet; server icon can be PNG or JPEG
 
 Fixes
 - smooth player sliding along walls, edges and 1-block holes (sphere push-out collision)
@@ -216,6 +217,7 @@ Fixes
 - flashlight could not be turned off after the options were opened (reloading the key config dropped action subscriptions)
 - turning particles off now hides every particle effect at once and nothing else
 - turning post processing off broke the image; the final pass that draws the image always runs now
+- singleplayer/host always loads the world's own local player save (localplayer.json), changing the nickname no longer creates a new player; headless server no longer plays or logs mood effects
 
 Engine
 - RenderTexture (offscreen rendering with its own camera) and OrbitViewCamera
@@ -246,6 +248,7 @@ Engine
 - headless mode (Application.EnableHeadless): no audio device, rendering, texture decoding, shader compiling or GPU uploads; used by the dedicated server
 - server query protocol (Engine/Networking/Query): connectionless server info, LAN broadcast discovery and chunked icon download on the game port
 - ConcurrentPool<T> (thread-safe bounded pool); chunk meshing reuses pooled vertex/index buffers (was ~45 MB per remesh), padded block/voxel arrays and light scratch are pooled, rotation face vectors cached, generated asteroid chunks skip the empty air fill
+- LocalBroadcastAddresses (subnet broadcast address per network adapter); ServerQueryClient.Discover also sends to directed broadcasts
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.1

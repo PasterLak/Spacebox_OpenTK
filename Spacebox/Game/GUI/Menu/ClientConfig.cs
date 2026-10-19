@@ -8,6 +8,7 @@ namespace Spacebox.Game.GUI.Menu
         public string PlayerNickname { get; set; } = "";
         public string SkinColor { get; set; } = "Yellow";
         public List<ServerEntry> Servers { get; set; } = new List<ServerEntry>();
+        public List<string> LocalServers { get; set; } = new List<string>();
 
 
 

@@ -11,6 +11,7 @@ public sealed class ServerBrowser : IDisposable
 
     private const string SavedKeyPrefix = "saved:";
     private const string LocalhostKey = "localhost";
+    private const string KnownLocalKeyPrefix = "known:";
 
     private readonly ServerQueryClient _client;
     private readonly List<ServerListItem> _saved = new List<ServerListItem>();
@@ -26,9 +27,12 @@ public sealed class ServerBrowser : IDisposable
     public IReadOnlyList<ServerListItem> Local => _local;
     public int DiscoveryPort { get; set; } = NetworkManager.DefaultPort;
     public Func<ulong, bool> HasIcon { get; set; }
+    public LocalServerHistory KnownLocal { get; set; }
+    public IReadOnlyList<IPAddress> DirectedBroadcasts { get; set; }
 
     public event Action<ulong, byte[]> IconReceived;
     public event Action SavedEntriesChanged;
+    public event Action KnownLocalChanged;
 
     public ServerBrowser(IQuerySocket socket, Func<double> clock = null)
     {
@@ -60,10 +64,12 @@ public sealed class ServerBrowser : IDisposable
     {
         _nextRefresh = _time + AutoRefreshInterval;
 
+        PingKnownLocal();
+
         foreach (var item in _saved)
             Ping(item);
 
-        _client.Discover(DiscoveryPort);
+        _client.Discover(DiscoveryPort, DirectedBroadcasts);
         _client.RequestInfo(LocalhostKey, IPAddress.Loopback.ToString(), DiscoveryPort);
     }
 
@@ -122,9 +128,24 @@ public sealed class ServerBrowser : IDisposable
         item.LastSeen = _time;
 
         if (item.IsSaved) CacheSavedEntry(item, status, result.BlobHash);
-        else item.IconHash = result.BlobHash;
+        else
+        {
+            item.IconHash = result.BlobHash;
+            if (KnownLocal != null && KnownLocal.Remember(result.EndPoint)) KnownLocalChanged?.Invoke();
+        }
 
         RequestIcon(result);
+    }
+
+    private void PingKnownLocal()
+    {
+        if (KnownLocal == null) return;
+
+        foreach (var address in KnownLocal.Addresses)
+        {
+            if (!LocalServerHistory.TryParse(address, out var endPoint)) continue;
+            _client.RequestInfo(KnownLocalKeyPrefix + address, endPoint.Address.ToString(), endPoint.Port);
+        }
     }
 
     private ServerListItem UpsertLocal(ServerQueryResult result, ServerStatus status)

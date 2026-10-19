@@ -53,6 +53,7 @@ namespace Spacebox.Game.Player
         }
 
         public Action OnDeath { get; set; }
+        public DeathCase LastDeathCase { get; private set; }
         public Action OnRevived { get; set; }
 
         private const float AttackerMemorySeconds = 10f;
@@ -378,6 +379,7 @@ namespace Spacebox.Game.Player
         {
             if (!IsAlive) return;
             PlayerStatistics.RecordDeath(deathCase?.CauseOfDeath);
+            LastDeathCase = deathCase;
 
             IsAlive = false;
             InertiaController.Reset();

@@ -74,6 +74,12 @@ public static class ClientConfigStore
             changed = true;
         }
 
+        if (config.LocalServers == null)
+        {
+            config.LocalServers = new List<string>();
+            changed = true;
+        }
+
         changed |= config.Servers.RemoveAll(server => server == null) > 0;
         foreach (var server in config.Servers)
         {
