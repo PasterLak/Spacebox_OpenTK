@@ -145,6 +145,8 @@ Small
 - equipment slot backgrounds
 
 Fixes
+- smooth player sliding along walls, edges and 1-block holes (sphere push-out collision)
+- statistics: distance traveled counts the real path every frame (was cut to whole meters every 5 s), ignores teleports/jitter; play time no longer loses minutes and sessions are not counted on every save; shots hits counted again after the first projectile reuse, explosions once per shot, processed items count what is taken out; new: distance in ships, max speed, visited asteroids/sectors, death causes, consumables used, damage dealt (shots, drills)
 - ship console: unbound engines no longer fire on their own while piloting; mouse steering only uses thruster sets that cancel each other's push
 - eraser: selection points, pointer and box are entity cells drawn with the entity's rotation and position; erase/fill is sent to the server (BulkBlockEditMessage, max 128^3 blocks) and synced to all players
 - voxel AO: two solid sides fully darken a corner, quads split through the darker diagonal (was reversed), AO and light read edge/corner neighbour chunks and border edits remesh them

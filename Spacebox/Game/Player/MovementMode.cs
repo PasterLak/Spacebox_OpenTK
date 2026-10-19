@@ -293,130 +293,115 @@ public class MovementMode : GameModeBase
 
     float timeInWall = 0;
 
-    private struct CollisionState
+    private const float CollisionSkin = 0.002f;
+    private const int MaxResolveIterations = 6;
+    private const int MaxSubsteps = 16;
+
+    private struct MoveContext
     {
-        public bool hitX;
-        public bool hitY;
-        public bool hitZ;
-        public float totalImpactSpeed;
-        public CollideInfo collideInfo;
-    }
-
-    private float CalculateEffectiveImpactSpeed(Vector3 velocityBefore, CollisionState collision, int hitCount)
-    {
-        float speed = velocityBefore.Length;
-
-        if (hitCount == 1)
-        {
-            if (collision.hitX) return MathF.Abs(velocityBefore.X);
-            if (collision.hitY) return MathF.Abs(velocityBefore.Y);
-            if (collision.hitZ) return MathF.Abs(velocityBefore.Z);
-        }
-        else if (hitCount == 2)
-        {
-            if (collision.hitX && collision.hitY)
-                return MathF.Sqrt(velocityBefore.X * velocityBefore.X + velocityBefore.Y * velocityBefore.Y);
-            if (collision.hitX && collision.hitZ)
-                return MathF.Sqrt(velocityBefore.X * velocityBefore.X + velocityBefore.Z * velocityBefore.Z);
-            if (collision.hitY && collision.hitZ)
-                return MathF.Sqrt(velocityBefore.Y * velocityBefore.Y + velocityBefore.Z * velocityBefore.Z);
-        }
-
-        return speed;
+        public Vector3 Step;
+        public Vector3 Velocity;
+        public float ImpactSpeed;
+        public CollideInfo ImpactInfo;
+        public SphereBody HitBody;
     }
 
     public void MoveAndCollide(Vector3 movement, LocalAstronaut player)
     {
-        Vector3 position = player.Position;
-
-        if (player.CollisionEnabled)
-        {
-            World world = World.Instance;
-
-            if (world == null) return;
-
-            CollisionState collision = new CollisionState();
-            Vector3 velocityBefore = player.InertiaController.Velocity;
-            float speedBefore = velocityBefore.Length;
-            SphereBody hitBody = null;
-
-            position.X += movement.X;
-            UpdateBoundingAt(position, player);
-
-            if (IsBlocked(world, player, out collision.collideInfo, ref hitBody))
-            {
-                position.X -= movement.X;
-                collision.hitX = true;
-            }
-
-            position.Y += movement.Y;
-            UpdateBoundingAt(position, player);
-            if (IsBlocked(world, player, out var collideInfoY, ref hitBody))
-            {
-                position.Y -= movement.Y;
-                collision.hitY = true;
-                if (!collision.hitX) collision.collideInfo = collideInfoY;
-            }
-
-            position.Z += movement.Z;
-            UpdateBoundingAt(position, player);
-            if (IsBlocked(world, player, out var collideInfoZ, ref hitBody))
-            {
-                position.Z -= movement.Z;
-                collision.hitZ = true;
-                if (!collision.hitX && !collision.hitY) collision.collideInfo = collideInfoZ;
-            }
-
-            if (hitBody != null) PushBody(hitBody, player, velocityBefore);
-
-            int hitCount = (collision.hitX ? 1 : 0) + (collision.hitY ? 1 : 0) + (collision.hitZ ? 1 : 0);
-
-            if (hitCount > 0)
-            {
-                float effectiveSpeed = CalculateEffectiveImpactSpeed(velocityBefore, collision, hitCount);
-
-                if (effectiveSpeed > 4f && collision.collideInfo.block != null)
-                {
-                    var saveSpeed = ApplyVelocityDamage(effectiveSpeed, player, collision.collideInfo);
-
-                    if (saveSpeed)
-                    {
-                        player.InertiaController.Velocity = velocityBefore * 0.7f;
-                    }
-                    else
-                    {
-                        if (collision.hitX) velocityBefore.X = 0;
-                        if (collision.hitY) velocityBefore.Y = 0;
-                        if (collision.hitZ) velocityBefore.Z = 0;
-                        player.InertiaController.Velocity = velocityBefore;
-                    }
-                }
-                else if (speedBefore > 2f)
-                {
-                    if (collision.hitX) velocityBefore.X *= 0.95f;
-                    if (collision.hitY) velocityBefore.Y *= 0.95f;
-                    if (collision.hitZ) velocityBefore.Z *= 0.95f;
-                    player.InertiaController.Velocity = velocityBefore;
-                }
-            }
-
-            player.Position = position;
-        }
-        else
+        if (!player.CollisionEnabled)
         {
             player.Position += movement;
+            return;
         }
+
+        World world = World.Instance;
+        if (world == null) return;
+
+        var sector = World.CurrentSector;
+        if (sector == null || player.BoundingVolume is not BoundingSphere sphere)
+        {
+            player.Position += movement;
+            return;
+        }
+
+        float radius = sphere.Radius;
+        Vector3 velocityBefore = player.InertiaController.Velocity;
+        Vector3 position = player.Position;
+        int steps = Math.Clamp((int)MathF.Ceiling(movement.Length / (radius * 0.5f)), 1, MaxSubsteps);
+
+        var context = new MoveContext
+        {
+            Step = movement / steps,
+            Velocity = velocityBefore
+        };
+
+        for (int i = 0; i < steps; i++)
+        {
+            Vector3 start = position;
+            position += context.Step;
+
+            if (!Resolve(world, sector, player, radius, ref position, ref context))
+            {
+                position = start;
+                break;
+            }
+        }
+
+        UpdateBoundingAt(position, player);
+
+        if (context.HitBody != null) PushBody(context.HitBody, player, velocityBefore);
+
+        if (context.ImpactSpeed > 4f && context.ImpactInfo.block != null &&
+            ApplyVelocityDamage(context.ImpactSpeed, player, context.ImpactInfo))
+        {
+            context.Velocity = velocityBefore * 0.7f;
+        }
+
+        player.InertiaController.Velocity = context.Velocity;
+        player.Position = position;
     }
 
-    private static bool IsBlocked(World world, LocalAstronaut player, out CollideInfo collideInfo, ref SphereBody hitBody)
+    private static bool Resolve(World world, Sector sector, LocalAstronaut player, float radius, ref Vector3 position, ref MoveContext context)
     {
-        if (world.IsColliding(player.Position, player.BoundingVolume, out collideInfo)) return true;
+        for (int i = 0; i < MaxResolveIterations; i++)
+        {
+            if (!TryFindContact(world, sector, player, position, radius, out var normal, out float depth, out var info, ref context.HitBody)) return true;
+
+            position += normal * (depth + CollisionSkin);
+            context.Step = SphereBoxMath.RemoveInward(context.Step, normal, out _);
+            context.Velocity = SphereBoxMath.RemoveInward(context.Velocity, normal, out float inwardSpeed);
+
+            if (inwardSpeed > context.ImpactSpeed)
+            {
+                context.ImpactSpeed = inwardSpeed;
+                context.ImpactInfo = info;
+            }
+        }
+
+        SphereBody ignored = null;
+        return !TryFindContact(world, sector, player, position, radius, out _, out float remaining, out _, ref ignored) || remaining <= CollisionSkin;
+    }
+
+    private static bool TryFindContact(World world, Sector sector, LocalAstronaut player, Vector3 position, float radius, out Vector3 normal, out float depth, out CollideInfo info, ref SphereBody hitBody)
+    {
+        Vector3 center = position + player.Offset;
+        bool found = VoxelSphereContacts.TryFindDeepest(sector, center, radius, out var contact);
+        normal = contact.Normal;
+        depth = contact.Depth;
+        info = contact.CollideInfo;
 
         var body = player.Body;
-        if (body == null || !world.Physics.OverlapsSolidBody(player.BoundingVolume.Center, body.Radius, body, out var other)) return false;
+        if (body == null || !world.Physics.OverlapsSolidBody(center, body.Radius, body, out var other)) return found;
+
+        Vector3 offset = center - other.Center;
+        float distance = offset.Length;
+        float bodyDepth = body.Radius + other.Radius - distance;
+        if (bodyDepth <= depth) return found;
 
         hitBody = other;
-        collideInfo = default;
+        normal = distance > 0.000001f ? offset / distance : player.Front * -1f;
+        depth = bodyDepth;
+        info = default;
         return true;
     }
 

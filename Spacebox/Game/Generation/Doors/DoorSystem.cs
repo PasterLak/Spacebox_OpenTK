@@ -358,6 +358,28 @@ public sealed class DoorSystem : IDisposable
         return false;
     }
 
+    public bool TryGetMovingDoorContact(Vector3 localCenter, float radius, out Vector3 normal, out float depth)
+    {
+        normal = Vector3.Zero;
+        depth = 0f;
+        if (_doors.Count == 0) return false;
+
+        bool found = false;
+        foreach (var record in _doors.Values)
+        {
+            if (record.AnimationDirection == 0) continue;
+
+            GetMovingBox(record, out var min, out var max);
+            if (!SphereBoxMath.TryGetContact(localCenter, radius, min, max, out var candidateNormal, out float candidateDepth)) continue;
+            if (candidateDepth <= depth) continue;
+
+            normal = candidateNormal;
+            depth = candidateDepth;
+            found = true;
+        }
+        return found;
+    }
+
     public bool RaycastMovingDoors(Engine.Physics.Ray entitySpaceRay, out HitInfo hitInfo, out float distance)
     {
         hitInfo = default;
