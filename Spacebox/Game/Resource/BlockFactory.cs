@@ -53,6 +53,8 @@ namespace Spacebox.Game.Resource
             return new Block(data);
         }
 
+        public static IEnumerable<string> Types => BlockCreators.Keys;
+
         public static bool ValidateBlockType(string type)
         {
             type = type.ToLower();

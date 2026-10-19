@@ -50,6 +50,9 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
             return;
         }
 
+        if (!string.IsNullOrEmpty(LaunchOptions.EditorGameSet) && Spacebox.Editor.GameSetEditorLauncher.TryOpen(LaunchOptions.EditorGameSet, LaunchOptions.EditorPanel))
+            return;
+
         if (LaunchOptions.HasConnectTarget)
         {
             QuickJoin.Start(LaunchOptions.ConnectAddress, LaunchOptions.ConnectPort, LaunchOptions.PlayerName);
@@ -106,6 +109,7 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
         SceneManager.Register<ServerMessageScene>();
         SceneManager.Register<PlaygroundScene>();
         SceneManager.Register<LocalSpaceScene>();
+        SceneManager.Register<Spacebox.Editor.GameSetEditorScene>();
         SceneManager.Register<LogoScene>();
         SceneManager.Register<ParticleSystemEditor>();
     }

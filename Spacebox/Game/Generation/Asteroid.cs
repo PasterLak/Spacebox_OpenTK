@@ -117,17 +117,9 @@ namespace Spacebox.Game.Generation
                 _removedChunks.Add(chunk.PositionIndex);
         }
 
-        private static float ComputeStep(byte wormDiameter, float overlapK = 0.75f)
-        {
-            float step = (wormDiameter * 0.5f) * overlapK;
-            return step < 1f ? 1f : step;
-        }
-
         public void OnGenerate()
         {
-            float halfSize = diameterBlocks * 0.5f;
-            int minChunk = (int)MathF.Floor(-halfSize / Chunk.Size);
-            int maxChunk = (int)MathF.Floor(halfSize / Chunk.Size);
+            AsteroidChunkBuilder.GetChunkRange(diameterBlocks, out int minChunk, out int maxChunk);
 
             for (int x = minChunk; x <= maxChunk; x++)
                 for (int y = minChunk; y <= maxChunk; y++)
@@ -304,37 +296,7 @@ namespace Spacebox.Game.Generation
         private (Chunk chunk, MeshData meshData) CreateChunk(Vector3SByte idx)
         {
             var chunk = new Chunk(idx, this, true);
-            var paddedData = voxelGen.GeneratePaddedDataForChunk(idx);
-            var chunkSeed = SeedHelper.GetChunkIdInt(EntityID, idx);
-
-            if (NotGeneratedEntity.asteroid.UsePerlinWorms)
-            {
-                var wormParams = new WormParameters(
-                    NotGeneratedEntity.asteroid.WormSettings.MinCount,
-                    NotGeneratedEntity.asteroid.WormSettings.MaxCount,
-                    NotGeneratedEntity.asteroid.WormSettings.DiameterInBlocks,
-                    NotGeneratedEntity.asteroid.WormSettings.PathDeviation,
-                    NotGeneratedEntity.asteroid.WormSettings.MaxTunnelLength,
-                    ComputeStep(NotGeneratedEntity.asteroid.WormSettings.DiameterInBlocks, NotGeneratedEntity.asteroid.WormSettings.StepSize),
-                    Seed);
-
-                PerlinWorms.CarvePaddedChunk(paddedData, idx, Seed, wormParams);
-            }
-
-            var oreGen = new AsteroidOreGenerator(NotGeneratedEntity.asteroid, chunkSeed);
-            oreGen.ApplyOres(ref paddedData);
-
-            Block[,,] paddedBlocks = new Block[34, 34, 34];
-            for (int x = 0; x < 34; x++)
-            {
-                for (int y = 0; y < 34; y++)
-                {
-                    for (int z = 0; z < 34; z++)
-                    {
-                        paddedBlocks[x, y, z] = GameAssets.CreateBlockFromId((short)paddedData[x, y, z]);
-                    }
-                }
-            }
+            var paddedBlocks = AsteroidChunkBuilder.BuildPaddedBlocks(voxelGen, NotGeneratedEntity.asteroid, Seed, EntityID, idx);
 
             for (int x = 0; x < Chunk.Size; x++)
             {

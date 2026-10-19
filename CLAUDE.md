@@ -37,6 +37,7 @@ Project skills in `.claude/skills/` cover repeated tasks: `add-block`, `add-item
 ```bash
 dotnet build Spacebox.sln                       # build everything (SpaceServerUI fails off Windows; build projects individually there)
 dotnet run --project Spacebox/Spacebox.csproj   # run the game (Debug)
+dotnet run --project Spacebox/Spacebox.csproj -- --editor Default Blocks   # open the GameSet editor (optional start panel)
 dotnet run --project SpaceServer                # run the dedicated server
 
 dotnet test Engine.Tests                                            # engine xUnit tests

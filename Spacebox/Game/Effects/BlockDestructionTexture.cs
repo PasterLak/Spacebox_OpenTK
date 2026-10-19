@@ -24,14 +24,14 @@ namespace Spacebox.Game.Effects
                 return GetEmptyTexture();
             }
 
-            if (pattern.Width != pattern.Height || blockTexture.Width != blockTexture.Height)
+            if (pattern.Width != pattern.Height)
             {
                 Debug.Error($"[BlockDestructionTexture] Error: Texture sizes are invalid (must be square)");
                 return GetEmptyTexture();
             }
 
             int patternSize = pattern.Width;
-            int blockSize = blockTexture.Width;
+            int blockSize = Math.Min(blockTexture.Width, blockTexture.Height);
 
             if (patternSize > blockSize)
             {

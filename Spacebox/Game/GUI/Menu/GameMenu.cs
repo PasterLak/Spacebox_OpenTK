@@ -62,6 +62,7 @@ namespace Spacebox.Game.GUI.Menu
             Reg(new GraphicsWindow(this));
             Reg(new AudioWindow(this));
             Reg(new GameWindow(this));
+            Reg(new ModsWindow(this));
 
             deleteWindow = new DeleteWindow(this);
             updateVersionWindow = new UpdateVersionWindow(this);
@@ -544,6 +545,30 @@ namespace Spacebox.Game.GUI.Menu
 
         }
 
+        public void OpenGameSetEditor(ModConfig mod, string startPanel)
+        {
+            if (mod == null) return;
+
+            var args = new Spacebox.Editor.GameSetEditorArgs
+            {
+                ModId = mod.ModId,
+                ModFolderName = mod.FolderName,
+                StartPanel = startPanel
+            };
+
+            Click1.Play();
+            hide = true;
+            IsVisible = false;
+            CenteredImageMenu.Hide();
+            VerticalLinks.IsVisible = false;
+            if (DevLogWindow.Instance != null) DevLogWindow.Instance.IsVisible = false;
+
+            ColorOverlay.StartFade(FadeMode.FadeIn, new Vector3(0, 0, 0), 0.5f, 0, 1, 0, () =>
+            {
+                SceneManager.Load<Spacebox.Editor.GameSetEditorScene, Spacebox.Editor.GameSetEditorArgs>(args);
+            }, null);
+        }
+
         public void DeleteWorld(WorldInfo world)
         {
             string worldsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Worlds");
@@ -572,5 +597,6 @@ namespace Spacebox.Game.GUI.Menu
         public void SetStateToMultiplayer() => Open<MultiplayerWindow>();
         public void SetStateToSettingsControls() => Open<SettingsControlsWindow>();
         public void SetStateToGraphics() => Open<GraphicsWindow>();
+        public void SetStateToMods() => Open<ModsWindow>();
     }
 }

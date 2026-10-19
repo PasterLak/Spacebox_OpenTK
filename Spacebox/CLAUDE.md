@@ -184,6 +184,12 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 - `MainThreadDispatcher` (`Game/Generation/Structures/MainThreadDispatcher.cs`) brings worker results back to the GL thread; drained in `BaseSpaceScene.Update` with a time budget (`StreamingBudget`, unlimited while loading) and in `Sector`.
 - World loading: `World.PreloadAroundPlayer` runs after the player is loaded; `WorldLoadingScreen` keeps the player frozen until `World.GetPendingStreamingWork` (entities, chunks, mesh jobs) and LOD jobs reach zero. `DisposalManager.ProcessDisposals` is also driven from `BaseSpaceScene`.
 
+## GameSet editor
+
+- `Spacebox/Editor/`: `GameSetEditorScene` (+ `GameSetEditorLauncher` for `--editor`), `EditorContext` (project, runtime assets, previews, status), `Data/` (JSON files, entry sources, `JsonSchema`, `GameSetCatalog`), `UI/` (`EditorShell`, `JsonInspector`, `Fields/`, `Panels/`), `Preview/` (offscreen previews), `Generation/` (biome map).
+- New content type: add an `EntryDefinition` (+ schema DTO) to `GameSetCatalog` and a `CollectionPanel` in `EditorPanelFactory`. New reference/value widget: an `IJsonFieldEditor` (or `ReferenceFieldEditor`) registered in `JsonFieldEditors.CreateDefault`. New preview: `IPreviewContent` + `IEntryPreview`.
+- Previews read runtime assets (need Save & Reload after edits), projectile previews read the JSON live. GL work only in `IPreviewContent.Update/Render`; asteroid meshes are built on workers.
+
 ## Where to add things
 
 | Feature | Steps |

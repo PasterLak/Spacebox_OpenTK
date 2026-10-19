@@ -196,7 +196,16 @@ GameSets/Default/
 
 `GameSetLoader` loads the active set, registers assets (`GameAssetsRegister`) and runs queued post-load actions. A GameSet declares the game version it targets in `Dependencies`.
 
-### 6.2 Code plugins
+### 6.2 GameSet editor
+
+- Main menu -> **Mods** (`ModsWindow`): list of local GameSets, "Download mods" (disabled, placeholder for a future mod shop), "GameSet editor" and "Generation editor" (same scene, different start panel). Launch option `--editor <GameSetFolder> [Panel]` opens the editor directly.
+- `GameSetEditorScene` (`Spacebox/Editor/`) loads the GameSet like a world (`SceneAssetsPreloader.Preload`) and shows `EditorShell`: toolbar (Save, Save & Reload, Reload, Discard, Back to menu), panel sidebar and the active panel. Layout and font scale follow the window size (`EditorWidgets.Scale`), theme `EditorTheme`.
+- The JSON files are the source of truth (`GameSetProject`, `EditorJsonFile`: comments and trailing commas accepted, saved indented, deletions applied on save). Previews and pickers use the last loaded runtime assets (`EditorAssets`); **Reload** rebuilds atlases, models and generation data.
+- Panels: Overview (`config.json`, statistics), Blocks, Items, Projectiles, Recipes (crafting blueprints, processing recipes grouped by machine type, categories), Loot, Mobs, Generation (asteroids, biome map, biomes, `generator.json`), Atlases (block/item atlases and emission layers, zoom, region list), All files (any JSON). List panels are `CollectionPanel`s over an `IEntrySource` (`ArrayEntrySource`, `FolderEntrySource`, `GroupedArrayEntrySource`) with search, new/duplicate/delete and raw JSON editing.
+- `JsonInspector` edits any JSON tree; the schema comes from the loader DTO via reflection (`JsonSchema`, `GameSetCatalog`) so every parameter can be added with its default ("Add parameter"). Field editors (`IJsonFieldEditor`, registered in `JsonFieldEditors`): colours, vectors, block textures and item sprites with icons, item/projectile/sound/mob/loot references, block/item types, categories, equipment slots, biome keys.
+- 3D previews (`PreviewViewport`, engine `RenderTexture` + `OrbitViewCamera`; drag to rotate, wheel to zoom): blocks (multi-cell, active/inactive textures), items (world model), projectiles (live from JSON: speed, length, thickness, colour, 1-block ruler), asteroids (generated in the background with the same `AsteroidChunkBuilder` as the game, radius/seed, block composition). Biome map: one sector, height slice, asteroid positions, legend.
+
+### 6.3 Code plugins
 
 - Built against `Spacebox.Core` only.
 - `PluginLoader` scans `Plugins/<mod>/*.dll`, loads each DLL into the default `AssemblyLoadContext`, creates every non-abstract `IPlugin` type and calls `OnInitialize(IGameApi)`.

@@ -204,6 +204,7 @@ void main()
             // Restore state
             GL.BindTexture(TextureTarget.Texture2D, prevTexture2D);
             GL.ActiveTexture((TextureUnit)prevActiveTexture);
+            Texture2D.ResetBindingCache();
 
             io.Fonts.SetTexID(_fontTexture);
 
@@ -441,7 +442,7 @@ void main()
 
 
             GLState.Blend(true);
-            GLState.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GLState.CullFace(false);
 
             GLState.DepthTest(false);
@@ -497,6 +498,7 @@ void main()
             // Reset state
             GL.BindTexture(TextureTarget.Texture2D, prevTexture2D);
             GL.ActiveTexture((TextureUnit)prevActiveTexture);
+            Texture2D.ResetBindingCache();
             GL.UseProgram(prevProgram);
             GL.BindVertexArray(prevVAO);
             GL.Scissor(prevScissorBox[0], prevScissorBox[1], prevScissorBox[2], prevScissorBox[3]);

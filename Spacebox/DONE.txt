@@ -152,6 +152,8 @@ Fixes
 - entities near a sector border collide and are hit by rays from the neighbour sector
 - unloaded ships load again when the player returns (they disappeared until the sector was reloaded)
 - entity files are portable: asteroid files store their asteroid type and radius and regenerate their untouched parts in any sector or world
+- Mods menu: GameSet list, download mods placeholder, GameSet editor and generation editor
+- GameSet editor: edit every parameter of blocks, items, projectiles, recipes, loot, mobs, asteroids, biomes and any JSON file, pickers with icons, save/discard/reload, 3D previews of blocks, items, projectiles and asteroids, atlas viewer, sector biome map; --editor launch option
 - disassembling assault rifle gave titanium it does not need
 - lock cursor if hidden
 - esc in inventory
@@ -191,8 +193,11 @@ Fixes
 - held item looked emissive near light blocks (block light on it softened and desaturated)
 - block placement range of asteroids grew with mass (heavy asteroids grabbed blocks far away); now 16 blocks from the nearest block
 - player and bullets went through an asteroid when a small entity was built next to it (collisions and raycasts only checked the entity with the nearest center of mass)
+- block break dust failed for blocks with non-square textures
 
 Engine
+- RenderTexture (offscreen rendering with its own camera) and OrbitViewCamera
+- ImGui left the blend function cache stale (text drawn as boxes in scenes without other blending); texture binding cache is reset after ImGui
 - Engine.Tests project (engine-only tests), Spacebox.Tests fixed and extended
 - GPU setup of Resources fallbacks, LightSystem and VisualDebug moved out of static constructors into explicit init in OnLoad; scene switching is unit-tested
 - networking: LiteNetLib transport, NetworkManager (offline/host/client/dedicated), messages, NetworkObject/NetworkBehaviour, [Rpc] methods, NetworkVariable, spawner, NetworkTransform

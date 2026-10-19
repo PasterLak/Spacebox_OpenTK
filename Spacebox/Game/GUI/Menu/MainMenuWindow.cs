@@ -36,7 +36,7 @@ public class MainMenuWindow : MenuWindow
         float buttonWidth = windowWidth * 0.9f;
         float buttonHeight = windowHeight * 0.12f;
         GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), windowSize.Y, 0.005f);
-        int buttonCount = 4;
+        int buttonCount = 5;
         float spacing = (windowHeight - (buttonCount * buttonHeight)) / (buttonCount + 1);
         float currentY = spacing;
         ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
@@ -51,6 +51,13 @@ public class MainMenuWindow : MenuWindow
         {
             menu.Click1.Play();
             menu.SetStateToMultiplayer();
+        });
+        currentY += buttonHeight + spacing;
+        ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
+        GameMenu.CenterButtonWithBackground("Mods", buttonWidth, buttonHeight, () =>
+        {
+            menu.Click1.Play();
+            menu.SetStateToMods();
         });
         currentY += buttonHeight + spacing;
         ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));

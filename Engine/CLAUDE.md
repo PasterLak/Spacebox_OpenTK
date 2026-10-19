@@ -80,6 +80,8 @@ Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
 - Materials derive from `MaterialBase` (shader, color, render mode/queue, textures, `Apply(node)`).
 - Large coordinates: build model matrices with `GetRenderModelMatrix` relative to `RenderSpace`.
 - Wrap GPU work in `GPUDebug` groups and `Prof.Time(token)` scopes where useful.
+- Offscreen rendering: `Graphics/RenderTexture.Render(camera, draw)` binds its FBO, swaps `Camera.Main`, pushes `GlobalUniforms` and restores everything; show it with `ImGui.Image(ColorTexture, size, (0,1), (1,0))`. `OrbitViewCamera` is a non-main orbit camera (`Orbit`, `Zoom`, `Frame(center, radius)`).
+- `GLState` and `Texture2D.Use` cache GL state: code that changes blend/texture state with raw GL calls must restore it or reset the cache (`Texture2D.ResetBindingCache`, done after ImGui).
 
 ## GUI and input
 

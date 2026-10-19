@@ -9,6 +9,8 @@ public static class LaunchOptions
     public static string ConnectAddress { get; private set; }
     public static int ConnectPort { get; private set; } = NetworkManager.DefaultPort;
     public static string PlayerName { get; private set; }
+    public static string EditorGameSet { get; private set; }
+    public static string EditorPanel { get; private set; }
 
     public static bool HasConnectTarget => !string.IsNullOrEmpty(ConnectAddress);
 
@@ -35,6 +37,15 @@ public static class LaunchOptions
                 case "--name" when next != null:
                     PlayerName = next;
                     i++;
+                    break;
+                case "--editor" when next != null:
+                    EditorGameSet = next;
+                    i++;
+                    if (i + 1 < args.Length && !args[i + 1].StartsWith("--"))
+                    {
+                        EditorPanel = args[i + 1];
+                        i++;
+                    }
                     break;
             }
         }

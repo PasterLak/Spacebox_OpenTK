@@ -25,6 +25,11 @@ namespace Spacebox.Scenes
 
         public static void Preload(SpaceSceneArgs param, BaseSpaceScene scene, Astronaut astronaut)
         {
+            Preload(param);
+        }
+
+        public static void Preload(SpaceSceneArgs param)
+        {
 
             bool isMultiplayer = !param.SearchForGameSetInLocalFolder;
             var modId = param.modId;

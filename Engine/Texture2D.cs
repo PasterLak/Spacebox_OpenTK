@@ -243,6 +243,12 @@ namespace Engine
             _isDirty = false;
         }
 
+        public static void ResetBindingCache()
+        {
+            Array.Clear(_boundTextures);
+            _activeUnit = -1;
+        }
+
         public void Use(TextureUnit unit = TextureUnit.Texture0)
         {
             int unitIndex = (int)(unit - TextureUnit.Texture0);

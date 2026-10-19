@@ -244,7 +244,7 @@ public class GenerationLoader
         }
     }
 
-    private static AsteroidData ConvertAsteroid(AsteroidJSON json)
+    public static AsteroidData ConvertAsteroid(AsteroidJSON json)
     {
         try
         {
