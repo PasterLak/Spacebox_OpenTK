@@ -10,12 +10,9 @@ namespace Spacebox.Game.Physics
 {
     public class VoxelPhysics
     {
-        public static bool IsColliding(BoundingVolume volume, Chunk chunk, Vector3 Position, out CollideInfo collideInfo)
+        public static bool IsColliding(BoundingVolume volume, Chunk chunk, Vector3 ChunkWorldPosition, out CollideInfo collideInfo)
         {
-            return IsColliding(volume, chunk.Blocks, Position, out collideInfo);
-        }
-        public static bool IsColliding(BoundingVolume volume, Block[,,] Blocks, Vector3 ChunkWorldPosition, out CollideInfo collideInfo)
-        {
+            Block[,,] Blocks = chunk.Blocks;
             collideInfo = new CollideInfo();
             if (!(volume is BoundingSphere sphere)) return false;
 
@@ -41,8 +38,9 @@ namespace Spacebox.Game.Physics
                         collideInfo.block = block;
                         if (!block.IsAir && !block.IsMeshHidden)
                         {
-                            Vector3 blockMin = ChunkWorldPosition + new Vector3(x, y, z);
-                            BoundingBox blockBox = new BoundingBox(blockMin + new Vector3(0.5f), Vector3.One);
+                            BlockCollision.GetChunkCellBounds(chunk, x, y, z, block, out var localBoxMin, out var localBoxMax);
+                            Vector3 blockMin = ChunkWorldPosition + localBoxMin;
+                            BoundingBox blockBox = new BoundingBox(blockMin + (localBoxMax - localBoxMin) * 0.5f, localBoxMax - localBoxMin);
                             if (sphere.Intersects(blockBox))
                             {
                                 collideInfo.blockPositionIndex = new Vector3Byte(x, y, z);
@@ -205,7 +203,20 @@ namespace Spacebox.Game.Physics
                 if (IsInRange(x, y, z))
                 {
                     Block block = blocks[x, y, z];
-                    if (!block.IsAir && !block.IsMeshHidden)
+                    if (!block.IsAir && !block.IsMeshHidden && block.HasCustomShape)
+                    {
+                        BlockCollision.GetChunkCellBounds(chunk, x, y, z, block, out var boxMin, out var boxMax);
+                        if (BoxMath.RayIntersects(rayOrigin, rayDirection, boxMin, boxMax, out float shapeDistance, out var shapeNormal) &&
+                            shapeDistance <= ray.Length)
+                        {
+                            hitInfo.blockPositionIndex = new Vector3Byte(x, y, z);
+                            hitInfo.hitPosition = ray.Origin + ray.Direction * shapeDistance;
+                            hitInfo.normal = shapeNormal;
+                            FillHitBlock(ref hitInfo, chunk, chunkPosWorld, block);
+                            return true;
+                        }
+                    }
+                    else if (!block.IsAir && !block.IsMeshHidden)
                     {
                         hitInfo.blockPositionIndex = new Vector3Byte(x, y, z);
                         hitInfo.hitPosition = ray.Origin + ray.Direction * distanceTraveled;
@@ -228,13 +239,7 @@ namespace Spacebox.Game.Physics
                                 break;
                         }
 
-                        hitInfo.blockPositionEntity = new Vector3i(
-                            chunk.PositionIndex.X * Chunk.Size + hitInfo.blockPositionIndex.X,
-                             chunk.PositionIndex.Y * Chunk.Size + hitInfo.blockPositionIndex.Y,
-                              chunk.PositionIndex.Z * Chunk.Size + hitInfo.blockPositionIndex.Z);
-
-                        hitInfo.block = block;
-                        hitInfo.blockPositionWorld = chunkPosWorld + new Vector3(x,y,z) + Vector3.One * 0.5f;
+                        FillHitBlock(ref hitInfo, chunk, chunkPosWorld, block);
                         return true;
                     }
                 }
@@ -280,6 +285,17 @@ namespace Spacebox.Game.Physics
             }
 
             return false;
+        }
+
+        private static void FillHitBlock(ref HitInfo hitInfo, Chunk chunk, Vector3 chunkPosWorld, Block block)
+        {
+            var index = hitInfo.blockPositionIndex;
+            hitInfo.blockPositionEntity = new Vector3i(
+                chunk.PositionIndex.X * Chunk.Size + index.X,
+                chunk.PositionIndex.Y * Chunk.Size + index.Y,
+                chunk.PositionIndex.Z * Chunk.Size + index.Z);
+            hitInfo.block = block;
+            hitInfo.blockPositionWorld = chunkPosWorld + new Vector3(index.X, index.Y, index.Z) + Vector3.One * 0.5f;
         }
 
         private static float CalcSideDist(

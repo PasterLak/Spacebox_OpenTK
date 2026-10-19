@@ -2,6 +2,7 @@ using Engine;
 using Engine.Physics;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
+using Spacebox.Game.Physics;
 
 namespace Spacebox.Game.Ships;
 
@@ -225,7 +226,7 @@ public sealed class ShipCollider
 
         var local = entity.WorldToEntityLocal(world);
         var cell = new Vector3i((int)MathF.Floor(local.X), (int)MathF.Floor(local.Y), (int)MathF.Floor(local.Z));
-        return IsSolid(entity, cell);
+        return BlockCollision.TryGetSolidBounds(entity, cell, out var boxMin, out var boxMax) && BoxMath.Contains(boxMin, boxMax, local);
     }
 
     private static float DistanceSquaredToBounds(SpaceEntity entity, Vector3 worldPoint)
@@ -246,7 +247,7 @@ public sealed class ShipCollider
 
     private static bool IsSolid(Generation.Blocks.Block block)
     {
-        return block != null && !block.IsAir && !block.IsMeshHidden;
+        return BlockCollision.IsSolid(block) && !block.HasCustomShape;
     }
 
     public sealed class ChunkHull

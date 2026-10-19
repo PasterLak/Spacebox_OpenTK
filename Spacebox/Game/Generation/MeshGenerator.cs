@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Engine.Physics;
 using Debug = Engine.Debug;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Shapes;
 using Spacebox.Game.Generation.Tools;
 using System;
 using System.Collections.Generic;
@@ -110,6 +111,12 @@ namespace Spacebox.Game.Generation
                         sumPosMass += new Vector3(x, y, z) * m;
 
                         if (block.IsMeshHidden) continue;
+
+                        if (BlockShapes.TryGet(block, out var shape))
+                        {
+                            AddShape(block, shape, x, y, z);
+                            continue;
+                        }
 
                         var transformedVectors = BlockRotationHelper.GetTransformedFaceVectors(
                             GameAssets.GetBaseFrontDirection(block.Id),
@@ -259,6 +266,59 @@ namespace Spacebox.Game.Generation
             }
         }
 
+        private void AddShape(Block block, BlockShape shape, sbyte x, sbyte y, sbyte z)
+        {
+            var support = shape.GetSupportOffset(block.Direction, block.Rotation);
+            bool supported = BlockShapes.CanSupport(GetBlockSafe((sbyte)(x + support.X), (sbyte)(y + support.Y), (sbyte)(z + support.Z)));
+            var pose = shape.GetPose(block.Direction, block.Rotation, supported);
+            var geometry = shape.Geometry;
+
+            int vertexTotal = geometry.VertexCount;
+            EnsureCapacity(vertexTotal * BuffersData.FloatsPerVertexBlock, geometry.Indices.Length);
+
+            var color = Vector3.Clamp(block.Color * (block.LightColor.ToVector3() + Ambient), Vector3.Zero, Vector3.One);
+            float emission = block.EnableEmission ? 1f : 0f;
+            int vStart = vertexCount / BuffersData.FloatsPerVertexBlock;
+
+            for (int f = 0; f < faces.Length; f++)
+                _shapeFaceUVs[(int)faces[f]] = GameAssets.GetBlockUVs(block, faces[f]) ?? BlockShapeTexturing.DefaultFaceUVs;
+
+            for (int i = 0; i < vertexTotal; i++)
+            {
+                var position = pose.Positions[i];
+                var normal = pose.Normals[i];
+                var uv = BlockShapeTexturing.MapToFace(_shapeFaceUVs[(int)shape.VertexFaces[i]], geometry.TexCoords[i]);
+
+                vertices[vertexCount++] = position.X + x;
+                vertices[vertexCount++] = position.Y + y;
+                vertices[vertexCount++] = position.Z + z;
+                vertices[vertexCount++] = uv.X;
+                vertices[vertexCount++] = uv.Y;
+                vertices[vertexCount++] = color.X;
+                vertices[vertexCount++] = color.Y;
+                vertices[vertexCount++] = color.Z;
+                vertices[vertexCount++] = normal.X;
+                vertices[vertexCount++] = normal.Y;
+                vertices[vertexCount++] = normal.Z;
+                vertices[vertexCount++] = 1f;
+                vertices[vertexCount++] = emission;
+            }
+
+            var shapeIndices = geometry.Indices;
+            for (int i = 0; i < shapeIndices.Length; i++)
+                indices[indexCount++] = (uint)(vStart + shapeIndices[i]);
+        }
+
+        private readonly Vector2[][] _shapeFaceUVs = new Vector2[6][];
+
+        private void EnsureCapacity(int extraFloats, int extraIndices)
+        {
+            if (vertexCount + extraFloats > vertices.Length)
+                Array.Resize(ref vertices, Math.Max(vertices.Length * 2, vertexCount + extraFloats));
+            if (indexCount + extraIndices > indices.Length)
+                Array.Resize(ref indices, Math.Max(indices.Length * 2, indexCount + extraIndices));
+        }
+
         private static readonly Vector3 Ambient = new Vector3(0.2f, 0.2f, 0.2f);
         private static readonly sbyte[] CornerUp = { -1, -1, 1, 1 };
         private static readonly sbyte[] CornerRight = { -1, 1, 1, -1 };
@@ -298,7 +358,7 @@ namespace Spacebox.Game.Generation
         private bool TrySampleLight(sbyte x, sbyte y, sbyte z, out Vector3 light)
         {
             var b = GetBlockSafe(x, y, z);
-            if (b == null || !(b.IsAir || b.IsTransparent || b.IsMeshHidden))
+            if (b == null || !(b.IsAir || b.IsTransparent || b.IsMeshHidden || b.HasCustomShape))
             {
                 light = Vector3.Zero;
                 return false;
@@ -350,7 +410,7 @@ namespace Spacebox.Game.Generation
         private bool IsOccluder(sbyte x, sbyte y, sbyte z)
         {
             var b = GetBlockSafe(x, y, z);
-            if (b == null || b.IsAir || b.IsTransparent || b.IsMeshHidden) return false;
+            if (b == null || b.IsAir || b.IsTransparent || b.IsMeshHidden || b.HasCustomShape) return false;
             return true;
         }
 
@@ -409,7 +469,7 @@ namespace Spacebox.Game.Generation
             var b = GetBlockSafe(x, y, z);
             if (b != null)
             {
-                return currentTransparent ? (b.IsAir || b.IsMeshHidden) : (b.IsAir || b.IsTransparent || b.IsMeshHidden);
+                return currentTransparent ? (b.IsAir || b.IsMeshHidden || b.HasCustomShape) : (b.IsAir || b.IsTransparent || b.IsMeshHidden || b.HasCustomShape);
             }
             return true;
         }

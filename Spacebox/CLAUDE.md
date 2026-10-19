@@ -61,7 +61,7 @@ Game project on top of `Engine` (see `Engine/CLAUDE.md`). World hierarchy, GameS
 | 31–34 | `BlockFlags` (Transparent, Air, Light, EnableEmission) |
 | 35–36 | Rotation |
 
-Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
+Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51+ are free. Color, light color/level and `OnDestroy` are regular members.
 
 - `Game/Resource/BlockFactory.cs`: dictionary `type string → constructor` (interactive, crusher, analyzer, mineral, furnace, disassembler, craftingtable, radar, cable, block, generator, consumer, storage). `RegisterBlockType` is currently a no-op — add new types to the dictionary.
 - Blocks with extra persistent state need an `IBlockSerializer` registered in `Game/Generation/Tools/BlockSerializerRegistry.cs`.
@@ -80,6 +80,12 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 ## Multi-cell blocks
 
 - `BlockData.Size` > 1: every cell is a `Block` with `MultiblockOffset` (model-space offset, origin = 0). Use `MultiblockLayout` for offsets/UVs, `SpaceEntity.TryPlaceBlock` (places all cells or nothing), `CanPlaceStructure`, `RemoveStructure` (called by `Chunk.RemoveBlock`), `TryGetStructureBounds`. Raw writes to `chunk.Blocks` (bulk tools) bypass this and can leave partial structures.
+
+## Custom block geometry
+
+- `Game/Generation/Shapes/`: JSON `Model` → `BlockShapeResolver` (code geometry from `BlockGeometryLibrary`, else GameSet `Models/Blocks/<name>.obj`) → `BlockData.Shape`; blocks get `HasCustomShape`. New code shapes: build with `BlockGeometryBuilder` and `BlockGeometryLibrary.Register`. Prefer OBJ files for content so shapes change without code.
+- Placement: `BlockPlacementHelper` gives shaped blocks the clicked face's normal as `Direction` (bottom on the clicked block); `BlockSelector` previews the model via `BlockShapePreviewMesh`.
+- Mesh: `MeshGenerator.AddShape`. Collisions/raycasts: `BlockCollision.TryGetSolidBounds` / `GetChunkCellBounds` (box depends on the support neighbour); new solidity checks should use it instead of treating every non-air cell as a full cube.
 
 ## Gravity
 

@@ -269,7 +269,7 @@ namespace Spacebox.Game.Generation
 
         public bool IsColliding(BoundingVolume volume, out CollideInfo collideInfo)
         {
-            bool b = VoxelPhysics.IsColliding(volume, Blocks, PositionWorld, out collideInfo);
+            bool b = VoxelPhysics.IsColliding(volume, this, PositionWorld, out collideInfo);
             collideInfo.chunk = this;
             return b;
         }

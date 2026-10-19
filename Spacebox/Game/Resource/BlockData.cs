@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Shapes;
 using Spacebox.Game.Generation.Tools;
 using System.Collections.Generic;
 
@@ -67,6 +68,7 @@ namespace Spacebox.Game.Resource
     
 
         public Vector3Byte Size { get; set; } = new Vector3Byte(1);
+        public BlockShape Shape { get; set; }
         public bool IsMultiblock => Size.X > 1 || Size.Y > 1 || Size.Z > 1;
         public int CellCount => Size.X * Size.Y * Size.Z;
 
@@ -104,6 +106,7 @@ namespace Spacebox.Game.Resource
             LightColor = baseBlock.LightColor;
             BaseFrontDirection = baseBlock.BaseFrontDirection;
             Size = baseBlock.Size;
+            Shape = baseBlock.Shape;
             AsItem = baseBlock.AsItem;
             Drop = baseBlock.Drop;
             SoundPlace = baseBlock.SoundPlace;

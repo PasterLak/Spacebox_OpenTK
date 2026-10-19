@@ -99,6 +99,14 @@ namespace Spacebox.Game.Generation.Blocks
             set => data = value ? data | (1L << 49) : data & ~(1L << 49);
         }
 
+        public bool HasCustomShape
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ((data >> 50) & 1) != 0;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set => data = value ? data | (1L << 50) : data & ~(1L << 50);
+        }
+
         public bool HasMultiblockOffset
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -129,6 +137,7 @@ namespace Spacebox.Game.Generation.Blocks
             SetDurability(blockData.Durability);
             SetTransparent(blockData.IsTransparent);
             SetAir(blockData.Id <= 1);
+            HasCustomShape = blockData.Shape != null;
 
             SetEnableEmission(true);
 

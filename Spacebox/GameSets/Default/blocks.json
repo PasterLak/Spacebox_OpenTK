@@ -577,8 +577,9 @@
   },
   {
     "ID": "light_white",
-    "Name": "Light White",
+    "Name": "Ivory Wall Torch",
     "Category": "lights",
+    "Model": "torch",
     "LightColor": {
       "r": 255,
       "g": 255,
@@ -596,8 +597,9 @@
   },
   {
     "ID": "light_blue",
-    "Name": "Light Blue",
+    "Name": "Cobalt Wall Torch",
     "Category": "lights",
+    "Model": "torch",
     "LightColor": {
       "r": 45,
       "g": 45,
@@ -615,8 +617,9 @@
   },
   {
     "ID": "light_red",
-    "Name": "Light Red",
+    "Name": "Crimson Wall Torch",
     "Category": "lights",
+    "Model": "torch",
     "LightColor": {
       "r": 255,
       "g": 15,
@@ -634,8 +637,9 @@
   },
   {
     "ID": "light_yellow",
-    "Name": "Light Yellow",
+    "Name": "Amber Wall Torch",
     "Category": "lights",
+    "Model": "torch",
     "LightColor": {
       "r": 255,
       "g": 216,
@@ -653,8 +657,9 @@
   },
   {
     "ID": "light_cyan",
-    "Name": "Light Cyan",
+    "Name": "Azure Wall Torch",
     "Category": "lights",
+    "Model": "torch",
     "LightColor": {
       "r": 0,
       "g": 255,
@@ -672,8 +677,9 @@
   },
   {
     "ID": "light_orange",
-    "Name": "Light Orange",
+    "Name": "Ember Wall Torch",
     "Category": "lights",
+    "Model": "torch",
     "LightColor": {
       "r": 255,
       "g": 106,
@@ -691,8 +697,9 @@
   },
   {
     "ID": "light_green",
-    "Name": "Light Green",
+    "Name": "Emerald Wall Torch",
     "Category": "lights",
+    "Model": "torch",
     "LightColor": {
       "r": 5,
       "g": 255,
@@ -710,8 +717,9 @@
   },
   {
     "ID": "light_pink",
-    "Name": "Light Pink",
+    "Name": "Violet Wall Torch",
     "Category": "lights",
+    "Model": "torch",
     "LightColor": {
       "r": 178,
       "g": 0,

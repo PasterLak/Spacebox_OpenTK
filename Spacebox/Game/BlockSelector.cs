@@ -3,6 +3,7 @@ using Engine;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Shapes;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Resource;
 using Spacebox.GUI;
@@ -55,6 +56,8 @@ public class BlockSelector : Node3D
     private Vector3 _highlightSize = Vector3.One;
     private Direction _blockDirection = Block.DefaultDirection;
     private Rotation _blockRotation = Block.DefaultRotation;
+    private bool _shapeSupported;
+    private int _shapePoseKey = -1;
 
     private bool _enableMagnet = true;
     private bool _onSurface;
@@ -127,6 +130,7 @@ public class BlockSelector : Node3D
     {
         _currentTransform = Matrix4.Identity;
         _highlightSize = Vector3.One;
+        _shapePoseKey = -1;
         HideReservedArea();
         ApplyBlockTransform();
         _transformDirty = true;
@@ -174,7 +178,7 @@ public class BlockSelector : Node3D
 
     private void SetupBlockMesh()
     {
-        if (CurrentBlockData == null) return;
+        if (CurrentBlockData == null || CurrentBlockData.Shape != null) return;
 
         if (CurrentBlockData.IsMultiblock)
         {
@@ -197,7 +201,12 @@ public class BlockSelector : Node3D
     {
         if (CurrentBlockData == null) return;
 
-        if (CurrentBlockData.AllSidesAreSame() && !CurrentBlockData.IsMultiblock)
+        if (CurrentBlockData.Shape != null)
+        {
+            _currentTransform = Matrix4.Identity;
+            UpdateShapeMesh(CurrentBlockData.Shape);
+        }
+        else if (CurrentBlockData.AllSidesAreSame() && !CurrentBlockData.IsMultiblock)
         {
             _currentTransform = Matrix4.Identity;
         }
@@ -212,6 +221,17 @@ public class BlockSelector : Node3D
 
         ApplyBlockTransform();
         _transformDirty = true;
+    }
+
+    private void UpdateShapeMesh(BlockShape shape)
+    {
+        int key = ((int)_blockDirection * 4 + (int)_blockRotation) * 2 + (_shapeSupported ? 1 : 0);
+        if (key == _shapePoseKey) return;
+
+        _shapePoseKey = key;
+        var pose = shape.GetPose(_blockDirection, _blockRotation, _shapeSupported);
+        var (vertices, indices) = BlockShapePreviewMesh.Build(CurrentBlockData, shape, pose, BlockState.Inactive);
+        SimpleBlock.SetCustomMesh(vertices, indices);
     }
 
     private void ApplyBlockTransform()
@@ -261,8 +281,10 @@ public class BlockSelector : Node3D
         Vector3 center = position + Vector3.One * 0.5f;
         Vector3 newPosition = entity != null ? entity.ToWorldSpace(center) : center;
         Matrix4 entityRotation = entity != null && entity.HasRotation ? entity.RotationMatrix : Matrix4.Identity;
+        bool shapeSupported = onSurface && IsShapeSupported(position, direction, rotation, entity);
 
         if (SimpleBlock.Position == newPosition &&
+            _shapeSupported == shapeSupported &&
             _blockDirection == direction &&
             _blockRotation == rotation &&
             _onSurface == onSurface &&
@@ -282,6 +304,7 @@ public class BlockSelector : Node3D
 
         _blockDirection = direction;
         _blockRotation = rotation;
+        _shapeSupported = shapeSupported;
 
         if (CurrentBlockData != null)
         {
@@ -301,6 +324,16 @@ public class BlockSelector : Node3D
         }
 
         _transformDirty = true;
+    }
+
+    private bool IsShapeSupported(Vector3 position, Direction direction, Rotation rotation, SpaceEntity entity)
+    {
+        var shape = CurrentBlockData?.Shape;
+        if (shape == null || entity == null) return false;
+
+        var local = entity.WorldPositionToLocal(position);
+        var cell = new Vector3i((int)MathF.Floor(local.X), (int)MathF.Floor(local.Y), (int)MathF.Floor(local.Z));
+        return BlockShapes.IsSupported(entity, cell, shape, direction, rotation);
     }
 
     public override void Update()

@@ -28,6 +28,13 @@ namespace Spacebox.Game.Generation.Tools
             out Direction finalDir,
             out Rotation finalRot)
         {
+            if (blockData.Shape != null)
+            {
+                finalDir = surfaceNormal.LengthSquared > 0.5f ? Block.GetDirectionFromNormal(surfaceNormal) : Direction.Up;
+                finalRot = Rotation.None;
+                return;
+            }
+
             if (blockData.AllSidesAreSame() && !blockData.IsMultiblock)
             {
                 finalDir = Direction.Up;

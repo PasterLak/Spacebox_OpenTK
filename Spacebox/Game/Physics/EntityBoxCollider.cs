@@ -17,27 +17,22 @@ public static class EntityBoxCollider
         int maxA = (int)MathF.Ceiling(max[axisA] - Skin) - 1;
         int minB = (int)MathF.Floor(min[axisB] + Skin);
         int maxB = (int)MathF.Ceiling(max[axisB] - Skin) - 1;
+        float allowed = distance;
 
         if (distance > 0f)
         {
-            int start = (int)MathF.Ceiling(max[axis] - 2f * Skin);
+            int start = (int)MathF.Floor(max[axis] - 2f * Skin);
             int end = (int)MathF.Ceiling(max[axis] + distance) - 1;
-            for (int c = start; c <= end; c++)
-            {
-                if (IsLayerSolid(entity, axis, c, axisA, minA, maxA, axisB, minB, maxB))
-                    return MathF.Min(distance, MathF.Max(0f, c - max[axis] - Skin));
-            }
-            return distance;
+            for (int c = start; c <= end && c <= max[axis] + allowed; c++)
+                allowed = ClipLayer(entity, min, max, axis, c, axisA, minA, maxA, axisB, minB, maxB, allowed, true);
+            return allowed;
         }
 
-        int from = (int)MathF.Floor(min[axis] + 2f * Skin) - 1;
+        int from = (int)MathF.Floor(min[axis] + 2f * Skin);
         int to = (int)MathF.Floor(min[axis] + distance);
-        for (int c = from; c >= to; c--)
-        {
-            if (IsLayerSolid(entity, axis, c, axisA, minA, maxA, axisB, minB, maxB))
-                return MathF.Max(distance, -MathF.Max(0f, min[axis] - (c + 1) - Skin));
-        }
-        return distance;
+        for (int c = from; c >= to && c + 1 >= min[axis] + allowed; c--)
+            allowed = ClipLayer(entity, min, max, axis, c, axisA, minA, maxA, axisB, minB, maxB, allowed, false);
+        return allowed;
     }
 
     public static bool Overlaps(SpaceEntity entity, Vector3 min, Vector3 max)
@@ -50,12 +45,16 @@ public static class EntityBoxCollider
         for (int y = minY; y <= maxY; y++)
         for (int z = minZ; z <= maxZ; z++)
         {
-            if (IsSolid(entity, new Vector3i(x, y, z))) return true;
+            if (!BlockCollision.TryGetSolidBounds(entity, new Vector3i(x, y, z), out var boxMin, out var boxMax)) continue;
+            if (BoxMath.OverlapsOnAxis(boxMin.X, boxMax.X, min.X, max.X, Skin) &&
+                BoxMath.OverlapsOnAxis(boxMin.Y, boxMax.Y, min.Y, max.Y, Skin) &&
+                BoxMath.OverlapsOnAxis(boxMin.Z, boxMax.Z, min.Z, max.Z, Skin))
+                return true;
         }
         return false;
     }
 
-    private static bool IsLayerSolid(SpaceEntity entity, int axis, int layer, int axisA, int minA, int maxA, int axisB, int minB, int maxB)
+    private static float ClipLayer(SpaceEntity entity, Vector3 min, Vector3 max, int axis, int layer, int axisA, int minA, int maxA, int axisB, int minB, int maxB, float allowed, bool positive)
     {
         var cell = new Vector3i();
         cell[axis] = layer;
@@ -65,16 +64,12 @@ public static class EntityBoxCollider
             for (int b = minB; b <= maxB; b++)
             {
                 cell[axisB] = b;
-                if (IsSolid(entity, cell)) return true;
+                if (!BlockCollision.TryGetSolidBounds(entity, cell, out var boxMin, out var boxMax)) continue;
+                if (!BoxMath.OverlapsOnAxis(boxMin[axisA], boxMax[axisA], min[axisA], max[axisA], Skin)) continue;
+                if (!BoxMath.OverlapsOnAxis(boxMin[axisB], boxMax[axisB], min[axisB], max[axisB], Skin)) continue;
+                allowed = BoxMath.ClipDistance(min[axis], max[axis], boxMin[axis], boxMax[axis], allowed, positive, Skin);
             }
         }
-        return false;
-    }
-
-    private static bool IsSolid(SpaceEntity entity, Vector3i cell)
-    {
-        if (!entity.TryGetBlockLocal(cell, out var chunk, out var index)) return false;
-        var block = chunk.Blocks[index.X, index.Y, index.Z];
-        return block != null && !block.IsAir && !block.IsMeshHidden;
+        return allowed;
     }
 }

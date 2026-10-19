@@ -134,7 +134,7 @@ public sealed class AirFloodFill
 
     private static bool IsPassable(Block block)
     {
-        return block == null || block.IsAir;
+        return block == null || block.IsAir || block.HasCustomShape;
     }
 
     private static int Encode(int x, int y, int z)

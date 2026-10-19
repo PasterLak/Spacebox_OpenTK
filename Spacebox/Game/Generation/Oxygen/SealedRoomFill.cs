@@ -60,6 +60,6 @@ public sealed class SealedRoomFill
 
     private static bool IsPassable(Block block)
     {
-        return block == null || block.IsAir;
+        return block == null || block.IsAir || block.HasCustomShape;
     }
 }

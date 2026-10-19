@@ -27,6 +27,7 @@ namespace Spacebox.Game.Resource
         public Color3Byte LightColor { get; set; } = Color3Byte.Black;
         public Vector2Byte StorageSize { get; set; } = new Vector2Byte(3, 3);
         public Vector3Byte Size { get; set; } = new Vector3Byte(1);
+        public string Model { get; set; } = "";
         public OxygenGeneratorJSON OxygenGenerator { get; set; } = new OxygenGeneratorJSON();
         public DoorJSON Door { get; set; } = new DoorJSON();
         public PowerGeneratorJSON Generator { get; set; } = new PowerGeneratorJSON();

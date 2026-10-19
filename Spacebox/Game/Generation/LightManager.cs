@@ -135,7 +135,7 @@ namespace Spacebox.Game.Generation
                     if (nChunk == null) continue;
 
                     var nb = nChunk.Blocks[bx, by, bz];
-                    if (!(nb.IsAir || nb.IsTransparent)) continue;
+                    if (!(nb.IsAir || nb.IsTransparent || nb.HasCustomShape)) continue;
                     if (nb.LightLevel >= 15f) continue;
 
                     var current = nb.LightColor;

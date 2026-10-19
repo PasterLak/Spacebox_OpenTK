@@ -2,6 +2,7 @@
 using Engine.Utils;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Shapes;
 using System;
 using System.Collections.Generic;
 
@@ -49,9 +50,11 @@ namespace Spacebox.Game.Resource
                     return;
                 }
 
+                var shapes = new BlockShapeResolver(modPath, defaultModPath);
+
                 foreach (var block in blocks)
                 {
-                    if (!ProcessBlock(block))
+                    if (!ProcessBlock(block, shapes))
                         continue;
                 }
             }
@@ -61,7 +64,7 @@ namespace Spacebox.Game.Resource
             }
         }
 
-        private static bool ProcessBlock(BlockJSON blockJson)
+        private static bool ProcessBlock(BlockJSON blockJson, BlockShapeResolver shapes)
         {
             if (string.IsNullOrWhiteSpace(blockJson.ID))
             {
@@ -92,6 +95,7 @@ namespace Spacebox.Game.Resource
             try
             {
                 BlockData blockData = CreateBlockData(blockJson, blockId);
+                blockData.Shape = shapes.Resolve(blockJson.Model);
 
                 if (blockData.Type == "storage")
                 {
