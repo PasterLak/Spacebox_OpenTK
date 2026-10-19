@@ -25,6 +25,8 @@ public sealed class ShipHull
         new Vector3i(0, 0, 1), new Vector3i(0, 0, -1)
     };
 
+    private static readonly float[] GridOffsets = { -SampleInset, 0f, SampleInset };
+
     private readonly List<HullSample> _samples = new List<HullSample>();
 
     public IReadOnlyList<HullSample> Samples => _samples;
@@ -45,7 +47,13 @@ public sealed class ShipHull
             if (isSolid(cell + face)) continue;
 
             var normal = new Vector3(face.X, face.Y, face.Z);
-            _samples.Add(new HullSample(center + normal * SampleInset, normal));
+            var tangent = MathF.Abs(normal.X) > 0.5f ? Vector3.UnitY : Vector3.UnitX;
+            var bitangent = Vector3.Cross(normal, tangent);
+            var faceCenter = center + normal * SampleInset;
+
+            for (int a = 0; a < GridOffsets.Length; a++)
+            for (int b = 0; b < GridOffsets.Length; b++)
+                _samples.Add(new HullSample(faceCenter + tangent * GridOffsets[a] + bitangent * GridOffsets[b], normal));
         }
     }
 

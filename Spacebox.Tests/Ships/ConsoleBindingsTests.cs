@@ -20,6 +20,39 @@ public class ConsoleBindingsTests
     }
 
     [Fact]
+    public void Cycle_SkipsGroupsWithoutKey()
+    {
+        var bindings = new ConsoleBindings(4, false);
+        bindings.SetKey(1, ShipKeys.None);
+        bindings.SetKey(2, ShipKeys.None);
+
+        Assert.Equal(0, bindings.Cycle(Cell));
+        Assert.Equal(3, bindings.Cycle(Cell));
+        Assert.Equal(-1, bindings.Cycle(Cell));
+    }
+
+    [Fact]
+    public void Cycle_Backward_WrapsToLastGroup()
+    {
+        var bindings = new ConsoleBindings(3, false);
+
+        Assert.Equal(2, bindings.Cycle(Cell, -1));
+        Assert.Equal(1, bindings.Cycle(Cell, -1));
+        Assert.Equal(0, bindings.Cycle(Cell, -1));
+        Assert.Equal(-1, bindings.Cycle(Cell, -1));
+    }
+
+    [Fact]
+    public void Cycle_NoKeys_StaysUnbound()
+    {
+        var bindings = new ConsoleBindings(2, false);
+        bindings.SetKey(0, ShipKeys.None);
+        bindings.SetKey(1, ShipKeys.None);
+
+        Assert.Equal(-1, bindings.Cycle(Cell));
+    }
+
+    [Fact]
     public void DefaultKeys_WeaponsUseLeftMouse()
     {
         Assert.Equal(ShipKeys.MouseLeft, new ConsoleBindings(1, true).GetKey(0));

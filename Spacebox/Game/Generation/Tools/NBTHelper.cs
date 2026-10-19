@@ -67,6 +67,9 @@ namespace Spacebox.Game.Generation.Tools
             {
                 Asteroid asteroid;
 
+                if (onlyChangedChunks && (generationData?.asteroid == null || generationData.Id != id))
+                    generationData = ReadAsteroidGenerationData(tag, id, generationData) ?? generationData;
+
                 if (onlyChangedChunks && generationData?.asteroid != null && generationData.Id == id)
                 {
                     generationData.positionWorld = worldPos;
@@ -100,6 +103,7 @@ namespace Spacebox.Game.Generation.Tools
 
             spaceEntity.Name = file_name;
             spaceEntity.IsGenerated = true;
+            spaceEntity.SavedSectorIndex = sector.PositionIndex;
 
             if (tag.ContainsKey(NBTKey.ENTITY.rotation_x))
             {
@@ -139,14 +143,37 @@ namespace Spacebox.Game.Generation.Tools
             return spaceEntity;
         }
 
+        private static NotGeneratedEntity ReadAsteroidGenerationData(CompoundTag tag, long id, NotGeneratedEntity existing)
+        {
+            if (!tag.TryGetValue<StringTag>(NBTKey.ENTITY.asteroid_type, out var typeTag)) return null;
+
+            var asteroidData = World.WorldGenerator?.GetAsteroid(typeTag.Value);
+            if (asteroidData == null)
+            {
+                Debug.Warning($"[NBTHelper] Asteroid type '{typeTag.Value}' of entity {id} is not in this GameSet");
+                return null;
+            }
+
+            int radius = tag.TryGetValue<IntTag>(NBTKey.ENTITY.asteroid_radius, out var radiusTag) ? radiusTag.Value : asteroidData.MinRadius;
+            var data = existing != null && existing.Id == id ? existing : new NotGeneratedEntity { Id = id, FileName = existing?.FileName };
+            data.asteroid = asteroidData;
+            data.radiusBlocks = Math.Max(1, radius);
+            return data;
+        }
+
         public static CompoundTag SpaceEntityToTag(SpaceEntity entity)
+        {
+            return SpaceEntityToTag(entity, entity.Sector.PositionWorld);
+        }
+
+        public static CompoundTag SpaceEntityToTag(SpaceEntity entity, Vector3 sectorOrigin)
         {
             var root = new CompoundTag(entity.GetType().Name);
 
             root.Add(new LongTag(NBTKey.ENTITY.id, entity.EntityID));
             root.Add(new StringTag(NBTKey.ENTITY.name, entity.Name));
 
-            var localPos = entity.Sector.WorldToLocalPosition(entity.PositionWorld);
+            var localPos = entity.PositionWorld - sectorOrigin;
 
             root.Add(new FloatTag(NBTKey.ENTITY.local_x, localPos.X));
             root.Add(new FloatTag(NBTKey.ENTITY.local_y, localPos.Y));
@@ -161,6 +188,12 @@ namespace Spacebox.Game.Generation.Tools
 
             bool onlyChangedChunks = entity.SavesOnlyChangedChunks;
             root.Add(new ByteTag(NBTKey.ENTITY.only_changed_chunks, (byte)(onlyChangedChunks ? 1 : 0)));
+
+            if (entity is Asteroid { NotGeneratedEntity.asteroid: { } asteroidData } asteroid)
+            {
+                root.Add(new StringTag(NBTKey.ENTITY.asteroid_type, asteroidData.IdString));
+                root.Add(new IntTag(NBTKey.ENTITY.asteroid_radius, asteroid.NotGeneratedEntity.radiusBlocks));
+            }
 
             if (entity.Ship != null && entity.Ship.Motion.IsMoving)
             {

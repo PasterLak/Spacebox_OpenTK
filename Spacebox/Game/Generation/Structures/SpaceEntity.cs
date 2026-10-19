@@ -36,6 +36,8 @@ namespace Spacebox.Game.Generation
         public ShipBody Ship { get; private set; }
         private ShipControlSystem _shipControl;
         public ShipControlSystem ShipControl => _shipControl ??= new ShipControlSystem(this);
+        public ShipBody EnsureShipBody() => Ship ??= new ShipBody(this);
+        public Vector3i? SavedSectorIndex { get; set; }
         public bool HasShipControl => _shipControl != null && _shipControl.HasParts;
 
         public Octree<Chunk> Octree { get; private set; }
@@ -59,12 +61,17 @@ namespace Spacebox.Game.Generation
             set
             {
                 _isModified = value;
-                Sector.IsModified = true;
+                if (Sector != null) Sector.IsModified = true;
             }
         }
         public bool IsGenerated { get; set; } = false;
 
         public Sector Sector { get; private set; }
+
+        internal void AttachToSector(Sector sector)
+        {
+            Sector = sector;
+        }
 
         public List<Chunk> Chunks { get; private set; } = new List<Chunk>();
         private readonly Dictionary<Vector3SByte, Chunk> _chunksByIndex = new Dictionary<Vector3SByte, Chunk>();
@@ -992,6 +999,7 @@ namespace Spacebox.Game.Generation
             }
 
             Doors.Render();
+            _shipControl?.Render();
 
             if (VisualDebug.Enabled)
             {
@@ -1099,9 +1107,11 @@ namespace Spacebox.Game.Generation
         public void SetPose(Vector3 positionWorld, Quaternion orientation)
         {
             var delta = positionWorld - PositionWorld;
+            bool rotated = orientation != Orientation;
             if (delta != Vector3.Zero) ShiftWorld(delta);
-            if (orientation != Orientation) SetOrientation(orientation);
+            if (rotated) SetOrientation(orientation);
             if (tag != null) tag.WorldPosition = CenterOfMassWorld;
+            if (delta != Vector3.Zero || rotated) World.Instance?.OnEntityMoved(this);
         }
 
         private void ShiftWorld(Vector3 delta)
@@ -1202,6 +1212,7 @@ namespace Spacebox.Game.Generation
         {
             IsDisposed = true;
             Doors.Dispose();
+            _shipControl?.Dispose();
             GravityField.UnregisterEntity(this);
             Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.UnregisterEntity(this);
             Sector = null;

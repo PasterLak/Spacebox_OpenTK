@@ -53,17 +53,27 @@ public sealed class ConsoleBindings
 
     public int GetGroup(Vector3i cell) => _bound.TryGetValue(cell, out var group) ? group : -1;
 
-    public int Cycle(Vector3i cell)
+    public int Cycle(Vector3i cell, int direction = 1)
     {
-        int next = GetGroup(cell) + 1;
-        if (next >= _keys.Length)
+        int step = direction < 0 ? -1 : 1;
+        int group = GetGroup(cell);
+
+        for (int i = 0; i <= _keys.Length; i++)
+        {
+            group += step;
+            if (group >= _keys.Length) group = -1;
+            else if (group < -1) group = _keys.Length - 1;
+            if (group < 0 || _keys[group] != ShipKeys.None) break;
+        }
+
+        if (group < 0)
         {
             Unbind(cell);
             return -1;
         }
 
-        Bind(cell, next);
-        return next;
+        Bind(cell, group);
+        return group;
     }
 
     public void Bind(Vector3i cell, int group)

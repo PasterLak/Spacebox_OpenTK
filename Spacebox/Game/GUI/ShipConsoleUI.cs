@@ -106,10 +106,12 @@ public static class ShipConsoleUI
         var console = ShipPilot.Console;
         if (console?.Entity == null || UIManager.IsUIMode) return;
 
+        ShipBindingTool.DrawLabels();
+
         var displaySize = ImGui.GetIO().DisplaySize;
         float speed = console.Entity.Ship?.Motion.Velocity.Length ?? 0f;
         string text = ShipBindingTool.IsActive
-            ? $"BINDING  {ShipBindingTool.DescribeHovered() ?? "Look at a ship block"}\nLMB: cycle group   RMB: done"
+            ? $"BINDING  {ShipBindingTool.DescribeHovered() ?? "Look at a ship block"}\nLMB / wheel: change group   RMB: back to seat"
             : $"Speed {speed:0.0} m/s\nInventory key: console   Use: leave";
 
         var size = ImGui.CalcTextSize(text);
@@ -187,7 +189,7 @@ public static class ShipConsoleUI
         }
 
         ImGui.SetCursorPosX(padding);
-        ImGui.TextColored(HintColor, "Binding: LMB cycles group (camera: toggle), RMB exits");
+        ImGui.TextColored(HintColor, "Binding: LMB or mouse wheel changes group (camera: toggle), RMB exits");
     }
 
     private static bool TryReadKey(out int key)

@@ -1285,7 +1285,7 @@
   {
     "ID": "thruster_weak",
     "Name": "Weak Hydrogen Thruster",
-    "Description": "Pushes the ship away from its glowing side. Force 20, uses 8 power",
+    "Description": "Pushes the ship away from its nozzle side",
     "Type": "thruster",
     "Thruster": {
       "Force": 20,
@@ -1297,7 +1297,7 @@
     "Durability": 10,
     "FrontDirection": {
       "x": 0,
-      "y": -1,
+      "y": 1,
       "z": 0
     },
     "Textures": {
@@ -1320,7 +1320,7 @@
   {
     "ID": "thruster_standard",
     "Name": "Standard Hydrogen Thruster",
-    "Description": "Pushes the ship away from its glowing side. Force 60, uses 15 power",
+    "Description": "Pushes the ship away from its nozzle side",
     "Type": "thruster",
     "Thruster": {
       "Force": 60,
@@ -1337,7 +1337,7 @@
     "Durability": 20,
     "FrontDirection": {
       "x": 0,
-      "y": -1,
+      "y": 1,
       "z": 0
     },
     "Textures": {
@@ -1360,7 +1360,7 @@
   {
     "ID": "thruster_powerful",
     "Name": "Powerful Hydrogen Thruster",
-    "Description": "Pushes the ship away from its glowing side. Force 160, uses 30 power",
+    "Description": "Pushes the ship away from its nozzle side",
     "Type": "thruster",
     "Thruster": {
       "Force": 160,
@@ -1377,7 +1377,7 @@
     "Durability": 40,
     "FrontDirection": {
       "x": 0,
-      "y": -1,
+      "y": 1,
       "z": 0
     },
     "Textures": {
@@ -1400,7 +1400,7 @@
   {
     "ID": "thruster_ion",
     "Name": "Standard Ion Thruster",
-    "Description": "Pushes the ship away from its glowing side. Force 1200, uses 75 power",
+    "Description": "Pushes the ship away from its nozzle side",
     "Type": "thruster",
     "Thruster": {
       "Force": 1200,
@@ -1417,7 +1417,7 @@
     "Durability": 80,
     "FrontDirection": {
       "x": 0,
-      "y": -1,
+      "y": 1,
       "z": 0
     },
     "Textures": {

@@ -44,7 +44,7 @@ public static class ShipWeapons
 
         var projectile = world.ProjectilesPool.Take();
         projectile.Initialize(new Ray(shot.Origin, shot.Direction, 1f), ref parameters, null, shot.ShooterPeer, authoritative, 0f);
-        projectile.SetCarrier(shot.CarrierVelocity, entity, ShipPhysicsSettings.Current.ProjectileOwnerIgnoreTime);
+        projectile.SetCarrier(shot.CarrierVelocity, entity, float.PositiveInfinity);
         if (age > 0f) projectile.FastForward(age);
         ProjectileImpactEffects.Attach(projectile);
 

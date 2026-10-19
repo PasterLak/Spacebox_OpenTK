@@ -7,6 +7,7 @@ namespace Spacebox.Game.Generation.Blocks;
 public class CannonBlock : ElectricalBlock, IShipPart, IEntityBlockListener
 {
     private const float MuzzleClearance = 0.3f;
+    private const float RestAngle = 0.005f;
 
     private readonly CannonBlockData _data;
     private Vector3 _targetDirection;
@@ -17,12 +18,16 @@ public class CannonBlock : ElectricalBlock, IShipPart, IEntityBlockListener
     public ShipPartFrame Frame { get; private set; }
     public bool IsPowered => IsActive;
     public bool TriggerHeld { get; set; }
+    public bool IsAiming { get; set; }
     public int ShooterPeer { get; set; } = -1;
     public Vector3 AimDirection { get; private set; } = Vector3.UnitY;
     public string ProjectileName => _data.ProjectileName;
     public CannonBlockData Data => _data;
     public float ReloadProgress => _data.ReloadSeconds > 0f ? 1f - Math.Clamp(_reload / _data.ReloadSeconds, 0f, 1f) : 1f;
-    public Vector3 MuzzleLocal => Frame.Center + AimDirection * MathF.Max(_data.BarrelLength, Frame.ExtentAlong(AimDirection) + MuzzleClearance);
+    public float Length => Frame.ExtentAlong(Frame.Front) * 2f;
+    public Vector3 PivotLocal => Frame.Center - Frame.Front * Frame.ExtentAlong(Frame.Front);
+    public Vector3 MuzzleLocal => PivotLocal + AimDirection * (MathF.Max(_data.BarrelLength, Length) + MuzzleClearance);
+    public bool IsAtRest => ShipAiming.AngleBetween(AimDirection, Frame.Front) < RestAngle;
 
     public CannonBlock(BlockData blockData) : base(blockData)
     {
@@ -34,6 +39,7 @@ public class CannonBlock : ElectricalBlock, IShipPart, IEntityBlockListener
 
     public void OnAddedToEntity(Chunk chunk, Vector3i localCell)
     {
+        IsMeshHidden = false;
         if (HasMultiblockOffset) return;
 
         Entity = chunk.SpaceEntity;
@@ -49,11 +55,17 @@ public class CannonBlock : ElectricalBlock, IShipPart, IEntityBlockListener
         Entity?.ShipControl.Unregister(this);
         Entity = null;
         TriggerHeld = false;
+        IsAiming = false;
     }
 
     public void SetAimTarget(Vector3 directionLocal)
     {
         _targetDirection = ShipAiming.ClampToCone(Frame.Front, directionLocal, _data.AimCone);
+    }
+
+    public void SetAimPoint(Vector3 pointLocal)
+    {
+        SetAimTarget(pointLocal - PivotLocal);
     }
 
     public void ResetAim()

@@ -26,7 +26,7 @@ namespace Spacebox.Game.Generation.Tools
             {
                 if (!sector.IsModified) continue;
 
-                SaveSector(sector, Path.Combine(worldPath, "Sectors"));
+                SaveSector(worldPath, sector);
             }
 
 
@@ -107,17 +107,30 @@ namespace Spacebox.Game.Generation.Tools
         }
 
 
-        private static void SaveSector(Sector sector, string sectorsPath)
+        private static void SaveSector(string worldPath, Sector sector)
         {
-            string sectorFolderName = sector.ToFolderName();
-            string sectorFolderPath = Path.Combine(sectorsPath, sectorFolderName);
-            string filePath = Path.Combine(sectorFolderPath, sectorFolderName + ".entity");
+            string sectorFolderPath = SaveSectorData(worldPath, sector);
             var entities = sector.Entities;
 
-            if (!Directory.Exists(sectorsPath))
+            for (int i = 0; i < entities.Count; i++)
             {
-                Directory.CreateDirectory(sectorsPath);
+                if (!entities[i].IsModified) continue;
+
+                var entity = entities[i];
+                var entityTag = NBTHelper.SpaceEntityToTag(entity);
+
+                Debug.Success("[WorldSaveLoad] Entity was saved: " + entities[i].EntityID + "  pos: " + entities[i].PositionWorld);
+                //NbtFile.WriteAsync(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
+                NbtFile.Write(EntityFiles.PathOf(sectorFolderPath, entity.Name), entityTag, FormatOptions.Java, CompressionType.GZip);
+                DeleteStaleEntityFile(worldPath, entity.SavedSectorIndex, sector.PositionIndex, entity.Name);
+                entity.SavedSectorIndex = sector.PositionIndex;
             }
+        }
+
+        public static string SaveSectorData(string worldPath, Sector sector)
+        {
+            string sectorFolderName = sector.ToFolderName();
+            string sectorFolderPath = GetSectorFolderPath(worldPath, sector.PositionIndex);
 
             if (!Directory.Exists(sectorFolderPath))
             {
@@ -134,21 +147,17 @@ namespace Spacebox.Game.Generation.Tools
                 }
             }
 
-            for (int i = 0; i < entities.Count; i++)
-            {
-                if (!entities[i].IsModified) continue;
-
-                var entity = entities[i];
-                var entityTag = NBTHelper.SpaceEntityToTag(entity);
-
-                Debug.Success("[WorldSaveLoad] Entity was saved: " + entities[i].EntityID + "  pos: " + entities[i].PositionWorld);
-                //NbtFile.WriteAsync(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
-                NbtFile.Write(EntityFiles.PathOf(sectorFolderPath, entity.Name), entityTag, FormatOptions.Java, CompressionType.GZip);
-            }
-
             //NbtFile.WriteAsync(Path.Combine(sectorFolderPath, sectorFolderName + ".sector"), NBTHelper.SectorOnlyToTag(sector), FormatOptions.Java, CompressionType.GZip);
             NbtFile.Write(Path.Combine(sectorFolderPath, sectorFolderName + ".sector"), NBTHelper.SectorOnlyToTag(sector), FormatOptions.Java, CompressionType.GZip);
+            return sectorFolderPath;
+        }
 
+        public static void DeleteStaleEntityFile(string worldPath, Vector3i? previousSector, Vector3i currentSector, string name)
+        {
+            if (!previousSector.HasValue || previousSector.Value == currentSector || string.IsNullOrEmpty(name)) return;
+
+            string stalePath = EntityFiles.PathOf(GetSectorFolderPath(worldPath, previousSector.Value), name);
+            if (File.Exists(stalePath)) File.Delete(stalePath);
         }
 
         public static List<NotGeneratedEntity> ScanAllEntities(Vector3i sectorIndex)

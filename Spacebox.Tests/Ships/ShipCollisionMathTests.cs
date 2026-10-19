@@ -6,18 +6,35 @@ namespace Spacebox.Tests.Ships;
 public class ShipCollisionMathTests
 {
     [Fact]
-    public void Hull_SingleCell_HasSixOutwardSamples()
+    public void Hull_SingleCell_HasGridOnEveryFace()
     {
         var hull = new ShipHull();
         hull.AddCell(Vector3i.Zero, _ => false);
         hull.Finish(new Vector3(0.5f));
 
-        Assert.Equal(6, hull.Samples.Count);
+        Assert.Equal(6 * 9, hull.Samples.Count);
         for (int i = 0; i < hull.Samples.Count; i++)
         {
             var sample = hull.Samples[i];
-            Assert.Equal(new Vector3(0.5f) + sample.Normal * ShipHull.SampleInset, sample.Point);
+            var offset = sample.Point - new Vector3(0.5f);
+            Assert.Equal(ShipHull.SampleInset, Vector3.Dot(offset, sample.Normal), 4);
+            Assert.True(MathF.Abs(offset.X) <= ShipHull.SampleInset + 1e-4f);
+            Assert.True(MathF.Abs(offset.Y) <= ShipHull.SampleInset + 1e-4f);
+            Assert.True(MathF.Abs(offset.Z) <= ShipHull.SampleInset + 1e-4f);
         }
+    }
+
+    [Fact]
+    public void Hull_SamplesReachFaceCorners()
+    {
+        var hull = new ShipHull();
+        hull.AddCell(Vector3i.Zero, _ => false);
+
+        bool hasCorner = false;
+        for (int i = 0; i < hull.Samples.Count; i++)
+            hasCorner |= (hull.Samples[i].Point - new Vector3(0.95f, 0.95f, 0.95f)).Length < 1e-4f;
+
+        Assert.True(hasCorner);
     }
 
     [Fact]
@@ -28,7 +45,7 @@ public class ShipCollisionMathTests
         foreach (var cell in cells) hull.AddCell(cell, cells.Contains);
         hull.Finish(new Vector3(1f, 0.5f, 0.5f));
 
-        Assert.Equal(10, hull.Samples.Count);
+        Assert.Equal(10 * 9, hull.Samples.Count);
         Assert.True(hull.Radius > 1f);
     }
 

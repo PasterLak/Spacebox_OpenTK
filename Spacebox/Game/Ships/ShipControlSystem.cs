@@ -13,6 +13,7 @@ public sealed class ShipControlSystem
     private readonly Dictionary<Vector3i, ConsoleBindings> _bindings = new Dictionary<Vector3i, ConsoleBindings>();
     private readonly Dictionary<Vector3i, ConsoleCommand> _commands = new Dictionary<Vector3i, ConsoleCommand>();
     private readonly List<Vector3i> _commandKeys = new List<Vector3i>();
+    private readonly CannonTurretRenderer _turrets;
 
     public SpaceEntity Entity => _entity;
     public IReadOnlyList<ThrusterBlock> Thrusters => _thrusters;
@@ -26,10 +27,12 @@ public sealed class ShipControlSystem
     public ShipControlSystem(SpaceEntity entity)
     {
         _entity = entity;
+        _turrets = new CannonTurretRenderer(entity);
     }
 
     public void Register(IShipPart part)
     {
+        _entity.EnsureShipBody();
         _parts[part.LocalCell] = part;
 
         switch (part)
@@ -59,6 +62,7 @@ public sealed class ShipControlSystem
                 break;
             case CannonBlock cannon:
                 _cannons.Remove(cannon);
+                _turrets.Forget(cannon);
                 break;
             case ShipConsoleBlock console:
                 _bindings.Remove(console.LocalCell);
@@ -97,13 +101,13 @@ public sealed class ShipControlSystem
         return bindings.Weapons ? target is CannonBlock : target is ThrusterBlock || target is CannonBlock;
     }
 
-    public int CycleBinding(Vector3i consoleCell, Vector3i targetCell)
+    public int CycleBinding(Vector3i consoleCell, Vector3i targetCell, int direction = 1)
     {
         var bindings = GetBindings(consoleCell);
         if (bindings == null || !CanBind(consoleCell, GetPart<IShipPart>(targetCell))) return -2;
 
         ReleaseFromOtherConsoles(consoleCell, targetCell);
-        int group = bindings.Cycle(targetCell);
+        int group = bindings.Cycle(targetCell, direction);
         NotifyBindingsChanged(consoleCell);
         return group;
     }
@@ -143,7 +147,11 @@ public sealed class ShipControlSystem
         if (_parts.Count == 0) return;
 
         for (int i = 0; i < _thrusters.Count; i++) _thrusters[i].IsFiring = false;
-        for (int i = 0; i < _cannons.Count; i++) _cannons[i].TriggerHeld = false;
+        for (int i = 0; i < _cannons.Count; i++)
+        {
+            _cannons[i].TriggerHeld = false;
+            _cannons[i].IsAiming = false;
+        }
 
         _commandKeys.Clear();
         _commandKeys.AddRange(_commands.Keys);
@@ -152,6 +160,17 @@ public sealed class ShipControlSystem
 
         ApplyThrust();
         UpdateCannons(deltaTime);
+        _turrets.Update(_cannons);
+    }
+
+    public void Render()
+    {
+        _turrets.Render();
+    }
+
+    public void Dispose()
+    {
+        _turrets.Dispose();
     }
 
     private void ApplyCommand(Vector3i consoleCell, ConsoleCommand command)
@@ -165,7 +184,11 @@ public sealed class ShipControlSystem
             var part = GetPart<IShipPart>(pair.Key);
             if (part is CannonBlock cannon)
             {
-                if (command.AimLocal != Vector3.Zero) cannon.SetAimTarget(command.AimLocal);
+                if (command.AimLocal != Vector3.Zero)
+                {
+                    cannon.SetAimPoint(command.AimPointLocal);
+                    cannon.IsAiming = true;
+                }
                 if (bindings.IsGroupPressed(pair.Value, command.Buttons))
                 {
                     cannon.TriggerHeld = true;
@@ -201,6 +224,7 @@ public sealed class ShipControlSystem
         for (int i = 0; i < _thrusters.Count; i++)
         {
             var thruster = _thrusters[i];
+            if (IsBound(thruster.LocalCell)) continue;
             var flags = AutoFlight.Classify(thruster.ThrustDirection, thruster.Frame.Center, com, frame);
             if (AutoFlight.ShouldFire(flags, flight, thruster.ThrustDirection, brake)) thruster.IsFiring = true;
         }
@@ -226,8 +250,18 @@ public sealed class ShipControlSystem
         for (int i = 0; i < _cannons.Count; i++)
         {
             var cannon = _cannons[i];
+            if (!cannon.IsAiming) cannon.ResetAim();
             if (cannon.UpdateCannon(deltaTime) && authoritative) CannonFired?.Invoke(this, cannon);
         }
+    }
+
+    public bool IsBound(Vector3i cell)
+    {
+        foreach (var pair in _bindings)
+        {
+            if (pair.Value.GetGroup(cell) >= 0) return true;
+        }
+        return false;
     }
 
     private void ReleaseFromOtherConsoles(Vector3i consoleCell, Vector3i targetCell)

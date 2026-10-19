@@ -1,5 +1,6 @@
 using Engine;
 using Engine.Physics;
+using ImGuiNET;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation;
@@ -13,7 +14,8 @@ public static class ShipBindingTool
 {
     private const float Reach = 48f;
     private const float Thin = 0.035f;
-    private const float Thick = 0.07f;
+    private const float Thick = 0.05f;
+    private const float HoverGrow = 0.25f;
 
     private static readonly Color4 ConsoleColor = new Color4(0.2f, 0.6f, 1f, 1f);
     private static readonly Color4 CameraColor = new Color4(1f, 1f, 1f, 1f);
@@ -69,12 +71,61 @@ public static class ShipBindingTool
         }
 
         _hovered = FindTarget(player, console.Entity);
-        if (_hovered == null || !Input.IsMouseButtonDown(MouseButton.Left)) return;
+        if (_hovered == null) return;
+
+        int direction = ReadCycleDirection();
+        if (direction == 0) return;
 
         if (_hovered is ShipCameraBlock)
             ShipNetwork.RequestToggleCamera(console.Entity, console.LocalCell, _hovered.LocalCell);
         else
-            ShipNetwork.RequestCycleBinding(console.Entity, console.LocalCell, _hovered.LocalCell);
+            ShipNetwork.RequestCycleBinding(console.Entity, console.LocalCell, _hovered.LocalCell, direction);
+    }
+
+    public static void DrawLabels()
+    {
+        var console = ShipPilot.Console;
+        var entity = console?.Entity;
+        var camera = Camera.Main;
+        if (!IsActive || entity == null || camera == null) return;
+
+        var bindings = entity.ShipControl.GetBindings(console.LocalCell);
+        if (bindings == null) return;
+
+        var drawList = ImGui.GetBackgroundDrawList();
+        foreach (var pair in bindings.Bound)
+        {
+            var part = entity.ShipControl.GetPart<IShipPart>(pair.Key);
+            var color = ConsoleBindings.GroupColors[pair.Value % ConsoleBindings.GroupColors.Length];
+            DrawLabel(drawList, camera, part, ShipKeys.GetName(bindings.GetKey(pair.Value)), color);
+        }
+
+        if (bindings.Camera is { } cameraCell)
+            DrawLabel(drawList, camera, entity.ShipControl.GetPart<IShipPart>(cameraCell), "CAM", CameraColor);
+    }
+
+    private static void DrawLabel(ImDrawListPtr drawList, Camera camera, IShipPart part, string text, Color4 color)
+    {
+        if (part?.Entity == null) return;
+
+        var screen = camera.WorldToScreenPoint(part.Entity.EntityLocalToWorld(part.Frame.Center));
+        if (screen == Vector2.Zero) return;
+
+        var size = ImGui.CalcTextSize(text);
+        var min = new System.Numerics.Vector2(screen.X - size.X * 0.5f - 4f, screen.Y - size.Y * 0.5f - 2f);
+        var max = new System.Numerics.Vector2(screen.X + size.X * 0.5f + 4f, screen.Y + size.Y * 0.5f + 2f);
+        drawList.AddRectFilled(min, max, ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(0f, 0f, 0f, 0.6f)), 3f);
+        drawList.AddText(new System.Numerics.Vector2(min.X + 4f, min.Y + 2f), ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(color.R, color.G, color.B, 1f)), text);
+    }
+
+    private static int ReadCycleDirection()
+    {
+        if (Input.IsMouseButtonDown(MouseButton.Left)) return 1;
+
+        float scroll = Input.MouseScrollDelta.Y;
+        if (scroll > 0f) return 1;
+        if (scroll < 0f) return -1;
+        return 0;
     }
 
     public static void Render()
@@ -99,7 +150,7 @@ public static class ShipBindingTool
                 AddOutline(control.GetPart<IShipPart>(cameraCell), CameraColor, Thin);
         }
 
-        if (_hovered != null) AddOutline(_hovered, HoverColor, Thick);
+        if (_hovered != null) AddOutline(_hovered, HoverColor, Thick, HoverGrow);
         _outlines.Render();
     }
 
@@ -118,10 +169,10 @@ public static class ShipBindingTool
         return group < 0 ? "Not bound" : $"Group {group + 1} ({ShipKeys.GetName(bindings.GetKey(group))})";
     }
 
-    private static void AddOutline(IShipPart part, Color4 color, float thickness)
+    private static void AddOutline(IShipPart part, Color4 color, float thickness, float grow = 0f)
     {
         if (part?.Entity == null) return;
-        _outlines.Add(part.Entity, part.Frame.Center, part.Frame.Size, color, thickness);
+        _outlines.Add(part.Entity, part.Frame.Center, part.Frame.Size + new Vector3(grow), color, thickness);
     }
 
     private static IShipPart FindTarget(LocalAstronaut player, SpaceEntity entity)

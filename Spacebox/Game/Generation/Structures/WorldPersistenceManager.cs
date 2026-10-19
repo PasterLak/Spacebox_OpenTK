@@ -14,6 +14,7 @@ namespace Spacebox.Game.Generation
         {
             public CompoundTag Tag;
             public Vector3i SectorIndex;
+            public Vector3i? PreviousSectorIndex;
             public string Name;
         }
 
@@ -24,12 +25,13 @@ namespace Spacebox.Game.Generation
             if (!entity.IsModified) return;
 
             var tag = NBTHelper.SpaceEntityToTag(entity);
-            var sectorIndex = SpaceMath.Sector.GetSectorIndex(entity.PositionWorld);
+            var sectorIndex = entity.Sector?.PositionIndex ?? SpaceMath.Sector.GetSectorIndex(entity.PositionWorld);
 
             var data = new CachedEntityData
             {
                 Tag = tag,
                 SectorIndex = sectorIndex,
+                PreviousSectorIndex = entity.SavedSectorIndex,
                 Name = entity.Name
             };
 
@@ -99,6 +101,7 @@ namespace Spacebox.Game.Generation
 
                     string filePath = EntityFiles.PathOf(sectorPath, data.Name);
                     NbtFile.Write(filePath, data.Tag, FormatOptions.Java, CompressionType.GZip);
+                    WorldSaveLoad.DeleteStaleEntityFile(worldPath, data.PreviousSectorIndex, data.SectorIndex, data.Name);
                 }
                 catch (Exception ex)
                 {

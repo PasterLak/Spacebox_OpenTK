@@ -30,6 +30,8 @@ namespace Spacebox.Game.Generation.Tools
             public const string removed_chunks = "removed_chunks";
             public const string velocity = "velocity";
             public const string angular_velocity = "angular_velocity";
+            public const string asteroid_type = "asteroid_type";
+            public const string asteroid_radius = "asteroid_radius";
         }
 
         public static class CHUNK

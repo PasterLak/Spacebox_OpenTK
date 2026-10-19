@@ -24,6 +24,14 @@ public struct ShipMassProperties
         _selfInertia += mass * CubeInertiaFactor;
     }
 
+    public void Merge(in ShipMassProperties other)
+    {
+        _mass += other._mass;
+        _weightedPosition += other._weightedPosition;
+        _secondMoment += other._secondMoment;
+        _selfInertia += other._selfInertia;
+    }
+
     public Vector3 GetInertia()
     {
         if (_mass <= 0f) return Vector3.One;

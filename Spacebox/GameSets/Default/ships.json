@@ -8,6 +8,5 @@
   "MaxStep": 0.05,
   "BoardDistance": 2.5,
   "LeaveDistance": 5,
-  "CollisionBounce": 0.2,
-  "ProjectileOwnerIgnoreTime": 0.25
+  "CollisionBounce": 0.2
 }

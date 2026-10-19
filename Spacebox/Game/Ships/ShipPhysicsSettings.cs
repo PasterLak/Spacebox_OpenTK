@@ -12,7 +12,6 @@ public sealed class ShipPhysicsSettings
     public float BoardDistance { get; set; } = 2.5f;
     public float LeaveDistance { get; set; } = 5f;
     public float CollisionBounce { get; set; } = 0.2f;
-    public float ProjectileOwnerIgnoreTime { get; set; } = 0.25f;
 
     public static ShipPhysicsSettings Current { get; set; } = new ShipPhysicsSettings();
 
@@ -28,6 +27,5 @@ public sealed class ShipPhysicsSettings
         BoardDistance = Math.Max(0.5f, BoardDistance);
         LeaveDistance = Math.Max(BoardDistance + 0.5f, LeaveDistance);
         CollisionBounce = Math.Clamp(CollisionBounce, 0f, 1f);
-        ProjectileOwnerIgnoreTime = Math.Max(0f, ProjectileOwnerIgnoreTime);
     }
 }

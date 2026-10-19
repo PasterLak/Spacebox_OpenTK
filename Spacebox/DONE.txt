@@ -137,6 +137,21 @@ Small
 - equipment slot backgrounds
 
 Fixes
+- thrusters push the ship away from their nozzle (was reversed)
+- ship cannons turn as a separate model around their base toward the crosshair point, never hit their own ship
+- while piloting the player holds nothing: no block selector, no item use, hotbar keys go to the ship
+- ship blocks show their parameters in the tooltip (thrust, groups, damage, reload, aim, power)
+- ship binding mode lets the player fly around the ship, RMB returns to the seat
+- cannon console: Q/E roll the view; ship camera view is inside the camera block (block hidden) and starts looking where the bound cannons aim
+- thrusters bound to a key no longer fire from automatic flight (WASD)
+- binding: key labels on bound blocks, hover outline drawn outside the group outline, mouse wheel changes group, groups without a key are skipped
+- binding started from a camera view puts the player back at the seat (no damage inside the camera block)
+- ship collisions are more precise: 3x3 samples per hull face, both ships test each other
+- asteroids with ship blocks fly like ships (mass and hull computed per chunk, so big asteroids stay fast)
+- entities move between sectors: moved asteroids are not generated again at their old place, the old entity file is deleted, sector data is saved when a sector unloads
+- entities near a sector border collide and are hit by rays from the neighbour sector
+- unloaded ships load again when the player returns (they disappeared until the sector was reloaded)
+- entity files are portable: asteroid files store their asteroid type and radius and regenerate their untouched parts in any sector or world
 - disassembling assault rifle gave titanium it does not need
 - lock cursor if hidden
 - esc in inventory

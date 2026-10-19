@@ -14,6 +14,7 @@ public struct ShipCommandMessage : INetMessage
     public ushort Buttons;
     public ushort Flight;
     public Vector3 AimLocal;
+    public Vector3 AimPointLocal;
 
     public void Serialize(NetWriter writer)
     {
@@ -22,6 +23,7 @@ public struct ShipCommandMessage : INetMessage
         writer.Write(Buttons);
         writer.Write(Flight);
         writer.Write(AimLocal);
+        writer.Write(AimPointLocal);
     }
 
     public void Deserialize(NetReader reader)
@@ -31,6 +33,7 @@ public struct ShipCommandMessage : INetMessage
         Buttons = reader.ReadUShort();
         Flight = reader.ReadUShort();
         AimLocal = reader.ReadVector3();
+        AimPointLocal = reader.ReadVector3();
     }
 }
 
@@ -80,6 +83,7 @@ public struct ShipStateMessage : INetMessage
             writer.Write(Commands[i].Command.Buttons);
             writer.Write((ushort)Commands[i].Command.Flight);
             writer.Write(Commands[i].Command.AimLocal);
+            writer.Write(Commands[i].Command.AimPointLocal);
         }
     }
 
@@ -100,7 +104,8 @@ public struct ShipStateMessage : INetMessage
             {
                 Buttons = reader.ReadUShort(),
                 Flight = (FlightInput)reader.ReadUShort(),
-                AimLocal = reader.ReadVector3()
+                AimLocal = reader.ReadVector3(),
+                AimPointLocal = reader.ReadVector3()
             };
             Commands.Add((cell, command));
         }
@@ -112,6 +117,7 @@ public struct ShipBindingRequestMessage : INetMessage
     public const byte OperationCycle = 0;
     public const byte OperationCamera = 1;
     public const byte OperationKey = 2;
+    public const byte OperationCycleBack = 3;
 
     public long EntityId;
     public Vector3i ConsoleCell;
@@ -240,7 +246,8 @@ public static class ShipNetwork
             ConsoleCell = console.LocalCell,
             Buttons = command.Buttons,
             Flight = (ushort)command.Flight,
-            AimLocal = command.AimLocal
+            AimLocal = command.AimLocal,
+            AimPointLocal = command.AimPointLocal
         }, DeliveryMode.Sequenced);
     }
 
@@ -257,15 +264,16 @@ public static class ShipNetwork
         network.SendToServer(new ShipMountMessage { EntityId = entity.EntityID, ConsoleCell = console.LocalCell, Mount = mount });
     }
 
-    public static void RequestCycleBinding(SpaceEntity entity, Vector3i consoleCell, Vector3i targetCell)
+    public static void RequestCycleBinding(SpaceEntity entity, Vector3i consoleCell, Vector3i targetCell, int direction = 1)
     {
         if (!NetworkManager.Instance.IsRemoteClient)
         {
-            entity.ShipControl.CycleBinding(consoleCell, targetCell);
+            entity.ShipControl.CycleBinding(consoleCell, targetCell, direction);
             return;
         }
 
-        SendBindingRequest(entity, consoleCell, ShipBindingRequestMessage.OperationCycle, targetCell, 0, 0);
+        byte operation = direction < 0 ? ShipBindingRequestMessage.OperationCycleBack : ShipBindingRequestMessage.OperationCycle;
+        SendBindingRequest(entity, consoleCell, operation, targetCell, 0, 0);
     }
 
     public static void RequestToggleCamera(SpaceEntity entity, Vector3i consoleCell, Vector3i cameraCell)
@@ -314,6 +322,7 @@ public static class ShipNetwork
             Buttons = message.Buttons,
             Flight = (FlightInput)message.Flight,
             AimLocal = message.AimLocal,
+            AimPointLocal = message.AimPointLocal,
             PilotPeer = sender
         });
     }
@@ -352,6 +361,9 @@ public static class ShipNetwork
         {
             case ShipBindingRequestMessage.OperationCycle:
                 control.CycleBinding(message.ConsoleCell, message.TargetCell);
+                break;
+            case ShipBindingRequestMessage.OperationCycleBack:
+                control.CycleBinding(message.ConsoleCell, message.TargetCell, -1);
                 break;
             case ShipBindingRequestMessage.OperationCamera:
                 control.ToggleCamera(message.ConsoleCell, message.TargetCell);

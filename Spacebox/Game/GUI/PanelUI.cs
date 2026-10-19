@@ -19,6 +19,7 @@ namespace Spacebox.Game.GUI
         public static bool EnableRenderForCurrentItem { get; set; } = true;
         public static bool AllowScroll { get; set; } = true;
         public static bool IsItemModelVisible { get; set; } = true;
+        public static bool AreHandsBlocked { get; private set; }
         public static Storage Storage;
         private static ItemModel ItemModel;
         private static ItemSlot SelectedSlot;
@@ -68,9 +69,42 @@ namespace Spacebox.Game.GUI
             return SelectedSlot.Item.Is<T>();
         }
 
+        public static void BlockHands()
+        {
+            if (AreHandsBlocked) return;
+            AreHandsBlocked = true;
+
+            if (ItemModel != null) ItemModel.ResetToEnd();
+            ItemModel = null;
+            ItemControlsUI.IsVisible = false;
+            BlockSelector.IsVisible = false;
+
+            if (Player != null)
+            {
+                Player.SetInteraction(new InteractionDefault());
+                Player.ChangeItemInHand(null);
+                Player.ItemLight.Enabled = false;
+            }
+
+            AstronautNetwork.Local?.SetHeldItem(null);
+        }
+
+        public static void ResetHandsBlock()
+        {
+            AreHandsBlocked = false;
+        }
+
+        public static void UnblockHands()
+        {
+            if (!AreHandsBlocked) return;
+            AreHandsBlocked = false;
+            ResetLastSelected();
+            SelectSlot(SelectedSlotId);
+        }
+
         public static void DrawItemModel()
         {
-            if (!IsItemModelVisible) return;
+            if (!IsItemModelVisible || AreHandsBlocked) return;
             if (ItemModel == null) return;
             ItemModel.Render();
         }
@@ -133,7 +167,7 @@ namespace Spacebox.Game.GUI
 
             if (UIManager.IsUIMode && !UIManager.IsOpen("radar")) return;
 
-            if (!AllowScroll) return;
+            if (!AllowScroll || AreHandsBlocked) return;
             if (Player.CanMove == false) return;
 
             if (Input.MouseScrollDelta.Y < 0)
@@ -303,6 +337,7 @@ namespace Spacebox.Game.GUI
             if (Storage != null)
             {
                 SelectedSlot = Storage.GetSlot(0, slot);
+                if (AreHandsBlocked) return;
 
                 var hadModel = ItemModel != null;
 

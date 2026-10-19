@@ -32,6 +32,15 @@ public static class ShipAiming
         return Vector3.Transform(from, rotation).Normalized();
     }
 
+    public static Quaternion LookRotation(Vector3 forward, Vector3 up)
+    {
+        var f = SafeNormalize(forward, -Vector3.UnitZ);
+        var right = Vector3.Cross(f, up);
+        if (right.LengthSquared < 1e-8f) right = Vector3.Cross(f, MathF.Abs(f.Y) < 0.9f ? Vector3.UnitY : Vector3.UnitX);
+        var u = Vector3.Cross(right.Normalized(), f);
+        return Quaternion.Normalize(Matrix4.LookAt(Vector3.Zero, f, u).ExtractRotation().Inverted());
+    }
+
     public static float AngleBetween(Vector3 a, Vector3 b)
     {
         return MathF.Acos(Math.Clamp(Vector3.Dot(a, b), -1f, 1f));

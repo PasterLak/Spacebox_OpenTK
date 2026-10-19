@@ -12,10 +12,12 @@ public sealed class ShipBody
     private readonly SpaceEntity _entity;
     private readonly ShipSnapshotBuffer _snapshots = new ShipSnapshotBuffer();
     private readonly ShipCollider _collider;
+    private readonly ShipMassCache _massCache = new ShipMassCache();
     private int _massVersion = -1;
     private double _clock;
 
     public ShipMotion Motion { get; } = new ShipMotion();
+    public ShipCollider Collider => _collider;
     public SpaceEntity Entity => _entity;
     public Vector3 CenterOfMassLocal => _entity.CenterOfMass - _entity.PositionWorld;
     public bool IsSimulated => !Spacebox.Network.GameSession.IsRemoteClient;
@@ -140,25 +142,7 @@ public sealed class ShipBody
         if (_entity.MassVersion == _massVersion) return;
         _massVersion = _entity.MassVersion;
 
-        var properties = new ShipMassProperties();
-        var chunks = _entity.Chunks;
-        for (int c = 0; c < chunks.Count; c++)
-        {
-            var chunk = chunks[c];
-            if (chunk.IsDisposed || chunk.Mass <= 0) continue;
-
-            var origin = new Vector3(chunk.PositionIndex.X, chunk.PositionIndex.Y, chunk.PositionIndex.Z) * Chunk.Size;
-            var blocks = chunk.Blocks;
-            for (int x = 0; x < Chunk.Size; x++)
-            for (int y = 0; y < Chunk.Size; y++)
-            for (int z = 0; z < Chunk.Size; z++)
-            {
-                var block = blocks[x, y, z];
-                if (block == null || block.IsAir) continue;
-                properties.Add(origin + new Vector3(x + 0.5f, y + 0.5f, z + 0.5f), Math.Max((byte)1, block.Mass));
-            }
-        }
-
+        var properties = _massCache.Compute(_entity.Chunks);
         Motion.SetMassProperties(properties.Mass, properties.GetInertia());
         _collider.RefreshHull(CenterOfMassLocal);
     }

@@ -1,6 +1,8 @@
+using System.Text;
+
 namespace Spacebox.Game.Resource;
 
-public class ThrusterBlockData : BlockData
+public class ThrusterBlockData : BlockData, IBlockTooltip
 {
     public float Force { get; }
     public ushort Power { get; }
@@ -11,9 +13,15 @@ public class ThrusterBlockData : BlockData
         Force = Math.Clamp(settings.Force, 0f, 100000f);
         Power = (ushort)Math.Clamp(settings.Power, 0, 8000);
     }
+
+    public void AppendTooltip(StringBuilder text)
+    {
+        text.Append($"\nThrust: {Force:0.#}");
+        text.Append($"\nPower usage: {Power} EU");
+    }
 }
 
-public class ShipConsoleBlockData : BlockData
+public class ShipConsoleBlockData : BlockData, IBlockTooltip
 {
     public const int MaxButtons = 16;
 
@@ -30,9 +38,16 @@ public class ShipConsoleBlockData : BlockData
         Weapons = settings.Weapons;
         Flight = settings.Flight && !settings.Weapons;
     }
+
+    public void AppendTooltip(StringBuilder text)
+    {
+        text.Append(Weapons ? "\nControls: cannons" : Flight ? "\nControls: flight, thrusters, cannons" : "\nControls: thrusters, cannons");
+        text.Append($"\nGroups: {Buttons}");
+        text.Append($"\nPower usage: {Power} EU");
+    }
 }
 
-public class CannonBlockData : BlockData
+public class CannonBlockData : BlockData, IBlockTooltip
 {
     public string ProjectileName { get; }
     public string ShotSound { get; }
@@ -53,9 +68,25 @@ public class CannonBlockData : BlockData
         TurnSpeed = Math.Clamp(settings.TurnSpeed, 1f, 3600f);
         Power = (ushort)Math.Clamp(settings.Power, 0, 8000);
     }
+
+    public void AppendTooltip(StringBuilder text)
+    {
+        if (GameAssets.TryGetProjectileByName(ProjectileName, out var projectile))
+        {
+            text.Append($"\nDamage: {projectile.Damage}/{projectile.DamageBlocks}");
+            text.Append($"\nPenetration: {projectile.Penetration}");
+            text.Append($"\nProjectile speed: {projectile.Speed:0.#} block/s");
+            text.Append($"\nRange: {projectile.MaxTravelDistance} blocks");
+        }
+
+        text.Append($"\nReload time: {ReloadSeconds:0.0#}s");
+        text.Append($"\nAim cone: {AimCone:0}°");
+        text.Append($"\nTurn speed: {TurnSpeed:0}°/s");
+        text.Append($"\nPower usage: {Power} EU");
+    }
 }
 
-public class ShipCameraBlockData : BlockData
+public class ShipCameraBlockData : BlockData, IBlockTooltip
 {
     public ushort Power { get; }
 
@@ -63,5 +94,10 @@ public class ShipCameraBlockData : BlockData
     {
         settings ??= new ShipCameraJSON();
         Power = (ushort)Math.Clamp(settings.Power, 0, 8000);
+    }
+
+    public void AppendTooltip(StringBuilder text)
+    {
+        text.Append($"\nPower usage: {Power} EU");
     }
 }

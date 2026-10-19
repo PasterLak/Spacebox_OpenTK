@@ -34,14 +34,10 @@ public sealed class ShipThrusterEffects : IDisposable
 
     public void Update(Sector sector, float deltaTime)
     {
-        if (sector != null)
+        if (sector?.Entities != null)
         {
-            var entities = sector.Entities;
-            for (int i = 0; i < entities.Count; i++)
-            {
-                var entity = entities[i];
-                if (entity.HasShipControl) Emit(entity, deltaTime);
-            }
+            EmitAll(sector.Entities, deltaTime);
+            EmitAll(sector.Visitors, deltaTime);
         }
 
         _flames.Update();
@@ -55,6 +51,15 @@ public sealed class ShipThrusterEffects : IDisposable
     public void Dispose()
     {
         _flames.Destroy();
+    }
+
+    private void EmitAll(IReadOnlyList<SpaceEntity> entities, float deltaTime)
+    {
+        for (int i = 0; i < entities.Count; i++)
+        {
+            var entity = entities[i];
+            if (entity.HasShipControl) Emit(entity, deltaTime);
+        }
     }
 
     private void Emit(SpaceEntity entity, float deltaTime)

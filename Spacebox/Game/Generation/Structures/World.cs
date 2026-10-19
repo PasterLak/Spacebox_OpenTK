@@ -44,6 +44,7 @@ public class World : Component, ISpaceStructure
     private readonly Dictionary<Vector3i, Sector> loadedSectors;
     private readonly HashSet<Vector3i> loadingSectors;
     private readonly List<Vector3i> _sectorsToRemoveCache;
+    private readonly EntitySectorTracker _entityTracker;
     private float _timeToCheckSectors = 0;
 
     private static readonly Vector3i[] _neighborDirs = new[]
@@ -73,6 +74,7 @@ public class World : Component, ISpaceStructure
         loadingSectors = new HashSet<Vector3i>();
         loadedSectors = new Dictionary<Vector3i, Sector>();
         _sectorsToRemoveCache = new List<Vector3i>();
+        _entityTracker = new EntitySectorTracker(this);
 
         BiomeGenerator = new BiomeGenerator(World.Seed, WorldGenerator);
         DropEffectManager = new DropManager(player);
@@ -249,10 +251,14 @@ public class World : Component, ISpaceStructure
 
         worldOctree.DrawDebug();
 
+        UpdateCurrentSector();
+
         foreach (var sector in loadedSectors)
         {
             sector.Value.Update();
         }
+
+        _entityTracker.Process();
 
         Explosions.Update(Time.Delta);
         ThrusterEffects.Update(CurrentSector, Time.Delta);
@@ -382,6 +388,34 @@ public class World : Component, ISpaceStructure
 
     public static event Action<Sector> SectorLoaded;
 
+    public void OnEntityMoved(SpaceEntity entity)
+    {
+        _entityTracker.Request(entity);
+    }
+
+    public void RequestEntityCheck(SpaceEntity entity)
+    {
+        _entityTracker.Request(entity);
+    }
+
+    public void ForgetEntity(SpaceEntity entity)
+    {
+        _entityTracker.Forget(entity);
+    }
+
+    public Sector GetOrLoadSectorFor(Vector3 positionWorld)
+    {
+        return GetOrLoadSector(SpaceMath.Sector.GetSectorIndex(positionWorld));
+    }
+
+    private void UpdateCurrentSector()
+    {
+        if (CurrentSector == null || Player == null) return;
+
+        var index = SpaceMath.Sector.GetSectorIndex(Player.Position);
+        if (CurrentSector.PositionIndex != index) CurrentSector = GetOrLoadSector(index);
+    }
+
     public static Sector SectorAt(Vector3 position)
     {
         var world = Instance;
@@ -440,6 +474,9 @@ public class World : Component, ISpaceStructure
         if (loadedSectors.TryGetValue(index, out Sector sector))
         {
             worldOctree.Remove(sector, sector.BoundingBox);
+            if (sector.IsModified && !Spacebox.Network.GameSession.IsRemoteClient)
+                WorldSaveLoad.SaveSectorData(WorldData.WorldFolderPath, sector);
+            _entityTracker.ForgetSector(sector);
             sector.Dispose();
             loadedSectors.Remove(index);
             Debug.Log($"[World] Unloaded sector {index}");
@@ -473,6 +510,7 @@ public class World : Component, ISpaceStructure
                         worldOctree.Add(sector, sector.BoundingBox);
                         loadedSectors[sectorIndex] = sector;
                         loadingSectors.Remove(sectorIndex);
+                        _entityTracker.OnSectorLoaded(sector);
                         SectorLoaded?.Invoke(sector);
                     });
                 }
@@ -511,6 +549,7 @@ public class World : Component, ISpaceStructure
 
         worldOctree.Add(newSector, newSector.BoundingBox);
         loadedSectors.Add(newSector.PositionIndex, newSector);
+        _entityTracker.OnSectorLoaded(newSector);
         SectorLoaded?.Invoke(newSector);
 
         return newSector;

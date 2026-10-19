@@ -2,6 +2,7 @@ using Engine;
 using Engine.Networking;
 using OpenTK.Mathematics;
 using SharpNBT;
+using Spacebox.Game.GameMath;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.Generation.Tools;
@@ -70,7 +71,7 @@ public static class EntitySync
     {
         var world = World.Instance;
         if (world != null && world.TryFindEntity(message.EntityId, out var entity))
-            return NBTHelper.SpaceEntityToTag(entity);
+            return NBTHelper.SpaceEntityToTag(entity, SpaceMath.Sector.GetSectorPosition(message.Sector));
 
         if (WorldPersistenceManager.TryGetCachedEntity(message.EntityId, out var cached))
             return cached;

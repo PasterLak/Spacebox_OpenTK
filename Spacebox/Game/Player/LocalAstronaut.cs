@@ -270,7 +270,7 @@ namespace Spacebox.Game.Player
 
             if (!IsMain) return;
 
-            if (!ShipPilot.IsPiloting) _gameModeBase.HandleInput(this);
+            if (!ShipPilot.IsPiloting || ShipPilot.AllowsMovement) _gameModeBase.HandleInput(this);
 
             ItemSway.EnableSway = CanMove;
             ItemSway.Update(InertiaController.Velocity, Front, Right);

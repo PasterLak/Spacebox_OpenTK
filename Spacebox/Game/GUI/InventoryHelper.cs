@@ -233,6 +233,8 @@ namespace Spacebox.Game.GUI
 
         }
 
+        private static readonly System.Text.StringBuilder _tooltipBuilder = new System.Text.StringBuilder();
+
         public static void ShowTooltip(ItemSlot slot, bool showStackSize, bool showDescription, bool showId = false)
         {
             if (SpaceboxWindow.Instance != null && !SpaceboxWindow.Instance.IsFocused) return;
@@ -319,6 +321,13 @@ namespace Spacebox.Game.GUI
                         if (d is GeneratorBlockData generatorData)
                         {
                             text += $"\nGenerates: {generatorData.Power} EU";
+                        }
+
+                        if (d is IBlockTooltip blockTooltip)
+                        {
+                            _tooltipBuilder.Clear();
+                            blockTooltip.AppendTooltip(_tooltipBuilder);
+                            text += _tooltipBuilder.ToString();
                         }
                     }
 
