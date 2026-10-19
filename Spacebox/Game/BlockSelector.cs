@@ -246,8 +246,14 @@ public class BlockSelector : Node3D
         SimpleBlock.SetBlockTransform(Matrix4.CreateScale(_highlightSize) * _currentTransform * _entityRotation);
     }
 
-    public void ShowReservedArea(Vector3 minPosition, Vector3 size, SpaceEntity entity)
+    public void SetPlaceable(bool placeable)
     {
+        SimpleBlock.Enabled = placeable;
+    }
+
+    public void ShowReservedArea(Vector3 minPosition, Vector3 size, SpaceEntity entity, bool placeable = true)
+    {
+        _reservedAreaRenderer.Color = placeable ? Color4.Cyan : Color4.Red;
         _reservedCorners[0] = minPosition;
         _reservedCorners[1] = minPosition + new Vector3(size.X, 0, 0);
         _reservedCorners[2] = minPosition + new Vector3(size.X, 0, size.Z);

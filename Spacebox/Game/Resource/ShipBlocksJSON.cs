@@ -4,6 +4,7 @@ public class ThrusterJSON
 {
     public float Force { get; set; } = 20f;
     public int Power { get; set; } = 8;
+    public int NozzleLength { get; set; }
 }
 
 public class ShipConsoleJSON

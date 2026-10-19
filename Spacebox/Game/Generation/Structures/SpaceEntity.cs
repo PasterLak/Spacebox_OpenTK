@@ -87,6 +87,7 @@ namespace Spacebox.Game.Generation
         public ElectricNetworkManager ElectricManager { get; private set; }
         public OxygenSystem Oxygen { get; private set; }
         public DoorSystem Doors { get; private set; }
+        public CellReservations Reservations { get; } = new CellReservations();
         public Particle StarParticle;
 
         private StringBuilder StringBuilder = new StringBuilder();
@@ -402,6 +403,7 @@ namespace Spacebox.Game.Generation
 
             Vector3 localPos = WorldPositionToLocal(worldPosition);
             if (IsCellReserved(worldPosition)) return false;
+            if (blockData != null && !IsReservedAreaFree(worldPosition, blockData, block.Direction, block.Rotation)) return false;
 
             return PlaceBlockInternal(localPos, block);
         }
@@ -409,7 +411,36 @@ namespace Spacebox.Game.Generation
         public bool IsCellReserved(Vector3 position)
         {
             var local = WorldPositionToLocal(position);
-            return Doors.IsReserved(new Vector3i((int)MathF.Floor(local.X), (int)MathF.Floor(local.Y), (int)MathF.Floor(local.Z)));
+            var cell = new Vector3i((int)MathF.Floor(local.X), (int)MathF.Floor(local.Y), (int)MathF.Floor(local.Z));
+            return Doors.IsReserved(cell) || Reservations.IsReserved(cell);
+        }
+
+        public bool CanPlaceBlock(Vector3 position, BlockData blockData, Direction direction, Rotation rotation)
+        {
+            if (blockData.IsMultiblock) return CanPlaceStructure(position, blockData, direction, rotation);
+            return !IsCellReserved(position) && IsReservedAreaFree(position, blockData, direction, rotation);
+        }
+
+        private static readonly List<Vector3i> _reservedArea = new List<Vector3i>();
+
+        public bool IsReservedAreaFree(Vector3 originPosition, BlockData blockData, Direction direction, Rotation rotation)
+        {
+            if (blockData is not IReservedAreaBlockData area) return true;
+
+            area.GetReservedArea(direction, rotation, _reservedArea);
+            for (int i = 0; i < _reservedArea.Count; i++)
+            {
+                var position = originPosition + new Vector3(_reservedArea[i].X, _reservedArea[i].Y, _reservedArea[i].Z);
+                if (!IsPositionWithinEntitySize(position))
+                {
+                    if (area.AreaMustBeInsideEntity) return false;
+                    continue;
+                }
+
+                if (!IsCellEmpty(position) || IsCellReserved(position)) return false;
+            }
+
+            return true;
         }
 
         internal void ClearCellSilently(Vector3i localCell)
@@ -423,21 +454,21 @@ namespace Spacebox.Game.Generation
             PlaceBlockInternal(new Vector3(localCell.X, localCell.Y, localCell.Z), block);
         }
 
-        private static readonly List<Vector3i> _slideArea = new List<Vector3i>();
-
-        public bool TryGetDoorSlideArea(Vector3 originPosition, DoorBlockData doorData, Direction direction, Rotation rotation, out Vector3 minPosition, out Vector3 size)
+        public bool TryGetReservedArea(Vector3 originPosition, BlockData blockData, Direction direction, Rotation rotation, out Vector3 minPosition, out Vector3 size)
         {
-            DoorSystem.GetSlideArea(doorData, direction, rotation, _slideArea);
             minPosition = Vector3.Zero;
             size = Vector3.Zero;
-            if (_slideArea.Count == 0) return false;
+            if (blockData is not IReservedAreaBlockData area) return false;
+
+            area.GetReservedArea(direction, rotation, _reservedArea);
+            if (_reservedArea.Count == 0) return false;
 
             var min = new Vector3i(int.MaxValue);
             var max = new Vector3i(int.MinValue);
-            for (int i = 0; i < _slideArea.Count; i++)
+            for (int i = 0; i < _reservedArea.Count; i++)
             {
-                min = Vector3i.ComponentMin(min, _slideArea[i]);
-                max = Vector3i.ComponentMax(max, _slideArea[i]);
+                min = Vector3i.ComponentMin(min, _reservedArea[i]);
+                max = Vector3i.ComponentMax(max, _reservedArea[i]);
             }
 
             minPosition = originPosition + new Vector3(min.X, min.Y, min.Z);
@@ -461,18 +492,7 @@ namespace Spacebox.Game.Generation
                     return false;
             }
 
-            if (blockData is DoorBlockData doorData)
-            {
-                DoorSystem.GetSlideArea(doorData, direction, rotation, _slideArea);
-                for (int i = 0; i < _slideArea.Count; i++)
-                {
-                    var position = originPosition + new Vector3(_slideArea[i].X, _slideArea[i].Y, _slideArea[i].Z);
-                    if (!IsPositionWithinEntitySize(position) || !IsCellEmpty(position) || IsCellReserved(position))
-                        return false;
-                }
-            }
-
-            return true;
+            return IsReservedAreaFree(originPosition, blockData, direction, rotation);
         }
 
         public bool IsCellEmpty(Vector3 position)

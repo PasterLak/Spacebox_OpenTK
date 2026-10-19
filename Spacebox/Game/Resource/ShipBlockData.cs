@@ -1,23 +1,37 @@
 using System.Text;
+using OpenTK.Mathematics;
+using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Ships;
 
 namespace Spacebox.Game.Resource;
 
-public class ThrusterBlockData : BlockData, IBlockTooltip
+public class ThrusterBlockData : BlockData, IBlockTooltip, IReservedAreaBlockData
 {
+    public const int MaxNozzleLength = 16;
+
     public float Force { get; }
     public ushort Power { get; }
+    public byte NozzleLength { get; }
+    public bool AreaMustBeInsideEntity => false;
 
     public ThrusterBlockData(BlockData baseBlock, ThrusterJSON settings) : base(baseBlock)
     {
         settings ??= new ThrusterJSON();
         Force = Math.Clamp(settings.Force, 0f, 100000f);
         Power = (ushort)Math.Clamp(settings.Power, 0, 8000);
+        NozzleLength = (byte)Math.Clamp(settings.NozzleLength, 0, MaxNozzleLength);
+    }
+
+    public void GetReservedArea(Direction direction, Rotation rotation, List<Vector3i> offsets)
+    {
+        ThrusterNozzle.GetCells(this, NozzleLength, direction, rotation, offsets);
     }
 
     public void AppendTooltip(StringBuilder text)
     {
         text.Append($"\nThrust: {Force:0.#}");
         text.Append($"\nPower usage: {Power} EU");
+        if (NozzleLength > 0) text.Append($"\nNozzle clearance: {NozzleLength} block{(NozzleLength == 1 ? "" : "s")}");
     }
 }
 

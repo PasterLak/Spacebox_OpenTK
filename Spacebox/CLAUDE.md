@@ -110,6 +110,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 
 - `Game/Ships/`: every dynamic entity has a `ShipBody` (`entity.Ship`); move entities only with `SpaceEntity.SetPose` (keeps chunk caches and the sector octree in sync). Physics settings: GameSet `ships.json` → `ShipPhysicsSettings.Current`.
 - Ship blocks (`ThrusterBlock`, `ShipConsoleBlock`, `CannonBlock`, `ShipCameraBlock`) implement `IShipPart` and register with `entity.ShipControl` from `IEntityBlockListener` (origin cell only for multi-cell blocks). Bindings are keyed by the part's origin cell (`ConsoleBindings`), saved by `ShipConsoleSerializer`.
+- Cells a block keeps free (door slide, thruster nozzle `NozzleLength`): implement `IReservedAreaBlockData` on its block data (checked by `SpaceEntity.CanPlaceBlock` and the build preview); reserve them at runtime with `entity.Reservations.Set(owner, cells)` from `OnAddedToEntity` and `Remove` on removal.
 - A new trigger block: implement `IShipPart`, register in `OnAddedToEntity`, react in `ShipControlSystem.ApplyCommand`, allow it in `CanBind`.
 - Local pilot state is static (`ShipPilot`, `ShipRider`, `ShipBindingTool`, `ShipConsoleUI`) and reset in `BaseSpaceScene.UnloadContent`. Remote clients never simulate ships; they apply `ShipStateMessage` snapshots. Everything that changes ships goes through `ShipNetwork`.
 - While piloting, `PanelUI.BlockHands`/`UnblockHands` hide the held item, block selector and hotbar input.

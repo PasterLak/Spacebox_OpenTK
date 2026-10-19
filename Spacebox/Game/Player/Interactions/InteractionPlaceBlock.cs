@@ -52,6 +52,9 @@ public class InteractionPlaceBlock : InteractionMode
         if(BlockSelector.Instance!=null)
         BlockSelector.IsVisible = false;
 
+        BlockSelector.Instance?.SetPlaceable(true);
+        BlockSelector.Instance?.HideReservedArea();
+
         if (lineRenderer != null)
             lineRenderer.Enabled = false;
     }
@@ -72,13 +75,10 @@ public class InteractionPlaceBlock : InteractionMode
         BlockSelector.Instance.UpdatePosition(selectorPositionWorld, finalDir, finalRot, true, entity);
 
         var previewData = BlockSelector.Instance.CurrentBlockData;
-        _previewPlaceable = previewData.IsMultiblock
-            ? entity.CanPlaceStructure(selectorPositionWorld, previewData, finalDir, finalRot)
-            : !entity.IsCellReserved(selectorPositionWorld);
-        if (!_previewPlaceable)
-            BlockSelector.IsVisible = false;
+        _previewPlaceable = entity.CanPlaceBlock(selectorPositionWorld, previewData, finalDir, finalRot);
+        BlockSelector.Instance.SetPlaceable(_previewPlaceable);
 
-        UpdateReservedArea(entity, selectorPositionWorld, previewData, finalDir, finalRot);
+        UpdateReservedArea(entity, selectorPositionWorld, previewData, finalDir, finalRot, _previewPlaceable);
         lineRenderer.Enabled = false;
         /*
         lineRenderer.Points[0] = selectorPositionWorld + new Vector3(0.5f, 0.5f, 0.5f);
@@ -199,12 +199,12 @@ public class InteractionPlaceBlock : InteractionMode
         }
     }
 
-    private static void UpdateReservedArea(SpaceEntity entity, Vector3 originPosition, BlockData blockData, Direction direction, Rotation rotation)
+    private static void UpdateReservedArea(SpaceEntity entity, Vector3 originPosition, BlockData blockData, Direction direction, Rotation rotation, bool placeable)
     {
-        if (entity != null && blockData is DoorBlockData doorData &&
-            entity.TryGetDoorSlideArea(originPosition, doorData, direction, rotation, out var min, out var size))
+        if (entity != null && blockData != null &&
+            entity.TryGetReservedArea(originPosition, blockData, direction, rotation, out var min, out var size))
         {
-            BlockSelector.Instance.ShowReservedArea(min, size, entity);
+            BlockSelector.Instance.ShowReservedArea(min, size, entity, placeable);
         }
         else
         {
@@ -281,17 +281,15 @@ public class InteractionPlaceBlock : InteractionMode
                                  entity.IsPositionWithinEntitySize(selectorPosition) &&
                                  entity.IsWithinBuildRange(selectorPosition);
         bool structureBlocked = currentData != null && insideEntityRange &&
-                                (currentData.IsMultiblock
-                                    ? !entity.CanPlaceStructure(selectorPosition, currentData, finalDir, finalRot)
-                                    : entity.IsCellReserved(selectorPosition));
+                                !entity.CanPlaceBlock(selectorPosition, currentData, finalDir, finalRot);
+        BlockSelector.Instance.SetPlaceable(!structureBlocked);
+        UpdateReservedArea(entity, selectorPosition, currentData, finalDir, finalRot, !structureBlocked);
+
         if (structureBlocked)
         {
-            BlockSelector.IsVisible = false;
             lineRenderer.Enabled = false;
             return;
         }
-
-        UpdateReservedArea(entity, selectorPosition, currentData, finalDir, finalRot);
 
         if (entity != null)
         {

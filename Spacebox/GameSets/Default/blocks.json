@@ -1313,7 +1313,8 @@
     "Type": "thruster",
     "Thruster": {
       "Force": 20,
-      "Power": 8
+      "Power": 8,
+      "NozzleLength": 1
     },
     "Category": "ships",
     "PowerToDrill": 2,
@@ -1348,7 +1349,8 @@
     "Type": "thruster",
     "Thruster": {
       "Force": 60,
-      "Power": 15
+      "Power": 15,
+      "NozzleLength": 2
     },
     "Size": {
       "x": 1,
@@ -1388,7 +1390,8 @@
     "Type": "thruster",
     "Thruster": {
       "Force": 160,
-      "Power": 30
+      "Power": 30,
+      "NozzleLength": 2
     },
     "Size": {
       "x": 2,
@@ -1428,7 +1431,8 @@
     "Type": "thruster",
     "Thruster": {
       "Force": 1200,
-      "Power": 75
+      "Power": 75,
+      "NozzleLength": 2
     },
     "Size": {
       "x": 2,

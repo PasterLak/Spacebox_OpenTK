@@ -1,11 +1,19 @@
 using Engine;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Doors;
 
 namespace Spacebox.Game.Resource;
 
-public class DoorBlockData : BlockData
+public class DoorBlockData : BlockData, IReservedAreaBlockData
 {
+    public bool AreaMustBeInsideEntity => true;
+
+    public void GetReservedArea(Direction direction, Rotation rotation, List<Vector3i> offsets)
+    {
+        DoorSystem.GetSlideArea(this, direction, rotation, offsets);
+    }
+
     public Direction MoveDirection { get; }
     public float Speed { get; }
     public float OpenTime { get; }

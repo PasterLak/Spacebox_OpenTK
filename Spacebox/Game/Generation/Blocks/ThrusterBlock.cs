@@ -33,12 +33,24 @@ public class ThrusterBlock : ElectricalBlock, IShipPart, IEntityBlockListener
         LocalCell = localCell;
         Frame = ShipPartFrame.Compute(this, localCell);
         Entity.ShipControl.Register(this);
+        ReserveNozzle(localCell);
     }
 
     public void OnRemovedFromEntity()
     {
+        Entity?.Reservations.Remove(this);
         Entity?.ShipControl.Unregister(this);
         Entity = null;
         IsFiring = false;
+    }
+
+    private void ReserveNozzle(Vector3i originCell)
+    {
+        var cells = new List<Vector3i>();
+        _data.GetReservedArea(Direction, Rotation, cells);
+        for (int i = 0; i < cells.Count; i++)
+            cells[i] += originCell;
+
+        Entity.Reservations.Set(this, cells);
     }
 }
