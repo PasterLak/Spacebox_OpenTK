@@ -145,7 +145,7 @@ namespace Spacebox.Game.Generation
             }
 
             MeshGenerator.GetNeighborChunkIndexAndLocalCoords(x, y, z, Size, out var offset, out var local);
-            if (Neighbors.TryGetValue(offset, out var neighbor) && neighbor != null)
+            if (HasNeighbor(offset, out var neighbor))
             {
                 return neighbor.Blocks[local.X, local.Y, local.Z];
             }
@@ -607,16 +607,10 @@ namespace Spacebox.Game.Generation
 
         private void CheckNeigborBlocks(Vector3Byte pos)
         {
-            int maxIndex = Size - 1;
-
-            if (pos.X == 0) TryUpdateNeighbor(new Vector3SByte(-1, 0, 0));
-            else if (pos.X == maxIndex) TryUpdateNeighbor(new Vector3SByte(1, 0, 0));
-
-            if (pos.Y == 0) TryUpdateNeighbor(new Vector3SByte(0, -1, 0));
-            else if (pos.Y == maxIndex) TryUpdateNeighbor(new Vector3SByte(0, 1, 0));
-
-            if (pos.Z == 0) TryUpdateNeighbor(new Vector3SByte(0, 0, -1));
-            else if (pos.Z == maxIndex) TryUpdateNeighbor(new Vector3SByte(0, 0, 1));
+            Span<Vector3SByte> touched = stackalloc Vector3SByte[ChunkBorder.MaxTouchedNeighbors];
+            int count = ChunkBorder.GetTouchedNeighbors(pos, Size, touched);
+            for (int i = 0; i < count; i++)
+                TryUpdateNeighbor(touched[i]);
         }
 
         private void TryUpdateNeighbor(Vector3SByte offset)
@@ -633,7 +627,7 @@ namespace Spacebox.Game.Generation
             {
                 return neighbor != null;
             }
-            return false;
+            return SpaceEntity != null && SpaceEntity.TryGetChunk(PositionIndex + pos, out neighbor) && !neighbor.IsDisposed;
         }
 
         public bool Raycast(Ray ray, out HitInfo info)

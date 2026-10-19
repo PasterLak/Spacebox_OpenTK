@@ -198,18 +198,15 @@ namespace Spacebox.Game.Generation
             CalculateVertexColors(block, nx, ny, nz, RoundToSByte(up), RoundToSByte(right));
 
             int vStart = vertexCount / BuffersData.FloatsPerVertexBlock;
-            float[] AO = new float[4];
+            float[] AO = _faceAO;
 
             bool isLightOrTransparent = block.IsTransparent || block.IsLight;
 
             if (!isLightOrTransparent && _EnableAO)
             {
                 byte aoMask = CalculateFaceAOMask(new Vector3SByte(x, y, z), normal, up, right);
-                var shading = AOShading.GetAO(aoMask);
-                AO[0] = shading[0];
-                AO[1] = shading[1];
-                AO[2] = shading[2];
-                AO[3] = shading[3];
+                for (int i = 0; i < 4; i++)
+                    AO[i] = AOShading.Get(aoMask, i);
             }
             else
             {
@@ -235,7 +232,7 @@ namespace Spacebox.Game.Generation
 
             if (_EnableAO && !isLightOrTransparent)
             {
-                bool flip = (AO[0] + AO[2]) < (AO[1] + AO[3]);
+                bool flip = AOShading.ShouldFlip(AO[0], AO[1], AO[2], AO[3]);
                 if (flip)
                 {
                     indices[indexCount++] = (uint)(vStart + 1);
@@ -310,6 +307,8 @@ namespace Spacebox.Game.Generation
         }
 
         private readonly Vector2[][] _shapeFaceUVs = new Vector2[6][];
+        private readonly float[] _faceAO = new float[4];
+        private readonly Vector3SByte[] _aoOffsets = new Vector3SByte[8];
 
         private void EnsureCapacity(int extraFloats, int extraIndices)
         {
@@ -373,7 +372,7 @@ namespace Spacebox.Game.Generation
             byte mask = 0;
             Vector3SByte facePos = blockPos + normal;
 
-            Vector3SByte[] offsets = new Vector3SByte[8];
+            Vector3SByte[] offsets = _aoOffsets;
             offsets[0] = RoundToSByte(-up);
             offsets[1] = RoundToSByte(-up - right);
             offsets[2] = RoundToSByte(-right);

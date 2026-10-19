@@ -375,21 +375,46 @@ public static class AOShading
             new int[] { 2, 3, 4 }  // Upper Left
     };
 
+    public const int MaxLevel = 3;
+
     static AOShading()
     {
         for (int mask = 0; mask < 256; mask++)
         {
             for (int corner = 0; corner < 4; corner++)
             {
-                int count = 0;
+                int sides = 0;
+                bool cornerSolid = false;
                 foreach (int bit in cornerBits[corner])
                 {
-                    if ((mask & 1 << bit) != 0)
-                        count++;
+                    if ((mask & 1 << bit) == 0) continue;
+                    if (bit % 2 == 0) sides++;
+                    else cornerSolid = true;
                 }
-                AOValues[mask, corner] = 1f - count / 4f;
+                AOValues[mask, corner] = Brightness(VertexLevel(sides >= 1, sides >= 2, cornerSolid));
             }
         }
+    }
+
+    public static int VertexLevel(bool side1, bool side2, bool corner)
+    {
+        if (side1 && side2) return 0;
+        return MaxLevel - ((side1 ? 1 : 0) + (side2 ? 1 : 0) + (corner ? 1 : 0));
+    }
+
+    public static float Brightness(int level)
+    {
+        return (level + 1) / (float)(MaxLevel + 1);
+    }
+
+    public static float Get(byte mask, int vertex)
+    {
+        return AOValues[mask, vertex];
+    }
+
+    public static bool ShouldFlip(float lowerLeft, float lowerRight, float upperRight, float upperLeft)
+    {
+        return lowerLeft + upperRight > lowerRight + upperLeft;
     }
 
     public static float[] GetAO(byte mask)

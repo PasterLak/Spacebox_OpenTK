@@ -139,6 +139,7 @@ Small
 - equipment slot backgrounds
 
 Fixes
+- voxel AO: two solid sides fully darken a corner, quads split through the darker diagonal (was reversed), AO and light read edge/corner neighbour chunks and border edits remesh them
 - thrusters push the ship away from their nozzle (was reversed)
 - ship cannons turn as a separate model around their base toward the crosshair point, never hit their own ship
 - while piloting the player holds nothing: no block selector, no item use, hotbar keys go to the ship
