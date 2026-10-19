@@ -13,6 +13,9 @@ public sealed class ShipControlSystem
     private readonly Dictionary<Vector3i, ConsoleBindings> _bindings = new Dictionary<Vector3i, ConsoleBindings>();
     private readonly Dictionary<Vector3i, ConsoleCommand> _commands = new Dictionary<Vector3i, ConsoleCommand>();
     private readonly List<Vector3i> _commandKeys = new List<Vector3i>();
+    private readonly List<ThrusterBlock> _steerThrusters = new List<ThrusterBlock>();
+    private readonly List<Vector3> _steerForces = new List<Vector3>();
+    private readonly List<bool> _steerSelected = new List<bool>();
     private readonly CannonTurretRenderer _turrets;
 
     public SpaceEntity Entity => _entity;
@@ -206,27 +209,49 @@ public sealed class ShipControlSystem
 
     private void ApplyFlight(ShipConsoleBlock console, ConsoleCommand command)
     {
-        var flight = command.Flight;
+        var manual = command.Flight & ~FlightInput.Steer;
         var frame = new ConsoleFrame(console.PilotForward, console.PilotUp);
         var ship = _entity.Ship;
 
         var angularVelocity = ship?.Motion.AngularVelocity ?? Vector3.Zero;
         var velocityLocal = ship != null ? _entity.DirectionToEntitySpace(ship.Motion.Velocity) : Vector3.Zero;
 
-        if ((flight & FlightInput.Steer) != 0 && command.AimLocal != Vector3.Zero)
-            flight |= AutoFlight.Steer(command.AimLocal, angularVelocity, frame);
+        var steer = FlightInput.None;
+        if ((command.Flight & FlightInput.Steer) != 0 && command.AimLocal != Vector3.Zero)
+            steer = AutoFlight.Steer(command.AimLocal, angularVelocity, frame) & ~manual;
 
-        if (flight == FlightInput.None) return;
+        if (manual == FlightInput.None && steer == FlightInput.None) return;
 
         var com = ship?.CenterOfMassLocal ?? Vector3.Zero;
         var brake = AutoFlight.BrakeDirection(velocityLocal);
+
+        _steerThrusters.Clear();
+        _steerForces.Clear();
+        _steerSelected.Clear();
 
         for (int i = 0; i < _thrusters.Count; i++)
         {
             var thruster = _thrusters[i];
             if (IsBound(thruster.LocalCell)) continue;
             var flags = AutoFlight.Classify(thruster.ThrustDirection, thruster.Frame.Center, com, frame);
-            if (AutoFlight.ShouldFire(flags, flight, thruster.ThrustDirection, brake)) thruster.IsFiring = true;
+            if (AutoFlight.ShouldFire(flags, manual, thruster.ThrustDirection, brake))
+            {
+                thruster.IsFiring = true;
+            }
+            else if ((flags & steer & FlightInput.SteerRotation) != 0 && thruster.IsPowered)
+            {
+                _steerThrusters.Add(thruster);
+                _steerForces.Add(thruster.ThrustDirection * thruster.Force);
+                _steerSelected.Add(true);
+            }
+        }
+
+        if (_steerThrusters.Count == 0) return;
+
+        AutoFlight.SelectBalanced(_steerForces, _steerSelected);
+        for (int i = 0; i < _steerThrusters.Count; i++)
+        {
+            if (_steerSelected[i]) _steerThrusters[i].IsFiring = true;
         }
     }
 

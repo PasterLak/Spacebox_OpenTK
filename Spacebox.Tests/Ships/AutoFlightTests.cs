@@ -72,4 +72,46 @@ public class AutoFlightTests
     {
         Assert.Equal(FlightInput.None, AutoFlight.Steer(-Vector3.UnitZ, Vector3.Zero, Frame));
     }
+
+    private static List<bool> Select(params Vector3[] forces)
+    {
+        var selected = forces.Select(_ => true).ToList();
+        AutoFlight.SelectBalanced(forces.ToList(), selected);
+        return selected;
+    }
+
+    [Fact]
+    public void SelectBalanced_SingleThrusterIsDropped()
+    {
+        Assert.Equal(new[] { false }, Select(new Vector3(0, 0, -10)));
+    }
+
+    [Fact]
+    public void SelectBalanced_OpposedPairFires()
+    {
+        Assert.Equal(new[] { true, true }, Select(new Vector3(-10, 0, 0), new Vector3(10, 0, 0)));
+    }
+
+    [Fact]
+    public void SelectBalanced_DropsUnmatchedExtraThruster()
+    {
+        var selected = Select(new Vector3(-10, 0, 0), new Vector3(10, 0, 0), new Vector3(0, 0, -10));
+
+        Assert.Equal(new[] { true, true, false }, selected);
+    }
+
+    [Fact]
+    public void SelectBalanced_AcceptsSmallImbalance()
+    {
+        Assert.Equal(new[] { true, true }, Select(new Vector3(-10, 0, 0), new Vector3(9, 0, 0)));
+    }
+
+    [Fact]
+    public void SelectBalanced_EmptyListStaysEmpty()
+    {
+        var selected = new List<bool>();
+        AutoFlight.SelectBalanced(new List<Vector3>(), selected);
+
+        Assert.Empty(selected);
+    }
 }

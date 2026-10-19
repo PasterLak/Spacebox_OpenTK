@@ -19,6 +19,13 @@ public sealed class ServerConfig
     public int MaxPlayers { get; set; } = 16;
     public byte GameMode { get; set; } = 0;
     public float AutoSaveInterval { get; set; } = 300f;
+    public int UpdateRate { get; set; } = DefaultUpdateRate;
+
+    public const int DefaultUpdateRate = 30;
+    public const int MinUpdateRate = 10;
+    public const int MaxUpdateRate = 240;
+
+    public int GetClampedUpdateRate() => Math.Clamp(UpdateRate, MinUpdateRate, MaxUpdateRate);
 
     public static ServerConfig LoadOrCreate()
     {

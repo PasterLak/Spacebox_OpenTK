@@ -19,5 +19,6 @@ public enum FlightInput : ushort
     Brake = 1 << 12,
     Steer = 1 << 13,
 
-    Translation = Forward | Backward | Left | Right | Up | Down
+    Translation = Forward | Backward | Left | Right | Up | Down,
+    SteerRotation = PitchUp | PitchDown | YawLeft | YawRight
 }

@@ -17,6 +17,8 @@ public static class DedicatedServer
     {
         Debug.MirrorToStandardOutput = true;
         Config = ServerConfig.LoadOrCreate();
+        FrameLimiter.IsRunning = true;
+        FrameLimiter.TargetFPS = Config.GetClampedUpdateRate();
 
         NetworkManager.Instance.MaxPeers = Math.Max(1, Config.MaxPlayers);
         GameSession.SetPlayer(Config.ServerName, "White");

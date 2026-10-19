@@ -9,6 +9,7 @@ public static class AutoFlight
     public const float MinLever = 0.25f;
     public const float BrakeThreshold = 0.5f;
     public const float BrakeMinSpeed = 0.05f;
+    public const float SteerMaxNetForceRatio = 0.2f;
 
     private const float SteerGain = 2f;
     private const float SteerMaxRate = 1f;
@@ -61,6 +62,39 @@ public static class AutoFlight
 
         return Axis(Vector3.Dot(need, frame.Up), FlightInput.YawLeft, FlightInput.YawRight, SteerDeadband)
                | Axis(Vector3.Dot(need, frame.PitchAxis), FlightInput.PitchUp, FlightInput.PitchDown, SteerDeadband);
+    }
+
+    public static void SelectBalanced(List<Vector3> forces, List<bool> selected)
+    {
+        while (true)
+        {
+            var net = Vector3.Zero;
+            float total = 0f;
+            for (int i = 0; i < forces.Count; i++)
+            {
+                if (!selected[i]) continue;
+                net += forces[i];
+                total += forces[i].Length;
+            }
+
+            if (total <= 0f || net.Length <= total * SteerMaxNetForceRatio) return;
+
+            int worst = -1;
+            float worstDot = float.MinValue;
+            for (int i = 0; i < forces.Count; i++)
+            {
+                if (!selected[i]) continue;
+                float dot = Vector3.Dot(forces[i], net);
+                if (dot > worstDot)
+                {
+                    worstDot = dot;
+                    worst = i;
+                }
+            }
+
+            if (worst < 0) return;
+            selected[worst] = false;
+        }
     }
 
     private static FlightInput Axis(float value, FlightInput positive, FlightInput negative, float threshold)

@@ -4,6 +4,7 @@ using OpenTK.Mathematics;
 using Spacebox.Game;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Tools;
 using Spacebox.Network.Messages;
 
 namespace Spacebox.Network;
@@ -13,6 +14,29 @@ public static class WorldEditNetwork
     public static void Register(NetworkManager network)
     {
         network.Messages.Register<BlockEditMessage>(OnBlockEdit);
+        network.Messages.Register<BulkBlockEditMessage>(OnBulkEdit);
+    }
+
+    public static bool RequestBulkEdit(SpaceEntity entity, Vector3i min, Vector3i max, short blockId)
+    {
+        if (entity == null) return false;
+
+        BulkBlockEdit.Normalize(ref min, ref max);
+        if (!BulkBlockEdit.TryValidate(min, max, blockId, out var error))
+        {
+            Debug.Warning($"[WorldEdit] {error}");
+            return false;
+        }
+
+        BulkBlockEdit.Apply(entity, min, max, blockId);
+
+        var network = NetworkManager.Instance;
+        if (!network.IsActive) return true;
+
+        var message = new BulkBlockEditMessage { EntityId = entity.EntityID, Min = min, Max = max, BlockId = blockId };
+        if (network.IsServer) network.SendToClients(message);
+        else network.SendToServer(message);
+        return true;
     }
 
     public static void NotifyPlaced(SpaceEntity entity, Vector3 entitySpacePosition, Block block)
@@ -59,6 +83,30 @@ public static class WorldEditNetwork
 
         Apply(message);
 
+        if (network.IsServer) network.SendToClients(message, DeliveryMode.Reliable, sender);
+    }
+
+    private static void OnBulkEdit(int sender, BulkBlockEditMessage message)
+    {
+        var network = NetworkManager.Instance;
+        if (sender == network.LocalPeerId) return;
+
+        var min = message.Min;
+        var max = message.Max;
+        BulkBlockEdit.Normalize(ref min, ref max);
+        if (!BulkBlockEdit.TryValidate(min, max, message.BlockId, out var error))
+        {
+            Debug.Warning($"[WorldEdit] Rejected bulk edit from peer {sender}: {error}");
+            return;
+        }
+
+        var world = World.Instance;
+        if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
+
+        BulkBlockEdit.Apply(entity, min, max, message.BlockId);
+
+        message.Min = min;
+        message.Max = max;
         if (network.IsServer) network.SendToClients(message, DeliveryMode.Reliable, sender);
     }
 
