@@ -78,6 +78,7 @@ public sealed class AstronautNetwork : NetworkTransform
                 localAstronaut.OnDeath += OnLocalDeath;
                 localAstronaut.OnRevived += OnLocalRevived;
                 localAstronaut.FallDamage.Impact += OnLocalFallImpact;
+                localAstronaut.ItemUsed += OnLocalItemUsed;
             }
             SetHeldItem(Spacebox.Game.GUI.PanelUI.CurrentSlot());
             astronaut.Flashlight.OnEnabledChanged += OnLocalFlashlightChanged;
@@ -121,6 +122,7 @@ public sealed class AstronautNetwork : NetworkTransform
                 localAstronaut.OnDeath -= OnLocalDeath;
                 localAstronaut.OnRevived -= OnLocalRevived;
                 localAstronaut.FallDamage.Impact -= OnLocalFallImpact;
+                localAstronaut.ItemUsed -= OnLocalItemUsed;
             }
         }
     }
@@ -239,6 +241,134 @@ public sealed class AstronautNetwork : NetworkTransform
 
         _fallSound ??= new FallImpactSound(true);
         _fallSound.Play(damage, astronaut.Position);
+    }
+
+    public static AstronautNetwork Find(Astronaut astronaut)
+    {
+        if (astronaut == null) return null;
+
+        foreach (var networkObject in NetworkManager.Instance.Spawner.Objects)
+        {
+            if (networkObject.Owner == astronaut) return networkObject.GetBehaviour<AstronautNetwork>();
+        }
+        return null;
+    }
+
+    public static AstronautNetwork Find(int peer)
+    {
+        foreach (var networkObject in NetworkManager.Instance.Spawner.Objects)
+        {
+            if (networkObject.OwnerPeer != peer) continue;
+
+            var network = networkObject.GetBehaviour<AstronautNetwork>();
+            if (network != null) return network;
+        }
+        return null;
+    }
+
+    public void SetGameModeByServer(GameMode mode)
+    {
+        SendRpc(nameof(ApplyServerGameMode), (byte)mode);
+    }
+
+    public void TeleportByServer(Vector3 position)
+    {
+        SendRpc(nameof(ApplyServerTeleport), position);
+    }
+
+    [Rpc(RpcTarget.Owner)]
+    private void ApplyServerGameMode(byte mode)
+    {
+        if (Owner is not LocalAstronaut local || mode > (byte)GameMode.Spectator) return;
+
+        local.GameMode = (GameMode)mode;
+        Spacebox.Game.GUI.Chat.Write($"The server changed your game mode to {local.GameMode}", Color4.Orange);
+    }
+
+    [Rpc(RpcTarget.Owner)]
+    private void ApplyServerTeleport(Vector3 position)
+    {
+        if (Owner is not LocalAstronaut local) return;
+
+        local.Teleport(position);
+        Spacebox.Game.GUI.Chat.Write("The server teleported you", Color4.Orange);
+    }
+
+    public void RequestGift(short itemId, int requestId)
+    {
+        SendRpc(nameof(GiftRequested), itemId, requestId);
+    }
+
+    [Rpc(RpcTarget.Server, RequireOwnership = false)]
+    private void GiftRequested(short itemId, int requestId)
+    {
+        int giverPeer = RpcContext.SenderPeer;
+        var giver = Find(giverPeer);
+        if (giver == null) return;
+
+        string failure = ValidateGift(giverPeer, itemId);
+        if (failure != null)
+        {
+            giver.SendRpc(nameof(GiftResult), requestId, false, failure);
+            return;
+        }
+
+        SendRpc(nameof(ReceiveGift), itemId, requestId, giverPeer);
+    }
+
+    private string ValidateGift(int giverPeer, short itemId)
+    {
+        if (giverPeer == OwnerPeer) return "You cannot give items to yourself";
+        if (!IsAlive) return "The player is dead";
+        if (!ItemReceiver.CanReceive(GetItem(itemId))) return "This item cannot be given";
+
+        var giverAstronaut = Spacebox.Network.Combat.PlayerHitboxes.FindPlayer(giverPeer);
+        if (giverAstronaut == null) return "Unknown player";
+
+        var targetPosition = IsOwner && Owner is Astronaut astronaut ? astronaut.Position : TargetPosition;
+        float maxDistance = ItemGiftNetwork.MaxDistance + ItemGiftNetwork.ServerDistanceTolerance;
+        return Vector3.DistanceSquared(giverAstronaut.Position, targetPosition) > maxDistance * maxDistance ? "Too far away" : null;
+    }
+
+    [Rpc(RpcTarget.Owner)]
+    private void ReceiveGift(short itemId, int requestId, int giverPeer)
+    {
+        var item = GetItem(itemId);
+        string failure = null;
+        bool success = Owner is LocalAstronaut local && ItemReceiver.TryReceive(local, item, out failure);
+        if (success) Spacebox.Game.GUI.Chat.Write($"{Combat.CombatNetwork.GetPlayerName(giverPeer)} gave you {item.Name}", new Color4(0.6f, 1f, 0.6f, 1f));
+
+        SendRpc(nameof(ReportGiftResult), requestId, giverPeer, success, ItemGiftNetwork.Clamp(failure));
+    }
+
+    [Rpc(RpcTarget.Server)]
+    private void ReportGiftResult(int requestId, int giverPeer, bool success, string failure)
+    {
+        Find(giverPeer)?.SendRpc(nameof(GiftResult), requestId, success, ItemGiftNetwork.Clamp(failure));
+    }
+
+    [Rpc(RpcTarget.Owner)]
+    private void GiftResult(int requestId, bool success, string failure)
+    {
+        ItemGiftNetwork.OnResult(requestId, success, failure);
+    }
+
+    private void OnLocalItemUsed(Item item)
+    {
+        if (ItemUseCue.IsReplicated(item)) SendRpc(nameof(ReportItemUse), item.Id);
+    }
+
+    [Rpc(RpcTarget.Server)]
+    private void ReportItemUse(short itemId)
+    {
+        if (!IsAlive || !ItemUseCue.IsReplicated(GetItem(itemId))) return;
+        SendRpc(nameof(ItemUse), itemId);
+    }
+
+    [Rpc(RpcTarget.ClientsExceptOwner, Delivery = DeliveryMode.ReliableUnordered)]
+    private void ItemUse(short itemId)
+    {
+        if (Owner is RemoteAstronaut remote) remote.PlayItemUse(GetItem(itemId));
     }
 
     private void OnLocalRevived()

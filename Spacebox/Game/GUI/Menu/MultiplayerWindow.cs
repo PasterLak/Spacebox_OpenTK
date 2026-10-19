@@ -131,7 +131,9 @@ namespace Spacebox.Game.GUI.Menu
             ImGui.Text("Nickname");
             ImGui.SetCursorPos(new Vector2(padding + nicknameLabel, y));
             ImGui.SetNextItemWidth(nicknameWidth);
-            if (ImGui.InputText("##nickname", ref nickname, 32) && !string.IsNullOrWhiteSpace(nickname))
+            bool nicknameChanged = ImGui.InputText("##nickname", ref nickname, 32);
+            nicknameChanged |= ClipboardMenu.ForTextField("##nicknameMenu", ref nickname, 32);
+            if (nicknameChanged && !string.IsNullOrWhiteSpace(nickname))
             {
                 config.PlayerNickname = nickname.Trim();
                 SaveConfig();

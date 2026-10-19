@@ -11,7 +11,8 @@ namespace Spacebox.Game.Commands
     {
         public override string Name => "tp";
 
-        public override string Description => "Teleport the player. Usage: tp x y z";
+        public override string Description => "Teleport the player. Usage: tp x y z";
+        public override bool AvailableInTerminal => false;
 
         public LocalAstronaut Astronaut { get; set; }
 

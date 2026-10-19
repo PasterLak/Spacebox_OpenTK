@@ -38,9 +38,12 @@ namespace Spacebox.Game.Player
             return this is LocalAstronaut;
         }
 
+        public Item? HeldItem { get; private set; }
+
         public void ChangeItemInHand(Item? item)
         {
 
+            HeldItem = item;
             HandVisualizer?.SetItem(item);
 
         }

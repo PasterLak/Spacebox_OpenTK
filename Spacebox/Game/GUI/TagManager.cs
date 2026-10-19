@@ -128,7 +128,7 @@ namespace Spacebox.Game.GUI
         private void FilterVisibleTags()
         {
             _visibleTags.Clear();
-            var camera = Camera.Main as Astronaut;
+            var camera = Camera.Main;
 
             if (camera == null) return;
 

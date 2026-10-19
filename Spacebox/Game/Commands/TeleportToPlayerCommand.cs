@@ -12,6 +12,7 @@ namespace Spacebox.Game.Commands
         public override string Name => "tpp";
 
         public override string Description => "Teleport to a player. Usage: tpp <name>";
+        public override bool AvailableInTerminal => false;
 
         public LocalAstronaut Astronaut { get; set; }
 

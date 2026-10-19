@@ -86,6 +86,12 @@ namespace Spacebox.Game.Player
             var blockData = GameAssets.GetBlockDataById(item.BlockId);
             if (blockData == null) return;
 
+            if (HeldBlockMesh.TryBuild(blockData, out var vertices, out var indices))
+            {
+                _blockModel.SetCustomMesh(vertices, indices);
+                return;
+            }
+
             for (byte i = 0; i < 6; i++)
             {
                 Face face = (Face)i;

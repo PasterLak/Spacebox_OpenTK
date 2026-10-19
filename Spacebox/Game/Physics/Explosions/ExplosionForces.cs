@@ -30,6 +30,7 @@ public sealed class ExplosionForces
         player.ApplyImpulse(GetImpulse(player.Position, center, distance, data));
 
         int damage = (int)MathF.Round(data.GetDamage(distance));
+        damage = ArmorProtection.Apply(damage, player.Equipment.ExplosionProtection);
         if (damage > 0 && player.GameMode == GameMode.Survival)
             player.TakeDamage(damage, new DeathCase(DeathMessage));
     }

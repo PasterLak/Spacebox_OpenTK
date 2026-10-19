@@ -14,12 +14,14 @@ namespace Spacebox.Network;
 public sealed class NetworkSession : IDisposable
 {
     private const float PlayerSyncInterval = 10f;
+    public const float HostAutoSaveInterval = 300f;
 
     private readonly LocalAstronaut _localPlayer;
     private readonly PlayerSpawnService _playerSpawner;
     private readonly Npc.SpacerSpawnService _spacerSpawner;
     private readonly Mobs.MobSpawnService _mobSpawner;
     private float _playerSyncTimer;
+    private readonly AutoSaveTimer _autoSave = new AutoSaveTimer();
     private bool _disposed;
     private readonly Auth.ServerAccessSettings _access;
     private readonly Auth.ServerAuthService _auth;
@@ -146,6 +148,8 @@ public sealed class NetworkSession : IDisposable
         TimeNetwork.Update();
         SectorNetwork.Update();
         PlayerListNetwork.Update();
+        Players.ItemGiftNetwork.Update();
+        UpdateAutoSave();
         if (!NetworkManager.Instance.IsRemoteClient || _localPlayer == null) return;
 
         _playerSyncTimer += Time.Delta;
@@ -170,6 +174,35 @@ public sealed class NetworkSession : IDisposable
         }
 
         WorldObservers.SetRemote(_observerPositions);
+    }
+
+    public void SaveWorld(string reason)
+    {
+        var world = World.Instance;
+        if (world == null || World.WorldData == null || GameSession.IsRemoteClient) return;
+
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        try
+        {
+            world.Save(!GameSession.IsDedicated);
+            SaveRemotePlayers();
+            _autoSave.Reset();
+            Debug.Success($"[Server] {reason}: world '{World.WorldData.Info?.Name}' saved in {stopwatch.ElapsedMilliseconds} ms, {PlayerRegistry.All.Count} player(s) online");
+        }
+        catch (Exception ex)
+        {
+            Debug.Error($"[Server] {reason} failed: {ex.Message}");
+        }
+    }
+
+    private void UpdateAutoSave()
+    {
+        if (!NetworkManager.Instance.IsServer) return;
+        if (GameSession.Mode != SessionMode.Host && GameSession.Mode != SessionMode.Dedicated) return;
+        if (Spacebox.Game.GUI.WorldLoadingScreen.IsActive) return;
+
+        float interval = GameSession.IsDedicated ? Dedicated.DedicatedServer.Config?.AutoSaveInterval ?? HostAutoSaveInterval : HostAutoSaveInterval;
+        if (_autoSave.Tick(Time.Delta, interval)) SaveWorld("Autosave");
     }
 
     public void SaveRemotePlayers()
@@ -210,6 +243,8 @@ public sealed class NetworkSession : IDisposable
         network.Shutdown("Server stopped");
         Discovery.ServerAdvertiser.Stop();
         Combat.CombatNetwork.Reset();
+        WorldEditNetwork.Reset();
+        Players.ItemGiftNetwork.Reset();
         Spacebox.Network.Mobs.MobSpawnNetwork.Reset();
         Containers.ContainerNetwork.Reset();
         BlockStateNetwork.Clear();

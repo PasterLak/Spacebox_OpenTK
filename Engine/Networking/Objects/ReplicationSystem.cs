@@ -52,7 +52,7 @@ public sealed class ReplicationSystem
                 variable.ClearDirty();
                 if (!isServer && variable.Permission != NetworkWritePermission.Owner) continue;
 
-                var writer = variable.Delivery == DeliveryMode.Reliable || variable.Delivery == DeliveryMode.ReliableUnordered ? _reliable : _unreliable;
+                var writer = IsReliable(variable.Delivery) ? _reliable : _unreliable;
                 writer.Write((byte)b);
                 writer.Write((byte)v);
                 variable.Write(writer);
@@ -78,6 +78,7 @@ public sealed class ReplicationSystem
         if (fromOwner && networkObject.OwnerPeer != sender) return;
 
         _reader.Set(message.Payload, 0, message.Payload.Length);
+        bool hasReliable = false;
 
         try
         {
@@ -90,6 +91,7 @@ public sealed class ReplicationSystem
                 var variable = behaviour.Variables[index];
                 if (fromOwner && variable.Permission != NetworkWritePermission.Owner) return;
 
+                hasReliable |= IsReliable(variable.Delivery);
                 variable.Read(_reader);
             }
         }
@@ -99,6 +101,11 @@ public sealed class ReplicationSystem
             return;
         }
 
-        if (fromOwner) _network.SendToClients(message, DeliveryMode.Reliable, sender);
+        if (fromOwner) _network.SendToClients(message, hasReliable ? DeliveryMode.Reliable : DeliveryMode.Sequenced, sender);
+    }
+
+    private static bool IsReliable(DeliveryMode delivery)
+    {
+        return delivery == DeliveryMode.Reliable || delivery == DeliveryMode.ReliableUnordered;
     }
 }

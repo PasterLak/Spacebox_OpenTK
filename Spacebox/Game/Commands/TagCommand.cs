@@ -11,7 +11,8 @@ namespace Spacebox.Game.Commands
     {
         public override string Name => "tag";
 
-        public override string Description => "Tag <create/delete> <name>";
+        public override string Description => "Tag <create/delete> <name>";
+        public override bool AvailableInTerminal => false;
 
         public Astronaut Astronaut { get; set; }
 

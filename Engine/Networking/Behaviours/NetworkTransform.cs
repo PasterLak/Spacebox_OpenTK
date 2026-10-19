@@ -6,39 +6,36 @@ public class NetworkTransform : NetworkBehaviour
 {
     private const int MaxSnapshots = 32;
 
-    private readonly NetworkVariable<Vector3> _position;
-    private readonly NetworkVariable<Quaternion> _rotation;
-    private readonly List<Snapshot> _snapshots = new List<Snapshot>(MaxSnapshots);
-    private bool _hasPendingSnapshot;
+    private readonly NetworkVariable<TransformState> _state;
+    private readonly TransformInterpolator _interpolator = new TransformInterpolator(MaxSnapshots);
 
     public float PositionThreshold { get; set; } = 0.01f;
     public float RotationThreshold { get; set; } = 0.00002f;
     public float SnapDistance { get; set; } = 20f;
+    public float RestResendInterval { get; set; } = 0.5f;
     public static float InterpolationDelay { get; set; } = 0.1f;
 
     public NetworkTransform()
     {
-        _position = CreateVariable(Vector3.Zero, NetworkWritePermission.Owner, DeliveryMode.Sequenced);
-        _rotation = CreateVariable(Quaternion.Identity, NetworkWritePermission.Owner, DeliveryMode.Sequenced);
-        _position.Changed += OnStateChanged;
-        _rotation.Changed += OnRotationChanged;
+        _state = CreateVariable(new TransformState(0f, Vector3.Zero, Quaternion.Identity), NetworkWritePermission.Owner, DeliveryMode.Sequenced);
+        _state.Changed += OnStateChanged;
     }
 
-    public Vector3 TargetPosition => _position.Value;
-    public Quaternion TargetRotation => _rotation.Value;
+    public Vector3 TargetPosition => _state.Value.Position;
+    public Quaternion TargetRotation => _state.Value.Rotation;
 
     public override void OnNetworkSpawn()
     {
         if (IsOwner)
         {
-            Capture();
+            Capture(true);
             return;
         }
 
-        _snapshots.Clear();
-        PushSnapshot();
-        ApplyPosition(_position.Value);
-        ApplyRotation(_rotation.Value);
+        _interpolator.Clear();
+        AddSnapshot(_state.Value);
+        ApplyPosition(_state.Value.Position);
+        ApplyRotation(_state.Value.Rotation);
     }
 
     public override void OnUpdate()
@@ -47,11 +44,10 @@ public class NetworkTransform : NetworkBehaviour
 
         if (IsOwner)
         {
-            Capture();
+            Capture(false);
             return;
         }
 
-        if (_hasPendingSnapshot) PushSnapshot();
         Interpolate();
     }
 
@@ -59,7 +55,7 @@ public class NetworkTransform : NetworkBehaviour
     {
         ApplyPosition(position);
         ApplyRotation(rotation);
-        if (IsOwner) Capture();
+        if (IsOwner) Capture(true);
     }
 
     protected virtual Vector3 ReadPosition() => Owner.Position;
@@ -67,89 +63,40 @@ public class NetworkTransform : NetworkBehaviour
     protected virtual Quaternion ReadRotation() => Owner.Orientation;
     protected virtual void ApplyRotation(Quaternion rotation) => Owner.Rotation = Node3D.QuaternionToEuler(rotation);
 
-    private void OnStateChanged(Vector3 previous, Vector3 current)
+    private void OnStateChanged(TransformState previous, TransformState current)
     {
-        if (!IsOwner) _hasPendingSnapshot = true;
+        if (!IsOwner) AddSnapshot(current);
     }
 
-    private void OnRotationChanged(Quaternion previous, Quaternion current)
+    private void AddSnapshot(TransformState state)
     {
-        if (!IsOwner) _hasPendingSnapshot = true;
+        _interpolator.ExpectedInterval = 1f / MathF.Max(1f, NetworkManager.Instance.TickRate);
+        _interpolator.SnapDistance = SnapDistance;
+        _interpolator.Add((float)Time.Total, state);
     }
 
-    private void PushSnapshot()
-    {
-        _hasPendingSnapshot = false;
-        if (_snapshots.Count == MaxSnapshots) _snapshots.RemoveAt(0);
-        _snapshots.Add(new Snapshot((float)Time.Total, _position.Value, _rotation.Value));
-    }
-
-    private void Capture()
+    private void Capture(bool force)
     {
         var position = ReadPosition();
-        if (Vector3.DistanceSquared(position, _position.Value) > PositionThreshold * PositionThreshold)
-            _position.Value = position;
-
         var rotation = ReadRotation();
-        var last = _rotation.Value;
-        float dot = rotation.X * last.X + rotation.Y * last.Y + rotation.Z * last.Z + rotation.W * last.W;
-        if (1f - MathF.Abs(dot) > RotationThreshold)
-            _rotation.Value = rotation;
+        var last = _state.Value;
+
+        bool moved = Vector3.DistanceSquared(position, last.Position) > PositionThreshold * PositionThreshold;
+        float dot = rotation.X * last.Rotation.X + rotation.Y * last.Rotation.Y + rotation.Z * last.Rotation.Z + rotation.W * last.Rotation.W;
+        bool rotated = 1f - MathF.Abs(dot) > RotationThreshold;
+
+        float now = (float)Time.Total;
+        bool resend = now - last.Time >= RestResendInterval;
+
+        if (force || moved || rotated || resend)
+            _state.Value = new TransformState(now, position, rotation);
     }
 
     private void Interpolate()
     {
-        if (_snapshots.Count == 0) return;
-
-        float renderTime = (float)Time.Total - InterpolationDelay;
-        Sample(renderTime, out var position, out var rotation);
-
-        if (Vector3.DistanceSquared(ReadPosition(), position) > SnapDistance * SnapDistance)
-            _snapshots.Clear();
+        if (!_interpolator.TrySample((float)Time.Total, InterpolationDelay, out var position, out var rotation)) return;
 
         ApplyPosition(position);
         ApplyRotation(rotation);
-    }
-
-    private void Sample(float time, out Vector3 position, out Quaternion rotation)
-    {
-        var first = _snapshots[0];
-        if (_snapshots.Count == 1 || time <= first.Time)
-        {
-            position = first.Position;
-            rotation = first.Rotation;
-            return;
-        }
-
-        for (int i = 1; i < _snapshots.Count; i++)
-        {
-            var next = _snapshots[i];
-            if (time > next.Time) continue;
-
-            var previous = _snapshots[i - 1];
-            float span = MathF.Max(next.Time - previous.Time, 1e-4f);
-            float t = Math.Clamp((time - previous.Time) / span, 0f, 1f);
-            position = Vector3.Lerp(previous.Position, next.Position, t);
-            rotation = Quaternion.Slerp(previous.Rotation, next.Rotation, t);
-            return;
-        }
-
-        var latest = _snapshots[^1];
-        position = latest.Position;
-        rotation = latest.Rotation;
-    }
-
-    private readonly struct Snapshot
-    {
-        public readonly float Time;
-        public readonly Vector3 Position;
-        public readonly Quaternion Rotation;
-
-        public Snapshot(float time, Vector3 position, Quaternion rotation)
-        {
-            Time = time;
-            Position = position;
-            Rotation = rotation;
-        }
     }
 }

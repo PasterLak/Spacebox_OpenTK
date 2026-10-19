@@ -3,6 +3,8 @@ using OpenTK.Mathematics;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Physics;
+using Spacebox.Game.Effects;
+using Engine.Audio;
 
 namespace Spacebox.Game.Player
 {
@@ -11,7 +13,14 @@ namespace Spacebox.Game.Player
         private const float NameTagHeight = 0.9f;
         private const float BodyRadius = 0.4f;
 
+        private const float UseSoundMinDistance = 3f;
+        private const float UseSoundMaxDistance = 40f;
+        private const float UseSoundRolloff = 1.5f;
+
         private readonly SphereBody _body;
+        private readonly RemoteDrillDust _drillDust;
+        private readonly PlayerEffects _effects;
+        private AudioSource? _useSound;
         private float _pendingDrillDamage;
 
         public event Action<int>? DrillDamaged;
@@ -29,6 +38,8 @@ namespace Spacebox.Game.Player
             CreateModel(0, string.IsNullOrEmpty(skinColor) ? "Yellow" : skinColor);
             Flashlight.Enabled = false;
             _body = AttachComponent(new SphereBody(World.Instance?.Physics, BodyRadius) { IsKinematic = true });
+            _effects = AddChild(new PlayerEffects());
+            _drillDust = new RemoteDrillDust(this);
 
             if (TagManager.Instance != null)
             {
@@ -42,7 +53,29 @@ namespace Spacebox.Game.Player
             if (_nameTag != null)
                 _nameTag.WorldPosition = Position + UpLocal * NameTagHeight;
 
+            _drillDust.Update(_isAliveVisual && HeldItemVisual != null && HeldItemVisual.IsUsing, HeldItem);
             base.Update();
+        }
+
+        public void PlayItemUse(Item item)
+        {
+            if (item == null || !_isAliveVisual) return;
+
+            ItemUseCue.PlayEffects(_effects, item);
+
+            var clip = ItemUseCue.GetSound(item);
+            if (clip == null) return;
+
+            if (_useSound == null)
+            {
+                _useSound = new AudioSource(clip);
+                _useSound.Setup3D(UseSoundMinDistance, UseSoundMaxDistance, UseSoundRolloff);
+            }
+
+            if (_useSound.IsPlaying) _useSound.Stop();
+            _useSound.Clip = clip;
+            _useSound.Position = Position;
+            _useSound.Play();
         }
 
         public void TakeDrillDamage(float damage)
@@ -69,6 +102,9 @@ namespace Spacebox.Game.Player
         public void OnDisconnect()
         {
             DetachComponent(_body);
+            _drillDust.Dispose();
+            _useSound?.Dispose();
+            _useSound = null;
 
             if (_nameTag != null)
             {

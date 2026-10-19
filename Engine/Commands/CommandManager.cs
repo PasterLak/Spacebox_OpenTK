@@ -5,8 +5,14 @@
         private static List<CommandBase> _globalCommands = new List<CommandBase>();
         private static List<CommandBase> _sceneCommands = new List<CommandBase>();
 
+        public static bool IsAvailable(CommandBase command)
+        {
+            return command != null && (!Application.IsHeadless || command.AvailableInTerminal);
+        }
+
         public static void RegisterGlobalCommand(CommandBase command)
         {
+            if (!IsAvailable(command)) return;
             if (IsCommandRegistered(command.Name))
             {
                 Debug.Error($"[CommandManager] Global Command '{command.Name}' is already registered.");
@@ -17,6 +23,7 @@
 
         public static void RegisterSceneCommand(CommandBase command)
         {
+            if (!IsAvailable(command)) return;
             if (IsCommandRegistered(command.Name))
             {
                 Debug.Error($"[CommandManager] Scene Command '{command.Name}' is already registered.");

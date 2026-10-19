@@ -5,6 +5,7 @@ namespace Engine.Commands
     {
         public override string Name => "camRelRender";
         public override string Description => "Toggles camera relative render";
+        public override bool AvailableInTerminal => false;
 
         public override void Execute(string[] args)
         {

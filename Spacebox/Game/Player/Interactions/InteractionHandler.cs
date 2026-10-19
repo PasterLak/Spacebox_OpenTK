@@ -68,12 +68,23 @@ public class InteractionHandler
     public void Update(LocalAstronaut player)
     {
 
-        Interaction.Update(player);
+        if (!TryGiftHeldItem(player)) Interaction.Update(player);
 
         for (int i = 0; i < _passiveInteractions.Count; i++)
         {
             _passiveInteractions[i].Update(player, Interaction);
         }
+    }
+
+    private static bool TryGiftHeldItem(LocalAstronaut player)
+    {
+        if (!player.CanMove || !(Input.IsActionDown("use") || Input.IsActionDown("block_place"))) return false;
+
+        var slot = Spacebox.Game.GUI.PanelUI.CurrentSlot();
+        if (!Spacebox.Network.Players.ItemGiftNetwork.TryGive(player, slot)) return false;
+
+        if (!slot.HasItem) player.SetInteraction(new InteractionDefault());
+        return true;
     }
 
     public void Render(LocalAstronaut player)

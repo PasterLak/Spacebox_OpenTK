@@ -191,13 +191,36 @@ public sealed class ServerInfoWindow
         float row = ImGui.GetFrameHeight() + ImGui.GetTextLineHeight() * 0.6f;
         float y = ImGui.GetCursorPosY();
 
-        DrawField(x, y, labelWidth, inputWidth, "Name", () => ImGui.InputText("##name", ref _name, ServerAddressValidator.MaxNameLength));
-        DrawField(x, y + row, labelWidth, inputWidth, "Address", () => ImGui.InputText("##host", ref _host, ServerAddressValidator.MaxHostLength));
+        DrawField(x, y, labelWidth, inputWidth, "Name", DrawNameField);
+        DrawField(x, y + row, labelWidth, inputWidth, "Address", DrawHostField);
         DrawField(x, y + row * 2f, labelWidth, inputWidth * 0.35f, "Port", () => ImGui.InputInt("##port", ref _port, 0));
 
         ImGui.SetCursorPos(new Vector2(x, y + row * 3f));
         if (!string.IsNullOrEmpty(_error)) ImGui.TextColored(ServerText.ErrorColor, _error);
         else if (_item != null && !_item.IsSaved) ImGui.TextDisabled("Found in your local network.");
+    }
+
+    private bool DrawNameField()
+    {
+        bool changed = ImGui.InputText("##name", ref _name, ServerAddressValidator.MaxNameLength);
+        return ClipboardMenu.ForTextField("##nameMenu", ref _name, ServerAddressValidator.MaxNameLength) || changed;
+    }
+
+    private bool DrawHostField()
+    {
+        bool changed = ImGui.InputText("##host", ref _host, ServerAddressValidator.MaxHostLength);
+        if (!ClipboardMenu.ForTextField("##hostMenu", ref _host, ServerAddressValidator.MaxHostLength)) return changed;
+
+        SplitPort();
+        return true;
+    }
+
+    private void SplitPort()
+    {
+        if (!ServerAddressValidator.TrySplitHostPort(_host, out var host, out var port)) return;
+
+        _host = host;
+        _port = port;
     }
 
     private static void DrawField(float x, float y, float labelWidth, float inputWidth, string label, Func<bool> input)
@@ -235,6 +258,7 @@ public sealed class ServerInfoWindow
 
     private void Save()
     {
+        SplitPort();
         if (!ServerAddressValidator.TryValidate(_host, _port, out _error)) return;
 
         _onSave?.Invoke(_item, ServerAddressValidator.ResolveName(_name, _host), _host.Trim(), _port);

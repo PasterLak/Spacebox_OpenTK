@@ -969,6 +969,9 @@ public static class GameSetLoader
             return null;
         }
 
+        if (data.ExplosionProtection < 0f || data.ExplosionProtection > 100f)
+            Debug.Warning($"[GameSetLoader] RegisterEquipmentItem: ExplosionProtection of <{data.Name}> must be 0-100, clamped");
+
         var equipmentItem = new EquipmentItem(data.Name, data.ModelDepth)
         {
             Id_string = id,
@@ -976,6 +979,7 @@ public static class GameSetLoader
             Slot = slot,
             HealthBonus = data.Health,
             PowerBonus = data.Power,
+            ExplosionProtection = Spacebox.Game.Player.ArmorProtection.FromPercent(data.ExplosionProtection),
             Flashlight = data.Flashlight,
             Radar = data.Radar,
             ArmorModelPath = ResolveGameSetFile(data.ArmorModel),

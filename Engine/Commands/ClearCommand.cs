@@ -10,6 +10,7 @@ namespace Engine.Commands
         public override void Execute(string[] args)
         {
             Debug.ClearMessages();
+            if (Debug.MirrorToStandardOutput) Utils.TerminalConsole.Clear();
            
         }
     }

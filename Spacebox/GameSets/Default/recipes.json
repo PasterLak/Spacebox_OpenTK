@@ -164,6 +164,114 @@
           "PowerPerTickRequared": 6,
           "Ingredient": { "Item": "thulium_lens", "Quantity": 2 },
           "Product": { "Item": "thulium_dust", "Quantity": 1 }
+        },
+        {
+          "DurationSec": 22.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "aluminium_block_light", "Quantity": 3 },
+          "Product": { "Item": "aluminium_dust", "Quantity": 2 }
+        },
+        {
+          "DurationSec": 11.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "aluminium_block_medium", "Quantity": 1 },
+          "Product": { "Item": "aluminium_dust", "Quantity": 1 }
+        },
+        {
+          "DurationSec": 44.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "aluminium_block_heavy", "Quantity": 3 },
+          "Product": { "Item": "aluminium_dust", "Quantity": 4 }
+        },
+        {
+          "DurationSec": 25.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "iron_block_light", "Quantity": 3 },
+          "Product": { "Item": "iron_dust", "Quantity": 2 }
+        },
+        {
+          "DurationSec": 12.5,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "iron_block_medium", "Quantity": 1 },
+          "Product": { "Item": "iron_dust", "Quantity": 1 }
+        },
+        {
+          "DurationSec": 50.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "iron_block_heavy", "Quantity": 3 },
+          "Product": { "Item": "iron_dust", "Quantity": 4 }
+        },
+        {
+          "DurationSec": 32.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "titanium_block_light", "Quantity": 3 },
+          "Product": { "Item": "titanium_dust", "Quantity": 2 }
+        },
+        {
+          "DurationSec": 16.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "titanium_block_medium", "Quantity": 1 },
+          "Product": { "Item": "titanium_dust", "Quantity": 1 }
+        },
+        {
+          "DurationSec": 64.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "titanium_block_heavy", "Quantity": 3 },
+          "Product": { "Item": "titanium_dust", "Quantity": 4 }
+        },
+        {
+          "DurationSec": 11.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "aluminium_drill_bit", "Quantity": 1 },
+          "Product": { "Item": "aluminium_dust", "Quantity": 1 }
+        },
+        {
+          "DurationSec": 12.5,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "iron_drill_bit", "Quantity": 1 },
+          "Product": { "Item": "iron_dust", "Quantity": 1 }
+        },
+        {
+          "DurationSec": 16.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "titanium_drill_bit", "Quantity": 1 },
+          "Product": { "Item": "titanium_dust", "Quantity": 1 }
+        },
+        {
+          "DurationSec": 10.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "cobalt_crystal", "Quantity": 1 },
+          "Product": { "Item": "cobalt_dust", "Quantity": 1 }
+        },
+        {
+          "DurationSec": 35.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "uranium_rods", "Quantity": 2 },
+          "Product": { "Item": "uranium_dust", "Quantity": 1 }
+        },
+        {
+          "DurationSec": 6.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "window", "Quantity": 1 },
+          "Product": { "Item": "sand", "Quantity": 5 }
+        },
+        {
+          "DurationSec": 8.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "reinforced_window", "Quantity": 1 },
+          "Product": { "Item": "sand", "Quantity": 5 }
+        },
+        {
+          "DurationSec": 24.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "big_window", "Quantity": 1 },
+          "Product": { "Item": "sand", "Quantity": 20 }
+        },
+        {
+          "DurationSec": 15.0,
+          "PowerPerTickRequared": 5,
+          "Ingredient": { "Item": "polymer_fiber", "Quantity": 1 },
+          "Product": { "Item": "polymer_pellets", "Quantity": 4 }
         }
       ]
     },

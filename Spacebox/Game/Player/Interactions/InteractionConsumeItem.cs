@@ -137,29 +137,7 @@ public class InteractionConsumeItem : InteractionMode
             player.PlayerStatistics.ItemsConsumed++;
             player.PlayerStatistics.RecordItemUse(consumable.Id_string);
 
-            if (consumable.HealAmount > 0)
-            {
-                ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 1, 0), 0.2f);
-                player.Effects.PlayEffect(PlayerEffectType.Heal);
-
-            }
-
-            if (consumable.PowerAmount > 0)
-            {
-                ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 0, 1), 0.15f);
-                player.Effects.PlayEffect(PlayerEffectType.Charge);
-            }
-
-
-            if (consumable.OxygenAmount > 0)
-            {
-                ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 1, 1), 0.15f);
-                player.Effects.PlayEffect(PlayerEffectType.Oxygen);
-            }
-
-            player.HealthBar.StatsData.Increment(consumable.HealAmount);
-            player.PowerBar.StatsData.Increment(consumable.PowerAmount);
-            player.OxygenBar.StatsData.Increment(consumable.OxygenAmount);
+            ConsumableUse.Apply(player, consumable);
         }
         else
         {

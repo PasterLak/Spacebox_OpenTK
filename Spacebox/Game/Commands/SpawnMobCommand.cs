@@ -20,7 +20,9 @@ internal sealed class SpawnMobCommand : CommandBase
 
     public override string Name => "mob";
 
-    public override string Description => "Mobs. Usage: mob <id> [count] | mob list | mob clear";
+    public override string Description => Application.IsHeadless
+        ? "Mobs. Usage: mob <id> <count> <player> | mob list | mob clear"
+        : "Mobs. Usage: mob <id> [count] [player] | mob list | mob clear";
 
     public override void Execute(string[] args)
     {
@@ -54,12 +56,40 @@ internal sealed class SpawnMobCommand : CommandBase
         }
 
         int count = args.Length > 1 && int.TryParse(args[1], out int parsed) ? Math.Clamp(parsed, 1, MaxCount) : 1;
-        var position = _astronaut.Position + _astronaut.Front * SpawnDistance;
+        if (!TryGetSpawnPosition(args, out var position)) return;
+
 
         for (int i = 0; i < count; i++)
             system.TrySpawn(definition, position, MobRandom.Chance(Random.Shared, definition.FleeChance));
 
         Debug.Success($"Spawned {count} x {definition.Name}");
+    }
+
+    private bool TryGetSpawnPosition(string[] args, out OpenTK.Mathematics.Vector3 position)
+    {
+        position = OpenTK.Mathematics.Vector3.Zero;
+
+        if (args.Length > 2)
+        {
+            if (Spacebox.Network.Players.PlayerLocator.TryFind(args[2], out var player) &&
+                Spacebox.Network.Players.PlayerLocator.TryGetPose(player.Peer, out var playerPosition, out var front))
+            {
+                position = playerPosition + front * SpawnDistance;
+                return true;
+            }
+
+            Debug.Error($"Player not found: {args[2]}");
+            return false;
+        }
+
+        if (Application.IsHeadless || _astronaut == null)
+        {
+            Debug.Error($"Usage on the server: {Name} <id> <count> <player>");
+            return false;
+        }
+
+        position = _astronaut.Position + _astronaut.Front * SpawnDistance;
+        return true;
     }
 
     private static void List(MobSystem system)

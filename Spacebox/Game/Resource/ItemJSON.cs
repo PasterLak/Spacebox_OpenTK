@@ -37,6 +37,7 @@ public class EquipmentJSON : ItemJSON
     public string Slot { get; set; } = "";
     public int Health { get; set; } = 0;
     public int Power { get; set; } = 0;
+    public float ExplosionProtection { get; set; } = 0f;
     public FlashlightSettings? Flashlight { get; set; }
     public RadarSettings? Radar { get; set; }
     public string ArmorModel { get; set; } = "";

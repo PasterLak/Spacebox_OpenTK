@@ -70,6 +70,7 @@ namespace Engine
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
             // Enable Docking
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+            Engine.GUI.ImGuiClipboard.Install(io);
 
             CreateDeviceResources();
 
@@ -262,6 +263,7 @@ void main()
 
             SetPerFrameImGuiData(deltaSeconds);
 
+            Engine.GUI.ImGuiClipboard.SetWindow(wnd);
             UpdateImGuiInput(wnd);
 
             _frameBegun = true;
@@ -325,10 +327,10 @@ void main()
             }
             PressedChars.Clear();
 
-            io.KeyCtrl = KeyboardState.IsKeyDown(Keys.LeftControl) || KeyboardState.IsKeyDown(Keys.RightControl);
-            io.KeyAlt = KeyboardState.IsKeyDown(Keys.LeftAlt) || KeyboardState.IsKeyDown(Keys.RightAlt);
-            io.KeyShift = KeyboardState.IsKeyDown(Keys.LeftShift) || KeyboardState.IsKeyDown(Keys.RightShift);
-            io.KeySuper = KeyboardState.IsKeyDown(Keys.LeftSuper) || KeyboardState.IsKeyDown(Keys.RightSuper);
+            io.AddKeyEvent(ImGuiKey.ModCtrl, KeyboardState.IsKeyDown(Keys.LeftControl) || KeyboardState.IsKeyDown(Keys.RightControl));
+            io.AddKeyEvent(ImGuiKey.ModAlt, KeyboardState.IsKeyDown(Keys.LeftAlt) || KeyboardState.IsKeyDown(Keys.RightAlt));
+            io.AddKeyEvent(ImGuiKey.ModShift, KeyboardState.IsKeyDown(Keys.LeftShift) || KeyboardState.IsKeyDown(Keys.RightShift));
+            io.AddKeyEvent(ImGuiKey.ModSuper, KeyboardState.IsKeyDown(Keys.LeftSuper) || KeyboardState.IsKeyDown(Keys.RightSuper));
         }
 
         public void PressChar(char keyChar)

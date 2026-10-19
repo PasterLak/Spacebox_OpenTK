@@ -25,7 +25,7 @@
 		<DefineConstants>DEBUG;TRACE;PROFILING;ASSERTS</DefineConstants>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+	<PropertyGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'Final'">
 		<OutputType>WinExe</OutputType>
 	</PropertyGroup>
 
@@ -54,7 +54,7 @@
 		</Content>
 	</ItemDefinitionGroup>
 
-	<PropertyGroup Condition="'$(Configuration)' != 'Release'">
+	<PropertyGroup Condition="'$(Configuration)' != 'Release' And '$(Configuration)' != 'Final'">
 		<OutputType>Exe</OutputType>
 	</PropertyGroup>
 

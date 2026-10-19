@@ -10,7 +10,8 @@ namespace Spacebox.Game.Commands
     {
         public override string Name => "gm";
 
-        public override string Description => "Change gamemode. Usage: gm <0,1,2>  (survival,creative,spectator)";
+        public override string Description => "Change gamemode. Usage: gm <0,1,2>  (survival,creative,spectator)";
+        public override bool AvailableInTerminal => false;
 
         public LocalAstronaut Astronaut { get; set; }
 

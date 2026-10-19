@@ -9,8 +9,6 @@ namespace Spacebox.Game.Player.Interactions;
 
 public static class BlockDestroyer
 {
-    private const string DefaultDestroySound = "blockDestroyDefault";
-
     private static readonly Random _random = new Random();
     private static AudioSource _sound;
 
@@ -32,8 +30,7 @@ public static class BlockDestroyer
 
     private static void PlaySound(short blockId)
     {
-        var clip = GameAssets.GetBlockAudioClipFromItemID(blockId, BlockInteractionType.Destroy)
-                   ?? Resources.Load<AudioClip>(DefaultDestroySound);
+        var clip = Spacebox.Game.Effects.BlockSounds.GetClip(blockId, BlockInteractionType.Destroy);
         if (clip == null) return;
 
         if (_sound == null || _sound.Clip != clip)

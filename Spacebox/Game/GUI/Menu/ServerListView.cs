@@ -68,6 +68,7 @@ public sealed class ServerListView
             Selected = item;
             if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left)) Activated?.Invoke(item);
         }
+        ClipboardMenu.ForCopy("##rowMenu", "Copy address", item.Entry.Address);
 
         var draw = ImGui.GetWindowDrawList();
         float pad = rowHeight * 0.1f;

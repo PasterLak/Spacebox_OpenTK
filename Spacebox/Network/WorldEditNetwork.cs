@@ -4,6 +4,7 @@ using OpenTK.Mathematics;
 using Spacebox.Game;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Effects;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Network.Messages;
 
@@ -37,6 +38,18 @@ public static class WorldEditNetwork
         if (network.IsServer) network.SendToClients(message);
         else network.SendToServer(message);
         return true;
+    }
+
+    private const float EditSoundMinDistance = 2f;
+    private const float EditSoundMaxDistance = 10f;
+    private const float EditSoundRolloff = 1.5f;
+
+    private static readonly SpatialSoundPool EditSounds = new SpatialSoundPool(4, EditSoundMinDistance, EditSoundMaxDistance, EditSoundRolloff);
+    private static readonly Random SoundRandom = new Random();
+
+    public static void Reset()
+    {
+        EditSounds.Clear();
     }
 
     public static void NotifyPlaced(SpaceEntity entity, Vector3 entitySpacePosition, Block block)
@@ -136,14 +149,35 @@ public static class WorldEditNetwork
 
         if (message.IsRemoval)
         {
+            short removedId = GetBlockId(entity, message.Cell);
             if (NetworkManager.Instance.IsServer) InvokeDestroy(entity, message.Cell);
             entity.RemoveBlockAtLocal(local, new Vector3SByte(0, 0, 0));
+            if (removedId > 0) PlayEditSound(entity, message.Cell, removedId, BlockInteractionType.Destroy);
             return;
         }
 
         var block = GameAssets.CreateBlockFromId(message.BlockId);
         block.Direction = (Direction)message.Direction;
         block.Rotation = (Rotation)message.Rotation;
-        entity.TryPlaceBlockLocal(local, block);
+        if (entity.TryPlaceBlockLocal(local, block)) PlayEditSound(entity, message.Cell, message.BlockId, BlockInteractionType.Place);
+    }
+
+    private static short GetBlockId(SpaceEntity entity, Vector3i cell)
+    {
+        if (!entity.TryGetBlockLocal(cell, out var chunk, out var index)) return 0;
+
+        var block = chunk.Blocks[index.X, index.Y, index.Z];
+        return block == null || block.IsAir ? (short)0 : block.Id;
+    }
+
+    private static void PlayEditSound(SpaceEntity entity, Vector3i cell, short blockId, BlockInteractionType type)
+    {
+        if (Application.IsHeadless) return;
+
+        var listener = Camera.Main;
+        var position = entity.EntityLocalToWorld(new Vector3(cell.X + 0.5f, cell.Y + 0.5f, cell.Z + 0.5f));
+        if (listener == null || Vector3.DistanceSquared(listener.Position, position) > EditSoundMaxDistance * EditSoundMaxDistance) return;
+
+        EditSounds.Play(BlockSounds.GetClip(blockId, type), position, SoundRandom.Next(9, 12) * 0.1f);
     }
 }

@@ -8,8 +8,6 @@ namespace Spacebox.Game.Player.Interactions;
 
 public sealed class InteractionEquipItem : InteractionDefault
 {
-    private const string EquipSound = "Resources/Audio/flashlight.ogg";
-
     private readonly ItemSlot _slot;
     private AudioSource? _sound;
 
@@ -21,7 +19,7 @@ public sealed class InteractionEquipItem : InteractionDefault
     public override void OnEnable()
     {
         base.OnEnable();
-        _sound = new AudioSource(GameAssets.LoadResource<AudioClip>(EquipSound)) { Volume = 0.4f };
+        _sound = new AudioSource(GameAssets.LoadResource<AudioClip>(ItemUseCue.EquipSound)) { Volume = 0.4f };
     }
 
     public override void OnDisable()
@@ -40,9 +38,12 @@ public sealed class InteractionEquipItem : InteractionDefault
         }
 
         if (!player.CanMove || !Input.IsActionDown("use")) return;
+
+        var item = _slot.Item;
         if (!player.Equipment.TryEquip(_slot)) return;
 
         _sound?.Play();
+        player.NotifyItemUsed(item);
     }
 
     private static bool IsLookingAtInteractiveBlock(LocalAstronaut player)

@@ -11,7 +11,8 @@ namespace Spacebox.Game.Commands
     {
         public override string Name => "tpa";
 
-        public override string Description => "Teleport to the nearest asteroid";
+        public override string Description => "Teleport to the nearest asteroid";
+        public override bool AvailableInTerminal => false;
 
         public Astronaut Astronaut { get; set; }
 

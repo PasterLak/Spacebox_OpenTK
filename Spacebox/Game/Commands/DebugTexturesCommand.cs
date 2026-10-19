@@ -7,7 +7,8 @@ namespace Spacebox.Game.Commands
     {
         public override string Name => "save_atlas";
 
-        public override string Description => "Save atlas textures to Debug folder";
+        public override string Description => "Save atlas textures to Debug folder";
+        public override bool AvailableInTerminal => false;
 
 
         public DebugTexturesCommand()

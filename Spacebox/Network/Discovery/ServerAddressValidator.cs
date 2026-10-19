@@ -31,6 +31,27 @@ public static class ServerAddressValidator
         return true;
     }
 
+    public static bool TrySplitHostPort(string text, out string host, out int port)
+    {
+        host = null;
+        port = 0;
+        if (string.IsNullOrWhiteSpace(text)) return false;
+
+        string trimmed = text.Trim();
+        int colon = trimmed.LastIndexOf(':');
+        if (colon <= 0 || colon == trimmed.Length - 1) return false;
+
+        string hostPart = trimmed.Substring(0, colon);
+        if (hostPart.StartsWith('[') && hostPart.EndsWith(']')) hostPart = hostPart.Substring(1, hostPart.Length - 2);
+        else if (hostPart.Contains(':')) return false;
+
+        if (!int.TryParse(trimmed.AsSpan(colon + 1), out int parsed) || parsed < 1 || parsed > ushort.MaxValue) return false;
+
+        host = hostPart;
+        port = parsed;
+        return host.Length > 0;
+    }
+
     public static string ResolveName(string name, string host)
     {
         if (!string.IsNullOrWhiteSpace(name))

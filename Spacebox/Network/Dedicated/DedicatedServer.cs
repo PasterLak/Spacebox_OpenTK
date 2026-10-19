@@ -82,6 +82,9 @@ public static class DedicatedServer
         CommandManager.RegisterGlobalCommand(new MuteCommand(false));
         CommandManager.RegisterGlobalCommand(new SaveCommand());
         CommandManager.RegisterGlobalCommand(new StopCommand());
+        CommandManager.RegisterGlobalCommand(new ServerGameModeCommand());
+        CommandManager.RegisterGlobalCommand(new ServerTeleportCommand());
+        CommandManager.RegisterGlobalCommand(new ServerTeleportToPlayerCommand());
     }
 
     private static void StartConsoleReader()

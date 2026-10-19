@@ -6,6 +6,7 @@ namespace Engine.Commands
     {
         public override string Name => "exit";
         public override string Description => "Closes the console";
+        public override bool AvailableInTerminal => false;
 
         public override void Execute(string[] args)
         {

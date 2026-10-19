@@ -11,6 +11,7 @@ namespace Engine.Commands
         {
             //string version = Application.Version; 
            // Debug.AddMessage($"Game version: {version}", new Vector4(1f, 1f, 0f, 1f));
+            Debug.Log($"Game version: {Application.Version}, engine {Application.EngineVersion}", new Vector4(1f, 1f, 0f, 1f));
         }
     }
 }

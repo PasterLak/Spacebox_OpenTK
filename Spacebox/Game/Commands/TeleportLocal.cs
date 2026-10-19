@@ -12,7 +12,8 @@ namespace Spacebox.Game.Commands
     {
         public override string Name => "tpl";
 
-        public override string Description => "Teleport the player in local sector coords (0-8191). Usage: tp x y z";
+        public override string Description => "Teleport the player in local sector coords (0-8191). Usage: tp x y z";
+        public override bool AvailableInTerminal => false;
 
         public LocalAstronaut Astronaut { get; set; }
 

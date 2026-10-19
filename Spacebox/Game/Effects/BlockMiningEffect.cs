@@ -19,6 +19,13 @@ namespace Spacebox.Game.Effects
 
         public bool IsFinished => elapsedTime >= duration && ParticleSystem.ParticlesCount == 0;
 
+        public static BlockMiningEffect CreateDefault()
+        {
+            var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/blockHit.png");
+            texture.FilterMode = FilterMode.Nearest;
+            return new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1), texture, Resources.Load<Shader>("Resources/Shaders/particle"));
+        }
+
         public BlockMiningEffect(Camera camera, Vector3 position, Vector3 color, Texture2D texture, Shader shader)
         {
             this.camera = camera;

@@ -112,14 +112,7 @@ namespace Spacebox.Game.Generation
 
             CalculateCenterOfMass();
 
-            MainThreadDispatcher.Instance.Enqueue(() =>
-            {
-                if (TagManager.Instance != null)
-                {
-                    tag = TagManager.Instance.CreateTag("", CenterOfMassWorld, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
-                    tag.Category = GUI.Tag.TagCategory.Entity;
-                }
-            });
+            MainThreadDispatcher.Instance.Enqueue(() => EnsureTag(""));
 
             CreateStar();
         }
@@ -282,26 +275,7 @@ namespace Spacebox.Game.Generation
 
         public void RecalculateMass(int chunkMassDifference)
         {
-            var x = (long)Mass + chunkMassDifference;
-            if (x >= 0)
-            {
-                Mass = (ulong)(x);
-            }
-            else
-            {
-                Mass = 0;
-            }
-
-            sumPosCenterOfMass = Vector3.Zero;
-
-            for (int i = 0; i < Chunks.Count; i++)
-            {
-                sumPosCenterOfMass += Chunks[i].GetCenterOfMass() * Chunks[i].Mass;
-            }
-
-            CalculateCenterOfMass();
-            MassVersion++;
-            _entityMassString = Mass.ToString("N0").Replace(",", ".");
+            RecalculateMass();
         }
 
         public void RecalculateMass()
@@ -847,7 +821,7 @@ namespace Spacebox.Game.Generation
         {
             Camera camera = Camera.Main;
 
-            if (camera == null) return;
+            if (camera == null || IsDisposed) return;
 
             var dis = (int)(Vector3.Distance(CenterOfMassWorld, camera.Position));
 
@@ -883,13 +857,20 @@ namespace Spacebox.Game.Generation
             {
                 tag.Text = StringBuilder.ToString();
             }
-            else if (TagManager.Instance != null)
+            else
             {
-                tag = TagManager.Instance.CreateTag(StringBuilder.ToString(), CenterOfMassWorld, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
-                tag.Category = GUI.Tag.TagCategory.Entity;
+                EnsureTag(StringBuilder.ToString());
             }
 
             StringBuilder.Clear();
+        }
+
+        private void EnsureTag(string text)
+        {
+            if (tag != null || IsDisposed || TagManager.Instance == null) return;
+
+            tag = TagManager.Instance.CreateTag(text, CenterOfMassWorld, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
+            tag.Category = GUI.Tag.TagCategory.Entity;
         }
 
         public bool Raycast(Ray ray, out HitInfo hitInfo)
@@ -1207,23 +1188,11 @@ namespace Spacebox.Game.Generation
         public static Chunk GetOrCreateChunk(SpaceEntity entity, Vector3SByte idx)
         {
             var localPos = SpaceMath.Entity.ChunkIndexToLocal(idx) + new Vector3(Chunk.SizeHalf, Chunk.SizeHalf, Chunk.SizeHalf);
-            if (!entity.Octree.TryFindDataAtPosition(localPos, out Chunk chunk) || chunk == null)
-            {
-                chunk = new Chunk(idx, entity, true);
+            if (entity.TryGetChunk(idx, out var existing) && existing != null) return existing;
+            if (entity.Octree.TryFindDataAtPosition(localPos, out Chunk chunk) && chunk != null) return chunk;
 
-                var local = SpaceMath.Entity.ChunkIndexToLocal(chunk.PositionIndex);
-
-                entity.Octree.Add(chunk, BoundingBox.CreateFromMinMax(local, local + Vector3.One * Chunk.Size));
-                entity.Chunks.Add(chunk);
-
-                chunk.OnChunkModified += entity.UpdateEntityGeometryMinMax;
-
-                entity.UpdateNeighbors(chunk);
-                entity.RecalculateGeometryBoundingBox();
-                entity.RecalculateMass();
-
-                chunk.CalculateLighting();
-            }
+            chunk = new Chunk(idx, entity, true);
+            entity.AddChunk(chunk, false);
             return chunk;
         }
 

@@ -10,7 +10,7 @@ public static class GameSetDownloader
 {
     public static void Prepare(RemoteWorldInfo world, Action<float> progress, Action completed, Action<string> failed)
     {
-        world.GameSetCacheName = World.MakeSafeFolderName($"{GameSession.HostAddress}_{GameSession.Port}");
+        world.GameSetCacheName = ServerFolderName.Current;
 
         if (TryUseLocal(world) || TryUseCache(world, true))
         {

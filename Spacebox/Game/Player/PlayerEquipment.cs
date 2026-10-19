@@ -9,6 +9,7 @@ public class PlayerEquipment
 
     public int HealthBonus { get; private set; }
     public int PowerBonus { get; private set; }
+    public float ExplosionProtection { get; private set; }
     public EquipmentItem? FlashlightItem { get; private set; }
     public EquipmentItem? RadarItem { get; private set; }
     public FlashlightSettings? Flashlight => FlashlightItem?.Flashlight;
@@ -69,6 +70,7 @@ public class PlayerEquipment
     {
         int health = 0;
         int power = 0;
+        float explosion = 0f;
         EquipmentItem? flashlight = null;
         EquipmentItem? radar = null;
 
@@ -79,15 +81,18 @@ public class PlayerEquipment
             {
                 health += equipment.HealthBonus;
                 power += equipment.PowerBonus;
+                explosion += equipment.ExplosionProtection;
                 if (equipment.Flashlight != null) flashlight = equipment;
                 if (equipment.Radar != null) radar = equipment;
             }
         }
 
-        if (health == HealthBonus && power == PowerBonus && flashlight == FlashlightItem && radar == RadarItem) return;
+        explosion = ArmorProtection.Combine(explosion);
+        if (health == HealthBonus && power == PowerBonus && explosion == ExplosionProtection && flashlight == FlashlightItem && radar == RadarItem) return;
 
         HealthBonus = health;
         PowerBonus = power;
+        ExplosionProtection = explosion;
         FlashlightItem = flashlight;
         RadarItem = radar;
         OnChanged?.Invoke();

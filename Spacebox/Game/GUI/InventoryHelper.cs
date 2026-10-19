@@ -347,6 +347,8 @@ namespace Spacebox.Game.GUI
                         text += "\nHealth: +" + itemType.HealthBonus;
                     if (itemType.PowerBonus != 0)
                         text += "\nPower: +" + itemType.PowerBonus;
+                    if (itemType.ExplosionProtection > 0f)
+                        text += $"\nExplosion protection: {itemType.ExplosionProtection * 100f:0}%";
                 }
                 else if (type == typeof(ConsumableItem))
                 {

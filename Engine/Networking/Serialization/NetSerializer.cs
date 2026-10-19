@@ -31,6 +31,7 @@ public static class NetSerializer
         Register<Vector3>((w, v) => w.Write(v), r => r.ReadVector3());
         Register<Vector3i>((w, v) => w.Write(v), r => r.ReadVector3i());
         Register<Quaternion>((w, v) => w.Write(v), r => r.ReadQuaternion());
+        Register<TransformState>(TransformState.Write, TransformState.Read);
         Register<byte[]>((w, v) => w.WriteBytes(v ?? Array.Empty<byte>()), r => r.ReadBytes());
     }
 

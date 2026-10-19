@@ -51,7 +51,7 @@ dotnet publish Spacebox/Spacebox.csproj -c Release -r linux-x64 --self-contained
 ```
 
 - `Engine.Tests`, `Spacebox.Tests` and `Spacebox.Benchmarks` are marked non-buildable in `Release`; use `Debug` for them.
-- `Debug`/`Profile` define `PROFILING` and `ASSERTS` (also via `Directory.Build.props`); `Release` defines only `TRACE` and builds the game as `WinExe`.
+- `Debug`/`Profile` define `PROFILING` and `ASSERTS` (also via `Directory.Build.props`); `Release` defines only `TRACE`; `Release` and `Final` build the game as `WinExe` (no terminal window; `--server` attaches or opens its own console via `TerminalConsole`).
 - `Spacebox/Build/AddAfterBuild/OpenAL32.dll` (Windows audio) is bundled into Windows publishes by `Spacebox.csproj`; normal builds don't copy it.
 - There is no linter/formatter configured.
 

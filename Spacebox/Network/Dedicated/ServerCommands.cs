@@ -63,8 +63,13 @@ public sealed class SaveCommand : CommandBase
 
     public override void Execute(string[] args)
     {
-        World.Instance?.Save();
-        NetworkSession.Current?.SaveRemotePlayers();
+        if (NetworkSession.Current != null)
+        {
+            NetworkSession.Current.SaveWorld("Save");
+            return;
+        }
+
+        World.Instance?.Save(false);
         Debug.Success("World saved");
     }
 }
@@ -76,7 +81,8 @@ public sealed class StopCommand : CommandBase
 
     public override void Execute(string[] args)
     {
-        World.Instance?.Save();
+        if (NetworkSession.Current != null) NetworkSession.Current.SaveWorld("Stop");
+        else World.Instance?.Save(false);
         NetworkSession.Current?.Dispose();
         Engine.Application.Quit();
     }

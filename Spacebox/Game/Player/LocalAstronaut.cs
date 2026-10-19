@@ -53,6 +53,8 @@ namespace Spacebox.Game.Player
         }
 
         public Action OnDeath { get; set; }
+        public event Action<Item> ItemUsed;
+        private bool IsControllingView => IsMain || ShipPilot.IsUsingCamera;
         public DeathCase LastDeathCase { get; private set; }
         public Action OnRevived { get; set; }
 
@@ -239,9 +241,10 @@ namespace Spacebox.Game.Player
             Frustum.UpdateFrustum(this);
             if (IsFrozen) return;
 
-            if (IsMain) ShipRider.Carry(this);
+            if (IsControllingView) ShipRider.Carry(this);
             UpdateControl();
-            if (IsMain) ShipRider.Capture(this);
+            if (IsControllingView) ShipRider.Capture(this);
+            ShipPilot.UpdateViewCamera(this);
         }
 
         private void UpdateControl()
@@ -249,7 +252,7 @@ namespace Spacebox.Game.Player
             if (ShipPilot.IsPiloting)
             {
                 _gameModeBase.Update(this);
-                if (IsMain) ShipPilot.Update(this);
+                if (IsControllingView) ShipPilot.Update(this);
             }
             else
             {
@@ -260,7 +263,7 @@ namespace Spacebox.Game.Player
             HitImage.Update();
             DeathScreen.Update();
 
-            if (!IsMain) return;
+            if (!IsControllingView) return;
 
             if (!ShipPilot.IsPiloting || ShipPilot.AllowsMovement) _gameModeBase.HandleInput(this);
 
@@ -316,11 +319,16 @@ namespace Spacebox.Game.Player
 
         private void HandleMouse()
         {
-            if (CameraActive)
+            if (CameraActive && !ShipPilot.IsUsingCamera)
             {
                 if (Gravity.IsActive) Gravity.Look(this);
                 else Rotate();
             }
+        }
+
+        public void NotifyItemUsed(Item item)
+        {
+            if (item != null) ItemUsed?.Invoke(item);
         }
 
         public void SetPosition(Vector3 position)
@@ -467,7 +475,7 @@ namespace Spacebox.Game.Player
                 _gameModeBase.Render(this);
             }
 
-            if (IsMain) ShipBindingTool.Render();
+            if (IsControllingView) ShipBindingTool.Render();
         }
 
         public override void Destroy()

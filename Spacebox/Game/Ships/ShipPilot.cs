@@ -19,6 +19,9 @@ public static class ShipPilot
     private static bool _skipUseThisFrame;
     private static bool _wasBinding;
     private static ShipCameraBlock _viewCamera;
+    private static ShipViewCamera _view;
+    private static Quaternion _seatRotationLocal = Quaternion.Identity;
+    private static Quaternion _lastViewOrientation = Quaternion.Identity;
 
     public static ShipConsoleBlock Console { get; private set; }
     public static bool IsPiloting => Console != null;
@@ -59,7 +62,7 @@ public static class ShipPilot
             player.InertiaController.Velocity = Vector3.Zero;
         }
 
-        SetViewCamera(null);
+        SetViewCamera(null, player);
         Spacebox.Network.ShipNetwork.SendMount(console, false);
         ShipBindingTool.Exit();
         Spacebox.Game.GUI.PanelUI.UnblockHands();
@@ -78,9 +81,11 @@ public static class ShipPilot
     {
         ShipBindingTool.Reset();
         Spacebox.Game.GUI.PanelUI.ResetHandsBlock();
+        if (_view != null && Camera.Main == _view) Camera.Main = _player;
         Console = null;
         _player = null;
         _viewCamera = null;
+        _view = null;
         _wasBinding = false;
         IsUsingCamera = false;
     }
@@ -111,7 +116,7 @@ public static class ShipPilot
         var bindings = entity.ShipControl.GetBindings(console.LocalCell);
         var command = new ConsoleCommand
         {
-            AimLocal = entity.DirectionToEntitySpace(player.Front).Normalized(),
+            AimLocal = entity.DirectionToEntitySpace(ViewFront(player)).Normalized(),
             AimPointLocal = entity.WorldToEntityLocal(FindAimPoint(player, entity)),
             PilotPeer = NetworkManager.Instance.LocalPeerId
         };
@@ -127,12 +132,33 @@ public static class ShipPilot
         UpdateView(player, console, bindings);
     }
 
+    public static void UpdateViewCamera(LocalAstronaut player)
+    {
+        var entity = _viewCamera?.Entity;
+        if (!IsUsingCamera || entity == null || _view == null) return;
+
+        var delta = entity.Orientation * Quaternion.Invert(_lastViewOrientation);
+        _lastViewOrientation = entity.Orientation;
+        _view.SetRotation(delta * _view.GetRotation());
+        if (player.CameraActive && !UIManager.IsUIMode) _view.Rotate();
+
+        player.SetRotation(entity.Orientation * _seatRotationLocal);
+        _view.Follow(player, entity.EntityLocalToWorld(_viewCamera.ViewPointLocal));
+    }
+
+    private static Vector3 ViewFront(LocalAstronaut player)
+    {
+        return IsUsingCamera && _view != null ? _view.Front : player.Front;
+    }
+
     private static Vector3 FindAimPoint(LocalAstronaut player, SpaceEntity entity)
     {
-        var ray = new Ray(player.Position, player.Front, AimDistance);
+        var origin = IsUsingCamera && _view != null ? _view.Position : player.Position;
+        var front = ViewFront(player);
+        var ray = new Ray(origin, front, AimDistance);
         var sector = World.CurrentSector;
         if (sector != null && sector.Raycast(ray, out var hit, entity)) return hit.hitPosition;
-        return player.Position + player.Front * AimDistance;
+        return origin + front * AimDistance;
     }
 
     private static FlightInput ReadFlight()
@@ -154,8 +180,9 @@ public static class ShipPilot
     private static void HandleViewRoll(LocalAstronaut player)
     {
         float roll = RollSpeed * Time.Delta;
-        if (Input.IsAction("rollLeft")) player.Roll(-roll);
-        if (Input.IsAction("rollRight")) player.Roll(roll);
+        Camera360Base view = IsUsingCamera && _view != null ? _view : player;
+        if (Input.IsAction("rollLeft")) view.Roll(-roll);
+        if (Input.IsAction("rollRight")) view.Roll(roll);
     }
 
     private static void UpdateView(LocalAstronaut player, ShipConsoleBlock console, ConsoleBindings bindings)
@@ -171,7 +198,7 @@ public static class ShipPilot
             }
 
             _wasBinding = true;
-            SetViewCamera(null);
+            SetViewCamera(null, player);
             IsUsingCamera = false;
             return;
         }
@@ -182,25 +209,27 @@ public static class ShipPilot
             player.InertiaController.Velocity = Vector3.Zero;
         }
 
+        player.SetPosition(entity.EntityLocalToWorld(_seatLocal));
+
         var camera = bindings?.Camera is { } cell ? entity.ShipControl.GetPart<ShipCameraBlock>(cell) : null;
         if (camera != null && camera.IsPowered)
         {
             if (_viewCamera != camera)
             {
-                SetViewCamera(camera);
-                player.SetRotation(ShipAiming.LookRotation(
+                if (!IsUsingCamera) _seatRotationLocal = Quaternion.Invert(entity.Orientation) * player.GetRotation();
+                SetViewCamera(camera, player);
+                _lastViewOrientation = entity.Orientation;
+                _view.SetRotation(ShipAiming.LookRotation(
                     entity.DirectionToWorldSpace(GetCameraLookDirection(entity, bindings, camera)),
                     entity.DirectionToWorldSpace(camera.Frame.Up)));
             }
 
-            player.SetPosition(entity.EntityLocalToWorld(camera.ViewPointLocal));
             IsUsingCamera = true;
             return;
         }
 
-        SetViewCamera(null);
+        SetViewCamera(null, player);
         IsUsingCamera = false;
-        player.SetPosition(entity.EntityLocalToWorld(_seatLocal));
     }
 
     private static Vector3 GetCameraLookDirection(SpaceEntity entity, ConsoleBindings bindings, ShipCameraBlock camera)
@@ -214,11 +243,23 @@ public static class ShipPilot
         return ShipAiming.SafeNormalize(sum, camera.Frame.Front);
     }
 
-    private static void SetViewCamera(ShipCameraBlock camera)
+    private static void SetViewCamera(ShipCameraBlock camera, LocalAstronaut player)
     {
-        if (_viewCamera == camera) return;
-        _viewCamera?.SetViewHidden(false);
-        _viewCamera = camera;
-        _viewCamera?.SetViewHidden(true);
+        if (_viewCamera != camera)
+        {
+            _viewCamera?.SetViewHidden(false);
+            _viewCamera = camera;
+            _viewCamera?.SetViewHidden(true);
+        }
+
+        if (camera != null)
+        {
+            _view ??= new ShipViewCamera();
+            if (player != null && Camera.Main == player) Camera.Main = _view;
+        }
+        else if (_view != null && Camera.Main == _view)
+        {
+            Camera.Main = player ?? _player;
+        }
     }
 }

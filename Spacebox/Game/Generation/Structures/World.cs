@@ -95,16 +95,13 @@ public class World : Component, ISpaceStructure
         ProjectilesPool = new ProjectilesPool(20);
         Owner.AttachComponent(ProjectilesPool);
 
-        var texture = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/blockHit.png");
-        texture.FilterMode = FilterMode.Nearest;
-
-        BlockMiningEffect = new BlockMiningEffect(Camera.Main, Vector3.Zero, new Vector3(1, 1, 1), texture, Resources.Load<Shader>("Resources/Shaders/particle"));
+        BlockMiningEffect = BlockMiningEffect.CreateDefault();
         Owner.AddChild(BlockMiningEffect);
 
 
     }
 
-    public void Save()
+    public void Save(bool capturePreview = true)
     {
         if (Spacebox.Network.GameSession.IsRemoteClient)
         {
@@ -124,10 +121,13 @@ public class World : Component, ISpaceStructure
         WorldData.Info.Ticks = GameTime.DayTick;
         WorldInfoSaver.Save(WorldData.Info);
 
-        var screenSize = SpaceboxWindow.Instance.ClientSize;
-        string path = Path.Combine(WorldData.WorldFolderPath, "preview.jpg");
+        if (capturePreview && !Engine.Application.IsHeadless)
+        {
+            var screenSize = SpaceboxWindow.Instance.ClientSize;
+            string path = Path.Combine(WorldData.WorldFolderPath, "preview.jpg");
 
-        FramebufferCapture.SaveWorldPreview(screenSize, path);
+            FramebufferCapture.SaveWorldPreview(screenSize, path);
+        }
         TagsSaveLoader.SaveTags(WorldData.WorldFolderPath);
 
         DropEffectManager.SaveDrops(Path.Combine(WorldData.WorldFolderPath, "drop.json"));
@@ -167,7 +167,7 @@ public class World : Component, ISpaceStructure
 
     public static void LoadRemoteWorldInfo(Spacebox.Network.RemoteWorldInfo remote)
     {
-        string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Multiplayer", MakeSafeFolderName(remote.ServerName), MakeSafeFolderName(remote.WorldName));
+        string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Multiplayer", Spacebox.Network.ServerFolderName.Current, MakeSafeFolderName(remote.WorldName));
         Directory.CreateDirectory(folder);
 
         WorldData = new WorldLoader.LoadedWorld

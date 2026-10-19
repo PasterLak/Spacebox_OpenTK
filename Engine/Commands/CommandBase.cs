@@ -6,6 +6,7 @@ namespace Engine.Commands
     {
         public abstract string Name { get; }
         public abstract string Description { get; }
+        public virtual bool AvailableInTerminal => true;
         public abstract void Execute(string[] args);
 
         protected bool TryParse<T>(string param, out T result) where T : IParsable<T>

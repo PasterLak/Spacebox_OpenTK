@@ -23,6 +23,17 @@ public static class TerminalConsole
         Debug.MirrorToStandardOutput = true;
     }
 
+    public static void Clear()
+    {
+        try
+        {
+            System.Console.Clear();
+        }
+        catch (IOException)
+        {
+        }
+    }
+
     private static void AttachWindowsConsole()
     {
         if (GetConsoleWindow() != IntPtr.Zero) return;
