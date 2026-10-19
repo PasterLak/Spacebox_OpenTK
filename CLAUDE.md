@@ -29,6 +29,7 @@ Spacebox is a voxel space-survival game (asteroid belt, mining, base/ship buildi
 - `Spacebox/TODO.txt` and `BUGS.txt` belong to the author; edit them only when asked.
 - After every game change, add a very short line to `Spacebox/DONE.txt` in the section of the current version (`Application.Version` in `Engine/Application.cs`), under `Game`, `Small`, `Fixes` or `Engine`. Create the version section in the same format if it is missing.
 - Keep `spec.md` (full technical description) up to date when architecture, file formats or limits change.
+- **Tutorials stay in sync with the game:** the tutorials in `Spacebox/GameSets/*/Tutorials/*.json` (see `tutorial-design.md`) teach real mechanics. Whenever a change touches something a tutorial step relies on, check the tutorials and fix steps, texts, order and rewards in the same change. This includes item or block ids, crafting and processing recipes, drill tiers and ore hardness, start items, input actions and default keys, UI window names, `PlayerStatistics` fields, `PlayerActivity` events, and ship, console or machine behaviour. Rewards must never be items that a tutorial task asks for. A new feature a beginner must know gets a tutorial step. `DefaultTutorialContentTests` and `DefaultTutorialProgressionTests` must stay green.
 
 Project skills in `.claude/skills/` cover repeated tasks: `add-block`, `add-item`, `add-network-message`, `release`.
 
@@ -86,3 +87,4 @@ Game content is JSON, not code: `Spacebox/GameSets/<Name>/` (`Default` is the ba
 - `Spacebox/TODO.txt`, `BUGS.txt` are the author's task tracking; `DONE.txt` is the changelog (see Project rules).
 - API docs can be generated with Doxygen (`Doxyfile` at the root, theme in `Documentation/`).
 - `ships-design.md`: design of player-built ships (movable entities, thrusters, consoles, cannons, camera blocks, boarding, collisions, multiplayer) and the planned work packages. Read it before working on movable entities or ship blocks.
+- `tutorial-design.md`: the JSON tutorial system (format, task types, runner, UI) and the Default tutorial content. Read it before changing tutorials or adding task types.

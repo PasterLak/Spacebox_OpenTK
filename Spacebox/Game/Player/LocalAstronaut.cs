@@ -54,6 +54,8 @@ namespace Spacebox.Game.Player
 
         public Action OnDeath { get; set; }
         public event Action<Item> ItemUsed;
+        public bool IsNewPlayer { get; set; }
+        public Spacebox.Game.Tutorial.TutorialProgress Tutorial { get; set; }
         private bool IsControllingView => IsMain || ShipPilot.IsUsingCamera;
         public DeathCase LastDeathCase { get; private set; }
         public Action OnRevived { get; set; }
@@ -328,7 +330,10 @@ namespace Spacebox.Game.Player
 
         public void NotifyItemUsed(Item item)
         {
-            if (item != null) ItemUsed?.Invoke(item);
+            if (item == null) return;
+
+            ItemUsed?.Invoke(item);
+            if (item is not EquipmentItem) PlayerActivity.Raise(PlayerActivityKind.ItemUsed, item.Id);
         }
 
         public void SetPosition(Vector3 position)

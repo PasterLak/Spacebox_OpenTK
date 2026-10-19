@@ -26,6 +26,7 @@ Game project on top of `Engine` (see `Engine/CLAUDE.md`). World hierarchy, GameS
 | `Game/Inventory/` | `Item` + `BlockItem`, `DrillItem`, `WeaponItem`, `ConsumableItem`, tool items; `Inventory`, `Storage`, `ItemSlot`, item models |
 | `Game/GUI/` | Static ImGui UIs (inventory, storage, crafting, radar, chat, `PanelUI` hotbar, tags); `Menu/` main menu |
 | `Game/Commands/` | Debug-console commands |
+| `Game/Tutorial/` | JSON tutorials: parser, task types (`Tasks/`), runner, progress, service, UI (`UI/`); see `tutorial-design.md` |
 | `Game/Effects/` | Block destruction/mining effects, `DropManager`, dust, hit effects, stars |
 | `Game/Events/` | `IEvent` structs for settings |
 | `Game/Physics/` | `VoxelPhysics`, hit/collide info |
@@ -206,6 +207,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 |---|---|
 | Data-only block / item | GameSet JSON + texture (`add-block` / `add-item` skills) |
 | Block behaviour | `Block` subclass in `Game/Generation/Blocks/` + `BlockFactory` entry (+ serializer if stateful) |
+| Tutorial / tutorial step | `GameSets/<set>/Tutorials/*.json` (see `tutorial-design.md`); a new task type is a `TutorialTask` subclass + `TutorialTaskFactory` entry (+ `ITutorialContext` member or `PlayerActivity` event) |
 | Equipment item | `items.json` entry with `"Type": "equipment"`, `Slot`, `Health`/`Power`, `ExplosionProtection` (%); bonuses applied by `EquipmentStatsBinder`, UI in `EquipmentUI` |
 | Item type | `Item` subclass in `Game/Inventory/` + case in `GameSetLoader` + interaction branch in `PanelUI` |
 | Interaction | `InteractionMode` subclass + game-mode whitelists + `PanelUI.UpdatePlayerInteraction` |

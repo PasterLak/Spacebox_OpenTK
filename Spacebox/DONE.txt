@@ -147,6 +147,9 @@ Small
 - multiplayer: right click with armor/equipment on another player puts it on them (empty slot only), heal/power/oxygen items heal the other player; the item comes back if it fails
 - multiplayer: other players hold shaped and multi-cell blocks as their real model (scaled to one block) instead of a cube
 - crusher: 18 new recycling recipes (metal blocks, drill bits, cobalt crystal, uranium rods, windows, polymer fiber)
+- tutorial: rewards are aluminium armor pieces (never items a task asks for) and are never given twice after a restart; new chapter Better drills (iron drill, thulium, triple iron drill, titanium and uranium) before base, ships and gravity
+- controls overlay (F6) works in game and the menu again and shows all keys grouped by category in columns
+- tutorial system: JSON tutorials in the GameSet (Tutorials/*.json, chapters, steps, tasks, item icons, rewards), compact quest panel top-right with progress bar, green crossed-out tasks, step/chapter toasts and sounds; welcome screen toggle, pause menu (skip, stop, resume, restart), J collapses the panel, start prompt for new multiplayer players; Default survival tutorial with 11 chapters (flying to the first ship) and a creative tutorial
 - armor explosion protection (ExplosionProtection in equipment JSON, shown in the tooltip, max 75% total): full aluminium set -10% bomb damage, iron -30%, titanium -50%
 - multiplayer world autosave (dedicated: AutoSaveInterval, host: every 5 min) with a terminal message for every save; the server no longer captures a preview image when headless
 - multiplayer: other players hear blocks being placed and destroyed (3D sound at the block)

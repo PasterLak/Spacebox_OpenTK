@@ -13,6 +13,7 @@ namespace Spacebox.Game.GUI
         private static bool _wasVisible = false;
         private static AudioSource clickAudio;
         private static IntPtr bannerTextureId;
+        private static bool _playTutorial = true;
 
         public static void Init()
         {
@@ -29,6 +30,7 @@ namespace Spacebox.Game.GUI
             if (savedState)
             {
                 UIManager.Open("welcome");
+                _playTutorial = World.WorldData?.Info?.GameMode == Spacebox.Game.Player.GameModes.GameMode.Survival;
                 
             }
         }
@@ -101,6 +103,15 @@ namespace Spacebox.Game.GUI
             float bottomPadding = windowHeight * 0.05f;
             float buttonY = windowHeight - bottomPadding - buttonHeight;
             float buttonX = (windowWidth - buttonWidth) * 0.5f;
+            bool hasTutorial = Spacebox.Game.Tutorial.TutorialService.HasTutorialFor(CurrentMode());
+            if (hasTutorial)
+            {
+                const string tutorialLabel = "Play the tutorial";
+                float checkboxWidth = ImGui.GetFrameHeight() + ImGui.GetStyle().ItemInnerSpacing.X + ImGui.CalcTextSize(tutorialLabel).X;
+                ImGui.SetCursorPos(new Vector2((windowWidth - checkboxWidth) * 0.5f, buttonY - buttonHeight * 1.1f - ImGui.GetFrameHeight()));
+                ImGui.Checkbox(tutorialLabel, ref _playTutorial);
+            }
+
             ImGui.SetCursorPos(new Vector2(buttonX, buttonY));
 
             GameMenu.CenterButtonWithBackground("Start", buttonWidth, buttonHeight, () =>
@@ -108,10 +119,18 @@ namespace Spacebox.Game.GUI
                 clickAudio?.Play();
                 UIManager.CloseTop();
                 SaveWelcomeState();
+                if (!hasTutorial) return;
+                if (_playTutorial) Spacebox.Game.Tutorial.TutorialService.Begin();
+                else Spacebox.Game.Tutorial.TutorialService.Decline();
             });
 
             ImGui.PopStyleColor(2);
             ImGui.End();
+        }
+
+        private static Spacebox.Game.Player.GameModes.GameMode CurrentMode()
+        {
+            return World.Instance?.Player?.GameMode ?? World.WorldData?.Info?.GameMode ?? Spacebox.Game.Player.GameModes.GameMode.Survival;
         }
 
         private static void SaveWelcomeState()

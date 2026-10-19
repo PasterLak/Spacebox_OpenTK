@@ -33,6 +33,7 @@ namespace Spacebox.Game.GUI
 
         public static void SetAlwaysVisible(bool value) => _alwaysVisible = value;
         public static void SetPlaceOnLeft(bool value) => _placeOnLeft = value;
+        public static bool IsShownOnRight => !_placeOnLeft && (IsVisible || _alwaysVisible);
         public static void SetHideDelay(float seconds) => _hideDelay = seconds;
 
         private static void AddMessage(string text, Color4 c)

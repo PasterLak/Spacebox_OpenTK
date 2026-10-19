@@ -42,6 +42,7 @@ public static class GameSetLoader
         }
         ModInfo = null;
         modPath = null;
+        Spacebox.Game.Tutorial.TutorialLibrary.Clear();
     }
     public static void Load(string modId, bool useLocalGameSetsFolder, string serverName)
     {
@@ -98,6 +99,7 @@ public static class GameSetLoader
         ShipPhysicsSettings.Current = ShipPhysicsSettingsLoader.Load(modPath);
         LoadLoot(modPath, defaultModPath);
         MobsLoader.Load(modPath, defaultModPath);
+        if (!Engine.Application.IsHeadless) Spacebox.Game.Tutorial.TutorialLoader.Load(modPath, defaultModPath, ModInfo.ModId);
         LoadSettings(modPath);
         LoadOptionalFiles(modPath);
 

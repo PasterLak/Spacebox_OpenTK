@@ -1,0 +1,477 @@
+{
+  "Id": "basics",
+  "Name": "Spacebox basics",
+  "Description": "From your first flight to your first spaceship.",
+  "GameModes": [ "Survival" ],
+  "Order": 0,
+  "Chapters": [
+    {
+      "Id": "first_steps",
+      "Title": "First steps",
+      "Icon": "aluminium_drill",
+      "Reward": [ { "Item": "med_kit", "Count": 1 } ],
+      "Steps": [
+        {
+          "Id": "look",
+          "Title": "Look around",
+          "Text": "Welcome, astronaut! Move the mouse to look around.",
+          "Tasks": [ { "Type": "look", "Degrees": 180, "Label": "Look around" } ]
+        },
+        {
+          "Id": "fly",
+          "Title": "Learn to fly",
+          "Text": "There is no gravity here. Fly with {key:forward} {key:left} {key:backward} {key:right}, go up with {key:up} and down with {key:down}.",
+          "Hint": "Hold {key:sprint} to fly faster.",
+          "Tasks": [
+            { "Type": "press", "Action": "forward", "Label": "Fly forward ({key:forward})" },
+            { "Type": "press", "Action": "up", "Label": "Fly up ({key:up})" },
+            { "Type": "press", "Action": "down", "Label": "Fly down ({key:down})" },
+            { "Type": "move", "Distance": 20 }
+          ]
+        },
+        {
+          "Id": "roll",
+          "Title": "Roll in space",
+          "Text": "In space there is no up or down. Roll with {key:rollLeft} and {key:rollRight}.",
+          "Tasks": [
+            { "Type": "press", "Action": "rollLeft", "Label": "Roll left ({key:rollLeft})" },
+            { "Type": "press", "Action": "rollRight", "Label": "Roll right ({key:rollRight})" }
+          ]
+        },
+        {
+          "Id": "flashlight",
+          "Title": "Light the dark",
+          "Text": "Asteroids are dark inside. Switch your flashlight with {key:flashlight}.",
+          "Icon": "aluminium_flashlight",
+          "Tasks": [
+            { "Type": "press", "Action": "flashlight", "Label": "Toggle the flashlight ({key:flashlight})" },
+            { "Type": "toggle", "What": "flashlight", "State": true, "Label": "Keep it on" }
+          ]
+        },
+        {
+          "Id": "controls",
+          "Title": "All controls",
+          "Text": "Forgot a key? Press {key:inputOverlay} at any time to see all controls.",
+          "Tasks": [ { "Type": "press", "Action": "inputOverlay", "Label": "Show the controls ({key:inputOverlay})" } ]
+        }
+      ]
+    },
+    {
+      "Id": "toolbelt",
+      "Title": "Your toolbelt",
+      "Icon": "crafting_table",
+      "Steps": [
+        {
+          "Id": "hotbar",
+          "Title": "The hotbar",
+          "Text": "The bar at the bottom holds your tools. Select a slot with the mouse wheel or the number keys.",
+          "Tasks": [ { "Type": "select_hotbar", "Item": "aluminium_drill", "Label": "Select the {item:aluminium_drill}" } ]
+        },
+        {
+          "Id": "inventory",
+          "Title": "Inventory",
+          "Text": "Open your inventory with {key:inventory}. Drag items between slots, Shift-click moves them quickly.",
+          "Tasks": [ { "Type": "open_ui", "Window": "inventory", "Label": "Open the inventory ({key:inventory})" } ]
+        },
+        {
+          "Id": "place_table",
+          "Title": "Place a block",
+          "Text": "Select the crafting table in the hotbar and place it with {key:block_place}.",
+          "Icon": "crafting_table",
+          "Tasks": [ { "Type": "place_block", "Block": "crafting_table" } ]
+        },
+        {
+          "Id": "rotate_magnet",
+          "Title": "Rotate and magnet",
+          "Text": "Hold a block: {key:block_rotate} rotates it. {key:magnet} toggles the magnet, so blocks snap to the surface you look at.",
+          "Tasks": [
+            { "Type": "press", "Action": "block_rotate", "Label": "Rotate a block ({key:block_rotate})" },
+            { "Type": "toggle", "What": "magnet", "State": true, "Label": "Turn the magnet on ({key:magnet})" }
+          ]
+        },
+        {
+          "Id": "place_furnace",
+          "Title": "Place the furnace",
+          "Text": "Place the furnace next to the crafting table. This is the start of your base.",
+          "Icon": "furnace",
+          "Tasks": [ { "Type": "place_block", "Block": "furnace" } ]
+        }
+      ]
+    },
+    {
+      "Id": "mining",
+      "Title": "Mining",
+      "Icon": "aluminium_ore",
+      "Reward": [ { "Item": "aluminium_helmet", "Count": 1 } ],
+      "Steps": [
+        {
+          "Id": "mine_rock",
+          "Title": "Mine some rock",
+          "Text": "Select the drill and hold {key:block_destroy} on an asteroid block. Drilling uses power, watch the power bar.",
+          "Icon": "aluminium_drill",
+          "Hint": "Mined blocks fly to you. Get close to pick them up.",
+          "Tasks": [ { "Type": "destroy_block", "Count": 5 } ]
+        },
+        {
+          "Id": "find_ore",
+          "Title": "Find ores",
+          "Text": "Ores are blocks with colored spots. Your drill is strong enough for aluminium and cobaltite.",
+          "Tasks": [
+            { "Type": "have_item", "Item": "aluminium_ore", "Count": 6 },
+            { "Type": "have_item", "Item": "cobaltite_rock", "Count": 4 }
+          ]
+        },
+        {
+          "Id": "find_ice",
+          "Title": "Ice is water",
+          "Text": "Light blue ice blocks melt into water. You will need it for oxygen.",
+          "Tasks": [ { "Type": "have_item", "Item": "ice_rock", "Count": 3 } ]
+        }
+      ]
+    },
+    {
+      "Id": "crafting",
+      "Title": "Smelting and crafting",
+      "Icon": "cobalt_drill",
+      "Reward": [ { "Item": "aluminium_chest", "Count": 1 } ],
+      "Steps": [
+        {
+          "Id": "use_furnace",
+          "Title": "Use the furnace",
+          "Text": "Look at the furnace and press {key:use}. Put ore into the input slot and take the ingots out.",
+          "Icon": "furnace",
+          "Tasks": [
+            { "Type": "use_block", "Block": "furnace" },
+            { "Type": "process", "Item": "aluminium_ingot", "Machine": "furnace", "Count": 4 }
+          ]
+        },
+        {
+          "Id": "smelt_cobalt",
+          "Title": "Smelt cobalt",
+          "Text": "Smelt the cobaltite rock into cobalt ingots.",
+          "Icon": "cobalt_ingot",
+          "Tasks": [ { "Type": "process", "Item": "cobalt_ingot", "Machine": "furnace", "Count": 3 } ]
+        },
+        {
+          "Id": "open_table",
+          "Title": "The crafting table",
+          "Text": "Use the crafting table with {key:use}. It shows everything you can build.",
+          "Icon": "crafting_table",
+          "Tasks": [ { "Type": "use_block", "Block": "crafting_table" } ]
+        },
+        {
+          "Id": "energy_cells",
+          "Title": "Energy cells",
+          "Text": "Energy cells power machines and tools. Craft two of them.",
+          "Tasks": [ { "Type": "craft", "Item": "energy_cell", "Count": 2 } ]
+        },
+        {
+          "Id": "drill_bit",
+          "Title": "A drill bit",
+          "Text": "Every drill needs a drill bit. Craft one.",
+          "Tasks": [ { "Type": "craft", "Item": "aluminium_drill_bit" } ]
+        },
+        {
+          "Id": "cobalt_drill",
+          "Title": "The Cobalt Drill",
+          "Text": "Combine your drill, a drill bit, cobalt ingots and energy cells. The new drill mines iron ore and dense ice.",
+          "Icon": "cobalt_drill",
+          "Tasks": [ { "Type": "craft", "Item": "cobalt_drill" } ]
+        }
+      ]
+    },
+    {
+      "Id": "survival",
+      "Title": "Staying alive",
+      "Icon": "compressed_oxygen",
+      "Reward": [ { "Item": "aluminium_legs", "Count": 1 } ],
+      "Steps": [
+        {
+          "Id": "oxygen",
+          "Title": "Oxygen",
+          "Text": "Your oxygen bar drops in space. Melt ice into water in the furnace, craft compressed oxygen and use it with {key:use}.",
+          "Icon": "compressed_oxygen",
+          "Tasks": [
+            { "Type": "process", "Item": "water", "Machine": "furnace" },
+            { "Type": "craft", "Item": "compressed_oxygen" },
+            { "Type": "use_item", "Item": "compressed_oxygen" }
+          ]
+        },
+        {
+          "Id": "power",
+          "Title": "Power",
+          "Text": "Drilling empties your power. Smelt water into liquid hydrogen, then craft and use a power pack.",
+          "Icon": "power",
+          "Tasks": [
+            { "Type": "process", "Item": "liquid_hydrogen", "Machine": "furnace" },
+            { "Type": "craft", "Item": "power" },
+            { "Type": "use_item", "Item": "power" }
+          ]
+        },
+        {
+          "Id": "generator",
+          "Title": "Equipment",
+          "Text": "Equipment makes you stronger. Craft a power generator and equip it with {key:use} or in the inventory.",
+          "Icon": "basic_generator",
+          "Hint": "Armor adds health and protects against explosions.",
+          "Tasks": [
+            { "Type": "craft", "Item": "basic_generator" },
+            { "Type": "equip", "Item": "basic_generator" }
+          ]
+        },
+        {
+          "Id": "waypoint",
+          "Title": "Mark your base",
+          "Text": "Open the console with ` and type: tag create home. The marker shows the way back.",
+          "Tasks": [ { "Type": "create_waypoint", "Label": "Create a waypoint" } ]
+        }
+      ]
+    },
+    {
+      "Id": "machines",
+      "Title": "Iron age and machines",
+      "Icon": "crusher",
+      "Reward": [ { "Item": "aluminium_boots", "Count": 1 } ],
+      "Steps": [
+        {
+          "Id": "iron",
+          "Title": "Mine iron",
+          "Text": "With the cobalt drill you can mine iron ore. You will need a lot of it.",
+          "Icon": "iron_ore",
+          "Tasks": [ { "Type": "have_item", "Item": "iron_ore", "Count": 8 } ]
+        },
+        {
+          "Id": "basic_machine",
+          "Title": "The basic machine",
+          "Text": "Most machines are built from a basic machine. Smelt iron and craft one.",
+          "Tasks": [ { "Type": "craft", "Item": "basic_machine" } ]
+        },
+        {
+          "Id": "crusher",
+          "Title": "The crusher",
+          "Text": "The crusher turns one ore into two dust, and dust smelts into ingots: double the metal! It also makes sand from light rock.",
+          "Icon": "crusher",
+          "Tasks": [
+            { "Type": "craft", "Item": "crusher" },
+            { "Type": "place_block", "Block": "crusher" },
+            { "Type": "process", "Machine": "crusher", "Count": 2, "Label": "Crush 2 items" }
+          ]
+        },
+        {
+          "Id": "storage",
+          "Title": "Storage",
+          "Text": "Your inventory is small. Craft a crate and place it in your base.",
+          "Icon": "basic_aluminium_crate",
+          "Tasks": [ { "Type": "place_block", "Block": "basic_aluminium_crate" } ]
+        },
+        {
+          "Id": "power_grid",
+          "Title": "Power grid",
+          "Text": "A cobalt power block powers machines and lights through cables. Connect a light to it.",
+          "Icon": "cobalt_power_block",
+          "Tasks": [
+            { "Type": "place_block", "Block": "cobalt_power_block" },
+            { "Type": "place_block", "Block": "cable_block", "Count": 3 },
+            { "Type": "place_block", "Block": "light_white" }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "better_drills",
+      "Title": "Better drills",
+      "Icon": "triple_iron_drill",
+      "Reward": [ { "Item": "aluminium_shoulders", "Count": 1 }, { "Item": "aluminium_arms", "Count": 1 } ],
+      "Steps": [
+        {
+          "Id": "iron_drill",
+          "Title": "The Iron Drill",
+          "Text": "Upgrade your cobalt drill with an iron drill bit, iron ingots and energy cells. It mines thulium ore.",
+          "Icon": "iron_drill",
+          "Tasks": [ { "Type": "craft", "Item": "iron_drill" } ]
+        },
+        {
+          "Id": "thulium",
+          "Title": "Thulium",
+          "Text": "Mine thulium ore with the iron drill. It does not melt directly: crush it into dust first, then smelt the dust.",
+          "Icon": "thulium_ore",
+          "Tasks": [
+            { "Type": "have_item", "Item": "thulium_ore", "Count": 4 },
+            { "Type": "process", "Item": "thulium_dust", "Machine": "crusher", "Count": 4 },
+            { "Type": "process", "Item": "thulium_ingot", "Machine": "furnace", "Count": 4 }
+          ]
+        },
+        {
+          "Id": "thulium_cells",
+          "Title": "Thulium energy cells",
+          "Text": "Thulium lenses (thulium and glass) make strong energy cells.",
+          "Icon": "thulium_energy_cell",
+          "Tasks": [
+            { "Type": "craft", "Item": "thulium_lens", "Count": 2 },
+            { "Type": "craft", "Item": "thulium_energy_cell", "Count": 6 }
+          ]
+        },
+        {
+          "Id": "triple_drill",
+          "Title": "The Triple Iron Drill",
+          "Text": "Three iron drills, three iron drill bits and six thulium energy cells make the triple iron drill. It is strong enough for titanium and uranium.",
+          "Icon": "triple_iron_drill",
+          "Hint": "Open the crafting table to see which ingredients are still missing.",
+          "Tasks": [ { "Type": "craft", "Item": "triple_iron_drill" } ]
+        },
+        {
+          "Id": "titanium",
+          "Title": "Titanium and uranium",
+          "Text": "Titanium makes the best armor and ship parts, uranium powers reactors and the gravity generator.",
+          "Icon": "titanium_ore",
+          "Tasks": [
+            { "Type": "have_item", "Item": "titanium_ore", "Count": 5 },
+            { "Type": "have_item", "Item": "uranium_ore", "Count": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "base",
+      "Title": "Build a base",
+      "Icon": "aluminium_block_light",
+      "Optional": true,
+      "Reward": [ { "Item": "light_blue", "Count": 2 } ],
+      "Steps": [
+        {
+          "Id": "build",
+          "Title": "Walls and floors",
+          "Text": "Craft aluminium panels and turn them into blocks. Build some walls around your machines.",
+          "Tasks": [ { "Type": "place_block", "Count": 20, "Label": "Place {target} blocks" } ]
+        },
+        {
+          "Id": "door_window",
+          "Title": "Door and window",
+          "Text": "A base needs a way in and a view out. Glass comes from sand in the furnace.",
+          "Tasks": [
+            { "Type": "place_block", "Block": "aluminium_door" },
+            { "Type": "place_block", "Block": "window" }
+          ]
+        },
+        {
+          "Id": "oxygen_room",
+          "Title": "Breathable air",
+          "Text": "Close a room completely and place an oxygen generator inside. Give it water and power to fill the room with air.",
+          "Icon": "oxygen_generator",
+          "Tasks": [ { "Type": "place_block", "Block": "oxygen_generator" } ]
+        },
+        {
+          "Id": "reconstructor",
+          "Title": "A second life",
+          "Text": "The DNA reconstructor brings you back at your base when you die.",
+          "Icon": "dna_reconstructor",
+          "Tasks": [ { "Type": "place_block", "Block": "dna_reconstructor" } ]
+        }
+      ]
+    },
+    {
+      "Id": "ship",
+      "Title": "Your first ship",
+      "Icon": "thruster_weak",
+      "Reward": [ { "Item": "iron_helmet", "Count": 1 } ],
+      "Steps": [
+        {
+          "Id": "ship_intro",
+          "Title": "How ships work",
+          "Text": "Anything you build in open space can fly. Build a small frame away from asteroids, then add thrusters and a console.",
+          "ReadSeconds": 8
+        },
+        {
+          "Id": "thrusters",
+          "Title": "Thrusters",
+          "Text": "Each thruster pushes away from its nozzle. Place four of them pointing in different directions.",
+          "Icon": "thruster_weak",
+          "Tasks": [ { "Type": "place_block", "Block": "thruster_weak", "Count": 4 } ]
+        },
+        {
+          "Id": "console",
+          "Title": "Ship console",
+          "Text": "The console is the pilot seat. Craft it and place it on the ship.",
+          "Icon": "ship_console",
+          "Tasks": [
+            { "Type": "craft", "Item": "ship_console" },
+            { "Type": "place_block", "Block": "ship_console" }
+          ]
+        },
+        {
+          "Id": "sit",
+          "Title": "Take the seat",
+          "Text": "Look at the console and press {key:use} to sit down. Press {key:use} again to leave.",
+          "Tasks": [ { "Type": "pilot", "Flight": true, "Label": "Sit at the console" } ]
+        },
+        {
+          "Id": "bind",
+          "Title": "Bind the thrusters",
+          "Text": "While sitting, press {key:inventory} and choose Bind blocks. Click thrusters to give them a key color.",
+          "Tasks": [ { "Type": "bind_ship_part", "Count": 2, "Label": "Bind 2 ship parts" } ]
+        },
+        {
+          "Id": "fly_ship",
+          "Title": "Fly!",
+          "Text": "{key:forward} {key:backward} {key:left} {key:right} move the ship, the mouse steers, {key:sprint} brakes.",
+          "Tasks": [ { "Type": "ship_travel", "Distance": 100 } ]
+        }
+      ]
+    },
+    {
+      "Id": "weapons",
+      "Title": "Armed and dangerous",
+      "Icon": "cannon_antipersonnel",
+      "Optional": true,
+      "Reward": [ { "Item": "microchip", "Count": 1 } ],
+      "Steps": [
+        {
+          "Id": "camera",
+          "Title": "Ship camera",
+          "Text": "Place a ship camera and bind it in the console window. Sit down to look through it.",
+          "Icon": "ship_camera",
+          "Tasks": [
+            { "Type": "place_block", "Block": "ship_camera" },
+            { "Type": "ship_camera" }
+          ]
+        },
+        {
+          "Id": "cannons",
+          "Title": "Cannons",
+          "Text": "A weapon console controls cannons. Bind a cannon to it and fire at a rock.",
+          "Icon": "cannon_antipersonnel",
+          "Tasks": [
+            { "Type": "place_block", "Block": "cannon_console" },
+            { "Type": "place_block", "Block": "cannon_antipersonnel" },
+            { "Type": "pilot", "Flight": false, "Label": "Sit at the weapon console" }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "beyond",
+      "Title": "Beyond",
+      "Icon": "gravity_generator",
+      "Optional": true,
+      "Steps": [
+        {
+          "Id": "gravity",
+          "Title": "Gravity",
+          "Text": "A gravity generator lets you walk inside your base or ship. Careful: now you can fall!",
+          "Icon": "gravity_generator",
+          "Tasks": [
+            { "Type": "place_block", "Block": "gravity_generator" },
+            { "Type": "enter_gravity" }
+          ]
+        },
+        {
+          "Id": "radar",
+          "Title": "Radar",
+          "Text": "The radar finds asteroids far away.",
+          "Icon": "radar",
+          "Tasks": [ { "Type": "place_block", "Block": "radar" } ]
+        }
+      ]
+    }
+  ]
+}

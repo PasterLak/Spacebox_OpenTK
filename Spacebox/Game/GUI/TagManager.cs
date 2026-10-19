@@ -160,7 +160,7 @@ namespace Spacebox.Game.GUI
 
                 var distanceSquared = Vector3.DistanceSquared(camera.PositionWorld, tag.WorldPosition);
 
-                float maxDistanceSquared = tag.Category == Tag.TagCategory.General ? generalRangeSquared : radarRangeSquared;
+                float maxDistanceSquared = tag.Category == Tag.TagCategory.Entity ? radarRangeSquared : generalRangeSquared;
                 if (distanceSquared > maxDistanceSquared)
                 {
                     continue;
@@ -194,6 +194,15 @@ namespace Spacebox.Game.GUI
         }
 
         public List<Tag> GetStaticTags() => _activeTags.Where(tag => tag.IsStatic).ToList();
+
+        public void CollectStaticTags(List<Tag> result)
+        {
+            result.Clear();
+            foreach (var tag in _activeTags)
+            {
+                if (tag.IsStatic) result.Add(tag);
+            }
+        }
 
         public int ActiveTagsCount => _activeTags.Count;
         public int PooledTagsCount => _tagPool?.AvailableObjects ?? 0;

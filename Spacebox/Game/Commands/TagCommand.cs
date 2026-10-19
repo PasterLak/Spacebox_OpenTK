@@ -62,6 +62,7 @@ namespace Spacebox.Game.Commands
 
                 TagManager.Instance.CreateTag(args[1], Astronaut.Position, Color4.Yellow, true);
                 Debug.Success("Tag added!: " + args[1]);
+                Spacebox.Game.Player.PlayerActivity.Raise(Spacebox.Game.Player.PlayerActivityKind.WaypointCreated);
 
 
                 if (args.Length == 5)

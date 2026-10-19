@@ -279,6 +279,7 @@ public class CraftingGUI
             }
 
             currentPlayer.PlayerStatistics.ItemsCrafted += (total - rest);
+            Spacebox.Game.Player.PlayerActivity.Raise(Spacebox.Game.Player.PlayerActivityKind.ItemCrafted, item.Id, total - rest);
         }
         else
         {

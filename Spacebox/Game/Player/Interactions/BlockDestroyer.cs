@@ -18,6 +18,7 @@ public static class BlockDestroyer
         hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
         WorldEditNetwork.NotifyRemoved(hit.chunk, hit.blockPositionIndex);
         player.PlayerStatistics.BlocksDestroyed++;
+        PlayerActivity.RaiseBlock(PlayerActivityKind.BlockDestroyed, hit.block.Id);
 
         PlaySound(hit.block.Id);
     }

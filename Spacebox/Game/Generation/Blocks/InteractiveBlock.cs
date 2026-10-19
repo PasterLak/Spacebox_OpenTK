@@ -29,6 +29,7 @@ public class InteractiveBlock : ElectricalBlock
 
         SetText();
         OnUse?.Invoke(player);
+        Spacebox.Game.Player.PlayerActivity.RaiseBlock(Spacebox.Game.Player.PlayerActivityKind.BlockUsed, Id);
     }
 
 

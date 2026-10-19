@@ -80,6 +80,8 @@ public static class ShipBindingTool
             ShipNetwork.RequestToggleCamera(console.Entity, console.LocalCell, _hovered.LocalCell);
         else
             ShipNetwork.RequestCycleBinding(console.Entity, console.LocalCell, _hovered.LocalCell, direction);
+
+        PlayerActivity.Raise(PlayerActivityKind.ShipPartBound);
     }
 
     public static void DrawLabels()

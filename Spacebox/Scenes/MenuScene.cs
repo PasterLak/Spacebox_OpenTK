@@ -93,8 +93,6 @@ namespace Spacebox.Scenes
             ));*/
 
  
-            var jump = InputManager.Instance.GetAction("inputOverlay");
-            jump.Subscribe(InputEventType.Pressed, () => InputOverlay.IsVisible = !InputOverlay.IsVisible);
 
             devLogWindow.AddLogFromFile("Resources/devlog.txt");
 
@@ -270,6 +268,7 @@ namespace Spacebox.Scenes
 
             //CenteredText.Hide();
             CenteredText.OnGUI();
+            InputOverlay.OnGUI();
         }
 
         public override void UnloadContent()
@@ -284,6 +283,7 @@ namespace Spacebox.Scenes
         {
             base.Update();
             CenteredImageMenu.Update();
+            InputOverlay.Update();
 
             if(menu.CurrentWindowType == typeof(MultiplayerWindow))
             {

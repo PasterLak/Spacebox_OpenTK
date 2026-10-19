@@ -1,0 +1,93 @@
+{
+  "Id": "creative",
+  "Name": "Creative basics",
+  "Description": "Fly, build and test your ships without limits.",
+  "GameModes": [ "Creative" ],
+  "Order": 1,
+  "Chapters": [
+    {
+      "Id": "creative_moving",
+      "Title": "Moving",
+      "Icon": "aluminium_drill",
+      "Steps": [
+        {
+          "Id": "creative_look",
+          "Title": "Look around",
+          "Text": "Move the mouse to look around.",
+          "Tasks": [ { "Type": "look", "Degrees": 180, "Label": "Look around" } ]
+        },
+        {
+          "Id": "creative_fly",
+          "Title": "Fly",
+          "Text": "Fly with {key:forward} {key:left} {key:backward} {key:right}, {key:up} and {key:down}. Roll with {key:rollLeft} and {key:rollRight}.",
+          "Hint": "Hold {key:sprint} to fly faster.",
+          "Tasks": [
+            { "Type": "move", "Distance": 30 },
+            { "Type": "hold", "Action": "sprint", "Seconds": 1, "Label": "Sprint ({key:sprint})" }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "creative_building",
+      "Title": "Building",
+      "Icon": "aluminium_block_light",
+      "Steps": [
+        {
+          "Id": "creative_inventory",
+          "Title": "All blocks and items",
+          "Text": "Press {key:inventory}. In creative mode you get every block and item for free.",
+          "Tasks": [ { "Type": "open_ui", "Window": "creative", "Label": "Open the creative inventory ({key:inventory})" } ]
+        },
+        {
+          "Id": "creative_place",
+          "Title": "Place blocks",
+          "Text": "Put blocks into the hotbar and place them with {key:block_place}. {key:block_rotate} rotates, {key:magnet} snaps to surfaces.",
+          "Tasks": [
+            { "Type": "place_block", "Count": 10, "Label": "Place {target} blocks" },
+            { "Type": "press", "Action": "block_rotate", "Label": "Rotate a block ({key:block_rotate})", "Optional": true }
+          ]
+        },
+        {
+          "Id": "creative_destroy",
+          "Title": "Remove blocks",
+          "Text": "Hold {key:block_destroy} to remove blocks instantly.",
+          "Tasks": [ { "Type": "destroy_block", "Count": 5 } ]
+        }
+      ]
+    },
+    {
+      "Id": "creative_ship",
+      "Title": "Build a ship",
+      "Icon": "thruster_weak",
+      "Steps": [
+        {
+          "Id": "creative_thrusters",
+          "Title": "Thrusters",
+          "Text": "Build a frame in open space and place thrusters pointing in different directions.",
+          "Icon": "thruster_weak",
+          "Tasks": [ { "Type": "place_block", "Block": "thruster_weak", "Count": 4 } ]
+        },
+        {
+          "Id": "creative_console",
+          "Title": "Console",
+          "Text": "Place a ship console and sit down with {key:use}.",
+          "Icon": "ship_console",
+          "Tasks": [
+            { "Type": "place_block", "Block": "ship_console" },
+            { "Type": "pilot", "Flight": true, "Label": "Sit at the console" }
+          ]
+        },
+        {
+          "Id": "creative_bind",
+          "Title": "Bind and fly",
+          "Text": "Press {key:inventory} at the console, choose Bind blocks and click your thrusters. Then fly away!",
+          "Tasks": [
+            { "Type": "bind_ship_part", "Count": 2, "Label": "Bind 2 ship parts" },
+            { "Type": "ship_travel", "Distance": 100 }
+          ]
+        }
+      ]
+    }
+  ]
+}

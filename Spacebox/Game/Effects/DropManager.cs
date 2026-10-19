@@ -705,6 +705,7 @@ namespace Spacebox.Game.Effects
             if (addedQuantity > 0)
             {
                 _player.PlayerStatistics.ItemsPickedUp += addedQuantity;
+                Spacebox.Game.Player.PlayerActivity.Raise(Spacebox.Game.Player.PlayerActivityKind.ItemPickedUp, item.Id, addedQuantity);
                 PlayPickupSound();
             }
 

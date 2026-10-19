@@ -65,6 +65,12 @@ namespace Spacebox.Game.GUI
                 return;
             }
 
+            if (Spacebox.Game.Tutorial.UI.TutorialMenuUI.IsOpen)
+            {
+                Spacebox.Game.Tutorial.UI.TutorialMenuUI.Render();
+                return;
+            }
+
             RenderPause();
             if (IsMultiplayerActive()) PlayerListUI.Draw();
             RenderPauseTitle();
@@ -127,7 +133,7 @@ namespace Spacebox.Game.GUI
         {
             Vector2 displaySize = ImGui.GetIO().DisplaySize;
             float windowWidth = displaySize.X * 0.15f;
-            float windowHeight = displaySize.Y * 0.35f;
+            float windowHeight = displaySize.Y * 0.4f;
             Vector2 windowPos = GameMenu.CenterNextWindow(windowWidth, windowHeight);
 
             ImGui.SetNextWindowPos(windowPos);
@@ -135,10 +141,10 @@ namespace Spacebox.Game.GUI
             ImGui.Begin("Pause", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
 
             float buttonWidth = windowWidth * 0.9f;
-            float buttonHeight = windowHeight * 0.12f;
+            float buttonHeight = windowHeight * 0.105f;
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y, 0.005f);
 
-            const int buttonCount = 7;
+            const int buttonCount = 8;
             float spacing = (windowHeight - (buttonCount * buttonHeight)) / (buttonCount + 1);
             float currentY = spacing;
 
@@ -178,6 +184,15 @@ namespace Spacebox.Game.GUI
                 {
                     StatisticsUI.Show(player.PlayerStatistics);
                 }
+            });
+
+            currentY += buttonHeight + spacing;
+            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) / 2, currentY));
+            GameMenu.CenterButtonWithBackground("Tutorial", buttonWidth, buttonHeight, () =>
+            {
+                click1?.Play();
+                StatisticsUI.Hide();
+                Spacebox.Game.Tutorial.UI.TutorialMenuUI.Open();
             });
 
             currentY += buttonHeight + spacing;

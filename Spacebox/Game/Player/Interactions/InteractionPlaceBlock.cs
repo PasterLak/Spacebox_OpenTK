@@ -185,6 +185,7 @@ public class InteractionPlaceBlock : InteractionMode
                     {
                         WorldEditNetwork.NotifyPlaced(chunk.SpaceEntity, selectorPos, newBlock);
                         player.PlayerStatistics.BlocksPlaced++;
+                        PlayerActivity.RaiseBlock(PlayerActivityKind.BlockPlaced, newBlock.Id);
                     }
 
                     if (blockPlace != null)
@@ -347,11 +348,13 @@ public class InteractionPlaceBlock : InteractionMode
                     {
                         WorldEditNetwork.NotifyPlaced(entity, selectorPosition, newBlock);
                         player.PlayerStatistics.BlocksPlaced++;
+                        PlayerActivity.RaiseBlock(PlayerActivityKind.BlockPlaced, newBlock.Id);
                     }
                     else
                     {
                         EntityCreationNetwork.PlaceNewEntity(World.CurrentSector, entity.ToWorldSpace(selectorPosition), newBlock);
                         player.PlayerStatistics.BlocksPlaced++;
+                        PlayerActivity.RaiseBlock(PlayerActivityKind.BlockPlaced, newBlock.Id);
                     }
 
 

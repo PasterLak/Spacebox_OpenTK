@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Spacebox.Game.Tutorial;
 using Engine.Components;
 using Engine.GUI;
 using Engine.Light;
@@ -116,6 +117,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Input.SetCursorState(CursorState.Grabbed);
 
         localPlayer.GameMode = World.WorldData.Info.GameMode;
+        TutorialService.Attach(localPlayer, World.WorldData.Info.ShowWelcomeWindow && !GameSession.IsRemoteClient);
 
         if (!Application.IsHeadless) localPlayer.AddChild(new DustSpawner());
 
@@ -146,6 +148,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         WelcomeUI.OnPlayerSpawned(World.WorldData.Info.ShowWelcomeWindow);
         WelcomeUI.Init();
+        Spacebox.Game.Tutorial.UI.TutorialUI.Init();
         PauseUI.Init();
         AttachComponent(new SpheresPool());
 
@@ -204,6 +207,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         MainThreadDispatcher.Instance.ExecutePending(StreamingBudget.DispatcherBudgetMs);
         _networkSession?.Update();
+        TutorialService.Update(Time.Delta);
         WorldLoadingScreen.Update();
         DnaReconstructionScreen.Update();
 
@@ -257,6 +261,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         Chat.Update();
         PanelUI.Update();
+        Spacebox.Game.Tutorial.UI.TutorialUI.Update();
+        InputOverlay.Update();
     }
 
     public Action OnRenderCenter;
@@ -298,8 +304,11 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         CreativeWindowUI.OnGUI();
         Chat.OnGUI();
         ItemControlsUI.OnGUI();
+        Spacebox.Game.Tutorial.UI.TutorialUI.OnGUI();
         WelcomeUI.OnGUI();
         PauseUI.OnGUI();
+        Spacebox.Game.Tutorial.UI.TutorialPromptUI.OnGUI();
+        if (Settings.ShowInterface) InputOverlay.OnGUI();
         GeneratorUI.OnGUI();
         AnalyzerUI.OnGUI();
         OxygenGeneratorUI.OnGUI();
@@ -341,6 +350,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         ShipRider.Reset();
         ShipNetwork.Reset();
         ShipWeapons.Reset();
+        TutorialService.Detach();
         PanelUI.Player = null;
 
         TickTaskManager.Dispose();
@@ -355,6 +365,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         PauseUI.Dispose();
         CraftingGUI.Dispose();
         WelcomeUI.Dispose();
+        Spacebox.Game.Tutorial.UI.TutorialUI.Dispose();
 
         GameAssets.DisposeAll();
         GameTime.Dispose();

@@ -130,6 +130,11 @@ public class InputManager
         return activeProfile.Axes.TryGetValue(id, out var axis) ? axis : null;
     }
 
+    public bool HasAction(string name)
+    {
+        return !string.IsNullOrEmpty(name) && activeProfile != null && activeProfile.Actions.ContainsKey(name);
+    }
+
     public bool IsActionPressed(string name)
     {
         return GetAction(name)?.IsPressed() ?? false;

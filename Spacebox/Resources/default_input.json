@@ -154,7 +154,7 @@
                 "Bindings": [
                     {
                         "Type": "Key",
-                        "Key": "M"
+                        "Key": "N"
                     }
                 ]
             },
@@ -244,6 +244,28 @@
                     {
                         "Type": "Key",
                         "Key": "F6"
+                    }
+                ]
+            },
+            "waypoints": {
+                "Name": "Waypoints",
+                "Description": "Open the waypoint list",
+                "Category": "Other",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "M"
+                    }
+                ]
+            },
+            "tutorial": {
+                "Name": "Tutorial panel",
+                "Description": "Show or hide the tutorial tasks",
+                "Category": "Other",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "J"
                     }
                 ]
             }

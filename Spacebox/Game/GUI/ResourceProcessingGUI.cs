@@ -439,13 +439,15 @@ namespace Spacebox.Game.GUI
                 TryMoveToPlayerPanel(slot, rest);
             }
 
-            CreditProcessedItems(slot, PlayerStatistics.CountMovedFrom(itemBefore, countBefore, slot.Item, slot.Count));
+            CreditProcessedItems(slot, itemBefore, PlayerStatistics.CountMovedFrom(itemBefore, countBefore, slot.Item, slot.Count));
         }
 
-        private static void CreditProcessedItems(ItemSlot slot, int moved)
+        private static void CreditProcessedItems(ItemSlot slot, Item item, int moved)
         {
-            if (moved > 0 && slot.Storage == OutputStorage && Player != null)
-                Player.PlayerStatistics.AddProcessedItems(moved);
+            if (moved <= 0 || slot.Storage != OutputStorage || Player == null) return;
+
+            Player.PlayerStatistics.AddProcessedItems(moved);
+            if (item != null) PlayerActivity.Raise(PlayerActivityKind.ItemProcessed, item.Id, moved, processingBlock?.BlockType);
         }
 
         private static void TryMoveToPlayerPanel(ItemSlot slot, byte rest)

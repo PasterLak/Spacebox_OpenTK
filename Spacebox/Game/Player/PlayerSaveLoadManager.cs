@@ -78,6 +78,7 @@ namespace Spacebox.Game.Player
             try
             {
                 player.PlayerStatistics.PrepareForSave();
+                Spacebox.Game.Tutorial.TutorialService.SyncProgress();
                 PlayerData data = new PlayerData
                 {
                     PositionX = player.Position.X,
@@ -95,7 +96,8 @@ namespace Spacebox.Game.Player
                     InventorySlots = CollectSlots(player.Inventory),
                     PanelSlots = CollectSlots(player.Panel),
                     EquipmentSlots = CollectSlots(player.Equipment.Storage),
-                    Statistics = player.PlayerStatistics
+                    Statistics = player.PlayerStatistics,
+                    Tutorial = player.Tutorial
                 };
 
                 return JsonSerializer.Serialize(data, new JsonSerializerOptions
@@ -136,6 +138,8 @@ namespace Spacebox.Game.Player
             Debug.Log("[PlayerSaveLoadManager] New player, spawning near an asteroid.");
 
             World.CurrentSector.SpawnPlayerNearRandomAsteroidData(player, new Random(World.Seed));
+            player.IsNewPlayer = true;
+            player.Tutorial = null;
             GameSetLoader.GiveStartItems(player, GameAssets.ItemsStr);
             player.Flashlight.Enabled = true;
             player.PlayerStatistics = new PlayerStatistics();
@@ -167,6 +171,9 @@ namespace Spacebox.Game.Player
                 player.Equipment.Storage.Clear();
                 player.Flashlight.Enabled = data.IsFlashlightOn;
                 player.PlayerStatistics = data.Statistics ?? new PlayerStatistics();
+                player.IsNewPlayer = false;
+                player.Tutorial = data.Tutorial;
+                player.Tutorial?.Normalize();
 
                 player.PlayerStatistics.StartSession();
               
@@ -301,6 +308,7 @@ namespace Spacebox.Game.Player
             public List<SavedItemSlot> EquipmentSlots { get; set; }
 
             public PlayerStatistics Statistics { get; set; } = new PlayerStatistics();
+            public Spacebox.Game.Tutorial.TutorialProgress Tutorial { get; set; }
         }
 
         private class SavedItemSlot
