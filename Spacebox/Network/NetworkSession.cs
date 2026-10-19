@@ -21,6 +21,8 @@ public sealed class NetworkSession : IDisposable
     private readonly Mobs.MobSpawnService _mobSpawner;
     private float _playerSyncTimer;
     private bool _disposed;
+    private readonly Auth.ServerAccessSettings _access;
+    private readonly Auth.ServerAuthService _auth;
 
     public static NetworkSession Current { get; private set; }
     public Npc.SpacerSpawnService Spacers => _spacerSpawner;
@@ -40,11 +42,32 @@ public sealed class NetworkSession : IDisposable
         network.Messages.Register<JoinRequestMessage>(OnJoinRequest);
         network.Messages.Register<ClientReadyMessage>(OnClientReady);
         network.Messages.Register<PlayerDataMessage>(OnPlayerData);
+        network.Messages.Register<AuthResponseMessage>(OnAuthResponse);
         network.PeerDisconnected += OnPeerDisconnected;
         network.DisconnectedFromServer += OnDisconnectedFromServer;
 
         if (World.DropEffectManager != null) World.DropEffectManager.Replicator = new DropNetwork();
         if (!GameSession.IsRemoteClient) Discovery.ServerAdvertiser.Start(CreateAdvertisement());
+
+        _access = CreateAccessSettings();
+        _auth = CreateAuthService(_access);
+    }
+
+    public bool RemoveAccount(string name) => _auth != null && _auth.RemoveAccount(name);
+
+    private static Auth.ServerAccessSettings CreateAccessSettings()
+    {
+        var config = Dedicated.DedicatedServer.Config;
+        if (!GameSession.IsDedicated || config == null) return Auth.ServerAccessSettings.Open;
+        return new Auth.ServerAccessSettings(config.WhitelistEnabled, config.Whitelist, config.RegistrationEnabled);
+    }
+
+    private Auth.ServerAuthService CreateAuthService(Auth.ServerAccessSettings access)
+    {
+        if (!access.RegistrationEnabled || World.WorldData == null) return null;
+
+        var accounts = new Auth.AccountStore(Path.Combine(World.WorldData.WorldFolderPath, Auth.AccountStore.FileName));
+        return new Auth.ServerAuthService(accounts, (peer, challenge) => NetworkManager.Instance.Send(peer, challenge), RejectJoin, AcceptJoin);
     }
 
     private static Discovery.ServerAdvertisement CreateAdvertisement()
@@ -112,6 +135,7 @@ public sealed class NetworkSession : IDisposable
     {
         if (NetworkManager.Instance.IsServer)
         {
+            _auth?.Update(Time.Delta);
             Combat.PlayerHitboxes.Record();
             UpdateObservers();
         }
@@ -181,6 +205,7 @@ public sealed class NetworkSession : IDisposable
         network.Messages.Unregister<JoinRequestMessage>();
         network.Messages.Unregister<ClientReadyMessage>();
         network.Messages.Unregister<PlayerDataMessage>();
+        network.Messages.Unregister<AuthResponseMessage>();
 
         network.Shutdown("Server stopped");
         Discovery.ServerAdvertiser.Stop();
@@ -223,11 +248,36 @@ public sealed class NetworkSession : IDisposable
         string reason = ValidateJoin(sender, message);
         if (reason != null)
         {
-            network.Send(sender, new JoinRejectedMessage { Reason = reason });
-            network.Kick(sender, reason);
+            RejectJoin(sender, reason);
             return;
         }
 
+        if (_auth != null)
+        {
+            Debug.Log($"[Server] {message.Name.Trim()} is logging in (peer {sender})");
+            _auth.Begin(sender, message);
+            return;
+        }
+
+        AcceptJoin(sender, message);
+    }
+
+    private void OnAuthResponse(int sender, AuthResponseMessage message)
+    {
+        if (!NetworkManager.Instance.IsServer || sender == NetworkManager.Instance.LocalPeerId) return;
+        _auth?.OnResponse(sender, message);
+    }
+
+    private static void RejectJoin(int peer, string reason)
+    {
+        var network = NetworkManager.Instance;
+        network.Send(peer, new JoinRejectedMessage { Reason = reason });
+        network.Kick(peer, reason);
+    }
+
+    private void AcceptJoin(int sender, JoinRequestMessage message)
+    {
+        var network = NetworkManager.Instance;
         string name = message.Name.Trim();
         PlayerRegistry.Add(new ConnectedPlayer { Peer = sender, Name = name, SkinColor = message.SkinColor });
 
@@ -249,13 +299,15 @@ public sealed class NetworkSession : IDisposable
         Debug.Log($"[Server] {name} is joining (peer {sender})");
     }
 
-    private static string ValidateJoin(int sender, JoinRequestMessage message)
+    private string ValidateJoin(int sender, JoinRequestMessage message)
     {
         if (message.GameVersion != Application.Version) return $"Version mismatch: server {Application.Version}, client {message.GameVersion}";
         if (string.IsNullOrWhiteSpace(message.Name)) return "Invalid name";
         if (Moderation.ServerModeration.IsBanned(message.Name.Trim(), NetworkManager.Instance.GetPeerAddress(sender))) return Moderation.ServerModeration.BannedReason;
         if (string.Equals(message.Name.Trim(), GameSession.PlayerName, StringComparison.OrdinalIgnoreCase) && GameSession.HasLocalPlayer) return "Name is already taken";
         if (PlayerRegistry.TryGetByName(message.Name.Trim(), out _)) return "Name is already taken";
+        if (_auth != null && _auth.IsPending(message.Name)) return "Name is already taken";
+        if (!_access.IsAllowed(message.Name)) return "You are not on the whitelist of this server";
         return null;
     }
 
@@ -285,6 +337,7 @@ public sealed class NetworkSession : IDisposable
     {
         var network = NetworkManager.Instance;
         network.Spawner.DespawnOwnedBy(peer);
+        _auth?.Remove(peer);
 
         if (!PlayerRegistry.Remove(peer, out var player)) return;
 

@@ -12,6 +12,9 @@ public sealed class ServerConfig
     public string Description { get; set; } = "A Spacebox server";
     public string IconFile { get; set; } = "server-icon.png";
     public bool LanDiscovery { get; set; } = true;
+    public bool WhitelistEnabled { get; set; } = false;
+    public List<string> Whitelist { get; set; } = new List<string>();
+    public bool RegistrationEnabled { get; set; } = false;
     public string WorldName { get; set; } = "ServerWorld";
     public string Seed { get; set; } = "";
     public string ModId { get; set; } = "default";

@@ -253,6 +253,7 @@ namespace Spacebox.Scenes
             if (ConnectionScreen.IsVisible)
             {
                 ConnectionScreen.OnGUI();
+                AuthPromptWindow.OnGUI();
                 ColorOverlay.OnGUI();
                 return;
             }

@@ -26,10 +26,12 @@ public static class ClientConnector
         Step($"Connecting to {address}:{port}");
 
         GameSession.BeginClient(address, port);
+        Auth.ClientAuth.Begin($"{GameSession.HostAddress}:{port}", response => NetworkManager.Instance.SendToServer(response));
 
         var network = NetworkManager.Instance;
         network.Messages.Register<JoinAcceptedMessage>(OnJoinAccepted);
         network.Messages.Register<JoinRejectedMessage>(OnJoinRejected);
+        network.Messages.Register<AuthChallengeMessage>(OnAuthChallenge);
         network.ConnectedToServer += OnConnected;
         network.ConnectionFailed += OnConnectionLost;
         network.DisconnectedFromServer += OnConnectionLost;
@@ -58,9 +60,20 @@ public static class ClientConnector
         });
     }
 
+    private static void OnAuthChallenge(int sender, AuthChallengeMessage message)
+    {
+        if (!_isConnecting) return;
+
+        if (!string.IsNullOrEmpty(message.Error)) Step(message.Error);
+        else Step(message.IsRegistered ? "The server asks for your password" : "Create an account on this server");
+        Auth.ClientAuth.HandleChallenge(message);
+    }
+
     private static void OnJoinAccepted(int sender, JoinAcceptedMessage message)
     {
         if (!_isConnecting) return;
+
+        Auth.ClientAuth.OnJoinAccepted();
 
         var world = new RemoteWorldInfo
         {
@@ -146,6 +159,8 @@ public static class ClientConnector
         network.DisconnectedFromServer -= OnConnectionLost;
         network.Messages.Unregister<JoinAcceptedMessage>();
         network.Messages.Unregister<JoinRejectedMessage>();
+        network.Messages.Unregister<AuthChallengeMessage>();
+        Auth.ClientAuth.Reset();
         _isConnecting = false;
         _isDownloading = false;
         _onAccepted = null;

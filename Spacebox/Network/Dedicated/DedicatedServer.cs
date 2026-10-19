@@ -77,6 +77,7 @@ public static class DedicatedServer
         CommandManager.RegisterGlobalCommand(new KickCommand());
         CommandManager.RegisterGlobalCommand(new BanCommand());
         CommandManager.RegisterGlobalCommand(new UnbanCommand());
+        CommandManager.RegisterGlobalCommand(new UnregisterCommand());
         CommandManager.RegisterGlobalCommand(new MuteCommand(true));
         CommandManager.RegisterGlobalCommand(new MuteCommand(false));
         CommandManager.RegisterGlobalCommand(new SaveCommand());

@@ -12,6 +12,7 @@ public static class QuickJoin
         GameSession.SetPlayer(string.IsNullOrWhiteSpace(playerName) ? "Player" + new Random().Next(1000, 9999) : playerName, "Yellow");
         Debug.Log($"[Network] Quick join {address}:{port} as {GameSession.PlayerName}");
 
+        if (SceneManager.Current is not MenuScene) SceneManager.Load<MenuScene>();
         ConnectionScreen.Show($"Joining {address}:{port}");
         ClientConnector.Connect(address, port, OnAccepted, OnFailed);
     }

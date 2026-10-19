@@ -112,7 +112,7 @@ public static class ConnectionScreen
             y += lineHeight * 2f;
         }
 
-        DrawButton(displaySize, y + lineHeight);
+        if (!AuthPromptWindow.IsVisible) DrawButton(displaySize, y + lineHeight);
     }
 
     private static void DrawButton(Vector2 displaySize, float y)

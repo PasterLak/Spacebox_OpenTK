@@ -48,3 +48,16 @@ public sealed class MuteCommand : CommandBase
         ServerModeration.SetMuted(args[0], _muted);
     }
 }
+
+public sealed class UnregisterCommand : CommandBase
+{
+    public override string Name => "unregister";
+    public override string Description => "Delete a player account so the name can register again. Usage: unregister <name>";
+
+    public override void Execute(string[] args)
+    {
+        if (args.Length == 0) return;
+        if (NetworkSession.Current != null && NetworkSession.Current.RemoveAccount(args[0])) Debug.Log($"Account {args[0]} was removed");
+        else Debug.Error($"{args[0]} has no account or registration is disabled");
+    }
+}
