@@ -86,6 +86,7 @@ Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
 ## GUI and input
 
 - GUI is ImGui (ImGui.NET) via `ImGuiController`. `UIManager` keeps a stack of named windows (`Open`, `Toggle`, `CloseTop`, `IsOpen`); gate gameplay input on `IsUIMode`. The debug console is the `"debug"` window.
+- ImGui style is global: a scene with its own look captures `GUI/ImGuiStyleSnapshot.Capture()` on load, applies its theme only around its own GUI pass and calls `Restore()` after it and on unload.
 - Input: named actions → `InputPro.InputManager.Instance` (JSON bindings, remappable); raw state → `Input.IsKey` / `IsKeyDown` / `Input.Mouse`. `InputManager0`/`InputAction0` are legacy (still used for engine F-keys).
 
 ## Threading and services

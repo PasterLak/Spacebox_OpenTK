@@ -1,4 +1,5 @@
 using Engine;
+using Engine.GUI;
 using Engine.Light;
 using Engine.SceneManagement;
 using ImGuiNET;
@@ -23,7 +24,7 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
     private GameSetEditorArgs _args;
     private EditorContext _context;
     private EditorShell _shell;
-    private float _previousFontScale = 1f;
+    private ImGuiStyleSnapshot _baseStyle;
     private Vector3 _previousAmbient;
 
     public void Initialize(GameSetEditorArgs param)
@@ -44,14 +45,13 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
         _context.Assets.Refresh();
         _shell = new EditorShell(_context, EditorPanelFactory.CreateDefault(project), _args.StartPanel);
 
-        _previousFontScale = ImGui.GetIO().FontGlobalScale;
+        _baseStyle = ImGuiStyleSnapshot.Capture();
         Input.ShowCursor();
     }
 
     public override void Start()
     {
         base.Start();
-        MenuScene.ResetImGuiFont();
         ColorOverlay.FadeOut(new System.Numerics.Vector3(0f, 0f, 0f), 0.5f);
     }
 
@@ -81,8 +81,14 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
     {
         EditorTheme.Apply();
         ImGui.GetIO().FontGlobalScale = EditorWidgets.Scale;
-        _shell?.Draw();
-        ImGui.GetIO().FontGlobalScale = _previousFontScale;
+        try
+        {
+            _shell?.Draw();
+        }
+        finally
+        {
+            _baseStyle?.Restore();
+        }
         ColorOverlay.OnGUI();
     }
 
@@ -94,7 +100,7 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
         _context = null;
         GameAssets.DisposeAll();
         Lighting.AmbientColor = _previousAmbient;
-        ImGui.GetIO().FontGlobalScale = _previousFontScale;
+        _baseStyle?.Restore();
     }
 
     private void LoadGameSet()

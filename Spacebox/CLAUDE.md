@@ -188,6 +188,7 @@ Bits 37+ are free. Color, light color/level and `OnDestroy` are regular members.
 
 - `Spacebox/Editor/`: `GameSetEditorScene` (+ `GameSetEditorLauncher` for `--editor`), `EditorContext` (project, runtime assets, previews, status), `Data/` (JSON files, entry sources, `JsonSchema`, `GameSetCatalog`), `UI/` (`EditorShell`, `JsonInspector`, `Fields/`, `Panels/`), `Preview/` (offscreen previews), `Generation/` (biome map).
 - New content type: add an `EntryDefinition` (+ schema DTO) to `GameSetCatalog` and a `CollectionPanel` in `EditorPanelFactory`. New reference/value widget: an `IJsonFieldEditor` (or `ReferenceFieldEditor`) registered in `JsonFieldEditors.CreateDefault`. New preview: `IPreviewContent` + `IEntryPreview`.
+- The editor theme (`EditorTheme`) and font scale are applied only during the editor's GUI pass and restored from an `ImGuiStyleSnapshot`, so menu and game styles are untouched; the editor does not change fonts.
 - Previews read runtime assets (need Save & Reload after edits), projectile previews read the JSON live. GL work only in `IPreviewContent.Update/Render`; asteroid meshes are built on workers.
 
 ## Where to add things

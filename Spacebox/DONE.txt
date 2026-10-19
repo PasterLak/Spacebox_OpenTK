@@ -194,6 +194,7 @@ Fixes
 - block placement range of asteroids grew with mass (heavy asteroids grabbed blocks far away); now 16 blocks from the nearest block
 - player and bullets went through an asteroid when a small entity was built next to it (collisions and raycasts only checked the entity with the nearest center of mass)
 - block break dust failed for blocks with non-square textures
+- leaving the GameSet editor left its ImGui style (padding, rounding, colours, font) in the menu and the game
 
 Engine
 - RenderTexture (offscreen rendering with its own camera) and OrbitViewCamera
