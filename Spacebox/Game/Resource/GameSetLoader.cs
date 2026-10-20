@@ -962,7 +962,7 @@ public static class GameSetLoader
         {
             Id_string = id,
             Category = data.Category,
-            RepairPerSecond = Math.Clamp(data.RepairPerSecond, 0.1f, 100f),
+            RepairTime = Math.Clamp(data.RepairTime, 0.05f, 60f),
             PowerPerSecond = Math.Clamp(data.PowerPerSecond, 0f, 100f),
             Range = Math.Clamp(data.Range, 1f, 12f)
         };

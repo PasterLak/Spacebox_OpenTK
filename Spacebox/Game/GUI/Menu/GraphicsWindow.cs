@@ -72,7 +72,7 @@ namespace Spacebox.Game.GUI.Menu
                         Apply(graphics, () => graphics.SaturationPercent = saturation);
 
                     int vignette = graphics.VignettePercent;
-                    if (rows.Slider("Vignette", "Darkens the screen edges. Needs Post Processing.", ref vignette, 0, 100, "%d%%"))
+                    if (rows.Slider("Vignette", "Darkens the screen edges. Needs Post Processing. The low oxygen warning still darkens the edges when it is off.", ref vignette, 0, 100, "%d%%"))
                         Apply(graphics, () => graphics.VignettePercent = vignette);
 
                     int filmGrain = graphics.FilmGrainPercent;

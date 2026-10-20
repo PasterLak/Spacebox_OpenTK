@@ -9,6 +9,7 @@ public class OxygenBar
 {
     public static readonly Vector4 Color = new Vector4(0f, 1f, 1f, 1f);
     private const string AirText = "Air";
+    private const string InfiniteText = "Infinite";
 
     public StatsData StatsData { get; }
     public StatsGUI StatsGUI { get; set; }
@@ -17,9 +18,11 @@ public class OxygenBar
     public int ConsumeAmount { get; set; } = 1;
     public int RefillPerSecond { get; set; } = 10;
     public bool IsInAir { get; private set; }
+    public bool IsInfinite { get; private set; }
 
     private float _time;
     private float _refillTime;
+    private bool _stateApplied;
 
     public OxygenBar()
     {
@@ -46,7 +49,7 @@ public class OxygenBar
 
     public void Update(bool isInAir)
     {
-        SetInAir(isInAir);
+        SetState(isInAir, false);
 
         if (isInAir)
         {
@@ -63,12 +66,25 @@ public class OxygenBar
         StatsData.Decrement(ConsumeAmount);
     }
 
-    private void SetInAir(bool isInAir)
+    public void UpdateInfinite(bool isInAir)
     {
-        if (IsInAir == isInAir) return;
+        SetState(isInAir, true);
+    }
 
+    public static string GetTextOverride(bool isInAir, bool isInfinite)
+    {
+        if (isInAir) return AirText;
+        return isInfinite ? InfiniteText : null;
+    }
+
+    private void SetState(bool isInAir, bool isInfinite)
+    {
+        if (IsInAir == isInAir && IsInfinite == isInfinite && _stateApplied) return;
+
+        _stateApplied = true;
         IsInAir = isInAir;
-        StatsGUI.TextOverride = isInAir ? AirText : null;
+        IsInfinite = isInfinite;
+        StatsGUI.TextOverride = GetTextOverride(isInAir, isInfinite);
         _refillTime = 0f;
     }
 

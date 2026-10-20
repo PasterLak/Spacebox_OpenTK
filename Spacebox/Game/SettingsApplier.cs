@@ -62,11 +62,7 @@ public static class SettingsApplier
         window.ColorGrading?.Configure(ColorGradingSettingsMapper.From(graphics));
         if (window.CameraFeed != null) window.CameraFeed.Intensity = graphics.CameraEffectPercent / 100f;
 
-        if (window.Vignette != null)
-        {
-            window.Vignette.VignetteStrength = graphics.VignettePercent / 100f;
-            window.Vignette.Enabled = graphics.VignettePercent > 0;
-        }
+        VignetteController.SetSettingStrength(graphics.VignettePercent / 100f);
     }
 
     public static void ApplyGameplay(GameplaySettings gameplay)

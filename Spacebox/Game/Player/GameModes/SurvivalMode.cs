@@ -51,11 +51,12 @@ public class SurvivalMode : MovementMode
         UpdateSuffocation(player);
     }
 
+    private readonly SuffocationDamage _suffocation = new SuffocationDamage();
+
     private void UpdateSuffocation(LocalAstronaut player)
     {
-        if (!player.IsAlive || !player.OxygenBar.StatsData.IsMinReached) return;
-
-        player.TakeDamage(player.HealthBar.StatsData.Value, new DeathCase("Ran out of oxygen"));
+        int damage = _suffocation.Update(Time.Delta, player.IsAlive && player.OxygenBar.StatsData.IsMinReached);
+        if (damage > 0) player.TakeDamage(damage, new DeathCase("Ran out of oxygen"));
     }
 
 

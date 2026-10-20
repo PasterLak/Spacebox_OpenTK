@@ -900,7 +900,7 @@
         "Sprite": "repairTool",
         "MaxStack": 1,
         "ModelDepth": 2.0,
-        "RepairPerSecond": 4,
+        "RepairTime": 1,
         "PowerPerSecond": 2,
         "Range": 5
     },

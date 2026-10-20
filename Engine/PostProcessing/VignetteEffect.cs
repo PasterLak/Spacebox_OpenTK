@@ -9,6 +9,8 @@ namespace Engine.PostProcessing
         public float VignetteStrength { get; set; } = 0.5f;
         public float VignetteRadius { get; set; } = 0.75f;
         public float VignetteSoftness { get; set; } = 0.3f;
+        public bool AlwaysApply { get; set; }
+        public override bool IsRequired => AlwaysApply;
         public VignetteEffect(Shader shader)
         {
             vignetteShader = shader;

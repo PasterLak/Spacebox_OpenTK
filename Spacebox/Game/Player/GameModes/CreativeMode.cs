@@ -1,5 +1,6 @@
 using OpenTK.Mathematics;
 using Spacebox.Game.GUI;
+using Spacebox.Game.Generation;
 using Spacebox.Game.Player.Interactions;
 using System;
 using System.Collections.Generic;
@@ -66,6 +67,7 @@ public class CreativeMode : MovementMode
     {
         player.PowerBar.Update();
         player.HealthBar.Update();
+        player.OxygenBar.UpdateInfinite(World.Instance != null && World.Instance.IsBreathable(player.Position));
     }
 
     public override void HandleInput(LocalAstronaut player)

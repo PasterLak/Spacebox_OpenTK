@@ -46,7 +46,7 @@ public class EquipmentJSON : ItemJSON
 
 public class RepairToolItemJSON : ItemJSON
 {
-    public float RepairPerSecond { get; set; } = 4f;
+    public float RepairTime { get; set; } = 1f;
     public float PowerPerSecond { get; set; } = 2f;
     public float Range { get; set; } = 5f;
 }

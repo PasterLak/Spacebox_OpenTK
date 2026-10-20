@@ -212,6 +212,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         WorldLoadingScreen.Update();
         DnaReconstructionScreen.Update();
         Spacebox.Game.Rendering.CameraFeedController.Update();
+        Spacebox.Game.Rendering.VignetteController.SetWarning(Spacebox.Game.Player.OxygenWarning.For(localPlayer));
 
 #if DEBUG
         if (Input.IsKeyDown(Keys.R))
@@ -363,6 +364,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         ShipConsoleUI.Reset();
         ShipPilot.Reset();
         Spacebox.Game.Rendering.CameraFeedController.Reset();
+        Spacebox.Game.Rendering.VignetteController.SetWarning(0f);
         ShipRider.Reset();
         ShipNetwork.Reset();
         ShipWeapons.Reset();

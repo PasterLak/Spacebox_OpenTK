@@ -63,16 +63,16 @@ public class InteractionRepair : InteractionMode
         bool holding = Input.IsAction("block_destroy");
         bool repairing = holding && max > 0 && tally.NeedsRepair && HasPower(player, tool);
 
-        if (repairing) Repair(player, tool, (byte)max);
+        if (repairing) Repair(player, tool, (byte)max, tally.Max);
         else ResetProgress();
 
         RepairTargetUI.Show(data?.Name ?? "Block", tally.Current, tally.Max, repairing);
     }
 
-    private void Repair(LocalAstronaut player, RepairToolItem tool, byte max)
+    private void Repair(LocalAstronaut player, RepairToolItem tool, byte max, int totalMax)
     {
         float delta = Time.Delta;
-        _repairProgress += tool.RepairPerSecond * delta;
+        _repairProgress += tool.GetRepairRate(totalMax) * delta;
         int amount = (int)_repairProgress;
         if (amount > 0)
         {
