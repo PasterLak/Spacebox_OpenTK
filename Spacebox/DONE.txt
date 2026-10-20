@@ -50,6 +50,7 @@ Small
 - build scripts read the version from Application.cs, keep other platform builds, zip without a root folder
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
+- light from a neighbour chunk no longer disappears when a nearby chunk is relit (block eaten, chunk loaded)
 - old worlds saved as 0.1.2 by the old converter are refused instead of loading broken
 - multiplayer: glass broken by flying into it is removed for everyone
 - multiplayer: rejected or conflicting block edits are corrected by the server

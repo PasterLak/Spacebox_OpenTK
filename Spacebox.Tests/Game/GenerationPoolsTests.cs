@@ -67,7 +67,7 @@ public class GenerationPoolsTests
         scratch.Clear();
 
         Assert.Empty(scratch.LightQueue);
-        Assert.Empty(scratch.Visited);
+        Assert.All(scratch.RegionChunks, Assert.Null);
         Assert.Empty(scratch.ChunkToIndex);
         Assert.Empty(scratch.IndexToChunk);
         Assert.Empty(scratch.ChangedChunks);

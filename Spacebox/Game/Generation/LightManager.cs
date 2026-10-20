@@ -10,6 +10,7 @@ namespace Spacebox.Game.Generation
         private const byte Size = Chunk.Size;
         private const int MinChannel = 3;
         private const float MaxPropagatedLevel = 14.9f;
+        private static readonly int Reach = ComputeReach();
         public static bool EnableLighting = true;
         private readonly Chunk _chunk;
 
@@ -53,65 +54,113 @@ namespace Spacebox.Game.Generation
 
         private void PropagateLight(LightPropagationScratch scratch)
         {
-            var visited = scratch.Visited;
-            visited.Add(_chunk);
+            CollectRegionChunks(scratch.RegionChunks);
+            ClearRegionAndEnqueueSources(scratch);
+            EnqueueRegionBorder(scratch);
+            SpreadLight(scratch);
 
-            foreach (var neighbor in _chunk.Neighbors.Values)
-            {
-                if (neighbor != null)
-                {
-                    visited.Add(neighbor);
-                }
-            }
-
-            var chunkToIndex = scratch.ChunkToIndex;
-            var indexToChunk = scratch.IndexToChunk;
-
-            foreach (var c in visited)
-            {
-                chunkToIndex[c] = indexToChunk.Count;
-                indexToChunk.Add(c);
-            }
-
-            var lightQueue = scratch.LightQueue;
             var changedChunks = scratch.ChangedChunks;
+            changedChunks.Remove(_chunk);
 
-            for (int i = 0; i < indexToChunk.Count; i++)
+            foreach (var c in changedChunks)
             {
-                Chunk c = indexToChunk[i];
+                c.QueueMeshUpdate(UpdateReason.Lighting);
+            }
+        }
+
+        private void CollectRegionChunks(Chunk[] region)
+        {
+            for (int ox = -1; ox <= 1; ox++)
+            for (int oy = -1; oy <= 1; oy++)
+            for (int oz = -1; oz <= 1; oz++)
+            {
+                region[RegionSlot(ox, oy, oz)] = FindRelativeChunk(_chunk, ox, oy, oz);
+            }
+        }
+
+        private static void ClearRegionAndEnqueueSources(LightPropagationScratch scratch)
+        {
+            var region = scratch.RegionChunks;
+
+            for (int ox = -1; ox <= 1; ox++)
+            for (int oy = -1; oy <= 1; oy++)
+            for (int oz = -1; oz <= 1; oz++)
+            {
+                var c = region[RegionSlot(ox, oy, oz)];
+                if (c == null) continue;
+
+                int index = GetChunkIndex(scratch, c);
+                GetRegionRange(ox, out int x0, out int x1);
+                GetRegionRange(oy, out int y0, out int y1);
+                GetRegionRange(oz, out int z0, out int z1);
                 bool chunkChanged = false;
 
-                for (int x = 0; x < Size; x++)
+                for (int x = x0; x < x1; x++)
+                for (int y = y0; y < y1; y++)
+                for (int z = z0; z < z1; z++)
                 {
-                    for (int y = 0; y < Size; y++)
+                    var b = c.Blocks[x, y, z];
+                    if (b.LightLevel <= 0f) continue;
+
+                    if (b.LightLevel < 15f)
                     {
-                        for (int z = 0; z < Size; z++)
-                        {
-                            var b = c.Blocks[x, y, z];
-                            if (b.LightLevel > 0f)
-                            {
-                                if (b.LightLevel < 15f)
-                                {
-                                    b.LightLevel = 0f;
-                                    b.LightColor = Color3Byte.Zero;
-                                    c.Blocks[x, y, z] = b;
-                                    chunkChanged = true;
-                                }
-                                else
-                                {
-                                    uint packed = (uint)((i << 15) | (x << 10) | (y << 5) | z);
-                                    lightQueue.Enqueue(packed);
-                                }
-                            }
-                        }
+                        b.LightLevel = 0f;
+                        b.LightColor = Color3Byte.Zero;
+                        chunkChanged = true;
+                    }
+                    else
+                    {
+                        scratch.LightQueue.Enqueue(Pack(index, x, y, z));
                     }
                 }
 
                 if (chunkChanged)
                 {
-                    changedChunks.Add(c);
+                    scratch.ChangedChunks.Add(c);
                 }
             }
+        }
+
+        private static void EnqueueRegionBorder(LightPropagationScratch scratch)
+        {
+            int low = -Reach - 1;
+            int high = Size + Reach;
+
+            for (int u = -Reach; u < high; u++)
+            for (int v = -Reach; v < high; v++)
+            {
+                EnqueueLitCell(scratch, low, u, v);
+                EnqueueLitCell(scratch, high, u, v);
+                EnqueueLitCell(scratch, u, low, v);
+                EnqueueLitCell(scratch, u, high, v);
+                EnqueueLitCell(scratch, u, v, low);
+                EnqueueLitCell(scratch, u, v, high);
+            }
+        }
+
+        private static void EnqueueLitCell(LightPropagationScratch scratch, int x, int y, int z)
+        {
+            int ox = x < 0 ? -1 : x >= Size ? 1 : 0;
+            int oy = y < 0 ? -1 : y >= Size ? 1 : 0;
+            int oz = z < 0 ? -1 : z >= Size ? 1 : 0;
+
+            var c = scratch.RegionChunks[RegionSlot(ox, oy, oz)];
+            if (c == null) return;
+
+            int lx = x - ox * Size;
+            int ly = y - oy * Size;
+            int lz = z - oz * Size;
+
+            if (c.Blocks[lx, ly, lz].LightLevel <= 0f) return;
+
+            scratch.LightQueue.Enqueue(Pack(GetChunkIndex(scratch, c), lx, ly, lz));
+        }
+
+        private void SpreadLight(LightPropagationScratch scratch)
+        {
+            var lightQueue = scratch.LightQueue;
+            var indexToChunk = scratch.IndexToChunk;
+            var changedChunks = scratch.ChangedChunks;
 
             while (lightQueue.Count > 0)
             {
@@ -160,27 +209,82 @@ namespace Spacebox.Game.Generation
 
                     nb.LightColor = new Color3Byte((byte)nr, (byte)ng, (byte)nbl);
                     nb.LightLevel = MathF.Min(MaxPropagatedLevel, Math.Max(nr, Math.Max(ng, nbl)) / 255f * 15f);
-                    nChunk.Blocks[bx, by, bz] = nb;
                     changedChunks.Add(nChunk);
 
-                    if (!chunkToIndex.TryGetValue(nChunk, out int nIndex))
-                    {
-                        nIndex = indexToChunk.Count;
-                        chunkToIndex[nChunk] = nIndex;
-                        indexToChunk.Add(nChunk);
-                    }
-
-                    uint nPacked = (uint)((nIndex << 15) | (bx << 10) | (by << 5) | bz);
-                    lightQueue.Enqueue(nPacked);
+                    lightQueue.Enqueue(Pack(GetChunkIndex(scratch, nChunk), bx, by, bz));
                 }
             }
+        }
 
-            changedChunks.Remove(_chunk);
+        private static int GetChunkIndex(LightPropagationScratch scratch, Chunk c)
+        {
+            if (scratch.ChunkToIndex.TryGetValue(c, out int index)) return index;
 
-            foreach (var c in changedChunks)
+            index = scratch.IndexToChunk.Count;
+            scratch.ChunkToIndex[c] = index;
+            scratch.IndexToChunk.Add(c);
+            return index;
+        }
+
+        private static uint Pack(int chunkIndex, int x, int y, int z)
+        {
+            return (uint)((chunkIndex << 15) | (x << 10) | (y << 5) | z);
+        }
+
+        private static int RegionSlot(int ox, int oy, int oz)
+        {
+            return (ox + 1) * 9 + (oy + 1) * 3 + (oz + 1);
+        }
+
+        private static void GetRegionRange(int offset, out int start, out int end)
+        {
+            if (offset < 0)
             {
-                c.QueueMeshUpdate(UpdateReason.Lighting);
+                start = Size - Reach;
+                end = Size;
             }
+            else if (offset > 0)
+            {
+                start = 0;
+                end = Reach;
+            }
+            else
+            {
+                start = 0;
+                end = Size;
+            }
+        }
+
+        private static Chunk FindRelativeChunk(Chunk from, int ox, int oy, int oz)
+        {
+            if (from == null) return null;
+            if (ox == 0 && oy == 0 && oz == 0) return from;
+
+            Chunk found = null;
+            if (ox != 0) found = FindRelativeChunk(Step(from, ox, 0, 0), 0, oy, oz);
+            if (found == null && oy != 0) found = FindRelativeChunk(Step(from, 0, oy, 0), ox, 0, oz);
+            if (found == null && oz != 0) found = FindRelativeChunk(Step(from, 0, 0, oz), ox, oy, 0);
+            return found;
+        }
+
+        private static Chunk Step(Chunk from, int dx, int dy, int dz)
+        {
+            from.Neighbors.TryGetValue(new Vector3SByte((sbyte)dx, (sbyte)dy, (sbyte)dz), out var next);
+            return next != null && !next.IsDisposed ? next : null;
+        }
+
+        private static int ComputeReach()
+        {
+            int value = byte.MaxValue;
+            int distance = 0;
+
+            while (value * 8 / 10 >= MinChannel)
+            {
+                value = value * 8 / 10;
+                distance++;
+            }
+
+            return distance;
         }
 
         private void GetNeighborCoord(Chunk c, int nx, int ny, int nz, out Chunk nChunk, out int bx, out int by, out int bz)

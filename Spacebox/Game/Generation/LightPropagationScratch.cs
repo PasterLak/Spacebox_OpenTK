@@ -9,7 +9,7 @@ public sealed class LightPropagationScratch
         scratch => scratch.Clear(),
         Math.Max(4, Environment.ProcessorCount));
 
-    public readonly HashSet<Chunk> Visited = new HashSet<Chunk>();
+    public readonly Chunk[] RegionChunks = new Chunk[27];
     public readonly Dictionary<Chunk, int> ChunkToIndex = new Dictionary<Chunk, int>();
     public readonly List<Chunk> IndexToChunk = new List<Chunk>();
     public readonly Queue<uint> LightQueue = new Queue<uint>(2048);
@@ -17,7 +17,7 @@ public sealed class LightPropagationScratch
 
     public void Clear()
     {
-        Visited.Clear();
+        Array.Clear(RegionChunks);
         ChunkToIndex.Clear();
         IndexToChunk.Clear();
         LightQueue.Clear();
