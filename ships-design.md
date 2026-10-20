@@ -118,7 +118,7 @@ Per console: position in entity space, color → key list, bound blocks as (colo
 | Player | `MovementMode` (zero-g, world space), `GravityWalker` (entity-local position + `EntityBoxCollider.Sweep`), kinematic `SphereBody` | Zero-g mode has no boarded frame; `GravityWalker.SyncLocal` re-derives the local position whenever the world position changed externally |
 | Moving geometry precedent | `DoorSystem` moves cells, pushes player/bodies/drops along the slide | Same push logic needed for hulls |
 | Power | `ElectricNetworkManager` per entity, `IsActive` on blocks | Ready to gate thrusters/cannons/consoles |
-| Blocks | `basic_engine`, `basic_cannon` exist in `blocks.json` **without behaviour**; multi-cell blocks, `BlockRotationHelper` directions | Need `Type`s + classes |
+| Blocks | `basic_engine`, `basic_cannon` were decorative blocks without behaviour (removed in 0.1.5); multi-cell blocks, `BlockRotationHelper` directions | Need `Type`s + classes |
 | Weapons | `Projectile`, `ProjectilesPool`, `CombatNetwork` (authoritative, lag compensated), `WeaponItem` | Reuse for cannons |
 | Network | `NetworkVariable<T>`, `[Rpc]`, `INetMessage`, `EntitySync`, `BlockStateNetwork`, `NetworkTransform` (snapshot interpolation 0.1 s) | Need ship state stream + pilot input |
 | Saving | NBT per entity; asteroids save only changed chunks; `IBlockSerializer` per block type | Add velocity, console bindings |

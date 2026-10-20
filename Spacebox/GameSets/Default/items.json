@@ -1013,20 +1013,10 @@
         "Power": 30
     },
     {
-        "ID": "obscurium_ammo",
-        "Name": "Obscurium Ammo",
-        "Description": "Ammunition made of obscurium",
-        "Sprite": "obscurium_ammo",
-        "Category": "weapons",
-        "MaxStack": 64,
-        "ModelDepth": 2.0
-    },
-    {
         "ID": "mineral_parasite_spawner",
         "Name": "Mineral Parasite Larva",
         "Description": "Use it to release a mineral parasite",
         "Type": "mob_spawner",
-        "Category": "consumables",
         "Sprite": "mineralParasiteSpawner",
         "Mob": "mineral_parasite",
         "UseCooldown": 0.5,

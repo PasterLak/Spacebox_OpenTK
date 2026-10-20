@@ -272,6 +272,13 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     public Action OnRenderCenter;
     public override void Render()
     {
+        if (WorldLoadingScreen.IsActive)
+        {
+            RenderSkybox();
+            DisposalManager.ProcessDisposals();
+            return;
+        }
+
         base.Render();
 
         DisposalManager.ProcessDisposals();

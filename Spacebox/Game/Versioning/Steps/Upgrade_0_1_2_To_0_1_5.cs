@@ -8,8 +8,11 @@ public sealed class Upgrade_0_1_2_To_0_1_5 : WorldUpgradeStep
 
     public const string RemovedCobaltCrystal = "default:cobalt_crystal";
     public const string CobaltIngot = "default:cobalt_ingot";
+    public const string RemovedBasicEngine = "default:basic_engine";
+    public const string RemovedBasicCannon = "default:basic_cannon";
+    public const string RemovedObscuriumAmmo = "default:obscurium_ammo";
 
-    public override string Description => "0.1.2 -> 0.1.5: new save fields are optional (tutorial progress, local player file), cobalt crystals become cobalt ingots";
+    public override string Description => "0.1.2 -> 0.1.5: new save fields are optional (tutorial progress, local player file), cobalt crystals become cobalt ingots, decorative basic engine and basic cannon blocks and obscurium ammo are removed";
 
     public override string Check(WorldUpgradeContext world)
     {
@@ -24,5 +27,8 @@ public sealed class Upgrade_0_1_2_To_0_1_5 : WorldUpgradeStep
     public override void Apply(WorldUpgradeContext world)
     {
         world.RemoveItem(RemovedCobaltCrystal, CobaltIngot);
+        world.RemoveBlock(RemovedBasicEngine);
+        world.RemoveBlock(RemovedBasicCannon);
+        world.RemoveItem(RemovedObscuriumAmmo);
     }
 }

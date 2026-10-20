@@ -48,6 +48,8 @@ New
 - Graphics options: brightness, contrast, saturation, vignette strength, film grain (animated or static), Show FPS counter, reset buttons for image and SSAO
 - viewing through a ship camera block shows a security camera feed: scanlines, grain, lens distortion, REC overlay with timer (Camera Block Effect option)
 Small
+- crafting categories: Building (blocks, windows, doors, lights), Production, Electricity, Logistics, Ships, Other; removed decorative basic engine and basic cannon blocks
+- removed obscurium ammo; mineral parasite larva is no longer in the Consumables crafting category
 - convert dialog shows steps, backup and warnings
 - release builds leave out unused assets found by Tools/Spacebox.AssetAudit (keep list Build/asset-keep.txt); _Ignored texture folders are no longer packed into the atlases
 - debug console: Copy All button, Select mode (selectable text, Ctrl+C), right-click a message to copy it
@@ -63,6 +65,7 @@ Small
 - build scripts read the version from Application.cs, keep other platform builds, zip without a root folder
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
+- while the world loads only the skybox is drawn: spacers, mobs and other players no longer show before the world
 - light from a neighbour chunk no longer disappears when a nearby chunk is relit (block eaten, chunk loaded)
 - new Interface options: font (Fusion Pixel by default with Cyrillic, or the old ProggyClean), font size and a font test field; licenses in Resources/Fonts/FONTS.md
 - interface text is readable in small windows: the pixel font is shrunk with smooth filtering instead of dropping pixel rows

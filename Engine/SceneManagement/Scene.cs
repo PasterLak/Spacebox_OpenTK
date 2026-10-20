@@ -44,15 +44,24 @@ namespace Engine.SceneManagement
 
         public virtual void Render()
         {
-            if (Lighting.Skybox != null)
-            {
-                using(Prof.Time(T_SceneSkybox))
-                Lighting.Skybox.Render();
-            }
+            RenderSkybox();
           //  base.Render();
+            RenderNodes();
+
+        }
+
+        protected void RenderSkybox()
+        {
+            if (Lighting.Skybox == null) return;
+
+            using (Prof.Time(T_SceneSkybox))
+                Lighting.Skybox.Render();
+        }
+
+        protected void RenderNodes()
+        {
             using (Prof.Time(T_SceneBVH))
                 BVHCuller.Render(this, Camera.Main);
-    
         }
 
         public override void Destroy()

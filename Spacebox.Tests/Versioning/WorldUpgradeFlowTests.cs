@@ -145,6 +145,43 @@ public class WorldUpgradeFlowTests : IDisposable
     }
 
     [Fact]
+    public void Step012To015_RemovesBasicEngineAndCannon()
+    {
+        string folder = Build(w => w.Version("0.1.2")
+            .Chunk(new[] { "default:air", "default:basic_engine", "default:basic_cannon", "default:light_rock" })
+            .Player("default:basic_engine", 3)
+            .Drop("default:basic_cannon"));
+        var info = new WorldInfo { Name = "W", GameVersion = "0.1.2" };
+
+        var result = new WorldUpgrader(WorldUpgradeRegistry.CreateDefault(), Path.Combine(_root, "backups")).Upgrade(info, folder, "0.1.5", DefaultIds());
+
+        Assert.True(result.Success, result.Error);
+        Assert.DoesNotContain("default:basic_engine", WorldInspector.BlockPalettes(folder));
+        Assert.DoesNotContain("default:basic_cannon", WorldInspector.BlockPalettes(folder));
+        Assert.DoesNotContain("default:basic_engine", WorldInspector.PlayerItems(folder));
+        Assert.DoesNotContain("default:basic_cannon", WorldInspector.DropItems(folder));
+        Assert.Empty(result.Warnings);
+    }
+
+    [Fact]
+    public void Step012To015_RemovesObscuriumAmmo()
+    {
+        string folder = Build(w => w.Version("0.1.2")
+            .Chunk(new[] { "default:air", "default:light_rock" }, new[] { "default:obscurium_ammo" })
+            .Player("default:obscurium_ammo", 8)
+            .Drop("default:obscurium_ammo"));
+        var info = new WorldInfo { Name = "W", GameVersion = "0.1.2" };
+
+        var result = new WorldUpgrader(WorldUpgradeRegistry.CreateDefault(), Path.Combine(_root, "backups")).Upgrade(info, folder, "0.1.5", DefaultIds());
+
+        Assert.True(result.Success, result.Error);
+        Assert.DoesNotContain("default:obscurium_ammo", WorldInspector.ItemPalettes(folder));
+        Assert.DoesNotContain("default:obscurium_ammo", WorldInspector.PlayerItems(folder));
+        Assert.DoesNotContain("default:obscurium_ammo", WorldInspector.DropItems(folder));
+        Assert.Empty(result.Warnings);
+    }
+
+    [Fact]
     public void TooOldWorld_IsRefusedAndUntouched()
     {
         string folder = Build(w => w.Version("0.1.1").Chunk(new[] { "default:light_rock" }));

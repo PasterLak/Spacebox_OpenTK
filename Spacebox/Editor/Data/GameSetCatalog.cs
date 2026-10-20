@@ -81,7 +81,7 @@ public static class GameSetCatalog
             ["ID"] = "new_block",
             ["Name"] = "New Block",
             ["Type"] = "block",
-            ["Category"] = "blocks",
+            ["Category"] = "building",
             ["PowerToDrill"] = 1,
             ["Mass"] = 1,
             ["Durability"] = 10,

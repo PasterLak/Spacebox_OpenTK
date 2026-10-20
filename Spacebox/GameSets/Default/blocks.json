@@ -181,7 +181,7 @@
     "ID": "aluminium_block_light",
     "Name": "Aluminium Light Block",
     "Description": "Light hull block",
-    "Category": "blocks",
+    "Category": "building",
     "PowerToDrill": 1,
     "Mass": 2,
     "Durability": 10,
@@ -198,7 +198,7 @@
     "ID": "aluminium_block_medium",
     "Name": "Aluminium Medium Block",
     "Description": "Hull block",
-    "Category": "blocks",
+    "Category": "building",
     "PowerToDrill": 2,
     "Mass": 4,
     "Durability": 20,
@@ -212,7 +212,7 @@
     "ID": "aluminium_block_heavy",
     "Name": "Aluminium Heavy Block",
     "Description": "Thick hull block",
-    "Category": "blocks",
+    "Category": "building",
     "PowerToDrill": 3,
     "Mass": 6,
     "Durability": 30,
@@ -229,7 +229,7 @@
     "ID": "iron_block_light",
     "Name": "Iron Light Block",
     "Description": "Light iron armor block",
-    "Category": "blocks",
+    "Category": "building",
     "PowerToDrill": 2,
     "Mass": 4,
     "Durability": 40,
@@ -246,7 +246,7 @@
     "ID": "iron_block_medium",
     "Name": "Iron Medium Block",
     "Description": "Iron armor block",
-    "Category": "blocks",
+    "Category": "building",
     "PowerToDrill": 3,
     "Mass": 6,
     "Durability": 60,
@@ -260,7 +260,7 @@
     "ID": "iron_block_heavy",
     "Name": "Iron Heavy Block",
     "Description": "Thick iron armor block",
-    "Category": "blocks",
+    "Category": "building",
     "PowerToDrill": 4,
     "Mass": 8,
     "Durability": 80,
@@ -277,7 +277,7 @@
     "ID": "titanium_block_light",
     "Name": "Titanium Light Block",
     "Description": "Light titanium armor block",
-    "Category": "blocks",
+    "Category": "building",
     "PowerToDrill": 3,
     "Mass": 5,
     "Durability": 80,
@@ -294,7 +294,7 @@
     "ID": "titanium_block_medium",
     "Name": "Titanium Medium Block",
     "Description": "Titanium armor block",
-    "Category": "blocks",
+    "Category": "building",
     "PowerToDrill": 4,
     "Mass": 8,
     "Durability": 100,
@@ -308,7 +308,7 @@
     "ID": "titanium_block_heavy",
     "Name": "Titanium Heavy Block",
     "Description": "Thick titanium armor block, the toughest to break",
-    "Category": "blocks",
+    "Category": "building",
     "PowerToDrill": 5,
     "Mass": 10,
     "Durability": 120,
@@ -325,7 +325,7 @@
     "ID": "window",
     "Name": "Window",
     "Description": "Lets light through",
-    "Category": "windows",
+    "Category": "building",
     "Mass": 1,
     "Durability": 1,
     "IsTransparent": true,
@@ -340,23 +340,10 @@
     }
   },
   {
-    "ID": "basic_machine",
-    "Name": "Basic Machine",
-    "Description": "Machine frame, a part for building machines",
-    "Category": "resources",
-    "Mass": 2,
-    "Durability": 5,
-    "Textures": {
-      "Active": {
-        "All": "basicMachine"
-      }
-    }
-  },
-  {
     "ID": "reinforced_window",
     "Name": "Reinforced Window",
     "Description": "A tougher window",
-    "Category": "windows",
+    "Category": "building",
     "Mass": 2,
     "Durability": 10,
     "IsTransparent": true,
@@ -371,10 +358,330 @@
     }
   },
   {
+    "ID": "big_window",
+    "Name": "Big Window",
+    "Description": "A large window",
+    "Category": "building",
+    "Mass": 4,
+    "Durability": 4,
+    "IsTransparent": true,
+    "Size": {
+      "x": 2,
+      "y": 2,
+      "z": 1
+    },
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+    },
+    "Textures": {
+      "Active": {
+        "All": "window"
+      }
+    },
+    "Sounds": {
+      "Place": "placeGlass",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "aluminium_door",
+    "Name": "Aluminium Door",
+    "Description": "Sliding door, opens with a click",
+    "Type": "door",
+    "Category": "building",
+    "PowerToDrill": 1,
+    "Mass": 2,
+    "Durability": 6,
+    "Door": {
+      "MoveDirection": "Right",
+      "Speed": 2,
+      "OpenTime": 3,
+      "AutoClose": true
+    },
+    "Size": {
+      "x": 2,
+      "y": 2,
+      "z": 1
+    },
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+    },
+    "Textures": {
+      "Active": {
+        "All": "aluMedium",
+        "Forward": "doorAluminium",
+        "Back": "doorAluminium"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal"
+    }
+  },
+  {
+    "ID": "iron_door",
+    "Name": "Iron Door",
+    "Description": "Sturdy sliding door",
+    "Type": "door",
+    "Category": "building",
+    "PowerToDrill": 1,
+    "Mass": 3,
+    "Durability": 12,
+    "Door": {
+      "MoveDirection": "Right",
+      "Speed": 1.6,
+      "OpenTime": 3,
+      "AutoClose": true
+    },
+    "Size": {
+      "x": 2,
+      "y": 2,
+      "z": 1
+    },
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+    },
+    "Textures": {
+      "Active": {
+        "All": "ironMedium",
+        "Forward": "doorIron",
+        "Back": "doorIron"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal"
+    }
+  },
+  {
+    "ID": "titanium_door",
+    "Name": "Titanium Door",
+    "Description": "Fast and very strong sliding door",
+    "Type": "door",
+    "Category": "building",
+    "PowerToDrill": 2,
+    "Mass": 3,
+    "Durability": 20,
+    "Door": {
+      "MoveDirection": "Right",
+      "Speed": 2.4,
+      "OpenTime": 3,
+      "AutoClose": true
+    },
+    "Size": {
+      "x": 2,
+      "y": 2,
+      "z": 1
+    },
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+    },
+    "Textures": {
+      "Active": {
+        "All": "titMedium",
+        "Forward": "doorTitanium",
+        "Back": "doorTitanium"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal"
+    }
+  },
+  {
+    "ID": "light_white",
+    "Name": "Ivory Wall Torch",
+    "Description": "Wall light with a white glow",
+    "Category": "building",
+    "Model": "torch",
+    "LightColor": {
+      "r": 255,
+      "g": 255,
+      "b": 255
+    },
+    "Textures": {
+      "Active": {
+        "All": "torchWhite",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "light_red",
+    "Name": "Crimson Wall Torch",
+    "Description": "Wall light with a red glow",
+    "Category": "building",
+    "Model": "torch",
+    "LightColor": {
+      "r": 255,
+      "g": 15,
+      "b": 15
+    },
+    "Textures": {
+      "Active": {
+        "All": "torchRed",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "light_orange",
+    "Name": "Ember Wall Torch",
+    "Description": "Wall light with an orange glow",
+    "Category": "building",
+    "Model": "torch",
+    "LightColor": {
+      "r": 255,
+      "g": 106,
+      "b": 0
+    },
+    "Textures": {
+      "Active": {
+        "All": "torchOrange",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "light_yellow",
+    "Name": "Amber Wall Torch",
+    "Description": "Wall light with an amber glow",
+    "Category": "building",
+    "Model": "torch",
+    "LightColor": {
+      "r": 255,
+      "g": 216,
+      "b": 0
+    },
+    "Textures": {
+      "Active": {
+        "All": "torchYellow",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "light_green",
+    "Name": "Emerald Wall Torch",
+    "Description": "Wall light with a green glow",
+    "Category": "building",
+    "Model": "torch",
+    "LightColor": {
+      "r": 5,
+      "g": 255,
+      "b": 5
+    },
+    "Textures": {
+      "Active": {
+        "All": "torchGreen",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "light_cyan",
+    "Name": "Azure Wall Torch",
+    "Description": "Wall light with a cyan glow",
+    "Category": "building",
+    "Model": "torch",
+    "LightColor": {
+      "r": 0,
+      "g": 255,
+      "b": 255
+    },
+    "Textures": {
+      "Active": {
+        "All": "torchCyan",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "light_blue",
+    "Name": "Cobalt Wall Torch",
+    "Description": "Wall light with a blue glow",
+    "Category": "building",
+    "Model": "torch",
+    "LightColor": {
+      "r": 45,
+      "g": 45,
+      "b": 255
+    },
+    "Textures": {
+      "Active": {
+        "All": "torchBlue",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
+    "ID": "light_pink",
+    "Name": "Violet Wall Torch",
+    "Description": "Wall light with a violet glow",
+    "Category": "building",
+    "Model": "torch",
+    "LightColor": {
+      "r": 178,
+      "g": 0,
+      "b": 255
+    },
+    "Textures": {
+      "Active": {
+        "All": "torchPink",
+        "Up": "torchMetal",
+        "Down": "torchMetal"
+      }
+    },
+    "Sounds": {
+      "Place": "placeMetal2",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
     "ID": "crafting_table",
     "Name": "Crafting Table",
     "Description": "Crafts tools, items and blocks",
-    "Category": "resources",
+    "Category": "production",
     "Type": "craftingtable",
     "Mass": 1,
     "Durability": 5,
@@ -392,11 +699,24 @@
     }
   },
   {
+    "ID": "basic_machine",
+    "Name": "Basic Machine",
+    "Description": "Machine frame, a part for building machines",
+    "Category": "production",
+    "Mass": 2,
+    "Durability": 5,
+    "Textures": {
+      "Active": {
+        "All": "basicMachine"
+      }
+    }
+  },
+  {
     "ID": "furnace",
     "Name": "Furnace",
     "Description": "Smelts ores and dust into ingots",
     "Type": "furnace",
-    "Category": "resources",
+    "Category": "production",
     "Mass": 2,
     "Durability": 7,
     "FrontDirection": {
@@ -420,7 +740,7 @@
     "Name": "Enhanced Furnace",
     "Description": "A faster furnace",
     "Type": "furnace",
-    "Category": "resources",
+    "Category": "production",
     "Mass": 2,
     "Durability": 10,
     "Efficiency": 1.3,
@@ -446,7 +766,7 @@
     "Name": "Crusher",
     "Description": "Crushes ores into dust for more metal",
     "Type": "crusher",
-    "Category": "resources",
+    "Category": "production",
     "Durability": 5,
     "Efficiency": 0.7,
     "FrontDirection": {
@@ -472,7 +792,7 @@
     "Name": "Enhanced Crusher",
     "Description": "A faster crusher",
     "Type": "crusher",
-    "Category": "resources",
+    "Category": "production",
     "Durability": 10,
     "Efficiency": 1.2,
     "PowerToDrill": 3,
@@ -495,56 +815,11 @@
     }
   },
   {
-    "ID": "analyzer",
-    "Name": "Ore scanner",
-    "Type": "analyzer",
-    "Description": "Scans the asteroid it stands on and shows what it is made of",
-    "Category": "resources",
-    "Durability": 5,
-    "Textures": {
-      "Active": {
-        "All": "electricalSide",
-        "Up": "analyzer",
-        "Down": "generatorDown"
-      },
-      "Inactive": {
-        "All": "electricalSideOff",
-        "Up": "analyzerOff",
-        "Down": "generatorDownOff"
-      }
-    }
-  },
-  {
-    "ID": "radar",
-    "Name": "Radar",
-    "Description": "Shows asteroids and ships around it",
-    "Type": "radar",
-    "Category": "resources",
-    "Durability": 5,
-    "FrontDirection": {
-      "x": 0,
-      "y": 0,
-      "z": 1
-    },
-    "Textures": {
-      "Active": {
-        "All": "electricalSide",
-        "Up": "radar",
-        "Down": "generatorDown"
-      },
-      "Inactive": {
-        "All": "electricalSideOff",
-        "Up": "radarOff",
-        "Down": "generatorDownOff"
-      }
-    }
-  },
-  {
     "ID": "disassembler",
     "Name": "Disassembler",
     "Description": "Takes items apart into their materials",
     "Type": "disassembler",
-    "Category": "resources",
+    "Category": "production",
     "Durability": 5,
     "Efficiency": 1.0,
     "Disassembler": {
@@ -569,11 +844,31 @@
     }
   },
   {
+    "ID": "analyzer",
+    "Name": "Ore scanner",
+    "Type": "analyzer",
+    "Description": "Scans the asteroid it stands on and shows what it is made of",
+    "Category": "production",
+    "Durability": 5,
+    "Textures": {
+      "Active": {
+        "All": "electricalSide",
+        "Up": "analyzer",
+        "Down": "generatorDown"
+      },
+      "Inactive": {
+        "All": "electricalSideOff",
+        "Up": "analyzerOff",
+        "Down": "generatorDownOff"
+      }
+    }
+  },
+  {
     "ID": "cable_block",
     "Name": "Cable Block",
     "Description": "Carries power between blocks",
     "Type": "cable",
-    "Category": "blocks",
+    "Category": "electricity",
     "Durability": 3,
     "Textures": {
       "Active": {
@@ -589,381 +884,6 @@
     }
   },
   {
-    "ID": "light_white",
-    "Name": "Ivory Wall Torch",
-    "Description": "Wall light with a white glow",
-    "Category": "lights",
-    "Model": "torch",
-    "LightColor": {
-      "r": 255,
-      "g": 255,
-      "b": 255
-    },
-    "Textures": {
-      "Active": {
-        "All": "torchWhite",
-        "Up": "torchMetal",
-        "Down": "torchMetal"
-      }
-    },
-    "Sounds": {
-      "Place": "placeMetal2",
-      "Destroy": "blockDestroyGlass"
-    }
-  },
-  {
-    "ID": "light_blue",
-    "Name": "Cobalt Wall Torch",
-    "Description": "Wall light with a blue glow",
-    "Category": "lights",
-    "Model": "torch",
-    "LightColor": {
-      "r": 45,
-      "g": 45,
-      "b": 255
-    },
-    "Textures": {
-      "Active": {
-        "All": "torchBlue",
-        "Up": "torchMetal",
-        "Down": "torchMetal"
-      }
-    },
-    "Sounds": {
-      "Place": "placeMetal2",
-      "Destroy": "blockDestroyGlass"
-    }
-  },
-  {
-    "ID": "light_red",
-    "Name": "Crimson Wall Torch",
-    "Description": "Wall light with a red glow",
-    "Category": "lights",
-    "Model": "torch",
-    "LightColor": {
-      "r": 255,
-      "g": 15,
-      "b": 15
-    },
-    "Textures": {
-      "Active": {
-        "All": "torchRed",
-        "Up": "torchMetal",
-        "Down": "torchMetal"
-      }
-    },
-    "Sounds": {
-      "Place": "placeMetal2",
-      "Destroy": "blockDestroyGlass"
-    }
-  },
-  {
-    "ID": "light_yellow",
-    "Name": "Amber Wall Torch",
-    "Description": "Wall light with an amber glow",
-    "Category": "lights",
-    "Model": "torch",
-    "LightColor": {
-      "r": 255,
-      "g": 216,
-      "b": 0
-    },
-    "Textures": {
-      "Active": {
-        "All": "torchYellow",
-        "Up": "torchMetal",
-        "Down": "torchMetal"
-      }
-    },
-    "Sounds": {
-      "Place": "placeMetal2",
-      "Destroy": "blockDestroyGlass"
-    }
-  },
-  {
-    "ID": "light_cyan",
-    "Name": "Azure Wall Torch",
-    "Description": "Wall light with a cyan glow",
-    "Category": "lights",
-    "Model": "torch",
-    "LightColor": {
-      "r": 0,
-      "g": 255,
-      "b": 255
-    },
-    "Textures": {
-      "Active": {
-        "All": "torchCyan",
-        "Up": "torchMetal",
-        "Down": "torchMetal"
-      }
-    },
-    "Sounds": {
-      "Place": "placeMetal2",
-      "Destroy": "blockDestroyGlass"
-    }
-  },
-  {
-    "ID": "light_orange",
-    "Name": "Ember Wall Torch",
-    "Description": "Wall light with an orange glow",
-    "Category": "lights",
-    "Model": "torch",
-    "LightColor": {
-      "r": 255,
-      "g": 106,
-      "b": 0
-    },
-    "Textures": {
-      "Active": {
-        "All": "torchOrange",
-        "Up": "torchMetal",
-        "Down": "torchMetal"
-      }
-    },
-    "Sounds": {
-      "Place": "placeMetal2",
-      "Destroy": "blockDestroyGlass"
-    }
-  },
-  {
-    "ID": "light_green",
-    "Name": "Emerald Wall Torch",
-    "Description": "Wall light with a green glow",
-    "Category": "lights",
-    "Model": "torch",
-    "LightColor": {
-      "r": 5,
-      "g": 255,
-      "b": 5
-    },
-    "Textures": {
-      "Active": {
-        "All": "torchGreen",
-        "Up": "torchMetal",
-        "Down": "torchMetal"
-      }
-    },
-    "Sounds": {
-      "Place": "placeMetal2",
-      "Destroy": "blockDestroyGlass"
-    }
-  },
-  {
-    "ID": "light_pink",
-    "Name": "Violet Wall Torch",
-    "Description": "Wall light with a violet glow",
-    "Category": "lights",
-    "Model": "torch",
-    "LightColor": {
-      "r": 178,
-      "g": 0,
-      "b": 255
-    },
-    "Textures": {
-      "Active": {
-        "All": "torchPink",
-        "Up": "torchMetal",
-        "Down": "torchMetal"
-      }
-    },
-    "Sounds": {
-      "Place": "placeMetal2",
-      "Destroy": "blockDestroyGlass"
-    }
-  },
-  {
-    "ID": "moritz",
-    "Name": "Moritz",
-    "Description": "A friendly face in space",
-    "PowerToDrill": 5,
-    "Mass": 1,
-    "Durability": 15,
-    "LightColor": {
-      "r": 255,
-      "g": 245,
-      "b": 68
-    },
-    "Textures": {
-      "Active": {
-        "All": "moritz"
-      }
-    },
-    "Sounds": {
-      "Place": "blockPlaceMoritz",
-      "Destroy": "blockDestroyMoritz"
-    }
-  },
-  {
-    "ID": "basic_engine",
-    "Name": "Basic Engine",
-    "Description": "Decorative engine block",
-    "Category": "blocks",
-    "PowerToDrill": 1,
-    "Mass": 3,
-    "Durability": 35,
-    "Textures": {
-      "Active": {
-        "All": "engine1Side",
-        "Up": "engine1Top",
-        "Down": "engine1Bottom"
-      }
-    },
-    "Sounds": {
-      "Place": "blockPlaceHeavy",
-      "Destroy": "blockPlaceHeavy"
-    }
-  },
-  {
-    "ID": "basic_cannon",
-    "Name": "Basic Cannon",
-    "Description": "Decorative cannon block",
-    "Category": "blocks",
-    "PowerToDrill": 1,
-    "Mass": 3,
-    "Durability": 35,
-    "Textures": {
-      "Active": {
-        "All": "cannon1Side",
-        "Up": "cannon1Top",
-        "Down": "cannon1Top"
-      }
-    },
-    "Sounds": {
-      "Place": "blockPlaceHeavy",
-      "Destroy": "blockPlaceHeavy"
-    }
-  },
-  {
-    "ID": "gravity_generator",
-    "Name": "Gravity Generator",
-    "Description": "Creates artificial gravity toward its bottom side. Set radius and strength in its window",
-    "Type": "gravity",
-    "Gravity": {
-      "Radius": 32,
-      "MinRadius": 4,
-      "MaxRadius": 512,
-      "Strength": 9.81,
-      "MinStrength": 0.5,
-      "MaxStrength": 30,
-      "Power": 200,
-      "StrengthPowerFactor": 0.25,
-      "MaxRoomCells": 200000,
-      "FallDamage": { "SafeHeight": 5, "DamagePerBlock": 4 },
-      "Presets": [
-        { "Name": "Moon", "Strength": 1.62, "FallDamage": { "SafeHeight": 8, "DamagePerBlock": 2 } },
-        { "Name": "Mars", "Strength": 3.71, "FallDamage": { "SafeHeight": 6, "DamagePerBlock": 3 } },
-        { "Name": "Earth", "Strength": 9.81, "FallDamage": { "SafeHeight": 5, "DamagePerBlock": 4 } },
-        { "Name": "Jupiter", "Strength": 24.79, "FallDamage": { "SafeHeight": 3, "DamagePerBlock": 6 } }
-      ]
-    },
-    "Category": "resources",
-    "PowerToDrill": 1,
-    "Mass": 255,
-    "Durability": 100,
-    "Textures": {
-      "Active": {
-        "All": "gravitySide",
-        "Up": "gravityTop",
-        "Down": "gravityBottom"
-      },
-      "Inactive": {
-        "All": "gravitySideOff",
-        "Up": "gravityTopOff",
-        "Down": "gravityBottomOff"
-      }
-    },
-    "Sounds": {
-      "Place": "blockPlaceHeavy",
-      "Destroy": "blockPlaceHeavy"
-    }
-  },
-  {
-    "ID": "basic_aluminium_crate",
-    "Name": "Basic Aluminium Crate",
-    "Description": "Stores items",
-    "Type": "storage",
-    "Category": "other",
-    "PowerToDrill": 1,
-    "Mass": 4,
-    "Durability": 10,
-    "StorageSize": {
-      "x": 8,
-      "y": 3
-    },
-    "Textures": {
-      "Active": {
-        "All": "aluChestSide",
-        "Forward": "aluChestFront",
-        "Up": "aluChestTop"
-      }
-    }
-  },
-  {
-    "ID": "basic_iron_crate",
-    "Name": "Basic Iron Crate",
-    "Description": "Stores items, tougher than aluminium",
-    "Type": "storage",
-    "Category": "other",
-    "PowerToDrill": 2,
-    "Mass": 8,
-    "Durability": 20,
-    "StorageSize": {
-      "x": 8,
-      "y": 3
-    },
-    "Textures": {
-      "Active": {
-        "All": "ironChestSide",
-        "Forward": "ironChestFront",
-        "Up": "ironChestTop"
-      }
-    }
-  },
-  {
-    "ID": "basic_titanium_crate",
-    "Name": "Basic Titanium Crate",
-    "Description": "Stores items, very tough",
-    "Type": "storage",
-    "Category": "",
-    "PowerToDrill": 3,
-    "Mass": 6,
-    "Durability": 30,
-    "StorageSize": {
-      "x": 8,
-      "y": 3
-    },
-    "Textures": {
-      "Active": {
-        "All": "aluChestSide",
-        "Up": "aluChestTop",
-        "Down": "aluChestTop"
-      }
-    }
-  },
-  {
-    "ID": "safe",
-    "Name": "Armored Safe",
-    "Description": "Small storage with very strong walls",
-    "Type": "storage",
-    "Category": "other",
-    "PowerToDrill": 5,
-    "Mass": 50,
-    "Durability": 200,
-    "StorageSize": {
-      "x": 3,
-      "y": 3
-    },
-    "Textures": {
-      "Active": {
-        "All": "safe_side",
-        "Up": "safe_top",
-        "Down": "safe_top",
-        "Forward": "safe_face"
-      }
-    }
-  },
-  {
     "ID": "cobalt_power_block",
     "Name": "Standard Cobalt Power Block",
     "Description": "Makes power for machines and lights through cables",
@@ -973,7 +893,7 @@
       "y": 2,
       "z": 1
     },
-    "Category": "resources",
+    "Category": "electricity",
     "PowerToDrill": 1,
     "Mass": 6,
     "Durability": 14,
@@ -1008,7 +928,7 @@
       "y": 2,
       "z": 1
     },
-    "Category": "resources",
+    "Category": "electricity",
     "PowerToDrill": 1,
     "Mass": 8,
     "Durability": 20,
@@ -1054,7 +974,7 @@
       "y": 2,
       "z": 2
     },
-    "Category": "resources",
+    "Category": "electricity",
     "PowerToDrill": 3,
     "Mass": 16,
     "Durability": 45,
@@ -1100,7 +1020,7 @@
       "y": 3,
       "z": 2
     },
-    "Category": "resources",
+    "Category": "electricity",
     "PowerToDrill": 3,
     "Mass": 25,
     "Durability": 65,
@@ -1123,29 +1043,177 @@
     }
   },
   {
-    "ID": "dna_reconstructor",
-    "Name": "DNA Reconstructor",
-    "Description": "Revives you here after death. Needs power and DNA samples",
-    "Type": "dnareconstructor",
-    "DnaReconstructor": {
-      "DnaItem": "dna_sample",
-      "Power": 50,
-      "ReconstructionTime": 5
-    },
-    "Category": "other",
+    "ID": "basic_aluminium_crate",
+    "Name": "Basic Aluminium Crate",
+    "Description": "Stores items",
+    "Type": "storage",
+    "Category": "logistics",
     "PowerToDrill": 1,
-    "Mass": 6,
-    "Durability": 6,
+    "Mass": 4,
+    "Durability": 10,
+    "StorageSize": {
+      "x": 8,
+      "y": 3
+    },
     "Textures": {
       "Active": {
-        "All": "spawnerSide",
-        "Up": "spawnerTop",
-        "Down": "bottom"
+        "All": "aluChestSide",
+        "Forward": "aluChestFront",
+        "Up": "aluChestTop"
+      }
+    }
+  },
+  {
+    "ID": "basic_iron_crate",
+    "Name": "Basic Iron Crate",
+    "Description": "Stores items, tougher than aluminium",
+    "Type": "storage",
+    "Category": "logistics",
+    "PowerToDrill": 2,
+    "Mass": 8,
+    "Durability": 20,
+    "StorageSize": {
+      "x": 8,
+      "y": 3
+    },
+    "Textures": {
+      "Active": {
+        "All": "ironChestSide",
+        "Forward": "ironChestFront",
+        "Up": "ironChestTop"
+      }
+    }
+  },
+  {
+    "ID": "basic_titanium_crate",
+    "Name": "Basic Titanium Crate",
+    "Description": "Stores items, very tough",
+    "Type": "storage",
+    "Category": "logistics",
+    "PowerToDrill": 3,
+    "Mass": 6,
+    "Durability": 30,
+    "StorageSize": {
+      "x": 8,
+      "y": 3
+    },
+    "Textures": {
+      "Active": {
+        "All": "aluChestSide",
+        "Up": "aluChestTop",
+        "Down": "aluChestTop"
+      }
+    }
+  },
+  {
+    "ID": "safe",
+    "Name": "Armored Safe",
+    "Description": "Small storage with very strong walls",
+    "Type": "storage",
+    "Category": "logistics",
+    "PowerToDrill": 5,
+    "Mass": 50,
+    "Durability": 200,
+    "StorageSize": {
+      "x": 3,
+      "y": 3
+    },
+    "Textures": {
+      "Active": {
+        "All": "safe_side",
+        "Up": "safe_top",
+        "Down": "safe_top",
+        "Forward": "safe_face"
+      }
+    }
+  },
+  {
+    "ID": "item_pipe",
+    "Name": "Item Pipe",
+    "Description": "Moves items from the bottom side to all other sides. Put an item into the Filter slot to move only that item",
+    "Type": "pipe",
+    "Pipe": {
+      "TransferInterval": 1,
+      "Power": 5,
+      "OutputSides": [ "Up", "Left", "Right", "Forward", "Back" ]
+    },
+    "Category": "logistics",
+    "PowerToDrill": 1,
+    "Mass": 3,
+    "Durability": 5,
+    "Textures": {
+      "Active": {
+        "All": "pipeOutput",
+        "Down": "pipeInput"
       },
       "Inactive": {
-        "All": "spawnerSideOff",
-        "Up": "spawnerTopOff",
-        "Down": "bottom"
+        "All": "pipeOutputOff",
+        "Down": "pipeInputOff"
+      }
+    }
+  },
+  {
+    "ID": "item_pipe_straight",
+    "Name": "Straight Item Pipe",
+    "Description": "Moves items from bottom to top. Put an item into the Filter slot to move only that item",
+    "Type": "pipe",
+    "Pipe": {
+      "TransferInterval": 1,
+      "Power": 5,
+      "OutputSides": [ "Up" ]
+    },
+    "Category": "logistics",
+    "PowerToDrill": 1,
+    "Mass": 3,
+    "Durability": 5,
+    "Textures": {
+      "Active": {
+        "All": "pipeStraightSide",
+        "Up": "pipeOutput",
+        "Down": "pipeInput"
+      },
+      "Inactive": {
+        "All": "pipeStraightSideOff",
+        "Up": "pipeOutputOff",
+        "Down": "pipeInputOff"
+      }
+    }
+  },
+  {
+    "ID": "item_pipe_merger",
+    "Name": "Merging Item Pipe",
+    "Description": "Collects items from three sides and sends them up. Put an item into the Filter slot to move only that item",
+    "Type": "pipe",
+    "Pipe": {
+      "TransferInterval": 1,
+      "Power": 5,
+      "InputSides": [
+        "Down",
+        "Left",
+        "Right"
+      ],
+      "OutputSides": [
+        "Up"
+      ]
+    },
+    "Category": "logistics",
+    "PowerToDrill": 1,
+    "Mass": 3,
+    "Durability": 5,
+    "Textures": {
+      "Active": {
+        "All": "pipeStraightSide",
+        "Up": "pipeOutput",
+        "Down": "pipeInput",
+        "Left": "pipeInput",
+        "Right": "pipeInput"
+      },
+      "Inactive": {
+        "All": "pipeStraightSideOff",
+        "Up": "pipeOutputOff",
+        "Down": "pipeInputOff",
+        "Left": "pipeInputOff",
+        "Right": "pipeInputOff"
       }
     }
   },
@@ -1183,151 +1251,83 @@
     }
   },
   {
-    "ID": "item_pipe",
-    "Name": "Item Pipe",
-    "Description": "Moves items from the bottom side to all other sides. Put an item into the Filter slot to move only that item",
-    "Type": "pipe",
-    "Pipe": {
-      "TransferInterval": 1,
-      "Power": 5,
-      "OutputSides": [ "Up", "Left", "Right", "Forward", "Back" ]
-    },
-    "Category": "other",
-    "PowerToDrill": 1,
-    "Mass": 3,
-    "Durability": 5,
-    "Textures": {
-      "Active": {
-        "All": "pipeOutput",
-        "Down": "pipeInput"
-      },
-      "Inactive": {
-        "All": "pipeOutputOff",
-        "Down": "pipeInputOff"
-      }
-    }
-  },
-  {
-    "ID": "item_pipe_straight",
-    "Name": "Straight Item Pipe",
-    "Description": "Moves items from bottom to top. Put an item into the Filter slot to move only that item",
-    "Type": "pipe",
-    "Pipe": {
-      "TransferInterval": 1,
-      "Power": 5,
-      "OutputSides": [ "Up" ]
-    },
-    "Category": "other",
-    "PowerToDrill": 1,
-    "Mass": 3,
-    "Durability": 5,
-    "Textures": {
-      "Active": {
-        "All": "pipeStraightSide",
-        "Up": "pipeOutput",
-        "Down": "pipeInput"
-      },
-      "Inactive": {
-        "All": "pipeStraightSideOff",
-        "Up": "pipeOutputOff",
-        "Down": "pipeInputOff"
-      }
-    }
-  },
-  {
-    "ID": "item_pipe_merger",
-    "Name": "Merging Item Pipe",
-    "Description": "Collects items from three sides and sends them up. Put an item into the Filter slot to move only that item",
-    "Type": "pipe",
-    "Pipe": {
-      "TransferInterval": 1,
-      "Power": 5,
-      "InputSides": [
-        "Down",
-        "Left",
-        "Right"
-      ],
-      "OutputSides": [
-        "Up"
+    "ID": "gravity_generator",
+    "Name": "Gravity Generator",
+    "Description": "Creates artificial gravity toward its bottom side. Set radius and strength in its window",
+    "Type": "gravity",
+    "Gravity": {
+      "Radius": 32,
+      "MinRadius": 4,
+      "MaxRadius": 512,
+      "Strength": 9.81,
+      "MinStrength": 0.5,
+      "MaxStrength": 30,
+      "Power": 200,
+      "StrengthPowerFactor": 0.25,
+      "MaxRoomCells": 200000,
+      "FallDamage": { "SafeHeight": 5, "DamagePerBlock": 4 },
+      "Presets": [
+        { "Name": "Moon", "Strength": 1.62, "FallDamage": { "SafeHeight": 8, "DamagePerBlock": 2 } },
+        { "Name": "Mars", "Strength": 3.71, "FallDamage": { "SafeHeight": 6, "DamagePerBlock": 3 } },
+        { "Name": "Earth", "Strength": 9.81, "FallDamage": { "SafeHeight": 5, "DamagePerBlock": 4 } },
+        { "Name": "Jupiter", "Strength": 24.79, "FallDamage": { "SafeHeight": 3, "DamagePerBlock": 6 } }
       ]
     },
     "Category": "other",
     "PowerToDrill": 1,
-    "Mass": 3,
-    "Durability": 5,
+    "Mass": 255,
+    "Durability": 100,
     "Textures": {
       "Active": {
-        "All": "pipeStraightSide",
-        "Up": "pipeOutput",
-        "Down": "pipeInput",
-        "Left": "pipeInput",
-        "Right": "pipeInput"
+        "All": "gravitySide",
+        "Up": "gravityTop",
+        "Down": "gravityBottom"
       },
       "Inactive": {
-        "All": "pipeStraightSideOff",
-        "Up": "pipeOutputOff",
-        "Down": "pipeInputOff",
-        "Left": "pipeInputOff",
-        "Right": "pipeInputOff"
+        "All": "gravitySideOff",
+        "Up": "gravityTopOff",
+        "Down": "gravityBottomOff"
       }
+    },
+    "Sounds": {
+      "Place": "blockPlaceHeavy",
+      "Destroy": "blockPlaceHeavy"
     }
   },
   {
-    "ID": "aluminium_door",
-    "Name": "Aluminium Door",
-    "Description": "Sliding door, opens with a click",
-    "Type": "door",
+    "ID": "dna_reconstructor",
+    "Name": "DNA Reconstructor",
+    "Description": "Revives you here after death. Needs power and DNA samples",
+    "Type": "dnareconstructor",
+    "DnaReconstructor": {
+      "DnaItem": "dna_sample",
+      "Power": 50,
+      "ReconstructionTime": 5
+    },
     "Category": "other",
     "PowerToDrill": 1,
-    "Mass": 2,
+    "Mass": 6,
     "Durability": 6,
-    "Door": {
-      "MoveDirection": "Right",
-      "Speed": 2,
-      "OpenTime": 3,
-      "AutoClose": true
-    },
-    "Size": {
-      "x": 2,
-      "y": 2,
-      "z": 1
-    },
-    "FrontDirection": {
-      "x": 0,
-      "y": 0,
-      "z": 1
-    },
     "Textures": {
       "Active": {
-        "All": "aluMedium",
-        "Forward": "doorAluminium",
-        "Back": "doorAluminium"
+        "All": "spawnerSide",
+        "Up": "spawnerTop",
+        "Down": "bottom"
+      },
+      "Inactive": {
+        "All": "spawnerSideOff",
+        "Up": "spawnerTopOff",
+        "Down": "bottom"
       }
-    },
-    "Sounds": {
-      "Place": "placeMetal"
     }
   },
   {
-    "ID": "iron_door",
-    "Name": "Iron Door",
-    "Description": "Sturdy sliding door",
-    "Type": "door",
+    "ID": "radar",
+    "Name": "Radar",
+    "Description": "Shows asteroids and ships around it",
+    "Type": "radar",
     "Category": "other",
-    "PowerToDrill": 1,
-    "Mass": 3,
-    "Durability": 12,
-    "Door": {
-      "MoveDirection": "Right",
-      "Speed": 1.6,
-      "OpenTime": 3,
-      "AutoClose": true
-    },
-    "Size": {
-      "x": 2,
-      "y": 2,
-      "z": 1
-    },
+    "Durability": 5,
     "FrontDirection": {
       "x": 0,
       "y": 0,
@@ -1335,77 +1335,37 @@
     },
     "Textures": {
       "Active": {
-        "All": "ironMedium",
-        "Forward": "doorIron",
-        "Back": "doorIron"
+        "All": "electricalSide",
+        "Up": "radar",
+        "Down": "generatorDown"
+      },
+      "Inactive": {
+        "All": "electricalSideOff",
+        "Up": "radarOff",
+        "Down": "generatorDownOff"
       }
-    },
-    "Sounds": {
-      "Place": "placeMetal"
     }
   },
   {
-    "ID": "titanium_door",
-    "Name": "Titanium Door",
-    "Description": "Fast and very strong sliding door",
-    "Type": "door",
-    "Category": "other",
-    "PowerToDrill": 2,
-    "Mass": 3,
-    "Durability": 20,
-    "Door": {
-      "MoveDirection": "Right",
-      "Speed": 2.4,
-      "OpenTime": 3,
-      "AutoClose": true
-    },
-    "Size": {
-      "x": 2,
-      "y": 2,
-      "z": 1
-    },
-    "FrontDirection": {
-      "x": 0,
-      "y": 0,
-      "z": 1
+    "ID": "moritz",
+    "Name": "Moritz",
+    "Description": "A friendly face in space",
+    "PowerToDrill": 5,
+    "Mass": 1,
+    "Durability": 15,
+    "LightColor": {
+      "r": 255,
+      "g": 245,
+      "b": 68
     },
     "Textures": {
       "Active": {
-        "All": "titMedium",
-        "Forward": "doorTitanium",
-        "Back": "doorTitanium"
+        "All": "moritz"
       }
     },
     "Sounds": {
-      "Place": "placeMetal"
-    }
-  },
-  {
-    "ID": "big_window",
-    "Name": "Big Window",
-    "Description": "A large window",
-    "Category": "windows",
-    "Mass": 4,
-    "Durability": 4,
-    "IsTransparent": true,
-    "Size": {
-      "x": 2,
-      "y": 2,
-      "z": 1
-    },
-    "FrontDirection": {
-      "x": 0,
-      "y": 0,
-      "z": 1
-    },
-    "Textures": {
-      "Active": {
-        "All": "window"
-      }
-    },
-    "Sounds": {
-      "Place": "placeGlass",
-      "Destroy": "blockDestroyGlass"
+      "Place": "blockPlaceMoritz",
+      "Destroy": "blockDestroyMoritz"
     }
   },
   {

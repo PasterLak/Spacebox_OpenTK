@@ -1,32 +1,26 @@
 {
   "Categories": [
     {
-      "Id": "blocks",
-      "Name": "Blocks",
+      "Id": "building",
+      "Name": "Building",
       "Icon": "iron_block_heavy",
       "Row": 1
     },
     {
-      "Id": "lights",
-      "Name": "Lights",
-      "Icon": "light_yellow",
-      "Row": 1
-    },
-    {
-      "Id": "windows",
-      "Name": "Windows",
-      "Icon": "window",
-      "Row": 1
-    },
-    {
-      "Id": "resources",
-      "Name": "Resources",
+      "Id": "production",
+      "Name": "Production",
       "Icon": "crusher",
       "Row": 1
     },
     {
-      "Id": "other",
-      "Name": "Other",
+      "Id": "electricity",
+      "Name": "Electricity",
+      "Icon": "cobalt_power_block",
+      "Row": 1
+    },
+    {
+      "Id": "logistics",
+      "Name": "Logistics",
       "Icon": "basic_aluminium_crate",
       "Row": 1
     },
@@ -34,6 +28,12 @@
       "Id": "ships",
       "Name": "Ships",
       "Icon": "ship_console",
+      "Row": 1
+    },
+    {
+      "Id": "other",
+      "Name": "Other",
+      "Icon": "oxygen_generator",
       "Row": 1
     },
     {
@@ -82,7 +82,7 @@
       "Ingredients": [
         {
           "Item": "aluminium_panels",
-          "Quantity": 2
+          "Quantity": 1
         }
       ]
     },
@@ -94,7 +94,7 @@
       "Ingredients": [
         {
           "Item": "aluminium_panels",
-          "Quantity": 3
+          "Quantity": 2
         }
       ]
     },
@@ -106,7 +106,7 @@
       "Ingredients": [
         {
           "Item": "aluminium_panels",
-          "Quantity": 4
+          "Quantity": 3
         }
       ]
     },
@@ -118,7 +118,7 @@
       "Ingredients": [
         {
           "Item": "iron_panels",
-          "Quantity": 2
+          "Quantity": 1
         }
       ]
     },
@@ -130,7 +130,7 @@
       "Ingredients": [
         {
           "Item": "iron_panels",
-          "Quantity": 3
+          "Quantity": 2
         }
       ]
     },
@@ -142,7 +142,7 @@
       "Ingredients": [
         {
           "Item": "iron_panels",
-          "Quantity": 4
+          "Quantity": 3
         }
       ]
     },
@@ -154,7 +154,7 @@
       "Ingredients": [
         {
           "Item": "titanium_panels",
-          "Quantity": 2
+          "Quantity": 1
         }
       ]
     },
@@ -166,7 +166,7 @@
       "Ingredients": [
         {
           "Item": "titanium_panels",
-          "Quantity": 3
+          "Quantity": 2
         }
       ]
     },
@@ -178,7 +178,7 @@
       "Ingredients": [
         {
           "Item": "titanium_panels",
-          "Quantity": 4
+          "Quantity": 3
         }
       ]
     },
@@ -270,7 +270,7 @@
       "Ingredients": [
         {
           "Item": "glass",
-          "Quantity": 6
+          "Quantity": 3
         }
       ]
     },
@@ -282,7 +282,7 @@
       "Ingredients": [
         {
           "Item": "glass",
-          "Quantity": 6
+          "Quantity": 4
         },
         {
           "Item": "iron_ingot",
@@ -1744,22 +1744,6 @@
         {
           "Item": "microchip",
           "Quantity": 4
-        }
-      ]
-    },
-    {
-      "Product": {
-        "Item": "obscurium_ammo",
-        "Quantity": 12
-      },
-      "Ingredients": [
-        {
-          "Item": "obscurium_ingot",
-          "Quantity": 1
-        },
-        {
-          "Item": "titanium_ingot",
-          "Quantity": 1
         }
       ]
     },
