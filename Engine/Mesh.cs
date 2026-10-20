@@ -35,6 +35,28 @@ namespace Engine
             GPUDebug.LabelVertexArray(buffer.VBO, "Mesh VBO");
         }
 
+        public Mesh(float[] vertices, int vertexCount, uint[] indices, int indexCount, MeshBuffer buffer)
+        {
+            Resources.AddResourceToControll(this);
+
+            this.buffer = buffer;
+            _indexCount = indexCount;
+
+            buffer.Upload(vertices, vertexCount, indices, indexCount);
+            buffer.SetAttributes();
+            GPUDebug.LabelVertexArray(buffer.VAO, "Mesh VAO");
+            GPUDebug.LabelVertexArray(buffer.VBO, "Mesh VBO");
+        }
+
+        public void Update(float[] vertices, int vertexCount, uint[] indices, int indexCount)
+        {
+            if (IsDisposed || buffer == null) return;
+
+            _indexCount = indexCount;
+            buffer.Upload(vertices, vertexCount, indices, indexCount);
+            if (buffer.VAO != 0) GL.BindVertexArray(0);
+        }
+
         public Mesh(float[] vertices, int[] indices)
         {
             Resources.AddResourceToControll(this);

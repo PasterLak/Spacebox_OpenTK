@@ -769,10 +769,15 @@ namespace Spacebox.Game.Generation
 
                         MainThreadDispatcher.Instance.Enqueue(() =>
                         {
-                            if (chunk.IsDisposed) return;
+                            if (chunk.IsDisposed)
+                            {
+                                meshData.Release();
+                                return;
+                            }
 
                             if (chunk.MeshVersion != currentVersion)
                             {
+                                meshData.Release();
                                 chunk.IsQueuedForMeshUpdate = false;
                                 QueueChunkUpdate(chunk, UpdateReason.Generation);
                                 return;
@@ -801,7 +806,11 @@ namespace Spacebox.Game.Generation
             int maxUpload = StreamingBudget.MeshUploadPerFrame;
             while (uploadedThisFrame < maxUpload && ReadyMeshesQueue.TryDequeue(out var result))
             {
-                if (result.chunk.IsDisposed) continue;
+                if (result.chunk.IsDisposed)
+                {
+                    result.data.Release();
+                    continue;
+                }
 
                 if (result.chunk.MeshVersion == result.version)
                 {
@@ -809,6 +818,7 @@ namespace Spacebox.Game.Generation
                 }
                 else
                 {
+                    result.data.Release();
                     result.chunk.IsQueuedForMeshUpdate = false;
                     QueueChunkUpdate(result.chunk, UpdateReason.Generation);
                 }

@@ -7,6 +7,8 @@ using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Network.Messages;
+using Spacebox.Game.GUI;
+using Spacebox.Game.Player;
 
 namespace Spacebox.Network;
 
@@ -16,6 +18,53 @@ public static class WorldEditNetwork
     {
         network.Messages.Register<BlockEditMessage>(OnBlockEdit);
         network.Messages.Register<BulkBlockEditMessage>(OnBulkEdit);
+        network.Messages.Register<BlockDamageMessage>(OnBlockDamage);
+        network.Messages.Register<BlockPlaceRefundMessage>(OnPlaceRefund);
+    }
+
+    private static void OnPlaceRefund(int sender, BlockPlaceRefundMessage message)
+    {
+        if (NetworkManager.Instance.IsServer) return;
+        PlacementRefund.Refund(PanelUI.Player, message.BlockId);
+    }
+
+    public static void NotifyDamaged(Chunk chunk, Vector3Byte index, short blockId, byte damage)
+    {
+        if (chunk?.SpaceEntity == null || damage == 0) return;
+
+        var origin = chunk.PositionIndex * Chunk.Size;
+        var message = new BlockDamageMessage
+        {
+            EntityId = chunk.SpaceEntity.EntityID,
+            Cell = new Vector3i(origin.X + index.X, origin.Y + index.Y, origin.Z + index.Z),
+            BlockId = blockId,
+            Damage = damage
+        };
+
+        var network = NetworkManager.Instance;
+        if (!network.IsActive) return;
+
+        if (network.IsServer)
+            network.SendToClients(message);
+        else
+            network.SendToServer(message);
+    }
+
+    private static void OnBlockDamage(int sender, BlockDamageMessage message)
+    {
+        var network = NetworkManager.Instance;
+        if (sender == network.LocalPeerId) return;
+
+        var world = World.Instance;
+        if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
+        if (!entity.TryGetBlockLocal(message.Cell, out var chunk, out var index)) return;
+
+        var block = chunk.Blocks[index.X, index.Y, index.Z];
+        if (block == null || block.IsAir || block.Id != message.BlockId) return;
+
+        block.Durability = BlockDamage.Apply(block.Durability, message.Damage);
+
+        if (network.IsServer) network.SendToClients(message, DeliveryMode.Reliable, sender);
     }
 
     public static bool RequestBulkEdit(SpaceEntity entity, Vector3i min, Vector3i max, short blockId)
@@ -109,6 +158,8 @@ public static class WorldEditNetwork
         network.SendToClients(message, DeliveryMode.Reliable, sender);
 
         if (known && NeedsCorrection(entity, message, previousId)) SendCorrection(sender, entity, message.Cell);
+        if (!message.IsRemoval && (!known || GetBlockId(entity, message.Cell) != message.BlockId))
+            network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
     }
 
     private static bool NeedsCorrection(SpaceEntity entity, BlockEditMessage message, short previousId)

@@ -49,15 +49,20 @@ namespace Engine
 
         public void BindBuffer(ref float[] vertices, ref uint[] indices)
         {
+            Upload(vertices, vertices.Length, indices, indices.Length);
+        }
+
+        public void Upload(float[] vertices, int vertexCount, uint[] indices, int indexCount)
+        {
             if (VAO == 0) return;
 
             GL.BindVertexArray(VAO);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertexCount * sizeof(float), vertices, BufferUsageHint.StaticDraw);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, indexCount * sizeof(uint), indices, BufferUsageHint.StaticDraw);
         }
 
         public void AddAttribute(string name, byte size)

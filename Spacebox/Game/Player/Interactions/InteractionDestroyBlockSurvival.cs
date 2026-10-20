@@ -11,6 +11,7 @@ using Engine.Light;
 using Spacebox.Game.Effects;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.GUI;
+using Spacebox.Network;
 
 public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
 {
@@ -116,13 +117,16 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
 
     private void DamageBlock(HitInfo hit, LocalAstronaut astronaut, DrillItem drill, byte damage = 1)
     {
-        int dam = hit.block.Durability - damage;
-        hit.block.Durability = (byte)(dam < 0 ? 0 : dam);
+        hit.block.Durability = BlockDamage.Apply(hit.block.Durability, damage);
         astronaut.PlayerStatistics.BlockDamageDealt += damage;
         if (hit.block.Durability <= 0)
         {
             DestroyBlock(hit, astronaut);
             astronaut.PowerBar.StatsData.Decrement(drill.PowerUsage);
+        }
+        else
+        {
+            WorldEditNetwork.NotifyDamaged(hit.chunk, hit.blockPositionIndex, hit.block.Id, damage);
         }
 
     }

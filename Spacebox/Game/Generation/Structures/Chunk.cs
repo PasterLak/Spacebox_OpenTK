@@ -139,36 +139,56 @@ namespace Spacebox.Game.Generation
             _lightManager.PropagateLight();
         }
 
+        [ThreadStatic] private static Chunk[] _snapshotNeighbors;
+        private static Block _snapshotAir;
+        private static Resource.BlockData _snapshotAirSource;
+
+        private static Block SnapshotAir()
+        {
+            GameAssets.Blocks.TryGetValue(0, out var source);
+            if (_snapshotAir == null || !ReferenceEquals(source, _snapshotAirSource))
+            {
+                _snapshotAirSource = source;
+                _snapshotAir = GameAssets.CreateBlockFromId(0);
+            }
+            return _snapshotAir;
+        }
+
         public Block[,,] CreatePaddedSnapshot()
         {
             var padded = PaddedArrayPools.Blocks.Rent();
+            var neighbors = _snapshotNeighbors ??= new Chunk[27];
+            for (int ox = -1; ox <= 1; ox++)
+            for (int oy = -1; oy <= 1; oy++)
+            for (int oz = -1; oz <= 1; oz++)
+            {
+                int slot = (ox + 1) * 9 + (oy + 1) * 3 + (oz + 1);
+                if (ox == 0 && oy == 0 && oz == 0) neighbors[slot] = this;
+                else neighbors[slot] = HasNeighbor(new Vector3SByte((sbyte)ox, (sbyte)oy, (sbyte)oz), out var neighbor) ? neighbor : null;
+            }
+
+            var air = SnapshotAir();
+            const int last = Size - 1;
             for (int x = -1; x <= Size; x++)
             {
+                int cx = x < 0 ? 0 : x > last ? 2 : 1;
+                int lx = x < 0 ? x + Size : x > last ? x - Size : x;
                 for (int y = -1; y <= Size; y++)
                 {
+                    int cy = y < 0 ? 0 : y > last ? 2 : 1;
+                    int ly = y < 0 ? y + Size : y > last ? y - Size : y;
                     for (int z = -1; z <= Size; z++)
                     {
-                        padded[x + 1, y + 1, z + 1] = GetBlockFromThisOrNeighbor(x, y, z);
+                        int cz = z < 0 ? 0 : z > last ? 2 : 1;
+                        int lz = z < 0 ? z + Size : z > last ? z - Size : z;
+                        var source = neighbors[cx * 9 + cy * 3 + cz];
+                        padded[x + 1, y + 1, z + 1] = source != null ? source.Blocks[lx, ly, lz] : air;
                     }
                 }
             }
+
+            System.Array.Clear(neighbors);
             return padded;
-        }
-
-        private Block GetBlockFromThisOrNeighbor(int x, int y, int z)
-        {
-            if (x >= 0 && x < Size && y >= 0 && y < Size && z >= 0 && z < Size)
-            {
-                return Blocks[x, y, z];
-            }
-
-            MeshGenerator.GetNeighborChunkIndexAndLocalCoords(x, y, z, Size, out var offset, out var local);
-            if (HasNeighbor(offset, out var neighbor))
-            {
-                return neighbor.Blocks[local.X, local.Y, local.Z];
-            }
-
-            return GameAssets.CreateBlockFromId(0);
         }
 
         public void ApplyMeshData(MeshData data)
@@ -177,15 +197,19 @@ namespace Spacebox.Game.Generation
 
             int oldMass = Mass;
 
-            _mesh?.Dispose();
-            if (data.Vertices.Length > 0 && data.Indices.Length > 0)
+            if (data.HasGeometry)
             {
-                _mesh = new Mesh(data.Vertices, data.Indices, BuffersData.CreateBlockBuffer());
+                if (_mesh != null && !_mesh.IsDisposed)
+                    _mesh.Update(data.Vertices, data.VertexCount, data.Indices, data.IndexCount);
+                else
+                    _mesh = new Mesh(data.Vertices, data.VertexCount, data.Indices, data.IndexCount, BuffersData.CreateBlockBuffer());
             }
             else
             {
+                _mesh?.Dispose();
                 _mesh = null;
             }
+            data.Release();
 
             GeometryBoundingBox = BoundingBox.CreateFromMinMax(
                 BoundingBox.Min + data.GeometryBoundingBox.Min,

@@ -208,6 +208,7 @@ namespace Spacebox.Game.Generation
                     {
                         if (IsDisposed)
                         {
+                            result.meshData.Release();
                             result.chunk.Dispose();
                             return;
                         }
@@ -227,6 +228,7 @@ namespace Spacebox.Game.Generation
                         {
                             result.chunk.Dispose();
                         }
+                        result.meshData.Release();
 
                         lock (_genLock)
                         {

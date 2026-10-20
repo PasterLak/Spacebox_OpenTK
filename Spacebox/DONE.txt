@@ -46,12 +46,16 @@ Fixes
 - crash/leaks after leaving a world while sectors or asteroids were still loading; same sector no longer loaded twice
 - furnace/crusher window state reset between worlds; failed LOD jobs no longer block the loading screen
 - furnace tasks and block serializers are thread safe while preloading
+- multiplayer: partial block damage (drilling, projectiles) is synced, players drilling one block add up
+- a block item is refunded when its placement fails locally or the server rejects it
 Engine
 - Node3D.Destroy detaches every component (every second one was skipped)
 - worker pool logs task exceptions; medium queue counted and shut down
 - TickTaskManager: thread-safe AddTask, stopped tasks no longer remove another task
 - particle pool leak (one particle per emitted particle)
 - fewer per-frame allocations: entity raycast, block collision, input bindings, ImGui keys, drops, sectors, network object loops
+- remeshing: pooled mesh arrays, GPU buffers updated in place, padded snapshot without per-cell lookups or air allocations
+- Perlin worms: worm paths cached per node and skipped by bounds instead of re-simulated for every chunk
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.2

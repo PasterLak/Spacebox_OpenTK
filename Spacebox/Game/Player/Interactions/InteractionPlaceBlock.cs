@@ -187,6 +187,10 @@ public class InteractionPlaceBlock : InteractionMode
                         player.PlayerStatistics.BlocksPlaced++;
                         PlayerActivity.RaiseBlock(PlayerActivityKind.BlockPlaced, newBlock.Id);
                     }
+                    else
+                    {
+                        PlacementRefund.Refund(player, id);
+                    }
 
                     if (blockPlace != null)
                     {

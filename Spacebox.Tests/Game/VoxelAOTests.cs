@@ -221,7 +221,7 @@ public class VoxelAOTests
     private static Dictionary<(int x, int z), (int Index, float Ao)> TopFace(MeshData mesh, int bx, int by, int bz)
     {
         var result = new Dictionary<(int x, int z), (int Index, float Ao)>();
-        int vertexCount = mesh.Vertices.Length / FloatsPerVertex;
+        int vertexCount = mesh.VertexCount / FloatsPerVertex;
 
         for (int i = 0; i < vertexCount; i++)
         {
@@ -244,7 +244,7 @@ public class VoxelAOTests
     private static int[] SharedDiagonal(MeshData mesh, int[] quad)
     {
         var counts = new Dictionary<int, int>();
-        for (int t = 0; t < mesh.Indices.Length; t += 3)
+        for (int t = 0; t < mesh.IndexCount; t += 3)
         {
             var triangle = new[] { (int)mesh.Indices[t], (int)mesh.Indices[t + 1], (int)mesh.Indices[t + 2] };
             if (!triangle.All(quad.Contains)) continue;

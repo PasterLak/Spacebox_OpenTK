@@ -412,8 +412,10 @@ public class Projectile : Node3D
     }
     private bool ApplyBlockDamage(HitInfo hit)
     {
+        short blockId = hit.block?.Id ?? 0;
         bool destroyed = hit.chunk.DamageBlock(hit, currentDamage, Parameters.DropBlock);
         if (destroyed) WorldEditNetwork.NotifyRemoved(hit.chunk, hit.blockPositionIndex);
+        else WorldEditNetwork.NotifyDamaged(hit.chunk, hit.blockPositionIndex, blockId, currentDamage);
 
         if (astronaut != null)
         {

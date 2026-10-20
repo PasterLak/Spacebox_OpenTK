@@ -15,9 +15,23 @@ namespace Spacebox.Game.Generation
     {
         public float[] Vertices;
         public uint[] Indices;
+        public int VertexCount;
+        public int IndexCount;
         public BoundingBox GeometryBoundingBox;
         public int Mass;
         public Vector3 SumPosMass;
+
+        public bool HasGeometry => VertexCount > 0 && IndexCount > 0;
+
+        public void Release()
+        {
+            if (Vertices != null) System.Buffers.ArrayPool<float>.Shared.Return(Vertices);
+            if (Indices != null) System.Buffers.ArrayPool<uint>.Shared.Return(Indices);
+            Vertices = null;
+            Indices = null;
+            VertexCount = 0;
+            IndexCount = 0;
+        }
     }
 
     public class MeshGenerator
@@ -149,9 +163,9 @@ namespace Spacebox.Game.Generation
                 }
             }
 
-            float[] finalVertices = new float[vertexCount];
+            float[] finalVertices = System.Buffers.ArrayPool<float>.Shared.Rent(Math.Max(1, vertexCount));
             Array.Copy(vertices, finalVertices, vertexCount);
-            uint[] finalIndices = new uint[indexCount];
+            uint[] finalIndices = System.Buffers.ArrayPool<uint>.Shared.Rent(Math.Max(1, indexCount));
             Array.Copy(indices, finalIndices, indexCount);
 
             if (_measureGenerationTime && stopwatch != null)
@@ -164,6 +178,8 @@ namespace Spacebox.Game.Generation
             {
                 Vertices = finalVertices,
                 Indices = finalIndices,
+                VertexCount = vertexCount,
+                IndexCount = indexCount,
                 GeometryBoundingBox = BoundingBox.CreateFromMinMax(new Vector3(xMin, yMin, zMin), new Vector3(xMax + 1, yMax + 1, zMax + 1)),
                 Mass = mass,
                 SumPosMass = sumPosMass

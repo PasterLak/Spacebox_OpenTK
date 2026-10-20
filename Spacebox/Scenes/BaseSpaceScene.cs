@@ -341,6 +341,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         _networkSession = null;
         Time.OnTick -= UpdateTickTasks;
         MainThreadDispatcher.Instance.Clear();
+        PerlinWorms.ClearCache();
         ResourceProcessingGUI.Reset();
         OxygenGeneratorUI.Reset();
         DisassemblerUI.Reset();
