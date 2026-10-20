@@ -25,6 +25,9 @@ public class ColorGradingSettingsMapperTests
         Assert.Equal(Defaults.FilmGrainPercent, graphics.FilmGrainPercent);
         Assert.Equal(Defaults.FilmGrainAnimated, graphics.FilmGrainAnimated);
         Assert.Equal(Defaults.CameraEffectPercent, graphics.CameraEffectPercent);
+        Assert.Equal(Defaults.FlashlightGlarePercent, graphics.FlashlightGlarePercent);
+        Assert.Equal(Defaults.FlashlightGlare, graphics.FlashlightGlare);
+        Assert.Equal(Defaults.FlashlightBeams, graphics.FlashlightBeams);
     }
 
     [Fact]
@@ -42,12 +45,15 @@ public class ColorGradingSettingsMapperTests
         Assert.True(ColorGradingSettingsMapper.From(Defaults).IsNeutral);
         Assert.Equal(50, Defaults.VignettePercent);
         Assert.Equal(100, Defaults.CameraEffectPercent);
+        Assert.Equal(100, Defaults.FlashlightGlarePercent);
+        Assert.True(Defaults.FlashlightGlare);
+        Assert.True(Defaults.FlashlightBeams);
     }
 
     [Fact]
     public void OutOfRangeValues_AreReplacedByDefaults()
     {
-        var settings = Parse("{ \"graphics\": { \"brightness_percent\": 10, \"contrast_percent\": 400, \"saturation_percent\": -5, \"vignette_percent\": 101, \"film_grain_percent\": 300, \"camera_effect_percent\": 120 } }");
+        var settings = Parse("{ \"graphics\": { \"brightness_percent\": 10, \"contrast_percent\": 400, \"saturation_percent\": -5, \"vignette_percent\": 101, \"film_grain_percent\": 300, \"camera_effect_percent\": 120, \"flashlight_glare_percent\": -1 } }");
 
         AssertImageDefaults(settings.Graphics);
     }
@@ -85,6 +91,9 @@ public class ColorGradingSettingsMapperTests
             FilmGrainPercent = 70,
             FilmGrainAnimated = false,
             CameraEffectPercent = 0,
+            FlashlightGlarePercent = 0,
+            FlashlightGlare = false,
+            FlashlightBeams = false,
             SsaoGrainPercent = 80,
             ShowFps = true
         };

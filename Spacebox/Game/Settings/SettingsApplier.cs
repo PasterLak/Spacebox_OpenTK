@@ -64,6 +64,7 @@ public static class SettingsApplier
         if (window.CameraFeed != null) window.CameraFeed.Intensity = graphics.CameraEffectPercent / 100f;
 
         VignetteController.SetSettingStrength(graphics.VignettePercent / 100f);
+        FlashlightGlareController.SetSettingStrength(graphics.FlashlightGlare ? graphics.FlashlightGlarePercent / 100f : 0f);
     }
 
     public static void ApplyInterface(InterfaceSettings settings)

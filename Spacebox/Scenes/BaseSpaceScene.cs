@@ -57,6 +57,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
     private FreeCamera freeCamera;
     private NetworkSession _networkSession;
+    private Spacebox.Game.Rendering.FlashlightBeamRenderer _flashlightBeams;
     
 
     public void Initialize(SpaceSceneArgs param)
@@ -120,6 +121,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         TutorialService.Attach(localPlayer, World.WorldData.Info.ShowWelcomeWindow && !GameSession.IsRemoteClient);
 
         if (!Application.IsHeadless) localPlayer.AddChild(new DustSpawner());
+        if (!Application.IsHeadless) _flashlightBeams = new Spacebox.Game.Rendering.FlashlightBeamRenderer();
 
         Debug.RegisterCommand(new DebugTexturesCommand());
         Debug.RegisterCommand(new TeleportCommand(localPlayer));
@@ -212,6 +214,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         WorldLoadingScreen.Update();
         DnaReconstructionScreen.Update();
         Spacebox.Game.Rendering.CameraFeedController.Update();
+        Spacebox.Game.Rendering.FlashlightGlareController.Update(localPlayer);
         Spacebox.Game.Rendering.VignetteController.SetWarning(Spacebox.Game.Player.OxygenWarning.For(localPlayer));
 
 #if DEBUG
@@ -280,6 +283,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         }
 
         base.Render();
+        _flashlightBeams?.Render();
 
         DisposalManager.ProcessDisposals();
 
@@ -371,6 +375,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         ShipConsoleUI.Reset();
         ShipPilot.Reset();
         Spacebox.Game.Rendering.CameraFeedController.Reset();
+        Spacebox.Game.Rendering.FlashlightGlareController.Reset();
         Spacebox.Game.Rendering.VignetteController.SetWarning(0f);
         ShipRider.Reset();
         ShipNetwork.Reset();

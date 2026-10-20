@@ -90,7 +90,22 @@ namespace Spacebox.Game.GUI.Menu
                     if (rows.Slider("Camera Block Effect", "Security camera look while you view through a ship camera block: scanlines, grain, lens distortion and a REC overlay. 0% turns it off.", ref cameraEffect, 0, 100, "%d%%"))
                         Apply(graphics, () => graphics.CameraEffectPercent = cameraEffect);
 
-                    if (rows.Button("Image Defaults", "Restores the default brightness, contrast, saturation, vignette, film grain and camera block effect.", "Reset"))
+                    bool flashlightGlareOn = graphics.FlashlightGlare;
+                    if (rows.Checkbox("Flashlight Glare", "Glare, lit dirt and reflections on your helmet glass when another player within 5 m shines a flashlight in your face.", ref flashlightGlareOn))
+                        Apply(graphics, () => graphics.FlashlightGlare = flashlightGlareOn);
+
+                    if (graphics.FlashlightGlare)
+                    {
+                        int flashlightGlare = graphics.FlashlightGlarePercent;
+                        if (rows.Slider("Glare Strength", "How strong the flashlight glare is.", ref flashlightGlare, 0, 100, "%d%%"))
+                            Apply(graphics, () => graphics.FlashlightGlarePercent = flashlightGlare);
+                    }
+
+                    bool flashlightBeams = graphics.FlashlightBeams;
+                    if (rows.Checkbox("Flashlight Beams", "Other players' flashlights show a light cone with dust floating in it.", ref flashlightBeams))
+                        Apply(graphics, () => graphics.FlashlightBeams = flashlightBeams);
+
+                    if (rows.Button("Image Defaults", "Restores the default brightness, contrast, saturation, vignette, film grain, camera block effect, flashlight glare and beams.", "Reset"))
                         Apply(graphics, graphics.ResetImage);
 
                     rows.Section("World");

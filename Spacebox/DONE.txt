@@ -105,6 +105,8 @@ Engine
 |------------------------------------------------------------------------------------------------------------------------------
 
 Game
+- flashlight glare: another player shining a flashlight in your face brightens the screen and puts a lens flare on the helmet glass (distance, cone and view angle, blocked by walls; Flashlight Glare option)
+- flashlight beams: other players' flashlights show a 3D light cone with drifting dust (Flashlight Beams option)
 - PerlinNoise+
 - Worms/Ores generator
 - refactoring

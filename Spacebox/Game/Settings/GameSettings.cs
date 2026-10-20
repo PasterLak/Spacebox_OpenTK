@@ -67,6 +67,9 @@ namespace Spacebox.Game
         [JsonPropertyName("film_grain_percent")] public int FilmGrainPercent { get; set; } = 0;
         [JsonPropertyName("film_grain_animated")] public bool FilmGrainAnimated { get; set; } = true;
         [JsonPropertyName("camera_effect_percent")] public int CameraEffectPercent { get; set; } = 100;
+        [JsonPropertyName("flashlight_beams")] public bool FlashlightBeams { get; set; } = true;
+        [JsonPropertyName("flashlight_glare")] public bool FlashlightGlare { get; set; } = true;
+        [JsonPropertyName("flashlight_glare_percent")] public int FlashlightGlarePercent { get; set; } = 100;
         [JsonPropertyName("show_fps")] public bool ShowFps { get; set; } = false;
 
         public void ResetSsao()
@@ -90,6 +93,9 @@ namespace Spacebox.Game
             FilmGrainPercent = defaults.FilmGrainPercent;
             FilmGrainAnimated = defaults.FilmGrainAnimated;
             CameraEffectPercent = defaults.CameraEffectPercent;
+            FlashlightGlare = defaults.FlashlightGlare;
+            FlashlightBeams = defaults.FlashlightBeams;
+            FlashlightGlarePercent = defaults.FlashlightGlarePercent;
         }
 
         public bool Validate(GraphicsSettings d)
@@ -111,6 +117,7 @@ namespace Spacebox.Game
             if (OutOfRange(VignettePercent, 0, 100)) { VignettePercent = d.VignettePercent; changed = true; }
             if (OutOfRange(FilmGrainPercent, 0, 100)) { FilmGrainPercent = d.FilmGrainPercent; changed = true; }
             if (OutOfRange(CameraEffectPercent, 0, 100)) { CameraEffectPercent = d.CameraEffectPercent; changed = true; }
+            if (OutOfRange(FlashlightGlarePercent, 0, 100)) { FlashlightGlarePercent = d.FlashlightGlarePercent; changed = true; }
             return changed;
         }
 
