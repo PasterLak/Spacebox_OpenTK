@@ -12,6 +12,7 @@ case "$rel" in
   Spacebox.Tests/*) project="Spacebox.Tests/Spacebox.Tests.csproj" ;;
   Spacebox.Benchmarks/*) project="Spacebox.Benchmarks/Spacebox.Benchmarks.csproj" ;;
   LegacyWorldConverter/*) project="LegacyWorldConverter/LegacyWorldConverter.csproj" ;;
+  Tools/Spacebox.AssetAudit/*) project="Tools/Spacebox.AssetAudit/Spacebox.AssetAudit.csproj" ;;
   Engine/*|Spacebox/*|Spacebox.Core/*) project="Spacebox/Spacebox.csproj" ;;
   *) exit 0 ;;
 esac

@@ -61,6 +61,7 @@ Move-Item -Path $logTemp -Destination $logPath -Force
 
 # Step 4.5: Exclude files listed in exclude.txt (if exists)
 Remove-ExcludedFiles $projectRoot $finalDir
+Remove-UnusedAssets $projectRoot $finalDir
 
 
 # Step 5: Create zip archive

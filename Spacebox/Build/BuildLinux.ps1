@@ -29,6 +29,7 @@ Get-ChildItem $publishRoot -Exclude "publish", "log.txt" | Remove-Item -Recurse 
 Rename-Item -Path $publishDir -NewName $finalFolderName
 
 Remove-ExcludedFiles $projectRoot $finalDir
+Remove-UnusedAssets $projectRoot $finalDir
 
 New-FlatZip $finalDir $zipPath -UnixExecutables @("Spacebox", "start.sh", "start-server.sh")
 

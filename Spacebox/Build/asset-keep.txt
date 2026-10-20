@@ -1,0 +1,3 @@
+# Assets the unused-asset audit must never remove from release builds.
+# One glob per line, relative to the game folder (Resources/..., GameSets/<set>/...).
+# Use it for files that are loaded by a name built at runtime, which the audit cannot see.

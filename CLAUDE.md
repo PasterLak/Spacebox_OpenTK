@@ -48,6 +48,7 @@ dotnet test Spacebox.Tests --filter "FullyQualifiedName~StorageTests" # single c
 dotnet test Spacebox.Tests --filter "FullyQualifiedName~BlockTests.SomeMethod"
 
 dotnet run -c Debug --project Spacebox.Benchmarks   # BenchmarkDotNet; edit Program.cs to choose which benchmark runs
+dotnet run --project Tools/Spacebox.AssetAudit -- audit . --list   # list assets that release builds leave out as unused
 
 dotnet publish Spacebox/Spacebox.csproj -c Release -r linux-x64 --self-contained true --output ./publish   # also win-x64 / osx-x64; single-file: only the executable + game folders
 ```

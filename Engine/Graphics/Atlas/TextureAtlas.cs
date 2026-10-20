@@ -105,10 +105,10 @@ public sealed class TextureAtlas : IDisposable
         return AddFile(Path.GetFileNameWithoutExtension(path).ToLowerInvariant(), path, overwrite);
     }
 
-    public int AddDirectory(string path, bool recursive = true)
+    public int AddDirectory(string path, bool recursive = true, bool skipIgnoredFolders = false)
     {
         int added = 0;
-        foreach (var file in EnumerateImages(path, recursive))
+        foreach (var file in EnumerateImages(path, recursive, skipIgnoredFolders))
         {
             if (AddFile(file)) added++;
         }
@@ -133,11 +133,11 @@ public sealed class TextureAtlas : IDisposable
         return true;
     }
 
-    public int AddLayerDirectory(string layer, string path, bool recursive = true)
+    public int AddLayerDirectory(string layer, string path, bool recursive = true, bool skipIgnoredFolders = false)
     {
         CreateLayer(layer);
         int added = 0;
-        foreach (var file in EnumerateImages(path, recursive))
+        foreach (var file in EnumerateImages(path, recursive, skipIgnoredFolders))
         {
             if (TryLoadPixels(file, out var pixels) &&
                 AddLayer(layer, Path.GetFileNameWithoutExtension(file).ToLowerInvariant(), pixels))
@@ -367,7 +367,19 @@ public sealed class TextureAtlas : IDisposable
         return texture;
     }
 
-    private static IEnumerable<string> EnumerateImages(string path, bool recursive)
+    public static bool IsInIgnoredFolder(string root, string file)
+    {
+        var relativeFolder = Path.GetDirectoryName(Path.GetRelativePath(root, file));
+        if (string.IsNullOrEmpty(relativeFolder)) return false;
+
+        foreach (var segment in relativeFolder.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
+        {
+            if (segment.StartsWith('_')) return true;
+        }
+        return false;
+    }
+
+    private static IEnumerable<string> EnumerateImages(string path, bool recursive, bool skipIgnoredFolders)
     {
         if (!Directory.Exists(path))
         {
@@ -381,6 +393,8 @@ public sealed class TextureAtlas : IDisposable
 
         foreach (var file in files)
         {
+            if (skipIgnoredFolders && IsInIgnoredFolder(path, file)) continue;
+
             var extension = Path.GetExtension(file);
             for (int i = 0; i < ImagePixels.SupportedExtensions.Length; i++)
             {

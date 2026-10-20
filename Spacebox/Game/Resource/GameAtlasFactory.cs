@@ -14,9 +14,9 @@ public static class GameAtlasFactory
     public static TextureAtlas CreateBlocksAtlas(string blocksPath, string emissionPath)
     {
         var atlas = new TextureAtlas("BlocksAtlas");
-        atlas.AddDirectory(blocksPath);
-        atlas.AddDirectory(BuiltInBlocksFolder);
-        atlas.AddLayerDirectory(EmissionLayer, emissionPath);
+        atlas.AddDirectory(blocksPath, skipIgnoredFolders: true);
+        atlas.AddDirectory(BuiltInBlocksFolder, skipIgnoredFolders: true);
+        atlas.AddLayerDirectory(EmissionLayer, emissionPath, skipIgnoredFolders: true);
         atlas.Build();
         return atlas;
     }
@@ -24,10 +24,10 @@ public static class GameAtlasFactory
     public static TextureAtlas CreateItemsAtlas(string itemsPath, string emissionPath)
     {
         var atlas = new TextureAtlas("ItemsAtlas", padding: 1);
-        atlas.AddDirectory(itemsPath);
-        atlas.AddDirectory(BuiltInItemsFolder);
+        atlas.AddDirectory(itemsPath, skipIgnoredFolders: true);
+        atlas.AddDirectory(BuiltInItemsFolder, skipIgnoredFolders: true);
         UIAtlas.AddUIElements(atlas);
-        atlas.AddLayerDirectory(EmissionLayer, emissionPath);
+        atlas.AddLayerDirectory(EmissionLayer, emissionPath, skipIgnoredFolders: true);
         atlas.Build();
         return atlas;
     }

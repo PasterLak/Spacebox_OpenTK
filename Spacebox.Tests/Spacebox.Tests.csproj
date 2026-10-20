@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Spacebox\Spacebox.csproj" />
+    <ProjectReference Include="..\Tools\Spacebox.AssetAudit\Spacebox.AssetAudit.csproj" />
   </ItemGroup>
 
 </Project>

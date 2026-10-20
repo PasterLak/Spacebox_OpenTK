@@ -43,6 +43,40 @@ function Remove-ExcludedFiles {
     }
 }
 
+function Remove-UnusedAssets {
+    param ([string]$projectRoot, [string]$targetDir)
+    $repoRoot = Split-Path $projectRoot -Parent
+    $auditProject = Join-Path $repoRoot "Tools\Spacebox.AssetAudit\Spacebox.AssetAudit.csproj"
+    if (-not (Test-Path $auditProject)) {
+        Write-Warning "Asset audit tool not found (skip): $auditProject"
+        return
+    }
+
+    $listFile = Join-Path $env:TEMP "spacebox_unused_assets.txt"
+    dotnet run --project $auditProject -c Release -- audit $repoRoot --out $listFile | Write-Host
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path $listFile)) {
+        Write-Warning "Asset audit failed, unused assets are kept."
+        return
+    }
+
+    $removedBytes = 0
+    $removedCount = 0
+    Get-Content $listFile | ForEach-Object {
+        $relativePath = $_.Trim()
+        if ($relativePath -ne "") {
+            $targetPath = Join-Path $targetDir $relativePath
+            if (Test-Path $targetPath -PathType Leaf) {
+                $removedBytes += (Get-Item $targetPath).Length
+                Remove-Item $targetPath -Force -ErrorAction SilentlyContinue
+                $removedCount++
+                Write-Host "Excluded unused: $relativePath"
+            }
+        }
+    }
+    Remove-Item $listFile -Force -ErrorAction SilentlyContinue
+    Write-Host ("Removed {0} unused assets ({1:N1} MB)" -f $removedCount, ($removedBytes / 1MB))
+}
+
 function Get-UnixAttributes {
     param ([uint32]$mode)
     return [BitConverter]::ToInt32([BitConverter]::GetBytes([uint32](($mode -bor 0x8000) * 65536)), 0)
