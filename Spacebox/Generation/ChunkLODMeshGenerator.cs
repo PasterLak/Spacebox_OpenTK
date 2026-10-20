@@ -33,7 +33,7 @@ namespace Spacebox.Game.Generation
             return data;
         }
 
-        public void GenerateFromBlocksAsync(Block[,,] blocks, int downscale, Vector2[] customUV, Action<MeshDataOld> onComplete)
+        public void GenerateFromBlocksAsync(Block[,,] blocks, int downscale, Vector2[] customUV, Action<MeshDataOld> onComplete, Action onFailed = null)
         {
             bool[,,] fullData = ConvertBlocksToBool(blocks);
             WorkerPoolManager.Enqueue<MeshDataOld>(token =>
@@ -49,6 +49,8 @@ namespace Spacebox.Game.Generation
             {
                 if (t.Status == TaskStatus.RanToCompletion)
                     onComplete(t.Result);
+                else
+                    onFailed?.Invoke();
             }, TaskScheduler.Default);
         }
 

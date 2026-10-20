@@ -31,9 +31,27 @@ New
 - dedicated server upgrades old worlds on start
 Small
 - convert dialog shows steps, backup and warnings
+- DNA reconstructor slot uses the dna_ui texture
+- build scripts read the version from Application.cs, keep other platform builds, zip without a root folder
+- Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
 - old worlds saved as 0.1.2 by the old converter are refused instead of loading broken
+- multiplayer: glass broken by flying into it is removed for everyone
+- multiplayer: rejected or conflicting block edits are corrected by the server
+- multiplayer: clients loading an entity later get the machine states (running furnace/crusher)
+- multiplayer: a machine window snapshot no longer overwrites an unsent item move (dupe/loss)
+- item duplication when a stack was only partly added (pickup, quick transfer, tutorial rewards)
+- crafting with a full inventory drops the rest instead of deleting it; x5 craft can't overflow quantities
+- empty renamed storages keep their name
+- crash/leaks after leaving a world while sectors or asteroids were still loading; same sector no longer loaded twice
+- furnace/crusher window state reset between worlds; failed LOD jobs no longer block the loading screen
+- furnace tasks and block serializers are thread safe while preloading
 Engine
+- Node3D.Destroy detaches every component (every second one was skipped)
+- worker pool logs task exceptions; medium queue counted and shut down
+- TickTaskManager: thread-safe AddTask, stopped tasks no longer remove another task
+- particle pool leak (one particle per emitted particle)
+- fewer per-frame allocations: entity raycast, block collision, input bindings, ImGui keys, drops, sectors, network object loops
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.2

@@ -94,9 +94,49 @@ public static class WorldEditNetwork
         var network = NetworkManager.Instance;
         if (sender == network.LocalPeerId) return;
 
-        Apply(message);
+        if (!network.IsServer)
+        {
+            Apply(message);
+            return;
+        }
 
-        if (network.IsServer) network.SendToClients(message, DeliveryMode.Reliable, sender);
+        var world = World.Instance;
+        SpaceEntity entity = null;
+        bool known = world != null && world.TryFindEntity(message.EntityId, out entity);
+        short previousId = known ? GetBlockId(entity, message.Cell) : (short)0;
+
+        Apply(message);
+        network.SendToClients(message, DeliveryMode.Reliable, sender);
+
+        if (known && NeedsCorrection(entity, message, previousId)) SendCorrection(sender, entity, message.Cell);
+    }
+
+    private static bool NeedsCorrection(SpaceEntity entity, BlockEditMessage message, short previousId)
+    {
+        short currentId = GetBlockId(entity, message.Cell);
+        if (message.IsRemoval) return currentId != 0;
+        return currentId != message.BlockId || previousId != 0;
+    }
+
+    private static void SendCorrection(int peer, SpaceEntity entity, Vector3i cell)
+    {
+        var correction = new BlockEditMessage { EntityId = entity.EntityID, Cell = cell, IsRemoval = true };
+
+        if (entity.TryGetBlockLocal(cell, out var chunk, out var index))
+        {
+            var block = chunk.Blocks[index.X, index.Y, index.Z];
+            if (block != null && !block.IsAir)
+            {
+                if (block.HasMultiblockOffset) return;
+
+                correction.IsRemoval = false;
+                correction.BlockId = block.Id;
+                correction.Direction = (byte)block.Direction;
+                correction.Rotation = (byte)block.Rotation;
+            }
+        }
+
+        NetworkManager.Instance.Send(peer, correction);
     }
 
     private static void OnBulkEdit(int sender, BulkBlockEditMessage message)

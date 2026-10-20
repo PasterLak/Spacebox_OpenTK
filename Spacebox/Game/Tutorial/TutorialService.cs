@@ -145,8 +145,8 @@ public static class TutorialService
             while (left > 0)
             {
                 byte count = (byte)Math.Min(left, Math.Max(1, (int)item.StackSize));
-                if (!_player.Panel.TryAddItem(item, count) && !_player.Inventory.TryAddItem(item, count))
-                    World.DropEffectManager?.DropItem(_player.Position, _player.Front, 1f, item, count);
+                if (!_player.Panel.TryAddItem(item, count, out var notAdded) && !_player.Inventory.TryAddItem(item, notAdded, out notAdded))
+                    World.DropEffectManager?.DropItem(_player.Position, _player.Front, 1f, item, notAdded);
                 left -= count;
             }
         }

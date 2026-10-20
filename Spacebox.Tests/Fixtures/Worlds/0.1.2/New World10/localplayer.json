@@ -1,0 +1,224 @@
+{
+  "PositionX": 4434.0557,
+  "PositionY": 4595.96,
+  "PositionZ": 2417.2415,
+  "RotationX": 0.8749313,
+  "RotationY": -0.23411301,
+  "RotationZ": 0.35203046,
+  "RotationW": -0.23613746,
+  "Health": 67,
+  "Power": 100,
+  "Oxygen": 100,
+  "IsFlashlightOn": true,
+  "SpawnPoint": [
+    4425.201,
+    4631.6978,
+    2401.507
+  ],
+  "InventorySlots": [
+    {
+      "ItemID": "default:ice_rock",
+      "Count": 2,
+      "SlotX": 0,
+      "SlotY": 0
+    },
+    {
+      "ItemID": "default:cobalt_ingot",
+      "Count": 5,
+      "SlotX": 0,
+      "SlotY": 1
+    },
+    {
+      "ItemID": "default:aluminium_ingot",
+      "Count": 5,
+      "SlotX": 0,
+      "SlotY": 2
+    },
+    {
+      "ItemID": "default:cobalt_ingot",
+      "Count": 64,
+      "SlotX": 1,
+      "SlotY": 0
+    },
+    {
+      "ItemID": "default:titanium_panels",
+      "Count": 12,
+      "SlotX": 1,
+      "SlotY": 1
+    },
+    {
+      "ItemID": "default:energy_cell",
+      "Count": 7,
+      "SlotX": 1,
+      "SlotY": 2
+    },
+    {
+      "ItemID": "default:glass",
+      "Count": 1,
+      "SlotX": 2,
+      "SlotY": 0
+    },
+    {
+      "ItemID": "default:aluminium_panels",
+      "Count": 1,
+      "SlotX": 2,
+      "SlotY": 1
+    },
+    {
+      "ItemID": "default:ice_shard",
+      "Count": 2,
+      "SlotX": 2,
+      "SlotY": 2
+    },
+    {
+      "ItemID": "default:microchip",
+      "Count": 2,
+      "SlotX": 3,
+      "SlotY": 0
+    },
+    {
+      "ItemID": "default:thulium_energy_cell",
+      "Count": 2,
+      "SlotX": 3,
+      "SlotY": 1
+    },
+    {
+      "ItemID": "default:liquid_hydrogen",
+      "Count": 12,
+      "SlotX": 3,
+      "SlotY": 2
+    },
+    {
+      "ItemID": "default:uranium_rods",
+      "Count": 2,
+      "SlotX": 4,
+      "SlotY": 0
+    },
+    {
+      "ItemID": "default:thulium_ingot",
+      "Count": 6,
+      "SlotX": 5,
+      "SlotY": 0
+    },
+    {
+      "ItemID": "default:titanium_ingot",
+      "Count": 30,
+      "SlotX": 5,
+      "SlotY": 1
+    },
+    {
+      "ItemID": "default:aluminium_drill_bit",
+      "Count": 4,
+      "SlotX": 6,
+      "SlotY": 0
+    },
+    {
+      "ItemID": "default:iron_ingot",
+      "Count": 30,
+      "SlotX": 6,
+      "SlotY": 2
+    },
+    {
+      "ItemID": "default:cobalt_lens",
+      "Count": 4,
+      "SlotX": 7,
+      "SlotY": 1
+    }
+  ],
+  "PanelSlots": [
+    {
+      "ItemID": "default:triple_iron_drill",
+      "Count": 1,
+      "SlotX": 0,
+      "SlotY": 0
+    },
+    {
+      "ItemID": "default:smg",
+      "Count": 1,
+      "SlotX": 0,
+      "SlotY": 1
+    },
+    {
+      "ItemID": "default:cable_block",
+      "Count": 1,
+      "SlotX": 0,
+      "SlotY": 2
+    },
+    {
+      "ItemID": "default:aluminium_block_light",
+      "Count": 18,
+      "SlotX": 0,
+      "SlotY": 3
+    },
+    {
+      "ItemID": "default:ice_rock",
+      "Count": 1,
+      "SlotX": 0,
+      "SlotY": 4
+    },
+    {
+      "ItemID": "default:light_rock",
+      "Count": 19,
+      "SlotX": 0,
+      "SlotY": 5
+    },
+    {
+      "ItemID": "default:cobaltite_rock",
+      "Count": 9,
+      "SlotX": 0,
+      "SlotY": 6
+    },
+    {
+      "ItemID": "default:compressed_oxygen",
+      "Count": 2,
+      "SlotX": 0,
+      "SlotY": 7
+    }
+  ],
+  "EquipmentSlots": [
+    {
+      "ItemID": "default:aluminium_flashlight",
+      "Count": 1,
+      "SlotX": 7,
+      "SlotY": 0
+    }
+  ],
+  "Statistics": {
+    "TotalPlayTimeMinutes": 76,
+    "PlayTimeSeconds": 4579.8006099797785,
+    "SessionsPlayed": 5,
+    "FirstPlayedUtc": "2026-10-18T14:38:26.7596629Z",
+    "LastPlayedUtc": "2026-10-19T21:20:08.0156348Z",
+    "BlocksDestroyed": 353,
+    "BlocksPlaced": 252,
+    "ItemsCrafted": 776,
+    "ItemsProcessed": 211,
+    "ItemsPickedUp": 405,
+    "ItemsConsumed": 6,
+    "ShotsFired": 60,
+    "ShotsHit": 4,
+    "ProjectilesRicocheted": 4,
+    "ExplosionsCaused": 0,
+    "BlockDamageDealt": 2950,
+    "EntityDamageDealt": 0,
+    "DeathsTotal": 7,
+    "DamageTaken": 1005,
+    "HealthHealed": 189,
+    "DistanceTraveled": 2254.246684194659,
+    "DistanceInShips": 0,
+    "MaxSpeedReached": 13.967253,
+    "TeleportsUsed": 0,
+    "VisitedAsteroids": [
+      7103043636161845739
+    ],
+    "VisitedSectors": [
+      "0,0,0"
+    ],
+    "FlashlightToggles": 7,
+    "AsteroidsDiscovered": 1,
+    "SectorsExplored": 1,
+    "ItemsUsed": {},
+    "DeathCauses": {}
+  },
+  "Tutorial": null
+}

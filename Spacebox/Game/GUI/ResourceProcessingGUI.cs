@@ -240,6 +240,21 @@ namespace Spacebox.Game.GUI
             }
         }
 
+        public static void Reset()
+        {
+            if (processingBlock != null) processingBlock.OnCrafted -= OnCrafted;
+            InputStorage.OnDataWasChanged -= OnInputItemWasChanged;
+            OutputStorage.OnDataWasChanged -= OnInputItemWasChanged;
+            FuelStorage.OnDataWasChanged -= OnInputItemWasChanged;
+
+            InputStorage = new Storage(1, 1);
+            FuelStorage = new Storage(1, 1);
+            OutputStorage = new Storage(1, 1);
+            processingBlock = null;
+            Player = null;
+            _wasVisible = false;
+        }
+
         public static void OnGUI()
         {
           
@@ -454,9 +469,10 @@ namespace Spacebox.Game.GUI
         {
             if (Player?.Panel == null) return;
 
-            if (Player.Panel.TryAddItem(slot.Item, rest))
+            Player.Panel.TryAddItem(slot.Item, rest, out var notAdded);
+            if (notAdded < rest)
             {
-                slot.Count = (byte)(slot.Count - rest);
+                slot.Count = (byte)(slot.Count - (rest - notAdded));
             }
         }
 

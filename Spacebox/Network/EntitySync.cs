@@ -45,6 +45,9 @@ public static class EntitySync
         }
 
         network.Send(sender, new EntityDataMessage { Sector = message.Sector, EntityId = message.EntityId, Data = payload });
+
+        var world = World.Instance;
+        if (world != null && world.TryFindEntity(message.EntityId, out var entity)) BlockStateNetwork.SendEntityStatesTo(sender, entity);
     }
 
     private static void OnData(int sender, EntityDataMessage message)

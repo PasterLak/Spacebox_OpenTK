@@ -521,9 +521,10 @@ public class World : Component, ISpaceStructure
                     var sector = new Sector(worldPos, sectorIndex, worldSeed);
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
-                        if (Instance == null)
+                        if (Instance != this || loadedSectors.ContainsKey(sectorIndex))
                         {
                             sector.Dispose();
+                            if (Instance == this) loadingSectors.Remove(sectorIndex);
                             return;
                         }
 
@@ -555,7 +556,7 @@ public class World : Component, ISpaceStructure
 
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
-                        if (Instance != null)
+                        if (Instance == this)
                             loadingSectors.Remove(sectorIndex);
                     });
                 }
@@ -569,6 +570,7 @@ public class World : Component, ISpaceStructure
 
         worldOctree.Add(newSector, newSector.BoundingBox);
         loadedSectors.Add(newSector.PositionIndex, newSector);
+        loadingSectors.Remove(sectorIndex);
         _entityTracker.OnSectorLoaded(newSector);
         SectorLoaded?.Invoke(newSector);
 

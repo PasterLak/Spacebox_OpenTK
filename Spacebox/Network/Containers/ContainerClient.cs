@@ -140,11 +140,16 @@ public sealed class ContainerClient
             Debug.Error($"[Containers] Bad container state: {ex.Message}");
         }
 
-        if (!container.HasSnapshot || container.Pending == 0)
+        if (!container.HasSnapshot || (container.Pending == 0 && !HasUnsentChange(container)))
         {
             container.HasSnapshot = true;
             ApplyConfirmed(container);
         }
+    }
+
+    private static bool HasUnsentChange(OpenContainer container)
+    {
+        return container.Predicted != null && !ContainerSlots.SequenceEqual(ContainerSlots.Read(container.Storages), container.Predicted);
     }
 
     public void OnResult(ContainerChangeResultMessage message)

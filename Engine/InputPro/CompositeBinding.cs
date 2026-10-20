@@ -16,22 +16,47 @@ public class CompositeBinding : InputBinding
     public override bool IsPressed(InputState state)
     {
         if (RequireAll)
-            return Bindings.All(b => b.IsHeld(state)) && Bindings.Any(b => b.IsPressed(state));
-        return Bindings.Any(b => b.IsPressed(state));
+            return AllHeld(state) && AnyPressed(state);
+        return AnyPressed(state);
     }
 
     public override bool IsReleased(InputState state)
     {
-        if (RequireAll)
-            return Bindings.Any(b => b.IsReleased(state));
-        return Bindings.Any(b => b.IsReleased(state));
+        for (int i = 0; i < Bindings.Count; i++)
+        {
+            if (Bindings[i].IsReleased(state)) return true;
+        }
+        return false;
     }
 
     public override bool IsHeld(InputState state)
     {
         if (RequireAll)
-            return Bindings.All(b => b.IsHeld(state));
-        return Bindings.Any(b => b.IsHeld(state));
+            return AllHeld(state);
+
+        for (int i = 0; i < Bindings.Count; i++)
+        {
+            if (Bindings[i].IsHeld(state)) return true;
+        }
+        return false;
+    }
+
+    private bool AllHeld(InputState state)
+    {
+        for (int i = 0; i < Bindings.Count; i++)
+        {
+            if (!Bindings[i].IsHeld(state)) return false;
+        }
+        return true;
+    }
+
+    private bool AnyPressed(InputState state)
+    {
+        for (int i = 0; i < Bindings.Count; i++)
+        {
+            if (Bindings[i].IsPressed(state)) return true;
+        }
+        return false;
     }
 
     public override string GetDisplayName()

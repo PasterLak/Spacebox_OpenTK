@@ -206,6 +206,12 @@ namespace Spacebox.Game.Generation
 
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
+                        if (IsDisposed)
+                        {
+                            result.chunk.Dispose();
+                            return;
+                        }
+
                         if (TryGetChunk(idx, out var existing))
                         {
                             MergeGeneratedBlocks(existing, result.chunk);

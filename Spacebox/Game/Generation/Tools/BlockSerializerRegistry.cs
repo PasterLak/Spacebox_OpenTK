@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Oxygen;
@@ -8,6 +9,8 @@ namespace Spacebox.Game.Generation.Tools
 {
     public static class BlockSerializerRegistry
     {
+        private static readonly ConcurrentDictionary<Type, IBlockSerializer> Resolved = new ConcurrentDictionary<Type, IBlockSerializer>();
+
         private static readonly Dictionary<Type, IBlockSerializer> Serializers = new Dictionary<Type, IBlockSerializer>
         {
             { typeof(StorageBlock), new StorageBlockSerializer() },
@@ -24,6 +27,18 @@ namespace Spacebox.Game.Generation.Tools
 
         public static IBlockSerializer GetSerializer(Type blockType)
         {
+            if (Resolved.TryGetValue(blockType, out var cached))
+            {
+                return cached;
+            }
+
+            var serializer = Find(blockType);
+            Resolved[blockType] = serializer;
+            return serializer;
+        }
+
+        private static IBlockSerializer Find(Type blockType)
+        {
             if (Serializers.TryGetValue(blockType, out var exactSerializer))
             {
                 return exactSerializer;
@@ -33,7 +48,6 @@ namespace Spacebox.Game.Generation.Tools
             {
                 if (kvp.Key.IsAssignableFrom(blockType))
                 {
-                    Serializers[blockType] = kvp.Value;
                     return kvp.Value;
                 }
             }

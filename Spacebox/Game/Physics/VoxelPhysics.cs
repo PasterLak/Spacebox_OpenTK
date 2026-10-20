@@ -40,17 +40,11 @@ namespace Spacebox.Game.Physics
                         {
                             BlockCollision.GetChunkCellBounds(chunk, x, y, z, block, out var localBoxMin, out var localBoxMax);
                             Vector3 blockMin = ChunkWorldPosition + localBoxMin;
-                            BoundingBox blockBox = new BoundingBox(blockMin + (localBoxMax - localBoxMin) * 0.5f, localBoxMax - localBoxMin);
-                            if (sphere.Intersects(blockBox))
+                            Vector3 blockMax = ChunkWorldPosition + localBoxMax;
+                            Vector3 clamped = Vector3.Clamp(sphere.Center, blockMin, blockMax);
+                            if ((sphere.Center - clamped).LengthSquared <= sphere.Radius * sphere.Radius)
                             {
                                 collideInfo.blockPositionIndex = new Vector3Byte(x, y, z);
-                                blockMin = blockBox.Center - blockBox.Size * 0.5f;
-                                Vector3 blockMax = blockBox.Center + blockBox.Size * 0.5f;
-                                Vector3 clamped = new Vector3(
-                                    Math.Clamp(sphere.Center.X, blockMin.X, blockMax.X),
-                                    Math.Clamp(sphere.Center.Y, blockMin.Y, blockMax.Y),
-                                    Math.Clamp(sphere.Center.Z, blockMin.Z, blockMax.Z)
-                                );
                                 Vector3 normal = (sphere.Center - clamped).Normalized();
                                 collideInfo.normal = (Vector3SByte)normal;
                                 return true;
@@ -64,9 +58,13 @@ namespace Spacebox.Game.Physics
         }
 
 
+        [ThreadStatic] private static List<ChunkHitInfo> _chunkHits;
+        private static readonly Comparison<ChunkHitInfo> _byDistance = (a, b) => a.Distance.CompareTo(b.Distance);
+
         public static bool RaycastChunks(SpaceEntity entity, Ray ray, out List<ChunkHitInfo> chunkHits)
         {
-            chunkHits = new List<ChunkHitInfo>();
+            chunkHits = _chunkHits ??= new List<ChunkHitInfo>();
+            chunkHits.Clear();
 
             float startDistance = 0;
 
@@ -88,14 +86,13 @@ namespace Spacebox.Game.Physics
                 ray = new Ray(ray.GetPoint(startDistance), ray.Direction, ray.Length - startDistance);
             }
 
-            HashSet<Chunk> potentialChunks = new HashSet<Chunk>();
-
-            potentialChunks = entity.Chunks.ToHashSet();
+            var potentialChunks = entity.Chunks;
 
             bool checkOrig = true;
 
-            foreach (var chunk in potentialChunks)
+            for (int i = 0; i < potentialChunks.Count; i++)
             {
+                var chunk = potentialChunks[i];
 
                 if (checkOrig && chunk.BoundingBox.Contains(ray.Origin))
                 {
@@ -132,7 +129,7 @@ namespace Spacebox.Game.Physics
 
             if (chunkHits.Count > 1)
             {
-                chunkHits.Sort((a, b) => a.Distance.CompareTo(b.Distance));
+                chunkHits.Sort(_byDistance);
             }
 
             return chunkHits.Count > 0;

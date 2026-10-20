@@ -12,6 +12,7 @@ namespace Spacebox.Game.GUI;
 public static class DnaReconstructorUI
 {
     private const string WindowId = "dnaReconstructor";
+    private const string SlotIcon = "dna_ui";
 
     private static readonly Vector4 TitleColor = new Vector4(1f, 1f, 0f, 1f);
     private static readonly Vector4 NoPowerColor = new Vector4(1f, 0f, 0f, 1f);
@@ -75,11 +76,7 @@ public static class DnaReconstructorUI
         float contentTop = padding * 3f;
         ImGui.SetCursorPos(new Vector2(padding, contentTop));
         var slot = _block.DnaStorage.GetSlot(0, 0);
-        var dnaItem = _block.Data.DnaItem;
-        if (dnaItem != null)
-            InventoryUIHelper.DrawSlot(slot, "dnaReconstructorSlot", _onSlotClicked, dnaItem.Icon);
-        else
-            InventoryUIHelper.DrawSlot(slot, "dnaReconstructorSlot", _onSlotClicked);
+        InventoryUIHelper.DrawSlot(slot, "dnaReconstructorSlot", _onSlotClicked, UIAtlas.Get(SlotIcon));
         InventoryUIHelper.ShowTooltip(slot, false, true);
 
         float textX = padding * 2f + slotSize;

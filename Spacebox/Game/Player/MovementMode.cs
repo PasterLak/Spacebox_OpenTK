@@ -7,6 +7,7 @@ using Spacebox.Game.Physics;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Game.Player.Interactions;
 using Spacebox.Game.Physics.Gravity;
+using Spacebox.Network;
 
 
 namespace Spacebox.Game.Player;
@@ -443,6 +444,7 @@ public class MovementMode : GameModeBase
                 if (ch != null)
                 {
                     ch.RemoveBlock(collideInfo.blockPositionIndex, new Vector3SByte(0, 0, 0));
+                    WorldEditNetwork.NotifyRemoved(ch, collideInfo.blockPositionIndex);
                     if (blockDestroy != null)
                     {
                         PickDestroySound(collideInfo.block.Id);

@@ -1,31 +1,20 @@
 # PowerShell script to build and package Spacebox project
 
+. (Join-Path $PSScriptRoot "BuildCommon.ps1")
+
 # ==== CONFIGURATION ====
-$version = "0.1.2 alpha"
+$channel = "alpha"
 $configuration = "Final"
 $runtime = "win-x64"
 $framework = "net8.0"
 $selfContained = $true
-$finalFolderName = "Spacebox_v$version"
 # ========================
-
-# Find the project root by looking for Spacebox.csproj
-function Find-ProjectRoot {
-    param ([string]$startDir)
-    $dir = Get-Item $startDir
-    while ($dir -ne $null) {
-        $csprojPath = Join-Path $dir.FullName "Spacebox.csproj"
-        if (Test-Path $csprojPath) {
-            return $dir.FullName
-        }
-        $dir = $dir.Parent
-    }
-    throw "Spacebox.csproj not found."
-}
 
 # Get paths
 $scriptDir = $PSScriptRoot
 $projectRoot = Find-ProjectRoot $scriptDir
+$version = "$(Get-GameVersion $projectRoot) $channel"
+$finalFolderName = "Spacebox_v$version"
 $projectFile = Join-Path $projectRoot "Spacebox.csproj"
 $publishRoot = Join-Path $projectRoot "bin\$configuration\$framework\$runtime"
 $publishDir = Join-Path $publishRoot "publish"
@@ -33,7 +22,7 @@ $finalDir = Join-Path $publishRoot $finalFolderName
 $zipPath = Join-Path $publishRoot "$finalFolderName.zip"
 
 cls
-Remove-Item -Path "$projectRoot\bin\$configuration" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path $publishRoot -Recurse -Force -ErrorAction SilentlyContinue
 
 New-Item -Path "$publishDir" -ItemType Directory -Force | Out-Null
 
@@ -44,6 +33,10 @@ Write-Host "Publishing project..."
 $logTemp = Join-Path $env:TEMP "spacebox_build_log.txt"
 $selfContainedArg = if ($selfContained) { "--self-contained" } else { "--no-self-contained" }
 dotnet publish $projectFile -c $configuration -r $runtime $selfContainedArg *> $logTemp
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Publish failed, see $logTemp"
+    exit 1
+}
 
 
 
@@ -67,36 +60,16 @@ $logPath = Join-Path $publishRoot "log.txt"
 Move-Item -Path $logTemp -Destination $logPath -Force
 
 # Step 4.5: Exclude files listed in exclude.txt (if exists)
-$excludeFile = Join-Path $projectRoot "Build\exclude.txt"
-if (Test-Path $excludeFile) {
-    Write-Host "Processing exclude.txt..."
-
-    Get-Content $excludeFile | ForEach-Object {
-        $relativePath = $_.Trim()
-        if ($relativePath -ne "") {
-            $targetPath = Join-Path $finalDir $relativePath
-            if (Test-Path $targetPath) {
-                Remove-Item $targetPath -Recurse -Force -ErrorAction SilentlyContinue
-                Write-Host "Excluded: $relativePath"
-            } else {
-                Write-Warning "Path not found (skip): $relativePath"
-            }
-        }
-    }
-}
+Remove-ExcludedFiles $projectRoot $finalDir
 
 
 # Step 5: Create zip archive
-if (Test-Path $zipPath) {
-    Remove-Item $zipPath -Force
-}
-
 if ($selfContained) {
-    Compress-Archive -Path $finalDir -DestinationPath $zipPath
+    New-FlatZip $finalDir $zipPath
     Write-Host "Created archive: $zipPath"
 } else {
     $extraData = Join-Path $projectRoot "Build\AddAfterBuild\Install_if_not_working.zip"
-    Compress-Archive -Path $finalDir, $extraData -DestinationPath $zipPath
+    New-FlatZip $finalDir $zipPath @($extraData)
     Write-Host "Created archive with folder and data.zip: $zipPath"
 }
 

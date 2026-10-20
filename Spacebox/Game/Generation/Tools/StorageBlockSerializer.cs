@@ -13,12 +13,15 @@ namespace Spacebox.Game.Generation.Tools
         public CompoundTag Serialize(Block block, int flatIndex, Dictionary<string, short> itemsPalette, ref short indexInPalette)
         {
             var storageBlock = (StorageBlock)block;
-            if (storageBlock.Storage == null || !storageBlock.Storage.HasAnyItems()) return null;
+            if (storageBlock.Storage == null) return null;
+
+            bool hasName = storageBlock.NeedsToSaveName(out var name);
+            if (!hasName && !storageBlock.Storage.HasAnyItems()) return null;
 
             var root = new CompoundTag(TagName);
             root.Add(new IntTag("flat_index", flatIndex));
 
-            if (storageBlock.NeedsToSaveName(out var name))
+            if (hasName)
             {
                 root.Add(new StringTag(NBTKey.STORAGE.name, name));
             }

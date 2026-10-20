@@ -546,16 +546,16 @@ namespace Spacebox.Game.Generation
             new ChunkLODMeshGenerator()
                 .GenerateFromBlocksAsync(this.Blocks, downscale, uv, data =>
                 {
+                    Interlocked.Decrement(ref _pendingLodJobs);
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
-                        Interlocked.Decrement(ref _pendingLodJobs);
                         if (Lod == requested && !IsDisposed)
                         {
                             _mesh?.Dispose();
                             _mesh = new Mesh(data.Vertices, data.Indices, BuffersData.CreateBlockBuffer());
                         }
                     });
-                });
+                }, () => Interlocked.Decrement(ref _pendingLodJobs));
         }
 
         public void SetLOD(int distanceSquared)

@@ -4,19 +4,22 @@
     {
         public static bool EnableDebug = false;
         private static List<TickTask> _tasks = new List<TickTask>();
+        private static readonly System.Collections.Concurrent.ConcurrentQueue<TickTask> _added = new System.Collections.Concurrent.ConcurrentQueue<TickTask>();
 
         public static void AddTask(TickTask task)
         {
-            _tasks.Add(task);
+            _added.Enqueue(task);
 
             if (EnableDebug)
             {
-                Debug.Log($"[TickTaskManager] Task added. Tasks running: " + _tasks.Count);
+                Debug.Log($"[TickTaskManager] Task added. Tasks running: " + (_tasks.Count + _added.Count));
             }
         }
 
         public static void UpdateTasks()
         {
+            while (_added.TryDequeue(out var added)) _tasks.Add(added);
+
             if (_tasks.Count == 0) return;
 
             for (int i = _tasks.Count - 1; i >= 0; i--)
@@ -40,6 +43,7 @@
                     {
                         Debug.Log($"[TickTaskManager] Task removed. Tasks running: " + _tasks.Count);
                     }
+                    continue;
                 }
 
                 task.Update();
@@ -59,6 +63,7 @@
         {
 
             _tasks.Clear();
+            _added.Clear();
         }
 
 

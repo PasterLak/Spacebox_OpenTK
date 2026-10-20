@@ -278,8 +278,11 @@ public class CraftingGUI
                 secondary.TryAddItem(item, rest, out rest);
             }
 
-            currentPlayer.PlayerStatistics.ItemsCrafted += (total - rest);
-            Spacebox.Game.Player.PlayerActivity.Raise(Spacebox.Game.Player.PlayerActivityKind.ItemCrafted, item.Id, total - rest);
+            if (rest > 0)
+                Spacebox.Game.Generation.World.DropEffectManager?.DropItem(currentPlayer.Position, currentPlayer.Front, 1f, item, rest);
+
+            currentPlayer.PlayerStatistics.ItemsCrafted += total;
+            Spacebox.Game.Player.PlayerActivity.Raise(Spacebox.Game.Player.PlayerActivityKind.ItemCrafted, item.Id, total);
         }
         else
         {

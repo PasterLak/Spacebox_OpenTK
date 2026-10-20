@@ -407,13 +407,18 @@ namespace Spacebox.Game.Effects
             }
         }
 
+        private readonly List<Drop> _toRemove = new List<Drop>();
+        private readonly List<Drop> _justStopped = new List<Drop>();
+
         public override void OnUpdate()
         {
             if (_activeDrops.Count == 0) return;
 
             var targetPosition = _player.Position - _player.Up * 0.3f;
-            var toRemove = new List<Drop>();
-            var justStopped = new List<Drop>();
+            var toRemove = _toRemove;
+            var justStopped = _justStopped;
+            toRemove.Clear();
+            justStopped.Clear();
 
             foreach (var drop in _activeDrops)
             {
@@ -691,15 +696,12 @@ namespace Spacebox.Game.Effects
             {
                 var amountToAdd = Math.Min(quantity, 255);
 
-                if (_player.Panel.TryAddItem(item, (byte)amountToAdd))
-                {
-                    addedQuantity += amountToAdd;
-                    quantity -= amountToAdd;
-                }
-                else
-                {
-                    break;
-                }
+                _player.Panel.TryAddItem(item, (byte)amountToAdd, out var notAdded);
+                int added = amountToAdd - notAdded;
+                addedQuantity += added;
+                quantity -= added;
+
+                if (notAdded > 0) break;
             }
 
             if (addedQuantity > 0)

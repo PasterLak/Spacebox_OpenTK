@@ -123,6 +123,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                 {
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
+                        if (Entities == null) return;
                         var entity = NBTHelper.TagToSpaceEntity(tag, this, data);
                         if (!Entities.Exists(e => e.EntityID == entity.EntityID))
                         {
@@ -515,7 +516,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     public void ApplyRemoteEntityData(long entityId, CompoundTag tag)
     {
-        if (!loadingEntities.Contains(entityId)) return;
+        if (Entities == null || !loadingEntities.Contains(entityId)) return;
 
         if (!EntitiesGeneratedData.TryGetValue(entityId, out var data))
         {
@@ -553,6 +554,11 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
                 MainThreadDispatcher.Instance.Enqueue(() =>
                 {
+                    if (Entities == null)
+                    {
+                        newEntity.Dispose();
+                        return;
+                    }
                     AddEntity(newEntity, newEntity.PositionWorld);
                     octreeNotGenerated.Remove(data);
                     loadingEntities.Remove(data.Id);
@@ -829,13 +835,16 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         DestroyEntity(entity, false);
     }
 
+    private readonly List<NotGeneratedEntity> _cameraNearby = new List<NotGeneratedEntity>();
+
     public override void Update()
     {
         base.Update();
 
         var camera = Camera.Main;
         if (camera == null) return;
-        List<NotGeneratedEntity> nearby = new List<NotGeneratedEntity>();
+        List<NotGeneratedEntity> nearby = _cameraNearby;
+        nearby.Clear();
 
         if (GetNotGeneratedEntitiesNearby(camera.PositionWorld, nearby))
         {
@@ -973,6 +982,12 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
+                        if (Entities == null)
+                        {
+                            entity?.Dispose();
+                            return;
+                        }
+
                         if (entity != null)
                         {
                             AddEntity(entity, entity.PositionWorld);

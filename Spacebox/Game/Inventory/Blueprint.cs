@@ -96,9 +96,25 @@ public class Blueprint : RecipeBase
         return copy;
     }
 
+    public static int MaxMultiplier(Blueprint blueprint)
+    {
+        int largest = blueprint.Product?.Quantity ?? 1;
+        if (blueprint.Ingredients != null)
+        {
+            foreach (var ingredient in blueprint.Ingredients)
+            {
+                if (ingredient != null && ingredient.Quantity > largest) largest = ingredient.Quantity;
+            }
+        }
+
+        return Math.Max(1, byte.MaxValue / Math.Max(1, largest));
+    }
+
     public static void ScaleBlueprint(Blueprint blueprint, int multiplier)
     {
         if (blueprint == null) return;
+
+        multiplier = Math.Min(multiplier, MaxMultiplier(blueprint));
 
         if (blueprint.Product != null)
         {

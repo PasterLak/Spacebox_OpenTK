@@ -41,7 +41,7 @@ namespace Engine.Multithreading
         public static long TasksCompleted => Interlocked.Read(ref tasksCompleted);
         public static long TasksFailed => Interlocked.Read(ref tasksFailed);
         public static int ActiveThreads => workers.Count + dedicatedWorkers.Count;
-        public static int PendingTasks => highQueue.Count + lowQueue.Count + GetNamedPending();
+        public static int PendingTasks => highQueue.Count + medQueue.Count + lowQueue.Count + GetNamedPending();
 
         public static Task Enqueue(Action<CancellationToken> action, Priority priority, CancellationToken token = default)
         {
@@ -67,10 +67,11 @@ namespace Engine.Multithreading
                     {
                         tcs.SetCanceled();
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         Interlocked.Increment(ref tasksFailed);
-                        tcs.SetException(new Exception("WorkerPool task failed"));
+                        Debug.Error($"[WorkerPool] Task failed: {ex}");
+                        tcs.SetException(ex);
                     }
                 }
             };
@@ -107,10 +108,11 @@ namespace Engine.Multithreading
                     {
                         tcs.SetCanceled();
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         Interlocked.Increment(ref tasksFailed);
-                        tcs.SetException(new Exception("WorkerPool task failed"));
+                        Debug.Error($"[WorkerPool] Task failed: {ex}");
+                        tcs.SetException(ex);
                     }
                 }
             };
@@ -175,6 +177,7 @@ namespace Engine.Multithreading
         {
             cts.Cancel();
             highQueue.CompleteAdding();
+            medQueue.CompleteAdding();
             lowQueue.CompleteAdding();
             foreach (var q in namedQueues.Values) q.CompleteAdding();
             foreach (var t in workers) t.Join();

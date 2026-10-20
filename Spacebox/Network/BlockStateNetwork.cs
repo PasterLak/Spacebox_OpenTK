@@ -64,6 +64,29 @@ public static class BlockStateNetwork
         _dirty.Clear();
     }
 
+    public static void SendEntityStatesTo(int peer, SpaceEntity entity)
+    {
+        var network = NetworkManager.Instance;
+        if (entity == null || !network.IsServer) return;
+
+        foreach (var chunk in entity.Chunks)
+        {
+            var blocks = chunk.Blocks;
+            var origin = chunk.PositionIndex * Chunk.Size;
+            for (int x = 0; x < Chunk.Size; x++)
+            for (int y = 0; y < Chunk.Size; y++)
+            for (int z = 0; z < Chunk.Size; z++)
+            {
+                if (blocks[x, y, z] is not INetworkStateBlock stateBlock || blocks[x, y, z].HasMultiblockOffset) continue;
+
+                _writer.Reset();
+                stateBlock.WriteNetworkState(_writer);
+                var key = new ContainerKey(entity.EntityID, new Vector3i(origin.X + x, origin.Y + y, origin.Z + z));
+                network.Send(peer, new BlockStateMessage { Key = key, State = _writer.ToArray() });
+            }
+        }
+    }
+
     public static void Clear()
     {
         _dirty.Clear();

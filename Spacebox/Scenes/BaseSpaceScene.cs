@@ -340,6 +340,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         _networkSession?.Dispose();
         _networkSession = null;
         Time.OnTick -= UpdateTickTasks;
+        MainThreadDispatcher.Instance.Clear();
+        ResourceProcessingGUI.Reset();
         OxygenGeneratorUI.Reset();
         DisassemblerUI.Reset();
         WorldLoadingScreen.Reset();

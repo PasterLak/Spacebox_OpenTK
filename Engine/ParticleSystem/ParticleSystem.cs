@@ -131,6 +131,7 @@ namespace Engine
                     p.AccEnd = tmp.AccEnd;
                     p.Rotation = 0f;
                     p.RotationSpeed = tmp.RotationSpeed;
+                    ReleaseTemporary(tmp);
 
                     PushParticle(p);
                     _acc -= 1f;
@@ -163,6 +164,11 @@ namespace Engine
             foreach (var p in _active)
                 _renderer.Draw(p, model, Space);
             _renderer.End();
+        }
+
+        private void ReleaseTemporary(Particle particle)
+        {
+            if (_pooledParticles.Remove(particle)) _particlePool.Release(particle);
         }
 
         public Particle CreateParticle()
@@ -243,6 +249,7 @@ namespace Engine
                     p.AccEnd = tmp.AccEnd;
                     p.Rotation = 0f;
                     p.RotationSpeed = tmp.RotationSpeed;
+                    ReleaseTemporary(tmp);
 
                     if (Space == SimulationSpace.World)
                         p.Position = LocalToWorld(p.Position);

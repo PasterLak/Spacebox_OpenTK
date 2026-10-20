@@ -1,0 +1,69 @@
+{
+  "PositionX": 4104.17,
+  "PositionY": 3542.588,
+  "PositionZ": 2313.9944,
+  "RotationX": 0,
+  "RotationY": 0,
+  "RotationZ": 0,
+  "RotationW": 1,
+  "Health": 100,
+  "Power": 100,
+  "Oxygen": 95,
+  "IsFlashlightOn": true,
+  "SpawnPoint": [
+    4104.17,
+    3542.588,
+    2313.9944
+  ],
+  "InventorySlots": [],
+  "PanelSlots": [
+    {
+      "ItemID": "default:aluminium_drill",
+      "Count": 1,
+      "SlotX": 0,
+      "SlotY": 0
+    },
+    {
+      "ItemID": "default:furnace",
+      "Count": 1,
+      "SlotX": 0,
+      "SlotY": 1
+    },
+    {
+      "ItemID": "default:crafting_table",
+      "Count": 1,
+      "SlotX": 0,
+      "SlotY": 2
+    }
+  ],
+  "EquipmentSlots": [],
+  "Statistics": {
+    "TotalPlayTimeMinutes": 0,
+    "SessionsPlayed": 0,
+    "FirstPlayedUtc": "2026-10-18T07:52:46.5442838Z",
+    "LastPlayedUtc": "2026-10-18T07:52:45.787259Z",
+    "BlocksDestroyed": 0,
+    "BlocksPlaced": 0,
+    "ItemsCrafted": 0,
+    "ItemsProcessed": 0,
+    "ItemsPickedUp": 0,
+    "ItemsConsumed": 0,
+    "ShotsFired": 0,
+    "ShotsHit": 0,
+    "ProjectilesRicocheted": 0,
+    "ExplosionsCaused": 0,
+    "BlockDamageDealt": 0,
+    "EntityDamageDealt": 0,
+    "DeathsTotal": 0,
+    "DamageTaken": 0,
+    "HealthHealed": 0,
+    "DistanceTraveled": 0,
+    "MaxSpeedReached": 0,
+    "TeleportsUsed": 0,
+    "AsteroidsDiscovered": 0,
+    "SectorsExplored": 0,
+    "FlashlightToggles": 0,
+    "ItemsUsed": {},
+    "DeathCauses": {}
+  }
+}

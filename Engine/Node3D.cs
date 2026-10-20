@@ -107,7 +107,7 @@ namespace Engine
         public virtual void Destroy()
         {
 
-            for (int i = 0; i < Components.Count; i++)
+            for (int i = Components.Count - 1; i >= 0; i--)
             {
                 DetachComponent(Components[i]);
             }

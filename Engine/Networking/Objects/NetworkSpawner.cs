@@ -19,7 +19,7 @@ public sealed class NetworkSpawner
     public event Action<NetworkObject> Spawned;
     public event Action<NetworkObject> Despawned;
 
-    public IReadOnlyCollection<NetworkObject> Objects => _objects.Values;
+    public Dictionary<uint, NetworkObject>.ValueCollection Objects => _objects.Values;
 
     internal NetworkSpawner(NetworkManager network)
     {

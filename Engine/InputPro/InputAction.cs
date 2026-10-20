@@ -80,12 +80,21 @@ public class InputAction
             valueCallbacks[eventType].Remove(callback);
     }
 
+    private bool AnyHeld(InputState state)
+    {
+        for (int i = 0; i < Bindings.Count; i++)
+        {
+            if (Bindings[i].IsHeld(state)) return true;
+        }
+        return false;
+    }
+
     public void Update(InputState state)
     {
         if (!Enabled) return;
 
         wasPressed = isPressed;
-        isPressed = Bindings.Any(b => b.IsHeld(state));
+        isPressed = AnyHeld(state);
 
         if (!wasPressed && isPressed)
         {

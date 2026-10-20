@@ -34,6 +34,7 @@ namespace Engine
 
         private System.Numerics.Vector2 _scaleFactor = System.Numerics.Vector2.One;
 
+        private static readonly Keys[] AllKeys = (Keys[])Enum.GetValues(typeof(Keys));
         private static bool KHRDebugAvailable = false;
 
         private int GLVersion;
@@ -312,7 +313,7 @@ void main()
                 io.MousePos = new System.Numerics.Vector2(point.X, point.Y);
             }
 
-            foreach (Keys key in Enum.GetValues(typeof(Keys)))
+            foreach (Keys key in AllKeys)
             {
                 if (key == Keys.Unknown)
                 {

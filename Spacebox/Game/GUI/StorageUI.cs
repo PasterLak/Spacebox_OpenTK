@@ -197,9 +197,10 @@ namespace Spacebox.Game.GUI
         {
             if (Astronaut?.Panel == null) return;
 
-            if (Astronaut.Panel.TryAddItem(slot.Item, rest))
+            Astronaut.Panel.TryAddItem(slot.Item, rest, out var notAdded);
+            if (notAdded < rest)
             {
-                slot.Count = (byte)(slot.Count - rest);
+                slot.Count = (byte)(slot.Count - (rest - notAdded));
             }
         }
 
