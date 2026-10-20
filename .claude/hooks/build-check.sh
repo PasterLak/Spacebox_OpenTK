@@ -9,12 +9,10 @@ root="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 rel="${file_path#"$root"/}"
 
 case "$rel" in
-  SpaceServerUI/*) exit 0 ;;
-  CommonLibrary/*|SpaceServer/*) project="SpaceServer/SpaceServer.csproj" ;;
   Spacebox.Tests/*) project="Spacebox.Tests/Spacebox.Tests.csproj" ;;
   Spacebox.Benchmarks/*) project="Spacebox.Benchmarks/Spacebox.Benchmarks.csproj" ;;
   LegacyWorldConverter/*) project="LegacyWorldConverter/LegacyWorldConverter.csproj" ;;
-  Engine/*|Spacebox/*|Spacebox.Core/*|SpaceNetwork/*) project="Spacebox/Spacebox.csproj" ;;
+  Engine/*|Spacebox/*|Spacebox.Core/*) project="Spacebox/Spacebox.csproj" ;;
   *) exit 0 ;;
 esac
 

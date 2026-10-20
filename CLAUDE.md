@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Spacebox is a voxel space-survival game (asteroid belt, mining, base/ship building, procedural generation, data-driven modding) built on a custom engine over OpenTK (OpenGL 3.3 core, forward-compatible context). All projects target .NET 8 (`SpaceServerUI` is WPF, `net8.0-windows`, Windows only).
+Spacebox is a voxel space-survival game (asteroid belt, mining, base/ship building, procedural generation, data-driven modding) built on a custom engine over OpenTK (OpenGL 3.3 core, forward-compatible context). All projects target .NET 8.
 
 ## Coding rules
 
@@ -24,7 +24,7 @@ Spacebox is a voxel space-survival game (asteroid belt, mining, base/ship buildi
 - **Engine boundary:** `Engine` must never reference `Spacebox.*`. Reusable, game-independent features belong in `Engine`.
 - **Save and content compatibility:** new fields in NBT saves or GameSet JSON need defaults so old data still loads. Renamed or removed block/item ids and changed NBT keys need a world upgrade step (`Spacebox/Game/Versioning/Steps/`, one file per step, registered in `WorldUpgradeRegistry.CreateDefault`) written with the `WorldUpgradeContext` operations (`RenameBlock`, `RenameItem`, `RemoveBlock`, `RemoveItem`, `EditChunks`, `EditPlayers`, …), plus a test in `Spacebox.Tests/Versioning/` that builds the old data with `WorldFixtureBuilder` and checks it with `WorldInspector`. Worlds older than `WorldUpgradeRegistry.DefaultMinimumSupportedVersion` (0.1.2) are refused. Never break the `Default` GameSet.
 - **Game version bumps:** when `Application.Version` changes, add a step from the previous version to the new one in the same change (`VersionBumpStep` if no files change) and a test for it; `WorldUpgraderTests` fails until the chain reaches the new version. Before a release, copy a small played world saved with that version into `Spacebox.Tests/Fixtures/Worlds/<version>/`; `SavedWorldFixtureTests` upgrades every fixture to the current version and fails on unknown ids. See the `release` skill.
-- **Network:** the game is client, host and dedicated server in one executable (`Engine/Networking` + `Spacebox/Network`, see `spec.md` §8). The server is authoritative; sync new state with `NetworkVariable<T>`, `[Rpc]` methods on `NetworkBehaviour`s or `INetMessage` structs registered on `NetworkManager.Messages`. `SpaceNetwork`, `SpaceServer`, `SpaceServerUI` and `CommonLibrary` are deprecated: do not change them, the game no longer references them.
+- **Network:** the game is client, host and dedicated server in one executable (`Engine/Networking` + `Spacebox/Network`, see `spec.md` §8). The server is authoritative; sync new state with `NetworkVariable<T>`, `[Rpc]` methods on `NetworkBehaviour`s or `INetMessage` structs registered on `NetworkManager.Messages`.
 - **Do not edit** the prebuilt `Spacebox/Plugins/**/*.dll`, `Spacebox/Build/**` or the vendored `Documentation/doxygen-awesome-css/**`.
 - **Git:** feature branches are named `<feature>-<version>` (e.g. `generation-0.1.2`). Do not commit or push unless asked. Commit messages are short and imperative.
 - `Spacebox/TODO.txt` and `BUGS.txt` belong to the author; edit them only when asked.
@@ -37,10 +37,10 @@ Project skills in `.claude/skills/` cover repeated tasks: `add-block`, `add-item
 ## Commands
 
 ```bash
-dotnet build Spacebox.sln                       # build everything (SpaceServerUI fails off Windows; build projects individually there)
+dotnet build Spacebox.sln                       # build everything
 dotnet run --project Spacebox/Spacebox.csproj   # run the game (Debug)
 dotnet run --project Spacebox/Spacebox.csproj -- --editor Default Blocks   # open the GameSet editor (optional start panel)
-dotnet run --project SpaceServer                # run the dedicated server
+dotnet run --project Spacebox/Spacebox.csproj -- --server   # run the dedicated server
 
 dotnet test Engine.Tests                                            # engine xUnit tests
 dotnet test Spacebox.Tests                                          # game xUnit tests
@@ -61,13 +61,12 @@ dotnet publish Spacebox/Spacebox.csproj -c Release -r linux-x64 --self-contained
 
 Detailed per-project notes: `Engine/CLAUDE.md` (engine architecture) and `Spacebox/CLAUDE.md` (game logic).
 
-Dependency direction: `Spacebox` → `Engine`, `Spacebox.Core`. Servers (`SpaceServer`, `SpaceServerUI`) → `ServerCommon` (folder `CommonLibrary/`) → `SpaceNetwork`. `Engine` must not reference game code.
+Dependency direction: `Spacebox` → `Engine`, `Spacebox.Core`. `Engine` must not reference game code.
 
 - **Engine/** — reusable engine: `EngineWindow` (abstract `GameWindow` with hook methods `OnRegisterScenes`, `OnGameLoad`, `OnSetupPostProcessing`, …), `SceneManagement` (`Scene` is a `Node3D`; scenes are registered then loaded via `SceneManager.Load<T>()`), `Node3D`/`Components` scene graph, `Resources.Load<T>(pathOrName, global)` resource cache, rendering (shaders, materials, post-processing, lights, particles), ImGui-based GUI, `InputPro` input actions, `Audio` (OpenAL + NVorbis), octrees, `ServiceLocator`, `EventBus`, `Debug` logging.
 - **Spacebox/** — the game. `Program.cs` → `SpaceboxWindow` (subclasses `EngineWindow`, registers scenes, starts at `MenuScene`). `Scenes/` holds menu, single-player (`LocalSpaceScene` / `BaseSpaceScene`) and multiplayer scenes. `Client/` is the multiplayer client side.
 - **Spacebox.Core/** — tiny plugin contract (`IPlugin`, `IGameApi`, `IWorldConverter`) that external DLL plugins compile against. `Game/PluginLoader.cs` loads every `*.dll` in `Plugins/<mod>/` and instantiates `IPlugin` types; `Game/Plugins/GameApi.cs` implements `IGameApi`.
 - **LegacyWorldConverter/** — a plugin (built against `Spacebox.Core`) whose compiled DLL is checked in at `Spacebox/Plugins/LegacyWorldConverter/`.
-- **SpaceNetwork/** — shared Lidgren.Network messages (`Messages/`, `MessageRegistry`, `MessageFactory`) used by both client and server.
 
 ## World / voxel architecture (`Spacebox/Game/Generation/`)
 

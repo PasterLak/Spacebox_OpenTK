@@ -8,7 +8,7 @@ Spacebox is a single-player voxel survival game set in an asteroid belt, with an
 
 | | |
 |---|---|
-| Language / runtime | C# / .NET 8 (`net8.0`; `SpaceServerUI` is `net8.0-windows`) |
+| Language / runtime | C# / .NET 8 (`net8.0`) |
 | Graphics | OpenGL 3.3 core, forward-compatible context (OpenTK 4.8.2) |
 | UI | ImGui.NET 1.91 (game UI and debug tools), SkiaSharp (engine-side 2D) |
 | Audio | OpenAL (via OpenTK) + NVorbis (`.ogg`) |
@@ -25,10 +25,6 @@ Spacebox is a single-player voxel survival game set in an asteroid belt, with an
 | `Engine` | Library | — | Reusable engine: window, scenes, rendering, input, audio, physics, GUI, threading |
 | `Spacebox` | Exe (WinExe in Release) | Engine, Spacebox.Core | The game: client, host and dedicated server (`--server`) |
 | `Spacebox.Core` | Library | — | Public plugin API (`IPlugin`, `IGameApi`, `IWorldConverter`, `WorldInfo`) |
-| `SpaceNetwork` | Library | Lidgren | Network message definitions shared by client and server |
-| `ServerCommon` (`CommonLibrary/`) | Library | SpaceNetwork | Server logic: networking, players, bans, commands, config |
-| `SpaceServer` | Exe | ServerCommon | Console dedicated server |
-| `SpaceServerUI` | WinExe (WPF) | ServerCommon | Windows GUI server (MaterialDesign) |
 | `LegacyWorldConverter` | Library | Spacebox.Core | Plugin that upgrades old saves; prebuilt DLL ships in `Spacebox/Plugins/` |
 | `Spacebox.Tests` | xUnit | Spacebox | Unit tests (Debug only) |
 | `Spacebox.Benchmarks` | Exe | Spacebox | Performance benchmarks (Debug only) |
@@ -245,7 +241,7 @@ Worlds are stored in `<app dir>/Worlds/<world>/`:
 
 ## 8. Multiplayer
 
-The game is always client and server at once (Godot-style shared world). Engine networking lives in `Engine/Networking`, game networking in `Spacebox/Network`. The old `SpaceNetwork`/`SpaceServer`/`SpaceServerUI`/`CommonLibrary` projects are deprecated and no longer referenced by the game.
+The game is always client and server at once (Godot-style shared world). Engine networking lives in `Engine/Networking`, game networking in `Spacebox/Network`.
 
 - **Modes** (`NetworkManager.Mode`, `GameSession.Mode`): `Offline` (singleplayer = server without a socket), `Host` (same world, listening), `Client` (remote), `DedicatedServer` (`Spacebox.exe --server`, or `start-server.bat` / `start-server.sh` next to the executable; hidden window that never captures the cursor, `serverconfig.json`, all log messages are written to the terminal with time and colour (on Windows the process attaches to the calling console or opens its own, `TerminalConsole`), stdin commands `say`, `players`, `kick`, `save`, `stop`). The dedicated server runs headless (`Application.EnableHeadless()` in `Program`): no audio device, no rendering or ImGui drawing, textures/atlas images are registered as 1x1 placeholders without decoding, shaders are not compiled, meshes are not uploaded, chunk meshing only computes mass and bounds, no LODs, skybox, music, dust or block icons. Singleplayer can be opened to the network from the pause menu ("Open to network", port 7777). `--connect host:port --name <name> [--hidden]` joins directly.
 - **Server config** (`serverconfig.json`, `ServerConfig`): `ServerName`, `Description`, `IconFile` (PNG or JPEG next to the executable, default `server-icon.png`; a missing file falls back to the same name with `.png`/`.jpg`/`.jpeg`, up to 256 KB, square 64-128 px recommended), `LanDiscovery`, `WhitelistEnabled` + `Whitelist` (names allowed to join, default off), `RegistrationEnabled` (accounts with passwords, default off), `WorldName`, `Seed`, `ModId`, `Port`, `MaxPlayers`, `GameMode`, `AutoSaveInterval` (seconds, default 300, 0 disables, minimum 10; hosts autosave every 300 s; every save prints `[Server] Autosave: world ... saved` to the terminal), `UpdateRate` (server loop rate, default 30, 10-240; client graphics settings such as VSync and the FPS cap are not used by the server), `DashboardEnabled` (default true), `DashboardPort` (TCP, 0 = same number as `Port`), `DashboardCertificateFile` / `DashboardCertificateKeyFile` / `DashboardCertificatePassword` (optional HTTPS, see below), `PublicAddress` (name or public IP for automatic HTTPS), `HttpsAutomatic` (default true), `HttpsChallengePort` (default 80), `DuckDnsToken` + `DuckDnsUpdateIp` (default true), `CloudflareApiToken`, `LetsEncryptEmail`, `LetsEncryptStaging` (default false); the older `DuckDnsDomain` still works as `PublicAddress` = `<name>.duckdns.org`. The server writes the file back on start, so missing settings appear with their defaults.
@@ -324,5 +320,5 @@ Options are reachable from the main menu and the pause menu.
 | Atlas size | power of two, up to 8192 px; textures of any size | `TextureAtlas.MaxSize` |
 | Ship speed caps | 20 blocks/s, 1.5 rad/s (GameSet `ships.json`) | `ShipPhysicsSettings` |
 | Console groups | 16 | `ShipConsoleBlockData.MaxButtons` |
-| Default server port | 14242 | `ServerCommon/Settings.cs` |
+| Default server port | 7777 | `NetworkManager.DefaultPort` |
 | OpenGL | 3.3 core | `Program.cs` |

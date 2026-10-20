@@ -49,6 +49,7 @@ New
 - viewing through a ship camera block shows a security camera feed: scanlines, grain, lens distortion, REC overlay with timer (Camera Block Effect option)
 Small
 - convert dialog shows steps, backup and warnings
+- removed the old SpaceNetwork, ServerCommon, SpaceServer and SpaceServerUI projects (replaced by the built-in dedicated server and dashboard)
 - low oxygen (below 20 %) grows the vignette up to 150 % at 0; at 0 oxygen the player loses 5 HP per second with the red damage flash instead of dying instantly
 - gravity generator crafting: 2 obscurium ingots instead of uranium rods
 - repair tool repairs any block (also multi-cell) fully in about 1 second (RepairTime in items.json); new iron-coloured mirrored icon
