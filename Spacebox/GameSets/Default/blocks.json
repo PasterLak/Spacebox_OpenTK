@@ -956,12 +956,12 @@
     },
     "Textures": {
       "Active": {
-        "All": "cobaltGeneratorSide",
+        "All": "cobaltGeneratorSideTall",
         "Up": "cobaltGeneratorTop",
         "Down": "cobaltGeneratorTop"
       },
       "Inactive": {
-        "All": "cobaltGeneratorSideOff",
+        "All": "cobaltGeneratorSideTallOff",
         "Up": "cobaltGeneratorTopOff",
         "Down": "cobaltGeneratorTopOff"
       }

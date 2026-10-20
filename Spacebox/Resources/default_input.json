@@ -113,7 +113,7 @@
                         "Key": "Button2"
                     }
                 ]
-            },
+            }, 
              "block_place": {
                 "Name": "Place block",
                 "Description": "Place selected block",
