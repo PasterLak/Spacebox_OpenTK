@@ -44,6 +44,7 @@ New
 - Standard Cobalt Power Block is now 1x2x1 with the Corneroids textures; tutorial text updated
 - nuclear power blocks explode when shots or an explosion bring a cell to 0 durability: radius 3, low penetration (aluminium and light iron break), deadly only up close, a full titanium set survives
 - loading repairs multi-cell blocks: a block that became bigger grows into free cells or is removed if it does not fit, cells without their origin are removed
+- screen space ambient occlusion (SSAO) on blocks, mobs, players and the held item; Graphics options: quality Off/Low/Medium/High and strength
 Small
 - convert dialog shows steps, backup and warnings
 - DNA reconstructor slot uses the dna_ui texture
@@ -74,6 +75,8 @@ Engine
 - fewer per-frame allocations: entity raycast, block collision, input bindings, ImGui keys, drops, sectors, network object loops
 - remeshing: pooled mesh arrays, GPU buffers updated in place, padded snapshot without per-cell lookups or air allocations
 - Perlin worms: worm paths cached per node and skipped by bounds instead of re-simulated for every chunk
+- SsaoEffect (Engine.PostProcessing.Ssao): half or full resolution AO, bilateral blur, depth-aware upsample; G-buffer normals are view space with an AO mask (MaterialBase.WritesGBuffer, ViewModelProjection)
+- post processing presents with the passthrough shader (the vignette was applied twice); Shader.SetVector3Array
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.2

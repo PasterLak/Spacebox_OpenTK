@@ -3,6 +3,7 @@ using Engine.Audio;
 using Spacebox.Game.Events;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
+using Spacebox.Game.Rendering;
 
 namespace Spacebox.Game;
 
@@ -38,6 +39,7 @@ public static class SettingsApplier
             window.SetVSync(graphics.VSync);
             window.RenderScale = graphics.ResolutionScalePercent / 100f;
             window.PostProcessingEnabled = graphics.PostProcessing;
+            (window as SpaceboxWindow)?.Ssao?.Configure(SsaoSettingsMapper.From(graphics));
         }
 
         ApplyFrameLimit(graphics);

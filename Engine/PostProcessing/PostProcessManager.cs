@@ -17,6 +17,7 @@ namespace Engine.PostProcessing
     {
         private List<PostProcessEffect> effects = new List<PostProcessEffect>();
         public bool Enabled { get; set; } = true;
+        public Shader PresentShader { get; set; }
         private bool disposed = false;
         private static MeshBuffer fullscreenBuffer;
         private int[] pingpongFBO = new int[2];
@@ -73,6 +74,14 @@ namespace Engine.PostProcessing
         {
             effects.Add(effect);
         }
+        public void InsertEffect(int index, PostProcessEffect effect)
+        {
+            effects.Insert(Math.Clamp(index, 0, effects.Count), effect);
+        }
+        public int IndexOf(PostProcessEffect effect)
+        {
+            return effects.IndexOf(effect);
+        }
         public void RemoveEffect(PostProcessEffect effect)
         {
             if (effects.Contains(effect))
@@ -113,6 +122,11 @@ namespace Engine.PostProcessing
            
                 GL.Viewport(0, 0, clientSize.X, clientSize.Y);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            if (PresentShader != null)
+            {
+                PresentShader.Use();
+                PresentShader.SetInt("scene", 0);
+            }
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, readTexture);
             RenderQuad();

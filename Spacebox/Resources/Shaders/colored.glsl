@@ -14,8 +14,9 @@ void main()
 --Frag
 
 #version 330 core
+#include "includes/gbuffer.glsl"
 
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
 
 
 uniform vec4 color = vec4(1,1,1,1);  
@@ -24,5 +25,6 @@ uniform vec4 color = vec4(1,1,1,1);
 void main()
 {
     FragColor = color;
+    writeGBufferNone();
    
 }

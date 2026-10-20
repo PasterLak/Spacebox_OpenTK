@@ -8,6 +8,7 @@ namespace Spacebox.Game.GUI.Menu
     {
         private readonly IOptionsNavigator _options;
         private readonly string[] _modes = { "Fullscreen", "Borderless", "Windowed" };
+        private readonly string[] _ssaoQualities = { "Off", "Low", "Medium", "High" };
         private int _pendingResolution = -1;
 
         public GraphicsWindow(IOptionsNavigator options)
@@ -66,6 +67,39 @@ namespace Spacebox.Game.GUI.Menu
                     bool post = graphics.PostProcessing;
                     if (rows.Checkbox("Post Processing", "Screen effects applied after the world is drawn, such as the vignette at the screen edges.", ref post))
                         Apply(graphics, () => graphics.PostProcessing = post);
+
+                    int ssao = graphics.SsaoQuality;
+                    if (rows.Combo("Ambient Occlusion (SSAO)", "Soft shadows in corners, under objects and on the item in your hand, computed on the screen. Low and Medium work at half resolution, High at full resolution and costs the most FPS.", ref ssao, _ssaoQualities))
+                        Apply(graphics, () => graphics.SsaoQuality = ssao);
+
+                    if (graphics.SsaoQuality > 0)
+                    {
+                        int strength = graphics.SsaoStrengthPercent;
+                        if (rows.Slider("SSAO Strength", "How dark the screen space ambient occlusion shadows are. Does not change performance.", ref strength, 0, GraphicsSettings.MaxSsaoStrengthPercent, "%d%%"))
+                            Apply(graphics, () => graphics.SsaoStrengthPercent = strength);
+
+                        int smoothness = graphics.SsaoSmoothnessPercent;
+                        if (rows.Slider("SSAO Smoothness", "How much the shadows are blurred. Low values keep fine detail but look grainy, high values give soft clean shadows.", ref smoothness, 0, 100, "%d%%"))
+                            Apply(graphics, () => graphics.SsaoSmoothnessPercent = smoothness);
+
+                        int grain = graphics.SsaoGrainPercent;
+                        if (rows.Slider("SSAO Grain", "Turns the shadows into retro grain: dense dots near corners and edges that thin out further away. Combine with low Smoothness for the strongest effect. Does not change performance.", ref grain, 0, 100, "%d%%"))
+                            Apply(graphics, () => graphics.SsaoGrainPercent = grain);
+
+                        if (graphics.SsaoGrainPercent > 0)
+                        {
+                            int grainSize = graphics.SsaoGrainSize;
+                            if (rows.Slider("SSAO Grain Size", "Size of one grain dot in screen pixels.", ref grainSize, 1, GraphicsSettings.MaxSsaoGrainSize, "%d px"))
+                                Apply(graphics, () => graphics.SsaoGrainSize = grainSize);
+                        }
+
+                        int radius = graphics.SsaoRadiusPercent;
+                        if (rows.Slider("SSAO Radius", "How far the shadows reach from corners and edges, in percent of a block. Large values darken whole walls near corners.", ref radius, GraphicsSettings.MinSsaoRadiusPercent, GraphicsSettings.MaxSsaoRadiusPercent, "%d%%"))
+                            Apply(graphics, () => graphics.SsaoRadiusPercent = radius);
+                    }
+
+                    if (rows.Button("SSAO Defaults", "Restores the default SSAO quality, strength, smoothness, grain and radius.", "Reset"))
+                        Apply(graphics, graphics.ResetSsao);
 
                     bool effects = graphics.EffectsEnabled;
                     if (rows.Checkbox("Particle Effects", "Space dust, mining sparks and similar particles. Turning them off gives a little more FPS.", ref effects))

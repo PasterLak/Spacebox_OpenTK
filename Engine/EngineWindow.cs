@@ -132,6 +132,7 @@ namespace Engine
             var passthroughShader = new Shader(code.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None));
             Resources.AddResource("passthrough_shader", passthroughShader, true);
             Resources.RemoveResourceFromControll(passthroughShader);
+            _processManager.PresentShader = passthroughShader;
             _processManager.AddEffect(new DefaultEffect(passthroughShader));
         }
 
@@ -156,6 +157,7 @@ namespace Engine
                     LightSystem.Update();
                 }
 
+                ViewModelProjection.Reset();
                 _sceneRenderer.Render(() => RenderScene());
 
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -333,6 +335,8 @@ namespace Engine
                 if (_processManager != null) _processManager.Enabled = value;
             }
         }
+
+        protected SceneRenderer SceneRenderer => _sceneRenderer;
 
         private Vector2i SceneSize => new Vector2i(Math.Max(1, (int)(ClientSize.X * _renderScale)), Math.Max(1, (int)(ClientSize.Y * _renderScale)));
 

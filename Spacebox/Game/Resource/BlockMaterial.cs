@@ -26,6 +26,7 @@ namespace Spacebox.Game.Resource
             base(texture, Resources.Load<Shader>("Resources/Shaders/block"))
         {
             RenderMode = RenderMode.Cutout;
+            WritesGBuffer = true;
             EmissionTexture = emissionAtlas;
         
         }

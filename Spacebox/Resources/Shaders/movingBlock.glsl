@@ -35,6 +35,7 @@ void main()
 --Frag
 #version 330 core
 #include "includes/lighting.fs"
+#include "includes/gbuffer.glsl"
 
 in vec3 vPos;
 in vec3 vNormal;
@@ -42,7 +43,6 @@ in vec2 vUV;
 in float vFog;
 
 layout(location = 0) out vec4 gColor;
-layout(location = 1) out vec4 gNormal;
 
 uniform sampler2D texture0;
 uniform vec3 extraLight = vec3(0.0);
@@ -62,5 +62,5 @@ void main()
     vec3 col = base * (AMBIENT + extraLight) + light;
 
     gColor  = fogMix(vec4(col, baseTex.a), vFog, FOG);
-    gNormal = vec4(N * 0.5 + 0.5, 1.0);
+    writeGBuffer(N * mat3(VIEW), GBUFFER_MASK_WORLD);
 }

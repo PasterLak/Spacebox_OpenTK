@@ -107,7 +107,7 @@ public sealed class CannonTurretRenderer : IDisposable
     {
         var (vertices, indices) = MultiblockPreviewMesh.Build(cannon.Data, BlockState.Active);
         var shader = Resources.Load<Shader>(MovingBlockShader, true);
-        var visual = new SimpleBlock(new TextureMaterial(GameAssets.BlocksTexture, shader), Vector3.Zero) { DisposesTexture = false };
+        var visual = new SimpleBlock(new TextureMaterial(GameAssets.BlocksTexture, shader) { WritesGBuffer = true }, Vector3.Zero) { DisposesTexture = false };
         visual.SetCustomMesh(vertices, indices);
 
         var turret = new Turret(visual, GetPivotModel(cannon.Data));

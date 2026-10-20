@@ -47,6 +47,7 @@ void main()
 --Frag
 #version 330 core
 #include "includes/lighting.fs"
+#include "includes/gbuffer.glsl"
 
 in vec2  vUV;
 in vec3  vColor;
@@ -59,7 +60,6 @@ in vec3  vBase;
 in float vAtlasFlag;
 
 layout(location = 0) out vec4 gColor;
-layout(location = 1) out vec4 gNormal;
 
 uniform vec4  color      = vec4(1,1,1,1);
 uniform sampler2D texture0;
@@ -101,5 +101,5 @@ void main()
 
     gColor  = vec4(mixed,fogged1.a);
    // gColor  =  vec4(vec3(LinearizeDepth(gl_FragCoord.z)/100), 1.0);
-    gNormal = vec4(N*0.5+0.5,1.0);
+    writeGBuffer(N * mat3(VIEW), aMix > 0.5 ? GBUFFER_MASK_NONE : GBUFFER_MASK_WORLD);
 }

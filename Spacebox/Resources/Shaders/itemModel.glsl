@@ -18,12 +18,14 @@ out vec3 FragPos;
 out vec2 TexCoords;
 out vec3 vPos;
 out vec4 screenPos;
+out vec3 ViewNormal;
 void main()
 {
    vec4 wp = vec4(aPosition, 1.0) * model;
    gl_Position = wp * view * projection;
    FragPos = vec3(vec4(aPosition, 1.0) * model);
    Normal = aNormal;
+   ViewNormal = aNormal * mat3(model) * mat3(view);
    TexCoords = aTexCoord;
    vPos = wp.xyz;
    screenPos = useLightModel == 1 ? vec4(aPosition, 1.0) * lightModel * view * projection : gl_Position;
@@ -47,6 +49,7 @@ void main()
 --Frag
 #version 330 core
 #include "includes/lighting.fs"
+#include "includes/gbuffer.glsl"
 
 in vec3 FragPos;
 in vec3 Normal;
@@ -56,14 +59,15 @@ in vec4 screenPos;
 in vec3 LightNormal;
 in vec3 LightPos;
 in vec3 LightView;
+in vec3 ViewNormal;
 uniform int useViewToRender = 0;
+uniform float gBufferMask = 1.0;
 uniform vec3 viewPos;
 uniform vec3 blockLight = vec3(0.0);
 uniform float blockLightStrength = 0.52;
 uniform float blockLightSaturation = 0.5;
 
 layout(location = 0) out vec4 gColor;   
-layout(location = 1) out vec4 gNormal; 
 
 uniform sampler2D texture0;
 uniform sampler2D texture1;
@@ -128,5 +132,5 @@ void main()
    vec3 final = mix(combined, base, emission.a);
    
    gColor = vec4(final, texColor.a);
-   gNormal = vec4(norm * 0.5 + 0.5, 1.0);
+   writeGBuffer(ViewNormal, emission.a > 0.5 ? GBUFFER_MASK_NONE : gBufferMask);
 }

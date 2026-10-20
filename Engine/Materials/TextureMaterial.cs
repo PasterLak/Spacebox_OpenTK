@@ -24,6 +24,7 @@ namespace Engine
         public TextureMaterial(Texture2D texture) : base(Resources.Load<Shader>("Resources/Shaders/textured"))
         {
             Init(texture);
+            WritesGBuffer = true;
         }
 
         public TextureMaterial(Texture2D texture, Shader shader) : 

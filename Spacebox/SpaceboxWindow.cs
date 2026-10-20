@@ -2,6 +2,7 @@
 using Engine.Audio;
 using Engine.InputPro;
 using Engine.PostProcessing;
+using Engine.PostProcessing.Ssao;
 using Engine.SceneManagement;
 using Engine.Utils;
 using ImGuiNET;
@@ -27,6 +28,8 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
 {
     private bool _doScreenshot = false;
     private AudioSource _screenshotAudio;
+
+    public SsaoEffect Ssao { get; private set; }
 
     public SpaceboxWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
         : base(gameWindowSettings, nativeWindowSettings)
@@ -139,15 +142,24 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
         var vignetteShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/vignette", true);
         var vignetteEffect = new VignetteEffect(vignetteShader);
         vignetteEffect.Enabled = true;
+
+        Ssao = new SsaoEffect(LoadSsaoShaders(), SceneRenderer);
+        processManager.AddEffect(Ssao);
         processManager.AddEffect(vignetteEffect);
 
         var edgeDetectionShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/edgeDetection", true);
 
         var normalShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/normalView", true);
         var depthShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/depthView", true);
+    }
 
-        Texture2D ssaoNoiseTex = SsaoNoise.GenerateRotationNoise(4, 1234);
-        var ssaoShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/ssao", true);
+    private static SsaoShaders LoadSsaoShaders()
+    {
+        return new SsaoShaders(
+            Resources.Load<Shader>("Resources/Shaders/PostProcessing/ssaoDepth", true),
+            Resources.Load<Shader>("Resources/Shaders/PostProcessing/ssaoOcclusion", true),
+            Resources.Load<Shader>("Resources/Shaders/PostProcessing/ssaoBlur", true),
+            Resources.Load<Shader>("Resources/Shaders/PostProcessing/ssaoComposite", true));
     }
 
     protected override void OnPostRender()

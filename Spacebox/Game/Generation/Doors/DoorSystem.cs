@@ -238,7 +238,7 @@ public sealed class DoorSystem : IDisposable
         {
             var (vertices, indices) = MultiblockPreviewMesh.Build(record.Door.Data, BlockState.Active);
             var shader = Resources.Load<Shader>(MovingBlockShader, true);
-            record.Visual = new SimpleBlock(new TextureMaterial(GameAssets.BlocksTexture, shader), Vector3.Zero) { DisposesTexture = false };
+            record.Visual = new SimpleBlock(new TextureMaterial(GameAssets.BlocksTexture, shader) { WritesGBuffer = true }, Vector3.Zero) { DisposesTexture = false };
             record.Visual.SetCustomMesh(vertices, indices);
         }
 

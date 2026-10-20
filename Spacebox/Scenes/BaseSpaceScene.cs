@@ -130,6 +130,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Debug.RegisterCommand(new SpawnAroundAsteroidCommand(localPlayer));
         Debug.RegisterCommand(new TeleportToPlayerCommand(localPlayer));
         Debug.RegisterCommand(new SpawnMobCommand(localPlayer));
+        Debug.RegisterCommand(new SsaoDebugCommand());
 
         InventoryUI.Initialize();
         StorageUI.Initialize();

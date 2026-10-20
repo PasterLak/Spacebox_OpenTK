@@ -54,6 +54,23 @@ namespace Spacebox.Game
         [JsonPropertyName("fov")] public int Fov { get; set; } = 90;                           // 50..120
         [JsonPropertyName("resolution_scale_percent")] public int ResolutionScalePercent { get; set; } = 100; // 10..100
         [JsonPropertyName("max_fps")] public int MaxFps { get; set; } = 120;
+        [JsonPropertyName("ssao_quality")] public int SsaoQuality { get; set; } = 2;
+        [JsonPropertyName("ssao_strength_percent")] public int SsaoStrengthPercent { get; set; } = 99;
+        [JsonPropertyName("ssao_smoothness_percent")] public int SsaoSmoothnessPercent { get; set; } = 38;
+        [JsonPropertyName("ssao_grain_percent")] public int SsaoGrainPercent { get; set; } = 29;
+        [JsonPropertyName("ssao_grain_size")] public int SsaoGrainSize { get; set; } = 2;
+        [JsonPropertyName("ssao_radius_percent")] public int SsaoRadiusPercent { get; set; } = 31;
+
+        public void ResetSsao()
+        {
+            var defaults = new GraphicsSettings();
+            SsaoQuality = defaults.SsaoQuality;
+            SsaoStrengthPercent = defaults.SsaoStrengthPercent;
+            SsaoSmoothnessPercent = defaults.SsaoSmoothnessPercent;
+            SsaoGrainPercent = defaults.SsaoGrainPercent;
+            SsaoGrainSize = defaults.SsaoGrainSize;
+            SsaoRadiusPercent = defaults.SsaoRadiusPercent;
+        }
 
         public bool Validate(GraphicsSettings d)
         {
@@ -62,11 +79,22 @@ namespace Spacebox.Game
             if (OutOfRange(ResolutionScalePercent, 10, 100)) { ResolutionScalePercent = d.ResolutionScalePercent; changed = true; }
             if (MaxFps != 0 && OutOfRange(MaxFps, MinFps, MaxFpsLimit)) { MaxFps = d.MaxFps; changed = true; }
             if (!Enum.IsDefined(WindowMode)) { WindowMode = d.WindowMode; changed = true; }
+            if (OutOfRange(SsaoQuality, 0, MaxSsaoQuality)) { SsaoQuality = d.SsaoQuality; changed = true; }
+            if (OutOfRange(SsaoStrengthPercent, 0, MaxSsaoStrengthPercent)) { SsaoStrengthPercent = d.SsaoStrengthPercent; changed = true; }
+            if (OutOfRange(SsaoSmoothnessPercent, 0, 100)) { SsaoSmoothnessPercent = d.SsaoSmoothnessPercent; changed = true; }
+            if (OutOfRange(SsaoGrainPercent, 0, 100)) { SsaoGrainPercent = d.SsaoGrainPercent; changed = true; }
+            if (OutOfRange(SsaoGrainSize, 1, MaxSsaoGrainSize)) { SsaoGrainSize = d.SsaoGrainSize; changed = true; }
+            if (OutOfRange(SsaoRadiusPercent, MinSsaoRadiusPercent, MaxSsaoRadiusPercent)) { SsaoRadiusPercent = d.SsaoRadiusPercent; changed = true; }
             return changed;
         }
 
         public const int MinFps = 30;
         public const int MaxFpsLimit = 360;
+        public const int MaxSsaoQuality = 3;
+        public const int MaxSsaoStrengthPercent = 200;
+        public const int MinSsaoRadiusPercent = 25;
+        public const int MaxSsaoRadiusPercent = 300;
+        public const int MaxSsaoGrainSize = 8;
 
         static bool OutOfRange(int v, int min, int max) => v < min || v > max;
     }

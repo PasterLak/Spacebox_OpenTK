@@ -11,6 +11,7 @@ uniform mat4 view;
 uniform mat4 projection;
 
 out vec3 worldNormal;
+out vec3 viewNormal;
 out vec3 worldPosition;
 out vec2 texCoords;
 out float fogFactor;
@@ -30,6 +31,7 @@ void main()
     gl_Position   = posWorld * view * projection;
     worldPosition = posWorld.xyz;
     worldNormal   = mat3(transpose(inverse(model))) * vertexNormal;
+    viewNormal    = vertexNormal * mat3(transpose(inverse(model))) * mat3(VIEW);
     texCoords     = vertexTexCoords;
     fogFactor     = fogFac(posWorld.xyz, 1.0, FOG_DENSITY);
 }
@@ -37,6 +39,7 @@ void main()
 --Frag
 #version 330 core
 #include "includes/lighting.fs"
+#include "includes/gbuffer.glsl"
 
 
 uniform vec4 color = vec4(1,1,1,1);
@@ -44,10 +47,11 @@ uniform vec3 extraLight = vec3(0.0);
 
 in vec3 worldPosition;
 in vec3 worldNormal;
+in vec3 viewNormal;
 in vec2 texCoords;
 in float fogFactor;
 
-out vec4 finalColor;
+layout(location = 0) out vec4 finalColor;
 
 uniform sampler2D texture0;
 
@@ -73,4 +77,5 @@ void main()
     shaded = fogMix(shaded, fogFactor, FOG);
     
     finalColor  = shaded;
+    writeGBuffer(viewNormal, GBUFFER_MASK_WORLD);
 }

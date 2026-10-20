@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Graphics;
 using Engine.Light;
 using OpenTK.Mathematics;
 using Spacebox.Game.Player;
@@ -138,6 +139,7 @@ namespace Spacebox.Game
 
                 Material.LightModel = Matrix4.CreateTranslation(EndPosition) * cameraTranslation * cameraRotation;
                 Material.ViewToRender = null;
+                Material.IsViewModel = false;
 
                 Material.Apply(model);
             }
@@ -170,6 +172,8 @@ namespace Spacebox.Game
                      additionalRotation *
                      Matrix4.CreateTranslation(itemCamera.Position);
                 Material.ViewToRender = GetViewToRender();
+                Material.IsViewModel = true;
+                ViewModelProjection.Set(itemCamera.GetProjectionMatrix());
 
                 Material.Action = () =>
                 {

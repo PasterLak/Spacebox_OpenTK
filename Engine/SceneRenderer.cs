@@ -11,6 +11,9 @@ namespace Engine
         public int ColorTexture { get; private set; }
         public int NormalTexture { get; private set; }
         public int DepthTexture { get; private set; }
+        public Vector2i Size => new Vector2i(width, height);
+
+        private static readonly float[] ClearGBuffer = { 0f, 0f, 0f, 0f };
 
         private int width, height;
         private bool disposed = false;
@@ -36,7 +39,7 @@ namespace Engine
 
             NormalTexture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, NormalTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, width, height, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, NormalTexture, 0);
@@ -80,7 +83,10 @@ namespace Engine
                 GL.Viewport(0, 0, width, height);
                 GLState.DepthMask(true);
                 GL.ClearColor(0f, 0f, 0f, 1f);
+                GLState.GBufferWrite(true);
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+                GL.ClearBuffer(ClearBuffer.Color, GLState.GBufferAttachment, ClearGBuffer);
+                GLState.GBufferWrite(false);
                 GPUDebug.Marker("START");
                 renderScene.Invoke();
                 GPUDebug.Marker("END");

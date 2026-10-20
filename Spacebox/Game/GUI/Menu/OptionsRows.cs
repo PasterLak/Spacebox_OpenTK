@@ -64,6 +64,14 @@ public sealed class OptionsRows
         return changed;
     }
 
+    public bool Button(string label, string tooltip, string text)
+    {
+        Label(label, tooltip);
+        bool clicked = ImGui.Button(text + "##" + label, new Vector2(_valueWidth, 0f));
+        UIHelper.ShowTooltip(tooltip);
+        return clicked;
+    }
+
     public static bool LastItemReleased => ImGui.IsItemDeactivatedAfterEdit();
 
     private static void Label(string label, string tooltip)

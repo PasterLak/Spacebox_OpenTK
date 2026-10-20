@@ -281,6 +281,22 @@ namespace Engine
             Use();
             GL.Uniform3(_uniformLocations[name], data);
         }
+        public void SetVector3Array(string name, Vector3[] values)
+        {
+            if (values == null || values.Length == 0) return;
+            string key = name + "[0]";
+            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(key))
+                return;
+            Use();
+            var data = new float[values.Length * 3];
+            for (int i = 0; i < values.Length; i++)
+            {
+                data[i * 3] = values[i].X;
+                data[i * 3 + 1] = values[i].Y;
+                data[i * 3 + 2] = values[i].Z;
+            }
+            GL.Uniform3(_uniformLocations[key], values.Length, data);
+        }
         public void SetVector4(string name, Vector4 data)
         {
             if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))

@@ -37,6 +37,7 @@ void main()
 --Frag
 #version 330 core
 #include "includes/lighting.fs"
+#include "includes/gbuffer.glsl"
 
 
 uniform vec4 color = vec4(1,1,1,1);
@@ -46,7 +47,7 @@ in vec3 worldNormal;
 in vec2 texCoords;
 in float fogFactor;
 
-out vec4 finalColor;
+layout(location = 0) out vec4 finalColor;
 
 uniform sampler2D texture0;
 
@@ -66,4 +67,5 @@ void main()
     shaded = fogMix(shaded, fogFactor, FOG);
     
     finalColor  = shaded;
+    writeGBufferNone();
 }

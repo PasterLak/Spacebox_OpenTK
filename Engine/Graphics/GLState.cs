@@ -11,6 +11,17 @@ namespace Engine.Graphics
         private static CullFaceMode _cullMode = CullFaceMode.Back;
         private static BlendingFactor _srcBlend = BlendingFactor.One;
         private static BlendingFactor _dstBlend = BlendingFactor.Zero;
+        private static bool _gBufferWrite = true;
+        public const int GBufferAttachment = 1;
+
+        public static void GBufferWrite(bool enable)
+        {
+            if (_gBufferWrite != enable)
+            {
+                GL.ColorMask(GBufferAttachment, enable, enable, enable, enable);
+                _gBufferWrite = enable;
+            }
+        }
 
         public static void DepthTest(bool enable)
         {

@@ -25,6 +25,7 @@ namespace Spacebox.Game.Resource
             base(texture, Resources.Load<Shader>("Resources/Shaders/itemModel"))
         {
             RenderMode = RenderMode.Opaque;
+            WritesGBuffer = true;
 
             //RenderFace = RenderFace.Both;
             Emission = emission;
@@ -46,11 +47,15 @@ namespace Spacebox.Game.Resource
             }
         }
 
+        private const float WorldMask = 1f;
+        private const float ViewModelMask = 0.5f;
+
         public Action Action;
 
         public Matrix4? LightModel { get; set; }
         public Matrix4? ViewToRender { get; set; }
         public Vector3 BlockLight { get; set; }
+        public bool IsViewModel { get; set; }
 
         protected override void UpdateDynamicUniforms()
         {
@@ -62,6 +67,7 @@ namespace Spacebox.Game.Resource
             if (LightModel.HasValue) Shader.SetMatrix4("lightModel", LightModel.Value);
 
             Shader.SetVector3("blockLight", BlockLight);
+            Shader.SetFloat("gBufferMask", IsViewModel ? ViewModelMask : WorldMask);
             Shader.SetInt("useViewToRender", ViewToRender.HasValue ? 1 : 0);
             if (ViewToRender.HasValue) Shader.SetMatrix4("viewToRender", ViewToRender.Value);
         }

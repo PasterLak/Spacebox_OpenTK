@@ -16,6 +16,7 @@ namespace Engine
         public RenderMode RenderMode { get; set; } = RenderMode.Opaque;
         public RenderFace RenderFace { get; set; } = RenderFace.Both;
         public int RenderQueue { get; set; } = 1000;
+        public bool WritesGBuffer { get; set; }
 
         public bool TransposeMatrices = true;
 
@@ -123,6 +124,7 @@ namespace Engine
 
             GLState.DepthMask(depthWrite);
             GLState.Blend(enableBlending);
+            GLState.GBufferWrite(WritesGBuffer && depthWrite);
 
             if (enableBlending)
             {

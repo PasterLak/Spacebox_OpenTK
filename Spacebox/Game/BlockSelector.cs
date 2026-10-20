@@ -78,7 +78,8 @@ public class BlockSelector : Node3D
         var shader = Resources.Load<Shader>(ShaderPath);
         var material = new TextureMaterial(_selectorTexture, shader)
         {
-            Color = Color4.White
+            Color = Color4.White,
+            WritesGBuffer = true
         };
 
         SimpleBlock = new SimpleBlock(material, Vector3.Zero)

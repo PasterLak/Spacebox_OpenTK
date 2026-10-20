@@ -82,6 +82,8 @@ Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
 - Large coordinates: build model matrices with `GetRenderModelMatrix` relative to `RenderSpace`.
 - Wrap GPU work in `GPUDebug` groups and `Prof.Time(token)` scopes where useful.
 - Offscreen rendering: `Graphics/RenderTexture.Render(camera, draw)` binds its FBO, swaps `Camera.Main`, pushes `GlobalUniforms` and restores everything; show it with `ImGui.Image(ColorTexture, size, (0,1), (1,0))`. `OrbitViewCamera` is a non-main orbit camera (`Orbit`, `Zoom`, `Frame(center, radius)`).
+- G-buffer: the scene FBO's attachment 1 holds view-space normals (`rgb`) and an AO mask (`a`: 0 none, 0.5 view-model, 1 world). Only materials with `WritesGBuffer = true` (Opaque/Cutout) write it; their shader must write `location = 1` (game include `includes/gbuffer.glsl`). A first-person model drawn with its own projection calls `ViewModelProjection.Set(projection)` each frame (reset before every scene render).
+- SSAO: `PostProcessing/Ssao/SsaoEffect` (+ `SsaoSettings`, `SsaoPreset`, `SsaoKernel`, `SsaoTargets`, `SsaoProjection`); shaders are injected via `SsaoShaders`, settings via `Configure`. Effects that need scene depth/normals get `EngineWindow.SceneRenderer`. Upload uniform arrays with `Shader.SetVector3Array`.
 - `GLState` and `Texture2D.Use` cache GL state: code that changes blend/texture state with raw GL calls must restore it or reset the cache (`Texture2D.ResetBindingCache`, done after ImGui).
 
 ## GUI and input

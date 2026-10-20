@@ -6,6 +6,7 @@
         {
             RenderFace = RenderFace.Front;
             RenderMode = RenderMode.Opaque;
+            WritesGBuffer = true;
         }
 
         public ColorMaterial(Shader customShader) : base(customShader)
