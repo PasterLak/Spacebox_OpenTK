@@ -50,6 +50,7 @@ New
 Small
 - convert dialog shows steps, backup and warnings
 - release builds leave out unused assets found by Tools/Spacebox.AssetAudit (keep list Build/asset-keep.txt); _Ignored texture folders are no longer packed into the atlases
+- debug console: Copy All button, Select mode (selectable text, Ctrl+C), right-click a message to copy it
 - removed duplicated and unused code: one UIManager (the debug console now counts as an open UI in the game), StaticBody/DynamicBody, CameraMode, unused debug post effects, renderers, components and helpers
 - source folders reorganized: Engine root split into Core, Cameras, Graphics, Assets, Spatial, Input; game GUI, Resource, Settings, Generation algorithms grouped by feature (namespaces unchanged)
 - multi-cell block textures fit per block (face-sized textures span, smaller ones repeat) without the global BlockSize; optional CellPixels in blocks.json

@@ -7,7 +7,7 @@ Game-independent engine over OpenTK (GL 3.3 core). Namespace `Engine.*`. Must ne
 | Path | Purpose |
 |---|---|
 | `EngineWindow.cs` | Abstract `GameWindow`; owns the main loop and hook methods (see Lifecycle). The only file at the root |
-| `Core/` | `Application` (version, platform, `OpenLink`, `Quit()`), `Time` (`Delta` scaled by `TimeSize`, `Total`, FPS/TPS, per-phase timings, ticks, `AlwaysCalculateFPS`), `FrameLimiter`, `Debug` (logging + console; `MirrorToStandardOutput`, `ExecuteCommand`, `MessageLogged` event), `Prof` (profiler scopes), services: `ServiceLocator`, `EventBus`, `Pool`, `ConcurrentPool`, `DisposalManager`, `TickTask`/`TickTaskManager` (see below) |
+| `Core/` | `Application` (version, platform, `OpenLink`, `Quit()`), `Time` (`Delta` scaled by `TimeSize`, `Total`, FPS/TPS, per-phase timings, ticks, `AlwaysCalculateFPS`), `FrameLimiter`, `Debug` (logging + console with Copy All / Select / right-click copy; `MirrorToStandardOutput`, `ExecuteCommand`, `MessageLogged` event), `Prof` (profiler scopes), services: `ServiceLocator`, `EventBus`, `Pool`, `ConcurrentPool`, `DisposalManager`, `TickTask`/`TickTaskManager` (see below) |
 | `SceneManagement/` | `Scene`, `SceneManager`, `ErrorScene`, `ParticleSystemEditor`, scene graph `Node3D`/`Transform3D` |
 | `Components/` | `Component` base + built-ins (`ModelRendererComponent`, `ColliderComponent`, `BillboardComponent`, …) |
 | `Assets/` | `Resources` (typed resource cache, `IResource`), `ResourceFallbacks` |

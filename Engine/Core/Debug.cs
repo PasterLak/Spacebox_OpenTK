@@ -59,6 +59,11 @@ namespace Engine
 
         private static MessageType showType = MessageType.Info;
 
+        private static bool _selectMode;
+        private static string _selectableText = string.Empty;
+        private static int _selectableCount = -1;
+        private static MessageType _selectableFilter;
+
         private static readonly string HistoryFilePath = "command_history.txt";
         private static int _autoCompleteIndex = 0;
         private static List<CommandBase> _autoCompleteMatches = new List<CommandBase>();
@@ -322,6 +327,22 @@ namespace Engine
             DrawFilterButton("Warning", warningCount, MessageType.Warning, waringColor);
             DrawFilterButton("Error", errorCount, MessageType.Error, errorColor);
 
+            ImGui.SameLine();
+            if (ImGui.Button(" Copy All "))
+                ImGui.SetClipboardText(BuildConsoleText(MessageType.Info));
+            if (ImGui.IsItemHovered()) ImGui.SetTooltip("Copy every message in the buffer");
+
+            ImGui.SameLine();
+            if (_selectMode) ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
+            bool toggleSelect = ImGui.Button(" Select ");
+            if (_selectMode) ImGui.PopStyleColor();
+            if (ImGui.IsItemHovered()) ImGui.SetTooltip("Show the messages as text that can be selected and copied with Ctrl+C. Right-click a message to copy it");
+            if (toggleSelect)
+            {
+                _selectMode = !_selectMode;
+                _selectableCount = -1;
+            }
+
             ImGui.PopStyleColor();
             ImGui.Separator();
 
@@ -330,6 +351,14 @@ namespace Engine
                 childHeight = 100f;
 
             ImGui.BeginChild("ScrollingRegion", new Vector2(0, childHeight), ImGuiChildFlags.AlwaysAutoResize);
+
+            if (_selectMode)
+            {
+                DrawSelectableText();
+                ImGui.EndChild();
+                DrawInputLine(windowSize);
+                return;
+            }
 
             List<ConsoleMessage> messagesToRender;
 
@@ -349,18 +378,25 @@ namespace Engine
                 ImGui.PushStyleColor(ImGuiCol.Text, msg.Color);
                 ImGui.TextWrapped(msg.Text);
                 ImGui.PopStyleColor();
+                if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+                    ImGui.SetClipboardText(msg.Text);
             }
 
             if (ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
                 ImGui.SetScrollHereY(1.0f);
             ImGui.EndChild();
 
+            DrawInputLine(windowSize);
+        }
+
+        private static void DrawInputLine(Vector2 windowSize)
+        {
             ImGui.Separator();
 
             float buttonWidth = windowSize.X * 0.06f;
             float inputWidth = ImGui.GetContentRegionAvail().X - buttonWidth - ImGui.GetStyle().ItemSpacing.X;
 
-            if (ImGui.IsWindowFocused(ImGuiFocusedFlags.AnyWindow))
+            if (!_selectMode && ImGui.IsWindowFocused(ImGuiFocusedFlags.AnyWindow))
             {
                 if (ImGui.IsKeyPressed(ImGuiKey.UpArrow))
                 {
@@ -409,6 +445,35 @@ namespace Engine
             ImGui.End();
             ImGui.PopStyleColor();
             ImGui.PopStyleVar();
+        }
+
+        private static void DrawSelectableText()
+        {
+            int count;
+            lock (_lock)
+            {
+                count = _messages.Count;
+            }
+
+            if (count != _selectableCount || showType != _selectableFilter)
+            {
+                _selectableText = BuildConsoleText(showType);
+                _selectableCount = count;
+                _selectableFilter = showType;
+            }
+
+            ImGui.InputTextMultiline("##ConsoleText", ref _selectableText, (uint)_selectableText.Length + 1,
+                ImGui.GetContentRegionAvail(), ImGuiInputTextFlags.ReadOnly);
+        }
+
+        private static string BuildConsoleText(MessageType filter)
+        {
+            var lines = new List<(string, MessageType)>();
+            lock (_lock)
+            {
+                foreach (var message in _messages) lines.Add((message.Text, message.Type));
+            }
+            return ConsoleText.Build(lines, filter);
         }
 
         private static void AddToHistory(string command)
