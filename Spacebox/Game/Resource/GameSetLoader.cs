@@ -1123,7 +1123,6 @@ public static class GameSetLoader
         public string Description { get; set; } = "";
         public string Author { get; set; } = "";
         public string Version { get; set; } = "0";
-        public int BlockSize { get; set; } = 32;
         public float OxygenConsumeInterval { get; set; } = 10f;
         public string FolderName { get; set; } = "";
         public string ModPath { get; set; } = "";

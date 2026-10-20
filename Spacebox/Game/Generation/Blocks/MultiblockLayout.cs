@@ -109,6 +109,11 @@ public static class MultiblockLayout
         };
     }
 
+    public static void GetFaceCells(Vector3Byte size, Direction face, out int columns, out int rows)
+    {
+        GetFaceGrid(size, new Vector3Byte(0), face, out _, out columns, out _, out rows);
+    }
+
     private static void GetFaceGrid(Vector3Byte size, Vector3Byte cell, Direction face, out int column, out int columns, out int row, out int rows)
     {
         switch (face)

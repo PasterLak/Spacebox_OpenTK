@@ -237,7 +237,8 @@ namespace Spacebox.Game.Resource
                 Efficiency = Math.Max(0.1f, block.Efficiency),
                 Category = block.Category,
                 BaseFrontDirection = Block.GetDirectionFromNormal(block.FrontDirection),
-                Size = new Vector3Byte(ClampSize(block.Size.X), ClampSize(block.Size.Y), ClampSize(block.Size.Z))
+                Size = new Vector3Byte(ClampSize(block.Size.X), ClampSize(block.Size.Y), ClampSize(block.Size.Z)),
+                CellPixels = Math.Clamp(block.CellPixels, 0, TextureTiling.MaxCellPixels)
             };
 
             blockData.Drop.Item.Id_string = string.IsNullOrWhiteSpace(block.Drop) ? "$self" : block.Drop;

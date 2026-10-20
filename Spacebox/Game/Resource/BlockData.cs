@@ -68,6 +68,7 @@ namespace Spacebox.Game.Resource
     
 
         public Vector3Byte Size { get; set; } = new Vector3Byte(1);
+        public int CellPixels { get; set; }
         public BlockShape Shape { get; set; }
         public bool IsMultiblock => Size.X > 1 || Size.Y > 1 || Size.Z > 1;
         public int CellCount => Size.X * Size.Y * Size.Z;
@@ -106,6 +107,7 @@ namespace Spacebox.Game.Resource
             LightColor = baseBlock.LightColor;
             BaseFrontDirection = baseBlock.BaseFrontDirection;
             Size = baseBlock.Size;
+            CellPixels = baseBlock.CellPixels;
             Shape = baseBlock.Shape;
             AsItem = baseBlock.AsItem;
             Drop = baseBlock.Drop;
@@ -155,10 +157,9 @@ namespace Spacebox.Game.Resource
             SetTexture(textureName, Direction.Back, state);
         }
 
-        private static int TileSizePixels => Math.Max(1, GameSetLoader.ModInfo?.BlockSize ?? 32);
-
         public static void CacheUvs(BlockData b)
         {
+            var faces = new List<FaceTexture>(12);
             foreach (var kvp in b._texturesByState)
             {
                 var state = kvp.Value;
@@ -187,9 +188,20 @@ namespace Spacebox.Game.Resource
                     var region = GameAssets.AtlasBlocks.GetRegion(textureName);
                     state.UVs[i] = region?.Uvs;
                     state.ResolvedTextureNames[i] = textureName;
-                    state.Tiles[i] = region == null
-                        ? Vector2i.One
-                        : new Vector2i(Math.Max(1, region.Width / TileSizePixels), Math.Max(1, region.Height / TileSizePixels));
+                    if (region == null) continue;
+
+                    MultiblockLayout.GetFaceCells(b.Size, (Direction)i, out int columns, out int rows);
+                    faces.Add(new FaceTexture(region.Width, region.Height, columns, rows));
+                }
+            }
+
+            int cellPixels = TextureTiling.ResolveCellPixels(faces, b.CellPixels);
+            foreach (var state in b._texturesByState.Values)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    var region = GameAssets.AtlasBlocks.GetRegion(state.ResolvedTextureNames[i]);
+                    state.Tiles[i] = region == null ? Vector2i.One : TextureTiling.GetTiles(region.Width, region.Height, cellPixels);
                 }
             }
         }

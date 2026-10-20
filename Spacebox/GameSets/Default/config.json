@@ -4,7 +4,6 @@
     "Description": "Basic set of blocks and items",
     "Author": "PasterLak",
     "Version": "0.1.5",
-    "BlockSize": 32,
     "OxygenConsumeInterval": 1,
 
     "Dependencies": [
