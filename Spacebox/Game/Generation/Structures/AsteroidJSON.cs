@@ -13,6 +13,7 @@ public class GeneratorJSON
     public int MinDistanceBetweenAsteroids { get; set; } = 128;
     public float BiomesMapNoiseFrequency { get; set; } = 0.02f;
     public string[] Biomes { get; set; } = new string[] { };
+    public PlayerSpawnJSON PlayerSpawn { get; set; } = new PlayerSpawnJSON();
 }
 
 public class BiomeJSON

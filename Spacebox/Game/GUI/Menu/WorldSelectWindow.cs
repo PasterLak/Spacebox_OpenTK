@@ -43,14 +43,7 @@ namespace Spacebox.Game.GUI.Menu
                 if (ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
                 {
                     menu.Click1.Play();
-                    if (VersionConverter.IsVersionOld(world.GameVersion, Application.Version))
-                    {
-                        menu.showVersionConvertWindow = true;
-                    }
-                    else
-                    {
-                        menu.LoadWorld(world);
-                    }
+                    menu.OpenWorld(world);
                 }
             }
 
@@ -99,14 +92,7 @@ namespace Spacebox.Game.GUI.Menu
                     () =>
                     {
                         menu.Click1.Play();
-                        if (VersionConverter.IsVersionOld(menu.selectedWorld.GameVersion, Application.Version))
-                        {
-                            menu.showVersionConvertWindow = true;
-                        }
-                        else
-                        {
-                            menu.LoadWorld(menu.selectedWorld);
-                        }
+                        menu.OpenWorld(menu.selectedWorld);
                     });
                 menu.ButtonWithBackground("Edit", new Vector2(buttonWidth - buttonHeight - buttonSpacing, buttonHeight),
                     new Vector2(buttonStartX + buttonWidth + buttonSpacing, buttonY + windowHeight * 0.02f),

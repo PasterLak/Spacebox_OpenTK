@@ -50,7 +50,7 @@ namespace Spacebox.Tests
         #region Convert Tests
 
         [Fact]
-        public void Convert_WhenWorldVersionIs080_AndAppVersionIs089_UpdatesSuccessfully()
+        public void Convert_WhenWorldVersionIs080_IsTooOldAndUnchanged()
         {
             // Arrange
             var worldInfo = new WorldInfo
@@ -69,8 +69,8 @@ namespace Spacebox.Tests
             bool result = VersionConverter.Convert(worldInfo, appVersion);
 
             // Assert
-            Assert.True(result);
-            Assert.Equal("0.0.9", worldInfo.GameVersion);
+            Assert.False(result);
+            Assert.Equal("0.0.8", worldInfo.GameVersion);
         }
 
         [Fact]
@@ -97,7 +97,7 @@ namespace Spacebox.Tests
             // Then attempts to convert "0.0.9" to "0.0.10", but "0.0.9" != "0.0.8"
             // Hence, second conversion fails and returns false
             Assert.False(result);
-            Assert.Equal("0.0.9", worldInfo.GameVersion);
+            Assert.Equal("0.0.8", worldInfo.GameVersion);
         }
 
         [Fact]
@@ -149,7 +149,7 @@ namespace Spacebox.Tests
         }
 
         [Fact]
-        public void Convert_WhenWorldVersionIs080_AndAppVersionIs089_AfterUpdateTo089_ReturnsTrue()
+        public void Convert_WhenWorldVersionIs080_StaysTooOldOnRetry()
         {
             // Arrange
             var worldInfo = new WorldInfo
@@ -168,13 +168,13 @@ namespace Spacebox.Tests
             bool firstResult = VersionConverter.Convert(worldInfo, appVersion);
 
             // Assert
-            Assert.True(firstResult);
-            Assert.Equal("0.0.9", worldInfo.GameVersion);
+            Assert.False(firstResult);
+            Assert.Equal("0.0.8", worldInfo.GameVersion);
 
             // Further conversion should return false as worldVersion == appVersion
             bool secondResult = VersionConverter.Convert(worldInfo, appVersion);
-            Assert.True(secondResult);
-            Assert.Equal("0.0.9", worldInfo.GameVersion);
+            Assert.False(secondResult);
+            Assert.Equal("0.0.8", worldInfo.GameVersion);
         }
 
         [Fact]

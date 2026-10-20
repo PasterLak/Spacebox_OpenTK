@@ -25,6 +25,13 @@ public static class DedicatedServer
         GameSession.BeginDedicated(Config.Port);
 
         var world = EnsureWorld(Config);
+        if (world == null)
+        {
+            Debug.Error("[Server] The world cannot be loaded, the server stops");
+            Application.Quit();
+            return;
+        }
+
         RegisterCommands();
         StartConsoleReader();
 
@@ -39,6 +46,25 @@ public static class DedicatedServer
         });
     }
 
+    private static bool UpgradeIfNeeded(WorldInfo world, string worldDirectory, string worldJson)
+    {
+        var status = Spacebox.Game.VersionConverter.GetSupport(world, out var reason);
+        if (status == Spacebox.Game.Versioning.WorldUpgradeStatus.UpToDate) return true;
+        if (status != Spacebox.Game.Versioning.WorldUpgradeStatus.Ok)
+        {
+            Debug.Error($"[Server] World '{world.Name}': {reason}");
+            return false;
+        }
+
+        Debug.Warning($"[Server] World '{world.Name}' is from version {world.GameVersion}, converting it to {Application.Version}");
+        var result = Spacebox.Game.VersionConverter.Upgrade(world, worldDirectory, Application.Version);
+        if (!result.Success) return false;
+
+        File.WriteAllText(worldJson, JsonSerializer.Serialize(world, new JsonSerializerOptions { WriteIndented = true }));
+        Debug.Success($"[Server] World converted to {result.ToVersion} ({result.Summary}), backup: {result.BackupPath}");
+        return true;
+    }
+
     private static WorldInfo EnsureWorld(ServerConfig config)
     {
         string worldsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Worlds");
@@ -48,7 +74,7 @@ public static class DedicatedServer
         if (File.Exists(worldJson))
         {
             var existing = JsonSerializer.Deserialize<WorldInfo>(File.ReadAllText(worldJson));
-            if (existing != null) return existing;
+            if (existing != null) return UpgradeIfNeeded(existing, worldDirectory, worldJson) ? existing : null;
         }
 
         var info = new WorldInfo

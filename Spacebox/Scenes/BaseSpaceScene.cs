@@ -263,6 +263,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         PanelUI.Update();
         Spacebox.Game.Tutorial.UI.TutorialUI.Update();
         InputOverlay.Update();
+        Spacebox.Game.Waypoints.WaypointWindowUI.Update();
     }
 
     public Action OnRenderCenter;
@@ -308,6 +309,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         WelcomeUI.OnGUI();
         PauseUI.OnGUI();
         Spacebox.Game.Tutorial.UI.TutorialPromptUI.OnGUI();
+        Spacebox.Game.Waypoints.WaypointWindowUI.OnGUI();
         if (Settings.ShowInterface) InputOverlay.OnGUI();
         GeneratorUI.OnGUI();
         AnalyzerUI.OnGUI();
@@ -351,6 +353,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         ShipNetwork.Reset();
         ShipWeapons.Reset();
         TutorialService.Detach();
+        Spacebox.Game.Waypoints.WaypointWindowUI.Reset();
         PanelUI.Player = null;
 
         TickTaskManager.Dispose();

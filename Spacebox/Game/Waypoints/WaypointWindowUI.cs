@@ -116,7 +116,8 @@ public static class WaypointWindowUI
         {
             var tag = waypoints[i];
             var rowStart = ImGui.GetCursorScreenPos();
-            if (ImGui.Selectable($"##waypoint{tag.Id}", tag == _selected, ImGuiSelectableFlags.SpanAvailWidth)) Select(tag);
+            float right = ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X;
+            if (ImGui.Selectable($"##waypoint{tag.Id}", tag == _selected)) Select(tag);
 
             var color = new NVector4(tag.Color.R, tag.Color.G, tag.Color.B, 1f);
             float y = rowStart.Y + (ImGui.GetTextLineHeight() - square) * 0.5f;
@@ -129,7 +130,7 @@ public static class WaypointWindowUI
             if (player != null)
             {
                 string distance = FormatDistance(Vector3.Distance(player.Position, tag.WorldPosition));
-                ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - ImGui.CalcTextSize(distance).X);
+                ImGui.SameLine(right - ImGui.CalcTextSize(distance).X);
                 ImGui.TextColored(HintColor, distance);
             }
         }

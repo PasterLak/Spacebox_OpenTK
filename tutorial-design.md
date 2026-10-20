@@ -97,7 +97,7 @@ Multiplayer joiners never see the welcome screen. A new player without saved tut
 | `craft` | `Item`, `Count` | the item is crafted |
 | `process` | `Item`, `Machine?`, `Count` | the output is taken from a furnace or crusher |
 | `use_item` | `Item?` | a consumable is used |
-| `create_waypoint` | `Count` | a waypoint is created (`tag create <name>`) |
+| `create_waypoint` | `Count` | a waypoint is added in the waypoint window (M) or with `tag create <name>` |
 | `equip` | `Item?`, `Slot?` | equipment is equipped |
 | `open_ui` | `Window` (`inventory`, `crafting`, `pause` …) | the window is open |
 | `use_block` | `Block` | that block's UI is opened |

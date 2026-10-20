@@ -22,12 +22,17 @@ additional
 - fix effect drop
 
 |------------------------------------------------------------------------------------------------------------------------------
-	version 0.1.3
+	version 0.1.5
 |------------------------------------------------------------------------------------------------------------------------------
 
 New
+- world converter: 0.1.2 worlds convert to 0.1.5, older ones are refused
+- world upgrade tools for NBT (rename/remove blocks and items), check for unknown ids
+- dedicated server upgrades old worlds on start
 Small
+- convert dialog shows steps, backup and warnings
 Fixes
+- old worlds saved as 0.1.2 by the old converter are refused instead of loading broken
 Engine
 
 |------------------------------------------------------------------------------------------------------------------------------
@@ -147,6 +152,9 @@ Small
 - multiplayer: right click with armor/equipment on another player puts it on them (empty slot only), heal/power/oxygen items heal the other player; the item comes back if it fails
 - multiplayer: other players hold shaped and multi-cell blocks as their real model (scaled to one block) instead of a cube
 - crusher: 18 new recycling recipes (metal blocks, drill bits, cobalt crystal, uranium rods, windows, polymer fiber)
+- waypoint window (M): list with distance, add at your position, rename, colors, show/hide, delete; saved per world and only visible to you; waypoints no longer need a radar; block magnet moved to N; the tutorial uses the window instead of the console
+- new players no longer spawn next to small or icy asteroids (generator.json PlayerSpawn: MinAsteroidRadius, ExcludedAsteroids)
+- world conversion: upgrade steps per version with a backup in Worlds/_backups, rollback if a step fails, the convert dialog shows errors
 - tutorial: rewards are aluminium armor pieces (never items a task asks for) and are never given twice after a restart; new chapter Better drills (iron drill, thulium, triple iron drill, titanium and uranium) before base, ships and gravity
 - controls overlay (F6) works in game and the menu again and shows all keys grouped by category in columns
 - tutorial system: JSON tutorials in the GameSet (Tutorials/*.json, chapters, steps, tasks, item icons, rewards), compact quest panel top-right with progress bar, green crossed-out tasks, step/chapter toasts and sounds; welcome screen toggle, pause menu (skip, stop, resume, restart), J collapses the panel, start prompt for new multiplayer players; Default survival tutorial with 11 chapters (flying to the first ship) and a creative tutorial

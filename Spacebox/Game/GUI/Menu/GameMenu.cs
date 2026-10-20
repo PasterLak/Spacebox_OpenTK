@@ -103,10 +103,7 @@ namespace Spacebox.Game.GUI.Menu
                         BlackScreenOverlay.IsEnabled = true;
                         selectedWorld = w;
                         Click1.Play();
-                        if (VersionConverter.IsVersionOld(selectedWorld.GameVersion, Application.Version))
-                            showVersionConvertWindow = true;
-                        else
-                            LoadWorld(selectedWorld);
+                        OpenWorld(selectedWorld);
                     }
                 }
             }
@@ -470,6 +467,21 @@ namespace Spacebox.Game.GUI.Menu
             Vector2 imagePosMin = buttonPos + offset;
             Vector2 imagePosMax = buttonPos + size - offset;
             TrashIcon.Draw(drawList, imagePosMin, imagePosMax);
+        }
+
+        public void OpenWorld(WorldInfo world)
+        {
+            if (world == null) return;
+
+            selectedWorld = world;
+            if (VersionConverter.GetSupport(world, out _) == Versioning.WorldUpgradeStatus.UpToDate)
+            {
+                LoadWorld(world);
+                return;
+            }
+
+            updateVersionWindow.Reset();
+            showVersionConvertWindow = true;
         }
 
         public void LoadWorld(WorldInfo world, bool multiplayer = false)

@@ -64,6 +64,7 @@ public class GenerationLoader
             generator.RejectionSamples = generatorJson.RejectionSamples;
             generator.MinDistanceBetweenAsteroids  = generatorJson.MinDistanceBetweenAsteroids;
             generator.BiomesMapNoiseFrequency = generatorJson.BiomesMapNoiseFrequency;
+            generator.PlayerSpawn = PlayerSpawnRules.FromJson(generatorJson.PlayerSpawn);
 
             for (int i = 0; i < generatorJson.Biomes.Length; i++)
             {

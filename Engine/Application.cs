@@ -6,7 +6,7 @@ namespace Engine
 {
     public static class Application
     {
-        public const string Version = "0.1.2";
+        public const string Version = "0.1.5";
         public const string Author = "PasterLak";
         public const string EngineVersion = "1.5";
 

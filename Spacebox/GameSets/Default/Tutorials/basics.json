@@ -222,8 +222,11 @@
         {
           "Id": "waypoint",
           "Title": "Mark your base",
-          "Text": "Open the console with ` and type: tag create home. The marker shows the way back.",
-          "Tasks": [ { "Type": "create_waypoint", "Label": "Create a waypoint" } ]
+          "Text": "Press {key:waypoints} to open your waypoints. Add one at your base, then give it a name and a color. Its marker always shows the way back.",
+          "Tasks": [
+            { "Type": "open_ui", "Window": "waypoints", "Label": "Open the waypoints ({key:waypoints})" },
+            { "Type": "create_waypoint", "Label": "Add a waypoint at your base" }
+          ]
         }
       ]
     },

@@ -13,6 +13,7 @@ public class WorldGenerator
     public int MinDistanceBetweenAsteroids { get; set; } = 128;
     public float BiomesMapNoiseFrequency { get; set; } = 0.02f;
     public Biome[] Biomes { get; set; } = new Biome[] { };
+    public PlayerSpawnRules PlayerSpawn { get; set; } = PlayerSpawnRules.Default;
     public byte[] BiomeProbabilityRanges { get; private set; } = new byte[] { };
 
 

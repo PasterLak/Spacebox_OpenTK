@@ -178,7 +178,8 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 - World data: NBT (SharpNBT `CompoundTag`, GZip) — `Game/Generation/Tools/WorldSaveLoad.cs` (sector folders, `.entity` files), `Structures/WorldPersistenceManager.cs` (caches and writes unloaded entities), `NBTHelper` / `NBTKey` / `PackingTools`.
 - Procedural asteroids save only changed chunks (`SpaceEntity.SavesOnlyChangedChunks`, `Chunk.ShouldBeSaved` = modified or loaded from a save, `Asteroid.RemovedChunks`). Anything that changes chunk data must set `chunk.IsModified = true`, otherwise the change is lost on save.
 - Player and tags: JSON in the world folder (`PlayerSaveLoadManager`, `TagsSaveLoader`).
-- `Game/WorldLoader.cs` loads `WorldInfo`; `Game/VersionConverter.cs` upgrades step by step (0.0.8 → 0.0.9 → 0.1.0 → 0.1.1 → 0.1.2). New format versions add a step there; new fields need defaults.
+- `Game/WorldLoader.cs` loads `WorldInfo`; `Game/VersionConverter.cs` (menu API, `CheckWorld` / `Upgrade`) runs `Game/Versioning/WorldUpgrader`, the dedicated server upgrades on start (`DedicatedServer.UpgradeIfNeeded`). The chain starts at 0.1.2 (`Steps/Upgrade_0_1_2_To_0_1_5`); older versions, newer versions and old 0.1.2 save formats (`WorldFormatProbe`: `worldX` legacy, `world_x` positions) are refused before any change. Upgrade: first-step `Check` → zip backup to `Worlds/_backups/` → steps → restore on failure → `WorldValidator` warns about ids missing from the world's GameSet (`GameSetIdIndex`).
+- Step toolkit: `WorldUpgradeContext` operations (`RenameBlock`/`RenameItem`/`RemoveBlock`/`RemoveItem` touch chunk palettes, player slots and drops; `EditChunks`/`EditEntities`/`EditSectors`/`EditPlayers`/`EditDrops`/`EditJson` for the rest), `NbtFileEditor` (read/write/edit GZip NBT, `RenameKey`), `ChunkTagAccess`, `IdRemap`, `WorldFileLayout`. Test kit: `Spacebox.Tests/Versioning/WorldFixtureBuilder` + `WorldInspector`.
 
 ## Multiplayer
 
@@ -215,6 +216,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 | UI window | `Game/GUI/` + wiring in `BaseSpaceScene` (`LoadContent`, `OnGUI`, `UnloadContent`) |
 | Debug command | `Game/Commands/` + registration in `BaseSpaceScene.LoadContent` |
 | Scene | `Scenes/` + `SpaceboxWindow.OnRegisterScenes` |
-| Save format change | NBT keys with defaults; breaking change → `VersionConverter` step |
+| Save format change | NBT keys with defaults; renamed/removed ids or keys → `WorldUpgradeStep` in `Game/Versioning/Steps/` registered in `WorldUpgradeRegistry.CreateDefault` + test with `WorldFixtureBuilder` |
+| Waypoint features | `Game/Waypoints/` (`WaypointService` over `TagManager` static tags, saved in `tags.json`; window `WaypointWindowUI`, key `waypoints` = M) |
 | Network message | `add-network-message` skill |
 | Reusable, game-independent code | `Engine/`, not here |

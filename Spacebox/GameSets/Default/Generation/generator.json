@@ -8,5 +8,9 @@
    
     "BiomesMapNoiseFrequency" : 0.001,
     "Biomes": [ "asteroid_field", "dense_cluster" ],
-    "Structures": [  ]
+    "Structures": [  ],
+    "PlayerSpawn": {
+        "MinAsteroidRadius": 24,
+        "ExcludedAsteroids": [ "asteroid_icy" ]
+    }
 }

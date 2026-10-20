@@ -1,0 +1,151 @@
+using Spacebox.Game.GUI;
+using Spacebox.Game.Versioning;
+using Spacebox.Game.Versioning.Steps;
+using Xunit;
+
+namespace Spacebox.Tests.Versioning;
+
+public class WorldUpgradeFlowTests : IDisposable
+{
+    private readonly string _root = Path.Combine(Path.GetTempPath(), "spacebox_flow_" + Guid.NewGuid().ToString("N"));
+
+    public void Dispose()
+    {
+        if (Directory.Exists(_root)) Directory.Delete(_root, true);
+    }
+
+    private sealed class ExampleStep : WorldUpgradeStep
+    {
+        public ExampleStep() : base("0.1.5", "0.1.6")
+        {
+        }
+
+        public override string Description => "Rename old_rock and power";
+
+        public override void Apply(WorldUpgradeContext world)
+        {
+            world.RenameBlock("default:old_rock", "default:light_rock");
+            world.RenameItem("default:old_power", "default:power");
+        }
+    }
+
+    private sealed class BrokenNbtStep : WorldUpgradeStep
+    {
+        public BrokenNbtStep() : base("0.1.6", "0.1.7")
+        {
+        }
+
+        public override void Apply(WorldUpgradeContext world)
+        {
+            world.RenameBlock("default:light_rock", "default:medium_rock");
+            throw new InvalidOperationException("broken step");
+        }
+    }
+
+    private string Build(Action<WorldFixtureBuilder> setup, string name = "World")
+    {
+        var builder = new WorldFixtureBuilder(Path.Combine(_root, "Worlds", name));
+        setup(builder);
+        return builder.Build();
+    }
+
+    private WorldUpgrader Upgrader(params IWorldUpgradeStep[] steps)
+    {
+        var registry = new WorldUpgradeRegistry("0.1.5");
+        foreach (var step in steps) registry.Register(step);
+        return new WorldUpgrader(registry, Path.Combine(_root, "Worlds", WorldUpgrader.BackupFolderName));
+    }
+
+    private static GameSetIdIndex DefaultIds() => GameSetIdIndex.Load(WorldToolkitTests.DefaultGameSet(), "default");
+
+    [Fact]
+    public void ExampleStep_RenamesEverywhereAndLeavesNoUnknownIds()
+    {
+        string folder = Build(w => w.Version("0.1.5")
+            .Chunk(new[] { "default:air", "default:old_rock" }, new[] { "default:old_power" })
+            .Player("default:old_power", 2)
+            .Drop("default:old_rock"));
+        var info = new WorldInfo { Name = "W", GameVersion = "0.1.5" };
+
+        var result = Upgrader(new ExampleStep()).Upgrade(info, folder, "0.1.6", DefaultIds());
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal("0.1.6", info.GameVersion);
+        Assert.Equal(new[] { "default:air", "default:light_rock" }, WorldInspector.BlockPalettes(folder));
+        Assert.Equal(new[] { "default:power" }, WorldInspector.ItemPalettes(folder));
+        Assert.Equal(new[] { "default:power" }, WorldInspector.PlayerItems(folder));
+        Assert.Equal(new[] { "default:light_rock" }, WorldInspector.DropItems(folder));
+        Assert.Empty(result.Warnings);
+        Assert.Contains("block palette entries", result.Summary);
+        Assert.True(File.Exists(result.BackupPath));
+    }
+
+    [Fact]
+    public void ForgottenRename_IsReportedAsWarning()
+    {
+        string folder = Build(w => w.Version("0.1.5").Chunk(new[] { "default:removed_in_new_version" }));
+
+        var result = Upgrader(new ExampleStep()).Upgrade(new WorldInfo { Name = "W", GameVersion = "0.1.5" }, folder, "0.1.6", DefaultIds());
+
+        Assert.True(result.Success);
+        Assert.Single(result.Warnings);
+        Assert.Contains("default:removed_in_new_version", result.Warnings[0]);
+    }
+
+    [Fact]
+    public void FailingNbtStep_RestoresEveryFileByteForByte()
+    {
+        string folder = Build(w => w.Version("0.1.5")
+            .Chunk(new[] { "default:old_rock" }, new[] { "default:old_power" })
+            .Player("default:old_power"));
+        var before = WorldInspector.Snapshot(folder);
+        var info = new WorldInfo { Name = "W", GameVersion = "0.1.5" };
+
+        var result = Upgrader(new ExampleStep(), new BrokenNbtStep()).Upgrade(info, folder, "0.1.7");
+
+        Assert.Equal(WorldUpgradeStatus.Failed, result.Status);
+        Assert.Contains("broken step", result.Error);
+        Assert.Equal("0.1.5", info.GameVersion);
+        Assert.Equal(before, WorldInspector.Snapshot(folder));
+    }
+
+    [Fact]
+    public void DefaultChain_UpgradesA012WorldWithDefaultIds()
+    {
+        string folder = Build(w => w.Version("0.1.2")
+            .Chunk(new[] { "default:air", "default:light_rock", "default:aluminium_ore" }, new[] { "default:aluminium_drill" })
+            .Player("default:aluminium_drill")
+            .Player("default:aluminium_flashlight", 1, list: "EquipmentSlots")
+            .Drop("default:aluminium_ore"));
+        var info = new WorldInfo { Name = "W", GameVersion = "0.1.2" };
+
+        var result = new WorldUpgrader(WorldUpgradeRegistry.CreateDefault(), Path.Combine(_root, "backups")).Upgrade(info, folder, Engine.Application.Version, DefaultIds());
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(Engine.Application.Version, info.GameVersion);
+        Assert.Empty(result.Warnings);
+    }
+
+    [Fact]
+    public void TooOldWorld_IsRefusedAndUntouched()
+    {
+        string folder = Build(w => w.Version("0.1.1").Chunk(new[] { "default:light_rock" }));
+        var before = WorldInspector.Snapshot(folder);
+        var info = new WorldInfo { Name = "W", GameVersion = "0.1.1" };
+
+        var result = new WorldUpgrader(WorldUpgradeRegistry.CreateDefault(), Path.Combine(_root, "backups")).Upgrade(info, folder, Engine.Application.Version);
+
+        Assert.Equal(WorldUpgradeStatus.TooOld, result.Status);
+        Assert.Equal(before, WorldInspector.Snapshot(folder));
+        Assert.False(Directory.Exists(Path.Combine(_root, "backups")));
+    }
+
+    [Fact]
+    public void FirstStep_GoesFrom012To015()
+    {
+        var step = new Upgrade_0_1_2_To_0_1_5();
+
+        Assert.Equal("0.1.2", step.FromVersion);
+        Assert.Equal("0.1.5", step.ToVersion);
+    }
+}

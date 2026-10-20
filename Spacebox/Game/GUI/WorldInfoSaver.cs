@@ -92,6 +92,14 @@ public class WorldInfoSaver
         File.WriteAllText(worldJsonPath, jsonContent);
     }
 
+    public static string GetWorldFolder(WorldInfo worldInfo)
+    {
+        if (worldInfo == null || string.IsNullOrWhiteSpace(worldInfo.FolderName)) return null;
+
+        string folder = Path.Combine(GetWorldsDirectory(), worldInfo.FolderName);
+        return Directory.Exists(folder) ? folder : null;
+    }
+
     private static string GetWorldsDirectory()
     {
         return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.Menu.WorldsFolder);

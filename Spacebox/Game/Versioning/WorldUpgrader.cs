@@ -1,0 +1,167 @@
+using Engine.Utils;
+using Spacebox.Game.GUI;
+
+namespace Spacebox.Game.Versioning;
+
+public sealed class WorldUpgradeResult
+{
+    public WorldUpgradeStatus Status { get; init; }
+    public bool Success => Status == WorldUpgradeStatus.Ok || Status == WorldUpgradeStatus.UpToDate;
+    public string FromVersion { get; init; } = "";
+    public string ToVersion { get; init; } = "";
+    public string BackupPath { get; init; }
+    public string Error { get; init; }
+    public string Summary { get; init; } = "";
+    public IReadOnlyList<string> Warnings { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<string> Log { get; init; } = Array.Empty<string>();
+}
+
+public sealed class WorldUpgrader
+{
+    public const string BackupFolderName = "_backups";
+
+    private readonly WorldUpgradeRegistry _registry;
+    private readonly string _backupDirectory;
+    private readonly Func<DateTime> _clock;
+    private readonly List<IWorldUpgradeStep> _path = new List<IWorldUpgradeStep>();
+
+    public WorldUpgrader(WorldUpgradeRegistry registry, string backupDirectory, Func<DateTime> clock = null)
+    {
+        _registry = registry ?? throw new ArgumentNullException(nameof(registry));
+        _backupDirectory = backupDirectory;
+        _clock = clock ?? (() => DateTime.Now);
+    }
+
+    public WorldUpgradeStatus Check(string fromVersion, string toVersion, out string error)
+    {
+        return _registry.Check(fromVersion, toVersion, _path, out error);
+    }
+
+    public WorldUpgradeStatus Check(WorldInfo info, string worldFolder, string targetVersion, out string error)
+    {
+        var status = _registry.Check(info?.GameVersion ?? "", targetVersion, _path, out error);
+        if (status != WorldUpgradeStatus.Ok) return status;
+
+        error = CheckFirstStep(new WorldUpgradeContext(info, worldFolder));
+        return error == null ? WorldUpgradeStatus.Ok : WorldUpgradeStatus.UnsupportedFormat;
+    }
+
+    public bool CanUpgrade(string fromVersion, string toVersion, out string error)
+    {
+        return _registry.TryBuildPath(fromVersion, toVersion, _path, out error);
+    }
+
+    public IReadOnlyList<IWorldUpgradeStep> GetPath(string fromVersion, string toVersion)
+    {
+        return _registry.Check(fromVersion, toVersion, _path, out _) == WorldUpgradeStatus.Ok ? _path.ToArray() : Array.Empty<IWorldUpgradeStep>();
+    }
+
+    public WorldUpgradeResult Upgrade(WorldInfo info, string worldFolder, string targetVersion, GameSetIdIndex ids = null)
+    {
+        string from = info?.GameVersion ?? "";
+        if (info == null) return Fail(WorldUpgradeStatus.Failed, from, targetVersion, "No world", null, null);
+
+        var status = _registry.Check(from, targetVersion, _path, out var error);
+        if (status == WorldUpgradeStatus.UpToDate) return new WorldUpgradeResult { Status = status, FromVersion = from, ToVersion = targetVersion, Summary = "already up to date" };
+        if (status != WorldUpgradeStatus.Ok) return Fail(status, from, targetVersion, error, null, null);
+
+        var context = new WorldUpgradeContext(info, worldFolder);
+        string unsupported = CheckFirstStep(context);
+        if (unsupported != null) return Fail(WorldUpgradeStatus.UnsupportedFormat, from, targetVersion, unsupported, null, null);
+
+        string backup = null;
+        if (context.HasFolder)
+        {
+            try
+            {
+                backup = CreateBackup(worldFolder, from);
+                context.Write($"Backup: {backup}");
+            }
+            catch (Exception ex)
+            {
+                return Fail(WorldUpgradeStatus.Failed, from, targetVersion, $"Could not create a backup: {ex.Message}", null, context.Log);
+            }
+        }
+
+        var steps = _path.ToArray();
+        foreach (var step in steps)
+        {
+            try
+            {
+                step.Apply(context);
+                info.GameVersion = step.ToVersion;
+                context.Write(step.Description);
+            }
+            catch (Exception ex)
+            {
+                info.GameVersion = from;
+                string restoreError = Restore(backup, worldFolder);
+                string message = $"Upgrade {step.Description} failed: {ex.Message}" + (restoreError == null ? "" : $". Restoring the backup failed: {restoreError}");
+                return Fail(WorldUpgradeStatus.Failed, from, targetVersion, message, backup, context.Log);
+            }
+        }
+
+        var warnings = context.HasFolder && ids != null ? WorldValidator.FindUnknownIds(worldFolder, ids) : new List<string>();
+        return new WorldUpgradeResult
+        {
+            Status = WorldUpgradeStatus.Ok,
+            FromVersion = from,
+            ToVersion = info.GameVersion,
+            BackupPath = backup,
+            Summary = context.Summary(),
+            Warnings = warnings,
+            Log = context.Log
+        };
+    }
+
+    private string CheckFirstStep(WorldUpgradeContext context)
+    {
+        if (_path.Count == 0 || !context.HasFolder) return null;
+
+        try
+        {
+            return _path[0].Check(context);
+        }
+        catch (Exception ex)
+        {
+            return $"The world files could not be read: {ex.Message}";
+        }
+    }
+
+    private string CreateBackup(string worldFolder, string version)
+    {
+        string directory = string.IsNullOrEmpty(_backupDirectory) ? Path.Combine(Path.GetDirectoryName(Path.GetFullPath(worldFolder)) ?? "", BackupFolderName) : _backupDirectory;
+        Directory.CreateDirectory(directory);
+
+        string name = $"{Path.GetFileName(Path.GetFullPath(worldFolder).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))}_{version}_{_clock():yyyyMMdd_HHmmss}.zip";
+        string path = Path.Combine(directory, name);
+        File.WriteAllBytes(path, DirectoryArchive.Pack(new[] { new ArchiveFolder(worldFolder, "world") }));
+        return path;
+    }
+
+    private static string Restore(string backup, string worldFolder)
+    {
+        if (backup == null || !File.Exists(backup)) return backup == null ? null : "the backup file is missing";
+
+        try
+        {
+            string temp = worldFolder.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + "_restore";
+            if (Directory.Exists(temp)) Directory.Delete(temp, true);
+            DirectoryArchive.Extract(File.ReadAllBytes(backup), temp);
+
+            Directory.Delete(worldFolder, true);
+            Directory.Move(Path.Combine(temp, "world"), worldFolder);
+            Directory.Delete(temp, true);
+            return null;
+        }
+        catch (Exception ex)
+        {
+            return ex.Message;
+        }
+    }
+
+    private static WorldUpgradeResult Fail(WorldUpgradeStatus status, string from, string to, string error, string backup, IReadOnlyList<string> log)
+    {
+        return new WorldUpgradeResult { Status = status, FromVersion = from, ToVersion = to, Error = error, BackupPath = backup, Log = log ?? Array.Empty<string>() };
+    }
+}
