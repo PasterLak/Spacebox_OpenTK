@@ -5,7 +5,6 @@ using OpenTK.Mathematics;
 using Spacebox.Game.Player;
 using Spacebox.Network;
 using Spacebox.Network.Admin;
-using Spacebox.Network.Players;
 
 namespace Spacebox.Game.Commands;
 
@@ -48,7 +47,7 @@ public sealed class SetSpawnCommand : CommandBase, IArgumentSuggestions
             return;
         }
 
-        if (!TryParsePosition(args, out var position) && (args.Length != 0 || !TryGetIssuerPosition(out position)))
+        if (!TryParsePosition(args, out var position) && (args.Length != 0 || !CommandIssuer.TryGetPosition(_player, out position)))
         {
             Debug.Error("Usage: setspawn [x y z] | setspawn clear");
             return;
@@ -61,18 +60,5 @@ public sealed class SetSpawnCommand : CommandBase, IArgumentSuggestions
     public void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results)
     {
         if (argumentIndex == 0) results.Add(ClearArgument);
-    }
-
-    private bool TryGetIssuerPosition(out Vector3 position)
-    {
-        position = Vector3.Zero;
-        if (GameSession.HasLocalPlayer && _player != null)
-        {
-            position = _player.Position;
-            return true;
-        }
-
-        string sender = ChatCommands.CurrentSender;
-        return sender != null && PlayerLocator.TryFind(sender, out var player) && PlayerLocator.TryGetPose(player.Peer, out position, out _);
     }
 }

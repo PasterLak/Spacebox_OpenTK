@@ -34,6 +34,7 @@ Game project on top of `Engine` (see `Engine/CLAUDE.md`). World hierarchy, GameS
 | `Game/GUI/Tags/`, `Game/GUI/Worlds/` | Waypoint tags (save/load); world info and the world list |
 | `Game/GUI/Menu/` | Main menu (`GameMenu`, windows); `Options/` options screens shared with the pause menu, `Multiplayer/` server list and join |
 | `Game/Commands/` | Debug-console commands |
+| `Game/Protection/` | `EntityProtection`: admin-protected asteroids/ships (no player edits, damage or movement), synced by `Network/ProtectionNetwork` |
 | `Game/Tutorial/` | JSON tutorials: parser, task types (`Tasks/`), runner, progress, service, UI (`UI/`); see `tutorial-design.md` |
 | `Game/Effects/` | Block destruction/mining effects, `DropManager`, dust, hit effects |
 | `Game/Settings/` | `Settings` (static sections), `GameSettings` DTOs, `SettingsApplier`, settings `IEvent`s |

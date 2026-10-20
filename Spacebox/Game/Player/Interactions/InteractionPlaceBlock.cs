@@ -181,7 +181,7 @@ public class InteractionPlaceBlock : InteractionMode
                     newBlock.Direction = finalDir;
                     newBlock.Rotation = finalRot;
 
-                    if (chunk.SpaceEntity.TryPlaceBlock(selectorPos, newBlock))
+                    if (Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(chunk.SpaceEntity) && chunk.SpaceEntity.TryPlaceBlock(selectorPos, newBlock))
                     {
                         WorldEditNetwork.NotifyPlaced(chunk.SpaceEntity, selectorPos, newBlock);
                         player.PlayerStatistics.BlocksPlaced++;
@@ -348,7 +348,7 @@ public class InteractionPlaceBlock : InteractionMode
                     newBlock.Rotation = finalRot;
 
 
-                    if (entity.TryPlaceBlock(selectorPosition, newBlock))
+                    if (Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(entity) && entity.TryPlaceBlock(selectorPosition, newBlock))
                     {
                         WorldEditNetwork.NotifyPlaced(entity, selectorPosition, newBlock);
                         player.PlayerStatistics.BlocksPlaced++;

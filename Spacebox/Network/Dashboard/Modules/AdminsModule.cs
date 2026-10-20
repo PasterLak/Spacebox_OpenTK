@@ -72,5 +72,6 @@ public sealed class AdminsModule : IDashboardModule
     {
         config.Save();
         PlayerListNetwork.MarkDirty();
+        ProtectionNetwork.BroadcastState();
     }
 }

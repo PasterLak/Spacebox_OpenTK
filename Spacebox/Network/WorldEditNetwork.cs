@@ -96,6 +96,7 @@ public static class WorldEditNetwork
 
         var world = World.Instance;
         if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
+        if (network.IsServer && ProtectionNetwork.BlocksPeer(sender, entity)) return;
         if (!entity.TryGetBlockLocal(message.Cell, out var chunk, out var index)) return;
 
         var block = chunk.Blocks[index.X, index.Y, index.Z];
@@ -191,6 +192,15 @@ public static class WorldEditNetwork
         var world = World.Instance;
         SpaceEntity entity = null;
         bool known = world != null && world.TryFindEntity(message.EntityId, out entity);
+
+        if (known && ProtectionNetwork.BlocksPeer(sender, entity))
+        {
+            SendCorrection(sender, entity, message.Cell);
+            if (!message.IsRemoval) network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
+            ProtectionNetwork.Deny(sender);
+            return;
+        }
+
         short previousId = known ? GetBlockId(entity, message.Cell) : (short)0;
 
         Apply(message);
@@ -245,6 +255,11 @@ public static class WorldEditNetwork
 
         var world = World.Instance;
         if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
+        if (network.IsServer && ProtectionNetwork.BlocksPeer(sender, entity))
+        {
+            ProtectionNetwork.Deny(sender);
+            return;
+        }
 
         BulkBlockEdit.Apply(entity, min, max, message.BlockId);
 

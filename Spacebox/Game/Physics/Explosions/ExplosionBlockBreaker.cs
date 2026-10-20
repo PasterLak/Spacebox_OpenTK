@@ -26,9 +26,11 @@ public sealed class ExplosionBlockBreaker
         _drops.Clear();
 
         int effects = 0;
+        bool isProtected = Spacebox.Game.Protection.EntityProtection.IsProtected(entity);
 
         foreach (var cell in cells)
         {
+            if (isProtected && cell != origin) continue;
             if (!entity.TryGetBlockLocal(cell, out var chunk, out var index)) continue;
 
             var block = chunk.Blocks[index.X, index.Y, index.Z];

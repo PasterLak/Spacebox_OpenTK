@@ -142,6 +142,9 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Debug.RegisterCommand(new PositionCommand(localPlayer));
         Debug.RegisterCommand(new SetSpawnCommand(localPlayer));
         Debug.RegisterCommand(new SpawnCommand(localPlayer));
+        Debug.RegisterCommand(new ProtectCommand(localPlayer, true));
+        Debug.RegisterCommand(new ProtectCommand(localPlayer, false));
+        Debug.RegisterCommand(new ProtectedListCommand(localPlayer));
 
         InventoryUI.Initialize();
         StorageUI.Initialize();
@@ -170,6 +173,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         AttachComponent(new MobSystem());
 
         TagsSaveLoader.LoadTags(World.WorldData.WorldFolderPath);
+        if (GameSession.IsRemoteClient) Spacebox.Game.Protection.EntityProtection.Reset();
+        else Spacebox.Game.Protection.EntityProtection.Load(World.WorldData.WorldFolderPath);
 
         if (GameSession.IsDedicated)
         {
@@ -384,6 +389,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         OxygenGeneratorUI.Reset();
         DisassemblerUI.Reset();
         WorldLoadingScreen.Reset();
+        Spacebox.Game.Protection.EntityProtection.Reset();
         GravityGeneratorUI.Reset();
         DnaReconstructorUI.Reset();
         DnaReconstructionScreen.Reset();

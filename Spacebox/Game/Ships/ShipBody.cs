@@ -32,7 +32,7 @@ public sealed class ShipBody
 
     public void ApplyForceAtLocal(Vector3 pointLocal, Vector3 forceLocal)
     {
-        if (!IsSimulated) return;
+        if (!IsSimulated || Spacebox.Game.Protection.EntityProtection.IsProtected(_entity)) return;
 
         RefreshMassProperties();
         Motion.ApplyForce(pointLocal, forceLocal, CenterOfMassLocal);
@@ -40,7 +40,7 @@ public sealed class ShipBody
 
     public void ApplyImpulseAtWorld(Vector3 worldPoint, Vector3 worldImpulse)
     {
-        if (!IsSimulated) return;
+        if (!IsSimulated || Spacebox.Game.Protection.EntityProtection.IsProtected(_entity)) return;
 
         RefreshMassProperties();
         var local = _entity.WorldToEntityLocal(worldPoint);
@@ -72,6 +72,11 @@ public sealed class ShipBody
         }
 
         if (_entity.Chunks.Count == 0) return;
+        if (Spacebox.Game.Protection.EntityProtection.IsProtected(_entity))
+        {
+            if (Motion.IsMoving || Motion.HasPendingForce) Motion.Stop();
+            return;
+        }
         if (!Motion.IsMoving && !Motion.HasPendingForce) return;
 
         RefreshMassProperties();
