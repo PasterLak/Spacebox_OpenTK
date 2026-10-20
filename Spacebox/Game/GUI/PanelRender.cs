@@ -9,7 +9,7 @@ namespace Spacebox.Game.GUI
     {
         public static void Render(Storage storage, short selectedSlotId)
         {
-            if (!Settings.ShowInterface || storage == null) return;
+            if (!HudVisibility.ShowPlayerHud || storage == null) return;
 
             ImGuiIOPtr io = ImGui.GetIO();
             float slotSize = InventoryUIHelper.SlotSize;

@@ -154,7 +154,7 @@ namespace Engine.Audio
                     _clip.AddSource(this);
                     if (_hasAl && !_clip.IsStreaming)
                     {
-                        AL.Source(handle, ALSourcei.Buffer, _clip.Buffer);
+                        AL.Source(handle, ALSourcei.Buffer, _is3D ? _clip.GetSpatialBuffer() : _clip.Buffer);
                         CheckALError("Setting buffer");
                     }
 
@@ -172,12 +172,17 @@ namespace Engine.Audio
         {
             if (isDisposed || !_hasAl) return;
 
-            if (_clip != null && _clip.IsStereo())
+            lock (playLock)
             {
-                Debug.Error("[AudioSource] The sound has 2 channels (stereo). It is recommended to use 1 channel (mono) for 3D sound! File:" + _clip.FileFullPath);
-            }
+                if (!_is3D && _clip != null && !_clip.IsStreaming && _clip.IsStereo())
+                {
+                    if (isPlaying) Stop();
+                    AL.Source(handle, ALSourcei.Buffer, _clip.GetSpatialBuffer());
+                    CheckALError("Setting mono buffer for 3D");
+                }
 
-            _is3D = true;
+                _is3D = true;
+            }
 
             AL.Source(handle, ALSourceb.SourceRelative, false);
 

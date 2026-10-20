@@ -24,6 +24,7 @@ public class ColorGradingSettingsMapperTests
         Assert.Equal(Defaults.VignettePercent, graphics.VignettePercent);
         Assert.Equal(Defaults.FilmGrainPercent, graphics.FilmGrainPercent);
         Assert.Equal(Defaults.FilmGrainAnimated, graphics.FilmGrainAnimated);
+        Assert.Equal(Defaults.CameraEffectPercent, graphics.CameraEffectPercent);
     }
 
     [Fact]
@@ -40,12 +41,13 @@ public class ColorGradingSettingsMapperTests
     {
         Assert.True(ColorGradingSettingsMapper.From(Defaults).IsNeutral);
         Assert.Equal(50, Defaults.VignettePercent);
+        Assert.Equal(100, Defaults.CameraEffectPercent);
     }
 
     [Fact]
     public void OutOfRangeValues_AreReplacedByDefaults()
     {
-        var settings = Parse("{ \"graphics\": { \"brightness_percent\": 10, \"contrast_percent\": 400, \"saturation_percent\": -5, \"vignette_percent\": 101, \"film_grain_percent\": 300 } }");
+        var settings = Parse("{ \"graphics\": { \"brightness_percent\": 10, \"contrast_percent\": 400, \"saturation_percent\": -5, \"vignette_percent\": 101, \"film_grain_percent\": 300, \"camera_effect_percent\": 120 } }");
 
         AssertImageDefaults(settings.Graphics);
     }
@@ -82,6 +84,7 @@ public class ColorGradingSettingsMapperTests
             VignettePercent = 0,
             FilmGrainPercent = 70,
             FilmGrainAnimated = false,
+            CameraEffectPercent = 0,
             SsaoGrainPercent = 80,
             ShowFps = true
         };

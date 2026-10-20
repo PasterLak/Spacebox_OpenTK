@@ -276,7 +276,11 @@ public sealed class ShipControlSystem
         {
             var cannon = _cannons[i];
             if (!cannon.IsAiming) cannon.ResetAim();
-            if (cannon.UpdateCannon(deltaTime) && authoritative) CannonFired?.Invoke(this, cannon);
+            if (!cannon.UpdateCannon(deltaTime)) continue;
+            if (authoritative && !CannonLineOfFire.IsClear(_entity, cannon)) continue;
+
+            cannon.MarkFired();
+            if (authoritative) CannonFired?.Invoke(this, cannon);
         }
     }
 

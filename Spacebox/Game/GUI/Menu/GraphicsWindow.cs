@@ -86,7 +86,11 @@ namespace Spacebox.Game.GUI.Menu
                             Apply(graphics, () => graphics.FilmGrainAnimated = animated);
                     }
 
-                    if (rows.Button("Image Defaults", "Restores the default brightness, contrast, saturation, vignette and film grain.", "Reset"))
+                    int cameraEffect = graphics.CameraEffectPercent;
+                    if (rows.Slider("Camera Block Effect", "Security camera look while you view through a ship camera block: scanlines, grain, lens distortion and a REC overlay. 0% turns it off.", ref cameraEffect, 0, 100, "%d%%"))
+                        Apply(graphics, () => graphics.CameraEffectPercent = cameraEffect);
+
+                    if (rows.Button("Image Defaults", "Restores the default brightness, contrast, saturation, vignette, film grain and camera block effect.", "Reset"))
                         Apply(graphics, graphics.ResetImage);
 
                     rows.Section("World");

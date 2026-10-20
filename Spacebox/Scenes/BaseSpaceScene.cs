@@ -211,6 +211,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         TutorialService.Update(Time.Delta);
         WorldLoadingScreen.Update();
         DnaReconstructionScreen.Update();
+        Spacebox.Game.Rendering.CameraFeedController.Update();
 
 #if DEBUG
         if (Input.IsKeyDown(Keys.R))
@@ -314,6 +315,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         PauseUI.OnGUI();
         Spacebox.Game.Tutorial.UI.TutorialPromptUI.OnGUI();
         Spacebox.Game.Waypoints.WaypointWindowUI.OnGUI();
+        Spacebox.Game.GUI.CameraFeedOverlayUI.OnGUI();
         Spacebox.Game.GUI.FpsCounterUI.OnGUI();
         if (Settings.ShowInterface) InputOverlay.OnGUI();
         GeneratorUI.OnGUI();
@@ -360,6 +362,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         EquipmentUI.Reset();
         ShipConsoleUI.Reset();
         ShipPilot.Reset();
+        Spacebox.Game.Rendering.CameraFeedController.Reset();
         ShipRider.Reset();
         ShipNetwork.Reset();
         ShipWeapons.Reset();

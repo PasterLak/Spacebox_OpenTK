@@ -60,6 +60,7 @@ public static class SettingsApplier
     {
         window.Ssao?.Configure(SsaoSettingsMapper.From(graphics));
         window.ColorGrading?.Configure(ColorGradingSettingsMapper.From(graphics));
+        if (window.CameraFeed != null) window.CameraFeed.Intensity = graphics.CameraEffectPercent / 100f;
 
         if (window.Vignette != null)
         {

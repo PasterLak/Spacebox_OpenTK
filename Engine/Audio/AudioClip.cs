@@ -10,6 +10,8 @@ namespace Engine.Audio
         public string FileFullPath { get; private set; }
         public bool IsStreaming { get; private set; }
         public int Buffer { get; private set; }
+        private int _monoBuffer;
+        private bool? _isStereo;
         private readonly HashSet<AudioSource> _sources = new HashSet<AudioSource>();
         private readonly List<AudioSource> _sourcesToDispose = new List<AudioSource>();
 
@@ -72,7 +74,20 @@ namespace Engine.Audio
 
         }
 
+        public int GetSpatialBuffer()
+        {
+            if (Buffer == 0 || !IsStereo()) return Buffer;
+            if (_monoBuffer == 0) _monoBuffer = SoundLoader.LoadSound(FileFullPath, out _, true);
+            return _monoBuffer;
+        }
+
         public bool IsStereo()
+        {
+            _isStereo ??= ReadIsStereo();
+            return _isStereo.Value;
+        }
+
+        private bool ReadIsStereo()
         {
             if (Buffer == 0) return false;
 
@@ -187,6 +202,7 @@ namespace Engine.Audio
                 CheckALError("Deleting streaming buffers");
             }
             if (Buffer != 0) AL.DeleteBuffer(Buffer);
+            if (_monoBuffer != 0) AL.DeleteBuffer(_monoBuffer);
 
             IsDisposed = true;
         }

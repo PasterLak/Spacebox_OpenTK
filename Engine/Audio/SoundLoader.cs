@@ -62,12 +62,17 @@ namespace Engine.Audio
             };
         }
 
-        public static int LoadSound(string path, out int sampleRate)
+        public static int LoadSound(string path, out int sampleRate, bool forceMono = false)
         {
 
             var (data, channels, bitsPerSample, sr) = AudioFormatLoader.LoadAudio(path);
 
             sampleRate = sr;
+            if (forceMono && channels == 2)
+            {
+                data = PcmDownmix.StereoToMono(data, bitsPerSample);
+                channels = 1;
+            }
             ALFormat format = GetSoundFormat(channels, bitsPerSample);
 
             int buffer = AL.GenBuffer();
@@ -82,7 +87,6 @@ namespace Engine.Audio
             }
             catch (Exception ex)
             {
-                handle.Free();
                 AL.DeleteBuffer(buffer);
                 Debug.Error($"[SoundLoader] Failed to load sound {path}: {ex.Message}");
                 //throw new InvalidOperationException($"[SoundLoader] Failed to load sound {path}: {ex.Message}");

@@ -492,9 +492,12 @@ namespace Spacebox.Game.Player
         public override void OnGUI()
         {
             base.OnGUI();
-            PowerBar.OnGUI();
-            OxygenBar.OnGUI();
-            HealthBar.OnGUI();
+            if (HudVisibility.ShowPlayerHud)
+            {
+                PowerBar.OnGUI();
+                OxygenBar.OnGUI();
+                HealthBar.OnGUI();
+            }
             GravityIndicatorUI.Draw(Gravity.IsActive);
             HitImage.Draw();
             DeathScreen.Render();

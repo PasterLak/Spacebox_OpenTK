@@ -408,7 +408,7 @@ namespace Spacebox.Game.GUI
         {
             PanelRenderer.Render(Storage, SelectedSlotId);
 
-            if (Settings.ShowInterface)
+            if (HudVisibility.ShowPlayerHud)
             {
                 if (SelectedSlot != null && SelectedSlot.HasItem && _time > 0)
                     PanelRenderer.DrawItemName(SelectedSlot.Item.Name);

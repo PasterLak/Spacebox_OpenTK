@@ -78,9 +78,11 @@ public class CannonBlock : ElectricalBlock, IShipPart, IEntityBlockListener
         AimDirection = ShipAiming.RotateTowards(AimDirection, _targetDirection, MathHelper.DegreesToRadians(_data.TurnSpeed) * deltaTime);
         if (_reload > 0f) _reload -= deltaTime;
 
-        if (!TriggerHeld || !IsActive || _reload > 0f) return false;
+        return TriggerHeld && IsActive && _reload <= 0f;
+    }
 
+    public void MarkFired()
+    {
         _reload = _data.ReloadSeconds;
-        return true;
     }
 }

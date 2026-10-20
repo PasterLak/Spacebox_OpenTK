@@ -92,7 +92,7 @@ namespace Engine.Audio
                 currentForward != _lastForward ||
                 currentUp != _lastUp)
             {
-                _velocity = (currentPosition - _lastPosition) / Time.Delta;
+                _velocity = ListenerVelocity.Compute(currentPosition - _lastPosition, Time.Delta, _speedOfSound);
 
                 _lastPosition = currentPosition;
                 _lastForward = currentForward;
@@ -116,6 +116,10 @@ namespace Engine.Audio
                     _lastUp.X, _lastUp.Y, _lastUp.Z
                 };
                 AL.Listener(ALListenerfv.Orientation, orientation);
+
+                ALError error = AL.GetError();
+                if (error != ALError.NoError)
+                    Debug.Error($"[AudioListener] OpenAL error while updating the listener: {AL.GetErrorString(error)}");
             }
             catch (System.Exception ex)
             {

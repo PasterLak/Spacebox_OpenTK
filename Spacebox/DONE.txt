@@ -46,6 +46,7 @@ New
 - loading repairs multi-cell blocks: a block that became bigger grows into free cells or is removed if it does not fit, cells without their origin are removed
 - screen space ambient occlusion (SSAO) on blocks, mobs, players and the held item; Graphics options: quality Off/Low/Medium/High and strength
 - Graphics options: brightness, contrast, saturation, vignette strength, film grain (animated or static), Show FPS counter, reset buttons for image and SSAO
+- viewing through a ship camera block shows a security camera feed: scanlines, grain, lens distortion, REC overlay with timer (Camera Block Effect option)
 Small
 - convert dialog shows steps, backup and warnings
 - DNA reconstructor slot uses the dna_ui texture
@@ -53,6 +54,9 @@ Small
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
 - light from a neighbour chunk no longer disappears when a nearby chunk is relit (block eaten, chunk loaded)
+- ship cannons hold fire while their own ship or the pilot is in the line of fire instead of shooting through them
+- 3D sounds from stereo files (cannon/AR shots) are positioned and fade with distance instead of playing at full volume everywhere
+- no more OpenAL 'Invalid Value' errors and Doppler pitch glitches after pausing, teleporting or very fast flight
 - old worlds saved as 0.1.2 by the old converter are refused instead of loading broken
 - multiplayer: glass broken by flying into it is removed for everyone
 - multiplayer: rejected or conflicting block edits are corrected by the server
@@ -76,6 +80,7 @@ Engine
 - fewer per-frame allocations: entity raycast, block collision, input bindings, ImGui keys, drops, sectors, network object loops
 - remeshing: pooled mesh arrays, GPU buffers updated in place, padded snapshot without per-cell lookups or air allocations
 - Perlin worms: worm paths cached per node and skipped by bounds instead of re-simulated for every chunk
+- audio: AudioClip.GetSpatialBuffer downmixes stereo clips to mono for 3D sources; ListenerVelocity guards the listener velocity (zero frame time, NaN, teleports, capped below the speed of sound); SoundLoader no longer frees the pinned buffer twice on errors
 - SsaoEffect (Engine.PostProcessing.Ssao): half or full resolution AO, bilateral blur, depth-aware upsample; G-buffer normals are view space with an AO mask (MaterialBase.WritesGBuffer, ViewModelProjection)
 - post processing presents with the passthrough shader (the vignette was applied twice); Shader.SetVector3Array
 

@@ -66,6 +66,7 @@ namespace Spacebox.Game
         [JsonPropertyName("vignette_percent")] public int VignettePercent { get; set; } = 50;
         [JsonPropertyName("film_grain_percent")] public int FilmGrainPercent { get; set; } = 0;
         [JsonPropertyName("film_grain_animated")] public bool FilmGrainAnimated { get; set; } = true;
+        [JsonPropertyName("camera_effect_percent")] public int CameraEffectPercent { get; set; } = 100;
         [JsonPropertyName("show_fps")] public bool ShowFps { get; set; } = false;
 
         public void ResetSsao()
@@ -88,6 +89,7 @@ namespace Spacebox.Game
             VignettePercent = defaults.VignettePercent;
             FilmGrainPercent = defaults.FilmGrainPercent;
             FilmGrainAnimated = defaults.FilmGrainAnimated;
+            CameraEffectPercent = defaults.CameraEffectPercent;
         }
 
         public bool Validate(GraphicsSettings d)
@@ -108,6 +110,7 @@ namespace Spacebox.Game
             if (OutOfRange(SaturationPercent, 0, MaxSaturationPercent)) { SaturationPercent = d.SaturationPercent; changed = true; }
             if (OutOfRange(VignettePercent, 0, 100)) { VignettePercent = d.VignettePercent; changed = true; }
             if (OutOfRange(FilmGrainPercent, 0, 100)) { FilmGrainPercent = d.FilmGrainPercent; changed = true; }
+            if (OutOfRange(CameraEffectPercent, 0, 100)) { CameraEffectPercent = d.CameraEffectPercent; changed = true; }
             return changed;
         }
 
