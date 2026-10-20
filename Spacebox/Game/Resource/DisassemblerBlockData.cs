@@ -1,6 +1,6 @@
 namespace Spacebox.Game.Resource;
 
-public class DisassemblerBlockData : BlockData
+public class DisassemblerBlockData : BlockData, IBlockTooltip
 {
     public ushort Power { get; }
 
@@ -8,5 +8,10 @@ public class DisassemblerBlockData : BlockData
     {
         settings ??= new DisassemblerJSON();
         Power = (ushort)Math.Clamp(settings.Power, 0, 8000);
+    }
+
+    public void AppendTooltip(System.Text.StringBuilder text)
+    {
+        text.Append($"\nPower usage: {Power} EU");
     }
 }

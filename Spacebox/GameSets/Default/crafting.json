@@ -3,57 +3,74 @@
     {
       "Id": "blocks",
       "Name": "Blocks",
-      "Icon": "iron_block_heavy"
+      "Icon": "iron_block_heavy",
+      "Row": 1
     },
     {
       "Id": "lights",
       "Name": "Lights",
-      "Icon": "light_yellow"
+      "Icon": "light_yellow",
+      "Row": 1
     },
     {
       "Id": "windows",
       "Name": "Windows",
-      "Icon": "window"
+      "Icon": "window",
+      "Row": 1
     },
     {
       "Id": "resources",
       "Name": "Resources",
-      "Icon": "crusher"
+      "Icon": "crusher",
+      "Row": 1
     },
     {
       "Id": "other",
       "Name": "Other",
-      "Icon": "basic_aluminium_crate"
-    },
-    {
-      "Id": "drills",
-      "Name": "Drills",
-      "Icon": "aluminium_drill"
-    },
-    {
-      "Id": "weapons",
-      "Name": "Weapons",
-      "Icon": "pistol"
-    },
-    {
-      "Id": "equipment",
-      "Name": "Equipment",
-      "Icon": "aluminium_helmet"
-    },
-    {
-      "Id": "items",
-      "Name": "Items",
-      "Icon": "microchip"
-    },
-    {
-      "Id": "consumables",
-      "Name": "Consumables",
-      "Icon": "med_kit"
+      "Icon": "basic_aluminium_crate",
+      "Row": 1
     },
     {
       "Id": "ships",
       "Name": "Ships",
-      "Icon": "ship_console"
+      "Icon": "ship_console",
+      "Row": 1
+    },
+    {
+      "Id": "drills",
+      "Name": "Drills",
+      "Icon": "aluminium_drill",
+      "Row": 2
+    },
+    {
+      "Id": "tools",
+      "Name": "Tools",
+      "Icon": "aluminium_flashlight",
+      "Row": 2
+    },
+    {
+      "Id": "weapons",
+      "Name": "Weapons",
+      "Icon": "pistol",
+      "Row": 2
+    },
+    {
+      "Id": "equipment",
+      "Name": "Equipment",
+      "Icon": "aluminium_helmet",
+      "Row": 2
+    },
+    {
+      "Id": "items",
+      "Name": "Items",
+      "Icon": "microchip",
+      "Row": 2
+    },
+    {
+      "Id": "consumables",
+      "Name": "Consumables",
+      "Icon": "med_kit",
+      "Row": 2
     }
   ],
   "Blueprints": [
@@ -1320,6 +1337,42 @@
         {
           "Item": "iron_panels",
           "Quantity": 2
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "repair_tool",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_panels",
+          "Quantity": 2
+        },
+        {
+          "Item": "microchip",
+          "Quantity": 1
+        },
+        {
+          "Item": "energy_cell",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "item_pipe_merger",
+        "Quantity": 2
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_panels",
+          "Quantity": 3
         },
         {
           "Item": "microchip",

@@ -16,6 +16,7 @@ public class SurvivalMode : MovementMode
             typeof(InteractionEquipItem),
             typeof(InteractionShoot),
             typeof(InteractionDefault),
+            typeof(InteractionRepair),
              typeof(InteractionEraser)
         },
         GameMode.Survival);

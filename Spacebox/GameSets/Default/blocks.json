@@ -2,7 +2,7 @@
   {
     "ID": "light_rock",
     "Name": "Light Rock",
-    "Description": "Easily mined rock",
+    "Description": "Soft rock, easy to mine",
     "Type": "mineral",
     "PowerToDrill": 1,
     "Mass": 2,
@@ -21,7 +21,7 @@
   {
     "ID": "medium_rock",
     "Name": "Medium Rock",
-    "Description": "Standard rock found in many big asteroids",
+    "Description": "Common rock of bigger asteroids",
     "Type": "mineral",
     "PowerToDrill": 3,
     "Mass": 4,
@@ -37,7 +37,7 @@
   {
     "ID": "heavy_rock",
     "Name": "Heavy Rock",
-    "Description": "Dense rock that requires powerful tools to mine",
+    "Description": "Dense rock, needs a strong drill",
     "Type": "mineral",
     "PowerToDrill": 5,
     "Mass": 10,
@@ -54,7 +54,7 @@
   {
     "ID": "cobaltite_rock",
     "Name": "Cobaltite Rock",
-    "Description": "Source of cobalt",
+    "Description": "Rock that contains cobalt",
     "Type": "mineral",
     "PowerToDrill": 1,
     "Mass": 1,
@@ -68,7 +68,7 @@
   {
     "ID": "ice_rock",
     "Name": "Icy Rock",
-    "Description": "Contains ice pieces",
+    "Description": "Frozen rock with water ice inside",
     "Type": "mineral",
     "PowerToDrill": 1,
     "Mass": 1,
@@ -82,7 +82,7 @@
   {
     "ID": "dense_ice_rock",
     "Name": "Dense Ice Rock",
-    "Description": "Source of methane",
+    "Description": "Frozen rock with methane ice inside",
     "Type": "mineral",
     "PowerToDrill": 2,
     "Mass": 2,
@@ -96,7 +96,7 @@
   {
     "ID": "aluminium_ore",
     "Name": "Aluminium Ore",
-    "Description": "Lightweight ore used in various fields",
+    "Description": "Light metal ore for the first tools and blocks",
     "Type": "mineral",
     "PowerToDrill": 1,
     "Mass": 1,
@@ -110,7 +110,7 @@
   {
     "ID": "iron_ore",
     "Name": "Iron Ore",
-    "Description": "A common ore used in construction",
+    "Description": "Common metal ore for building",
     "Type": "mineral",
     "PowerToDrill": 2,
     "Mass": 2,
@@ -124,7 +124,7 @@
   {
     "ID": "titanium_ore",
     "Name": "Titanium Ore",
-    "Description": "A strong and lightweight ore",
+    "Description": "Strong and light metal ore",
     "Type": "mineral",
     "PowerToDrill": 4,
     "Mass": 4,
@@ -138,7 +138,7 @@
   {
     "ID": "thulium_ore",
     "Name": "Thulium Ore",
-    "Description": "A rare ore used in advanced technologies",
+    "Description": "Rare ore for advanced technology. Crush it before smelting",
     "Type": "mineral",
     "PowerToDrill": 3,
     "Mass": 4,
@@ -152,7 +152,7 @@
   {
     "ID": "obscurium_ore",
     "Name": "Obscurium Ore",
-    "Description": "An extremely rare ore with unusual properties",
+    "Description": "Extremely rare ore with strange properties",
     "Type": "mineral",
     "PowerToDrill": 5,
     "Mass": 10,
@@ -166,7 +166,7 @@
   {
     "ID": "uranium_ore",
     "Name": "Uranium Ore",
-    "Description": "A radioactive ore used for advanced power generation",
+    "Description": "Radioactive ore for nuclear power",
     "Type": "mineral",
     "PowerToDrill": 4,
     "Mass": 1,
@@ -180,6 +180,7 @@
   {
     "ID": "aluminium_block_light",
     "Name": "Aluminium Light Block",
+    "Description": "Light hull block",
     "Category": "blocks",
     "PowerToDrill": 1,
     "Mass": 2,
@@ -196,6 +197,7 @@
   {
     "ID": "aluminium_block_medium",
     "Name": "Aluminium Medium Block",
+    "Description": "Hull block",
     "Category": "blocks",
     "PowerToDrill": 2,
     "Mass": 4,
@@ -209,6 +211,7 @@
   {
     "ID": "aluminium_block_heavy",
     "Name": "Aluminium Heavy Block",
+    "Description": "Thick hull block",
     "Category": "blocks",
     "PowerToDrill": 3,
     "Mass": 6,
@@ -225,6 +228,7 @@
   {
     "ID": "iron_block_light",
     "Name": "Iron Light Block",
+    "Description": "Light iron armor block",
     "Category": "blocks",
     "PowerToDrill": 2,
     "Mass": 4,
@@ -241,6 +245,7 @@
   {
     "ID": "iron_block_medium",
     "Name": "Iron Medium Block",
+    "Description": "Iron armor block",
     "Category": "blocks",
     "PowerToDrill": 3,
     "Mass": 6,
@@ -254,6 +259,7 @@
   {
     "ID": "iron_block_heavy",
     "Name": "Iron Heavy Block",
+    "Description": "Thick iron armor block",
     "Category": "blocks",
     "PowerToDrill": 4,
     "Mass": 8,
@@ -270,6 +276,7 @@
   {
     "ID": "titanium_block_light",
     "Name": "Titanium Light Block",
+    "Description": "Light titanium armor block",
     "Category": "blocks",
     "PowerToDrill": 3,
     "Mass": 5,
@@ -286,6 +293,7 @@
   {
     "ID": "titanium_block_medium",
     "Name": "Titanium Medium Block",
+    "Description": "Titanium armor block",
     "Category": "blocks",
     "PowerToDrill": 4,
     "Mass": 8,
@@ -299,6 +307,7 @@
   {
     "ID": "titanium_block_heavy",
     "Name": "Titanium Heavy Block",
+    "Description": "Thick titanium armor block, the toughest to break",
     "Category": "blocks",
     "PowerToDrill": 5,
     "Mass": 10,
@@ -315,7 +324,7 @@
   {
     "ID": "window",
     "Name": "Window",
-    "Description": "Allows light to pass through",
+    "Description": "Lets light through",
     "Category": "windows",
     "Mass": 1,
     "Durability": 1,
@@ -333,6 +342,7 @@
   {
     "ID": "basic_machine",
     "Name": "Basic Machine",
+    "Description": "Machine frame, a part for building machines",
     "Category": "resources",
     "Mass": 2,
     "Durability": 5,
@@ -345,7 +355,7 @@
   {
     "ID": "reinforced_window",
     "Name": "Reinforced Window",
-    "Description": "Stronger than regular windows",
+    "Description": "A tougher window",
     "Category": "windows",
     "Mass": 2,
     "Durability": 10,
@@ -363,7 +373,7 @@
   {
     "ID": "crafting_table",
     "Name": "Crafting Table",
-    "Description": "Used for crafting items and blocks",
+    "Description": "Crafts tools, items and blocks",
     "Category": "resources",
     "Type": "craftingtable",
     "Mass": 1,
@@ -384,7 +394,7 @@
   {
     "ID": "furnace",
     "Name": "Furnace",
-    "Description": "Used for smelting ores",
+    "Description": "Smelts ores and dust into ingots",
     "Type": "furnace",
     "Category": "resources",
     "Mass": 2,
@@ -408,6 +418,7 @@
   {
     "ID": "enhanced_furnace",
     "Name": "Enhanced Furnace",
+    "Description": "A faster furnace",
     "Type": "furnace",
     "Category": "resources",
     "Mass": 2,
@@ -433,7 +444,7 @@
   {
     "ID": "crusher",
     "Name": "Crusher",
-    "Description": "Crushes ores to extract more resources",
+    "Description": "Crushes ores into dust for more metal",
     "Type": "crusher",
     "Category": "resources",
     "Durability": 5,
@@ -459,6 +470,7 @@
   {
     "ID": "enhanced_crusher",
     "Name": "Enhanced Crusher",
+    "Description": "A faster crusher",
     "Type": "crusher",
     "Category": "resources",
     "Durability": 10,
@@ -486,7 +498,7 @@
     "ID": "analyzer",
     "Name": "Ore scanner",
     "Type": "analyzer",
-    "Description": "Scans asteroid to reveal its composition",
+    "Description": "Scans the asteroid it stands on and shows what it is made of",
     "Category": "resources",
     "Durability": 5,
     "Textures": {
@@ -505,7 +517,7 @@
   {
     "ID": "radar",
     "Name": "Radar",
-    "Description": "Scans surroundings",
+    "Description": "Shows asteroids and ships around it",
     "Type": "radar",
     "Category": "resources",
     "Durability": 5,
@@ -530,7 +542,7 @@
   {
     "ID": "disassembler",
     "Name": "Disassembler",
-    "Description": "Disassembles items back into their components. Needs power",
+    "Description": "Takes items apart into their materials",
     "Type": "disassembler",
     "Category": "resources",
     "Durability": 5,
@@ -559,6 +571,7 @@
   {
     "ID": "cable_block",
     "Name": "Cable Block",
+    "Description": "Carries power between blocks",
     "Type": "cable",
     "Category": "blocks",
     "Durability": 3,
@@ -578,6 +591,7 @@
   {
     "ID": "light_white",
     "Name": "Ivory Wall Torch",
+    "Description": "Wall light with a white glow",
     "Category": "lights",
     "Model": "torch",
     "LightColor": {
@@ -600,6 +614,7 @@
   {
     "ID": "light_blue",
     "Name": "Cobalt Wall Torch",
+    "Description": "Wall light with a blue glow",
     "Category": "lights",
     "Model": "torch",
     "LightColor": {
@@ -622,6 +637,7 @@
   {
     "ID": "light_red",
     "Name": "Crimson Wall Torch",
+    "Description": "Wall light with a red glow",
     "Category": "lights",
     "Model": "torch",
     "LightColor": {
@@ -644,6 +660,7 @@
   {
     "ID": "light_yellow",
     "Name": "Amber Wall Torch",
+    "Description": "Wall light with an amber glow",
     "Category": "lights",
     "Model": "torch",
     "LightColor": {
@@ -666,6 +683,7 @@
   {
     "ID": "light_cyan",
     "Name": "Azure Wall Torch",
+    "Description": "Wall light with a cyan glow",
     "Category": "lights",
     "Model": "torch",
     "LightColor": {
@@ -688,6 +706,7 @@
   {
     "ID": "light_orange",
     "Name": "Ember Wall Torch",
+    "Description": "Wall light with an orange glow",
     "Category": "lights",
     "Model": "torch",
     "LightColor": {
@@ -710,6 +729,7 @@
   {
     "ID": "light_green",
     "Name": "Emerald Wall Torch",
+    "Description": "Wall light with a green glow",
     "Category": "lights",
     "Model": "torch",
     "LightColor": {
@@ -732,6 +752,7 @@
   {
     "ID": "light_pink",
     "Name": "Violet Wall Torch",
+    "Description": "Wall light with a violet glow",
     "Category": "lights",
     "Model": "torch",
     "LightColor": {
@@ -754,6 +775,7 @@
   {
     "ID": "moritz",
     "Name": "Moritz",
+    "Description": "A friendly face in space",
     "PowerToDrill": 5,
     "Mass": 1,
     "Durability": 15,
@@ -775,6 +797,7 @@
   {
     "ID": "basic_engine",
     "Name": "Basic Engine",
+    "Description": "Decorative engine block",
     "Category": "blocks",
     "PowerToDrill": 1,
     "Mass": 3,
@@ -794,6 +817,7 @@
   {
     "ID": "basic_cannon",
     "Name": "Basic Cannon",
+    "Description": "Decorative cannon block",
     "Category": "blocks",
     "PowerToDrill": 1,
     "Mass": 3,
@@ -813,7 +837,7 @@
   {
     "ID": "gravity_generator",
     "Name": "Gravity Generator",
-    "Description": "Creates artificial gravity toward its bottom side. Radius and strength are set in its window",
+    "Description": "Creates artificial gravity toward its bottom side. Set radius and strength in its window",
     "Type": "gravity",
     "Gravity": {
       "Radius": 32,
@@ -857,6 +881,7 @@
   {
     "ID": "basic_aluminium_crate",
     "Name": "Basic Aluminium Crate",
+    "Description": "Stores items",
     "Type": "storage",
     "Category": "other",
     "PowerToDrill": 1,
@@ -877,6 +902,7 @@
   {
     "ID": "basic_iron_crate",
     "Name": "Basic Iron Crate",
+    "Description": "Stores items, tougher than aluminium",
     "Type": "storage",
     "Category": "other",
     "PowerToDrill": 2,
@@ -897,6 +923,7 @@
   {
     "ID": "basic_titanium_crate",
     "Name": "Basic Titanium Crate",
+    "Description": "Stores items, very tough",
     "Type": "storage",
     "Category": "",
     "PowerToDrill": 3,
@@ -917,7 +944,7 @@
   {
     "ID": "safe",
     "Name": "Armored Safe",
-    "Description": "Provides high security for valuable items",
+    "Description": "Small storage with very strong walls",
     "Type": "storage",
     "Category": "other",
     "PowerToDrill": 5,
@@ -939,6 +966,7 @@
   {
     "ID": "cobalt_power_block",
     "Name": "Standard Cobalt Power Block",
+    "Description": "Makes power for machines and lights through cables",
     "Type": "generator",
     "Size": {
       "x": 1,
@@ -970,6 +998,7 @@
   {
     "ID": "powerful_cobalt_power_block",
     "Name": "Powerful Cobalt Power Block",
+    "Description": "Makes more power in less space",
     "Type": "generator",
     "Generator": {
       "Power": 125
@@ -1004,6 +1033,7 @@
   {
     "ID": "standard_nuclear_power_block",
     "Name": "Standard Nuclear Power Block",
+    "Description": "Strong power source. Explodes when destroyed, protect it with armor",
     "Type": "generator",
     "Generator": {
       "Power": 180
@@ -1049,6 +1079,7 @@
   {
     "ID": "nuclear_power_block",
     "Name": "Powerful Nuclear Power Block",
+    "Description": "Very strong power source. Explodes when destroyed, protect it with armor",
     "Type": "generator",
     "Generator": {
       "Power": 300
@@ -1094,7 +1125,7 @@
   {
     "ID": "dna_reconstructor",
     "Name": "DNA Reconstructor",
-    "Description": "Revives you here after death. Needs power and DNA samples (1 per revival)",
+    "Description": "Revives you here after death. Needs power and DNA samples",
     "Type": "dnareconstructor",
     "DnaReconstructor": {
       "DnaItem": "dna_sample",
@@ -1121,7 +1152,7 @@
   {
     "ID": "oxygen_generator",
     "Name": "Oxygen Generator",
-    "Description": "Fills a closed room with air (radius 32)",
+    "Description": "Fills a closed room with air. Needs power and water",
     "Type": "oxygengenerator",
     "Category": "other",
     "OxygenGenerator": {
@@ -1154,7 +1185,7 @@
   {
     "ID": "item_pipe",
     "Name": "Item Pipe",
-    "Description": "Moves one item per second from the block below (input) to the blocks on its other sides. Takes only results from machines and feeds them only items they can process. Put an item into the Filter slot to move only that item. Needs 5 power",
+    "Description": "Moves items from the bottom side to all other sides. Put an item into the Filter slot to move only that item",
     "Type": "pipe",
     "Pipe": {
       "TransferInterval": 1,
@@ -1179,7 +1210,7 @@
   {
     "ID": "item_pipe_straight",
     "Name": "Straight Item Pipe",
-    "Description": "Moves one item per second from the block below (input) only to the block above (output). Takes only results from machines and feeds them only items they can process. Put an item into the Filter slot to move only that item. Needs 5 power",
+    "Description": "Moves items from bottom to top. Put an item into the Filter slot to move only that item",
     "Type": "pipe",
     "Pipe": {
       "TransferInterval": 1,
@@ -1204,9 +1235,47 @@
     }
   },
   {
+    "ID": "item_pipe_merger",
+    "Name": "Merging Item Pipe",
+    "Description": "Collects items from three sides and sends them up. Put an item into the Filter slot to move only that item",
+    "Type": "pipe",
+    "Pipe": {
+      "TransferInterval": 1,
+      "Power": 5,
+      "InputSides": [
+        "Down",
+        "Left",
+        "Right"
+      ],
+      "OutputSides": [
+        "Up"
+      ]
+    },
+    "Category": "other",
+    "PowerToDrill": 1,
+    "Mass": 3,
+    "Durability": 5,
+    "Textures": {
+      "Active": {
+        "All": "pipeStraightSide",
+        "Up": "pipeOutput",
+        "Down": "pipeInput",
+        "Left": "pipeInput",
+        "Right": "pipeInput"
+      },
+      "Inactive": {
+        "All": "pipeStraightSideOff",
+        "Up": "pipeOutputOff",
+        "Down": "pipeInputOff",
+        "Left": "pipeInputOff",
+        "Right": "pipeInputOff"
+      }
+    }
+  },
+  {
     "ID": "aluminium_door",
     "Name": "Aluminium Door",
-    "Description": "Sliding 2x2 door made of aluminium",
+    "Description": "Sliding door, opens with a click",
     "Type": "door",
     "Category": "other",
     "PowerToDrill": 1,
@@ -1242,7 +1311,7 @@
   {
     "ID": "iron_door",
     "Name": "Iron Door",
-    "Description": "Sliding 2x2 door made of iron",
+    "Description": "Sturdy sliding door",
     "Type": "door",
     "Category": "other",
     "PowerToDrill": 1,
@@ -1278,7 +1347,7 @@
   {
     "ID": "titanium_door",
     "Name": "Titanium Door",
-    "Description": "Sliding 2x2 door made of titanium",
+    "Description": "Fast and very strong sliding door",
     "Type": "door",
     "Category": "other",
     "PowerToDrill": 2,
@@ -1314,7 +1383,7 @@
   {
     "ID": "big_window",
     "Name": "Big Window",
-    "Description": "A 2x2 window",
+    "Description": "A large window",
     "Category": "windows",
     "Mass": 4,
     "Durability": 4,
@@ -1342,7 +1411,7 @@
   {
     "ID": "cobalt_bomb",
     "Name": "Cobalt Bomb",
-    "Description": "Explodes when shot. Radius 4, penetration 100, up to 50 damage",
+    "Description": "Explodes when shot",
     "Type": "explosive",
     "Explosive": {
       "Radius": 3,
@@ -1355,7 +1424,7 @@
       "DropBlocks": false,
       "DestroyStorageItems": false
     },
-    "Category": "other",
+    "Category": "weapons",
     "Mass": 8,
     "Durability": 10,
     "Textures": {
@@ -1373,7 +1442,7 @@
   {
     "ID": "uranium_bomb",
     "Name": "Uranium Bomb",
-    "Description": "Explodes when shot. Radius 12, penetration 200, 200 damage",
+    "Description": "Huge explosion when shot. Keep your distance",
     "Type": "explosive",
     "Explosive": {
       "Radius": 12,
@@ -1386,7 +1455,7 @@
       "DropBlocks": false,
       "DestroyStorageItems": false
     },
-    "Category": "other",
+    "Category": "weapons",
     "Mass": 12,
     "Durability": 10,
     "Textures": {
@@ -1481,7 +1550,7 @@
   {
     "ID": "thruster_powerful",
     "Name": "Powerful Hydrogen Thruster",
-    "Description": "Pushes the ship away from its nozzle side",
+    "Description": "Pushes the ship hard away from its nozzle side",
     "Type": "thruster",
     "Thruster": {
       "Force": 160,
@@ -1522,7 +1591,7 @@
   {
     "ID": "thruster_ion",
     "Name": "Standard Ion Thruster",
-    "Description": "Pushes the ship away from its nozzle side",
+    "Description": "Very strong thruster for big ships",
     "Type": "thruster",
     "Thruster": {
       "Force": 1200,
@@ -1656,7 +1725,7 @@
   {
     "ID": "cannon_antipersonnel",
     "Name": "Anti-Personnel Gun",
-    "Description": "Ship weapon. Bind it to a console to aim and fire",
+    "Description": "Fast ship gun against small targets. Bind it to a console",
     "Type": "cannon",
     "Cannon": {
       "Projectile": "p_cannon_antipersonnel",
@@ -1696,7 +1765,7 @@
   {
     "ID": "cannon_light_assault",
     "Name": "Light Assault Gun",
-    "Description": "Ship weapon. Bind it to a console to aim and fire",
+    "Description": "Ship gun. Bind it to a console to aim and fire",
     "Type": "cannon",
     "Cannon": {
       "Projectile": "p_cannon_light",
@@ -1741,7 +1810,7 @@
   {
     "ID": "cannon_heavy_assault",
     "Name": "Heavy Assault Gun",
-    "Description": "Ship weapon. Bind it to a console to aim and fire",
+    "Description": "Heavy ship gun. Bind it to a console to aim and fire",
     "Type": "cannon",
     "Cannon": {
       "Projectile": "p_cannon_heavy",
@@ -1786,7 +1855,7 @@
   {
     "ID": "cannon_anticorvette",
     "Name": "Anti-Corvette Gun",
-    "Description": "Ship weapon. Bind it to a console to aim and fire",
+    "Description": "Strong ship gun against ships. Bind it to a console",
     "Type": "cannon",
     "Cannon": {
       "Projectile": "p_cannon_antipersonnel_heavy",
@@ -1831,7 +1900,7 @@
   {
     "ID": "cannon_antifrigate",
     "Name": "Anti-Frigate Gun",
-    "Description": "Ship weapon. Bind it to a console to aim and fire",
+    "Description": "Plasma cannon against big ships. Bind it to a console",
     "Type": "cannon",
     "Cannon": {
       "Projectile": "p_cannon_plasma",

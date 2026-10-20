@@ -44,6 +44,13 @@ public class EquipmentJSON : ItemJSON
     public string ArmorTexture { get; set; } = "";
 }
 
+public class RepairToolItemJSON : ItemJSON
+{
+    public float RepairPerSecond { get; set; } = 4f;
+    public float PowerPerSecond { get; set; } = 2f;
+    public float Range { get; set; } = 5f;
+}
+
 public class ConsumableItemJSON : ItemJSON
 {
     public byte HealAmount { get; set; } = 0;

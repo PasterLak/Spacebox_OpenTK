@@ -3,7 +3,7 @@
         "Info": "Tags:  Name, Type<Drill,Weapone,Item>, Sprite, MaxStack, ModelDepth",
         "ID": "aluminium_drill",
         "Name": "Aluminium Drill",
-        "Description": "Can mine only soft blocks",
+        "Description": "Your first drill. Mines soft blocks",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill1",
@@ -22,7 +22,7 @@
     {
         "ID": "cobalt_drill",
         "Name": "Cobalt Drill",
-        "Description": "A sturdy drill. Can mine soft blocks",
+        "Description": "A sturdy drill. Mines soft blocks faster",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill2",
@@ -41,7 +41,7 @@
     {
         "ID": "iron_drill",
         "Name": "Iron Drill",
-        "Description": "A strong drill. Can mine medium blocks",
+        "Description": "Mines medium blocks",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill3",
@@ -60,7 +60,7 @@
     {
         "ID": "triple_iron_drill",
         "Name": "Triple Iron Drill",
-        "Description": "A powerful drill with three drill bits. Can mine hard blocks",
+        "Description": "Three drill bits. Mines hard blocks",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill4",
@@ -98,7 +98,7 @@
     {
         "ID": "obscurium_drill",
         "Name": "Obscurium Drill",
-        "Description": "The ultimate drill. Can mine anything",
+        "Description": "The ultimate drill. Mines anything",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill6",
@@ -200,7 +200,7 @@
     {
         "ID": "laser_gun",
         "Name": "Laser",
-        "Description": "Can destroy planets",
+        "Description": "An experimental laser",
         "Type": "weapon",
         "Category": "",
         "Sprite": "scanner1",
@@ -220,6 +220,7 @@
     {
         "ID": "aluminium_drill_bit",
         "Name": "Aluminium Drill Bit",
+"Description": "Part for aluminium drills",
 
         "Sprite": "aluDrillBit",
         "Category": "items",
@@ -229,6 +230,7 @@
     {
         "ID": "iron_drill_bit",
         "Name": "Iron Drill Bit",
+        "Description": "Part for iron drills",
         "Sprite": "ironDrillBit",
         "Category": "items",
         "MaxStack": 64,
@@ -237,6 +239,7 @@
     {
         "ID": "titanium_drill_bit",
         "Name": "Titanium Drill Bit",
+        "Description": "Part for titanium drills",
         "Sprite": "titDrillBit",
         "Category": "items",
         "MaxStack": 64,
@@ -245,6 +248,7 @@
     {
         "ID": "cobalt_ingot",
         "Name": "Cobalt Ingot",
+        "Description": "Metal for energy cells, lenses and microchips",
         "Sprite": "cobaltIngot",
         "MaxStack": 64,
         "ModelDepth": 2.0
@@ -252,6 +256,7 @@
     {
         "ID": "aluminium_ingot",
         "Name": "Aluminium Ingot",
+        "Description": "Light metal for panels and early tools",
         "Sprite": "aluIngot",
         "MaxStack": 64,
         "ModelDepth": 2.0
@@ -259,6 +264,7 @@
     {
         "ID": "iron_ingot",
         "Name": "Iron Ingot",
+        "Description": "Common metal for panels and machines",
         "Sprite": "ironIngot",
         "MaxStack": 64,
         "ModelDepth": 2.0
@@ -266,6 +272,7 @@
     {
         "ID": "titanium_ingot",
         "Name": "Titanium Ingot",
+        "Description": "Strong metal for the best armor and ship parts",
         "Sprite": "titIngot",
         "MaxStack": 64,
         "ModelDepth": 2.0
@@ -273,7 +280,7 @@
     {
         "ID": "thulium_ingot",
         "Name": "Thulium Ingot",
-        "Description": "Radioactive material",
+        "Description": "Rare metal for thulium lenses",
         "Sprite": "thuliumIngot",
         "MaxStack": 64,
         "ModelDepth": 2.0
@@ -281,7 +288,7 @@
     {
         "ID": "uranium_ingot",
         "Name": "Uranium Ingot",
-        "Description": "Radioactive material",
+        "Description": "Radioactive metal for fuel rods",
         "Sprite": "uranIngot",
         "MaxStack": 64,
         "ModelDepth": 1.0,
@@ -302,6 +309,7 @@
     {
         "ID": "sand",
         "Name": "Sand",
+        "Description": "Melts into glass",
         "Sprite": "sand",
         "MaxStack": 64,
         "ModelDepth": 2
@@ -309,6 +317,7 @@
     {
         "ID": "cobalt_dust",
         "Name": "Cobalt Dust",
+        "Description": "Smelts into a cobalt ingot",
         "Sprite": "cobaltDust",
         "MaxStack": 64,
         "ModelDepth": 2
@@ -316,6 +325,7 @@
     {
         "ID": "aluminium_dust",
         "Name": "Aluminium Dust",
+        "Description": "Smelts into an aluminium ingot",
         "Sprite": "aluDust",
         "MaxStack": 64,
         "ModelDepth": 2
@@ -323,6 +333,7 @@
     {
         "ID": "iron_dust",
         "Name": "Iron Dust",
+        "Description": "Smelts into an iron ingot",
         "Sprite": "ironDust",
         "MaxStack": 64,
         "ModelDepth": 2
@@ -330,6 +341,7 @@
     {
         "ID": "titanium_dust",
         "Name": "Titanium Dust",
+        "Description": "Smelts into a titanium ingot",
         "Sprite": "titDust",
         "MaxStack": 64,
         "ModelDepth": 2
@@ -337,6 +349,7 @@
     {
         "ID": "thulium_dust",
         "Name": "Thulium Dust",
+        "Description": "Smelts into a thulium ingot",
         "Sprite": "thuliumDust",
         "MaxStack": 64,
         "ModelDepth": 2
@@ -344,6 +357,7 @@
     {
         "ID": "uranium_dust",
         "Name": "Uranium Dust",
+        "Description": "Smelts into a uranium ingot",
         "Sprite": "uraniumDust",
         "MaxStack": 64,
         "ModelDepth": 2,
@@ -357,6 +371,7 @@
     {
         "ID": "obscurium_dust",
         "Name": "Obscurium Dust",
+        "Description": "Smelts into an obscurium ingot",
         "Sprite": "obscuriumDust",
         "MaxStack": 64,
         "ModelDepth": 2
@@ -373,6 +388,7 @@
     {
         "ID": "iron_lens",
         "Name": "Iron Lens",
+        "Description": "A sturdy iron lens",
         "Category": "items",
         "Sprite": "ironLens",
         "MaxStack": 64,
@@ -381,6 +397,7 @@
     {
         "ID": "thulium_lens",
         "Name": "Thulium Lens",
+        "Description": "A precise lens for advanced devices",
         "Category": "items",
         "Sprite": "thuliumLens",
         "MaxStack": 64,
@@ -389,6 +406,7 @@
     {
         "ID": "aluminium_panels",
         "Name": "Aluminium Panels",
+        "Description": "Building material for blocks and parts",
         "Category": "items",
         "Sprite": "aluPanels",
         "MaxStack": 64,
@@ -397,6 +415,7 @@
     {
         "ID": "iron_panels",
         "Name": "Iron Panels",
+        "Description": "Strong building material",
         "Category": "items",
         "Sprite": "ironPanels",
         "MaxStack": 64,
@@ -405,6 +424,7 @@
     {
         "ID": "titanium_panels",
         "Name": "Titanium Panels",
+        "Description": "The strongest building material",
         "Category": "items",
         "Sprite": "titPanels",
         "MaxStack": 64,
@@ -413,7 +433,7 @@
     {
         "ID": "med_kit",
         "Name": "Med Kit",
-        "Description": "Heals the player",
+        "Description": "Heals you",
         "Sprite": "health3",
         "Type": "consumable",
         "Category": "consumables",
@@ -426,6 +446,7 @@
     {
         "ID": "ice_shard",
         "Name": "Ice Shard",
+        "Description": "Melts into water",
         "Sprite": "ice",
         "MaxStack": 64,
         "ModelDepth": 1.5
@@ -433,7 +454,7 @@
     {
         "ID": "methane_ice_shard",
         "Name": "Methane Ice",
-        "Description": "Frozen methane ice shard",
+        "Description": "Smelts into compressed methane",
         "Sprite": "methane_ice",
         "MaxStack": 64,
         "ModelDepth": 1.5
@@ -441,7 +462,7 @@
     {
         "ID": "glass",
         "Name": "Glass",
-        "Description": "Transparent material",
+        "Description": "Transparent material for windows and lenses",
         "Sprite": "glass",
         "MaxStack": 64,
         "ModelDepth": 1.5
@@ -449,6 +470,7 @@
     {
         "ID": "paint",
         "Name": "Paint",
+        "Description": "Decorative paint",
         "Sprite": "paint",
         "MaxStack": 1,
         "ModelDepth": 3.0
@@ -470,7 +492,7 @@
     {
         "ID": "water",
         "Name": "Water",
-        "Description": "Essential for life",
+        "Description": "Essential for life and oxygen",
         "Sprite": "water1",
         "MaxStack": 64,
         "ModelDepth": 2.0
@@ -487,7 +509,7 @@
   {
     "ID": "compressed_oxygen",
     "Name": "Compressed Oxygen",
-    "Description": "Oxygen for breathing in space",
+    "Description": "Refills your oxygen",
     "Category": "consumables",
     "Type": "consumable",
     "Sound": "beer",
@@ -500,7 +522,7 @@
     {
         "ID": "compressed_methane",
         "Name": "Compressed Methane",
-        "Description": "Highly flammable fuel",
+        "Description": "Raw material for polymer pellets",
 
         "Sprite": "methane",
         "MaxStack": 64,
@@ -509,7 +531,7 @@
     {
         "ID": "polymer_pellets",
         "Name": "Polymer Pellets",
-        "Description": "Useful polymer",
+        "Description": "Raw material for plastic and fiber",
         "Category": "items",
         "Sprite": "polymer_pellets",
         "MaxStack": 64,
@@ -528,7 +550,7 @@
     {
         "ID": "plastic",
         "Name": "Plastic",
-        "Description": "Useful polymer",
+        "Description": "Light and tough material",
 
         "Sprite": "plastic",
         "MaxStack": 64,
@@ -538,7 +560,7 @@
     {
         "ID": "power",
         "Name": "Cobalt Power Overcharge",
-        "Description": "Restores power",
+        "Description": "Refills your power",
         "Sprite": "power",
         "Type": "consumable",
         "Category": "consumables",
@@ -563,7 +585,7 @@
     {
         "ID": "energy_cell",
         "Name": "Cobalt Energy Cell",
-        "Description": "A cell that stores energy for various devices",
+        "Description": "Stores energy for devices and machines",
         "Category": "items",
         "Sprite": "energyCells",
         "MaxStack": 64,
@@ -572,7 +594,7 @@
     {
         "ID": "thulium_energy_cell",
         "Name": "Thulium Energy Cell",
-        "Description": "A cell that stores energy for various devices",
+        "Description": "Stores a lot of energy for advanced devices",
         "Category": "items",
         "Sprite": "ThuliumEnergyCells",
         "MaxStack": 64,
@@ -581,7 +603,7 @@
     {
         "ID": "microchip",
         "Name": "Microchip",
-        "Description": "A small electronic component used in various devices",
+        "Description": "Small electronic part for devices",
         "Category": "items",
         "Sprite": "microchip",
         "MaxStack": 64,
@@ -590,7 +612,7 @@
     {
         "ID": "dna_sample",
         "Name": "DNA Sample",
-        "Description": "A sample of DNA to revive an organism",
+        "Description": "Lets a DNA reconstructor revive you",
         "Category": "items",
         "Sprite": "dna",
         "MaxStack": 8,
@@ -606,7 +628,7 @@
         "Health": 2,
         "ExplosionProtection": 1,
         "Name": "Aluminium Helmet",
-        "Description": "Fancy but unwearable",
+        "Description": "Light armor",
         "Category": "equipment",
         "Sprite": "aluminium_helmet",
         "MaxStack": 1,
@@ -621,7 +643,7 @@
         "Health": 5,
         "ExplosionProtection": 3,
         "Name": "Aluminium Chest Armor",
-        "Description": "Fancy but unwearable",
+        "Description": "Light armor",
         "Category": "equipment",
         "Sprite": "aluminium_chest",
         "MaxStack": 1,
@@ -636,7 +658,7 @@
         "Health": 3,
         "ExplosionProtection": 2,
         "Name": "Aluminium Shoulders Armor",
-        "Description": "Fancy but unwearable",
+        "Description": "Light armor",
         "Category": "equipment",
         "Sprite": "aluminium_shoulders",
         "MaxStack": 1,
@@ -651,7 +673,7 @@
         "Health": 2,
         "ExplosionProtection": 1,
         "Name": "Aluminium Arms Armor",
-        "Description": "Fancy but unwearable",
+        "Description": "Light armor",
         "Category": "equipment",
         "Sprite": "aluminium_arms",
         "MaxStack": 1,
@@ -666,7 +688,7 @@
         "Health": 4,
         "ExplosionProtection": 2,
         "Name": "Aluminium Legs Armor",
-        "Description": "Fancy but unwearable",
+        "Description": "Light armor",
         "Category": "equipment",
         "Sprite": "aluminium_legs",
         "MaxStack": 1,
@@ -681,7 +703,7 @@
         "Health": 2,
         "ExplosionProtection": 1,
         "Name": "Aluminium Boots",
-        "Description": "Fancy but unwearable",
+        "Description": "Light armor",
         "Category": "equipment",
         "Sprite": "aluminium_boots",
         "MaxStack": 1,
@@ -696,7 +718,7 @@
         "Health": 3,
         "ExplosionProtection": 3,
         "Name": "Iron Helmet",
-        "Description": "Sturdy iron protection",
+        "Description": "Sturdy iron armor",
         "Category": "equipment",
         "Sprite": "iron_helmet",
         "MaxStack": 1,
@@ -711,7 +733,7 @@
         "Health": 8,
         "ExplosionProtection": 9,
         "Name": "Iron Chest Armor",
-        "Description": "Sturdy iron protection",
+        "Description": "Sturdy iron armor",
         "Category": "equipment",
         "Sprite": "iron_chest",
         "MaxStack": 1,
@@ -726,7 +748,7 @@
         "Health": 4,
         "ExplosionProtection": 6,
         "Name": "Iron Shoulders Armor",
-        "Description": "Sturdy iron protection",
+        "Description": "Sturdy iron armor",
         "Category": "equipment",
         "Sprite": "iron_shoulders",
         "MaxStack": 1,
@@ -741,7 +763,7 @@
         "Health": 3,
         "ExplosionProtection": 3,
         "Name": "Iron Arms Armor",
-        "Description": "Sturdy iron protection",
+        "Description": "Sturdy iron armor",
         "Category": "equipment",
         "Sprite": "iron_arms",
         "MaxStack": 1,
@@ -756,7 +778,7 @@
         "Health": 6,
         "ExplosionProtection": 6,
         "Name": "Iron Legs Armor",
-        "Description": "Sturdy iron protection",
+        "Description": "Sturdy iron armor",
         "Category": "equipment",
         "Sprite": "iron_legs",
         "MaxStack": 1,
@@ -771,7 +793,7 @@
         "Health": 3,
         "ExplosionProtection": 3,
         "Name": "Iron Boots",
-        "Description": "Sturdy iron protection",
+        "Description": "Sturdy iron armor",
         "Category": "equipment",
         "Sprite": "iron_boots",
         "MaxStack": 1,
@@ -786,7 +808,7 @@
         "Health": 4,
         "ExplosionProtection": 5,
         "Name": "Titanium Helmet",
-        "Description": "Light and very strong titanium protection",
+        "Description": "Light and very strong titanium armor",
         "Category": "equipment",
         "Sprite": "titanium_helmet",
         "MaxStack": 1,
@@ -801,7 +823,7 @@
         "Health": 10,
         "ExplosionProtection": 15,
         "Name": "Titanium Chest Armor",
-        "Description": "Light and very strong titanium protection",
+        "Description": "Light and very strong titanium armor",
         "Category": "equipment",
         "Sprite": "titanium_chest",
         "MaxStack": 1,
@@ -816,7 +838,7 @@
         "Health": 6,
         "ExplosionProtection": 10,
         "Name": "Titanium Shoulders Armor",
-        "Description": "Light and very strong titanium protection",
+        "Description": "Light and very strong titanium armor",
         "Category": "equipment",
         "Sprite": "titanium_shoulders",
         "MaxStack": 1,
@@ -831,7 +853,7 @@
         "Health": 4,
         "ExplosionProtection": 5,
         "Name": "Titanium Arms Armor",
-        "Description": "Light and very strong titanium protection",
+        "Description": "Light and very strong titanium armor",
         "Category": "equipment",
         "Sprite": "titanium_arms",
         "MaxStack": 1,
@@ -846,7 +868,7 @@
         "Health": 8,
         "ExplosionProtection": 10,
         "Name": "Titanium Legs Armor",
-        "Description": "Light and very strong titanium protection",
+        "Description": "Light and very strong titanium armor",
         "Category": "equipment",
         "Sprite": "titanium_legs",
         "MaxStack": 1,
@@ -861,7 +883,7 @@
         "Health": 4,
         "ExplosionProtection": 5,
         "Name": "Titanium Boots",
-        "Description": "Light and very strong titanium protection",
+        "Description": "Light and very strong titanium armor",
         "Category": "equipment",
         "Sprite": "titanium_boots",
         "MaxStack": 1,
@@ -870,12 +892,25 @@
         "ArmorTexture": "Models/Armor/armor_titanium.png"
     },
     {
+        "ID": "repair_tool",
+        "Name": "Repair Tool",
+        "Description": "Repairs damaged blocks. Aim at a block and hold the left mouse button",
+        "Type": "repair_tool",
+        "Category": "tools",
+        "Sprite": "repairTool",
+        "MaxStack": 1,
+        "ModelDepth": 2.0,
+        "RepairPerSecond": 4,
+        "PowerPerSecond": 2,
+        "Range": 5
+    },
+    {
         "ID": "aluminium_flashlight",
         "Type": "equipment",
         "Slot": "Flashlight",
         "Name": "Aluminium Flashlight",
         "Description": "Weak flashlight with a short beam",
-        "Category": "equipment",
+        "Category": "tools",
         "Sprite": "flashlight2",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -887,7 +922,7 @@
         "Slot": "Flashlight",
         "Name": "Iron Flashlight",
         "Description": "Standard flashlight",
-        "Category": "equipment",
+        "Category": "tools",
         "Sprite": "iron_flashlight",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -899,7 +934,7 @@
         "Slot": "Flashlight",
         "Name": "Titanium Flashlight",
         "Description": "Bright flashlight with a long, wide beam",
-        "Category": "equipment",
+        "Category": "tools",
         "Sprite": "titanium_flashlight",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -910,8 +945,8 @@
         "Type": "equipment",
         "Slot": "Scanner",
         "Name": "Aluminium Radar",
-        "Description": "Shows asteroids and your markers with their distance",
-        "Category": "equipment",
+        "Description": "Shows asteroids and your markers",
+        "Category": "tools",
         "Sprite": "scanner1",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -922,8 +957,8 @@
         "Type": "equipment",
         "Slot": "Scanner",
         "Name": "Iron Radar",
-        "Description": "Shows asteroids and your markers with distance and mass",
-        "Category": "equipment",
+        "Description": "Shows asteroids and your markers, also their mass",
+        "Category": "tools",
         "Sprite": "iron_scanner",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -934,8 +969,8 @@
         "Type": "equipment",
         "Slot": "Scanner",
         "Name": "Titanium Radar",
-        "Description": "Shows distance and mass, 20% longer range",
-        "Category": "equipment",
+        "Description": "Shows asteroids, markers and mass at a longer range",
+        "Category": "tools",
         "Sprite": "titanium_scanner",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -946,7 +981,7 @@
         "Type": "equipment",
         "Slot": "PowerGenerator",
         "Name": "Aluminium Power Generator",
-        "Description": "+10 max power",
+        "Description": "Raises your maximum power",
         "Category": "equipment",
         "Sprite": "generator1",
         "MaxStack": 1,
@@ -958,7 +993,7 @@
         "Type": "equipment",
         "Slot": "PowerGenerator",
         "Name": "Iron Power Generator",
-        "Description": "+20 max power",
+        "Description": "Raises your maximum power more",
         "Category": "equipment",
         "Sprite": "iron_generator",
         "MaxStack": 1,
@@ -970,7 +1005,7 @@
         "Type": "equipment",
         "Slot": "PowerGenerator",
         "Name": "Titanium Power Generator",
-        "Description": "+30 max power",
+        "Description": "Raises your maximum power the most",
         "Category": "equipment",
         "Sprite": "titanium_generator",
         "MaxStack": 1,
@@ -980,6 +1015,7 @@
     {
         "ID": "obscurium_ammo",
         "Name": "Obscurium Ammo",
+        "Description": "Ammunition made of obscurium",
         "Sprite": "obscurium_ammo",
         "Category": "weapons",
         "MaxStack": 64,

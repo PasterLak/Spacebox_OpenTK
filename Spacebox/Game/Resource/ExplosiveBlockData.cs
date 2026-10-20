@@ -13,7 +13,7 @@ public class ExplosiveJSON
     public bool DestroyStorageItems { get; set; } = false;
 }
 
-public class ExplosiveBlockData : BlockData, IExplosiveBlockData
+public class ExplosiveBlockData : BlockData, IExplosiveBlockData, IBlockTooltip
 {
     public ExplosiveBlockData Explosion => this;
 
@@ -39,6 +39,14 @@ public class ExplosiveBlockData : BlockData, IExplosiveBlockData
         ChainDelay = Math.Clamp(settings.ChainDelay, 0f, 5f);
         DropBlocks = settings.DropBlocks;
         DestroyStorageItems = settings.DestroyStorageItems;
+    }
+
+    public void AppendTooltip(System.Text.StringBuilder text)
+    {
+        text.Append("\nExplodes when shot");
+        text.Append($"\nRadius: {Radius:0.#} blocks");
+        text.Append($"\nPenetration: {Penetration}");
+        text.Append($"\nDamage: {(DamageFalloff ? "up to " : "")}{Damage}");
     }
 
     public float GetDamage(float distance)

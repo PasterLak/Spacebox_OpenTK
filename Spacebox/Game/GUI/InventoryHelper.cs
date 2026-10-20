@@ -65,6 +65,24 @@ namespace Spacebox.Game.GUI
         private static ItemSlot startSlot = null;
         private static Storage startStorage = null;
 
+        public static unsafe bool AcceptSlotDrop(out ItemSlot source)
+        {
+            source = null;
+            if (!ImGui.BeginDragDropTarget()) return false;
+
+            ImGuiPayloadPtr payload = ImGui.AcceptDragDropPayload("ITEM_SLOT", ImGuiDragDropFlags.None);
+            if (payload.NativePtr != null && startSlot != null)
+            {
+                source = startSlot;
+                IsDragging = false;
+                startSlot = null;
+                startStorage = null;
+            }
+
+            ImGui.EndDragDropTarget();
+            return source != null;
+        }
+
         public static unsafe void DrawSlot(ItemSlot slot, string id, Action<ItemSlot> onSlotClicked, bool isSelected = false)
         {
             DrawSlot(slot, id, onSlotClicked, AtlasSprite.None, isSelected);
@@ -325,6 +343,11 @@ namespace Spacebox.Game.GUI
                             text += $"\nSize: {storageData.Size.X}x{ storageData.Size.Y} slots";
                         }
 
+                        if (d.Efficiency != 1f && d.Efficiency > 0f)
+                        {
+                            text += $"\nSpeed: {d.Efficiency * 100f:0}%";
+                        }
+
                         if (d is GeneratorBlockData generatorData)
                         {
                             text += $"\nGenerates: {generatorData.Power} EU";
@@ -349,6 +372,10 @@ namespace Spacebox.Game.GUI
                         text += "\nPower: +" + itemType.PowerBonus;
                     if (itemType.ExplosionProtection > 0f)
                         text += $"\nExplosion protection: {itemType.ExplosionProtection * 100f:0}%";
+                    if (itemType.Flashlight != null)
+                        text += $"\nBeam range: {itemType.Flashlight.Range:0} m";
+                    if (itemType.Radar != null)
+                        text += $"\nScan range: {itemType.Radar.Range:0} m" + (itemType.Radar.ShowMass ? "\nShows mass" : "");
                 }
                 else if (type == typeof(ConsumableItem))
                 {
@@ -360,6 +387,13 @@ namespace Spacebox.Game.GUI
                     if (itemType.OxygenAmount > 0)
                         text += "\nOxygen: +" + itemType.OxygenAmount;
 
+                }
+
+                if (slot.Item is IItemTooltip itemTooltip)
+                {
+                    _tooltipBuilder.Clear();
+                    itemTooltip.AppendTooltip(_tooltipBuilder);
+                    text += _tooltipBuilder.ToString();
                 }
 
                 ImGui.BeginTooltip();

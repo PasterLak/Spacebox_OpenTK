@@ -16,6 +16,8 @@ public class PipeBlock : InteractiveBlock, IEntityBlockListener, IContainerBlock
     private readonly List<IItemTransferEndpoint> _outputs = new List<IItemTransferEndpoint>(5);
     private readonly List<Vector3i> _outputSides = new List<Vector3i>(5);
     private readonly List<Vector3i> _outputDirections = new List<Vector3i>(5);
+    private readonly List<Vector3i> _inputDirections = new List<Vector3i>(5);
+    private int _nextInput;
     private readonly Predicate<Item> _canPull;
     private float _timer;
     private int _nextOutput;
@@ -25,7 +27,7 @@ public class PipeBlock : InteractiveBlock, IEntityBlockListener, IContainerBlock
     public ItemSlot FilterSlot => Storage.GetSlot(1, 0)!;
     public SpaceEntity? Entity { get; private set; }
     public Vector3i LocalCell { get; private set; }
-    public Vector3i InputSide { get; private set; } = new Vector3i(0, -1, 0);
+    public IReadOnlyList<Vector3i> InputSides => _inputDirections;
 
     public PipeBlock(BlockData blockData) : base(blockData)
     {
@@ -112,7 +114,7 @@ public class PipeBlock : InteractiveBlock, IEntityBlockListener, IContainerBlock
 
     public bool CanInsert(Item item, Vector3i fromSide)
     {
-        return fromSide == InputSide && !Buffer.HasItem && AllowsItem(item);
+        return _inputDirections.Contains(fromSide) && !Buffer.HasItem && AllowsItem(item);
     }
 
     public bool Insert(Item item, Vector3i fromSide)
@@ -125,14 +127,22 @@ public class PipeBlock : InteractiveBlock, IEntityBlockListener, IContainerBlock
 
     private void Pull()
     {
-        if (_outputs.Count == 0 || !TryGetEndpoint(InputSide, out var source)) return;
+        if (_outputs.Count == 0) return;
 
-        var slot = source.FindExtractable(_canPull);
-        if (slot == null) return;
+        for (int i = 0; i < _inputDirections.Count; i++)
+        {
+            int index = (_nextInput + i) % _inputDirections.Count;
+            if (!TryGetEndpoint(_inputDirections[index], out var source)) continue;
 
-        Buffer.SetData(slot.Item, 1);
-        slot.TakeOne();
-        source.OnExtracted();
+            var slot = source.FindExtractable(_canPull);
+            if (slot == null) continue;
+
+            Buffer.SetData(slot.Item, 1);
+            slot.TakeOne();
+            source.OnExtracted();
+            _nextInput = index + 1;
+            return;
+        }
     }
 
     private void Push()
@@ -190,7 +200,9 @@ public class PipeBlock : InteractiveBlock, IEntityBlockListener, IContainerBlock
     private void CalculateSides()
     {
         var transform = BlockRotationHelper.CalculateTransformMatrix(GameAssets.GetBaseFrontDirection(Id), Direction, Rotation);
-        InputSide = Rotate(transform, -Vector3.UnitY);
+        _inputDirections.Clear();
+        for (int i = 0; i < _data.InputSides.Count; i++)
+            _inputDirections.Add(Rotate(transform, BlockRotationHelper.GetDirectionVector(_data.InputSides[i])));
 
         _outputDirections.Clear();
         for (int i = 0; i < _data.OutputSides.Count; i++)

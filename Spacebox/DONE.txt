@@ -33,6 +33,11 @@ New
 - server console command restart
 - dashboard HTTPS with a certificate file (Let's Encrypt for DuckDNS), auto reload on renewal, internet HTTP redirected to HTTPS; guide Documentation/dashboard-public-access.md
 - automatic HTTPS for any address: PublicAddress (DuckDNS name + token, Cloudflare domain + token, any other name or a public IP via port 80); the server gets and renews the Let's Encrypt certificate itself and keeps a DuckDNS name on the current IP
+- merging item pipe (inputs bottom, left, right, output top); pipes have configurable input sides
+- repair tool: shows block durability under the crosshair and repairs damaged blocks, multi-cell blocks as a whole, weakest cell first (synced in multiplayer)
+- new Tools crafting category (repair tool, flashlights, radars), category rows set in crafting.json (drills in the second row), bombs in Weapons after the guns (items before blocks in every category)
+- all blocks and items have short descriptions without numbers, parameters moved to tooltips
+- compact equipment window: armor slots in body order, devices column, rotatable 3D player preview with skybox, armor, held item, skin colour and world lighting; drop equipment on the preview to wear it
 - Spacebox Server Guide.pdf shipped with the game (server, config, port forwarding, DuckDNS, dashboard, commands, troubleshooting)
 - new power blocks from Corneroids: Powerful Cobalt Power Block (1x2x1, 125 EU), Standard Nuclear Power Block (2x2x2, 180 EU); the 2x3x2 nuclear block is now Powerful Nuclear Power Block
 - cobalt crystal removed (item, craft, crusher recipe); old worlds get cobalt ingots instead

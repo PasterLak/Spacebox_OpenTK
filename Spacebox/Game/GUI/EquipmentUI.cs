@@ -1,5 +1,4 @@
 using System.Numerics;
-using Engine.Graphics.Atlas;
 using Engine;
 using ImGuiNET;
 using Spacebox.Game.GUI.Menu;
@@ -9,24 +8,35 @@ namespace Spacebox.Game.GUI;
 
 public static class EquipmentUI
 {
-    private const int Columns = 3;
     private const string Title = "Equipment";
     private const string BackgroundsFolder = "equipment/";
-    private const float SlotGapRatio = 0.1f;
+    private const float SlotGapRatio = 0.08f;
+    private const int Rows = 4;
+    private const float PreviewColumns = 2.8f;
 
-    private static readonly EquipmentSlotType[] _armorSlots =
+    private static readonly Vector4 TitleColor = new Vector4(0.9f, 0.9f, 0.9f, 1f);
+    private static readonly Vector4 SeparatorColor = new Vector4(0.55f, 0.56f, 0.6f, 0.6f);
+
+    public readonly record struct SlotPlacement(EquipmentSlotType Type, int Column, int Row);
+
+    public static readonly SlotPlacement[] ArmorLayout =
     {
-        EquipmentSlotType.Helmet, EquipmentSlotType.Shoulders, EquipmentSlotType.Chest,
-        EquipmentSlotType.Arms, EquipmentSlotType.Legs, EquipmentSlotType.Boots
+        new SlotPlacement(EquipmentSlotType.Helmet, 0, 0),
+        new SlotPlacement(EquipmentSlotType.Chest, 0, 1),
+        new SlotPlacement(EquipmentSlotType.Legs, 0, 2),
+        new SlotPlacement(EquipmentSlotType.Boots, 0, 3),
+        new SlotPlacement(EquipmentSlotType.Shoulders, 1, 0),
+        new SlotPlacement(EquipmentSlotType.Arms, 1, 1)
     };
 
-    private static readonly EquipmentSlotType[] _upgradeSlots =
+    public static readonly EquipmentSlotType[] DeviceSlots =
     {
         EquipmentSlotType.PowerGenerator, EquipmentSlotType.Flashlight, EquipmentSlotType.Scanner
     };
 
     private static readonly Action<ItemSlot> _onSlotClicked = OnSlotClicked;
     private static readonly string[] _backgroundNames = CreateBackgroundNames();
+    private static PlayerPreview _preview = new PlayerPreview();
 
     private static string[] CreateBackgroundNames()
     {
@@ -39,21 +49,25 @@ public static class EquipmentUI
         return names;
     }
 
-    public static void OnGUI(PlayerEquipment equipment)
+    public static void OnGUI(LocalAstronaut player)
     {
+        var equipment = player?.Equipment;
         if (equipment == null || !UIManager.IsOpen("inventory")) return;
 
         var displaySize = ImGui.GetIO().DisplaySize;
         float slotSize = InventoryUIHelper.SlotSize;
-        float padding = slotSize * 0.1f;
+        float padding = slotSize * 0.12f;
         float slotStep = slotSize * (1f + SlotGapRatio);
-        float titleHeight = padding * 4;
-        float upgradesGap = padding * 3;
+        float titleHeight = ImGui.GetTextLineHeight() + padding;
+        float columnsHeight = Rows * slotStep - slotStep * SlotGapRatio;
+        var previewSize = new Vector2(slotStep * PreviewColumns, columnsHeight);
+        float gap = padding;
+        float sectionGap = padding * 2.5f;
 
-        float contentWidth = Columns * slotStep;
-        float armorHeight = (_armorSlots.Length / Columns) * slotStep;
-        var windowSize = new Vector2(contentWidth + padding * 2, titleHeight + armorHeight + upgradesGap + slotStep + padding * 2);
-        var windowPos = new Vector2(InventoryUI.WindowPosition.X + InventoryUI.WindowSize.X + padding, InventoryUI.WindowPosition.Y);
+        float width = padding * 2f + slotSize * 3f + previewSize.X + gap * 2f + sectionGap;
+        float height = padding * 2f + titleHeight + columnsHeight;
+        var windowSize = new Vector2(width, height);
+        var windowPos = PlaceWindow(windowSize, padding, displaySize);
 
         ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
         ImGui.SetNextWindowSize(windowSize, ImGuiCond.Always);
@@ -63,26 +77,68 @@ public static class EquipmentUI
         GameMenu.DrawElementColors(windowPos, windowSize, displaySize.Y);
 
         ImGui.SetCursorPos(new Vector2(padding, padding));
-        ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), Title);
+        ImGui.TextColored(TitleColor, Title);
 
-        var armorOrigin = new Vector2(padding, padding + titleHeight);
-        DrawSlots(equipment, _armorSlots, armorOrigin, slotStep);
+        float top = padding + titleHeight;
+        float leftX = padding;
+        float previewX = leftX + slotSize + gap;
+        float rightX = previewX + previewSize.X + gap;
+        float devicesX = rightX + slotSize + sectionGap;
 
-        var upgradesOrigin = new Vector2(padding, armorOrigin.Y + armorHeight + upgradesGap);
-        DrawSlots(equipment, _upgradeSlots, upgradesOrigin, slotStep);
+        foreach (var placement in ArmorLayout)
+        {
+            float x = placement.Column == 0 ? leftX : rightX;
+            DrawSlot(equipment, placement.Type, new Vector2(x, top + placement.Row * slotStep));
+        }
+
+        ImGui.SetCursorPos(new Vector2(previewX, top));
+        bool shown = _preview.Show(player, equipment, PanelUI.HeldItem, previewSize);
+        if (shown && InventoryUIHelper.AcceptSlotDrop(out var dropped)) equipment.TryEquip(dropped);
+        if (shown && ImGui.IsItemHovered()) ImGui.SetTooltip("Drag to rotate, double-click to reset\nDrop equipment here to wear it");
+
+        float separatorX = windowPos.X + rightX + slotSize + sectionGap * 0.5f;
+        ImGui.GetWindowDrawList().AddLine(new Vector2(separatorX, windowPos.Y + top), new Vector2(separatorX, windowPos.Y + top + columnsHeight),
+            ImGui.ColorConvertFloat4ToU32(SeparatorColor), 1f);
+
+        for (int i = 0; i < DeviceSlots.Length; i++)
+            DrawSlot(equipment, DeviceSlots[i], new Vector2(devicesX, top + i * slotStep));
 
         ImGui.End();
     }
 
-    private static void DrawSlots(PlayerEquipment equipment, EquipmentSlotType[] types, Vector2 origin, float slotStep)
+    public static void RenderPreview()
     {
-        for (int i = 0; i < types.Length; i++)
+        _preview.Render();
+    }
+
+    public static void Reset()
+    {
+        _preview.Dispose();
+        _preview = new PlayerPreview();
+    }
+
+    private static Vector2 PlaceWindow(Vector2 size, float gap, Vector2 displaySize)
+    {
+        float x = InventoryUI.WindowPosition.X + InventoryUI.WindowSize.X + gap;
+        float y = MathF.Max(gap, InventoryUI.WindowPosition.Y + InventoryUI.WindowSize.Y - size.Y);
+
+        if (CraftingGUI.IsVisible)
         {
-            var slot = equipment.GetSlot(types[i]);
-            ImGui.SetCursorPos(origin + new Vector2(i % Columns * slotStep, i / Columns * slotStep));
-            InventoryUIHelper.DrawSlot(slot, slot.Name, _onSlotClicked, UIAtlas.Get(_backgroundNames[(int)types[i]]));
-            InventoryUIHelper.ShowTooltip(slot, false, true);
+            float craftingBottom = CraftingGUI.WindowPosition.Y + CraftingGUI.WindowSize.Y + gap;
+            float craftingRight = CraftingGUI.WindowPosition.X + CraftingGUI.WindowSize.X + gap;
+            if (y < craftingBottom && x < craftingRight) x = craftingRight;
         }
+
+        x = MathF.Min(x, MathF.Max(gap, displaySize.X - size.X - gap));
+        return new Vector2(x, y);
+    }
+
+    private static void DrawSlot(PlayerEquipment equipment, EquipmentSlotType type, Vector2 position)
+    {
+        var slot = equipment.GetSlot(type);
+        ImGui.SetCursorPos(position);
+        InventoryUIHelper.DrawSlot(slot, slot.Name, _onSlotClicked, UIAtlas.Get(_backgroundNames[(int)type]));
+        InventoryUIHelper.ShowTooltip(slot, false, true);
     }
 
     private static void OnSlotClicked(ItemSlot slot)

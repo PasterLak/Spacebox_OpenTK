@@ -209,7 +209,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 | Data-only block / item | GameSet JSON + texture (`add-block` / `add-item` skills) |
 | Block behaviour | `Block` subclass in `Game/Generation/Blocks/` + `BlockFactory` entry (+ serializer if stateful) |
 | Tutorial / tutorial step | `GameSets/<set>/Tutorials/*.json` (see `tutorial-design.md`); a new task type is a `TutorialTask` subclass + `TutorialTaskFactory` entry (+ `ITutorialContext` member or `PlayerActivity` event) |
-| Equipment item | `items.json` entry with `"Type": "equipment"`, `Slot`, `Health`/`Power`, `ExplosionProtection` (%); bonuses applied by `EquipmentStatsBinder`, UI in `EquipmentUI` |
+| Equipment item | `items.json` entry with `"Type": "equipment"`, `Slot`, `Health`/`Power`, `ExplosionProtection` (%); bonuses applied by `EquipmentStatsBinder`, UI in `EquipmentUI` (layout `ArmorLayout`/`DeviceSlots`, 3D figure `PlayerPreview`) |
 | Item type | `Item` subclass in `Game/Inventory/` + case in `GameSetLoader` + interaction branch in `PanelUI` |
 | Interaction | `InteractionMode` subclass + game-mode whitelists + `PanelUI.UpdatePlayerInteraction` |
 | Action for any held item | `IPassiveInteraction` + add it in the game mode's `CreateInteractionHandler` |

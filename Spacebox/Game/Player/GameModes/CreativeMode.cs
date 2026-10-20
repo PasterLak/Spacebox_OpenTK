@@ -24,6 +24,7 @@ public class CreativeMode : MovementMode
             typeof(InteractionShoot),
             typeof(InteractionDefault),
             typeof(InteractionEraser),
+            typeof(InteractionRepair),
             typeof(InteractionCameraPoint)
         }, GameMode.Creative, new IPassiveInteraction[]
         {

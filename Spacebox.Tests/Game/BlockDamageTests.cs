@@ -15,6 +15,26 @@ public class BlockDamageTests
         Assert.Equal(expected, BlockDamage.Apply(durability, damage));
     }
 
+    [Theory]
+    [InlineData(10, 3, 20, 13)]
+    [InlineData(18, 5, 20, 20)]
+    [InlineData(20, 5, 20, 20)]
+    [InlineData(30, 5, 20, 30)]
+    public void Repair_AddsAndStopsAtMaximum(byte durability, byte amount, byte max, byte expected)
+    {
+        Assert.Equal(expected, BlockDamage.Repair(durability, amount, max));
+    }
+
+    [Theory]
+    [InlineData(45, 45, "No repair needed")]
+    [InlineData(30, 45, "Durability 66%  (30/45)")]
+    [InlineData(0, 10, "Durability 0%  (0/10)")]
+    [InlineData(5, 0, "Cannot be repaired")]
+    public void RepairHud_DescribesTheBlock(int current, int max, string expected)
+    {
+        Assert.Equal(expected, Spacebox.Game.GUI.RepairTargetUI.Describe(current, max));
+    }
+
     [Fact]
     public void DamageFromTwoPlayers_AddsUp()
     {

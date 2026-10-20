@@ -23,6 +23,7 @@ namespace Spacebox.Game.GUI
         public static Storage Storage;
         private static ItemModel ItemModel;
         private static ItemSlot SelectedSlot;
+        public static Item HeldItem => SelectedSlot != null && SelectedSlot.HasItem ? SelectedSlot.Item : null;
         private static AudioSource scrollAudio;
         private static AudioSource dropAudio;
         private static short _selectedSlotId = 0;
@@ -285,6 +286,8 @@ namespace Spacebox.Game.GUI
                 player.SetInteraction(new InteractionConsumeItem(SelectedSlot));
             else if (IsHolding<EquipmentItem>())
                 player.SetInteraction(new InteractionEquipItem(SelectedSlot));
+            else if (IsHolding<RepairToolItem>())
+                player.SetInteraction(new InteractionRepair(SelectedSlot));
             else if (IsHolding<MobSpawnerItem>())
                 player.SetInteraction(new InteractionSpawnMob(SelectedSlot));
             else if (IsHolding<EraserToolItem>())

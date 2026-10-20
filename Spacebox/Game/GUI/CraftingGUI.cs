@@ -55,8 +55,7 @@ public class CraftingGUI
 
     public static void Init()
     {
-        category = GameAssets.CraftingCategories.Values.ToArray();
-        CategoriesCountX = (int)(category.Length / CategoriesCountY) + (int)(category.Length % CategoriesCountY);
+        category = CraftingCategoryLayout.Arrange(GameAssets.CraftingCategories.Values, CategoriesCountY, out CategoriesCountX);
 
         var slotSize = CategoriesCountX * 1.5f;
 
@@ -79,6 +78,10 @@ public class CraftingGUI
         }
     }
 
+    public static bool IsVisible { get; private set; }
+    public static Vector2 WindowPosition { get; private set; }
+    public static Vector2 WindowSize { get; private set; }
+
     public static void OnGUI()
     {
         bool isVisible = UIManager.IsOpen("crafting");
@@ -91,12 +94,15 @@ public class CraftingGUI
             _wasVisible = isVisible;
         }
 
+        IsVisible = isVisible;
         if (!isVisible) return;
 
         Vector2 displaySize = ImGui.GetIO().DisplaySize;
         float windowWidth = displaySize.Y * (0.1f * CategoriesCountX);
         float windowHeight = displaySize.Y * 0.25f;
         var windowPos = GameMenu.CenterNextWindow3(windowWidth, windowHeight);
+        WindowPosition = windowPos;
+        WindowSize = new Vector2(windowWidth, windowHeight);
         ImGui.Begin("Crafting",
             ImGuiWindowFlags.NoResize
             | ImGuiWindowFlags.NoMove
@@ -134,7 +140,7 @@ public class CraftingGUI
 
                     var categoryIndex = y * CategoriesCountX + x;
 
-                    if (categoryIndex >= category.Length) continue;
+                    if (categoryIndex >= category.Length || category[categoryIndex] == null) continue;
 
                     string btnLabel = category[categoryIndex].Name;
                     CraftingCategoryButton(btnLabel, Vector2.Zero, btnWidth, btnHeight, (str) =>

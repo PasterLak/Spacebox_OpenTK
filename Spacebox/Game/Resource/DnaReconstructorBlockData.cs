@@ -1,6 +1,6 @@
 namespace Spacebox.Game.Resource;
 
-public class DnaReconstructorBlockData : BlockData
+public class DnaReconstructorBlockData : BlockData, IBlockTooltip
 {
     public string DnaItemId { get; }
     public ushort Power { get; }
@@ -16,6 +16,13 @@ public class DnaReconstructorBlockData : BlockData
         DnaItemId = dnaItem.Contains(':') ? dnaItem : GameSetLoader.CombineId(modId, dnaItem);
         Power = (ushort)Math.Clamp(settings.Power, 0, 8000);
         ReconstructionTime = Math.Clamp(settings.ReconstructionTime, 1f, 30f);
+    }
+
+    public void AppendTooltip(System.Text.StringBuilder text)
+    {
+        text.Append($"\nUses 1 {DnaItem?.Name ?? "DNA sample"} per revival");
+        text.Append($"\nRevival time: {ReconstructionTime:0.#} s");
+        text.Append($"\nPower usage: {Power} EU");
     }
 
     public Item DnaItem

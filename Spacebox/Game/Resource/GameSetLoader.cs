@@ -463,6 +463,10 @@ public static class GameSetLoader
                             var consumableData = itemElement.Deserialize<ConsumableItemJSON>();
                             if (consumableData != null) registeredItem = RegisterConsumableItem(consumableData, idString);
                             break;
+                        case "repair_tool":
+                            var repairData = itemElement.Deserialize<RepairToolItemJSON>();
+                            if (repairData != null) registeredItem = RegisterRepairToolItem(repairData, idString);
+                            break;
                         case "mob_spawner":
                             var spawnerData = itemElement.Deserialize<MobSpawnerItemJSON>();
                             if (spawnerData != null) registeredItem = RegisterMobSpawnerItem(spawnerData, idString);
@@ -733,6 +737,9 @@ public static class GameSetLoader
             GameAssets.CraftingCategories[category].Items.Add(d);
 
         }
+
+        foreach (var category in GameAssets.CraftingCategories.Values)
+            GUI.CraftingCategoryOrder.PutBlocksLast(category.Items);
     }
 
     private static void LoadBlueprints(CraftingJSON data)
@@ -946,6 +953,21 @@ public static class GameSetLoader
         GameAssetsRegister.RegisterItem(consumableItem, data.Sprite);
 
         return consumableItem;
+    }
+
+    private static Item RegisterRepairToolItem(RepairToolItemJSON data, string id)
+    {
+        data.ValidateMaxStack();
+        var tool = new RepairToolItem((byte)Math.Max(1, data.MaxStack), data.Name, data.ModelDepth)
+        {
+            Id_string = id,
+            Category = data.Category,
+            RepairPerSecond = Math.Clamp(data.RepairPerSecond, 0.1f, 100f),
+            PowerPerSecond = Math.Clamp(data.PowerPerSecond, 0f, 100f),
+            Range = Math.Clamp(data.Range, 1f, 12f)
+        };
+        GameAssetsRegister.RegisterItem(tool, data.Sprite);
+        return tool;
     }
 
     private static Item RegisterMobSpawnerItem(MobSpawnerItemJSON data, string id)

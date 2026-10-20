@@ -20,6 +20,45 @@ public static class WorldEditNetwork
         network.Messages.Register<BulkBlockEditMessage>(OnBulkEdit);
         network.Messages.Register<BlockDamageMessage>(OnBlockDamage);
         network.Messages.Register<BlockPlaceRefundMessage>(OnPlaceRefund);
+        network.Messages.Register<BlockRepairMessage>(OnBlockRepair);
+    }
+
+    public static void NotifyRepaired(Chunk chunk, Vector3Byte index, short blockId, byte amount)
+    {
+        if (chunk?.SpaceEntity == null || amount == 0) return;
+
+        var origin = chunk.PositionIndex * Chunk.Size;
+        var message = new BlockRepairMessage
+        {
+            EntityId = chunk.SpaceEntity.EntityID,
+            Cell = new Vector3i(origin.X + index.X, origin.Y + index.Y, origin.Z + index.Z),
+            BlockId = blockId,
+            Amount = amount
+        };
+
+        var network = NetworkManager.Instance;
+        if (!network.IsActive) return;
+
+        if (network.IsServer) network.SendToClients(message);
+        else network.SendToServer(message);
+    }
+
+    private static void OnBlockRepair(int sender, BlockRepairMessage message)
+    {
+        var network = NetworkManager.Instance;
+        if (sender == network.LocalPeerId) return;
+
+        var world = World.Instance;
+        if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
+        if (!entity.TryGetBlockLocal(message.Cell, out var chunk, out var index)) return;
+
+        var block = chunk.Blocks[index.X, index.Y, index.Z];
+        if (block == null || block.IsAir || block.Id != message.BlockId) return;
+
+        byte max = GameAssets.GetBlockDataById(block.Id)?.Durability ?? block.Durability;
+        block.Durability = BlockDamage.Repair(block.Durability, message.Amount, max);
+
+        if (network.IsServer) network.SendToClients(message, DeliveryMode.Reliable, sender);
     }
 
     private static void OnPlaceRefund(int sender, BlockPlaceRefundMessage message)

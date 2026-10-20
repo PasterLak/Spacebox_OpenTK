@@ -1,6 +1,6 @@
 namespace Spacebox.Game.Resource;
 
-public class OxygenGeneratorBlockData : BlockData
+public class OxygenGeneratorBlockData : BlockData, IBlockTooltip
 {
     public string WaterItemId { get; }
     public int TankCapacity { get; }
@@ -17,6 +17,14 @@ public class OxygenGeneratorBlockData : BlockData
         TankCapacity = Math.Max(1, settings.TankCapacity);
         WaterConsumeInterval = Math.Max(0.1f, settings.WaterConsumeInterval);
         WaterFillInterval = Math.Max(0.05f, settings.WaterFillInterval);
+    }
+
+    public void AppendTooltip(System.Text.StringBuilder text)
+    {
+        text.Append($"\nRoom size: up to {Spacebox.Game.Generation.Oxygen.OxygenGeneratorBlock.Radius} blocks from it");
+        text.Append($"\nWater tank: {TankCapacity}");
+        text.Append($"\nUses 1 {WaterItem?.Name ?? "water"} every {WaterConsumeInterval:0.#} s");
+        text.Append($"\nPower usage: {Spacebox.Game.Generation.Oxygen.OxygenGeneratorBlock.RequiredPower} EU");
     }
 
     public Item WaterItem

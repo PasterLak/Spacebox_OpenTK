@@ -5,7 +5,7 @@ using Spacebox.Game.Generation.Doors;
 
 namespace Spacebox.Game.Resource;
 
-public class DoorBlockData : BlockData, IReservedAreaBlockData
+public class DoorBlockData : BlockData, IReservedAreaBlockData, IBlockTooltip
 {
     public bool AreaMustBeInsideEntity => true;
 
@@ -46,4 +46,11 @@ public class DoorBlockData : BlockData, IReservedAreaBlockData
     }
 
     public float SlideDistance => ModelSlide.Length;
+
+    public void AppendTooltip(System.Text.StringBuilder text)
+    {
+        text.Append($"\nSize: {Size.X}x{Size.Y}");
+        text.Append($"\nSpeed: {Speed:0.#} blocks/s");
+        if (AutoClose) text.Append($"\nCloses after {OpenTime:0.#} s");
+    }
 }

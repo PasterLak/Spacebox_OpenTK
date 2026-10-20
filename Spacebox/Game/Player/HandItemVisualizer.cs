@@ -1,26 +1,18 @@
 ﻿using Engine;
 using OpenTK.Mathematics;
-using Spacebox.Game.Generation.Tools;
-using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Player
 {
     public class HandItemVisualizer : Node3D
     {
         private readonly Astronaut _owner;
-        private ItemWorldModel _itemModel;
-        private SimpleBlock _blockModel;
+        private readonly HeldItemModels _models;
 
         private const float VibrationSpeed = 55f;
         private const float VibrationAmount = 0.012f;
         private const float KickDistance = 0.08f;
         private const float KickRecovery = 12f;
 
-        private static readonly Vector3 ItemBasePosition = new Vector3(0.35f, -0.47f, -0.25f);
-        private static readonly Vector3 BlockBasePosition = new Vector3(0.35f, -0.25f, -0.45f);
-
-        private bool _isHoldingBlock;
-        private bool _isHoldingItem;
         private float _kick;
         private float _time;
 
@@ -30,75 +22,13 @@ namespace Spacebox.Game.Player
         {
             _owner = owner;
             Name = "HandItemVisualizer";
-            InitializeModels();
-        }
-
-        private void InitializeModels()
-        {
-            _itemModel = new ItemWorldModel();
-            AddChild(_itemModel);
-
-            _itemModel.Rotate(new Vector3(10, 90, -10));
-            _itemModel.SetScale(0.6f);
-            _itemModel.Position = ItemBasePosition;
-            _itemModel.Enabled = false;
-
-            _blockModel = new SimpleBlock(new TextureMaterial(GameAssets.BlocksTexture), Vector3.Zero) { DisposesTexture = false };
-            AddChild(_blockModel);
-
-            _blockModel.SetScale(0.2f);
-            _blockModel.Rotate(0, 180, 0);
-            _blockModel.Position = BlockBasePosition;
-            _blockModel.Enabled = false;
+            _models = new HeldItemModels(this);
         }
 
         public void SetItem(Item? item)
         {
-
-            _isHoldingBlock = false;
-            _isHoldingItem = false;
-
-            if (item != null)
-            {
-                if (item is BlockItem blockItem && blockItem.BlockId != 0)
-                {
-                    PrepareBlock(blockItem);
-                    _isHoldingBlock = true;
-                }
-                else
-                {
-                    PrepareItem(item);
-                    _isHoldingItem = true;
-                }
-            }
-
+            _models.SetItem(item);
             UpdateVisibilityState();
-        }
-
-        private void PrepareItem(Item item)
-        {
-            _itemModel.ChangeModelTo(item);
-            _itemModel.ShowModel = true;
-        }
-
-        private void PrepareBlock(BlockItem item)
-        {
-            var blockData = GameAssets.GetBlockDataById(item.BlockId);
-            if (blockData == null) return;
-
-            if (HeldBlockMesh.TryBuild(blockData, out var vertices, out var indices))
-            {
-                _blockModel.SetCustomMesh(vertices, indices);
-                return;
-            }
-
-            for (byte i = 0; i < 6; i++)
-            {
-                Face face = (Face)i;
-                Vector2[] uv = blockData.GetFaceUV(face, BlockState.Inactive);
-                _blockModel.ChangeUV(uv, face, false);
-            }
-            _blockModel.RegenerateMesh();
         }
 
         public void PlayKick()
@@ -119,8 +49,7 @@ namespace Spacebox.Game.Player
             if (IsUsing)
                 offset += new Vector3(MathF.Sin(_time * VibrationSpeed) * VibrationAmount, MathF.Cos(_time * VibrationSpeed * 1.3f) * VibrationAmount * 0.5f, 0f);
 
-            _itemModel.Position = ItemBasePosition + offset;
-            _blockModel.Position = BlockBasePosition + offset;
+            _models.SetOffset(offset);
         }
 
         public override void Render()
@@ -136,18 +65,7 @@ namespace Spacebox.Game.Player
 
         private void UpdateVisibilityState()
         {
-
-            if (_owner.IsMain)
-            {
-                if (_itemModel.Enabled) _itemModel.Enabled = false;
-                if (_blockModel.Enabled) _blockModel.Enabled = false;
-            }
-            else
-            {
-
-                if (_itemModel.Enabled != _isHoldingItem) _itemModel.Enabled = _isHoldingItem;
-                if (_blockModel.Enabled != _isHoldingBlock) _blockModel.Enabled = _isHoldingBlock;
-            }
+            _models.SetVisible(!_owner.IsMain);
         }
     }
 }

@@ -34,7 +34,7 @@ public class GravityGeneratorJSON
     };
 }
 
-public class GravityGeneratorBlockData : BlockData
+public class GravityGeneratorBlockData : BlockData, IBlockTooltip
 {
     private const int MaxConsumption = 8000;
 
@@ -64,6 +64,13 @@ public class GravityGeneratorBlockData : BlockData
         MaxRoomCells = Math.Max(1, settings.MaxRoomCells);
         Presets = settings.Presets ?? new List<GravityPresetJSON>();
         FallDamage = settings.FallDamage ?? new FallDamageJSON();
+    }
+
+    public void AppendTooltip(System.Text.StringBuilder text)
+    {
+        text.Append($"\nRadius: {MinRadius}-{MaxRadius} blocks");
+        text.Append($"\nStrength: {MinStrength:0.#}-{MaxStrength:0.#} m/s²");
+        text.Append($"\nPower usage: from {Power} EU");
     }
 
     public FallDamageJSON GetFallDamage(float strength)

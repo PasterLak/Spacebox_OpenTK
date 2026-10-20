@@ -276,7 +276,10 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         OnRenderCenter?.Invoke();
 
         if (!WorldLoadingScreen.IsActive)
+        {
             PanelUI.DrawItemModel();
+            EquipmentUI.RenderPreview();
+        }
     }
 
     public override void OnGUI()
@@ -300,7 +303,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         PanelUI.Render();
 
         InventoryUI.OnGUI(localPlayer.Inventory);
-        EquipmentUI.OnGUI(localPlayer.Equipment);
+        EquipmentUI.OnGUI(localPlayer);
         StorageUI.OnGUI();
         CreativeWindowUI.OnGUI();
         Chat.OnGUI();
@@ -320,6 +323,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         DnaReconstructorUI.OnGUI();
         DnaReconstructionScreen.OnGUI();
         HitMarkerUI.OnGUI();
+        if (!UIManager.IsUIMode) RepairTargetUI.OnGUI();
 
         if (VisualDebug.Enabled)
         {
@@ -350,6 +354,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         DnaReconstructorUI.Reset();
         DnaReconstructionScreen.Reset();
         HitMarkerUI.Reset();
+        RepairTargetUI.Reset();
+        EquipmentUI.Reset();
         ShipConsoleUI.Reset();
         ShipPilot.Reset();
         ShipRider.Reset();
