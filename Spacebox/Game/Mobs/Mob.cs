@@ -30,6 +30,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
     private bool _hasLookTarget;
     private bool _hasMoveDirection;
     private float _pendingDrillDamage;
+    private float _provokedTimer;
     private MobAction _action;
     private bool _isRemoved;
 
@@ -40,6 +41,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
     public MobSenses Senses { get; }
     public IMobLink? Link { get; set; }
     public bool IsTimid { get; }
+    public bool IsProvoked => _provokedTimer > 0f;
     public bool IsDead { get; private set; }
     public bool IsReplica => Link != null && Link.IsReplica;
     public string StateName => _brain?.StateName ?? "";
@@ -157,6 +159,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
         else PlayHurt();
 
         Senses.Alert(AlertDuration);
+        _provokedTimer = MobRules.ProvokedDuration;
         _health.Decrement(damage);
     }
 
@@ -234,6 +237,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
 
     private void UpdateAuthority(float deltaTime)
     {
+        if (_provokedTimer > 0f) _provokedTimer -= deltaTime;
         Context.Tick(deltaTime);
         Senses.Update(deltaTime);
 

@@ -418,6 +418,12 @@ async function refreshModeration() {
   chips($("#muted-names"), data.mutedNames, name => mute(name, false));
   chips($("#whitelist"), data.whitelist, name => run(() => api("/whitelist/remove", { name }), `${name} was removed`).then(refreshModeration));
   $("#whitelist-enabled").checked = data.whitelistEnabled;
+
+  const admins = await run(() => api("/admins"));
+  if (!admins) return;
+  chips($("#admins"), admins.admins, name => run(() => api("/admins/remove", { name }), `${name} is no longer an admin`).then(refreshModeration));
+  $("#show-admins").checked = admins.showAdmins;
+  $("#admins-warning").classList.toggle("hidden", admins.rightsActive);
 }
 
 $("#ban-form").addEventListener("submit", async event => {
@@ -435,6 +441,16 @@ $("#whitelist-form").addEventListener("submit", async event => {
   event.target.reset();
   refreshModeration();
 });
+
+$("#admins-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  await run(() => api("/admins/add", formToObject(event.target)), "Admin added");
+  event.target.reset();
+  refreshModeration();
+});
+
+$("#show-admins").addEventListener("change", event =>
+  run(() => api("/admins/show", { enabled: event.target.checked }), event.target.checked ? "Admins are shown" : "Admins are hidden"));
 
 $("#whitelist-enabled").addEventListener("change", event =>
   run(() => api("/whitelist/enabled", { enabled: event.target.checked }), event.target.checked ? "Whitelist on" : "Whitelist off"));

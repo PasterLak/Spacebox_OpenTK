@@ -11,6 +11,7 @@ public struct PlayerListEntry
     public int Ping;
     public bool IsMuted;
     public bool IsHost;
+    public bool IsAdmin;
 }
 
 public struct PlayerListMessage : INetMessage
@@ -28,6 +29,7 @@ public struct PlayerListMessage : INetMessage
             writer.Write(player.Ping);
             writer.Write(player.IsMuted);
             writer.Write(player.IsHost);
+            writer.Write(player.IsAdmin);
         }
     }
 
@@ -43,7 +45,8 @@ public struct PlayerListMessage : INetMessage
                 Name = reader.ReadString(),
                 Ping = reader.ReadInt(),
                 IsMuted = reader.ReadBool(),
-                IsHost = reader.ReadBool()
+                IsHost = reader.ReadBool(),
+                IsAdmin = reader.ReadBool()
             });
         }
     }
@@ -104,7 +107,8 @@ public static class PlayerListNetwork
                 Name = player.Name,
                 Ping = network.GetRoundTripMilliseconds(player.Peer),
                 IsMuted = ServerModeration.IsMuted(player.Name),
-                IsHost = player.Peer == network.LocalPeerId
+                IsHost = player.Peer == network.LocalPeerId,
+                IsAdmin = Admin.ServerAdmins.ShowsBadge(player.Name)
             });
         }
 

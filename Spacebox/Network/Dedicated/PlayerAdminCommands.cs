@@ -10,17 +10,18 @@ namespace Spacebox.Network.Dedicated;
 public sealed class ServerGameModeCommand : CommandBase
 {
     public override string Name => "gm";
-    public override string Description => "Change the game mode of a player. Usage: gm <0|1|2> <player> (survival, creative, spectator)";
+    public override string Description => "Change the game mode of a player. Usage: gm <0|1|2> <player> (survival, creative, spectator); admins in chat can leave out the player to change their own";
 
     public override void Execute(string[] args)
     {
-        if (args.Length < 2 || !int.TryParse(args[0], out int id) || id < 0 || id > 2)
+        string target = args.Length >= 2 ? args[1] : Spacebox.Network.Admin.ChatCommands.CurrentSender;
+        if (args.Length < 1 || target == null || !int.TryParse(args[0], out int id) || id < 0 || id > 2)
         {
             Debug.Error($"Usage: {Name} <0|1|2> <player>");
             return;
         }
 
-        if (!PlayerAdmin.TryGetNetwork(args[1], out var player, out var network)) return;
+        if (!PlayerAdmin.TryGetNetwork(target, out var player, out var network)) return;
 
         var mode = id switch { 0 => GameMode.Survival, 1 => GameMode.Creative, _ => GameMode.Spectator };
         network.SetGameModeByServer(mode);

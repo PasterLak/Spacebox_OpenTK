@@ -96,6 +96,8 @@
   <tr><td>LanDiscovery</td><td>true</td><td>Players in the same network find the server automatically</td></tr>
   <tr><td>WhitelistEnabled / Whitelist</td><td>false / []</td><td>Only listed names may join</td></tr>
   <tr><td>RegistrationEnabled</td><td>false</td><td>Players need a password (created on their first join)</td></tr>
+  <tr><td>Admins</td><td>[]</td><td>Player names with admin rights: they run every console command from the in-game chat with <code>/</code> (e.g. <code>/gm 1 Anna</code>, <code>/kick Bob</code>). Only works with <code>RegistrationEnabled</code>, so nobody can take an admin's name</td></tr>
+  <tr><td>ShowAdmins</td><td>true</td><td>Show <code>[ADMIN]</code> before admin names in the player list and in chat</td></tr>
   <tr><td>WorldName</td><td>ServerWorld</td><td>Folder in <code>Worlds/</code>; a missing world is created</td></tr>
   <tr><td>Seed</td><td>random</td><td>World seed for a new world</td></tr>
   <tr><td>ModId</td><td>default</td><td>GameSet (content pack) of the world</td></tr>
@@ -104,6 +106,7 @@
   <tr><td>GameMode</td><td>0</td><td>0 Survival, 1 Creative, 2 Spectator (for a new world)</td></tr>
   <tr><td>AutoSaveInterval</td><td>300</td><td>Seconds between autosaves, 0 turns it off (minimum 10)</td></tr>
   <tr><td>UpdateRate</td><td>30</td><td>Server frame rate, 10–240</td></tr>
+  <tr><td>FriendlyMobs</td><td>false</td><td>Mobs never attack first; a mob that is hurt fights back for 30 seconds</td></tr>
   <tr><td>DashboardEnabled</td><td>true</td><td>Web dashboard on or off</td></tr>
   <tr><td>DashboardPort</td><td>0</td><td>TCP port of the dashboard, 0 = same number as <code>Port</code></td></tr>
   <tr><td>PublicAddress</td><td>empty</td><td>The address people use from the internet: a DuckDNS name, any domain or your public IP. Turns on automatic HTTPS (chapter 5)</td></tr>
@@ -194,14 +197,14 @@
   <tr><th>Page</th><th>What you can do</th></tr>
   <tr><td>Overview</td><td>Players, uptime, CPU, memory, game ticks, update time, world size, live charts; server info and HTTPS state; send a chat message to everyone; Save world, Restart, Stop</td></tr>
   <tr><td>Players</td><td>Online players with ping, address and position; all players who ever joined; Kick, Mute, Ban. Click a player for health, power, oxygen, equipment, hotbar, inventory with item icons and statistics</td></tr>
-  <tr><td>Moderation</td><td>Banned names and IP addresses (unban), muted players, ban by name, whitelist on/off, add and remove names</td></tr>
+  <tr><td>Moderation</td><td>Banned names and IP addresses (unban), muted players, ban by name, whitelist on/off, add and remove names; admins: add and remove, show or hide the [ADMIN] tag</td></tr>
   <tr><td>Console</td><td>Live server log; type any console command (Tab completes, arrow keys browse the history)</td></tr>
   <tr><td>Settings</td><td>Name, description, max players, LAN visibility, autosave interval, frame rate (applied at once); upload the server icon; change the dashboard password</td></tr>
 </table>
 <div class="box tip"><b>Security built in</b>Login sessions last 12 hours; 5 wrong passwords lock that address for 5 minutes; every admin action is written to the server log as <code>[Dashboard] admin: …</code>. If you never need the dashboard from outside, simply do not forward TCP 7777, or set <code>"DashboardEnabled": false</code>.</div>
 
 <h2>7. Console commands</h2>
-<p>Type them in the server terminal or the dashboard console. <code>help</code> lists all of them.</p>
+<p>Type them in the server terminal or the dashboard console. <code>help</code> lists all of them. Admins (see <code>Admins</code> in chapter 2) type them in the game chat with a leading <code>/</code>; the answer appears only in their own chat. Other players cannot run commands and cannot change their own game mode.</p>
 <table>
   <tr><th>Command</th><th>Meaning</th></tr>
   <tr><td>say &lt;text&gt;</td><td>Chat message from the server</td></tr>
@@ -210,7 +213,7 @@
   <tr><td>ban / unban &lt;name&gt;</td><td>Ban (also offline players and their IP) or unban</td></tr>
   <tr><td>mute / unmute &lt;name&gt;</td><td>Block or allow chat for a player</td></tr>
   <tr><td>unregister &lt;name&gt;</td><td>Delete a player's password account (registration mode)</td></tr>
-  <tr><td>gm &lt;0|1|2&gt; &lt;name&gt;</td><td>Game mode: survival, creative, spectator</td></tr>
+  <tr><td>gm &lt;0|1|2&gt; &lt;name&gt;</td><td>Game mode: survival, creative, spectator. In chat an admin can leave out the name to change their own mode: <code>/gm 1</code></td></tr>
   <tr><td>tp &lt;name&gt; &lt;x&gt; &lt;y&gt; &lt;z&gt;</td><td>Teleport a player to a position</td></tr>
   <tr><td>tpp &lt;name&gt; &lt;target&gt;</td><td>Teleport a player to another player</td></tr>
   <tr><td>mob &lt;id&gt; &lt;count&gt; &lt;name&gt; | list | clear</td><td>Spawn, list or remove mobs</td></tr>

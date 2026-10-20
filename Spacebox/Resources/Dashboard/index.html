@@ -138,6 +138,16 @@
             </form>
             <ul class="chips" id="whitelist"></ul>
           </div>
+          <div class="panel">
+            <h3>Admins</h3>
+            <p class="error hidden" id="admins-warning">Admin rights only work with player registration on (RegistrationEnabled), because without passwords anyone could join with an admin's name.</p>
+            <label class="switch"><input type="checkbox" id="show-admins"><span>Show [ADMIN] in the player list and chat</span></label>
+            <form id="admins-form" class="row">
+              <input name="name" maxlength="32" placeholder="Add an admin" required>
+              <button class="btn gold" type="submit">Add</button>
+            </form>
+            <ul class="chips" id="admins"></ul>
+          </div>
         </div>
       </section>
 

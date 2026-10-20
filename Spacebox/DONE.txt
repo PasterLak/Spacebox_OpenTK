@@ -107,6 +107,8 @@ Engine
 Game
 - flashlight glare: another player shining a flashlight in your face brightens the screen and puts a lens flare on the helmet glass (distance, cone and view angle, blocked by walls; Flashlight Glare option)
 - flashlight beams: other players' flashlights show a 3D light cone with drifting dust (Flashlight Beams option)
+- server option FriendlyMobs (serverconfig.json, default false): mobs never attack first, a hurt mob fights back for 30 s
+- server admins: Admins list and ShowAdmins in serverconfig.json and the dashboard; admins run server commands in chat with / (also /gm for any player), [ADMIN] tag in chat and player list; players cannot change their own game mode on a server
 - PerlinNoise+
 - Worms/Ores generator
 - refactoring

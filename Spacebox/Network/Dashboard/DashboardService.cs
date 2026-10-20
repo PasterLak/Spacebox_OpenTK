@@ -62,6 +62,7 @@ public static class DashboardService
             new ServerModule(),
             new PlayersModule(),
             new ModerationModule(),
+            new AdminsModule(),
             new ConsoleModule()
         };
         foreach (var module in modules) module.Map(router, context);

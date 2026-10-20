@@ -10,7 +10,8 @@ namespace Spacebox.Game.Commands
     {
         public override string Name => "gm";
 
-        public override string Description => "Change gamemode. Usage: gm <0,1,2>  (survival,creative,spectator)";
+        public override string Description => "Change gamemode. Usage: gm <0,1,2>  (survival,creative,spectator)";
+
         public override bool AvailableInTerminal => false;
 
         public LocalAstronaut Astronaut { get; set; }
@@ -27,6 +28,12 @@ namespace Spacebox.Game.Commands
             if (Astronaut == null)
             {
                 Debug.Error("Astronaut reference is null.");
+                return;
+            }
+
+            if (Spacebox.Network.GameSession.IsRemoteClient)
+            {
+                Debug.Error("Only server admins can change game modes. Admins use /gm <0|1|2> [player] in the chat.");
                 return;
             }
 

@@ -15,6 +15,8 @@ public sealed class ServerConfig
     public bool WhitelistEnabled { get; set; } = false;
     public List<string> Whitelist { get; set; } = new List<string>();
     public bool RegistrationEnabled { get; set; } = false;
+    public List<string> Admins { get; set; } = new List<string>();
+    public bool ShowAdmins { get; set; } = true;
     public string WorldName { get; set; } = "ServerWorld";
     public string Seed { get; set; } = "";
     public string ModId { get; set; } = "default";
@@ -23,6 +25,7 @@ public sealed class ServerConfig
     public byte GameMode { get; set; } = 0;
     public float AutoSaveInterval { get; set; } = 300f;
     public int UpdateRate { get; set; } = DefaultUpdateRate;
+    public bool FriendlyMobs { get; set; } = false;
     public bool DashboardEnabled { get; set; } = true;
     public int DashboardPort { get; set; } = 0;
     public string DashboardCertificateFile { get; set; } = "";

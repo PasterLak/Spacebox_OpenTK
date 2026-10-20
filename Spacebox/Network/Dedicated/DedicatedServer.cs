@@ -13,6 +13,12 @@ public static class DedicatedServer
 {
     public static ServerConfig Config { get; private set; }
 
+    public static void WarnIfAdminsUnprotected(ServerConfig config)
+    {
+        if (config.Admins.Count > 0 && !Spacebox.Network.Admin.ServerAdmins.RightsActive(config))
+            Debug.Warning("[Server] Admins are listed but RegistrationEnabled is false: player names are not checked, so admin rights stay off until registration is enabled");
+    }
+
     public static void Launch()
     {
         Debug.MirrorToStandardOutput = true;
@@ -21,6 +27,8 @@ public static class DedicatedServer
         FrameLimiter.TargetFPS = Config.GetClampedUpdateRate();
 
         NetworkManager.Instance.MaxPeers = Math.Max(1, Config.MaxPlayers);
+        Spacebox.Game.Mobs.MobRules.FriendlyMobs = Config.FriendlyMobs;
+        WarnIfAdminsUnprotected(Config);
         GameSession.SetPlayer(Config.ServerName, "White");
         GameSession.BeginDedicated(Config.Port);
 

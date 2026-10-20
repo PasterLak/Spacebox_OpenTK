@@ -31,6 +31,7 @@ public sealed class MobContext
     public MobSenses Senses => Mob.Senses;
     public MobNavigationGrid Grid => Mob.Navigation;
     public bool IsTimid => Mob.IsTimid;
+    public bool IsHostile => MobRules.IsHostile(MobRules.FriendlyMobs, Mob.IsProvoked);
 
     public FoodTarget Food { get; set; }
     public bool FoodSearchFailed { get; set; }
