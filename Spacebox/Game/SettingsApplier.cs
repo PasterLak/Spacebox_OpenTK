@@ -39,8 +39,11 @@ public static class SettingsApplier
             window.SetVSync(graphics.VSync);
             window.RenderScale = graphics.ResolutionScalePercent / 100f;
             window.PostProcessingEnabled = graphics.PostProcessing;
-            (window as SpaceboxWindow)?.Ssao?.Configure(SsaoSettingsMapper.From(graphics));
+            if (window is SpaceboxWindow spacebox)
+                ApplyPostProcessing(spacebox, graphics);
         }
+
+        Time.AlwaysCalculateFPS = graphics.ShowFps;
 
         ApplyFrameLimit(graphics);
         ParticleSystem.GloballyEnabled = graphics.EffectsEnabled;
@@ -51,6 +54,18 @@ public static class SettingsApplier
 
         var changed = new GraphicsSettingsChangedEvent { NewSettings = graphics };
         EventBus.Publish(ref changed);
+    }
+
+    private static void ApplyPostProcessing(SpaceboxWindow window, GraphicsSettings graphics)
+    {
+        window.Ssao?.Configure(SsaoSettingsMapper.From(graphics));
+        window.ColorGrading?.Configure(ColorGradingSettingsMapper.From(graphics));
+
+        if (window.Vignette != null)
+        {
+            window.Vignette.VignetteStrength = graphics.VignettePercent / 100f;
+            window.Vignette.Enabled = graphics.VignettePercent > 0;
+        }
     }
 
     public static void ApplyGameplay(GameplaySettings gameplay)

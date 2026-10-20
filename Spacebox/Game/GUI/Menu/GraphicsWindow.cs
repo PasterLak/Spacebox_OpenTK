@@ -40,6 +40,10 @@ namespace Spacebox.Game.GUI.Menu
                         Apply(graphics, () => graphics.MaxFps = fps > GraphicsSettings.MaxFpsLimit ? 0 : fps);
                     if (graphics.VSync) ImGui.EndDisabled();
 
+                    bool showFps = graphics.ShowFps;
+                    if (rows.Checkbox("Show FPS", "Shows frames per second and frame time in the top right corner.", ref showFps))
+                        Apply(graphics, () => graphics.ShowFps = showFps);
+
                     int resolution = _pendingResolution >= 0 ? _pendingResolution : graphics.ResolutionScalePercent;
                     if (rows.Slider("Resolution Scale", "Renders the world at a lower resolution and stretches it to the window. The interface stays sharp. Lower values give more FPS.", ref resolution, 10, 100, "%d%%"))
                         _pendingResolution = resolution;
@@ -53,6 +57,37 @@ namespace Spacebox.Game.GUI.Menu
                     int fov = graphics.Fov;
                     if (rows.Slider("Field of View", "How wide the camera sees, in degrees. Higher values show more around you.", ref fov, 50, 120, "%d"))
                         Apply(graphics, () => graphics.Fov = fov);
+
+                    rows.Section("Image");
+                    int brightness = graphics.BrightnessPercent;
+                    if (rows.Slider("Brightness", "Brightens or darkens the dark and middle tones of the image. Light sources stay bright.", ref brightness, GraphicsSettings.MinBrightnessPercent, GraphicsSettings.MaxBrightnessPercent, "%d%%"))
+                        Apply(graphics, () => graphics.BrightnessPercent = brightness);
+
+                    int contrast = graphics.ContrastPercent;
+                    if (rows.Slider("Contrast", "Difference between dark and bright parts of the image.", ref contrast, GraphicsSettings.MinContrastPercent, GraphicsSettings.MaxContrastPercent, "%d%%"))
+                        Apply(graphics, () => graphics.ContrastPercent = contrast);
+
+                    int saturation = graphics.SaturationPercent;
+                    if (rows.Slider("Saturation", "Color intensity. 0% is black and white, higher values give stronger colors.", ref saturation, 0, GraphicsSettings.MaxSaturationPercent, "%d%%"))
+                        Apply(graphics, () => graphics.SaturationPercent = saturation);
+
+                    int vignette = graphics.VignettePercent;
+                    if (rows.Slider("Vignette", "Darkens the screen edges. Needs Post Processing.", ref vignette, 0, 100, "%d%%"))
+                        Apply(graphics, () => graphics.VignettePercent = vignette);
+
+                    int filmGrain = graphics.FilmGrainPercent;
+                    if (rows.Slider("Film Grain", "Noise over the whole image for a retro film look.", ref filmGrain, 0, 100, "%d%%"))
+                        Apply(graphics, () => graphics.FilmGrainPercent = filmGrain);
+
+                    if (graphics.FilmGrainPercent > 0)
+                    {
+                        bool animated = graphics.FilmGrainAnimated;
+                        if (rows.Checkbox("Animated Grain", "On: the grain changes 24 times per second like film. Off: the grain stays fixed on the screen.", ref animated))
+                            Apply(graphics, () => graphics.FilmGrainAnimated = animated);
+                    }
+
+                    if (rows.Button("Image Defaults", "Restores the default brightness, contrast, saturation, vignette and film grain.", "Reset"))
+                        Apply(graphics, graphics.ResetImage);
 
                     rows.Section("World");
                     bool ao = graphics.AO;

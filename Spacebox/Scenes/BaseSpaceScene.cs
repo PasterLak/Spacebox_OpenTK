@@ -314,6 +314,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         PauseUI.OnGUI();
         Spacebox.Game.Tutorial.UI.TutorialPromptUI.OnGUI();
         Spacebox.Game.Waypoints.WaypointWindowUI.OnGUI();
+        Spacebox.Game.GUI.FpsCounterUI.OnGUI();
         if (Settings.ShowInterface) InputOverlay.OnGUI();
         GeneratorUI.OnGUI();
         AnalyzerUI.OnGUI();

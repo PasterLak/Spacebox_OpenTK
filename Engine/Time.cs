@@ -57,6 +57,7 @@ namespace Engine
 
         public static bool EnableProfiling { get; set; } = true;
         public static bool CalculateFPS { get; set; } = false;
+        public static bool AlwaysCalculateFPS { get; set; } = false;
 
         public static float TargetTPS
         {
@@ -80,7 +81,7 @@ namespace Engine
             if (Total > 100000f)                
                 Total -= 100000f;
 
-            if(CalculateFPS)
+            if(CalculateFPS || AlwaysCalculateFPS)
             UpdateFPS(frame);
         }
 

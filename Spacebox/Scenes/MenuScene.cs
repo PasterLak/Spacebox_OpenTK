@@ -269,6 +269,7 @@ namespace Spacebox.Scenes
             //CenteredText.Hide();
             CenteredText.OnGUI();
             InputOverlay.OnGUI();
+            Spacebox.Game.GUI.FpsCounterUI.OnGUI();
         }
 
         public override void UnloadContent()

@@ -60,6 +60,13 @@ namespace Spacebox.Game
         [JsonPropertyName("ssao_grain_percent")] public int SsaoGrainPercent { get; set; } = 29;
         [JsonPropertyName("ssao_grain_size")] public int SsaoGrainSize { get; set; } = 2;
         [JsonPropertyName("ssao_radius_percent")] public int SsaoRadiusPercent { get; set; } = 31;
+        [JsonPropertyName("brightness_percent")] public int BrightnessPercent { get; set; } = 100;
+        [JsonPropertyName("contrast_percent")] public int ContrastPercent { get; set; } = 100;
+        [JsonPropertyName("saturation_percent")] public int SaturationPercent { get; set; } = 100;
+        [JsonPropertyName("vignette_percent")] public int VignettePercent { get; set; } = 50;
+        [JsonPropertyName("film_grain_percent")] public int FilmGrainPercent { get; set; } = 0;
+        [JsonPropertyName("film_grain_animated")] public bool FilmGrainAnimated { get; set; } = true;
+        [JsonPropertyName("show_fps")] public bool ShowFps { get; set; } = false;
 
         public void ResetSsao()
         {
@@ -70,6 +77,17 @@ namespace Spacebox.Game
             SsaoGrainPercent = defaults.SsaoGrainPercent;
             SsaoGrainSize = defaults.SsaoGrainSize;
             SsaoRadiusPercent = defaults.SsaoRadiusPercent;
+        }
+
+        public void ResetImage()
+        {
+            var defaults = new GraphicsSettings();
+            BrightnessPercent = defaults.BrightnessPercent;
+            ContrastPercent = defaults.ContrastPercent;
+            SaturationPercent = defaults.SaturationPercent;
+            VignettePercent = defaults.VignettePercent;
+            FilmGrainPercent = defaults.FilmGrainPercent;
+            FilmGrainAnimated = defaults.FilmGrainAnimated;
         }
 
         public bool Validate(GraphicsSettings d)
@@ -85,6 +103,11 @@ namespace Spacebox.Game
             if (OutOfRange(SsaoGrainPercent, 0, 100)) { SsaoGrainPercent = d.SsaoGrainPercent; changed = true; }
             if (OutOfRange(SsaoGrainSize, 1, MaxSsaoGrainSize)) { SsaoGrainSize = d.SsaoGrainSize; changed = true; }
             if (OutOfRange(SsaoRadiusPercent, MinSsaoRadiusPercent, MaxSsaoRadiusPercent)) { SsaoRadiusPercent = d.SsaoRadiusPercent; changed = true; }
+            if (OutOfRange(BrightnessPercent, MinBrightnessPercent, MaxBrightnessPercent)) { BrightnessPercent = d.BrightnessPercent; changed = true; }
+            if (OutOfRange(ContrastPercent, MinContrastPercent, MaxContrastPercent)) { ContrastPercent = d.ContrastPercent; changed = true; }
+            if (OutOfRange(SaturationPercent, 0, MaxSaturationPercent)) { SaturationPercent = d.SaturationPercent; changed = true; }
+            if (OutOfRange(VignettePercent, 0, 100)) { VignettePercent = d.VignettePercent; changed = true; }
+            if (OutOfRange(FilmGrainPercent, 0, 100)) { FilmGrainPercent = d.FilmGrainPercent; changed = true; }
             return changed;
         }
 
@@ -95,6 +118,11 @@ namespace Spacebox.Game
         public const int MinSsaoRadiusPercent = 25;
         public const int MaxSsaoRadiusPercent = 300;
         public const int MaxSsaoGrainSize = 8;
+        public const int MinBrightnessPercent = 50;
+        public const int MaxBrightnessPercent = 150;
+        public const int MinContrastPercent = 50;
+        public const int MaxContrastPercent = 150;
+        public const int MaxSaturationPercent = 200;
 
         static bool OutOfRange(int v, int min, int max) => v < min || v > max;
     }

@@ -2,6 +2,7 @@
 using Engine.Audio;
 using Engine.InputPro;
 using Engine.PostProcessing;
+using Engine.PostProcessing.ColorGrading;
 using Engine.PostProcessing.Ssao;
 using Engine.SceneManagement;
 using Engine.Utils;
@@ -30,6 +31,8 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
     private AudioSource _screenshotAudio;
 
     public SsaoEffect Ssao { get; private set; }
+    public VignetteEffect Vignette { get; private set; }
+    public ColorGradingEffect ColorGrading { get; private set; }
 
     public SpaceboxWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
         : base(gameWindowSettings, nativeWindowSettings)
@@ -146,6 +149,10 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
         Ssao = new SsaoEffect(LoadSsaoShaders(), SceneRenderer);
         processManager.AddEffect(Ssao);
         processManager.AddEffect(vignetteEffect);
+        Vignette = vignetteEffect;
+
+        ColorGrading = new ColorGradingEffect(Resources.Load<Shader>("Resources/Shaders/PostProcessing/colorGrading", true));
+        processManager.AddEffect(ColorGrading);
 
         var edgeDetectionShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/edgeDetection", true);
 
