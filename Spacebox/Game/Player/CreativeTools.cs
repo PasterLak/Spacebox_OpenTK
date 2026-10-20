@@ -87,7 +87,7 @@ namespace Spacebox.Game.Player
                 return;
             }
 
-            if (Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(Block1.spaceEntity)) WorldEditNetwork.RequestBulkEdit(Block1.spaceEntity, Block1.Cell, Block2.Cell, blockId);
+            if (Spacebox.Game.Protection.EntityProtection.CheckLocalEditBox(Block1.spaceEntity, Vector3i.ComponentMin(Block1.Cell, Block2.Cell), Vector3i.ComponentMax(Block1.Cell, Block2.Cell))) WorldEditNetwork.RequestBulkEdit(Block1.spaceEntity, Block1.Cell, Block2.Cell, blockId);
             Reset();
         }
 

@@ -415,7 +415,7 @@ namespace Spacebox.Game.Generation
         public bool DamageBlock(HitInfo hit, byte damage, bool spawnDrop)
         {
             if (damage == 0) return false;
-            if (Spacebox.Game.Protection.EntityProtection.IsProtected(SpaceEntity)) return false;
+            if (Spacebox.Game.Protection.ProtectionRules.IsDamageProtected(SpaceEntity, Spacebox.Game.Protection.ProtectionRules.CellOf(this, hit.blockPositionIndex))) return false;
             if (!IsInRange(hit.blockPositionIndex.X, hit.blockPositionIndex.Y, hit.blockPositionIndex.Z))
                 return false;
 

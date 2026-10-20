@@ -332,7 +332,8 @@ public static class ShipNetwork
         if (!NetworkManager.Instance.IsServer) return;
 
         ReleasePilot(sender);
-        if (!message.Mount || !TryGetConsole(message.EntityId, message.ConsoleCell, out _, out var console) || !console.IsPowered) return;
+        if (!message.Mount || !TryGetConsole(message.EntityId, message.ConsoleCell, out var mountEntity, out var console) || !console.IsPowered) return;
+        if (ProtectionNetwork.BlocksPeerUse(sender, mountEntity)) return;
 
         _pilots[sender] = (message.EntityId, message.ConsoleCell);
     }
@@ -355,6 +356,7 @@ public static class ShipNetwork
     {
         if (!NetworkManager.Instance.IsServer) return;
         if (!TryGetConsole(message.EntityId, message.ConsoleCell, out var entity, out _)) return;
+        if (ProtectionNetwork.BlocksPeerUse(sender, entity)) return;
 
         var control = entity.ShipControl;
         switch (message.Operation)

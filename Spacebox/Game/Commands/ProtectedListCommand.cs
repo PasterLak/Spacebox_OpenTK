@@ -17,13 +17,15 @@ public sealed class ProtectedListCommand : CommandBase
 
     public override string Name => "protected";
 
-    public override string Description => "List the protected asteroids and ships";
+    public override string Description => "List admin-protected asteroids and ships and the loaded claim beacons";
 
     public override void Execute(string[] args)
     {
+        ListClaims();
+
         if (EntityProtection.Ids.Count == 0)
         {
-            Debug.Log("Nothing is protected");
+            Debug.Log("No admin protection");
             return;
         }
 
@@ -40,6 +42,24 @@ public sealed class ProtectedListCommand : CommandBase
             {
                 Debug.Log($"Entity {id} (not loaded)");
             }
+        }
+    }
+
+    private static void ListClaims()
+    {
+        var claims = ClaimRegistry.Loaded;
+        if (claims.Count == 0)
+        {
+            Debug.Log("No claim beacons loaded");
+            return;
+        }
+
+        for (int i = 0; i < claims.Count; i++)
+        {
+            var claim = claims[i];
+            string state = claim.IsClaimActive ? $"{ClaimCost.FormatDuration(claim.RemainingSeconds)} left" : "inactive";
+            string where = claim.Entity != null ? ProtectCommand.Describe(claim.Entity) : "?";
+            Debug.Log($"Claim of {(claim.Owner.Length > 0 ? claim.Owner : "nobody")} on {where}: {state}, {claim.Members.Count} member(s)");
         }
     }
 }

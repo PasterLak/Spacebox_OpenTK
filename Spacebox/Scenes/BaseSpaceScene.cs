@@ -92,6 +92,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
             World.LoadRemoteWorldInfo(GameSession.RemoteWorld);
         else
             World.LoadWorldInfo(SceneArgs.worldName);
+        Spacebox.Game.Protection.ClaimRegistry.Load(World.WorldData.WorldFolderPath);
         blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.EmissionBlocks);
         var world = new World(localPlayer, blockMaterial);
         AttachComponent(world);
@@ -229,6 +230,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         DnaReconstructionScreen.Update();
         Spacebox.Game.Rendering.CameraFeedController.Update();
         Spacebox.Game.Rendering.FlashlightGlareController.Update(localPlayer);
+        Spacebox.Game.Protection.ClaimRegistry.Update(Time.Delta);
         Spacebox.Game.Rendering.VignetteController.SetWarning(Spacebox.Game.Player.OxygenWarning.For(localPlayer));
 
 #if DEBUG
@@ -298,6 +300,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         base.Render();
         _flashlightBeams?.Render();
+        Spacebox.Game.Protection.ClaimVisuals.Update(localPlayer, Time.Delta);
         if (VisualDebug.Enabled)
         {
             VisualDebug.DrawAxes(Vector3.Zero, 10f);
@@ -353,6 +356,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         GeneratorUI.OnGUI();
         AnalyzerUI.OnGUI();
         OxygenGeneratorUI.OnGUI();
+        ClaimBeaconUI.OnGUI();
         DisassemblerUI.OnGUI();
         GravityGeneratorUI.OnGUI();
         ShipConsoleUI.OnGUI();
@@ -387,9 +391,13 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         PerlinWorms.ClearCache();
         ResourceProcessingGUI.Reset();
         OxygenGeneratorUI.Reset();
+        ClaimBeaconUI.Reset();
         DisassemblerUI.Reset();
         WorldLoadingScreen.Reset();
         Spacebox.Game.Protection.EntityProtection.Reset();
+        Spacebox.Game.Protection.ClaimRegistry.Reset();
+        Spacebox.Game.Protection.ClaimVisuals.Reset();
+        Spacebox.Game.Protection.ClaimSettings.ClearOverride();
         GravityGeneratorUI.Reset();
         DnaReconstructorUI.Reset();
         DnaReconstructionScreen.Reset();

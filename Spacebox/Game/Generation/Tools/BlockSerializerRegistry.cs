@@ -22,7 +22,8 @@ namespace Spacebox.Game.Generation.Tools
             { typeof(GravityGeneratorBlock), new GravityGeneratorSerializer() },
             { typeof(DnaReconstructorBlock), new DnaReconstructorSerializer() },
             { typeof(PipeBlock), new PipeSerializer() },
-            { typeof(ShipConsoleBlock), new ShipConsoleSerializer() }
+            { typeof(ShipConsoleBlock), new ShipConsoleSerializer() },
+            { typeof(ClaimBeaconBlock), new ClaimBeaconSerializer() }
         };
 
         public static IBlockSerializer GetSerializer(Type blockType)

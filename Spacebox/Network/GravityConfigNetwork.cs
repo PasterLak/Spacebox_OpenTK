@@ -73,6 +73,7 @@ public static class GravityConfigNetwork
     {
         if (!NetworkManager.Instance.IsServer) return;
         if (!ContainerResolver.TryResolveBlock(message.Key, out var block, out _) || block is not GravityGeneratorBlock gravity) return;
+        if (ProtectionNetwork.BlocksPeerKey(sender, message.Key)) return;
 
         gravity.Configure(message.Radius, message.Strength, message.Enabled, message.InsideOnly);
         gravity.ApplyPendingPower();

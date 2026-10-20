@@ -73,6 +73,17 @@ namespace Engine
 
         public static void ClearRegistry() => _all.Clear();
 
+        public static void DestroyAll()
+        {
+            for (int i = _all.Count - 1; i >= 0; i--)
+            {
+                if (i < _all.Count) _all[i].Destroy();
+            }
+            _all.Clear();
+        }
+
+        public bool IsDestroyed { get; private set; }
+
         public ParticleSystem(ParticleMaterial material, EmitterBase emitter)
         {
             _all.Add(this);
@@ -316,6 +327,8 @@ namespace Engine
 
         public override void Destroy()
         {
+            if (IsDestroyed) return;
+            IsDestroyed = true;
             base.Destroy();
             _all.Remove(this);
             ClearParticles();

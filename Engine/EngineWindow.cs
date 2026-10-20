@@ -68,6 +68,7 @@ namespace Engine
             {
                 LightSystem.InitializeGpu();
                 VisualDebug.InitializeGpu();
+                WorldLines.InitializeGpu();
                 _sceneRenderer = new SceneRenderer(SceneSize.X, SceneSize.Y);
             }
 
@@ -241,6 +242,8 @@ namespace Engine
             {
                 using (Prof.Time(T_SceneRender))
                     SceneManager.Render();
+
+                WorldLines.Render();
 
                 using (Prof.Time(T_VisualDebug))
                     VisualDebug.Render();
@@ -451,10 +454,14 @@ namespace Engine
             IsQuitting = true;
 
             if (SceneManager.Current != null)
+            {
+                SceneManager.Current.Destroy();
                 SceneManager.Current.UnloadContent();
+            }
 
             AudioDevice.Instance.Dispose();
             _processManager?.Dispose();
+            ParticleSystem.DestroyAll();
             Resources.UnloadAll(true);
             _sceneRenderer?.Dispose();
             Debug.SaveMessagesToFile(true);

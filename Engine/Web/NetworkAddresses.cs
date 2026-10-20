@@ -28,4 +28,38 @@ public static class NetworkAddresses
 
         return false;
     }
+
+    public static IReadOnlyList<string> LocalIPv4()
+    {
+        var result = new List<string>();
+        try
+        {
+            foreach (var adapter in System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (adapter.OperationalStatus != System.Net.NetworkInformation.OperationalStatus.Up) continue;
+                if (adapter.NetworkInterfaceType == System.Net.NetworkInformation.NetworkInterfaceType.Loopback) continue;
+
+                foreach (var unicast in adapter.GetIPProperties().UnicastAddresses)
+                {
+                    var ip = unicast.Address;
+                    if (ip.AddressFamily != AddressFamily.InterNetwork || IPAddress.IsLoopback(ip)) continue;
+
+                    string text = ip.ToString();
+                    if (IsLocal(text) && !text.StartsWith("169.254.", StringComparison.Ordinal) && !result.Contains(text)) result.Add(text);
+                }
+            }
+        }
+        catch (System.Net.NetworkInformation.NetworkInformationException)
+        {
+        }
+
+        return result;
+    }
+
+    public static string DescribeUrls(int port, string route, IReadOnlyList<string> lanAddresses)
+    {
+        var urls = new List<string> { $"http://localhost:{port}{route}" };
+        for (int i = 0; i < lanAddresses.Count; i++) urls.Add($"http://{lanAddresses[i]}:{port}{route}");
+        return string.Join(" or ", urls);
+    }
 }

@@ -34,7 +34,7 @@ public static class ShipPilot
     public static void Mount(ShipConsoleBlock console, LocalAstronaut player)
     {
         if (console?.Entity == null || player == null) return;
-        if (!Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(console.Entity)) return;
+        if (!Spacebox.Game.Protection.EntityProtection.CheckLocalUse(console.Entity)) return;
         if (IsPiloting) Unmount(player);
 
         Console = console;

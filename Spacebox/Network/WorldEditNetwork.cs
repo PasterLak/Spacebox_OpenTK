@@ -96,7 +96,7 @@ public static class WorldEditNetwork
 
         var world = World.Instance;
         if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
-        if (network.IsServer && ProtectionNetwork.BlocksPeer(sender, entity)) return;
+        if (network.IsServer && ProtectionNetwork.BlocksPeer(sender, entity, message.Cell)) return;
         if (!entity.TryGetBlockLocal(message.Cell, out var chunk, out var index)) return;
 
         var block = chunk.Blocks[index.X, index.Y, index.Z];
@@ -193,7 +193,7 @@ public static class WorldEditNetwork
         SpaceEntity entity = null;
         bool known = world != null && world.TryFindEntity(message.EntityId, out entity);
 
-        if (known && ProtectionNetwork.BlocksPeer(sender, entity))
+        if (known && ProtectionNetwork.BlocksPeer(sender, entity, message.Cell))
         {
             SendCorrection(sender, entity, message.Cell);
             if (!message.IsRemoval) network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
@@ -201,9 +201,24 @@ public static class WorldEditNetwork
             return;
         }
 
+        bool isBeacon = !message.IsRemoval && Spacebox.Game.Protection.ClaimPlacement.IsBeacon(message.BlockId);
+        string senderName = PlayerRegistry.GetName(sender);
+        if (known && isBeacon)
+        {
+            string error = Spacebox.Game.Protection.ClaimRegistry.CheckPlacement(entity, message.Cell, senderName);
+            if (error != null)
+            {
+                SendCorrection(sender, entity, message.Cell);
+                network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
+                ChatService.SendToPlayer(senderName, error, OpenTK.Mathematics.Color4.Red);
+                return;
+            }
+        }
+
         short previousId = known ? GetBlockId(entity, message.Cell) : (short)0;
 
         Apply(message);
+        if (known && isBeacon) Spacebox.Game.Protection.ClaimPlacement.AssignOwner(entity, message.Cell, senderName);
         network.SendToClients(message, DeliveryMode.Reliable, sender);
 
         if (known && NeedsCorrection(entity, message, previousId)) SendCorrection(sender, entity, message.Cell);
@@ -255,7 +270,7 @@ public static class WorldEditNetwork
 
         var world = World.Instance;
         if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
-        if (network.IsServer && ProtectionNetwork.BlocksPeer(sender, entity))
+        if (network.IsServer && ProtectionNetwork.BlocksPeerBox(sender, entity, min, max))
         {
             ProtectionNetwork.Deny(sender);
             return;

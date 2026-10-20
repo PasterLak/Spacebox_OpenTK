@@ -87,6 +87,9 @@ public class InteractiveBlock : ElectricalBlock
         {
             if (Input.IsActionDown("use"))
             {
+                if (block is not Doors.DoorBlock && hit.chunk != null &&
+                    !Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(hit.chunk.SpaceEntity, Spacebox.Game.Protection.ProtectionRules.CellOf(hit.chunk, hit.blockPositionIndex))) return;
+
                 block.chunk = hit.chunk;
                 if (block is IContainerBlock container)
                     Spacebox.Network.Containers.ContainerNetwork.OnInteract(container, hit.chunk, hit.blockPositionIndex);

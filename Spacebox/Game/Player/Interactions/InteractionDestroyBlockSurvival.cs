@@ -117,7 +117,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
 
     private void DamageBlock(HitInfo hit, LocalAstronaut astronaut, DrillItem drill, byte damage = 1)
     {
-        if (!Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(hit.chunk?.SpaceEntity)) return;
+        if (hit.chunk != null && !Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(hit.chunk.SpaceEntity, Spacebox.Game.Protection.ProtectionRules.CellOf(hit.chunk, hit.blockPositionIndex))) return;
         hit.block.Durability = BlockDamage.Apply(hit.block.Durability, damage);
         astronaut.PlayerStatistics.BlockDamageDealt += damage;
         if (hit.block.Durability <= 0)

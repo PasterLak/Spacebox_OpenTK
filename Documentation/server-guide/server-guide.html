@@ -106,6 +106,7 @@
   <tr><td>GameMode</td><td>0</td><td>0 Survival, 1 Creative, 2 Spectator (for a new world)</td></tr>
   <tr><td>AutoSaveInterval</td><td>300</td><td>Seconds between autosaves, 0 turns it off (minimum 10)</td></tr>
   <tr><td>UpdateRate</td><td>30</td><td>Server frame rate, 10–240</td></tr>
+  <tr><td>Claims</td><td>see chapter 7</td><td>Claim beacon settings: <code>Enabled</code>, <code>Radius</code> (asteroid zone ± blocks, 12), <code>MaxStoredMinutes</code> (20160 = 14 days), <code>WarningMinutes</code> (60), <code>ExtraClaimCostPercent</code> (50: every further claim of a player makes all of them use time 50 % faster), <code>MaxClaimsPerPlayer</code> (0 = unlimited), <code>MaxMembers</code> (16), <code>MinDistanceFromSpawn</code> (0 = off), <code>Payments</code> (ingot id → minutes: cobalt 60, thulium 720, uranium 1440, obscurium 10080). Also editable on the dashboard Settings page</td></tr>
   <tr><td>FriendlyMobs</td><td>false</td><td>Mobs never attack first; a mob that is hurt fights back for 30 seconds</td></tr>
   <tr><td>DashboardEnabled</td><td>true</td><td>Web dashboard on or off</td></tr>
   <tr><td>DashboardPort</td><td>0</td><td>TCP port of the dashboard, 0 = same number as <code>Port</code></td></tr>
@@ -187,7 +188,7 @@
 <h3>First start: create the admin</h3>
 <ol class="steps">
   <li>Start the server. The log says: <i>No admin yet. Register in the dashboard with the setup key from …/dashboard/setup-key.txt</i>.</li>
-  <li>Open the dashboard: on the server PC <code>http://localhost:7777/dashboard</code>, in your network <code>http://192.168.1.50:7777/dashboard</code>, from outside <code>https://&lt;your address&gt;:7777/dashboard</code>.</li>
+  <li>Open the dashboard: on the server PC <code>http://localhost:7777/dashboard</code>, in your network <code>http://192.168.1.50:7777/dashboard</code> (the server log prints the exact local addresses at start; Windows Firewall on the server PC must allow the server, TCP port 7777 for the dashboard), from outside <code>https://&lt;your address&gt;:7777/dashboard</code>.</li>
   <li>Open <code>dashboard/setup-key.txt</code> in the server folder and copy the key (like <code>ABCDE-FGHJK-LMNPQ-RSTUV</code>).</li>
   <li>Enter the key, an admin name and a password (at least 8 characters). The key file is deleted; only one admin exists.</li>
 </ol>
@@ -225,6 +226,9 @@
   <tr><td>save / stop / restart</td><td>Save the world; save and stop; save and restart</td></tr>
   <tr><td>clear, version, help</td><td>Clear the console, show the version, list commands</td></tr>
 </table>
+
+<h3>Claim beacons (player protection)</h3>
+<p>Players craft a <b>Claim Beacon</b> and place it on their ship (protects the whole ship) or their base on an asteroid (protects a cube of ±<code>Radius</code> blocks around it; the rest of the asteroid stays free to mine). They pay with ingots in the beacon's slot; every ingot adds protection time, up to the stored maximum. While time is left, only the owner, the members the owner adds in the beacon window and admins can build, break, open blocks or fly the ship there; doors still work for everyone, and bullets, bombs and collisions do no damage. When the time runs out, the area is free again, so abandoned claims disappear by themselves. Time only runs while the area is loaded on the server. Claims cannot overlap another player's active claim; <code>/protected</code> lists the loaded claims.</p>
 
 <h2>8. Files, saves and backups</h2>
 <table>

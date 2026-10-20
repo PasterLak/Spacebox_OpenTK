@@ -199,6 +199,20 @@
             </form>
           </div>
         </div>
+        <form class="panel" id="claims-form">
+          <h3>Claim beacons</h3>
+          <p class="hint">Players protect ships and bases with a Claim Beacon paid with ingots. <span id="claims-count"></span></p>
+          <label class="switch"><input type="checkbox" name="enabled"><span>Claims enabled</span></label>
+          <label>Asteroid zone radius (blocks, 2-64)<input name="radius" type="number" min="2" max="64" required></label>
+          <label>Most stored protection (hours)<input name="maxStoredHours" type="number" min="1" step="1" required></label>
+          <label>Owner warning before it runs out (minutes)<input name="warningMinutes" type="number" min="0" step="1" required></label>
+          <label>Extra cost per additional claim (%)<input name="extraClaimCostPercent" type="number" min="0" max="1000" required></label>
+          <label>Max claims per player (0 = unlimited)<input name="maxClaimsPerPlayer" type="number" min="0" required></label>
+          <label>Max members per claim<input name="maxMembers" type="number" min="0" max="64" required></label>
+          <label>No claims near the spawn (meters, 0 = off)<input name="minDistanceFromSpawn" type="number" min="0" required></label>
+          <label>Payment (one per line: item id = minutes)<textarea name="payments" rows="5" spellcheck="false"></textarea></label>
+          <button class="btn gold" type="submit">Save claim settings</button>
+        </form>
       </section>
     </main>
   </section>

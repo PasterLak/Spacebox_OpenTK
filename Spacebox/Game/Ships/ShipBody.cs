@@ -32,7 +32,7 @@ public sealed class ShipBody
 
     public void ApplyForceAtLocal(Vector3 pointLocal, Vector3 forceLocal)
     {
-        if (!IsSimulated || Spacebox.Game.Protection.EntityProtection.IsProtected(_entity)) return;
+        if (!IsSimulated || Spacebox.Game.Protection.ProtectionRules.IsMovementLocked(_entity)) return;
 
         RefreshMassProperties();
         Motion.ApplyForce(pointLocal, forceLocal, CenterOfMassLocal);
@@ -40,7 +40,7 @@ public sealed class ShipBody
 
     public void ApplyImpulseAtWorld(Vector3 worldPoint, Vector3 worldImpulse)
     {
-        if (!IsSimulated || Spacebox.Game.Protection.EntityProtection.IsProtected(_entity)) return;
+        if (!IsSimulated || Spacebox.Game.Protection.ProtectionRules.IsMovementLocked(_entity)) return;
 
         RefreshMassProperties();
         var local = _entity.WorldToEntityLocal(worldPoint);
@@ -72,7 +72,7 @@ public sealed class ShipBody
         }
 
         if (_entity.Chunks.Count == 0) return;
-        if (Spacebox.Game.Protection.EntityProtection.IsProtected(_entity))
+        if (Spacebox.Game.Protection.ProtectionRules.IsMovementLocked(_entity))
         {
             if (Motion.IsMoving || Motion.HasPendingForce) Motion.Stop();
             return;
@@ -127,11 +127,12 @@ public sealed class ShipBody
         var relative = GetPointVelocity(contact.PointWorld) - (other?.GetPointVelocity(contact.PointWorld) ?? Vector3.Zero);
 
         float inverseA = GetInverseMassAlong(contact.PointWorld, normal);
-        float inverseB = other?.GetInverseMassAlong(contact.PointWorld, -normal) ?? 0f;
+        bool otherFixed = other != null && Spacebox.Game.Protection.ProtectionRules.IgnoresExternalImpulses(other._entity);
+        float inverseB = other == null || otherFixed ? 0f : other.GetInverseMassAlong(contact.PointWorld, -normal);
         if (!ShipContactSolver.TrySolve(relative, normal, inverseA, inverseB, bounce, out var impulse)) return false;
 
         ApplyImpulseAtWorld(contact.PointWorld, impulse);
-        other?.ApplyImpulseAtWorld(contact.PointWorld, -impulse);
+        if (!otherFixed) other?.ApplyImpulseAtWorld(contact.PointWorld, -impulse);
         return true;
     }
 

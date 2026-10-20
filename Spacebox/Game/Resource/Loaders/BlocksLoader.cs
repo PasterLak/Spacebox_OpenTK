@@ -105,6 +105,10 @@ namespace Spacebox.Game.Resource
 
                     blockData = new StorageBlockData(blockData, Size);
                 }
+                else if (blockData.Type == "claim")
+                {
+                    blockData = new ClaimBeaconBlockData(blockData);
+                }
                 else if (blockData.Type == "gravity")
                 {
                     blockData = new GravityGeneratorBlockData(blockData, blockJson.Gravity);

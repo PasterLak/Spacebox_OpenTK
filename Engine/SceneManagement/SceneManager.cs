@@ -148,9 +148,10 @@ namespace Engine.SceneManagement
 
                 EventBus.ClearAll();
                 Camera.Main = null;
+                ParticleSystem.DestroyAll();
                 Resources.UnloadAll();
                 VisualDebug.Clear();
-                ParticleSystem.ClearRegistry();
+                WorldLines.Clear();
                 Engine.GUI.GizmoIcons.Clear();
                 _current = null;
 

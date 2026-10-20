@@ -23,11 +23,24 @@ public static class EntityProtection
 
     public static bool IsProtected(SpaceEntity entity) => entity != null && _ids.Contains(entity.EntityID);
 
-    public static bool CanLocalPlayerEdit(SpaceEntity entity) => LocalCanEdit || !IsProtected(entity);
-
-    public static bool CheckLocalEdit(SpaceEntity entity)
+    public static bool CheckLocalEdit(SpaceEntity entity, Vector3i cell)
     {
-        if (CanLocalPlayerEdit(entity)) return true;
+        return Check(ProtectionRules.CanEdit(Spacebox.Network.GameSession.PlayerName, LocalCanEdit, entity, cell));
+    }
+
+    public static bool CheckLocalEditBox(SpaceEntity entity, Vector3i min, Vector3i max)
+    {
+        return Check(ProtectionRules.CanEditBox(Spacebox.Network.GameSession.PlayerName, LocalCanEdit, entity, min, max));
+    }
+
+    public static bool CheckLocalUse(SpaceEntity entity)
+    {
+        return Check(ProtectionRules.CanUseEntity(Spacebox.Network.GameSession.PlayerName, LocalCanEdit, entity));
+    }
+
+    private static bool Check(bool allowed)
+    {
+        if (allowed) return true;
         NotifyDenied();
         return false;
     }

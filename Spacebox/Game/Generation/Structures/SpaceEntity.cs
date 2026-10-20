@@ -1250,6 +1250,7 @@ namespace Spacebox.Game.Generation
             _shipControl?.Dispose();
             GravityField.UnregisterEntity(this);
             Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.UnregisterEntity(this);
+            Spacebox.Game.Protection.ClaimRegistry.UnregisterEntity(this);
             Sector = null;
             MeshUpdateQueue.Clear();
             foreach (var mesh in MeshesTogenerate)

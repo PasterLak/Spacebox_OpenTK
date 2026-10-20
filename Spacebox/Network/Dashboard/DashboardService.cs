@@ -63,6 +63,7 @@ public static class DashboardService
             new PlayersModule(),
             new ModerationModule(),
             new AdminsModule(),
+            new ClaimsModule(),
             new ConsoleModule()
         };
         foreach (var module in modules) module.Map(router, context);
@@ -93,7 +94,7 @@ public static class DashboardService
         else if (_certificate.Current != null)
             Debug.Success($"[Dashboard] Open https://{string.Join(" or https://", _certificate.DnsNames())}:{port}{DashboardPaths.Route} (plain http only from the local network)");
         else
-            Debug.Success($"[Dashboard] Open http://<server address>:{port}{DashboardPaths.Route}");
+            Debug.Success($"[Dashboard] Open {Engine.Web.NetworkAddresses.DescribeUrls(port, DashboardPaths.Route, Engine.Web.NetworkAddresses.LocalIPv4())} (other PCs: allow TCP port {port} in this PC's firewall)");
         string key = admins.EnsureSetupKey();
         if (key != null)
             Debug.Warning($"[Dashboard] No admin yet. Register in the dashboard with the setup key from {DashboardPaths.SetupKeyFile}");

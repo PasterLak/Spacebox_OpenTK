@@ -34,6 +34,7 @@ public static class SpaceboxNetwork
         PlayerListNetwork.Register(network);
         WorldSpawnNetwork.Register(network);
         ProtectionNetwork.Register(network);
+        ClaimNetwork.Register(network);
         Mobs.MobSpawnNetwork.Register(network);
     }
 }

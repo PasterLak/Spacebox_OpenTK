@@ -179,7 +179,7 @@ const views = {
   player: () => { every(10000, () => state.player && loadPlayer(state.player)); },
   moderation: () => { refreshModeration(); },
   console: () => { every(1000, pollConsole); $("#console-form input").focus(); },
-  settings: () => { loadSettings(); }
+  settings: () => { loadSettings(); loadClaims(); }
 };
 
 function switchView(view) {
@@ -539,6 +539,51 @@ async function loadSettings() {
   form.lanDiscovery.checked = info.lanDiscovery;
   loadIcon();
 }
+
+async function loadClaims() {
+  const data = await run(() => api("/claims"));
+  if (!data) return;
+  const s = data.settings;
+  const form = $("#claims-form");
+  form.enabled.checked = s.enabled;
+  form.radius.value = s.radius;
+  form.maxStoredHours.value = Math.round(s.maxStoredMinutes / 60);
+  form.warningMinutes.value = s.warningMinutes;
+  form.extraClaimCostPercent.value = s.extraClaimCostPercent;
+  form.maxClaimsPerPlayer.value = s.maxClaimsPerPlayer;
+  form.maxMembers.value = s.maxMembers;
+  form.minDistanceFromSpawn.value = s.minDistanceFromSpawn;
+  form.payments.value = Object.entries(s.payments || {}).map(([id, minutes]) => `${id} = ${minutes}`).join("\n");
+  $("#claims-count").textContent = `${data.total} claim(s) in this world, ${data.loaded} loaded.`;
+}
+
+function parsePayments(text) {
+  const payments = {};
+  for (const line of text.split("\n")) {
+    const [id, minutes] = line.split("=").map(part => (part || "").trim());
+    if (id && Number(minutes) > 0) payments[id] = Math.round(Number(minutes));
+  }
+  return payments;
+}
+
+$("#claims-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  const form = event.target;
+  const body = {
+    enabled: form.enabled.checked,
+    radius: Number(form.radius.value),
+    maxStoredMinutes: Math.round(Number(form.maxStoredHours.value) * 60),
+    warningMinutes: Math.round(Number(form.warningMinutes.value)),
+    extraClaimCostPercent: Number(form.extraClaimCostPercent.value),
+    maxClaimsPerPlayer: Number(form.maxClaimsPerPlayer.value),
+    maxMembers: Number(form.maxMembers.value),
+    minDistanceFromSpawn: Number(form.minDistanceFromSpawn.value),
+    payments: parsePayments(form.payments.value)
+  };
+  const result = await run(() => api("/claims/settings", body), "Claim settings saved");
+  if (result?.corrected) toast("Some values were out of range and were reset to defaults", true);
+  loadClaims();
+});
 
 $("#settings-form").addEventListener("submit", async event => {
   event.preventDefault();

@@ -53,13 +53,18 @@ public static class ProtectionNetwork
         return ServerAdmins.IsAdmin(PlayerRegistry.GetName(peer));
     }
 
-    public static bool BlocksPeer(int peer, SpaceEntity entity) => EntityProtection.IsProtected(entity) && !CanPeerEdit(peer);
+    public static bool BlocksPeer(int peer, SpaceEntity entity, Vector3i cell) => !ProtectionRules.CanEdit(PlayerRegistry.GetName(peer), CanPeerEdit(peer), entity, cell);
 
-    public static bool BlocksPeer(int peer, long entityId)
+    public static bool BlocksPeerBox(int peer, SpaceEntity entity, Vector3i min, Vector3i max) => !ProtectionRules.CanEditBox(PlayerRegistry.GetName(peer), CanPeerEdit(peer), entity, min, max);
+
+    public static bool BlocksPeerKey(int peer, Messages.ContainerKey key)
     {
+        if (key.IsObject) return false;
         var world = World.Instance;
-        return world != null && world.TryFindEntity(entityId, out var entity) && BlocksPeer(peer, entity);
+        return world != null && world.TryFindEntity(key.EntityId, out var entity) && BlocksPeer(peer, entity, key.Cell);
     }
+
+    public static bool BlocksPeerUse(int peer, SpaceEntity entity) => !ProtectionRules.CanUseEntity(PlayerRegistry.GetName(peer), CanPeerEdit(peer), entity);
 
     public static void Deny(int peer)
     {

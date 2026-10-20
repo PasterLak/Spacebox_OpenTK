@@ -17,6 +17,22 @@
   "AutoSaveInterval": 300,
   "UpdateRate": 30,
   "FriendlyMobs": false,
+  "Claims": {
+    "Enabled": true,
+    "Radius": 12,
+    "MaxStoredMinutes": 20160,
+    "WarningMinutes": 60,
+    "ExtraClaimCostPercent": 50,
+    "MaxClaimsPerPlayer": 0,
+    "MaxMembers": 16,
+    "MinDistanceFromSpawn": 0,
+    "Payments": {
+      "cobalt_ingot": 60,
+      "thulium_ingot": 720,
+      "uranium_ingot": 1440,
+      "obscurium_ingot": 10080
+    }
+  },
   "DashboardEnabled": true,
   "DashboardPort": 0,
   "PublicAddress": "",

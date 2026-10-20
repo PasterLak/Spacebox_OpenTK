@@ -181,8 +181,11 @@ public class InteractionPlaceBlock : InteractionMode
                     newBlock.Direction = finalDir;
                     newBlock.Rotation = finalRot;
 
-                    if (Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(chunk.SpaceEntity) && chunk.SpaceEntity.TryPlaceBlock(selectorPos, newBlock))
+                    if (Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(chunk.SpaceEntity, Spacebox.Game.Protection.ProtectionRules.CellAt(chunk.SpaceEntity, selectorPos)) &&
+                        Spacebox.Game.Protection.ClaimPlacement.CheckLocal(chunk.SpaceEntity, Spacebox.Game.Protection.ProtectionRules.CellAt(chunk.SpaceEntity, selectorPos), newBlock) &&
+                        chunk.SpaceEntity.TryPlaceBlock(selectorPos, newBlock))
                     {
+                        Spacebox.Game.Protection.ClaimPlacement.OnPlacedLocally(newBlock);
                         WorldEditNetwork.NotifyPlaced(chunk.SpaceEntity, selectorPos, newBlock);
                         player.PlayerStatistics.BlocksPlaced++;
                         PlayerActivity.RaiseBlock(PlayerActivityKind.BlockPlaced, newBlock.Id);
@@ -348,8 +351,11 @@ public class InteractionPlaceBlock : InteractionMode
                     newBlock.Rotation = finalRot;
 
 
-                    if (Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(entity) && entity.TryPlaceBlock(selectorPosition, newBlock))
+                    if (Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(entity, Spacebox.Game.Protection.ProtectionRules.CellAt(entity, selectorPosition)) &&
+                        Spacebox.Game.Protection.ClaimPlacement.CheckLocal(entity, Spacebox.Game.Protection.ProtectionRules.CellAt(entity, selectorPosition), newBlock) &&
+                        entity.TryPlaceBlock(selectorPosition, newBlock))
                     {
+                        Spacebox.Game.Protection.ClaimPlacement.OnPlacedLocally(newBlock);
                         WorldEditNetwork.NotifyPlaced(entity, selectorPosition, newBlock);
                         player.PlayerStatistics.BlocksPlaced++;
                         PlayerActivity.RaiseBlock(PlayerActivityKind.BlockPlaced, newBlock.Id);

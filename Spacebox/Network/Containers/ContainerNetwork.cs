@@ -18,9 +18,9 @@ public static class ContainerNetwork
 
     public static void Register(NetworkManager network)
     {
-        network.Messages.Register<ContainerOpenMessage>((peer, message) => { if (network.IsServer && peer != network.LocalPeerId) _server.Open(peer, message.Key); });
+        network.Messages.Register<ContainerOpenMessage>((peer, message) => { if (network.IsServer && peer != network.LocalPeerId && !Denied(peer, message.Key)) _server.Open(peer, message.Key); });
         network.Messages.Register<ContainerCloseMessage>((peer, message) => { if (network.IsServer) _server.Close(peer, message.Key); });
-        network.Messages.Register<ContainerChangeMessage>((peer, message) => { if (network.IsServer && peer != network.LocalPeerId) _server.HandleChange(peer, message); });
+        network.Messages.Register<ContainerChangeMessage>((peer, message) => { if (network.IsServer && peer != network.LocalPeerId && !Denied(peer, message.Key)) _server.HandleChange(peer, message); });
         network.Messages.Register<ContainerSnapshotMessage>((peer, message) => { if (!network.IsServer) _client.OnSnapshot(message); });
         network.Messages.Register<ContainerChangeResultMessage>((peer, message) => { if (!network.IsServer) _client.OnResult(message); });
         network.Messages.Register<ContainerTakeRequestMessage>(OnTakeRequest);
@@ -105,12 +105,19 @@ public static class ContainerNetwork
         _takeCallbacks.Clear();
     }
 
+    private static bool Denied(int peer, ContainerKey key)
+    {
+        if (!ProtectionNetwork.BlocksPeerKey(peer, key)) return false;
+        ProtectionNetwork.Deny(peer);
+        return true;
+    }
+
     private static void OnTakeRequest(int peer, ContainerTakeRequestMessage message)
     {
         var network = NetworkManager.Instance;
         if (!network.IsServer) return;
 
-        bool granted = _server.TryTake(message.Key, message.ItemId, message.Amount);
+        bool granted = !ProtectionNetwork.BlocksPeerKey(peer, message.Key) && _server.TryTake(message.Key, message.ItemId, message.Amount);
         network.Send(peer, new ContainerTakeResultMessage { RequestId = message.RequestId, Granted = granted });
     }
 

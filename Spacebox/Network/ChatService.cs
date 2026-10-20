@@ -84,6 +84,24 @@ public static class ChatService
             SendPrivate(sender, output[i].Text, ColorOf(output[i].Type));
     }
 
+    public static void SendToPlayer(string name, string text, Color4 color)
+    {
+        var network = NetworkManager.Instance;
+        if (!network.IsActive)
+        {
+            if (!GameSession.IsDedicated) Chat.Write(text, color);
+            return;
+        }
+
+        if (string.Equals(name, GameSession.PlayerName, StringComparison.OrdinalIgnoreCase) && GameSession.HasLocalPlayer)
+        {
+            Chat.Write(text, color);
+            return;
+        }
+
+        if (PlayerRegistry.TryGetByName(name, out var player)) SendPrivate(player.Peer, text, color);
+    }
+
     private static void SendPrivate(int peer, string text, Color4 color)
     {
         var network = NetworkManager.Instance;

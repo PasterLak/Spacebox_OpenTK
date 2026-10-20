@@ -12,7 +12,7 @@ function Find-ProjectRoot {
 
 function Get-GameVersion {
     param ([string]$projectRoot)
-    $applicationFile = Join-Path (Split-Path $projectRoot -Parent) "Engine\Application.cs"
+    $applicationFile = Join-Path (Split-Path $projectRoot -Parent) "Engine\Core\Application.cs"
     if (-not (Test-Path $applicationFile)) {
         throw "Application.cs not found: $applicationFile"
     }
