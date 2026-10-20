@@ -130,6 +130,20 @@ namespace Spacebox.Game
         static bool OutOfRange(int v, int min, int max) => v < min || v > max;
     }
 
+    public sealed class InterfaceSettings
+    {
+        [JsonPropertyName("font")] public string Font { get; set; } = InterfaceFonts.DefaultId;
+        [JsonPropertyName("font_size")] public int FontSize { get; set; } = InterfaceFonts.Find(InterfaceFonts.DefaultId).NativeSize;
+
+        public bool Validate(InterfaceSettings d)
+        {
+            bool changed = false;
+            if (!InterfaceFonts.IsKnown(Font)) { Font = d.Font; FontSize = d.FontSize; changed = true; }
+            if (FontSize < InterfaceFonts.MinSize || FontSize > InterfaceFonts.MaxSize) { FontSize = InterfaceFonts.Find(Font).NativeSize; changed = true; }
+            return changed;
+        }
+    }
+
     public sealed class GameplaySettings
     {
         public const int MinDrawDistance = 200;
@@ -165,6 +179,7 @@ namespace Spacebox.Game
         [JsonPropertyName("meta")] public MetaSettings Meta { get; set; } = new();
         [JsonPropertyName("audio")] public AudioSettings Audio { get; set; } = new();
         [JsonPropertyName("graphics")] public GraphicsSettings Graphics { get; set; } = new();
+        [JsonPropertyName("interface")] public InterfaceSettings Interface { get; set; } = new();
         [JsonPropertyName("game")] public GameplaySettings Game { get; set; } = new();
 
         public static GameSettings Default() => new();
@@ -176,12 +191,14 @@ namespace Spacebox.Game
             if (Meta == null) { Meta = d.Meta; changed = true; }
             if (Audio == null) { Audio = d.Audio; changed = true; }
             if (Graphics == null) { Graphics = d.Graphics; changed = true; }
+            if (Interface == null) { Interface = d.Interface; changed = true; }
             if (Game == null) { Game = d.Game; changed = true; }
 
             if (Meta.SchemaVersion <= 0) { Meta.SchemaVersion = d.Meta.SchemaVersion; changed = true; }
 
             changed |= Audio.Validate(d.Audio);
             changed |= Graphics.Validate(d.Graphics);
+            changed |= Interface.Validate(d.Interface);
             changed |= Game.Validate(d.Game, allowedLanguages);
 
             return changed;

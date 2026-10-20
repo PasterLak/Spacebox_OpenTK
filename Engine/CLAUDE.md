@@ -82,6 +82,8 @@ Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
 ## GUI and input
 
 - GUI is ImGui (ImGui.NET) via `ImGuiController`. `UIManager` keeps a stack of named windows (`Open`, `Toggle`, `CloseTop`, `IsOpen`); gate gameplay input on `IsUIMode`. The debug console is the `"debug"` window.
+- The ImGui font is a pixel font; `FontGlobalScale` follows the window width (`width / 1280`). Its texture is magnified with nearest filtering (crisp pixels in big windows) and minified with linear filtering, because shrinking a pixel font with nearest filtering drops whole glyph rows and makes text unreadable in small windows.
+- Interface font: `EngineWindow.RequestImGuiFont(ImGuiFontRequest)` (file + pixel size, null file = built-in ProggyClean); the controller rebuilds the atlas between frames (`ImGuiFontLoader`: Latin + Cyrillic ranges, pixel-font settings) and only when the request changes.
 - ImGui style is global: a scene with its own look captures `GUI/ImGuiStyleSnapshot.Capture()` on load, applies its theme only around its own GUI pass and calls `Restore()` after it and on unload.
 - `InputManager.LoadConfiguration` keeps the existing `InputAction` objects (and their `Subscribe` callbacks) and only replaces their bindings, so reloading the key config is safe at any time.
 - `ParticleSystem.GloballyEnabled` hides and stops all particle systems (the particle setting). Post-processing effects that must always run (the passthrough `DefaultEffect`) override `IsRequired`; `PostProcessManager.Enabled = false` skips only the others.

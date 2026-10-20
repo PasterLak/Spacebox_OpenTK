@@ -45,6 +45,15 @@ public sealed class OptionsRows
         return changed;
     }
 
+    public bool TextInput(string label, string tooltip, ref string value, uint maxLength)
+    {
+        Label(label, tooltip);
+        ImGui.SetNextItemWidth(_valueWidth);
+        bool changed = ImGui.InputText("##" + label, ref value, maxLength);
+        UIHelper.ShowTooltip(tooltip);
+        return changed;
+    }
+
     public bool Checkbox(string label, string tooltip, ref bool value)
     {
         Label(label, tooltip);

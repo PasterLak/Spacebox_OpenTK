@@ -313,6 +313,11 @@ namespace Engine
             _controller.RecreateFontDeviceTexture(nearestFilter);
         }
 
+        public void RequestImGuiFont(Engine.GUI.ImGuiFontRequest request)
+        {
+            _controller?.RequestFont(request);
+        }
+
         private float _renderScale = 1f;
 
         public float RenderScale

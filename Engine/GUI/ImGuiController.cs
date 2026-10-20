@@ -30,6 +30,9 @@ namespace Engine
         private int _windowWidth;
         private int _windowHeight;
 
+        private Engine.GUI.ImGuiFontRequest _activeFont = Engine.GUI.ImGuiFontRequest.Default;
+        private Engine.GUI.ImGuiFontRequest _pendingFont;
+
         private nint _imguiContext;
 
         private System.Numerics.Vector2 _scaleFactor = System.Numerics.Vector2.One;
@@ -94,6 +97,22 @@ namespace Engine
 
             ImGui.NewFrame();
             _frameBegun = true;
+        }
+
+        public void RequestFont(Engine.GUI.ImGuiFontRequest request)
+        {
+            request ??= Engine.GUI.ImGuiFontRequest.Default;
+            _pendingFont = request == _activeFont ? null : request;
+        }
+
+        private void ApplyPendingFont()
+        {
+            if (_pendingFont == null || Application.IsHeadless) return;
+
+            Engine.GUI.ImGuiFontLoader.Load(ImGui.GetIO().Fonts, _pendingFont);
+            RecreateFontDeviceTexture(true);
+            _activeFont = _pendingFont;
+            _pendingFont = null;
         }
 
         public void EnsureContext()
@@ -224,7 +243,7 @@ void main()
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, mips - 1);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)(nearestFilter ? TextureMagFilter.Nearest : TextureMagFilter.Linear));
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)(nearestFilter ? TextureMinFilter.Nearest : TextureMinFilter.Linear));
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
 
             // Restore state
             GL.BindTexture(TextureTarget.Texture2D, prevTexture2D);
@@ -262,6 +281,7 @@ void main()
                 ImGui.Render();
             }
 
+            ApplyPendingFont();
             SetPerFrameImGuiData(deltaSeconds);
 
             Engine.GUI.ImGuiClipboard.SetWindow(wnd);

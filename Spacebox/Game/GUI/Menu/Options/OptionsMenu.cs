@@ -29,6 +29,7 @@ public sealed class OptionsMenu : IOptionsNavigator
         Register(new AudioWindow(this));
         Register(new GameWindow(this));
         Register(new GraphicsWindow(this));
+        Register(new InterfaceWindow(this));
         Register(new ControlsWindow(this));
         _current = _windows[typeof(OptionsWindow)];
     }

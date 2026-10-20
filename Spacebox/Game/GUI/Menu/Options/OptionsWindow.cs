@@ -28,13 +28,14 @@ namespace Spacebox.Game.GUI.Menu
             float buttonHeight = windowHeight * 0.12f;
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), windowSize.Y, 0.005f);
 
-            const int buttonCount = 5;
+            const int buttonCount = 6;
             float spacing = (windowHeight - (buttonCount * buttonHeight)) / (buttonCount + 1);
             float currentY = spacing;
 
             currentY = Button("Audio", "Master, music, ambient, effects and interface volume", buttonWidth, buttonHeight, windowWidth, currentY, spacing, () => _options.Show<AudioWindow>());
             currentY = Button("Game", "Draw distance, mouse and camera settings", buttonWidth, buttonHeight, windowWidth, currentY, spacing, () => _options.Show<GameWindow>());
             currentY = Button("Graphics", "Display mode, frame rate, resolution and visual quality", buttonWidth, buttonHeight, windowWidth, currentY, spacing, () => _options.Show<GraphicsWindow>());
+            currentY = Button("Interface", "Interface font and font size", buttonWidth, buttonHeight, windowWidth, currentY, spacing, () => _options.Show<InterfaceWindow>());
             currentY = Button("Controls", "Change key bindings", buttonWidth, buttonHeight, windowWidth, currentY, spacing, () => _options.Show<ControlsWindow>());
             Button("Back", "Return to the previous menu", buttonWidth, buttonHeight, windowWidth, currentY, spacing, _options.Close);
 

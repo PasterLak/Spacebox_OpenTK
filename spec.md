@@ -295,6 +295,7 @@ dotnet publish Spacebox/Spacebox.csproj -c Release -r <win-x64|linux-x64|osx-x64
 |---|---|
 | audio | master, music, ambient, effects, ui (0-100), mute_when_unfocused, menu_music |
 | graphics | window_mode, vsync, max_fps (0 = unlimited, 30-360), resolution_scale_percent (10-100), fov (50-120), ambient_occlusion (voxel AO), voxel_lighting, post_processing, effects_enabled, ssao_quality (0 Off, 1 Low, 2 Medium, 3 High), ssao_strength_percent (0-200), ssao_smoothness_percent (0-100), ssao_grain_percent (0-100), ssao_grain_size (1-8 px), ssao_radius_percent (25-300, % of a block), brightness_percent (50-150, gamma), contrast_percent (50-150), saturation_percent (0-200), vignette_percent (0-100), film_grain_percent (0-100), film_grain_animated (24 Hz), camera_effect_percent (0-100), show_fps |
+| interface | font (`fusion_pixel` default, `proggy_clean` built in; fonts and licenses in `Resources/Fonts/FONTS.md`), font_size (6-32 px, default 12) |
 | game | draw_distance (200-1000 blocks: entity draw radius, chunk draw/generation radius = 90 %), language, mouse_sensitivity (10-300 %), invert_mouse_y, camera_sway |
 
 Options are reachable from the main menu and the pause menu.

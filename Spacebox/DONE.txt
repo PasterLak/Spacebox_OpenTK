@@ -63,6 +63,8 @@ Small
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
 - light from a neighbour chunk no longer disappears when a nearby chunk is relit (block eaten, chunk loaded)
+- new Interface options: font (Fusion Pixel by default with Cyrillic, or the old ProggyClean), font size and a font test field; licenses in Resources/Fonts/FONTS.md
+- interface text is readable in small windows: the pixel font is shrunk with smooth filtering instead of dropping pixel rows
 - creative: oxygen bar shows Air inside a room with air and Infinite outside instead of 100/100
 - ship cannons hold fire while their own ship or the pilot is in the line of fire instead of shooting through them
 - 3D sounds from stereo files (cannon/AR shots) are positioned and fade with distance instead of playing at full volume everywhere

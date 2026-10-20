@@ -13,6 +13,7 @@ public static class SettingsApplier
     {
         ApplyAudio(Settings.Audio);
         ApplyGraphics(Settings.Graphics);
+        ApplyInterface(Settings.Interface);
         ApplyGameplay(Settings.Gameplay);
     }
 
@@ -63,6 +64,11 @@ public static class SettingsApplier
         if (window.CameraFeed != null) window.CameraFeed.Intensity = graphics.CameraEffectPercent / 100f;
 
         VignetteController.SetSettingStrength(graphics.VignettePercent / 100f);
+    }
+
+    public static void ApplyInterface(InterfaceSettings settings)
+    {
+        SpaceboxWindow.Instance?.RequestImGuiFont(InterfaceFonts.ToRequest(settings.Font, settings.FontSize));
     }
 
     public static void ApplyGameplay(GameplaySettings gameplay)

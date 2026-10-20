@@ -7,6 +7,7 @@ public class Settings
  
     public static AudioSettings Audio { get; set; } = new AudioSettings();
     public static GraphicsSettings Graphics { get; set; } = new GraphicsSettings();
+    public static InterfaceSettings Interface { get; set; } = new InterfaceSettings();
     public static GameplaySettings Gameplay { get; set; } = new GameplaySettings();
     public static MetaSettings Meta { get; set; } = new MetaSettings();
 
@@ -16,6 +17,7 @@ public class Settings
         {
             Audio = Audio,
             Graphics = Graphics,
+            Interface = Interface,
             Game = Gameplay,
             Meta = Meta
         };
@@ -55,6 +57,7 @@ public class Settings
         Audio = settings.Audio;
         Gameplay = settings.Game;
         Graphics = settings.Graphics;
+        Interface = settings.Interface;
         Meta = settings.Meta;
     }
 }

@@ -200,14 +200,7 @@ namespace Spacebox.Scenes
 
         public unsafe static void ResetImGuiFont()
         {
-            var io = ImGui.GetIO();
-
-            io.Fonts.Clear();
-
-            io.Fonts.AddFontDefault();
-
-            io.Fonts.Build();
-            SpaceboxWindow.Instance.RebuildImGuiFontTexture(true);
+            SettingsApplier.ApplyInterface(Settings.Interface);
         }
 
 
