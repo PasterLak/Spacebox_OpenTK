@@ -23,9 +23,7 @@ Spacebox is a single-player voxel survival game set in an asteroid belt, with an
 | Project | Type | Depends on | Purpose |
 |---|---|---|---|
 | `Engine` | Library | — | Reusable engine: window, scenes, rendering, input, audio, physics, GUI, threading |
-| `Spacebox` | Exe (WinExe in Release) | Engine, Spacebox.Core | The game: client, host and dedicated server (`--server`) |
-| `Spacebox.Core` | Library | — | Public plugin API (`IPlugin`, `IGameApi`, `IWorldConverter`, `WorldInfo`) |
-| `LegacyWorldConverter` | Library | Spacebox.Core | Plugin that upgrades old saves; prebuilt DLL ships in `Spacebox/Plugins/` |
+| `Spacebox` | Exe (WinExe in Release) | Engine | The game: client, host and dedicated server (`--server`) |
 | `Spacebox.Tests` | xUnit | Spacebox | Unit tests (Debug only) |
 | `Spacebox.Benchmarks` | Exe | Spacebox | Performance benchmarks (Debug only) |
 
@@ -211,12 +209,6 @@ GameSets/Default/
 - `JsonInspector` edits any JSON tree; the schema comes from the loader DTO via reflection (`JsonSchema`, `GameSetCatalog`) so every parameter can be added with its default ("Add parameter"). Field editors (`IJsonFieldEditor`, registered in `JsonFieldEditors`): colours, vectors, block textures and item sprites with icons, item/projectile/sound/mob/loot references, block/item types, categories, equipment slots, biome keys.
 - 3D previews (`PreviewViewport`, engine `RenderTexture` + `OrbitViewCamera`; drag to rotate, wheel to zoom): blocks (multi-cell, active/inactive textures), items (world model), projectiles (live from JSON: speed, length, thickness, colour, 1-block ruler), asteroids (generated in the background with the same `AsteroidChunkBuilder` as the game, radius/seed, block composition). Biome map: one sector, height slice, asteroid positions, legend.
 
-### 6.3 Code plugins
-
-- Built against `Spacebox.Core` only.
-- `PluginLoader` scans `Plugins/<mod>/*.dll`, loads each DLL into the default `AssemblyLoadContext`, creates every non-abstract `IPlugin` type and calls `OnInitialize(IGameApi)`.
-- `IWorldConverter` lets plugins upgrade saves; `LegacyWorldConverter` is the reference example.
-
 ## 7. Persistence
 
 Worlds are stored in `<app dir>/Worlds/<world>/`:
@@ -287,8 +279,8 @@ dotnet run -c Debug --project Spacebox.Benchmarks
 dotnet publish Spacebox/Spacebox.csproj -c Release -r <win-x64|linux-x64|osx-x64> --self-contained true --output ./publish
 ```
 
-- `Resources/`, `GameSets/`, `Plugins/` and shaders are copied to the output folder as content files.
-- `Release` and `Final` publishes with a runtime id are single-file: all managed and native libraries are bundled into `Spacebox(.exe)` (native libraries are extracted to the .NET bundle cache on first start), so the game folder holds only the executable, `Resources/`, `GameSets/`, `Plugins/`, the server scripts and runtime data. `--self-contained true` also bundles the .NET runtime; `--no-self-contained` (used by `Build/BuildWindows.ps1`) needs the installed .NET 8 runtime. Windows publishes bundle `Build/AddAfterBuild/OpenAL32.dll`. Content items are `ExcludeFromSingleFile` (they must stay files); `Release`/`Final` builds embed their pdbs (`Directory.Build.props`). On Linux, OpenAL comes from the system (`libopenal`).
+- `Resources/`, `GameSets/` and shaders are copied to the output folder as content files.
+- `Release` and `Final` publishes with a runtime id are single-file: all managed and native libraries are bundled into `Spacebox(.exe)` (native libraries are extracted to the .NET bundle cache on first start), so the game folder holds only the executable, `Resources/`, `GameSets/`, the server scripts and runtime data. `--self-contained true` also bundles the .NET runtime; `--no-self-contained` (used by `Build/BuildWindows.ps1`) needs the installed .NET 8 runtime. Windows publishes bundle `Build/AddAfterBuild/OpenAL32.dll`. Content items are `ExcludeFromSingleFile` (they must stay files); `Release`/`Final` builds embed their pdbs (`Directory.Build.props`). On Linux, OpenAL comes from the system (`libopenal`).
 - Packaging: `Build/BuildWindows.ps1` (`$selfContained` switch; the .NET installer zip is added only for framework-dependent builds) and `Build/BuildLinux.ps1` (self-contained linux-x64 zip). Both apply `Build/exclude.txt`, remove unused assets and open the output folder. Unused assets come from `Tools/Spacebox.AssetAudit` (static: C# string literals in `Spacebox`/`Engine` without comments, every string in the GameSet JSON files, shader `#include` chains; a file is used when its path, its file name or an interpolated path prefix is referenced; `_`-prefixed GameSet folders are always unused and are also skipped by the texture atlases and sound loading; JSON, `Resources/Textures/UI`, `Resources/Audio/Mood`, `Resources/Dashboard`, `Resources/Fonts`, `icon.*` and globs in `Build/asset-keep.txt` are always kept). Note that pruning GameSet files changes the multiplayer GameSet hash, so server and client should use the same kind of build. Launch scripts are platform-specific (`LaunchScripts` in `Spacebox.csproj`): Windows targets get `start-server.bat`, Linux/macOS targets get `start.sh` and `start-server.sh` (builds without a runtime id use the current OS). Publishes also contain a default `serverconfig.json` (`Spacebox/serverconfig.json`, empty `Seed` = random seed when the server world is created); normal builds don't copy it, the server creates it on first start.
 - Linux: run `sh start.sh` (game) or `sh start-server.sh` (dedicated server); both set the executable bit lost in zips. The server needs a display for its hidden GL window: without `DISPLAY`/`WAYLAND_DISPLAY` the script uses `xvfb-run`. System packages: OpenAL (`libopenal1`), OpenGL 3.3 drivers, X11 or Wayland libraries, ICU (`libicu`). The game sets the working directory to its own folder at start, so relative resource paths work from any launcher.
 - Tests cover packed vector types, blocks, atlas packing (`AtlasLayout`), AO, mesh generation, world logic and version conversion.

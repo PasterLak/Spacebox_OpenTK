@@ -78,9 +78,6 @@
 		<Content Include="Resources\**\*.*">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-		<Content Include="Plugins\**\*.*">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
 		<Content Include="Resources\Shaders\**\*.*">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
@@ -108,7 +105,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Engine\Engine.csproj" />
-		<ProjectReference Include="..\Spacebox.Core\Spacebox.Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

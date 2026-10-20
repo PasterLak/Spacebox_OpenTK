@@ -32,7 +32,6 @@ Game project on top of `Engine` (see `Engine/CLAUDE.md`). World hierarchy, GameS
 | `Game/Physics/` | `VoxelPhysics`, hit/collide info |
 | `Game/GameMath/` | World ↔ Sector ↔ Entity ↔ Chunk coordinate conversions |
 | `Game/Resource/` | GameSet loading, `BlockFactory`, atlases |
-| `Game/Plugins/`, `Game/PluginLoader.cs` | `GameApi` and plugin DLL loading |
 | `Game/Generation/` | World structures, `Blocks/`, meshing/AO, light and electric managers, `Tools/` (NBT, serializers) |
 | `Generation/` | Stateless algorithms: noise, `PerlinWorms`, `InternalCavities`, `AsteroidOreGenerator`, `ChunkLODMeshGenerator`, seeds |
 | `Network/` | Multiplayer (see the Multiplayer section) |

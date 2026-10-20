@@ -10,7 +10,6 @@ using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Core;
 using Spacebox.Game;
 using Spacebox.Game.Generation;
 using Spacebox.Game.GUI;
@@ -32,8 +31,6 @@ namespace Spacebox.Scenes
 
         private DevLogWindow devLogWindow = new DevLogWindow();
 
-        private static PluginLoader modLoader = new PluginLoader();
-
         private Node3D astronautNode;
 
         public override void LoadContent()
@@ -41,19 +38,7 @@ namespace Spacebox.Scenes
 
             //Theme.ApplySpaceboxTheme();
 
-            string pluginsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
-
             //modLoader.LoadMods(pluginsPath);
-
-            if(modLoader.LoadedMods.Count > 0)
-            {
-                var mod = modLoader.LoadedMods[0] as IWorldConverter;
-
-                if (mod != null)
-                {
-                    Debug.Log("Mod Loader", $"Loaded mod for game version: {mod.TargetGameVersion}", Color4.LightGreen);
-                }
-            }
 
     
             InputManager.Instance.LoadConfiguration("Resources/default_input.json");

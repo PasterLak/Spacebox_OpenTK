@@ -50,6 +50,7 @@ New
 Small
 - convert dialog shows steps, backup and warnings
 - release builds leave out unused assets found by Tools/Spacebox.AssetAudit (keep list Build/asset-keep.txt); _Ignored texture folders are no longer packed into the atlases
+- removed the unused DLL plugin system (Spacebox.Core, PluginLoader, Plugins folder, LegacyWorldConverter); modding stays data-driven through GameSets
 - removed the old SpaceNetwork, ServerCommon, SpaceServer and SpaceServerUI projects (replaced by the built-in dedicated server and dashboard)
 - low oxygen (below 20 %) grows the vignette up to 150 % at 0; at 0 oxygen the player loses 5 HP per second with the red damage flash instead of dying instantly
 - gravity generator crafting: 2 obscurium ingots instead of uranium rods
