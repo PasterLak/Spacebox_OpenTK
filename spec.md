@@ -1,6 +1,6 @@
 # Spacebox — Technical Specification
 
-Version: `0.1.5` (`Engine/Application.cs` → `Application.Version`)
+Version: `0.1.5` (`Engine/Core/Application.cs` → `Application.Version`)
 
 ## 1. Overview
 
@@ -74,8 +74,8 @@ Spacebox is a single-player voxel survival game set in an asteroid belt, with an
 
 | Subsystem | Location | Notes |
 |---|---|---|
-| Resources | `Engine/Resources.cs` | `Resources.Load<T>(pathOrName, global)` cache for `IResource` types; `global` resources survive scene changes |
-| Input | `Engine/InputPro`, `Engine/Input.cs` | Action/binding system (`InputManager`, `KeyBinding`) |
+| Resources | `Engine/Assets/Resources.cs` | `Resources.Load<T>(pathOrName, global)` cache for `IResource` types; `global` resources survive scene changes |
+| Input | `Engine/Input/InputPro`, `Engine/Input/Input.cs` | Action/binding system (`InputManager`, `KeyBinding`) |
 | Audio | `Engine/Audio` | `AudioDevice` singleton, `AudioClip`, `AudioSource` |
 | Physics | `Engine/Physics` | AABB/OBB/sphere bounds, rays, `StaticBody` / `DynamicBody`, collision layers |
 | Threading | `Engine/Multithreading/WorkerPoolManager` | `ProcessorCount − 1` background workers with priority queue, plus named dedicated workers; `Enqueue(Action<CancellationToken>, Priority)` |
@@ -152,7 +152,7 @@ Behaviour subclasses are created by `BlockFactory` from the JSON `Type` string (
 
 - Driven by `GameSets/<set>/Generation/generator.json`. Default: 1250–2500 asteroids per sector, at least 128 blocks apart, rejection sampling, biome-map noise frequency `0.001`.
 - `BiomeGenerator` / `BiomesMap` choose a biome per region (`asteroid_field`, `dense_cluster`, `debug`). Biomes reference asteroid presets (`light`, `medium`, `heavy`, `asteroid_icy`, `cheese`).
-- Asteroid voxels come from `AsteroidVoxelDataGenerator`, using `Spacebox/Generation/` helpers: `NoiseGenerator`, `PerlinWorms`, `InternalCavities`, `AsteroidOreGenerator`, `MaskContainer`, `SectorPointProvider`, `SeedHelper`. `PerlinWorms` builds each node's worm paths once (cached, up to 1024 nodes, cleared on world unload) and carves only the path points inside the padded chunk. Chunk meshes come back as pooled arrays with counts (`MeshData.VertexCount`/`IndexCount`, returned with `Release`) and are uploaded into the chunk's existing GPU buffers (`Mesh.Update`).
+- Asteroid voxels come from `AsteroidVoxelDataGenerator`, using `Spacebox/Game/Generation/Algorithms/` helpers: `NoiseGenerator`, `PerlinWorms`, `InternalCavities`, `AsteroidOreGenerator`, `MaskContainer`, `SectorPointProvider`, `SeedHelper`. `PerlinWorms` builds each node's worm paths once (cached, up to 1024 nodes, cleared on world unload) and carves only the path points inside the padded chunk. Chunk meshes come back as pooled arrays with counts (`MeshData.VertexCount`/`IndexCount`, returned with `Release`) and are uploaded into the chunk's existing GPU buffers (`Mesh.Update`).
 - Loot tables (`Generation/Loot`) and structure definitions (`abandoned_ship`, `alien_base`, `ruins`) are data files.
 - Generation runs on the worker pool. Results are handed back to the GL thread through `MainThreadDispatcher`; all OpenGL calls must happen on the main thread.
 

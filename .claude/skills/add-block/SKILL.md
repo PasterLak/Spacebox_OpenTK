@@ -12,7 +12,7 @@ description: Add a new block type to Spacebox — a data-only block (JSON + text
 
 ## 2. JSON entry
 
-Add an object to `Spacebox/GameSets/Default/blocks.json` (fields come from `Spacebox/Game/Resource/BlockJSON.cs`):
+Add an object to `Spacebox/GameSets/Default/blocks.json` (fields come from `Spacebox/Game/Resource/Json/BlockJSON.cs`):
 
 ```json
 {
@@ -39,7 +39,7 @@ Add an object to `Spacebox/GameSets/Default/blocks.json` (fields come from `Spac
 ## 3. New behaviour (only if needed)
 
 1. Create `Spacebox/Game/Generation/Blocks/<Name>Block.cs` deriving from the closest base (`InteractiveBlock`, `ElectricalBlock`, `ResourceProcessingBlock`, `ConsumerBlock`, …). Follow the constructor pattern of a sibling block (`(BlockJSON data)`).
-2. Register it in `Spacebox/Game/Resource/BlockFactory.cs` with a lowercase key: `{ "mytype", data => new MyTypeBlock(data) }`.
+2. Register it in `Spacebox/Game/Resource/Loaders/BlockFactory.cs` with a lowercase key: `{ "mytype", data => new MyTypeBlock(data) }`.
 3. If it needs extra JSON fields, add them to a dedicated data class (like `StorageBlockData`) instead of growing `BlockJSON` with type-specific fields.
 4. If it has UI, follow an existing window in `Spacebox/Game/GUI` (e.g. the analyzer UI).
 

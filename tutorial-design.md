@@ -165,11 +165,11 @@ Task options:
 - none → no icon.
 
 ### Integration points (files to touch)
-- `Spacebox/Game/GUI/WelcomeUI.cs`: "Play tutorial" checkbox → `TutorialRunner.Start(...)`.
+- `Spacebox/Game/GUI/Screens/WelcomeUI.cs`: "Play tutorial" checkbox → `TutorialRunner.Start(...)`.
 - `Spacebox/Game/Player/PlayerSaveLoadManager.cs`: `PlayerData.Tutorial`, save and load.
 - `Spacebox/Scenes/BaseSpaceScene.cs`: `TutorialUI` Init/OnGUI/Dispose; runner update in `Update`; reset in `UnloadContent`.
-- `Spacebox/Game/Resource/GameSetLoader.cs`: `TutorialLoader.Load`.
-- `Spacebox/Game/GUI/PauseUI.cs`: the Tutorial menu.
+- `Spacebox/Game/Resource/Loaders/GameSetLoader.cs`: `TutorialLoader.Load`.
+- `Spacebox/Game/GUI/Screens/PauseUI.cs`: the Tutorial menu.
 - Activity call sites listed above.
 - `Resources/default_input.json`: the new `tutorial` action (key J). Check during implementation that existing user configs get the new default action (InputPro keeps actions on reload).
 - `Spacebox/Editor/Data/GameSetCatalog.cs`: entry type `tutorials` with the DTO schema, so tutorials are editable in the GameSet editor (not done yet; tutorials are edited as JSON files).

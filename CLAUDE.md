@@ -28,7 +28,7 @@ Spacebox is a voxel space-survival game (asteroid belt, mining, base/ship buildi
 - **Do not edit** `Spacebox/Build/**` or the vendored `Documentation/doxygen-awesome-css/**`.
 - **Git:** feature branches are named `<feature>-<version>` (e.g. `generation-0.1.2`). Do not commit or push unless asked. Commit messages are short and imperative.
 - `Spacebox/TODO.txt` and `BUGS.txt` belong to the author; edit them only when asked.
-- After every game change, add a very short line to `Spacebox/DONE.txt` in the section of the current version (`Application.Version` in `Engine/Application.cs`), under `Game`, `Small`, `Fixes` or `Engine`. Create the version section in the same format if it is missing.
+- After every game change, add a very short line to `Spacebox/DONE.txt` in the section of the current version (`Application.Version` in `Engine/Core/Application.cs`), under `Game`, `Small`, `Fixes` or `Engine`. Create the version section in the same format if it is missing.
 - Keep `spec.md` (full technical description) up to date when architecture, file formats or limits change.
 - **Tutorials stay in sync with the game:** the tutorials in `Spacebox/GameSets/*/Tutorials/*.json` (see `tutorial-design.md`) teach real mechanics. Whenever a change touches something a tutorial step relies on, check the tutorials and fix steps, texts, order and rewards in the same change. This includes item or block ids, crafting and processing recipes, drill tiers and ore hardness, start items, input actions and default keys, UI window names, `PlayerStatistics` fields, `PlayerActivity` events, and ship, console or machine behaviour. Rewards must never be items that a tutorial task asks for. A new feature a beginner must know gets a tutorial step. `DefaultTutorialContentTests` and `DefaultTutorialProgressionTests` must stay green.
 
@@ -65,7 +65,7 @@ Detailed per-project notes: `Engine/CLAUDE.md` (engine architecture) and `Spaceb
 Dependency direction: `Spacebox` → `Engine`. `Engine` must not reference game code.
 
 - **Engine/** — reusable engine: `EngineWindow` (abstract `GameWindow` with hook methods `OnRegisterScenes`, `OnGameLoad`, `OnSetupPostProcessing`, …), `SceneManagement` (`Scene` is a `Node3D`; scenes are registered then loaded via `SceneManager.Load<T>()`), `Node3D`/`Components` scene graph, `Resources.Load<T>(pathOrName, global)` resource cache, rendering (shaders, materials, post-processing, lights, particles), ImGui-based GUI, `InputPro` input actions, `Audio` (OpenAL + NVorbis), octrees, `ServiceLocator`, `EventBus`, `Debug` logging.
-- **Spacebox/** — the game. `Program.cs` → `SpaceboxWindow` (subclasses `EngineWindow`, registers scenes, starts at `MenuScene`). `Scenes/` holds menu, single-player (`LocalSpaceScene` / `BaseSpaceScene`) and multiplayer scenes. `Client/` is the multiplayer client side.
+- **Spacebox/** — the game. `Program.cs` → `SpaceboxWindow` (subclasses `EngineWindow`, registers scenes, starts at `MenuScene`). `Scenes/` holds menu, single-player (`LocalSpaceScene` / `BaseSpaceScene`) and multiplayer scenes, `Game/` the game logic by feature, `Network/` multiplayer, `Editor/` the GameSet editor.
 
 ## World / voxel architecture (`Spacebox/Game/Generation/`)
 
@@ -73,7 +73,7 @@ Hierarchy: `World` (singleton `Component`, octree of sectors, loads/unloads sect
 
 - Meshing: `MeshGenerator` + `AOVoxels` (ambient occlusion) build chunk meshes; neighbor-chunk lookups go through `MeshGenerator.GetNeighborChunkIndexAndLocalCoords`. Changing block state (e.g. emission/light) needs the chunk mesh to be regenerated.
 - Block behaviour: `Block` base class with subclasses in `Blocks/` (`InteractiveBlock`, `ElectricalBlock`, `StorageBlock`, furnace/crusher/generator, …). `ElectricalManager` and `LightManager` handle power and light propagation.
-- Generation helpers outside `Game/`: `Spacebox/Generation/` (noise, Perlin worms, cavities, ore placement, LOD meshing).
+- Stateless generation algorithms: `Spacebox/Game/Generation/Algorithms/` (noise, Perlin worms, cavities, ore placement, LOD meshing).
 - Background generation work is marshalled back to the GL thread through `MainThreadDispatcher`; GL calls must stay on the main thread.
 
 ## Data-driven content (GameSets)

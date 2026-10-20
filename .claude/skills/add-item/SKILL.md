@@ -7,7 +7,7 @@ description: Add a new item to Spacebox (plain item, drill, weapon, consumable) 
 
 ## 1. JSON entry
 
-Add an object to `Spacebox/GameSets/Default/items.json`. `Type` selects the DTO in `Spacebox/Game/Resource/ItemJSON.cs`:
+Add an object to `Spacebox/GameSets/Default/items.json`. `Type` selects the DTO in `Spacebox/Game/Resource/Json/ItemJSON.cs`:
 
 | Type | DTO | Extra fields |
 |---|---|---|
@@ -25,7 +25,7 @@ PNG in `Spacebox/GameSets/Default/Items/`, file name = `Sprite` value. Weapons m
 ## 3. New item type (only if no existing type fits)
 
 1. Add a DTO deriving from `ItemJSON` in `ItemJSON.cs` and an `Item` subclass next to the existing ones.
-2. Add a `case` in the item switch in `GameSetLoader` (`Spacebox/Game/Resource/GameSetLoader.cs`, the `"weapon"`/`"drill"`/`"consumable"` switch) and a matching `Register<Type>Item` method.
+2. Add a `case` in the item switch in `GameSetLoader` (`Spacebox/Game/Resource/Loaders/GameSetLoader.cs`, the `"weapon"`/`"drill"`/`"consumable"` switch) and a matching `Register<Type>Item` method.
 3. If the item needs its own interaction, add an `Interaction*` class in `Spacebox/Game/Player/Interactions/` and select it in `InteractionHandler`.
 
 ## 4. Optional

@@ -23,28 +23,38 @@ Game project on top of `Engine` (see `Engine/CLAUDE.md`). World hierarchy, GameS
 | `Game/Player/` | `Astronaut`, `LocalAstronaut`, `RemoteAstronaut`, movement, flashlight, projectiles, death, stats, player save |
 | `Game/Player/GameModes/` | `GameModeBase` + Survival / Creative / Spectator / Camera |
 | `Game/Player/Interactions/` | `InteractionMode` subclasses + `InteractionHandler` |
+| `Game/Player/Building/` | `BlockSelector` (build preview, magnet, reserved areas) |
 | `Game/Inventory/` | `Item` + `BlockItem`, `DrillItem`, `WeaponItem`, `ConsumableItem`, tool items; `Inventory`, `Storage`, `ItemSlot`, item models |
-| `Game/GUI/` | Static ImGui UIs (inventory, storage, crafting, radar, chat, `PanelUI` hotbar, tags); `Menu/` main menu |
+| `Game/GUI/` | Static ImGui UIs; root: `UIManager`, `UIAtlas`, `Theme`, `GUIHelper`, `KeyNames` |
+| `Game/GUI/Hud/` | In-game overlay: `PanelUI` hotbar, health/power/oxygen bars, crosshair hit marker, `HudVisibility`, FPS counter, camera feed overlay |
+| `Game/GUI/Inventory/` | Inventory, equipment (`PlayerPreview`), storage, creative window |
+| `Game/GUI/Crafting/` | Crafting window, categories, crafting logic |
+| `Game/GUI/Machines/` | Block windows: analyzer, disassembler, DNA reconstructor, generators, oxygen generator, processing machines, radar, ship console |
+| `Game/GUI/Screens/` | Full screens and dialogs: pause, death, loading, connection, welcome, chat, statistics, player list, auth, update |
+| `Game/GUI/Tags/`, `Game/GUI/Worlds/` | Waypoint tags (save/load); world info and the world list |
+| `Game/GUI/Menu/` | Main menu (`GameMenu`, windows); `Options/` options screens shared with the pause menu, `Multiplayer/` server list and join |
 | `Game/Commands/` | Debug-console commands |
 | `Game/Tutorial/` | JSON tutorials: parser, task types (`Tasks/`), runner, progress, service, UI (`UI/`); see `tutorial-design.md` |
 | `Game/Effects/` | Block destruction/mining effects, `DropManager`, dust, hit effects, stars |
-| `Game/Events/` | `IEvent` structs for settings |
+| `Game/Settings/` | `Settings` (static sections), `GameSettings` DTOs, `SettingsApplier`, settings `IEvent`s |
+| `Game/Rendering/` | Game-side rendering: post-processing controllers (SSAO, color grading, vignette, camera feed), `SimpleBlock`, `SpaceTexture` skybox, `ShootAnimation` |
+| `Game/Npc/` | `Spacer` NPC (network side in `Network/Npc/`) |
+| `Game/Versioning/` | `WorldLoader`, `VersionConverter`, world upgrade chain (`Steps/`) |
 | `Game/Physics/` | `VoxelPhysics`, hit/collide info |
 | `Game/GameMath/` | World ↔ Sector ↔ Entity ↔ Chunk coordinate conversions |
-| `Game/Resource/` | GameSet loading, `BlockFactory`, atlases |
-| `Game/Generation/` | World structures, `Blocks/`, meshing/AO, light and electric managers, `Tools/` (NBT, serializers) |
-| `Generation/` | Stateless algorithms: noise, `PerlinWorms`, `InternalCavities`, `AsteroidOreGenerator`, `ChunkLODMeshGenerator`, seeds |
+| `Game/Resource/` | `GameAssets` registry, `Globals`; `Loaders/` (GameSet, blocks, mobs, generation, `BlockFactory`, atlases), `Json/` (DTOs), `BlockTypes/` (`BlockData` and its subclasses, `TextureTiling`), `Materials/` |
+| `Game/Generation/` | World structures, `Blocks/`, meshing/AO, light and electric managers, `Tools/` (NBT, serializers), `Algorithms/` (stateless: noise, `PerlinWorms`, `InternalCavities`, `AsteroidOreGenerator`, `ChunkLODMeshGenerator`, seeds) |
 | `Network/` | Multiplayer (see the Multiplayer section) |
 | `Scenes/` | All scenes |
 | `Resources/` | Shaders (`includes/`, `PostProcessing/`, `Engine/`), audio, fonts, models, textures, `Settings.json`, `default_input.json`, `theme.json` |
 
 ## Global state
 
-- `Game/GameAssets.cs`: static session registry — `Blocks`/`Items` (by short id or string id), models, icons, sounds, recipes, blueprints, projectiles, atlases; `CreateBlockFromId`; cleared by `DisposeAll` on scene unload.
+- `Game/Resource/GameAssets.cs`: static session registry — `Blocks`/`Items` (by short id or string id), models, icons, sounds, recipes, blueprints, projectiles, atlases; `CreateBlockFromId`; cleared by `DisposeAll` on scene unload.
 - `Globals.cs`: path constants. `Settings.cs`: static settings sections saved to `Resources/Settings.json`; DTOs in `GameSettings.cs` (with defaults and `Validate`). `SettingsApplier` pushes them into the systems (audio mixer, window, frame limiter, render scale, post processing, AO/voxel lighting remesh, FOV, mouse); call it after changing a setting, at startup it runs from `SpaceboxWindow.ApplyDisplaySettings`.
-- Options screens (`Game/GUI/Menu/OptionsMenu`, `OptionsWindow`, `AudioWindow`, `GameWindow`, `GraphicsWindow`, `ControlsWindow`) are shared by the main menu (`OptionsHostWindow`) and the pause menu (`PauseUI`, UI layer `pauseOptions`). They talk to an `IOptionsNavigator`; rows go through `OptionsRows` (label + widget + tooltip). Changes apply live, Save writes the file, Back/Escape restore the saved settings. A new setting: field with default + range check in `GameSettings.cs`, a row with a tooltip, and its effect in `SettingsApplier`.
+- Options screens (`Game/GUI/Menu/Options/OptionsMenu`, `OptionsWindow`, `AudioWindow`, `GameWindow`, `GraphicsWindow`, `ControlsWindow`) are shared by the main menu (`OptionsHostWindow`) and the pause menu (`PauseUI`, UI layer `pauseOptions`). They talk to an `IOptionsNavigator`; rows go through `OptionsRows` (label + widget + tooltip). Changes apply live, Save writes the file, Back/Escape restore the saved settings. A new setting: field with default + range check in `GameSettings.cs`, a row with a tooltip, and its effect in `SettingsApplier`.
 - Sounds pick a mixer channel: `new AudioSource(clip, AudioChannel.UI)` for interface sounds, `Music`/`Ambient` for loops, `Effects` (default) for gameplay.
-- `Game/UIManager.cs`: named window stack controlling the cursor (`Open("pause")`, `IsUIMode`, `CloseTop`).
+- `Game/GUI/UIManager.cs`: named window stack controlling the cursor (`Open("pause")`, `IsUIMode`, `CloseTop`).
 - Static singletons: `World.Instance`, `NetworkSession.Current`, `BlockSelector`, `RadarUI`, `TagManager`, `SpheresPool`, `ProjectileHitEffectsManager`, `MainThreadDispatcher`.
 - Static UIs follow `Init` / `OnGUI` / `Dispose` and must be wired by hand into `BaseSpaceScene` (`LoadContent`, `OnGUI`, `UnloadContent`). Missing `Dispose` leaks state across scene loads.
 
@@ -63,16 +73,16 @@ Game project on top of `Engine` (see `Engine/CLAUDE.md`). World hierarchy, GameS
 
 Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51+ are free. Color, light color/level and `OnDestroy` are regular members.
 
-- `Game/Resource/BlockFactory.cs`: dictionary `type string → constructor` (interactive, crusher, analyzer, mineral, furnace, disassembler, craftingtable, radar, cable, block, generator, consumer, storage). `RegisterBlockType` is currently a no-op — add new types to the dictionary.
+- `Game/Resource/Loaders/BlockFactory.cs`: dictionary `type string → constructor` (interactive, crusher, analyzer, mineral, furnace, disassembler, craftingtable, radar, cable, block, generator, consumer, storage). `RegisterBlockType` is currently a no-op — add new types to the dictionary.
 - Blocks with extra persistent state need an `IBlockSerializer` registered in `Game/Generation/Tools/BlockSerializerRegistry.cs`.
 - `ElectricNetworkManager` (file `ElectricalManager.cs`) — one per `SpaceEntity` (`SpaceEntity.ElectricManager`). `LightManager` — one per `Chunk`.
 - Changing block visuals/emission requires regenerating the chunk mesh.
 
 ## Items and interactions
 
-- Item type is chosen by a switch on JSON `Type` in `Game/Resource/GameSetLoader.cs` (weapon / drill / consumable / item).
+- Item type is chosen by a switch on JSON `Type` in `Game/Resource/Loaders/GameSetLoader.cs` (weapon / drill / consumable / item).
 - Interactions use a state pattern: `InteractionMode` (`OnEnable`, `OnDisable`, `Update(LocalAstronaut)`, `Render`, `AllowReload`) held by `InteractionHandler`. Each game mode passes a whitelist of allowed interaction types (e.g. `SurvivalMode.CreateInteractionHandler`); non-whitelisted types are rejected with an error log.
-- The active interaction is picked from the held item in `Game/GUI/PanelUI.cs` → `UpdatePlayerInteraction`.
+- The active interaction is picked from the held item in `Game/GUI/Hud/PanelUI.cs` → `UpdatePlayerInteraction`.
 - Item-independent behaviour: `IPassiveInteraction`, passed to `InteractionHandler` by the game mode and updated after the active interaction (e.g. `CreativeBlockDestroying` in `CreativeMode`).
 - Interactions that own left click (`block_destroy`/`shoot`) override `UsesPrimaryAction => true` (drills, shoot, eraser, camera point); passive left-click actions skip them to avoid double actions.
 - Destroy blocks through `BlockDestroyer.Destroy` / `DestroyInstantly` (callback, removal, network, stats, sound). Hold-to-repeat input: `RepeatingAction`.
@@ -177,7 +187,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 - World data: NBT (SharpNBT `CompoundTag`, GZip) — `Game/Generation/Tools/WorldSaveLoad.cs` (sector folders, `.entity` files), `Structures/WorldPersistenceManager.cs` (caches and writes unloaded entities), `NBTHelper` / `NBTKey` / `PackingTools`.
 - Procedural asteroids save only changed chunks (`SpaceEntity.SavesOnlyChangedChunks`, `Chunk.ShouldBeSaved` = modified or loaded from a save, `Asteroid.RemovedChunks`). Anything that changes chunk data must set `chunk.IsModified = true`, otherwise the change is lost on save.
 - Player and tags: JSON in the world folder (`PlayerSaveLoadManager`, `TagsSaveLoader`).
-- `Game/WorldLoader.cs` loads `WorldInfo`; `Game/VersionConverter.cs` (menu API, `CheckWorld` / `Upgrade`) runs `Game/Versioning/WorldUpgrader`, the dedicated server upgrades on start (`DedicatedServer.UpgradeIfNeeded`). The chain starts at 0.1.2 (`Steps/Upgrade_0_1_2_To_0_1_5`); older versions, newer versions and old 0.1.2 save formats (`WorldFormatProbe`: `worldX` legacy, `world_x` positions) are refused before any change. Upgrade: first-step `Check` → zip backup to `Worlds/_backups/` → steps → restore on failure → `WorldValidator` warns about ids missing from the world's GameSet (`GameSetIdIndex`).
+- `Game/Versioning/WorldLoader.cs` loads `WorldInfo`; `Game/Versioning/VersionConverter.cs` (menu API, `CheckWorld` / `Upgrade`) runs `Game/Versioning/WorldUpgrader`, the dedicated server upgrades on start (`DedicatedServer.UpgradeIfNeeded`). The chain starts at 0.1.2 (`Steps/Upgrade_0_1_2_To_0_1_5`); older versions, newer versions and old 0.1.2 save formats (`WorldFormatProbe`: `worldX` legacy, `world_x` positions) are refused before any change. Upgrade: first-step `Check` → zip backup to `Worlds/_backups/` → steps → restore on failure → `WorldValidator` warns about ids missing from the world's GameSet (`GameSetIdIndex`).
 - Step toolkit: `WorldUpgradeContext` operations (`RenameBlock`/`RenameItem`/`RemoveBlock`/`RemoveItem` touch chunk palettes, player slots and drops; `EditChunks`/`EditEntities`/`EditSectors`/`EditPlayers`/`EditDrops`/`EditJson` for the rest), `NbtFileEditor` (read/write/edit GZip NBT, `RenameKey`), `ChunkTagAccess`, `IdRemap`, `WorldFileLayout`. Test kit: `Spacebox.Tests/Versioning/WorldFixtureBuilder` + `WorldInspector`.
 
 ## Multiplayer

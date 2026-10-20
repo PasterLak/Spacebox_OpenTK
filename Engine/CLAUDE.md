@@ -6,41 +6,33 @@ Game-independent engine over OpenTK (GL 3.3 core). Namespace `Engine.*`. Must ne
 
 | Path | Purpose |
 |---|---|
-| `EngineWindow.cs` | Abstract `GameWindow`; owns the main loop and hook methods (see Lifecycle) |
-| `Application.cs` | Static: version, platform, `OpenLink`, `Quit()` |
-| `Time.cs` | `Time.Delta` (scaled by `TimeSize`), `Total`, FPS/TPS, per-phase timings, ticks |
-| `SceneManagement/` | `Scene`, `SceneManager`, `ErrorScene`, `ParticleSystemEditor` |
-| `Node3D.cs`, `Transform3D.cs`, `Components/` | Scene graph; `Component` base + built-ins (`ModelRendererComponent`, `ColliderComponent`, `BillboardComponent`, …) |
-| `Resources.cs` | Typed resource cache (`IResource`) |
-| `Shader.cs`, `Materials/`, `Texture2D.cs`, `Mesh.cs`, `Model.cs`, `MeshBuffer.cs` | Rendering primitives |
-| `SceneRenderer.cs`, `Graphics/` | Scene FBO (color/normal/depth); `GLState`, `GPUDebug`, `UniformBuffer`, `GlobalUniforms` |
+| `EngineWindow.cs` | Abstract `GameWindow`; owns the main loop and hook methods (see Lifecycle). The only file at the root |
+| `Core/` | `Application` (version, platform, `OpenLink`, `Quit()`), `Time` (`Delta` scaled by `TimeSize`, `Total`, FPS/TPS, per-phase timings, ticks, `AlwaysCalculateFPS`), `FrameLimiter`, `Debug` (logging + console; `MirrorToStandardOutput`, `ExecuteCommand`, `MessageLogged` event), `Prof` (profiler scopes), services: `ServiceLocator`, `EventBus`, `Pool`, `ConcurrentPool`, `DisposalManager`, `TickTask`/`TickTaskManager`, `TimedEventManager` (see below) |
+| `SceneManagement/` | `Scene`, `SceneManager`, `ErrorScene`, `ParticleSystemEditor`, scene graph `Node3D`/`Transform3D` |
+| `Components/` | `Component` base + built-ins (`ModelRendererComponent`, `ColliderComponent`, `BillboardComponent`, …) |
+| `Assets/` | `Resources` (typed resource cache, `IResource`), `ResourceFallbacks` |
+| `Cameras/` | `Camera` (`Camera.Main` is the active one), `Camera360Base`, `FreeCamera`, `OrbitCamera`, `OrbitViewCamera`, `CameraStatic`, `CameraFrustum` |
+| `Graphics/` | Rendering primitives `Shader`, `Texture2D`, `Mesh`, `MeshBuffer`, `Model`; scene FBO `SceneRenderer` (color/normal/depth); `GLState`, `GPUDebug`, `UniformBuffer`, `GlobalUniforms`, `RenderTexture`, `ViewModelProjection`; `Skybox` (assigned to `Lighting.Skybox`), `RenderSpace` (camera-relative origin for large coordinates), `VisualDebug` (debug lines, F4), `FramebufferCapture` |
+| `Graphics/Primitives/` | `LineRenderer`, `CubeRenderer`, `SphereRenderer`, `Axes`, `BoundingBoxRenderer` |
 | `Graphics/Atlas/` | `TextureAtlas` (skyline packing, any sizes, layers, lazy rebuild), `AtlasLayout`, `AtlasRegion`, `AtlasSprite` (ImGui drawing), `ImagePixels` |
+| `Materials/` | `MaterialBase` and built-in materials |
 | `Light/` | `LightSystem` (UBO), `Lighting` (ambient, fog, `Lighting.Skybox`), light types, `LightPool` |
 | `PostProcessing/` | `PostProcessManager` + effects (`DefaultEffect`, SSAO, Vignette, …) |
-| `Skybox.cs` | Skybox `Node3D`, assigned to `Lighting.Skybox` |
-| `Camera*.cs`, `FreeCamera.cs`, `OrbitCamera.cs`, `CameraFrustum.cs` | Cameras; `Camera.Main` is the active one |
-| `RenderSpace.cs` | Camera-relative origin for large-coordinate rendering |
 | `Physics/` | Bounding volumes, `Ray`, `Collision`, bodies, `BVHCuller` (file `BHVCuller.cs`) |
-| `Octree*.cs`, `PointOctree*.cs` | Spatial structures (see "Which to use") |
-| `GUI/` | ImGui debug `Overlay` (F3) and its elements, `Sprite`, `WorldTextDebug` |
+| `Spatial/` | `Octree<T>`, `PointOctree<T>` (see "Which to use") |
+| `GUI/` | ImGui debug `Overlay` (F3) and its elements, `Sprite`, `WorldTextDebug`; ImGui backend `ImGuiController`, `ThemeUIEngine`, window stack `UIManager` |
 | `UI/` | `DevGui`, `Canvas`/`Node2D`/`Rect` (2D layer, rarely used) |
-| `ImGuiController.cs`, `ThemeUIEngine.cs`, `UIManager.cs` | ImGui backend, theme, window stack |
-| `InputPro/` | Current input system (`InputManager.Instance`) |
-| `Input.cs` | Raw keyboard/mouse state |
-| `InputManager0.cs`, `InputAction0.cs` | Legacy input — do not use in new code |
+| `Input/` | `Input` (raw keyboard/mouse state); `InputPro/` the current input system (`InputManager.Instance`); `InputManager0`/`InputAction0` legacy input — do not use in new code |
 | `Audio/` | OpenAL `AudioDevice`, `AudioClip`, `AudioSource`, `AudioMixer` (master + channels Effects/Music/Ambient/UI, `Muted`; set a source's `Channel`), Ogg/Wave loaders |
 | `Animation/` | `Animator`, move/rotate tweens |
 | `ParticleSystem/` | Emitters and renderer |
 | `Commands/` | Debug-console commands (`CommandManager`, `CommandBase`) |
 | `Multithreading/` | `WorkerPoolManager`, `MainThread.Run` (run a function on the main thread from any thread and await its result) |
 | `Web/` | Dependency-free HTTP/1.1 server: `MiniHttpServer` (TCP, IPv4 + IPv6 listeners, connection limit, timeouts, body limit, optional TLS on the same port via `CertificateProvider` + `PrefixedStream`), `NetworkAddresses.IsLocal`, `Acme/` (`AcmeClient`: Let's Encrypt / RFC 8555 certificates for names and IPs through an `IAcmeChallengeSolver`: `DnsChallengeSolver` over an `IDnsChallenge` (`DuckDnsClient`, `CloudflareDnsClient`) or `HttpChallengeSolver` (HTTP-01 on a port); `AcmeJws` ES256 signing; a new DNS provider is one `IDnsChallenge` class), `HttpProtocol` (parse/write), `HttpRouter` (exact and prefix routes), `HttpRequest`/`HttpResponse` (JSON with camelCase, cookies, query) |
-| `Math/`, `VectorExtensions.cs` | Byte vectors, colors, helpers |
+| `Math/` | Byte vectors, colors, `VectorExtensions` |
 | `Utils/` | `ObjLoader`, `PixelDataLoader`, `FastNoiseLite`, `GenMesh`, `ShaderHotReloader`, `DirectoryArchive` (zip folders, content hash, safe extract) |
-| `Debug.cs`, `VisualDebug.cs`, `Prof.cs` | Logging + console, debug lines (F4), profiler scopes; `Debug.MirrorToStandardOutput`, `Debug.ExecuteCommand`, `Debug.MessageLogged` event (every log line, any thread) |
 | `AI/` | `StateMachine/` (`State<TContext>`, hierarchical `StateMachine<TContext>`), `Pathfinding/` (`INavigationGrid`, `VoxelLine` DDA, `VoxelPathfinder` A*, `PathRequest`, `PathScheduler` with per-frame node budget) — main thread only |
 | `Networking/` | `NetworkManager` (modes, peers, send), `Transport/` (`INetTransport`, `LiteNetTransport`), `Serialization/` (`NetWriter`, `NetReader`, `NetSerializer`), `Messages/`, `Objects/` (`NetworkObject`, `NetworkBehaviour`, `NetworkVariable<T>`, `NetworkSpawner`, `ReplicationSystem`), `Rpc/` (`[Rpc]`, `RpcSystem`), `Behaviours/NetworkTransform`, `Transfer/` (`NetTransferService` = `NetworkManager.Transfers`, chunked blob downloads), `Query/` (connectionless server info: `ServerQueryResponder` = `NetworkManager.Query`, `ServerQueryClient` over an `IQuerySocket` for pings, LAN broadcast and icon download) |
-| `ServiceLocator.cs`, `EventBus.cs`, `DisposalManager.cs`, `Pool.cs`, `TickTaskManager.cs`, `TimedEventManager.cs` | Services (see below) |
-
 ## Lifecycle (`EngineWindow.cs`)
 
 Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
