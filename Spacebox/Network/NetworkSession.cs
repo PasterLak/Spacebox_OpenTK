@@ -23,7 +23,7 @@ public sealed class NetworkSession : IDisposable
     private float _playerSyncTimer;
     private readonly AutoSaveTimer _autoSave = new AutoSaveTimer();
     private bool _disposed;
-    private readonly Auth.ServerAccessSettings _access;
+    private Auth.ServerAccessSettings _access;
     private readonly Auth.ServerAuthService _auth;
 
     public static NetworkSession Current { get; private set; }
@@ -56,6 +56,19 @@ public sealed class NetworkSession : IDisposable
     }
 
     public bool RemoveAccount(string name) => _auth != null && _auth.RemoveAccount(name);
+
+    public void ReloadAccessSettings()
+    {
+        _access = CreateAccessSettings();
+    }
+
+    public void RefreshAdvertisement()
+    {
+        if (GameSession.IsRemoteClient) return;
+
+        Discovery.ServerAdvertiser.Stop();
+        Discovery.ServerAdvertiser.Start(CreateAdvertisement());
+    }
 
     private static Auth.ServerAccessSettings CreateAccessSettings()
     {

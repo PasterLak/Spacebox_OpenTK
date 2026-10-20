@@ -23,6 +23,22 @@ public sealed class ServerConfig
     public byte GameMode { get; set; } = 0;
     public float AutoSaveInterval { get; set; } = 300f;
     public int UpdateRate { get; set; } = DefaultUpdateRate;
+    public bool DashboardEnabled { get; set; } = true;
+    public int DashboardPort { get; set; } = 0;
+    public string DashboardCertificateFile { get; set; } = "";
+    public string DashboardCertificateKeyFile { get; set; } = "";
+    public string DashboardCertificatePassword { get; set; } = "";
+    public string PublicAddress { get; set; } = "";
+    public bool HttpsAutomatic { get; set; } = true;
+    public int HttpsChallengePort { get; set; } = 80;
+    public string DuckDnsDomain { get; set; } = "";
+    public string DuckDnsToken { get; set; } = "";
+    public string CloudflareApiToken { get; set; } = "";
+    public bool DuckDnsUpdateIp { get; set; } = true;
+    public string LetsEncryptEmail { get; set; } = "";
+    public bool LetsEncryptStaging { get; set; } = false;
+
+    public int GetDashboardPort() => DashboardPort > 0 ? DashboardPort : Port;
 
     public const int DefaultUpdateRate = 30;
     public const int MinUpdateRate = 10;
@@ -56,6 +72,11 @@ public sealed class ServerConfig
         if (Save(config, path, options)) Debug.Warning($"[Server] Created default {FileName}");
 
         return config;
+    }
+
+    public bool Save()
+    {
+        return Save(this, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FileName), new JsonSerializerOptions { WriteIndented = true });
     }
 
     private static bool Save(ServerConfig config, string path, JsonSerializerOptions options)

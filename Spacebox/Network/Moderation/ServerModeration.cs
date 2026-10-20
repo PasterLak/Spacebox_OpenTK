@@ -81,6 +81,25 @@ public static class ServerModeration
         return removed;
     }
 
+    public static ModerationData Snapshot()
+    {
+        var data = Load();
+        return new ModerationData
+        {
+            BannedNames = new List<string>(data.BannedNames),
+            BannedAddresses = new List<string>(data.BannedAddresses),
+            MutedNames = new List<string>(data.MutedNames)
+        };
+    }
+
+    public static bool UnbanAddress(string address)
+    {
+        var data = Load();
+        bool removed = data.BannedAddresses.RemoveAll(entry => string.Equals(entry, address, StringComparison.OrdinalIgnoreCase)) > 0;
+        if (removed) Save();
+        return removed;
+    }
+
     public static void SetMuted(string name, bool muted)
     {
         if (string.IsNullOrWhiteSpace(name) || IsMuted(name) == muted) return;

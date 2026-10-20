@@ -16,6 +16,7 @@ public static class Program
     {
         Directory.SetCurrentDirectory(AppContext.BaseDirectory);
         LaunchOptions.Parse(args);
+        Network.Dedicated.ServerRestart.WaitForPreviousProcess(LaunchOptions.WaitForProcessId);
 
         if (LaunchOptions.IsDedicated)
         {

@@ -1,0 +1,94 @@
+using System.Diagnostics;
+using Engine;
+using Debug = Engine.Debug;
+using Spacebox.Game.Generation;
+
+namespace Spacebox.Network.Dedicated;
+
+public static class ServerRestart
+{
+    private const string WaitArgument = "--wait-pid";
+    private const int WaitMilliseconds = 30000;
+
+    public static void Save(string reason)
+    {
+        if (NetworkSession.Current != null) NetworkSession.Current.SaveWorld(reason);
+        else World.Instance?.Save(false);
+    }
+
+    public static void Stop()
+    {
+        Save("Stop");
+        NetworkSession.Current?.Dispose();
+        Application.Quit();
+    }
+
+    public static bool Restart()
+    {
+        string executable = Environment.ProcessPath;
+        if (string.IsNullOrEmpty(executable))
+        {
+            Debug.Error("[Server] Restart failed: the executable path is unknown");
+            return false;
+        }
+
+        Save("Restart");
+        NetworkSession.Current?.Dispose();
+
+        try
+        {
+            Process.Start(CreateStartInfo(executable, Environment.GetCommandLineArgs(), Environment.ProcessId));
+        }
+        catch (Exception ex)
+        {
+            Debug.Error($"[Server] Restart failed: {ex.Message}");
+            return false;
+        }
+
+        Debug.Warning("[Server] Restarting");
+        Application.Quit();
+        return true;
+    }
+
+    public static ProcessStartInfo CreateStartInfo(string executable, string[] commandLine, int processId)
+    {
+        var info = new ProcessStartInfo(executable)
+        {
+            UseShellExecute = false,
+            WorkingDirectory = AppContext.BaseDirectory
+        };
+
+        bool skipFirst = commandLine.Length > 0 && !commandLine[0].StartsWith("--");
+        for (int i = skipFirst ? 1 : 0; i < commandLine.Length; i++)
+        {
+            if (string.Equals(commandLine[i], WaitArgument, StringComparison.OrdinalIgnoreCase))
+            {
+                i++;
+                continue;
+            }
+
+            info.ArgumentList.Add(commandLine[i]);
+        }
+
+        info.ArgumentList.Add(WaitArgument);
+        info.ArgumentList.Add(processId.ToString());
+        return info;
+    }
+
+    public static void WaitForPreviousProcess(int processId)
+    {
+        if (processId <= 0) return;
+
+        try
+        {
+            using var previous = Process.GetProcessById(processId);
+            previous.WaitForExit(WaitMilliseconds);
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+    }
+}

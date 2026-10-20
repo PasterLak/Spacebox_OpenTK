@@ -34,6 +34,7 @@ public static class DedicatedServer
 
         RegisterCommands();
         StartConsoleReader();
+        Dashboard.DashboardService.Start(Config);
 
         Debug.Success($"[Server] Starting '{Config.ServerName}' with world '{world.Name}' on port {Config.Port}");
 
@@ -108,6 +109,7 @@ public static class DedicatedServer
         CommandManager.RegisterGlobalCommand(new MuteCommand(false));
         CommandManager.RegisterGlobalCommand(new SaveCommand());
         CommandManager.RegisterGlobalCommand(new StopCommand());
+        CommandManager.RegisterGlobalCommand(new RestartCommand());
         CommandManager.RegisterGlobalCommand(new ServerGameModeCommand());
         CommandManager.RegisterGlobalCommand(new ServerTeleportCommand());
         CommandManager.RegisterGlobalCommand(new ServerTeleportToPlayerCommand());

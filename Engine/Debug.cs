@@ -12,7 +12,7 @@ namespace Engine
 {
     public static class Debug
     {
-        enum MessageType : byte
+        public enum MessageType : byte
         {
             Info,
             Warning,
@@ -113,6 +113,8 @@ namespace Engine
 
         public static bool MirrorToStandardOutput { get; set; }
 
+        public static event Action<string, MessageType> MessageLogged;
+
         public static void ExecuteCommand(string command)
         {
             ProcessCommand(command);
@@ -142,6 +144,7 @@ namespace Engine
                 _messages.Add(msg);
                 messageCount++;
             }
+            MessageLogged?.Invoke(message, msg.Type);
         }
 
         private static void AddMessage(string message, OpenTK.Mathematics.Color4 color)
@@ -165,6 +168,7 @@ namespace Engine
             MirrorMessage(message, msg.Type);
             _messages.Add(msg);
             messageCount++;
+            MessageLogged?.Invoke(message, msg.Type);
         }
 
         private static readonly object _mirrorLock = new object();

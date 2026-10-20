@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Spacebox Server &amp; Dashboard Guide</title>
+<style>
+  @font-face { font-family: "StarPixel"; src: url("../../Spacebox/Resources/Fonts/StarPixel.ttf"); }
+  @page { size: A4; margin: 16mm 15mm 18mm; }
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font: 10.5pt/1.5 "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: #1c2230; margin: 0; }
+  h1, h2, h3 { font-family: "StarPixel", monospace; letter-spacing: .5px; }
+  h1 { font-size: 30pt; color: #d9a10f; margin: 0; }
+  h2 { font-size: 15pt; color: #10141c; border-bottom: 3px solid #ffc428; padding-bottom: 4px; margin: 26px 0 10px; page-break-after: avoid; }
+  h3 { font-size: 11pt; color: #3a7a8c; margin: 16px 0 6px; page-break-after: avoid; }
+  p { margin: 6px 0; }
+  code, pre { font-family: "Cascadia Mono", Consolas, "DejaVu Sans Mono", monospace; font-size: 9pt; }
+  code { background: #f1f2f5; border: 1px solid #dfe2e8; border-radius: 3px; padding: 0 4px; }
+  pre { background: #10141c; color: #f0f0f0; border-radius: 5px; padding: 10px 12px; white-space: pre-wrap; page-break-inside: avoid; border-left: 4px solid #ffc428; }
+  pre .c { color: #828791; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0; page-break-inside: auto; }
+  th { background: #10141c; color: #ffc428; text-align: left; font-weight: 600; padding: 5px 8px; font-size: 9.5pt; }
+  td { border-bottom: 1px solid #e1e4ea; padding: 5px 8px; vertical-align: top; font-size: 9.5pt; }
+  tr { page-break-inside: avoid; }
+  td:first-child { white-space: nowrap; font-weight: 600; }
+  ol, ul { margin: 6px 0 6px 20px; padding: 0; }
+  li { margin: 3px 0; }
+  .cover { height: 245mm; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: #10141c; color: #f0f0f0; border-radius: 8px; page-break-after: always; border: 3px solid #5a6478; }
+  .cover h1 { font-size: 44pt; color: #ffc428; text-shadow: 0 3px 0 #000; }
+  .cover .sub { font-family: "StarPixel", monospace; color: #6ed2e6; font-size: 15pt; margin-top: 10px; }
+  .cover .ver { color: #b9bec8; margin-top: 30px; }
+  .cover .toc { margin-top: 40px; text-align: left; color: #b9bec8; font-size: 11pt; line-height: 1.9; }
+  .cover .toc b { color: #ffc428; display: inline-block; width: 26px; }
+  .box { border-radius: 5px; padding: 8px 12px; margin: 10px 0; page-break-inside: avoid; }
+  .tip { background: #eef8ef; border-left: 4px solid #2f9a43; }
+  .warn { background: #fff6e0; border-left: 4px solid #e0a400; }
+  .danger { background: #fdeceb; border-left: 4px solid #d43b2b; }
+  .box b:first-child { display: block; margin-bottom: 2px; }
+  .steps { counter-reset: step; list-style: none; margin-left: 0; }
+  .steps > li { counter-increment: step; position: relative; padding-left: 34px; margin: 8px 0; page-break-inside: avoid; }
+  .steps > li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 24px; height: 24px; border-radius: 4px; background: #ffc428; color: #10141c; font-family: "StarPixel", monospace; text-align: center; line-height: 24px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .two > div { page-break-inside: avoid; }
+  .small { color: #5f6675; font-size: 9pt; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <h1>SPACEBOX</h1>
+  <div class="sub">Server &amp; Dashboard Guide</div>
+  <div class="ver">Game version 0.1.5</div>
+  <div class="toc">
+    <div><b>1</b>Start a server</div>
+    <div><b>2</b>The config file</div>
+    <div><b>3</b>Join the server</div>
+    <div><b>4</b>Open it to the internet</div>
+    <div><b>5</b>Automatic HTTPS</div>
+    <div><b>6</b>The web dashboard</div>
+    <div><b>7</b>Console commands</div>
+    <div><b>8</b>Files, saves and backups</div>
+    <div><b>9</b>Troubleshooting</div>
+  </div>
+</section>
+
+<h2>1. Start a server</h2>
+<p>The game, the host mode and the dedicated server are the same program. A dedicated server runs without a window and keeps the world running while nobody plays on that PC.</p>
+<div class="two">
+  <div>
+    <h3>Windows</h3>
+    <ol class="steps">
+      <li>Open the game folder.</li>
+      <li>Double-click <code>start-server.bat</code>. A terminal window opens and shows the log.</li>
+      <li>Allow Spacebox in the Windows Firewall question (also on public networks if you want players from outside).</li>
+    </ol>
+  </div>
+  <div>
+    <h3>Linux</h3>
+    <ol class="steps">
+      <li>Unzip the Linux build.</li>
+      <li>Run <code>./start-server.sh</code> in a terminal.</li>
+      <li>On a machine without a desktop it uses <code>xvfb-run</code> if installed (<code>sudo apt install xvfb</code>); most servers also run without it.</li>
+    </ol>
+  </div>
+</div>
+<p>On the first start the server creates <code>serverconfig.json</code> and a new world in <code>Worlds/ServerWorld</code>. When the log shows <code>World ready</code>, players can join.</p>
+<div class="box tip"><b>Stop the server safely</b>Type <code>stop</code> in the terminal (or use Stop in the dashboard). The world is saved first. Closing the window without <code>stop</code> loses changes since the last autosave.</div>
+<p>Without the scripts: <code>Spacebox.exe --server</code> (Windows) or <code>./Spacebox --server</code> (Linux).</p>
+
+<h2>2. The config file</h2>
+<p><code>serverconfig.json</code> lies next to the executable. Edit it while the server is stopped (most settings can also be changed live in the dashboard). Missing settings are added with their defaults on the next start.</p>
+<table>
+  <tr><th>Setting</th><th>Default</th><th>Meaning</th></tr>
+  <tr><td>ServerName</td><td>Spacebox Server</td><td>Name in the server list</td></tr>
+  <tr><td>Description</td><td>A Spacebox server</td><td>Text under the name (up to 600 characters)</td></tr>
+  <tr><td>IconFile</td><td>server-icon.png</td><td>PNG or JPEG next to the executable, up to 256 KB, square 64–128 px looks best</td></tr>
+  <tr><td>LanDiscovery</td><td>true</td><td>Players in the same network find the server automatically</td></tr>
+  <tr><td>WhitelistEnabled / Whitelist</td><td>false / []</td><td>Only listed names may join</td></tr>
+  <tr><td>RegistrationEnabled</td><td>false</td><td>Players need a password (created on their first join)</td></tr>
+  <tr><td>WorldName</td><td>ServerWorld</td><td>Folder in <code>Worlds/</code>; a missing world is created</td></tr>
+  <tr><td>Seed</td><td>random</td><td>World seed for a new world</td></tr>
+  <tr><td>ModId</td><td>default</td><td>GameSet (content pack) of the world</td></tr>
+  <tr><td>Port</td><td>7777</td><td>UDP port of the game (the dashboard uses TCP on the same number)</td></tr>
+  <tr><td>MaxPlayers</td><td>16</td><td>Player limit</td></tr>
+  <tr><td>GameMode</td><td>0</td><td>0 Survival, 1 Creative, 2 Spectator (for a new world)</td></tr>
+  <tr><td>AutoSaveInterval</td><td>300</td><td>Seconds between autosaves, 0 turns it off (minimum 10)</td></tr>
+  <tr><td>UpdateRate</td><td>30</td><td>Server frame rate, 10–240</td></tr>
+  <tr><td>DashboardEnabled</td><td>true</td><td>Web dashboard on or off</td></tr>
+  <tr><td>DashboardPort</td><td>0</td><td>TCP port of the dashboard, 0 = same number as <code>Port</code></td></tr>
+  <tr><td>PublicAddress</td><td>empty</td><td>The address people use from the internet: a DuckDNS name, any domain or your public IP. Turns on automatic HTTPS (chapter 5)</td></tr>
+  <tr><td>HttpsAutomatic</td><td>true</td><td>Get and renew the HTTPS certificate automatically when <code>PublicAddress</code> is set</td></tr>
+  <tr><td>HttpsChallengePort</td><td>80</td><td>Port for the Let's Encrypt check when no DNS token is set</td></tr>
+  <tr><td>DuckDnsToken</td><td>empty</td><td>For <code>*.duckdns.org</code> addresses: no port 80 needed, and the server keeps the name on your current IP</td></tr>
+  <tr><td>DuckDnsUpdateIp</td><td>true</td><td>Update the DuckDNS IP every 5 minutes</td></tr>
+  <tr><td>CloudflareApiToken</td><td>empty</td><td>For domains managed by Cloudflare: no port 80 needed</td></tr>
+  <tr><td>LetsEncryptEmail</td><td>empty</td><td>Optional, Let's Encrypt sends expiry warnings there</td></tr>
+  <tr><td>LetsEncryptStaging</td><td>false</td><td>Test certificates (not trusted by browsers), only for testing the setup</td></tr>
+  <tr><td>DashboardCertificateFile / …KeyFile / …Password</td><td>empty</td><td>Your own certificate files instead (PEM + key, or PFX + password); turns the automatic mode off</td></tr>
+</table>
+
+<h2>3. Join the server</h2>
+<ul>
+  <li><b>Same network:</b> Multiplayer menu → the server appears under local servers.</li>
+  <li><b>By address:</b> add a server with the IP (or DuckDNS name) and port 7777.</li>
+  <li><b>Same PC:</b> address <code>127.0.0.1</code>.</li>
+</ul>
+<p>Players get the server's GameSet automatically if they do not have it. The game version must be the same on server and clients.</p>
+
+<h2>4. Open it to the internet</h2>
+<ol class="steps">
+  <li><b>Fixed LAN address:</b> give the server PC a fixed local IP in your router (DHCP reservation), e.g. <code>192.168.1.50</code>.</li>
+  <li><b>Port forwarding:</b> in the router forward <b>UDP 7777</b> (game) and <b>TCP 7777</b> (dashboard) to that IP. Some routers have one rule for "TCP/UDP".</li>
+  <li><b>Firewall:</b> Windows: allow Spacebox when asked, or add inbound rules for TCP and UDP 7777. Linux with ufw: <code>sudo ufw allow 7777</code>.</li>
+  <li><b>A name instead of an IP:</b> home IPs change. A free DuckDNS name is easiest (chapter 5): the server keeps it up to date by itself. Any other name service works too.</li>
+</ol>
+<div class="box warn"><b>CGNAT</b>If the WAN/Internet IP in your router differs from the IP that duckdns.org shows for you, your provider uses CGNAT and port forwarding cannot work. Ask the provider for a public IPv4 address, or use a VPN/tunnel service (for example a VPS or a mesh VPN for your friends).</div>
+<div class="box tip"><b>Inside your own network</b>Many routers cannot open your own public name from inside (no "NAT loopback"). At home use the LAN address, e.g. <code>192.168.1.50:7777</code>; friends outside use the DuckDNS name.</div>
+
+<h2>5. Automatic HTTPS</h2>
+<p>The dashboard asks for your admin password. Over the internet it must be encrypted (HTTPS), otherwise the password can be read on the way. The server gets a free certificate from Let's Encrypt and renews it by itself. You only tell it the address people use, and pick one of the ways below.</p>
+<table>
+  <tr><th>Your situation</th><th>What to put in serverconfig.json</th><th>Extra port</th></tr>
+  <tr><td>Free DuckDNS name</td><td><code>PublicAddress</code> + <code>DuckDnsToken</code></td><td>none</td></tr>
+  <tr><td>Own domain on Cloudflare</td><td><code>PublicAddress</code> + <code>CloudflareApiToken</code></td><td>none</td></tr>
+  <tr><td>Any other name (No-IP, Dynu, own domain, …)</td><td><code>PublicAddress</code></td><td>TCP 80</td></tr>
+  <tr><td>Only your public IP</td><td><code>PublicAddress</code> = the IP</td><td>TCP 80</td></tr>
+</table>
+
+<h3>A. DuckDNS (easiest, free)</h3>
+<ol class="steps">
+  <li>Open <code>https://www.duckdns.org</code>, sign in and add a sub domain, for example <code>myserver</code>.</li>
+  <li>Copy the <b>token</b> shown at the top of the page.</li>
+  <li>Stop the server and set:
+<pre>"PublicAddress": "myserver.duckdns.org",
+"DuckDnsToken": "a1b2c3d4-....-your-token"</pre></li>
+  <li>Start the server. The server also keeps the name on your current IP, so the DuckDNS updater program is not needed.</li>
+</ol>
+
+<h3>B. Your own domain on Cloudflare</h3>
+<ol class="steps">
+  <li>In Cloudflare, add a DNS record (A) like <code>play.example.com</code> → your public IP, proxy <b>off</b> (grey cloud).</li>
+  <li>My Profile → API Tokens → Create Token → template <b>Edit zone DNS</b>, zone = your domain. Copy the token.</li>
+  <li>Set:
+<pre>"PublicAddress": "play.example.com",
+"CloudflareApiToken": "your-cloudflare-token"</pre></li>
+</ol>
+
+<h3>C. Any other name or just your IP</h3>
+<ol class="steps">
+  <li>Make sure the name points to your public IP (No-IP, Dynu and others have their own small updater program).</li>
+  <li>Forward <b>TCP 80</b> to the server PC as well (Let's Encrypt checks a file there; the server opens port 80 only for those few seconds).</li>
+  <li>Set:
+<pre>"PublicAddress": "play.example.com"     <span class="c">or your IP, e.g. "85.10.20.30"</span></pre></li>
+</ol>
+<div class="box warn"><b>Port 80 not possible?</b>Some providers block it, and on Linux only root may open ports below 1024. Forward external port 80 to another internal port in the router (for example 8080) and set <code>"HttpsChallengePort": 8080</code>. If your provider blocks port 80 completely, use DuckDNS or Cloudflare instead.</div>
+<div class="box tip"><b>Only an IP address</b>Let's Encrypt gives certificates for IP addresses that last about 6 days; the server renews them automatically every few days. If your IP changes, a name (DuckDNS) is the better choice.</div>
+
+<h3>Then</h3>
+<p>Start the server. After about a minute the log shows <code>HTTPS certificate for … saved</code>, and the dashboard overview shows the HTTPS state. Open <code>https://&lt;your address&gt;:7777/dashboard</code> from anywhere.</p>
+<div class="box tip"><b>What happens in the background</b>The certificate is stored in <code>dashboard/certificates/</code>, checked every 12 hours and renewed when a third of its time is left (30 days for normal certificates). Failures are written to the log with a hint and retried after an hour. Set <code>"LetsEncryptStaging": true</code> for a first test run: Let's Encrypt then issues test certificates (browsers warn about them) and failed attempts do not count against its limits.</div>
+<div class="box danger"><b>Keep tokens secret</b>DuckDNS and Cloudflare tokens control your name. Do not share <code>serverconfig.json</code> or screenshots of it.</div>
+<p class="small">While HTTPS is active, plain <code>http://</code> still works inside your own network; from the internet it is redirected to <code>https://</code>. Using your own certificate instead: set <code>DashboardCertificateFile</code> and <code>DashboardCertificateKeyFile</code>.</p>
+
+<h2>6. The web dashboard</h2>
+<h3>First start: create the admin</h3>
+<ol class="steps">
+  <li>Start the server. The log says: <i>No admin yet. Register in the dashboard with the setup key from …/dashboard/setup-key.txt</i>.</li>
+  <li>Open the dashboard: on the server PC <code>http://localhost:7777/dashboard</code>, in your network <code>http://192.168.1.50:7777/dashboard</code>, from outside <code>https://&lt;your address&gt;:7777/dashboard</code>.</li>
+  <li>Open <code>dashboard/setup-key.txt</code> in the server folder and copy the key (like <code>ABCDE-FGHJK-LMNPQ-RSTUV</code>).</li>
+  <li>Enter the key, an admin name and a password (at least 8 characters). The key file is deleted; only one admin exists.</li>
+</ol>
+<div class="box warn"><b>Forgot the password?</b>Stop the server, delete <code>dashboard/admin.json</code> and start again: a new setup key is written and you can register again.</div>
+<h3>Pages</h3>
+<table>
+  <tr><th>Page</th><th>What you can do</th></tr>
+  <tr><td>Overview</td><td>Players, uptime, CPU, memory, game ticks, update time, world size, live charts; server info and HTTPS state; send a chat message to everyone; Save world, Restart, Stop</td></tr>
+  <tr><td>Players</td><td>Online players with ping, address and position; all players who ever joined; Kick, Mute, Ban. Click a player for health, power, oxygen, equipment, hotbar, inventory with item icons and statistics</td></tr>
+  <tr><td>Moderation</td><td>Banned names and IP addresses (unban), muted players, ban by name, whitelist on/off, add and remove names</td></tr>
+  <tr><td>Console</td><td>Live server log; type any console command (Tab completes, arrow keys browse the history)</td></tr>
+  <tr><td>Settings</td><td>Name, description, max players, LAN visibility, autosave interval, frame rate (applied at once); upload the server icon; change the dashboard password</td></tr>
+</table>
+<div class="box tip"><b>Security built in</b>Login sessions last 12 hours; 5 wrong passwords lock that address for 5 minutes; every admin action is written to the server log as <code>[Dashboard] admin: …</code>. If you never need the dashboard from outside, simply do not forward TCP 7777, or set <code>"DashboardEnabled": false</code>.</div>
+
+<h2>7. Console commands</h2>
+<p>Type them in the server terminal or the dashboard console. <code>help</code> lists all of them.</p>
+<table>
+  <tr><th>Command</th><th>Meaning</th></tr>
+  <tr><td>say &lt;text&gt;</td><td>Chat message from the server</td></tr>
+  <tr><td>players</td><td>List online players</td></tr>
+  <tr><td>kick &lt;name&gt;</td><td>Disconnect a player</td></tr>
+  <tr><td>ban / unban &lt;name&gt;</td><td>Ban (also offline players and their IP) or unban</td></tr>
+  <tr><td>mute / unmute &lt;name&gt;</td><td>Block or allow chat for a player</td></tr>
+  <tr><td>unregister &lt;name&gt;</td><td>Delete a player's password account (registration mode)</td></tr>
+  <tr><td>gm &lt;0|1|2&gt; &lt;name&gt;</td><td>Game mode: survival, creative, spectator</td></tr>
+  <tr><td>tp &lt;name&gt; &lt;x&gt; &lt;y&gt; &lt;z&gt;</td><td>Teleport a player to a position</td></tr>
+  <tr><td>tpp &lt;name&gt; &lt;target&gt;</td><td>Teleport a player to another player</td></tr>
+  <tr><td>mob &lt;id&gt; &lt;count&gt; &lt;name&gt; | list | clear</td><td>Spawn, list or remove mobs</td></tr>
+  <tr><td>save / stop / restart</td><td>Save the world; save and stop; save and restart</td></tr>
+  <tr><td>clear, version, help</td><td>Clear the console, show the version, list commands</td></tr>
+</table>
+
+<h2>8. Files, saves and backups</h2>
+<table>
+  <tr><th>Path</th><th>Content</th></tr>
+  <tr><td>serverconfig.json</td><td>Server settings</td></tr>
+  <tr><td>Worlds/&lt;WorldName&gt;/</td><td>The world: sectors and asteroids, <code>players/</code> (one file per player), <code>moderation.json</code> (bans, mutes), <code>accounts.json</code> (passwords in registration mode)</td></tr>
+  <tr><td>Worlds/_backups/</td><td>Zip backups made automatically before a world is converted to a new game version</td></tr>
+  <tr><td>dashboard/</td><td><code>admin.json</code> (dashboard login), <code>setup-key.txt</code> (only before the first registration), <code>certificates/</code> (automatic HTTPS)</td></tr>
+  <tr><td>GameSets/</td><td>Content packs (blocks, items, recipes)</td></tr>
+</table>
+<div class="box tip"><b>Backups</b>Stop the server (or run <code>save</code>) and copy the world folder. Updating the game: copy the new game files over the old ones, keep <code>serverconfig.json</code>, <code>Worlds/</code> and <code>dashboard/</code>. Worlds from 0.1.2 are converted automatically on the first start (a backup is made first); older worlds cannot be converted.</div>
+
+<h2>9. Troubleshooting</h2>
+<table>
+  <tr><th>Problem</th><th>What to check</th></tr>
+  <tr><td>Friends cannot join</td><td>UDP 7777 forwarded to the right LAN IP; firewall rule; same game version; not behind CGNAT (chapter 4)</td></tr>
+  <tr><td>Dashboard does not open</td><td>TCP 7777 forwarded and allowed; you added <code>:7777</code> to the address; at home use the LAN IP</td></tr>
+  <tr><td>"Your connection is not private"</td><td>HTTPS is not ready yet or you opened <code>https://</code> with an IP: use the DuckDNS name; check the log for certificate errors</td></tr>
+  <tr><td>Certificate fails</td><td>The log line says why and what to check: DuckDNS/Cloudflare token, the name pointing to your public IP, TCP 80 forwarded (or <code>HttpsChallengePort</code>). <code>PublicAddress</code> must be public, not 192.168.x.x. It retries every hour; Let's Encrypt allows only a few failed attempts per hour, so test with <code>LetsEncryptStaging</code></td></tr>
+  <tr><td>"Too many attempts"</td><td>5 wrong passwords: wait 5 minutes</td></tr>
+  <tr><td>Port already in use</td><td>Another program (or a second server) uses 7777: stop it or change <code>Port</code> / <code>DashboardPort</code></td></tr>
+  <tr><td>World cannot be loaded</td><td>The log names the reason; worlds older than 0.1.2 are not supported</td></tr>
+</table>
+
+</body>
+</html>

@@ -29,6 +29,11 @@ New
 - world converter: 0.1.2 worlds convert to 0.1.5, older ones are refused
 - world upgrade tools for NBT (rename/remove blocks and items), check for unknown ids
 - dedicated server upgrades old worlds on start
+- web dashboard for the dedicated server (http://server:port/dashboard): one-time setup key, admin login, server info, CPU/RAM/ticks charts, players with inventories, kick/ban/mute, bans and whitelist, live console with commands, settings, server icon, save/restart/stop
+- server console command restart
+- dashboard HTTPS with a certificate file (Let's Encrypt for DuckDNS), auto reload on renewal, internet HTTP redirected to HTTPS; guide Documentation/dashboard-public-access.md
+- automatic HTTPS for any address: PublicAddress (DuckDNS name + token, Cloudflare domain + token, any other name or a public IP via port 80); the server gets and renews the Let's Encrypt certificate itself and keeps a DuckDNS name on the current IP
+- Spacebox Server Guide.pdf shipped with the game (server, config, port forwarding, DuckDNS, dashboard, commands, troubleshooting)
 - new power blocks from Corneroids: Powerful Cobalt Power Block (1x2x1, 125 EU), Standard Nuclear Power Block (2x2x2, 180 EU); the 2x3x2 nuclear block is now Powerful Nuclear Power Block
 - cobalt crystal removed (item, craft, crusher recipe); old worlds get cobalt ingots instead
 - Standard Cobalt Power Block is now 1x2x1 with the Corneroids textures; tutorial text updated
@@ -55,6 +60,8 @@ Fixes
 - a block item is refunded when its placement fails locally or the server rejects it
 Engine
 - Node3D.Destroy detaches every component (every second one was skipped)
+- Engine.Web: dependency-free HTTP server and router; MainThread.Run; Debug.MessageLogged
+- Engine.Web.Acme: ACME (Let's Encrypt) client with DNS-01 and a DuckDNS client, TLS on the HTTP server port
 - worker pool logs task exceptions; medium queue counted and shut down
 - TickTaskManager: thread-safe AddTask, stopped tasks no longer remove another task
 - particle pool leak (one particle per emitted particle)

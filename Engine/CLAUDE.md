@@ -32,10 +32,11 @@ Game-independent engine over OpenTK (GL 3.3 core). Namespace `Engine.*`. Must ne
 | `Animation/` | `Animator`, move/rotate tweens |
 | `ParticleSystem/` | Emitters and renderer |
 | `Commands/` | Debug-console commands (`CommandManager`, `CommandBase`) |
-| `Multithreading/` | `WorkerPoolManager` |
+| `Multithreading/` | `WorkerPoolManager`, `MainThread.Run` (run a function on the main thread from any thread and await its result) |
+| `Web/` | Dependency-free HTTP/1.1 server: `MiniHttpServer` (TCP, IPv4 + IPv6 listeners, connection limit, timeouts, body limit, optional TLS on the same port via `CertificateProvider` + `PrefixedStream`), `NetworkAddresses.IsLocal`, `Acme/` (`AcmeClient`: Let's Encrypt / RFC 8555 certificates for names and IPs through an `IAcmeChallengeSolver`: `DnsChallengeSolver` over an `IDnsChallenge` (`DuckDnsClient`, `CloudflareDnsClient`) or `HttpChallengeSolver` (HTTP-01 on a port); `AcmeJws` ES256 signing; a new DNS provider is one `IDnsChallenge` class), `HttpProtocol` (parse/write), `HttpRouter` (exact and prefix routes), `HttpRequest`/`HttpResponse` (JSON with camelCase, cookies, query) |
 | `Math/`, `VectorExtensions.cs` | Byte vectors, colors, helpers |
 | `Utils/` | `ObjLoader`, `PixelDataLoader`, `FastNoiseLite`, `GenMesh`, `ShaderHotReloader`, `DirectoryArchive` (zip folders, content hash, safe extract) |
-| `Debug.cs`, `VisualDebug.cs`, `Prof.cs` | Logging + console, debug lines (F4), profiler scopes; `Debug.MirrorToStandardOutput`, `Debug.ExecuteCommand` |
+| `Debug.cs`, `VisualDebug.cs`, `Prof.cs` | Logging + console, debug lines (F4), profiler scopes; `Debug.MirrorToStandardOutput`, `Debug.ExecuteCommand`, `Debug.MessageLogged` event (every log line, any thread) |
 | `AI/` | `StateMachine/` (`State<TContext>`, hierarchical `StateMachine<TContext>`), `Pathfinding/` (`INavigationGrid`, `VoxelLine` DDA, `VoxelPathfinder` A*, `PathRequest`, `PathScheduler` with per-frame node budget) — main thread only |
 | `Networking/` | `NetworkManager` (modes, peers, send), `Transport/` (`INetTransport`, `LiteNetTransport`), `Serialization/` (`NetWriter`, `NetReader`, `NetSerializer`), `Messages/`, `Objects/` (`NetworkObject`, `NetworkBehaviour`, `NetworkVariable<T>`, `NetworkSpawner`, `ReplicationSystem`), `Rpc/` (`[Rpc]`, `RpcSystem`), `Behaviours/NetworkTransform`, `Transfer/` (`NetTransferService` = `NetworkManager.Transfers`, chunked blob downloads), `Query/` (connectionless server info: `ServerQueryResponder` = `NetworkManager.Query`, `ServerQueryClient` over an `IQuerySocket` for pings, LAN broadcast and icon download) |
 | `ServiceLocator.cs`, `EventBus.cs`, `DisposalManager.cs`, `Pool.cs`, `TickTaskManager.cs`, `TimedEventManager.cs` | Services (see below) |

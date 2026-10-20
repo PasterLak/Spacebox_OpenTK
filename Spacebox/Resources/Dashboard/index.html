@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spacebox Server Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div id="stars"></div>
+
+  <section id="auth" class="auth hidden">
+    <div class="panel auth-panel">
+      <h1 class="title">SPACEBOX</h1>
+      <p class="subtitle" id="auth-server">Server dashboard</p>
+
+      <form id="setup-form" class="hidden" autocomplete="off">
+        <p class="hint">First start: create the admin account. The setup key is in the file <code>dashboard/setup-key.txt</code> next to the server executable.</p>
+        <label>Setup key<input name="key" required placeholder="XXXXX-XXXXX-XXXXX-XXXXX"></label>
+        <label>Admin name<input name="name" required maxlength="32"></label>
+        <label>Password<input name="password" type="password" required minlength="8" maxlength="128"></label>
+        <label>Repeat password<input name="password2" type="password" required minlength="8" maxlength="128"></label>
+        <button class="btn gold" type="submit">Create admin</button>
+      </form>
+
+      <form id="login-form" class="hidden">
+        <label>Name<input name="name" required autocomplete="username"></label>
+        <label>Password<input name="password" type="password" required autocomplete="current-password"></label>
+        <button class="btn gold" type="submit">Log in</button>
+      </form>
+
+      <p class="error" id="auth-error"></p>
+    </div>
+  </section>
+
+  <section id="app" class="app hidden">
+    <aside class="sidebar panel">
+      <div class="brand">
+        <img id="brand-icon" alt="" class="brand-icon hidden">
+        <div>
+          <div class="title small">SPACEBOX</div>
+          <div class="dim" id="brand-name"></div>
+        </div>
+      </div>
+      <nav id="nav">
+        <button data-view="overview" class="active">Overview</button>
+        <button data-view="players">Players</button>
+        <button data-view="moderation">Moderation</button>
+        <button data-view="console">Console</button>
+        <button data-view="settings">Settings</button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="dim" id="who"></div>
+        <button class="btn ghost" id="logout">Log out</button>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div id="toast" class="toast hidden"></div>
+
+      <section class="view" data-view="overview">
+        <header class="view-head">
+          <h2 class="title">Overview</h2>
+          <div class="actions">
+            <button class="btn" data-action="save">Save world</button>
+            <button class="btn warn" data-action="restart">Restart</button>
+            <button class="btn danger" data-action="stop">Stop</button>
+          </div>
+        </header>
+        <div class="cards" id="cards"></div>
+        <div class="grid charts">
+          <div class="panel"><h3>CPU %</h3><canvas id="chart-cpu" height="140"></canvas></div>
+          <div class="panel"><h3>Memory MB</h3><canvas id="chart-ram" height="140"></canvas></div>
+          <div class="panel"><h3>Players</h3><canvas id="chart-players" height="140"></canvas></div>
+          <div class="panel"><h3>Game ticks per second</h3><canvas id="chart-tps" height="140"></canvas></div>
+        </div>
+        <div class="grid two">
+          <div class="panel"><h3>Server</h3><table class="kv" id="server-info"></table></div>
+          <div class="panel">
+            <h3>Broadcast</h3>
+            <form id="say-form" class="row">
+              <input name="text" maxlength="256" placeholder="Message to all players" required>
+              <button class="btn gold" type="submit">Send</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="view hidden" data-view="players">
+        <header class="view-head"><h2 class="title">Players</h2></header>
+        <div class="panel">
+          <h3>Online <span class="badge" id="online-count">0</span></h3>
+          <table class="list" id="online-table"></table>
+        </div>
+        <div class="panel">
+          <h3>All saved players</h3>
+          <input id="player-filter" class="filter" placeholder="Filter by name">
+          <table class="list" id="saved-table"></table>
+        </div>
+      </section>
+
+      <section class="view hidden" data-view="player">
+        <header class="view-head">
+          <h2 class="title" id="player-title">Player</h2>
+          <div class="actions" id="player-actions"></div>
+        </header>
+        <div class="grid two">
+          <div class="panel"><h3>Status</h3><div id="player-status"></div></div>
+          <div class="panel"><h3>Equipment</h3><div class="slots" id="player-equipment"></div></div>
+        </div>
+        <div class="panel"><h3>Hotbar</h3><div class="slots" id="player-panel"></div></div>
+        <div class="panel"><h3>Inventory</h3><div class="slots" id="player-inventory"></div></div>
+        <div class="panel"><h3>Statistics</h3><table class="kv" id="player-stats"></table></div>
+      </section>
+
+      <section class="view hidden" data-view="moderation">
+        <header class="view-head"><h2 class="title">Moderation</h2></header>
+        <div class="grid two">
+          <div class="panel">
+            <h3>Banned players</h3>
+            <form id="ban-form" class="row">
+              <input name="name" maxlength="32" placeholder="Ban a player by name" required>
+              <button class="btn danger" type="submit">Ban</button>
+            </form>
+            <ul class="chips" id="banned-names"></ul>
+            <h3>Banned addresses</h3>
+            <ul class="chips" id="banned-addresses"></ul>
+            <h3>Muted players</h3>
+            <ul class="chips" id="muted-names"></ul>
+          </div>
+          <div class="panel">
+            <h3>Whitelist</h3>
+            <label class="switch"><input type="checkbox" id="whitelist-enabled"><span>Only whitelisted players can join</span></label>
+            <form id="whitelist-form" class="row">
+              <input name="name" maxlength="32" placeholder="Add a player" required>
+              <button class="btn gold" type="submit">Add</button>
+            </form>
+            <ul class="chips" id="whitelist"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="view hidden" data-view="console">
+        <header class="view-head">
+          <h2 class="title">Console</h2>
+          <label class="switch"><input type="checkbox" id="console-follow" checked><span>Follow output</span></label>
+        </header>
+        <div class="panel console-panel">
+          <div id="console-output" class="console"></div>
+          <form id="console-form" class="row console-input">
+            <span class="prompt">&gt;</span>
+            <input name="command" autocomplete="off" spellcheck="false" placeholder="Type a command, Tab completes, Up/Down for history">
+            <button class="btn gold" type="submit">Run</button>
+          </form>
+          <div id="console-suggest" class="suggest hidden"></div>
+        </div>
+      </section>
+
+      <section class="view hidden" data-view="settings">
+        <header class="view-head"><h2 class="title">Settings</h2></header>
+        <div class="grid two">
+          <form class="panel" id="settings-form">
+            <h3>Server</h3>
+            <label>Name<input name="name" maxlength="64" required></label>
+            <label>Description<textarea name="description" maxlength="600" rows="4"></textarea></label>
+            <label>Max players<input name="maxPlayers" type="number" min="1" max="128" required></label>
+            <label>Autosave interval (seconds, 0 = off)<input name="autoSaveInterval" type="number" min="0" step="1" required></label>
+            <label>Server frame rate (updates per second)<input name="updateRate" type="number" min="10" max="240" required></label>
+            <label class="switch"><input type="checkbox" name="lanDiscovery"><span>Visible in LAN search</span></label>
+            <button class="btn gold" type="submit">Save settings</button>
+          </form>
+          <div>
+            <div class="panel">
+              <h3>Server icon</h3>
+              <div class="icon-row">
+                <img id="icon-preview" alt="Server icon" class="icon-preview hidden">
+                <div>
+                  <p class="hint">PNG or JPEG, up to 256 KB. Square images look best.</p>
+                  <input type="file" id="icon-file" accept="image/png,image/jpeg">
+                </div>
+              </div>
+            </div>
+            <form class="panel" id="password-form">
+              <h3>Dashboard password</h3>
+              <label>Current password<input name="oldPassword" type="password" required autocomplete="current-password"></label>
+              <label>New password<input name="newPassword" type="password" minlength="8" maxlength="128" required autocomplete="new-password"></label>
+              <button class="btn" type="submit">Change password</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <div id="confirm" class="modal hidden">
+    <div class="panel modal-panel">
+      <h3 id="confirm-text"></h3>
+      <div class="actions">
+        <button class="btn ghost" id="confirm-no">Cancel</button>
+        <button class="btn danger" id="confirm-yes">Confirm</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

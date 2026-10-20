@@ -81,9 +81,17 @@ public sealed class StopCommand : CommandBase
 
     public override void Execute(string[] args)
     {
-        if (NetworkSession.Current != null) NetworkSession.Current.SaveWorld("Stop");
-        else World.Instance?.Save(false);
-        NetworkSession.Current?.Dispose();
-        Engine.Application.Quit();
+        ServerRestart.Stop();
+    }
+}
+
+public sealed class RestartCommand : CommandBase
+{
+    public override string Name => "restart";
+    public override string Description => "Save and restart the server";
+
+    public override void Execute(string[] args)
+    {
+        ServerRestart.Restart();
     }
 }

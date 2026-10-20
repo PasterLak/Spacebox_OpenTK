@@ -13,5 +13,18 @@
   "MaxPlayers": 16,
   "GameMode": 0,
   "AutoSaveInterval": 300,
-  "UpdateRate": 30
+  "UpdateRate": 30,
+  "DashboardEnabled": true,
+  "DashboardPort": 0,
+  "PublicAddress": "",
+  "HttpsAutomatic": true,
+  "HttpsChallengePort": 80,
+  "DuckDnsToken": "",
+  "DuckDnsUpdateIp": true,
+  "CloudflareApiToken": "",
+  "LetsEncryptEmail": "",
+  "LetsEncryptStaging": false,
+  "DashboardCertificateFile": "",
+  "DashboardCertificateKeyFile": "",
+  "DashboardCertificatePassword": ""
 }
