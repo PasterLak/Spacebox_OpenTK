@@ -107,20 +107,7 @@ public static class DedicatedServer
 
     private static void RegisterCommands()
     {
-        CommandManager.RegisterGlobalCommand(new SayCommand());
-        CommandManager.RegisterGlobalCommand(new PlayersCommand());
-        CommandManager.RegisterGlobalCommand(new KickCommand());
-        CommandManager.RegisterGlobalCommand(new BanCommand());
-        CommandManager.RegisterGlobalCommand(new UnbanCommand());
-        CommandManager.RegisterGlobalCommand(new UnregisterCommand());
-        CommandManager.RegisterGlobalCommand(new MuteCommand(true));
-        CommandManager.RegisterGlobalCommand(new MuteCommand(false));
-        CommandManager.RegisterGlobalCommand(new SaveCommand());
-        CommandManager.RegisterGlobalCommand(new StopCommand());
-        CommandManager.RegisterGlobalCommand(new RestartCommand());
-        CommandManager.RegisterGlobalCommand(new ServerGameModeCommand());
-        CommandManager.RegisterGlobalCommand(new ServerTeleportCommand());
-        CommandManager.RegisterGlobalCommand(new ServerTeleportToPlayerCommand());
+        foreach (var command in ServerCommandCatalog.Create()) CommandManager.RegisterGlobalCommand(command);
     }
 
     private static void StartConsoleReader()

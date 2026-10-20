@@ -20,14 +20,26 @@ public static class ChatService
         if (string.IsNullOrWhiteSpace(text)) return;
 
         var network = NetworkManager.Instance;
+        if (ChatCommands.IsCommand(text) && (!network.IsActive || network.IsServer || ChatCommands.IsKnownLocally(ChatCommands.ToCommandLine(text))))
+        {
+            RunCommand(network.LocalPeerId, GameSession.PlayerName, text);
+            return;
+        }
+
         if (!network.IsActive)
         {
-            if (ChatCommands.IsCommand(text)) RunCommand(network.LocalPeerId, GameSession.PlayerName, text);
-            else Chat.Write(text, Color4.White);
+            Chat.Write(text, Color4.White);
             return;
         }
 
         network.SendToServer(new ChatSendMessage { Text = text });
+    }
+
+    public static void SendCommandToServer(string commandLine)
+    {
+        var network = NetworkManager.Instance;
+        if (!network.IsActive || network.IsServer || string.IsNullOrWhiteSpace(commandLine)) return;
+        network.SendToServer(new ChatSendMessage { Text = ChatCommands.Prefix + commandLine.Trim() });
     }
 
     public static void Broadcast(string text, Color4 color)

@@ -429,6 +429,40 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         }
     }
 
+    public bool TryFindNearestAsteroid(Vector3 positionWorld, out AsteroidTarget target, out SpaceEntity loaded)
+    {
+        target = default;
+        loaded = null;
+        float best = float.MaxValue;
+
+        for (int i = 0; i < Entities.Count; i++)
+        {
+            if (Entities[i] is not Asteroid asteroid) continue;
+
+            var box = asteroid.GeometryBoundingBox;
+            var candidate = new AsteroidTarget(asteroid.ToWorldSpace(box.Center), box.Size.Length * 0.5f);
+            if (!AsteroidApproach.IsBetter(candidate, positionWorld, best, out float distance)) continue;
+
+            best = distance;
+            target = candidate;
+            loaded = asteroid;
+        }
+
+        foreach (var data in EntitiesGeneratedData.Values)
+        {
+            if (SuppressedEntities.Contains(data.Id)) continue;
+
+            var candidate = new AsteroidTarget(data.positionWorld, data.radiusBlocks);
+            if (!AsteroidApproach.IsBetter(candidate, positionWorld, best, out float distance)) continue;
+
+            best = distance;
+            target = candidate;
+            loaded = null;
+        }
+
+        return best < float.MaxValue;
+    }
+
     public bool TryGetNearestEntity(Vector3 positionWorld, out SpaceEntity entity)
     {
         entity = null;

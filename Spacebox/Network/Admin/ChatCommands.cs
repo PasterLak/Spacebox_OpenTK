@@ -15,7 +15,26 @@ public static class ChatCommands
 
     public static bool IsCommand(string text) => !string.IsNullOrEmpty(text) && text.Length > 1 && text[0] == Prefix && !char.IsWhiteSpace(text[1]);
 
+    public static bool IsCommandStart(string text) => !string.IsNullOrEmpty(text) && text[0] == Prefix && (text.Length == 1 || !char.IsWhiteSpace(text[1]));
+
+    public static string LastWord(string line)
+    {
+        if (string.IsNullOrEmpty(line) || char.IsWhiteSpace(line[^1])) return "";
+        int space = line.LastIndexOf(' ');
+        return line.Substring(space + 1);
+    }
+
     public static string ToCommandLine(string text) => IsCommand(text) ? text.Substring(1).Trim() : "";
+
+    public static string CommandName(string commandLine)
+    {
+        if (string.IsNullOrWhiteSpace(commandLine)) return "";
+        string trimmed = commandLine.Trim();
+        int space = trimmed.IndexOf(' ');
+        return (space < 0 ? trimmed : trimmed.Substring(0, space)).ToLowerInvariant();
+    }
+
+    public static bool IsKnownLocally(string commandLine) => Engine.Commands.CommandManager.GetCommand(CommandName(commandLine)) != null;
 
     public static IReadOnlyList<CommandOutputLine> Run(string commandLine, string sender)
     {

@@ -7,8 +7,14 @@ using Spacebox.Network.Players;
 
 namespace Spacebox.Network.Dedicated;
 
-public sealed class ServerGameModeCommand : CommandBase
+public sealed class ServerGameModeCommand : CommandBase, Engine.Commands.IArgumentSuggestions
 {
+    public void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results)
+    {
+        if (argumentIndex == 0) Spacebox.Game.Commands.CommandSuggestionSources.AddGameModes(results);
+        else if (argumentIndex == 1) Spacebox.Game.Commands.CommandSuggestionSources.AddPlayerNames(results);
+    }
+
     public override string Name => "gm";
     public override string Description => "Change the game mode of a player. Usage: gm <0|1|2> <player> (survival, creative, spectator); admins in chat can leave out the player to change their own";
 
@@ -29,8 +35,13 @@ public sealed class ServerGameModeCommand : CommandBase
     }
 }
 
-public sealed class ServerTeleportCommand : CommandBase
+public sealed class ServerTeleportCommand : CommandBase, Engine.Commands.IArgumentSuggestions
 {
+    public void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results)
+    {
+        if (argumentIndex == 0) Spacebox.Game.Commands.CommandSuggestionSources.AddPlayerNames(results);
+    }
+
     public override string Name => "tp";
     public override string Description => "Teleport a player. Usage: tp <player> <x> <y> <z>";
 
@@ -54,8 +65,13 @@ public sealed class ServerTeleportCommand : CommandBase
     }
 }
 
-public sealed class ServerTeleportToPlayerCommand : CommandBase
+public sealed class ServerTeleportToPlayerCommand : CommandBase, Engine.Commands.IArgumentSuggestions
 {
+    public void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results)
+    {
+        if (argumentIndex < 2) Spacebox.Game.Commands.CommandSuggestionSources.AddPlayerNames(results);
+    }
+
     private const float Offset = 2f;
 
     public override string Name => "tpp";

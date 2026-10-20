@@ -50,6 +50,7 @@ New
 Small
 - crafting categories: Building (blocks, windows, doors, lights), Production, Electricity, Logistics, Ships, Other; removed decorative basic engine and basic cannon blocks
 - removed obscurium ammo; mineral parasite larva is no longer in the Consumables crafting category
+- metal blocks are cheaper (1/2/3 panels), crusher returns match: 3 light -> 1 dust, 3 medium -> 2 dust, 1 heavy -> 1 dust
 - convert dialog shows steps, backup and warnings
 - release builds leave out unused assets found by Tools/Spacebox.AssetAudit (keep list Build/asset-keep.txt); _Ignored texture folders are no longer packed into the atlases
 - debug console: Copy All button, Select mode (selectable text, Ctrl+C), right-click a message to copy it
@@ -65,6 +66,8 @@ Small
 - build scripts read the version from Application.cs, keep other platform builds, zip without a root folder
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
+- chat: older messages no longer pile up on the top line when the chat is full, long messages wrap
+- tpa: lands next to the surface of the nearest asteroid (or the next one if you are already at one), also unloaded asteroids, free spot, teleport effect and a message; ships are no longer targets
 - while the world loads only the skybox is drawn: spacers, mobs and other players no longer show before the world
 - light from a neighbour chunk no longer disappears when a nearby chunk is relit (block eaten, chunk loaded)
 - new Interface options: font (Fusion Pixel by default with Cyrillic, or the old ProggyClean), font size and a font test field; licenses in Resources/Fonts/FONTS.md
@@ -109,6 +112,8 @@ Game
 - flashlight beams: other players' flashlights show a 3D light cone with drifting dust (Flashlight Beams option)
 - server option FriendlyMobs (serverconfig.json, default false): mobs never attack first, a hurt mob fights back for 30 s
 - server admins: Admins list and ShowAdmins in serverconfig.json and the dashboard; admins run server commands in chat with / (also /gm for any player), [ADMIN] tag in chat and player list; players cannot change their own game mode on a server
+- all game commands work in the chat with / (output in the chat, / key opens the chat); server-side commands are forwarded to the server for admins
+- chat command suggestions with Tab completion and Up/Down (commands, player names, item and mob ids), chat history; new commands give, heal, health, power, air (self or another player), items, pos
 - PerlinNoise+
 - Worms/Ores generator
 - refactoring

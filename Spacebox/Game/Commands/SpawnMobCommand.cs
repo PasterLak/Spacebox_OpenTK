@@ -6,8 +6,27 @@ using Spacebox.Game.Player;
 
 namespace Spacebox.Game.Commands;
 
-internal sealed class SpawnMobCommand : CommandBase
+internal sealed class SpawnMobCommand : CommandBase, Engine.Commands.IArgumentSuggestions
 {
+    public void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results)
+    {
+        switch (argumentIndex)
+        {
+            case 0:
+                CommandSuggestionSources.AddMobIds(results);
+                results.Add("list");
+                results.Add("clear");
+                break;
+            case 1:
+                results.Add("1");
+                results.Add("5");
+                break;
+            case 2:
+                CommandSuggestionSources.AddPlayerNames(results);
+                break;
+        }
+    }
+
     private const float SpawnDistance = 3f;
     private const int MaxCount = 32;
 
@@ -26,6 +45,8 @@ internal sealed class SpawnMobCommand : CommandBase
 
     public override void Execute(string[] args)
     {
+        if (Spacebox.Network.Admin.ServerCommandForwarder.TryForward(Name, args)) return;
+
         var system = MobSystem.Instance;
         if (system == null || !NetworkManager.Instance.IsServer)
         {
@@ -69,16 +90,17 @@ internal sealed class SpawnMobCommand : CommandBase
     {
         position = OpenTK.Mathematics.Vector3.Zero;
 
-        if (args.Length > 2)
+        string target = args.Length > 2 ? args[2] : Application.IsHeadless ? Spacebox.Network.Admin.ChatCommands.CurrentSender : null;
+        if (target != null)
         {
-            if (Spacebox.Network.Players.PlayerLocator.TryFind(args[2], out var player) &&
+            if (Spacebox.Network.Players.PlayerLocator.TryFind(target, out var player) &&
                 Spacebox.Network.Players.PlayerLocator.TryGetPose(player.Peer, out var playerPosition, out var front))
             {
                 position = playerPosition + front * SpawnDistance;
                 return true;
             }
 
-            Debug.Error($"Player not found: {args[2]}");
+            Debug.Error($"Player not found: {target}");
             return false;
         }
 

@@ -140,15 +140,7 @@ public static class TutorialService
         for (int i = 0; i < rewards.Count; i++)
         {
             if (!GameAssets.TryGetItemById(rewards[i].ItemId, out var item)) continue;
-
-            int left = rewards[i].Count;
-            while (left > 0)
-            {
-                byte count = (byte)Math.Min(left, Math.Max(1, (int)item.StackSize));
-                if (!_player.Panel.TryAddItem(item, count, out var notAdded) && !_player.Inventory.TryAddItem(item, notAdded, out notAdded))
-                    World.DropEffectManager?.DropItem(_player.Position, _player.Front, 1f, item, notAdded);
-                left -= count;
-            }
+            PlayerItemGiver.Give(_player, item, rewards[i].Count);
         }
     }
 }

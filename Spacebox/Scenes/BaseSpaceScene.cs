@@ -133,6 +133,13 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Debug.RegisterCommand(new TeleportToPlayerCommand(localPlayer));
         Debug.RegisterCommand(new SpawnMobCommand(localPlayer));
         Debug.RegisterCommand(new SsaoDebugCommand());
+        Debug.RegisterCommand(new GiveCommand(localPlayer));
+        Debug.RegisterCommand(new StatCommand(localPlayer, "heal", PlayerStat.All));
+        Debug.RegisterCommand(new StatCommand(localPlayer, "health", PlayerStat.Health));
+        Debug.RegisterCommand(new StatCommand(localPlayer, "power", PlayerStat.Power));
+        Debug.RegisterCommand(new StatCommand(localPlayer, "air", PlayerStat.Air));
+        Debug.RegisterCommand(new ItemsCommand());
+        Debug.RegisterCommand(new PositionCommand(localPlayer));
 
         InventoryUI.Initialize();
         StorageUI.Initialize();

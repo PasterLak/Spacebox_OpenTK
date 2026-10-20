@@ -98,6 +98,7 @@ namespace Spacebox.Game.GUI
             if (!IsVisible) return;
 
             _inputBuffer = "";
+            ChatCommandInput.Reset();
 
             PanelUI.AllowScroll = true;
             InputManager0.Enabled = true;
@@ -147,6 +148,12 @@ namespace Spacebox.Game.GUI
             if (Input.IsKeyDown(Keys.T))
             {
                 StartInput();
+            }
+
+            if (Input.IsKeyDown(Keys.Slash) && !UIManager.IsOpen("chat") && _inputBuffer.Length == 0)
+            {
+                StartInput();
+                _inputBuffer = "/";
             }
 
             UpdateHide();
@@ -219,21 +226,30 @@ namespace Spacebox.Game.GUI
             float currentY = listHeight;
             int startIndex = Math.Max(0, _messages.Count - 100);
 
+            float wrapWidth = ImGui.GetContentRegionAvail().X;
+
             for (int i = _messages.Count - 1; i >= startIndex; i--)
             {
                 var msg = _messages[i];
-                var textSize = ImGui.CalcTextSize(msg.Text);
+                var textSize = ImGui.CalcTextSize(msg.Text, false, wrapWidth);
                 float lineHeight = textSize.Y + ImGui.GetStyle().ItemSpacing.Y;
                 currentY -= lineHeight;
-                if (currentY < 0) currentY = 0;
+                if (currentY < 0) break;
                 ImGui.SetCursorPos(new System.Numerics.Vector2(0, currentY));
                 ImGui.PushStyleColor(ImGuiCol.Text, Vec4ToUintColor(msg.Color));
-                ImGui.Text(msg.Text);
+                ImGui.PushTextWrapPos(wrapWidth);
+                ImGui.TextUnformatted(msg.Text);
+                ImGui.PopTextWrapPos();
                 ImGui.PopStyleColor();
             }
 
             ImGui.EndChild();
         }
+
+        private static readonly unsafe ImGuiInputTextCallback _inputCallback = OnInputCallback;
+        private static readonly System.Numerics.Vector4 SuggestionColor = new System.Numerics.Vector4(0.8f, 0.8f, 0.8f, 1f);
+        private static readonly System.Numerics.Vector4 SelectedSuggestionColor = new System.Numerics.Vector4(1f, 0.85f, 0.1f, 1f);
+        private static readonly System.Numerics.Vector4 HintColor = new System.Numerics.Vector4(0.6f, 0.6f, 0.6f, 1f);
 
         private static bool DrawInputField()
         {
@@ -242,16 +258,71 @@ namespace Spacebox.Game.GUI
             bool inputActive = ImGui.InputText("##ChatInput",
                 ref _inputBuffer,
                 256,
-                ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.NoHorizontalScroll);
+                ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.NoHorizontalScroll | ImGuiInputTextFlags.CallbackCompletion | ImGuiInputTextFlags.CallbackHistory,
+                _inputCallback);
             ImGui.PopStyleColor();
 
+            ChatCommandInput.Update(_inputBuffer);
+            DrawSuggestions(ImGui.GetItemRectMin(), ImGui.GetItemRectMax());
+
             return inputActive;
+        }
+
+        private static unsafe int OnInputCallback(ImGuiInputTextCallbackData* raw)
+        {
+            var data = new ImGuiInputTextCallbackDataPtr(raw);
+            string current = System.Runtime.InteropServices.Marshal.PtrToStringUTF8(data.Buf, data.BufTextLen) ?? "";
+
+            string replacement = data.EventFlag == ImGuiInputTextFlags.CallbackCompletion
+                ? ChatCommandInput.Complete(current)
+                : ChatCommandInput.Navigate(current, data.EventKey == ImGuiKey.UpArrow);
+
+            if (replacement != null && replacement != current)
+            {
+                data.DeleteChars(0, data.BufTextLen);
+                data.InsertChars(0, replacement);
+            }
+
+            return 0;
+        }
+
+        private static void DrawSuggestions(System.Numerics.Vector2 inputMin, System.Numerics.Vector2 inputMax)
+        {
+            var suggestions = ChatCommandInput.Suggestions;
+            string usage = ChatCommandInput.Usage;
+            if (suggestions.Count == 0 && usage.Length == 0) return;
+
+            ImGui.SetNextWindowPos(new System.Numerics.Vector2(inputMin.X, inputMax.Y + 2f), ImGuiCond.Always);
+            ImGui.SetNextWindowBgAlpha(0.75f);
+            ImGui.Begin("ChatSuggestions",
+                ImGuiWindowFlags.NoDecoration
+                | ImGuiWindowFlags.AlwaysAutoResize
+                | ImGuiWindowFlags.NoFocusOnAppearing
+                | ImGuiWindowFlags.NoNav
+                | ImGuiWindowFlags.NoInputs
+                | ImGuiWindowFlags.NoSavedSettings);
+
+            if (usage.Length > 0) ImGui.TextColored(HintColor, usage);
+
+            for (int i = 0; i < suggestions.Count; i++)
+            {
+                bool selected = i == ChatCommandInput.Selected;
+                ImGui.TextColored(selected ? SelectedSuggestionColor : SuggestionColor, (selected ? "> " : "  ") + suggestions[i].Text);
+                if (suggestions[i].Hint.Length == 0) continue;
+
+                ImGui.SameLine();
+                ImGui.TextColored(HintColor, suggestions[i].Hint);
+            }
+
+            if (suggestions.Count > 0) ImGui.TextColored(HintColor, "Tab completes, Up/Down selects");
+            ImGui.End();
         }
 
         private static void OnSend()
         {
             if (!string.IsNullOrWhiteSpace(_inputBuffer))
             {
+                ChatCommandInput.Sent(_inputBuffer);
                 ChatService.Send(_inputBuffer);
             }
             _inputBuffer = "";

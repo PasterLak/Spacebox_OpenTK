@@ -7,11 +7,19 @@ using Engine.Commands;
 
 namespace Spacebox.Game.Commands
 {
-    internal class TagCommand : CommandBase
+    internal class TagCommand : CommandBase, Engine.Commands.IArgumentSuggestions
     {
+        public void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results)
+        {
+            if (argumentIndex != 0) return;
+            results.Add("create");
+            results.Add("delete");
+        }
+
         public override string Name => "tag";
 
-        public override string Description => "Tag <create/delete> <name>";
+        public override string Description => "Tag <create/delete> <name>";
+
         public override bool AvailableInTerminal => false;
 
         public Astronaut Astronaut { get; set; }

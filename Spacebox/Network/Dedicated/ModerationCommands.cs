@@ -4,8 +4,13 @@ using Spacebox.Network.Moderation;
 
 namespace Spacebox.Network.Dedicated;
 
-public sealed class BanCommand : CommandBase
+public sealed class BanCommand : CommandBase, Engine.Commands.IArgumentSuggestions
 {
+    public void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results)
+    {
+        if (argumentIndex == 0) Spacebox.Game.Commands.CommandSuggestionSources.AddPlayerNames(results);
+    }
+
     public override string Name => "ban";
     public override string Description => "Ban a player by name (also offline). Usage: ban <name>";
 
@@ -30,8 +35,13 @@ public sealed class UnbanCommand : CommandBase
     }
 }
 
-public sealed class MuteCommand : CommandBase
+public sealed class MuteCommand : CommandBase, Engine.Commands.IArgumentSuggestions
 {
+    public void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results)
+    {
+        if (argumentIndex == 0) Spacebox.Game.Commands.CommandSuggestionSources.AddPlayerNames(results);
+    }
+
     private readonly bool _muted;
 
     public MuteCommand(bool muted)
@@ -49,8 +59,13 @@ public sealed class MuteCommand : CommandBase
     }
 }
 
-public sealed class UnregisterCommand : CommandBase
+public sealed class UnregisterCommand : CommandBase, Engine.Commands.IArgumentSuggestions
 {
+    public void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results)
+    {
+        if (argumentIndex == 0) Spacebox.Game.Commands.CommandSuggestionSources.AddPlayerNames(results);
+    }
+
     public override string Name => "unregister";
     public override string Description => "Delete a player account so the name can register again. Usage: unregister <name>";
 

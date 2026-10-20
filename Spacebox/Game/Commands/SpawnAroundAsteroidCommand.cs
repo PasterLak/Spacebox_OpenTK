@@ -1,8 +1,7 @@
-﻿using OpenTK.Mathematics;
-
-using Engine.Commands;
+﻿using Engine.Commands;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
+using Spacebox.Game.Player.Respawn;
 using Engine;
 
 namespace Spacebox.Game.Commands
@@ -11,44 +10,43 @@ namespace Spacebox.Game.Commands
     {
         public override string Name => "tpa";
 
-        public override string Description => "Teleport to the nearest asteroid";
+        public override string Description => "Teleport to the nearest asteroid (the next one if you are already at one)";
         public override bool AvailableInTerminal => false;
 
-        public Astronaut Astronaut { get; set; }
+        public LocalAstronaut Astronaut { get; set; }
 
-
-        public SpawnAroundAsteroidCommand(Astronaut astronaut)
+        public SpawnAroundAsteroidCommand(LocalAstronaut astronaut)
         {
             this.Astronaut = astronaut;
         }
+
         public override void Execute(string[] args)
         {
-
-
             if (Astronaut == null)
             {
                 Debug.Error("Astronaut reference is null.");
                 return;
             }
 
-            if (args.Length == 0)
+            if (args.Length > 0)
             {
-
-                var sector = World.CurrentSector;
-
-                if(sector.TryGetNearestEntity(Astronaut.Position, out var entity))
-                {
-                    var pos = sector.GetRandomPositionNearAsteroid(new Random(), entity);
-
-                    Astronaut.Position = pos;
-                }
-
-                
+                Debug.Error($"Usage: {Name}");
+                return;
             }
 
+            var sector = World.CurrentSector;
+            if (sector == null || !sector.TryFindNearestAsteroid(Astronaut.Position, out var target, out var loaded))
+            {
+                Debug.Warning("No asteroid found in this sector");
+                return;
+            }
 
+            var position = AsteroidApproach.ApproachPoint(target, Astronaut.Position);
+            if (loaded != null) position = SafeSpawnFinder.FindFreePosition(position);
+
+            float distance = (position - Astronaut.Position).Length;
+            Astronaut.Teleport(position);
+            Debug.Success($"Teleported {distance:0} m to an asteroid");
         }
-
-
     }
 }

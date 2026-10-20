@@ -276,6 +276,35 @@ public sealed class AstronautNetwork : NetworkTransform
         SendRpc(nameof(ApplyServerTeleport), position);
     }
 
+    public void RestoreStatsByServer(PlayerStat stats, int amount)
+    {
+        SendRpc(nameof(ApplyServerStats), (byte)stats, amount);
+    }
+
+    public void GiveItemByServer(string fullItemId, int count)
+    {
+        SendRpc(nameof(ApplyServerGiveItem), fullItemId, count);
+    }
+
+    [Rpc(RpcTarget.Owner)]
+    private void ApplyServerStats(byte stats, int amount)
+    {
+        if (Owner is not LocalAstronaut local) return;
+
+        var restored = (PlayerStat)stats & PlayerStat.All;
+        PlayerStatsAccess.Restore(local, restored, amount);
+        Spacebox.Game.GUI.Chat.Write($"The server restored your {PlayerStatsAccess.Describe(restored)}", Color4.Orange);
+    }
+
+    [Rpc(RpcTarget.Owner)]
+    private void ApplyServerGiveItem(string fullItemId, int count)
+    {
+        if (Owner is not LocalAstronaut local || count <= 0 || !GameAssets.ItemsStr.TryGetValue(fullItemId ?? "", out var item)) return;
+
+        PlayerItemGiver.Give(local, item, count);
+        Spacebox.Game.GUI.Chat.Write($"The server gave you {count} x {item.Name}", Color4.Orange);
+    }
+
     [Rpc(RpcTarget.Owner)]
     private void ApplyServerGameMode(byte mode)
     {

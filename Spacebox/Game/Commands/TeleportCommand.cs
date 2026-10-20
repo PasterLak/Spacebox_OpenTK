@@ -11,7 +11,8 @@ namespace Spacebox.Game.Commands
     {
         public override string Name => "tp";
 
-        public override string Description => "Teleport the player. Usage: tp x y z";
+        public override string Description => "Teleport the player. Usage: tp x y z";
+
         public override bool AvailableInTerminal => false;
 
         public LocalAstronaut Astronaut { get; set; }
@@ -22,6 +23,8 @@ namespace Spacebox.Game.Commands
         }
         public override void Execute(string[] args)
         {
+            if (Spacebox.Network.Admin.ServerCommandForwarder.ShouldForwardTeleport(args) && Spacebox.Network.Admin.ServerCommandForwarder.TryForward(Name, args)) return;
+
             if (args.Length < 3)
             {
                 Debug.Error($"Usage: {Name} [x] [y] [z]");

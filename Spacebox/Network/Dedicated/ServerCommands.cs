@@ -31,8 +31,13 @@ public sealed class PlayersCommand : CommandBase
     }
 }
 
-public sealed class KickCommand : CommandBase
+public sealed class KickCommand : CommandBase, Engine.Commands.IArgumentSuggestions
 {
+    public void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results)
+    {
+        if (argumentIndex == 0) Spacebox.Game.Commands.CommandSuggestionSources.AddPlayerNames(results);
+    }
+
     public override string Name => "kick";
     public override string Description => "Kick a player. Usage: kick <name|peer> [reason]";
 

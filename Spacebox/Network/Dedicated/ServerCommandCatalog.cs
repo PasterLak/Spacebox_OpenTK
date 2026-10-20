@@ -1,0 +1,31 @@
+using Engine.Commands;
+
+namespace Spacebox.Network.Dedicated;
+
+public static class ServerCommandCatalog
+{
+    private static CommandBase[] _reference;
+
+    public static CommandBase[] Create()
+    {
+        return new CommandBase[]
+        {
+            new SayCommand(),
+            new PlayersCommand(),
+            new KickCommand(),
+            new BanCommand(),
+            new UnbanCommand(),
+            new UnregisterCommand(),
+            new MuteCommand(true),
+            new MuteCommand(false),
+            new SaveCommand(),
+            new StopCommand(),
+            new RestartCommand(),
+            new ServerGameModeCommand(),
+            new ServerTeleportCommand(),
+            new ServerTeleportToPlayerCommand()
+        };
+    }
+
+    public static IReadOnlyList<CommandBase> Reference => _reference ??= Create();
+}

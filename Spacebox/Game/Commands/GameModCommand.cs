@@ -6,11 +6,17 @@ using Spacebox.Game.Player.GameModes;
 
 namespace Spacebox.Game.Commands
 {
-    internal class GameModCommand : CommandBase
+    internal class GameModCommand : CommandBase, Engine.Commands.IArgumentSuggestions
     {
+        public void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results)
+        {
+            if (argumentIndex == 0) Spacebox.Game.Commands.CommandSuggestionSources.AddGameModes(results);
+            else if (argumentIndex == 1) Spacebox.Game.Commands.CommandSuggestionSources.AddPlayerNames(results);
+        }
+
         public override string Name => "gm";
 
-        public override string Description => "Change gamemode. Usage: gm <0,1,2>  (survival,creative,spectator)";
+        public override string Description => "Change gamemode. Usage: gm <0,1,2> [player]  (survival,creative,spectator; on a server only admins)";
 
         public override bool AvailableInTerminal => false;
 
@@ -31,11 +37,7 @@ namespace Spacebox.Game.Commands
                 return;
             }
 
-            if (Spacebox.Network.GameSession.IsRemoteClient)
-            {
-                Debug.Error("Only server admins can change game modes. Admins use /gm <0|1|2> [player] in the chat.");
-                return;
-            }
+            if (Spacebox.Network.Admin.ServerCommandForwarder.TryForward(Name, args)) return;
 
             if (ValidateArgs(args, 1) == false) return;
 

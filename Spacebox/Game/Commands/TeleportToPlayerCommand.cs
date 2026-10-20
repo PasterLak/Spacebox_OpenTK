@@ -7,8 +7,13 @@ using System.Numerics;
 
 namespace Spacebox.Game.Commands
 {
-    internal class TeleportToPlayerCommand : CommandBase
+    internal class TeleportToPlayerCommand : CommandBase, Engine.Commands.IArgumentSuggestions
     {
+        public void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results)
+        {
+            if (argumentIndex < 2) CommandSuggestionSources.AddPlayerNames(results);
+        }
+
         public override string Name => "tpp";
 
         public override string Description => "Teleport to a player. Usage: tpp <name>";
@@ -24,6 +29,8 @@ namespace Spacebox.Game.Commands
 
         public override void Execute(string[] args)
         {
+            if (Spacebox.Network.Admin.ServerCommandForwarder.ShouldForwardTeleportToPlayer(args) && Spacebox.Network.Admin.ServerCommandForwarder.TryForward(Name, args)) return;
+
             if (args.Length < 1)
             {
                 Debug.Error($"Usage: {Name} [playerName]");
