@@ -3,6 +3,7 @@ using System.Numerics;
 
 using Spacebox.Game.Player;
 using Engine;
+using Engine.UI;
 
 namespace Spacebox.GUI
 {

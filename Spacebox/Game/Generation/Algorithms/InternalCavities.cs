@@ -1,10 +1,6 @@
 ﻿
 namespace Spacebox.Generation
 {
-    public interface IInternalCavitiesRemover
-    {
-        void RemoveInternalCavities(ref bool[,,] data);
-    }
     public static class InternalCavitiesUnity
     {
         public static void RemoveInternalCavities(ref bool[,,] data)

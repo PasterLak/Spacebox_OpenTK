@@ -9,7 +9,7 @@ namespace Engine
         Perspective,
         Orthographic
     }
-    public abstract class Camera : DynamicBody
+    public abstract class Camera : Collision
     {
         private static Camera _instance;
         public static Camera Main
@@ -84,7 +84,7 @@ namespace Engine
         }
 
         protected Camera(Vector3 position, bool isMainCamera = true)
-            : base(new BoundingSphere(position, 0.5f))
+            : base(new BoundingSphere(position, 0.5f), false)
         {
             if (isMainCamera)
                 Main = this;

@@ -27,55 +27,6 @@ namespace Engine.Generation
         }
     }
 
-    public class FarthestPointGenerator : IPointGenerator
-    {
-        public List<Vector3> Generate(in GeneratorSettings settings, Vector3 sectorIndex)
-        {
-            var size = new Vector3(Sector.SizeBlocks);
-            var rng = new Random(settings.Seed);
-            var points = new List<Vector3>(settings.Count);
-
-            points.Add(sectorIndex + (settings.Round ? IPointGenerator.RoundVector3(RandomPoint(rng, size)) : RandomPoint(rng, size)));
-            while (points.Count < settings.Count)
-            {
-                Vector3 best = default;
-                float bestDist = -1f;
-                for (int i = 0; i < settings.RejectionSamples; i++)
-                {
-                    var cand = RandomPoint(rng, size);
-
-                    if (settings.Round)
-                    {
-                        cand = IPointGenerator.RoundVector3(cand);
-                    }
-
-                    float dmin = float.MaxValue;
-                    foreach (var p in points)
-                    {
-                        float d = (p - cand).LengthSquared;
-                        if (d < dmin) dmin = d;
-                    }
-                    if (dmin > bestDist)
-                    {
-                        bestDist = dmin;
-                        best = cand;
-                    }
-                }
-                points.Add(sectorIndex + best);
-            }
-            return points;
-        }
-
-        Vector3 RandomPoint(Random rng, Vector3 size)
-        {
-            return new Vector3(
-                (float)rng.NextDouble() * size.X,
-                (float)rng.NextDouble() * size.Y,
-                (float)rng.NextDouble() * size.Z
-            );
-        }
-    }
-
     public class SimplePoissonDiscGenerator : IPointGenerator
     {
 

@@ -21,12 +21,7 @@ using Spacebox.Scenes;
 
 namespace Spacebox;
 
-public interface IGameWindow
-{
-    void Quit();
-}
-
-public class SpaceboxWindow : EngineWindow, IGameWindow
+public class SpaceboxWindow : EngineWindow
 {
     private bool _doScreenshot = false;
     private AudioSource _screenshotAudio;
@@ -142,8 +137,6 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
 
     protected override void OnSetupPostProcessing(PostProcessManager processManager)
     {
-        var blackWhiteShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/blackWhite", true);
-
         var vignetteShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/vignette", true);
         var vignetteEffect = new VignetteEffect(vignetteShader);
         vignetteEffect.Enabled = true;
@@ -158,11 +151,6 @@ public class SpaceboxWindow : EngineWindow, IGameWindow
 
         CameraFeed = new CameraFeedEffect(Resources.Load<Shader>("Resources/Shaders/PostProcessing/cameraFeed", true));
         processManager.AddEffect(CameraFeed);
-
-        var edgeDetectionShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/edgeDetection", true);
-
-        var normalShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/normalView", true);
-        var depthShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/depthView", true);
     }
 
     private static SsaoShaders LoadSsaoShaders()

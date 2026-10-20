@@ -7,8 +7,4 @@ namespace Spacebox.Game.Events
         public GraphicsSettings NewSettings;
     }
 
-    public struct AudioSettingsChangedEvent : IEvent
-    {
-        public AudioSettings NewSettings;
-    }
 }

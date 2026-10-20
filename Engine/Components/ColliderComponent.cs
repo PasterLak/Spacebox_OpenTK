@@ -38,23 +38,6 @@ namespace Engine.Components
         }
     }
 
-    public class AABBCollider : ColliderComponent
-    {
-        public BoundingBox Box => (BoundingBox)Volume;
-
-        protected override void Recalculate()
-        {
-            Vector3 size = UseManualSize ? ManualSize : Owner.Scale;
-            Volume = new BoundingBox(GetOwnerWorldPositionWithOffset(), size);
-        }
-
-        protected override void DrawDebug()
-        {
-            if(DebugCollision)
-            VisualDebug.DrawBoundingBox(Box, Color4.Yellow);
-        }
-    }
-
     public class OBBCollider : ColliderComponent
     {
         public BoundingBoxOBB OBB => (BoundingBoxOBB)Volume;

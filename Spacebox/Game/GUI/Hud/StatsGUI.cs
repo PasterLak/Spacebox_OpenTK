@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Engine.UI;
 using ImGuiNET;
 using Spacebox.Game.Player;
 using Spacebox.GUI;
@@ -7,21 +8,6 @@ using Spacebox.GUI;
 namespace Spacebox.Game.GUI
 {
 
-    public enum Anchor
-    {
-        TopLeft,
-        TopRight,
-        BottomLeft,
-        BottomRight,
-
-        Center,
-        Top,
-        Bottom,
-        Left,
-        Right
-
-
-    }
     public class StatsGUI
     {
         public bool IsVisible { get; set; } = true;

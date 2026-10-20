@@ -7,11 +7,22 @@ namespace Engine
         private static readonly Stack<HashSet<string>> _stack = new Stack<HashSet<string>>();
         private static readonly HashSet<string> _activeWindows = new HashSet<string>();
 
+        // Храним состояние курсора, которое было до открытия UI
+        private static bool _cursorWasVisible;
+        private static bool _isInitialized;
+
         public static bool IsUIMode => _activeWindows.Count > 0;
 
         public static void Open(params string[] windowNames)
         {
             if (windowNames == null || windowNames.Length == 0) return;
+
+            // Сохраняем состояние только если это первое открытие UI в цепочке
+            if (!_isInitialized)
+            {
+                _cursorWasVisible = Input.GetCursorState() == OpenTK.Windowing.Common.CursorState.Normal;
+                _isInitialized = true;
+            }
 
             var newLayer = new HashSet<string>(windowNames);
             _stack.Push(newLayer);
@@ -49,10 +60,7 @@ namespace Engine
             UpdateState();
         }
 
-        public static bool IsOpen(string windowName)
-        {
-            return _activeWindows.Contains(windowName);
-        }
+        public static bool IsOpen(string windowName) => _activeWindows.Contains(windowName);
 
         public static bool IsTop(string windowName)
         {
@@ -65,13 +73,9 @@ namespace Engine
             if (windowNames == null || windowNames.Length == 0) return;
 
             if (IsTop(windowNames[0]))
-            {
                 CloseTop();
-            }
             else
-            {
                 Open(windowNames);
-            }
         }
 
         private static void UpdateState()
@@ -79,12 +83,18 @@ namespace Engine
             if (IsUIMode)
             {
                 Input.ShowCursor();
-                InputManager0.Enabled = false; 
+                InputManager0.Enabled = false;
             }
             else
             {
-                Input.HideCursor();
-                InputManager0.Enabled = true; 
+                // При закрытии восстанавливаем состояние
+                if (_cursorWasVisible)
+                    Input.ShowCursor();
+                else
+                    Input.HideCursor();
+
+                InputManager0.Enabled = true;
+                _isInitialized = false; // Сбрасываем инициализацию
             }
         }
     }

@@ -7,20 +7,20 @@ Game-independent engine over OpenTK (GL 3.3 core). Namespace `Engine.*`. Must ne
 | Path | Purpose |
 |---|---|
 | `EngineWindow.cs` | Abstract `GameWindow`; owns the main loop and hook methods (see Lifecycle). The only file at the root |
-| `Core/` | `Application` (version, platform, `OpenLink`, `Quit()`), `Time` (`Delta` scaled by `TimeSize`, `Total`, FPS/TPS, per-phase timings, ticks, `AlwaysCalculateFPS`), `FrameLimiter`, `Debug` (logging + console; `MirrorToStandardOutput`, `ExecuteCommand`, `MessageLogged` event), `Prof` (profiler scopes), services: `ServiceLocator`, `EventBus`, `Pool`, `ConcurrentPool`, `DisposalManager`, `TickTask`/`TickTaskManager`, `TimedEventManager` (see below) |
+| `Core/` | `Application` (version, platform, `OpenLink`, `Quit()`), `Time` (`Delta` scaled by `TimeSize`, `Total`, FPS/TPS, per-phase timings, ticks, `AlwaysCalculateFPS`), `FrameLimiter`, `Debug` (logging + console; `MirrorToStandardOutput`, `ExecuteCommand`, `MessageLogged` event), `Prof` (profiler scopes), services: `ServiceLocator`, `EventBus`, `Pool`, `ConcurrentPool`, `DisposalManager`, `TickTask`/`TickTaskManager` (see below) |
 | `SceneManagement/` | `Scene`, `SceneManager`, `ErrorScene`, `ParticleSystemEditor`, scene graph `Node3D`/`Transform3D` |
 | `Components/` | `Component` base + built-ins (`ModelRendererComponent`, `ColliderComponent`, `BillboardComponent`, …) |
 | `Assets/` | `Resources` (typed resource cache, `IResource`), `ResourceFallbacks` |
 | `Cameras/` | `Camera` (`Camera.Main` is the active one), `Camera360Base`, `FreeCamera`, `OrbitCamera`, `OrbitViewCamera`, `CameraStatic`, `CameraFrustum` |
 | `Graphics/` | Rendering primitives `Shader`, `Texture2D`, `Mesh`, `MeshBuffer`, `Model`; scene FBO `SceneRenderer` (color/normal/depth); `GLState`, `GPUDebug`, `UniformBuffer`, `GlobalUniforms`, `RenderTexture`, `ViewModelProjection`; `Skybox` (assigned to `Lighting.Skybox`), `RenderSpace` (camera-relative origin for large coordinates), `VisualDebug` (debug lines, F4), `FramebufferCapture` |
-| `Graphics/Primitives/` | `LineRenderer`, `CubeRenderer`, `SphereRenderer`, `Axes`, `BoundingBoxRenderer` |
+| `Graphics/Primitives/` | `LineRenderer`, `CubeRenderer`, `SphereRenderer`, `Axes` |
 | `Graphics/Atlas/` | `TextureAtlas` (skyline packing, any sizes, layers, lazy rebuild), `AtlasLayout`, `AtlasRegion`, `AtlasSprite` (ImGui drawing), `ImagePixels` |
 | `Materials/` | `MaterialBase` and built-in materials |
 | `Light/` | `LightSystem` (UBO), `Lighting` (ambient, fog, `Lighting.Skybox`), light types, `LightPool` |
 | `PostProcessing/` | `PostProcessManager` + effects (`DefaultEffect`, SSAO, Vignette, …) |
 | `Physics/` | Bounding volumes, `Ray`, `Collision`, bodies, `BVHCuller` (file `BHVCuller.cs`) |
 | `Spatial/` | `Octree<T>`, `PointOctree<T>` (see "Which to use") |
-| `GUI/` | ImGui debug `Overlay` (F3) and its elements, `Sprite`, `WorldTextDebug`; ImGui backend `ImGuiController`, `ThemeUIEngine`, window stack `UIManager` |
+| `GUI/` | ImGui debug `Overlay` (F3) and its elements, `Sprite`, `WorldTextDebug`; ImGui backend `ImGuiController`, window stack `UIManager` (the only one; the game uses it too) |
 | `UI/` | `DevGui`, `Canvas`/`Node2D`/`Rect` (2D layer, rarely used) |
 | `Input/` | `Input` (raw keyboard/mouse state); `InputPro/` the current input system (`InputManager.Instance`); `InputManager0`/`InputAction0` legacy input — do not use in new code |
 | `Audio/` | OpenAL `AudioDevice`, `AudioClip`, `AudioSource`, `AudioMixer` (master + channels Effects/Music/Ambient/UI, `Muted`; set a source's `Channel`), Ogg/Wave loaders |
@@ -95,7 +95,7 @@ Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
 - Main-thread marshalling inside the engine: `EngineWindow`'s main-thread action queue. (The game's `MainThreadDispatcher` lives in `Spacebox`, not here.)
 - `DisposalManager`: thread-safe queue to defer GL disposal from worker threads; processed by the game scene.
 - `EventBus`: struct events implementing `IEvent`, listeners `IEventListener<T>`, `Publish(ref e)`. Cleared on every scene switch — subscribe again in each scene.
-- `ServiceLocator` (`Register`/`Get`/`TryGet`), `Pool<T>` (`Get`/`Release`), `ConcurrentPool<T>` (thread-safe `Rent`/`Return` with reset and a retain limit, for buffers shared by workers and the main thread), `TickTaskManager` (game ticks), `TimedEventManager` (unused), `Debug` (`Log`/`Warning`/`Error`/`Success`, console on backtick, log file).
+- `ServiceLocator` (`Register`/`Get`/`TryGet`), `Pool<T>` (`Get`/`Release`), `ConcurrentPool<T>` (thread-safe `Rent`/`Return` with reset and a retain limit, for buffers shared by workers and the main thread), `TickTaskManager` (game ticks), `Debug` (`Log`/`Warning`/`Error`/`Success`, console on backtick, log file).
 
 ## Headless mode
 

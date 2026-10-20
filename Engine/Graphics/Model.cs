@@ -4,7 +4,7 @@ using Engine.Physics;
 
 namespace Engine
 {
-    public class Model : StaticBody
+    public class Model : Collision
     {
         public Mesh Mesh { get; private set; }
         public MaterialBase Material { get; private set; }
@@ -16,7 +16,7 @@ namespace Engine
         }
 
         public Model(Mesh mesh, MaterialBase material)
-        : base(new BoundingBox(Vector3.Zero, Vector3.One))
+        : base(new BoundingBox(Vector3.Zero, Vector3.One), true)
         {
 
             Mesh = mesh;
@@ -45,7 +45,7 @@ namespace Engine
         {
 
 
-            if (other is DynamicBody)
+            if (!other.IsStatic)
             {
                 oldColor = Material.Color;
                 Material.Color = new Color4(0, 1, 0, 1f);
@@ -56,7 +56,7 @@ namespace Engine
         public override void OnCollisionExit(Collision other)
         {
 
-            if (other is DynamicBody)
+            if (!other.IsStatic)
             {
                 Material.Color = oldColor;
                 base.OnCollisionExit(other);

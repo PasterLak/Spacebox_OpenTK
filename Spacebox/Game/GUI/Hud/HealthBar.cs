@@ -3,6 +3,7 @@
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
 using Engine;
+using Engine.UI;
 namespace Spacebox.GUI
 {
     public class HealthBar

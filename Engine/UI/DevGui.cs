@@ -194,11 +194,4 @@ namespace Engine.UI
         }
     }
 
-    static class ImGuiVectorExtensions
-    {
-        public static Vector3 ToSystemVector3(this OpenTK.Mathematics.Vector3 v) =>
-            new Vector3(v.X, v.Y, v.Z);
-        public static OpenTK.Mathematics.Vector3 ToOpenTKVector3(this Vector3 v) =>
-            new OpenTK.Mathematics.Vector3(v.X, v.Y, v.Z);
-    }
 }
