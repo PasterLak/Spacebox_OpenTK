@@ -424,15 +424,6 @@
         "ModelDepth": 2.0
     },
     {
-        "ID": "cobalt_crystal",
-        "Name": "Cobalt Crystal",
-        "Description": "A shiny cobalt crystal",
-        "Sprite": "cobaltDiamond",
-        "Category": "",
-        "MaxStack": 64,
-        "ModelDepth": 1.5
-    },
-    {
         "ID": "ice_shard",
         "Name": "Ice Shard",
         "Sprite": "ice",

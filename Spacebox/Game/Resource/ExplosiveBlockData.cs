@@ -13,8 +13,10 @@ public class ExplosiveJSON
     public bool DestroyStorageItems { get; set; } = false;
 }
 
-public class ExplosiveBlockData : BlockData
+public class ExplosiveBlockData : BlockData, IExplosiveBlockData
 {
+    public ExplosiveBlockData Explosion => this;
+
     public float Radius { get; }
     public int Penetration { get; }
     public int Damage { get; }

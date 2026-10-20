@@ -33,7 +33,7 @@ namespace Spacebox.Game.Resource
         public PowerGeneratorJSON Generator { get; set; } = new PowerGeneratorJSON();
         public GravityGeneratorJSON Gravity { get; set; } = new GravityGeneratorJSON();
         public DnaReconstructorJSON DnaReconstructor { get; set; } = new DnaReconstructorJSON();
-        public ExplosiveJSON Explosive { get; set; } = new ExplosiveJSON();
+        public ExplosiveJSON Explosive { get; set; }
         public PipeJSON Pipe { get; set; } = new PipeJSON();
         public DisassemblerJSON Disassembler { get; set; } = new DisassemblerJSON();
         public ThrusterJSON Thruster { get; set; } = new ThrusterJSON();

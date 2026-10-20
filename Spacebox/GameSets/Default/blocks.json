@@ -54,7 +54,7 @@
   {
     "ID": "cobaltite_rock",
     "Name": "Cobaltite Rock",
-    "Description": "Source of cobalt crystals",
+    "Description": "Source of cobalt",
     "Type": "mineral",
     "PowerToDrill": 1,
     "Mass": 1,
@@ -940,10 +940,15 @@
     "ID": "cobalt_power_block",
     "Name": "Standard Cobalt Power Block",
     "Type": "generator",
+    "Size": {
+      "x": 1,
+      "y": 2,
+      "z": 1
+    },
     "Category": "resources",
     "PowerToDrill": 1,
-    "Mass": 4,
-    "Durability": 10,
+    "Mass": 6,
+    "Durability": 14,
     "FrontDirection": {
       "x": 0,
       "y": 0,
@@ -951,23 +956,113 @@
     },
     "Textures": {
       "Active": {
-        "All": "generatorSides",
-        "Up": "generator",
+        "All": "cobaltGeneratorSide",
+        "Up": "cobaltGeneratorTop",
+        "Down": "cobaltGeneratorTop"
+      },
+      "Inactive": {
+        "All": "cobaltGeneratorSideOff",
+        "Up": "cobaltGeneratorTopOff",
+        "Down": "cobaltGeneratorTopOff"
+      }
+    }
+  },
+  {
+    "ID": "powerful_cobalt_power_block",
+    "Name": "Powerful Cobalt Power Block",
+    "Type": "generator",
+    "Generator": {
+      "Power": 125
+    },
+    "Size": {
+      "x": 1,
+      "y": 2,
+      "z": 1
+    },
+    "Category": "resources",
+    "PowerToDrill": 1,
+    "Mass": 8,
+    "Durability": 20,
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+    },
+    "Textures": {
+      "Active": {
+        "All": "powerfulCobaltGenerator",
+        "Up": "generatorDown",
         "Down": "generatorDown"
       },
       "Inactive": {
-        "All": "generatorSidesOff",
-        "Up": "generatorOff",
+        "All": "powerfulCobaltGeneratorOff",
+        "Up": "generatorDownOff",
+        "Down": "generatorDownOff"
+      }
+    }
+  },
+  {
+    "ID": "standard_nuclear_power_block",
+    "Name": "Standard Nuclear Power Block",
+    "Type": "generator",
+    "Generator": {
+      "Power": 180
+    },
+    "Explosive": {
+      "Radius": 3,
+      "Penetration": 35,
+      "Damage": 180,
+      "DamageFalloff": true,
+      "PushStrength": 12,
+      "PushRadiusMultiplier": 1.5,
+      "ChainDelay": 0.2,
+      "DropBlocks": false,
+      "DestroyStorageItems": false
+    },
+    "Size": {
+      "x": 2,
+      "y": 2,
+      "z": 2
+    },
+    "Category": "resources",
+    "PowerToDrill": 3,
+    "Mass": 16,
+    "Durability": 45,
+    "FrontDirection": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+    },
+    "Textures": {
+      "Active": {
+        "All": "standard_nuclear_generator",
+        "Up": "generatorDown",
+        "Down": "generatorDown"
+      },
+      "Inactive": {
+        "All": "standard_nuclear_generatorOff",
+        "Up": "generatorDownOff",
         "Down": "generatorDownOff"
       }
     }
   },
   {
     "ID": "nuclear_power_block",
-    "Name": "Standard Nuclear Power Block",
+    "Name": "Powerful Nuclear Power Block",
     "Type": "generator",
     "Generator": {
       "Power": 300
+    },
+    "Explosive": {
+      "Radius": 3,
+      "Penetration": 45,
+      "Damage": 200,
+      "DamageFalloff": true,
+      "PushStrength": 14,
+      "PushRadiusMultiplier": 1.5,
+      "ChainDelay": 0.2,
+      "DropBlocks": false,
+      "DestroyStorageItems": false
     },
     "Size": {
       "x": 2,

@@ -3,11 +3,12 @@ using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation.Blocks;
 
-public class ExplosiveBlock : Block, IProjectileReactive
+public class ExplosiveBlock : Block, IProjectileReactive, IExplosiveBlock
 {
     private readonly ExplosiveBlockData _data;
 
     public ExplosiveBlockData Data => _data;
+    public ExplosiveBlockData Explosion => _data;
 
     public ExplosiveBlock(BlockData blockData) : base(blockData)
     {
@@ -16,10 +17,6 @@ public class ExplosiveBlock : Block, IProjectileReactive
 
     public bool OnProjectileHit(HitInfo hit)
     {
-        var explosions = World.Instance?.Explosions;
-        if (explosions == null || hit.chunk == null) return false;
-
-        explosions.Detonate(hit.chunk, hit.blockPositionIndex, _data, 0f);
-        return true;
+        return ExplosiveTrigger.Detonate(hit, _data);
     }
 }

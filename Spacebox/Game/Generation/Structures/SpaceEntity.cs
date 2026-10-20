@@ -521,6 +521,23 @@ namespace Spacebox.Game.Generation
             return true;
         }
 
+        public void GetStructureCells(Chunk chunk, Vector3Byte index, List<Vector3i> result)
+        {
+            result.Clear();
+            var local = GetCellLocal(chunk, index);
+            var block = chunk.Blocks[index.X, index.Y, index.Z];
+            if (block == null || !GameAssets.Blocks.TryGetValue(block.Id, out var blockData) || !blockData.IsMultiblock)
+            {
+                result.Add(local);
+                return;
+            }
+
+            var originLocal = local - MultiblockLayout.GetOriginOffset(blockData, block);
+            MultiblockLayout.GetCells(blockData, block.Direction, block.Rotation, _structureCells);
+            for (int i = 0; i < _structureCells.Count; i++)
+                result.Add(originLocal + _structureCells[i].Offset);
+        }
+
         public Block GetStructureOrigin(Chunk chunk, Vector3Byte index)
         {
             var block = chunk.Blocks[index.X, index.Y, index.Z];

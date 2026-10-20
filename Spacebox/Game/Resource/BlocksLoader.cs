@@ -111,7 +111,7 @@ namespace Spacebox.Game.Resource
                 }
                 else if (blockData.Type == "generator")
                 {
-                    blockData = new GeneratorBlockData(blockData, blockJson.Generator);
+                    blockData = new GeneratorBlockData(blockData, blockJson.Generator, blockJson.Explosive);
                 }
                 else if (blockData.Type == "door")
                 {

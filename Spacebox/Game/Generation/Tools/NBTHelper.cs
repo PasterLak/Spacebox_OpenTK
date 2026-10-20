@@ -118,15 +118,27 @@ namespace Spacebox.Game.Generation.Tools
             var chunksList = tag.Get<ListTag>(NBTKey.ENTITY.chunks);
             var chunks = new List<Chunk>();
             var completeChunks = new List<Vector3SByte>();
+            var decoded = new Dictionary<Vector3SByte, Block[,,]>();
 
             foreach (CompoundTag chunkTag in chunksList)
             {
-                var chunk = TagToChunk(chunkTag, spaceEntity);
-                chunks.Add(chunk);
+                var blocks = TagToChunkBlocks(chunkTag, out var chunkIndex);
+                decoded[chunkIndex] = blocks;
 
                 bool needsGeneration = chunkTag.TryGetValue<ByteTag>(NBTKey.CHUNK.needs_generation, out var needsTag) && needsTag.Value == 1;
                 if (!needsGeneration)
-                    completeChunks.Add(chunk.PositionIndex);
+                    completeChunks.Add(chunkIndex);
+            }
+
+            var repair = MultiblockRepair.ForCurrentGameSet().Repair(decoded);
+            if (repair.Changed)
+                Debug.Warning($"[NBTHelper] Entity {spaceEntity.EntityID}: multi-cell blocks completed {repair.Completed}, removed {repair.Removed}, orphan cells removed {repair.OrphanPartsRemoved}");
+
+            foreach (var pair in decoded)
+            {
+                var chunk = new Chunk(pair.Key, spaceEntity, pair.Value, true, false);
+                if (repair.Changed) chunk.IsModified = true;
+                chunks.Add(chunk);
             }
 
             spaceEntity.AddChunks(chunks.ToArray(), false);
@@ -391,10 +403,17 @@ namespace Spacebox.Game.Generation.Tools
 
         public static Chunk? TagToChunk(CompoundTag tag, SpaceEntity spaceEntity)
         {
+            var blocks = TagToChunkBlocks(tag, out var index);
+            return new Chunk(index, spaceEntity, blocks, true, false);
+        }
+
+        public static Block[,,] TagToChunkBlocks(CompoundTag tag, out Vector3SByte chunkIndex)
+        {
             const byte SIZE = Chunk.Size;
             sbyte ix = PackingTools.ByteToSByte(tag.Get<ByteTag>(NBTKey.CHUNK.index_x).Value);
             sbyte iy = PackingTools.ByteToSByte(tag.Get<ByteTag>(NBTKey.CHUNK.index_y).Value);
             sbyte iz = PackingTools.ByteToSByte(tag.Get<ByteTag>(NBTKey.CHUNK.index_z).Value);
+            chunkIndex = new Vector3SByte(ix, iy, iz);
 
             var listBlocks = tag.Get<ByteArrayTag>(NBTKey.CHUNK.blocks).ToArray();
             var listPaletteBlocks = tag.Get<ListTag>(NBTKey.CHUNK.palette_blocks);
@@ -476,8 +495,7 @@ namespace Spacebox.Game.Generation.Tools
                 }
             }
 
-            Chunk chunk = new Chunk(new Vector3SByte(ix, iy, iz), spaceEntity, blocks, true, false);
-            return chunk;
+            return blocks;
         }
 
         private static void GetCoordinatesFrom1DIndex(int index, int size, out byte x, out byte y, out byte z)

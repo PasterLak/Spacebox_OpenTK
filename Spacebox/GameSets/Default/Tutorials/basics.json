@@ -270,7 +270,7 @@
         {
           "Id": "power_grid",
           "Title": "Power grid",
-          "Text": "A cobalt power block powers machines and lights through cables. Connect a light to it.",
+          "Text": "A cobalt power block is two blocks tall and needs free space above it. It powers machines and lights through cables: place it, lay cables and connect a light.",
           "Icon": "cobalt_power_block",
           "Tasks": [
             { "Type": "place_block", "Block": "cobalt_power_block" },

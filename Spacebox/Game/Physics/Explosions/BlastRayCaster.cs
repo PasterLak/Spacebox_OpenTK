@@ -12,10 +12,14 @@ public sealed class BlastRayCaster
 
     private readonly Dictionary<int, Vector3[]> _directionsByCount = new Dictionary<int, Vector3[]>();
 
-    public void Collect(SpaceEntity entity, Vector3 centerLocal, float radius, int penetration, HashSet<Vector3i> cells)
+    public void Collect(SpaceEntity entity, Vector3 centerLocal, float radius, int penetration, HashSet<Vector3i> cells, IReadOnlyList<Vector3i> sourceCells = null)
     {
         cells.Clear();
         cells.Add(ToCell(centerLocal));
+        if (sourceCells != null)
+        {
+            for (int i = 0; i < sourceCells.Count; i++) cells.Add(sourceCells[i]);
+        }
 
         var directions = GetDirections(radius);
         int steps = (int)MathF.Ceiling(radius / Step);

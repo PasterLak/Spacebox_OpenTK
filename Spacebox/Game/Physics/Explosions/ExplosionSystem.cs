@@ -18,13 +18,13 @@ public sealed class ExplosionSystem : IDisposable
     private readonly HashSet<(SpaceEntity, Vector3i)> _scheduled = new HashSet<(SpaceEntity, Vector3i)>();
     private readonly Action<Chunk, Vector3Byte, ExplosiveBlockData> _chainExplosive;
     private readonly List<Vector3i> _removedCells = new List<Vector3i>();
+    private readonly List<Vector3i> _sourceCells = new List<Vector3i>();
 
     public static event Action<SpaceEntity, Vector3i, short, IReadOnlyList<Vector3i>> Exploded;
 
     public void ApplyReplica(SpaceEntity entity, Vector3i cell, ExplosiveBlockData data, IReadOnlyList<Vector3i> cells)
     {
-        var centerLocal = new Vector3(cell.X + 0.5f, cell.Y + 0.5f, cell.Z + 0.5f);
-        var worldCenter = entity.EntityLocalToWorld(centerLocal);
+        var worldCenter = entity.EntityLocalToWorld(GetCenterLocal(entity, cell));
 
         _breaker.Break(entity, cells, cell, worldCenter, data, _chainExplosive, true, null);
         _forces.Apply(worldCenter, data);
@@ -97,19 +97,31 @@ public sealed class ExplosionSystem : IDisposable
     {
         var entity = pending.Entity;
         if (!entity.TryGetBlockLocal(pending.Cell, out var chunk, out var index)) return;
-        if (chunk.IsDisposed || chunk.Blocks[index.X, index.Y, index.Z] is not ExplosiveBlock) return;
+        if (chunk.IsDisposed || chunk.Blocks[index.X, index.Y, index.Z] is not IExplosiveBlock { Explosion: not null }) return;
 
         var data = pending.Data;
-        var centerLocal = new Vector3(pending.Cell.X + 0.5f, pending.Cell.Y + 0.5f, pending.Cell.Z + 0.5f);
+        var centerLocal = GetCenterLocal(entity, pending.Cell);
         var worldCenter = entity.EntityLocalToWorld(centerLocal);
 
         short bombId = chunk.Blocks[index.X, index.Y, index.Z].Id;
 
-        _rayCaster.Collect(entity, centerLocal, data.Radius, data.Penetration, _cells);
+        _rayCaster.Collect(entity, centerLocal, data.Radius, data.Penetration, _cells, _sourceCells);
         _breaker.Break(entity, _cells, pending.Cell, worldCenter, data, _chainExplosive, false, _removedCells);
         _forces.Apply(worldCenter, data);
         _effects.Play(worldCenter, data.Radius);
         Exploded?.Invoke(entity, pending.Cell, bombId, _removedCells);
+    }
+
+    private Vector3 GetCenterLocal(SpaceEntity entity, Vector3i cell)
+    {
+        _sourceCells.Clear();
+        if (entity.TryGetBlockLocal(cell, out var chunk, out var index)) entity.GetStructureCells(chunk, index, _sourceCells);
+        if (_sourceCells.Count == 0) _sourceCells.Add(cell);
+
+        var sum = Vector3.Zero;
+        for (int i = 0; i < _sourceCells.Count; i++)
+            sum += new Vector3(_sourceCells[i].X + 0.5f, _sourceCells[i].Y + 0.5f, _sourceCells[i].Z + 0.5f);
+        return sum / _sourceCells.Count;
     }
 
     private struct PendingExplosion

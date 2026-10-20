@@ -36,14 +36,15 @@ public sealed class ExplosionBlockBreaker
 
             if (cell == origin)
             {
-                if (chunk.ClearCellForBulkEdit(index.X, index.Y, index.Z)) _touchedChunks.Add(chunk);
+                if (NeedsFullRemoval(block)) _specialCells.Add(cell);
+                else if (chunk.ClearCellForBulkEdit(index.X, index.Y, index.Z)) _touchedChunks.Add(chunk);
                 removedCells?.Add(cell);
                 continue;
             }
 
-            if (block is ExplosiveBlock explosive && !isReplica)
+            if (block is IExplosiveBlock { Explosion: { } explosion } && !isReplica)
             {
-                chainExplosive(chunk, index, explosive.Data);
+                chainExplosive(chunk, index, explosion);
                 continue;
             }
 

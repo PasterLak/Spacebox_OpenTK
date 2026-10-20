@@ -29,6 +29,11 @@ New
 - world converter: 0.1.2 worlds convert to 0.1.5, older ones are refused
 - world upgrade tools for NBT (rename/remove blocks and items), check for unknown ids
 - dedicated server upgrades old worlds on start
+- new power blocks from Corneroids: Powerful Cobalt Power Block (1x2x1, 125 EU), Standard Nuclear Power Block (2x2x2, 180 EU); the 2x3x2 nuclear block is now Powerful Nuclear Power Block
+- cobalt crystal removed (item, craft, crusher recipe); old worlds get cobalt ingots instead
+- Standard Cobalt Power Block is now 1x2x1 with the Corneroids textures; tutorial text updated
+- nuclear power blocks explode when shots or an explosion bring a cell to 0 durability: radius 3, low penetration (aluminium and light iron break), deadly only up close, a full titanium set survives
+- loading repairs multi-cell blocks: a block that became bigger grows into free cells or is removed if it does not fit, cells without their origin are removed
 Small
 - convert dialog shows steps, backup and warnings
 - DNA reconstructor slot uses the dna_ui texture

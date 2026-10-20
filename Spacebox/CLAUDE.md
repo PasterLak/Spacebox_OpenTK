@@ -101,7 +101,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 
 ## Explosions
 
-- `World.Explosions` (`Game/Physics/Explosions/`): `Detonate(chunk, index, data, delay)`. Blocks that react to bullets implement `IProjectileReactive` (checked in `Projectile` before ricochet). Bodies take damage through `IExplosionDamageable`. Bulk block removal: `Chunk.ClearCellForBulkEdit` + `FinishBulkEdit` + `Oxygen.OnChunksChanged`.
+- `World.Explosions` (`Game/Physics/Explosions/`): `Detonate(chunk, index, data, delay)`. Blocks that react to bullets implement `IProjectileReactive` (checked in `Projectile` before ricochet). Bodies take damage through `IExplosionDamageable`. Any block can explode: implement `IExplosiveBlock` (data side `IExplosiveBlockData`, e.g. `GeneratorBlockData` with a JSON `Explosive` section) and trigger with `ExplosiveTrigger.Detonate` (bombs on any hit through `IProjectileReactive`, other explosive blocks from `Chunk.DamageBlock` when durability reaches 0); multi-cell blocks blast from their structure center and are removed as a whole. Bulk block removal: `Chunk.ClearCellForBulkEdit` + `FinishBulkEdit` + `Oxygen.OnChunksChanged`.
 
 ## Doors
 

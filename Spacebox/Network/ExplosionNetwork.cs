@@ -62,7 +62,7 @@ public static class ExplosionNetwork
 
         var world = World.Instance;
         if (world?.Explosions == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
-        if (!GameAssets.Blocks.TryGetValue(message.BombBlockId, out var blockData) || blockData is not ExplosiveBlockData data) return;
+        if (!GameAssets.Blocks.TryGetValue(message.BombBlockId, out var blockData) || blockData is not IExplosiveBlockData { Explosion: { } data }) return;
 
         world.Explosions.ApplyReplica(entity, message.Cell, data, message.Cells);
     }

@@ -238,12 +238,6 @@
           "Product": { "Item": "titanium_dust", "Quantity": 1 }
         },
         {
-          "DurationSec": 10.0,
-          "PowerPerTickRequared": 5,
-          "Ingredient": { "Item": "cobalt_crystal", "Quantity": 1 },
-          "Product": { "Item": "cobalt_dust", "Quantity": 1 }
-        },
-        {
           "DurationSec": 35.0,
           "PowerPerTickRequared": 5,
           "Ingredient": { "Item": "uranium_rods", "Quantity": 2 },

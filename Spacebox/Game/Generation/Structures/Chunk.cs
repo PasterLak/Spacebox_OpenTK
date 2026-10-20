@@ -404,6 +404,9 @@ namespace Spacebox.Game.Generation
             else
             {
                 block.Durability = 0;
+                if (block is IExplosiveBlock { Explosion: { } explosion } && ExplosiveTrigger.Detonate(hit, explosion))
+                    return false;
+
                 block.OnDestroy?.Invoke(hit);
                 RemoveBlock(hit.blockPositionIndex.X, hit.blockPositionIndex.Y, hit.blockPositionIndex.Z,
                     hit.normal.X, hit.normal.Y, hit.normal.Z, spawnDrop);

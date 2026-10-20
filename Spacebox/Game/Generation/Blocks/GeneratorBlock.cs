@@ -5,10 +5,13 @@ using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation.Blocks
 {
-    public class GeneratorBlock : InteractiveBlock
+    public class GeneratorBlock : InteractiveBlock, IExplosiveBlock
     {
+        public ExplosiveBlockData Explosion { get; }
+
         public GeneratorBlock(BlockData blockData) : base(blockData)
         {
+            Explosion = (blockData as GeneratorBlockData)?.Explosion;
             EFlags = ElectricalFlags.CanGenerate | ElectricalFlags.CanTransfer;
             ushort power = blockData is GeneratorBlockData generatorData ? generatorData.Power : GeneratorBlockData.DefaultPower;
             MaxPower = (short)Math.Clamp(power * 10, 500, 16000);

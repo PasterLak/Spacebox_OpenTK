@@ -127,6 +127,24 @@ public class WorldUpgradeFlowTests : IDisposable
     }
 
     [Fact]
+    public void Step012To015_ReplacesCobaltCrystalsWithIngots()
+    {
+        string folder = Build(w => w.Version("0.1.2")
+            .Chunk(new[] { "default:air", "default:light_rock" }, new[] { "default:cobalt_crystal" })
+            .Player("default:cobalt_crystal", 5)
+            .Drop("default:cobalt_crystal"));
+        var info = new WorldInfo { Name = "W", GameVersion = "0.1.2" };
+
+        var result = new WorldUpgrader(WorldUpgradeRegistry.CreateDefault(), Path.Combine(_root, "backups")).Upgrade(info, folder, "0.1.5", DefaultIds());
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(new[] { "default:cobalt_ingot" }, WorldInspector.ItemPalettes(folder));
+        Assert.Equal(new[] { "default:cobalt_ingot" }, WorldInspector.PlayerItems(folder));
+        Assert.Equal(new[] { "default:cobalt_ingot" }, WorldInspector.DropItems(folder));
+        Assert.Empty(result.Warnings);
+    }
+
+    [Fact]
     public void TooOldWorld_IsRefusedAndUntouched()
     {
         string folder = Build(w => w.Version("0.1.1").Chunk(new[] { "default:light_rock" }));

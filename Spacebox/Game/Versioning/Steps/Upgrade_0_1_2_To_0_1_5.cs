@@ -6,7 +6,10 @@ public sealed class Upgrade_0_1_2_To_0_1_5 : WorldUpgradeStep
     {
     }
 
-    public override string Description => "0.1.2 -> 0.1.5: new save fields are optional (tutorial progress, local player file), no data changes";
+    public const string RemovedCobaltCrystal = "default:cobalt_crystal";
+    public const string CobaltIngot = "default:cobalt_ingot";
+
+    public override string Description => "0.1.2 -> 0.1.5: new save fields are optional (tutorial progress, local player file), cobalt crystals become cobalt ingots";
 
     public override string Check(WorldUpgradeContext world)
     {
@@ -20,6 +23,6 @@ public sealed class Upgrade_0_1_2_To_0_1_5 : WorldUpgradeStep
 
     public override void Apply(WorldUpgradeContext world)
     {
-        world.Write("Saves from 0.1.2 load in 0.1.5 without changes");
+        world.RemoveItem(RemovedCobaltCrystal, CobaltIngot);
     }
 }
