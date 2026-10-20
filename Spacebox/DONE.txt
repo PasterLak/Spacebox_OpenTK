@@ -68,6 +68,10 @@ Small
 Fixes
 - chat: older messages no longer pile up on the top line when the chat is full, long messages wrap
 - tpa: lands next to the surface of the nearest asteroid (or the next one if you are already at one), also unloaded asteroids, free spot, teleport effect and a message; ships are no longer targets
+- F4 visual debug: lines drawn camera-relative (no jitter far from the origin), translucent colours work and no longer break SSAO, boxes of rotated entities and their chunks follow the rotation, world origin axes drawn, view axes gizmo at the crosshair instead of the clipped 3D one
+- F4 visual debug: no spheres, colliders or axes around your own player, thicker chunk lines, screen icons (center of mass, cameras, particles, lights, thrusters, cannons, spawn point), gizmos for lights (range, cone), cameras (frustum), ship thrusters (thrust arrow), cannons (aim) and camera blocks; particle emitter shapes drawn at their system instead of the world origin
+- F4 visual debug: geometry center icon, light block icons in their light colour, particle system icons with particle count for all systems (also effect pools, at their particles), emitter shapes for emitting systems, thruster arrows point along the exhaust
+- /setspawn [x y z] | clear (admin): spawn point for all players (new players and respawns), saved in world.json and synced to clients; /spawn teleports there; particle icons stay at their system instead of jumping with the particles
 - while the world loads only the skybox is drawn: spacers, mobs and other players no longer show before the world
 - light from a neighbour chunk no longer disappears when a nearby chunk is relit (block eaten, chunk loaded)
 - new Interface options: font (Fusion Pixel by default with Cyrillic, or the old ProggyClean), font size and a font test field; licenses in Resources/Fonts/FONTS.md

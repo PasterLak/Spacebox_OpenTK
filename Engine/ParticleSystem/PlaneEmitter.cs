@@ -31,7 +31,7 @@ namespace Engine
 
         public override void Debug()
         {
-            VisualDebug.DrawPlane(Center, Normal, Width, Height, Color4.Cyan);
+            VisualDebug.DrawPlane(DebugPoint(Center), DebugDirection(Normal), Width, Height, Color4.Cyan);
         }
     }
 }

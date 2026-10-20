@@ -908,7 +908,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     public void Render(BlockMaterial shader)
     {
-        VisualDebug.DrawBoundingBox(BoundingBox, new Color4(255, 255, 20, 100));
+        VisualDebug.DrawBoundingBox(BoundingBox, new Color4(1f, 1f, 0.08f, 0.4f));
 
         var cam = Camera.Main;
 

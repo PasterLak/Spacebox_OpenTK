@@ -69,7 +69,7 @@ namespace Engine
         public override void Debug()
         {
             Vector3 axisN = Direction.LengthSquared > 0f ? Direction.Normalized() : Axis.Normalized();
-            VisualDebug.DrawCone(Apex, axisN, Angle, Height, Color4.Cyan, 12);
+            VisualDebug.DrawCone(DebugPoint(Apex), DebugDirection(axisN), Angle, Height, Color4.Cyan, 12);
         }
 
     }

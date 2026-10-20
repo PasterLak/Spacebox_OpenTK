@@ -64,6 +64,7 @@ namespace Engine.Light
         public static void Register(LightBase l) { if (!_all.Contains(l)) _all.Add(l); }
         public static void Unregister(LightBase l) { _all.Remove(l); }
         public static int GetRegisteredLightsCount => _all.Count;
+        public static IReadOnlyList<LightBase> All => _all;
         public static int ActivePointLights { get; private set; }
         public static int ActiveDirectionalLights { get; private set; }
         public static int ActiveSpotLights { get; private set; }

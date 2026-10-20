@@ -573,7 +573,7 @@ namespace Engine
             }
             else
             {
-                VisualDebug.DrawBoundingBox(bounds, new Color4(255, 192, 200, 50));
+                VisualDebug.DrawBoundingBox(bounds, new Color4(1f, 0.75f, 0.78f, 0.2f));
 
                 if(objects.Count > 0)
                 {

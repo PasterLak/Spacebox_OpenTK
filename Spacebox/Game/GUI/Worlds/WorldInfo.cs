@@ -18,6 +18,7 @@ public class WorldInfo
     public int Day { get; set; } = 0;
     public string FolderName { get; set; } = "";
     public bool ShowWelcomeWindow { get; set; } = true;
+    public float[] SpawnPoint { get; set; }
 
     public bool IsLocalWorld = true;
     public Texture2D? WorldPreview;

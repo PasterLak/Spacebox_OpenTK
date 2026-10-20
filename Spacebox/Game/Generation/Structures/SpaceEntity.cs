@@ -53,6 +53,7 @@ namespace Spacebox.Game.Generation
         private readonly Ray _entitySpaceRay = new Ray(Vector3.Zero, Vector3.UnitZ, 1f);
         private readonly BoundingSphere _entitySpaceSphere = new BoundingSphere(Vector3.Zero, 0f);
         private readonly BoundingBox _worldBoundsScratch = new BoundingBox(Vector3.Zero, Vector3.Zero);
+        private readonly BoundingBoxOBB _debugBox = new BoundingBoxOBB(Vector3.Zero, Vector3.One, Quaternion.Identity);
 
         private bool _isModified = false;
         public bool IsModified
@@ -1032,12 +1033,29 @@ namespace Spacebox.Game.Generation
 
             if (VisualDebug.Enabled)
             {
-                VisualDebug.DrawBoundingBox(BoundingBox, Color4.Cyan);
-                VisualDebug.DrawPosition(GeometryBoundingBox.Center, 6, Color4.Orange);
+                DrawDebugBox(BoundingBox, Color4.Cyan);
+                Engine.GUI.GizmoIcons.Add(ToWorldSpace(GeometryBoundingBox.Center), Engine.GUI.GizmoIcon.GeometryCenter, Color4.Orange);
 
-                VisualDebug.DrawBoundingBox(GeometryBoundingBox, Color4.Orange);
-                VisualDebug.DrawPosition(CenterOfMassWorld, 8, Color4.Lime);
+                DrawDebugBox(GeometryBoundingBox, Color4.Orange);
+                VisualDebug.DrawAxes(CenterOfMassWorld, 3f);
+                Engine.GUI.GizmoIcons.Add(CenterOfMassWorld, Engine.GUI.GizmoIcon.CenterOfMass, Color4.Lime);
             }
+        }
+
+        public void DrawDebugBox(BoundingBox entitySpaceBox, Color4 color, float thickness = 0f)
+        {
+            if (!HasRotation)
+            {
+                if (thickness > 0f) VisualDebug.DrawBoundingBox(entitySpaceBox, color, thickness);
+                else VisualDebug.DrawBoundingBox(entitySpaceBox, color);
+                return;
+            }
+
+            _debugBox.Center = ToWorldSpace(entitySpaceBox.Center);
+            _debugBox.Size = entitySpaceBox.Size;
+            _debugBox.Rotation = Orientation;
+            if (thickness > 0f) VisualDebug.DrawOBB(_debugBox, color, thickness);
+            else VisualDebug.DrawOBB(_debugBox, color);
         }
 
         public bool IsColliding(BoundingVolume volume, out CollideInfo collideInfo)

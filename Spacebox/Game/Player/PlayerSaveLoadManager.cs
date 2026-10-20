@@ -137,7 +137,15 @@ namespace Spacebox.Game.Player
         {
             Debug.Log("[PlayerSaveLoadManager] New player, spawning near an asteroid.");
 
-            World.CurrentSector.SpawnPlayerNearRandomAsteroidData(player, new Random(World.Seed));
+            if (Respawn.WorldSpawn.TryGet(out var worldSpawn))
+            {
+                player.SetPosition(Respawn.SafeSpawnFinder.FindFreePosition(worldSpawn));
+                player.SpawnPosition = worldSpawn;
+            }
+            else
+            {
+                World.CurrentSector.SpawnPlayerNearRandomAsteroidData(player, new Random(World.Seed));
+            }
             player.IsNewPlayer = true;
             player.Tutorial = null;
             GameSetLoader.GiveStartItems(player, GameAssets.ItemsStr);

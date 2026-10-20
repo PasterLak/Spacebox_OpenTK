@@ -25,8 +25,7 @@ namespace Engine.Components
         public override void OnUpdate()
         {
             Recalculate();
-            DrawDebug();
-            if (VisualDebug.Enabled) DrawDebug();
+            if (VisualDebug.Enabled && !VisualDebug.IsViewOwner(Owner)) DrawDebug();
         }
 
         protected abstract void Recalculate();

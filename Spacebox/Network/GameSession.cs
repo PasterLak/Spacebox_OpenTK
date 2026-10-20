@@ -78,6 +78,7 @@ public sealed class RemoteWorldInfo
     public string GameSetFolder;
     public string GameSetCacheName;
     public bool UseLocalGameSet = true;
+    public float[] SpawnPoint;
 
     public SpaceSceneArgs ToSceneArgs(string skinColor, string nickname)
     {

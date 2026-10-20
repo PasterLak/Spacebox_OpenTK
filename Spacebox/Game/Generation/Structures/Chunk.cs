@@ -18,6 +18,8 @@ namespace Spacebox.Game.Generation
         public const byte SizeHalf = Size / 2;
 
         public static bool ShowChunkBounds { get; set; } = true;
+        private ChunkLightSources _lightSources;
+        public const float ChunkBoundsThickness = 0.08f;
         public static bool MeasureGenerationTime { get; set; } = false;
 
         public int Mass { get; set; } = 0;
@@ -341,7 +343,28 @@ namespace Spacebox.Game.Generation
 
             if (ShowChunkBounds && VisualDebug.Enabled)
             {
-                VisualDebug.DrawBoundingBox(BoundingBox, new Color4(0.5f, 0f, 0.5f, 0.4f));
+                SpaceEntity.DrawDebugBox(BoundingBox, new Color4(0.75f, 0.2f, 0.9f, 0.6f), ChunkBoundsThickness);
+            }
+
+            if (VisualDebug.Enabled) DrawLightSourceIcons();
+        }
+
+        private void DrawLightSourceIcons()
+        {
+            if (!Engine.GUI.GizmoIcons.IsInRange(SpaceEntity.ToWorldSpace(BoundingBox.Center))) return;
+
+            _lightSources ??= new ChunkLightSources();
+            var cells = _lightSources.Get(Blocks, DataVersion);
+            for (int i = 0; i < cells.Count; i++)
+            {
+                var cell = cells[i];
+                var block = Blocks[cell.X, cell.Y, cell.Z];
+                if (!ChunkLightSources.IsSource(block)) continue;
+
+                var world = SpaceEntity.ToWorldSpace(PositionWorld + new Vector3(cell.X + 0.5f, cell.Y + 0.5f, cell.Z + 0.5f));
+                var color = block.LightColor.ToVector3();
+                if (color.LengthSquared < 0.01f) color = new Vector3(1f, 0.9f, 0.4f);
+                Engine.GUI.GizmoIcons.Add(world, Engine.GUI.GizmoIcon.BlockLight, new Color4(color.X, color.Y, color.Z, 1f));
             }
         }
 

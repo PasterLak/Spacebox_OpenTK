@@ -36,7 +36,7 @@ namespace Engine
 
         public override void Debug()
         {
-            VisualDebug.DrawBox(Center, Size, Color4.Cyan);
+            VisualDebug.DrawBox(DebugPoint(Center), Size, Color4.Cyan);
         }
     }
 }

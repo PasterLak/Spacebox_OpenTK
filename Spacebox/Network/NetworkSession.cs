@@ -341,7 +341,9 @@ public sealed class NetworkSession : IDisposable
             Ticks = GameTime.DayTick,
             PlayerJson = PlayerSaveLoadManager.ReadPlayerJson(World.WorldData.WorldFolderPath, name, false),
             GameSetHash = GameSetPackage.Hash,
-            GameSetFolder = GameSetPackage.FolderName
+            GameSetFolder = GameSetPackage.FolderName,
+            HasSpawnPoint = Spacebox.Game.Player.Respawn.WorldSpawn.TryGet(out var spawnPoint),
+            SpawnPoint = spawnPoint
         });
 
         Debug.Log($"[Server] {name} is joining (peer {sender})");

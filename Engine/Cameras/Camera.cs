@@ -63,6 +63,7 @@ namespace Engine
            
         }
         public bool IsMain => Main == this;
+        public virtual bool DrawsDebugGizmo => true;
         private bool _cameraRelativeRender = false;
 
         public bool CameraRelativeRender => _cameraRelativeRender;

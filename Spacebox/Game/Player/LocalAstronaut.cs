@@ -107,7 +107,6 @@ namespace Spacebox.Game.Player
             set => _collisionEnabled = value;
         }
 
-        private Axes _axes;
         private readonly PlayerStatsTracker _statsTracker;
 
         public LocalAstronaut(Vector3 position) : base(position, true)
@@ -196,8 +195,6 @@ namespace Spacebox.Game.Player
             Equipment.Storage.ConnectStorage(Inventory);
             Equipment.Storage.OnDataWasChanged += _ => ApplyArmorVisuals();
             _equipmentStats = new EquipmentStatsBinder(Equipment, HealthBar.StatsData, PowerBar.StatsData);
-
-            _axes = new Axes(Position, 0.01f);
         }
 
         private void SetGameMode(GameMode mode)
@@ -469,12 +466,6 @@ namespace Spacebox.Game.Player
         {
             base.Render();
 
-            if (VisualDebug.Enabled)
-            {
-                _axes.Position = Position + Front * 0.1f;
-                _axes.Render();
-            }
-
             if (_gameModeBase != null)
             {
                 _gameModeBase.Render(this);
@@ -486,7 +477,6 @@ namespace Spacebox.Game.Player
         public override void Destroy()
         {
             base.Destroy();
-            _axes.Destroy();
         }
 
         public override void OnGUI()

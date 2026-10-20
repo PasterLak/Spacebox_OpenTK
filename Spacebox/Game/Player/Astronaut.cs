@@ -17,6 +17,7 @@ namespace Spacebox.Game.Player
         public bool HasOxygen { get; set; } = true;
         public Armor.ArmorRenderer ArmorVisual { get; private set; }
         public Flashlight Flashlight { get; private set; }
+        public override bool DrawsDebugGizmo => false;
 
         protected HandItemVisualizer HandVisualizer;
         public HandItemVisualizer HeldItemVisual => HandVisualizer;

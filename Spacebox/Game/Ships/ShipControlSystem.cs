@@ -23,6 +23,7 @@ public sealed class ShipControlSystem
     public IReadOnlyList<CannonBlock> Cannons => _cannons;
     public IReadOnlyDictionary<Vector3i, ConsoleCommand> Commands => _commands;
     public bool HasParts => _parts.Count > 0;
+    public Dictionary<Vector3i, IShipPart>.ValueCollection Parts => _parts.Values;
 
     public static event Action<ShipControlSystem, CannonBlock> CannonFired;
     public static event Action<ShipControlSystem, Vector3i> BindingsChanged;
@@ -169,6 +170,7 @@ public sealed class ShipControlSystem
     public void Render()
     {
         _turrets.Render();
+        ShipDebugGizmos.Draw(this);
     }
 
     public void Dispose()

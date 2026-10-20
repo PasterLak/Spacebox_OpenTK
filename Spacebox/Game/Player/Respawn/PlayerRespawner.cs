@@ -24,7 +24,7 @@ public sealed class PlayerRespawner
 
     public void RespawnAtSpawnPoint()
     {
-        _player.Revive(_player.SpawnPosition);
+        _player.Revive(WorldSpawn.For(_player));
         World.Instance?.PreloadAroundPlayer();
         WorldLoadingScreen.Begin(_player, MoveToFreeSpace);
     }

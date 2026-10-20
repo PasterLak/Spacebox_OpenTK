@@ -21,6 +21,8 @@ namespace Engine
 
         public static bool IsGpuInitialized => _shader != null;
 
+        public static bool IsViewOwner(Node3D node) => node is Camera camera && camera.IsMain;
+
         public static void InitializeGpu()
         {
             if (IsGpuInitialized) return;
@@ -66,6 +68,7 @@ namespace Engine
         public static void DrawPoint(Vector3 position, float size, Color4 color)
         {
             if (!Enabled) return;
+            position = RenderSpace.ToRender(position);
             _points.Add(position.X);
             _points.Add(position.Y);
             _points.Add(position.Z);
@@ -79,6 +82,8 @@ namespace Engine
         public static void DrawLine(Vector3 start, Vector3 end, Color4 color)
         {
             if (!Enabled) return;
+            start = RenderSpace.ToRender(start);
+            end = RenderSpace.ToRender(end);
             _lines.Add(start.X);
             _lines.Add(start.Y);
             _lines.Add(start.Z);
@@ -93,6 +98,123 @@ namespace Engine
             _lines.Add(color.G);
             _lines.Add(color.B);
             _lines.Add(color.A);
+        }
+
+        public static void DrawThickLine(Vector3 start, Vector3 end, Color4 color, float thickness)
+        {
+            if (!Enabled) return;
+
+            var camera = Camera.Main;
+            var direction = end - start;
+            if (camera == null || direction.LengthSquared < 0.000001f)
+            {
+                DrawLine(start, end, color);
+                return;
+            }
+
+            var toCamera = camera.Position - (start + end) * 0.5f;
+            var side = Vector3.Cross(direction, toCamera);
+            if (side.LengthSquared < 0.000001f) side = Vector3.Cross(direction, camera.Up);
+            side = side.Normalized() * (thickness * 0.5f);
+
+            AddTriangle(start - side, start + side, end + side, color);
+            AddTriangle(end + side, end - side, start - side, color);
+        }
+
+        public static void DrawBoundingBox(BoundingBox box, Color4 color, float thickness)
+        {
+            if (!Enabled || box == null) return;
+            DrawBoxEdges(box.Min, box.Max, color, thickness);
+        }
+
+        private static void DrawBoxEdges(Vector3 min, Vector3 max, Color4 color, float thickness)
+        {
+            var c0 = new Vector3(min.X, min.Y, min.Z);
+            var c1 = new Vector3(max.X, min.Y, min.Z);
+            var c2 = new Vector3(max.X, max.Y, min.Z);
+            var c3 = new Vector3(min.X, max.Y, min.Z);
+            var c4 = new Vector3(min.X, min.Y, max.Z);
+            var c5 = new Vector3(max.X, min.Y, max.Z);
+            var c6 = new Vector3(max.X, max.Y, max.Z);
+            var c7 = new Vector3(min.X, max.Y, max.Z);
+            DrawThickLine(c0, c1, color, thickness);
+            DrawThickLine(c1, c2, color, thickness);
+            DrawThickLine(c2, c3, color, thickness);
+            DrawThickLine(c3, c0, color, thickness);
+            DrawThickLine(c4, c5, color, thickness);
+            DrawThickLine(c5, c6, color, thickness);
+            DrawThickLine(c6, c7, color, thickness);
+            DrawThickLine(c7, c4, color, thickness);
+            DrawThickLine(c0, c4, color, thickness);
+            DrawThickLine(c1, c5, color, thickness);
+            DrawThickLine(c2, c6, color, thickness);
+            DrawThickLine(c3, c7, color, thickness);
+        }
+
+        public static void DrawOBB(BoundingBoxOBB obb, Color4 color, float thickness)
+        {
+            if (!Enabled || obb == null) return;
+            var corners = obb.GetCorners();
+            DrawThickLine(corners[0], corners[1], color, thickness);
+            DrawThickLine(corners[1], corners[3], color, thickness);
+            DrawThickLine(corners[3], corners[2], color, thickness);
+            DrawThickLine(corners[2], corners[0], color, thickness);
+            DrawThickLine(corners[4], corners[5], color, thickness);
+            DrawThickLine(corners[5], corners[7], color, thickness);
+            DrawThickLine(corners[7], corners[6], color, thickness);
+            DrawThickLine(corners[6], corners[4], color, thickness);
+            DrawThickLine(corners[0], corners[4], color, thickness);
+            DrawThickLine(corners[1], corners[5], color, thickness);
+            DrawThickLine(corners[2], corners[6], color, thickness);
+            DrawThickLine(corners[3], corners[7], color, thickness);
+        }
+
+        public static void DrawFrustum(Vector3 apex, Vector3 forward, Vector3 up, float fovDegrees, float aspect, float length, Color4 color)
+        {
+            if (!Enabled || forward.LengthSquared < 0.000001f) return;
+
+            forward = forward.Normalized();
+            var right = Vector3.Cross(forward, up);
+            if (right.LengthSquared < 0.000001f) right = Vector3.Cross(forward, Vector3.UnitY);
+            right = right.Normalized();
+            var trueUp = Vector3.Cross(right, forward);
+
+            float halfHeight = MathF.Tan(MathHelper.DegreesToRadians(fovDegrees) * 0.5f) * length;
+            float halfWidth = halfHeight * aspect;
+            var center = apex + forward * length;
+            var a = center + right * halfWidth + trueUp * halfHeight;
+            var b = center - right * halfWidth + trueUp * halfHeight;
+            var c = center - right * halfWidth - trueUp * halfHeight;
+            var d = center + right * halfWidth - trueUp * halfHeight;
+
+            DrawLine(apex, a, color);
+            DrawLine(apex, b, color);
+            DrawLine(apex, c, color);
+            DrawLine(apex, d, color);
+            DrawLine(a, b, color);
+            DrawLine(b, c, color);
+            DrawLine(c, d, color);
+            DrawLine(d, a, color);
+            DrawLine(a + trueUp * halfHeight * 0.3f, b + trueUp * halfHeight * 0.3f, color);
+        }
+
+        public static void DrawArrow(Vector3 start, Vector3 end, Color4 color)
+        {
+            if (!Enabled) return;
+            var direction = end - start;
+            float length = direction.Length;
+            if (length < 0.0001f) return;
+
+            DrawLine(start, end, color);
+            direction /= length;
+            var side = Vector3.Cross(direction, MathF.Abs(direction.Y) < 0.9f ? Vector3.UnitY : Vector3.UnitX).Normalized();
+            var up = Vector3.Cross(side, direction);
+            float head = MathF.Min(0.4f, length * 0.25f);
+            var back = end - direction * head;
+            DrawLine(end, back + side * head * 0.5f, color);
+            DrawLine(end, back - side * head * 0.5f, color);
+            DrawLine(end, back + up * head * 0.5f, color);
+            DrawLine(end, back - up * head * 0.5f, color);
         }
 
         public static void DrawSquare(Vector3 position, Vector2 size, Color4 color)
@@ -127,6 +249,7 @@ namespace Engine
         private static void AddVertexToTriangles(Vector3 position, Color4 color)
         {
             if (!Enabled) return;
+            position = RenderSpace.ToRender(position);
             _triangles.Add(position.X);
             _triangles.Add(position.Y);
             _triangles.Add(position.Z);
@@ -261,9 +384,14 @@ namespace Engine
 
         public static void DrawAxes(Vector3 pos)
         {
-            DrawLine(pos, pos + Vector3.UnitX * 2, Color4.Red);
-            DrawLine(pos, pos + Vector3.UnitY * 2, Color4.Green);
-            DrawLine(pos, pos + Vector3.UnitZ * 2, Color4.Blue);
+            DrawAxes(pos, 2f);
+        }
+
+        public static void DrawAxes(Vector3 pos, float length)
+        {
+            DrawLine(pos, pos + Vector3.UnitX * length, Color4.Red);
+            DrawLine(pos, pos + Vector3.UnitY * length, Color4.Green);
+            DrawLine(pos, pos + Vector3.UnitZ * length, Color4.Blue);
         }
         public static void DrawAxes(Node3D node, float length = 1f)
         {
@@ -387,10 +515,14 @@ namespace Engine
 
 
             _shader.Use();
-            _shader.SetMatrix4("model", Matrix4.Identity * Matrix4.CreateTranslation(-RenderSpace.Origin));
+            _shader.SetMatrix4("model", Matrix4.Identity);
           
             GLState.DepthTest(true);
             GLState.CullFace(false);
+            GLState.DepthMask(false);
+            GLState.GBufferWrite(false);
+            GLState.Blend(true);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             if (_points.Count > 0)
             {
@@ -425,6 +557,8 @@ namespace Engine
 
             GL.BindVertexArray(0);
             GLState.CullFace(false);
+            GLState.Blend(false);
+            GLState.DepthMask(true);
         }
 
         public static void SetLineWidth(float width)

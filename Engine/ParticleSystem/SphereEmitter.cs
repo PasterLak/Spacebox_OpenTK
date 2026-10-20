@@ -28,7 +28,7 @@ namespace Engine
         public override void Debug()
         {
             if (ParticleSystem == null) return;
-            VisualDebug.DrawSphere(ParticleSystem.PositionWorld, Radius, 8, Color4.Cyan);
+            VisualDebug.DrawSphere(DebugPoint(Center), Radius, 8, Color4.Cyan);
         }
     }
 }

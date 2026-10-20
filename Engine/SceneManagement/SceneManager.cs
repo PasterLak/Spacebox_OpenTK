@@ -150,6 +150,8 @@ namespace Engine.SceneManagement
                 Camera.Main = null;
                 Resources.UnloadAll();
                 VisualDebug.Clear();
+                ParticleSystem.ClearRegistry();
+                Engine.GUI.GizmoIcons.Clear();
                 _current = null;
 
                 GC.Collect();

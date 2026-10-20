@@ -20,6 +20,7 @@ namespace Engine.Components.Debug
         public override void OnRender()
         {
 
+            if (VisualDebug.IsViewOwner(Owner)) return;
             VisualDebug.DrawAxes(Owner, _length);
            
         }

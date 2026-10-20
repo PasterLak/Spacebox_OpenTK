@@ -67,8 +67,15 @@ namespace Engine
             set => _renderer.Material = value;
         }
 
+        private static readonly List<ParticleSystem> _all = new();
+
+        public static IReadOnlyList<ParticleSystem> All => _all;
+
+        public static void ClearRegistry() => _all.Clear();
+
         public ParticleSystem(ParticleMaterial material, EmitterBase emitter)
         {
+            _all.Add(this);
             Emitter = emitter;
             if (Emitter != null)
                 Emitter.ParticleSystem = this;
@@ -158,7 +165,6 @@ namespace Engine
         {
             if (!Enabled || !GloballyEnabled) return;
             base.Render();
-            Emitter.Debug();
             var model = Space == SimulationSpace.Local ? GetRenderModelMatrix() : Matrix4.Identity;
             _renderer.Begin();
             foreach (var p in _active)
@@ -301,6 +307,8 @@ namespace Engine
             _acc = 0f;
         }
 
+        public bool EmitsByItself => !UseManually && Rate > 0f && Emitter != null;
+
         public List<Particle> GetActiveParticles()
         {
             return _active;
@@ -309,6 +317,7 @@ namespace Engine
         public override void Destroy()
         {
             base.Destroy();
+            _all.Remove(this);
             ClearParticles();
             _renderer.Dispose();
            

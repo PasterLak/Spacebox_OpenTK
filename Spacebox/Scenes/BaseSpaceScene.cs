@@ -140,6 +140,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Debug.RegisterCommand(new StatCommand(localPlayer, "air", PlayerStat.Air));
         Debug.RegisterCommand(new ItemsCommand());
         Debug.RegisterCommand(new PositionCommand(localPlayer));
+        Debug.RegisterCommand(new SetSpawnCommand(localPlayer));
+        Debug.RegisterCommand(new SpawnCommand(localPlayer));
 
         InventoryUI.Initialize();
         StorageUI.Initialize();
@@ -291,6 +293,12 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         base.Render();
         _flashlightBeams?.Render();
+        if (VisualDebug.Enabled)
+        {
+            VisualDebug.DrawAxes(Vector3.Zero, 10f);
+            DebugGizmos.Draw(this);
+            Engine.GUI.GizmoIcons.Add(Spacebox.Game.Player.Respawn.WorldSpawn.For(localPlayer), Engine.GUI.GizmoIcon.SpawnPoint, Color4.LightGreen);
+        }
 
         DisposalManager.ProcessDisposals();
 
@@ -351,6 +359,9 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         if (VisualDebug.Enabled)
         {
             WorldTextDebug.OnGUI();
+            Engine.GUI.GizmoIcons.Draw();
+            var displaySize = ImGuiNET.ImGui.GetIO().DisplaySize;
+            Engine.GUI.AxesGizmo.Draw(Camera.Main, displaySize * 0.5f, displaySize.Y * 0.04f);
         }
 
         BlackScreenOverlay.OnGUI();

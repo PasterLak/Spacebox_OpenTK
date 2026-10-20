@@ -30,7 +30,7 @@ namespace Engine
 
         public override void Debug()
         {
-            VisualDebug.DrawDisk(Center, Normal, Radius, Color4.Cyan, 16);
+            VisualDebug.DrawDisk(DebugPoint(Center), DebugDirection(Normal), Radius, Color4.Cyan, 16);
         }
     }
 }

@@ -61,7 +61,7 @@ public sealed class SphereBody : Component
 
     public override void OnUpdate()
     {
-        if (VisualDebug.Enabled) DrawDebug();
+        if (VisualDebug.Enabled && !VisualDebug.IsViewOwner(Owner)) DrawDebug();
         if (IsKinematic || _physics == null) return;
 
         if (GravityField.HasSources)

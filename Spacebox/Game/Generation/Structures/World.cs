@@ -183,7 +183,8 @@ public class World : Component, ISpaceStructure
                 Ticks = remote.Ticks,
                 FolderName = folder,
                 ShowWelcomeWindow = false,
-                IsLocalWorld = false
+                IsLocalWorld = false,
+                SpawnPoint = remote.SpawnPoint
             }
         };
 

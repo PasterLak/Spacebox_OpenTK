@@ -85,7 +85,8 @@ public static class ClientConnector
             Day = message.Day,
             Ticks = message.Ticks,
             GameSetHash = message.GameSetHash,
-            GameSetFolder = message.GameSetFolder
+            GameSetFolder = message.GameSetFolder,
+            SpawnPoint = message.HasSpawnPoint ? new[] { message.SpawnPoint.X, message.SpawnPoint.Y, message.SpawnPoint.Z } : null
         };
 
         GameSession.SetRemoteWorld(world);

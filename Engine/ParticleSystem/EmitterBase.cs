@@ -57,6 +57,14 @@ namespace Engine
         protected float NextFloat() => (float)R.NextDouble();
         protected float Range(float a, float b) => a + (b - a) * NextFloat();
 
+        protected Vector3 DebugPoint(Vector3 local) => ParticleSystem != null ? ParticleSystem.LocalToWorld(local) : local;
+
+        protected Vector3 DebugDirection(Vector3 local)
+        {
+            if (ParticleSystem == null) return local;
+            return ParticleSystem.LocalToWorld(local) - ParticleSystem.LocalToWorld(Vector3.Zero);
+        }
+
         public abstract Particle Create();
         public abstract void Debug();
     }
