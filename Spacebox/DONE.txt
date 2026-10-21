@@ -69,6 +69,8 @@ Small
 - build scripts read the version from Application.cs, keep other platform builds, zip without a root folder
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
+- chat: a message arriving while typing (e.g. a game mode change by the server) no longer closes the input and leaves the hotbar keys and mouse wheel blocked; Escape closes the chat input
+- dashboard map: untouched loaded and unloaded asteroids have clearly different colours
 - block damage and repairs are saved (also for asteroid chunks); damaged and repaired chunks are marked as changed
 - multi-cell blocks that cannot be restored on load drop their items and the block instead of losing them
 - restoring a world backup after a failed upgrade no longer deletes the world folder if the move fails

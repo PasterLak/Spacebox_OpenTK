@@ -3,7 +3,7 @@
 const spaceMap = (() => {
   const FLAG_SHIP = 1, FLAG_LOADED = 2, FLAG_CLAIMED = 4, FLAG_CLAIM_ACTIVE = 8, PERSISTENCE_SHIFT = 4;
   const PERSISTENCE = ["Regenerated", "Modified", "Saved"];
-  const COLORS = { regenerated: "#7d8494", modified: "#ff9b3d", saved: "#6ed2e6", player: "#6edc6e", dead: "#ff6b5a", claimActive: "#ffc428", claimInactive: "#aaafb9", grid: "rgba(90,100,120,0.35)", gridStrong: "rgba(120,130,150,0.55)" };
+  const COLORS = { regenerated: "#545c6e", regeneratedLoaded: "#d4dae6", modified: "#ff9b3d", saved: "#6ed2e6", player: "#6edc6e", dead: "#ff6b5a", claimActive: "#ffc428", claimInactive: "#aaafb9", grid: "rgba(90,100,120,0.35)", gridStrong: "rgba(120,130,150,0.55)" };
   const FOV = 60 * Math.PI / 180;
 
   const view = { yaw: 0.7, pitch: 0.45, distance: 3000, target: [0, 0, 0] };
@@ -246,14 +246,16 @@ const spaceMap = (() => {
 
   function colorOf(item) {
     const persistence = item.flags >> PERSISTENCE_SHIFT;
-    return persistence === 1 ? COLORS.modified : persistence === 2 ? COLORS.saved : COLORS.regenerated;
+    if (persistence === 1) return COLORS.modified;
+    if (persistence === 2) return COLORS.saved;
+    return item.flags & FLAG_LOADED ? COLORS.regeneratedLoaded : COLORS.regenerated;
   }
 
   function drawAsteroid(item) {
     const s = item.screen;
     const radius = Math.max(1.5, item.r * s.scale);
     const fade = Math.max(0.35, Math.min(1, 1.6 - s.depth / (view.distance * 1.6)));
-    ctx.globalAlpha = (item.flags & FLAG_LOADED ? 1 : 0.7) * fade;
+    ctx.globalAlpha = fade;
     ctx.fillStyle = colorOf(item);
     ctx.beginPath();
     ctx.arc(s.x, s.y, radius, 0, Math.PI * 2);

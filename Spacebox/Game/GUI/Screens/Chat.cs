@@ -52,6 +52,7 @@ namespace Spacebox.Game.GUI
         public static void Write(string text, Color4 c)
         {
             AddMessage(text, c);
+            if (UIManager.IsOpen("chat")) return;
             FocusInput = false;
         }
 
@@ -95,8 +96,6 @@ namespace Spacebox.Game.GUI
 
         private static void StopInput()
         {
-            if (!IsVisible) return;
-
             _inputBuffer = "";
             ChatCommandInput.Reset();
 
@@ -118,7 +117,7 @@ namespace Spacebox.Game.GUI
             if (!IsVisible) return;
             if (_alwaysVisible) return;
 
-            if (FocusInput || _inputBuffer.Length > 0)
+            if (FocusInput || _inputBuffer.Length > 0 || UIManager.IsOpen("chat"))
             {
                 _hideTimer = _hideDelay;
             }

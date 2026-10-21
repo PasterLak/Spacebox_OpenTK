@@ -254,13 +254,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         }
 #endif
 
-        if (Input.IsKeyDown(Keys.Escape))
+        if (Input.IsKeyDown(Keys.Escape) && !UIManager.IsTop("chat"))
         {
-            if (UIManager.IsTop("chat") && Chat.FocusInput)
-            {
-                return;
-            }
-
             if (UIManager.IsUIMode)
             {
                 UIManager.CloseTop();
