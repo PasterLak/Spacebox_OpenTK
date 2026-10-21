@@ -34,7 +34,7 @@ public sealed class SignLine
 public static class SignMarkup
 {
     public const int MaxTagLength = 24;
-    public const int MaxRawLineLength = 256;
+    public const int MaxRawLineLength = 8192;
 
     private static readonly Dictionary<string, Color4> NamedColors = new Dictionary<string, Color4>(StringComparer.OrdinalIgnoreCase)
     {

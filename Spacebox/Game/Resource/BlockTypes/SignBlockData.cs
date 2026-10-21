@@ -8,6 +8,7 @@ namespace Spacebox.Game.Resource;
 public class SignBlockData : BlockData, IBlockTooltip
 {
     public const int MaxWidth = 4;
+    public const int MaxLineLengthLimit = 256;
     public const string DefaultFont = "Resources/Fonts/FusionPixel/FusionPixel12pxMonospacedLatin.ttf";
 
     public int Width { get; }
@@ -28,7 +29,7 @@ public class SignBlockData : BlockData, IBlockTooltip
 
         Width = Math.Clamp((int)Size.X, 1, MaxWidth);
         MaxLines = Math.Clamp(settings.MaxLines, 1, 16);
-        MaxLineLength = Math.Clamp(settings.MaxLineLength, 1, 64);
+        MaxLineLength = Math.Clamp(settings.MaxLineLength, 1, MaxLineLengthLimit);
         PixelsPerBlock = Math.Clamp(settings.PixelsPerBlock, 32, 256);
         Margin = Math.Clamp(settings.Margin, 0, PixelsPerBlock / 4);
         Glow = settings.Glow;

@@ -25,7 +25,7 @@ public struct SignTextMessage : INetMessage
 
 public static class SignNetwork
 {
-    public const int MaxMessageLength = 4096;
+    public const int MaxMessageLength = 65536;
 
     public static void Register(NetworkManager network)
     {

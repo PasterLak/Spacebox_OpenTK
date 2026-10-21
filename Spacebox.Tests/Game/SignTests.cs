@@ -93,6 +93,16 @@ public class SignTests
     }
 
     [Fact]
+    public void BlockData_AllowsLongStyledLines()
+    {
+        var data = new SignBlockData(new BlockData("Wide", "sign"), new SignJSON { MaxLines = 4, MaxLineLength = 120 });
+        string line = string.Concat(Enumerable.Repeat("<color=#ff0000><b>x</b></color>", 120));
+
+        Assert.Equal(120, data.MaxLineLength);
+        Assert.Equal(120, SignMarkup.VisibleLength(data.SanitizeText(line)));
+    }
+
+    [Fact]
     public void BlockData_DefaultsToCenterAlignment()
     {
         var data = new SignBlockData(new BlockData("Sign", "sign"), new SignJSON());
