@@ -231,7 +231,7 @@ public sealed class NetworkSession : IDisposable
         foreach (var player in PlayerRegistry.All)
         {
             if (player.Peer != NetworkManager.Instance.LocalPeerId && !string.IsNullOrEmpty(player.LastPlayerJson))
-                PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, player.LastPlayerJson);
+                PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, Players.PlayerGameModes.Current.ApplyTo(player.Name, player.LastPlayerJson));
         }
     }
 
@@ -391,9 +391,9 @@ public sealed class NetworkSession : IDisposable
     {
         if (!NetworkManager.Instance.IsServer || !PlayerRegistry.TryGet(sender, out var player) || string.IsNullOrEmpty(message.Json)) return;
 
-        player.LastPlayerJson = message.Json;
+        player.LastPlayerJson = Players.PlayerGameModes.Current.ApplyTo(player.Name, message.Json);
         if (World.WorldData != null)
-            PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, message.Json);
+            PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, player.LastPlayerJson);
     }
 
     private void OnPeerDisconnected(int peer, string reason)
@@ -406,7 +406,7 @@ public sealed class NetworkSession : IDisposable
         if (!PlayerRegistry.Remove(peer, out var player)) return;
 
         if (!string.IsNullOrEmpty(player.LastPlayerJson) && World.WorldData != null)
-            PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, player.LastPlayerJson);
+            PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, Players.PlayerGameModes.Current.ApplyTo(player.Name, player.LastPlayerJson));
 
         PlayerListNetwork.MarkDirty();
         ChatService.Broadcast($"{player.Name} left the game", Color4.Yellow);

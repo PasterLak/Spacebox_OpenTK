@@ -1,3 +1,4 @@
+using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Network.Admin;
 using Spacebox.Network.Players;
@@ -19,31 +20,45 @@ public class PlayerGameModesTests : IDisposable
     }
 
     [Fact]
-    public void Modes_PersistAndIgnoreNameCase()
+    public void Modes_AreStoredInThePlayerSave()
     {
+        PlayerSaveLoadManager.WritePlayerJson(_folder, "Anna", "{\"Health\": 50}");
         var modes = new PlayerGameModes();
         modes.Load(_folder);
-        Assert.Equal(GameMode.Survival, modes.Get("Anna", GameMode.Survival));
+        Assert.False(modes.TryGet("Anna", out _));
 
         modes.Set("Anna", GameMode.Creative);
-        modes.Set("Bob", GameMode.Spectator);
+
+        string saved = PlayerSaveLoadManager.ReadPlayerJson(_folder, "Anna", false);
+        Assert.Contains("\"Health\": 50", saved);
+        Assert.True(PlayerGameModes.TryRead(saved, out var mode));
+        Assert.Equal(GameMode.Creative, mode);
 
         var reloaded = new PlayerGameModes();
         reloaded.Load(_folder);
-        Assert.Equal(GameMode.Creative, reloaded.Get("anna", GameMode.Survival));
-        Assert.Equal(GameMode.Spectator, reloaded.Get(" BOB ", GameMode.Survival));
-        Assert.False(reloaded.TryGet("Carl", out _));
+        Assert.Equal(GameMode.Creative, reloaded.Get("Anna", GameMode.Survival));
     }
 
     [Fact]
-    public void Modes_SkipInvalidValuesInFile()
+    public void ApplyTo_ReplacesTheModeSentByTheClient()
     {
-        File.WriteAllText(Path.Combine(_folder, PlayerGameModes.FileName), "{\"Anna\": 7, \"Bob\": 1}");
         var modes = new PlayerGameModes();
         modes.Load(_folder);
 
-        Assert.False(modes.TryGet("Anna", out _));
-        Assert.Equal(GameMode.Creative, modes.Get("Bob", GameMode.Survival));
+        string cheated = "{\"Health\": 100, \"GameMode\": 1}";
+        Assert.False(PlayerGameModes.TryRead(modes.ApplyTo("Bob", cheated), out _));
+
+        modes.Set("Bob", GameMode.Spectator);
+        Assert.True(PlayerGameModes.TryRead(modes.ApplyTo("Bob", cheated), out var mode));
+        Assert.Equal(GameMode.Spectator, mode);
+    }
+
+    [Fact]
+    public void TryRead_IgnoresInvalidValues()
+    {
+        Assert.False(PlayerGameModes.TryRead("{\"GameMode\": 7}", out _));
+        Assert.False(PlayerGameModes.TryRead("not json", out _));
+        Assert.False(PlayerGameModes.TryRead(null, out _));
     }
 
     [Fact]

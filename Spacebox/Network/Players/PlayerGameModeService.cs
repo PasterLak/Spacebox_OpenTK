@@ -16,6 +16,7 @@ public static class PlayerGameModeService
         PlayerGameModes.Current.Set(name, mode);
         if (!PlayerRegistry.TryGetByName(name, out var player)) return false;
 
+        player.LastPlayerJson = PlayerGameModes.Current.ApplyTo(player.Name, player.LastPlayerJson);
         var network = AstronautNetwork.Find(player.Peer);
         network?.SetGameModeByServer(mode);
         return network != null;
