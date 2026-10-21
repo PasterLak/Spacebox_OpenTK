@@ -5,6 +5,7 @@ layout(location = 1) in vec3 vertexNormal;
 layout(location = 2) in vec2 vertexUV;
 
 uniform mat4 model;
+uniform mat3 normalMatrix;
 uniform mat4 view;
 uniform mat4 projection;
 
@@ -66,7 +67,7 @@ void main(){
     vec4 wp=model*vec4(local,1.0);
     gl_Position=wp*view*projection;
     vWorldPos=wp.xyz;
-    vWorldNormal=mat3(transpose(inverse(model))) * n;
+    vWorldNormal=normalMatrix * n;
     vUV=vertexUV;
     vFog=fog_fac(wp.xyz,1.0);
     vHeightN=clamp(h/(SEA_HEIGHT*3.0),-1.0,1.0);

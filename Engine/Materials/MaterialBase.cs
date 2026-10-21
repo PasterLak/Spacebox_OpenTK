@@ -91,6 +91,7 @@ namespace Engine
         {
             var cam = Camera.Main;
             Shader.SetMatrix4("model", model, TransposeMatrices);
+            Shader.SetMatrix3("normalMatrix", NormalMatrix.From(model), TransposeMatrices);
             if (cam == null) return;
             var view = cam.GetViewMatrix();
             var proj = cam.GetProjectionMatrix();

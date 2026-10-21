@@ -6,12 +6,26 @@ namespace Engine
     {
         public string Name;
         public byte Size;
+        public VertexAttribPointerType Type;
+        public bool Normalized;
 
         public BufferAttribute(string name, byte size)
         {
             Name = name;
             Size = size;
         }
+
+        public VertexAttribPointerType ComponentType => Type == 0 ? VertexAttribPointerType.Float : Type;
+
+        public int ByteSize => Size * ComponentSize(ComponentType);
+
+        public static int ComponentSize(VertexAttribPointerType type) => type switch
+        {
+            VertexAttribPointerType.Byte or VertexAttribPointerType.UnsignedByte => 1,
+            VertexAttribPointerType.Short or VertexAttribPointerType.UnsignedShort or VertexAttribPointerType.HalfFloat => 2,
+            VertexAttribPointerType.Double => 8,
+            _ => 4
+        };
     }
     public class MeshBuffer : IDisposable, IResource
     {
@@ -28,7 +42,7 @@ namespace Engine
             GenBuffer();
             for (byte i = 0; i < attributes.Length; i++)
             {
-                AddAttribute(attributes[i].Name, attributes[i].Size);
+                AddAttribute(attributes[i].Name, attributes[i].Size, attributes[i].ComponentType, attributes[i].Normalized);
             }
 
             Resources.AddResourceToControll(this);
@@ -67,14 +81,19 @@ namespace Engine
 
         public void AddAttribute(string name, byte size)
         {
+            AddAttribute(name, size, VertexAttribPointerType.Float, false);
+        }
+
+        public void AddAttribute(string name, byte size, VertexAttribPointerType type, bool normalized)
+        {
             if (attributes == null) attributes = new List<BufferAttribute>();
 
-            var atr = new BufferAttribute();
-            atr.Name = name;
-            atr.Size = size;
-            attributes.Add(atr);
+            var atr = new BufferAttribute(name, size) { Type = type, Normalized = normalized };
+            if (atr.ByteSize % sizeof(float) != 0)
+                throw new ArgumentException($"Attribute {name} must use a multiple of 4 bytes, got {atr.ByteSize}");
 
-            FloatsPerVertex = (byte)(FloatsPerVertex + size);
+            attributes.Add(atr);
+            FloatsPerVertex = (byte)(FloatsPerVertex + atr.ByteSize / sizeof(float));
         }
         public void SetAttributes()
         {
@@ -89,18 +108,17 @@ namespace Engine
             for (byte i = 0; i < attributes.Count; i++)
             {
                 var atr = attributes[i];
-                AddAttribPointer(i, atr.Size, ref stride, ref offset, i < attributes.Count - 1);
+                AddAttribPointer(i, atr, stride, ref offset);
             }
 
             GL.BindVertexArray(0);
         }
 
-        private void AddAttribPointer(int index, int size, ref int stride, ref int offset, bool addOffset)
+        private static void AddAttribPointer(int index, BufferAttribute attribute, int stride, ref int offset)
         {
-            GL.VertexAttribPointer(index, size, VertexAttribPointerType.Float, false, stride, offset);
+            GL.VertexAttribPointer(index, attribute.Size, attribute.ComponentType, attribute.Normalized, stride, offset);
             GL.EnableVertexAttribArray(index);
-            if (addOffset)
-                offset += sizeof(float) * size;
+            offset += attribute.ByteSize;
         }
 
         public void Dispose()

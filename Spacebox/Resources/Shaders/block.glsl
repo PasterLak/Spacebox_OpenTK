@@ -3,9 +3,8 @@
 
 layout(location = 0) in vec3 aPosition;
 layout(location = 1) in vec2 aTexCoord;
-layout(location = 2) in vec3 aColor;
-layout(location = 3) in vec3 aNormal;
-layout(location = 4) in vec2 aAO;
+layout(location = 2) in vec4 aColor;
+layout(location = 3) in vec4 aNormal;
 
 out vec2 vUV;
 out vec3 vColor;
@@ -18,6 +17,7 @@ out float vAO;
 out float vAtlasFlag;
 
 uniform mat4 model;
+uniform mat3 normalMatrix;
 
 #define FOG_LN2 1.44269504
 
@@ -34,14 +34,14 @@ void main()
     gl_Position=wp*VIEW*PROJECTION;
 
     vUV         = aTexCoord;
-    vColor      = aColor;
+    vColor      = aColor.rgb;
     vPos        = wp.xyz;
-    vNormal     = aNormal*mat3(transpose(inverse(model)));
-     vBase     = (AMBIENT + aColor) * aAO.x;
+    vNormal     = (aNormal.xyz * 2.0 - 1.0)*normalMatrix;
+     vBase     = (AMBIENT + aColor.rgb) * aNormal.w;
     vFog1       = fogFac(wp.xyz,1.0);
     vFog2       = fogFac(wp.xyz,0.5);
-    vAO         = aAO.x;
-    vAtlasFlag  = aAO.y;
+    vAO         = aNormal.w;
+    vAtlasFlag  = aColor.a;
 }
 
 --Frag

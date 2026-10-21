@@ -6,6 +6,7 @@ layout(location = 1) in vec3 vertexNormal;
 layout(location = 2) in vec2 vertexTexCoords;
 
 uniform mat4 model;
+uniform mat3 normalMatrix;
 
 out vec3 vPos;
 out vec3 vNormal;
@@ -27,7 +28,7 @@ void main()
     gl_Position = wp * VIEW * PROJECTION;
 
     vPos    = wp.xyz;
-    vNormal = vertexNormal * mat3(transpose(inverse(model)));
+    vNormal = vertexNormal * normalMatrix;
     vUV     = vertexTexCoords;
     vFog    = fogFac(wp.xyz, 1.0);
 }

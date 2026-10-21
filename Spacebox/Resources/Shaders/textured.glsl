@@ -7,6 +7,7 @@ layout(location = 1) in vec3 vertexNormal;
 layout(location = 2) in vec2 vertexTexCoords;
 
 uniform mat4 model;
+uniform mat3 normalMatrix;
 uniform mat4 view;
 uniform mat4 projection;
 
@@ -30,8 +31,8 @@ void main()
     vec4 posWorld = vec4(vertexPosition, 1.0) * model;
     gl_Position   = posWorld * view * projection;
     worldPosition = posWorld.xyz;
-    worldNormal   = mat3(transpose(inverse(model))) * vertexNormal;
-    viewNormal    = vertexNormal * mat3(transpose(inverse(model))) * mat3(VIEW);
+    worldNormal   = normalMatrix * vertexNormal;
+    viewNormal    = vertexNormal * normalMatrix * mat3(VIEW);
     texCoords     = vertexTexCoords;
     fogFactor     = fogFac(posWorld.xyz, 1.0, FOG_DENSITY);
 }

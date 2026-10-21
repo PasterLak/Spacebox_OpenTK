@@ -246,21 +246,11 @@ namespace Spacebox.Game.Generation
                 AO[0] = AO[1] = AO[2] = AO[3] = 1f;
             }
 
+            var faceNormal = new Vector3(normal.X, normal.Y, normal.Z);
             for (byte i = 0; i < 4; i++)
             {
-                vertices[vertexCount++] = faceVertices[i].X + x;
-                vertices[vertexCount++] = faceVertices[i].Y + y;
-                vertices[vertexCount++] = faceVertices[i].Z + z;
-                vertices[vertexCount++] = faceUVs[i].X;
-                vertices[vertexCount++] = faceUVs[i].Y;
-                vertices[vertexCount++] = _vertexColors[i].X;
-                vertices[vertexCount++] = _vertexColors[i].Y;
-                vertices[vertexCount++] = _vertexColors[i].Z;
-                vertices[vertexCount++] = normal.X;
-                vertices[vertexCount++] = normal.Y;
-                vertices[vertexCount++] = normal.Z;
-                vertices[vertexCount++] = AO[i];
-                vertices[vertexCount++] = block.EnableEmission ? 1f : 0f;
+                var position = new Vector3(faceVertices[i].X + x, faceVertices[i].Y + y, faceVertices[i].Z + z);
+                BlockVertex.Write(vertices, ref vertexCount, position, faceUVs[i], _vertexColors[i], faceNormal, AO[i], block.EnableEmission);
             }
 
             if (_EnableAO && !isLightOrTransparent)
@@ -310,7 +300,7 @@ namespace Spacebox.Game.Generation
             EnsureCapacity(vertexTotal * BuffersData.FloatsPerVertexBlock, geometry.Indices.Length);
 
             var color = Vector3.Clamp(block.Color * (block.LightColor.ToVector3() + Ambient), Vector3.Zero, Vector3.One);
-            float emission = block.EnableEmission ? 1f : 0f;
+            bool emission = block.EnableEmission;
             int vStart = vertexCount / BuffersData.FloatsPerVertexBlock;
 
             for (int f = 0; f < faces.Length; f++)
@@ -327,19 +317,7 @@ namespace Spacebox.Game.Generation
                 var normal = pose.Normals[i];
                 var uv = BlockShapeTexturing.MapToFace(_shapeFaceUVs[(int)shape.VertexFaces[i]], geometry.TexCoords[i]);
 
-                vertices[vertexCount++] = position.X + x;
-                vertices[vertexCount++] = position.Y + y;
-                vertices[vertexCount++] = position.Z + z;
-                vertices[vertexCount++] = uv.X;
-                vertices[vertexCount++] = uv.Y;
-                vertices[vertexCount++] = color.X;
-                vertices[vertexCount++] = color.Y;
-                vertices[vertexCount++] = color.Z;
-                vertices[vertexCount++] = normal.X;
-                vertices[vertexCount++] = normal.Y;
-                vertices[vertexCount++] = normal.Z;
-                vertices[vertexCount++] = 1f;
-                vertices[vertexCount++] = emission;
+                BlockVertex.Write(vertices, ref vertexCount, new Vector3(position.X + x, position.Y + y, position.Z + z), uv, color, normal, 1f, emission);
             }
 
             var shapeIndices = geometry.Indices;

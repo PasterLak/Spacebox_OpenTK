@@ -110,9 +110,9 @@ public class VoxelAOTests
         var mesh = Generate(Solid(), (1, 1, 1), (0, 2, 1), (1, 2, 0));
         var top = TopFace(mesh, 1, 1, 1);
 
-        Assert.Equal(AOShading.Brightness(0), top[(1, 1)].Ao);
-        Assert.Equal(AOShading.Brightness(2), top[(2, 1)].Ao);
-        Assert.Equal(AOShading.Brightness(2), top[(1, 2)].Ao);
+        Assert.Equal(AOShading.Brightness(0), top[(1, 1)].Ao, 2);
+        Assert.Equal(AOShading.Brightness(2), top[(2, 1)].Ao, 2);
+        Assert.Equal(AOShading.Brightness(2), top[(1, 2)].Ao, 2);
         Assert.Equal(1f, top[(2, 2)].Ao);
     }
 
@@ -122,7 +122,7 @@ public class VoxelAOTests
         var mesh = Generate(Solid(), (1, 1, 1), (2, 2, 2));
         var top = TopFace(mesh, 1, 1, 1);
 
-        Assert.Equal(AOShading.Brightness(2), top[(2, 2)].Ao);
+        Assert.Equal(AOShading.Brightness(2), top[(2, 2)].Ao, 2);
         Assert.Equal(1f, top[(1, 1)].Ao);
         Assert.Equal(1f, top[(2, 1)].Ao);
         Assert.Equal(1f, top[(1, 2)].Ao);
@@ -157,7 +157,7 @@ public class VoxelAOTests
 
         var diagonal = SharedDiagonal(mesh, top.Values.Select(v => v.Index).ToArray());
 
-        Assert.Equal(AOShading.Brightness(0), top[(2, 2)].Ao);
+        Assert.Equal(AOShading.Brightness(0), top[(2, 2)].Ao, 2);
         Assert.Contains(top[(2, 2)].Index, diagonal);
         Assert.Contains(top[(1, 1)].Index, diagonal);
     }
@@ -177,7 +177,7 @@ public class VoxelAOTests
         var actual = TopFace(Generate(rotated, (1, 1, 1), (0, 2, 1), (2, 2, 2)), 1, 1, 1);
 
         foreach (var corner in expected.Keys)
-            Assert.Equal(expected[corner].Ao, actual[corner].Ao);
+            Assert.Equal(expected[corner].Ao, actual[corner].Ao, 2);
     }
 
     [Theory]
@@ -227,14 +227,15 @@ public class VoxelAOTests
         {
             int o = i * FloatsPerVertex;
             var position = new Vector3(mesh.Vertices[o], mesh.Vertices[o + 1], mesh.Vertices[o + 2]);
-            var normal = new Vector3(mesh.Vertices[o + 8], mesh.Vertices[o + 9], mesh.Vertices[o + 10]);
-            if (normal != Vector3.UnitY || MathF.Abs(position.Y - (by + 1)) > 1e-4f) continue;
+            var packed = BlockVertex.Unpack((uint)BitConverter.SingleToInt32Bits(mesh.Vertices[o + 6]));
+            var normal = new Vector3(packed.X, packed.Y, packed.Z) * 2f - Vector3.One;
+            if (normal.Y < 0.99f || MathF.Abs(position.Y - (by + 1)) > 1e-4f) continue;
 
             int x = (int)MathF.Round(position.X);
             int z = (int)MathF.Round(position.Z);
             if (x < bx || x > bx + 1 || z < bz || z > bz + 1) continue;
 
-            result[(x, z)] = (i, mesh.Vertices[o + 11]);
+            result[(x, z)] = (i, packed.W);
         }
 
         Assert.Equal(4, result.Count);

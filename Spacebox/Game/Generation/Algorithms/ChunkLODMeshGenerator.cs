@@ -311,11 +311,7 @@ namespace Spacebox.Game.Generation
 
         private static void AddVertex(List<float> verts, Vector3 pos, Vector2 uv, Vector3 normal)
         {
-            verts.Add(pos.X); verts.Add(pos.Y); verts.Add(pos.Z);
-            verts.Add(uv.X); verts.Add(uv.Y);
-            verts.Add(1); verts.Add(1); verts.Add(1);
-            verts.Add(normal.X); verts.Add(normal.Y); verts.Add(normal.Z);
-            verts.Add(1f); verts.Add(0f);
+            BlockVertex.Append(verts, pos, uv, Vector3.One, normal, 1f, false);
         }
 
     }

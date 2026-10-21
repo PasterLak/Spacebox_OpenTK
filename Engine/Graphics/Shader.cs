@@ -267,6 +267,13 @@ namespace Engine
             Use();
             GL.UniformMatrix4(_uniformLocations[name], transpose, ref data);
         }
+        public void SetMatrix3(string name, Matrix3 data, bool transpose = true)
+        {
+            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+                return;
+            Use();
+            GL.UniformMatrix3(_uniformLocations[name], transpose, ref data);
+        }
         public void SetVector2(string name, Vector2 data)
         {
             if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
