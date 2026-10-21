@@ -522,7 +522,7 @@ namespace Engine
             GLState.DepthMask(false);
             GLState.GBufferWrite(false);
             GLState.Blend(true);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GLState.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             if (_points.Count > 0)
             {

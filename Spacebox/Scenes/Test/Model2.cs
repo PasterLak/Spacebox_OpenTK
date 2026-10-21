@@ -3,6 +3,7 @@ using OpenTK.Mathematics;
 using Engine.Physics;
 using Engine.Utils;
 using Engine;
+using Engine.Graphics;
 using Spacebox.Scenes.Test;
 
 public class Model2 : SceneNode,  IGameComponent
@@ -57,9 +58,9 @@ public class Model2 : SceneNode,  IGameComponent
         public void Render()
         {
             if (BackfaceCulling)
-                GL.Enable(EnableCap.CullFace);
+                GLState.CullFace(true);
             else
-                GL.Disable(EnableCap.CullFace);
+                GLState.CullFace(false);
 
         var camera = Camera.Main;
 
@@ -81,8 +82,8 @@ public class Model2 : SceneNode,  IGameComponent
             Material.Shader.SetMatrix4("projection", camera.GetProjectionMatrix());*/
             Mesh.Render();
 
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.Blend);
+            GLState.DepthTest(false);
+            GLState.Blend(false);
 
         }
 

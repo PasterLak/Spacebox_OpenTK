@@ -555,6 +555,7 @@ void main()
                 (BlendingFactorDest)prevBlendFuncDstRgb,
                 (BlendingFactorSrc)prevBlendFuncSrcAlpha,
                 (BlendingFactorDest)prevBlendFuncDstAlpha);
+            GLState.InvalidateBlendFunc();
             GLState.Blend(prevBlendEnabled);
             GLState.DepthTest(prevDepthTestEnabled);
             GLState.CullFace(prevCullFaceEnabled);

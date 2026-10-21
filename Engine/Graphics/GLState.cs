@@ -80,5 +80,11 @@ namespace Engine.Graphics
                 _dstBlend = dst;
             }
         }
+
+        public static void InvalidateBlendFunc()
+        {
+            _srcBlend = (BlendingFactor)(-1);
+            _dstBlend = (BlendingFactor)(-1);
+        }
     }
 }

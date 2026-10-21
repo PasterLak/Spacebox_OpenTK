@@ -2,6 +2,7 @@
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 using Engine;
+using Engine.Graphics;
 using Spacebox.Scenes.Test;
 
 public class CubeRenderer2 : SceneNode, IDisposable, IGameComponent
@@ -107,12 +108,12 @@ public class CubeRenderer2 : SceneNode, IDisposable, IGameComponent
             if (Camera.Main == null) return;
             var cam = Camera.Main;
 
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            GL.Enable(EnableCap.DepthTest);
+            GLState.Blend(true);
+            GLState.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GLState.DepthTest(true);
 
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
+            GLState.CullFace(true);
+            GLState.CullMode(CullFaceMode.Back);
 
             _shader.Use();
             var matModel = WorldMatrix;
@@ -125,7 +126,7 @@ public class CubeRenderer2 : SceneNode, IDisposable, IGameComponent
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
 
-            GL.Disable(EnableCap.CullFace);
+            GLState.CullFace(false);
         }
 
         public void Dispose()
