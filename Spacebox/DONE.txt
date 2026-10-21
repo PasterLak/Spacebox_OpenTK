@@ -166,6 +166,7 @@ Fixes
 - GameSet editor: asteroid MinRadius/MaxRadius are limited to 2-256 (also clamped when loading)
 - ship console: the ship no longer turns by itself after sitting down or leaving binding mode (view faces the console forward); in multiplayer binding works while walking away from the console
 - creative search text is white
+- protection: placing a block in empty space to start a new entity was refused when the nearest entity (even far away) was protected or claimed
 - Big Window: the forward face used the plain window texture (blocks.json had "Front" instead of "Forward")
 - multiplayer: players riding or piloting a fast ship were pulled back by the server's speed check (camera jiggle); the check now adds the speed of the ship under the player
 - the block selector stayed visible while piloting a ship (using the console with a block in hand)

@@ -358,14 +358,15 @@ public class InteractionPlaceBlock : InteractionMode
 
 
                     var cell = new Vector3i((int)localPos.X, (int)localPos.Y, (int)localPos.Z);
-                    if (!Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(entity, cell) ||
-                        !Spacebox.Game.Protection.ClaimPlacement.CheckLocal(entity, cell, newBlock))
+                    if (insideEntityRange &&
+                        (!Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(entity, cell) ||
+                         !Spacebox.Game.Protection.ClaimPlacement.CheckLocal(entity, cell, newBlock)))
                     {
                         PlacementRefund.Refund(player, newBlock.Id);
                         return;
                     }
 
-                    if (entity.TryPlaceBlockAtCell(cell, newBlock))
+                    if (insideEntityRange && entity.TryPlaceBlockAtCell(cell, newBlock))
                     {
                         Spacebox.Game.Protection.ClaimPlacement.OnPlacedLocally(newBlock);
                         Spacebox.Game.Ships.ShipKeyMemory.OnPlacedLocally(newBlock);
