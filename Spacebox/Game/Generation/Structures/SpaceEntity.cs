@@ -92,6 +92,8 @@ namespace Spacebox.Game.Generation
         public Spacebox.Game.Signs.SignRenderer Signs => _signs ??= new Spacebox.Game.Signs.SignRenderer(this);
         private Spacebox.Game.Pictures.PictureFrameRenderer _pictures;
         public Spacebox.Game.Pictures.PictureFrameRenderer Pictures => _pictures ??= new Spacebox.Game.Pictures.PictureFrameRenderer(this);
+        private Spacebox.Game.Rendering.InvisibleBlockRenderer _invisibleBlocks;
+        public Spacebox.Game.Rendering.InvisibleBlockRenderer InvisibleBlocks => _invisibleBlocks ??= new Spacebox.Game.Rendering.InvisibleBlockRenderer(this);
         public CellReservations Reservations { get; } = new CellReservations();
         public Particle StarParticle;
 
@@ -1079,6 +1081,7 @@ namespace Spacebox.Game.Generation
             Doors.Render();
             _signs?.Render();
             _pictures?.Render();
+            if (Spacebox.Game.Rendering.InvisibleBlockVisibility.IsShown) InvisibleBlocks.Render();
             _shipControl?.Render();
 
             if (VisualDebug.Enabled)
@@ -1317,6 +1320,7 @@ namespace Spacebox.Game.Generation
             Doors.Dispose();
             _signs?.Dispose();
             _pictures?.Dispose();
+            _invisibleBlocks?.Dispose();
             _shipControl?.Dispose();
             GravityField.UnregisterEntity(this);
             Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.UnregisterEntity(this);

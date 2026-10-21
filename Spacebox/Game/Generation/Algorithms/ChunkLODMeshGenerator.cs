@@ -40,7 +40,7 @@ namespace Spacebox.Game.Generation
             for (int x = 0; x < sx; x++)
                 for (int y = 0; y < sy; y++)
                     for (int z = 0; z < sz; z++)
-                        target[x, y, z] = !blocks[x, y, z].IsAir;
+                        target[x, y, z] = !blocks[x, y, z].IsAir && blocks[x, y, z] is not InvisibleBlock;
         }
 
         public static bool[,,] RentSolidMask(Block[,,] blocks)

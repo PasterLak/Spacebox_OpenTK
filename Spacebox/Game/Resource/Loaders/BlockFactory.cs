@@ -36,7 +36,8 @@ namespace Spacebox.Game.Resource
                 { "thruster", data => new ThrusterBlock(data) },
                 { "shipconsole", data => new ShipConsoleBlock(data) },
                 { "cannon", data => new CannonBlock(data) },
-                { "shipcamera", data => new ShipCameraBlock(data) }
+                { "shipcamera", data => new ShipCameraBlock(data) },
+                { InvisibleBlock.TypeName, data => new InvisibleBlock(data) }
         };
 
         public static Block CreateBlockFromId(short id)

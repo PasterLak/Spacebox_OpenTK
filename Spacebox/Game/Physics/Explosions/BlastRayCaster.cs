@@ -54,7 +54,7 @@ public sealed class BlastRayCaster
         var block = chunk.Blocks[index.X, index.Y, index.Z];
         if (block == null || block.IsAir) return false;
 
-        durability = Math.Max(1, (int)block.Durability);
+        durability = Spacebox.Game.Generation.Blocks.UnbreakableBlocks.Is(block) ? int.MaxValue : Math.Max(1, (int)block.Durability);
         return true;
     }
 

@@ -29,6 +29,7 @@ namespace Spacebox.Game.Resource
         public Vector3Byte Size { get; set; } = new Vector3Byte(1);
         public int CellPixels { get; set; } = 0;
         public bool TextureFit { get; set; } = false;
+        public bool Unbreakable { get; set; } = false;
         public string Model { get; set; } = "";
         public OxygenGeneratorJSON OxygenGenerator { get; set; } = new OxygenGeneratorJSON();
         public DoorJSON Door { get; set; } = new DoorJSON();

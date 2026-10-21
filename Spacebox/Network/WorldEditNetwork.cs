@@ -233,7 +233,9 @@ public static class WorldEditNetwork
         }
 
         short previousId = known ? GetBlockId(entity, message.Cell) : (short)0;
-        if (known && ((!message.IsRemoval && previousId != 0) || !IsInReach(sender, entity, message.Cell)))
+        bool unbreakable = message.IsRemoval && Spacebox.Game.Generation.Blocks.UnbreakableBlocks.Is(previousId) &&
+                           Spacebox.Network.Players.PlayerGameModeService.Of(senderName) != Spacebox.Game.Player.GameModes.GameMode.Creative;
+        if (known && ((!message.IsRemoval && previousId != 0) || unbreakable || !IsInReach(sender, entity, message.Cell)))
         {
             SendCorrection(sender, entity, message.Cell);
             network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });

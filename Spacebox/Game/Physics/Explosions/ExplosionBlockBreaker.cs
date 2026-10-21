@@ -41,7 +41,7 @@ public sealed class ExplosionBlockBreaker
             if (!entity.TryGetBlockLocal(cell, out var chunk, out var index)) continue;
 
             var block = chunk.Blocks[index.X, index.Y, index.Z];
-            if (block == null || block.IsAir) continue;
+            if (block == null || block.IsAir || UnbreakableBlocks.Is(block)) continue;
 
             if (cell == origin)
             {

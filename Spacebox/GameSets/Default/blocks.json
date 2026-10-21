@@ -389,6 +389,26 @@
     }
   },
   {
+    "ID": "barrier",
+    "Name": "Barrier",
+    "Description": "Invisible wall for maps. Only visible while a barrier is held; cannot be damaged and only creative players can remove it",
+    "Type": "invisible",
+    "Category": "tools",
+    "Mass": 1,
+    "Durability": 255,
+    "IsTransparent": true,
+    "Unbreakable": true,
+    "Textures": {
+      "Active": {
+        "All": "barrier"
+      }
+    },
+    "Sounds": {
+      "Place": "placeGlass",
+      "Destroy": "blockDestroyGlass"
+    }
+  },
+  {
     "ID": "aluminium_door",
     "Name": "Aluminium Door",
     "Description": "Sliding door, opens with a click",

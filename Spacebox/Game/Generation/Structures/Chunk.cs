@@ -409,6 +409,7 @@ namespace Spacebox.Game.Generation
                 return false;
 
             var block = Blocks[hit.blockPositionIndex.X, hit.blockPositionIndex.Y, hit.blockPositionIndex.Z];
+            if (UnbreakableBlocks.Is(block)) return false;
 
             if ((((short)block.Durability) - damage) > 0)
             {

@@ -34,6 +34,7 @@ Add an object to `Spacebox/GameSets/Default/blocks.json` (fields come from `Spac
 - `ID` must be unique, snake_case. The mod id prefix is added by the loader.
 - `Textures.Active` / `Textures.Inactive` accept `All` or per face `Up, Down, Left, Right, Forward, Back`. `Inactive` is used by machines when off.
 - Optional: `IsTransparent`, `LightColor {r,g,b}` (emissive), `FrontDirection`, `Efficiency`, `StorageSize` (storage only), `Door { MoveDirection, Speed, OpenTime, AutoClose }` (type `door`), `Generator { Power }` (type `generator`), `Size {x,y,z}` (multi-cell block, 1–16 per axis; x = width, y = height, z = depth relative to the front face). For multi-cell faces, a face-sized texture (e.g. 64×64 px on a 2×2 face of a 32 px block) spans the face and a one-cell texture repeats per cell; the pixels per cell are detected per block from its textures (any resolution works), override with `CellPixels` when every face of the block should repeat a large texture, or set `"TextureFit": true` to stretch each face texture once over the whole face. Electrical multi-cell blocks work (only the origin cell generates/consumes); storage and processing machines are still per cell.
+- `"Unbreakable": true` works on any block: only creative players and commands can remove it. Type `invisible` makes a solid block that is only drawn while a player holds an invisible block (Default `barrier`).
 - Mass and Durability are stored in 8 bits each (0–255).
 
 ## 3. New behaviour (only if needed)

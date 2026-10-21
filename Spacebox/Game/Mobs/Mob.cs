@@ -200,6 +200,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
     {
         if (IsReplica || !food.IsEdible(Navigation, Definition)) return false;
         if (!Navigation.TryGetBlock(food.Cell, out var chunk, out var index, out _)) return false;
+        if (Spacebox.Game.Generation.Blocks.UnbreakableBlocks.Is(chunk.Blocks[index.X, index.Y, index.Z])) return false;
 
         var normal = food.Normal;
         chunk.RemoveBlock(index.X, index.Y, index.Z, (sbyte)normal.X, (sbyte)normal.Y, (sbyte)normal.Z, false);

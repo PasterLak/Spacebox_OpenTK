@@ -140,7 +140,7 @@ namespace Spacebox.Game.Generation
                         if (z > zMax) zMax = z;
                         sumPosMass += new Vector3(x, y, z) * m;
 
-                        if (!_buildGeometry || block.IsMeshHidden) continue;
+                        if (!_buildGeometry || block.IsMeshHidden || block is InvisibleBlock) continue;
 
                         if (BlockShapes.TryGet(block, out var shape))
                         {
@@ -227,7 +227,7 @@ namespace Spacebox.Game.Generation
             if (block.IsTransparent && IsInRange(nx, ny, nz))
             {
                 var nb = _paddedBlocks[nx + 1, ny + 1, nz + 1];
-                if (nb != null && nb.IsTransparent) return;
+                if (nb != null && nb.IsTransparent && nb is not InvisibleBlock) return;
             }
 
             if (!IsTransparentBlock(nx, ny, nz, normal, block.IsTransparent)) return;
@@ -512,7 +512,7 @@ namespace Spacebox.Game.Generation
             var b = GetBlockSafe(x, y, z);
             if (b != null)
             {
-                return currentTransparent ? (b.IsAir || b.IsMeshHidden || b.HasCustomShape) : (b.IsAir || b.IsTransparent || b.IsMeshHidden || b.HasCustomShape);
+                return currentTransparent ? (b.IsAir || b.IsMeshHidden || b.HasCustomShape || b is InvisibleBlock) : (b.IsAir || b.IsTransparent || b.IsMeshHidden || b.HasCustomShape);
             }
             return true;
         }

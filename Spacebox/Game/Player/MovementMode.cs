@@ -441,7 +441,7 @@ public class MovementMode : GameModeBase
             wallhitAudio2.Volume = MathHelper.Clamp(speed * 0.1f, 0, 1);
             wallhitAudio2.Play();
 
-            if (collideInfo.block != null && collideInfo.block.IsTransparent)
+            if (collideInfo.block != null && collideInfo.block.IsTransparent && !Spacebox.Game.Generation.Blocks.UnbreakableBlocks.Is(collideInfo.block))
             {
                 Chunk ch = collideInfo.chunk;
                 if (ch != null)

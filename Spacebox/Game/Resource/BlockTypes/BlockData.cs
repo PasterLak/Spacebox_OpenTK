@@ -70,6 +70,7 @@ namespace Spacebox.Game.Resource
         public Vector3Byte Size { get; set; } = new Vector3Byte(1);
         public int CellPixels { get; set; }
         public bool TextureFit { get; set; }
+        public bool Unbreakable { get; set; }
         public BlockShape Shape { get; set; }
         public bool IsMultiblock => Size.X > 1 || Size.Y > 1 || Size.Z > 1;
         public int CellCount => Size.X * Size.Y * Size.Z;
@@ -110,6 +111,7 @@ namespace Spacebox.Game.Resource
             Size = baseBlock.Size;
             CellPixels = baseBlock.CellPixels;
             TextureFit = baseBlock.TextureFit;
+            Unbreakable = baseBlock.Unbreakable;
             Shape = baseBlock.Shape;
             AsItem = baseBlock.AsItem;
             Drop = baseBlock.Drop;
