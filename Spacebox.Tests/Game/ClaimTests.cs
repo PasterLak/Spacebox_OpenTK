@@ -149,6 +149,21 @@ public class ClaimTests : IDisposable
     }
 
     [Fact]
+    public void Index_RemoveEntityDropsOnlyThatEntity()
+    {
+        var index = new ClaimIndex();
+        index.Load(_folder);
+        index.Upsert(ClaimIndex.KeyFor(-12, new Vector3i(1, 2, 3)), "Anna", true);
+        index.Upsert(ClaimIndex.KeyFor(-12, Vector3i.Zero), "Anna", true);
+        index.Upsert(ClaimIndex.KeyFor(-1, Vector3i.Zero), "Anna", true);
+        index.Upsert(ClaimIndex.KeyFor(12, Vector3i.Zero), "Anna", true);
+
+        Assert.True(index.RemoveEntity(-12));
+        Assert.False(index.RemoveEntity(-12));
+        Assert.Equal(2, index.CountAll("Anna"));
+    }
+
+    [Fact]
     public void Beacon_ActiveOnlyWithOwnerAndTime()
     {
         var beacon = NewBeacon();

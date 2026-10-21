@@ -36,6 +36,7 @@ namespace Engine
         private static float _tickElapsedTime = 0.0f;
         private static float _targetTPS = 20.0f; 
         private static float _tickInterval = 1.0f / 20.0f;
+        private const int MaxTicksPerFrame = 10;
         private static int _totalTicks = 0;
         private static float _tickAccumulatedTime = 0.0f;
         private static float _currentTPS;
@@ -184,6 +185,7 @@ namespace Engine
         public static void HandleTicks()
         {
             _tickAccumulatedTime += Delta;
+            if (_tickAccumulatedTime > _tickInterval * MaxTicksPerFrame) _tickAccumulatedTime = _tickInterval * MaxTicksPerFrame;
 
             while (_tickAccumulatedTime > _tickInterval)
             {

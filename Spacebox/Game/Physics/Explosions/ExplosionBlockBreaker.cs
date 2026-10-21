@@ -79,13 +79,7 @@ public sealed class ExplosionBlockBreaker
         if (!isReplica) SpawnDrops(entity, worldCenter);
     }
 
-    private static bool NeedsFullRemoval(Block block)
-    {
-        if (block.OnDestroy != null || block is ElectricalBlock || block is IEntityBlockListener || block is DoorBlock)
-            return true;
-
-        return GameAssets.Blocks.TryGetValue(block.Id, out var data) && data.IsMultiblock;
-    }
+    private static bool NeedsFullRemoval(Block block) => Spacebox.Game.Generation.Tools.BlockRemovalRules.NeedsFullRemoval(block);
 
     private void RemoveSpecialBlocks(SpaceEntity entity, ExplosiveBlockData data, bool isReplica)
     {

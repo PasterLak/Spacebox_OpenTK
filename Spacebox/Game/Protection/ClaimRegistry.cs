@@ -43,6 +43,11 @@ public static class ClaimRegistry
         if (removed) Changed?.Invoke();
     }
 
+    public static void ForgetEntity(long entityId)
+    {
+        if (IsAuthority && _index.RemoveEntity(entityId)) Changed?.Invoke();
+    }
+
     public static void NotifyStateChanged(ClaimBeaconBlock beacon)
     {
         UpdateIndex(beacon);

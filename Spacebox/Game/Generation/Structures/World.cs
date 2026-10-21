@@ -113,9 +113,9 @@ public class World : Component, ISpaceStructure
 
         if (Spacebox.Network.GameSession.HasLocalPlayer)
             PlayerSaveLoadManager.SavePlayer(Player, WorldData.WorldFolderPath);
-        WorldSaveLoad.SaveWorld(WorldData.WorldFolderPath, loadedSectors);
-
         WorldPersistenceManager.SaveAllCacheToDiskNow(WorldData.WorldFolderPath);
+
+        WorldSaveLoad.SaveWorld(WorldData.WorldFolderPath, loadedSectors);
 
         if (Spacebox.Network.GameSession.HasLocalPlayer)
             WorldData.Info.GameMode = Player.GameMode;

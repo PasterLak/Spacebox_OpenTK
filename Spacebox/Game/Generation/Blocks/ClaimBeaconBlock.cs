@@ -66,6 +66,7 @@ public class ClaimBeaconBlock : InteractiveBlock, IContainerBlock, IEntityBlockL
         Owner = ClaimMembership.Sanitize(owner);
         MarkStateDirty();
         MarkModified();
+        if (Entity != null) ClaimRegistry.NotifyStateChanged(this);
     }
 
     public bool TryAddMember(string name)

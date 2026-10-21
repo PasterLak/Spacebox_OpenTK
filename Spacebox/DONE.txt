@@ -68,6 +68,11 @@ Small
 - build scripts read the version from Application.cs, keep other platform builds, zip without a root folder
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
+- saving no longer overwrites newer changes of an asteroid that was unloaded and loaded again with its older cached copy
+- a block refused by admin protection or a claim is refunded instead of being placed as a new entity next to it
+- creative erase/fill: claim beacons, machines, doors and multi-cell blocks are removed properly, light updates, boxes outside the entity are refused, no overflow with huge boxes; special blocks cannot be used to fill
+- claim beacons count towards the claim limit as soon as they get an owner; claims of destroyed entities are removed from claims.json
+- unreadable .entity files are logged and kept as .corrupt copies; at most 10 game ticks run in one frame after a long pause
 - crash when toggling the flashlight after leaving and re-entering a world (old flashlight key handler was never removed)
 - chat: older messages no longer pile up on the top line when the chat is full, long messages wrap
 - tpa: lands next to the surface of the nearest asteroid (or the next one if you are already at one), also unloaded asteroids, free spot, teleport effect and a message; ships are no longer targets

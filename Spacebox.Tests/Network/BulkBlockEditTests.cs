@@ -81,4 +81,19 @@ public class BulkBlockEditTests
 
         Assert.False(CreativeTools.TryGetSelection(out _, out _, out _));
     }
+
+    [Fact]
+    public void CountCells_DoesNotOverflow()
+    {
+        Assert.Equal(4294967296L, BulkBlockEdit.CountCells(new Vector3i(int.MinValue, 0, 0), new Vector3i(int.MaxValue, 0, 0)));
+    }
+
+    [Fact]
+    public void TryValidate_RejectsHugeOrOutOfRangeBoxes()
+    {
+        Assert.False(BulkBlockEdit.TryValidate(new Vector3i(int.MinValue, 0, 0), new Vector3i(int.MaxValue, 0, 0), BulkBlockEdit.EraseBlockId, _ => true, out _));
+        Assert.False(BulkBlockEdit.TryValidate(new Vector3i(BulkBlockEdit.MaxCoordinate - 1, 0, 0), new Vector3i(BulkBlockEdit.MaxCoordinate + 1, 0, 0), BulkBlockEdit.EraseBlockId, _ => true, out var error));
+        Assert.NotNull(error);
+        Assert.True(BulkBlockEdit.TryValidate(new Vector3i(BulkBlockEdit.MinCoordinate, 0, 0), new Vector3i(BulkBlockEdit.MinCoordinate + 3, 0, 0), BulkBlockEdit.EraseBlockId, _ => true, out _));
+    }
 }

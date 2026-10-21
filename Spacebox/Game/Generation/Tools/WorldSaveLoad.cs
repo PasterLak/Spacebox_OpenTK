@@ -195,7 +195,11 @@ namespace Spacebox.Game.Generation.Tools
                     };
                     list.Add(meta);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Debug.Error($"[WorldSaveLoad] Cannot read entity file {file}: {ex.Message}. A copy is kept as {Path.GetFileName(file)}.corrupt");
+                    try { File.Copy(file, file + ".corrupt", true); } catch (IOException) { }
+                }
             }
             return list;
         }

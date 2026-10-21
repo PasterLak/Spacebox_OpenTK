@@ -37,6 +37,19 @@ public sealed class ClaimIndex
         return true;
     }
 
+    public bool RemoveEntity(long entityId)
+    {
+        string prefix = entityId + ":";
+        var keys = new List<string>();
+        foreach (var key in _entries.Keys)
+            if (key.StartsWith(prefix, StringComparison.Ordinal)) keys.Add(key);
+        if (keys.Count == 0) return false;
+
+        foreach (var key in keys) _entries.Remove(key);
+        Save();
+        return true;
+    }
+
     public int CountActive(string owner) => CountFor(owner, true);
 
     public int CountAll(string owner) => CountFor(owner, false);

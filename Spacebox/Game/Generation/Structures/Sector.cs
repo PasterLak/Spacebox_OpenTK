@@ -763,6 +763,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         EntitiesDestroyed.Add(name);
         IsModified = true;
+        Spacebox.Game.Protection.ClaimRegistry.ForgetEntity(id);
         EntityDestroyedPermanently?.Invoke(this, id);
     }
 

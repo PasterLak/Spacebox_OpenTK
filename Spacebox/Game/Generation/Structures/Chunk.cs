@@ -531,6 +531,15 @@ namespace Spacebox.Game.Generation
             return true;
         }
 
+        internal void SetCellForBulkEdit(byte x, byte y, byte z, Block block)
+        {
+            if (!IsInRange(x, y, z) || block == null) return;
+
+            Blocks[x, y, z] = block;
+            IsModified = true;
+            DataVersion++;
+        }
+
         public void FinishBulkEdit()
         {
             _lightManager.PropagateLight();

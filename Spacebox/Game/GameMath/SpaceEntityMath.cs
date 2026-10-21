@@ -3,6 +3,7 @@ using Engine.Physics;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,6 +76,10 @@ public class SpaceEntityMath
         int chunkMaxZ = (int)MathF.Floor((float)maxZ / Chunk.Size);
 
         HashSet<Chunk> modified = new HashSet<Chunk>();
+        var special = new List<(Chunk Chunk, byte X, byte Y, byte Z)>();
+        ClampChunkRange(ref chunkMinX, ref chunkMaxX);
+        ClampChunkRange(ref chunkMinY, ref chunkMaxY);
+        ClampChunkRange(ref chunkMinZ, ref chunkMaxZ);
 
         for (int cx = chunkMinX; cx <= chunkMaxX; cx++)
         {
@@ -107,7 +112,8 @@ public class SpaceEntityMath
                                 Block b = chunk.Blocks[x, y, z];
                                 if (b != null && !b.IsAir)
                                 {
-                                    chunk.Blocks[x, y, z] = GameAssets.CreateBlockFromId(0);
+                                    if (BlockRemovalRules.NeedsFullRemoval(b)) special.Add((chunk, (byte)x, (byte)y, (byte)z));
+                                    else chunk.ClearCellForBulkEdit((byte)x, (byte)y, (byte)z);
                                     chunkModified = true;
 
                                     CheckAndAddNeighbor(entity, idx, x, y, z, modified);
@@ -125,9 +131,22 @@ public class SpaceEntityMath
             }
         }
 
+        foreach (var (chunk, x, y, z) in special)
+        {
+            var block = chunk.Blocks[x, y, z];
+            if (block == null || block.IsAir) continue;
+            chunk.RemoveBlock(x, y, z, 0, 0, 0, false);
+        }
+
         if (modified.Count > 0) entity.Oxygen.OnChunksChanged();
 
         return modified.ToList();
+    }
+
+    private static void ClampChunkRange(ref int min, ref int max)
+    {
+        min = Math.Max(min, sbyte.MinValue);
+        max = Math.Min(max, sbyte.MaxValue);
     }
 
     public List<Chunk> FillBlocksInLocalBox(SpaceEntity entity, BoundingBox localBox, short blockId)
@@ -150,6 +169,9 @@ public class SpaceEntityMath
         int chunkMaxZ = (int)MathF.Floor((float)maxZ / Chunk.Size);
 
         HashSet<Chunk> modified = new HashSet<Chunk>();
+        ClampChunkRange(ref chunkMinX, ref chunkMaxX);
+        ClampChunkRange(ref chunkMinY, ref chunkMaxY);
+        ClampChunkRange(ref chunkMinZ, ref chunkMaxZ);
 
         for (int cx = chunkMinX; cx <= chunkMaxX; cx++)
         {
@@ -178,7 +200,7 @@ public class SpaceEntityMath
                                 Block b = c.Blocks[x, y, z];
                                 if (b == null || b.IsAir)
                                 {
-                                    c.Blocks[x, y, z] = GameAssets.CreateBlockFromId(blockId);
+                                    c.SetCellForBulkEdit((byte)x, (byte)y, (byte)z, GameAssets.CreateBlockFromId(blockId));
                                     chunkModified = true;
 
                                     CheckAndAddNeighbor(entity, idx, x, y, z, modified);

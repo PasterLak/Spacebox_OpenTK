@@ -351,9 +351,15 @@ public class InteractionPlaceBlock : InteractionMode
                     newBlock.Rotation = finalRot;
 
 
-                    if (Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(entity, Spacebox.Game.Protection.ProtectionRules.CellAt(entity, selectorPosition)) &&
-                        Spacebox.Game.Protection.ClaimPlacement.CheckLocal(entity, Spacebox.Game.Protection.ProtectionRules.CellAt(entity, selectorPosition), newBlock) &&
-                        entity.TryPlaceBlock(selectorPosition, newBlock))
+                    var cell = Spacebox.Game.Protection.ProtectionRules.CellAt(entity, selectorPosition);
+                    if (!Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(entity, cell) ||
+                        !Spacebox.Game.Protection.ClaimPlacement.CheckLocal(entity, cell, newBlock))
+                    {
+                        PlacementRefund.Refund(player, newBlock.Id);
+                        return;
+                    }
+
+                    if (entity.TryPlaceBlock(selectorPosition, newBlock))
                     {
                         Spacebox.Game.Protection.ClaimPlacement.OnPlacedLocally(newBlock);
                         WorldEditNetwork.NotifyPlaced(entity, selectorPosition, newBlock);

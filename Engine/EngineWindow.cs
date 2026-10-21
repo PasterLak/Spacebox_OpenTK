@@ -72,6 +72,7 @@ namespace Engine
                 VisualDebug.InitializeGpu();
                 WorldLines.InitializeGpu();
                 _sceneRenderer = new SceneRenderer(SceneSize.X, SceneSize.Y);
+                GL.Enable(EnableCap.DepthTest);
             }
 
             FrameLimiter.Initialize(120);
