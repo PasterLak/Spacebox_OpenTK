@@ -17,7 +17,7 @@ public class BlockSelector : Node3D
     public static bool IsVisible
     {
         get => Instance != null && Instance.Enabled;
-        set { if (Instance != null) Instance.Enabled = value; }
+        set { if (Instance != null) Instance.Enabled = value && !Spacebox.Game.GUI.PanelUI.AreHandsBlocked; }
     }
 
     private const float MagnetTextDuration = 1f;

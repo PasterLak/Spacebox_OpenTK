@@ -56,6 +56,7 @@ public static class ShipConsoleUI
             if (TryReadKey(out int key))
             {
                 ShipNetwork.RequestSetKey(entity, console.LocalCell, _waitingGroup, key);
+                ShipKeyMemory.Remember(console, bindings, _waitingGroup, key);
                 _waitingGroup = -1;
             }
         }

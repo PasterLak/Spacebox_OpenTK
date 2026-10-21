@@ -16,6 +16,15 @@ public class ServerGuardTests
     }
 
     [Fact]
+    public void Movement_CarrierSpeedAllowsRidingFastShips()
+    {
+        var guard = new MovementGuard();
+        guard.Accept(Vector3.Zero, 0f, 100.0);
+        Assert.False(guard.Accept(new Vector3(150, 0, 0), 1f, 101.0));
+        Assert.True(guard.Accept(new Vector3(150, 0, 0), 1f, 101.0, 100f));
+    }
+
+    [Fact]
     public void Movement_LagBurstUsesOwnerClock()
     {
         var guard = new MovementGuard();

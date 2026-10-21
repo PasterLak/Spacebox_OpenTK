@@ -321,7 +321,10 @@ public static class CreativeWindowUI
         float x = ImGui.GetCursorPosX() + SlotSize * 0.2f;
         ImGui.SetCursorPosX(x);
         ImGui.SetNextItemWidth(MathF.Max(SlotSize, right - x));
+        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1f, 1f, 1f, 1f));
+        ImGui.PushStyleColor(ImGuiCol.TextDisabled, new Vector4(0.85f, 0.85f, 0.85f, 1f));
         ImGui.InputTextWithHint("##creativeSearch", "Search items", ref _search, SearchMaxLength);
+        ImGui.PopStyleColor(2);
         UIHelper.ShowTooltip("Name, id or category; case and word order do not matter");
 
         string query = _search.Trim();

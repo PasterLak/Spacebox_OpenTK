@@ -46,6 +46,7 @@ public static class ShipPilot
         ShipRider.Board(player, console.Entity);
         _seatLocal = console.Entity.WorldToEntityLocal(player.Position);
         player.InertiaController.Velocity = Vector3.Zero;
+        FaceConsole(player, console);
 
         Spacebox.Game.GUI.PanelUI.BlockHands();
         Spacebox.Network.ShipNetwork.SendMount(console, true);
@@ -208,6 +209,7 @@ public static class ShipPilot
         {
             _wasBinding = false;
             player.InertiaController.Velocity = Vector3.Zero;
+            FaceConsole(player, console);
         }
 
         player.SetPosition(entity.EntityLocalToWorld(_seatLocal));
@@ -231,6 +233,12 @@ public static class ShipPilot
 
         SetViewCamera(null, player);
         IsUsingCamera = false;
+    }
+
+    private static void FaceConsole(LocalAstronaut player, ShipConsoleBlock console)
+    {
+        var entity = console.Entity;
+        player.SetRotation(ShipAiming.LookRotation(entity.DirectionToWorldSpace(console.PilotForward), entity.DirectionToWorldSpace(console.PilotUp)));
     }
 
     private static Vector3 GetCameraLookDirection(SpaceEntity entity, ConsoleBindings bindings, ShipCameraBlock camera)

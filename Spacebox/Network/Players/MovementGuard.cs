@@ -20,7 +20,7 @@ public sealed class MovementGuard
         _graceUntil = Math.Max(_graceUntil, now + seconds);
     }
 
-    public bool Accept(Vector3 position, float ownerTime, double now)
+    public bool Accept(Vector3 position, float ownerTime, double now, float carrierSpeed = 0f)
     {
         if (!NetValidation.IsFinite(position) || !float.IsFinite(ownerTime)) return false;
 
@@ -29,7 +29,7 @@ public sealed class MovementGuard
             double serverElapsed = Math.Max(0.0, now - _lastServerTime);
             double ownerElapsed = Math.Max(0.0, ownerTime - _lastOwnerTime);
             double elapsed = Math.Min(Math.Max(ownerElapsed, serverElapsed), serverElapsed + ClockSlack);
-            double allowed = MaxSpeed * elapsed + Tolerance;
+            double allowed = (MaxSpeed + Math.Max(0f, carrierSpeed)) * elapsed + Tolerance;
             if (Vector3.DistanceSquared(position, LastPosition) > allowed * allowed) return false;
         }
 

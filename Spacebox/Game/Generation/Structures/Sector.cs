@@ -111,40 +111,38 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     {
         if (EntitiesGeneratedData.ContainsKey(data.Id) == false) return;
 
+        LoadEntityAsync(() => WorldSaveLoad.LoadSpaceEntityTagFromFile(filePath), data, true, Path.GetFileNameWithoutExtension(filePath));
+    }
+
+    private void LoadEntityAsync(Func<CompoundTag> loadTag, NotGeneratedEntity data, bool applyFixes, string fileName)
+    {
         WorkerPoolManager.Enqueue(token =>
         {
             try
             {
-                var tag = WorldSaveLoad.LoadSpaceEntityTagFromFile(filePath);
-
-                var fileName = Path.GetFileNameWithoutExtension(filePath);
-
-                if (tag != null)
-                {
-                    MainThreadDispatcher.Instance.Enqueue(() =>
-                    {
-                        if (Entities == null) return;
-                        var entity = NBTHelper.TagToSpaceEntity(tag, this, data);
-                        if (!Entities.Exists(e => e.EntityID == entity.EntityID))
-                        {
-                            ApplyLoadedEntityFixes(entity, data, fileName);
-                            AddEntity(entity, entity.PositionWorld);
-                            octreeNotGenerated.Remove(data);
-                        }
-                        loadingEntities.Remove(data.Id);
-                    });
-                }
-                else
-                {
-                    MainThreadDispatcher.Instance.Enqueue(() => loadingEntities.Remove(data.Id));
-                }
+                var tag = loadTag();
+                var prepared = NBTHelper.PrepareEntity(tag, this, data);
+                MainThreadDispatcher.Instance.Enqueue(() => FinishLoadedEntity(tag, prepared, data, applyFixes, fileName));
             }
             catch (Exception ex)
             {
-                Debug.Error($"[Sector] Async load failed for {filePath}: {ex.Message}");
+                Debug.Error($"[Sector] Async load failed for entity {data.Id}: {ex.Message}");
                 MainThreadDispatcher.Instance.Enqueue(() => loadingEntities.Remove(data.Id));
             }
         }, WorkerPoolManager.Priority.High);
+    }
+
+    private void FinishLoadedEntity(CompoundTag tag, PreparedEntity prepared, NotGeneratedEntity data, bool applyFixes, string fileName)
+    {
+        loadingEntities.Remove(data.Id);
+        if (Entities == null || tag == null) return;
+
+        var entity = NBTHelper.TagToSpaceEntity(tag, this, data, prepared);
+        if (entity == null || Entities.Exists(e => e.EntityID == entity.EntityID)) return;
+
+        if (applyFixes) ApplyLoadedEntityFixes(entity, data, fileName ?? entity.Name);
+        AddEntity(entity, entity.PositionWorld);
+        octreeNotGenerated.Remove(data);
     }
 
     private bool RemoveGeneratedData(long entityId)
@@ -523,9 +521,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         if (WorldPersistenceManager.TryGetCachedEntity(data.Id, out var cachedTag))
         {
-            var entity = NBTHelper.TagToSpaceEntity(cachedTag, this, data);
-            AddEntity(entity, entity.PositionWorld);
-            octreeNotGenerated.Remove(data);
+            loadingEntities.Add(data.Id);
+            LoadEntityAsync(() => cachedTag, data, false, null);
             return;
         }
 
@@ -565,15 +562,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             return;
         }
 
-        var entity = NBTHelper.TagToSpaceEntity(tag, this, data);
-        if (entity != null && !Entities.Exists(e => e.EntityID == entity.EntityID))
-        {
-            ApplyLoadedEntityFixes(entity, data, entity.Name);
-            AddEntity(entity, entity.PositionWorld);
-            octreeNotGenerated.Remove(data);
-        }
-
-        loadingEntities.Remove(entityId);
+        LoadEntityAsync(() => tag, data, true, null);
     }
 
     private void GenerateFreshAsteroid(NotGeneratedEntity data)
@@ -1020,6 +1009,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                         entity = newEntity;
                     }
 
+                    var prepared = entity == null ? NBTHelper.PrepareEntity(tag, this, data) : null;
+
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {
                         if (Entities == null)
@@ -1033,7 +1024,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                         {
                             try
                             {
-                                entity = NBTHelper.TagToSpaceEntity(tag, this, data);
+                                entity = NBTHelper.TagToSpaceEntity(tag, this, data, prepared);
                                 if (entity != null && fileName != null) ApplyLoadedEntityFixes(entity, data, fileName);
                             }
                             catch (Exception ex)

@@ -47,54 +47,95 @@ namespace Spacebox.Game.Generation.Tools
             }
         }
 
-        public static SpaceEntity? TagToSpaceEntity(CompoundTag tag, Sector sector, NotGeneratedEntity generationData = null)
+        public static PreparedEntity? PrepareEntity(CompoundTag tag, Sector sector, NotGeneratedEntity generationData = null)
         {
             if (tag == null) return null;
+
+            var asteroid = tag.Get<LongTag>(NBTKey.ENTITY.id) >= 0 ? CreateAsteroid(tag, sector, generationData) : null;
+            var chunksList = tag.Get<ListTag>(NBTKey.ENTITY.chunks);
+            var completeChunks = new List<Vector3SByte>();
+            var decoded = new Dictionary<Vector3SByte, Block[,,]>();
+
+            foreach (CompoundTag chunkTag in chunksList)
+            {
+                var blocks = TagToChunkBlocks(chunkTag, out var chunkIndex);
+                decoded[chunkIndex] = blocks;
+
+                bool needsGeneration = chunkTag.TryGetValue<ByteTag>(NBTKey.CHUNK.needs_generation, out var needsTag) && needsTag.Value == 1;
+                if (!needsGeneration)
+                    completeChunks.Add(chunkIndex);
+            }
+
+            return new PreparedEntity
+            {
+                Asteroid = asteroid,
+                Blocks = decoded,
+                CompleteChunks = completeChunks,
+                Repair = MultiblockRepair.ForCurrentGameSet().Repair(decoded)
+            };
+        }
+
+        private static Vector3 ReadWorldPosition(CompoundTag tag, Sector sector)
+        {
+            var x = tag.Get<FloatTag>(NBTKey.ENTITY.local_x);
+            var y = tag.Get<FloatTag>(NBTKey.ENTITY.local_y);
+            var z = tag.Get<FloatTag>(NBTKey.ENTITY.local_z);
+            return sector.LocalToWorldPosition(new Vector3(x, y, z));
+        }
+
+        private static Asteroid CreateAsteroid(CompoundTag tag, Sector sector, NotGeneratedEntity generationData)
+        {
+            long id = tag.Get<LongTag>(NBTKey.ENTITY.id);
+            var worldPos = ReadWorldPosition(tag, sector);
+            bool onlyChangedChunks = tag.TryGetValue<ByteTag>(NBTKey.ENTITY.only_changed_chunks, out var onlyChangedTag) && onlyChangedTag.Value == 1;
+            Asteroid asteroid;
+
+            if (onlyChangedChunks && (generationData?.asteroid == null || generationData.Id != id))
+                generationData = ReadAsteroidGenerationData(tag, id, generationData) ?? generationData;
+
+            if (onlyChangedChunks && generationData?.asteroid != null && generationData.Id == id)
+            {
+                generationData.positionWorld = worldPos;
+                asteroid = new Asteroid(generationData, sector, true);
+                asteroid.OnGenerate();
+            }
+            else
+            {
+                var stubData = new NotGeneratedEntity
+                {
+                    Id = id,
+                    positionWorld = worldPos
+                };
+
+                asteroid = new Asteroid(stubData, sector, false);
+
+                if (onlyChangedChunks)
+                {
+                    asteroid.MarkSavedWithoutGenerator();
+                    Debug.Warning($"[NBTHelper] Asteroid {id} has no generation data; only its saved chunks are loaded");
+                }
+            }
+
+            asteroid.IsGenerated = true;
+            return asteroid;
+        }
+
+        public static SpaceEntity? TagToSpaceEntity(CompoundTag tag, Sector sector, NotGeneratedEntity generationData = null, PreparedEntity? prepared = null)
+        {
+            if (tag == null) return null;
+            prepared ??= PrepareEntity(tag, sector, generationData);
 
             long id = tag.Get<LongTag>(NBTKey.ENTITY.id);
             string file_name = tag.Get<StringTag>(NBTKey.ENTITY.name);
 
-            var x = tag.Get<FloatTag>(NBTKey.ENTITY.local_x);
-            var y = tag.Get<FloatTag>(NBTKey.ENTITY.local_y);
-            var z = tag.Get<FloatTag>(NBTKey.ENTITY.local_z);
-
-            var worldPos = sector.LocalToWorldPosition(new Vector3(x, y, z));
+            var worldPos = ReadWorldPosition(tag, sector);
 
             SpaceEntity spaceEntity;
             bool onlyChangedChunks = tag.TryGetValue<ByteTag>(NBTKey.ENTITY.only_changed_chunks, out var onlyChangedTag) && onlyChangedTag.Value == 1;
 
             if (id >= 0)
             {
-                Asteroid asteroid;
-
-                if (onlyChangedChunks && (generationData?.asteroid == null || generationData.Id != id))
-                    generationData = ReadAsteroidGenerationData(tag, id, generationData) ?? generationData;
-
-                if (onlyChangedChunks && generationData?.asteroid != null && generationData.Id == id)
-                {
-                    generationData.positionWorld = worldPos;
-                    asteroid = new Asteroid(generationData, sector, true);
-                    asteroid.OnGenerate();
-                }
-                else
-                {
-                    var stubData = new NotGeneratedEntity
-                    {
-                        Id = id,
-                        positionWorld = worldPos
-                    };
-
-                    asteroid = new Asteroid(stubData, sector, false);
-
-                    if (onlyChangedChunks)
-                    {
-                        asteroid.MarkSavedWithoutGenerator();
-                        Debug.Warning($"[NBTHelper] Asteroid {id} has no generation data; only its saved chunks are loaded");
-                    }
-                }
-
-                asteroid.IsGenerated = true;
-                spaceEntity = asteroid;
+                spaceEntity = prepared.Asteroid != null && prepared.Asteroid.EntityID == id ? prepared.Asteroid : CreateAsteroid(tag, sector, generationData);
             }
             else
             {
@@ -115,22 +156,10 @@ namespace Spacebox.Game.Generation.Tools
                 spaceEntity.SetOrientation(new Quaternion(rx, ry, rz, rw));
             }
 
-            var chunksList = tag.Get<ListTag>(NBTKey.ENTITY.chunks);
             var chunks = new List<Chunk>();
-            var completeChunks = new List<Vector3SByte>();
-            var decoded = new Dictionary<Vector3SByte, Block[,,]>();
-
-            foreach (CompoundTag chunkTag in chunksList)
-            {
-                var blocks = TagToChunkBlocks(chunkTag, out var chunkIndex);
-                decoded[chunkIndex] = blocks;
-
-                bool needsGeneration = chunkTag.TryGetValue<ByteTag>(NBTKey.CHUNK.needs_generation, out var needsTag) && needsTag.Value == 1;
-                if (!needsGeneration)
-                    completeChunks.Add(chunkIndex);
-            }
-
-            var repair = MultiblockRepair.ForCurrentGameSet().Repair(decoded);
+            var completeChunks = prepared.CompleteChunks;
+            var decoded = prepared.Blocks;
+            var repair = prepared.Repair;
             if (repair.Changed)
                 Debug.Warning($"[NBTHelper] Entity {spaceEntity.EntityID}: multi-cell blocks completed {repair.Completed}, removed {repair.Removed}, orphan cells removed {repair.OrphanPartsRemoved}");
             BrokenMultiblockSpill.Schedule(spaceEntity, repair.Broken);
@@ -181,6 +210,17 @@ namespace Spacebox.Game.Generation.Tools
 
         public static CompoundTag SpaceEntityToTag(SpaceEntity entity, Vector3 sectorOrigin)
         {
+            var root = BeginEntityTag(entity, sectorOrigin, out var chunks);
+            var chunksList = entity.Chunks;
+
+            for (int i = 0; i < chunksList.Count; i++)
+                AddChunkTag(entity, chunksList[i], chunks);
+
+            return FinishEntityTag(entity, root, chunks);
+        }
+
+        public static CompoundTag BeginEntityTag(SpaceEntity entity, Vector3 sectorOrigin, out ListTag chunks)
+        {
             var root = new CompoundTag(entity.GetType().Name);
 
             root.Add(new LongTag(NBTKey.ENTITY.id, entity.EntityID));
@@ -214,24 +254,27 @@ namespace Spacebox.Game.Generation.Tools
                 WriteVector(root, NBTKey.ENTITY.angular_velocity, entity.Ship.Motion.AngularVelocity);
             }
 
-            var chunks = new ListTag(NBTKey.ENTITY.chunks, TagType.Compound);
-            var chunksList = entity.Chunks;
+            chunks = new ListTag(NBTKey.ENTITY.chunks, TagType.Compound);
+            return root;
+        }
 
-            for (int i = 0; i < chunksList.Count; i++)
-            {
-                var chunk = chunksList[i];
-                if (onlyChangedChunks && !chunk.ShouldBeSaved) continue;
+        public static void AddChunkTag(SpaceEntity entity, Chunk chunk, ListTag chunks)
+        {
+            bool onlyChangedChunks = entity.SavesOnlyChangedChunks;
+            if (onlyChangedChunks && !chunk.ShouldBeSaved) return;
 
-                var chunkTag = ChunkToTag(chunk);
-                if (onlyChangedChunks && !entity.IsChunkGenerated(chunk.PositionIndex))
-                    chunkTag.Add(new ByteTag(NBTKey.CHUNK.needs_generation, 1));
+            var chunkTag = ChunkToTag(chunk);
+            if (onlyChangedChunks && !entity.IsChunkGenerated(chunk.PositionIndex))
+                chunkTag.Add(new ByteTag(NBTKey.CHUNK.needs_generation, 1));
 
-                chunks.Add(chunkTag);
-            }
+            chunks.Add(chunkTag);
+        }
 
+        public static CompoundTag FinishEntityTag(SpaceEntity entity, CompoundTag root, ListTag chunks)
+        {
             root.Add(chunks);
 
-            if (onlyChangedChunks)
+            if (entity.SavesOnlyChangedChunks)
                 root.Add(new IntArrayTag(NBTKey.ENTITY.removed_chunks, PackChunkIndices(entity.RemovedChunks)));
 
             return root;

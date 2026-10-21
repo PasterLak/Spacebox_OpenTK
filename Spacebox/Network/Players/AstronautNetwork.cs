@@ -69,7 +69,7 @@ public sealed class AstronautNetwork : NetworkTransform
         {
             _movement.AllowJump(Time.Total, TeleportGraceSeconds);
         }
-        return _movement.Accept(next.Position, next.Time, Time.Total);
+        return _movement.Accept(next.Position, next.Time, Time.Total, ShipCarrierSpeed.Around(_movement.LastPosition, next.Position));
     }
 
     protected override void OnOwnerStateRejected(TransformState previous, TransformState next)

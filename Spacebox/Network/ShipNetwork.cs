@@ -340,6 +340,11 @@ public static class ShipNetwork
         _pilots[sender] = (message.EntityId, message.ConsoleCell);
     }
 
+    private static bool IsPilotOf(int peer, long entityId, Vector3i cell)
+    {
+        return _pilots.TryGetValue(peer, out var pilot) && pilot.EntityId == entityId && pilot.Cell == cell;
+    }
+
     private static bool IsPiloted(long entityId, Vector3i cell)
     {
         foreach (var pilot in _pilots.Values)
@@ -366,7 +371,7 @@ public static class ShipNetwork
         if (!NetworkManager.Instance.IsServer) return;
         if (!TryGetConsole(message.EntityId, message.ConsoleCell, out var entity, out _)) return;
         if (ProtectionNetwork.BlocksPeerUse(sender, entity)) return;
-        if (!WorldEditNetwork.IsInReach(sender, entity, message.ConsoleCell)) return;
+        if (!IsPilotOf(sender, message.EntityId, message.ConsoleCell) && !WorldEditNetwork.IsInReach(sender, entity, message.ConsoleCell)) return;
 
         var control = entity.ShipControl;
         switch (message.Operation)

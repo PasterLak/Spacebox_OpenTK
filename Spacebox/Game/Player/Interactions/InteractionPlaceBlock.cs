@@ -191,6 +191,7 @@ public class InteractionPlaceBlock : InteractionMode
                         chunk.SpaceEntity.TryPlaceBlockAtCell(targetCell, newBlock))
                     {
                         Spacebox.Game.Protection.ClaimPlacement.OnPlacedLocally(newBlock);
+                        Spacebox.Game.Ships.ShipKeyMemory.OnPlacedLocally(newBlock);
                         WorldEditNetwork.NotifyPlacedAtCell(chunk.SpaceEntity, targetCell, newBlock);
                         player.PlayerStatistics.BlocksPlaced++;
                         PlayerActivity.RaiseBlock(PlayerActivityKind.BlockPlaced, newBlock.Id);
@@ -367,6 +368,7 @@ public class InteractionPlaceBlock : InteractionMode
                     if (entity.TryPlaceBlockAtCell(cell, newBlock))
                     {
                         Spacebox.Game.Protection.ClaimPlacement.OnPlacedLocally(newBlock);
+                        Spacebox.Game.Ships.ShipKeyMemory.OnPlacedLocally(newBlock);
                         WorldEditNetwork.NotifyPlacedAtCell(entity, cell, newBlock);
                         player.PlayerStatistics.BlocksPlaced++;
                         PlayerActivity.RaiseBlock(PlayerActivityKind.BlockPlaced, newBlock.Id);

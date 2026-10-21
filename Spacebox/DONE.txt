@@ -59,6 +59,7 @@ New
 Small
 - options: leaving a category with Back after changing something asks Save / Don't Save / Cancel
 - equipment preview: dragging up and down tilts the view (up to 75 degrees), double click resets
+- ship consoles remember the keys you set last (per console type, saved on this computer) and use them for newly placed consoles
 - creative window: search field at the top, filters while typing by name, id, category or type (ignores case, separators and word order, finds parts of words; best matches first)
 - claim beacon: online players are suggested while typing a member name (click fills it in)
 - hosted (LAN) games: every player can use all commands
@@ -162,6 +163,11 @@ Fixes
 - placing a block can no longer replace a block in that cell (torches and other small blocks were overwritten when the ray missed them)
 - power networks: area fill registers cables, generators and machines; with the exact-cell placement fix networks match on host and clients
 - GameSet editor: asteroid MinRadius/MaxRadius are limited to 2-256 (also clamped when loading)
+- ship console: the ship no longer turns by itself after sitting down or leaving binding mode (view faces the console forward); in multiplayer binding works while walking away from the console
+- creative search text is white
+- multiplayer: players riding or piloting a fast ship were pulled back by the server's speed check (camera jiggle); the check now adds the speed of the ship under the player
+- the block selector stayed visible while piloting a ship (using the console with a block in hand)
+- changed asteroids (after mining or explosions) froze loading and joining: their base generation and chunk decoding now run on worker threads; the server sends entity data to joining players in 3 ms slices per frame and compresses it in the background, so the host no longer lags while someone joins
 - dying while typing in the chat closed the chat afterwards and hid the cursor on the death screen
 - bombs on protected asteroids (and in claims that respect explosions) no longer explode when shot
 - after dying against a moving ship the player no longer keeps the ship's speed after respawn (ship frame, gravity walker and collision velocity are reset on death, respawn and teleport)

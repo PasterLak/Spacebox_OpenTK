@@ -1,4 +1,5 @@
 using Engine;
+using Engine.Multithreading;
 using Engine.Networking;
 using OpenTK.Mathematics;
 using SharpNBT;
@@ -29,21 +30,47 @@ public static class EntitySync
     }
 
     private const int MaxQueuedPerPeer = 256;
-    private const int MaxRequestsPerFrame = 16;
+    private const double FrameBudgetMs = 3.0;
 
     private static readonly Queue<(int Peer, EntityDataRequestMessage Message)> _queue = new Queue<(int, EntityDataRequestMessage)>();
     private static readonly Dictionary<int, int> _queuedPerPeer = new Dictionary<int, int>();
+    private static PendingAnswer _current;
+
+    private sealed class PendingAnswer
+    {
+        public int Peer;
+        public EntityDataRequestMessage Message;
+        public IncrementalEntityTagWriter Writer;
+    }
 
     public static void Update()
     {
-        if (_queue.Count == 0) return;
+        if (_queue.Count == 0 && _current == null) return;
         if (!NetworkManager.Instance.IsServer)
         {
             Clear();
             return;
         }
 
-        for (int i = 0; i < MaxRequestsPerFrame && _queue.Count > 0; i++)
+        long deadline = System.Diagnostics.Stopwatch.GetTimestamp() + (long)(FrameBudgetMs * System.Diagnostics.Stopwatch.Frequency / 1000.0);
+        do
+        {
+            if (_current == null && !TryStartNext()) return;
+            ContinueCurrent(deadline);
+        }
+        while (System.Diagnostics.Stopwatch.GetTimestamp() < deadline);
+    }
+
+    public static void Clear()
+    {
+        _queue.Clear();
+        _queuedPerPeer.Clear();
+        _current = null;
+    }
+
+    private static bool TryStartNext()
+    {
+        while (_queue.Count > 0)
         {
             var (peer, message) = _queue.Dequeue();
             if (_queuedPerPeer.TryGetValue(peer, out int count))
@@ -51,14 +78,68 @@ public static class EntitySync
                 if (count <= 1) _queuedPerPeer.Remove(peer);
                 else _queuedPerPeer[peer] = count - 1;
             }
-            if (NetworkManager.Instance.Peers.Contains(peer) || peer == NetworkManager.Instance.LocalPeerId) Answer(peer, message);
+            if (!IsConnected(peer)) continue;
+
+            var world = World.Instance;
+            if (world != null && world.TryFindEntity(message.EntityId, out var entity))
+            {
+                _current = new PendingAnswer
+                {
+                    Peer = peer,
+                    Message = message,
+                    Writer = new IncrementalEntityTagWriter(entity, SpaceMath.Sector.GetSectorPosition(message.Sector))
+                };
+                return true;
+            }
+
+            AnswerFromStorage(peer, message);
         }
+
+        return false;
     }
 
-    public static void Clear()
+    private static void ContinueCurrent(long deadline)
     {
-        _queue.Clear();
-        _queuedPerPeer.Clear();
+        var answer = _current;
+        if (!answer.Writer.IsValid)
+        {
+            _current = null;
+            AnswerFromStorage(answer.Peer, answer.Message);
+            return;
+        }
+
+        bool done;
+        try
+        {
+            done = answer.Writer.Step(deadline);
+        }
+        catch (Exception ex)
+        {
+            Debug.Error($"[EntitySync] Failed to serialize entity {answer.Message.EntityId}: {ex.Message}");
+            _current = null;
+            SendCompressed(answer.Peer, answer.Message, null, true);
+            return;
+        }
+
+        if (!done) return;
+
+        _current = null;
+        CompoundTag tag = null;
+        try
+        {
+            tag = answer.Writer.Finish();
+        }
+        catch (Exception ex)
+        {
+            Debug.Error($"[EntitySync] Failed to serialize entity {answer.Message.EntityId}: {ex.Message}");
+        }
+        SendCompressed(answer.Peer, answer.Message, tag, true);
+    }
+
+    private static bool IsConnected(int peer)
+    {
+        var network = NetworkManager.Instance;
+        return network.Peers.Contains(peer) || peer == network.LocalPeerId;
     }
 
     private static void OnRequest(int sender, EntityDataRequestMessage message)
@@ -71,25 +152,57 @@ public static class EntitySync
         _queue.Enqueue((sender, message));
     }
 
-    private static void Answer(int sender, EntityDataRequestMessage message)
+    private static void AnswerFromStorage(int peer, EntityDataRequestMessage message)
+    {
+        if (WorldPersistenceManager.TryGetCachedEntity(message.EntityId, out var cached))
+        {
+            SendCompressed(peer, message, cached, false);
+            return;
+        }
+
+        string path = StoredEntityPath(message);
+        WorkerPoolManager.Enqueue(token =>
+        {
+            CompoundTag tag = null;
+            try
+            {
+                if (path != null && File.Exists(path)) tag = WorldSaveLoad.LoadSpaceEntityTagFromFile(path);
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"[EntitySync] Failed to read entity {message.EntityId}: {ex.Message}");
+            }
+            MainThreadDispatcher.Instance.Enqueue(() => SendCompressed(peer, message, tag, false));
+        }, WorkerPoolManager.Priority.High);
+    }
+
+    private static void SendCompressed(int peer, EntityDataRequestMessage message, CompoundTag tag, bool sendStates)
+    {
+        WorkerPoolManager.Enqueue(token =>
+        {
+            byte[] payload = Array.Empty<byte>();
+            try
+            {
+                if (tag != null) payload = NbtSerializer.ToBytes(tag);
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"[EntitySync] Failed to compress entity {message.EntityId}: {ex.Message}");
+            }
+
+            MainThreadDispatcher.Instance.Enqueue(() => Send(peer, message, payload, sendStates));
+        }, WorkerPoolManager.Priority.High);
+    }
+
+    private static void Send(int peer, EntityDataRequestMessage message, byte[] payload, bool sendStates)
     {
         var network = NetworkManager.Instance;
+        if (!network.IsServer || !IsConnected(peer)) return;
 
-        byte[] payload = Array.Empty<byte>();
-        try
-        {
-            var tag = FindEntityTag(message);
-            if (tag != null) payload = NbtSerializer.ToBytes(tag);
-        }
-        catch (Exception ex)
-        {
-            Debug.Error($"[EntitySync] Failed to serialize entity {message.EntityId}: {ex.Message}");
-        }
-
-        network.Send(sender, new EntityDataMessage { Sector = message.Sector, EntityId = message.EntityId, Data = payload });
+        network.Send(peer, new EntityDataMessage { Sector = message.Sector, EntityId = message.EntityId, Data = payload });
 
         var world = World.Instance;
-        if (world != null && world.TryFindEntity(message.EntityId, out var entity)) BlockStateNetwork.SendEntityStatesTo(sender, entity);
+        if (sendStates && world != null && world.TryFindEntity(message.EntityId, out var entity)) BlockStateNetwork.SendEntityStatesTo(peer, entity);
     }
 
     private static void OnData(int sender, EntityDataMessage message)
@@ -112,21 +225,13 @@ public static class EntitySync
         sector.ApplyRemoteEntityData(message.EntityId, tag);
     }
 
-    private static CompoundTag FindEntityTag(EntityDataRequestMessage message)
+    private static string StoredEntityPath(EntityDataRequestMessage message)
     {
-        var world = World.Instance;
-        if (world != null && world.TryFindEntity(message.EntityId, out var entity))
-            return NBTHelper.SpaceEntityToTag(entity, SpaceMath.Sector.GetSectorPosition(message.Sector));
-
-        if (WorldPersistenceManager.TryGetCachedEntity(message.EntityId, out var cached))
-            return cached;
-
         if (World.WorldData == null) return null;
 
         string sectorPath = WorldSaveLoad.GetSectorFolderPath(World.WorldData.WorldFolderPath, message.Sector);
         string fileName = string.IsNullOrEmpty(message.FileName) ? message.EntityId.ToString() : message.FileName;
         if (fileName != Path.GetFileName(fileName) || fileName.Contains("..")) return null;
-        string path = EntityFiles.PathOf(sectorPath, fileName);
-        return File.Exists(path) ? WorldSaveLoad.LoadSpaceEntityTagFromFile(path) : null;
+        return EntityFiles.PathOf(sectorPath, fileName);
     }
 }
