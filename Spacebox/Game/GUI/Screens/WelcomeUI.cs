@@ -91,24 +91,28 @@ namespace Spacebox.Game.GUI
             float textBlockWidth = windowWidth - sidePadding * 2;
             ImGui.SetCursorPosX(sidePadding);
 
-            ImGui.BeginChild("TextBlock", new Vector2(textBlockWidth, textBlockWidth / 2f));
+            float buttonWidth = windowWidth * 0.25f;
+            float buttonHeight = sidePadding;
+            float bottomPadding = windowHeight * 0.05f;
+            float buttonY = windowHeight - bottomPadding - buttonHeight;
+            float buttonX = (windowWidth - buttonWidth) * 0.5f;
+            float checkboxY = buttonY - buttonHeight * 1.1f - ImGui.GetFrameHeight();
+            bool hasTutorial = Spacebox.Game.Tutorial.TutorialService.HasTutorialFor(CurrentMode());
+            float textBottom = (hasTutorial ? checkboxY : buttonY) - blockVerticalSpacing;
+            float textBlockHeight = MathF.Max(ImGui.GetFrameHeight(), MathF.Min(textBlockWidth / 2f, textBottom - nextYPos));
+
+            ImGui.BeginChild("TextBlock", new Vector2(textBlockWidth, textBlockHeight));
             ImGui.TextWrapped(
             "The game is still in development and, unfortunately, has many bugs and incomplete features.\r\n\r\n" +
             "If you find any bugs, please be sure to let me know!\n\nPress F6  to see the controls." +
             "\r\n\r\nEnjoy the game!");
             ImGui.EndChild();
 
-            float buttonWidth = windowWidth * 0.25f;
-            float buttonHeight = sidePadding;
-            float bottomPadding = windowHeight * 0.05f;
-            float buttonY = windowHeight - bottomPadding - buttonHeight;
-            float buttonX = (windowWidth - buttonWidth) * 0.5f;
-            bool hasTutorial = Spacebox.Game.Tutorial.TutorialService.HasTutorialFor(CurrentMode());
             if (hasTutorial)
             {
                 const string tutorialLabel = "Play the tutorial";
                 float checkboxWidth = ImGui.GetFrameHeight() + ImGui.GetStyle().ItemInnerSpacing.X + ImGui.CalcTextSize(tutorialLabel).X;
-                ImGui.SetCursorPos(new Vector2((windowWidth - checkboxWidth) * 0.5f, buttonY - buttonHeight * 1.1f - ImGui.GetFrameHeight()));
+                ImGui.SetCursorPos(new Vector2((windowWidth - checkboxWidth) * 0.5f, checkboxY));
                 ImGui.Checkbox(tutorialLabel, ref _playTutorial);
             }
 

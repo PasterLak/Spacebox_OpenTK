@@ -394,11 +394,12 @@
         {
           "Id": "console",
           "Title": "Ship console",
-          "Text": "The console is the pilot seat. Craft it and place it on the ship.",
+          "Text": "The console is the pilot seat. Like the thrusters it only works with power: place a cobalt power block on the ship and connect it to the console and thrusters, touching them or with cables.",
           "Icon": "ship_console",
           "Tasks": [
             { "Type": "craft", "Item": "ship_console" },
-            { "Type": "place_block", "Block": "ship_console" }
+            { "Type": "place_block", "Block": "ship_console" },
+            { "Type": "place_block", "Block": "cobalt_power_block" }
           ]
         },
         {

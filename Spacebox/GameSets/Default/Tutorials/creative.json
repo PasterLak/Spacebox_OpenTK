@@ -71,10 +71,11 @@
         {
           "Id": "creative_console",
           "Title": "Console",
-          "Text": "Place a ship console and sit down with {key:use}.",
+          "Text": "Place a ship console and a cobalt power block: the console and thrusters only work with power, so connect them to it, touching or with cables. Then sit down with {key:use}.",
           "Icon": "ship_console",
           "Tasks": [
             { "Type": "place_block", "Block": "ship_console" },
+            { "Type": "place_block", "Block": "cobalt_power_block" },
             { "Type": "pilot", "Flight": true, "Label": "Sit at the console" }
           ]
         },
