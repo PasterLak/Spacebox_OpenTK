@@ -10,18 +10,19 @@ public static class SignTextBaker
 
     private static readonly Dictionary<string, SKTypeface> _typefaces = new Dictionary<string, SKTypeface>(StringComparer.OrdinalIgnoreCase);
 
-    public static PixelData Bake(IReadOnlyList<SignLine> lines, int width, int height, int margin, string fontPath)
+    public static PixelData Bake(IReadOnlyList<SignLine> lines, int width, int height, int margin, string fontPath, SignTextSize size)
     {
         width = Math.Max(1, width);
         height = Math.Max(1, height);
 
         using var bitmap = new SKBitmap(width, height, SKColorType.Rgba8888, SKAlphaType.Unpremul);
         using (var canvas = new SKCanvas(bitmap))
-        using (var font = new SKFont(GetTypeface(fontPath), FontPixels) { Edging = SKFontEdging.Alias, Hinting = SKFontHinting.None, Subpixel = false })
         using (var paint = new SKPaint { IsAntialias = false })
         {
             canvas.Clear(SKColors.Transparent);
-            DrawLines(canvas, font, paint, lines, width, height, margin);
+            float scale = size.Resolve(FitScale(lines, width, height, margin, fontPath));
+            using var font = CreateFittingFont(lines, width, height, margin, fontPath, scale, out scale);
+            DrawLines(canvas, font, paint, lines, width, height, margin, scale);
         }
 
         var data = new byte[width * height * 4];
@@ -29,52 +30,101 @@ public static class SignTextBaker
         return new PixelData { Width = width, Height = height, Data = data };
     }
 
+    public static float FitScale(IReadOnlyList<SignLine> lines, int width, int height, int margin, string fontPath)
+    {
+        using var font = CreateFont(fontPath, 1f);
+        return FitScale(font, lines, width, height, margin, 1f);
+    }
+
     public static float MeasureText(string text, string fontPath)
     {
-        using var font = new SKFont(GetTypeface(fontPath), FontPixels) { Edging = SKFontEdging.Alias, Hinting = SKFontHinting.None, Subpixel = false };
+        using var font = CreateFont(fontPath, 1f);
         return font.MeasureText(text ?? "");
     }
 
-    public static int LineHeight(SKFont font) => (int)MathF.Ceiling(font.Metrics.Descent - font.Metrics.Ascent) + 1;
-
-    private static void DrawLines(SKCanvas canvas, SKFont font, SKPaint paint, IReadOnlyList<SignLine> lines, int width, int height, int margin)
+    public static float BaseLineHeight(string fontPath)
     {
-        int lineHeight = LineHeight(font);
-        float ascent = -font.Metrics.Ascent;
-        int maxLines = Math.Max(1, (height - margin * 2) / lineHeight);
-        int count = Math.Min(lines.Count, maxLines);
-        float top = MathF.Floor((height - count * lineHeight) * 0.5f);
+        using var font = CreateFont(fontPath, 1f);
+        return LineHeight(font, 1f);
+    }
 
-        for (int i = 0; i < count; i++)
+    private static float LineHeight(SKFont font, float scale) => MathF.Ceiling(font.Metrics.Descent - font.Metrics.Ascent) + MathF.Max(1f, MathF.Round(scale));
+
+    private static float BoldOffset(float scale) => MathF.Max(1f, MathF.Round(scale));
+
+    private static SKFont CreateFont(string fontPath, float scale)
+    {
+        return new SKFont(GetTypeface(fontPath), FontPixels * scale) { Edging = SKFontEdging.Alias, Hinting = SKFontHinting.None, Subpixel = false };
+    }
+
+    private static float FitScale(SKFont font, IReadOnlyList<SignLine> lines, int width, int height, int margin, float scale)
+    {
+        float availableWidth = Math.Max(1, width - margin * 2);
+        float availableHeight = Math.Max(1, height - margin * 2);
+        float widest = 0f;
+        foreach (var line in lines) widest = MathF.Max(widest, MeasureLine(font, line, scale));
+        float tallest = Math.Max(1, lines.Count) * LineHeight(font, scale);
+
+        float fit = scale * availableHeight / tallest;
+        if (widest > 0f) fit = MathF.Min(fit, scale * availableWidth / widest);
+        return fit;
+    }
+
+    private static SKFont CreateFittingFont(IReadOnlyList<SignLine> lines, int width, int height, int margin, string fontPath, float scale, out float finalScale)
+    {
+        var font = CreateFont(fontPath, scale);
+        for (int i = 0; i < 4; i++)
+        {
+            float fit = FitScale(font, lines, width, height, margin, scale);
+            if (fit >= scale) break;
+            scale = fit * 0.995f;
+            font.Dispose();
+            font = CreateFont(fontPath, scale);
+        }
+        finalScale = scale;
+        return font;
+    }
+
+    private static void DrawLines(SKCanvas canvas, SKFont font, SKPaint paint, IReadOnlyList<SignLine> lines, int width, int height, int margin, float scale)
+    {
+        float lineHeight = LineHeight(font, scale);
+        float ascent = -font.Metrics.Ascent;
+        float bold = BoldOffset(scale);
+        float top = MathF.Floor((height - lines.Count * lineHeight) * 0.5f);
+
+        canvas.Save();
+        canvas.ClipRect(new SKRect(margin, margin, width - margin, height - margin));
+        for (int i = 0; i < lines.Count; i++)
         {
             var line = lines[i];
-            float lineWidth = MeasureLine(font, line);
+            float lineWidth = MeasureLine(font, line, scale);
             float x = line.Align switch
             {
                 SignAlign.Left => margin,
                 SignAlign.Right => width - margin - lineWidth,
                 _ => MathF.Floor((width - lineWidth) * 0.5f)
             };
-            float baseline = top + i * lineHeight + ascent;
+            float baseline = MathF.Round(top + i * lineHeight + ascent);
 
             foreach (var run in line.Runs)
             {
                 paint.Color = ToSkia(run.Color);
                 canvas.DrawText(run.Text, x, baseline, SKTextAlign.Left, font, paint);
-                if (run.Bold) canvas.DrawText(run.Text, x + 1f, baseline, SKTextAlign.Left, font, paint);
-                x += RunWidth(font, run);
+                if (run.Bold) canvas.DrawText(run.Text, x + bold, baseline, SKTextAlign.Left, font, paint);
+                x += RunWidth(font, run, scale);
             }
         }
+        canvas.Restore();
     }
 
-    private static float MeasureLine(SKFont font, SignLine line)
+    private static float MeasureLine(SKFont font, SignLine line, float scale)
     {
         float width = 0f;
-        foreach (var run in line.Runs) width += RunWidth(font, run);
+        foreach (var run in line.Runs) width += RunWidth(font, run, scale);
         return width;
     }
 
-    private static float RunWidth(SKFont font, SignRun run) => font.MeasureText(run.Text) + (run.Bold ? 1f : 0f);
+    private static float RunWidth(SKFont font, SignRun run, float scale) => font.MeasureText(run.Text) + (run.Bold ? BoldOffset(scale) : 0f);
 
     private static SKColor ToSkia(Color4 color)
     {

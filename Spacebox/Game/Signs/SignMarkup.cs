@@ -155,6 +155,25 @@ public static class SignMarkup
         return count;
     }
 
+    public static SignTextSize ReadTextSize(string text)
+    {
+        var size = SignTextSize.Default;
+        if (string.IsNullOrEmpty(text)) return size;
+
+        int i = 0;
+        while (i < text.Length)
+        {
+            if (TryReadTag(text, i, out var tag, out int length))
+            {
+                SignTextSize.TryParseTag(tag, ref size);
+                i += length;
+                continue;
+            }
+            i++;
+        }
+        return size;
+    }
+
     public static bool IsTagAt(string text, int index)
     {
         return !string.IsNullOrEmpty(text) && index >= 0 && index < text.Length && TryReadTag(text, index, out _, out _);
@@ -244,6 +263,8 @@ public static class SignMarkup
                 return true;
         }
 
+        var size = SignTextSize.Default;
+        if (SignTextSize.TryParseTag(tag, ref size)) return true;
         return tag.StartsWith("color=", StringComparison.Ordinal) && TryParseColor(tag.Substring(6).Trim('"', '\''), out _);
     }
 
@@ -259,6 +280,7 @@ public static class SignMarkup
             case "right": line.Align = SignAlign.Right; return;
         }
 
+        if (!tag.StartsWith("color=", StringComparison.Ordinal)) return;
         if (TryParseColor(tag.Substring(6).Trim('"', '\''), out var color)) colors.Push(color);
     }
 

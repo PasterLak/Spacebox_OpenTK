@@ -55,6 +55,7 @@ public sealed class SignDocument
     public SignCaret Anchor { get; private set; }
     public bool TypingBold { get; set; }
     public Color4? TypingColor { get; set; }
+    public SignTextSize TextSize { get; set; } = SignTextSize.Default;
     public bool HasSelection => Caret.CompareTo(Anchor) != 0;
     public SignCaret SelectionStart => Caret.CompareTo(Anchor) <= 0 ? Caret : Anchor;
     public SignCaret SelectionEnd => Caret.CompareTo(Anchor) <= 0 ? Anchor : Caret;
@@ -71,6 +72,7 @@ public sealed class SignDocument
     {
         var document = new SignDocument(maxLines, maxLineLength, defaultAlign);
         document._lines.Clear();
+        document.TextSize = SignMarkup.ReadTextSize(markup);
 
         var colorMarker = new Color4(0.123f, 0.456f, 0.789f, 1f);
         foreach (var parsed in SignMarkup.Parse(SignMarkup.Sanitize(markup, maxLines, maxLineLength), colorMarker, defaultAlign))
@@ -94,6 +96,7 @@ public sealed class SignDocument
     public string ToMarkup()
     {
         var builder = new StringBuilder();
+        builder.Append(TextSize.ToTag());
         for (int l = 0; l < _lines.Count; l++)
         {
             if (l > 0) builder.Append('\n');
@@ -290,6 +293,7 @@ public sealed class SignDocument
         }
 
         for (int l = firstLine; l <= lastLine; l++) _lines[l].Align = DefaultAlign;
+        if (all) TextSize = SignTextSize.Default;
         TypingBold = false;
         TypingColor = null;
     }

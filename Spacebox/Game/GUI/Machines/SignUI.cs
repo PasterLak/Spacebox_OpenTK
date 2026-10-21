@@ -30,6 +30,7 @@ public static class SignUI
     private static SignDocument _document;
     private static string _blockName = "Sign";
     private static float _signGlyphWidth;
+    private static float _signLineHeight;
 
     public static bool IsOpen => UIManager.IsOpen(WindowId) && _sign != null;
 
@@ -40,6 +41,7 @@ public static class SignUI
         _document = SignDocument.FromMarkup(sign.Text, data.MaxLines, data.MaxLineLength, data.Align);
         _blockName = GameAssets.GetBlockDataById(sign.Id)?.Name ?? _blockName;
         _signGlyphWidth = SignTextBaker.MeasureText(MeasureGlyph, data.Font);
+        _signLineHeight = SignTextBaker.BaseLineHeight(data.Font);
         _editor.ResetBlink();
         UIManager.Open(WindowId);
     }
@@ -77,11 +79,17 @@ public static class SignUI
         ImGui.SetCursorPosX(padding);
         DrawLayoutRow();
 
+        float fit = FitScale(data);
+        ImGui.SetCursorPosX(padding);
+        DrawSizeRow(fit, contentWidth);
+
         float editorWidth = MathF.Min(contentWidth, editorHeight * data.Width);
         ImGui.SetCursorPosX(padding + (contentWidth - editorWidth) * 0.5f);
         float signToEditor = editorWidth / (data.PixelsPerBlock * data.Width);
-        float scale = Math.Clamp(_signGlyphWidth * signToEditor / ImGui.CalcTextSize(MeasureGlyph).X, MinTextScale, MaxTextScale);
-        _editor.Draw(_document, new Vector2(editorWidth, editorHeight), BackgroundFor(data.TextColor), data.TextColor, scale, data.Margin * signToEditor);
+        float textScale = _document.TextSize.Resolve(fit);
+        float glyphScale = Math.Clamp(_signGlyphWidth * signToEditor / ImGui.CalcTextSize(MeasureGlyph).X, MinTextScale, MaxTextScale) * textScale;
+        var metrics = new SignEditorMetrics(glyphScale, _signLineHeight * textScale * signToEditor, data.Margin * signToEditor);
+        _editor.Draw(_document, new Vector2(editorWidth, editorHeight), BackgroundFor(data.TextColor), data.TextColor, metrics);
 
         ImGui.SetCursorPosX(padding);
         var caret = _document.Caret;
@@ -136,7 +144,35 @@ public static class SignUI
 
         ImGui.SameLine();
         if (ImGui.Button("Reset style")) _document.ResetStyle();
-        TooltipFor("Removes bold, colours and alignment from the selection, or from the whole sign when nothing is selected");
+        TooltipFor("Removes bold, colours and alignment from the selection, or every style and the text size when nothing is selected");
+    }
+
+    private static float FitScale(Spacebox.Game.Resource.SignBlockData data)
+    {
+        var lines = SignMarkup.Parse(_document.ToMarkup(), data.TextColor, data.Align);
+        return SignTextBaker.FitScale(lines, data.PixelsPerBlock * data.Width, data.PixelsPerBlock, data.Margin, data.Font);
+    }
+
+    private static void DrawSizeRow(float fit, float width)
+    {
+        var size = _document.TextSize;
+        float largest = Math.Clamp(fit, SignTextSize.MinScale, SignTextSize.MaxScale);
+        if (!size.Fill && size.Scale > largest) _document.TextSize = size = new SignTextSize(largest, false);
+
+        if (ToggleButton("Fill", size.Fill)) _document.TextSize = size = new SignTextSize(size.Fill ? largest : size.Scale, !size.Fill);
+        TooltipFor("Makes the text as big as the sign allows; use new lines to fit long text better");
+
+        ImGui.SameLine();
+        ImGui.TextColored(HintColor, "Size");
+        ImGui.SameLine();
+        bool locked = size.Fill || largest <= SignTextSize.MinScale;
+        float value = size.Fill ? largest : size.Scale;
+        ImGui.BeginDisabled(locked);
+        ImGui.SetNextItemWidth(width * 0.45f);
+        if (ImGui.SliderFloat("##signTextSize", ref value, SignTextSize.MinScale, MathF.Max(largest, SignTextSize.MinScale + 0.1f), "%.1fx"))
+            _document.TextSize = new SignTextSize(MathF.Min(value, largest), false);
+        ImGui.EndDisabled();
+        TooltipFor(largest <= SignTextSize.MinScale ? "The text does not fit bigger; shorten the lines or split them" : "Text size for the whole sign");
     }
 
     private static bool ToggleButton(string label, bool active)

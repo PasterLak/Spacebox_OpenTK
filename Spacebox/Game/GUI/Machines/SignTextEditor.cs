@@ -17,10 +17,11 @@ public sealed class SignTextEditor
     private readonly List<float> _lineTops = new List<float>();
     private float _cachedFontSize;
     private float _lineHeight;
+    private float _scale = 1f;
     private bool _dragging;
     private double _blinkStart;
 
-    public bool Draw(SignDocument document, Vector2 size, Vector4 background, Color4 defaultColor, float scale, float margin)
+    public bool Draw(SignDocument document, Vector2 size, Vector4 background, Color4 defaultColor, SignEditorMetrics metrics)
     {
         var start = ImGui.GetCursorScreenPos();
         ImGui.InvisibleButton("##signEditor", size);
@@ -28,16 +29,16 @@ public sealed class SignTextEditor
         if (hovered) ImGui.SetMouseCursor(ImGuiMouseCursor.TextInput);
         ImGui.SetNextFrameWantCaptureKeyboard(true);
 
-        Layout(document, start, size, scale, margin);
+        Layout(document, start, size, metrics);
         bool changed = HandleKeyboard(document);
         HandleMouse(document, hovered);
-        if (changed) Layout(document, start, size, scale, margin);
+        if (changed) Layout(document, start, size, metrics);
 
         var drawList = ImGui.GetWindowDrawList();
         drawList.AddRectFilled(start, start + size, ImGui.ColorConvertFloat4ToU32(background));
-        drawList.PushClipRect(start, start + size, true);
+        drawList.PushClipRect(start + new Vector2(metrics.Margin), start + size - new Vector2(metrics.Margin), true);
         DrawSelection(drawList, document);
-        DrawText(drawList, document, defaultColor, scale);
+        DrawText(drawList, document, defaultColor);
         DrawCaret(drawList, document, defaultColor);
         drawList.PopClipRect();
         return changed;
@@ -49,7 +50,7 @@ public sealed class SignTextEditor
         _dragging = false;
     }
 
-    private void Layout(SignDocument document, Vector2 start, Vector2 size, float scale, float margin)
+    private void Layout(SignDocument document, Vector2 start, Vector2 size, SignEditorMetrics metrics)
     {
         if (_cachedFontSize != ImGui.GetFontSize())
         {
@@ -58,9 +59,20 @@ public sealed class SignTextEditor
         }
 
         var lines = document.Lines;
-        _lineHeight = ImGui.GetTextLineHeight() * scale;
-        float top = start.Y + (size.Y - lines.Count * _lineHeight) * 0.5f;
+        _scale = metrics.GlyphScale;
+        _lineHeight = metrics.LineHeight;
 
+        float widest = 0f;
+        for (int l = 0; l < lines.Count; l++) widest = MathF.Max(widest, LineWidth(lines[l], _scale));
+
+        float availableWidth = MathF.Max(1f, size.X - metrics.Margin * 2f);
+        float availableHeight = MathF.Max(1f, size.Y - metrics.Margin * 2f);
+        float shrink = MathF.Min(1f, availableHeight / (lines.Count * _lineHeight));
+        if (widest > 0f) shrink = MathF.Min(shrink, availableWidth / widest);
+        _scale *= shrink;
+        _lineHeight *= shrink;
+
+        float top = start.Y + (size.Y - lines.Count * _lineHeight) * 0.5f;
         while (_columns.Count < lines.Count) _columns.Add(Array.Empty<float>());
         _lineTops.Clear();
 
@@ -69,26 +81,31 @@ public sealed class SignTextEditor
             var chars = lines[l].Chars;
             if (_columns[l].Length != chars.Count + 1) _columns[l] = new float[chars.Count + 1];
             var columns = _columns[l];
-
-            float width = 0f;
-            for (int i = 0; i < chars.Count; i++) width += CharWidth(chars[i], scale);
+            float width = LineWidth(lines[l], _scale);
 
             float x = lines[l].Align switch
             {
-                SignAlign.Left => start.X + margin,
-                SignAlign.Right => start.X + size.X - margin - width,
+                SignAlign.Left => start.X + metrics.Margin,
+                SignAlign.Right => start.X + size.X - metrics.Margin - width,
                 _ => start.X + (size.X - width) * 0.5f
             };
 
             columns[0] = x;
             for (int i = 0; i < chars.Count; i++)
             {
-                x += CharWidth(chars[i], scale);
+                x += CharWidth(chars[i], _scale);
                 columns[i + 1] = x;
             }
 
             _lineTops.Add(top + l * _lineHeight);
         }
+    }
+
+    private float LineWidth(SignDocumentLine line, float scale)
+    {
+        float width = 0f;
+        for (int i = 0; i < line.Chars.Count; i++) width += CharWidth(line.Chars[i], scale);
+        return width;
     }
 
     private bool HandleKeyboard(SignDocument document)
@@ -209,11 +226,12 @@ public sealed class SignTextEditor
         }
     }
 
-    private void DrawText(ImDrawListPtr drawList, SignDocument document, Color4 defaultColor, float scale)
+    private void DrawText(ImDrawListPtr drawList, SignDocument document, Color4 defaultColor)
     {
         var font = ImGui.GetFont();
-        float fontSize = ImGui.GetFontSize() * scale;
-        float boldOffset = MathF.Max(1f, scale);
+        float fontSize = ImGui.GetFontSize() * _scale;
+        float boldOffset = MathF.Max(1f, _scale);
+        float lift = (_lineHeight - fontSize) * 0.5f;
 
         for (int l = 0; l < document.Lines.Count; l++)
         {
@@ -224,7 +242,7 @@ public sealed class SignTextEditor
                 var c = chars[i];
                 var tint = c.Color ?? defaultColor;
                 uint color = ImGui.ColorConvertFloat4ToU32(new Vector4(tint.R, tint.G, tint.B, 1f));
-                var position = new Vector2(columns[i], _lineTops[l]);
+                var position = new Vector2(columns[i], _lineTops[l] + lift);
                 string glyph = Glyph(c.Value);
                 drawList.AddText(font, fontSize, position, color, glyph);
                 if (c.Bold) drawList.AddText(font, fontSize, position + new Vector2(boldOffset, 0f), color, glyph);
@@ -262,5 +280,19 @@ public sealed class SignTextEditor
             _glyphs[value] = glyph;
         }
         return glyph;
+    }
+}
+
+public readonly struct SignEditorMetrics
+{
+    public readonly float GlyphScale;
+    public readonly float LineHeight;
+    public readonly float Margin;
+
+    public SignEditorMetrics(float glyphScale, float lineHeight, float margin)
+    {
+        GlyphScale = glyphScale;
+        LineHeight = lineHeight;
+        Margin = margin;
     }
 }

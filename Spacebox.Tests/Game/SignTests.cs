@@ -229,4 +229,74 @@ public class SignTests
         Assert.True(shape.RequiresSupport);
         Assert.True(shape.HasFacing);
     }
+
+    [Fact]
+    public void TextSize_ReadsAndWritesTags()
+    {
+        Assert.Equal(SignTextSize.Default, SignMarkup.ReadTextSize("plain"));
+        Assert.True(SignMarkup.ReadTextSize("<fill>SHOP").Fill);
+        Assert.Equal(2.5f, SignMarkup.ReadTextSize("<size=2.5>Hi").Scale);
+        Assert.Equal(SignTextSize.MaxScale, SignMarkup.ReadTextSize("<size=999>Hi").Scale);
+        Assert.Equal("Hi", SignMarkup.StripTags("<size=2>Hi"));
+
+        var document = SignDocument.FromMarkup("<size=3>A<b>B</b>", 4, 15, SignAlign.Center);
+        Assert.Equal(3f, document.TextSize.Scale);
+        Assert.Equal("<size=3>A<b>B</b>", document.ToMarkup());
+
+        document.TextSize = new SignTextSize(1f, true);
+        Assert.StartsWith("<fill>", document.ToMarkup());
+        document.ResetStyle();
+        Assert.Equal("AB", document.ToMarkup());
+    }
+
+    [Fact]
+    public void TextSize_NeverExceedsTheFit()
+    {
+        Assert.Equal(2f, new SignTextSize(5f, false).Resolve(2f));
+        Assert.Equal(1.5f, new SignTextSize(1.5f, false).Resolve(4f));
+        Assert.Equal(4f, new SignTextSize(1f, true).Resolve(4f));
+        Assert.Equal(0.5f, SignTextSize.Default.Resolve(0.5f));
+    }
+
+    [Theory]
+    [InlineData("<fill>SHOP")]
+    [InlineData("<size=16>SHOP")]
+    [InlineData("a very long line that is too long\nsecond")]
+    [InlineData("<fill><b>1\n2\n3\n4\n5\n6</b>")]
+    public void Baker_KeepsTextInsideTheArea(string markup)
+    {
+        const int width = 192, height = 96, margin = 4;
+        var lines = SignMarkup.Parse(markup, Black, SignAlign.Center);
+        var pixels = SignTextBaker.Bake(lines, width, height, margin, "missing.ttf", SignMarkup.ReadTextSize(markup));
+
+        var (minX, minY, maxX, maxY) = Bounds(pixels.Data, width, height);
+        Assert.True(maxX >= minX, "nothing was drawn");
+        Assert.True(minX >= margin && minY >= margin && maxX < width - margin && maxY < height - margin, $"{minX},{minY} - {maxX},{maxY}");
+    }
+
+    [Fact]
+    public void Baker_FillMakesShortTextBig()
+    {
+        const int width = 192, height = 96, margin = 4;
+        var plain = SignMarkup.Parse("SHOP", Black, SignAlign.Center);
+        float fit = SignTextBaker.FitScale(plain, width, height, margin, "missing.ttf");
+        Assert.True(fit > 3f, $"fit {fit}");
+
+        var pixels = SignTextBaker.Bake(plain, width, height, margin, "missing.ttf", new SignTextSize(1f, true));
+        var (minX, minY, maxX, maxY) = Bounds(pixels.Data, width, height);
+        Assert.True(maxX - minX > (width - margin * 2) * 0.8f || maxY - minY > (height - margin * 2) * 0.5f, $"{minX},{minY} - {maxX},{maxY}");
+    }
+
+    private static (int, int, int, int) Bounds(byte[] data, int width, int height)
+    {
+        int minX = width, minY = height, maxX = -1, maxY = -1;
+        for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
+            {
+                if (data[(y * width + x) * 4 + 3] == 0) continue;
+                minX = Math.Min(minX, x); maxX = Math.Max(maxX, x);
+                minY = Math.Min(minY, y); maxY = Math.Max(maxY, y);
+            }
+        return (minX, minY, maxX, maxY);
+    }
 }
