@@ -86,6 +86,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 - The active interaction is picked from the held item in `Game/GUI/Hud/PanelUI.cs` → `UpdatePlayerInteraction`.
 - Item-independent behaviour: `IPassiveInteraction`, passed to `InteractionHandler` by the game mode and updated after the active interaction (e.g. `CreativeBlockDestroying` in `CreativeMode`).
 - Interactions that own left click (`block_destroy`/`shoot`) override `UsesPrimaryAction => true` (drills, shoot, eraser, camera point); passive left-click actions skip them to avoid double actions.
+- Interactions that let the player use blocks call `BlockUseTarget.Update(player)` (fixed `InteractiveBlock.InteractionDistance`), never their own tool ray.
 - Destroy blocks through `BlockDestroyer.Destroy` / `DestroyInstantly` (callback, removal, network, stats, sound). Hold-to-repeat input: `RepeatingAction`.
 
 ## Multi-cell blocks

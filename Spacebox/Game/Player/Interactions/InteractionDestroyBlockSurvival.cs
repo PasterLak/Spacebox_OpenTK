@@ -18,7 +18,6 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
     private const float timeToDamage = 0.5f;
     private float _time = timeToDamage;
     private Block lastBlock = null;
-    private InteractiveBlock lastInteractiveBlock;
     private static AudioSource drillAudio;
     private static AudioSource drill0Audio;
 
@@ -193,6 +192,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             return;
         }
 
+        BlockUseTarget.Update(player);
         Ray ray = new Ray(player.Position, player.Front, drillItem.Range);
 
 
@@ -258,17 +258,6 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
                 BlockMiningEffect.Enabled = true;
                 if (!light.Enabled)
                     light.Enabled = true;
-            }
-
-            lastInteractiveBlock = hit.block as InteractiveBlock;
-            if (lastInteractiveBlock != null)
-
-            {
-                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, ref hit);
-                if (hit.block.Is<StorageBlock>(out var storageBlock))
-                {
-                    storageBlock.SetPositionInChunk(hit.blockPositionIndex);
-                }
             }
 
         }

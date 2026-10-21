@@ -15,7 +15,6 @@ namespace Spacebox.Game.Player.Interactions;
 public class InteractionShoot : InteractionMode
 {
     private AudioSource shotSound;
-    private InteractiveBlock lastInteractiveBlock;
 
     private AnimatedItemModel model;
 
@@ -137,22 +136,7 @@ public class InteractionShoot : InteractionMode
             return;
         }
 
-        Ray rayNormal = new Ray(player.Position, player.Front, InteractiveBlock.InteractionDistance);
-        HitInfo hit;
-
-        if (World.CurrentSector.Raycast(rayNormal, out hit))
-        {
-            if (hit.block.Is<InteractiveBlock>(out var b))
-            {
-                lastInteractiveBlock = b;
-                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, ref hit);
-
-                if (hit.block.Is<StorageBlock>(out var storageBlock))
-                {
-                    storageBlock.SetPositionInChunk(hit.blockPositionIndex);
-                }
-            }
-        }
+        BlockUseTarget.Update(player);
 
         if (canShoot && Input.IsAction("shoot"))
         {

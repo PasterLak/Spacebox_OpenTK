@@ -18,7 +18,6 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
 {
     private const float MinBlockDestroyTime = 0.175f;
     private readonly RepeatingAction _destroyAction = new RepeatingAction("block_destroy", MinBlockDestroyTime);
-    private InteractiveBlock lastInteractiveBlock;
 
     public InteractionDestroyBlockCreative(ItemSlot itemSlot) : base(itemSlot)
     {
@@ -43,6 +42,7 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
             model.SetAnimation(false);
             return;
         }
+        BlockUseTarget.Update(player);
         Ray ray = new Ray(player.Position, player.Front, 10);
         bool hasVoxelHit = World.CurrentSector.Raycast(ray, out HitInfo hit);
 
@@ -60,17 +60,6 @@ public class InteractionDestroyBlockCreative : InteractionDestroyBlock
                 model.SetAnimation(true);
             if (_destroyAction.Poll())
                 BlockDestroyer.DestroyInstantly(hit, player);
-            if (hit.block.Is<InteractiveBlock>(out var b))
-            {
-                lastInteractiveBlock = b;
-                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, ref hit);
-
-                if (hit.block.Is<StorageBlock>(out var storageBlock))
-                {
-
-                    storageBlock.SetPositionInChunk(hit.blockPositionIndex);
-                }
-            }
             //else CenteredText.Hide();
         }
         else

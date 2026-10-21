@@ -14,7 +14,6 @@ public class InteractionConsumeItem : InteractionMode
 
     private ItemSlot _itemSlot;
     private AudioSource useConsumableAudio;
-    private InteractiveBlock lastInteractiveBlock;
 
     private float ticks = 0;
     private float cooldown = 0f;
@@ -77,24 +76,7 @@ public class InteractionConsumeItem : InteractionMode
             ticks = cooldown;
         }
 
-        Ray rayNormal = new Ray(player.Position, player.Front, InteractiveBlock.InteractionDistance);
-        HitInfo hit;
-
-        if (World.CurrentSector.Raycast(rayNormal, out hit))
-        {
-            if (hit.block.Is<InteractiveBlock>(out var b))
-            {
-                lastInteractiveBlock = b;
-                InteractiveBlock.UpdateInteractive(lastInteractiveBlock, player, ref hit);
-
-                if (hit.block.Is<StorageBlock>(out var storageBlock))
-                {
-                    storageBlock.SetPositionInChunk(hit.blockPositionIndex);
-                }
-            }
-
-            return;
-        }
+        if (BlockUseTarget.Update(player)) return;
 
         if (ticks < cooldown) return;
         if (!Input.IsActionDown("use")) return;
