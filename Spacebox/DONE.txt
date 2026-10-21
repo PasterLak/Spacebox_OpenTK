@@ -95,6 +95,7 @@ Small
 - build scripts read the version from Application.cs, keep other platform builds, zip without a root folder
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
+- multiplayer: mobs no longer play the alert sound when they first appear for a joining client
 - multiplayer: explosions that broke blocks were dropped by every client (cell count limit too small), so clients never saw the blast
 - multiplayer: the server checks reach (16 m) for block removal, block damage, doors, gravity generator settings, ship console bindings and new entities (refused new entities are refunded); edits of entities the server has not loaded are undone and refunded instead of being relayed and lost; gravity strength NaN is ignored; entity file requests cannot leave the sector folder
 - multiplayer: creative and spectator players no longer take damage from other players' weapons and drills

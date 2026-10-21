@@ -35,7 +35,7 @@ public sealed class MobNetwork : NetworkTransform, IMobLink
         if (!IsReplica) return;
 
         mob.MakeReplica();
-        mob.ApplyReplicatedAction((MobAction)_action.Value);
+        mob.ApplyReplicatedAction((MobAction)_action.Value, false);
     }
 
     public override void OnNetworkDespawn()

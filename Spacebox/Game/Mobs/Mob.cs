@@ -96,9 +96,9 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
         Locomotion.Stop();
     }
 
-    public void ApplyReplicatedAction(MobAction action)
+    public void ApplyReplicatedAction(MobAction action, bool playSounds = true)
     {
-        if (action == MobAction.Hunting && _action != MobAction.Hunting) PlaySound(Definition.Sounds.Alert);
+        if (playSounds && action == MobAction.Hunting && _action != MobAction.Hunting) PlaySound(Definition.Sounds.Alert);
         _action = action;
         if (action != MobAction.Eating) _eatingEffect.Stop();
     }
