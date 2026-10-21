@@ -58,6 +58,12 @@ public class SpaceboxWindow : EngineWindow
         if (!string.IsNullOrEmpty(LaunchOptions.EditorGameSet) && Spacebox.Editor.GameSetEditorLauncher.TryOpen(LaunchOptions.EditorGameSet, LaunchOptions.EditorPanel))
             return;
 
+        if (LaunchOptions.UiShowcase)
+        {
+            SceneManager.Load<UiShowcaseScene>();
+            return;
+        }
+
         if (LaunchOptions.HasConnectTarget)
         {
             QuickJoin.Start(LaunchOptions.ConnectAddress, LaunchOptions.ConnectPort, LaunchOptions.PlayerName);
@@ -117,6 +123,7 @@ public class SpaceboxWindow : EngineWindow
         SceneManager.Register<Spacebox.Editor.GameSetEditorScene>();
         SceneManager.Register<LogoScene>();
         SceneManager.Register<ParticleSystemEditor>();
+        SceneManager.Register<UiShowcaseScene>();
     }
 
     protected override void OnLoadImGui()

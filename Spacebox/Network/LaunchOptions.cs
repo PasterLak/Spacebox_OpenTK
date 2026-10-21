@@ -12,6 +12,7 @@ public static class LaunchOptions
     public static string EditorGameSet { get; private set; }
     public static string EditorPanel { get; private set; }
     public static int WaitForProcessId { get; private set; }
+    public static bool UiShowcase { get; private set; }
 
     public static bool HasConnectTarget => !string.IsNullOrEmpty(ConnectAddress);
 
@@ -27,6 +28,9 @@ public static class LaunchOptions
                 case "--server":
                 case "--dedicated":
                     IsDedicated = true;
+                    break;
+                case "--ui-showcase":
+                    UiShowcase = true;
                     break;
                 case "--hidden":
                     IsHidden = true;

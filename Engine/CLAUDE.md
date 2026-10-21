@@ -21,7 +21,8 @@ Game-independent engine over OpenTK (GL 3.3 core). Namespace `Engine.*`. Must ne
 | `Physics/` | Bounding volumes, `Ray`, `Collision`, bodies, `BVHCuller` (file `BHVCuller.cs`) |
 | `Spatial/` | `Octree<T>`, `PointOctree<T>` (see "Which to use") |
 | `GUI/` | ImGui debug `Overlay` (F3) and its elements, `Sprite`, `WorldTextDebug`; ImGui backend `ImGuiController`, window stack `UIManager` (the only one; the game uses it too) |
-| `UI/` | `DevGui`, `Canvas`/`Node2D`/`Rect` (2D layer, rarely used) |
+| `UI/` | `DevGui`, `Canvas`/`Node2D`/`Rect` (old ImGui-based 2D layer, rarely used) |
+| `CanvasUI/` | Godot-like retained UI (namespace `Engine.CanvasUI`, see below): `CanvasItem` tree, `Node2D`/`Sprite2D`, `Control` with anchors/offsets/size flags, containers, controls, themes and style boxes, `SkiaCanvasFont`, batched `GlCanvasRenderer`, `CanvasRoot` (virtual resolution, input), `CanvasLayer` (engine glue) |
 | `Input/` | `Input` (raw keyboard/mouse state); `InputPro/` the current input system (`InputManager.Instance`); `InputManager0`/`InputAction0` legacy input — do not use in new code |
 | `Audio/` | OpenAL `AudioDevice`, `AudioClip`, `AudioSource`, `AudioMixer` (master + channels Effects/Music/Ambient/UI, `Muted`; set a source's `Channel`), Ogg/Wave loaders |
 | `Animation/` | `Animator`, move/rotate tweens |
@@ -99,6 +100,16 @@ Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
 - `DisposalManager`: thread-safe queue to defer GL disposal from worker threads; processed by the game scene.
 - `EventBus`: struct events implementing `IEvent`, listeners `IEventListener<T>`, `Publish(ref e)`. Cleared on every scene switch — subscribe again in each scene.
 - `ServiceLocator` (`Register`/`Get`/`TryGet`), `Pool<T>` (`Get`/`Release`), `ConcurrentPool<T>` (thread-safe `Rent`/`Return` with reset and a retain limit, for buffers shared by workers and the main thread), `TickTaskManager` (game ticks), `Debug` (`Log`/`Warning`/`Error`/`Success`, console on backtick, log file).
+
+## CanvasUI (new retained UI)
+
+- Godot model: `CanvasItem` (tree, `Visible`, `Modulate`) → `Node2D` (position/rotation/scale transform, `Sprite2D`) and `Control` (rect from anchors 0..1 + offsets, `CustomMinimumSize`, `SizeFlags` Fill/Expand/ShrinkCenter/ShrinkEnd + stretch ratio, `GrowDirection`, `MouseFilter` Stop/Pass/Ignore, `ClipContents`, `TooltipText`). `SetAnchorsAndOffsetsPreset(LayoutPreset, margin, size)` places a control like Godot's layout presets.
+- Containers set child rects (`Container.FitChildInRect`): `HBoxContainer`/`VBoxContainer` (separation, alignment, expand by ratio), `GridContainer`, `MarginContainer`, `CenterContainer`, `PanelContainer`. Controls: `ColorRect`, `Panel`, `TextureRect` (stretch modes, atlas `Region`), `NinePatchRect`, `Label` (alignment, autowrap, shadow/outline), `Button` (`BaseButton`: `Pressed`, toggle mode, states normal/hover/pressed/disabled), `ProgressBar`.
+- Styling: `Theme` holds style boxes, colors and constants by (type, name), `DefaultFont`/`DefaultFontSize`; lookup order: control overrides (`AddTheme*Override`) → `Theme` of the control and its ancestors → `CanvasRoot.Theme` → `Theme.Fallback`, each for `ThemeTypeVariation` (and `SetTypeVariation` bases) then the class chain. Style boxes: `StyleBoxFlat` (background, borders, shadow, top highlight), `StyleBoxTexture` (nine-patch), `StyleBoxEmpty`.
+- `CanvasRoot`: `VirtualSize` + `StretchMode` (Disabled, KeepAspect letterbox, Expand), layout only when dirty (property setters call `QueueLayout`), hit test (topmost, respects clip and mouse filter), hover/press/release/scroll dispatch with bubbling through `Pass` controls, tooltip delay; `WantsPointer` for gating game input. All of this is GL-free and covered by `Engine.Tests/CanvasUI`.
+- Rendering: `ICanvasRenderer` (`DrawRect`, `DrawTexture` with uv rect, clip stack); `GlCanvasRenderer` batches quads (8192 per batch, flush on texture change or clip), one draw call per texture run; `CanvasCommandList` records commands for tests. UVs follow the GL convention (image top at v = 1, `CanvasDraw.UvOf` converts top-down pixel regions). Text: `CanvasFont` (glyph metrics, `Measure`, `TextWrap`), `SkiaCanvasFont` bakes a TTF into an atlas (pixel fonts unantialiased, nearest).
+- Use: create a `CanvasLayer`, add controls to `layer.Root`, call `layer.Update(Time.Delta)` in the scene update and `layer.Render()` from `OnGUI` (draws before ImGui). No per-frame allocations in layout/draw; cache strings that change rarely.
+- Demo: game scene `UiShowcaseScene` (`--ui-showcase`, or the dev panel scene list) with three interface variants in `Spacebox/Game/GUI/Showcase/`.
 
 ## Headless mode
 

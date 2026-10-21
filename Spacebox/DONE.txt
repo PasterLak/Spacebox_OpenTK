@@ -104,6 +104,7 @@ Fixes
 - multiplayer: partial block damage (drilling, projectiles) is synced, players drilling one block add up
 - a block item is refunded when its placement fails locally or the server rejects it
 Engine
+- CanvasUI: Godot-like retained UI (Node2D, Control, anchors, containers, themes, style boxes, TTF atlas fonts, batched renderer, virtual resolution, mouse input and tooltips); UiShowcaseScene (--ui-showcase) with three game interface variants
 - Node3D.Destroy detaches every component (every second one was skipped)
 - Engine.Web: dependency-free HTTP server and router; MainThread.Run; Debug.MessageLogged
 - Engine.Web.Acme: ACME (Let's Encrypt) client with DNS-01 and a DuckDNS client, TLS on the HTTP server port
