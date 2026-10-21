@@ -33,4 +33,13 @@ public class EquipmentLayoutTests
     {
         Assert.Equal(expected, PlayerPreview.NormalizeYaw(yaw), 3);
     }
+
+    [Theory]
+    [InlineData(10f, 10f)]
+    [InlineData(200f, PlayerPreview.MaxPitch)]
+    [InlineData(-200f, -PlayerPreview.MaxPitch)]
+    public void Pitch_IsClamped(float pitch, float expected)
+    {
+        Assert.Equal(expected, PlayerPreview.ClampPitch(pitch), 3);
+    }
 }

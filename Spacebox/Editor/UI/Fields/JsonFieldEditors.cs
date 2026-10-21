@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using Spacebox.Editor.Data;
 using Spacebox.Game;
+using Spacebox.Game.Generation.Structures;
 
 namespace Spacebox.Editor.UI.Fields;
 
@@ -17,6 +18,7 @@ public sealed class JsonFieldEditors
         var editors = new JsonFieldEditors();
         editors.Add(new ColorFieldEditor());
         editors.Add(new VectorFieldEditor());
+        editors.Add(new NumberRangeFieldEditor(c => c.Scope == EditorScopes.Asteroids && c.NameIs("MinRadius", "MaxRadius"), AsteroidRadius.Min, AsteroidRadius.Max));
 
         editors.Add(new ReferenceFieldEditor(c => c.Scope == EditorScopes.Blocks && c.PathContains("Textures"), e => e.Assets.BlockTextures, (e, n) => e.Assets.BlockTexture(n)));
         editors.Add(new ReferenceFieldEditor(c => c.NameIs("Sprite"), e => e.Assets.ItemSprites, (e, n) => e.Assets.ItemSprite(n)));

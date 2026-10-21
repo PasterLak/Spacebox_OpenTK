@@ -35,6 +35,10 @@ public static class ClaimBeaconUI
     private static LocalAstronaut _player;
     private static bool _wasVisible;
     private static string _newMember = "";
+    private const int MaxNameSuggestions = 6;
+    private static readonly List<string> _onlinePlayers = new List<string>();
+    private static readonly List<string> _excludedNames = new List<string>();
+    private static readonly List<string> _nameSuggestions = new List<string>();
     private static string _blockName = "Claim Beacon";
 
     public static bool ShowZone { get; private set; } = true;
@@ -223,7 +227,7 @@ public static class ClaimBeaconUI
         ImGui.SetCursorPos(min);
         ImGui.TextUnformatted($"Members {_block.Members.Count}/{ClaimSettings.Current.MaxMembers}");
 
-        float footer = canManage ? line * 2f : line;
+        float footer = canManage ? line * 3f : line;
         float listHeight = MathF.Max(line, height - ImGui.GetTextLineHeightWithSpacing() - footer);
         ImGui.SetCursorPosX(min.X);
         ImGui.PushStyleColor(ImGuiCol.ChildBg, Vector4.Zero);
@@ -258,11 +262,47 @@ public static class ClaimBeaconUI
                 ClaimMembersNetwork.Request(_block, _newMember, true);
                 _newMember = "";
             }
+
+            DrawNameSuggestions(min.X, width);
         }
 
         ImGui.SetCursorPosX(min.X);
         bool showZone = ShowZone;
         if (ImGui.Checkbox("Show area", ref showZone)) ShowZone = showZone;
+    }
+
+    private static void DrawNameSuggestions(float x, float width)
+    {
+        _onlinePlayers.Clear();
+        CommandSuggestionSources.AddPlayerNames(_onlinePlayers);
+        _excludedNames.Clear();
+        _excludedNames.AddRange(_block.Members);
+        _excludedNames.Add(_block.Owner);
+        _excludedNames.Add(GameSession.PlayerName);
+        NameSuggestions.Filter(_newMember, _onlinePlayers, _excludedNames, _nameSuggestions, MaxNameSuggestions);
+
+        ImGui.SetCursorPosX(x);
+        if (_nameSuggestions.Count == 0)
+        {
+            Text(SecondaryColor, _newMember.Trim().Length == 0 ? "No other players online" : "No matching online player");
+            return;
+        }
+
+        float right = x + width;
+        var style = ImGui.GetStyle();
+        for (int i = 0; i < _nameSuggestions.Count; i++)
+        {
+            string name = _nameSuggestions[i];
+            float buttonWidth = ImGui.CalcTextSize(name).X + style.FramePadding.X * 2f;
+            if (i > 0)
+            {
+                ImGui.SameLine();
+                if (ImGui.GetCursorPosX() + buttonWidth > right) break;
+            }
+
+            if (ImGui.SmallButton($"{name}##suggest{i}")) _newMember = name;
+            UIHelper.ShowTooltip("Online player, click to fill in");
+        }
     }
 
     private static void Text(Vector4 color, string text)

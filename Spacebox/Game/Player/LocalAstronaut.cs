@@ -397,6 +397,8 @@ namespace Spacebox.Game.Player
             HitImage.Hide();
             Settings.ShowInterface = false;
             PanelUI.IsItemModelVisible = false;
+            Chat.CancelInput();
+            UIManager.CloseAll();
             Input.ShowCursor();
             Mood.AddMoodRandom(1, 10);
             Flashlight.Enabled = false;

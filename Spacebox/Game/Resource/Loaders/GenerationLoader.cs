@@ -247,8 +247,8 @@ public class GenerationLoader
             var asteroid = new AsteroidData(json.Id, json.Name)
             {
                 
-                MinRadius = json.MinRadius,
-                MaxRadius = json.MaxRadius,
+                MinRadius = AsteroidRadius.Clamp(json.MinRadius),
+                MaxRadius = Math.Max(AsteroidRadius.Clamp(json.MinRadius), AsteroidRadius.Clamp(json.MaxRadius)),
                 DensityThreshold = json.DensityThreshold,
                 NoiseOctaves = json.NoiseOctaves,
                 NoiseScale = json.NoiseScale,

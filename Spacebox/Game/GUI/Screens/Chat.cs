@@ -94,6 +94,11 @@ namespace Spacebox.Game.GUI
 
         static bool isStopped = true;
 
+        public static void CancelInput()
+        {
+            if (FocusInput || UIManager.IsOpen("chat")) StopInput();
+        }
+
         private static void StopInput()
         {
             _inputBuffer = "";

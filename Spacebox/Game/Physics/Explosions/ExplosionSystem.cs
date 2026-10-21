@@ -102,12 +102,14 @@ public sealed class ExplosionSystem : IDisposable
         if (!entity.TryGetBlockLocal(pending.Cell, out var chunk, out var index)) return;
         if (chunk.IsDisposed || chunk.Blocks[index.X, index.Y, index.Z] is not IExplosiveBlock { Explosion: not null }) return;
 
+        var rules = GameplayRules.ForExplosion(ServerRules.Current, pending.CauserPeer);
+        if (Spacebox.Game.Protection.ProtectionRules.IsExplosionProtected(entity, pending.Cell, rules.RespectClaims)) return;
+
         var data = pending.Data;
         var centerLocal = GetCenterLocal(entity, pending.Cell);
         var worldCenter = entity.EntityLocalToWorld(centerLocal);
 
         short bombId = chunk.Blocks[index.X, index.Y, index.Z].Id;
-        var rules = GameplayRules.ForExplosion(ServerRules.Current, pending.CauserPeer);
 
         if (rules.BreakBlocks)
         {

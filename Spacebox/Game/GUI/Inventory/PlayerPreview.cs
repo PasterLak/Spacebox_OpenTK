@@ -17,6 +17,7 @@ public sealed class PlayerPreview : IDisposable
     private const float FigureRadius = 0.75f;
     private const float StartYaw = 205f;
     private const float CameraPitch = -6f;
+    public const float MaxPitch = 75f;
     private const float RotateSpeed = 0.5f;
     private const string BodyModel = "Resources/Models/Player/Astronaut_Body_Fly.obj";
     private const string HelmetModel = "Resources/Models/Player/Astronaut_Helmet_Closed.obj";
@@ -35,6 +36,7 @@ public sealed class PlayerPreview : IDisposable
     private string _skinColor;
     private Item _heldItem;
     private float _yaw = StartYaw;
+    private float _pitch = CameraPitch;
     private bool _visible;
 
     public static float NormalizeYaw(float yaw)
@@ -42,6 +44,8 @@ public sealed class PlayerPreview : IDisposable
         yaw %= 360f;
         return yaw < 0f ? yaw + 360f : yaw;
     }
+
+    public static float ClampPitch(float pitch) => Math.Clamp(pitch, -MaxPitch, MaxPitch);
 
     public bool Show(LocalAstronaut player, PlayerEquipment equipment, Item heldItem, Vector2 size)
     {
@@ -57,9 +61,16 @@ public sealed class PlayerPreview : IDisposable
         ImGui.InvisibleButton("##playerPreview", size);
 
         if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left, 0f))
-            _yaw = NormalizeYaw(_yaw + ImGui.GetIO().MouseDelta.X * RotateSpeed);
+        {
+            var delta = ImGui.GetIO().MouseDelta;
+            _yaw = NormalizeYaw(_yaw + delta.X * RotateSpeed);
+            _pitch = ClampPitch(_pitch + delta.Y * RotateSpeed);
+        }
         if (ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
+        {
             _yaw = StartYaw;
+            _pitch = CameraPitch;
+        }
 
         _visible = true;
         return true;
@@ -71,6 +82,7 @@ public sealed class PlayerPreview : IDisposable
         _visible = false;
 
         _figure.Rotation = new Vector3(0f, _yaw, 0f);
+        _camera.SetAngles(0f, _pitch);
 
         int fog = Lighting.FogDensity;
         Lighting.FogDensity = 0;

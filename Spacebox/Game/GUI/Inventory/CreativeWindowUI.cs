@@ -59,6 +59,14 @@ public static class CreativeWindowUI
     private static Storage selectedStorage;
     static int hovered = -1;
 
+    private const uint SearchMaxLength = 64;
+    private static string _search = "";
+    private static string _appliedSearch = "";
+    private static Storage _searchResults;
+    private static readonly List<(Item Item, int Score)> _matches = new List<(Item, int)>();
+
+    private static bool IsSearching => _appliedSearch.Length > 0;
+
     public static void SetDefaultIcon(LocalAstronaut player)
     {
         CreativeWindowUI.player = player;
@@ -70,6 +78,9 @@ public static class CreativeWindowUI
          .ToArray();
 
         selectedStorage = storageAll;
+        _search = "";
+        _appliedSearch = "";
+        _searchResults = null;
 
         scrollAudio = new AudioSource(Resources.Get<AudioClip>("scroll"), AudioChannel.UI);
     }
@@ -126,6 +137,7 @@ public static class CreativeWindowUI
         GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y);
         ImGui.SetCursorPos(new Vector2(padding, padding));
         ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), "Creative");
+        DrawSearch(windowWidth - padding);
 
         ImGui.SetCursorPos(new Vector2(padding, scrollY));
 
@@ -153,7 +165,7 @@ public static class CreativeWindowUI
 
             if (ImGui.Button(" ALL\nTYPES", new Vector2(SlotSize, SlotSize)))
             {
-                selectedStorage = storageAll;
+                SelectCategory(storageAll);
             }
 
             ImGui.PopStyleColor(1);
@@ -201,14 +213,14 @@ public static class CreativeWindowUI
                             ImGui.PushStyleColor(ImGuiCol.Button, selected);
                             if (ImGui.Button("", new Vector2(SlotSize, SlotSize)))
                             {
-                                selectedStorage = categories[i].Storage;
+                                SelectCategory(categories[i].Storage);
                             }
                         }
                         else
                         {
                             if (InventoryUIHelper.SlotSprite.ImageButton(v.Name.Name, new Vector2(SlotSize, SlotSize)))
                             {
-                                selectedStorage = categories[i].Storage;
+                                SelectCategory(categories[i].Storage);
                             }
                         }
 
@@ -246,19 +258,22 @@ public static class CreativeWindowUI
 
         float scrollbarSize = ImGui.GetStyle().ScrollbarSize;
         float tableWidth = scrollWidth - scrollbarSize;
+        var shownStorage = IsSearching ? _searchResults : selectedStorage;
 
-        if (ImGui.BeginTable("CreativeTable", selectedStorage.SizeX, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit, new Vector2(scrollWidth, scrollHeight)))
+        if (IsSearching && _matches.Count == 0)
+            ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), $"Nothing found for \"{_appliedSearch}\"");
+        else if (ImGui.BeginTable("CreativeTable", shownStorage.SizeX, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit, new Vector2(scrollWidth, scrollHeight)))
         {
-            for (int x = 0; x < selectedStorage.SizeX; x++)
+            for (int x = 0; x < shownStorage.SizeX; x++)
                 ImGui.TableSetupColumn($"##columnCreative_{x}", ImGuiTableColumnFlags.WidthFixed, SlotSize);
 
-            for (int y = 0; y < selectedStorage.SizeY; y++)
+            for (int y = 0; y < shownStorage.SizeY; y++)
             {
                 ImGui.TableNextRow();
-                for (int x = 0; x < selectedStorage.SizeX; x++)
+                for (int x = 0; x < shownStorage.SizeX; x++)
                 {
                     ImGui.TableSetColumnIndex(x);
-                    var slot = selectedStorage.GetSlot(x, y);
+                    var slot = shownStorage.GetSlot(x, y);
                     if (slot == null) continue;
 
                     string id = $"slotCreative_{x}_{y}";
@@ -298,6 +313,55 @@ public static class CreativeWindowUI
         ImGui.PopStyleColor(4);
         ImGui.EndChild();
         ImGui.End();
+    }
+
+    private static void DrawSearch(float right)
+    {
+        ImGui.SameLine();
+        float x = ImGui.GetCursorPosX() + SlotSize * 0.2f;
+        ImGui.SetCursorPosX(x);
+        ImGui.SetNextItemWidth(MathF.Max(SlotSize, right - x));
+        ImGui.InputTextWithHint("##creativeSearch", "Search items", ref _search, SearchMaxLength);
+        UIHelper.ShowTooltip("Name, id or category; case and word order do not matter");
+
+        string query = _search.Trim();
+        if (query != _appliedSearch) ApplySearch(query);
+    }
+
+    private static void ApplySearch(string query)
+    {
+        _appliedSearch = query;
+        _matches.Clear();
+        if (query.Length == 0)
+        {
+            _searchResults = null;
+            return;
+        }
+
+        foreach (var item in GameAssets.Items.Values)
+        {
+            if (item.Id <= 1) continue;
+            int score = ItemSearch.Score(query, item.Name, SearchKeywords(item));
+            if (score != ItemSearch.NoMatch) _matches.Add((item, score));
+        }
+
+        _matches.Sort((a, b) => a.Score != b.Score ? a.Score.CompareTo(b.Score) : a.Item.Id.CompareTo(b.Item.Id));
+
+        var items = new List<Item>(_matches.Count);
+        for (int i = 0; i < _matches.Count; i++) items.Add(_matches[i].Item);
+        _searchResults = GameAssets.CreateCreativeStorage(5, items);
+    }
+
+    private static string SearchKeywords(Item item)
+    {
+        return $"{item.Id_string} {item.Category} {item.GetType().Name}";
+    }
+
+    private static void SelectCategory(Storage storage)
+    {
+        selectedStorage = storage;
+        _search = "";
+        ApplySearch("");
     }
 
     private static void OnSlotClicked(ItemSlot slot)
