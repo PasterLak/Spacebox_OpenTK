@@ -332,6 +332,9 @@ namespace Spacebox.Game.Resource
             {
                 blockData.SoundDestroy = modBlockData.Sounds.Destroy;
             }
+
+            blockData.FootstepSounds = Spacebox.Game.Player.Footsteps.FootstepSoundNames.KeepExisting(modBlockData.Sounds.Footsteps, GameAssets.Sounds.ContainsKey,
+                name => Debug.Error($"[GamesetLoader] Block <{modBlockData.Name}> wrong footstep sound: {name}. Skipped."));
         }
     }
 }

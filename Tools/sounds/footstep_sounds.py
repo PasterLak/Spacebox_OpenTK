@@ -1,60 +1,87 @@
 import sys, math
 import numpy as np
 import synth
-from synth import samples, resonator, lowpass, noise, envelope, crunch, place, soft_clip, save, RATE
+from synth import samples, resonator, lowpass, noise, place, soft_clip, save, RATE
 
 synth.setup(41, sys.argv[1] if len(sys.argv) > 1 else ".")
 rng = synth.rng
 
 VARIANTS = 4
+PEAK = 0.4
 
 
-def damped(freq, decay, length):
+def highpass(x, cutoff):
+    return x - lowpass(x, cutoff)
+
+
+def burst(length, decay, attack=0.001):
     n = samples(length)
     t = np.arange(n) / RATE
-    return np.sin(2 * math.pi * freq * t) * np.exp(-t / decay) * (1 - np.exp(-t / 0.0015))
+    return noise(n) * np.exp(-t / decay) * (1 - np.exp(-t / attack))
 
 
-def loudness_peak(x, target_rms):
-    x = x / max(1e-9, np.max(np.abs(x)))
-    rms = math.sqrt(float(np.mean(x ** 2)))
-    return min(0.7, target_rms / max(1e-9, rms))
+def band(x, center, q):
+    return resonator(x, center, q)
 
 
-def heel(length, cutoff, decay):
+def scuff(length, cutoff, amount):
     n = samples(length)
-    return lowpass(lowpass(noise(n), cutoff), cutoff) * np.exp(-np.arange(n) / (decay * RATE)) * 4
+    t = np.arange(n) / RATE
+    env = (1 - np.exp(-t / 0.008)) * np.exp(-t / (length * 0.35))
+    return highpass(noise(n), cutoff) * env * amount
+
+
+def stone_contact(strength):
+    hit = burst(0.08, rng.uniform(0.012, 0.02))
+    body = band(hit, rng.uniform(420, 650), 0.8) * 1.2
+    thump = lowpass(lowpass(burst(0.08, 0.02), 260), 260) * 1.5
+    return highpass(body + thump, 110) * strength
 
 
 def stone_step():
-    length = 0.3
-    out = np.zeros(samples(length))
-    place(out, heel(0.12, rng.uniform(180, 260), 0.025), 0)
-    place(out, damped(rng.uniform(80, 110), 0.03, 0.15) * 0.6, 0)
-    grit = crunch(0.16, int(rng.integers(40, 70)), 1400, 3200) * envelope(samples(0.16), [(0, 1), (0.4, 0.5), (1, 0)])
-    place(out, grit * 0.45, rng.uniform(0.005, 0.02))
-    roll = crunch(0.1, int(rng.integers(10, 20)), 900, 2000) * 0.25
-    place(out, roll, rng.uniform(0.06, 0.1))
-    return soft_clip(lowpass(out, 6000), 1.1)
+    out = np.zeros(samples(0.28))
+    place(out, stone_contact(1.0), 0)
+    place(out, stone_contact(rng.uniform(0.35, 0.5)), rng.uniform(0.055, 0.08))
+    place(out, lowpass(scuff(0.12, rng.uniform(1800, 2600), 0.05), 4000), rng.uniform(0.0, 0.01))
+    return soft_clip(lowpass(lowpass(out, 3800), 6000), 1.05)
+
+
+def metal_contact(strength):
+    hit = burst(0.12, rng.uniform(0.008, 0.012))
+    clack = band(hit, rng.uniform(1300, 1700), 0.7) * 0.9
+    plate = np.zeros_like(hit)
+    for center, decay, gain in ((rng.uniform(420, 520), 0.035, 0.55), (rng.uniform(1000, 1250), 0.025, 0.35), (rng.uniform(2100, 2500), 0.018, 0.2)):
+        excite = burst(0.12, decay)
+        plate += band(excite, center, 2.5) * gain
+    thump = lowpass(lowpass(burst(0.12, 0.02), 240), 240) * 1.1
+    return highpass(clack + plate + thump, 90) * strength
 
 
 def metal_step():
-    length = 0.32
-    out = np.zeros(samples(length))
-    place(out, heel(0.1, rng.uniform(220, 300), 0.02), 0)
-    place(out, damped(rng.uniform(105, 125), 0.04, 0.2) * 0.7, 0)
-    for freq, decay, gain in ((rng.uniform(290, 330), 0.06, 0.32), (rng.uniform(510, 560), 0.045, 0.22), (rng.uniform(840, 920), 0.03, 0.12)):
-        place(out, damped(freq, decay, 0.25) * gain, 0.002)
-    n = samples(0.04)
-    tick = resonator(noise(n), rng.uniform(2200, 2800), 2.0) * np.exp(-np.arange(n) / (0.006 * RATE)) * 0.25
-    place(out, tick, 0)
-    return soft_clip(lowpass(out, 5000), 1.1)
+    out = np.zeros(samples(0.3))
+    place(out, metal_contact(1.0), 0)
+    place(out, metal_contact(rng.uniform(0.35, 0.5)), rng.uniform(0.06, 0.08))
+    place(out, lowpass(scuff(0.08, 2500, 0.03), 5000), 0.005)
+    return soft_clip(lowpass(lowpass(out, 5000), 7000), 1.05)
 
 
-for i in range(1, VARIANTS + 1):
-    sound = stone_step()
-    save(f"footstepStone{i}", sound, loudness_peak(sound, 0.07))
+def glass_contact(strength):
+    hit = burst(0.1, rng.uniform(0.003, 0.005))
+    tap = band(hit, rng.uniform(3200, 3900), 1.5) * 0.9
+    pane = np.zeros_like(hit)
+    for center, decay, gain in ((rng.uniform(1700, 1950), 0.022, 0.3), (rng.uniform(2950, 3250), 0.017, 0.22), (rng.uniform(4500, 4900), 0.012, 0.15)):
+        pane += band(burst(0.1, decay), center, 6.0) * gain
+    thump = lowpass(lowpass(burst(0.1, 0.012), 320), 320) * 0.7
+    return highpass(tap + pane + thump, 150) * strength
 
-for i in range(1, VARIANTS + 1):
-    sound = metal_step()
-    save(f"footstepMetal{i}", sound, loudness_peak(sound, 0.07))
+
+def glass_step():
+    out = np.zeros(samples(0.26))
+    place(out, glass_contact(1.0), 0)
+    place(out, glass_contact(rng.uniform(0.35, 0.5)), rng.uniform(0.055, 0.075))
+    return soft_clip(lowpass(lowpass(out, 7000), 9000), 1.05)
+
+
+for name, build in (("footstepStone", stone_step), ("footstepMetal", metal_step), ("footstepGlass", glass_step)):
+    for i in range(1, VARIANTS + 1):
+        save(f"{name}{i}", build(), PEAK)

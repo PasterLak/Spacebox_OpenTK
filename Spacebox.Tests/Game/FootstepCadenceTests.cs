@@ -42,7 +42,27 @@ public class FootstepCadenceTests
     [Fact]
     public void NaturalBlocksSoundLikeStone()
     {
-        Assert.Equal(FootstepSurface.Stone, FootstepSurfaces.For(true));
-        Assert.Equal(FootstepSurface.Metal, FootstepSurfaces.For(false));
+        Assert.Same(FootstepSurfaces.Stone, FootstepSurfaces.Resolve(null, true));
+        Assert.Same(FootstepSurfaces.Metal, FootstepSurfaces.Resolve(Array.Empty<string>(), false));
+    }
+
+    [Fact]
+    public void BlockFootstepsOverrideSurface()
+    {
+        var glass = new[] { "footstepGlass1", "footstepGlass2" };
+
+        Assert.Same(glass, FootstepSurfaces.Resolve(glass, true));
+        Assert.Same(glass, FootstepSurfaces.Resolve(glass, false));
+    }
+
+    [Fact]
+    public void MissingFootstepSoundsAreSkipped()
+    {
+        var missing = new List<string>();
+        var names = FootstepSoundNames.KeepExisting(new[] { "footstepGlass1", "", "nope" }, name => name == "footstepGlass1", missing.Add);
+
+        Assert.Equal(new[] { "footstepGlass1" }, names);
+        Assert.Equal(new[] { "nope" }, missing);
+        Assert.Empty(FootstepSoundNames.KeepExisting(null, _ => true, null));
     }
 }

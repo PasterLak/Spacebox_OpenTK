@@ -5,7 +5,7 @@ namespace Spacebox.Game.Player.Footsteps;
 public sealed class PlayerFootsteps
 {
     public const float LandingMinSpeed = 2f;
-    public const float LandingVolume = 0.9f;
+    public const float LandingVolume = 0.65f;
 
     private readonly GravityWalker _walker;
     private readonly FootstepCadence _cadence = new FootstepCadence();
@@ -26,12 +26,12 @@ public sealed class PlayerFootsteps
 
         var gait = _walker.Gait;
         if (!_cadence.Advance(_walker.HorizontalSpeed, deltaTime, gait)) return;
-        if (_walker.TryGetGroundBlock(out var block)) FootstepSounds.Play(FootstepSurfaces.For(block), FootstepSounds.Volume(gait));
+        if (_walker.TryGetGroundBlock(out var block)) FootstepSounds.Play(FootstepSurfaces.SoundsFor(block), FootstepSounds.Volume(gait));
     }
 
     private void OnLanded(float impactSpeed, Vector3 gravity)
     {
         if (impactSpeed < LandingMinSpeed || !_walker.TryGetGroundBlock(out var block)) return;
-        FootstepSounds.Play(FootstepSurfaces.For(block), LandingVolume);
+        FootstepSounds.Play(FootstepSurfaces.SoundsFor(block), LandingVolume);
     }
 }

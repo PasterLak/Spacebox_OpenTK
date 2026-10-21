@@ -69,5 +69,6 @@ namespace Spacebox.Game.Resource
     {
         public string Place { get; set; } = "blockPlaceDefault";
         public string Destroy { get; set; } = "blockDestroyDefault";
+        public string[] Footsteps { get; set; } = Array.Empty<string>();
     }
 }
