@@ -316,3 +316,5 @@ table.list tr.clickable:hover td { background: #ffffff08; }
 .map-stage canvas:active { cursor: grabbing; }
 .map-tooltip { position: absolute; pointer-events: none; background: var(--panel-solid); border: 1px solid var(--border); border-radius: 4px; padding: 6px 8px; font-size: 12px; white-space: nowrap; z-index: 2; }
 .map-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 13px; }
+
+.mode-select { display: inline-block; width: auto; margin-top: 0; padding: 4px 6px; font-size: 13px; }

@@ -342,7 +342,7 @@ public sealed class NetworkSession : IDisposable
             WorldName = info.Name,
             Seed = info.Seed,
             ModId = info.ModId,
-            GameMode = (byte)info.GameMode,
+            GameMode = (byte)Players.PlayerGameModes.Current.Get(name, info.GameMode),
             Day = GameTime.Day,
             Ticks = GameTime.DayTick,
             PlayerJson = PlayerSaveLoadManager.ReadPlayerJson(World.WorldData.WorldFolderPath, name, false),

@@ -23,7 +23,7 @@ namespace Spacebox.Game.Commands
         }
         public override void Execute(string[] args)
         {
-            if (Spacebox.Network.Admin.ServerCommandForwarder.ShouldForwardTeleport(args) && Spacebox.Network.Admin.ServerCommandForwarder.TryForward(Name, args)) return;
+            if (Spacebox.Network.Admin.ServerCommandForwarder.TryForward(Name, Spacebox.Network.Admin.ServerCommandForwarder.TeleportArguments(args, Spacebox.Network.GameSession.PlayerName))) return;
 
             if (args.Length < 3)
             {

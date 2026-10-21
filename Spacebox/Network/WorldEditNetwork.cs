@@ -276,6 +276,12 @@ public static class WorldEditNetwork
             return;
         }
 
+        if (network.IsServer && Players.PlayerGameModeService.Of(PlayerRegistry.GetName(sender)) != Spacebox.Game.Player.GameModes.GameMode.Creative)
+        {
+            ChatService.SendToPlayer(PlayerRegistry.GetName(sender), "Only players in creative mode can erase or fill areas", OpenTK.Mathematics.Color4.Red);
+            return;
+        }
+
         var world = World.Instance;
         if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
         if (network.IsServer && ProtectionNetwork.BlocksPeerBox(sender, entity, min, max))

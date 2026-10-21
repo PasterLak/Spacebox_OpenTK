@@ -17,6 +17,12 @@ public sealed class PlayersModule : IDashboardModule
         public bool Muted { get; set; }
     }
 
+    private sealed class GameModeRequest
+    {
+        public string Name { get; set; }
+        public int Mode { get; set; }
+    }
+
     public void Map(HttpRouter router, DashboardContext context)
     {
         var guard = context.Guard;
@@ -47,6 +53,19 @@ public sealed class PlayersModule : IDashboardModule
             await MainThread.Run(() => ServerModeration.BanName(name));
             DashboardContext.Audit(user, $"banned {name}");
             return HttpResponse.Json(new { ok = true });
+        }));
+
+        router.Map("POST", DashboardContext.Api("/players/gamemode"), guard.Admin(async (request, user) =>
+        {
+            var body = DashboardGuard.Read<GameModeRequest>(request);
+            string name = body?.Name?.Trim();
+            if (string.IsNullOrEmpty(name) || body.Mode < 0 || body.Mode > (int)Spacebox.Game.Player.GameModes.GameMode.Spectator)
+                return HttpResponse.Error("Bad request", 400);
+
+            var mode = (Spacebox.Game.Player.GameModes.GameMode)body.Mode;
+            bool applied = await MainThread.Run(() => PlayerGameModeService.Change(name, mode));
+            DashboardContext.Audit(user, $"set the game mode of {name} to {mode}");
+            return HttpResponse.Json(new { ok = true, applied });
         }));
 
         router.Map("POST", DashboardContext.Api("/players/mute"), guard.Admin(async (request, user) =>
@@ -97,6 +116,7 @@ public sealed class PlayersModule : IDashboardModule
                 position = hasPose ? new[] { MathF.Round(position.X, 1), MathF.Round(position.Y, 1), MathF.Round(position.Z, 1) } : null,
                 alive = AstronautNetwork.Find(player.Peer)?.IsAlive ?? false,
                 muted = ServerModeration.IsMuted(player.Name),
+                gameMode = (int)PlayerGameModeService.Of(player.Name),
                 skin = player.SkinColor
             });
         }
@@ -114,7 +134,8 @@ public sealed class PlayersModule : IDashboardModule
                     name,
                     online = onlineNames.Contains(name),
                     lastSeen = File.GetLastWriteTime(file).ToString("yyyy-MM-dd HH:mm"),
-                    muted = ServerModeration.IsMuted(name)
+                    muted = ServerModeration.IsMuted(name),
+                    gameMode = (int)PlayerGameModeService.Of(name)
                 });
             }
         }
@@ -138,6 +159,7 @@ public sealed class PlayersModule : IDashboardModule
         {
             name,
             online = player != null,
+            gameMode = (int)PlayerGameModeService.Of(name),
             view.Health,
             view.Power,
             view.Oxygen,

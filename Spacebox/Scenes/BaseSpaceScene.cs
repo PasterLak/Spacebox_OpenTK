@@ -93,6 +93,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         else
             World.LoadWorldInfo(SceneArgs.worldName);
         Spacebox.Game.Protection.ClaimRegistry.Load(World.WorldData.WorldFolderPath);
+        if (GameSession.IsRemoteClient) Spacebox.Network.Players.PlayerGameModes.Current.Reset();
+        else Spacebox.Network.Players.PlayerGameModes.Current.Load(World.WorldData.WorldFolderPath);
         blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.EmissionBlocks);
         var world = new World(localPlayer, blockMaterial);
         AttachComponent(world);
@@ -396,6 +398,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         WorldLoadingScreen.Reset();
         Spacebox.Game.Protection.EntityProtection.Reset();
         Spacebox.Game.Protection.ClaimRegistry.Reset();
+        Spacebox.Network.Players.PlayerGameModes.Current.Reset();
         Spacebox.Game.Protection.ClaimVisuals.Reset();
         Spacebox.Game.Protection.ClaimSettings.ClearOverride();
         GravityGeneratorUI.Reset();

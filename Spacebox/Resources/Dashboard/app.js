@@ -298,6 +298,7 @@ $("#say-form").addEventListener("submit", async event => {
 });
 
 async function refreshPlayers() {
+  if (document.activeElement?.classList.contains("mode-select")) return;
   const data = await run(() => api("/players"));
   if (!data) return;
   state.players = data;
@@ -308,10 +309,11 @@ async function refreshPlayers() {
     el("td", { text: `${p.ping} ms` }),
     el("td", { class: "faint", text: p.position ? p.position.join(", ") : "—" }),
     el("td", { class: "faint", text: p.address }),
+    el("td", {}, gameModeSelect(p.name, p.gameMode)),
     el("td", {}, playerButtons(p.name, true, p.muted))));
   $("#online-table").replaceChildren(
-    el("tr", {}, ...["Name", "Ping", "Position", "Address", ""].map(t => el("th", { text: t }))),
-    ...(online.length ? online : [el("tr", {}, el("td", { class: "empty", colspan: "5", text: "Nobody is online" }))]));
+    el("tr", {}, ...["Name", "Ping", "Position", "Address", "Game mode", ""].map(t => el("th", { text: t }))),
+    ...(online.length ? online : [el("tr", {}, el("td", { class: "empty", colspan: "6", text: "Nobody is online" }))]));
   renderSaved();
 }
 
@@ -321,13 +323,30 @@ function renderSaved() {
   const rows = saved.map(p => el("tr", { class: "clickable", onclick: () => openPlayer(p.name) },
     el("td", {}, el("span", { class: p.online ? "dot on" : "dot" }), p.name, p.muted ? el("span", { class: "tag red", text: "muted" }) : null),
     el("td", { class: "faint", text: p.lastSeen }),
+    el("td", {}, gameModeSelect(p.name, p.gameMode)),
     el("td", {}, playerButtons(p.name, p.online, p.muted))));
   $("#saved-table").replaceChildren(
-    el("tr", {}, ...["Name", "Last save", ""].map(t => el("th", { text: t }))),
-    ...(rows.length ? rows : [el("tr", {}, el("td", { class: "empty", colspan: "3", text: "No saved players" }))]));
+    el("tr", {}, ...["Name", "Last save", "Game mode", ""].map(t => el("th", { text: t }))),
+    ...(rows.length ? rows : [el("tr", {}, el("td", { class: "empty", colspan: "4", text: "No saved players" }))]));
 }
 
 $("#player-filter").addEventListener("input", renderSaved);
+
+const GAME_MODES = ["Survival", "Creative", "Spectator"];
+
+function gameModeSelect(name, mode) {
+  const select = el("select", { class: "mode-select", title: "Game mode (kept when the player rejoins)", onclick: event => event.stopPropagation() },
+    ...GAME_MODES.map((label, index) => el("option", { value: index, text: label, selected: index === mode })));
+  select.addEventListener("change", async event => {
+    event.stopPropagation();
+    const value = Number(select.value);
+    const result = await run(() => api("/players/gamemode", { name, mode: value }));
+    if (!result) { select.value = mode; return; }
+    mode = value;
+    toast(`${name}: ${GAME_MODES[value]}${result.applied ? "" : " (applied when the player joins)"}`);
+  });
+  return select;
+}
 
 function playerButtons(name, online, muted) {
   const stop = handler => event => { event.stopPropagation(); handler(); };
@@ -371,6 +390,7 @@ async function loadPlayer(name) {
   $("#player-title").textContent = name;
   $("#player-actions").replaceChildren(
     el("button", { class: "btn ghost", text: "← Back", onclick: () => switchView("players") }),
+    gameModeSelect(name, data.gameMode),
     playerButtons(name, data.online, false));
 
   const bar = (label, value, max, kind) => el("div", {},

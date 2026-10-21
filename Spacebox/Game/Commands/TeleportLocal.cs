@@ -24,6 +24,12 @@ namespace Spacebox.Game.Commands
         }
         public override void Execute(string[] args)
         {
+            if (Spacebox.Network.GameSession.IsRemoteClient)
+            {
+                Debug.Error($"{Name} is not available on a server, use tp");
+                return;
+            }
+
             if (args.Length < 3)
             {
                 Debug.Error($"Usage: {Name} [x] [y] [z]");

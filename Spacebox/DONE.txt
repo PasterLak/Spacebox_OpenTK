@@ -26,6 +26,7 @@ additional
 |------------------------------------------------------------------------------------------------------------------------------
 
 New
+- server keeps each player's game mode (playermodes.json, set with gm or on the dashboard) and gives it back on rejoin; dashboard shows and changes game modes of online and offline players
 - dashboard Map page: rotatable 3D map of the space around the players (asteroids sized by radius, ships, players with names, claims with owner and state, untouched / saved / unsaved entities)
 - world converter: 0.1.2 worlds convert to 0.1.5, older ones are refused
 - world upgrade tools for NBT (rename/remove blocks and items), check for unknown ids
@@ -68,6 +69,7 @@ Small
 - build scripts read the version from Application.cs, keep other platform builds, zip without a root folder
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
+- multiplayer: area erase/fill only for players in creative mode (checked by the server); tp x y z from a client goes through the server's admin check, tplocal is not available on servers
 - SSAO no longer darkens particles and dropped items: particles clear the AO mask where they cover the scene
 - the game starts without sound instead of crashing when OpenAL is missing (Linux without libopenal1)
 - multiplayer: peers that have not joined (no join request, pending login, banned) can no longer send gameplay messages or receive broadcasts

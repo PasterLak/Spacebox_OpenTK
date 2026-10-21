@@ -7,6 +7,15 @@ public static class ServerCommandForwarder
 {
     public static bool ShouldForwardTeleport(string[] args) => args.Length > 0 && !float.TryParse(args[0], NumberStyles.Float, CultureInfo.InvariantCulture, out _);
 
+    public static string[] TeleportArguments(string[] args, string ownName)
+    {
+        if (ShouldForwardTeleport(args) || args.Length < 3) return args;
+        var result = new string[args.Length + 1];
+        result[0] = ownName;
+        Array.Copy(args, 0, result, 1, args.Length);
+        return result;
+    }
+
     public static bool ShouldForwardTeleportToPlayer(string[] args) => args.Length >= 2;
 
     public static string BuildLine(string name, string[] args) => args.Length == 0 ? name : name + " " + string.Join(' ', args);

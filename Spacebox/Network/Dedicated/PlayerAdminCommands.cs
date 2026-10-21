@@ -30,7 +30,7 @@ public sealed class ServerGameModeCommand : CommandBase, Engine.Commands.IArgume
         if (!PlayerAdmin.TryGetNetwork(target, out var player, out var network)) return;
 
         var mode = id switch { 0 => GameMode.Survival, 1 => GameMode.Creative, _ => GameMode.Spectator };
-        network.SetGameModeByServer(mode);
+        Spacebox.Network.Players.PlayerGameModeService.Change(player.Name, mode);
         Debug.Success($"{player.Name}: game mode {mode}");
     }
 }
