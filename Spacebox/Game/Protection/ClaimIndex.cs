@@ -17,6 +17,7 @@ public sealed class ClaimIndex
     private string _folder;
 
     public int Count => _entries.Count;
+    public IReadOnlyDictionary<string, Entry> Entries => _entries;
 
     public static string KeyFor(long entityId, OpenTK.Mathematics.Vector3i cell) => $"{entityId}:{cell.X}:{cell.Y}:{cell.Z}";
 

@@ -26,6 +26,7 @@ additional
 |------------------------------------------------------------------------------------------------------------------------------
 
 New
+- dashboard Map page: rotatable 3D map of the space around the players (asteroids sized by radius, ships, players with names, claims with owner and state, untouched / saved / unsaved entities)
 - world converter: 0.1.2 worlds convert to 0.1.5, older ones are refused
 - world upgrade tools for NBT (rename/remove blocks and items), check for unknown ids
 - dedicated server upgrades old worlds on start

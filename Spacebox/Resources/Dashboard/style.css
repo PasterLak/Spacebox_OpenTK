@@ -300,3 +300,19 @@ table.list tr.clickable:hover td { background: #ffffff08; }
   .sidebar-footer { flex-direction: row; align-items: center; justify-content: space-between; margin-top: 12px; }
   .content { padding: 12px; }
 }
+
+.map-tools select { display: inline-block; width: auto; margin-top: 0; }
+.map-panel { display: flex; flex-direction: column; gap: 8px; }
+.map-filters, .map-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; color: var(--dim); font-size: 13px; }
+.map-filters input { display: inline-block; width: auto; margin: 0 4px 0 0; }
+.map-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.map-legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+.map-legend .dot.ring { background: transparent; border: 2px solid var(--box); }
+.map-legend .dot.ring.gold { border-color: var(--gold); }
+.map-legend .dot.ring.dashed { border-style: dashed; }
+.map-legend .ship-icon { display: inline-block; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 11px solid var(--dim); }
+.map-stage { position: relative; height: min(70vh, 720px); min-height: 320px; background: radial-gradient(ellipse at center, #0e1320 0%, #05070b 100%); border: 1px solid var(--bar); border-radius: 4px; overflow: hidden; }
+.map-stage canvas { display: block; cursor: grab; }
+.map-stage canvas:active { cursor: grabbing; }
+.map-tooltip { position: absolute; pointer-events: none; background: var(--panel-solid); border: 1px solid var(--border); border-radius: 4px; padding: 6px 8px; font-size: 12px; white-space: nowrap; z-index: 2; }
+.map-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 13px; }

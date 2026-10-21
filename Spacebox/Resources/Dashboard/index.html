@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Spacebox Server Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <script src="map.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -46,6 +47,7 @@
       <nav id="nav">
         <button data-view="overview" class="active">Overview</button>
         <button data-view="players">Players</button>
+        <button data-view="map">Map</button>
         <button data-view="moderation">Moderation</button>
         <button data-view="console">Console</button>
         <button data-view="settings">Settings</button>
@@ -112,6 +114,48 @@
         <div class="panel"><h3>Hotbar</h3><div class="slots" id="player-panel"></div></div>
         <div class="panel"><h3>Inventory</h3><div class="slots" id="player-inventory"></div></div>
         <div class="panel"><h3>Statistics</h3><table class="kv" id="player-stats"></table></div>
+      </section>
+
+      <section class="view hidden" data-view="map">
+        <header class="view-head">
+          <h2 class="title">Map</h2>
+          <div class="actions map-tools">
+            <select id="map-focus" title="Center on"><option value="">All players</option></select>
+            <select id="map-radius" title="Shown radius around players">
+              <option value="500">500 m</option>
+              <option value="1000">1000 m</option>
+              <option value="2000" selected>2000 m</option>
+              <option value="4000">4000 m</option>
+            </select>
+            <button class="btn ghost" id="map-reset">Reset view</button>
+          </div>
+        </header>
+        <div class="panel map-panel">
+          <div class="map-filters">
+            <label><input type="checkbox" data-map-filter="regenerated"> Untouched</label>
+            <label><input type="checkbox" data-map-filter="changed"> Saved / changed</label>
+            <label><input type="checkbox" data-map-filter="ships"> Ships</label>
+            <label><input type="checkbox" data-map-filter="claimedOnly"> Claimed only</label>
+            <label><input type="checkbox" data-map-filter="labels"> Names</label>
+          </div>
+          <div class="map-legend">
+            <span><i class="dot" style="background:#7d8494"></i>untouched, regenerated from the seed</span>
+            <span><i class="dot" style="background:#6ed2e6"></i>saved by players</span>
+            <span><i class="dot" style="background:#ff9b3d"></i>changed, not saved yet</span>
+            <span><i class="ship-icon"></i>ship</span>
+            <span><i class="dot ring gold"></i>active claim</span>
+            <span><i class="dot ring dashed"></i>expired claim</span>
+            <span><i class="dot" style="background:#6edc6e"></i>player</span>
+          </div>
+          <div class="map-stage">
+            <canvas id="map-canvas"></canvas>
+            <div id="map-tooltip" class="map-tooltip hidden"></div>
+          </div>
+          <div class="map-footer">
+            <div id="map-info"></div>
+            <div id="map-stats" class="dim"></div>
+          </div>
+        </div>
       </section>
 
       <section class="view hidden" data-view="moderation">

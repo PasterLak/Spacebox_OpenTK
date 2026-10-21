@@ -176,6 +176,7 @@ $$("#nav button").forEach(button => button.addEventListener("click", () => switc
 const views = {
   overview: () => { every(3000, refreshOverview); },
   players: () => { every(4000, refreshPlayers); },
+  map: () => { spaceMap.show(); every(2000, spaceMap.refresh); },
   player: () => { every(10000, () => state.player && loadPlayer(state.player)); },
   moderation: () => { refreshModeration(); },
   console: () => { every(1000, pollConsole); $("#console-form input").focus(); },

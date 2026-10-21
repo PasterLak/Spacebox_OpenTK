@@ -648,6 +648,19 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         return PointsIds.Contains(entityId);
     }
 
+    public bool IsSavedHere(long entityId)
+    {
+        return _savedHere.Contains(entityId);
+    }
+
+    public void CollectUnloadedData(List<NotGeneratedEntity> output)
+    {
+        foreach (var data in EntitiesGeneratedData.Values)
+        {
+            if (!Entities.Exists(e => e.EntityID == data.Id)) output.Add(data);
+        }
+    }
+
     private bool CanGenerateFresh(NotGeneratedEntity data)
     {
         return data.asteroid != null && IsGeneratedHere(data.Id) && !SuppressedEntities.Contains(data.Id);
