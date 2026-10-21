@@ -27,7 +27,6 @@ additional
 
 New
 - signs: Steel Sign (1x1), Wide Steel Sign (2x1) and Info Panel (2x1, glowing text) on any block side; wide signs are real multi-cell blocks; WYSIWYG text editor with bold, colours, alignment, text size slider, Fill (biggest text that fits) and Reset style; up to 60 characters per line on 1x1 signs and 120 on 2x1; saved and synced in multiplayer; new signs are blocks.json entries (Type sign + Sign settings)
-- the distance to use blocks is the same for every held item (drills no longer use their mining range)
 - server keeps each player's game mode in the player's save file (GameMode, set with gm or on the dashboard, clients cannot change it) and gives it back on rejoin; dashboard shows and changes game modes of online and offline players
 - dashboard Map page: rotatable 3D map of the space around the players (asteroids sized by radius, ships, players with names, claims with owner and state, untouched / saved / unsaved entities)
 - world converter: 0.1.2 worlds convert to 0.1.5, older ones are refused
@@ -71,6 +70,7 @@ Small
 - build scripts read the version from Application.cs, keep other platform builds, zip without a root folder
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
+- the distance to use blocks is the same for every held item (drills no longer use their mining range)
 - chat: a message arriving while typing (e.g. a game mode change by the server) no longer closes the input and leaves the hotbar keys and mouse wheel blocked; Escape closes the chat input
 - dashboard map: untouched loaded and unloaded asteroids have clearly different colours
 - block damage and repairs are saved (also for asteroid chunks); damaged and repaired chunks are marked as changed
