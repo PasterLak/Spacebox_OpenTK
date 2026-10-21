@@ -48,6 +48,8 @@ public class InteractionRepair : InteractionMode
             return;
         }
 
+        BlockUseTarget.Update(player);
+
         var ray = new Ray(player.Position, player.Front, tool.Range);
         if (World.CurrentSector == null || !World.CurrentSector.Raycast(ray, out HitInfo hit) || hit.block == null || hit.block.IsAir)
         {

@@ -171,6 +171,7 @@ Fixes
 - GameSet editor: asteroid MinRadius/MaxRadius are limited to 2-256 (also clamped when loading)
 - ship console: the ship no longer turns by itself after sitting down or leaving binding mode (view faces the console forward); in multiplayer binding works while walking away from the console
 - creative search text is white
+- doors, storages and other blocks can be used (right click) while holding the repair tool
 - welcome window: the "Play the tutorial" checkbox could not be clicked (the text box covered it), so Start never began the tutorial
 - tutorials: the ship console step says that console and thrusters need power and asks for a cobalt power block
 - barriers could lose durability to drills and other players' damage messages (only removal was blocked)
