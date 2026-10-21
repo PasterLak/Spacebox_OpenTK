@@ -1,14 +1,13 @@
 using System.Text;
 using Engine;
 using OpenTK.Mathematics;
-using Spacebox.Game.Generation.Blocks;
-using Spacebox.Game.Generation.Shapes;
 using Spacebox.Game.Signs;
 
 namespace Spacebox.Game.Resource;
 
-public class SignBlockData : BlockData, IReservedAreaBlockData, IBlockTooltip
+public class SignBlockData : BlockData, IBlockTooltip
 {
+    public const int MaxWidth = 4;
     public const string DefaultFont = "Resources/Fonts/FusionPixel/FusionPixel12pxMonospacedLatin.ttf";
 
     public int Width { get; }
@@ -22,13 +21,12 @@ public class SignBlockData : BlockData, IReservedAreaBlockData, IBlockTooltip
     public bool Glow { get; }
     public float ViewDistance { get; }
     public string Font { get; }
-    public bool AreaMustBeInsideEntity => true;
 
     public SignBlockData(BlockData baseBlock, SignJSON settings) : base(baseBlock)
     {
         settings ??= new SignJSON();
 
-        Width = Math.Clamp(settings.Width, 1, 2);
+        Width = Math.Clamp((int)Size.X, 1, MaxWidth);
         MaxLines = Math.Clamp(settings.MaxLines, 1, 16);
         MaxLineLength = Math.Clamp(settings.MaxLineLength, 1, 64);
         PixelsPerBlock = Math.Clamp(settings.PixelsPerBlock, 32, 256);
@@ -54,29 +52,10 @@ public class SignBlockData : BlockData, IReservedAreaBlockData, IBlockTooltip
         DefaultText = SignMarkup.Sanitize(settings.DefaultText, MaxLines, MaxLineLength);
     }
 
-    public static string ShapeNameFor(SignJSON settings) => SignPlateGeometry.NameFor(settings?.Width ?? 1);
-
     public string SanitizeText(string text) => SignMarkup.Sanitize(text, MaxLines, MaxLineLength);
-
-    public void GetReservedArea(Direction direction, Rotation rotation, List<Vector3i> offsets)
-    {
-        GetExtraCells(Width, direction, rotation, offsets);
-    }
-
-    public static void GetExtraCells(int width, Direction direction, Rotation rotation, List<Vector3i> offsets)
-    {
-        offsets.Clear();
-        if (width < 2) return;
-
-        var transform = BlockRotationHelper.CalculateTransformMatrix(Direction.Up, direction, rotation);
-        var step = Vector3.TransformVector(SignPlateGeometry.ExtentDirection, transform);
-        var offset = new Vector3i((int)MathF.Round(step.X), (int)MathF.Round(step.Y), (int)MathF.Round(step.Z));
-        for (int i = 1; i < width; i++) offsets.Add(offset * i);
-    }
 
     public void AppendTooltip(StringBuilder text)
     {
         text.Append($"\nText: up to {MaxLines} lines of {MaxLineLength} characters");
-        text.Append("\nFormatting: <b>bold</b>, <color=red>...</color>, <left> <center> <right>");
     }
 }

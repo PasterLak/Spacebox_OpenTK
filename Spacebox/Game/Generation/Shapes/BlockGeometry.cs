@@ -11,10 +11,8 @@ public sealed class BlockGeometry
     public Vector3 Min { get; }
     public Vector3 Max { get; }
     public Vector3 Size => Max - Min;
-    public Vector3? Anchor { get; init; }
     public Vector3? FacingUp { get; init; }
     public bool RequiresSupport { get; init; }
-    public Vector3 AnchorPoint => Anchor ?? (Min + Max) * 0.5f;
     public int VertexCount => Positions.Length;
 
     public BlockGeometry(Vector3[] positions, Vector3[] normals, Vector2[] texCoords, int[] indices)

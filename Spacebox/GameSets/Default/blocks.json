@@ -1948,10 +1948,11 @@
     "Description": "Two blocks wide plate for longer labels",
     "Type": "sign",
     "Category": "building",
+    "CellPixels": 32,
     "Textures": {
       "Active": {
         "All": "signSteelEdge",
-        "Up": "signSteel",
+        "Up": "signSteelWide",
         "Down": "signSteelEdge"
       }
     },
@@ -1971,10 +1972,11 @@
     "Description": "Dark wide panel with glowing text, good for spawn and base information",
     "Type": "sign",
     "Category": "building",
+    "CellPixels": 32,
     "Textures": {
       "Active": {
         "All": "signPanelEdge",
-        "Up": "signPanel",
+        "Up": "signPanelWide",
         "Down": "signPanelEdge"
       }
     },

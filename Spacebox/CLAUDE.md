@@ -100,10 +100,10 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 
 ## Signs
 
-- Type `sign` (`SignBlock`, settings `SignBlockData` from the JSON `Sign` section: `Width` 1-2, `MaxLines`, `MaxLineLength`, `DefaultText`, `TextColor`, `Align`, `PixelsPerBlock`, `Margin`, `Glow`, `ViewDistance`, `Font`). A new sign is a `blocks.json` entry with `"Type": "sign"` and textures (`Up` = front plate); no code.
-- Plates are the code shapes `sign_plate` / `sign_plate_wide` (`SignPlateGeometry`, 1/32 thick, `RequiresSupport`, `FacingUp` so placement picks the `Rotation` that keeps the text upright via `BlockShape.BestRotation`). A 2x1 sign is one origin block with a wide shape plus a reserved neighbour cell (`IReservedAreaBlockData`), not a multi-cell block; only the origin half has a collider.
+- Type `sign` (`SignBlock`, settings `SignBlockData` from the JSON `Sign` section: `MaxLines`, `MaxLineLength`, `DefaultText`, `TextColor`, `Align` (default center), `PixelsPerBlock`, `Margin`, `Glow`, `ViewDistance`, `Font`). A new sign is a `blocks.json` entry with `"Type": "sign"` and textures (`Up` = front plate); no code. Wider signs set `Sign.Width` (1-4), which becomes `Size.X`; give them one texture spanning all cells with `CellPixels`.
+- The plate is the code shape `sign_plate` (`SignPlateGeometry`, 1/32 thick, `RequiresSupport`, `FacingUp` so placement picks the `Rotation` that keeps the text upright via `BlockShape.BestRotation`). Wide signs are normal multi-cell blocks (`BaseFrontDirection` Up, cells along the text's right); every cell needs support, all cells can be used and broken, and only the origin cell registers with the renderer.
 - Text markup (`Game/Signs/SignMarkup`): `<b>`, `<color=name|#rgb|#rrggbb>`, `<left> <center> <right>`; unknown tags stay text; `Sanitize` limits lines and visible characters. Text is baked per sign with SkiaSharp (`SignTextBaker`) into a small texture only when it changes and drawn as one quad by the entity's `SignRenderer` (`SpaceEntity.Signs`, rendered after doors, distance and facing culled, max 4 bakes per frame).
-- Editing: `SignUI` → `SignNetwork` (`SignTextMessage`, server checks protection and reach, sanitizes) → `BlockStateNetwork`; saved by `SignSerializer` (`sign_data` with `text`).
+- Editing: `SignUI` (window, toolbar) + `SignTextEditor` (custom ImGui rich-text field: caret, selection, clipboard, keys) over `SignDocument` (per-character bold/colour, per-line alignment, converts from/to markup) → `SignNetwork` (`SignTextMessage`, server checks protection and reach, sanitizes) → `BlockStateNetwork`; saved by `SignSerializer` (`sign_data` with `text`).
 
 ## Gravity
 

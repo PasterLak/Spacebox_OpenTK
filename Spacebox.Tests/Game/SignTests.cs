@@ -79,12 +79,12 @@ public class SignTests
     [Fact]
     public void BlockData_ClampsSettings()
     {
-        var data = new SignBlockData(new BlockData("Sign", "sign"), new SignJSON
+        var data = new SignBlockData(new BlockData("Sign", "sign") { Size = new Vector3Byte(9, 1, 1) }, new SignJSON
         {
-            Width = 5, MaxLines = 99, MaxLineLength = 0, TextColor = "bad", Align = "middle", PixelsPerBlock = 4000, DefaultText = "a\nb"
+            MaxLines = 99, MaxLineLength = 0, TextColor = "bad", Align = "middle", PixelsPerBlock = 4000, DefaultText = "a\nb"
         });
 
-        Assert.Equal(2, data.Width);
+        Assert.Equal(SignBlockData.MaxWidth, data.Width);
         Assert.Equal(16, data.MaxLines);
         Assert.Equal(1, data.MaxLineLength);
         Assert.Equal(256, data.PixelsPerBlock);
@@ -93,31 +93,104 @@ public class SignTests
     }
 
     [Fact]
-    public void WideSign_ReservesOneNeighbourInThePlate()
+    public void BlockData_DefaultsToCenterAlignment()
     {
-        var shape = new BlockShape(SignPlateGeometry.Create(2));
-        var cells = new List<Vector3i>();
+        var data = new SignBlockData(new BlockData("Sign", "sign"), new SignJSON());
+        Assert.Equal(SignAlign.Center, data.Align);
+        Assert.Equal(1, data.Width);
+    }
+
+    [Fact]
+    public void WideSign_SecondCellLiesAlongTheTextInThePlate()
+    {
+        var shape = new BlockShape(SignPlateGeometry.Create());
+        var data = new BlockData("Wide", "sign") { Size = new Vector3Byte(2, 1, 1), BaseFrontDirection = Direction.Up };
+        var cells = new List<MultiblockCell>();
 
         foreach (Direction direction in Enum.GetValues<Direction>())
         {
-            var normal = BlockRotationHelper.CalculateTransformMatrix(Direction.Up, direction, Rotation.None);
-            var up = Vector3.TransformVector(Vector3.UnitY, normal);
             foreach (Rotation rotation in Enum.GetValues<Rotation>())
             {
-                SignBlockData.GetExtraCells(2, direction, rotation, cells);
-                Assert.Single(cells);
-                var offset = new Vector3(cells[0].X, cells[0].Y, cells[0].Z);
-                Assert.Equal(1f, offset.Length, 3);
-                Assert.Equal(0f, Vector3.Dot(offset, up), 3);
+                MultiblockLayout.GetCells(data, direction, rotation, cells);
+                Assert.Equal(2, cells.Count);
+                Assert.True(cells[0].IsOrigin);
 
-                var origin = shape.ToCellSpace(new Vector3(0f, 0f, 0f), direction, rotation, true);
-                var far = shape.ToCellSpace(new Vector3(1f, 0f, 0f), direction, rotation, true);
-                Assert.True((offset - (far - origin)).Length < 1e-4f);
+                var offset = new Vector3(cells[1].Offset.X, cells[1].Offset.Y, cells[1].Offset.Z);
+                var right = Vector3.TransformVector(SignPlateGeometry.TextRight, shape.GetTransform(direction, rotation));
+                Assert.True((offset - right).Length < 1e-4f, $"{direction} {rotation}: {offset} vs {right}");
             }
         }
+    }
 
-        SignBlockData.GetExtraCells(1, Direction.Up, Rotation.None, cells);
-        Assert.Empty(cells);
+    [Fact]
+    public void Document_RoundTripsMarkup()
+    {
+        string markup = "Hello <b>big</b>\n<right><color=#ff0000>Red</color> plain";
+        var document = SignDocument.FromMarkup(markup, 4, 15, SignAlign.Center);
+
+        Assert.Equal(2, document.Lines.Count);
+        Assert.Equal(SignAlign.Center, document.Lines[0].Align);
+        Assert.Equal(SignAlign.Right, document.Lines[1].Align);
+        Assert.True(document.Lines[0].Chars[6].Bold);
+        Assert.Null(document.Lines[1].Chars[4].Color);
+        Assert.Equal(markup, document.ToMarkup());
+    }
+
+    [Fact]
+    public void Document_TypingUsesCurrentStyleAndRespectsLimits()
+    {
+        var document = new SignDocument(2, 5, SignAlign.Center);
+        document.ToggleBold();
+        document.Insert("abcdefg");
+        document.NewLine();
+        document.ApplyColor(new Color4(1f, 0f, 0f, 1f));
+        document.Insert("x\ny\nz");
+
+        Assert.Equal("abcde\nxyz", document.PlainText());
+        Assert.Equal("<b>abcde</b>\n<color=#ff0000><b>xyz</b></color>", document.ToMarkup());
+    }
+
+    [Fact]
+    public void Document_StylesSelectionAndResets()
+    {
+        var document = SignDocument.FromMarkup("one two", 4, 15, SignAlign.Center);
+        document.SetCaret(new SignCaret(0, 4), false);
+        document.SetCaret(new SignCaret(0, 7), true);
+        document.ToggleBold();
+        document.SetAlign(SignAlign.Left);
+        Assert.Equal("<left>one <b>two</b>", document.ToMarkup());
+
+        document.SelectAll();
+        document.ResetStyle();
+        Assert.Equal("one two", document.ToMarkup());
+    }
+
+    [Fact]
+    public void Document_EditsAcrossLines()
+    {
+        var document = SignDocument.FromMarkup("ab\ncd", 4, 15, SignAlign.Center);
+        document.SetCaret(new SignCaret(1, 0), false);
+        document.Backspace();
+        Assert.Equal("abcd", document.PlainText());
+
+        document.SetCaret(new SignCaret(0, 1), false);
+        document.SetCaret(new SignCaret(0, 3), true);
+        Assert.Equal("bc", document.SelectedText());
+        document.Insert("X");
+        Assert.Equal("aXd", document.PlainText());
+    }
+
+    [Fact]
+    public void Document_EscapesTextThatLooksLikeATag()
+    {
+        var document = new SignDocument(1, 15, SignAlign.Center);
+        document.Insert("2<3 <b>");
+        string markup = document.ToMarkup();
+
+        var lines = SignMarkup.Parse(markup, Black, SignAlign.Center);
+        Assert.Single(lines[0].Runs);
+        Assert.False(lines[0].Runs[0].Bold);
+        Assert.StartsWith("2<3 ", lines[0].Runs[0].Text);
     }
 
     [Theory]
@@ -127,7 +200,7 @@ public class SignTests
     [InlineData(Direction.Back)]
     public void Placement_KeepsTextUprightOnWalls(Direction wall)
     {
-        var shape = new BlockShape(SignPlateGeometry.Create(1));
+        var shape = new BlockShape(SignPlateGeometry.Create());
         var rotation = shape.BestRotation(wall, Vector3.UnitY);
         var textUp = Vector3.TransformVector(SignPlateGeometry.TextUp, shape.GetTransform(wall, rotation));
 
@@ -137,7 +210,7 @@ public class SignTests
     [Fact]
     public void Placement_FloorSignFacesThePlayer()
     {
-        var shape = new BlockShape(SignPlateGeometry.Create(1));
+        var shape = new BlockShape(SignPlateGeometry.Create());
         var away = new Vector3(0f, 0f, -1f);
         var rotation = shape.BestRotation(Direction.Up, away);
         var textUp = Vector3.TransformVector(SignPlateGeometry.TextUp, shape.GetTransform(Direction.Up, rotation));
@@ -148,7 +221,7 @@ public class SignTests
     [Fact]
     public void Plate_IsThinAndRestsOnTheSupport()
     {
-        var shape = new BlockShape(SignPlateGeometry.Create(1));
+        var shape = new BlockShape(SignPlateGeometry.Create());
         var pose = shape.GetPose(Direction.Up, Rotation.None, true);
 
         Assert.Equal(0f, pose.Min.Y, 3);

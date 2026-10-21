@@ -29,6 +29,12 @@ public static class SignTextBaker
         return new PixelData { Width = width, Height = height, Data = data };
     }
 
+    public static float MeasureText(string text, string fontPath)
+    {
+        using var font = new SKFont(GetTypeface(fontPath), FontPixels) { Edging = SKFontEdging.Alias, Hinting = SKFontHinting.None, Subpixel = false };
+        return font.MeasureText(text ?? "");
+    }
+
     public static int LineHeight(SKFont font) => (int)MathF.Ceiling(font.Metrics.Descent - font.Metrics.Ascent) + 1;
 
     private static void DrawLines(SKCanvas canvas, SKFont font, SKPaint paint, IReadOnlyList<SignLine> lines, int width, int height, int margin)

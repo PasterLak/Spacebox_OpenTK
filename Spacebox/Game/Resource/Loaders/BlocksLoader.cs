@@ -155,7 +155,9 @@ namespace Spacebox.Game.Resource
                 }
                 else if (blockData.Type == "sign")
                 {
-                    blockData.Shape ??= shapes.Resolve(SignBlockData.ShapeNameFor(blockJson.Sign));
+                    blockData.Shape ??= shapes.Resolve(SignPlateGeometry.Name);
+                    blockData.Size = new Vector3Byte(Math.Clamp(blockJson.Sign?.Width ?? 1, 1, SignBlockData.MaxWidth), 1, 1);
+                    blockData.BaseFrontDirection = Direction.Up;
                     blockData = new SignBlockData(blockData, blockJson.Sign);
                 }
                 else if (blockData.Type == "oxygengenerator")

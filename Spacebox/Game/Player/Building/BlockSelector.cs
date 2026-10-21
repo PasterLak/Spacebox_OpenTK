@@ -237,8 +237,7 @@ public class BlockSelector : Node3D
         if (key == _shapePoseKey) return;
 
         _shapePoseKey = key;
-        var pose = shape.GetPose(_blockDirection, _blockRotation, _shapeSupported);
-        var (vertices, indices) = BlockShapePreviewMesh.Build(CurrentBlockData, shape, pose, BlockState.Inactive);
+        var (vertices, indices) = BlockShapePreviewMesh.Build(CurrentBlockData, shape, _blockDirection, _blockRotation, _shapeSupported, BlockState.Inactive);
         SimpleBlock.SetCustomMesh(vertices, indices);
     }
 

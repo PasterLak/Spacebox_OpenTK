@@ -155,6 +155,11 @@ public static class SignMarkup
         return count;
     }
 
+    public static bool IsTagAt(string text, int index)
+    {
+        return !string.IsNullOrEmpty(text) && index >= 0 && index < text.Length && TryReadTag(text, index, out _, out _);
+    }
+
     public static string StripTags(string text)
     {
         if (string.IsNullOrEmpty(text)) return "";

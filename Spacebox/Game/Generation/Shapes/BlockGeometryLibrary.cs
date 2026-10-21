@@ -9,8 +9,7 @@ public static class BlockGeometryLibrary
     private static readonly Dictionary<string, BlockGeometry> Geometries = new(StringComparer.OrdinalIgnoreCase)
     {
         ["slab"] = new BlockGeometryBuilder().AddBox(new Vector3(-0.5f, 0f, -0.5f), new Vector3(0.5f, 0.5f, 0.5f)).Build(),
-        [SignPlateGeometry.SmallName] = SignPlateGeometry.Create(1),
-        [SignPlateGeometry.WideName] = SignPlateGeometry.Create(2)
+        [SignPlateGeometry.Name] = SignPlateGeometry.Create()
     };
 
     public static void Register(string name, BlockGeometry geometry)

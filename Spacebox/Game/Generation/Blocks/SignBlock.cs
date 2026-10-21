@@ -9,7 +9,6 @@ namespace Spacebox.Game.Generation.Blocks;
 public class SignBlock : InteractiveBlock, IEntityBlockListener, INetworkStateBlock
 {
     private readonly SignBlockData _data;
-    private readonly List<Vector3i> _extraCells = new List<Vector3i>();
     private string _text;
 
     public SpaceEntity Entity { get; private set; }
@@ -28,7 +27,9 @@ public class SignBlock : InteractiveBlock, IEntityBlockListener, INetworkStateBl
     public override void Use(LocalAstronaut player, ref HitInfo hit)
     {
         base.Use(player, ref hit);
-        SignUI.Open(this);
+
+        var origin = HasMultiblockOffset ? FindOrigin(ref hit) : this;
+        if (origin != null) SignUI.Open(origin);
     }
 
     public bool SetText(string text)
@@ -51,23 +52,16 @@ public class SignBlock : InteractiveBlock, IEntityBlockListener, INetworkStateBl
 
     public void OnAddedToEntity(Chunk chunk, Vector3i localCell)
     {
+        if (HasMultiblockOffset) return;
+
         this.chunk = chunk;
         Entity = chunk.SpaceEntity;
         LocalCell = localCell;
-
-        SignBlockData.GetExtraCells(_data.Width, Direction, Rotation, _extraCells);
-        if (_extraCells.Count > 0)
-        {
-            for (int i = 0; i < _extraCells.Count; i++) _extraCells[i] += localCell;
-            Entity.Reservations.Set(this, _extraCells);
-        }
-
         Entity.Signs.Register(this);
     }
 
     public void OnRemovedFromEntity()
     {
-        Entity?.Reservations.Remove(this);
         Entity?.Signs.Unregister(this);
         Entity = null;
     }
@@ -80,5 +74,16 @@ public class SignBlock : InteractiveBlock, IEntityBlockListener, INetworkStateBl
     public void ReadNetworkState(Engine.Networking.NetReader reader)
     {
         SetText(reader.ReadString() ?? "");
+    }
+
+    private SignBlock FindOrigin(ref HitInfo hit)
+    {
+        if (hit.chunk == null) return null;
+
+        var entity = hit.chunk.SpaceEntity;
+        var cell = Spacebox.Game.Protection.ProtectionRules.CellOf(hit.chunk, hit.blockPositionIndex);
+        var origin = cell - MultiblockLayout.GetOriginOffset(_data, this);
+        if (!entity.TryGetBlockLocal(origin, out var originChunk, out var index)) return null;
+        return originChunk.Blocks[index.X, index.Y, index.Z] as SignBlock;
     }
 }

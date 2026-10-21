@@ -27,10 +27,9 @@ public sealed class BlockShape
         for (int i = 0; i < VertexFaces.Length; i++)
             VertexFaces[i] = DominantFace(geometry.Normals[i]);
 
-        var anchor = geometry.AnchorPoint;
-        var bottomCenter = new Vector3(anchor.X, geometry.Min.Y, anchor.Z);
+        var bottomCenter = new Vector3((geometry.Min.X + geometry.Max.X) * 0.5f, geometry.Min.Y, (geometry.Min.Z + geometry.Max.Z) * 0.5f);
         var supportedOffset = new Vector3(0f, -0.5f, 0f) - bottomCenter;
-        var freeOffset = -new Vector3(anchor.X, (geometry.Min.Y + geometry.Max.Y) * 0.5f, anchor.Z);
+        var freeOffset = -(geometry.Min + geometry.Max) * 0.5f;
         _supportedOffset = supportedOffset;
         _freeOffset = freeOffset;
 

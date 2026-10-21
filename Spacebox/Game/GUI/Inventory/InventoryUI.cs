@@ -33,6 +33,7 @@ namespace Spacebox.Game.GUI
             {
                 if (Player.IsAlive == false) return;
                 if (Chat.FocusInput) return; 
+                if (ImGui.GetIO().WantCaptureKeyboard) return;
 
                 if (!UIManager.IsUIMode)
                 {

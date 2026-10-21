@@ -310,8 +310,14 @@ namespace Spacebox.Game.Generation
             float emission = block.EnableEmission ? 1f : 0f;
             int vStart = vertexCount / BuffersData.FloatsPerVertexBlock;
 
+            var multiblockData = GameAssets.Blocks.TryGetValue(block.Id, out var shapeData) && shapeData.IsMultiblock ? shapeData : null;
             for (int f = 0; f < faces.Length; f++)
-                _shapeFaceUVs[(int)faces[f]] = GameAssets.GetBlockUVs(block, faces[f]) ?? BlockShapeTexturing.DefaultFaceUVs;
+            {
+                var faceUVs = GameAssets.GetBlockUVs(block, faces[f]) ?? BlockShapeTexturing.DefaultFaceUVs;
+                if (multiblockData != null)
+                    faceUVs = MultiblockLayout.GetFaceUVs(faceUVs, multiblockData.GetFaceTiles(faces[f]), multiblockData.Size, block.MultiblockOffset, (Direction)faces[f]);
+                _shapeFaceUVs[(int)faces[f]] = faceUVs;
+            }
 
             for (int i = 0; i < vertexTotal; i++)
             {

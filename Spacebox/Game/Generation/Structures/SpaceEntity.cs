@@ -478,6 +478,8 @@ namespace Spacebox.Game.Generation
 
                 if (!IsPositionWithinEntitySize(position) || !IsCellEmpty(position) || IsCellReserved(position))
                     return false;
+                if (!HasRequiredSupport(position, blockData, direction, rotation))
+                    return false;
             }
 
             return IsReservedAreaFree(originPosition, blockData, direction, rotation);
