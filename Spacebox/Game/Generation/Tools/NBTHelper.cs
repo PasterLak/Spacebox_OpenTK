@@ -296,6 +296,8 @@ namespace Spacebox.Game.Generation.Tools
             List<int> blockWithDirectionIDs = new List<int>();
             List<int> blockWithRotationIDs = new List<int>();
             List<int> multiblockOffsets = new List<int>();
+            List<int> damagedBlocks = new List<int>();
+            List<byte> paletteMaxDurability = new List<byte>();
 
             var complexBlocksList = new ListTag(NBTKey.CHUNK.storages, TagType.Compound);
 
@@ -317,6 +319,7 @@ namespace Spacebox.Game.Generation.Tools
 
                             var blockFullId = GameAssets.GetBlockFullId(block);
                             paletteStrings.Add(blockFullId);
+                            paletteMaxDurability.Add(GameAssets.Blocks.TryGetValue(currentSessionId, out var paletteData) ? paletteData.Durability : block.Durability);
                         }
 
                         listBlocks[indexIn1D] = paletteIndex;
@@ -332,6 +335,8 @@ namespace Spacebox.Game.Generation.Tools
                             blockWithRotationIDs.Add(indexIn1D);
                             blockWithRotationIDs.Add((byte)block.Rotation);
                         }
+
+                        BlockDurabilityNbt.Collect(damagedBlocks, indexIn1D, block, paletteMaxDurability[paletteIndex]);
 
                         if (block.HasMultiblockOffset)
                         {
@@ -384,6 +389,8 @@ namespace Spacebox.Game.Generation.Tools
 
             if (multiblockOffsets.Count > 0)
                 root.Add(new IntArrayTag(NBTKey.CHUNK.multiblock_offsets, multiblockOffsets.ToArray()));
+
+            BlockDurabilityNbt.Write(root, damagedBlocks);
 
             root.Add(complexBlocksList);
 
@@ -465,6 +472,8 @@ namespace Spacebox.Game.Generation.Tools
                     if (blocks[x, y, z].HasMultiblockOffset) blocks[x, y, z].ConfigureAsMultiblockPart();
                 }
             }
+
+            BlockDurabilityNbt.Read(tag, blocks);
 
             string[] paletteItemsString = new string[0];
             if (tag.TryGetValue<ListTag>(NBTKey.CHUNK.palette_items, out var paletteItemsTag))

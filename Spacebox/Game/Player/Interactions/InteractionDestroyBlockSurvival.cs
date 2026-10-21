@@ -119,6 +119,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
     {
         if (hit.chunk != null && !Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(hit.chunk.SpaceEntity, Spacebox.Game.Protection.ProtectionRules.CellOf(hit.chunk, hit.blockPositionIndex))) return;
         hit.block.Durability = BlockDamage.Apply(hit.block.Durability, damage);
+        if (hit.chunk != null) hit.chunk.IsModified = true;
         astronaut.PlayerStatistics.BlockDamageDealt += damage;
         if (hit.block.Durability <= 0)
         {

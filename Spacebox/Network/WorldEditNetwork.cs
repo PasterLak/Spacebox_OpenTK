@@ -60,6 +60,7 @@ public static class WorldEditNetwork
 
         byte max = GameAssets.GetBlockDataById(block.Id)?.Durability ?? block.Durability;
         block.Durability = BlockDamage.Repair(block.Durability, message.Amount, max);
+        chunk.IsModified = true;
 
         if (network.IsServer) network.SendToClients(message, DeliveryMode.Reliable, sender);
     }
@@ -106,6 +107,7 @@ public static class WorldEditNetwork
         if (block == null || block.IsAir || block.Id != message.BlockId) return;
 
         block.Durability = BlockDamage.Apply(block.Durability, message.Damage);
+        chunk.IsModified = true;
 
         if (network.IsServer) network.SendToClients(message, DeliveryMode.Reliable, sender);
     }

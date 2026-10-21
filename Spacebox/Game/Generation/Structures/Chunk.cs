@@ -424,6 +424,7 @@ namespace Spacebox.Game.Generation
             if ((((short)block.Durability) - damage) > 0)
             {
                 block.Durability -= damage;
+                IsModified = true;
             }
             else
             {

@@ -80,6 +80,7 @@ public class InteractionRepair : InteractionMode
             var block = _target.WeakestBlock;
             byte repaired = (byte)Math.Min(amount, max - block.Durability);
             block.Durability = BlockDamage.Repair(block.Durability, repaired, max);
+            if (_target.WeakestChunk != null) _target.WeakestChunk.IsModified = true;
             WorldEditNetwork.NotifyRepaired(_target.WeakestChunk, _target.WeakestIndex, block.Id, repaired);
         }
 
