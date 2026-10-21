@@ -265,13 +265,17 @@ namespace Spacebox.Game
             return loaded;
         }
 
+        public static string Serialize(GameSettings settings)
+        {
+            return JsonSerializer.Serialize(settings, JsonOpts);
+        }
+
         public static void Save(GameSettings settings)
         {
             string path = FilePath;
             var dir = Path.GetDirectoryName(path);
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
-            var json = JsonSerializer.Serialize(settings, JsonOpts);
-            File.WriteAllText(path, json);
+            File.WriteAllText(path, Serialize(settings));
 
 
 

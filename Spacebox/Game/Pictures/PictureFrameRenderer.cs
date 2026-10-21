@@ -11,7 +11,7 @@ public sealed class PictureFrameRenderer
 {
     private const string ShaderPath = "Resources/Shaders/movingBlock";
     private const float RefreshInterval = 1f;
-    private const float PictureLift = 0.002f;
+    private const float PictureLift = 0.004f;
 
     private sealed class Entry
     {

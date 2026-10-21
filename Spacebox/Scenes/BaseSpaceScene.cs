@@ -128,13 +128,15 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         if (!Application.IsHeadless) _flashlightBeams = new Spacebox.Game.Rendering.FlashlightBeamRenderer();
 
         Debug.RegisterCommand(new DebugTexturesCommand());
-        Debug.RegisterCommand(new TeleportCommand(localPlayer));
+        Debug.RegisterCommand(new Spacebox.Game.Commands.Teleport.TeleportCommand(localPlayer));
+        Debug.RegisterCommand(new Spacebox.Game.Commands.Teleport.TeleportCommand(localPlayer, "teleport"));
+        Debug.RegisterCommand(new Spacebox.Game.Commands.Teleport.TeleportCommand(localPlayer, "tpp"));
+        Debug.RegisterCommand(new Spacebox.Game.Commands.Teleport.TeleportHereCommand(localPlayer));
         Debug.RegisterCommand(new TeleportLocal(localPlayer));
         Debug.RegisterCommand(new TagCommand(localPlayer));
         Debug.RegisterCommand(new ClearInventoryCommand(localPlayer));
         Debug.RegisterCommand(new GameModCommand(localPlayer));
         Debug.RegisterCommand(new SpawnAroundAsteroidCommand(localPlayer));
-        Debug.RegisterCommand(new TeleportToPlayerCommand(localPlayer));
         Debug.RegisterCommand(new SpawnMobCommand(localPlayer));
         Debug.RegisterCommand(new SsaoDebugCommand());
         Debug.RegisterCommand(new OcclusionCommand());

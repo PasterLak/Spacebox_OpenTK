@@ -150,10 +150,15 @@ public static class WorldEditNetwork
     public static void NotifyPlaced(SpaceEntity entity, Vector3 entitySpacePosition, Block block)
     {
         var local = entity.WorldPositionToLocal(entitySpacePosition);
+        NotifyPlacedAtCell(entity, new Vector3i((int)MathF.Floor(local.X), (int)MathF.Floor(local.Y), (int)MathF.Floor(local.Z)), block);
+    }
+
+    public static void NotifyPlacedAtCell(SpaceEntity entity, Vector3i cell, Block block)
+    {
         Send(new BlockEditMessage
         {
             EntityId = entity.EntityID,
-            Cell = new Vector3i((int)MathF.Floor(local.X), (int)MathF.Floor(local.Y), (int)MathF.Floor(local.Z)),
+            Cell = cell,
             BlockId = block.Id,
             Direction = (byte)block.Direction,
             Rotation = (byte)block.Rotation

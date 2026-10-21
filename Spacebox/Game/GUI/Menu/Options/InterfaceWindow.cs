@@ -1,6 +1,6 @@
 namespace Spacebox.Game.GUI.Menu;
 
-public class InterfaceWindow : MenuWindow
+public class InterfaceWindow : SettingsCategoryWindow
 {
     private const uint FontTestLength = 256;
 
@@ -42,18 +42,8 @@ public class InterfaceWindow : MenuWindow
 
                 rows.End();
             },
-            () =>
-            {
-                _options.PlayClick();
-                SettingsService.Save(Settings.AsGameSettings());
-                _options.ShowOptions();
-            },
-            () =>
-            {
-                _options.PlayClick();
-                OptionsMenu.DiscardUnsavedChanges();
-                _options.ShowOptions();
-            }
+            _options.Save,
+            _options.Back
         );
     }
 

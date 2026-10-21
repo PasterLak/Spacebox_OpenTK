@@ -48,7 +48,8 @@ namespace Spacebox.Game
 
             Position = pos;
             Texture2D spacerTex = GameAssets.LoadResource<Texture2D>("Resources/Textures/Skins/spacer.png");
-            spacerTex.FlipY();
+            if (!spacerTex.YWasFlipped)
+                spacerTex.FlipY();
             spacerTex.FilterMode = FilterMode.Nearest;
             Name = nameof(Spacer);
             _health = new StatsData();

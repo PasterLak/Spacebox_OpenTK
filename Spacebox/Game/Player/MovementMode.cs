@@ -360,6 +360,7 @@ public class MovementMode : GameModeBase
             context.Velocity = velocityBefore * 0.7f;
         }
 
+        if (!player.IsAlive) context.Velocity = Vector3.Zero;
         player.InertiaController.Velocity = context.Velocity;
         player.Position = position;
     }

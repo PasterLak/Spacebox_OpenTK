@@ -5,6 +5,8 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Doors;
+using Spacebox.Game.Player.Interactions;
 using Spacebox.Game.Player;
 using Spacebox.Network;
 
@@ -118,6 +120,14 @@ public static class ShipBindingTool
         var max = new System.Numerics.Vector2(screen.X + size.X * 0.5f + 4f, screen.Y + size.Y * 0.5f + 2f);
         drawList.AddRectFilled(min, max, ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(0f, 0f, 0f, 0.6f)), 3f);
         drawList.AddText(new System.Numerics.Vector2(min.X + 4f, min.Y + 2f), ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(color.R, color.G, color.B, 1f)), text);
+    }
+
+    public static bool TryUseDoor(LocalAstronaut player)
+    {
+        if (!BlockUseTarget.TryFind(player, out var block, out var hit) || block is not DoorBlock) return false;
+
+        InteractiveBlock.UpdateInteractive(block, player, ref hit);
+        return true;
     }
 
     private static int ReadCycleDirection()

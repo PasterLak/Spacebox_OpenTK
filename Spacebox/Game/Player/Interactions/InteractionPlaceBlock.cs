@@ -59,15 +59,19 @@ public class InteractionPlaceBlock : InteractionMode
             lineRenderer.Enabled = false;
     }
 
+    private static Vector3i TargetCell(HitInfo hit)
+    {
+        return new Vector3i(hit.blockPositionEntity.X + hit.normal.X,
+            hit.blockPositionEntity.Y + hit.normal.Y,
+            hit.blockPositionEntity.Z + hit.normal.Z);
+    }
+
     private Vector3 UpdateBlockPreview(HitInfo hit, LocalAstronaut player)
     {
 
         BlockSelector.IsVisible = true;
-        var selectorPositionWorld = new Vector3(hit.blockPositionIndex.X + hit.normal.X,
-            hit.blockPositionIndex.Y + hit.normal.Y,
-            hit.blockPositionIndex.Z + hit.normal.Z) + hit.chunk.PositionWorld;
-
         var entity = hit.chunk.SpaceEntity;
+        var selectorPositionWorld = entity.CellCorner(TargetCell(hit));
         if (BlockSelector.Instance.CurrentBlockData == null) return selectorPositionWorld;
 
         BlockPlacementHelper.CalculateOrientation(entity.ToEntitySpace(player.PositionWorld), selectorPositionWorld, entity.DirectionToEntitySpace(player.Up),
@@ -75,7 +79,7 @@ public class InteractionPlaceBlock : InteractionMode
         BlockSelector.Instance.UpdatePosition(selectorPositionWorld, finalDir, finalRot, true, entity);
 
         var previewData = BlockSelector.Instance.CurrentBlockData;
-        _previewPlaceable = entity.CanPlaceBlock(selectorPositionWorld, previewData, finalDir, finalRot);
+        _previewPlaceable = entity.CanPlaceBlockAtCell(TargetCell(hit), previewData, finalDir, finalRot);
         BlockSelector.Instance.SetPlaceable(_previewPlaceable);
 
         UpdateReservedArea(entity, selectorPositionWorld, previewData, finalDir, finalRot, _previewPlaceable);
@@ -181,12 +185,13 @@ public class InteractionPlaceBlock : InteractionMode
                     newBlock.Direction = finalDir;
                     newBlock.Rotation = finalRot;
 
-                    if (Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(chunk.SpaceEntity, Spacebox.Game.Protection.ProtectionRules.CellAt(chunk.SpaceEntity, selectorPos)) &&
-                        Spacebox.Game.Protection.ClaimPlacement.CheckLocal(chunk.SpaceEntity, Spacebox.Game.Protection.ProtectionRules.CellAt(chunk.SpaceEntity, selectorPos), newBlock) &&
-                        chunk.SpaceEntity.TryPlaceBlock(selectorPos, newBlock))
+                    var targetCell = TargetCell(hit);
+                    if (Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(chunk.SpaceEntity, targetCell) &&
+                        Spacebox.Game.Protection.ClaimPlacement.CheckLocal(chunk.SpaceEntity, targetCell, newBlock) &&
+                        chunk.SpaceEntity.TryPlaceBlockAtCell(targetCell, newBlock))
                     {
                         Spacebox.Game.Protection.ClaimPlacement.OnPlacedLocally(newBlock);
-                        WorldEditNetwork.NotifyPlaced(chunk.SpaceEntity, selectorPos, newBlock);
+                        WorldEditNetwork.NotifyPlacedAtCell(chunk.SpaceEntity, targetCell, newBlock);
                         player.PlayerStatistics.BlocksPlaced++;
                         PlayerActivity.RaiseBlock(PlayerActivityKind.BlockPlaced, newBlock.Id);
                     }
@@ -351,7 +356,7 @@ public class InteractionPlaceBlock : InteractionMode
                     newBlock.Rotation = finalRot;
 
 
-                    var cell = Spacebox.Game.Protection.ProtectionRules.CellAt(entity, selectorPosition);
+                    var cell = new Vector3i((int)localPos.X, (int)localPos.Y, (int)localPos.Z);
                     if (!Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(entity, cell) ||
                         !Spacebox.Game.Protection.ClaimPlacement.CheckLocal(entity, cell, newBlock))
                     {
@@ -359,10 +364,10 @@ public class InteractionPlaceBlock : InteractionMode
                         return;
                     }
 
-                    if (entity.TryPlaceBlock(selectorPosition, newBlock))
+                    if (entity.TryPlaceBlockAtCell(cell, newBlock))
                     {
                         Spacebox.Game.Protection.ClaimPlacement.OnPlacedLocally(newBlock);
-                        WorldEditNetwork.NotifyPlaced(entity, selectorPosition, newBlock);
+                        WorldEditNetwork.NotifyPlacedAtCell(entity, cell, newBlock);
                         player.PlayerStatistics.BlocksPlaced++;
                         PlayerActivity.RaiseBlock(PlayerActivityKind.BlockPlaced, newBlock.Id);
                     }

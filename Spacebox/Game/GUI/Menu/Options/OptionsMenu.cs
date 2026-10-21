@@ -8,6 +8,8 @@ public interface IOptionsNavigator
     void PlayClick();
     void Show<T>() where T : MenuWindow;
     void ShowOptions();
+    void Save();
+    void Back();
     void Close();
 }
 
@@ -18,7 +20,9 @@ public sealed class OptionsMenu : IOptionsNavigator
     private readonly Dictionary<Type, MenuWindow> _windows = new Dictionary<Type, MenuWindow>();
     private readonly AudioSource _click;
     private readonly Action _onClose;
+    private readonly UnsavedChangesPrompt _unsavedPrompt = new UnsavedChangesPrompt();
     private MenuWindow _current;
+    private string _savedState;
 
     public OptionsMenu(AudioSource click, Action onClose)
     {
@@ -38,6 +42,7 @@ public sealed class OptionsMenu : IOptionsNavigator
     {
         if (_current is ControlsWindow controls) controls.Update();
         _current?.Render();
+        _unsavedPrompt.Render(Save, LeaveWithoutSaving, PlayClick);
     }
 
     public void PlayClick()
@@ -49,12 +54,31 @@ public sealed class OptionsMenu : IOptionsNavigator
     {
         if (!_windows.TryGetValue(typeof(T), out var window)) return;
         _current = window;
+        _savedState = window is IOptionsCategory category ? category.CaptureState() : null;
         window.OnWindowChanged();
     }
 
     public void ShowOptions()
     {
         Show<OptionsWindow>();
+    }
+
+    public void Save()
+    {
+        PlayClick();
+        SaveAndLeave();
+    }
+
+    public void Back()
+    {
+        PlayClick();
+        if (_current is IOptionsCategory category && category.CaptureState() != _savedState)
+        {
+            _unsavedPrompt.Open();
+            return;
+        }
+
+        DiscardAndLeave();
     }
 
     public void Close()
@@ -68,6 +92,24 @@ public sealed class OptionsMenu : IOptionsNavigator
         Settings.LoadSettings();
         SettingsApplier.ApplyAll();
         InputManager.Instance.LoadConfiguration(InputConfigPath);
+    }
+
+    private void SaveAndLeave()
+    {
+        if (_current is IOptionsCategory category) category.Save();
+        ShowOptions();
+    }
+
+    private void LeaveWithoutSaving()
+    {
+        PlayClick();
+        DiscardAndLeave();
+    }
+
+    private void DiscardAndLeave()
+    {
+        if (_current is IOptionsCategory category) category.Discard();
+        ShowOptions();
     }
 
     private void Register(MenuWindow window)

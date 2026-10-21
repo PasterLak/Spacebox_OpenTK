@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Spacebox.Game.GUI.Menu;
 
-public class ControlsWindow : MenuWindow
+public class ControlsWindow : MenuWindow, IOptionsCategory
 {
     private readonly IOptionsNavigator _options;
     private InputRemapper remapper;
@@ -30,18 +30,8 @@ public class ControlsWindow : MenuWindow
             {
                 RenderControlsTable(listSize, rowH);
             },
-            () =>
-            {
-                _options.PlayClick();
-                InputManager.Instance.SaveConfiguration(OptionsMenu.InputConfigPath);
-                _options.ShowOptions();
-            },
-            () =>
-            {
-                _options.PlayClick();
-                InputManager.Instance.LoadConfiguration(OptionsMenu.InputConfigPath);
-                _options.ShowOptions();
-            }
+            _options.Save,
+            _options.Back
         );
 
         if (isRemapping)
@@ -49,6 +39,12 @@ public class ControlsWindow : MenuWindow
             RenderRemapOverlay();
         }
     }
+
+    public string CaptureState() => InputManager.Instance.SerializeConfiguration();
+
+    public void Save() => InputManager.Instance.SaveConfiguration(OptionsMenu.InputConfigPath);
+
+    public void Discard() => InputManager.Instance.LoadConfiguration(OptionsMenu.InputConfigPath);
 
     public override void OnWindowChanged()
     {

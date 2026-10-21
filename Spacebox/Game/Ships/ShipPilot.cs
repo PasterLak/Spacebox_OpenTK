@@ -105,7 +105,7 @@ public static class ShipPilot
         {
             _skipUseThisFrame = false;
         }
-        else if (!UIManager.IsUIMode && Input.IsActionDown("use"))
+        else if (!UIManager.IsUIMode && Input.IsActionDown("use") && !(ShipBindingTool.IsActive && ShipBindingTool.TryUseDoor(player)))
         {
             Unmount(player);
             return;

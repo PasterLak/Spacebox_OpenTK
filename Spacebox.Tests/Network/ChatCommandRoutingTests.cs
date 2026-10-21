@@ -15,21 +15,6 @@ public class ChatCommandRoutingTests
     }
 
     [Fact]
-    public void Teleport_ToCoordinatesStaysLocal_ForAPlayerGoesToTheServer()
-    {
-        Assert.False(ServerCommandForwarder.ShouldForwardTeleport(new[] { "10", "-5.5", "3" }));
-        Assert.True(ServerCommandForwarder.ShouldForwardTeleport(new[] { "Anna", "10", "0", "3" }));
-        Assert.False(ServerCommandForwarder.ShouldForwardTeleport(System.Array.Empty<string>()));
-    }
-
-    [Fact]
-    public void TeleportToPlayer_WithTwoNamesGoesToTheServer()
-    {
-        Assert.False(ServerCommandForwarder.ShouldForwardTeleportToPlayer(new[] { "Anna" }));
-        Assert.True(ServerCommandForwarder.ShouldForwardTeleportToPlayer(new[] { "Bob", "Anna" }));
-    }
-
-    [Fact]
     public void BuildLine_JoinsNameAndArguments()
     {
         Assert.Equal("gm 1 Anna", ServerCommandForwarder.BuildLine("gm", new[] { "1", "Anna" }));

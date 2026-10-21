@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace Spacebox.Game.GUI.Menu
 {
-    public class GameWindow : MenuWindow
+    public class GameWindow : SettingsCategoryWindow
     {
         private const int DrawDistanceStep = 50;
 
@@ -52,18 +52,8 @@ namespace Spacebox.Game.GUI.Menu
 
                     rows.End();
                 },
-                () =>
-                {
-                    _options.PlayClick();
-                    SettingsService.Save(Settings.AsGameSettings());
-                    _options.ShowOptions();
-                },
-                () =>
-                {
-                    _options.PlayClick();
-                    OptionsMenu.DiscardUnsavedChanges();
-                    _options.ShowOptions();
-                }
+                _options.Save,
+                _options.Back
             );
 
             Settings.Gameplay.Language = _languages[_languageIndex];

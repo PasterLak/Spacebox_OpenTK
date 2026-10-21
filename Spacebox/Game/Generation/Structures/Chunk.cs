@@ -527,6 +527,8 @@ namespace Spacebox.Game.Generation
             return true;
         }
 
+        private bool _bulkElectricalChanged;
+
         internal void SetCellForBulkEdit(byte x, byte y, byte z, Block block)
         {
             if (!IsInRange(x, y, z) || block == null) return;
@@ -534,10 +536,22 @@ namespace Spacebox.Game.Generation
             Blocks[x, y, z] = block;
             IsModified = true;
             DataVersion++;
+
+            if (SpaceEntity != null && block.Id != 0 && block is ElectricalBlock electrical && electrical.EFlags != ElectricalFlags.None)
+            {
+                SpaceEntity.ElectricManager.AddBlockFast((PositionIndex.X * Size + x, PositionIndex.Y * Size + y, PositionIndex.Z * Size + z), electrical, this);
+                _bulkElectricalChanged = true;
+            }
         }
 
         public void FinishBulkEdit()
         {
+            if (_bulkElectricalChanged)
+            {
+                _bulkElectricalChanged = false;
+                SpaceEntity?.ElectricManager.Rebuild();
+            }
+
             _lightManager.PropagateLight();
             QueueMeshUpdate(UpdateReason.PlayerAction);
 

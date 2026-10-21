@@ -330,23 +330,24 @@ namespace Spacebox.Game.Generation
 
         private bool PlaceBlockInternal(Vector3 localPos, Block block)
         {
-            int chunkX = (int)MathF.Floor(localPos.X / Chunk.Size);
-            int chunkY = (int)MathF.Floor(localPos.Y / Chunk.Size);
-            int chunkZ = (int)MathF.Floor(localPos.Z / Chunk.Size);
+            var cell = new Vector3i((int)MathF.Floor(localPos.X), (int)MathF.Floor(localPos.Y), (int)MathF.Floor(localPos.Z));
+            int chunkX = (int)MathF.Floor(cell.X / (float)Chunk.Size);
+            int chunkY = (int)MathF.Floor(cell.Y / (float)Chunk.Size);
+            int chunkZ = (int)MathF.Floor(cell.Z / (float)Chunk.Size);
             Vector3SByte chunkIndex = new Vector3SByte((sbyte)chunkX, (sbyte)chunkY, (sbyte)chunkZ);
 
-            int blockX = (int)MathF.Floor(localPos.X) - chunkX * Chunk.Size;
-            int blockY = (int)MathF.Floor(localPos.Y) - chunkY * Chunk.Size;
-            int blockZ = (int)MathF.Floor(localPos.Z) - chunkZ * Chunk.Size;
+            int blockX = cell.X - chunkX * Chunk.Size;
+            int blockY = cell.Y - chunkY * Chunk.Size;
+            int blockZ = cell.Z - chunkZ * Chunk.Size;
             Vector3Byte blockPos = new Vector3Byte((byte)blockX, (byte)blockY, (byte)blockZ);
 
-            if (Octree.TryFindDataAtPosition(localPos + new Vector3(0.5f, 0.5f, 0.5f), out var chunk))
+            if (Octree.TryFindDataAtPosition(new Vector3(cell.X + 0.5f, cell.Y + 0.5f, cell.Z + 0.5f), out var chunk))
             {
                 chunk.PlaceBlock(blockPos, block);
 
                 if (block.Is<ElectricalBlock>(out var el))
                 {
-                    ElectricManager.AddBlock(((int)localPos.X, (int)localPos.Y, (int)localPos.Z), el, chunk);
+                    ElectricManager.AddBlock((cell.X, cell.Y, cell.Z), el, chunk);
                 }
             }
             else
@@ -357,7 +358,7 @@ namespace Spacebox.Game.Generation
 
                 if (block.Is<ElectricalBlock>(out var el))
                 {
-                    ElectricManager.AddBlock(((int)localPos.X, (int)localPos.Y, (int)localPos.Z), el, newChunk);
+                    ElectricManager.AddBlock((cell.X, cell.Y, cell.Z), el, newChunk);
                 }
             }
             return true;
@@ -365,8 +366,28 @@ namespace Spacebox.Game.Generation
 
         public bool TryPlaceBlockLocal(Vector3 localBlockPosition, Block block)
         {
-            Vector3 worldBlockPos = PositionWorld + localBlockPosition;
-            return TryPlaceBlock(worldBlockPos, block);
+            var cell = new Vector3i((int)MathF.Floor(localBlockPosition.X), (int)MathF.Floor(localBlockPosition.Y), (int)MathF.Floor(localBlockPosition.Z));
+            return TryPlaceBlockAtCell(cell, block);
+        }
+
+        public bool TryPlaceBlockAtCell(Vector3i localCell, Block block)
+        {
+            return TryPlaceBlock(CellCenter(localCell), block);
+        }
+
+        public bool CanPlaceBlockAtCell(Vector3i localCell, BlockData blockData, Direction direction, Rotation rotation)
+        {
+            return CanPlaceBlock(CellCenter(localCell), blockData, direction, rotation);
+        }
+
+        public Vector3 CellCorner(Vector3i localCell)
+        {
+            return PositionWorld + new Vector3(localCell.X, localCell.Y, localCell.Z);
+        }
+
+        private Vector3 CellCenter(Vector3i localCell)
+        {
+            return PositionWorld + new Vector3(localCell.X + 0.5f, localCell.Y + 0.5f, localCell.Z + 0.5f);
         }
 
         public bool TryPlaceBlock(Vector3 worldPosition, Block block)
@@ -381,7 +402,7 @@ namespace Spacebox.Game.Generation
                 return false;
 
             Vector3 localPos = WorldPositionToLocal(worldPosition);
-            if (IsCellReserved(worldPosition)) return false;
+            if (!IsCellEmpty(worldPosition) || IsCellReserved(worldPosition)) return false;
             if (blockData != null && !IsReservedAreaFree(worldPosition, blockData, block.Direction, block.Rotation)) return false;
             if (blockData != null && !HasRequiredSupport(worldPosition, blockData, block.Direction, block.Rotation)) return false;
 
@@ -398,7 +419,7 @@ namespace Spacebox.Game.Generation
         public bool CanPlaceBlock(Vector3 position, BlockData blockData, Direction direction, Rotation rotation)
         {
             if (blockData.IsMultiblock) return CanPlaceStructure(position, blockData, direction, rotation);
-            return !IsCellReserved(position) && IsReservedAreaFree(position, blockData, direction, rotation) &&
+            return IsCellEmpty(position) && !IsCellReserved(position) && IsReservedAreaFree(position, blockData, direction, rotation) &&
                    HasRequiredSupport(position, blockData, direction, rotation);
         }
 

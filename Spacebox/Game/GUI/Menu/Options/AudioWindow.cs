@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace Spacebox.Game.GUI.Menu
 {
-    public class AudioWindow : MenuWindow
+    public class AudioWindow : SettingsCategoryWindow
     {
         private readonly IOptionsNavigator _options;
 
@@ -50,18 +50,8 @@ namespace Spacebox.Game.GUI.Menu
                     audio.MenuMusic = menuMusic;
                     SettingsApplier.ApplyAudio(audio);
                 },
-                () =>
-                {
-                    _options.PlayClick();
-                    SettingsService.Save(Settings.AsGameSettings());
-                    _options.ShowOptions();
-                },
-                () =>
-                {
-                    _options.PlayClick();
-                    OptionsMenu.DiscardUnsavedChanges();
-                    _options.ShowOptions();
-                }
+                _options.Save,
+                _options.Back
             );
         }
     }

@@ -16,6 +16,9 @@ public struct PlatePlacement
 
 public static class PlateQuad
 {
+    private const float DepthOffsetFactor = -1f;
+    private const float DepthOffsetUnits = -16f;
+
     private static MeshBuffer _quad;
 
     public static PlatePlacement Place(SpaceEntity entity, Vector3i cell, BlockShape shape, Direction direction, Rotation rotation, Box2 area, float height)
@@ -58,9 +61,12 @@ public static class PlateQuad
     public static void Draw()
     {
         _quad ??= CreateQuad();
+        GL.Enable(EnableCap.PolygonOffsetFill);
+        GL.PolygonOffset(DepthOffsetFactor, DepthOffsetUnits);
         GL.BindVertexArray(_quad.VAO);
         GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, 0);
         GL.BindVertexArray(0);
+        GL.Disable(EnableCap.PolygonOffsetFill);
     }
 
     private static MeshBuffer CreateQuad()

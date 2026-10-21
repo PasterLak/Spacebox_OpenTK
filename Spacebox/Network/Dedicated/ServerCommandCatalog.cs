@@ -21,9 +21,7 @@ public static class ServerCommandCatalog
             new SaveCommand(),
             new StopCommand(),
             new RestartCommand(),
-            new ServerGameModeCommand(),
-            new ServerTeleportCommand(),
-            new ServerTeleportToPlayerCommand()
+            new ServerGameModeCommand()
         };
     }
 

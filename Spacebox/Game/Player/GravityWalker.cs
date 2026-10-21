@@ -74,6 +74,16 @@ public sealed class GravityWalker
         player.InertiaController.Velocity = _velocity;
     }
 
+    public void Reset()
+    {
+        IsActive = false;
+        _isGrounded = false;
+        _isAirborne = false;
+        _peakFallSpeed = 0f;
+        _velocity = Vector3.Zero;
+        _entity = null;
+    }
+
     public void Update(LocalAstronaut player, Vector3 gravity, bool canMove)
     {
         float deltaTime = Time.Delta;

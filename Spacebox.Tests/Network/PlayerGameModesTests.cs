@@ -60,12 +60,4 @@ public class PlayerGameModesTests : IDisposable
         Assert.False(PlayerGameModes.TryRead("not json", out _));
         Assert.False(PlayerGameModes.TryRead(null, out _));
     }
-
-    [Fact]
-    public void Teleport_CoordinatesAreSentForOwnPlayer()
-    {
-        Assert.Equal(new[] { "Me", "1", "2", "3" }, ServerCommandForwarder.TeleportArguments(new[] { "1", "2", "3" }, "Me"));
-        Assert.Equal(new[] { "Bob" }, ServerCommandForwarder.TeleportArguments(new[] { "Bob" }, "Me"));
-        Assert.Equal(new[] { "1" }, ServerCommandForwarder.TeleportArguments(new[] { "1" }, "Me"));
-    }
 }

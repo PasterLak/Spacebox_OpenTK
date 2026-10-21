@@ -343,7 +343,7 @@ namespace Spacebox.Game.Player
         {
             Position = position;
             _statsTracker.ResetPosition();
-            InertiaController.Reset();
+            ResetMotion();
             Effects.PlayEffect(PlayerEffectType.Teleport);
             PlayerStatistics.TeleportsUsed++;
             Mood.RemoveMood(5);
@@ -392,7 +392,7 @@ namespace Spacebox.Game.Player
             LastDeathCase = deathCase;
 
             IsAlive = false;
-            InertiaController.Reset();
+            ResetMotion();
             FOV = 110;
             HitImage.Hide();
             Settings.ShowInterface = false;
@@ -411,6 +411,13 @@ namespace Spacebox.Game.Player
 
             DeathDrops.Drop(this);
             OnDeath?.Invoke();
+        }
+
+        private void ResetMotion()
+        {
+            ShipRider.Reset();
+            Gravity.Reset();
+            InertiaController.Reset();
         }
 
         private void ReconstructOrRespawn()
@@ -437,6 +444,7 @@ namespace Spacebox.Game.Player
             HealthBar.StatsGUI.IsVisible = true;
             PowerBar.StatsGUI.IsVisible = true;
             OxygenBar.StatsGUI.IsVisible = true;
+            ResetMotion();
             SetPosition(position);
             Effects.PlayEffect(PlayerEffectType.Heal);
             _lastAttackerPeer = -1;

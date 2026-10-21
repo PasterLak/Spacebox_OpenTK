@@ -173,14 +173,7 @@ public class InputManager
     {
         try
         {
-
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Converters = { new InputBindingConverter() }
-            };
-            var json = JsonSerializer.Serialize(profiles, options);
-            File.WriteAllText(path, json);
+            File.WriteAllText(path, SerializeConfiguration());
         }
         catch (Exception ex)
         {
@@ -190,6 +183,16 @@ public class InputManager
         {
             Debug.Success($"[InputManager] Input configuration saved to {path} (profiles: {profiles.Count})");
         }
+    }
+
+    public string SerializeConfiguration()
+    {
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Converters = { new InputBindingConverter() }
+        };
+        return JsonSerializer.Serialize(profiles, options);
     }
 
     public void LoadConfiguration(string path)

@@ -4,7 +4,7 @@ using static Engine.EngineWindow;
 
 namespace Spacebox.Game.GUI.Menu
 {
-    public class GraphicsWindow : MenuWindow
+    public class GraphicsWindow : SettingsCategoryWindow
     {
         private readonly IOptionsNavigator _options;
         private readonly string[] _modes = { "Fullscreen", "Borderless", "Windowed" };
@@ -161,20 +161,15 @@ namespace Spacebox.Game.GUI.Menu
 
                     rows.End();
                 },
-                () =>
-                {
-                    _options.PlayClick();
-                    SettingsService.Save(Settings.AsGameSettings());
-                    _options.ShowOptions();
-                },
-                () =>
-                {
-                    _options.PlayClick();
-                    _pendingResolution = -1;
-                    OptionsMenu.DiscardUnsavedChanges();
-                    _options.ShowOptions();
-                }
+                _options.Save,
+                _options.Back
             );
+        }
+
+        public override void Discard()
+        {
+            _pendingResolution = -1;
+            base.Discard();
         }
 
         private static void Apply(GraphicsSettings graphics, Action change)

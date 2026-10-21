@@ -54,7 +54,7 @@ public static class SettingsUI
         {
             ButtonWithBackground("Back", new Vector2(listSize.X / 2f - spacing, btnH),
             new Vector2((ww - btnW) / 2f + listSize.X / 2f + spacing, wh - btnH - spacing), onBack);
-            UIHelper.ShowTooltip("Go back and undo the changes that were not saved.");
+            UIHelper.ShowTooltip("Go back. If something was changed, asks whether to save it.");
         }
 
         ImGui.End();

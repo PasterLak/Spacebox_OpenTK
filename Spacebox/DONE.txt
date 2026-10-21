@@ -55,7 +55,9 @@ New
 - keep inventory rule (on by default): with gamerule keep_inventory off (or keepinventory) survival players drop their hotbar, inventory and equipment where they die; death drops last death_drop_minutes (default 10, 1-1440), also on the dashboard and in serverconfig.json; dead players do not pick items up; drops keep their remaining time when saved
 - single player and hosted worlds save their gamerules in the world folder (rules.json); clients get the server's rules
 - cable blocks connect automatically: they turn along the line, the middle block of an L becomes an angle and a block with 3 or more connections a hub (only the cable block is crafted); new angle and hub textures
+- Minecraft-like tp: tp <x y z> | <target> | <player> <target> | <player> <x y z>, ~ relative coordinates, @s and @a; also teleport; tphere <player> brings a player to you; same command in single player, host, dedicated server and chat
 Small
+- options: leaving a category with Back after changing something asks Save / Don't Save / Cancel
 - block icons show the real shape: signs, picture frames, torches, slabs and multi-cell blocks are rendered from their model (same isometric style as cube icons)
 - held and dropped item models merge pixels by shape instead of colour and merge their side faces: about 84% fewer polygons
 - agent API for automated play testing (--agent, --agent-world; not in Final builds): localhost HTTP control of player, camera, input, ImGui text and clicks, A* goto, block scans, screenshots; Tools/agent/game.sh
@@ -149,7 +151,15 @@ Fixes
 - furnace tasks and block serializers are thread safe while preloading
 - multiplayer: partial block damage (drilling, projectiles) is synced, players drilling one block add up
 - a block item is refunded when its placement fails locally or the server rejects it
+- multiplayer: placed blocks (often next to generators or on ships) could land one cell off on the host; placement now uses the exact entity cell instead of a float world position round trip, also at chunk borders and for the power network
+- spacer texture no longer flips upside down for every second spacer
+- ship key binding mode: use opens doors instead of leaving the binding mode
+- pictures in frames and sign text no longer z-fight with the plate from a distance (depth offset)
+- placing a block can no longer replace a block in that cell (torches and other small blocks were overwritten when the ray missed them)
+- power networks: area fill registers cables, generators and machines; with the exact-cell placement fix networks match on host and clients
+- after dying against a moving ship the player no longer keeps the ship's speed after respawn (ship frame, gravity walker and collision velocity are reset on death, respawn and teleport)
 Engine
+- InputManager.SerializeConfiguration
 - F10 render debug views (Shift+F10 back): wireframe of all meshes, G-buffer normals, linear depth, G-buffer mask, SSAO occlusion; removed the stray F10 toggle inside Mesh.Render
 - chunk vertices packed from 52 to 28 bytes (light colour, emission, normal and AO as normalized bytes; MeshBuffer supports typed attributes); normal matrix computed once per draw instead of per vertex in 13 shaders
 - occlusion culling: chunks hidden behind other asteroids, ships or blocks are not drawn (GPU occlusion queries, windows still see through); console occlusion [on|off], F3 shows drawn/occluded chunks, F4 marks occluded chunks
