@@ -39,6 +39,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         set
         {
             _isModified = value;
+            if (value) WorldSaveState.MarkChanged();
         }
     }
 
@@ -73,9 +74,20 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         PopulateSector();
 
-        ScanAndRegisterCustomEntities();
+        CompoundTag cachedTag = null;
+        string[] cachedDestroyed = null;
+        bool cached = !Spacebox.Network.GameSession.IsRemoteClient && WorldPersistenceManager.TryTakeCachedSector(PositionIndex, out cachedTag, out cachedDestroyed);
 
-        if (WorldSaveLoad.CanLoadSectorHere(PositionIndex, out var sectorFolderPath))
+        ScanAndRegisterCustomEntities(cachedDestroyed);
+
+        if (cached)
+        {
+            NBTHelper.TagToSectorOnly(cachedTag, this);
+            EntitiesDestroyed.AddRange(cachedDestroyed);
+            HandleSuppressedEntities();
+            IsModified = true;
+        }
+        else if (WorldSaveLoad.CanLoadSectorHere(PositionIndex, out var sectorFolderPath))
         {
 
             WorldSaveLoad.LoadSectorData(this);
@@ -171,13 +183,14 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     }
 
-    private void ScanAndRegisterCustomEntities()
+    private void ScanAndRegisterCustomEntities(string[] destroyedSinceSave)
     {
 
         var savedEntities = WorldSaveLoad.ScanAllEntities(PositionIndex);
 
         foreach (var saved in savedEntities)
         {
+            if (destroyedSinceSave != null && Array.IndexOf(destroyedSinceSave, saved.FileName) >= 0) continue;
             saved.positionWorld = LocalToWorldPosition(saved.positionInSector);
 
             if (!_savedHere.Add(saved.Id))

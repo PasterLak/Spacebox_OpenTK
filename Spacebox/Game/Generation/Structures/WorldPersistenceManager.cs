@@ -20,6 +20,36 @@ namespace Spacebox.Game.Generation
 
         private static ConcurrentDictionary<long, CachedEntityData> _modifiedEntitiesCache = new();
 
+        private sealed class CachedSectorData
+        {
+            public CompoundTag Tag;
+            public string[] Destroyed;
+        }
+
+        private static readonly ConcurrentDictionary<Vector3i, CachedSectorData> _sectorCache = new();
+
+        public static void CacheUnloadedSector(Sector sector)
+        {
+            _sectorCache[sector.PositionIndex] = new CachedSectorData
+            {
+                Tag = NBTHelper.SectorOnlyToTag(sector),
+                Destroyed = sector.EntitiesDestroyed.ToArray()
+            };
+        }
+
+        public static bool TryTakeCachedSector(Vector3i index, out CompoundTag tag, out string[] destroyed)
+        {
+            tag = null;
+            destroyed = Array.Empty<string>();
+            if (!_sectorCache.TryRemove(index, out var data)) return false;
+
+            tag = data.Tag;
+            destroyed = data.Destroyed;
+            return true;
+        }
+
+        public static bool HasUnsavedData => !_modifiedEntitiesCache.IsEmpty || !_sectorCache.IsEmpty;
+
         public static void CacheUnloadedEntity(SpaceEntity entity)
         {
             if (!entity.IsModified) return;
@@ -66,6 +96,7 @@ namespace Spacebox.Game.Generation
 
         public static void SaveAllCacheToDiskNow(string worldPath)
         {
+            SaveCachedSectors(worldPath);
             if (_modifiedEntitiesCache.IsEmpty) return;
 
             var entitiesToSave = _modifiedEntitiesCache.ToArray();
@@ -112,9 +143,26 @@ namespace Spacebox.Game.Generation
             }
         }
 
+        private static void SaveCachedSectors(string worldPath)
+        {
+            foreach (var pair in _sectorCache.ToArray())
+            {
+                try
+                {
+                    WorldSaveLoad.WriteSectorData(worldPath, pair.Key, pair.Value.Tag, pair.Value.Destroyed);
+                    _sectorCache.TryRemove(pair.Key, out _);
+                }
+                catch (Exception ex)
+                {
+                    Debug.Error($"[Persistence] Failed to save sector {pair.Key}: {ex.Message}");
+                }
+            }
+        }
+
         public static void Dispose()
         {
             _modifiedEntitiesCache.Clear();
+            _sectorCache.Clear();
         }
     }
 }

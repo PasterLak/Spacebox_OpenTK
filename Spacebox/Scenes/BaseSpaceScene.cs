@@ -234,6 +234,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         _networkSession?.Update();
         TutorialService.Update(Time.Delta);
         WorldLoadingScreen.Update();
+        if (!WorldSaveState.IsTracking && !WorldLoadingScreen.IsActive) World.Instance?.StartTrackingChanges();
         DnaReconstructionScreen.Update();
         Spacebox.Game.Rendering.CameraFeedController.Update();
         Spacebox.Game.Rendering.FlashlightGlareController.Update(localPlayer);

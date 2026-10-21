@@ -134,6 +134,18 @@ public class World : Component, ISpaceStructure
 
         DropEffectManager.SaveDrops(Path.Combine(WorldData.WorldFolderPath, "drop.json"));
 
+        if (Spacebox.Network.GameSession.HasLocalPlayer) WorldSaveState.MarkSaved(PlayerSaveLoadManager.Serialize(Player));
+    }
+
+    public bool HasUnsavedChanges()
+    {
+        if (Spacebox.Network.GameSession.IsRemoteClient || !Spacebox.Network.GameSession.HasLocalPlayer || Player == null) return false;
+        return WorldSaveState.HasUnsavedChanges(PlayerSaveLoadManager.Serialize(Player));
+    }
+
+    public void StartTrackingChanges()
+    {
+        if (Spacebox.Network.GameSession.HasLocalPlayer && Player != null) WorldSaveState.MarkSaved(PlayerSaveLoadManager.Serialize(Player));
     }
 
     public void Load()
@@ -329,7 +341,6 @@ public class World : Component, ISpaceStructure
         DestructionManager = null;
         ProjectilesPool = null;
 
-        WorldPersistenceManager.Dispose();
         CurrentSector?.Dispose();
         worldOctree = null;
         CurrentSector = null;
@@ -339,6 +350,9 @@ public class World : Component, ISpaceStructure
         {
             s.Dispose();
         }
+
+        WorldPersistenceManager.Dispose();
+        WorldSaveState.Reset();
         loadedSectors.Clear();
         loadingSectors.Clear();
         _sectorsToRemoveCache.Clear();
@@ -502,7 +516,7 @@ public class World : Component, ISpaceStructure
         {
             worldOctree.Remove(sector, sector.BoundingBox);
             if (sector.IsModified && !Spacebox.Network.GameSession.IsRemoteClient)
-                WorldSaveLoad.SaveSectorData(WorldData.WorldFolderPath, sector);
+                WorldPersistenceManager.CacheUnloadedSector(sector);
             _entityTracker.ForgetSector(sector);
             sector.Dispose();
             loadedSectors.Remove(index);

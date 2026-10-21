@@ -21,6 +21,10 @@
 		<DefineConstants>TRACE;AGENT_API</DefineConstants>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)'=='Final'">
+		<DefineConstants>TRACE;FINAL</DefineConstants>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)'=='Profile'">
 		<DefineConstants>DEBUG;TRACE;PROFILING;ASSERTS;AGENT_API</DefineConstants>
 	</PropertyGroup>

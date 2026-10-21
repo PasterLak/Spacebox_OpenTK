@@ -129,15 +129,20 @@ namespace Spacebox.Game.Generation.Tools
 
         public static string SaveSectorData(string worldPath, Sector sector)
         {
-            string sectorFolderName = sector.ToFolderName();
-            string sectorFolderPath = GetSectorFolderPath(worldPath, sector.PositionIndex);
+            //NbtFile.WriteAsync(Path.Combine(sectorFolderPath, sectorFolderName + ".sector"), NBTHelper.SectorOnlyToTag(sector), FormatOptions.Java, CompressionType.GZip);
+            return WriteSectorData(worldPath, sector.PositionIndex, NBTHelper.SectorOnlyToTag(sector), sector.EntitiesDestroyed);
+        }
+
+        public static string WriteSectorData(string worldPath, Vector3i sectorIndex, CompoundTag sectorTag, IEnumerable<string> destroyedEntities)
+        {
+            string sectorFolderPath = GetSectorFolderPath(worldPath, sectorIndex);
 
             if (!Directory.Exists(sectorFolderPath))
             {
                 Directory.CreateDirectory(sectorFolderPath);
             }
 
-            foreach (var deleted in sector.EntitiesDestroyed)
+            foreach (var deleted in destroyedEntities)
             {
                 string deletedEntityPath = EntityFiles.PathOf(sectorFolderPath, deleted.ToString());
                 if (File.Exists(deletedEntityPath))
@@ -147,8 +152,7 @@ namespace Spacebox.Game.Generation.Tools
                 }
             }
 
-            //NbtFile.WriteAsync(Path.Combine(sectorFolderPath, sectorFolderName + ".sector"), NBTHelper.SectorOnlyToTag(sector), FormatOptions.Java, CompressionType.GZip);
-            NbtFile.Write(Path.Combine(sectorFolderPath, sectorFolderName + ".sector"), NBTHelper.SectorOnlyToTag(sector), FormatOptions.Java, CompressionType.GZip);
+            NbtFile.Write(Path.Combine(sectorFolderPath, Sector.IndexToFolderName(sectorIndex) + ".sector"), sectorTag, FormatOptions.Java, CompressionType.GZip);
             return sectorFolderPath;
         }
 

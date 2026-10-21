@@ -106,6 +106,17 @@ public class SpaceboxWindow : EngineWindow
 
     }
 
+    protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+    {
+        if (!IsQuitting && Spacebox.Game.GUI.PauseUI.TryPromptBeforeLeaving(Quit))
+        {
+            e.Cancel = true;
+            return;
+        }
+
+        base.OnClosing(e);
+    }
+
     protected override void OnUnload()
     {
 

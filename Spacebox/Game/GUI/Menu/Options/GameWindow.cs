@@ -50,6 +50,15 @@ namespace Spacebox.Game.GUI.Menu
                     if (rows.Checkbox("Camera Sway", "The view sways slightly while you move. Turn it off if it makes you dizzy.", ref sway))
                         game.CameraSway = sway;
 
+                    rows.Section("Saving");
+                    bool autosave = game.Autosave;
+                    if (rows.Checkbox("Autosave", "Saves your own worlds (single player and hosted games) automatically. Without it only the Save button in the pause menu saves.", ref autosave))
+                        game.Autosave = autosave;
+
+                    int autosaveMinutes = game.AutosaveMinutes;
+                    if (rows.Slider("Autosave Interval", "Minutes between automatic saves.", ref autosaveMinutes, GameplaySettings.MinAutosaveMinutes, GameplaySettings.MaxAutosaveMinutes, "%d min"))
+                        game.AutosaveMinutes = autosaveMinutes;
+
                     rows.End();
                 },
                 _options.Save,

@@ -15,6 +15,7 @@ public sealed class NetworkSession : IDisposable
 {
     private const float PlayerSyncInterval = 10f;
     public const float HostAutoSaveInterval = 300f;
+    public const string AutosaveReason = "Autosave";
 
     private readonly LocalAstronaut _localPlayer;
     private readonly PlayerSpawnService _playerSpawner;
@@ -207,6 +208,7 @@ public sealed class NetworkSession : IDisposable
             SaveRemotePlayers();
             _autoSave.Reset();
             Debug.Success($"[Server] {reason}: world '{World.WorldData.Info?.Name}' saved in {stopwatch.ElapsedMilliseconds} ms, {PlayerRegistry.All.Count} player(s) online");
+            if (GameSession.HasLocalPlayer) Spacebox.Game.GUI.Chat.Write(reason == AutosaveReason ? "Game autosaved" : "Game saved", OpenTK.Mathematics.Color4.LightGreen);
         }
         catch (Exception ex)
         {
@@ -216,12 +218,11 @@ public sealed class NetworkSession : IDisposable
 
     private void UpdateAutoSave()
     {
-        if (!NetworkManager.Instance.IsServer) return;
-        if (GameSession.Mode != SessionMode.Host && GameSession.Mode != SessionMode.Dedicated) return;
+        if (!NetworkManager.Instance.IsServer || GameSession.IsRemoteClient) return;
         if (Spacebox.Game.GUI.WorldLoadingScreen.IsActive) return;
 
-        float interval = GameSession.IsDedicated ? Dedicated.DedicatedServer.Config?.AutoSaveInterval ?? HostAutoSaveInterval : HostAutoSaveInterval;
-        if (_autoSave.Tick(Time.Delta, interval)) SaveWorld("Autosave");
+        float interval = GameSession.IsDedicated ? Dedicated.DedicatedServer.Config?.AutoSaveInterval ?? HostAutoSaveInterval : Spacebox.Game.Settings.Gameplay.AutosaveIntervalSeconds;
+        if (_autoSave.Tick(Time.Delta, interval)) SaveWorld(AutosaveReason);
     }
 
     public void SaveRemotePlayers()

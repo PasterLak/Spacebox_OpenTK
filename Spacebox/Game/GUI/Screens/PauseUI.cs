@@ -24,6 +24,8 @@ namespace Spacebox.Game.GUI
         private static bool _optionsWasOpen;
         private static bool _optionsClosedByMenu;
         private static readonly uint DimColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.7f));
+        private static readonly UnsavedChangesPrompt _leavePrompt = new UnsavedChangesPrompt();
+        private static Action _pendingLeave;
 
         public static void Init()
         {
@@ -72,6 +74,7 @@ namespace Spacebox.Game.GUI
             }
 
             RenderPause();
+            _leavePrompt.Render(SaveAndLeave, LeaveWithoutSaving, CancelLeave);
             if (IsMultiplayerActive()) PlayerListUI.Draw();
             RenderPauseTitle();
             StatisticsUI.OnGUI();
@@ -160,8 +163,7 @@ namespace Spacebox.Game.GUI
             GameMenu.CenterButtonWithBackground(saveButtonText, buttonWidth, buttonHeight, () =>
             {
                 click1?.Play();
-                if (World.Instance != null)
-                    World.Instance.Save();
+                SaveGame();
                 saveButtonText = "Saved!";
             });
 
@@ -220,8 +222,7 @@ namespace Spacebox.Game.GUI
             GameMenu.CenterButtonWithBackground("Go to menu", buttonWidth, buttonHeight, () =>
             {
                 click1?.Play();
-                UIManager.CloseAll();
-                SceneManager.Load<MenuScene>();
+                if (!TryPromptBeforeLeaving(GoToMenu)) GoToMenu();
             });
 
             currentY += buttonHeight + spacing;
@@ -229,10 +230,64 @@ namespace Spacebox.Game.GUI
             GameMenu.CenterButtonWithBackground("Exit", buttonWidth, buttonHeight, () =>
             {
                 click1?.Play();
-                SpaceboxWindow.Instance.Quit();
+                if (!TryPromptBeforeLeaving(ExitGame)) ExitGame();
             });
 
             ImGui.End();
+        }
+
+        public static bool TryPromptBeforeLeaving(Action leave)
+        {
+            if (World.Instance == null || !World.Instance.HasUnsavedChanges()) return false;
+
+            _pendingLeave = leave;
+            if (!UIManager.IsOpen("pause")) UIManager.Open("pause");
+            _leavePrompt.Open();
+            return true;
+        }
+
+        private static void SaveGame()
+        {
+            if (World.Instance == null) return;
+            if (NetworkSession.Current != null && !GameSession.IsRemoteClient) NetworkSession.Current.SaveWorld("Save");
+            else World.Instance.Save();
+        }
+
+        private static void SaveAndLeave()
+        {
+            click1?.Play();
+            SaveGame();
+            Leave();
+        }
+
+        private static void LeaveWithoutSaving()
+        {
+            click1?.Play();
+            Leave();
+        }
+
+        private static void CancelLeave()
+        {
+            click1?.Play();
+            _pendingLeave = null;
+        }
+
+        private static void Leave()
+        {
+            var leave = _pendingLeave;
+            _pendingLeave = null;
+            leave?.Invoke();
+        }
+
+        private static void GoToMenu()
+        {
+            UIManager.CloseAll();
+            SceneManager.Load<MenuScene>();
+        }
+
+        private static void ExitGame()
+        {
+            SpaceboxWindow.Instance.Quit();
         }
 
         private static bool IsMultiplayerActive()

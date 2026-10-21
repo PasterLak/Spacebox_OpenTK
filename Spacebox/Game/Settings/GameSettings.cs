@@ -155,12 +155,23 @@ namespace Spacebox.Game
     {
         public const int MinDrawDistance = 200;
         public const int MaxDrawDistance = 1000;
+        public const int MinAutosaveMinutes = 1;
+        public const int MaxAutosaveMinutes = 60;
+#if FINAL
+        public const bool DefaultAutosave = true;
+#else
+        public const bool DefaultAutosave = false;
+#endif
 
         [JsonPropertyName("draw_distance")] public int DrawDistance { get; set; } = MaxDrawDistance; // 2..32
         [JsonPropertyName("language")] public string Language { get; set; } = "English";
         [JsonPropertyName("mouse_sensitivity")] public int MouseSensitivity { get; set; } = 100;
         [JsonPropertyName("invert_mouse_y")] public bool InvertMouseY { get; set; } = false;
         [JsonPropertyName("camera_sway")] public bool CameraSway { get; set; } = true;
+        [JsonPropertyName("autosave")] public bool Autosave { get; set; } = DefaultAutosave;
+        [JsonPropertyName("autosave_minutes")] public int AutosaveMinutes { get; set; } = 5;
+
+        [JsonIgnore] public float AutosaveIntervalSeconds => Autosave ? AutosaveMinutes * 60f : 0f;
 
         public bool Validate(GameplaySettings d, HashSet<string> allowedLanguages = null)
         {
@@ -168,6 +179,7 @@ namespace Spacebox.Game
 
             if (OutOfRange(DrawDistance, MinDrawDistance, MaxDrawDistance)) { DrawDistance = d.DrawDistance; changed = true; }
             if (OutOfRange(MouseSensitivity, 10, 300)) { MouseSensitivity = d.MouseSensitivity; changed = true; }
+            if (OutOfRange(AutosaveMinutes, MinAutosaveMinutes, MaxAutosaveMinutes)) { AutosaveMinutes = d.AutosaveMinutes; changed = true; }
 
             if (string.IsNullOrWhiteSpace(Language)) { Language = d.Language; changed = true; }
             else if (allowedLanguages != null && allowedLanguages.Count > 0 && !allowedLanguages.Contains(Language))

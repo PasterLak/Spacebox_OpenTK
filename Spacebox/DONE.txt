@@ -57,6 +57,8 @@ New
 - cable blocks connect automatically: they turn along the line, the middle block of an L becomes an angle and a block with 3 or more connections a hub (only the cable block is crafted); new angle and hub textures
 - Minecraft-like tp: tp <x y z> | <target> | <player> <target> | <player> <x y z>, ~ relative coordinates, @s and @a; also teleport; tphere <player> brings a player to you; same command in single player, host, dedicated server and chat
 Small
+- own worlds are only saved with the Save button or autosave; leaving (menu, exit, closing the window) asks Save / Don't Save / Cancel when something changed; saves are announced in chat
+- Options > Game: Autosave and Autosave Interval (1-60 min; off by default, on by default in Final builds)
 - options: leaving a category with Back after changing something asks Save / Don't Save / Cancel
 - equipment preview: dragging up and down tilts the view (up to 75 degrees), double click resets
 - damaged blocks show soft cracks in 6 stages with 8 patterns chosen per block and a random rotation per face (lighter on dark blocks); baked into the chunk mesh, re-meshed only when a stage changes and at most every 0.3 s per chunk
@@ -172,6 +174,7 @@ Fixes
 - welcome window: the "Play the tutorial" checkbox could not be clicked (the text box covered it), so Start never began the tutorial
 - tutorials: the ship console step says that console and thrusters need power and asks for a cobalt power block
 - barriers could lose durability to drills and other players' damage messages (only removal was blocked)
+- leaving a world without saving kept its changes in memory (the next visit showed them, a restart did not); far sectors were written to disk when unloaded
 - protection: placing a block in empty space to start a new entity was refused when the nearest entity (even far away) was protected or claimed
 - Big Window: the forward face used the plain window texture (blocks.json had "Front" instead of "Forward")
 - multiplayer: players riding or piloting a fast ship were pulled back by the server's speed check (camera jiggle); the check now adds the speed of the ship under the player
