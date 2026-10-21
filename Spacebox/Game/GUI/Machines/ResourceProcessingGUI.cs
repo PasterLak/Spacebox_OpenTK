@@ -113,6 +113,7 @@ namespace Spacebox.Game.GUI
             }
 
             InitIcons();
+            if (processingBlock != null) processingBlock.OnCrafted -= OnCrafted;
             processingBlock = block;
 
             if (InputStorage != null) InputStorage.OnDataWasChanged -= OnInputItemWasChanged;
@@ -128,6 +129,7 @@ namespace Spacebox.Game.GUI
             FuelStorage = processingBlock.FuelStorage;
             OutputStorage = processingBlock.OutputStorage;
 
+            block.OnCrafted -= OnCrafted;
             block.OnCrafted += OnCrafted;
 
             InputStorage.ConnectStorage(player.Inventory, true);
