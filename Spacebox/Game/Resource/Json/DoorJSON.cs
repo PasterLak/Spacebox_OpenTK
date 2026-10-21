@@ -6,4 +6,6 @@ public class DoorJSON
     public float Speed { get; set; } = 2f;
     public float OpenTime { get; set; } = 3f;
     public bool AutoClose { get; set; } = true;
+    public string OpenSound { get; set; } = "";
+    public string CloseSound { get; set; } = "";
 }

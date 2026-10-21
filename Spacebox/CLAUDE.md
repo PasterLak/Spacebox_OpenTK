@@ -134,7 +134,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 
 ## Doors
 
-- `DoorBlock` (type `door`, settings in `DoorBlockData`) + per-entity `DoorSystem` (`entity.Doors`): registration, toggling, animation, auto-close, crushing and reserved cells (`IsReserved`, checked by `TryPlaceBlock`/`CanPlaceStructure`). Moving cells uses `SpaceEntity.ClearCellSilently`/`PlaceCellRaw` (no drops/effects). Toggles go through the server (`DoorNetwork`).
+- `DoorBlock` (type `door`, settings in `DoorBlockData`) + per-entity `DoorSystem` (`entity.Doors`): registration, toggling, animation, auto-close, crushing and reserved cells (`IsReserved`, checked by `TryPlaceBlock`/`CanPlaceStructure`). Moving cells uses `SpaceEntity.ClearCellSilently`/`PlaceCellRaw` (no drops/effects). Toggles go through the server (`DoorNetwork`). `Door.OpenSound` / `Door.CloseSound` (GameSet sound names) play from `DoorSystem.StartAnimation` on every machine via `DoorSounds` (shared `Game/Effects/RangedSoundPlayer`, 20 blocks); the Default door sounds come from `Tools/sounds/door_sounds.py` (3 styles per door: 1 pneumatic, 2 motor, 3 servo).
 
 ## Ships
 

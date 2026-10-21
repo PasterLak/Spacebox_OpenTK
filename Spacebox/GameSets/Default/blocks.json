@@ -421,7 +421,9 @@
       "MoveDirection": "Right",
       "Speed": 2,
       "OpenTime": 3,
-      "AutoClose": true
+      "AutoClose": true,
+      "OpenSound": "aluminiumDoorOpen1",
+      "CloseSound": "aluminiumDoorClose1"
     },
     "Size": {
       "x": 2,
@@ -457,7 +459,9 @@
       "MoveDirection": "Right",
       "Speed": 1.6,
       "OpenTime": 3,
-      "AutoClose": true
+      "AutoClose": true,
+      "OpenSound": "ironDoorOpen2",
+      "CloseSound": "ironDoorClose2"
     },
     "Size": {
       "x": 2,
@@ -493,7 +497,9 @@
       "MoveDirection": "Right",
       "Speed": 2.4,
       "OpenTime": 3,
-      "AutoClose": true
+      "AutoClose": true,
+      "OpenSound": "titaniumDoorOpen3",
+      "CloseSound": "titaniumDoorClose3"
     },
     "Size": {
       "x": 2,

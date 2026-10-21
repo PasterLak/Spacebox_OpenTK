@@ -18,6 +18,8 @@ public class DoorBlockData : BlockData, IReservedAreaBlockData, IBlockTooltip
     public float Speed { get; }
     public float OpenTime { get; }
     public bool AutoClose { get; }
+    public string OpenSound { get; }
+    public string CloseSound { get; }
 
     public DoorBlockData(BlockData baseBlock, DoorJSON settings) : base(baseBlock)
     {
@@ -33,6 +35,8 @@ public class DoorBlockData : BlockData, IReservedAreaBlockData, IBlockTooltip
         Speed = Math.Max(0.1f, settings.Speed);
         OpenTime = Math.Max(0f, settings.OpenTime);
         AutoClose = settings.AutoClose;
+        OpenSound = settings.OpenSound ?? "";
+        CloseSound = settings.CloseSound ?? "";
     }
 
     public Vector3 ModelSlide

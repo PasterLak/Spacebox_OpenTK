@@ -425,6 +425,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Rendering.VignetteController.SetWarning(0f);
         ShipRider.Reset();
         Spacebox.Game.Generation.Blocks.BlockDamageVisuals.Instance.Reset();
+        Spacebox.Game.Generation.Doors.DoorSounds.Clear();
         ShipNetwork.Reset();
         ShipWeapons.Reset();
         TutorialService.Detach();

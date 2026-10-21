@@ -233,6 +233,7 @@ public sealed class DoorSystem : IDisposable
         SampleLight(record, direction);
         SetHidden(record, true);
         CalculateBox(record);
+        PlaySound(record, direction);
 
         if (record.Visual == null)
         {
@@ -243,6 +244,13 @@ public sealed class DoorSystem : IDisposable
         }
 
         _reservedDirty = true;
+    }
+
+    private void PlaySound(DoorRecord record, int direction)
+    {
+        var data = record.Door.Data;
+        GetMovingBox(record, out var min, out var max);
+        DoorSounds.Play(direction > 0 ? data.OpenSound : data.CloseSound, _entity.EntityLocalToWorld((min + max) * 0.5f));
     }
 
     private void SampleLight(DoorRecord record, int direction)

@@ -1,4 +1,3 @@
-using Engine;
 using OpenTK.Mathematics;
 using Spacebox.Game.Effects;
 
@@ -11,22 +10,15 @@ public static class MobSounds
     public const float Rolloff = 1.6f;
     public const float PitchVariation = 0.1f;
 
-    private static readonly SpatialSoundPool _pool = new SpatialSoundPool(3, MinDistance, MaxDistance, Rolloff);
+    private static readonly RangedSoundPlayer _player = new RangedSoundPlayer(3, MinDistance, MaxDistance, Rolloff, PitchVariation);
 
     public static void Play(MobSoundsJSON sounds, string soundName, Vector3 position, Random random)
     {
-        if (Application.IsHeadless || sounds == null || string.IsNullOrEmpty(soundName)) return;
-        if (!IsInHearingRange(position, Camera.Main?.PositionWorld)) return;
-        if (!GameAssets.Sounds.TryGetValue(soundName, out var clip)) return;
-
-        float pitch = 1f + ((float)random.NextDouble() * 2f - 1f) * PitchVariation;
-        _pool.Play(clip, position, pitch, sounds.Volume);
+        if (sounds == null) return;
+        _player.Play(soundName, position, sounds.Volume, random);
     }
 
-    public static bool IsInHearingRange(Vector3 source, Vector3? listener)
-    {
-        return listener.HasValue && Vector3.DistanceSquared(source, listener.Value) <= MaxDistance * MaxDistance;
-    }
+    public static bool IsInHearingRange(Vector3 source, Vector3? listener) => _player.IsInHearingRange(source, listener);
 
     public static float NextIdleDelay(MobSoundsJSON sounds, Random random)
     {
@@ -37,6 +29,6 @@ public static class MobSounds
 
     public static void Clear()
     {
-        _pool.Clear();
+        _player.Clear();
     }
 }
