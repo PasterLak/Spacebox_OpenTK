@@ -36,6 +36,7 @@ namespace Engine
      
         private static Keys _debugKey;
         private GBufferDebugPass _gbufferDebug;
+        public Engine.Graphics.Occlusion.OcclusionCuller Occlusion { get; } = new Engine.Graphics.Occlusion.OcclusionCuller();
 
         static readonly Prof.Token T_VisualDebug = Prof.RegisterTimer("Visual Debug");
         static readonly Prof.Token T_SceneRender = Prof.RegisterTimer("Scene Render");
@@ -256,9 +257,11 @@ namespace Engine
                 {
                     TransparentQueue.BeginScope();
                     if (RenderDebugView.IsWireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+                    Occlusion.BeginFrame(Camera.Main);
                     try
                     {
                         SceneManager.Render();
+                        Occlusion.Flush();
                     }
                     finally
                     {
@@ -499,6 +502,7 @@ namespace Engine
             AudioDevice.Instance.Dispose();
             _processManager?.Dispose();
             _gbufferDebug?.Dispose();
+            Occlusion.Dispose();
             ParticleSystem.DestroyAll();
             Resources.UnloadAll(true);
             _sceneRenderer?.Dispose();

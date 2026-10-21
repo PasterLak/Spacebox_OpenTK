@@ -37,7 +37,6 @@ public class World : Component, ISpaceStructure
 
     public LocalAstronaut Player { get; private set; }
     public ExplosionSystem Explosions { get; private set; }
-    public Engine.Graphics.Occlusion.OcclusionCuller Occlusion { get; } = new Engine.Graphics.Occlusion.OcclusionCuller();
     public ShipThrusterEffects ThrusterEffects { get; private set; }
     public Spacebox.Game.Effects.JetpackEffects JetpackEffects { get; private set; }
 
@@ -273,12 +272,10 @@ public class World : Component, ISpaceStructure
     {
         if (StreamingBudget.IsLoading) return;
 
-        Occlusion.BeginFrame(Engine.Camera.Main);
         foreach (var sector in loadedSectors)
         {
             sector.Value.Render(material);
         }
-        Occlusion.Flush();
 
         Explosions.Render();
         ThrusterEffects.Render();
@@ -318,7 +315,6 @@ public class World : Component, ISpaceStructure
         GravityField.Clear();
         WorldObservers.Clear();
         Explosions?.Dispose();
-        Occlusion.Dispose();
         ThrusterEffects?.Dispose();
         JetpackEffects?.Dispose();
         Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.Clear();

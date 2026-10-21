@@ -1,14 +1,33 @@
 ﻿
 using Engine.Components;
 using Engine.Physics;
+using Engine.Graphics;
+using Engine.Graphics.Occlusion;
 using OpenTK.Mathematics;
 
 namespace Engine
 {
     public static class BVHCuller
     {
-        private static readonly Dictionary<Node3D, BoundingBox> cache = new();
-        private static readonly List<string> visibleNames = new();
+        private readonly struct Bounds
+        {
+            public readonly Vector3 Min;
+            public readonly Vector3 Max;
+
+            public Bounds(Vector3 min, Vector3 max)
+            {
+                Min = min;
+                Max = max;
+            }
+
+            public Bounds Union(Bounds other) => new Bounds(Vector3.ComponentMin(Min, other.Min), Vector3.ComponentMax(Max, other.Max));
+
+            public bool Contains(Vector3 point) =>
+                point.X >= Min.X && point.Y >= Min.Y && point.Z >= Min.Z &&
+                point.X <= Max.X && point.Y <= Max.Y && point.Z <= Max.Z;
+        }
+
+        private static readonly Dictionary<Node3D, Bounds> cache = new();
         public static bool DebugGroups = true;
         public static Color4 DebugColor = new(1f, 0f, 1f, 1f);
 
@@ -21,9 +40,8 @@ namespace Engine
             if (root == null || cam == null) return;
 
             cache.Clear();
-            visibleNames.Clear();
             using(Prof.Time(T_SceneBVH))
-            Build(root);
+            Build(root, cam);
 
             VisibleObjects = CulledObjects = 0;
             Draw(root, cam);
@@ -36,26 +54,22 @@ namespace Engine
 
         /* ---------- Build -------------------------------------------------- */
 
-        private static void Build(Node3D node)
+        private static void Build(Node3D node, Camera cam)
         {
-            if (node is Camera) return;
-            if (!HasCollider(node))
+            if (ReferenceEquals(node, cam)) return;
+
+            bool hasBox = TryGetNodeBounds(node, out var box);
+            if (!hasBox)
             {
-                foreach (var ch in node.Children) Build(ch);
+                foreach (var ch in node.Children) Build(ch, cam);
                 return;
             }
-
-            BoundingBox? box = null;
-            foreach (var c in node.Components)
-                if (c.Enabled && c is ColliderComponent col)
-                    box = Union(box, ToAABB(col.Volume));
-            if (DebugGroups) VisualDebug.DrawBoundingBox(box, DebugColor);
-            if (box != null)
-                cache[node] = box;
+            if (DebugGroups && VisualDebug.Enabled) VisualDebug.DrawBoundingBox(BoundingBox.CreateFromMinMax(box.Min, box.Max), DebugColor);
+            cache[node] = box;
 
             
 
-            foreach (var ch in node.Children) Build(ch);
+            foreach (var ch in node.Children) Build(ch, cam);
         }
 
         /* ---------- Draw --------------------------------------------------- */
@@ -67,7 +81,8 @@ namespace Engine
 
             if (hasCol)
             {
-                inside = box.Contains(cam.Position) || cam.Frustum.IsInFrustum(box);
+                inside = box.Contains(cam.Position) || cam.Frustum.IsBoxInFrustum(box.Min, box.Max);
+                if (inside && node is IOcclusionCullable cullable) inside = PassesOcclusion(cullable, box, cam);
                 //if (DebugGroups) VisualDebug.DrawBoundingBox(box, DebugColor);
             }
 
@@ -77,7 +92,6 @@ namespace Engine
                 if (hasCol)
                 {
                     VisibleObjects++;
-                    visibleNames.Add(node.Name);
                 }
             }
             else                      
@@ -96,44 +110,67 @@ namespace Engine
 
         /* ---------- Helpers ------------------------------------------------ */
 
-        private static bool HasCollider(Node3D n) =>
-            n.Components.Any(c => c.Enabled && c is ColliderComponent);
+        private const float OcclusionNearDistance = 3f;
 
-        private static BoundingBox? ToAABB(BoundingVolume v) => v switch
+        private static bool TryGetNodeBounds(Node3D node, out Bounds box)
         {
-            BoundingBox bb => bb,
-            BoundingSphere s => BoundingBox.CreateFromMinMax(
-                                    s.Center - new Vector3(s.Radius),
-                                    s.Center + new Vector3(s.Radius)),
-            BoundingBoxOBB o => BoundingBox.CreateFromMinMax(
-                                    o.GetCorners().ComponentMin(),
-                                    o.GetCorners().ComponentMax()),
-            _ => null
-        };
+            if (node is IRenderBounds renderBounds)
+            {
+                bool has = renderBounds.TryGetRenderBounds(out var min, out var max);
+                box = new Bounds(min, max);
+                return has;
+            }
 
-        private static BoundingBox? Union(BoundingBox? a, BoundingBox? b)
-        {
-            if (a == null) return b;
-            if (b == null) return a;
-            a.Expand(b);
-            return a;
-        }
-    }
-
-    static class Vector3ArrayExt
-    {
-        public static Vector3 ComponentMin(this Vector3[] a)
-        {
-            var m = a[0];
-            for (int i = 1; i < a.Length; i++) m = Vector3.ComponentMin(m, a[i]);
-            return m;
+            bool hasBox = false;
+            box = default;
+            foreach (var c in node.Components)
+            {
+                if (!c.Enabled || c is not ColliderComponent col || !TryGetBounds(col.Volume, out var bounds)) continue;
+                box = hasBox ? box.Union(bounds) : bounds;
+                hasBox = true;
+            }
+            return hasBox;
         }
 
-        public static Vector3 ComponentMax(this Vector3[] a)
+        private static bool PassesOcclusion(IOcclusionCullable cullable, Bounds box, Camera cam)
         {
-            var m = a[0];
-            for (int i = 1; i < a.Length; i++) m = Vector3.ComponentMax(m, a[i]);
-            return m;
+            var culler = EngineWindow.Instance?.Occlusion;
+            if (culler == null || cullable.Occlusion == null) return true;
+
+            var near = new Vector3(OcclusionNearDistance);
+            bool cameraNear = new Bounds(box.Min - near, box.Max + near).Contains(cam.Position);
+            return culler.Prepare(cullable.Occlusion, cameraNear, Matrix4.Identity, RenderSpace.ToRender(box.Min), RenderSpace.ToRender(box.Max));
+        }
+
+        private static bool TryGetBounds(BoundingVolume v, out Bounds bounds)
+        {
+            switch (v)
+            {
+                case BoundingBox bb:
+                    bounds = new Bounds(bb.Min, bb.Max);
+                    return true;
+                case BoundingSphere s:
+                    bounds = new Bounds(s.Center - new Vector3(s.Radius), s.Center + new Vector3(s.Radius));
+                    return true;
+                case BoundingBoxOBB o:
+                    var extents = RotatedExtents(o.Extents, o.Rotation);
+                    bounds = new Bounds(o.Center - extents, o.Center + extents);
+                    return true;
+                default:
+                    bounds = default;
+                    return false;
+            }
+        }
+
+        private static Vector3 RotatedExtents(Vector3 extents, Quaternion rotation)
+        {
+            var x = Vector3.Transform(Vector3.UnitX, rotation);
+            var y = Vector3.Transform(Vector3.UnitY, rotation);
+            var z = Vector3.Transform(Vector3.UnitZ, rotation);
+            return new Vector3(
+                MathF.Abs(x.X) * extents.X + MathF.Abs(y.X) * extents.Y + MathF.Abs(z.X) * extents.Z,
+                MathF.Abs(x.Y) * extents.X + MathF.Abs(y.Y) * extents.Y + MathF.Abs(z.Y) * extents.Z,
+                MathF.Abs(x.Z) * extents.X + MathF.Abs(y.Z) * extents.Y + MathF.Abs(z.Z) * extents.Z);
         }
     }
 }

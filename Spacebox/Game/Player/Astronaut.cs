@@ -7,7 +7,7 @@ using OpenTK.Mathematics;
 
 namespace Spacebox.Game.Player
 {
-    public abstract class Astronaut : Camera360Base, IDamageable
+    public abstract class Astronaut : Camera360Base, IDamageable, Engine.Graphics.Occlusion.IOcclusionCullable
     {
      
         protected ModelRendererComponent AstBody;
@@ -23,6 +23,8 @@ namespace Spacebox.Game.Player
         protected HandItemVisualizer HandVisualizer;
         public HandItemVisualizer HeldItemVisual => HandVisualizer;
         protected ColliderComponent sphereCollision;
+        private const float RenderBoundsHalfSize = 1.5f;
+        public Engine.Graphics.Occlusion.OcclusionState Occlusion { get; } = new Engine.Graphics.Occlusion.OcclusionState();
         public int SkinId { get; protected set; }
 
         public Astronaut(Vector3 position, bool isLocal) : base(position, isLocal)
@@ -33,6 +35,14 @@ namespace Spacebox.Game.Player
             AttachComponent(new AxesDebugComponent());
             sphereCollision = AttachComponent(new SphereCollider());
 
+        }
+
+        public bool TryGetRenderBounds(out Vector3 min, out Vector3 max)
+        {
+            var half = new Vector3(RenderBoundsHalfSize);
+            min = Position - half;
+            max = Position + half;
+            return true;
         }
 
         public bool IsLocalAstronaut()

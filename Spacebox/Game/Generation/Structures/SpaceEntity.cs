@@ -1076,7 +1076,7 @@ namespace Spacebox.Game.Generation
 
         private bool PassesOcclusion(Chunk chunk, Vector3 cameraEntitySpace)
         {
-            var culler = World.Instance?.Occlusion;
+            var culler = Engine.EngineWindow.Instance?.Occlusion;
             if (culler == null) return true;
 
             var bounds = chunk.GeometryBoundingBox;

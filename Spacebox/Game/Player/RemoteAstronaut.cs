@@ -114,6 +114,7 @@ namespace Spacebox.Game.Player
             }
 
             Flashlight?.Destroy();
+            Occlusion.Release();
 
             if (HandVisualizer != null)
             {

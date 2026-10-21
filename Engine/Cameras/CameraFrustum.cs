@@ -12,8 +12,13 @@ namespace Engine
 
         public void UpdateFrustum(Camera camera)
         {
-            ViewMatrix = camera.GetViewMatrix();
-            ProjectionMatrix = camera.GetProjectionMatrix();
+            SetFromMatrices(camera.GetViewMatrix(), camera.GetProjectionMatrix());
+        }
+
+        public void SetFromMatrices(Matrix4 view, Matrix4 projection)
+        {
+            ViewMatrix = view;
+            ProjectionMatrix = projection;
             Matrix4 clipMatrix = ViewMatrix * ProjectionMatrix;
 
             _planes[0] = CreatePlane(clipMatrix.M14 + clipMatrix.M11, clipMatrix.M24 + clipMatrix.M21, clipMatrix.M34 + clipMatrix.M31, clipMatrix.M44 + clipMatrix.M41);
@@ -87,25 +92,27 @@ namespace Engine
             return PointInFrustum(RenderSpace.ToRender(point));
         }
 
+        public bool IsBoxInFrustum(Vector3 min, Vector3 max)
+        {
+            var offset = RenderSpace.Origin;
+            return BoxInFrustum(min - offset, max - offset);
+        }
+
         private bool BoxInFrustum(BoundingBox box, Vector3 offset)
         {
-            var min = box.Min - offset;
-            var max = box.Max - offset;
-            Vector3[] corners = new Vector3[8];
-            corners[0] = min;
-            corners[1] = new Vector3(max.X, min.Y, min.Z);
-            corners[2] = new Vector3(min.X, max.Y, min.Z);
-            corners[3] = new Vector3(min.X, min.Y, max.Z);
-            corners[4] = new Vector3(max.X, max.Y, min.Z);
-            corners[5] = new Vector3(min.X, max.Y, max.Z);
-            corners[6] = new Vector3(max.X, min.Y, max.Z);
-            corners[7] = max;
-            foreach (var plane in _planes)
+            return BoxInFrustum(box.Min - offset, box.Max - offset);
+        }
+
+        private bool BoxInFrustum(Vector3 min, Vector3 max)
+        {
+            for (int i = 0; i < _planes.Length; i++)
             {
-                int outside = 0;
-                foreach (var corner in corners)
-                    if (DistanceToPlane(plane, corner) < 0) outside++;
-                if (outside == 8) return false;
+                var normal = _planes[i].Normal;
+                var nearest = new Vector3(
+                    normal.X >= 0f ? max.X : min.X,
+                    normal.Y >= 0f ? max.Y : min.Y,
+                    normal.Z >= 0f ? max.Z : min.Z);
+                if (DistanceToPlane(_planes[i], nearest) < 0) return false;
             }
             return true;
         }
@@ -120,13 +127,20 @@ namespace Engine
 
         private bool ObbInFrustum(BoundingBoxOBB obb, Vector3 offset)
         {
-            var shifted = new BoundingBoxOBB(obb) { Center = obb.Center - offset };
-            foreach (var plane in _planes)
+            var center = obb.Center - offset;
+            var extents = obb.Extents;
+            var axisX = Vector3.Transform(Vector3.UnitX, obb.Rotation);
+            var axisY = Vector3.Transform(Vector3.UnitY, obb.Rotation);
+            var axisZ = Vector3.Transform(Vector3.UnitZ, obb.Rotation);
+
+            for (int i = 0; i < _planes.Length; i++)
             {
-                int outside = 0;
-                foreach (var corner in shifted.GetCorners())
-                    if (DistanceToPlane(plane, corner) < 0) outside++;
-                if (outside == 8) return false;
+                var n = _planes[i].Normal;
+                var normal = new Vector3(n.X, n.Y, n.Z);
+                float radius = MathF.Abs(Vector3.Dot(normal, axisX)) * extents.X
+                             + MathF.Abs(Vector3.Dot(normal, axisY)) * extents.Y
+                             + MathF.Abs(Vector3.Dot(normal, axisZ)) * extents.Z;
+                if (DistanceToPlane(_planes[i], center) < -radius) return false;
             }
             return true;
         }
