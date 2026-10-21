@@ -38,7 +38,7 @@ public static class EditorPanelFactory
             new CollectionPanel("Loot", EditorScopes.Loot,
                 new FolderEntrySource(project, GameSetCatalog.LootFolder, GameSetCatalog.Loot), inspector),
             new CollectionPanel("Mobs", EditorScopes.Mobs,
-                new FolderEntrySource(project, GameSetCatalog.MobsFolder, GameSetCatalog.Mobs), inspector),
+                new FolderEntrySource(project, GameSetCatalog.MobsFolder, GameSetCatalog.Mobs), inspector, new MobEntryPreview()),
             new GenerationPanel(inspector, asteroids, biomes),
             new AtlasPanel(),
             new FilesPanel(inspector)

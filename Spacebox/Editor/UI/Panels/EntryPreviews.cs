@@ -185,3 +185,62 @@ public sealed class AsteroidEntryPreview : IEntryPreview
         }
     }
 }
+
+public sealed class MobEntryPreview : IEntryPreview
+{
+    private static readonly string[] Actions = { "Idle", "Eating" };
+
+    private int _action;
+    private bool _showRanges = true;
+    private bool _showBlock = true;
+    private bool _bite;
+    private bool _hurt;
+
+    public bool CanPreview(EditorContext context, EditorEntry entry)
+    {
+        return GameAssets.Mobs.ContainsKey(IdOf(entry));
+    }
+
+    public void DrawControls(EditorContext context, EditorEntry entry)
+    {
+        float width = ImGui.GetContentRegionAvail().X;
+        ImGui.SetNextItemWidth(width * 0.25f);
+        ImGui.Combo("Action", ref _action, Actions, Actions.Length);
+        ImGui.SameLine();
+        _bite |= ImGui.Button("Bite");
+        ImGui.SameLine();
+        _hurt |= ImGui.Button("Hurt");
+        ImGui.SameLine();
+        ImGui.Checkbox("Ranges", ref _showRanges);
+        EditorWidgets.Tooltip("Green: hit radius, red: attack range");
+        ImGui.SameLine();
+        ImGui.Checkbox("Block", ref _showBlock);
+        EditorWidgets.Tooltip("1x1x1 block for size reference");
+        if (entry.File.IsDirty) ImGui.TextDisabled("(model and texture: save and reload to update)");
+    }
+
+    public void Apply(EditorContext context, EditorEntry entry, PreviewViewport viewport)
+    {
+        if (!GameAssets.Mobs.TryGetValue(IdOf(entry), out var definition) || entry.Node is not JsonObject obj) return;
+
+        float scale = MathF.Max(0.05f, (float)EditorJson.GetNumber(obj, "Scale", definition.Scale));
+        float radius = Math.Clamp((float)EditorJson.GetNumber(obj, "Radius", definition.Radius), 0.1f, 0.49f);
+        float attackRange = MathF.Max(0.5f, (float)EditorJson.GetNumber(obj, "AttackRange", definition.AttackRange));
+
+        viewport.SetContent((definition.Id, scale, radius, attackRange), context.Assets.Version,
+            () => new MobPreviewContent(definition, scale, radius, attackRange));
+        if (viewport.Content is not MobPreviewContent mob) return;
+
+        mob.Action = _action == 1 ? Spacebox.Game.Mobs.MobAction.Eating : Spacebox.Game.Mobs.MobAction.Idle;
+        mob.ShowRanges = _showRanges;
+        mob.ShowBlock = _showBlock;
+        if (_bite) mob.PlayBite();
+        if (_hurt) mob.PlayHurt();
+        _bite = _hurt = false;
+    }
+
+    private static string IdOf(EditorEntry entry)
+    {
+        return entry.Node is JsonObject obj ? EditorJson.GetString(obj, "Id") : "";
+    }
+}

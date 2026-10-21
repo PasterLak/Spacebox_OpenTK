@@ -48,6 +48,7 @@ New
 - Graphics options: brightness, contrast, saturation, vignette strength, film grain (animated or static), Show FPS counter, reset buttons for image and SSAO
 - viewing through a ship camera block shows a security camera feed: scanlines, grain, lens distortion, REC overlay with timer (Camera Block Effect option)
 Small
+- GameSet editor: mob preview (animated model, idle/eating, bite and hurt, hit radius and attack range, 1-block size reference)
 - crafting categories: Building (blocks, windows, doors, lights), Production, Electricity, Logistics, Ships, Other; removed decorative basic engine and basic cannon blocks
 - removed obscurium ammo; mineral parasite larva is no longer in the Consumables crafting category
 - metal blocks are cheaper (1/2/3 panels), crusher returns match: 3 light -> 1 dust, 3 medium -> 2 dust, 1 heavy -> 1 dust
