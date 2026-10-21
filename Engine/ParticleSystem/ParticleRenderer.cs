@@ -137,11 +137,25 @@ namespace Engine
             GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, _count * 20 * sizeof(float), _data);
             GL.BindVertexArray(_quad.VAO);
             GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, _count);
+            if (Material.ClearsAmbientOcclusion) DrawAmbientOcclusionMask();
             GL.BindVertexArray(0);
 
             GLState.DepthMask(true);
             GLState.DepthTest(true);
             
+        }
+
+        private void DrawAmbientOcclusionMask()
+        {
+            GL.ColorMask(0, false, false, false, false);
+            GLState.GBufferWrite(true);
+            GLState.Blend(false);
+            Material.Shader.SetBool("aoMaskPass", true);
+            GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, _count);
+            Material.Shader.SetBool("aoMaskPass", false);
+            GL.ColorMask(0, true, true, true, true);
+            GLState.GBufferWrite(false);
+            GLState.Blend(true);
         }
 
         public void Dispose()

@@ -60,9 +60,11 @@ void main()
 in vec2 TexCoords;
 in vec4 ParticleColor;
 
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
+layout(location = 1) out vec4 gNormal;
 
 uniform sampler2D particleTexture;
+uniform bool aoMaskPass = false;
 uniform vec3 color = vec3(1,1,1);
 uniform bool debug = false;
 
@@ -85,6 +87,11 @@ void main()
         finalColor = vec4(1,0,1,1);
     }
     //finalColor = vec4(1,0,1,1);
+    if (aoMaskPass)
+    {
+        if (finalColor.a < 0.35) discard;
+        gNormal = vec4(0.0);
+    }
     FragColor = finalColor;
 
 }

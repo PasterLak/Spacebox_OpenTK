@@ -19,8 +19,11 @@ namespace Engine
             }
         }
 
+        public bool ClearsAmbientOcclusion { get; set; }
+
         public ParticleMaterial(Texture2D texture) : base(Resources.Load<Shader>("Resources/Shaders/particle"))
         {
+            ClearsAmbientOcclusion = true;
            
             RenderFace = RenderFace.Both;
             RenderMode = RenderMode.Fade;
