@@ -13,11 +13,25 @@ namespace Engine.Audio
 
         private bool isDisposed = false;
 
-        public static bool IsEnabled => !Application.IsHeadless;
+        private static bool _unavailable;
+
+        public static bool IsEnabled => !Application.IsHeadless && !_unavailable;
 
         AudioDevice()
         {
-            if (IsEnabled) Setup();
+            if (!IsEnabled) return;
+
+            try
+            {
+                Setup();
+            }
+            catch (Exception ex) when (ex is DllNotFoundException || ex is InvalidOperationException || ex is EntryPointNotFoundException)
+            {
+                _unavailable = true;
+                Device = ALDevice.Null;
+                Context = ALContext.Null;
+                Debug.Warning($"[Audio] OpenAL is not available, the game runs without sound: {ex.Message}");
+            }
         }
 
         public static AudioDevice Instance

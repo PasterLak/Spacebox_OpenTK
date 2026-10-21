@@ -68,6 +68,7 @@ Small
 - build scripts read the version from Application.cs, keep other platform builds, zip without a root folder
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
+- the game starts without sound instead of crashing when OpenAL is missing (Linux without libopenal1)
 - multiplayer: peers that have not joined (no join request, pending login, banned) can no longer send gameplay messages or receive broadcasts
 - multiplayer: placing a block over an occupied cell is refused by the server (no more chest wipes or claim beacon takeovers)
 - multiplayer: drop pickups and weapon shots need a spawned player; repairs respect claims and protection; mob and NPC drill damage is limited by distance and per second, NaN pushes are ignored; one pilot per ship console
