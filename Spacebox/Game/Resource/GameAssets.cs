@@ -188,10 +188,10 @@ namespace Spacebox.Game
             {
                 if (!electricalBlock.IsActive)
                 {
-                    return data.GetFaceUV(face, BlockState.Inactive);
+                    return data.GetFaceUV(face, BlockState.Inactive) ?? DefaultUVs;
                 }
             }
-            return data.GetFaceUV(face, BlockState.Active);
+            return data.GetFaceUV(face, BlockState.Active) ?? DefaultUVs;
         }
 
         public static Direction GetBaseFrontDirection(short id)

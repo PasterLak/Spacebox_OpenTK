@@ -264,6 +264,7 @@ public class World : Component, ISpaceStructure
         _entityTracker.Process();
 
         Explosions.Update(Time.Delta);
+        Spacebox.Game.Generation.Blocks.BlockDamageVisuals.Instance.Update(Time.Delta);
         ThrusterEffects.Update(CurrentSector, Time.Delta);
         JetpackEffects.Update(Time.Delta);
     }

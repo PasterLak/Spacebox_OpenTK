@@ -59,8 +59,10 @@ public static class WorldEditNetwork
         if (block == null || block.IsAir || block.Id != message.BlockId) return;
 
         byte max = GameAssets.GetBlockDataById(block.Id)?.Durability ?? block.Durability;
+        byte before = block.Durability;
         block.Durability = BlockDamage.Repair(block.Durability, message.Amount, max);
         chunk.IsModified = true;
+        Spacebox.Game.Generation.Blocks.BlockDamageVisuals.OnDurabilityChanged(chunk, block, before);
 
         if (network.IsServer) network.SendToClients(message, DeliveryMode.Reliable, sender);
     }
@@ -105,10 +107,12 @@ public static class WorldEditNetwork
         if (!entity.TryGetBlockLocal(message.Cell, out var chunk, out var index)) return;
 
         var block = chunk.Blocks[index.X, index.Y, index.Z];
-        if (block == null || block.IsAir || block.Id != message.BlockId) return;
+        if (block == null || block.IsAir || block.Id != message.BlockId || Spacebox.Game.Generation.Blocks.UnbreakableBlocks.Is(block)) return;
 
+        byte before = block.Durability;
         block.Durability = BlockDamage.Apply(block.Durability, message.Damage);
         chunk.IsModified = true;
+        Spacebox.Game.Generation.Blocks.BlockDamageVisuals.OnDurabilityChanged(chunk, block, before);
 
         if (network.IsServer) network.SendToClients(message, DeliveryMode.Reliable, sender);
     }

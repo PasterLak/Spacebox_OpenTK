@@ -271,10 +271,11 @@ namespace Spacebox.Game.Generation
             }
 
             var faceNormal = new Vector3(normal.X, normal.Y, normal.Z);
+            int damageStage = DamageStageOf(block);
             for (byte i = 0; i < 4; i++)
             {
                 var position = new Vector3(faceVertices[i].X + x, faceVertices[i].Y + y, faceVertices[i].Z + z);
-                BlockVertex.Write(vertices, ref vertexCount, position, faceUVs[i], _vertexColors[i], faceNormal, AO[i], block.EnableEmission);
+                BlockVertex.Write(vertices, ref vertexCount, position, faceUVs[i], _vertexColors[i], faceNormal, AO[i], block.EnableEmission, damageStage);
             }
 
             if (_EnableAO && !isLightOrTransparent)
@@ -310,6 +311,20 @@ namespace Spacebox.Game.Generation
             }
         }
 
+        private short _durabilityBlockId = -1;
+        private int _maxDurability;
+
+        private int DamageStageOf(Block block)
+        {
+            if (block.Id != _durabilityBlockId)
+            {
+                _durabilityBlockId = block.Id;
+                _maxDurability = GameAssets.Blocks.TryGetValue(block.Id, out var data) ? data.Durability : 0;
+            }
+
+            return DamageStage.Of(block.Durability, _maxDurability);
+        }
+
         private void AddShape(Block block, BlockShape shape, sbyte x, sbyte y, sbyte z)
         {
             var multiblockData = GameAssets.Blocks.TryGetValue(block.Id, out var shapeData) && shapeData.IsMultiblock ? shapeData : null;
@@ -335,13 +350,14 @@ namespace Spacebox.Game.Generation
                 _shapeFaceUVs[(int)faces[f]] = faceUVs;
             }
 
+            int damageStage = DamageStageOf(block);
             for (int i = 0; i < vertexTotal; i++)
             {
                 var position = pose.Positions[i];
                 var normal = pose.Normals[i];
                 var uv = BlockShapeTexturing.MapToFace(_shapeFaceUVs[(int)shape.VertexFaces[i]], geometry.TexCoords[i]);
 
-                BlockVertex.Write(vertices, ref vertexCount, new Vector3(position.X + x, position.Y + y, position.Z + z), uv, color, normal, 1f, emission);
+                BlockVertex.Write(vertices, ref vertexCount, new Vector3(position.X + x, position.Y + y, position.Z + z), uv, color, normal, 1f, emission, damageStage);
             }
 
             var shapeIndices = geometry.Indices;

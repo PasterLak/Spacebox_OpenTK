@@ -413,8 +413,10 @@ namespace Spacebox.Game.Generation
 
             if ((((short)block.Durability) - damage) > 0)
             {
+                byte before = block.Durability;
                 block.Durability -= damage;
                 IsModified = true;
+                BlockDamageVisuals.OnDurabilityChanged(this, block, before);
             }
             else
             {

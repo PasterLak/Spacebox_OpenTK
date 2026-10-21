@@ -59,6 +59,7 @@ New
 Small
 - options: leaving a category with Back after changing something asks Save / Don't Save / Cancel
 - equipment preview: dragging up and down tilts the view (up to 75 degrees), double click resets
+- damaged blocks show cracks in 3 stages (lighter on dark blocks); baked into the chunk mesh, re-meshed only when a stage changes and at most every 0.3 s per chunk
 - Barrier (creative): invisible solid block for maps, shown only while a barrier is held, unbreakable
 - blocks.json "Unbreakable": true for any block: no damage from drills, bullets, cannons, explosions, collisions or mobs; only creative players and commands remove it
 - blocks.json "TextureFit": true stretches each face texture over the whole face of a multi-cell block (no repeats); used by Big Window
@@ -170,6 +171,7 @@ Fixes
 - creative search text is white
 - welcome window: the "Play the tutorial" checkbox could not be clicked (the text box covered it), so Start never began the tutorial
 - tutorials: the ship console step says that console and thrusters need power and asks for a cobalt power block
+- barriers could lose durability to drills and other players' damage messages (only removal was blocked)
 - protection: placing a block in empty space to start a new entity was refused when the nearest entity (even far away) was protected or claimed
 - Big Window: the forward face used the plain window texture (blocks.json had "Front" instead of "Forward")
 - multiplayer: players riding or piloting a fast ship were pulled back by the server's speed check (camera jiggle); the check now adds the speed of the ship under the player

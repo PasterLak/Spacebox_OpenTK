@@ -14,7 +14,10 @@ out vec3 vNormal;
 out vec3 vPos;
 out vec3  vBase; 
 out float vAO;
-out float vAtlasFlag;
+flat out float vAtlasFlag;
+flat out int vDamage;
+out vec3 vLocal;
+out vec3 vLocalNormal;
 
 uniform mat4 model;
 uniform mat3 normalMatrix;
@@ -41,7 +44,11 @@ void main()
     vFog1       = fogFac(wp.xyz,1.0);
     vFog2       = fogFac(wp.xyz,0.5);
     vAO         = aNormal.w;
-    vAtlasFlag  = aColor.a;
+    int flags   = int(round(aColor.a * 255.0));
+    vAtlasFlag  = flags >= 128 ? 1.0 : 0.0;
+    vDamage     = flags & 3;
+    vLocal      = aPosition;
+    vLocalNormal = aNormal.xyz * 2.0 - 1.0;
 }
 
 --Frag
@@ -57,13 +64,33 @@ in vec3  vNormal;
 in vec3  vPos;
 in float vAO;
 in vec3  vBase;
-in float vAtlasFlag;
+flat in float vAtlasFlag;
+flat in int vDamage;
+in vec3  vLocal;
+in vec3  vLocalNormal;
 
 layout(location = 0) out vec4 gColor;
 
 uniform vec4  color      = vec4(1,1,1,1);
 uniform sampler2D texture0;
 uniform sampler2D textureAtlas;
+uniform sampler2D crackTexture;
+
+const float CRACK_STAGES = 3.0;
+
+vec3 applyCracks(vec3 base)
+{
+    if (vDamage == 0) return base;
+
+    vec3 n = abs(vLocalNormal);
+    vec2 face = n.x > n.y && n.x > n.z ? vLocal.zy : (n.y > n.z ? vLocal.xz : vLocal.xy);
+    vec2 cell = fract(face);
+    vec2 uv = vec2((float(vDamage - 1) + cell.x) / CRACK_STAGES, cell.y);
+    vec4 crack = texture(crackTexture, uv);
+    float luminance = dot(base, vec3(0.299, 0.587, 0.114));
+    vec3 lineColor = luminance > 0.35 ? base * crack.rgb : base + vec3(0.45) * (1.0 - crack.rgb);
+    return mix(base, lineColor, crack.a);
+}
 
 
 float near = 0.1; 
@@ -83,7 +110,7 @@ void main()
 
     vec3 N = normalize(vNormal);
     vec3 V = normalize(CAMERA_POS - vPos);
-    vec3 base = baseTex.rgb;
+    vec3 base = applyCracks(baseTex.rgb);
 
     vec3 light = 
     //accumulateDirLights(N,V,base) +

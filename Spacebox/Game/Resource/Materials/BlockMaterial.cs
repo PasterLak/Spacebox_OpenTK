@@ -28,10 +28,21 @@ namespace Spacebox.Game.Resource
             RenderMode = RenderMode.Cutout;
             WritesGBuffer = true;
             EmissionTexture = emissionAtlas;
+            AddCrackTexture();
         
         }
 
-        protected override void UpdateDynamicUniforms()
+        private const string CrackTexturePath = "Resources/Textures/Effects/blockCracks.png";
+
+        private void AddCrackTexture()
+        {
+            var cracks = Resources.Load<Texture2D>(CrackTexturePath);
+            if (cracks == null) return;
+            cracks.FilterMode = FilterMode.Nearest;
+            AddTexture("crackTexture", cracks);
+        }
+
+                protected override void UpdateDynamicUniforms()
         {
             base.UpdateDynamicUniforms();
            

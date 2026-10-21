@@ -30,8 +30,21 @@ public class BlockVertexTests
         Assert.InRange(MathF.Abs(lit.X - color.X), 0f, ByteStep);
         Assert.InRange(MathF.Abs(lit.Y - color.Y), 0f, ByteStep);
         Assert.InRange(MathF.Abs(lit.Z - color.Z), 0f, ByteStep);
-        Assert.Equal(1f, lit.W);
+        Assert.Equal(BlockVertex.EmissionFlag, (byte)MathF.Round(lit.W * 255f));
         Assert.Equal(0f, plain.W);
+    }
+
+    [Theory]
+    [InlineData(false, 0)]
+    [InlineData(true, 0)]
+    [InlineData(false, 3)]
+    [InlineData(true, 2)]
+    public void Flags_CarryEmissionAndDamageStage(bool emission, int stage)
+    {
+        byte flags = (byte)MathF.Round(BlockVertex.Unpack(BlockVertex.PackColor(Vector3.One, emission, stage)).W * 255f);
+
+        Assert.Equal(emission, (flags & BlockVertex.EmissionFlag) != 0);
+        Assert.Equal(stage, flags & BlockVertex.DamageMask);
     }
 
     [Theory]

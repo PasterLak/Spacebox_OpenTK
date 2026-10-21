@@ -79,8 +79,10 @@ public class InteractionRepair : InteractionMode
             _repairProgress -= amount;
             var block = _target.WeakestBlock;
             byte repaired = (byte)Math.Min(amount, max - block.Durability);
+            byte before = block.Durability;
             block.Durability = BlockDamage.Repair(block.Durability, repaired, max);
             if (_target.WeakestChunk != null) _target.WeakestChunk.IsModified = true;
+            Spacebox.Game.Generation.Blocks.BlockDamageVisuals.OnDurabilityChanged(_target.WeakestChunk, block, before);
             WorldEditNetwork.NotifyRepaired(_target.WeakestChunk, _target.WeakestIndex, block.Id, repaired);
         }
 
