@@ -70,6 +70,7 @@ Small
 - mineral parasite bursts into violet particles when it dies (mobs.json DeathParticles: color, count, speed, size, life)
 - gravity generator: power-up and power-down sounds when switched on/off, heard by everyone near it (24 blocks)
 - new gravity generators start with gravity switched off (Gravity.EnabledOnPlace); the tutorial step asks to turn it on
+- oxygen generator plays a sputter and warning tone when its water tank runs dry (Oxygen.EmptySound)
 - quiet air hiss when entering and leaving a breathable zone
 - DNA reconstructor sounds: bio-tech hum while reconstructing (pitch rises), a cue at each body stage, and a spawn sound when the player appears; other players near the reconstructor (24 blocks) hear only the spawn sound; DnaReconstructor.Sounds in blocks.json
 - mineral parasite sounds (organic: voiced growls, wet squelches, bubbles, crunches; heard up to 16 blocks): idle gurgle, alert growl when it starts hunting, bite, hurt, death and eating; mobs.json "Sounds" section for any mob

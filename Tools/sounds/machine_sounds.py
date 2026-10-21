@@ -54,3 +54,26 @@ for on, name in ((True, "gravityGeneratorOn"), (False, "gravityGeneratorOff")):
 for entering, name in ((True, "airZoneEnter"), (False, "airZoneExit")):
     sound = air_zone(entering)
     save(name, sound, loudness_peak(sound, 0.035))
+
+
+def oxygen_empty():
+    length = 1.5
+    out = np.zeros(samples(length))
+    for i in range(4):
+        n = samples(0.12)
+        t = np.arange(n) / RATE
+        glug = np.sin(2 * math.pi * np.cumsum(np.full(n, 170 - i * 25) * (1 + 0.6 * t / 0.12)) / RATE) * np.exp(-t / 0.035) * (1 - np.exp(-t / 0.003))
+        place(out, glug * (0.9 - i * 0.18), 0.02 + i * 0.13 + rng.uniform(0, 0.03))
+    hiss_n = samples(0.7)
+    hiss = resonator(noise(hiss_n), curve([1400, 600], hiss_n), 0.8) * envelope(hiss_n, [(0, 0.7), (0.3, 0.4), (1, 0)]) * 0.35
+    place(out, hiss, 0.0)
+    for j, freq in enumerate((660, 440)):
+        n = samples(0.28)
+        t = np.arange(n) / RATE
+        tone = (np.sin(2 * math.pi * freq * t) + 0.25 * np.sin(4 * math.pi * freq * t)) * envelope(n, [(0, 0), (0.06, 1), (0.5, 0.6), (1, 0)])
+        place(out, lowpass(tone, 2200) * 0.45, 0.68 + j * 0.3)
+    return soft_clip(lowpass(out, 5000), 1.05)
+
+
+sound = oxygen_empty()
+save("oxygenGeneratorEmpty", sound, loudness_peak(sound, 0.08))

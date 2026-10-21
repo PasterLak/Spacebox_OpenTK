@@ -1,4 +1,5 @@
 using Engine.Networking;
+using Spacebox.Game.Effects;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
@@ -105,7 +106,7 @@ public class OxygenGeneratorBlock : InteractiveBlock, IContainerBlock, IEntityBl
 
     public void Restore(int water, float consumeProgress)
     {
-        Water = Math.Clamp(water, 0, TankCapacity);
+        SetWater(Math.Clamp(water, 0, TankCapacity));
         ConsumeProgress = Math.Clamp(consumeProgress, 0f, 1f);
     }
 
@@ -137,9 +138,22 @@ public class OxygenGeneratorBlock : InteractiveBlock, IContainerBlock, IEntityBl
         if (ConsumeProgress < 1f) return;
 
         ConsumeProgress -= 1f;
-        Water--;
+        SetWater(Water - 1);
         MarkStateDirty();
         MarkModified();
+    }
+
+    private void SetWater(int water)
+    {
+        bool ranDry = Water > 0 && water <= 0;
+        Water = water;
+        if (ranDry) PlayEmptySound();
+    }
+
+    private void PlayEmptySound()
+    {
+        if (_entity == null || _data == null) return;
+        BlockEventSounds.Play(_data.EmptySound, _entity.EntityLocalToWorld(new OpenTK.Mathematics.Vector3(_cell.X + 0.5f, _cell.Y + 0.5f, _cell.Z + 0.5f)));
     }
 
     private bool IsWater(Item item)

@@ -6,4 +6,5 @@ public class OxygenGeneratorJSON
     public int TankCapacity { get; set; } = 30;
     public float WaterConsumeInterval { get; set; } = 120f;
     public float WaterFillInterval { get; set; } = 1f;
+    public string EmptySound { get; set; } = "oxygenGeneratorEmpty";
 }

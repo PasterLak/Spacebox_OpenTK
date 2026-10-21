@@ -6,6 +6,7 @@ public class OxygenGeneratorBlockData : BlockData, IBlockTooltip
     public int TankCapacity { get; }
     public float WaterConsumeInterval { get; }
     public float WaterFillInterval { get; }
+    public string EmptySound { get; }
 
     private Item _waterItem;
 
@@ -17,6 +18,7 @@ public class OxygenGeneratorBlockData : BlockData, IBlockTooltip
         TankCapacity = Math.Max(1, settings.TankCapacity);
         WaterConsumeInterval = Math.Max(0.1f, settings.WaterConsumeInterval);
         WaterFillInterval = Math.Max(0.05f, settings.WaterFillInterval);
+        EmptySound = settings.EmptySound ?? "";
     }
 
     public void AppendTooltip(System.Text.StringBuilder text)
