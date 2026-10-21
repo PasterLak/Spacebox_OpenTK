@@ -12,6 +12,7 @@ public sealed class MultiblockRepair
         public int Completed;
         public int Removed;
         public int OrphanPartsRemoved;
+        public List<BrokenMultiblock> Broken;
 
         public bool Changed => Completed > 0 || Removed > 0 || OrphanPartsRemoved > 0;
     }
@@ -56,6 +57,8 @@ public sealed class MultiblockRepair
                 }
                 else
                 {
+                    result.Broken ??= new List<BrokenMultiblock>();
+                    result.Broken.Add(new BrokenMultiblock(ToLocal(pair.Key, x, y, z), block));
                     blocks[x, y, z] = _create(0);
                     result.Removed++;
                 }

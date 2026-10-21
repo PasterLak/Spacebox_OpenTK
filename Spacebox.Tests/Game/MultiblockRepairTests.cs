@@ -129,4 +129,51 @@ public class MultiblockRepairTests
         Assert.Equal(1, result.OrphanPartsRemoved);
         Assert.True(blocks[3, 4, 3].IsAir);
     }
+
+    [Fact]
+    public void BlockedStructure_IsReportedWithItsCellAndOriginalBlock()
+    {
+        var world = World(Vector3SByte.Zero);
+        var blocks = world[Vector3SByte.Zero];
+        var origin = Create(Tall);
+        blocks[3, 3, 3] = origin;
+        blocks[3, 4, 3] = Create(Stone);
+
+        var result = Repair().Repair(world);
+
+        var broken = Assert.Single(result.Broken);
+        Assert.Equal(new OpenTK.Mathematics.Vector3i(3, 3, 3), broken.Cell);
+        Assert.Same(origin, broken.Block);
+    }
+
+    [Fact]
+    public void StructureLeavingLoadedChunks_IsReportedInItsChunkCell()
+    {
+        var chunk = new Vector3SByte(1, 0, 0);
+        var world = World(chunk);
+        var origin = Create(Tall);
+        world[chunk][2, Chunk.Size - 1, 5] = origin;
+
+        var result = Repair().Repair(world);
+
+        var broken = Assert.Single(result.Broken);
+        Assert.Equal(new OpenTK.Mathematics.Vector3i(Chunk.Size + 2, Chunk.Size - 1, 5), broken.Cell);
+        Assert.Same(origin, broken.Block);
+    }
+
+    [Fact]
+    public void CompletedAndOrphanRepairs_ReportNoBrokenStructures()
+    {
+        var world = World(Vector3SByte.Zero);
+        var blocks = world[Vector3SByte.Zero];
+        blocks[3, 3, 3] = Create(Tall);
+        var part = Create(Tall);
+        part.MultiblockOffset = new Vector3Byte(0, 1, 0);
+        blocks[8, 4, 8] = part;
+
+        var result = Repair().Repair(world);
+
+        Assert.True(result.Changed);
+        Assert.Null(result.Broken);
+    }
 }

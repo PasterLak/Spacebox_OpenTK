@@ -133,6 +133,7 @@ namespace Spacebox.Game.Generation.Tools
             var repair = MultiblockRepair.ForCurrentGameSet().Repair(decoded);
             if (repair.Changed)
                 Debug.Warning($"[NBTHelper] Entity {spaceEntity.EntityID}: multi-cell blocks completed {repair.Completed}, removed {repair.Removed}, orphan cells removed {repair.OrphanPartsRemoved}");
+            BrokenMultiblockSpill.Schedule(spaceEntity, repair.Broken);
 
             foreach (var pair in decoded)
             {
