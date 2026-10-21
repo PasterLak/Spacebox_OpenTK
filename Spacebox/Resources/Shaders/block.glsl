@@ -46,7 +46,7 @@ void main()
     vAO         = aNormal.w;
     int flags   = int(round(aColor.a * 255.0));
     vAtlasFlag  = flags >= 128 ? 1.0 : 0.0;
-    vDamage     = flags & 3;
+    vDamage     = flags & 7;
     vLocal      = aPosition;
     vLocalNormal = aNormal.xyz * 2.0 - 1.0;
 }
@@ -76,20 +76,42 @@ uniform sampler2D texture0;
 uniform sampler2D textureAtlas;
 uniform sampler2D crackTexture;
 
-const float CRACK_STAGES = 3.0;
+const float CRACK_STAGES = 6.0;
+const float CRACK_VARIANTS = 8.0;
+
+uint crackHash(ivec3 c)
+{
+    uint h = uint(c.x) * 73856093u ^ uint(c.y) * 19349663u ^ uint(c.z) * 83492791u;
+    h ^= h >> 13u;
+    h *= 0x5bd1e995u;
+    h ^= h >> 15u;
+    return h;
+}
 
 vec3 applyCracks(vec3 base)
 {
     if (vDamage == 0) return base;
 
     vec3 n = abs(vLocalNormal);
-    vec2 face = n.x > n.y && n.x > n.z ? vLocal.zy : (n.y > n.z ? vLocal.xz : vLocal.xy);
-    vec2 cell = fract(face);
-    vec2 uv = vec2((float(vDamage - 1) + cell.x) / CRACK_STAGES, cell.y);
-    vec4 crack = texture(crackTexture, uv);
+    int axis = n.x > n.y && n.x > n.z ? 0 : (n.y > n.z ? 1 : 2);
+    float side = axis == 0 ? vLocalNormal.x : (axis == 1 ? vLocalNormal.y : vLocalNormal.z);
+    uint face = uint(axis * 2 + (side > 0.0 ? 1 : 0));
+
+    vec2 coords = axis == 0 ? vLocal.zy : (axis == 1 ? vLocal.xz : vLocal.xy);
+    vec2 c = fract(coords);
+
+    uint h = crackHash(ivec3(floor(vLocal - vLocalNormal * 0.5)));
+    float variant = float(h & 7u);
+    uint orient = ((h >> 3u) ^ face) & 7u;
+    if ((orient & 1u) != 0u) c.x = 1.0 - c.x;
+    if ((orient & 2u) != 0u) c.y = 1.0 - c.y;
+    if ((orient & 4u) != 0u) c = c.yx;
+
+    vec2 uv = vec2((float(vDamage - 1) + c.x) / CRACK_STAGES, (variant + c.y) / CRACK_VARIANTS);
+    float a = texture(crackTexture, uv).a;
     float luminance = dot(base, vec3(0.299, 0.587, 0.114));
-    vec3 lineColor = luminance > 0.35 ? base * crack.rgb : base + vec3(0.45) * (1.0 - crack.rgb);
-    return mix(base, lineColor, crack.a);
+    float shade = mix(1.0, luminance > 0.35 ? 0.6 : 1.35, a);
+    return base * shade + vec3(luminance > 0.35 ? 0.0 : 0.04 * a);
 }
 
 

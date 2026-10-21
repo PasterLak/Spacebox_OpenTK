@@ -38,7 +38,7 @@ public class BlockVertexTests
     [InlineData(false, 0)]
     [InlineData(true, 0)]
     [InlineData(false, 3)]
-    [InlineData(true, 2)]
+    [InlineData(true, 6)]
     public void Flags_CarryEmissionAndDamageStage(bool emission, int stage)
     {
         byte flags = (byte)MathF.Round(BlockVertex.Unpack(BlockVertex.PackColor(Vector3.One, emission, stage)).W * 255f);

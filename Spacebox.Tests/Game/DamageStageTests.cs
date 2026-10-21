@@ -10,14 +10,15 @@ public class DamageStageTests
     [Theory]
     [InlineData(100, 100, 0)]
     [InlineData(99, 100, 1)]
-    [InlineData(67, 100, 1)]
-    [InlineData(66, 100, 2)]
-    [InlineData(34, 100, 2)]
-    [InlineData(33, 100, 3)]
-    [InlineData(1, 100, 3)]
-    [InlineData(0, 100, 3)]
+    [InlineData(84, 100, 1)]
+    [InlineData(83, 100, 2)]
+    [InlineData(50, 100, 4)]
+    [InlineData(17, 100, 5)]
+    [InlineData(16, 100, 6)]
+    [InlineData(1, 100, 6)]
+    [InlineData(0, 100, 6)]
     [InlineData(5, 0, 0)]
-    public void Of_MapsDurabilityToFourStages(int durability, int max, int expected)
+    public void Of_MapsDurabilityToSixCrackStages(int durability, int max, int expected)
     {
         Assert.Equal(expected, DamageStage.Of(durability, max));
     }
@@ -25,9 +26,9 @@ public class DamageStageTests
     [Fact]
     public void Changed_OnlyWhenCrossingAStage()
     {
-        Assert.False(DamageStage.Changed(90, 80, 100));
+        Assert.False(DamageStage.Changed(95, 90, 100));
         Assert.True(DamageStage.Changed(100, 99, 100));
-        Assert.True(DamageStage.Changed(70, 60, 100));
+        Assert.True(DamageStage.Changed(84, 83, 100));
         Assert.True(DamageStage.Changed(50, 100, 100));
     }
 
@@ -60,7 +61,7 @@ public class DamageStageTests
         int remeshes = 0;
         var visuals = new BlockDamageVisuals(_ => remeshes++, _ => true);
 
-        visuals.MarkIfStageChanged(chunk, 90, 80, 100);
+        visuals.MarkIfStageChanged(chunk, 95, 90, 100);
         visuals.Update(1f);
 
         Assert.Equal(0, remeshes);

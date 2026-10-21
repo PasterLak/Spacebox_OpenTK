@@ -2,7 +2,7 @@ namespace Spacebox.Game.Generation.Blocks;
 
 public static class DamageStage
 {
-    public const int Count = 4;
+    public const int Count = 7;
     public const int Max = Count - 1;
 
     public static int Of(int durability, int maxDurability)

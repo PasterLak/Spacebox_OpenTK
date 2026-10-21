@@ -13,8 +13,9 @@ public class DamageMeshTests
 
     [Theory]
     [InlineData(10, 0)]
-    [InlineData(8, 1)]
-    [InlineData(1, 3)]
+    [InlineData(9, 1)]
+    [InlineData(5, 4)]
+    [InlineData(1, 6)]
     public void Mesh_WritesDamageStageIntoEveryVertex(byte durability, int expectedStage)
     {
         var data = new BlockData("damage_mesh_test", "block") { Id = TestId, Id_string = "test:damage_mesh", Durability = 10, Mass = 1 };

@@ -59,7 +59,7 @@ New
 Small
 - options: leaving a category with Back after changing something asks Save / Don't Save / Cancel
 - equipment preview: dragging up and down tilts the view (up to 75 degrees), double click resets
-- damaged blocks show cracks in 3 stages (lighter on dark blocks); baked into the chunk mesh, re-meshed only when a stage changes and at most every 0.3 s per chunk
+- damaged blocks show soft cracks in 6 stages with 8 patterns chosen per block and a random rotation per face (lighter on dark blocks); baked into the chunk mesh, re-meshed only when a stage changes and at most every 0.3 s per chunk
 - Barrier (creative): invisible solid block for maps, shown only while a barrier is held, unbreakable
 - blocks.json "Unbreakable": true for any block: no damage from drills, bullets, cannons, explosions, collisions or mobs; only creative players and commands remove it
 - blocks.json "TextureFit": true stretches each face texture over the whole face of a multi-cell block (no repeats); used by Big Window

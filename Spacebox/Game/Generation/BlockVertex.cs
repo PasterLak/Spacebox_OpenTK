@@ -7,7 +7,7 @@ public static class BlockVertex
     public const int Words = 7;
 
     public const byte EmissionFlag = 0x80;
-    public const byte DamageMask = 0x03;
+    public const byte DamageMask = 0x07;
 
     public static void Write(float[] destination, ref int offset, Vector3 position, Vector2 uv, Vector3 color, Vector3 normal, float ao, bool emission, int damageStage = 0)
     {
