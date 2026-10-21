@@ -11,6 +11,7 @@ public static class EquipmentUI
     private const string Title = "Equipment";
     private const string BackgroundsFolder = "equipment/";
     private const float SlotGapRatio = 0.08f;
+    private const float WindowGapFactor = 3f;
     private const int Rows = 4;
     private const float PreviewColumns = 2.8f;
 
@@ -119,7 +120,7 @@ public static class EquipmentUI
 
     private static Vector2 PlaceWindow(Vector2 size, float gap, Vector2 displaySize)
     {
-        float x = InventoryUI.WindowPosition.X + InventoryUI.WindowSize.X + gap;
+        float x = InventoryUI.WindowPosition.X + InventoryUI.WindowSize.X + gap * WindowGapFactor;
         float y = MathF.Max(gap, InventoryUI.WindowPosition.Y + InventoryUI.WindowSize.Y - size.Y);
 
         if (CraftingGUI.IsVisible)

@@ -219,7 +219,7 @@ namespace Spacebox.Game.GUI
 
                 ImGui.SetCursorPosY(ImGui.GetCursorPosY() + windowHeight * 0.005f);
                 ImGui.SetCursorPosX(padding);
-                ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), $"Deviation: {analyzerBlock.DeviationPercentage}%");
+                ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), $"Deviation: {analyzerBlock.DeviationPercentage}%%");
 
                 ImGui.SetCursorPosY(ImGui.GetCursorPosY() + windowHeight * 0.01f);
                 ImGui.Separator();

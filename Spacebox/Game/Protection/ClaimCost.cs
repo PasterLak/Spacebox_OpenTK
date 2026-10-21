@@ -29,8 +29,8 @@ public static class ClaimCost
         if (seconds <= 0f) return "0m";
 
         var span = TimeSpan.FromSeconds(seconds);
-        if (span.TotalDays >= 1) return $"{(int)span.TotalDays}d {span.Hours}h";
-        if (span.TotalHours >= 1) return $"{span.Hours}h {span.Minutes}m";
+        if (span.TotalDays >= 1) return span.Hours == 0 ? $"{(int)span.TotalDays}d" : $"{(int)span.TotalDays}d {span.Hours}h";
+        if (span.TotalHours >= 1) return span.Minutes == 0 ? $"{span.Hours}h" : $"{span.Hours}h {span.Minutes}m";
         return $"{Math.Max(1, span.Minutes)}m";
     }
 }

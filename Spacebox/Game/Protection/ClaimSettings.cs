@@ -12,7 +12,7 @@ public sealed class ClaimSettings
 
     public bool Enabled { get; set; } = true;
     public int Radius { get; set; } = 12;
-    public int MaxStoredMinutes { get; set; } = 14 * 24 * 60;
+    public int MaxStoredMinutes { get; set; } = 30 * 24 * 60;
     public int WarningMinutes { get; set; } = 60;
     public int ExtraClaimCostPercent { get; set; } = 50;
     public int MaxClaimsPerPlayer { get; set; } = 0;
@@ -21,7 +21,10 @@ public sealed class ClaimSettings
 
     public Dictionary<string, int> Payments { get; set; } = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
     {
+        ["aluminium_ingot"] = 30,
+        ["iron_ingot"] = 30,
         ["cobalt_ingot"] = 60,
+        ["titanium_ingot"] = 10 * 60,
         ["thulium_ingot"] = 12 * 60,
         ["uranium_ingot"] = 24 * 60,
         ["obscurium_ingot"] = 7 * 24 * 60

@@ -155,7 +155,7 @@ public static class DisassemblerUI
         switch (_block.Status)
         {
             case DisassemblerStatus.Working:
-                ImGui.TextColored(WorkingColor, $"Working {(int)(_block.ProgressNormalized * 100f)}%");
+                ImGui.TextColored(WorkingColor, $"Working {(int)(_block.ProgressNormalized * 100f)}%%");
                 break;
             case DisassemblerStatus.OutputFull:
                 ImGui.TextColored(WarningColor, "Output is full");

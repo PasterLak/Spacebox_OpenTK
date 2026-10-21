@@ -20,14 +20,17 @@
   "Claims": {
     "Enabled": true,
     "Radius": 12,
-    "MaxStoredMinutes": 20160,
+    "MaxStoredMinutes": 43200,
     "WarningMinutes": 60,
     "ExtraClaimCostPercent": 50,
     "MaxClaimsPerPlayer": 0,
     "MaxMembers": 16,
     "MinDistanceFromSpawn": 0,
     "Payments": {
+      "aluminium_ingot": 30,
+      "iron_ingot": 30,
       "cobalt_ingot": 60,
+      "titanium_ingot": 600,
       "thulium_ingot": 720,
       "uranium_ingot": 1440,
       "obscurium_ingot": 10080

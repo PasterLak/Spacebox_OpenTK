@@ -75,6 +75,10 @@ Fixes
 - /protect, /unprotect, /protected (admin): protect the nearest asteroid or ship so only admins can build, break or fly it, nothing damages or pushes it; players get a red message; saved per world and checked by the server
 - Claim Beacon: players protect their ship (whole ship) or base (zone on an asteroid) by paying ingots (cobalt 1h, thulium 12h, uranium 1d, obscurium 7d); members, no damage, doors still work; more claims cost more; all settings in serverconfig.json "Claims" and the dashboard
 - claim payments and limits in minutes (config, dashboard); dashboard works again (broken script after the claims panel), server log shows the local network addresses of the dashboard; stop/restart in the server terminal no longer log resource errors (scene and particle systems are destroyed on quit)
+- claim beacon window: compact, same width as the inventory and right above it, readable name field, styled like the other machine windows, payment ingots as icons, durations without zero parts (1h, 14d)
+- analyzer and disassembler windows show the % sign again
+- default claim protection storage 30 days; equipment window a bit further from the inventory
+- claim payments: aluminium and iron +30 min, titanium +10 h (list scrolls, cheapest first); claim beacon is crafted from iron panels
 - while the world loads only the skybox is drawn: spacers, mobs and other players no longer show before the world
 - light from a neighbour chunk no longer disappears when a nearby chunk is relit (block eaten, chunk loaded)
 - new Interface options: font (Fusion Pixel by default with Cyrillic, or the old ProggyClean), font size and a font test field; licenses in Resources/Fonts/FONTS.md

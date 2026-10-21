@@ -80,13 +80,16 @@ public class ClaimTests : IDisposable
 
         Assert.Equal(3600, ClaimCost.SecondsFor(settings, "default:cobalt_ingot"));
         Assert.Equal(7 * 24 * 3600, ClaimCost.SecondsFor(settings, "obscurium_ingot"));
-        Assert.Equal(0, ClaimCost.SecondsFor(settings, "default:iron_ingot"));
+        Assert.Equal(0, ClaimCost.SecondsFor(settings, "default:glass"));
         Assert.True(ClaimCost.CanAdd(0f, 3600, 7200));
         Assert.False(ClaimCost.CanAdd(5000f, 3600, 7200));
         Assert.False(ClaimCost.CanAdd(0f, 0, 7200));
         Assert.Equal("2d 3h", ClaimCost.FormatDuration(2 * 86400 + 3 * 3600));
         Assert.Equal("1h 30m", ClaimCost.FormatDuration(5400));
         Assert.Equal("0m", ClaimCost.FormatDuration(0));
+        Assert.Equal("1h", ClaimCost.FormatDuration(3600));
+        Assert.Equal("14d", ClaimCost.FormatDuration(14 * 86400));
+        Assert.Equal("1d 2h", ClaimCost.FormatDuration(26 * 3600));
     }
 
     [Fact]
@@ -109,7 +112,9 @@ public class ClaimTests : IDisposable
 
         Assert.NotNull(config.Claims);
         Assert.True(config.Claims.Enabled);
-        Assert.Equal(4, config.Claims.Payments.Count);
+        Assert.Equal(7, config.Claims.Payments.Count);
+        Assert.Equal(30, ClaimCost.MinutesFor(config.Claims, "default:iron_ingot"));
+        Assert.Equal(600, ClaimCost.MinutesFor(config.Claims, "titanium_ingot"));
     }
 
     [Fact]
@@ -184,7 +189,7 @@ public class ClaimTests : IDisposable
         var slot = beacon.PaymentStorage.GetSlot(0, 0);
 
         Assert.True(slot.Filter(new Item(1, 64, "Uranium") { Id_string = "default:uranium_ingot" }));
-        Assert.False(slot.Filter(new Item(2, 64, "Iron") { Id_string = "default:iron_ingot" }));
+        Assert.False(slot.Filter(new Item(2, 64, "Glass") { Id_string = "default:glass" }));
     }
 
     [Fact]
