@@ -6,131 +6,101 @@ from synth import samples, curve, resonator, lowpass, noise, envelope, place, so
 synth.setup(11, sys.argv[1] if len(sys.argv) > 1 else ".")
 rng = synth.rng
 
-PLATE_MODES = [(1.0, 1.0, 1.0), (1.59, 0.55, 0.8), (2.14, 0.4, 0.65), (2.65, 0.3, 0.5), (3.42, 0.18, 0.35), (4.17, 0.1, 0.25)]
-
 DOORS = {
-    "aluminiumDoor": {"slide": 1.0, "ring": 980, "decay": 0.22, "weight": 0.55, "rumble": 160, "motor": 260, "noise": 1.0},
-    "ironDoor": {"slide": 1.25, "ring": 430, "decay": 0.5, "weight": 1.0, "rumble": 95, "motor": 140, "noise": 0.8},
-    "titaniumDoor": {"slide": 0.83, "ring": 700, "decay": 0.34, "weight": 0.8, "rumble": 120, "motor": 340, "noise": 0.6},
+    "aluminiumDoor": {"slide": 1.0, "thud": 150, "body": 900, "weight": 0.6, "air": 1.0},
+    "ironDoor": {"slide": 1.25, "thud": 95, "body": 600, "weight": 1.0, "air": 0.8},
+    "titaniumDoor": {"slide": 0.83, "thud": 120, "body": 750, "weight": 0.8, "air": 0.7},
 }
 
+TAIL = 0.22
 
-def metal_ring(freq, decay, length=None, brightness=1.0):
-    length = length or decay * 5
+
+def damped(freq, decay, length):
     n = samples(length)
     t = np.arange(n) / RATE
-    out = np.zeros(n)
-    for ratio, gain, decay_scale in PLATE_MODES:
-        f = freq * ratio * rng.uniform(0.985, 1.015)
-        if f > RATE * 0.45: continue
-        g = gain * (brightness if ratio > 2 else 1.0)
-        out += np.sin(2 * math.pi * f * t + rng.uniform(0, 6.28)) * np.exp(-t / (decay * decay_scale)) * g
-    strike = resonator(noise(samples(0.01)) * np.hanning(samples(0.01)), freq * 3, 1.5)
-    place(out, strike * 0.6, 0)
-    return out * (1 - np.exp(-t / 0.0008))
+    return np.sin(2 * math.pi * freq * t) * np.exp(-t / decay) * (1 - np.exp(-t / 0.001))
 
 
-def thump(freq, length, weight):
+def thud(door, strength):
+    length = 0.2
     n = samples(length)
-    body = lowpass(lowpass(noise(n), freq), freq) * envelope(n, [(0, 1), (0.3, 0.4), (1, 0)])
-    return body * 6 * weight
+    body = lowpass(lowpass(noise(n), door["thud"] * 2.5), door["thud"] * 2.5) * envelope(n, [(0, 1), (0.15, 0.35), (1, 0)]) * 4
+    low = damped(door["thud"], 0.035 * door["weight"] + 0.015, length)
+    knock = resonator(noise(n), door["body"], 3.0) * np.exp(-np.arange(n) / (0.012 * RATE)) * 0.6
+    return (body + low * 0.9 + knock) * strength * door["weight"]
 
 
-def latch(door, strength):
-    out = np.zeros(samples(0.5))
-    place(out, metal_ring(door["ring"] * 1.6, door["decay"] * 0.25, 0.35, 1.2) * 0.5 * strength, 0)
-    place(out, thump(door["rumble"] * 1.5, 0.12, door["weight"]) * strength, 0.002)
-    place(out, metal_ring(door["ring"] * 2.3, door["decay"] * 0.12, 0.2) * 0.25 * strength, 0.035)
-    return out
+def click(door, strength):
+    n = samples(0.05)
+    tick = resonator(noise(n), door["body"] * 2.2, 2.0) * np.exp(-np.arange(n) / (0.004 * RATE))
+    return (tick + damped(door["body"] * 1.7, 0.006, 0.05) * 0.4) * strength
 
 
-def slam(door, strength):
-    out = np.zeros(samples(door["decay"] * 4 + 0.2))
-    place(out, thump(door["rumble"], 0.25, door["weight"]) * 1.3 * strength, 0)
-    place(out, metal_ring(door["ring"], door["decay"], door["decay"] * 4) * 0.7 * strength, 0.001)
-    place(out, latch(door, 0.6) * strength, 0.06)
-    return out
-
-
-def slide_texture(door, length, smooth):
+def slide_noise(door, length, smooth):
     n = samples(length)
-    center = door["ring"] * 0.7 * (1 + curve(rng.uniform(-0.08, 0.08, 6), n))
-    scrape = resonator(noise(n), center, 2.0 + smooth * 4) * (1 - smooth * 0.6)
-    roller_rate = curve([9, 14, 12, 8], n) * (1.4 if door["weight"] < 0.7 else 1.0)
-    roller = 0.6 + 0.4 * np.sin(2 * math.pi * np.cumsum(roller_rate) / RATE)
-    rumble = lowpass(lowpass(noise(n), door["rumble"] * 2), door["rumble"] * 2) * 5 * door["weight"]
-    env = envelope(n, [(0, 0), (0.15, 1), (0.8, 0.9), (1, 0.2)])
-    return (scrape * 0.35 * door["noise"] + rumble * roller) * env
+    center = curve([door["body"] * 0.55, door["body"] * 0.7, door["body"] * 0.6], n)
+    swish = resonator(noise(n), center, 0.8)
+    rumble = lowpass(lowpass(noise(n), 260), 260) * 3 * door["weight"]
+    roll = 1 + 0.12 * np.sin(2 * math.pi * np.cumsum(curve([6, 9, 7], n)) / RATE) * (1 - smooth)
+    env = envelope(n, [(0, 0), (0.18, 1), (0.75, 0.85), (1, 0)])
+    return lowpass((swish * 0.5 + rumble) * roll, 3200) * env
 
 
-def hiss(length, low, high, amount):
+def air(length, cutoff, amount):
     n = samples(length)
-    sweep = curve([high, (low + high) * 0.5, low], n)
-    burst = resonator(noise(n), sweep, 0.9) * envelope(n, [(0, 0), (0.04, 1), (0.35, 0.5), (1, 0)])
-    return burst * amount
+    return lowpass(lowpass(noise(n), cutoff), cutoff) * 2.2 * amount * envelope(n, [(0, 0), (0.06, 1), (0.5, 0.45), (1, 0)])
 
 
-def motor(door, length, rising):
+def hum(door, length, opening):
     n = samples(length)
-    base = door["motor"]
-    f0 = curve([base * 0.6, base * 1.05, base, base * 0.7] if rising else [base * 0.7, base, base * 1.05, base * 0.6], n)
-    f0 = f0 * (1 + curve(rng.uniform(-0.01, 0.01, 30), n))
-    phase = np.cumsum(f0) / RATE * 2 * math.pi
-    tone = sum(np.sin(phase * k) / k ** 1.3 for k in range(1, 8))
-    gears = 1 + 0.25 * np.sign(np.sin(phase / 6))
-    out = lowpass(tone * gears, 2200) * envelope(n, [(0, 0), (0.12, 1), (0.85, 0.9), (1, 0)])
-    return out * 0.5
+    base = door["thud"] * 1.6
+    center = curve([base * 0.85, base * 1.08, base] if opening else [base, base * 1.05, base * 0.85], n)
+    tone = resonator(noise(n), center, 7.0) * 2.5
+    return lowpass(tone, 900) * envelope(n, [(0, 0), (0.15, 1), (0.85, 0.9), (1, 0)])
 
 
-def servo(door, length, rising):
+def whoosh(door, length, opening):
     n = samples(length)
-    base = door["motor"] * 2.2
-    f0 = curve([base * 0.75, base * 1.2, base * 1.25] if rising else [base * 1.25, base * 1.15, base * 0.75], n)
-    phase = np.cumsum(f0) / RATE * 2 * math.pi
-    tone = np.sin(phase) + 0.35 * np.sin(phase * 2.01) + 0.15 * np.sin(phase * 3.02)
-    shimmer = 0.85 + 0.15 * np.sin(2 * math.pi * 6 * np.arange(n) / RATE)
-    out = resonator(tone * shimmer, base * 1.6, 1.2) + tone * 0.2
-    return out * envelope(n, [(0, 0), (0.1, 1), (0.8, 0.8), (1, 0)]) * 0.35
+    lo, hi = door["body"] * 0.45, door["body"] * 1.4
+    center = curve([lo, hi, hi * 0.9] if opening else [hi * 0.9, hi, lo], n)
+    return lowpass(resonator(noise(n), center, 1.6), 3500) * envelope(n, [(0, 0), (0.2, 1), (0.8, 0.7), (1, 0)])
 
 
 def build(door, style, opening):
     slide = door["slide"]
-    total = slide + 0.9
-    out = np.zeros(samples(total))
-    start = 0.06 if opening else 0.0
+    out = np.zeros(samples(slide + TAIL))
+    lead = 0.03 if opening else 0.0
+    move = slide - lead
 
     if opening:
-        place(out, latch(door, 0.7), 0)
+        place(out, click(door, 0.5), 0)
+
     if style == 1:
-        place(out, lowpass(hiss(0.45 if opening else 0.35, 700, 4200, 0.4 * door["noise"]), 5000), 0.02 if opening else slide - 0.05)
-        place(out, slide_texture(door, slide, 0.6) * 0.8, start)
+        place(out, air(move * 0.55, 1800, 0.55 * door["air"]), lead)
+        place(out, slide_noise(door, move, 0.7) * 0.8, lead)
     elif style == 2:
-        place(out, motor(door, slide + 0.1, opening), start - 0.03 if opening else 0)
-        place(out, slide_texture(door, slide, 0.2), start)
+        place(out, hum(door, move, opening) * 0.7, lead)
+        place(out, slide_noise(door, move, 0.3), lead)
     else:
-        place(out, servo(door, slide, opening), start)
-        place(out, slide_texture(door, slide, 0.9) * 0.45, start)
-        place(out, hiss(0.25, 2000, 7000, 0.18), start + slide - 0.15)
+        place(out, whoosh(door, move, opening) * 0.8, lead)
+        place(out, slide_noise(door, move, 0.9) * 0.5, lead)
 
-    end = start + slide
     if opening:
-        place(out, slam(door, 0.35), end)
+        place(out, thud(door, 0.35), slide - 0.01)
     else:
-        place(out, slam(door, 1.0), end)
-        if style == 1: place(out, lowpass(hiss(0.3, 1000, 3800, 0.18), 4500), end + 0.05)
+        place(out, thud(door, 1.0), slide - 0.01)
+        if style == 1: place(out, air(0.18, 1400, 0.25 * door["air"]), slide)
 
-    out = soft_clip(lowpass(out, 9000), 1.2)
-    tail = samples(end + door["decay"] * 2.5 + 0.15)
-    return out[:min(len(out), tail)]
+    return soft_clip(lowpass(out, 6000), 1.1)
 
 
-TARGET_RMS = {True: 0.12, False: 0.15}
+TARGET_RMS = {True: 0.07, False: 0.085}
 
 
 def loudness_peak(x, target_rms):
     x = x / max(1e-9, np.max(np.abs(x)))
     rms = math.sqrt(float(np.mean(x ** 2)))
-    return min(0.9, target_rms / max(1e-9, rms))
+    return min(0.6, target_rms / max(1e-9, rms))
 
 
 for name, door in DOORS.items():

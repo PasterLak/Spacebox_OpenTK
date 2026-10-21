@@ -66,7 +66,7 @@ Small
 - blocks.json "Unbreakable": true for any block: no damage from drills, bullets, cannons, explosions, collisions or mobs; only creative players and commands remove it
 - blocks.json "TextureFit": true stretches each face texture over the whole face of a multi-cell block (no repeats); used by Big Window
 - ship consoles remember the keys you set last (per console type, saved on this computer) and use them for newly placed consoles
-- door open/close sounds: 3 styles per door (pneumatic, motor, servo) tuned to the aluminium, iron and titanium doors and their slide time; set in blocks.json Door.OpenSound / CloseSound
+- door open/close sounds: 3 neutral styles per door (pneumatic air, soft motor hum, servo whoosh) with dull thuds instead of ringing metal, as long as the slide plus a short tail; set in blocks.json Door.OpenSound / CloseSound
 - mineral parasite sounds (organic: voiced growls, wet squelches, bubbles, crunches; heard up to 16 blocks): idle gurgle, alert growl when it starts hunting, bite, hurt, death and eating; mobs.json "Sounds" section for any mob
 - mob spawner items show an icon rendered from the mob model
 - equipment preview: dragging up and down tilts the player instead of the camera and skybox
