@@ -20,6 +20,7 @@ public class OxygenBar
     public int RefillPerSecond { get; set; } = 10;
     public bool IsInAir { get; private set; }
     public bool IsInfinite { get; private set; }
+    public event Action<bool> AirChanged;
 
     private float _time;
     private float _refillTime;
@@ -82,11 +83,13 @@ public class OxygenBar
     {
         if (IsInAir == isInAir && IsInfinite == isInfinite && _stateApplied) return;
 
+        bool airChanged = _stateApplied && IsInAir != isInAir;
         _stateApplied = true;
         IsInAir = isInAir;
         IsInfinite = isInfinite;
         StatsGUI.TextOverride = GetTextOverride(isInAir, isInfinite);
         _refillTime = 0f;
+        if (airChanged) AirChanged?.Invoke(isInAir);
     }
 
     private void Refill()

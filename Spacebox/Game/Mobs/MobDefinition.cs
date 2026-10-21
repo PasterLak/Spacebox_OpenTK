@@ -33,6 +33,7 @@ public sealed class MobDefinition
     public string LootTable { get; init; } = "";
     public MobSpawnJSON Spawn { get; init; } = new MobSpawnJSON();
     public MobSoundsJSON Sounds { get; init; } = new MobSoundsJSON();
+    public MobDeathParticlesJSON DeathParticles { get; init; } = new MobDeathParticlesJSON();
 
     public bool CanEat(short blockId)
     {

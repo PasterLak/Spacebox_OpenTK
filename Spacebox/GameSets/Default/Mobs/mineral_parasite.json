@@ -39,6 +39,14 @@
         "IdleIntervalMax": 16,
         "Volume": 1.0
     },
+    "DeathParticles": {
+        "Color": { "r": 140, "g": 70, "b": 220 },
+        "Count": 45,
+        "Speed": 2.8,
+        "Size": 0.12,
+        "Life": 0.9,
+        "Radius": 0.3
+    },
     "Spawn": {
         "Enabled": true,
         "MaxPerChunk": 1,

@@ -25,6 +25,9 @@ public class GravityGeneratorJSON
     public float StrengthPowerFactor { get; set; } = 0.25f;
     public int MaxRoomCells { get; set; } = 200000;
     public FallDamageJSON FallDamage { get; set; } = new FallDamageJSON();
+    public bool EnabledOnPlace { get; set; } = false;
+    public string EnableSound { get; set; } = "gravityGeneratorOn";
+    public string DisableSound { get; set; } = "gravityGeneratorOff";
     public List<GravityPresetJSON> Presets { get; set; } = new List<GravityPresetJSON>
     {
         new GravityPresetJSON { Name = "Moon", Strength = 1.62f },
@@ -49,6 +52,9 @@ public class GravityGeneratorBlockData : BlockData, IBlockTooltip
     public int MaxRoomCells { get; }
     public IReadOnlyList<GravityPresetJSON> Presets { get; }
     public FallDamageJSON FallDamage { get; }
+    public bool EnabledOnPlace { get; }
+    public string EnableSound { get; }
+    public string DisableSound { get; }
 
     public GravityGeneratorBlockData(BlockData baseBlock, GravityGeneratorJSON settings) : base(baseBlock)
     {
@@ -64,6 +70,9 @@ public class GravityGeneratorBlockData : BlockData, IBlockTooltip
         MaxRoomCells = Math.Max(1, settings.MaxRoomCells);
         Presets = settings.Presets ?? new List<GravityPresetJSON>();
         FallDamage = settings.FallDamage ?? new FallDamageJSON();
+        EnabledOnPlace = settings.EnabledOnPlace;
+        EnableSound = settings.EnableSound ?? "";
+        DisableSound = settings.DisableSound ?? "";
     }
 
     public void AppendTooltip(System.Text.StringBuilder text)

@@ -69,7 +69,8 @@ public static class MobsLoader
             EdibleBlocks = ResolveBlocks(json.Id, json.EdibleBlocks),
             LootTable = ResolveLoot(json.Id, json.Loot),
             Spawn = json.Spawn ?? new MobSpawnJSON(),
-            Sounds = json.Sounds ?? new MobSoundsJSON()
+            Sounds = json.Sounds ?? new MobSoundsJSON(),
+            DeathParticles = MobDeathParticles.Sanitize(json.DeathParticles)
         };
     }
 

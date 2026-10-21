@@ -426,7 +426,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         ShipRider.Reset();
         Spacebox.Game.Generation.Blocks.BlockDamageVisuals.Instance.Reset();
         Spacebox.Game.Generation.Doors.DoorSounds.Clear();
-        Spacebox.Game.Player.Respawn.DnaReconstructorSounds.Clear();
+        Spacebox.Game.Effects.BlockEventSounds.Clear();
+        Spacebox.Game.Player.AirZoneSounds.Clear();
         ShipNetwork.Reset();
         ShipWeapons.Reset();
         TutorialService.Detach();

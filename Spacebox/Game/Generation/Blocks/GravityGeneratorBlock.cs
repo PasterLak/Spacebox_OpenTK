@@ -1,4 +1,5 @@
 using OpenTK.Mathematics;
+using Spacebox.Game.Effects;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Physics.Gravity;
@@ -7,7 +8,7 @@ using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation.Blocks;
 
-public class GravityGeneratorBlock : InteractiveBlock, IGravitySource, IEntityBlockListener, INetworkStateBlock
+public class GravityGeneratorBlock : InteractiveBlock, IGravitySource, IEntityBlockListener, IPlacedBlockListener, INetworkStateBlock
 {
     private readonly GravityGeneratorBlockData _data;
     private readonly GravityRoom _room = new GravityRoom();
@@ -55,6 +56,7 @@ public class GravityGeneratorBlock : InteractiveBlock, IGravitySource, IEntityBl
         if (radius == RadiusSetting && strength == Strength && isGravityEnabled == IsGravityEnabled && insideOnly == InsideOnly) return;
 
         if (radius != RadiusSetting || insideOnly != InsideOnly) _room.Invalidate();
+        if (isGravityEnabled != IsGravityEnabled) PlayToggleSound(isGravityEnabled);
 
         RadiusSetting = radius;
         Strength = strength;
@@ -64,6 +66,17 @@ public class GravityGeneratorBlock : InteractiveBlock, IGravitySource, IEntityBl
         UpdateConsumption();
         if (chunk != null) chunk.IsModified = true;
         Spacebox.Network.BlockStateNetwork.MarkDirty(Entity, _localCell, this);
+    }
+
+    public void OnPlaced()
+    {
+        if (!_data.EnabledOnPlace) Configure(RadiusSetting, Strength, false, InsideOnly);
+    }
+
+    private void PlayToggleSound(bool enabled)
+    {
+        if (Entity == null) return;
+        BlockEventSounds.Play(enabled ? _data.EnableSound : _data.DisableSound, WorldCenter);
     }
 
     public void WriteNetworkState(Engine.Networking.NetWriter writer)

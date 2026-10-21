@@ -1,3 +1,5 @@
+using Engine;
+
 namespace Spacebox.Game.Mobs;
 
 public class MobJSON
@@ -33,6 +35,17 @@ public class MobJSON
     public string Loot { get; set; } = "";
     public MobSpawnJSON Spawn { get; set; } = new MobSpawnJSON();
     public MobSoundsJSON Sounds { get; set; } = new MobSoundsJSON();
+    public MobDeathParticlesJSON DeathParticles { get; set; } = new MobDeathParticlesJSON();
+}
+
+public class MobDeathParticlesJSON
+{
+    public Color3Byte Color { get; set; } = new Color3Byte(255, 255, 255);
+    public int Count { get; set; } = 0;
+    public float Speed { get; set; } = 2.5f;
+    public float Size { get; set; } = 0.12f;
+    public float Life { get; set; } = 0.9f;
+    public float Radius { get; set; } = 0.3f;
 }
 
 public class MobSoundsJSON

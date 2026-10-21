@@ -385,6 +385,7 @@ namespace Spacebox.Game.Generation
             if (block.Id == oldBlock.Id) return;
 
             Blocks[x, y, z] = block;
+            if (block is IPlacedBlockListener placedListener) placedListener.OnPlaced();
             SpaceEntity.Oxygen.OnBlockChanged(this, x, y, z, oldBlock, block);
             if (block is IEntityBlockListener addedListener) addedListener.OnAddedToEntity(this, ToLocalCell(x, y, z));
             IsModified = true;

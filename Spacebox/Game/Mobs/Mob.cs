@@ -228,6 +228,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
     public void PlayDeathEffect(short blockId)
     {
         PlaySound(Definition.Sounds.Death);
+        MobSystem.Instance?.DeathEffects.Play(Definition.DeathParticles, Position);
         if (World.DestructionManager == null || !GameAssets.Blocks.ContainsKey(blockId)) return;
         World.DestructionManager.DestroyBlock(Position - new Vector3(0.5f), Color3Byte.White, GameAssets.CreateBlockFromId(blockId));
     }

@@ -461,10 +461,11 @@
         {
           "Id": "gravity",
           "Title": "Gravity",
-          "Text": "A gravity generator lets you walk inside your base or ship. Careful: now you can fall!",
+          "Text": "A gravity generator lets you walk inside your base or ship. It starts switched off: open it with {key:use} and turn on Gravity. Careful: now you can fall!",
           "Icon": "gravity_generator",
           "Tasks": [
             { "Type": "place_block", "Block": "gravity_generator" },
+            { "Type": "use_block", "Block": "gravity_generator" },
             { "Type": "enter_gravity" }
           ]
         },

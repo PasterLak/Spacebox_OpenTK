@@ -19,6 +19,7 @@ public sealed class MobSystem : Component
     public static MobSystem? Instance { get; private set; }
 
     public PathScheduler Paths { get; } = new PathScheduler();
+    public MobDeathEffects DeathEffects { get; } = new MobDeathEffects();
     public IReadOnlyList<Mob> Mobs => _mobs;
 
     public MobSystem()
@@ -61,6 +62,7 @@ public sealed class MobSystem : Component
 
     public override void OnUpdate()
     {
+        DeathEffects.Update(Time.Delta);
         if (!NetworkManager.Instance.IsServer) return;
 
         float deltaTime = Time.Delta;
@@ -70,8 +72,14 @@ public sealed class MobSystem : Component
         UpdateDespawn(deltaTime);
     }
 
+    public override void OnRender()
+    {
+        DeathEffects.Render();
+    }
+
     public override void OnDetached()
     {
+        DeathEffects.Clear();
         Paths.Clear();
         _mobs.Clear();
         MobTargets.Clear();

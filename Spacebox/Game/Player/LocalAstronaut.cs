@@ -122,6 +122,7 @@ namespace Spacebox.Game.Player
             OxygenBar = new OxygenBar();
             if (GameSetLoader.ModInfo != null)
                 OxygenBar.ConsumeInterval = GameSetLoader.ModInfo.OxygenConsumeInterval;
+            OxygenBar.AirChanged += OnAirChanged;
             Mood = AttachComponent(new Mood(this));
 
             SetData();
@@ -426,6 +427,11 @@ namespace Spacebox.Game.Player
         {
             if (!Respawner.RespawnAtReconstructor())
                 Respawner.RespawnAtSpawnPoint();
+        }
+
+        private void OnAirChanged(bool isInAir)
+        {
+            if (IsAlive) AirZoneSounds.Play(isInAir);
         }
 
         public void Revive(Vector3 position)
