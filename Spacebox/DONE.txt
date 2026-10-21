@@ -52,6 +52,7 @@ New
 - Graphics options: brightness, contrast, saturation, vignette strength, film grain (animated or static), Show FPS counter, reset buttons for image and SSAO
 - viewing through a ship camera block shows a security camera feed: scanlines, grain, lens distortion, REC overlay with timer (Camera Block Effect option)
 Small
+- held and dropped item models merge pixels by shape instead of colour and merge their side faces: about 84% fewer polygons
 - agent API for automated play testing (--agent, --agent-world; not in Final builds): localhost HTTP control of player, camera, input, ImGui text and clicks, A* goto, block scans, screenshots; Tools/agent/game.sh
 - GameSet editor: mob preview (animated model, idle/eating, bite and hurt, hit radius and attack range, 1-block size reference)
 - crafting categories: Building (blocks, windows, doors, lights), Production, Electricity, Logistics, Ships, Other; removed decorative basic engine and basic cannon blocks
@@ -131,6 +132,7 @@ Fixes
 - multiplayer: partial block damage (drilling, projectiles) is synced, players drilling one block add up
 - a block item is refunded when its placement fails locally or the server rejects it
 Engine
+- F10 render debug views (Shift+F10 back): wireframe of all meshes, G-buffer normals, linear depth, G-buffer mask, SSAO occlusion; removed the stray F10 toggle inside Mesh.Render
 - Engine.Automation: InputInjector (key/mouse injection through OpenTK input state), ImGuiTextCapture (window texts and positions from ImGui draw data); MainThread.RunAfterRender; MiniHttpServer.Start(port, address)
 - blend function changes go through the GLState cache (GLState.InvalidateBlendFunc after ImGui); LOD jobs use a pooled block snapshot; NetworkVariable.OwnerWriteValidator, NetworkTransform.ValidateOwnerState, PeerRateLimiter
 - CanvasUI: Godot-like retained UI (Node2D, Control, anchors, containers, themes, style boxes, TTF atlas fonts, batched renderer, virtual resolution, mouse input and tooltips); UiShowcaseScene (--ui-showcase) with three game interface variants

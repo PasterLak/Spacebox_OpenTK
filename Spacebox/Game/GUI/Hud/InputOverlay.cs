@@ -24,7 +24,7 @@ namespace Spacebox.Game.GUI
             ("F7", "FPS limiter off"),
             ("F8", "Hide interface"),
             ("F9", "UI debugger"),
-            ("F10", "Wireframe"),
+            ("F10", "Render debug views"),
             ("F11", "Fullscreen"),
             ("F12", "Screenshot"),
             ("Alt+F4", "Close the game")

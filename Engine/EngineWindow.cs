@@ -7,6 +7,7 @@ using Engine.InputPro;
 using Engine.Light;
 using Engine.Multithreading;
 using Engine.PostProcessing;
+using Engine.Graphics.Debugging;
 using Engine.SceneManagement;
 using Engine.UI;
 using ImGuiNET;
@@ -34,7 +35,7 @@ namespace Engine
         private InputManager _inputManager;
      
         private static Keys _debugKey;
-        private static PolygonMode _polygonMode = PolygonMode.Fill;
+        private GBufferDebugPass _gbufferDebug;
 
         static readonly Prof.Token T_VisualDebug = Prof.RegisterTimer("Visual Debug");
         static readonly Prof.Token T_SceneRender = Prof.RegisterTimer("Scene Render");
@@ -107,8 +108,8 @@ namespace Engine
             InputManager0.AddAction("overlay", Keys.F3, true);
             InputManager0.RegisterCallback("overlay", () => { Overlay.IsVisible = !Overlay.IsVisible; });
 
-            InputManager0.AddAction("polygodMode", Keys.F10, true);
-            InputManager0.RegisterCallback("polygodMode", TogglePolygonMode);
+            InputManager0.AddAction("renderDebugView", Keys.F10, true);
+            InputManager0.RegisterCallback("renderDebugView", CycleRenderDebugView);
 
             InputManager0.AddAction("fullscreen", Keys.F11, true);
             InputManager0.RegisterCallback("fullscreen", ToggleFullScreen);
@@ -176,6 +177,11 @@ namespace Engine
                     using (Prof.Time(T_PostProcessing))
                     {
                         _processManager.Process(_sceneRenderer, ClientSize);
+                        if (RenderDebugView.ShowsBuffer)
+                        {
+                            _gbufferDebug ??= new GBufferDebugPass();
+                            _gbufferDebug.Draw(_sceneRenderer, ClientSize, RenderDebugView.Mode);
+                        }
                     }
                 }
 
@@ -249,6 +255,7 @@ namespace Engine
                 using (Prof.Time(T_SceneRender))
                 {
                     TransparentQueue.BeginScope();
+                    if (RenderDebugView.IsWireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
                     try
                     {
                         SceneManager.Render();
@@ -257,6 +264,7 @@ namespace Engine
                     {
                         using (Prof.Time(T_Transparent))
                             TransparentQueue.EndScope();
+                        if (RenderDebugView.IsWireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
                     }
                 }
 
@@ -281,6 +289,7 @@ namespace Engine
                 Debug.Render();
                 Overlay.OnGUI();
                 DevGui.Draw();
+                DrawRenderDebugLabel();
                 //InputOverlay.OnGUI();
 
                 OnRenderGameGUI();
@@ -430,13 +439,24 @@ namespace Engine
   
         }
 
-        public void TogglePolygonMode()
+        public void CycleRenderDebugView()
         {
-            if (_polygonMode == PolygonMode.Fill)
-                _polygonMode = PolygonMode.Line;
+            if (Input.IsKey(Keys.LeftShift) || Input.IsKey(Keys.RightShift))
+                RenderDebugView.Previous();
             else
-                _polygonMode = PolygonMode.Fill;
-            GL.PolygonMode(MaterialFace.FrontAndBack, _polygonMode);
+                RenderDebugView.Next();
+        }
+
+        private static void DrawRenderDebugLabel()
+        {
+            if (RenderDebugView.Mode == RenderDebugMode.Lit) return;
+
+            string text = $"F10  {RenderDebugView.Describe(RenderDebugView.Mode)}";
+            var drawList = ImGui.GetForegroundDrawList();
+            var position = new System.Numerics.Vector2(12f, 12f);
+            var size = ImGui.CalcTextSize(text);
+            drawList.AddRectFilled(position - new System.Numerics.Vector2(6f, 4f), position + size + new System.Numerics.Vector2(6f, 4f), 0xC0000000);
+            drawList.AddText(position, 0xFF66E0FF, text);
         }
 
         public void CenterWindow()
@@ -478,6 +498,7 @@ namespace Engine
 
             AudioDevice.Instance.Dispose();
             _processManager?.Dispose();
+            _gbufferDebug?.Dispose();
             ParticleSystem.DestroyAll();
             Resources.UnloadAll(true);
             _sceneRenderer?.Dispose();

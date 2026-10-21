@@ -15,7 +15,6 @@ namespace Engine
         private BoundingBox _bounds;
 
         public List<Vector3> VerticesPositions { get; private set; }
-        private static PolygonMode polygonMode = PolygonMode.Fill;
         public bool IsDisposed { get; set; }
         public Mesh()
         {
@@ -132,19 +131,6 @@ namespace Engine
 
         public void Render()
         {
-            if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F10))
-            {
-                if (polygonMode == PolygonMode.Line)
-                {
-                    polygonMode = PolygonMode.Fill;
-                }
-
-                else
-                {
-                    polygonMode = PolygonMode.Line;
-                }
-            }
-
             if (buffer == null || buffer.VAO == 0) return;
 
             GL.BindVertexArray(buffer.VAO);

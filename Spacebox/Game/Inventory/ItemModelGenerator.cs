@@ -3,14 +3,11 @@ using Engine;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Resource;
-using static Spacebox.Game.ItemModelGeneratorHelper;
 
 namespace Spacebox.Game
 {
     public static class ItemModelGenerator
     {
-        private static int CellSize = 32;
-
         public static ItemModel GenerateItemModel(
             Texture2D cellTexture,
             Texture2D cellTexture2,
@@ -54,7 +51,6 @@ namespace Spacebox.Game
             bool isAnimated = false,
             bool drawOnlyVisibleSides = true)
         {
-            CellSize = 1;
             var mesh = BuildItemMesh(texture, modelSize, modelDepth, drawOnlyVisibleSides);
             return ItemModelFromMesh(texture, emission, mesh, isAnimated);
         }
@@ -65,7 +61,6 @@ namespace Spacebox.Game
             float modelDepth = 0.2f,
             bool drawOnlyVisibleSides = false)
         {
-            CellSize = 1;
             return BuildItemMesh(texture, 1f / texture.Width, modelDepth, drawOnlyVisibleSides);
         }
 
@@ -84,85 +79,10 @@ namespace Spacebox.Game
             if(!cellTexture.XWasFlipped)
                 cellTexture.FlipX();
           
-            CellSize = cellTexture.Width;
+            var solid = ItemMeshBuilder.SolidMask(cellTexture.GetPixels());
+            var (vertices, indices) = ItemMeshBuilder.Build(solid, modelSize, modelDepth, drawOnlyVisibleSides);
 
-            var pixels = cellTexture.GetPixels();
-            var quads = GreedyMesh(pixels, cellTexture.Width, cellTexture.Height);
-
-            List<float> vertices = new();
-            List<uint> indices = new();
-            uint indexOffset = 0;
-
-            foreach (var q in quads)
-            {
-                Vector3 bl = new Vector3(q.X, q.Y, 0) * modelSize;
-                Vector3 br = new Vector3(q.X + q.Width, q.Y, 0) * modelSize;
-                Vector3 tr = new Vector3(q.X + q.Width, q.Y + q.Height, 0) * modelSize;
-                Vector3 tl = new Vector3(q.X, q.Y + q.Height, 0) * modelSize;
-
-                var uv = GetUVs(q);
-
-                AddFace(vertices, indices, indexOffset, tl, tr, br, bl, Vector3.One, uv[0], uv[1], uv[2], uv[3]);
-                indexOffset += 4;
-
-                if (q.NeedsTopSide && !drawOnlyVisibleSides)
-                {
-                    AddFaceButton(vertices, indices, indexOffset, q, modelDepth, modelSize, uv[0], uv[1], uv[2], uv[3]);
-                    indexOffset += 4;
-                }
-
-                if (q.NeedsBottomSide)
-                {
-                    AddFaceTop(vertices, indices, indexOffset, q, modelDepth, modelSize, uv[0], uv[1], uv[2], uv[3]);
-                    indexOffset += 4;
-                }
-
-                if (q.NeedsRightSide && !drawOnlyVisibleSides)
-                {
-                    AddFaceForward(vertices, indices, indexOffset, q, modelDepth, modelSize, uv[0], uv[1], uv[2], uv[3]);
-                    indexOffset += 4;
-                }
-
-                if (q.NeedsLeftSide)
-                {
-                    AddFaceBack(vertices, indices, indexOffset, q, modelDepth, modelSize, uv[0], uv[1], uv[2], uv[3]);
-                    indexOffset += 4;
-                }
-            }
-
-            if (!drawOnlyVisibleSides)
-            {
-                foreach (var q in quads)
-                {
-                    Vector3 bl = new Vector3(q.X, q.Y, 0) * modelSize;
-                    Vector3 br = new Vector3(q.X + q.Width, q.Y, 0) * modelSize;
-                    Vector3 tr = new Vector3(q.X + q.Width, q.Y + q.Height, 0) * modelSize;
-                    Vector3 tl = new Vector3(q.X, q.Y + q.Height, 0) * modelSize;
-
-                    float offset = modelDepth;
-                    bl.Z = offset;
-                    br.Z = offset;
-                    tr.Z = offset;
-                    tl.Z = offset;
-
-                    var uv = GetUVs(q);
-
-                    AddFace(vertices, indices, indexOffset, tl, bl, br, tr, Vector3.One, uv[0], uv[1], uv[2], uv[3]);
-                    indexOffset += 4;
-                }
-            }
-
-            return new Mesh(vertices.ToArray(), indices.ToArray(), BuffersData.CreateItemModelBuffer());
-        }
-
-        public static Vector2[] GetUVs(Quad quad)
-        {
-            float pixelUV = 1f / CellSize;
-            Vector2 uvLeft = new(quad.X * pixelUV, quad.Y * pixelUV);
-            Vector2 uvRight = new((quad.X + quad.Width) * pixelUV, quad.Y * pixelUV);
-            Vector2 uvTopRight = new((quad.X + quad.Width) * pixelUV, (quad.Y + quad.Height) * pixelUV);
-            Vector2 uvTop = new(quad.X * pixelUV, (quad.Y + quad.Height) * pixelUV);
-            return new[] { uvLeft, uvRight, uvTopRight, uvTop };
+            return new Mesh(vertices, indices, BuffersData.CreateItemModelBuffer());
         }
     }
 }

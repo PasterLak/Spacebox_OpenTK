@@ -85,7 +85,7 @@ public sealed class SsaoEffect : PostProcessEffect, IDisposable
             composite.SetFloat("uViewModelStrength", _settings.ViewModelStrength);
             composite.SetFloat("uGrain", _settings.Grain);
             composite.SetInt("uGrainSize", _settings.GrainSize);
-            composite.SetInt("uDebugView", DebugView ? 1 : 0);
+            composite.SetInt("uDebugView", DebugView || Engine.Graphics.Debugging.RenderDebugView.Mode == Engine.Graphics.Debugging.RenderDebugMode.Ssao ? 1 : 0);
             BindTexture(1, _targets.OcclusionTexture, composite, "uAo");
             BindTexture(2, _targets.DepthTexture, composite, "uAoDepth");
             BindTexture(3, _renderer.DepthTexture, composite, "uSceneDepth");
