@@ -32,7 +32,7 @@ public static class DedicatedServer
         GameSession.SetPlayer(Config.ServerName, "White");
         GameSession.BeginDedicated(Config.Port);
 
-        var world = EnsureWorld(Config);
+        var world = WorldProvisioner.Ensure(Config.WorldName, Config.ServerName, (GameMode)Config.GameMode, Config.Seed, Config.ModId, "Server");
         if (world == null)
         {
             Debug.Error("[Server] The world cannot be loaded, the server stops");
@@ -53,56 +53,6 @@ public static class DedicatedServer
             seed = world.Seed,
             modfolderName = GameSetLocator.FindFolder(world.ModId)
         });
-    }
-
-    private static bool UpgradeIfNeeded(WorldInfo world, string worldDirectory, string worldJson)
-    {
-        var status = Spacebox.Game.VersionConverter.GetSupport(world, out var reason);
-        if (status == Spacebox.Game.Versioning.WorldUpgradeStatus.UpToDate) return true;
-        if (status != Spacebox.Game.Versioning.WorldUpgradeStatus.Ok)
-        {
-            Debug.Error($"[Server] World '{world.Name}': {reason}");
-            return false;
-        }
-
-        Debug.Warning($"[Server] World '{world.Name}' is from version {world.GameVersion}, converting it to {Application.Version}");
-        var result = Spacebox.Game.VersionConverter.Upgrade(world, worldDirectory, Application.Version);
-        if (!result.Success) return false;
-
-        File.WriteAllText(worldJson, JsonSerializer.Serialize(world, new JsonSerializerOptions { WriteIndented = true }));
-        Debug.Success($"[Server] World converted to {result.ToVersion} ({result.Summary}), backup: {result.BackupPath}");
-        return true;
-    }
-
-    private static WorldInfo EnsureWorld(ServerConfig config)
-    {
-        string worldsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Worlds");
-        string worldDirectory = Path.Combine(worldsDirectory, config.WorldName);
-        string worldJson = Path.Combine(worldDirectory, "world.json");
-
-        if (File.Exists(worldJson))
-        {
-            var existing = JsonSerializer.Deserialize<WorldInfo>(File.ReadAllText(worldJson));
-            if (existing != null) return UpgradeIfNeeded(existing, worldDirectory, worldJson) ? existing : null;
-        }
-
-        var info = new WorldInfo
-        {
-            Name = config.WorldName,
-            Author = config.ServerName,
-            GameMode = (GameMode)config.GameMode,
-            Seed = string.IsNullOrWhiteSpace(config.Seed) ? new Random().Next().ToString() : config.Seed,
-            ModId = config.ModId,
-            GameVersion = Application.Version,
-            LastEditDate = WorldInfo.GetCurrentDate(),
-            FolderName = config.WorldName,
-            ShowWelcomeWindow = false
-        };
-
-        Directory.CreateDirectory(worldDirectory);
-        File.WriteAllText(worldJson, JsonSerializer.Serialize(info, new JsonSerializerOptions { WriteIndented = true }));
-        Debug.Warning($"[Server] Created new world '{info.Name}'");
-        return info;
     }
 
     private static void RegisterCommands()

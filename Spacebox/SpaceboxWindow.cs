@@ -55,6 +55,10 @@ public class SpaceboxWindow : EngineWindow
             return;
         }
 
+#if AGENT_API
+        Agent.AgentHost.Start();
+#endif
+
         if (!string.IsNullOrEmpty(LaunchOptions.EditorGameSet) && Spacebox.Editor.GameSetEditorLauncher.TryOpen(LaunchOptions.EditorGameSet, LaunchOptions.EditorPanel))
             return;
 
@@ -69,6 +73,10 @@ public class SpaceboxWindow : EngineWindow
             QuickJoin.Start(LaunchOptions.ConnectAddress, LaunchOptions.ConnectPort, LaunchOptions.PlayerName);
             return;
         }
+
+#if AGENT_API
+        if (Agent.AgentHost.TryLoadWorld()) return;
+#endif
 
 #if DEBUG
         SceneManager.Load<MenuScene>();
@@ -108,6 +116,9 @@ public class SpaceboxWindow : EngineWindow
     {
         base.OnUpdateFrame(e);
         SettingsApplier.UpdateFocusMute(IsFocused);
+#if AGENT_API
+        Agent.AgentHost.Update();
+#endif
 
         if (Input.IsKeyDown(Keys.F12))
         {

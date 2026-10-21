@@ -12,6 +12,7 @@ namespace Engine
         private static bool _isInitialized;
 
         public static bool IsUIMode => _activeWindows.Count > 0;
+        public static IReadOnlyCollection<string> OpenWindows => _activeWindows;
 
         public static void Open(params string[] windowNames)
         {

@@ -189,6 +189,8 @@ namespace Engine
                     }
                 }
 
+                MainThread.RunPendingAfterRender();
+
                 using (Prof.Time(T_Swap))
                 {
                     SwapBuffers();
@@ -210,6 +212,7 @@ namespace Engine
 
                 base.OnUpdateFrame(e);
                 RenderSpace.BeginFrame();
+                Automation.InputInjector.Apply(this);
                 Input.Update();
                 Time.StartUpdate();
                 Time.Update(e);

@@ -265,6 +265,7 @@ void main()
                 _frameBegun = false;
                
                 ImGui.Render();
+                Automation.ImGuiTextCapture.Publish(ImGui.GetDrawData());
 
                 if (!Application.IsHeadless)
                     RenderImDrawData(ImGui.GetDrawData());

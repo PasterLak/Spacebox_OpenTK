@@ -31,17 +31,25 @@ public sealed class MiniHttpServer : IDisposable
 
     public void Start(int port)
     {
+        Start(port, IPAddress.Any);
+    }
+
+    public void Start(int port, IPAddress address)
+    {
         if (IsRunning) return;
 
         _cancel = new CancellationTokenSource();
 
-        var ipv4 = new TcpListener(IPAddress.Any, port);
+        var ipv4 = new TcpListener(address, port);
         ipv4.Start();
         Port = ((IPEndPoint)ipv4.LocalEndpoint).Port;
         _listeners.Add(ipv4);
 
-        var ipv6 = TryStartIPv6(Port);
-        if (ipv6 != null) _listeners.Add(ipv6);
+        if (address.Equals(IPAddress.Any))
+        {
+            var ipv6 = TryStartIPv6(Port);
+            if (ipv6 != null) _listeners.Add(ipv6);
+        }
 
         foreach (var listener in _listeners) _ = AcceptLoop(listener, _cancel.Token);
     }

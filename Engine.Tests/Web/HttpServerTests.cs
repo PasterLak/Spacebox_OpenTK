@@ -64,4 +64,17 @@ public class HttpServerTests
         Assert.Contains("\"path\":\"/hello\"", text);
         Assert.Contains("\"body\":\"ping\"", text);
     }
+
+    [Fact]
+    public async Task Server_BoundToLoopback_AnswersOnLoopback()
+    {
+        using var server = new MiniHttpServer(request => Task.FromResult(HttpResponse.Text(request.Path)));
+        server.Start(0, System.Net.IPAddress.Loopback);
+
+        using var client = new HttpClient();
+        string text = await client.GetStringAsync($"http://127.0.0.1:{server.Port}/agent");
+
+        Assert.Equal("/agent", text);
+        Assert.True(server.IsRunning);
+    }
 }

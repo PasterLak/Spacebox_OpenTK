@@ -32,7 +32,9 @@ Spacebox is a voxel space-survival game (asteroid belt, mining, base/ship buildi
 - Keep `spec.md` (full technical description) up to date when architecture, file formats or limits change.
 - **Tutorials stay in sync with the game:** the tutorials in `Spacebox/GameSets/*/Tutorials/*.json` (see `tutorial-design.md`) teach real mechanics. Whenever a change touches something a tutorial step relies on, check the tutorials and fix steps, texts, order and rewards in the same change. This includes item or block ids, crafting and processing recipes, drill tiers and ore hardness, start items, input actions and default keys, UI window names, `PlayerStatistics` fields, `PlayerActivity` events, and ship, console or machine behaviour. Rewards must never be items that a tutorial task asks for. A new feature a beginner must know gets a tutorial step. `DefaultTutorialContentTests` and `DefaultTutorialProgressionTests` must stay green.
 
-Project skills in `.claude/skills/` cover repeated tasks: `add-block`, `add-item`, `add-network-message`, `release`.
+Project skills in `.claude/skills/` cover repeated tasks: `add-block`, `add-item`, `add-network-message`, `release`, `play-game`.
+
+**Testing in the running game:** use the `play-game` skill (`Tools/agent/game.sh start`, then `state`, `ui`, `click`, `goto`, `cmd`, `shot`, …) instead of asking the user to try things. It drives the Release build through a localhost HTTP API (`--agent`, `--agent-world <name>`; compiled into Debug/Release/Profile, never Final).
 
 ## Commands
 
@@ -41,6 +43,7 @@ dotnet build Spacebox.sln                       # build everything
 dotnet run --project Spacebox/Spacebox.csproj   # run the game (Debug)
 dotnet run --project Spacebox/Spacebox.csproj -- --editor Default Blocks   # open the GameSet editor (optional start panel)
 dotnet run --project Spacebox/Spacebox.csproj -- --server   # run the dedicated server
+Tools/agent/game.sh start   # build Release, launch with the agent API and load a test world (see play-game skill)
 
 dotnet test Engine.Tests                                            # engine xUnit tests
 dotnet test Spacebox.Tests                                          # game xUnit tests
