@@ -239,6 +239,11 @@ namespace Spacebox.Game.GUI
         public static bool TryPromptBeforeLeaving(Action leave)
         {
             if (World.Instance == null || !World.Instance.HasUnsavedChanges()) return false;
+            if (WorldSavePolicy.SavesOnLeave)
+            {
+                SaveGame();
+                return false;
+            }
 
             _pendingLeave = leave;
             if (!UIManager.IsOpen("pause")) UIManager.Open("pause");

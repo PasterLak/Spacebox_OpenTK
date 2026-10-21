@@ -68,4 +68,10 @@ public class WorldSaveStateTests
     {
         Assert.False(new GameplaySettings().Autosave);
     }
+
+    [Fact]
+    public void LeavingSavesAutomaticallyOnlyInFinalBuilds()
+    {
+        Assert.False(WorldSavePolicy.SavesOnLeave);
+    }
 }

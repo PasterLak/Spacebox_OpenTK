@@ -57,7 +57,7 @@ New
 - cable blocks connect automatically: they turn along the line, the middle block of an L becomes an angle and a block with 3 or more connections a hub (only the cable block is crafted); new angle and hub textures
 - Minecraft-like tp: tp <x y z> | <target> | <player> <target> | <player> <x y z>, ~ relative coordinates, @s and @a; also teleport; tphere <player> brings a player to you; same command in single player, host, dedicated server and chat
 Small
-- own worlds are only saved with the Save button or autosave; leaving (menu, exit, closing the window) asks Save / Don't Save / Cancel when something changed; saves are announced in chat
+- own worlds: Final builds save automatically when leaving (menu, exit, closing the window) and autosave by default; Debug/Release only save with the Save button and ask Save / Don't Save / Cancel when leaving with changes; saves are announced in chat
 - Options > Game: Autosave and Autosave Interval (1-60 min; off by default, on by default in Final builds)
 - options: leaving a category with Back after changing something asks Save / Don't Save / Cancel
 - equipment preview: dragging up and down tilts the view (up to 75 degrees), double click resets
