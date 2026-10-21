@@ -5,6 +5,7 @@ using Spacebox.Network.Messages;
 
 namespace Spacebox.Tests.Network;
 
+[Collection(GameAssetsCollection.Name)]
 public class ContainerSlotsTests
 {
     private static readonly Item Ore = new Item(901, 64, "ore") { Id_string = "nettest:ore" };

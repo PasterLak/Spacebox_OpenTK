@@ -10,13 +10,13 @@ public static class InvisibleBlockMesh
 
     private static readonly Face[] Faces = (Face[])Enum.GetValues(typeof(Face));
 
-    public static void AddCell(Vector3i cell, BlockData data, HashSet<Vector3i> occupied, List<float> vertices, List<uint> indices)
+    public static void AddCell(Vector3i cell, BlockData data, Func<Vector3i, bool> hidesFace, List<float> vertices, List<uint> indices)
     {
         for (int f = 0; f < Faces.Length; f++)
         {
             var face = Faces[f];
             var normal = face.GetNormal();
-            if (occupied.Contains(new Vector3i(cell.X + normal.X, cell.Y + normal.Y, cell.Z + normal.Z))) continue;
+            if (hidesFace(new Vector3i(cell.X + normal.X, cell.Y + normal.Y, cell.Z + normal.Z))) continue;
 
             var uvs = data?.GetFaceUV(face) ?? CubeMeshData.GetBasicUVs();
             if (uvs.Length < 4) uvs = CubeMeshData.GetBasicUVs();

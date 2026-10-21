@@ -8,6 +8,7 @@ using Spacebox.Game.Resource;
 
 namespace Spacebox.Tests;
 
+[Collection(GameAssetsCollection.Name)]
 public class BlockDurabilityNbtTests
 {
     private const short StoneId = 4090;

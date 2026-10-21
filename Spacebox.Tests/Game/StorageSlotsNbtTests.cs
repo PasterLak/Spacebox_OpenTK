@@ -3,6 +3,7 @@ using Spacebox.Game.Generation.Tools;
 
 namespace Spacebox.Tests;
 
+[Collection(GameAssetsCollection.Name)]
 public class StorageSlotsNbtTests
 {
     private static readonly Item Ore = new Item(121, 64, "ore") { Id_string = "nbttest:ore" };

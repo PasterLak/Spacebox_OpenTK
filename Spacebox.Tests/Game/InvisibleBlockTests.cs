@@ -7,6 +7,7 @@ using Spacebox.Game;
 
 namespace Spacebox.Tests.Game;
 
+[Collection(GameAssetsCollection.Name)]
 public class InvisibleBlockTests
 {
     private const short BarrierId = 4070;
@@ -18,7 +19,7 @@ public class InvisibleBlockTests
         var indices = new List<uint>();
         var occupied = new HashSet<Vector3i> { Vector3i.Zero };
 
-        InvisibleBlockMesh.AddCell(Vector3i.Zero, null, occupied, vertices, indices);
+        InvisibleBlockMesh.AddCell(Vector3i.Zero, null, occupied.Contains, vertices, indices);
 
         Assert.Equal(6 * 4 * InvisibleBlockMesh.FloatsPerVertex, vertices.Count);
         Assert.Equal(6 * 6, indices.Count);
@@ -33,8 +34,8 @@ public class InvisibleBlockTests
         var b = new Vector3i(1, 0, 0);
         var occupied = new HashSet<Vector3i> { a, b };
 
-        InvisibleBlockMesh.AddCell(a, null, occupied, vertices, indices);
-        InvisibleBlockMesh.AddCell(b, null, occupied, vertices, indices);
+        InvisibleBlockMesh.AddCell(a, null, occupied.Contains, vertices, indices);
+        InvisibleBlockMesh.AddCell(b, null, occupied.Contains, vertices, indices);
 
         Assert.Equal(10 * 6, indices.Count);
         Assert.Equal((uint)(10 * 4 - 1), indices.Max());

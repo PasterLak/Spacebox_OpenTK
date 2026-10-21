@@ -24,6 +24,7 @@ public sealed class InvisibleBlockRenderer : IDisposable
     private readonly Dictionary<Chunk, ChunkCells> _chunks = new Dictionary<Chunk, ChunkCells>();
     private readonly List<Chunk> _stale = new List<Chunk>();
     private readonly HashSet<Vector3i> _occupied = new HashSet<Vector3i>();
+    private readonly Func<Vector3i, bool> _hidesFace;
     private readonly List<float> _vertices = new List<float>();
     private readonly List<uint> _indices = new List<uint>();
     private MeshBuffer _buffer;
@@ -34,6 +35,7 @@ public sealed class InvisibleBlockRenderer : IDisposable
     public InvisibleBlockRenderer(SpaceEntity entity)
     {
         _entity = entity;
+        _hidesFace = HidesFace;
     }
 
     public void Render()
@@ -46,7 +48,7 @@ public sealed class InvisibleBlockRenderer : IDisposable
         var texture = GameAssets.BlocksTexture;
         if (_indexCount == 0 || texture == null) return;
 
-        _material ??= new TextureMaterial(texture, Resources.Load<Shader>(ShaderPath, true)) { WritesGBuffer = true, RenderFace = RenderFace.Both };
+        _material ??= new TextureMaterial(texture, Resources.Load<Shader>(ShaderPath, true)) { WritesGBuffer = true, RenderFace = RenderFace.Front };
         _material.MainTexture = texture;
         _material.ExtraLight = Vector3.One;
         _material.Apply(_entity.RotationMatrix * Matrix4.CreateTranslation(RenderSpace.ToRender(_entity.PositionWorld)));
@@ -119,6 +121,15 @@ public sealed class InvisibleBlockRenderer : IDisposable
         }
     }
 
+    private bool HidesFace(Vector3i neighbour)
+    {
+        if (_occupied.Contains(neighbour)) return true;
+        if (!_entity.TryGetBlockLocal(neighbour, out var chunk, out var index)) return false;
+
+        var block = chunk.Blocks[index.X, index.Y, index.Z];
+        return block != null && !block.IsAir;
+    }
+
     private void Rebuild()
     {
         _dirty = false;
@@ -133,7 +144,7 @@ public sealed class InvisibleBlockRenderer : IDisposable
         foreach (var cached in _chunks.Values)
         {
             for (int i = 0; i < cached.Cells.Count; i++)
-                InvisibleBlockMesh.AddCell(cached.Cells[i].Cell, GameAssets.GetBlockDataById(cached.Cells[i].Id), _occupied, _vertices, _indices);
+                InvisibleBlockMesh.AddCell(cached.Cells[i].Cell, GameAssets.GetBlockDataById(cached.Cells[i].Id), _hidesFace, _vertices, _indices);
         }
 
         _indexCount = _indices.Count;

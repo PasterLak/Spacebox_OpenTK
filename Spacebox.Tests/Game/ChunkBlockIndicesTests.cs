@@ -6,6 +6,7 @@ using Spacebox.Game.Resource;
 
 namespace Spacebox.Tests.Game;
 
+[Collection(GameAssetsCollection.Name)]
 public class ChunkBlockIndicesTests
 {
     private const short FirstId = 3500;
