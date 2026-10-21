@@ -22,29 +22,65 @@ namespace Spacebox.Game.Generation
     public class ChunkLODMeshGenerator
     {
         public static bool DebugQuadsCount = false;
+        public static readonly ConcurrentPool<bool[,,]> SolidMaskPool = new ConcurrentPool<bool[,,]>(
+            () => new bool[Chunk.Size, Chunk.Size, Chunk.Size],
+            null,
+            Math.Max(4, Environment.ProcessorCount));
+
         public static bool[,,] ConvertBlocksToBool(Block[,,] blocks)
         {
+            var data = new bool[blocks.GetLength(0), blocks.GetLength(1), blocks.GetLength(2)];
+            CopySolidMask(blocks, data);
+            return data;
+        }
+
+        public static void CopySolidMask(Block[,,] blocks, bool[,,] target)
+        {
             int sx = blocks.GetLength(0), sy = blocks.GetLength(1), sz = blocks.GetLength(2);
-            var data = new bool[sx, sy, sz];
             for (int x = 0; x < sx; x++)
                 for (int y = 0; y < sy; y++)
                     for (int z = 0; z < sz; z++)
-                        data[x, y, z] = !blocks[x, y, z].IsAir;
-            return data;
+                        target[x, y, z] = !blocks[x, y, z].IsAir;
+        }
+
+        public static bool[,,] RentSolidMask(Block[,,] blocks)
+        {
+            if (!IsChunkSized(blocks)) return ConvertBlocksToBool(blocks);
+
+            var mask = SolidMaskPool.Rent();
+            CopySolidMask(blocks, mask);
+            return mask;
+        }
+
+        public static void ReturnSolidMask(bool[,,] mask)
+        {
+            if (mask != null && IsChunkSized(mask)) SolidMaskPool.Return(mask);
+        }
+
+        private static bool IsChunkSized(Array array)
+        {
+            return array.GetLength(0) == Chunk.Size && array.GetLength(1) == Chunk.Size && array.GetLength(2) == Chunk.Size;
         }
 
         public void GenerateFromBlocksAsync(Block[,,] blocks, int downscale, Vector2[] customUV, Action<MeshDataOld> onComplete, Action onFailed = null)
         {
-            bool[,,] fullData = ConvertBlocksToBool(blocks);
+            bool[,,] fullData = RentSolidMask(blocks);
             WorkerPoolManager.Enqueue<MeshDataOld>(token =>
             {
-                token.ThrowIfCancellationRequested();
-                bool[,,] lodData = downscale > 1
-                    ? CreateDownscaledData(fullData, downscale)
-                    : fullData;
-                InternalCavitiesBits.FillInternalCavities(ref lodData);
-                token.ThrowIfCancellationRequested();
-                return GenerateGreedyMesh(lodData, downscale, customUV);
+                try
+                {
+                    token.ThrowIfCancellationRequested();
+                    bool[,,] lodData = downscale > 1
+                        ? CreateDownscaledData(fullData, downscale)
+                        : fullData;
+                    InternalCavitiesBits.FillInternalCavities(ref lodData);
+                    token.ThrowIfCancellationRequested();
+                    return GenerateGreedyMesh(lodData, downscale, customUV);
+                }
+                finally
+                {
+                    ReturnSolidMask(fullData);
+                }
             }, WorkerPoolManager.Priority.Medium).ContinueWith(t =>
             {
                 if (t.Status == TaskStatus.RanToCompletion)

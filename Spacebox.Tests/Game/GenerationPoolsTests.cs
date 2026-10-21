@@ -33,6 +33,47 @@ public class GenerationPoolsTests
     }
 
     [Fact]
+    public void LodSolidMask_IsASnapshotOfTheBlocks()
+    {
+        var blocks = new Block[Chunk.Size, Chunk.Size, Chunk.Size];
+        for (int x = 0; x < Chunk.Size; x++)
+            for (int y = 0; y < Chunk.Size; y++)
+                for (int z = 0; z < Chunk.Size; z++)
+                    blocks[x, y, z] = new Block { IsAir = true };
+        blocks[3, 4, 5] = new Block();
+
+        var mask = ChunkLODMeshGenerator.RentSolidMask(blocks);
+        blocks[3, 4, 5] = new Block { IsAir = true };
+        blocks[0, 0, 0] = new Block();
+
+        Assert.True(mask[3, 4, 5]);
+        Assert.False(mask[0, 0, 0]);
+        ChunkLODMeshGenerator.ReturnSolidMask(mask);
+
+        var reused = ChunkLODMeshGenerator.RentSolidMask(blocks);
+        Assert.False(reused[3, 4, 5]);
+        Assert.True(reused[0, 0, 0]);
+        ChunkLODMeshGenerator.ReturnSolidMask(reused);
+    }
+
+    [Fact]
+    public void LodSolidMask_HandlesOtherSizesWithoutThePool()
+    {
+        var blocks = new Block[2, 2, 2];
+        for (int x = 0; x < 2; x++)
+            for (int y = 0; y < 2; y++)
+                for (int z = 0; z < 2; z++)
+                    blocks[x, y, z] = new Block { IsAir = x == 0 };
+
+        var mask = ChunkLODMeshGenerator.RentSolidMask(blocks);
+
+        Assert.Equal(2, mask.GetLength(0));
+        Assert.False(mask[0, 1, 1]);
+        Assert.True(mask[1, 0, 0]);
+        ChunkLODMeshGenerator.ReturnSolidMask(mask);
+    }
+
+    [Fact]
     public void MeshBuildBuffers_TrimShrinksOversizedBuffers()
     {
         var buffers = new MeshBuildBuffers();
