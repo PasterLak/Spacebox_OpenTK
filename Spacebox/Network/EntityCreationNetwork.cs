@@ -48,12 +48,24 @@ public static class EntityCreationNetwork
 
     private static void OnCreateRequest(int sender, EntityCreateRequestMessage message)
     {
-        if (!NetworkManager.Instance.IsServer || !GameAssets.Blocks.ContainsKey(message.BlockId)) return;
+        var network = NetworkManager.Instance;
+        if (!network.IsServer || !GameAssets.Blocks.ContainsKey(message.BlockId)) return;
 
         var sector = World.SectorAt(message.PositionWorld);
-        if (sector == null || !sector.BoundingBox.Contains(message.PositionWorld)) return;
+        if (sector == null || !sector.BoundingBox.Contains(message.PositionWorld) || !IsInReach(sender, message.PositionWorld))
+        {
+            network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
+            return;
+        }
 
         PlaceNewEntity(sector, message.PositionWorld, CreateBlock(message.BlockId, message.Direction, message.Rotation));
+    }
+
+    private static bool IsInReach(int peer, Vector3 positionWorld)
+    {
+        var player = Combat.PlayerHitboxes.FindPlayer(peer);
+        return player != null && float.IsFinite(positionWorld.X + positionWorld.Y + positionWorld.Z) &&
+               Vector3.DistanceSquared(player.Position, positionWorld) <= WorldEditNetwork.MaxEditDistance * WorldEditNetwork.MaxEditDistance;
     }
 
     private static void OnCreated(int sender, EntityCreatedMessage message)

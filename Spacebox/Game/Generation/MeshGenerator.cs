@@ -5,6 +5,7 @@ using Engine.Physics;
 using Debug = Engine.Debug;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Shapes;
+using Spacebox.Game.Generation.Wires;
 using Spacebox.Game.Generation.Tools;
 using System;
 using System.Collections.Generic;
@@ -147,6 +148,12 @@ namespace Spacebox.Game.Generation
                             continue;
                         }
 
+                        if (block is CableBlock cable && GameAssets.Blocks.TryGetValue(block.Id, out var cableData) && cableData is Resource.CableBlockData { HasWireLook: true } wireData)
+                        {
+                            AddWire(cable, wireData, x, y, z);
+                            continue;
+                        }
+
                         var transformedVectors = BlockRotationHelper.GetCachedFaceVectors(
                             GameAssets.GetBaseFrontDirection(block.Id),
                             block.Direction,
@@ -186,7 +193,24 @@ namespace Spacebox.Game.Generation
             };
         }
 
-        private void AddRotatedFace(Block block, Face face, byte fIndex, sbyte x, sbyte y, sbyte z, IReadOnlyDictionary<Direction, Vector3> transformedVectors, Resource.BlockData multiblockData)
+        private void AddWire(CableBlock cable, Resource.CableBlockData data, sbyte x, sbyte y, sbyte z)
+        {
+            int connections = 0;
+            for (int i = 0; i < WireShape.DirectionCount; i++)
+            {
+                var normal = faceNormals[i];
+                if (GetBlockSafe((sbyte)(x + normal.X), (sbyte)(y + normal.Y), (sbyte)(z + normal.Z)) is ElectricalBlock neighbor && neighbor.EFlags != ElectricalFlags.None)
+                    connections |= 1 << (int)faces[i];
+            }
+
+            for (byte fIndex = 0; fIndex < faces.Length; fIndex++)
+            {
+                var wireFace = WireShape.Resolve(connections, (Direction)faces[fIndex], cable.Direction);
+                AddRotatedFace(cable, faces[fIndex], fIndex, x, y, z, WireShape.FaceVectors, null, data.GetWireUVs(wireFace, cable.IsActive));
+            }
+        }
+
+        private void AddRotatedFace(Block block, Face face, byte fIndex, sbyte x, sbyte y, sbyte z, IReadOnlyDictionary<Direction, Vector3> transformedVectors, Resource.BlockData multiblockData, Vector2[] uvOverride = null)
         {
             Direction faceDir = (Direction)face;
             Vector3 transformedNormal = transformedVectors[faceDir];
@@ -224,7 +248,7 @@ namespace Spacebox.Game.Generation
             faceVertices[2] = faceCenter + upVector + rightVector;
             faceVertices[3] = faceCenter + upVector - rightVector;
 
-            var faceUVs = GameAssets.GetBlockUVs(block, face);
+            var faceUVs = uvOverride ?? GameAssets.GetBlockUVs(block, face);
             if (multiblockData != null)
                 faceUVs = MultiblockLayout.GetFaceUVs(faceUVs, multiblockData.GetFaceTiles(face), multiblockData.Size, block.MultiblockOffset, faceDir);
 

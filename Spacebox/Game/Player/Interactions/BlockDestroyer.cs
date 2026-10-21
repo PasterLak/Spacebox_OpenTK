@@ -38,7 +38,7 @@ public static class BlockDestroyer
 
         if (_sound == null || _sound.Clip != clip)
         {
-            _sound?.Stop();
+            _sound?.Dispose();
             _sound = new AudioSource(clip);
         }
 

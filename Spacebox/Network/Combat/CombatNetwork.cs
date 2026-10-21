@@ -68,6 +68,8 @@ public static class CombatNetwork
     {
         var network = NetworkManager.Instance;
         if (!network.IsServer) return;
+        if (!Spacebox.Game.Rules.GameplayRules.AllowsPlayerHit(Spacebox.Game.Rules.ServerRules.Current, attackerPeer, victimPeer)) return;
+        if (!CanBeHurt(victimPeer)) return;
 
         int finalDamage = (int)MathF.Round(damage * (headshot ? HeadshotMultiplier : 1f));
         var message = new PlayerDamageMessage { AttackerPeer = attackerPeer, Damage = finalDamage, Headshot = headshot };
@@ -81,6 +83,13 @@ public static class CombatNetwork
             HitMarkerUI.Show(headshot);
         else if (attackerPeer != victimPeer)
             network.Send(attackerPeer, new HitConfirmMessage { Headshot = headshot });
+    }
+
+    private static bool CanBeHurt(int peer)
+    {
+        if (peer == NetworkManager.Instance.LocalPeerId)
+            return AstronautNetwork.Local?.Owner is LocalAstronaut local && local.GameMode == Spacebox.Game.Player.GameModes.GameMode.Survival;
+        return PlayerGameModeService.Of(PlayerRegistry.GetName(peer)) == Spacebox.Game.Player.GameModes.GameMode.Survival;
     }
 
     public static string GetPlayerName(int peer)
@@ -173,7 +182,7 @@ public static class CombatNetwork
         if (sender != NetworkManager.ServerPeerId && !network.IsServer) return;
 
         var local = AstronautNetwork.Local?.Owner as LocalAstronaut;
-        if (local == null || !local.IsAlive) return;
+        if (local == null || !local.IsAlive || local.GameMode != Spacebox.Game.Player.GameModes.GameMode.Survival) return;
 
         local.RegisterAttacker(message.AttackerPeer);
         string attacker = GetPlayerName(message.AttackerPeer);

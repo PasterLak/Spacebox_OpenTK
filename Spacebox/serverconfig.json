@@ -17,6 +17,13 @@
   "AutoSaveInterval": 300,
   "UpdateRate": 30,
   "FriendlyMobs": false,
+  "Gameplay": {
+    "Pvp": true,
+    "Explosions": true,
+    "ExplosionBlockDamage": true,
+    "ExplosionPlayerDamage": true,
+    "ExplosionsRespectClaims": true
+  },
   "Claims": {
     "Enabled": true,
     "Radius": 12,

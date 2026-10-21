@@ -366,6 +366,7 @@ public static class ShipNetwork
         if (!NetworkManager.Instance.IsServer) return;
         if (!TryGetConsole(message.EntityId, message.ConsoleCell, out var entity, out _)) return;
         if (ProtectionNetwork.BlocksPeerUse(sender, entity)) return;
+        if (!WorldEditNetwork.IsInReach(sender, entity, message.ConsoleCell)) return;
 
         var control = entity.ShipControl;
         switch (message.Operation)

@@ -77,6 +77,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 
 - `Game/Resource/Loaders/BlockFactory.cs`: dictionary `type string → constructor` (interactive, crusher, analyzer, mineral, furnace, disassembler, craftingtable, radar, cable, block, generator, consumer, storage). `RegisterBlockType` is currently a no-op — add new types to the dictionary.
 - Blocks with extra persistent state need an `IBlockSerializer` registered in `Game/Generation/Tools/BlockSerializerRegistry.cs`.
+- Cables (`CableBlock`, `CableBlockData` from the JSON `Cable` section) look like straight wires, angles or hubs depending on their electrical neighbours: `Generation/Wires/WireShape` (pure, tested) picks a texture and quarter turn per face, `MeshGenerator.AddWire` applies it. Look only, no extra block ids.
 - `ElectricNetworkManager` (file `ElectricalManager.cs`) — one per `SpaceEntity` (`SpaceEntity.ElectricManager`). `LightManager` — one per `Chunk`.
 - Changing block visuals/emission requires regenerating the chunk mesh.
 
@@ -127,6 +128,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 ## Explosions
 
 - `World.Explosions` (`Game/Physics/Explosions/`): `Detonate(chunk, index, data, delay)`. Blocks that react to bullets implement `IProjectileReactive` (checked in `Projectile` before ricochet). Bodies take damage through `IExplosionDamageable`. Any block can explode: implement `IExplosiveBlock` (data side `IExplosiveBlockData`, e.g. `GeneratorBlockData` with a JSON `Explosive` section) and trigger with `ExplosiveTrigger.Detonate` (bombs on any hit through `IProjectileReactive`, other explosive blocks from `Chunk.DamageBlock` when durability reaches 0); multi-cell blocks blast from their structure center and are removed as a whole. Bulk block removal: `Chunk.ClearCellForBulkEdit` + `FinishBulkEdit` + `Oxygen.OnChunksChanged`.
+- Server gameplay rules (`Game/Rules/ServerRules`, `GameplayRules`): read `ServerRules.Current` only on the server; pass the causing peer (`GameplayRules.NoPeer` if none) into damage and explosion calls, explosions carry their resolved `ExplosionRules` to clients. A new switch: a property on `ServerRules` + a `ServerRuleDefinition` in `Network/ServerRulesService` (command and dashboard pick it up).
 
 ## Doors
 
@@ -156,7 +158,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 
 - Engine `TextureAtlas` (`Engine/Graphics/Atlas/`): add with `AddDirectory`/`AddFile`/`Add(name, Texture2D|pixels)`, layers via `AddLayer*`; rebuilds lazily on `Texture`/`TryGetRegion`. Pixels passed to `Add` are top-down (like PNG files); `TryGetPixels(name, bottomUp: true)` returns GL-order pixels.
 - `GameAssets.AtlasBlocks` / `AtlasItems` are built by `GameAtlasFactory`; built-in textures live in `Resources/Textures/Blocks` and `Resources/Textures/Items`.
-- Item icons: `Item.Icon` (`AtlasSprite`, draw with `Draw`/`Image`/`ImageButton`). UI elements: `UIAtlas.Get("slot")` (lower-case path under `Resources/Textures/UI`, files up to 128 px; inside a world they share the items atlas with item icons). `GameAssets.GetItemIconTexture(id)` creates a standalone texture only when needed (drops).
+- Item icons: `Item.Icon` (`AtlasSprite`, draw with `Draw`/`Image`/`ImageButton`). Block icons: plain 1x1 cubes use `IsometricIcon` (three face textures); blocks with a shape (code/OBJ model) or more than one cell are rendered from their preview mesh by `BlockIconRenderer` → engine `Graphics/Icons/IsometricRasterizer` (CPU, same 2:1 view and face shading, depth buffer, fits the model into 64x64; flat facing shapes like signs and frames stand facing the viewer). UI elements: `UIAtlas.Get("slot")` (lower-case path under `Resources/Textures/UI`, files up to 128 px; inside a world they share the items atlas with item icons). `GameAssets.GetItemIconTexture(id)` creates a standalone texture only when needed (drops).
 
 ## Dynamic entities
 

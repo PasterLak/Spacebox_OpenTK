@@ -10,12 +10,12 @@ public interface IExplosiveBlock
 
 public static class ExplosiveTrigger
 {
-    public static bool Detonate(HitInfo hit, ExplosiveBlockData explosion)
+    public static bool Detonate(HitInfo hit, ExplosiveBlockData explosion, int causerPeer)
     {
         var explosions = World.Instance?.Explosions;
         if (explosion == null || explosions == null || hit.chunk == null) return false;
 
-        explosions.Detonate(hit.chunk, hit.blockPositionIndex, explosion, 0f);
+        explosions.Detonate(hit.chunk, hit.blockPositionIndex, explosion, 0f, causerPeer);
         return true;
     }
 }

@@ -4,5 +4,5 @@ namespace Spacebox.Game.Generation.Blocks;
 
 public interface IProjectileReactive
 {
-    bool OnProjectileHit(HitInfo hit);
+    bool OnProjectileHit(HitInfo hit, int attackerPeer);
 }

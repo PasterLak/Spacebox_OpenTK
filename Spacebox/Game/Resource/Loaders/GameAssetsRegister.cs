@@ -121,6 +121,12 @@ namespace Spacebox.Game
 
         private static void CacheIcon(BlockData blockData)
         {
+            if (BlockIconRenderer.NeedsModelIcon(blockData))
+            {
+                AddIcon(blockData, BlockIconRenderer.Render(blockData));
+                return;
+            }
+
             var blocks = GameAssets.AtlasBlocks;
             if (!blocks.TryGetPixels(blockData.GetFaceTextureName(Generation.Blocks.Direction.Left), true, out var left) ||
                 !blocks.TryGetPixels(blockData.GetFaceTextureName(Generation.Blocks.Direction.Forward), true, out var forward) ||
@@ -131,6 +137,11 @@ namespace Spacebox.Game
             var pixels = IsometricIcon.CreatePixels(Resample(left, faceSize), Resample(forward, faceSize), Resample(top, faceSize));
             if (pixels == null) return;
 
+            AddIcon(blockData, pixels);
+        }
+
+        private static void AddIcon(BlockData blockData, Color4[,] pixels)
+        {
             string iconName = GameAtlasFactory.BlockIconName(blockData);
             GameAssets.AtlasItems.Add(iconName, pixels, true);
             blockData.AsItem.Icon = GameAssets.AtlasItems.GetSprite(iconName);

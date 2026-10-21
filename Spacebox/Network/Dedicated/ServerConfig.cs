@@ -26,6 +26,7 @@ public sealed class ServerConfig
     public float AutoSaveInterval { get; set; } = 300f;
     public int UpdateRate { get; set; } = DefaultUpdateRate;
     public bool FriendlyMobs { get; set; } = false;
+    public Spacebox.Game.Rules.ServerRules Gameplay { get; set; } = new Spacebox.Game.Rules.ServerRules();
     public Spacebox.Game.Protection.ClaimSettings Claims { get; set; } = new Spacebox.Game.Protection.ClaimSettings();
     public bool DashboardEnabled { get; set; } = true;
     public int DashboardPort { get; set; } = 0;
@@ -63,6 +64,7 @@ public sealed class ServerConfig
                 if (loaded != null)
                 {
                     loaded.Claims ??= new Spacebox.Game.Protection.ClaimSettings();
+                    loaded.Gameplay ??= new Spacebox.Game.Rules.ServerRules();
                     loaded.Claims.Validate();
                     Save(loaded, path, options);
                     return loaded;

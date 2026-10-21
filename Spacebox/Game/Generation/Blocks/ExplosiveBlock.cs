@@ -15,8 +15,8 @@ public class ExplosiveBlock : Block, IProjectileReactive, IExplosiveBlock
         _data = blockData as ExplosiveBlockData ?? new ExplosiveBlockData(blockData, null);
     }
 
-    public bool OnProjectileHit(HitInfo hit)
+    public bool OnProjectileHit(HitInfo hit, int attackerPeer)
     {
-        return ExplosiveTrigger.Detonate(hit, _data);
+        return ExplosiveTrigger.Detonate(hit, _data, attackerPeer);
     }
 }

@@ -43,8 +43,8 @@ public class MovementMode : GameModeBase
            
        
 
-        wallhitAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/wallhit.png"));
-        wallhitAudio2 = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/wallHit2.png"));
+        wallhitAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/wallhit.ogg"));
+        wallhitAudio2 = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/wallHit2.ogg"));
 
 
     }
@@ -64,7 +64,7 @@ public class MovementMode : GameModeBase
 
         if (blockDestroy != null)
         {
-            blockDestroy.Stop();
+            blockDestroy.Dispose();
         }
 
         blockDestroy = new AudioSource(clip);

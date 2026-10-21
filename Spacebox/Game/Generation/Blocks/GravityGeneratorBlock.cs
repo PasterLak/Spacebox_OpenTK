@@ -50,6 +50,7 @@ public class GravityGeneratorBlock : InteractiveBlock, IGravitySource, IEntityBl
     public void Configure(int radius, float strength, bool isGravityEnabled, bool insideOnly)
     {
         radius = Math.Clamp(radius, _data.MinRadius, _data.MaxRadius);
+        if (!float.IsFinite(strength)) strength = Strength;
         strength = Math.Clamp(strength, _data.MinStrength, _data.MaxStrength);
         if (radius == RadiusSetting && strength == Strength && isGravityEnabled == IsGravityEnabled && insideOnly == InsideOnly) return;
 

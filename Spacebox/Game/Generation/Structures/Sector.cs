@@ -999,28 +999,20 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                 try
                 {
                     SpaceEntity entity = null;
+                    CompoundTag tag = null;
+                    string fileName = null;
 
                     if (WorldPersistenceManager.TryGetCachedEntity(data.Id, out var cachedTag))
                     {
-                        entity = NBTHelper.TagToSpaceEntity(cachedTag, this, data);
+                        tag = cachedTag;
                     }
                     else
                     {
-                        string fileName = EntityFiles.NameOf(!string.IsNullOrEmpty(data.FileName) ? data.FileName : data.Id.ToString());
-                        string filePath = EntityFiles.PathOf(sectorPath, fileName);
-
-                        if (File.Exists(filePath))
-                        {
-                            var loaded = WorldSaveLoad.LoadSpaceEntityFromFile(filePath, this, data);
-                            if (loaded != null)
-                            {
-                                ApplyLoadedEntityFixes(loaded, data, fileName);
-                                entity = loaded;
-                            }
-                        }
+                        fileName = EntityFiles.NameOf(!string.IsNullOrEmpty(data.FileName) ? data.FileName : data.Id.ToString());
+                        tag = WorldSaveLoad.LoadSpaceEntityTagFromFile(EntityFiles.PathOf(sectorPath, fileName));
                     }
 
-                    if (entity == null && CanGenerateFresh(data))
+                    if (tag == null && CanGenerateFresh(data))
                     {
                         var newEntity = new Asteroid(data, this, true);
                         newEntity.Name = newEntity.EntityID.ToString();
@@ -1033,7 +1025,22 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                         if (Entities == null)
                         {
                             entity?.Dispose();
+                            loadedCount++;
                             return;
+                        }
+
+                        if (tag != null)
+                        {
+                            try
+                            {
+                                entity = NBTHelper.TagToSpaceEntity(tag, this, data);
+                                if (entity != null && fileName != null) ApplyLoadedEntityFixes(entity, data, fileName);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.Error($"[Sector] Preload failed for entity {data.Id}: {ex.Message}");
+                                entity = null;
+                            }
                         }
 
                         if (entity != null)

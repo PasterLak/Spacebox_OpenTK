@@ -33,6 +33,8 @@ public sealed class TextureAtlas : IDisposable
     private int _nextOrder;
     private Entry _fallback;
 
+    private Entry _lastSampled;
+
     public string Name { get; }
     public int Padding { get; }
     public int MaxSize { get; }
@@ -207,6 +209,36 @@ public sealed class TextureAtlas : IDisposable
 
         pixels = bottomUp ? ImagePixels.FlipY(entry.Pixels) : ImagePixels.Copy(entry.Pixels);
         return true;
+    }
+
+    public bool TrySample(Vector2 uv, Vector2 anchor, out Color4 color)
+    {
+        color = default;
+        EnsureBuilt();
+        if (_lastSampled == null || !Contains(_lastSampled.Region, anchor))
+        {
+            _lastSampled = null;
+            foreach (var entry in _entries.Values)
+            {
+                if (!Contains(entry.Region, anchor)) continue;
+                _lastSampled = entry;
+                break;
+            }
+            if (_lastSampled == null) return false;
+        }
+
+        var region = _lastSampled.Region;
+        float u = (uv.X - region.UvMin.X) / (region.UvMax.X - region.UvMin.X);
+        float v = (uv.Y - region.UvMin.Y) / (region.UvMax.Y - region.UvMin.Y);
+        int x = Math.Clamp((int)(u * region.Width), 0, region.Width - 1);
+        int y = Math.Clamp((int)(v * region.Height), 0, region.Height - 1);
+        color = _lastSampled.Pixels[x, region.Height - 1 - y];
+        return true;
+    }
+
+    private static bool Contains(AtlasRegion region, Vector2 uv)
+    {
+        return uv.X >= region.UvMin.X && uv.X <= region.UvMax.X && uv.Y >= region.UvMin.Y && uv.Y <= region.UvMax.Y;
     }
 
     public bool TryGetLayerPixels(string layer, string name, bool bottomUp, out Color4[,] pixels)

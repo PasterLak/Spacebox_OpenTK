@@ -1,3 +1,4 @@
+using Spacebox.Game.Rules;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
@@ -12,22 +13,24 @@ public sealed class ExplosionForces
 
     private readonly List<(IExplosionDamageable Target, int Damage)> _damageTargets = new List<(IExplosionDamageable, int)>();
 
-    public void Apply(Vector3 center, ExplosiveBlockData data)
+    public void Apply(Vector3 center, ExplosiveBlockData data, ExplosionRules rules)
     {
         var world = World.Instance;
-        if (world == null) return;
+        if (world == null || !rules.Explode) return;
 
-        ApplyToPlayer(world.Player, center, data);
+        ApplyToPlayer(world.Player, center, data, rules);
         ApplyToBodies(world.Physics, world.Player, center, data);
         World.DropEffectManager?.PushDropsFrom(center, data.PushRadius, data.PushStrength);
     }
 
-    private static void ApplyToPlayer(LocalAstronaut player, Vector3 center, ExplosiveBlockData data)
+    private static void ApplyToPlayer(LocalAstronaut player, Vector3 center, ExplosiveBlockData data, ExplosionRules rules)
     {
         if (player == null || !player.IsAlive || !Spacebox.Network.GameSession.HasLocalPlayer) return;
 
         float distance = Vector3.Distance(player.Position, center);
         player.ApplyImpulse(GetImpulse(player.Position, center, distance, data));
+
+        if (!rules.DamagesPlayer(Engine.Networking.NetworkManager.Instance.LocalPeerId)) return;
 
         int damage = (int)MathF.Round(data.GetDamage(distance));
         damage = ArmorProtection.Apply(damage, player.Equipment.ExplosionProtection);

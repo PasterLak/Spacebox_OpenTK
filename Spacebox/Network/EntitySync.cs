@@ -125,6 +125,7 @@ public static class EntitySync
 
         string sectorPath = WorldSaveLoad.GetSectorFolderPath(World.WorldData.WorldFolderPath, message.Sector);
         string fileName = string.IsNullOrEmpty(message.FileName) ? message.EntityId.ToString() : message.FileName;
+        if (fileName != Path.GetFileName(fileName) || fileName.Contains("..")) return null;
         string path = EntityFiles.PathOf(sectorPath, fileName);
         return File.Exists(path) ? WorldSaveLoad.LoadSpaceEntityTagFromFile(path) : null;
     }

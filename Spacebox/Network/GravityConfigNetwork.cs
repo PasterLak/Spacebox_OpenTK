@@ -72,8 +72,9 @@ public static class GravityConfigNetwork
     private static void OnConfig(int sender, GravityConfigMessage message)
     {
         if (!NetworkManager.Instance.IsServer) return;
-        if (!ContainerResolver.TryResolveBlock(message.Key, out var block, out _) || block is not GravityGeneratorBlock gravity) return;
+        if (!ContainerResolver.TryResolveBlock(message.Key, out var block, out var chunk) || block is not GravityGeneratorBlock gravity) return;
         if (ProtectionNetwork.BlocksPeerKey(sender, message.Key)) return;
+        if (!WorldEditNetwork.IsInReach(sender, chunk.SpaceEntity, message.Key.Cell)) return;
 
         gravity.Configure(message.Radius, message.Strength, message.Enabled, message.InsideOnly);
         gravity.ApplyPendingPower();

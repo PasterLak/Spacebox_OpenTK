@@ -51,7 +51,10 @@ New
 - screen space ambient occlusion (SSAO) on blocks, mobs, players and the held item; Graphics options: quality Off/Low/Medium/High and strength
 - Graphics options: brightness, contrast, saturation, vignette strength, film grain (animated or static), Show FPS counter, reset buttons for image and SSAO
 - viewing through a ship camera block shows a security camera feed: scanlines, grain, lens distortion, REC overlay with timer (Camera Block Effect option)
+- server gameplay rules: PvP (weapons, drills, ship cannons and bombs of other players), explosions on/off, explosions break blocks, explosions hurt players, explosions respect claims, friendly mobs; set in serverconfig.json "Gameplay", on the dashboard Settings page or with the gamerule command (also /gamerule in chat), applied at once and announced in chat
+- cable blocks connect automatically: they turn along the line, the middle block of an L becomes an angle and a block with 3 or more connections a hub (only the cable block is crafted); new angle and hub textures
 Small
+- block icons show the real shape: signs, picture frames, torches, slabs and multi-cell blocks are rendered from their model (same isometric style as cube icons)
 - held and dropped item models merge pixels by shape instead of colour and merge their side faces: about 84% fewer polygons
 - agent API for automated play testing (--agent, --agent-world; not in Final builds): localhost HTTP control of player, camera, input, ImGui text and clicks, A* goto, block scans, screenshots; Tools/agent/game.sh
 - GameSet editor: mob preview (animated model, idle/eating, bite and hurt, hit radius and attack range, 1-block size reference)
@@ -73,6 +76,15 @@ Small
 - build scripts read the version from Application.cs, keep other platform builds, zip without a root folder
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
+- multiplayer: explosions that broke blocks were dropped by every client (cell count limit too small), so clients never saw the blast
+- multiplayer: the server checks reach (16 m) for block removal, block damage, doors, gravity generator settings, ship console bindings and new entities (refused new entities are refunded); edits of entities the server has not loaded are undone and refunded instead of being relayed and lost; gravity strength NaN is ignored; entity file requests cannot leave the sector folder
+- multiplayer: creative and spectator players no longer take damage from other players' weapons and drills
+- one click on an inventory or hotbar slot ran the click twice (shift-click equip swapped back, alt-click split twice)
+- block place and destroy sounds no longer leak an OpenAL source every time the sound changes (sounds stopped after long play); wall hit sounds load directly
+- world preload builds entities on the main thread (pipes, analyzers and claim beacons could be lost or crash the load); preload no longer waits forever when the sector is closed meanwhile
+- GameSet blocks with an invalid mass, durability, efficiency or drop quantity are corrected and loaded instead of being skipped
+- a furnace/crusher with a broken item palette no longer stops its whole entity from loading
+- mods with a Generation folder but no Asteroids folder use the default asteroids instead of none; removed a wrong "Asteroid directory not found" log
 - the distance to use blocks is the same for every held item (drills no longer use their mining range)
 - chat: a message arriving while typing (e.g. a game mode change by the server) no longer closes the input and leaves the hotbar keys and mouse wheel blocked; Escape closes the chat input
 - dashboard map: untouched loaded and unloaded asteroids have clearly different colours

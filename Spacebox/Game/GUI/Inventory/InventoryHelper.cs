@@ -104,10 +104,6 @@ namespace Spacebox.Game.GUI
             {
                 OnSlotRightClicked(slot);
             }
-            if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
-            {
-                onSlotClicked?.Invoke(slot);
-            }
 
             if (slot.HasItem)
             {

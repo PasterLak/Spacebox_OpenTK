@@ -137,6 +137,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Debug.RegisterCommand(new SpawnMobCommand(localPlayer));
         Debug.RegisterCommand(new SsaoDebugCommand());
         Debug.RegisterCommand(new OcclusionCommand());
+        Debug.RegisterCommand(new GameRuleCommand());
         Debug.RegisterCommand(new GiveCommand(localPlayer));
         Debug.RegisterCommand(new StatCommand(localPlayer, "heal", PlayerStat.All));
         Debug.RegisterCommand(new StatCommand(localPlayer, "health", PlayerStat.Health));
@@ -402,6 +403,11 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         SignUI.Reset();
         DnaReconstructorUI.Reset();
         Spacebox.Game.Pictures.PictureFrameInteraction.Reset();
+        if (!GameSession.IsDedicated)
+        {
+            Spacebox.Game.Rules.ServerRules.ResetSession();
+            Spacebox.Game.Mobs.MobRules.FriendlyMobs = false;
+        }
         Spacebox.Game.Pictures.PictureTextures.Clear();
         DnaReconstructionScreen.Reset();
         HitMarkerUI.Reset();

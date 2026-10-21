@@ -244,6 +244,17 @@
             </form>
           </div>
         </div>
+        <form class="panel" id="gameplay-form">
+          <h3>Gameplay</h3>
+          <p class="hint">Changes apply at once and are announced in the chat.</p>
+          <label class="switch"><input type="checkbox" name="pvp"><span>PvP: players can hurt other players (weapons, drills, ship cannons, their explosions)</span></label>
+          <label class="switch"><input type="checkbox" name="explosions"><span>Explosions (off: bombs and reactors only fizzle)</span></label>
+          <label class="switch"><input type="checkbox" name="explosion_blocks"><span>Explosions break blocks</span></label>
+          <label class="switch"><input type="checkbox" name="explosion_players"><span>Explosions hurt players</span></label>
+          <label class="switch"><input type="checkbox" name="explosion_claims"><span>Explosions respect claims (no block damage inside active claims)</span></label>
+          <label class="switch"><input type="checkbox" name="friendly_mobs"><span>Friendly mobs (they only fight back when attacked)</span></label>
+          <button class="btn gold" type="submit">Save gameplay rules</button>
+        </form>
         <form class="panel" id="claims-form">
           <h3>Claim beacons</h3>
           <p class="hint">Players protect ships and bases with a Claim Beacon paid with ingots. <span id="claims-count"></span></p>

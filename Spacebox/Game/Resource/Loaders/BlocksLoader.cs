@@ -81,7 +81,7 @@ namespace Spacebox.Game.Resource
             NormalizeBlockStrings(blockJson);
 
             if (!ValidateBlockType(blockJson)) return false;
-            if (!ValidateBlockValues(blockJson)) return false;
+            FixBlockValues(blockJson);
 
             var blockId = GameSetLoader.ValidateIdString(GameSetLoader.ModInfo.ModId, blockJson.ID);
             blockId = GameSetLoader.CombineId(GameSetLoader.ModInfo.ModId, blockId);
@@ -160,6 +160,10 @@ namespace Spacebox.Game.Resource
                     blockData.BaseFrontDirection = Direction.Up;
                     blockData = new SignBlockData(blockData, blockJson.Sign);
                 }
+                else if (blockData.Type == "cable")
+                {
+                    blockData = new CableBlockData(blockData, blockJson.Cable);
+                }
                 else if (blockData.Type == "frame")
                 {
                     blockData.Shape ??= PictureFrameGeometry.Shape;
@@ -222,17 +226,13 @@ namespace Spacebox.Game.Resource
             return true;
         }
 
-        private static bool ValidateBlockValues(BlockJSON block)
+        private static void FixBlockValues(BlockJSON block)
         {
-            bool isValid = true;
-
-            if (block.Mass <= 0) { Debug.Error($"[GameSetLoader] Block '{block.ID}' invalid mass {block.Mass}, set to 1"); block.Mass = 1; isValid = false; }
-            if (block.Durability <= 0) { Debug.Error($"[GameSetLoader] Block '{block.ID}' invalid durability {block.Durability}, set to 1"); block.Durability = 1; isValid = false; }
-            if (block.PowerToDrill < 0) { Debug.Error($"[GameSetLoader] Block '{block.ID}' invalid PowerToDrill {block.PowerToDrill}, set to 0"); block.PowerToDrill = 0; isValid = false; }
-            if (block.Efficiency <= 0) { Debug.Error($"[GameSetLoader] Block '{block.ID}' invalid efficiency {block.Efficiency}, set to 1.0"); block.Efficiency = 1.0f; isValid = false; }
-            if (block.DropQuantity <= 0) { Debug.Error($"[GameSetLoader] Block '{block.ID}' invalid DropQuantity {block.DropQuantity}, set to 1"); block.DropQuantity = 1; isValid = false; }
-
-            return isValid;
+            if (block.Mass <= 0) { Debug.Warning($"[GameSetLoader] Block '{block.ID}' invalid mass {block.Mass}, set to 1"); block.Mass = 1; }
+            if (block.Durability <= 0) { Debug.Warning($"[GameSetLoader] Block '{block.ID}' invalid durability {block.Durability}, set to 1"); block.Durability = 1; }
+            if (block.PowerToDrill < 0) { Debug.Warning($"[GameSetLoader] Block '{block.ID}' invalid PowerToDrill {block.PowerToDrill}, set to 0"); block.PowerToDrill = 0; }
+            if (block.Efficiency <= 0) { Debug.Warning($"[GameSetLoader] Block '{block.ID}' invalid efficiency {block.Efficiency}, set to 1.0"); block.Efficiency = 1.0f; }
+            if (block.DropQuantity <= 0) { Debug.Warning($"[GameSetLoader] Block '{block.ID}' invalid DropQuantity {block.DropQuantity}, set to 1"); block.DropQuantity = 1; }
         }
 
         private static byte ClampSize(byte value)

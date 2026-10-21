@@ -235,7 +235,7 @@ public class InteractionPlaceBlock : InteractionMode
 
         if (blockPlace != null)
         {
-            blockPlace.Stop();
+            blockPlace.Dispose();
         }
 
         blockPlace = new AudioSource(clip);

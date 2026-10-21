@@ -43,6 +43,11 @@ public static class ProtectionRules
         return entity != null && (EntityProtection.IsProtected(entity) || ClaimRegistry.TryFindActive(entity, cell, out _));
     }
 
+    public static bool IsExplosionProtected(SpaceEntity entity, Vector3i cell, bool respectClaims)
+    {
+        return entity != null && (EntityProtection.IsProtected(entity) || (respectClaims && ClaimRegistry.TryFindActive(entity, cell, out _)));
+    }
+
     public static bool IsMovementLocked(SpaceEntity entity) => EntityProtection.IsProtected(entity);
 
     public static bool IgnoresExternalImpulses(SpaceEntity entity)

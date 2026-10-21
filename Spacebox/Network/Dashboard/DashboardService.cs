@@ -64,6 +64,7 @@ public static class DashboardService
             new ModerationModule(),
             new AdminsModule(),
             new ClaimsModule(),
+            new GameplayModule(),
             new MapModule(),
             new ConsoleModule()
         };

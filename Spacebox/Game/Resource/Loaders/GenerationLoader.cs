@@ -93,12 +93,7 @@ public class GenerationLoader
         string asteroidPath = Path.Combine(modPath, "Asteroids");
         string defaultAsteroidPath = Path.Combine(defaultModPath, "Asteroids");
 
-        if (Directory.Exists(modPath))
-        {
-            Debug.Log($"[GenerationLoader] Asteroid directory not found: {modPath}");
-            LoadAsteroidsFromDirectory(asteroidPath, generator);
-        } else 
-        LoadAsteroidsFromDirectory(defaultAsteroidPath, generator);
+        LoadAsteroidsFromDirectory(Directory.Exists(asteroidPath) ? asteroidPath : defaultAsteroidPath, generator);
 
         //Debug.Success($"[GenerationLoader] Loaded {generator.loadedAsteroids.Count} asteroids");
     }

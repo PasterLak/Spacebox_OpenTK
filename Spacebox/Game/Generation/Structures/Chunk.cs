@@ -401,7 +401,7 @@ namespace Spacebox.Game.Generation
             QueueMeshUpdate(UpdateReason.PlayerAction);
         }
 
-        public bool DamageBlock(HitInfo hit, byte damage, bool spawnDrop)
+        public bool DamageBlock(HitInfo hit, byte damage, bool spawnDrop, int attackerPeer = Spacebox.Game.Rules.GameplayRules.NoPeer)
         {
             if (damage == 0) return false;
             if (Spacebox.Game.Protection.ProtectionRules.IsDamageProtected(SpaceEntity, Spacebox.Game.Protection.ProtectionRules.CellOf(this, hit.blockPositionIndex))) return false;
@@ -418,7 +418,7 @@ namespace Spacebox.Game.Generation
             else
             {
                 block.Durability = 0;
-                if (block is IExplosiveBlock { Explosion: { } explosion } && ExplosiveTrigger.Detonate(hit, explosion))
+                if (block is IExplosiveBlock { Explosion: { } explosion } && ExplosiveTrigger.Detonate(hit, explosion, attackerPeer))
                     return false;
 
                 block.OnDestroy?.Invoke(hit);

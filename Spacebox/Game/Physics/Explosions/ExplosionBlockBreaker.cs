@@ -18,7 +18,7 @@ public sealed class ExplosionBlockBreaker
     private readonly Dictionary<(short ItemId, Chunk Chunk), DropGroup> _drops = new Dictionary<(short, Chunk), DropGroup>();
     private readonly Random _random = new Random();
 
-    public void Break(SpaceEntity entity, IEnumerable<Vector3i> cells, Vector3i origin, Vector3 worldCenter, ExplosiveBlockData data, Action<Chunk, Vector3Byte, ExplosiveBlockData> chainExplosive, bool isReplica, List<Vector3i> removedCells)
+    public void Break(SpaceEntity entity, IEnumerable<Vector3i> cells, Vector3i origin, Vector3 worldCenter, ExplosiveBlockData data, Action<Chunk, Vector3Byte, ExplosiveBlockData> chainExplosive, bool isReplica, List<Vector3i> removedCells, bool respectClaims)
     {
         removedCells?.Clear();
         _touchedChunks.Clear();
@@ -29,7 +29,7 @@ public sealed class ExplosionBlockBreaker
 
         foreach (var cell in cells)
         {
-            if (cell != origin && Spacebox.Game.Protection.ProtectionRules.IsDamageProtected(entity, cell)) continue;
+            if (cell != origin && !isReplica && Spacebox.Game.Protection.ProtectionRules.IsExplosionProtected(entity, cell, respectClaims)) continue;
             if (!entity.TryGetBlockLocal(cell, out var chunk, out var index)) continue;
 
             var block = chunk.Blocks[index.X, index.Y, index.Z];

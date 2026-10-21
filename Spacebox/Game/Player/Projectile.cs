@@ -300,7 +300,7 @@ public class Projectile : Node3D
 
     private bool TryTriggerReactiveBlock(HitInfo hit)
     {
-        if (!_isAuthoritative || hit.block is not IProjectileReactive reactive || !reactive.OnProjectileHit(hit)) return false;
+        if (!_isAuthoritative || hit.block is not IProjectileReactive reactive || !reactive.OnProjectileHit(hit, _ownerPeer)) return false;
 
         ProcessHitStats(hit.hitPosition);
         ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.hitPosition + hit.normalWorld * 0.1f, Parameters.ID);
@@ -449,7 +449,7 @@ public class Projectile : Node3D
     private bool ApplyBlockDamage(HitInfo hit)
     {
         short blockId = hit.block?.Id ?? 0;
-        bool destroyed = hit.chunk.DamageBlock(hit, currentDamage, Parameters.DropBlock);
+        bool destroyed = hit.chunk.DamageBlock(hit, currentDamage, Parameters.DropBlock, _ownerPeer);
         if (destroyed) WorldEditNetwork.NotifyRemoved(hit.chunk, hit.blockPositionIndex);
         else WorldEditNetwork.NotifyDamaged(hit.chunk, hit.blockPositionIndex, blockId, currentDamage);
 

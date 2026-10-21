@@ -33,6 +33,7 @@ namespace Spacebox.Game.Resource
         public DoorJSON Door { get; set; } = new DoorJSON();
         public SignJSON Sign { get; set; } = new SignJSON();
         public PictureFrameJSON Frame { get; set; } = new PictureFrameJSON();
+        public CableJSON Cable { get; set; } = new CableJSON();
         public PowerGeneratorJSON Generator { get; set; } = new PowerGeneratorJSON();
         public GravityGeneratorJSON Gravity { get; set; } = new GravityGeneratorJSON();
         public DnaReconstructorJSON DnaReconstructor { get; set; } = new DnaReconstructorJSON();

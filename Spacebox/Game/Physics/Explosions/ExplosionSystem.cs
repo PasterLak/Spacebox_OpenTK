@@ -1,3 +1,4 @@
+using Spacebox.Game.Rules;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
@@ -20,14 +21,16 @@ public sealed class ExplosionSystem : IDisposable
     private readonly List<Vector3i> _removedCells = new List<Vector3i>();
     private readonly List<Vector3i> _sourceCells = new List<Vector3i>();
 
-    public static event Action<SpaceEntity, Vector3i, short, IReadOnlyList<Vector3i>> Exploded;
+    public static event Action<SpaceEntity, Vector3i, short, IReadOnlyList<Vector3i>, ExplosionRules> Exploded;
 
-    public void ApplyReplica(SpaceEntity entity, Vector3i cell, ExplosiveBlockData data, IReadOnlyList<Vector3i> cells)
+    private int _currentCauser = GameplayRules.NoPeer;
+
+    public void ApplyReplica(SpaceEntity entity, Vector3i cell, ExplosiveBlockData data, IReadOnlyList<Vector3i> cells, ExplosionRules rules)
     {
         var worldCenter = entity.EntityLocalToWorld(GetCenterLocal(entity, cell));
 
-        _breaker.Break(entity, cells, cell, worldCenter, data, _chainExplosive, true, null);
-        _forces.Apply(worldCenter, data);
+        _breaker.Break(entity, cells, cell, worldCenter, data, _chainExplosive, true, null, rules.RespectClaims);
+        _forces.Apply(worldCenter, data, rules);
         _effects.Play(worldCenter, data.Radius);
     }
 
@@ -38,10 +41,10 @@ public sealed class ExplosionSystem : IDisposable
 
     public ExplosionSystem()
     {
-        _chainExplosive = (chunk, index, data) => Detonate(chunk, index, data, data.ChainDelay);
+        _chainExplosive = (chunk, index, data) => Detonate(chunk, index, data, data.ChainDelay, _currentCauser);
     }
 
-    public void Detonate(Chunk chunk, Vector3Byte index, ExplosiveBlockData data, float delay)
+    public void Detonate(Chunk chunk, Vector3Byte index, ExplosiveBlockData data, float delay, int causerPeer = GameplayRules.NoPeer)
     {
         var entity = chunk.SpaceEntity;
         if (entity == null) return;
@@ -52,7 +55,7 @@ public sealed class ExplosionSystem : IDisposable
             chunk.PositionIndex.Z * Chunk.Size + index.Z);
 
         if (!_scheduled.Add((entity, cell))) return;
-        _pending.Add(new PendingExplosion { Entity = entity, Cell = cell, Data = data, Delay = delay });
+        _pending.Add(new PendingExplosion { Entity = entity, Cell = cell, Data = data, Delay = delay, CauserPeer = causerPeer });
     }
 
     public void Update(float deltaTime)
@@ -104,12 +107,24 @@ public sealed class ExplosionSystem : IDisposable
         var worldCenter = entity.EntityLocalToWorld(centerLocal);
 
         short bombId = chunk.Blocks[index.X, index.Y, index.Z].Id;
+        var rules = GameplayRules.ForExplosion(ServerRules.Current, pending.CauserPeer);
 
-        _rayCaster.Collect(entity, centerLocal, data.Radius, data.Penetration, _cells, _sourceCells);
-        _breaker.Break(entity, _cells, pending.Cell, worldCenter, data, _chainExplosive, false, _removedCells);
-        _forces.Apply(worldCenter, data);
+        if (rules.BreakBlocks)
+        {
+            _rayCaster.Collect(entity, centerLocal, data.Radius, data.Penetration, _cells, _sourceCells);
+        }
+        else
+        {
+            _cells.Clear();
+            for (int i = 0; i < _sourceCells.Count; i++) _cells.Add(_sourceCells[i]);
+        }
+
+        _currentCauser = pending.CauserPeer;
+        _breaker.Break(entity, _cells, pending.Cell, worldCenter, data, _chainExplosive, false, _removedCells, rules.RespectClaims);
+        _currentCauser = GameplayRules.NoPeer;
+        _forces.Apply(worldCenter, data, rules);
         _effects.Play(worldCenter, data.Radius);
-        Exploded?.Invoke(entity, pending.Cell, bombId, _removedCells);
+        Exploded?.Invoke(entity, pending.Cell, bombId, _removedCells, rules);
     }
 
     private Vector3 GetCenterLocal(SpaceEntity entity, Vector3i cell)
@@ -130,5 +145,6 @@ public sealed class ExplosionSystem : IDisposable
         public Vector3i Cell;
         public ExplosiveBlockData Data;
         public float Delay;
+        public int CauserPeer;
     }
 }

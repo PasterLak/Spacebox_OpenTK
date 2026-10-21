@@ -47,6 +47,11 @@ namespace Spacebox.Game.Generation.Tools
             return root;
         }
 
+        private static Item FindPaletteItem(string[] paletteItems, short index)
+        {
+            return index >= 0 && index < paletteItems.Length ? GameAssets.GetItemByFullID(paletteItems[index]) : null;
+        }
+
         public void Deserialize(Block block, CompoundTag tag, string[] paletteItems)
         {
             var processingBlock = (ResourceProcessingBlock)block;
@@ -54,21 +59,21 @@ namespace Spacebox.Game.Generation.Tools
             if (tag.TryGetValue<IntTag>("input_data", out var inData))
             {
                 PackingTools.UnpackShorts(inData.Value, out short itemIdx, out short count);
-                var item = GameAssets.GetItemByFullID(paletteItems[itemIdx]);
+                var item = FindPaletteItem(paletteItems, itemIdx);
                 if (item != null) processingBlock.SetStorageAfterLoadFromNBT(item, (byte)count, processingBlock.InputStorage);
             }
 
             if (tag.TryGetValue<IntTag>("output_data", out var outData))
             {
                 PackingTools.UnpackShorts(outData.Value, out short itemIdx, out short count);
-                var item = GameAssets.GetItemByFullID(paletteItems[itemIdx]);
+                var item = FindPaletteItem(paletteItems, itemIdx);
                 if (item != null) processingBlock.SetStorageAfterLoadFromNBT(item, (byte)count, processingBlock.OutputStorage);
             }
 
             if (tag.TryGetValue<IntTag>("fuel_data", out var fuelData))
             {
                 PackingTools.UnpackShorts(fuelData.Value, out short itemIdx, out short count);
-                var item = GameAssets.GetItemByFullID(paletteItems[itemIdx]);
+                var item = FindPaletteItem(paletteItems, itemIdx);
                 if (item != null) processingBlock.SetStorageAfterLoadFromNBT(item, (byte)count, processingBlock.FuelStorage);
             }
 

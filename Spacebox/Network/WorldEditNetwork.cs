@@ -101,6 +101,7 @@ public static class WorldEditNetwork
         var world = World.Instance;
         if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
         if (network.IsServer && ProtectionNetwork.BlocksPeer(sender, entity, message.Cell)) return;
+        if (network.IsServer && !IsInReach(sender, entity, message.Cell)) return;
         if (!entity.TryGetBlockLocal(message.Cell, out var chunk, out var index)) return;
 
         var block = chunk.Blocks[index.X, index.Y, index.Z];
@@ -198,6 +199,12 @@ public static class WorldEditNetwork
         SpaceEntity entity = null;
         bool known = world != null && world.TryFindEntity(message.EntityId, out entity);
 
+        if (!known)
+        {
+            RejectUnknown(sender, message);
+            return;
+        }
+
         if (known && ProtectionNetwork.BlocksPeer(sender, entity, message.Cell))
         {
             SendCorrection(sender, entity, message.Cell);
@@ -221,7 +228,7 @@ public static class WorldEditNetwork
         }
 
         short previousId = known ? GetBlockId(entity, message.Cell) : (short)0;
-        if (!message.IsRemoval && known && (previousId != 0 || !IsInReach(sender, entity, message.Cell)))
+        if (known && ((!message.IsRemoval && previousId != 0) || !IsInReach(sender, entity, message.Cell)))
         {
             SendCorrection(sender, entity, message.Cell);
             network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
@@ -238,6 +245,14 @@ public static class WorldEditNetwork
     }
 
     public const float MaxEditDistance = 16f;
+
+    private static void RejectUnknown(int sender, BlockEditMessage message)
+    {
+        if (message.IsRemoval) return;
+        var network = NetworkManager.Instance;
+        network.Send(sender, new BlockEditMessage { EntityId = message.EntityId, Cell = message.Cell, IsRemoval = true });
+        network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
+    }
 
     public static bool IsInReach(int peer, SpaceEntity entity, Vector3i cell)
     {

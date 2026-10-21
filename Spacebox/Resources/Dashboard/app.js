@@ -180,7 +180,7 @@ const views = {
   player: () => { every(10000, () => state.player && loadPlayer(state.player)); },
   moderation: () => { refreshModeration(); },
   console: () => { every(1000, pollConsole); $("#console-form input").focus(); },
-  settings: () => { loadSettings(); loadClaims(); }
+  settings: () => { loadSettings(); loadGameplay(); loadClaims(); }
 };
 
 function switchView(view) {
@@ -560,6 +560,24 @@ async function loadSettings() {
   form.lanDiscovery.checked = info.lanDiscovery;
   loadIcon();
 }
+
+async function loadGameplay() {
+  const data = await run(() => api("/gameplay"));
+  if (!data) return;
+  const form = $("#gameplay-form");
+  for (const [name, value] of Object.entries(data.rules)) {
+    if (form[name]) form[name].checked = value;
+  }
+}
+
+$("#gameplay-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  const form = event.target;
+  const body = {};
+  for (const input of form.querySelectorAll("input[type=checkbox]")) body[input.name] = input.checked;
+  await run(() => api("/gameplay", body), "Gameplay rules saved");
+  loadGameplay();
+});
 
 async function loadClaims() {
   const data = await run(() => api("/claims"));
