@@ -13,6 +13,9 @@ public sealed class BlockShape
 
     private readonly BlockShapePose[] _poses = new BlockShapePose[DirectionCount * RotationCount * 2];
     private readonly Vector3SByte[] _supportOffsets = new Vector3SByte[DirectionCount * RotationCount];
+    private readonly Matrix4[] _transforms = new Matrix4[DirectionCount * RotationCount];
+    private readonly Vector3 _supportedOffset;
+    private readonly Vector3 _freeOffset;
 
     public BlockGeometry Geometry { get; }
     public Face[] VertexFaces { get; }
@@ -24,9 +27,12 @@ public sealed class BlockShape
         for (int i = 0; i < VertexFaces.Length; i++)
             VertexFaces[i] = DominantFace(geometry.Normals[i]);
 
-        var bottomCenter = new Vector3((geometry.Min.X + geometry.Max.X) * 0.5f, geometry.Min.Y, (geometry.Min.Z + geometry.Max.Z) * 0.5f);
+        var anchor = geometry.AnchorPoint;
+        var bottomCenter = new Vector3(anchor.X, geometry.Min.Y, anchor.Z);
         var supportedOffset = new Vector3(0f, -0.5f, 0f) - bottomCenter;
-        var freeOffset = -(geometry.Min + geometry.Max) * 0.5f;
+        var freeOffset = -new Vector3(anchor.X, (geometry.Min.Y + geometry.Max.Y) * 0.5f, anchor.Z);
+        _supportedOffset = supportedOffset;
+        _freeOffset = freeOffset;
 
         for (int d = 0; d < DirectionCount; d++)
         {
@@ -34,6 +40,7 @@ public sealed class BlockShape
             {
                 var transform = BlockRotationHelper.CalculateTransformMatrix(Direction.Up, (Direction)d, (Rotation)r);
                 int index = d * RotationCount + r;
+                _transforms[index] = transform;
 
                 var down = Vector3.TransformVector(-Vector3.UnitY, transform);
                 _supportOffsets[index] = new Vector3SByte((sbyte)MathF.Round(down.X), (sbyte)MathF.Round(down.Y), (sbyte)MathF.Round(down.Z));
@@ -47,6 +54,37 @@ public sealed class BlockShape
     public BlockShapePose GetPose(Direction direction, Rotation rotation, bool supported)
     {
         return _poses[((int)direction * RotationCount + (int)rotation) * 2 + (supported ? 1 : 0)];
+    }
+
+    public bool HasFacing => Geometry.FacingUp.HasValue;
+    public bool RequiresSupport => Geometry.RequiresSupport;
+
+    public Matrix4 GetTransform(Direction direction, Rotation rotation)
+    {
+        return _transforms[(int)direction * RotationCount + (int)rotation];
+    }
+
+    public Vector3 ToCellSpace(Vector3 geometryPoint, Direction direction, Rotation rotation, bool supported)
+    {
+        var offset = supported ? _supportedOffset : _freeOffset;
+        return Vector3.TransformVector(geometryPoint + offset, GetTransform(direction, rotation)) + CellCenter;
+    }
+
+    public Rotation BestRotation(Direction direction, Vector3 desiredUp)
+    {
+        if (!Geometry.FacingUp.HasValue) return Rotation.None;
+
+        var facing = Geometry.FacingUp.Value;
+        var best = Rotation.None;
+        float bestDot = float.MinValue;
+        for (int r = 0; r < RotationCount; r++)
+        {
+            float dot = Vector3.Dot(Vector3.TransformVector(facing, GetTransform(direction, (Rotation)r)), desiredUp);
+            if (dot <= bestDot) continue;
+            bestDot = dot;
+            best = (Rotation)r;
+        }
+        return best;
     }
 
     public Vector3SByte GetSupportOffset(Direction direction, Rotation rotation)

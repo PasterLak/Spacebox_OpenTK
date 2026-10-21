@@ -308,6 +308,50 @@
     },
     {
       "Product": {
+        "Item": "sign_steel",
+        "Quantity": 2
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_panels",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "sign_steel_wide",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_panels",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "sign_panel_wide",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_panels",
+          "Quantity": 2
+        },
+        {
+          "Item": "glass",
+          "Quantity": 1
+        },
+        {
+          "Item": "energy_cell",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
         "Item": "light_blue",
         "Quantity": 1
       },

@@ -98,6 +98,13 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 - Placement: `BlockPlacementHelper` gives shaped blocks the clicked face's normal as `Direction` (bottom on the clicked block); `BlockSelector` previews the model via `BlockShapePreviewMesh`.
 - Mesh: `MeshGenerator.AddShape`. Collisions/raycasts: `BlockCollision.TryGetSolidBounds` / `GetChunkCellBounds` (box depends on the support neighbour); new solidity checks should use it instead of treating every non-air cell as a full cube.
 
+## Signs
+
+- Type `sign` (`SignBlock`, settings `SignBlockData` from the JSON `Sign` section: `Width` 1-2, `MaxLines`, `MaxLineLength`, `DefaultText`, `TextColor`, `Align`, `PixelsPerBlock`, `Margin`, `Glow`, `ViewDistance`, `Font`). A new sign is a `blocks.json` entry with `"Type": "sign"` and textures (`Up` = front plate); no code.
+- Plates are the code shapes `sign_plate` / `sign_plate_wide` (`SignPlateGeometry`, 1/32 thick, `RequiresSupport`, `FacingUp` so placement picks the `Rotation` that keeps the text upright via `BlockShape.BestRotation`). A 2x1 sign is one origin block with a wide shape plus a reserved neighbour cell (`IReservedAreaBlockData`), not a multi-cell block; only the origin half has a collider.
+- Text markup (`Game/Signs/SignMarkup`): `<b>`, `<color=name|#rgb|#rrggbb>`, `<left> <center> <right>`; unknown tags stay text; `Sanitize` limits lines and visible characters. Text is baked per sign with SkiaSharp (`SignTextBaker`) into a small texture only when it changes and drawn as one quad by the entity's `SignRenderer` (`SpaceEntity.Signs`, rendered after doors, distance and facing culled, max 4 bakes per frame).
+- Editing: `SignUI` → `SignNetwork` (`SignTextMessage`, server checks protection and reach, sanitizes) → `BlockStateNetwork`; saved by `SignSerializer` (`sign_data` with `text`).
+
 ## Gravity
 
 - `GravityField.Sample(worldPos)` returns the gravity acceleration from all powered `GravityGeneratorBlock`s. Blocks that must know when they enter/leave an entity implement `IEntityBlockListener` (called on place, load and removal).
@@ -217,6 +224,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 | Feature | Steps |
 |---|---|
 | Data-only block / item | GameSet JSON + texture (`add-block` / `add-item` skills) |
+| Sign | `blocks.json` entry with `"Type": "sign"` and a `Sign` section (see Signs) |
 | Block behaviour | `Block` subclass in `Game/Generation/Blocks/` + `BlockFactory` entry (+ serializer if stateful) |
 | Tutorial / tutorial step | `GameSets/<set>/Tutorials/*.json` (see `tutorial-design.md`); a new task type is a `TutorialTask` subclass + `TutorialTaskFactory` entry (+ `ITutorialContext` member or `PlayerActivity` event) |
 | Equipment item | `items.json` entry with `"Type": "equipment"`, `Slot`, `Health`/`Power`, `ExplosionProtection` (%); bonuses applied by `EquipmentStatsBinder`, UI in `EquipmentUI` (layout `ArmorLayout`/`DeviceSlots`, 3D figure `PlayerPreview`) |

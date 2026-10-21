@@ -31,6 +31,7 @@ namespace Spacebox.Game.Resource
         public string Model { get; set; } = "";
         public OxygenGeneratorJSON OxygenGenerator { get; set; } = new OxygenGeneratorJSON();
         public DoorJSON Door { get; set; } = new DoorJSON();
+        public SignJSON Sign { get; set; } = new SignJSON();
         public PowerGeneratorJSON Generator { get; set; } = new PowerGeneratorJSON();
         public GravityGeneratorJSON Gravity { get; set; } = new GravityGeneratorJSON();
         public DnaReconstructorJSON DnaReconstructor { get; set; } = new DnaReconstructorJSON();

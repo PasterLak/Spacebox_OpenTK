@@ -1918,5 +1918,76 @@
       "Place": "blockPlaceHeavy",
       "Destroy": "blockPlaceHeavy"
     }
+  },
+  {
+    "ID": "sign_steel",
+    "Name": "Steel Sign",
+    "Description": "Plate for a short label, attach it to any block side",
+    "Type": "sign",
+    "Category": "building",
+    "Textures": {
+      "Active": {
+        "All": "signSteelEdge",
+        "Up": "signSteel",
+        "Down": "signSteelEdge"
+      }
+    },
+    "Sign": {
+      "Width": 1,
+      "MaxLines": 4,
+      "MaxLineLength": 15,
+      "TextColor": "#22262c"
+    },
+    "Sounds": {
+      "Place": "placeMetal2"
+    }
+  },
+  {
+    "ID": "sign_steel_wide",
+    "Name": "Wide Steel Sign",
+    "Description": "Two blocks wide plate for longer labels",
+    "Type": "sign",
+    "Category": "building",
+    "Textures": {
+      "Active": {
+        "All": "signSteelEdge",
+        "Up": "signSteel",
+        "Down": "signSteelEdge"
+      }
+    },
+    "Sign": {
+      "Width": 2,
+      "MaxLines": 4,
+      "MaxLineLength": 30,
+      "TextColor": "#22262c"
+    },
+    "Sounds": {
+      "Place": "placeMetal2"
+    }
+  },
+  {
+    "ID": "sign_panel_wide",
+    "Name": "Info Panel",
+    "Description": "Dark wide panel with glowing text, good for spawn and base information",
+    "Type": "sign",
+    "Category": "building",
+    "Textures": {
+      "Active": {
+        "All": "signPanelEdge",
+        "Up": "signPanel",
+        "Down": "signPanelEdge"
+      }
+    },
+    "Sign": {
+      "Width": 2,
+      "MaxLines": 5,
+      "MaxLineLength": 30,
+      "TextColor": "#6ed2e6",
+      "Glow": true,
+      "ViewDistance": 64
+    },
+    "Sounds": {
+      "Place": "placeMetal2"
+    }
   }
 ]

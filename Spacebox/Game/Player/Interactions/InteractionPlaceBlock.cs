@@ -366,6 +366,11 @@ public class InteractionPlaceBlock : InteractionMode
                         player.PlayerStatistics.BlocksPlaced++;
                         PlayerActivity.RaiseBlock(PlayerActivityKind.BlockPlaced, newBlock.Id);
                     }
+                    else if (GameAssets.GetBlockDataById(newBlock.Id)?.Shape?.RequiresSupport == true)
+                    {
+                        PlacementRefund.Refund(player, newBlock.Id);
+                        return;
+                    }
                     else
                     {
                         EntityCreationNetwork.PlaceNewEntity(World.CurrentSector, entity.ToWorldSpace(selectorPosition), newBlock);

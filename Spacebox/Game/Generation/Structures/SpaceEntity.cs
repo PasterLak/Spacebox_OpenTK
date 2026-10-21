@@ -88,6 +88,8 @@ namespace Spacebox.Game.Generation
         public ElectricNetworkManager ElectricManager { get; private set; }
         public OxygenSystem Oxygen { get; private set; }
         public DoorSystem Doors { get; private set; }
+        private Spacebox.Game.Signs.SignRenderer _signs;
+        public Spacebox.Game.Signs.SignRenderer Signs => _signs ??= new Spacebox.Game.Signs.SignRenderer(this);
         public CellReservations Reservations { get; } = new CellReservations();
         public Particle StarParticle;
 
@@ -379,6 +381,7 @@ namespace Spacebox.Game.Generation
             Vector3 localPos = WorldPositionToLocal(worldPosition);
             if (IsCellReserved(worldPosition)) return false;
             if (blockData != null && !IsReservedAreaFree(worldPosition, blockData, block.Direction, block.Rotation)) return false;
+            if (blockData != null && !HasRequiredSupport(worldPosition, blockData, block.Direction, block.Rotation)) return false;
 
             return PlaceBlockInternal(localPos, block);
         }
@@ -393,7 +396,17 @@ namespace Spacebox.Game.Generation
         public bool CanPlaceBlock(Vector3 position, BlockData blockData, Direction direction, Rotation rotation)
         {
             if (blockData.IsMultiblock) return CanPlaceStructure(position, blockData, direction, rotation);
-            return !IsCellReserved(position) && IsReservedAreaFree(position, blockData, direction, rotation);
+            return !IsCellReserved(position) && IsReservedAreaFree(position, blockData, direction, rotation) &&
+                   HasRequiredSupport(position, blockData, direction, rotation);
+        }
+
+        public bool HasRequiredSupport(Vector3 position, BlockData blockData, Direction direction, Rotation rotation)
+        {
+            if (blockData.Shape == null || !blockData.Shape.RequiresSupport) return true;
+
+            var local = WorldPositionToLocal(position);
+            var cell = new Vector3i((int)MathF.Floor(local.X), (int)MathF.Floor(local.Y), (int)MathF.Floor(local.Z));
+            return Spacebox.Game.Generation.Shapes.BlockShapes.IsSupported(this, cell, blockData.Shape, direction, rotation);
         }
 
         private static readonly List<Vector3i> _reservedArea = new List<Vector3i>();
@@ -1029,6 +1042,7 @@ namespace Spacebox.Game.Generation
             }
 
             Doors.Render();
+            _signs?.Render();
             _shipControl?.Render();
 
             if (VisualDebug.Enabled)
@@ -1247,6 +1261,7 @@ namespace Spacebox.Game.Generation
         {
             IsDisposed = true;
             Doors.Dispose();
+            _signs?.Dispose();
             _shipControl?.Dispose();
             GravityField.UnregisterEntity(this);
             Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.UnregisterEntity(this);

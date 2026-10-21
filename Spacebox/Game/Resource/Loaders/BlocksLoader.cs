@@ -153,6 +153,11 @@ namespace Spacebox.Game.Resource
                 {
                     blockData = new DisassemblerBlockData(blockData, blockJson.Disassembler);
                 }
+                else if (blockData.Type == "sign")
+                {
+                    blockData.Shape ??= shapes.Resolve(SignBlockData.ShapeNameFor(blockJson.Sign));
+                    blockData = new SignBlockData(blockData, blockJson.Sign);
+                }
                 else if (blockData.Type == "oxygengenerator")
                 {
                     blockData = new OxygenGeneratorBlockData(blockData, blockJson.OxygenGenerator, GameSetLoader.ModInfo.ModId);

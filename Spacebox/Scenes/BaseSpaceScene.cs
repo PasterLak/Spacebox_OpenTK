@@ -356,6 +356,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         ClaimBeaconUI.OnGUI();
         DisassemblerUI.OnGUI();
         GravityGeneratorUI.OnGUI();
+        SignUI.OnGUI();
         ShipConsoleUI.OnGUI();
         DnaReconstructorUI.OnGUI();
         DnaReconstructionScreen.OnGUI();
@@ -397,6 +398,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Protection.ClaimVisuals.Reset();
         Spacebox.Game.Protection.ClaimSettings.ClearOverride();
         GravityGeneratorUI.Reset();
+        SignUI.Reset();
         DnaReconstructorUI.Reset();
         DnaReconstructionScreen.Reset();
         HitMarkerUI.Reset();

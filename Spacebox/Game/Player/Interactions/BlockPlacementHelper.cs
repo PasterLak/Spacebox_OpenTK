@@ -34,7 +34,9 @@ namespace Spacebox.Game.Generation.Tools
                     ? surfaceNormal
                     : GetShapeUpInAir(playerPosition, blockPosition, playerUp, additionalRotation);
                 finalDir = Block.GetDirectionFromNormal(shapeUp);
-                finalRot = Rotation.None;
+                finalRot = blockData.Shape.HasFacing
+                    ? blockData.Shape.BestRotation(finalDir, GetFacingUp(shapeUp, playerUp, blockPosition - playerPosition))
+                    : Rotation.None;
                 return;
             }
 
@@ -158,6 +160,16 @@ namespace Spacebox.Game.Generation.Tools
                 int combinedRot = ((int)bestRot + (int)additionalRotation) % 4;
                 bestRot = (Rotation)combinedRot;
             }
+        }
+
+        public static Vector3 GetFacingUp(Vector3 normal, Vector3 playerUp, Vector3 away)
+        {
+            var n = normal.LengthSquared > 1e-6f ? normal.Normalized() : Vector3.UnitY;
+            var up = playerUp - Vector3.Dot(playerUp, n) * n;
+            if (up.LengthSquared > 0.09f) return up.Normalized();
+
+            var forward = away - Vector3.Dot(away, n) * n;
+            return forward.LengthSquared > 1e-6f ? forward.Normalized() : up;
         }
 
         private static Vector3 GetShapeUpInAir(Vector3 playerPosition, Vector3 blockPosition, Vector3 playerUp, Rotation rotation)
