@@ -76,6 +76,7 @@ public sealed class MobSystem : Component
         _mobs.Clear();
         MobTargets.Clear();
         MobModels.Clear();
+        MobSounds.Clear();
         NaturalBlocks.Reset();
         if (Instance == this) Instance = null;
 

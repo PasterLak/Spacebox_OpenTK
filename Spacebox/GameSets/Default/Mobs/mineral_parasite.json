@@ -28,6 +28,17 @@
     "MealFarDistance": 96,
     "EdibleBlocks": [],
     "Loot": "mineral_parasite",
+    "Sounds": {
+        "Idle": "parasiteIdle",
+        "Alert": "parasiteAlert",
+        "Bite": "parasiteBite",
+        "Hurt": "parasiteHurt",
+        "Death": "parasiteDeath",
+        "Eat": "parasiteEat",
+        "IdleIntervalMin": 6,
+        "IdleIntervalMax": 16,
+        "Volume": 1.0
+    },
     "Spawn": {
         "Enabled": true,
         "MaxPerChunk": 1,

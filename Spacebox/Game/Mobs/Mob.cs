@@ -23,6 +23,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
     private readonly MobAnimator _animator;
     private readonly MobEatingEffect _eatingEffect = new MobEatingEffect();
     private readonly Random _random;
+    private readonly Random _soundRandom;
     private IMobBrain? _brain;
     private Quaternion _orientation = Quaternion.Identity;
     private Vector3 _lookTarget;
@@ -54,6 +55,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
         set
         {
             if (_action == value) return;
+            if (value == MobAction.Hunting) PlaySound(Definition.Sounds.Alert);
             _action = value;
             if (value != MobAction.Eating) _eatingEffect.Stop();
             if (!IsReplica) Link?.SyncAction(value);
@@ -67,6 +69,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
         Position = position;
         IsTimid = isTimid;
         _random = new Random(seed);
+        _soundRandom = new Random(seed ^ 0x5A17);
 
         _health = new StatsData(definition.Name, definition.Health, definition.Health);
         _health.OnEqualZero += Die;
@@ -95,6 +98,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
 
     public void ApplyReplicatedAction(MobAction action)
     {
+        if (action == MobAction.Hunting && _action != MobAction.Hunting) PlaySound(Definition.Sounds.Alert);
         _action = action;
         if (action != MobAction.Eating) _eatingEffect.Stop();
     }
@@ -117,6 +121,7 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
         float deltaTime = Time.Delta;
 
         if (!IsReplica && !IsDead) UpdateAuthority(deltaTime);
+        if (!IsDead) UpdateIdleSound(deltaTime);
 
         _animator.Update(deltaTime, _action);
         _eatingEffect.Update(deltaTime);
@@ -211,15 +216,18 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
     public void PlayHurt()
     {
         _animator.PlayHurt();
+        PlaySound(Definition.Sounds.Hurt);
     }
 
     public void PlayBite()
     {
         _animator.PlayBite();
+        PlaySound(Definition.Sounds.Bite);
     }
 
     public void PlayDeathEffect(short blockId)
     {
+        PlaySound(Definition.Sounds.Death);
         if (World.DestructionManager == null || !GameAssets.Blocks.ContainsKey(blockId)) return;
         World.DestructionManager.DestroyBlock(Position - new Vector3(0.5f), Color3Byte.White, GameAssets.CreateBlockFromId(blockId));
     }
@@ -234,6 +242,44 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
         DetachComponent(_body);
         Parent?.RemoveChild(this);
         MobSystem.Instance?.Unregister(this);
+    }
+
+    private const float EatSoundInterval = 1f;
+    private float _idleSoundTimer = -1f;
+    private float _eatSoundTimer;
+
+    private void UpdateIdleSound(float deltaTime)
+    {
+        var sounds = Definition.Sounds;
+        if (sounds == null) return;
+
+        if (_action == MobAction.Eating)
+        {
+            _eatSoundTimer -= deltaTime;
+            if (_eatSoundTimer <= 0f)
+            {
+                _eatSoundTimer = EatSoundInterval;
+                PlaySound(sounds.Eat);
+            }
+        }
+        else
+        {
+            _eatSoundTimer = 0f;
+        }
+
+        if (string.IsNullOrEmpty(sounds.Idle)) return;
+
+        if (_idleSoundTimer < 0f) _idleSoundTimer = MobSounds.NextIdleDelay(sounds, _soundRandom);
+        _idleSoundTimer -= deltaTime;
+        if (_idleSoundTimer > 0f) return;
+
+        _idleSoundTimer = MobSounds.NextIdleDelay(sounds, _soundRandom);
+        if (_action != MobAction.Eating) PlaySound(sounds.Idle);
+    }
+
+    private void PlaySound(string soundName)
+    {
+        MobSounds.Play(Definition.Sounds, soundName, Position, _soundRandom);
     }
 
     private void UpdateAuthority(float deltaTime)

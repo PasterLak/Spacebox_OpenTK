@@ -32,6 +32,7 @@ public sealed class MobDefinition
     public IReadOnlySet<short>? EdibleBlocks { get; init; }
     public string LootTable { get; init; } = "";
     public MobSpawnJSON Spawn { get; init; } = new MobSpawnJSON();
+    public MobSoundsJSON Sounds { get; init; } = new MobSoundsJSON();
 
     public bool CanEat(short blockId)
     {

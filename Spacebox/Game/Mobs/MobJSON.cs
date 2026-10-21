@@ -32,6 +32,20 @@ public class MobJSON
     public string[] EdibleBlocks { get; set; } = Array.Empty<string>();
     public string Loot { get; set; } = "";
     public MobSpawnJSON Spawn { get; set; } = new MobSpawnJSON();
+    public MobSoundsJSON Sounds { get; set; } = new MobSoundsJSON();
+}
+
+public class MobSoundsJSON
+{
+    public string Idle { get; set; } = "";
+    public string Alert { get; set; } = "";
+    public string Bite { get; set; } = "";
+    public string Hurt { get; set; } = "";
+    public string Death { get; set; } = "";
+    public string Eat { get; set; } = "";
+    public float IdleIntervalMin { get; set; } = 6f;
+    public float IdleIntervalMax { get; set; } = 16f;
+    public float Volume { get; set; } = 1f;
 }
 
 public class MobSpawnJSON

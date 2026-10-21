@@ -68,7 +68,8 @@ public static class MobsLoader
             MealFarDistance = MathF.Max(json.MealNearDistance, json.MealFarDistance),
             EdibleBlocks = ResolveBlocks(json.Id, json.EdibleBlocks),
             LootTable = ResolveLoot(json.Id, json.Loot),
-            Spawn = json.Spawn ?? new MobSpawnJSON()
+            Spawn = json.Spawn ?? new MobSpawnJSON(),
+            Sounds = json.Sounds ?? new MobSoundsJSON()
         };
     }
 
