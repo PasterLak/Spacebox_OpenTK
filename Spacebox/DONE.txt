@@ -70,6 +70,8 @@ Small
 - mineral parasite bursts into violet particles when it dies (mobs.json DeathParticles: color, count, speed, size, life)
 - gravity generator: power-up and power-down sounds when switched on/off, heard by everyone near it (24 blocks)
 - new gravity generators start with gravity switched off (Gravity.EnabledOnPlace); the tutorial step asks to turn it on
+- footsteps in gravity: stone steps on asteroid blocks, metal steps on built blocks, timed to crouch, walk and run speed, plus a step on landing
+- crouch in gravity with Left Ctrl (new Crouch key, 0.9 m tall, slower); entering gravity in a 1-block gap crouches automatically instead of pushing the player into blocks
 - oxygen generator plays a sputter and warning tone when its water tank runs dry (Oxygen.EmptySound)
 - quiet air hiss when entering and leaving a breathable zone
 - DNA reconstructor sounds: bio-tech hum while reconstructing (pitch rises), a cue at each body stage, and a spawn sound when the player appears; other players near the reconstructor (24 blocks) hear only the spawn sound; DnaReconstructor.Sounds in blocks.json

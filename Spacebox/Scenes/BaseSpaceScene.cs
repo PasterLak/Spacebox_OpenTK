@@ -428,6 +428,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Generation.Doors.DoorSounds.Clear();
         Spacebox.Game.Effects.BlockEventSounds.Clear();
         Spacebox.Game.Player.AirZoneSounds.Clear();
+        Spacebox.Game.Player.Footsteps.FootstepSounds.Clear();
         ShipNetwork.Reset();
         ShipWeapons.Reset();
         TutorialService.Detach();

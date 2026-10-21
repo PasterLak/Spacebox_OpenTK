@@ -70,6 +70,17 @@
                     }
                 ]
             },
+            "crouch": {
+                "Name": "Crouch",
+                "Description": "Crouch while walking in gravity",
+                "Category": "Movement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "LeftControl"
+                    }
+                ]
+            },
             "rollLeft": {
                 "Name": "Roll Left",
                 "Description": "",

@@ -25,6 +25,7 @@ namespace Spacebox.Game.Player
         private EquipmentStatsBinder _equipmentStats;
         private EquipmentFlashlightBinder _flashlightBinder;
         public FallDamage FallDamage { get; private set; }
+        public Footsteps.PlayerFootsteps Footsteps { get; private set; }
 
         public bool IsUsingItem => PanelUI.CurrentSlot() is { HasItem: true, Item: DrillItem } && PanelUI.IsHeldItemAnimating;
 
@@ -144,6 +145,7 @@ namespace Spacebox.Game.Player
             GameMode = GameMode.Creative;
             _flashlightBinder = new EquipmentFlashlightBinder(this);
             FallDamage = new FallDamage(this);
+            Footsteps = new Footsteps.PlayerFootsteps(Gravity);
 
             AddChild(Effects);
 

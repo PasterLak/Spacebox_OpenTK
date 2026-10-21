@@ -1,7 +1,9 @@
 ﻿using Engine;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
+using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Physics;
+using Spacebox.Game.Player.Footsteps;
 
 namespace Spacebox.Game.Player;
 
@@ -10,9 +12,13 @@ public sealed class GravityWalker
     public const float EyeHeight = 1.5f;
     public const float CapsuleHeight = 1.6f;
     public const float CapsuleRadius = 0.3f;
+    public const float CrouchEyeHeight = 0.8f;
+    public const float HeadClearance = CapsuleHeight - EyeHeight;
 
     private const float WalkSpeed = 4.5f;
     private const float RunSpeed = 7f;
+    private const float CrouchSpeed = 2.2f;
+    private const float RunGaitSpeed = (WalkSpeed + RunSpeed) * 0.5f;
     private const float JumpHeight = 1.25f;
     private const float MinJumpHeight = 1.2f;
     private const float ReferenceGravity = 9.81f;
@@ -40,14 +46,23 @@ public sealed class GravityWalker
     private float _upSign = 1f;
     private float _peakFallSpeed;
     private bool _isAirborne;
+    private readonly CrouchStance _stance = new CrouchStance(EyeHeight, CrouchEyeHeight);
+    private readonly Func<float, bool> _fitsEyeHeight;
 
     public event Action<float, Vector3>? Landed;
-
-    private static readonly float[] CapsuleSamples = { CapsuleRadius, CapsuleHeight * 0.5f, CapsuleHeight - CapsuleRadius };
 
     public bool IsActive { get; private set; }
     public bool IsGrounded => _isGrounded;
     public Vector3 Velocity => _velocity;
+    public bool IsCrouching => _stance.IsCrouching;
+    public float CurrentEyeHeight => _stance.EyeHeight;
+    public float HorizontalSpeed => (_velocity - _up * Vector3.Dot(_velocity, _up)).Length;
+    public FootstepGait Gait => _stance.IsCrouching ? FootstepGait.Crouch : HorizontalSpeed > RunGaitSpeed ? FootstepGait.Run : FootstepGait.Walk;
+
+    public GravityWalker()
+    {
+        _fitsEyeHeight = FitsEyeHeight;
+    }
 
     public void Enter(LocalAstronaut player, Vector3 gravity)
     {
@@ -57,6 +72,7 @@ public sealed class GravityWalker
         _isGrounded = false;
         _isAirborne = false;
         _peakFallSpeed = 0f;
+        _stance.Reset(EyeHeight);
         LiftOutOfGeometry(player);
     }
 
@@ -82,6 +98,7 @@ public sealed class GravityWalker
         _peakFallSpeed = 0f;
         _velocity = Vector3.Zero;
         _entity = null;
+        _stance.Reset(EyeHeight);
     }
 
     public void Update(LocalAstronaut player, Vector3 gravity, bool canMove)
@@ -91,6 +108,7 @@ public sealed class GravityWalker
 
         _up = -gravity.Normalized();
         SyncLocal(player);
+        UpdateStance(player, canMove && Input.IsAction("crouch"), deltaTime);
         _isGrounded = ProbeGround();
 
         Align(player, deltaTime);
@@ -99,7 +117,7 @@ public sealed class GravityWalker
         var horizontal = _velocity - vertical;
 
         var wish = canMove ? GetWishDirection(player) : Vector3.Zero;
-        float speed = canMove && Input.IsAction("sprint") ? RunSpeed : WalkSpeed;
+        float speed = _stance.IsCrouching ? CrouchSpeed : canMove && Input.IsAction("sprint") ? RunSpeed : WalkSpeed;
         float acceleration = _isGrounded ? GroundAcceleration : AirAcceleration;
         if (_isGrounded || wish != Vector3.Zero)
             horizontal = MoveTowards(horizontal, wish * speed, acceleration * deltaTime);
@@ -122,6 +140,66 @@ public sealed class GravityWalker
         TrackLanding(gravity);
         player.CameraSway.Update(0f);
         player.OnMoved?.Invoke(player);
+    }
+
+    public bool TryGetGroundBlock(out Block block)
+    {
+        block = null;
+        if (_entity == null || !_isGrounded) return false;
+
+        var feet = _localPosition;
+        feet[_upAxis] -= _upSign * (_stance.EyeHeight + GroundProbe);
+        int a = (_upAxis + 1) % 3;
+        int b = (_upAxis + 2) % 3;
+
+        for (int i = 0; i < GroundSampleOffsets.Length; i += 2)
+        {
+            var sample = feet;
+            sample[a] += GroundSampleOffsets[i] * CapsuleRadius;
+            sample[b] += GroundSampleOffsets[i + 1] * CapsuleRadius;
+            if (TryGetSolidBlock(sample, out block)) return true;
+        }
+
+        return false;
+    }
+
+    private static readonly float[] GroundSampleOffsets = { 0f, 0f, -1f, -1f, 1f, -1f, -1f, 1f, 1f, 1f };
+
+    private bool TryGetSolidBlock(Vector3 local, out Block block)
+    {
+        block = null;
+        var cell = new Vector3i((int)MathF.Floor(local.X), (int)MathF.Floor(local.Y), (int)MathF.Floor(local.Z));
+        if (!_entity.TryGetBlockLocal(cell, out var chunk, out var index)) return false;
+
+        block = chunk.Blocks[index.X, index.Y, index.Z];
+        return block != null && !block.IsAir;
+    }
+
+    private void UpdateStance(LocalAstronaut player, bool wantsCrouch, float deltaTime)
+    {
+        float previous = _stance.EyeHeight;
+        float next = _stance.Update(wantsCrouch, deltaTime, _fitsEyeHeight);
+        if (next == previous) return;
+
+        float delta = next - previous;
+        if (_entity == null)
+        {
+            player.Position += _up * delta;
+            return;
+        }
+
+        _localPosition[_upAxis] += _upSign * delta;
+        ApplyLocal(player);
+    }
+
+    private bool FitsEyeHeight(float eyeHeight)
+    {
+        if (_entity == null) return true;
+
+        var candidate = _localPosition;
+        candidate[_upAxis] += _upSign * (eyeHeight - _stance.EyeHeight);
+        GetBox(candidate, eyeHeight, out var min, out var max);
+        return !EntityBoxCollider.Overlaps(_entity, min, max);
     }
 
     private void TrackLanding(Vector3 gravity)
@@ -292,40 +370,56 @@ public sealed class GravityWalker
         if (!EntityBoxCollider.Overlaps(_entity, min, max)) return;
 
         var start = _localPosition;
-        for (float lift = EntryLiftStep; lift <= CapsuleHeight; lift += EntryLiftStep)
+        for (float lift = 0f; lift <= CapsuleHeight; lift += EntryLiftStep)
         {
-            var candidate = start;
-            candidate[_upAxis] += _upSign * lift;
-            GetBox(candidate, out min, out max);
-            if (EntityBoxCollider.Overlaps(_entity, min, max)) continue;
-
-            _localPosition = candidate;
-            ApplyLocal(player);
-            return;
+            if (lift > 0f && TryPlace(player, start, lift, EyeHeight)) return;
+            if (TryPlace(player, start, lift, CrouchEyeHeight) || TryPlace(player, start, -lift, CrouchEyeHeight)) return;
         }
+    }
+
+    private bool TryPlace(LocalAstronaut player, Vector3 start, float lift, float eyeHeight)
+    {
+        var candidate = start;
+        candidate[_upAxis] += _upSign * lift;
+        GetBox(candidate, eyeHeight, out var min, out var max);
+        if (EntityBoxCollider.Overlaps(_entity, min, max)) return false;
+
+        _localPosition = candidate;
+        _stance.Reset(eyeHeight);
+        ApplyLocal(player);
+        return true;
     }
 
     private void GetBox(Vector3 eyeLocal, out Vector3 min, out Vector3 max)
     {
+        GetBox(eyeLocal, _stance.EyeHeight, out min, out max);
+    }
+
+    private void GetBox(Vector3 eyeLocal, float eyeHeight, out Vector3 min, out Vector3 max)
+    {
         min = eyeLocal - new Vector3(CapsuleRadius);
         max = eyeLocal + new Vector3(CapsuleRadius);
 
-        float feet = eyeLocal[_upAxis] - _upSign * EyeHeight;
-        float low = _upSign > 0f ? feet : feet - CapsuleHeight;
+        float height = eyeHeight + HeadClearance;
+        float feet = eyeLocal[_upAxis] - _upSign * eyeHeight;
+        float low = _upSign > 0f ? feet : feet - height;
         min[_upAxis] = low;
-        max[_upAxis] = low + CapsuleHeight;
+        max[_upAxis] = low + height;
     }
 
     private bool OverlapsDynamic(LocalAstronaut player, Vector3 eyeLocal)
     {
         var localUp = Vector3.Zero;
         localUp[_upAxis] = _upSign;
-        var feetLocal = eyeLocal - localUp * EyeHeight;
+        float eyeHeight = _stance.EyeHeight;
+        float height = eyeHeight + HeadClearance;
+        var feetLocal = eyeLocal - localUp * eyeHeight;
         var physics = World.Instance?.Physics;
 
-        for (int i = 0; i < CapsuleSamples.Length; i++)
+        for (int i = 0; i < 3; i++)
         {
-            var center = feetLocal + localUp * CapsuleSamples[i];
+            float sample = i == 0 ? CapsuleRadius : i == 1 ? height * 0.5f : height - CapsuleRadius;
+            var center = feetLocal + localUp * sample;
             if (_entity.Doors.IntersectsMovingDoor(center, CapsuleRadius)) return true;
             if (physics != null && physics.OverlapsSolidBody(_entity.EntityLocalToWorld(center), CapsuleRadius, player.Body, out _)) return true;
         }

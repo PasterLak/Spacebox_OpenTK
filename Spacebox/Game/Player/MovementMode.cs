@@ -113,6 +113,7 @@ public class MovementMode : GameModeBase
             StopSpeedUp(player);
             if (!player.Gravity.IsActive) player.Gravity.Enter(player, gravity);
             player.Gravity.Update(player, gravity, player.CanMove);
+            player.Footsteps.Update(Time.Delta);
             return true;
         }
 
