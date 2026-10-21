@@ -29,6 +29,10 @@ namespace Spacebox.Game.GUI
             ImGui.SeparatorText("[WORLD]");
             ImGui.Text($"Time: {GameTime.ToString()} Tick: {GameTime.DayTick} ");
             ImGui.Text($"Sector: Pos: {World.CurrentSector.PositionWorld} Index: {World.CurrentSector.PositionIndex}");
+            var occlusion = world.Occlusion;
+            ImGui.Text(occlusion.Enabled
+                ? $"Chunks: drawn {occlusion.DrawnLastFrame}, occluded {occlusion.OccludedLastFrame}"
+                : $"Chunks: drawn {occlusion.DrawnLastFrame} (occlusion off)");
 
             var cam = Camera.Main;
 

@@ -60,6 +60,7 @@ namespace Spacebox.Game.Generation
         public SpaceEntity SpaceEntity { get; private set; }
         public BoundingBox BoundingBox { get; private set; }
         public BoundingBox GeometryBoundingBox { get; private set; }
+        public Engine.Graphics.Occlusion.OcclusionState Occlusion { get; } = new Engine.Graphics.Occlusion.OcclusionState();
 
         public Action<Chunk> OnChunkModified;
 
@@ -322,19 +323,7 @@ namespace Spacebox.Game.Generation
         {
             if (!_isLoadedOrGenerated || IsDisposed) return;
 
-            Matrix4 model;
-            if (SpaceEntity.HasRotation)
-            {
-                model = Matrix4.CreateTranslation(PositionWorld - SpaceEntity.PositionWorld)
-                        * SpaceEntity.RotationMatrix
-                        * Matrix4.CreateTranslation(RenderSpace.ToRender(SpaceEntity.PositionWorld));
-            }
-            else
-            {
-                model = Matrix4.CreateTranslation(RenderSpace.ToRender(PositionWorld));
-            }
-
-            material.Apply(model);
+            material.Apply(RenderMatrix());
 
             if (_mesh != null)
             {
@@ -733,10 +722,21 @@ namespace Spacebox.Game.Generation
             return PositionWorld + local;
         }
 
+        public Matrix4 RenderMatrix()
+        {
+            if (!SpaceEntity.HasRotation)
+                return Matrix4.CreateTranslation(RenderSpace.ToRender(PositionWorld));
+
+            return Matrix4.CreateTranslation(PositionWorld - SpaceEntity.PositionWorld)
+                   * SpaceEntity.RotationMatrix
+                   * Matrix4.CreateTranslation(RenderSpace.ToRender(SpaceEntity.PositionWorld));
+        }
+
         public void Dispose()
         {
             IsDisposed = true;
             _mesh?.Dispose();
+            Occlusion.Release();
             OnChunkModified = null;
         }
 

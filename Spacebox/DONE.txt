@@ -134,6 +134,7 @@ Fixes
 Engine
 - F10 render debug views (Shift+F10 back): wireframe of all meshes, G-buffer normals, linear depth, G-buffer mask, SSAO occlusion; removed the stray F10 toggle inside Mesh.Render
 - chunk vertices packed from 52 to 28 bytes (light colour, emission, normal and AO as normalized bytes; MeshBuffer supports typed attributes); normal matrix computed once per draw instead of per vertex in 13 shaders
+- occlusion culling: chunks hidden behind other asteroids, ships or blocks are not drawn (GPU occlusion queries, windows still see through); console occlusion [on|off], F3 shows drawn/occluded chunks, F4 marks occluded chunks
 - Engine.Automation: InputInjector (key/mouse injection through OpenTK input state), ImGuiTextCapture (window texts and positions from ImGui draw data); MainThread.RunAfterRender; MiniHttpServer.Start(port, address)
 - blend function changes go through the GLState cache (GLState.InvalidateBlendFunc after ImGui); LOD jobs use a pooled block snapshot; NetworkVariable.OwnerWriteValidator, NetworkTransform.ValidateOwnerState, PeerRateLimiter
 - CanvasUI: Godot-like retained UI (Node2D, Control, anchors, containers, themes, style boxes, TTF atlas fonts, batched renderer, virtual resolution, mouse input and tooltips); UiShowcaseScene (--ui-showcase) with three game interface variants

@@ -1049,6 +1049,7 @@ namespace Spacebox.Game.Generation
                     }
 
                     if (!visible) continue;
+                    if (!PassesOcclusion(chunk, cameraEntitySpace)) continue;
 
                     chunk.Render(material);
                 }
@@ -1068,6 +1069,24 @@ namespace Spacebox.Game.Generation
                 VisualDebug.DrawAxes(CenterOfMassWorld, 3f);
                 Engine.GUI.GizmoIcons.Add(CenterOfMassWorld, Engine.GUI.GizmoIcon.CenterOfMass, Color4.Lime);
             }
+        }
+
+        private const float OcclusionBoxMargin = 1f;
+        private const float OcclusionNearDistance = 2f;
+
+        private bool PassesOcclusion(Chunk chunk, Vector3 cameraEntitySpace)
+        {
+            var culler = World.Instance?.Occlusion;
+            if (culler == null) return true;
+
+            var bounds = chunk.GeometryBoundingBox;
+            var margin = new Vector3(OcclusionBoxMargin);
+            var near = new Vector3(OcclusionBoxMargin + OcclusionNearDistance);
+            bool cameraNear = Vector3.ComponentMin(Vector3.ComponentMax(cameraEntitySpace, bounds.Min - near), bounds.Max + near) == cameraEntitySpace;
+
+            bool visible = culler.Prepare(chunk.Occlusion, cameraNear, chunk.RenderMatrix(), bounds.Min - chunk.PositionWorld - margin, bounds.Max - chunk.PositionWorld + margin);
+            if (!visible && VisualDebug.Enabled) DrawDebugBox(bounds, new Color4(1f, 0.15f, 0.15f, 0.7f));
+            return visible;
         }
 
         public void DrawDebugBox(BoundingBox entitySpaceBox, Color4 color, float thickness = 0f)
